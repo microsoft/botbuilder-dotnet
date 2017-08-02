@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Primitives;
 
 namespace Microsoft.Bot.Connector
 {
@@ -91,6 +92,28 @@ namespace Microsoft.Bot.Connector
         public async Task<bool> TryAuthenticateAsync(HttpRequestMessage request, IEnumerable<IActivity> activities,
            CancellationToken token)
         {
+            var identityToken = await this.AuthenticateAsync(request, activities, token);
+            return identityToken.Authenticated;
+        }
+
+        /// <summary>
+        /// Authenticates the request based on headers and add the <see cref="IActivity.ServiceUrl"/> for each
+        /// activities to <see cref="MicrosoftAppCredentials.TrustedHostNames"/> if the request is authenticated.
+        /// </summary>
+        /// <param name="headers"> The headers from incoming request.</param>
+        /// <param name="activities"> The activities extracted from request.</param>
+        /// <param name="token"> The cancellation token.</param>
+        /// <returns></returns>
+        public async Task<bool> TryAuthenticateAsync(IDictionary<string, StringValues> headers, IEnumerable<IActivity> activities,
+           CancellationToken token)
+        {
+            var request = new HttpRequestMessage();
+            var authorization = StringValues.Empty;
+            if(headers.Keys.Contains("Authorization") || headers.Keys.Contains("authorization"))
+            {
+                authorization = headers.Keys.Contains("Authorization") ? headers["Authorization"] : headers["authorization"];
+            }
+            request.Headers.Add("Authorization", authorization.ToArray());
             var identityToken = await this.AuthenticateAsync(request, activities, token);
             return identityToken.Authenticated;
         }
