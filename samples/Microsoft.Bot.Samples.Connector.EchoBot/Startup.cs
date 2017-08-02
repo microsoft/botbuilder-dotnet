@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Bot.Connector;
+using Microsoft.Bot.Builder;
 
 namespace Microsoft.Bot.Samples.Connector.EchoBot
 {
@@ -31,7 +32,7 @@ namespace Microsoft.Bot.Samples.Connector.EchoBot
         {
             services.AddSingleton(_ => Configuration);
             services.AddMvc();
-            services.UseBotConnector();
+            services.UseBotServices().UseBotFrameworkConnector();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
