@@ -57,15 +57,12 @@ namespace Microsoft.Bot.Builder
             // BotLogger
             services.AddSingleton<IBotLogger, NullLogger>();
 
-            // Activity resolver and IActivity
-            services.AddScoped<ActivityResolver>();
-            services.AddScoped<IActivity>(provider => provider.GetRequiredService<ActivityResolver>().Resolve());
-
-            // Setup botContext
+            // Setup dataContext
             services.AddScoped<IDataContext, NullDataContext>();
-            services.AddScoped<BotContext>();
-            services.AddScoped<IBotContext>(provider => provider.GetService<BotContext>());
 
+            // Setup botContextFactory
+            services.AddScoped<IBotContextFactory, BotContextFactory>();
+            
             // add post to connector as the default middleware
             services.AddScoped<PostToConnectorMiddleWare>();
             services.AddScoped<IMiddleware>(provider => provider.GetService<PostToConnectorMiddleWare>())
