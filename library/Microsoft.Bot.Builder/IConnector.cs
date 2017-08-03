@@ -35,9 +35,15 @@ namespace Microsoft.Bot.Builder
 
         public virtual async Task Receive(IActivity activity, CancellationToken token)
         {
+            //register current activity with resolver so connectorClient can be instantiated correctly
+            this.serviceProvider.GetRequiredService<ActivityResolver>().Register(activity);
+            
+            //get the context factory and create a new botContext
             var factory = this.serviceProvider.GetRequiredService<IBotContextFactory>();
-            var bot = this.serviceProvider.GetRequiredService<Bot>();
             var context = await factory.CreateBotContext(activity, token);
+
+            // get bot object from container and post the activity to bot
+            var bot = this.serviceProvider.GetRequiredService<Bot>();
             await bot.Receive(context, token);
         }
     }

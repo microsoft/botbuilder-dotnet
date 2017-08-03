@@ -16,12 +16,12 @@ namespace Microsoft.Bot.Builder
 
     public static partial class BotContextExtension
     {
-        public static async Task PostAsync(this BotContext context, CancellationToken token)
+        public static async Task Post(this BotContext context, CancellationToken token)
         {
-            await context.PostAsync(context, new List<IActivity>(), token);
+            await context.Post(context, new List<IActivity>(), token);
         }
 
-        public static Task DoneAsync(this IBotContext context, CancellationToken token)
+        public static Task Done(this IBotContext context, CancellationToken token)
         {
             throw new NotImplementedException();
         }
@@ -44,9 +44,9 @@ namespace Microsoft.Bot.Builder
             this.responses = new List<IActivity>();
         }
         
-        public async Task PostAsync(BotContext context, IList<IActivity> acitivties, CancellationToken token)
+        public async Task Post(BotContext context, IList<IActivity> acitivties, CancellationToken token)
         {
-            await this.postToUser.PostAsync(context, acitivties, token);
+            await this.postToUser.Post(context, acitivties, token);
         }
 
         public IActivity Request => request;

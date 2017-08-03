@@ -21,7 +21,7 @@ namespace Microsoft.Bot.Samples.Connector.EchoBot
                 reply.Text = $"activity type: {activity.Type}";
             }
             context.Responses.Add(reply);
-            await context.PostAsync(token);
+            await context.Post(token);
             return true;
         }
     }

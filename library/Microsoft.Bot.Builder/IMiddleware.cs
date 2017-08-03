@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Builder
 
     public interface IPostToUser : IMiddleware
     {
-        Task PostAsync(BotContext context, IList<IActivity> acitivties, CancellationToken token);
+        Task Post(BotContext context, IList<IActivity> acitivties, CancellationToken token);
     }
 
     public interface IContextFinalizer : IMiddleware
@@ -34,9 +34,9 @@ namespace Microsoft.Bot.Builder
     
     public static partial class MiddlewareExtensions
     {
-        public static IEnumerable<T> Select<T>(this IList<IMiddleware> middlewares) where T : IMiddleware
+        public static IEnumerable<T> Where<T>(this IList<IMiddleware> middlewares) where T : IMiddleware
         {
-            return middlewares.Where(x => x is T).Select(x => (T)x);
+            return middlewares.Where(x => x is T).Cast<T>();
         }
     }
 }

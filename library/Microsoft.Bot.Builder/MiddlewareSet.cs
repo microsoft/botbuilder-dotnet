@@ -20,14 +20,14 @@ namespace Microsoft.Bot.Builder
 
         public virtual async Task ContextCreated(BotContext context, CancellationToken token)
         {
-            foreach (var m in this.middlewares.Select<IContextInitializer>())
+            foreach (var m in this.middlewares.Where<IContextInitializer>())
                 await m.ContextCreated(context, token);
         }
 
         public virtual async Task<bool> ReceiveActivity(BotContext context, CancellationToken token)
         {
             var handled = false;
-            foreach (var middleware in this.middlewares.Select<IPostToBot>())
+            foreach (var middleware in this.middlewares.Where<IPostToBot>())
             {
                 handled = await middleware.ReceiveActivity(context, token);
                 if (handled) break;
@@ -37,14 +37,14 @@ namespace Microsoft.Bot.Builder
 
         public virtual async Task ContextDone(BotContext context, CancellationToken token)
         {
-            foreach (var m in this.middlewares.Select<IContextFinalizer>().Reverse())
+            foreach (var m in this.middlewares.Where<IContextFinalizer>().Reverse())
                 await m.ContextDone(context, token);
         }
 
-        public virtual async Task PostAsync(BotContext context, IList<IActivity> acitivties, CancellationToken token)
+        public virtual async Task Post(BotContext context, IList<IActivity> acitivties, CancellationToken token)
         {
-            foreach (var m in this.middlewares.Select<IPostToUser>().Reverse())
-                await m.PostAsync(context, acitivties, token);
+            foreach (var m in this.middlewares.Where<IPostToUser>().Reverse())
+                await m.Post(context, acitivties, token);
         }
     }
 }

@@ -11,24 +11,24 @@ namespace Microsoft.Bot.Builder
 {
     public class Bot
     {
-        private readonly MiddlewareSet middlewareSet;
+        private readonly PostToConnectorMiddleware postToConnectorMiddleware;
         
-        public Bot(MiddlewareSet middlewareSet)
+        public Bot(PostToConnectorMiddleware postToConnectorMiddleware)
         {
-            SetField.NotNull(out this.middlewareSet, nameof(middlewareSet), middlewareSet);
+            SetField.NotNull(out this.postToConnectorMiddleware, nameof(postToConnectorMiddleware), postToConnectorMiddleware);
         }
 
         public Func<BotContext, CancellationToken, Task<bool>> OnReceive = null;
 
-        public MiddlewareSet MiddlewareSet => middlewareSet;
+        public MiddlewareSet MiddlewareSet => postToConnectorMiddleware.MiddlewareSet;
 
         public async Task<bool> Receive(BotContext context, CancellationToken token = default(CancellationToken))
         {
             var done = false; 
             try
             {
-                await this.middlewareSet.ContextCreated(context, token);
-                done = await this.middlewareSet.ReceiveActivity(context, token);
+                await this.postToConnectorMiddleware.ContextCreated(context, token);
+                done = await this.postToConnectorMiddleware.ReceiveActivity(context, token);
                 if(!done && OnReceive != null)
                 {
                     done = await this.OnReceive(context, token);
@@ -36,7 +36,7 @@ namespace Microsoft.Bot.Builder
             }
             finally
             {
-                await this.middlewareSet.ContextDone(context, token);
+                await this.postToConnectorMiddleware.ContextDone(context, token);
             }
             return done;
         }
@@ -60,51 +60,25 @@ namespace Microsoft.Bot.Builder
             // Setup dataContext
             services.AddScoped<IDataContext, NullDataContext>();
 
+            // Activity resolver and IActivity
+            services.AddScoped<ActivityResolver>();
+            services.AddScoped<IActivity>(provider => provider.GetRequiredService<ActivityResolver>().Resolve());
+
             // Setup botContextFactory
             services.AddScoped<IBotContextFactory, BotContextFactory>();
             
-            // add post to connector as the default middleware
-            services.AddScoped<PostToConnectorMiddleWare>();
-            services.AddScoped<IMiddleware>(provider => provider.GetService<PostToConnectorMiddleWare>())
-                    .AddScoped<IList<IMiddleware>>(provider => provider.GetServices<IMiddleware>().ToList());
+            // create default middlewareset
+            services.AddScoped<MiddlewareSet>(provider => new MiddlewareSet(provider.GetServices<IMiddleware>().ToList()));
 
-            // register middleware set and set it up as IPostToUser
-            services.AddScoped<MiddlewareSet>()
-                    .AddScoped<IPostToUser>(provider => provider.GetService<MiddlewareSet>());
+            // wrap all other middlewares registered with the container 
+            // with PostToConnectorMiddleware
+            services.AddScoped<PostToConnectorMiddleware>();
+
+            // register PostToConnectorMiddleware as IPostToUser
+            services.AddScoped<IPostToUser>(provider => provider.GetService<PostToConnectorMiddleware>());
             
             services.AddScoped<Bot>();
             return services;
-        }
-    }
-
-    public class PostToConnectorMiddleWare : IPostToUser, IContextFinalizer
-    {
-        private readonly IConnector connector;
-
-        public PostToConnectorMiddleWare(IConnector connector)
-        {
-            SetField.NotNull(out this.connector, nameof(connector), connector);
-        }
-        
-        public async Task ContextDone(BotContext context, CancellationToken token)
-        {
-            await this.FlushResponses(context, token);
-        }
-
-        public async Task PostAsync(BotContext context, IList<IActivity> activities, CancellationToken token)
-        {
-            
-            foreach(var activity in activities)
-            {
-                context.Responses.Add(activity);
-            }
-            await this.FlushResponses(context, token);
-        }
-
-        private async Task FlushResponses(BotContext context, CancellationToken token)
-        {
-            await this.connector.Post(context.Responses, token);
-            context.Responses.Clear();
         }
     }
 }
