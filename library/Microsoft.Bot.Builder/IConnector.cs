@@ -13,9 +13,14 @@ namespace Microsoft.Bot.Builder
 {
     public interface IConnector
     {
-        Task Receive(IDictionary<string, StringValues> headers, IActivity activity, CancellationToken token);
+        Task Receive(IActivity activity, CancellationToken token);
 
         Task Post(IList<IActivity> activities, CancellationToken token);
+    }
+
+    public interface IHttpConnector : IConnector
+    {
+        Task Receive(IDictionary<string, StringValues> headers, IActivity activity, CancellationToken token);
     }
 
     public abstract class Connector : IConnector
@@ -28,7 +33,7 @@ namespace Microsoft.Bot.Builder
         
         public abstract Task Post(IList<IActivity> activities, CancellationToken token);
 
-        public virtual async Task Receive(IDictionary<string, StringValues> headers, IActivity activity, CancellationToken token)
+        public virtual async Task Receive(IActivity activity, CancellationToken token)
         {
             var resolver = this.serviceProvider.GetRequiredService<ActivityResolver>();
             resolver.Register(activity);
@@ -38,7 +43,7 @@ namespace Microsoft.Bot.Builder
         }
     }
 
-    public class BotFrameworkConnector : Connector
+    public class BotFrameworkConnector : Connector, IHttpConnector
     {
         private readonly BotAuthenticator botAuthenticator;
         
@@ -57,11 +62,11 @@ namespace Microsoft.Bot.Builder
             }
         }
 
-        public async override Task Receive(IDictionary<string, StringValues> headers, IActivity activity, CancellationToken token)
+        public async Task Receive(IDictionary<string, StringValues> headers, IActivity activity, CancellationToken token)
         {
             if (await botAuthenticator.TryAuthenticateAsync(headers, new[] { activity }, token))
             {
-                await base.Receive(headers, activity, token);
+                await base.Receive(activity, token);
             }
             else
             {
@@ -106,6 +111,7 @@ namespace Microsoft.Bot.Builder
         {
             services.UseBotConnector();
             services.AddScoped<IConnector, BotFrameworkConnector>();
+            services.AddScoped<IHttpConnector, BotFrameworkConnector>();
             services.AddScoped<IConnectorClient>(provider =>
             {
                 var activity = provider.GetRequiredService<IActivity>();

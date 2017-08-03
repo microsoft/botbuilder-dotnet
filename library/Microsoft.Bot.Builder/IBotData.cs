@@ -58,18 +58,6 @@ namespace Microsoft.Bot.Builder
     /// </summary>
     public static partial class Extensions
     {
-        [System.Obsolete(@"Use GetValue<T> instead", false)]
-        public static T Get<T>(this IBotDataBag bag, string key)
-        {
-            T value;
-            if (!bag.TryGetValue(key, out value))
-            {
-                throw new KeyNotFoundException(key);
-            }
-
-            return value;
-        }
-
         /// <summary>
         /// Gets the value associated with the specified key.
         /// </summary>

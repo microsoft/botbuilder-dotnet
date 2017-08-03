@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -7,27 +8,35 @@ using Microsoft.Bot.Connector;
 
 namespace Microsoft.Bot.Builder
 {
-    public interface IContextInitializer
+    public interface IMiddleware
+    {
+    }
+
+    public interface IContextInitializer : IMiddleware
     {
         Task ContextCreated(BotContext context, CancellationToken token);
     }
 
-    public interface IPostToBot
+    public interface IPostToBot : IMiddleware
     {
         Task<bool> ReceiveActivity(BotContext context, CancellationToken token);
     }
 
-    public interface IPostToUser
+    public interface IPostToUser : IMiddleware
     {
         Task PostAsync(BotContext context, IList<IActivity> acitivties, CancellationToken token);
     }
 
-    public interface IContextFinalizer
+    public interface IContextFinalizer : IMiddleware
     {
         Task ContextDone(BotContext context, CancellationToken token);
     }
-
-    public interface IMiddleware : IContextInitializer, IPostToBot, IPostToUser, IContextFinalizer
+    
+    public static partial class MiddlewareExtensions
     {
+        public static IEnumerable<T> Select<T>(this IList<IMiddleware> middlewares) where T : IMiddleware
+        {
+            return middlewares.Where(x => x is T).Select(x => (T)x);
+        }
     }
 }

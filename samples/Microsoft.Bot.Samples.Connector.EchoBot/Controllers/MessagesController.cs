@@ -44,7 +44,7 @@ namespace Microsoft.Bot.Samples.Connector.EchoBot.Controllers
         //[Authorize(Roles = "Bot")]
         // POST api/values
         [HttpPost]
-        public virtual async Task<OkResult> Post([FromBody]Activity activity,[FromServices]IConnector connector)
+        public virtual async Task<OkResult> Post([FromBody]Activity activity,[FromServices]IHttpConnector connector)
         {
             await connector.Receive(HttpContext.Request.Headers, activity, CancellationToken.None);
             return Ok();

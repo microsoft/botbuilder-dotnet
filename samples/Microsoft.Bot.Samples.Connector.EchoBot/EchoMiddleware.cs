@@ -6,23 +6,8 @@ using System.Collections.Generic;
 
 namespace Microsoft.Bot.Samples.Connector.EchoBot
 {
-    public class EchoMiddleWare : IMiddleware
+    public class EchoMiddleWare : IPostToBot
     {
-        public Task ContextCreated(BotContext context, CancellationToken token)
-        {
-            return Task.CompletedTask;
-        }
-
-        public Task ContextDone(BotContext context, CancellationToken token)
-        {
-            return Task.CompletedTask;
-        }
-
-        public Task PostAsync(BotContext context, IList<IActivity> acitivties, CancellationToken token)
-        {
-            return Task.CompletedTask;
-        }
-
         public async Task<bool> ReceiveActivity(BotContext context, CancellationToken token)
         {
             var activity = context.Request as Activity;

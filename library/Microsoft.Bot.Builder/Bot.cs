@@ -80,7 +80,7 @@ namespace Microsoft.Bot.Builder
         }
     }
 
-    public class PostToConnectorMiddleWare : IMiddleware
+    public class PostToConnectorMiddleWare : IPostToUser, IContextFinalizer
     {
         private readonly IConnector connector;
 
@@ -88,17 +88,7 @@ namespace Microsoft.Bot.Builder
         {
             SetField.NotNull(out this.connector, nameof(connector), connector);
         }
-
-        public Task ContextCreated(BotContext context, CancellationToken token)
-        {
-            return Task.CompletedTask;
-        }
-
-        public async Task<bool> ReceiveActivity(BotContext context, CancellationToken token)
-        {
-            return await Task.FromResult(false);
-        }
-
+        
         public async Task ContextDone(BotContext context, CancellationToken token)
         {
             await this.FlushResponses(context, token);
