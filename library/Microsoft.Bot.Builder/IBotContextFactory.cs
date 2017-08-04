@@ -26,9 +26,9 @@ namespace Microsoft.Bot.Builder
             SetField.NotNull(out this.logger, nameof(logger), logger);
         }
         
-        public async Task<BotContext> CreateBotContext(IActivity activity, CancellationToken token)
+        public Task<BotContext> CreateBotContext(IActivity activity, CancellationToken token)
         {
-            return new BotContext(activity, this.dataContext, this.postToUser, this.logger);
+            return Task.FromResult(new BotContext(activity, this.dataContext, this.postToUser, this.logger));
         }
 
         public async Task<BotContext> CreateBotContext(ConversationReference reference, CancellationToken token)
