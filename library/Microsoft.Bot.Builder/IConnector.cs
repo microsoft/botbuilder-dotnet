@@ -8,6 +8,7 @@ using Microsoft.Bot.Connector;
 using Microsoft.Extensions.Primitives;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
+using System.Linq;
 
 namespace Microsoft.Bot.Builder
 {
@@ -104,11 +105,75 @@ namespace Microsoft.Bot.Builder
         }
     }
 
+    public class ConsoleConnector : Connector
+    {
+        public ConsoleConnector(IServiceProvider serviceProvider) : base(serviceProvider)
+        {
+        }
+
+        public override async Task Post(IList<IActivity> activities, CancellationToken token)
+        {
+            foreach (Activity activity in activities)
+            {
+                switch (activity.GetActivityType())
+                {
+                    case ActivityTypes.Message:
+                        if (activity.Attachments != null && activity.Attachments.Any())
+                        {
+                            var attachment = activity.Attachments.Count == 1 ? "1 attachments" : $"{activity.Attachments.Count()} attachments";
+                            Console.WriteLine($"{activity.Text} with {attachment} ");
+                        }
+                        else
+                        {
+                            Console.WriteLine($"{activity.Text}");
+                        }
+                        break;
+                    default:
+                        Console.WriteLine("Bot: acitivyt type: {0}", activity.Type);
+                        break;
+
+                }
+            }
+        }
+
+        public async Task Listen()
+        {
+            while (true)
+            {
+                var msg = Console.ReadLine();
+                if (msg.ToLower() == "quit")
+                {
+                    break;
+                }
+
+                var activity = new Activity()
+                {
+                    Text = msg,
+                    ChannelId = "console",
+                    From = new ChannelAccount(id: "user", name: "User1"),
+                    Recipient = new ChannelAccount(id: "bot", name: "Bot"),
+                    Conversation = new ConversationAccount(id: "Convo1"),
+                    Timestamp = DateTime.UtcNow,
+                    Id = Guid.NewGuid().ToString(),
+                    Type = ActivityTypes.Message
+                };
+                await base.Receive(activity, CancellationToken.None);
+            }
+        }
+    }
+
     public static partial class ConnectorExtensions 
     {
         public static IServiceCollection UseTraceConnector(this IServiceCollection services)
         {
             services.AddScoped<IConnector, TraceConnector>();
+            return services;
+        }
+
+        public static IServiceCollection UseConsoleConnector(this IServiceCollection services)
+        {
+            services.AddScoped<ConsoleConnector>();
+            services.AddScoped<IConnector>(p => p.GetRequiredService<ConsoleConnector>());
             return services;
         }
 
