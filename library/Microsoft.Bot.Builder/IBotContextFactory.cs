@@ -7,9 +7,25 @@ using Microsoft.Bot.Connector;
 
 namespace Microsoft.Bot.Builder
 {
+    /// <summary>
+    /// Interface for creating BotContext
+    /// </summary>
     public interface IBotContextFactory
     {
+        /// <summary>
+        /// Create a bot context from an activity from an activiy source such as a connector
+        /// </summary>
+        /// <param name="activity"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
         Task<BotContext> CreateBotContext(IActivity activity, CancellationToken token);
+
+        /// <summary>
+        /// Create a bot context from a conversationReference so you can proactively interact witha conversation
+        /// </summary>
+        /// <param name="reference"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
         Task<BotContext> CreateBotContext(ConversationReference reference, CancellationToken token);
     }
 
