@@ -19,16 +19,12 @@ namespace Microsoft.Bot.Samples.ConsoleConnector
 
         static async Task MainAsync(string[] args)
         {
+            // setup service collection with echo middleware
             var serviceCollection = new ServiceCollection();
             serviceCollection.AddSingleton<IMiddleware, EchoMiddleWare>();
             serviceCollection.UseBotServices().UseConsoleConnector();
-
-            var provider = serviceCollection.BuildServiceProvider();
-            using (var scope = provider.CreateScope())
-            {   
-                var connector = scope.ServiceProvider.GetRequiredService<Builder.ConsoleConnector>();
-                await connector.Listen();
-            }
+            
+            await Builder.ConsoleConnector.Listen(serviceCollection);
         }
     }
 }

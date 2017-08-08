@@ -136,12 +136,13 @@ namespace Microsoft.Bot.Builder
             }
         }
 
-        public async Task Listen()
+        public static async Task Listen(IServiceCollection collection)
         {
+            var provider = collection.BuildServiceProvider();
             while (true)
             {
                 var msg = Console.ReadLine();
-                if (msg.ToLower() == "quit")
+                if (msg == null || msg.ToLower() == "quit")
                 {
                     break;
                 }
@@ -157,7 +158,12 @@ namespace Microsoft.Bot.Builder
                     Id = Guid.NewGuid().ToString(),
                     Type = ActivityTypes.Message
                 };
-                await base.Receive(activity, CancellationToken.None);
+
+                using (var scope = provider.CreateScope())
+                {
+                    var connector = scope.ServiceProvider.GetRequiredService<Builder.ConsoleConnector>();
+                    await connector.Receive(activity, CancellationToken.None);
+                }
             }
         }
     }
