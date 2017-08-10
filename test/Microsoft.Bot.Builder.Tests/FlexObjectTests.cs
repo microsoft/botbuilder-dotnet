@@ -5,18 +5,18 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Microsoft.Bot.Builder.Tests
 {
     [TestClass]
-    public class DynamicContextTests
+    public class FlexObjectTests
     {
         [TestMethod]
         public void DynamicContext_DynamicProperties()
         {
             var testValue = "testValue";
-            var context = new DynamicContext();
+            var context = new FlexObject();
             context["test"] = testValue;
             Assert.AreEqual(context["test"], "testValue");
         }
 
-        class Context : DynamicContext
+        class Context : FlexObject
         {
             public string Name { get; set; }
         }

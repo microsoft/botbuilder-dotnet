@@ -27,13 +27,14 @@ namespace Microsoft.Bot.Builder
         }
     }
 
-    public class BotContext : DynamicContext, IBotContext, IPostToUser
+    public class BotContext : FlexObject, IBotContext, IPostToUser
     {
         private readonly IActivity request;
         private IList<IActivity> responses;
         private IBotLogger logger;
         private IDataContext dataContext;
         private IPostToUser postToUser;
+        private IStorage storage;
 
         public BotContext(IActivity request, IDataContext dataContext, IPostToUser postToUser, IBotLogger logger = null)
         {
@@ -60,5 +61,10 @@ namespace Microsoft.Bot.Builder
         public IBotContextData Data => dataContext.Data;
 
         public IBotLogger Logger => this.logger;
+
+        /// <summary>
+        /// Key/Value storage provider
+        /// </summary>
+        public IStorage Storage { get; set; }
     }
 }

@@ -5,7 +5,10 @@ using System.Reflection;
 
 namespace Microsoft.Bot.Builder
 {
-    public class DynamicContext : DynamicObject
+    /// <summary>
+    /// DynamicObject which seemlessly blends dictionary properties with real properties
+    /// </summary>
+    public class FlexObject : DynamicObject
     {
         private Dictionary<string, object> dynamicProperties { get; set; } = new Dictionary<string, object>();
         private string[] _objectProperties = null;
@@ -33,7 +36,7 @@ namespace Microsoft.Bot.Builder
         {
             foreach (var p in this.objectProperties)
                 yield return p;
-            foreach (var key in this.dynamicProperties.Keys)
+            foreach (var key in this.dynamicProperties.Keys.Where(key=> !this.objectProperties.Contains(key)))
                 yield return key;
             yield break;
         }

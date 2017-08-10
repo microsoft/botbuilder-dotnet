@@ -10,6 +10,7 @@ namespace Microsoft.Bot.Builder
 {
     public interface IMiddleware
     {
+
     }
 
     public interface IContextInitializer : IMiddleware

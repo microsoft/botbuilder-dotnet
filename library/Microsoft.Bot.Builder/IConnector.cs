@@ -111,7 +111,7 @@ namespace Microsoft.Bot.Builder
         {
         }
 
-        public override async Task Post(IList<IActivity> activities, CancellationToken token)
+        public override Task Post(IList<IActivity> activities, CancellationToken token)
         {
             foreach (Activity activity in activities)
             {
@@ -134,6 +134,7 @@ namespace Microsoft.Bot.Builder
 
                 }
             }
+            return Task.CompletedTask;
         }
 
         public static async Task Listen(IServiceCollection collection)
