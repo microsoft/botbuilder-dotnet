@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Dynamic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Tests
 {
@@ -8,7 +9,7 @@ namespace Microsoft.Bot.Builder.Tests
     public class FlexObjectTests
     {
         [TestMethod]
-        public void DynamicContext_DynamicProperties()
+        public void FlexObject_DynamicProperties()
         {
             var testValue = "testValue";
             var context = new FlexObject();
@@ -34,7 +35,7 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [TestMethod]
-        public void DynamicContext_AccessDeclaredProperties()
+        public void FlexObject_AccessDeclaredProperties()
         {
             var testValue = "testValue";
             dynamic context = new Context();
@@ -49,5 +50,59 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
 
+        [TestMethod]
+        public void FlexObject_DynamicPropertyAccess()
+        {
+            dynamic context = new Context();
+            context.Test = "test";
+
+            Assert.AreEqual(context.Test, "test");
+        }
+
+        [TestMethod]
+        public void FlexObject_PropertyAccess()
+        {
+            var context = new Context();
+            context.Name = "name";
+
+            Assert.AreEqual(context.Name, "name");
+        }
+
+
+        [TestMethod]
+        public void FlexObject_IndexPropertyAccess()
+        {
+            var context = new Context();
+            context["Name"] = "name";
+
+            Assert.AreEqual(context["Name"], "name");
+            Assert.AreEqual(context["Name"], context.Name);
+        }
+
+        [TestMethod]
+        public void FlexObject_SerializeDynamic()
+        {
+            dynamic context = new Context();
+            context.Name = "name";
+            context.Test = "test";
+
+            var context2 = new Context();
+            context2.Name = "name";
+            context2["Test"] = "test";
+
+            var json = JsonConvert.SerializeObject(context);
+            var json2 = JsonConvert.SerializeObject(context2);
+            Assert.AreEqual(json, json2, "expect dynamic and typed serialization to be the same");
+
+            var context3 = JsonConvert.DeserializeObject<Context>(json);
+            var context4 = JsonConvert.DeserializeObject<Context>(json2);
+            Assert.AreEqual(context3.Name, context.Name, "typed should roundtrip");
+            Assert.AreEqual(context3["Test"], context["Test"], "indexed should roundtrip");
+            Assert.AreEqual(((dynamic)context3).Test, ((dynamic)context).Test, "indexed should roundtrip");
+
+            Assert.AreEqual(context4.Name, context2.Name, "typed should roundtrip");
+            Assert.AreEqual(context4["Test"], context2["Test"], "indexed should roundtrip");
+            Assert.AreEqual(((dynamic)context4).Test, ((dynamic)context2).Test, "dynamic should roundtrip");
+        }
     }
 }

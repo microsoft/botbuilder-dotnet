@@ -58,6 +58,7 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="StorageTests.cs" />
     <Compile Include="FlexObjectTests.cs" />
     <Compile Include="MiddlewareTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

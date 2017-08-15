@@ -36,12 +36,14 @@ namespace Microsoft.Bot.Builder.Storage
             return Task.CompletedTask;
         }
 
-        public async Task<Dictionary<string, StoreItem>> Read(string[] keys)
+        public async Task<StoreItems> Read(string[] keys)
         {
-            var storeItems = new Dictionary<string, StoreItem>();
+            var storeItems = new StoreItems();
             foreach (var key in keys)
             {
-                storeItems[key] = await ReadStoreItem(key);
+                var item = await ReadStoreItem(key);
+                if (item != null)
+                    storeItems[key] = item;
             }
             return storeItems;
         }
@@ -63,25 +65,26 @@ namespace Microsoft.Bot.Builder.Storage
             }
         }
 
-        public async Task Write(Dictionary<string, StoreItem> changes)
+        public async Task Write(StoreItems changes)
         {
-            foreach (var key in changes.Keys)
+            foreach (var change in changes)
             {
-                StoreItem old = await this.ReadStoreItem(key);
-                if (old == null ||
-                    changes[key].eTag == "*" ||
-                    old.eTag == changes[key].eTag)
+                StoreItem newValue = change.Value as StoreItem;
+                StoreItem oldValue = await this.ReadStoreItem(change.Key);
+                if (oldValue == null ||
+                    newValue.eTag == "*" ||
+                    oldValue.eTag == newValue.eTag)
                 {
-                    string path = Path.Combine(this.folder, key);
-                    var oldTag = changes[key].eTag;
-                    changes[key].eTag = (this.eTag++).ToString();
-                    var json = JsonConvert.SerializeObject(changes[key]);
-                    changes[key].eTag = oldTag;
+                    string path = Path.Combine(this.folder, change.Key);
+                    var oldTag = newValue.eTag;
+                    newValue.eTag = (this.eTag++).ToString();
+                    var json = JsonConvert.SerializeObject(newValue);
+                    newValue.eTag = oldTag;
                     File.WriteAllText(path, json);
                 }
                 else
                 {
-                    throw new Exception($"etag conflict key={key}");
+                    throw new Exception($"etag conflict key={change}");
                 }
             }
         }

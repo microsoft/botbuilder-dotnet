@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using Newtonsoft.Json;
+using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
 using System.Reflection;
@@ -8,7 +11,7 @@ namespace Microsoft.Bot.Builder
     /// <summary>
     /// DynamicObject which seemlessly blends dictionary properties with real properties
     /// </summary>
-    public class FlexObject : DynamicObject
+    public class FlexObject : DynamicObject, ICloneable
     {
         private Dictionary<string, object> dynamicProperties { get; set; } = new Dictionary<string, object>();
         private string[] _objectProperties = null;
@@ -22,7 +25,7 @@ namespace Microsoft.Bot.Builder
                     lock (dynamicProperties)
                     {
                         if (_objectProperties == null)
-                            _objectProperties = this.GetType().GetTypeInfo().DeclaredProperties
+                            _objectProperties = this.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance)
                                    .Where(pi => pi.Name != "Item")
                                    .Select(pi => pi.Name)
                                    .ToArray();
@@ -36,7 +39,7 @@ namespace Microsoft.Bot.Builder
         {
             foreach (var p in this.objectProperties)
                 yield return p;
-            foreach (var key in this.dynamicProperties.Keys.Where(key=> !this.objectProperties.Contains(key)))
+            foreach (var key in this.dynamicProperties.Keys.Where(key => !this.objectProperties.Contains(key)))
                 yield return key;
             yield break;
         }
@@ -44,6 +47,11 @@ namespace Microsoft.Bot.Builder
         public override bool TryGetMember(GetMemberBinder binder, out object result)
         {
             return TryGetMember(binder.Name, out result);
+        }
+
+        public override bool TryDeleteMember(DeleteMemberBinder binder)
+        {
+            return base.TryDeleteMember(binder);
         }
 
         public override bool TrySetMember(SetMemberBinder binder, object value)
@@ -55,11 +63,11 @@ namespace Microsoft.Bot.Builder
         {
             get
             {
-                object value;
+                object value = null;
                 this.TryGetMember(name, out value);
                 return value;
             }
-            set { this.dynamicProperties[name] = value; }
+            set { this.TrySetMember(name, value); }
         }
 
         private bool TryGetMember(string name, out object result)
@@ -90,6 +98,70 @@ namespace Microsoft.Bot.Builder
             }
             dynamicProperties[name] = value;
             return true;
+        }
+
+        public void Add(string key, object value)
+        {
+            this.TrySetMember(key, value);
+        }
+
+        public bool ContainsKey(string key)
+        {
+            return this.GetDynamicMemberNames().Contains(key);
+        }
+
+        public bool Remove(string key)
+        {
+            var prop = this.GetType().GetTypeInfo().GetDeclaredProperty(key);
+            if (prop != null)
+            {
+                prop.SetValue(this, null);
+                return true;
+            }
+            return this.dynamicProperties.Remove(key);
+        }
+
+        public bool TryGetValue(string key, out object value)
+        {
+            return this.TryGetMember(key, out value);
+        }
+
+        public void Add(KeyValuePair<string, object> item)
+        {
+            this.TrySetMember(item.Key, item.Value);
+        }
+
+        public void Clear()
+        {
+            this.dynamicProperties.Clear();
+        }
+
+        public bool Contains(KeyValuePair<string, object> item)
+        {
+            return this.dynamicProperties.Contains(item);
+        }
+
+        public void CopyTo(KeyValuePair<string, object>[] array, int arrayIndex)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public bool Remove(KeyValuePair<string, object> item)
+        {
+            return this.dynamicProperties.Remove(item.Key);
+        }
+
+        public IEnumerator<KeyValuePair<string, object>> GetEnumerator()
+        {
+            foreach (var x in this.dynamicProperties)
+                yield return x;
+            foreach (var y in this.objectProperties)
+                yield return new KeyValuePair<string, object>(y, ((dynamic)this)[y]);
+        }
+
+        public object Clone()
+        {
+            return JsonConvert.DeserializeObject<StoreItem>(JsonConvert.SerializeObject(this));
         }
     }
 }

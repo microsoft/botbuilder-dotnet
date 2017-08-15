@@ -12,12 +12,12 @@ namespace Microsoft.Bot.Builder.Storage
     /// </summary>
     public class DictionaryStorage : IStorage, IContextInitializer
     {
-        protected Dictionary<string, StoreItem> memory;
+        protected StoreItems memory;
         protected int eTag = 0;
 
-        public DictionaryStorage(Dictionary<string, StoreItem> dictionary = null)
+        public DictionaryStorage(StoreItems dictionary = null)
         {
-            this.memory = dictionary ?? new Dictionary<string, StoreItem>();
+            this.memory = dictionary ?? new StoreItems();
         }
 
         public Task ContextCreated(BotContext context, CancellationToken token)
@@ -35,29 +35,36 @@ namespace Microsoft.Bot.Builder.Storage
             return Task.CompletedTask;
         }
 
-        public Task<Dictionary<string, StoreItem>> Read(string[] keys)
+        public Task<StoreItems> Read(string[] keys)
         {
-            var storeItems = new Dictionary<string, StoreItem>();
+            var storeItems = new StoreItems();
             foreach (var key in keys)
             {
-                StoreItem value;
+                object value;
                 if (this.memory.TryGetValue(key, out value))
-                    storeItems[key] = value;
+                    storeItems[key] = ((ICloneable)value).Clone() as StoreItem;
             }
             return Task.FromResult(storeItems);
         }
 
-        public Task Write(Dictionary<string, StoreItem> changes)
+
+        public Task Write(StoreItems changes)
         {
-            foreach (var key in changes.Keys)
+            foreach (var change in changes)
             {
-                StoreItem old = this.memory[key];
-                if (old == null ||
-                    changes[key].eTag == "*" ||
-                    old.eTag == changes[key].eTag)
+                StoreItem newValue = change.Value as StoreItem;
+                StoreItem oldValue = null;
+                object x;
+                if (this.memory.TryGetValue(change.Key, out x))
+                    oldValue = x as StoreItem;
+                if (oldValue == null ||
+                    newValue.eTag == "*" ||
+                    oldValue.eTag == newValue.eTag)
                 {
-                    this.memory[key] = JsonConvert.DeserializeObject<StoreItem>(JsonConvert.SerializeObject(changes[key]));
-                    this.memory[key].eTag = (this.eTag++).ToString();
+                    // clone and set etag
+                    newValue = newValue.Clone() as StoreItem;
+                    newValue.eTag = (this.eTag++).ToString();
+                    this.memory[change.Key] = newValue;
                 }
                 else
                 {
