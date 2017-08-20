@@ -52,6 +52,7 @@ namespace Microsoft.Bot.Builder.Storage
         {
             try
             {
+                key = SanitizeKey(key);
                 string path = Path.Combine(this.folder, key);
                 using (TextReader file = File.OpenText(path))
                 {
@@ -75,7 +76,8 @@ namespace Microsoft.Bot.Builder.Storage
                     newValue.eTag == "*" ||
                     oldValue.eTag == newValue.eTag)
                 {
-                    string path = Path.Combine(this.folder, change.Key);
+                    string key = SanitizeKey(change.Key);
+                    string path = Path.Combine(this.folder, key);
                     var oldTag = newValue.eTag;
                     newValue.eTag = (this.eTag++).ToString();
                     var json = JsonConvert.SerializeObject(newValue);
@@ -88,5 +90,29 @@ namespace Microsoft.Bot.Builder.Storage
                 }
             }
         }
+
+
+        private static Lazy<Dictionary<char, string>> badChars = new Lazy<Dictionary<char, string>>(() =>
+        {
+            char[] badChars = Path.GetInvalidFileNameChars();
+            var dict = new Dictionary<char, string>();
+            foreach (var badChar in badChars)
+                dict[badChar] = '%' + ((int)badChar).ToString("x2");
+            return dict;
+        });
+
+        private string SanitizeKey(string key)
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach (char ch in key)
+            {
+                if (badChars.Value.TryGetValue(ch, out string val))
+                    sb.Append(val);
+                else
+                    sb.Append(ch);
+            }
+            return sb.ToString();
+        }
+
     }
 }

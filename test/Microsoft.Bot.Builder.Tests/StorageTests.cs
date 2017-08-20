@@ -8,7 +8,7 @@ using System.IO;
 namespace Microsoft.Bot.Builder.Tests
 {
     [TestClass]
-    public class RamStorageTests : StorageTests
+    public class RamStorageTests : StorageTests, IStorageTests
     {
         private IStorage storage;
 
@@ -21,32 +21,38 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [TestMethod]
-        public async Task Ram_CreateObjectTest()
+        public async Task CreateObjectTest()
         {
-            await base.CreateObjectTest(storage);
+            await base._createObjectTest(storage);
         }
 
         [TestMethod]
-        public async Task Ram_ReadUnknownTest()
+        public async Task ReadUnknownTest()
         {
-            await base.ReadUnknownTest(storage);
+            await base._readUnknownTest(storage);
         }
 
         [TestMethod]
-        public async Task Ram_UpdateObjectTest()
+        public async Task UpdateObjectTest()
         {
-            await base.UpdateObjectTest(storage);
+            await base._updateObjectTest(storage);
         }
 
         [TestMethod]
-        public async Task Ram_DeleteObjectTest()
+        public async Task DeleteObjectTest()
         {
-            await base.DeleteObjectTest(storage);
+            await base._deleteObjectTest(storage);
+        }
+
+        [TestMethod]
+        public async Task HandleCrazyKeys()
+        {
+            await base._handleCrazyKeys(storage);
         }
     }
 
     [TestClass]
-    public class FileStorageTests : StorageTests
+    public class FileStorageTests : StorageTests, IStorageTests
     {
         private IStorage storage;
         public FileStorageTests() { }
@@ -63,27 +69,33 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [TestMethod]
-        public async Task File_CreateObjectTest()
+        public async Task CreateObjectTest()
         {
-            await base.CreateObjectTest(this.storage);
+            await base._createObjectTest(this.storage);
         }
 
         [TestMethod]
-        public async Task File_ReadUnknownTest()
+        public async Task ReadUnknownTest()
         {
-            await base.ReadUnknownTest(this.storage);
+            await base._readUnknownTest(this.storage);
         }
 
         [TestMethod]
-        public async Task File_UpdateObjectTest()
+        public async Task UpdateObjectTest()
         {
-            await base.UpdateObjectTest(this.storage);
+            await base._updateObjectTest(this.storage);
         }
 
         [TestMethod]
-        public async Task File_DeleteObjectTest()
+        public async Task DeleteObjectTest()
         {
-            await base.DeleteObjectTest(this.storage);
+            await base._deleteObjectTest(this.storage);
+        }
+
+        [TestMethod]
+        public async Task HandleCrazyKeys()
+        {
+            await base._handleCrazyKeys(this.storage);
         }
     }
 
@@ -95,16 +107,29 @@ namespace Microsoft.Bot.Builder.Tests
         public int Count { get; set; }
     }
 
-    public class StorageTests
+    public interface IStorageTests
     {
-        public async Task ReadUnknownTest(IStorage storage)
+        Task ReadUnknownTest();
+
+        Task CreateObjectTest();
+
+        Task HandleCrazyKeys();
+
+        Task UpdateObjectTest();
+
+        Task DeleteObjectTest();
+    }
+
+    public class StorageTests 
+    {
+        protected async Task _readUnknownTest(IStorage storage)
         {
             var result = await storage.Read(new[] { "unknown" });
             Assert.IsNotNull(result, "result should not be null");
             Assert.IsNull(result["unknown"], "unknown should be null");
         }
 
-        public async Task CreateObjectTest(IStorage storage)
+        protected async Task _createObjectTest(IStorage storage)
         {
             var storeItems = new StoreItems();
             storeItems["create1"] = new TestItem() { Id = "1" };
@@ -122,7 +147,20 @@ namespace Microsoft.Bot.Builder.Tests
             Assert.AreEqual(result.create2.dyno, "dynamicStuff", "create2.dyno should be dynoStuff");
         }
 
-        public async Task UpdateObjectTest(IStorage storage)
+        protected async Task _handleCrazyKeys(IStorage storage)
+        {
+            var storeItems = new StoreItems();
+            string key = "!@#$%^&*()~/\\><,.?';\"`~";
+            storeItems[key] = new TestItem() { Id = "1" };
+            
+            await storage.Write(storeItems);
+
+            dynamic result = await storage.Read(key);
+            Assert.IsNotNull(result[key], $"result['{key}'] should not be null");
+            Assert.AreEqual(result[key].Id, "1", "strong .id should be 1");
+        }
+
+        protected async Task _updateObjectTest(IStorage storage)
         {
             dynamic storeItems = new StoreItems();
             storeItems.update = new TestItem() { Id = "1", Count = 1 };
@@ -176,7 +214,7 @@ namespace Microsoft.Bot.Builder.Tests
             Assert.AreEqual(result5.update.Count, 100, "count should be 100");
         }
 
-        public async Task DeleteObjectTest(IStorage storage)
+        protected async Task _deleteObjectTest(IStorage storage)
         {
             dynamic storeItems = new StoreItems();
             storeItems.delete1 = new TestItem() { Id = "1", Count = 1 };
@@ -193,5 +231,7 @@ namespace Microsoft.Bot.Builder.Tests
             StoreItems result2 = await storage.Read("delete1");
             Assert.IsFalse(result2.ContainsKey("delete1"), "delete1 should be null");
         }
+
+
     }
 }
