@@ -19,9 +19,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Samples.Conne
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Samples.ConsoleConnector", "samples\Microsoft.Bot.Samples.ConsoleConnector\Microsoft.Bot.Samples.ConsoleConnector.csproj", "{41BC20C1-523A-4715-8E8B-88390E6F45F6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Builder.Azure", "library\Microsoft.Bot.Builder.Azure\Microsoft.Bot.Builder.Azure.csproj", "{B2C5EED9-21B2-4763-AB92-C1995B76DA3A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Azure", "library\Microsoft.Bot.Builder.Azure\Microsoft.Bot.Builder.Azure.csproj", "{B2C5EED9-21B2-4763-AB92-C1995B76DA3A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Builder.Azure.Tests", "test\Microsoft.Bot.Builder.Azure.Tests\Microsoft.Bot.Builder.Azure.Tests.csproj", "{1E60CAC8-31F3-42A4-B478-C21C39A57161}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Builder.Ai", "library\Microsoft.Bot.Builder.Ai\Microsoft.Bot.Builder.Ai.csproj", "{F31CF172-6FEE-4188-9828-E5FDA531C871}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -57,6 +59,10 @@ Global
 		{1E60CAC8-31F3-42A4-B478-C21C39A57161}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1E60CAC8-31F3-42A4-B478-C21C39A57161}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1E60CAC8-31F3-42A4-B478-C21C39A57161}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F31CF172-6FEE-4188-9828-E5FDA531C871}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F31CF172-6FEE-4188-9828-E5FDA531C871}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F31CF172-6FEE-4188-9828-E5FDA531C871}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F31CF172-6FEE-4188-9828-E5FDA531C871}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -69,6 +75,7 @@ Global
 		{41BC20C1-523A-4715-8E8B-88390E6F45F6} = {3ADFB27A-95FA-4330-B211-1D66A29A17AB}
 		{B2C5EED9-21B2-4763-AB92-C1995B76DA3A} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
 		{1E60CAC8-31F3-42A4-B478-C21C39A57161} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
+		{F31CF172-6FEE-4188-9828-E5FDA531C871} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7173C9F3-A7F9-496E-9078-9156E35D6E16}

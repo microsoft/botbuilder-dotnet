@@ -18,27 +18,27 @@ namespace Microsoft.Bot.Builder
             SetField.NotNull(out this.postToConnectorMiddleware, nameof(postToConnectorMiddleware), postToConnectorMiddleware);
         }
 
-        public Func<BotContext, CancellationToken, Task<bool>> OnReceive = null;
+        public Func<BotContext, CancellationToken, Task<ReceiveResponse>> OnReceive = null;
 
         public MiddlewareSet MiddlewareSet => postToConnectorMiddleware.MiddlewareSet;
 
-        public async Task<bool> Receive(BotContext context, CancellationToken token = default(CancellationToken))
+        public async Task<ReceiveResponse> Receive(BotContext context, CancellationToken token = default(CancellationToken))
         {
-            var done = false; 
+            ReceiveResponse receiveResponse = null; 
             try
             {
                 await this.postToConnectorMiddleware.ContextCreated(context, token);
-                done = await this.postToConnectorMiddleware.ReceiveActivity(context, token);
-                if(!done && OnReceive != null)
+                receiveResponse = await this.postToConnectorMiddleware.ReceiveActivity(context, token);
+                if(receiveResponse?.Handled != true && OnReceive != null)
                 {
-                    done = await this.OnReceive(context, token);
+                    receiveResponse = await this.OnReceive(context, token);
                 }
             }
             finally
             {
                 await this.postToConnectorMiddleware.ContextDone(context, token);
             }
-            return done;
+            return receiveResponse;
         }
     }
     
@@ -75,7 +75,7 @@ namespace Microsoft.Bot.Builder
             services.AddScoped<PostToConnectorMiddleware>();
 
             // register PostToConnectorMiddleware as IPostToUser
-            services.AddScoped<IPostToUser>(provider => provider.GetService<PostToConnectorMiddleware>());
+            services.AddScoped<IPostActivity>(provider => provider.GetService<PostToConnectorMiddleware>());
             
             services.AddScoped<Bot>();
             return services;

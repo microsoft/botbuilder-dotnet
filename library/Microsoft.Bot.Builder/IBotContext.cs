@@ -18,7 +18,7 @@ namespace Microsoft.Bot.Builder
     {
         public static async Task Post(this BotContext context, CancellationToken token)
         {
-            await context.Post(context, new List<IActivity>(), token);
+            await context.PostActivity(context, new List<IActivity>(), token);
         }
 
         public static Task Done(this IBotContext context, CancellationToken token)
@@ -27,16 +27,16 @@ namespace Microsoft.Bot.Builder
         }
     }
 
-    public class BotContext : FlexObject, IBotContext, IPostToUser
+    public class BotContext : FlexObject, IBotContext, IPostActivity
     {
         private readonly IActivity request;
         private IList<IActivity> responses;
         private IBotLogger logger;
         private IDataContext dataContext;
-        private IPostToUser postToUser;
+        private IPostActivity postToUser;
         private IStorage storage;
 
-        public BotContext(IActivity request, IDataContext dataContext, IPostToUser postToUser, IBotLogger logger = null)
+        public BotContext(IActivity request, IDataContext dataContext, IPostActivity postToUser, IBotLogger logger = null)
         {
             SetField.NotNull(out this.request, nameof(request), request);
             SetField.NotNull(out this.dataContext, nameof(dataContext), dataContext);
@@ -45,9 +45,9 @@ namespace Microsoft.Bot.Builder
             this.responses = new List<IActivity>();
         }
         
-        public async Task Post(BotContext context, IList<IActivity> acitivties, CancellationToken token)
+        public async Task PostActivity(BotContext context, IList<IActivity> acitivties, CancellationToken token)
         {
-            await this.postToUser.Post(context, acitivties, token);
+            await this.postToUser.PostActivity(context, acitivties, token);
         }
 
         public IActivity Request => request;

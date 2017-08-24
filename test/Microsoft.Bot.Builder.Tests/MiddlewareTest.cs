@@ -48,7 +48,7 @@ namespace Microsoft.Bot.Builder.Tests
         }
     }
 
-    public class EchoMiddleWare : IPostToBot
+    public class EchoMiddleWare : IReceiveActivity
     {
         private readonly bool handled; 
 
@@ -57,12 +57,12 @@ namespace Microsoft.Bot.Builder.Tests
             this.handled = handled;
         }
 
-        public Task<bool> ReceiveActivity(BotContext context, CancellationToken token)
+        public Task<ReceiveResponse> ReceiveActivity(BotContext context, CancellationToken token)
         {
             var response = (context.Request as Activity).CreateReply();
             response.Text = (context.Request as Activity).Text;
             context.Responses.Add(response);
-            return Task.FromResult(handled);
+            return Task.FromResult(new ReceiveResponse(this.handled));
         }
     }
 }

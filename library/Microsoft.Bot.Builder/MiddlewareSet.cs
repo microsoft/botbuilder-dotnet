@@ -8,7 +8,7 @@ using Microsoft.Bot.Connector;
 
 namespace Microsoft.Bot.Builder
 {
-    public class MiddlewareSet : IContextInitializer, IPostToUser, IPostToBot, IContextFinalizer
+    public class MiddlewareSet : IContextCreated, IPostActivity, IReceiveActivity, IContextDone
     {
         private readonly IList<IMiddleware> middlewares;
         public MiddlewareSet(IList<IMiddleware> middlewares)
@@ -20,31 +20,31 @@ namespace Microsoft.Bot.Builder
 
         public virtual async Task ContextCreated(BotContext context, CancellationToken token)
         {
-            foreach (var m in this.middlewares.Where<IContextInitializer>())
+            foreach (var m in this.middlewares.Where<IContextCreated>())
                 await m.ContextCreated(context, token);
         }
 
-        public virtual async Task<bool> ReceiveActivity(BotContext context, CancellationToken token)
+        public virtual async Task<ReceiveResponse> ReceiveActivity(BotContext context, CancellationToken token)
         {
-            var handled = false;
-            foreach (var middleware in this.middlewares.Where<IPostToBot>())
+            ReceiveResponse response=null;
+            foreach (var middleware in this.middlewares.Where<IReceiveActivity>())
             {
-                handled = await middleware.ReceiveActivity(context, token);
-                if (handled) break;
+                response = await middleware.ReceiveActivity(context, token);
+                if (response?.Handled == true) break;
             }
-            return handled;
+            return response;
         }
 
         public virtual async Task ContextDone(BotContext context, CancellationToken token)
         {
-            foreach (var m in this.middlewares.Where<IContextFinalizer>().Reverse())
+            foreach (var m in this.middlewares.Where<IContextDone>().Reverse())
                 await m.ContextDone(context, token);
         }
 
-        public virtual async Task Post(BotContext context, IList<IActivity> acitivties, CancellationToken token)
+        public virtual async Task PostActivity(BotContext context, IList<IActivity> acitivties, CancellationToken token)
         {
-            foreach (var m in this.middlewares.Where<IPostToUser>().Reverse())
-                await m.Post(context, acitivties, token);
+            foreach (var m in this.middlewares.Where<IPostActivity>().Reverse())
+                await m.PostActivity(context, acitivties, token);
         }
     }
 }

@@ -7,7 +7,7 @@ using Microsoft.Bot.Connector;
 
 namespace Microsoft.Bot.Builder
 {
-    public class PostToConnectorMiddleware : IPostToUser, IContextFinalizer, IContextInitializer, IPostToBot
+    public class PostToConnectorMiddleware : IPostActivity, IContextDone, IContextCreated, IReceiveActivity
     {
         private readonly IConnector connector;
         private readonly MiddlewareSet inner;
@@ -25,14 +25,14 @@ namespace Microsoft.Bot.Builder
             await this.inner.ContextCreated(context, token);
         }
 
-        public async Task<bool> ReceiveActivity(BotContext context, CancellationToken token)
+        public async Task<ReceiveResponse> ReceiveActivity(BotContext context, CancellationToken token)
         {
             return await this.inner.ReceiveActivity(context, token);
         }
 
-        public async Task Post(BotContext context, IList<IActivity> activities, CancellationToken token)
+        public async Task PostActivity(BotContext context, IList<IActivity> activities, CancellationToken token)
         {
-            await this.inner.Post(context, activities, token);
+            await this.inner.PostActivity(context, activities, token);
             foreach (var activity in activities)
             {
                 context.Responses.Add(activity);

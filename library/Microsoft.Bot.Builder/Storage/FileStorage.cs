@@ -11,7 +11,7 @@ namespace Microsoft.Bot.Builder.Storage
     /// <summary>
     /// Models IStorage around a File System
     /// </summary>
-    public class FileStorage : IStorage, IContextInitializer
+    public class FileStorage : IStorage, IContextCreated
     {
         protected string folder;
         protected int eTag = 0;

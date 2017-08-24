@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Builder.Azure
     /// <summary>
     /// Models IStorage around a dictionary 
     /// </summary>
-    public class AzureTableStorage : IStorage, IContextInitializer
+    public class AzureTableStorage : IStorage, IContextCreated
     {
         private static HashSet<string> _checkedTables = new HashSet<string>();
 

@@ -32,10 +32,10 @@ namespace Microsoft.Bot.Builder
     public class BotContextFactory : IBotContextFactory
     {
         private readonly IDataContext dataContext;
-        private readonly IPostToUser postToUser;
+        private readonly IPostActivity postToUser;
         private readonly IBotLogger logger; 
 
-        public BotContextFactory(IDataContext dataContext, IPostToUser postToUser, IBotLogger logger)
+        public BotContextFactory(IDataContext dataContext, IPostActivity postToUser, IBotLogger logger)
         {
             SetField.NotNull(out this.dataContext, nameof(dataContext), dataContext);
             SetField.NotNull(out this.postToUser, nameof(postToUser), postToUser);

@@ -6,9 +6,9 @@ using System.Collections.Generic;
 
 namespace Microsoft.Bot.Samples.Connector.EchoBot
 {
-    public class EchoMiddleWare : IPostToBot
+    public class EchoMiddleWare : IReceiveActivity
     {
-        public async Task<bool> ReceiveActivity(BotContext context, CancellationToken token)
+        public async Task<ReceiveResponse> ReceiveActivity(BotContext context, CancellationToken token)
         {
             var activity = context.Request as Activity;
             var reply = activity.CreateReply();
@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Samples.Connector.EchoBot
             }
             context.Responses.Add(reply);
             await context.Post(token);
-            return true;
+            return new ReceiveResponse(true);
         }
     }
 }

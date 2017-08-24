@@ -10,7 +10,7 @@ namespace Microsoft.Bot.Builder.Storage
     /// <summary>
     /// Models IStorage around a dictionary 
     /// </summary>
-    public class DictionaryStorage : IStorage, IContextInitializer
+    public class DictionaryStorage : IStorage, IContextCreated
     {
         protected StoreItems memory;
         protected int eTag = 0;
