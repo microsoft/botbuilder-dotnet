@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Azure.Tests
 {
+    /// <summary>
+    /// NOTE: THESE TESTS REQUIRE THAT THE AZURE STORAGE EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
+    /// </summary>
     [TestClass]
     public class TableStorageTests : StorageTests, IStorageTests
     {
@@ -22,12 +25,14 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             _testContext = testContext;
         }
 
+        // NOTE: THESE TESTS REQUIRE THAT THE AZURE STORAGE EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
         [TestInitialize]
         public void TestInit()
         {
             storage = new AzureTableStorage("UseDevelopmentStorage=true", TestContext.TestName + TestContext.GetHashCode().ToString("x"));
         }
 
+        // NOTE: THESE TESTS REQUIRE THAT THE AZURE STORAGE EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
         [TestCleanup]
         public async Task TestCleanUp()
         {
@@ -35,30 +40,35 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             await store.Table.DeleteIfExistsAsync();
         }
 
+        // NOTE: THESE TESTS REQUIRE THAT THE AZURE STORAGE EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
         [TestMethod]
         public async Task CreateObjectTest()
         {
             await base._createObjectTest(storage);
         }
 
+        // NOTE: THESE TESTS REQUIRE THAT THE AZURE STORAGE EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
         [TestMethod]
         public async Task ReadUnknownTest()
         {
             await base._readUnknownTest(storage);
         }
 
+        // NOTE: THESE TESTS REQUIRE THAT THE AZURE STORAGE EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
         [TestMethod]
         public async Task UpdateObjectTest()
         {
             await base._updateObjectTest(storage);
         }
 
+        // NOTE: THESE TESTS REQUIRE THAT THE AZURE STORAGE EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
         [TestMethod]
         public async Task DeleteObjectTest()
         {
             await base._deleteObjectTest(storage);
         }
 
+        // NOTE: THESE TESTS REQUIRE THAT THE AZURE STORAGE EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
         [TestMethod]
         public async Task HandleCrazyKeys()
         {
