@@ -1,12 +1,11 @@
-﻿using System;
+﻿using Microsoft.Bot.Connector;
+using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Connector;
 
 namespace Microsoft.Bot.Builder
-{ 
+{
     public interface IBotContext : IDataContext
     {
         IActivity Request { get; }
@@ -18,49 +17,51 @@ namespace Microsoft.Bot.Builder
     {
         public static async Task Post(this BotContext context, CancellationToken token)
         {
+            BotAssert.CancellationTokenNotNull(token); 
             await context.PostActivity(context, new List<IActivity>(), token);
         }
 
         public static Task Done(this IBotContext context, CancellationToken token)
         {
+            BotAssert.CancellationTokenNotNull(token);
             throw new NotImplementedException();
         }
     }
 
     public class BotContext : FlexObject, IBotContext, IPostActivity
     {
-        private readonly IActivity request;
-        private IList<IActivity> responses;
-        private IBotLogger logger;
-        private IDataContext dataContext;
-        private IPostActivity postToUser;
-        private IStorage storage;
+        private readonly IActivity _request;
+        private IList<IActivity> _responses = new List<IActivity>();
+        private IBotLogger _logger;
+        private IDataContext _dataContext;
+        private IPostActivity _postToUser;
+        private IStorage _storage = null;
 
         public BotContext(IActivity request, IDataContext dataContext, IPostActivity postToUser, IBotLogger logger = null)
         {
-            SetField.NotNull(out this.request, nameof(request), request);
-            SetField.NotNull(out this.dataContext, nameof(dataContext), dataContext);
-            SetField.NotNull(out this.postToUser, nameof(postToUser), postToUser);
-            this.logger = logger;
-            this.responses = new List<IActivity>();
+            _request = request ?? throw new ArgumentNullException("request");
+            _dataContext = dataContext ?? throw new ArgumentNullException("dataContext");
+            _postToUser = postToUser ?? throw new ArgumentNullException("postToUser");
+
+            this._logger = logger ?? new NullLogger();
         }
         
         public async Task PostActivity(BotContext context, IList<IActivity> acitivties, CancellationToken token)
         {
-            await this.postToUser.PostActivity(context, acitivties, token);
+            await this._postToUser.PostActivity(context, acitivties, token);
         }
 
-        public IActivity Request => request;
+        public IActivity Request => _request;
 
-        public IList<IActivity> Responses { get => responses; set => this.responses = value; }
+        public IList<IActivity> Responses { get => _responses; set => this._responses = value; }
 
-        public IUserContext User => dataContext.User;
+        public IUserContext User => _dataContext.User;
 
-        public IConversationContext Conversation => dataContext.Conversation;
+        public IConversationContext Conversation => _dataContext.Conversation;
 
-        public IBotContextData Data => dataContext.Data;
+        public IBotContextData Data => _dataContext.Data;
 
-        public IBotLogger Logger => this.logger;
+        public IBotLogger Logger => this._logger;
 
         /// <summary>
         /// Key/Value storage provider

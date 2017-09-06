@@ -18,7 +18,7 @@ namespace Microsoft.Bot.Builder.Tests
         
         public override async Task Post(IList<IActivity> activities, CancellationToken token)
         {
-            var validator = this.serviceProvider.GetRequiredService<TestValidator>();
+            var validator = _serviceProvider.GetRequiredService<TestValidator>();
             await validator(activities);
         }
     }
@@ -35,11 +35,11 @@ namespace Microsoft.Bot.Builder.Tests
     
     public class TestRunner
     {
-        private readonly IServiceCollection serviceCollection;
+        private readonly IServiceCollection _serviceCollection;
 
         public TestRunner(IServiceCollection serviceCollection)
         {
-            SetField.NotNull(out this.serviceCollection, nameof(serviceCollection), serviceCollection);
+            _serviceCollection = serviceCollection ?? throw new ArgumentNullException("serviceCollection");           
         }
 
         public static class ChannelID
@@ -66,9 +66,9 @@ namespace Microsoft.Bot.Builder.Tests
         
         public async Task<TestRunner> Test(string testMessage, TestValidator validator, CancellationToken token = default(CancellationToken))
         {
-            serviceCollection.AddSingleton<TestValidator>(validator);
+            _serviceCollection.AddSingleton<TestValidator>(validator);
 
-            var provider = serviceCollection.BuildServiceProvider();
+            var provider = _serviceCollection.BuildServiceProvider();
             using (var scope = provider.CreateScope())
             {
                 var connector = scope.ServiceProvider.GetRequiredService<TestConnector>();

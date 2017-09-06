@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Microsoft.Bot.Builder
+﻿namespace Microsoft.Bot.Builder
 {
     public interface IBotLogger
     {

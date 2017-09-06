@@ -30,24 +30,27 @@ namespace Microsoft.Bot.Builder
 
     public sealed class DataContext : IDataContext
     {
-        private readonly IUserContext user;
-        private readonly IConversationContext conversation;
-        private readonly IBotContextData data;
+        private readonly IUserContext _user;
+        private readonly IConversationContext _conversation;
+        private readonly IBotContextData _data;
 
         public DataContext(IUserContext user, IConversationContext conversation, IBotContextData data)
         {
-            SetField.NotNull(out this.user, nameof(user), user);
-            SetField.NotNull(out this.conversation, nameof(conversation), conversation);
-            SetField.NotNull(out this.data, nameof(data), data);
+            _user = user ?? throw new ArgumentNullException("user");
+            _conversation = conversation ?? throw new ArgumentNullException("conversation");
+            _data = data ?? throw new ArgumentNullException("data");
         }
 
-        public IUserContext User => this.user;
+        public IUserContext User => this._user;
 
-        public IConversationContext Conversation => this.conversation;
+        public IConversationContext Conversation => this._conversation;
 
-        public IBotContextData Data => this.data;
+        public IBotContextData Data => this._data;
     }
 
+    /// <summary>
+    /// Note: This class is only here for DI to work. It'll be removed in then next pass. 
+    /// </summary>
     public sealed class NullDataContext : IDataContext
     {
         public NullDataContext()

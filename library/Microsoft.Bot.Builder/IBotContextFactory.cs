@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Microsoft.Bot.Connector;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Connector;
 
 namespace Microsoft.Bot.Builder
 {
@@ -31,24 +29,31 @@ namespace Microsoft.Bot.Builder
 
     public class BotContextFactory : IBotContextFactory
     {
-        private readonly IDataContext dataContext;
-        private readonly IPostActivity postToUser;
-        private readonly IBotLogger logger; 
+        private readonly IDataContext _dataContext;
+        private readonly IPostActivity _postToUser;
+        private readonly IBotLogger _logger; 
 
         public BotContextFactory(IDataContext dataContext, IPostActivity postToUser, IBotLogger logger)
         {
-            SetField.NotNull(out this.dataContext, nameof(dataContext), dataContext);
-            SetField.NotNull(out this.postToUser, nameof(postToUser), postToUser);
-            SetField.NotNull(out this.logger, nameof(logger), logger);
+            _dataContext = dataContext ?? throw new ArgumentNullException("dataContext");
+            _postToUser = postToUser ?? throw new ArgumentNullException("postToUser");
+            _logger = logger ?? throw new ArgumentNullException("logger");
         }
         
         public Task<BotContext> CreateBotContext(IActivity activity, CancellationToken token)
         {
-            return Task.FromResult(new BotContext(activity, this.dataContext, this.postToUser, this.logger));
+            BotAssert.ActivityNotNull(activity);
+            BotAssert.CancellationTokenNotNull(token);
+            return Task.FromResult(new BotContext(activity, this._dataContext, this._postToUser, this._logger));
         }
 
         public async Task<BotContext> CreateBotContext(ConversationReference reference, CancellationToken token)
         {
+            if (reference == null)
+                throw new ArgumentNullException("reference");
+
+            BotAssert.CancellationTokenNotNull(token);
+
             return await this.CreateBotContext(reference.GetPostToBotMessage(), token);
         }
     }
