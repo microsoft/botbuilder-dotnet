@@ -31,8 +31,8 @@ namespace Microsoft.Bot.Samples.Connector.EchoBot
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton(_ => Configuration);
-            services.AddMvc();
-            services.UseBotServices().UseBotFrameworkConnector();
+            services.AddMvc();            
+            services.UseBotConnector();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

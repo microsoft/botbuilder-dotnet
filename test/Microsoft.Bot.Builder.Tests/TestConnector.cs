@@ -1,52 +1,41 @@
-﻿using System;
+﻿using Microsoft.Bot.Connector;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Connector;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Microsoft.Bot.Builder.Tests
 {
-    public delegate Task TestValidator(IList<IActivity> activities);
-    public class TestConnector : Connector
+    public delegate void TestValidator(IList<IActivity> activities);
+
+    public class ValidateOnPostConnector : Connector
     {
-        public TestConnector(IServiceProvider serviceProvider) : base(serviceProvider)
-        {
-        }
-        
+        private List<TestValidator> _validators = new List<TestValidator>();        
+
         public override async Task Post(IList<IActivity> activities, CancellationToken token)
         {
-            var validator = _serviceProvider.GetRequiredService<TestValidator>();
-            await validator(activities);
+            Assert.IsTrue(_validators.Count > 0, "No Validators Present.");                
+            foreach( var v in _validators)
+            {
+                v(activities);
+            }            
         }
+
+        public void ValidationsToRunOnPost(params TestValidator[] validators)
+        {
+            if (validators == null)
+                throw new ArgumentNullException("validators");
+
+            foreach (var v in validators)
+                _validators.Add(v);
+        }        
     }
 
-    public static partial class TestConnectorExtensions
-    {
-        public static IServiceCollection UseTestConnector(this IServiceCollection serviceCollection)
-        {
-            serviceCollection.AddScoped<TestConnector>();
-            serviceCollection.AddScoped<IConnector>(t => t.GetRequiredService<TestConnector>());
-            return serviceCollection;
-        }
-    }
-    
     public class TestRunner
-    {
-        private readonly IServiceCollection _serviceCollection;
-
-        public TestRunner(IServiceCollection serviceCollection)
-        {
-            _serviceCollection = serviceCollection ?? throw new ArgumentNullException("serviceCollection");           
-        }
-
-        public static class ChannelID
-        {
-            public const string User = "testUser";
-            public const string Bot = "testBot";
-        }
+    {        
+        public const string User = "testUser";
+        public const string Bot = "testBot";        
 
         public static Activity MakeTestMessage()
         {
@@ -54,29 +43,23 @@ namespace Microsoft.Bot.Builder.Tests
             {
                 Id = Guid.NewGuid().ToString(),
                 Type = ActivityTypes.Message,
-                From = new ChannelAccount { Id = ChannelID.User },
+                From = new ChannelAccount { Id = User },
                 Conversation = new ConversationAccount { Id = Guid.NewGuid().ToString() },
-                Recipient = new ChannelAccount { Id = ChannelID.Bot },
+                Recipient = new ChannelAccount { Id = Bot },
                 ServiceUrl = "InvalidServiceUrl",
                 ChannelId = "Test",
                 Attachments = Array.Empty<Attachment>(),
                 Entities = Array.Empty<Entity>(),
             };
         }
-        
-        public async Task<TestRunner> Test(string testMessage, TestValidator validator, CancellationToken token = default(CancellationToken))
-        {
-            _serviceCollection.AddSingleton<TestValidator>(validator);
 
-            var provider = _serviceCollection.BuildServiceProvider();
-            using (var scope = provider.CreateScope())
-            {
-                var connector = scope.ServiceProvider.GetRequiredService<TestConnector>();
-                var message = MakeTestMessage();
-                message.Text = testMessage;
-                await connector.Receive(message, token);
-            }
-            return this; 
+        public async Task<TestRunner> Test(ValidateOnPostConnector c, string testMessage, CancellationToken token = default(CancellationToken))
+        {            
+            var message = MakeTestMessage();
+            message.Text = testMessage;
+            await c.Receive(message, token);
+
+            return this;
         }
     }
 }

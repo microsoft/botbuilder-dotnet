@@ -16,36 +16,20 @@ namespace Microsoft.Bot.Builder.Tests
         [TestMethod]
         public async Task EchoMiddleware_Should_Echo()
         {
-            var serviceCollection = new ServiceCollection();
-            serviceCollection.AddSingleton<IMiddleware, EchoMiddleWare>();
-            serviceCollection.UseBotServices().UseTestConnector();
+            string messageText = Guid.NewGuid().ToString();
 
-            var testRunner = new TestRunner(serviceCollection);
-            await testRunner.Test("test", async (IList<IActivity> responses) =>
-            {
-                Assert.AreEqual(1, responses.Count);
-                Assert.AreEqual("test", (responses.First() as IMessageActivity).Text);
-            });
-        }
+            ValidateOnPostConnector connector = new ValidateOnPostConnector();
+            connector.ValidationsToRunOnPost(
+                (responses) => Assert.AreEqual(responses.Count, 1),
+                (responses) => Assert.AreEqual(messageText, (responses.First() as IMessageActivity).Text)
+            );
 
-        [TestMethod]
-        public async Task Multi_EchoMiddleware_Should_Echo_Multiple()
-        {
-            int count = 3;
-            var serviceCollection = new ServiceCollection();
-            for (int i = 0; i < count; i++)
-            {
-                serviceCollection.AddSingleton<IMiddleware>(new EchoMiddleWare(i == count -1));
-            }
-            serviceCollection.UseBotServices().UseTestConnector();
+            Bot bot = new Bot(connector);
+            bot.Use(new EchoMiddleWare());
 
-            var testRunner = new TestRunner(serviceCollection);
-            await testRunner.Test("test", async (IList<IActivity> responses) =>
-            {
-                Assert.AreEqual(count, responses.Count);
-                Assert.AreEqual(count, responses.Cast<IMessageActivity>().Where(r => r.Text == "test").Count());
-            });
-        }
+            var runner = new TestRunner();
+            await runner.Test(connector, messageText);
+        }       
     }
 
     public class EchoMiddleWare : IReceiveActivity

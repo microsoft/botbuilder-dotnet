@@ -11,6 +11,8 @@ namespace Microsoft.Bot.Builder
         Task Receive(IActivity activity, CancellationToken token);
 
         Task Post(IList<IActivity> activities, CancellationToken token);
+
+        Bot Bot { get; set; }
     }
 
     public interface IHttpConnector : IConnector

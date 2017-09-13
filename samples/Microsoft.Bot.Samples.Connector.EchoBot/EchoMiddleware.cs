@@ -1,10 +1,9 @@
-﻿using Microsoft.Bot.Connector;
-using Microsoft.Bot.Builder;
+﻿using Microsoft.Bot.Builder;
+using Microsoft.Bot.Connector;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Collections.Generic;
 
-namespace Microsoft.Bot.Samples.Connector.EchoBot
+namespace Microsoft.Bot.Samples.Middleware
 {
     public class EchoMiddleWare : IReceiveActivity
     {
@@ -12,16 +11,11 @@ namespace Microsoft.Bot.Samples.Connector.EchoBot
         {
             var activity = context.Request as Activity;
             var reply = activity.CreateReply();
-            if (activity.Type == ActivityTypes.Message)
-            {
-                reply.Text = $"echo: {activity.Text}";
-            }
-            else
-            {
-                reply.Text = $"activity type: {activity.Type}";
-            }
-            context.Responses.Add(reply);
-            await context.Post(token);
+
+            reply.Text = (activity.Type == ActivityTypes.Message) 
+                ? $"echo: {activity.Text}" : $"activity type: {activity.Type}";
+
+            context.Responses.Add(reply);            
             return new ReceiveResponse(true);
         }
     }

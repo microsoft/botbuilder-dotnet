@@ -24,11 +24,16 @@ namespace Microsoft.Bot.Builder
                 throw new ArgumentNullException("token");
         }
 
+        public static void ConnectorNotNull(IConnector connector)
+        {
+            if (connector == null)
+                throw new ArgumentNullException("connector");
+        }
+
         public static void ActivityListNotNull(IList<IActivity> activityList)
         {
             if (activityList == null)
                 throw new ArgumentNullException("activityList");
         }
-
     }
 }

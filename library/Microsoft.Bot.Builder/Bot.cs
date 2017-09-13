@@ -1,84 +1,94 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using Microsoft.Bot.Connector;
+using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Connector;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Microsoft.Bot.Builder
 {
-    public class Bot
+    public class Bot : MiddlewareSet
     {
-        private readonly PostToConnectorMiddleware _postToConnectorMiddleware;
+        private IConnector _connector;
+        private IBotLogger _logger = new NullLogger();
 
-        public Bot(PostToConnectorMiddleware postToConnectorMiddleware)
+        public Bot(IConnector connector) : base()
         {
-            _postToConnectorMiddleware = postToConnectorMiddleware ?? throw new ArgumentNullException("postToConnectorMiddleware");
+            BotAssert.ConnectorNotNull(connector);
+            _connector = connector;
+            _connector.Bot = this;
+
+            PostToConnectorMiddleware poster = new PostToConnectorMiddleware(this);
+            this.Use(poster);
         }
 
-        public Func<BotContext, CancellationToken, Task<ReceiveResponse>> OnReceive = null;
-
-        public MiddlewareSet MiddlewareSet => _postToConnectorMiddleware.MiddlewareSet;
-
-        public async Task<ReceiveResponse> Receive(BotContext context, CancellationToken token = default(CancellationToken))
+        public Bot Use(IBotLogger logger)
         {
-            ReceiveResponse receiveResponse = null;
-            try
+            _logger = logger ?? throw new ArgumentNullException("logger");
+            return this;
+        }
+
+        public Bot Use (IMiddleware middleware)
+        {
+            base.Use(middleware);
+            return this;
+        }
+
+        public IBotLogger Logger => _logger;
+
+        public IConnector Connector
+        {
+            get
             {
-                await this._postToConnectorMiddleware.ContextCreated(context, token);
-                receiveResponse = await this._postToConnectorMiddleware.ReceiveActivity(context, token);
-                if (receiveResponse?.Handled != true && OnReceive != null)
+                return _connector;
+            }
+            set
+            {
+                /** Changes the bots connector. The previous connector will first be disconnected */
+                BotAssert.ConnectorNotNull(value);
+
+                // Disconnect from existing connector
+                if (_connector != null)
                 {
-                    receiveResponse = await this.OnReceive(context, token);
+                    // ToDo: How to cancel any existing async / await here and disconnect? 
                 }
+
+                _connector = value;
+                _connector.Bot = this;
             }
-            finally
-            {
-                await this._postToConnectorMiddleware.ContextDone(context, token);
-            }
-            return receiveResponse;
         }
-    }
 
-    public static partial class BotExtensions
-    {
-        public static void Use(this Bot bot, params IMiddleware[] middlewares)
+        public virtual async Task RunPipeline(IActivity activity, CancellationToken token)
         {
-            if (bot.MiddlewareSet == null)
-                throw new InvalidOperationException("No middleware set present"); 
+            BotAssert.ActivityNotNull(activity);
+            BotAssert.CancellationTokenNotNull(token);
 
-            bot.MiddlewareSet.AddRange(middlewares);
+            Logger.Information($"Bot: Pipeline Running for Activity {activity.Id}");
+
+            var context = await this.CreateBotContext(activity, token).ConfigureAwait(false);
+            await base.RunPipeline(context, token).ConfigureAwait(false);
+            Logger.Information($"Bot: Pipeline Complete for Activity {activity.Id}");
         }
 
-        public static IServiceCollection UseBotServices(this IServiceCollection services)
+        public virtual Task<BotContext> CreateBotContext(IActivity activity, CancellationToken token)
         {
-            // BotLogger
-            services.AddSingleton<IBotLogger, NullLogger>();
+            BotAssert.ActivityNotNull(activity);
+            BotAssert.CancellationTokenNotNull(token);
 
-            // Setup dataContext
-            services.AddScoped<IDataContext, NullDataContext>();
+            Logger.Information($"Bot: Creating BotContext for {activity.Id}");
 
-            // Activity resolver and IActivity
-            services.AddScoped<ActivityResolver>();
-            services.AddScoped<IActivity>(provider => provider.GetRequiredService<ActivityResolver>().Resolve());
-
-            // Setup botContextFactory
-            services.AddScoped<IBotContextFactory, BotContextFactory>();
-
-            // create default middlewareset
-            services.AddScoped<MiddlewareSet>(provider => new MiddlewareSet(provider.GetServices<IMiddleware>().ToList()));
-
-            // wrap all other middlewares registered with the container 
-            // with PostToConnectorMiddleware
-            services.AddScoped<PostToConnectorMiddleware>();
-
-            // register PostToConnectorMiddleware as IPostToUser
-            services.AddScoped<IPostActivity>(provider => provider.GetService<PostToConnectorMiddleware>());
-
-            services.AddScoped<Bot>();
-            return services;
+            return Task.FromResult(new BotContext(this, activity));
         }
-    }
+
+        public virtual async Task<BotContext> CreateBotContext(ConversationReference reference, CancellationToken token)
+        {
+            if (reference == null)
+                throw new ArgumentNullException("reference");
+
+            BotAssert.CancellationTokenNotNull(token);
+
+            Logger.Information($"Bot: Creating BotContext for {reference.ActivityId}");
+
+            return await this.CreateBotContext(reference.GetPostToBotMessage(), token).ConfigureAwait(false);
+        }
+    }  
 }

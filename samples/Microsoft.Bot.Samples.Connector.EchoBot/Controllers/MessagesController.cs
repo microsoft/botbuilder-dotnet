@@ -1,53 +1,30 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Connector;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Bot.Samples.Middleware;
+using System.Threading;
 
 namespace Microsoft.Bot.Samples.Connector.EchoBot.Controllers
 {
     [Route("api/[controller]")]
     public class MessagesController : Controller
     {
-        private readonly Builder.Bot bot; 
+        Builder.Bot _bot; 
 
-        public MessagesController(Builder.Bot bot)
+        public MessagesController()
         {
-            this.bot = bot;
-            bot.Use(new EchoMiddleWare());
+            var connector = new BotFrameworkConnector("", "");
 
-            // instead of using middleware you can register the default OnReceive handler of the bot 
-            /*bot.OnReceive = async (context, token) =>
-            {
-                var activity = context.Request as Activity;
-                var reply = activity.CreateReply();
-                if (activity.Type == ActivityTypes.Message)
-                {
-                    reply.Text = $"echo: {activity.Text}";
-                }
-                else
-                {
-                    reply.Text = $"activity type: {activity.Type}";
-                }
-                context.Responses.Add(reply);
-                await context.PostAsync(token);
-                return true; 
-            };*/
+            _bot = new Builder.Bot(connector)
+                .Use(new EchoMiddleWare());
         }
 
-        //[Authorize(Roles = "Bot")]
-        // POST api/values
         [HttpPost]
-        public virtual async Task<OkResult> Post([FromBody]Activity activity,[FromServices]IHttpConnector connector)
+        public async void Post([FromBody]Activity activity)
         {
+            BotFrameworkConnector connector = (BotFrameworkConnector)_bot.Connector; 
             await connector.Receive(HttpContext.Request.Headers, activity, CancellationToken.None);
-            return Ok();
-        }
+            return;
+        }      
     }
 }

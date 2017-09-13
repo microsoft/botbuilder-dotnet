@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26730.3
+VisualStudioVersion = 15.0.26730.10
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder", "library\Microsoft.Bot.Builder\Microsoft.Bot.Builder.csproj", "{74908F42-3842-49B4-9344-60BB791FDE32}"
 EndProject
@@ -23,7 +23,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Azure
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Builder.Azure.Tests", "test\Microsoft.Bot.Builder.Azure.Tests\Microsoft.Bot.Builder.Azure.Tests.csproj", "{1E60CAC8-31F3-42A4-B478-C21C39A57161}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Builder.Ai", "library\Microsoft.Bot.Builder.Ai\Microsoft.Bot.Builder.Ai.csproj", "{F31CF172-6FEE-4188-9828-E5FDA531C871}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Ai", "library\Microsoft.Bot.Builder.Ai\Microsoft.Bot.Builder.Ai.csproj", "{F31CF172-6FEE-4188-9828-E5FDA531C871}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
