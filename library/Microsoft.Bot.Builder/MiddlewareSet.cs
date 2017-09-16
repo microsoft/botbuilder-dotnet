@@ -62,7 +62,7 @@ namespace Microsoft.Bot.Builder
 
             context.Bot.Logger.Information($"Middleware: ReceiveActivity for {context.Request.Id}.");
 
-            ReceiveResponse response = null;
+            ReceiveResponse response = new ReceiveResponse(false);
             foreach (var middleware in this._middlewareList.Where<IReceiveActivity>())
             {
                 response = await middleware.ReceiveActivity(context, token).ConfigureAwait(false);
@@ -81,7 +81,7 @@ namespace Microsoft.Bot.Builder
                 await m.ContextDone(context, token).ConfigureAwait(false);
         }
 
-        public virtual async Task PostActivity(BotContext context, IList<IActivity> activities, CancellationToken token)
+        public virtual async Task PostActivity(BotContext context, IList<Activity> activities, CancellationToken token)
         {
             BotAssert.ContextNotNull(context);
             BotAssert.ActivityListNotNull(activities);

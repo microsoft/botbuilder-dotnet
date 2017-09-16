@@ -30,7 +30,7 @@ namespace Microsoft.Bot.Builder
                 throw new ArgumentNullException("connector");
         }
 
-        public static void ActivityListNotNull(IList<IActivity> activityList)
+        public static void ActivityListNotNull(IList<Activity> activityList)
         {
             if (activityList == null)
                 throw new ArgumentNullException("activityList");

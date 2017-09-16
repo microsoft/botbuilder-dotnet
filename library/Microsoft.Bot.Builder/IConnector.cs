@@ -8,15 +8,15 @@ namespace Microsoft.Bot.Builder
 {
     public interface IConnector
     {
-        Task Receive(IActivity activity, CancellationToken token);
+        Task Receive(Activity activity, CancellationToken token);
 
-        Task Post(IList<IActivity> activities, CancellationToken token);
+        Task Post(IList<Activity> activities, CancellationToken token);
 
         Bot Bot { get; set; }
     }
 
     public interface IHttpConnector : IConnector
     {
-        Task Receive(IDictionary<string, StringValues> headers, IActivity activity, CancellationToken token);
+        Task Receive(IDictionary<string, StringValues> headers, Activity activity, CancellationToken token);
     }
 }

@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Builder
 
     public interface IPostActivity : IMiddleware
     {
-        Task PostActivity(BotContext context, IList<IActivity> activities, CancellationToken token);
+        Task PostActivity(BotContext context, IList<Activity> activities, CancellationToken token);
     }
 
     public interface IContextDone : IMiddleware

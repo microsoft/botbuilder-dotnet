@@ -9,28 +9,31 @@ namespace Microsoft.Bot.Builder
     
     public interface IBotContext
     {
-        IActivity Request { get; }
-        IList<IActivity> Responses { get; set; }
+        Activity Request { get; }
+        IList<Activity> Responses { get; set; }
+        BotState State { get; }    
+        ConversationReference ConversationReference { get; }
         IBotLogger Logger { get; }
-    }
+    }   
 
     public static partial class BotContextExtension
     {
         public static async Task Post(this BotContext context, CancellationToken token)
         {
             BotAssert.CancellationTokenNotNull(token);
-            await context.PostActivity(context, new List<IActivity>(), token);
+            await context.PostActivity(context, new List<Activity>(), token);
         }        
     }
 
     public class BotContext : FlexObject, IBotContext, IPostActivity
     {
         private Bot _bot;
-        private readonly IActivity _request;
-        private IList<IActivity> _responses = new List<IActivity>();
+        private readonly Activity _request;
+        private IList<Activity> _responses = new List<Activity>();
         private ConversationReference _conversationReference;
+        private BotState _state = new BotState(); 
 
-        public BotContext(Bot bot, IActivity request)
+        public BotContext(Bot bot, Activity request)
         {
             _bot = bot ?? throw new ArgumentNullException("bot");
             _request = request ?? throw new ArgumentNullException("request");
@@ -45,21 +48,34 @@ namespace Microsoft.Bot.Builder
                 ServiceUrl = request.ServiceUrl
             };
         }
+        
 
-        public async Task PostActivity(BotContext context, IList<IActivity> acitivties, CancellationToken token)
+        public async Task PostActivity(BotContext context, IList<Activity> acitivties, CancellationToken token)
         {
             await _bot.PostActivity(context, acitivties, token).ConfigureAwait(false);
         }
 
-        public IActivity Request => _request;
+        public Activity Request => _request;
 
         public Bot Bot => _bot;
 
-        public IList<IActivity> Responses { get => _responses; set => this._responses = value; }
+        public IList<Activity> Responses { get => _responses; set => this._responses = value; }
 
         public IBotLogger Logger => _bot.Logger;
 
         public IStorage Storage { get; set; }
+
+        public ConversationReference ConversationReference { get => _conversationReference; }
+
+        public BotState State { get => _state; }
+
+        public BotContext Say(string text)
+        {
+            var reply = (this.Request as Activity).CreateReply();
+            reply.Text = text;
+            this.Responses.Add(reply);
+            return this; 
+        }
 
         // Note: These will come back a we interagte the storage layer next. 
         //public IUserContext User => throw new NotImplementedException();

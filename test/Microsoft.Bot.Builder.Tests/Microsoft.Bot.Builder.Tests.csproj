@@ -58,6 +58,7 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BotStateManagerTests.cs" />
     <Compile Include="StorageTests.cs" />
     <Compile Include="FlexObjectTests.cs" />
     <Compile Include="MiddlewareTest.cs" />

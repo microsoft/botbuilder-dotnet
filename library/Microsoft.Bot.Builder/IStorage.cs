@@ -1,23 +1,11 @@
-﻿using System.Threading.Tasks;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System;
+using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder
 {
-    public class StoreItem : FlexObject
-    {
-        /// <summary>
-        /// eTag for concurrency
-        /// </summary>
-        public string eTag { get; set; }
-    }
 
-    public class StoreItems : FlexObject
-    {
-    }
-
-    public class StoreItems<StoreItemT> : StoreItems
-        where StoreItemT : StoreItem
-    {
-    }
 
     public interface IStorage
     {
@@ -40,6 +28,40 @@ namespace Microsoft.Bot.Builder
         /// <param name="keys">keys of the storeItems to delete</param>
         Task Delete(params string[] keys);
     }
+
+    public class StoreItem : FlexObject
+    {
+        /// <summary>
+        /// eTag for concurrency
+        /// </summary>
+        public string eTag { get; set; }
+
+        public T ToObject<T>()
+        {
+            return JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(this));
+        }
+    }
+
+    public class StoreItems : FlexObject
+    {
+        public T Get<T>(string name)
+        {
+            if (this.ContainsKey(name))
+                return this[name].ToObject<T>();
+            return default(T);
+        }
+    }
+
+    public class StoreItems<StoreItemT> : StoreItems
+        where StoreItemT : StoreItem
+    {
+    }
+
+    public interface IStorageSettings
+    {
+        bool OptimizeWrites { get; set; }
+    }
+
 
     public static class StorageExtensions
     {

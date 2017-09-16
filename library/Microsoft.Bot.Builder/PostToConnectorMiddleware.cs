@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Builder
             _bot = b ?? throw new ArgumentNullException("bot");
         }
                 
-        public async Task PostActivity(BotContext context, IList<IActivity> activities, CancellationToken token)
+        public async Task PostActivity(BotContext context, IList<Activity> activities, CancellationToken token)
         {
             BotAssert.ContextNotNull(context);
             BotAssert.ActivityListNotNull(activities);

@@ -24,8 +24,8 @@ namespace Microsoft.Bot.Builder.Tests
                 (responses) => Assert.AreEqual(messageText, (responses.First() as IMessageActivity).Text)
             );
 
-            Bot bot = new Bot(connector);
-            bot.Use(new EchoMiddleWare());
+            Bot bot = new Bot(connector)
+                .Use(new EchoMiddleWare());
 
             var runner = new TestRunner();
             await runner.Test(connector, messageText);

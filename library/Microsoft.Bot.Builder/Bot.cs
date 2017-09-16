@@ -11,6 +11,16 @@ namespace Microsoft.Bot.Builder
         private IConnector _connector;
         private IBotLogger _logger = new NullLogger();
 
+        public delegate Task<ReceiveResponse> ReceiveDelegate(BotContext context, CancellationToken token);
+        private ReceiveDelegate[] _onReceive = null;
+
+        public Bot OnReceive(params ReceiveDelegate[] receiveHandler)
+        {
+            _onReceive = receiveHandler;
+            return this;
+        }
+
+
         public Bot(IConnector connector) : base()
         {
             BotAssert.ConnectorNotNull(connector);
@@ -57,7 +67,29 @@ namespace Microsoft.Bot.Builder
             }
         }
 
-        public virtual async Task RunPipeline(IActivity activity, CancellationToken token)
+        public override async Task<ReceiveResponse> ReceiveActivity(BotContext context, CancellationToken token)
+        {
+            BotAssert.ContextNotNull(context);
+            BotAssert.CancellationTokenNotNull(token);
+            
+            var result = await base.ReceiveActivity(context, token);
+            if (result?.Handled == false)
+            {
+                if (_onReceive != null)
+                {
+                    foreach (var r in _onReceive)
+                    {
+                        result = await r(context, token);
+                        if (result.Handled == true)
+                            break;
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        public virtual async Task RunPipeline(Activity activity, CancellationToken token)
         {
             BotAssert.ActivityNotNull(activity);
             BotAssert.CancellationTokenNotNull(token);
@@ -69,7 +101,7 @@ namespace Microsoft.Bot.Builder
             Logger.Information($"Bot: Pipeline Complete for Activity {activity.Id}");
         }
 
-        public virtual Task<BotContext> CreateBotContext(IActivity activity, CancellationToken token)
+        public virtual Task<BotContext> CreateBotContext(Activity activity, CancellationToken token)
         {
             BotAssert.ActivityNotNull(activity);
             BotAssert.CancellationTokenNotNull(token);

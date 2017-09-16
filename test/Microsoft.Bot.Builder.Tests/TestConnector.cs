@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Tests
 {
-    public delegate void TestValidator(IList<IActivity> activities);
+    public delegate void TestValidator(IList<Activity> activities);
 
     public class ValidateOnPostConnector : Connector
     {
         private List<TestValidator> _validators = new List<TestValidator>();        
 
-        public override async Task Post(IList<IActivity> activities, CancellationToken token)
+        public override async Task Post(IList<Activity> activities, CancellationToken token)
         {
             Assert.IsTrue(_validators.Count > 0, "No Validators Present.");                
             foreach( var v in _validators)
@@ -30,12 +30,19 @@ namespace Microsoft.Bot.Builder.Tests
             foreach (var v in validators)
                 _validators.Add(v);
         }        
+
+        public void Clear()
+        {
+            _validators = new List<TestValidator>();
+        }
     }
 
     public class TestRunner
     {        
         public const string User = "testUser";
-        public const string Bot = "testBot";        
+        public const string Bot = "testBot";
+
+        //public delegate void TestDelegate(IActivity activity);
 
         public static Activity MakeTestMessage()
         {
@@ -53,13 +60,21 @@ namespace Microsoft.Bot.Builder.Tests
             };
         }
 
-        public async Task<TestRunner> Test(ValidateOnPostConnector c, string testMessage, CancellationToken token = default(CancellationToken))
-        {            
+        public async Task<TestRunner> Test(ValidateOnPostConnector c, string testMessage)
+        {
             var message = MakeTestMessage();
             message.Text = testMessage;
-            await c.Receive(message, token);
+            await c.Receive(message, new CancellationToken());
 
             return this;
+
+        }
+        public async Task<TestRunner> Test(ValidateOnPostConnector c, string testMessage, TestValidator testFunction)
+        {
+            c.Clear();
+            c.ValidationsToRunOnPost(testFunction);
+
+            return await Test(c, testMessage);
         }
     }
 }

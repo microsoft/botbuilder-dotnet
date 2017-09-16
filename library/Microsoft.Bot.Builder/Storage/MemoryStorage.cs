@@ -78,9 +78,9 @@ namespace Microsoft.Bot.Builder.Storage
     /// <summary>
     /// RamStorage stores data in volative dictionary
     /// </summary>
-    public class RamStorage : DictionaryStorage
+    public class MemoryStorage : DictionaryStorage
     {
-        public RamStorage() : base(null)
+        public MemoryStorage() : base(null)
         {
         }
     }

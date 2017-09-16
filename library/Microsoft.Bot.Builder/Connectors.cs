@@ -11,15 +11,15 @@ namespace Microsoft.Bot.Builder
 {
     public abstract class Connector : IConnector
     {        
-        public Bot Bot {get; set;}               
+        public Bot Bot {get; set;}        
 
         public Connector()
         {            
         }
 
-        public abstract Task Post(IList<IActivity> activities, CancellationToken token);
+        public abstract Task Post(IList<Activity> activities, CancellationToken token);
 
-        public virtual async Task Receive(IActivity activity, CancellationToken token)
+        public virtual async Task Receive(Activity activity, CancellationToken token)
         {
             BotAssert.ActivityNotNull(activity);
             BotAssert.CancellationTokenNotNull(token);
@@ -39,7 +39,7 @@ namespace Microsoft.Bot.Builder
             _credentials = new MicrosoftAppCredentials(appId, appPassword);            
         }
      
-        public async override Task Post(IList<IActivity> activities, CancellationToken token)
+        public async override Task Post(IList<Activity> activities, CancellationToken token)
         {
             BotAssert.ActivityListNotNull(activities);
             BotAssert.CancellationTokenNotNull(token); 
@@ -51,7 +51,7 @@ namespace Microsoft.Bot.Builder
             }
         }
 
-        public async Task Receive(IDictionary<string, StringValues> headers, IActivity activity, CancellationToken token)
+        public async Task Receive(IDictionary<string, StringValues> headers, Activity activity, CancellationToken token)
         {
             if (headers == null)
                 throw new ArgumentNullException("headers");
@@ -76,7 +76,7 @@ namespace Microsoft.Bot.Builder
         {
         }
 
-        public override Task Post(IList<IActivity> activities, CancellationToken token)
+        public override Task Post(IList<Activity> activities, CancellationToken token)
         {
             foreach (var activity in activities)
             {
@@ -99,7 +99,7 @@ namespace Microsoft.Bot.Builder
         {
         }
 
-        public override Task Post(IList<IActivity> activities, CancellationToken token)
+        public override Task Post(IList<Activity> activities, CancellationToken token)
         {
             foreach (Activity activity in activities)
             {

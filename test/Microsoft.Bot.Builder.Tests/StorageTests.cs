@@ -17,7 +17,7 @@ namespace Microsoft.Bot.Builder.Tests
         [TestInitialize]
         public void initialize()
         {
-            storage = new RamStorage();
+            storage = new MemoryStorage();
         }
 
         [TestMethod]
