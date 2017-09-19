@@ -9,7 +9,7 @@ namespace Microsoft.Bot.Samples.Middleware
     {
         public async Task<ReceiveResponse> ReceiveActivity(BotContext context, CancellationToken token)
         {
-            var activity = context.Request as Activity;
+            var activity = context.Request;
             var reply = activity.CreateReply();
 
             reply.Text = (activity.Type == ActivityTypes.Message) 

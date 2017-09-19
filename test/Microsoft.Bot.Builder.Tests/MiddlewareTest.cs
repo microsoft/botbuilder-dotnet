@@ -43,8 +43,8 @@ namespace Microsoft.Bot.Builder.Tests
 
         public Task<ReceiveResponse> ReceiveActivity(BotContext context, CancellationToken token)
         {
-            var response = (context.Request as Activity).CreateReply();
-            response.Text = (context.Request as Activity).Text;
+            var response = context.Request.CreateReply();
+            response.Text = context.Request.Text;
             context.Responses.Add(response);
             return Task.FromResult(new ReceiveResponse(this.handled));
         }

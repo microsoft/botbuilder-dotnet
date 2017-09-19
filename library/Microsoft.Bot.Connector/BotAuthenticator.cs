@@ -52,12 +52,8 @@ namespace Microsoft.Bot.Connector
             string openIdConfigurationUrl,
             bool disableEmulatorTokens,
             EndorsementsValidator validator = null)
-        {
-            if (credentialProvider == null)
-            {
-                throw new ArgumentNullException(nameof(credentialProvider));
-            }
-            this.credentialProvider = credentialProvider;
+        {            
+            this.credentialProvider = credentialProvider ?? throw new ArgumentNullException("credentialProvider");
             this.openIdConfigurationUrl = openIdConfigurationUrl;
             this.disableEmulatorTokens = disableEmulatorTokens;
             this.validator = validator ?? DefaultEndorsementsValidator;
