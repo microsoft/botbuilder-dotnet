@@ -16,12 +16,8 @@ namespace Microsoft.Bot.Builder.Tests
         public async Task DoNOTRememberContextState()
         {
             TestConnector connector = new TestConnector();
-
             Bot bot = new Bot(connector)
-                .Use(new MemoryStorage())
-                .Use(new BotStateManager())
-                .OnReceive(
-                    async (context, token) =>
+                .OnReceive( async (context, token) =>
                     {
                         Assert.IsNotNull(context.State, "context.state should exist");
                         switch (context.Request.Text)
@@ -38,9 +34,7 @@ namespace Microsoft.Bot.Builder.Tests
                         return new ReceiveResponse(true);
                     }
                 );
-
             var runner = new TestRunner();
-
             await runner.Test(connector, "set value", (a) => Assert.IsTrue(a[0].Text == "value saved", "set value failed"));
             await runner.Test(connector, "get value", (a) => Assert.IsTrue(a[0].Text == null, "get value was incorrectly defined"));
         }
