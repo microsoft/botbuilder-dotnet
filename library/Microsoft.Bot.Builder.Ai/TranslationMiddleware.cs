@@ -62,7 +62,7 @@ namespace Microsoft.Bot.Builder.Ai
         /// <param name="activities"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        public async Task PostActivity(BotContext context, IList<IActivity> activities, CancellationToken token)
+        public async Task PostActivity(BotContext context, IList<Activity> activities, CancellationToken token)
         {
             foreach (var activity in activities)
             {

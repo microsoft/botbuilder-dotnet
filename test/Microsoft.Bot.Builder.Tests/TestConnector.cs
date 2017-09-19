@@ -9,9 +9,50 @@ namespace Microsoft.Bot.Builder.Tests
 {
     public delegate void TestValidator(IList<Activity> activities);
 
-    public class ValidateOnPostConnector : Connector
-    {
-        private List<TestValidator> _validators = new List<TestValidator>();        
+    public class TestConnector : Connector
+    {        
+        private List<TestValidator> _validators = new List<TestValidator>();
+        int _nextId = 0;
+
+        public TestConnector()
+        {
+            ConversationReference r = new ConversationReference
+            {
+                ChannelId = "test",
+                ServiceUrl = "https://test.com"
+            };
+
+            r.User = new ChannelAccount("user1", "User1");
+            r.Bot = new ChannelAccount("bot", "Bot");
+            r.Conversation = new ConversationAccount(false, "convo1", "Conversation1");            
+
+            Reference = r;
+        }
+
+        public TestConnector(ConversationReference reference)
+        {
+            Reference = reference;
+        }
+
+        public ConversationReference Reference { get; set; }        
+
+        public Activity MakeTestActivity()
+        {
+            Activity a = new Activity
+            {
+                Type = ActivityTypes.Message,
+                From = Reference.User,
+                Recipient = Reference.Bot,
+                Conversation = Reference.Conversation,
+                ServiceUrl = Reference.ServiceUrl,
+                Id = (_nextId++).ToString()
+            };
+
+            //Attachments = Array.Empty<Attachment>(),
+            //Entities = Array.Empty<Entity>(),
+
+            return a;
+        }
 
         public override async Task Post(IList<Activity> activities, CancellationToken token)
         {
@@ -40,36 +81,18 @@ namespace Microsoft.Bot.Builder.Tests
     public class TestRunner
     {        
         public const string User = "testUser";
-        public const string Bot = "testBot";
+        public const string Bot = "testBot";               
 
-        //public delegate void TestDelegate(IActivity activity);
-
-        public static Activity MakeTestMessage()
+        public async Task<TestRunner> Test(TestConnector c, string testMessage)
         {
-            return new Activity()
-            {
-                Id = Guid.NewGuid().ToString(),
-                Type = ActivityTypes.Message,
-                From = new ChannelAccount { Id = User },
-                Conversation = new ConversationAccount { Id = Guid.NewGuid().ToString() },
-                Recipient = new ChannelAccount { Id = Bot },
-                ServiceUrl = "InvalidServiceUrl",
-                ChannelId = "Test",
-                Attachments = Array.Empty<Attachment>(),
-                Entities = Array.Empty<Entity>(),
-            };
-        }
-
-        public async Task<TestRunner> Test(ValidateOnPostConnector c, string testMessage)
-        {
-            var message = MakeTestMessage();
+            var message = c.MakeTestActivity();             
             message.Text = testMessage;
             await c.Receive(message, new CancellationToken());
 
             return this;
 
         }
-        public async Task<TestRunner> Test(ValidateOnPostConnector c, string testMessage, TestValidator testFunction)
+        public async Task<TestRunner> Test(TestConnector c, string testMessage, TestValidator testFunction)
         {
             c.Clear();
             c.ValidationsToRunOnPost(testFunction);

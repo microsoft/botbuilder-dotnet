@@ -5,8 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder
-{
-    
+{    
     public interface IBotContext
     {
         Activity Request { get; }
@@ -21,7 +20,7 @@ namespace Microsoft.Bot.Builder
         public static async Task Post(this BotContext context, CancellationToken token)
         {
             BotAssert.CancellationTokenNotNull(token);
-            await context.PostActivity(context, new List<Activity>(), token);
+            await context.PostActivity(context, new List<Activity>(), token).ConfigureAwait(false);
         }        
     }
 
@@ -76,10 +75,5 @@ namespace Microsoft.Bot.Builder
             this.Responses.Add(reply);
             return this; 
         }
-
-        // Note: These will come back a we interagte the storage layer next. 
-        //public IUserContext User => throw new NotImplementedException();
-        //public IConversationContext Conversation => throw new NotImplementedException();
-        //public IBotContextData Data => throw new NotImplementedException();
     }
 }

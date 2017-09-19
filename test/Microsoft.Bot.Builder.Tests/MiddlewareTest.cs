@@ -18,7 +18,7 @@ namespace Microsoft.Bot.Builder.Tests
         {
             string messageText = Guid.NewGuid().ToString();
 
-            ValidateOnPostConnector connector = new ValidateOnPostConnector();
+            TestConnector connector = new TestConnector();
             connector.ValidationsToRunOnPost(
                 (responses) => Assert.AreEqual(responses.Count, 1),
                 (responses) => Assert.AreEqual(messageText, (responses.First() as IMessageActivity).Text)
