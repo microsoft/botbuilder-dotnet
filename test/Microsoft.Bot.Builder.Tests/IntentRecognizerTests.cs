@@ -203,7 +203,7 @@ namespace Microsoft.Bot.Builder.Tests
 
             m.OnFilter(async (context, intentList) =>
             {
-                Assert.IsTrue(intentList.Count == 2, "Expecting exactly 1 intent");
+                Assert.IsTrue(intentList.Count == 2, "Expecting exactly 2 intents");
                 Assert.IsTrue(intentList[0].Name == intentToKeep, $"Unexpected Intent Name. Expected {intentToKeep}");
                 Assert.IsTrue(intentList[1].Name == intentToRemove, $"Unexpected Intent Name. Expected {intentToRemove}");
 
@@ -345,17 +345,11 @@ namespace Microsoft.Bot.Builder.Tests
                 new Intent { Name = large, Score = 1.0 }
             };
 
-            Shuffle(intents);
-            Assert.IsTrue(IntentRecognizerMiddleware.FindTopIntent(intents).Name == large, "Not the top intent");
-
-            Shuffle(intents);
-            Assert.IsTrue(IntentRecognizerMiddleware.FindTopIntent(intents).Name == large, "Not the top intent");
-
-            Shuffle(intents);
-            Assert.IsTrue(IntentRecognizerMiddleware.FindTopIntent(intents).Name == large, "Not the top intent");
-
-            Shuffle(intents);
-            Assert.IsTrue(IntentRecognizerMiddleware.FindTopIntent(intents).Name == large, "Not the top intent");
+            for (int i = 0; i < 100; i++)
+            {
+                Shuffle(intents);
+                Assert.IsTrue(IntentRecognizerMiddleware.FindTopIntent(intents).Name == large, "Not the top intent");
+            }           
         }
 
         public BotContext CreateEmptyContext()
