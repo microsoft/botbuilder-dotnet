@@ -10,9 +10,11 @@ namespace Microsoft.Bot.Builder
     {
         Activity Request { get; }
         IList<Activity> Responses { get; set; }
-        BotState State { get; }    
         ConversationReference ConversationReference { get; }
+        BotState State { get; }    
         IBotLogger Logger { get; }
+        IStorage Storage { get; set; }
+        Intent TopIntent { get; set; }
     }   
 
     public static partial class BotContextExtension
@@ -21,7 +23,12 @@ namespace Microsoft.Bot.Builder
         {
             BotAssert.CancellationTokenNotNull(token);
             await context.PostActivity(context, new List<Activity>(), token).ConfigureAwait(false);
-        }        
+        }  
+        
+        public static BotContext ToBotContext(this IBotContext context)
+        {
+            return (BotContext)context; 
+        }
     }
 
     public class BotContext : FlexObject, IBotContext, IPostActivity
@@ -63,6 +70,8 @@ namespace Microsoft.Bot.Builder
         public IBotLogger Logger => _bot.Logger;
 
         public IStorage Storage { get; set; }
+
+        public Intent TopIntent { get; set; }
 
         public ConversationReference ConversationReference { get => _conversationReference; }
 
