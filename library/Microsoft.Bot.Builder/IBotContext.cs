@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 
 namespace Microsoft.Bot.Builder
 {    
@@ -15,6 +16,9 @@ namespace Microsoft.Bot.Builder
         IBotLogger Logger { get; }
         IStorage Storage { get; set; }
         Intent TopIntent { get; set; }
+
+        bool IfIntent(string intentName);
+        bool IfIntent(Regex expression);
     }   
 
     public static partial class BotContextExtension
@@ -73,11 +77,41 @@ namespace Microsoft.Bot.Builder
 
         public Intent TopIntent { get; set; }
 
+        public bool IfIntent(string intentName)
+        {
+            if (string.IsNullOrWhiteSpace(intentName))
+                throw new ArgumentNullException("intentName"); 
+
+            if (this.TopIntent != null)
+            {
+                if (TopIntent.Name == intentName)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+        public bool IfIntent(Regex expression)
+        {
+            if (expression == null) 
+                throw new ArgumentNullException("expression");
+
+            if (this.TopIntent != null)
+            {
+                if (expression.IsMatch(this.TopIntent.Name))
+                    return true;
+            }
+
+            return false;
+        }
+
+
         public ConversationReference ConversationReference { get => _conversationReference; }
 
         public BotState State { get => _state; }
 
-        public BotContext Say(string text)
+        public BotContext Reply(string text)
         {
             var reply = (this.Request as Activity).CreateReply();
             reply.Text = text;

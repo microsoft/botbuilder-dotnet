@@ -7,6 +7,12 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder
 {
+    public class Intent
+    {
+        public string Name { get; set; }
+        public double Score { get; set; }
+    }
+
     public class IntentRecognizerMiddleware : IMiddleware, IReceiveActivity
     {
         public delegate Task<Boolean> IntentDisabler(IBotContext context);

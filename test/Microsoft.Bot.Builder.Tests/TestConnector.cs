@@ -76,28 +76,22 @@ namespace Microsoft.Bot.Builder.Tests
         {
             _validators = new List<TestValidator>();
         }
-    }
 
-    public class TestRunner
-    {        
-        public const string User = "testUser";
-        public const string Bot = "testBot";               
-
-        public async Task<TestRunner> Test(TestConnector c, string testMessage)
+        public async Task<TestConnector> Test(string testMessage)
         {
-            var message = c.MakeTestActivity();             
+            var message = MakeTestActivity();
             message.Text = testMessage;
-            await c.Receive(message, new CancellationToken());
+            await Receive(message, new CancellationToken());
 
             return this;
-
         }
-        public async Task<TestRunner> Test(TestConnector c, string testMessage, TestValidator testFunction)
+
+        public async Task<TestConnector> Test(string testMessage, TestValidator testFunction)
         {
-            c.Clear();
-            c.ValidationsToRunOnPost(testFunction);
-
-            return await Test(c, testMessage);
+            Clear();
+            ValidationsToRunOnPost(testFunction);
+            return await Test(testMessage); 
         }
-    }
+
+    }   
 }

@@ -24,19 +24,18 @@ namespace Microsoft.Bot.Builder.Tests
                         {
                             case "set value":
                                 context.State["value"] = "test";
-                                context.Say("value saved");
+                                context.Reply("value saved");
                                 break;
                             case "get value":
                                 string state = context.State["value"];
-                                context.Say(state);
+                                context.Reply(state);
                                 break;
                         }
                         return new ReceiveResponse(true);
                     }
                 );
-            var runner = new TestRunner();
-            await runner.Test(connector, "set value", (a) => Assert.IsTrue(a[0].Text == "value saved", "set value failed"));
-            await runner.Test(connector, "get value", (a) => Assert.IsTrue(a[0].Text == null, "get value was incorrectly defined"));
+            await connector.Test("set value", (a) => Assert.IsTrue(a[0].Text == "value saved", "set value failed"));
+            await connector.Test("get value", (a) => Assert.IsTrue(a[0].Text == null, "get value was incorrectly defined"));
         }
 
         [TestMethod]
@@ -55,20 +54,18 @@ namespace Microsoft.Bot.Builder.Tests
                         {
                             case "set value":
                                 context.State.User["value"] = "test";
-                                context.Say("value saved");
+                                context.Reply("value saved");
                                 break;
                             case "get value":
-                                context.Say(context.State.User["value"]);
+                                context.Reply(context.State.User["value"]);
                                 break;
                         }
                         return new ReceiveResponse(true);
                     }
                 );
 
-            var runner = new TestRunner();
-
-            await runner.Test(connector, "set value", (a) => Assert.IsTrue(a[0].Text == "value saved"));
-            await runner.Test(connector, "get value", (a) => Assert.IsTrue(a[0].Text == "test"));
+            await connector.Test("set value", (a) => Assert.IsTrue(a[0].Text == "value saved"));
+            await connector.Test("get value", (a) => Assert.IsTrue(a[0].Text == "test"));
         }
 
         [TestMethod]
@@ -87,19 +84,18 @@ namespace Microsoft.Bot.Builder.Tests
                         {
                             case "set value":
                                 context.State.Conversation["value"] = "test";
-                                context.Say("value saved");
+                                context.Reply("value saved");
                                 break;
                             case "get value":
-                                context.Say(context.State.Conversation["value"]);
+                                context.Reply(context.State.Conversation["value"]);
                                 break;
                         }
                         return new ReceiveResponse(true);
                     }
                 );
 
-            var runner = new TestRunner();
-            await runner.Test(connector, "set value", (a) => Assert.IsTrue(a[0].Text == "value saved"));
-            await runner.Test(connector, "get value", (a) => Assert.IsTrue(a[0].Text == "test"));
+            await connector.Test("set value", (a) => Assert.IsTrue(a[0].Text == "value saved"));
+            await connector.Test("get value", (a) => Assert.IsTrue(a[0].Text == "test"));
         }
     }
 }

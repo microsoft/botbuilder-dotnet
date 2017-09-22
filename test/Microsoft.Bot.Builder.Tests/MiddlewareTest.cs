@@ -26,9 +26,8 @@ namespace Microsoft.Bot.Builder.Tests
 
             Bot bot = new Bot(connector)
                 .Use(new EchoMiddleWare());
-
-            var runner = new TestRunner();
-            await runner.Test(connector, messageText);
+            
+            await connector.Test(messageText);
         }       
     }
 
