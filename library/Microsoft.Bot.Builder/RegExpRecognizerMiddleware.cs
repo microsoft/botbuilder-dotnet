@@ -16,6 +16,7 @@ namespace Microsoft.Bot.Builder
     public class RegExLocaleMap
     {
         private Dictionary<string, List<Regex>> _map = new Dictionary<string, List<Regex>>();
+        private const string Default_Key = "*";
 
         public RegExLocaleMap()
         {
@@ -23,14 +24,15 @@ namespace Microsoft.Bot.Builder
 
         public RegExLocaleMap(List<Regex> items)
         {
-            _map["*"] = items;
+            _map[Default_Key] = items;
         }
         
-
         public List<Regex> GetLocale(string locale)
         {
             if (_map.ContainsKey(locale))
                 return _map[locale];
+            else if (_map.ContainsKey(Default_Key))
+                return _map[Default_Key];
             else
                 return new List<Regex>();
         }
@@ -137,8 +139,9 @@ namespace Microsoft.Bot.Builder
 
         public static Intent Recognize(string text, Regex expression, List<string> entityTypes, double minScore)
         {
+            // Note: Not throwing here, as users enter whitespace all the time. 
             if (string.IsNullOrWhiteSpace(text))
-                throw new ArgumentNullException("text");
+                return null;                
 
             if (expression == null)
                 throw new ArgumentNullException("expression");

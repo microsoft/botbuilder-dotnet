@@ -21,18 +21,15 @@ namespace Microsoft.Bot.Builder.Tests
                 .AddIntent("HelpIntent", new Regex("help", RegexOptions.IgnoreCase));
 
             Bot bot = new Bot(connector)
-                .Use(helpRecognizer);
+                .Use(helpRecognizer)
+                .OnReceive(async (context, token) => {
+                    if (context.IfIntent("HelpIntent"))
+                        context.Reply("You selected HelpIntent");
 
-            bot.OnReceive(async (context, token) =>
-            {
-                if (context.IfIntent("HelpIntent"))             
-                    context.Reply("You selected HelpIntent");                
+                    return new ReceiveResponse(true);
+                });
 
-                return new ReceiveResponse(true);
-            });
-            
-            await connector.Test("help", (a) =>
-            {
+            await connector.Test("help", (a) => {
                 Assert.IsTrue(a[0].Type == "message");
                 Assert.IsTrue(a[0].Text == "You selected HelpIntent");
             });
@@ -43,22 +40,21 @@ namespace Microsoft.Bot.Builder.Tests
         {
             TestConnector connector = new TestConnector();
 
-            RegExpRecognizerMiddleare helpRecognizer = new RegExpRecognizerMiddleare()
+            RegExpRecognizerMiddleare recognizer = new RegExpRecognizerMiddleare()
                 .AddIntent("aaaaa", new Regex("a", RegexOptions.IgnoreCase))
                 .AddIntent("bbbbb", new Regex("b", RegexOptions.IgnoreCase));
 
             Bot bot = new Bot(connector)
-                .Use(helpRecognizer);
+                .Use(recognizer)
+                .OnReceive(async (context, token) =>
+                {
+                    if (context.IfIntent(new Regex("a")))
+                        context.Reply("aaaa Intent");
+                    if (context.IfIntent(new Regex("b")))
+                        context.Reply("bbbb Intent");
 
-            bot.OnReceive(async (context, token) =>
-            {
-                if (context.IfIntent(new Regex("a")))
-                    context.Reply("aaaa Intent");
-                if (context.IfIntent(new Regex("b")))
-                    context.Reply("bbbb Intent");
-
-                return new ReceiveResponse(true);
-            });
+                    return new ReceiveResponse(true);
+                });
 
             await connector.Test("aaaaaaaaa", (a) =>
             {
@@ -82,15 +78,14 @@ namespace Microsoft.Bot.Builder.Tests
                 .AddIntent("CancelIntent", new Regex("cancel", RegexOptions.IgnoreCase));
 
             Bot bot = new Bot(connector)
-                .Use(helpRecognizer);
+                .Use(helpRecognizer)
+                .OnReceive(async (context, token) =>
+                {
+                    if (context.IfIntent("CancelIntent"))
+                        context.Reply("You selected CancelIntent");
 
-            bot.OnReceive(async (context, token) =>
-            {
-                if (context.IfIntent("CancelIntent"))                
-                    context.Reply("You selected CancelIntent");                
-
-                return new ReceiveResponse(true);
-            });
+                    return new ReceiveResponse(true);
+                });
 
             await connector.Test("cancel", (a) =>
             {
@@ -108,17 +103,16 @@ namespace Microsoft.Bot.Builder.Tests
                 .AddIntent("CancelIntent", new Regex("cancel", RegexOptions.IgnoreCase));
 
             Bot bot = new Bot(connector)
-                .Use(helpRecognizer);
+                .Use(helpRecognizer)
+                .OnReceive(async (context, token) =>
+                {
+                    if (context.IfIntent("CancelIntent"))
+                        context.Reply("You selected CancelIntent");
+                    else
+                        context.Reply("Bot received request of type message");
 
-            bot.OnReceive(async (context, token) =>
-            {
-                if (context.IfIntent("CancelIntent"))
-                    context.Reply("You selected CancelIntent");                
-                else                
-                    context.Reply("Bot received request of type message");                
-
-                return new ReceiveResponse(true);
-            });
+                    return new ReceiveResponse(true);
+                });
 
             await connector.Test("tacos", (a) =>
             {
@@ -138,20 +132,19 @@ namespace Microsoft.Bot.Builder.Tests
                 .AddIntent("TacoIntent", new Regex("taco", RegexOptions.IgnoreCase));
 
             Bot bot = new Bot(connector)
-                .Use(helpRecognizer);
+                .Use(helpRecognizer)
+                .OnReceive(async (context, token) =>
+                {
+                    if (context.IfIntent("HelpIntent"))
+                        context.Reply("You selected HelpIntent");
+                    else if (context.IfIntent("CancelIntent"))
+                        context.Reply("You selected CancelIntent");
+                    else if (context.IfIntent("TacoIntent"))
+                        context.Reply("You selected TacoIntent");
 
-            bot.OnReceive(async (context, token) =>
-            {
-                if (context.IfIntent("HelpIntent"))                
-                    context.Reply("You selected HelpIntent");                
-                else if (context.IfIntent("CancelIntent"))
-                    context.Reply("You selected CancelIntent");                
-                else if (context.IfIntent("TacoIntent"))
-                    context.Reply("You selected TacoIntent");                
+                    return new ReceiveResponse(true);
+                });
 
-                return new ReceiveResponse(true);
-            });
-            
             await connector.Test("help", (a) =>
             {
                 Assert.IsTrue(a.Count == 1, "Expecting exactly 1 activity.");

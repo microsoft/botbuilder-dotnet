@@ -2,6 +2,7 @@
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Samples.Middleware;
+using System.Text.RegularExpressions;
 using System.Threading;
 
 namespace Microsoft.Bot.Samples.Connector.EchoBot.Controllers
@@ -15,8 +16,22 @@ namespace Microsoft.Bot.Samples.Connector.EchoBot.Controllers
         {
             var connector = new BotFrameworkConnector("", "");
 
-            _bot = new Builder.Bot(connector)
-                .Use(new EchoMiddleWare());
+            _bot = new Builder.Bot(connector)                
+                .Use(new RegExpRecognizerMiddleare()
+                    .AddIntent("echoIntent", new Regex("echo", RegexOptions.IgnoreCase))
+                    .AddIntent("helpIntent", new Regex("help", RegexOptions.IgnoreCase)))
+                .Use(new EchoMiddleWare())
+                .OnReceive( async (context, token) =>
+                    {
+                        // Example of handling the Help intent w/o using Middleware
+                        if (context.IfIntent("helpIntent"))                            
+                        {                            
+                            context.Reply("Ask this bot to 'Echo something' and it will!");                                
+                            return new ReceiveResponse(true);
+                        }
+                        return new ReceiveResponse(false);
+                    }
+                );
         }
 
         [HttpPost]
