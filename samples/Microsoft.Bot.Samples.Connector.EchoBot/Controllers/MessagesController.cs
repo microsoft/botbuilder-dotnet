@@ -17,10 +17,10 @@ namespace Microsoft.Bot.Samples.Connector.EchoBot.Controllers
             var connector = new BotFrameworkConnector("", "");
 
             _bot = new Builder.Bot(connector)                
-                .Use(new RegExpRecognizerMiddleare()
+                .Use(new RegExpRecognizerMiddleware()
                     .AddIntent("echoIntent", new Regex("echo", RegexOptions.IgnoreCase))
                     .AddIntent("helpIntent", new Regex("help", RegexOptions.IgnoreCase)))
-                .Use(new EchoMiddleWare())
+                .Use(new EchoMiddleware())
                 .OnReceive( async (context, token) =>
                     {
                         // Example of handling the Help intent w/o using Middleware

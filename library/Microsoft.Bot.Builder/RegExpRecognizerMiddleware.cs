@@ -44,16 +44,16 @@ namespace Microsoft.Bot.Builder
 
     }
 
-    public class RegExpRecognizerMiddleare : IntentRecognizerMiddleware
+    public class RegExpRecognizerMiddleware : IntentRecognizerMiddleware
     {
         private RegExpRecognizerSettings _settings;
         private Dictionary<string, RegExLocaleMap> _intents = new Dictionary<string, RegExLocaleMap>();
 
-        public RegExpRecognizerMiddleare() : this(new RegExpRecognizerSettings() { MinScore = 0.0 })
+        public RegExpRecognizerMiddleware() : this(new RegExpRecognizerSettings() { MinScore = 0.0 })
         {
         }
 
-        public RegExpRecognizerMiddleare(RegExpRecognizerSettings settings)
+        public RegExpRecognizerMiddleware(RegExpRecognizerSettings settings)
         {
             _settings = settings ?? throw new ArgumentNullException("settings");
             if (_settings.MinScore < 0 || _settings.MinScore > 1.0)
@@ -99,14 +99,14 @@ namespace Microsoft.Bot.Builder
            });
         }
 
-        public RegExpRecognizerMiddleare AddIntent(string intentName, Regex regex)
+        public RegExpRecognizerMiddleware AddIntent(string intentName, Regex regex)
         {
             if (regex == null)
                 throw new ArgumentNullException("regex");
 
             return AddIntent(intentName, new List<Regex> { regex });
         }
-        public RegExpRecognizerMiddleare AddIntent(string intentName, List<Regex> regexList)
+        public RegExpRecognizerMiddleware AddIntent(string intentName, List<Regex> regexList)
         {
             if (regexList == null)
                 throw new ArgumentNullException("regexList");
@@ -114,7 +114,7 @@ namespace Microsoft.Bot.Builder
             return AddIntent(intentName, new RegExLocaleMap(regexList)); 
         }
 
-        public RegExpRecognizerMiddleare AddIntent(string intentName, RegExLocaleMap map)
+        public RegExpRecognizerMiddleware AddIntent(string intentName, RegExLocaleMap map)
         {
             if (string.IsNullOrWhiteSpace(intentName))
                 throw new ArgumentNullException("intentName");

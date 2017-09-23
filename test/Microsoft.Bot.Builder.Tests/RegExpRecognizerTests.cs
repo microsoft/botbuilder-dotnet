@@ -17,7 +17,7 @@ namespace Microsoft.Bot.Builder.Tests
         {
             TestConnector connector = new TestConnector();
 
-            RegExpRecognizerMiddleare helpRecognizer = new RegExpRecognizerMiddleare()
+            RegExpRecognizerMiddleware helpRecognizer = new RegExpRecognizerMiddleware()
                 .AddIntent("HelpIntent", new Regex("help", RegexOptions.IgnoreCase));
 
             Bot bot = new Bot(connector)
@@ -40,7 +40,7 @@ namespace Microsoft.Bot.Builder.Tests
         {
             TestConnector connector = new TestConnector();
 
-            RegExpRecognizerMiddleare recognizer = new RegExpRecognizerMiddleare()
+            RegExpRecognizerMiddleware recognizer = new RegExpRecognizerMiddleware()
                 .AddIntent("aaaaa", new Regex("a", RegexOptions.IgnoreCase))
                 .AddIntent("bbbbb", new Regex("b", RegexOptions.IgnoreCase));
 
@@ -74,7 +74,7 @@ namespace Microsoft.Bot.Builder.Tests
         {
             TestConnector connector = new TestConnector();
 
-            RegExpRecognizerMiddleare helpRecognizer = new RegExpRecognizerMiddleare()
+            RegExpRecognizerMiddleware helpRecognizer = new RegExpRecognizerMiddleware()
                 .AddIntent("CancelIntent", new Regex("cancel", RegexOptions.IgnoreCase));
 
             Bot bot = new Bot(connector)
@@ -99,7 +99,7 @@ namespace Microsoft.Bot.Builder.Tests
         {
             TestConnector connector = new TestConnector();
 
-            RegExpRecognizerMiddleare helpRecognizer = new RegExpRecognizerMiddleare()
+            RegExpRecognizerMiddleware helpRecognizer = new RegExpRecognizerMiddleware()
                 .AddIntent("CancelIntent", new Regex("cancel", RegexOptions.IgnoreCase));
 
             Bot bot = new Bot(connector)
@@ -126,7 +126,7 @@ namespace Microsoft.Bot.Builder.Tests
         {
             TestConnector connector = new TestConnector();
 
-            RegExpRecognizerMiddleare helpRecognizer = new RegExpRecognizerMiddleare()
+            RegExpRecognizerMiddleware helpRecognizer = new RegExpRecognizerMiddleware()
                 .AddIntent("HelpIntent", new Regex("help", RegexOptions.IgnoreCase))
                 .AddIntent("CancelIntent", new Regex("cancel", RegexOptions.IgnoreCase))
                 .AddIntent("TacoIntent", new Regex("taco", RegexOptions.IgnoreCase));

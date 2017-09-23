@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Samples.Middleware
 {
-    public class EchoMiddleWare : IReceiveActivity
+    public class EchoMiddleware : IReceiveActivity
     {
         public async Task<ReceiveResponse> ReceiveActivity(BotContext context, CancellationToken token)
         {
