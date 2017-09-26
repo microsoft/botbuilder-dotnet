@@ -63,11 +63,13 @@
     <Compile Include="BotStateManagerTests.cs" />
     <Compile Include="IntentRecognizerTests.cs" />
     <Compile Include="RegExpRecognizerTests.cs" />
+    <Compile Include="RouterTests.cs" />
     <Compile Include="StorageTests.cs" />
     <Compile Include="FlexObjectTests.cs" />
     <Compile Include="MiddlewareTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestConnector.cs" />
+    <Compile Include="TestUtilities.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

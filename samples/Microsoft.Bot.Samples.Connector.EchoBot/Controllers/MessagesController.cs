@@ -38,8 +38,7 @@ namespace Microsoft.Bot.Samples.Connector.EchoBot.Controllers
         public async void Post([FromBody]Activity activity)
         {
             BotFrameworkConnector connector = (BotFrameworkConnector)_bot.Connector; 
-            await connector.Receive(HttpContext.Request.Headers, activity, CancellationToken.None);
-            return;
+            await connector.Receive(HttpContext.Request.Headers, activity, CancellationToken.None);            
         }      
     }
 }
