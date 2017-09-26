@@ -2,6 +2,7 @@
 using Microsoft.Bot.Samples.Middleware;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
+using Microsoft.Bot.Builder.Prague;
 
 namespace Microsoft.Bot.Samples.ConsoleConnector
 {
@@ -15,11 +16,13 @@ namespace Microsoft.Bot.Samples.ConsoleConnector
         static async Task MainAsync(string[] args)
         {
             Builder.ConsoleConnector cc = new Builder.ConsoleConnector();
-            
+          
             Builder.Bot bot = new Builder.Bot(cc)
                 .Use(CreateRegEx())
                 .Use(new EchoMiddleware())
                 .Use(new ReverseMiddleWare())
+                .Use(new ActivityRoutingMiddleware(Routing.BuildHelpRouting()))
+                .Use(new ActivityRoutingMiddleware(Routing.BuildLoggingRouting()))                
                 .Use(new ConsoleLogger());
 
             await cc.Listen();
@@ -33,6 +36,12 @@ namespace Microsoft.Bot.Samples.ConsoleConnector
 
             regExpMiddleware.AddIntent(
                 "reverseIntent", new Regex("reverse", RegexOptions.IgnoreCase));
+
+            regExpMiddleware.AddIntent(
+                "help", new Regex("help", RegexOptions.IgnoreCase));
+
+            regExpMiddleware.AddIntent(
+                "logging", new Regex("logging", RegexOptions.IgnoreCase));
 
             return regExpMiddleware;
         }

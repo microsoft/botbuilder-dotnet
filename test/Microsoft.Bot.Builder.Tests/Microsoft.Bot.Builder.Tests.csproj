@@ -63,6 +63,7 @@
     <Compile Include="BotStateManagerTests.cs" />
     <Compile Include="IntentRecognizerTests.cs" />
     <Compile Include="RegExpRecognizerTests.cs" />
+    <Compile Include="RouterMiddlewareTests.cs" />
     <Compile Include="RouterTests.cs" />
     <Compile Include="StorageTests.cs" />
     <Compile Include="FlexObjectTests.cs" />

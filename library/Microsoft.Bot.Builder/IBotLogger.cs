@@ -29,13 +29,21 @@ namespace Microsoft.Bot.Builder
 
     public class ConsoleLogger : IBotLogger
     {
+        public bool LoggingEnabled { get; set; } = false;
+
         public void Information(string message)
         {
+            if (!LoggingEnabled)
+                return;
+
             Console.WriteLine("Trace Info:" + message);
         }
 
         public void Error(string message)
         {
+            if (!LoggingEnabled)
+                return;
+
             ConsoleColor originalColor = Console.ForegroundColor;
 
             Console.ForegroundColor = ConsoleColor.Red;

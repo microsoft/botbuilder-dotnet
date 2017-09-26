@@ -19,6 +19,7 @@ namespace Microsoft.Bot.Builder
 
         bool IfIntent(string intentName);
         bool IfIntent(Regex expression);
+        BotContext Reply(string text);
     }   
 
     public static partial class BotContextExtension
