@@ -25,6 +25,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Builder.Azure
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Ai", "library\Microsoft.Bot.Builder.Ai\Microsoft.Bot.Builder.Ai.csproj", "{F31CF172-6FEE-4188-9828-E5FDA531C871}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Micosoft.Bot.Samples.InjectionBasedBotExample", "InjectionBasedBotExample\Micosoft.Bot.Samples.InjectionBasedBotExample.csproj", "{21F823FA-733E-48FE-8CDA-6AADB5DDEE74}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -63,6 +65,10 @@ Global
 		{F31CF172-6FEE-4188-9828-E5FDA531C871}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F31CF172-6FEE-4188-9828-E5FDA531C871}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F31CF172-6FEE-4188-9828-E5FDA531C871}.Release|Any CPU.Build.0 = Release|Any CPU
+		{21F823FA-733E-48FE-8CDA-6AADB5DDEE74}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{21F823FA-733E-48FE-8CDA-6AADB5DDEE74}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{21F823FA-733E-48FE-8CDA-6AADB5DDEE74}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{21F823FA-733E-48FE-8CDA-6AADB5DDEE74}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -76,6 +82,7 @@ Global
 		{B2C5EED9-21B2-4763-AB92-C1995B76DA3A} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
 		{1E60CAC8-31F3-42A4-B478-C21C39A57161} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 		{F31CF172-6FEE-4188-9828-E5FDA531C871} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
+		{21F823FA-733E-48FE-8CDA-6AADB5DDEE74} = {3ADFB27A-95FA-4330-B211-1D66A29A17AB}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7173C9F3-A7F9-496E-9078-9156E35D6E16}
