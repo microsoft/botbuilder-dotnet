@@ -41,11 +41,14 @@ namespace Microsoft.Bot.Builder.Tests
             Regex r = new Regex(@"how many days until (.*)|how long until (.*)", RegexOptions.IgnoreCase);            
             string input = "How long until Tuesday";
 
-            Intent i = RegExpRecognizerMiddleware.Recognize(input, r, new List<string>(), 1.0);
+            Intent i = RegExpRecognizerMiddleware.Recognize(input, r, 1.0);            
+
             Assert.IsNotNull(i, "Expected an Intent");
             Assert.IsTrue(i.Entities.Count == 1, "Should match 1 groups");
             Assert.IsTrue(i.Entities[0].ValueAs<string>() == "Tuesday");
             Assert.IsTrue(i.Entities[0].Type == RegExpRecognizerMiddleware.DefaultEntityType);
+
+
         }
 
       

@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Samples.Middleware
 
                 context.Responses.Add(
                         context.Request.CreateReply(
-                            $"[{turnNumber}] echo: {context.Request.Text.Substring("echo ".Length)}"));                
+                            $"[{turnNumber}] echo: {context.TopIntent.Entities[0].ValueAs<string>()}"));                
                 
                 return new ReceiveResponse(true);
             }
