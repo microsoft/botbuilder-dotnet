@@ -46,9 +46,12 @@ namespace InjectionBasedBotExample
         public void CreateBot(IServiceCollection services)
         {
             services.UseBotConnector();
-            services.AddSingleton<IStorage>(new MemoryStorage());            
+
+            /*** Create just the Memory state store as a sigleton,
+             *      and keep the Bot created on each request **/
+            services.AddSingleton<IStorage>(new MemoryStorage());
             services.AddScoped<Bot>(serviceProvider =>
-              {                  
+              {
                   Bot b = new Bot(new BotFrameworkConnector("", ""))
                     .Use((IMiddleware)serviceProvider.GetService<IStorage>())
                     .Use(new BotStateManager())
@@ -56,6 +59,17 @@ namespace InjectionBasedBotExample
 
                   return b;
               });
+
+            /*** Create the entire Bot as a Singleton **/
+            //services.AddSingleton<Bot>(serviceProvider =>
+            //{
+            //    Bot b = new Bot(new BotFrameworkConnector("", ""))
+            //      .Use(new MemoryStorage())
+            //      .Use(new BotStateManager())
+            //      .Use(new EchoMiddleware());
+
+            //    return b;
+            //});
         }
     }
 }

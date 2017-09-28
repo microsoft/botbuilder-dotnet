@@ -26,7 +26,7 @@ namespace Microsoft.Bot.Builder
         {
             _map[Default_Key] = items;
         }
-        
+
         public List<Regex> GetLocale(string locale)
         {
             if (_map.ContainsKey(locale))
@@ -48,6 +48,7 @@ namespace Microsoft.Bot.Builder
     {
         private RegExpRecognizerSettings _settings;
         private Dictionary<string, RegExLocaleMap> _intents = new Dictionary<string, RegExLocaleMap>();
+        public const string DefaultEntityType = "string";
 
         public RegExpRecognizerMiddleware() : this(new RegExpRecognizerSettings() { MinScore = 0.0 })
         {
@@ -111,7 +112,7 @@ namespace Microsoft.Bot.Builder
             if (regexList == null)
                 throw new ArgumentNullException("regexList");
 
-            return AddIntent(intentName, new RegExLocaleMap(regexList)); 
+            return AddIntent(intentName, new RegExLocaleMap(regexList));
         }
 
         public RegExpRecognizerMiddleware AddIntent(string intentName, RegExLocaleMap map)
@@ -125,7 +126,7 @@ namespace Microsoft.Bot.Builder
             _intents[intentName] = map;
 
             return this;
-        }        
+        }
         private List<Regex> GetExpressions(IBotContext context, RegExLocaleMap map)
         {
             string locale = string.IsNullOrWhiteSpace(context.Request.Locale) ? "*" : context.Request.Locale;
@@ -137,11 +138,15 @@ namespace Microsoft.Bot.Builder
             return string.IsNullOrWhiteSpace(s) ? string.Empty : s.Trim();
         }
 
+        public static Intent Recognize(string text, Regex expression, double minScore)
+        {
+            return Recognize(text, expression, new List<string>(), minScore);
+        }
         public static Intent Recognize(string text, Regex expression, List<string> entityTypes, double minScore)
         {
             // Note: Not throwing here, as users enter whitespace all the time. 
             if (string.IsNullOrWhiteSpace(text))
-                return null;                
+                return null;
 
             if (expression == null)
                 throw new ArgumentNullException("expression");
@@ -152,19 +157,43 @@ namespace Microsoft.Bot.Builder
             if (minScore < 0 || minScore > 1.0)
                 throw new ArgumentOutOfRangeException($"RegExpRecognizer: a minScore of '{minScore}' is out of range for expression '{expression.ToString()}'");
 
-            var matched = expression.Match(text);
-            if (matched.Success)
+            var match = expression.Match(text);
+            //var matches = expression.Matches(text);
+            if (match.Success)
             {
-                double coverage = (double) matched.Length / (double) text.Length;
+                double coverage = (double)match.Length / (double)text.Length;
                 double score = minScore + ((1.0 - minScore) * coverage);
 
-                //ToDo: Entity Matching
-
-                return new Intent()
+                Intent intent = new Intent()
                 {
                     Name = expression.ToString(),
                     Score = score
                 };
+
+                for (int i = 0; i < match.Groups.Count; i++)
+                {
+                    if (i == 0)
+                        continue;   // First one is always the entire capture, so just skip
+
+                    string groupName = expression.GroupNameFromNumber(i);
+                    if (string.IsNullOrEmpty(groupName))
+                    {
+                        groupName = (i - 1) < entityTypes.Count ? entityTypes[i - 1] : DefaultEntityType;
+                    }
+                    Group g = match.Groups[i];
+                    if (g.Success)
+                    {
+                        Entity newEntity = new Entity()
+                        {
+                            Type = groupName,
+                            Score = 1.0,
+                            ["Value"] = match.Groups[i].Value
+                        };
+                        intent.Entities.Add(newEntity);
+                    }
+                }
+
+                return intent;
             }
 
             return null;

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Bot.Connector;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -7,13 +8,19 @@ namespace Microsoft.Bot.Builder
 {
     public class Entity : FlexObject
     {
-        public string Type { get; set; }
+        public string Type { get; set; }        
+        public double Score { get; set; }
+
+        public T ValueAs<T>()
+        {
+            string json = JsonConvert.SerializeObject(this["Value"]);
+            return JsonConvert.DeserializeObject<T>(json);
+        }
     }
 
     public class EntityObject<T> : Entity
-    {
-        public T Value { get; set; }
-        public double Score { get; set; }
+    {        
+     
     }
 
     public class RecognizerNumberOptions

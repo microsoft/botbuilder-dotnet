@@ -11,7 +11,11 @@ namespace Microsoft.Bot.Builder
     {
         public string Name { get; set; }
         public double Score { get; set; }
+
+        public IList<Entity> Entities { get; } = new List<Entity>();                       
     }
+
+    
 
     public class IntentRecognizerMiddleware : IMiddleware, IReceiveActivity
     {
