@@ -35,7 +35,7 @@ namespace Microsoft.Bot.Samples.ConsoleConnector
         {
             RegExpRecognizerMiddleware regExpMiddleware = new RegExpRecognizerMiddleware();
             regExpMiddleware.AddIntent(
-                "echoIntent", new Regex("echo (.*)", RegexOptions.IgnoreCase));
+                "echoIntent", new Regex("echo (?<WhatToEcho>.*)", RegexOptions.IgnoreCase));
 
             regExpMiddleware.AddIntent(
                 "reverseIntent", new Regex("reverse", RegexOptions.IgnoreCase));

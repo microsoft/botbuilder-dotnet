@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Bot.Builder;
+using Microsoft.Bot.Builder.Storage;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Samples.Middleware;
 using System.Text.RegularExpressions;
@@ -17,9 +18,11 @@ namespace Microsoft.Bot.Samples.Connector.EchoBot.Controllers
             var connector = new BotFrameworkConnector("", "");
 
             _bot = new Builder.Bot(connector)                
+                .Use(new FileStorage(@"C:\d\DeleteMe\"))
+                .Use(new BotStateManager())
                 .Use(new RegExpRecognizerMiddleware()
-                    .AddIntent("echoIntent", new Regex("echo", RegexOptions.IgnoreCase))
-                    .AddIntent("helpIntent", new Regex("help", RegexOptions.IgnoreCase)))
+                    .AddIntent("echoIntent", new Regex("echo (.*)", RegexOptions.IgnoreCase))
+                    .AddIntent("helpIntent", new Regex("help (.*)", RegexOptions.IgnoreCase)))
                 .Use(new EchoMiddleware())
                 .OnReceive( async (context, token) =>
                     {

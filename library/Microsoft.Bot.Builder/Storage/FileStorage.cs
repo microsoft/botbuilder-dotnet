@@ -16,6 +16,7 @@ namespace Microsoft.Bot.Builder.Storage
         protected string folder;
         protected int eTag = 0;
 
+
         public FileStorage(string folder)
         {
             this.folder = folder;
@@ -41,7 +42,7 @@ namespace Microsoft.Bot.Builder.Storage
             var storeItems = new StoreItems();
             foreach (var key in keys)
             {
-                var item = await ReadStoreItem(key);
+                var item = await ReadStoreItem(key).ConfigureAwait(false);
                 if (item != null)
                     storeItems[key] = item;
             }
@@ -50,47 +51,102 @@ namespace Microsoft.Bot.Builder.Storage
 
         private async Task<StoreItem> ReadStoreItem(string key)
         {
-            try
+            // The funky threading in here is due to concurrency and async methods. 
+            // When this method is called, it may happen (in parallel) from any number of
+            // thread. 
+            //
+            // If a write operation is in progress, the "OpenRead" will fail with an 
+            // IOException. If this happens,the best thing to do is simply wait a moment
+            // and retry. From the Docs:
+            //      This method is equivalent to the FileStream(String, FileMode, 
+            //      FileAccess, FileShare) constructor overload with a FileMode value 
+            //      of Open, a FileAccess value of Read and a FileShare value of Read.
+
+            key = SanitizeKey(key);
+            string path = Path.Combine(this.folder, key);
+            string json;
+            DateTime start = DateTime.UtcNow;
+            while (true)
             {
-                key = SanitizeKey(key);
-                string path = Path.Combine(this.folder, key);
-                using (TextReader file = File.OpenText(path))
+                try
                 {
-                    string json = await file.ReadToEndAsync().ConfigureAwait(false);
+                    using (TextReader file = new StreamReader(File.OpenRead(path)))
+                    {
+                        json = await file.ReadToEndAsync().ConfigureAwait(false);
+                    }
+
                     return JsonConvert.DeserializeObject<StoreItem>(json);
                 }
-            }
-            catch (FileNotFoundException)
-            {
-                return null;
+                catch (FileNotFoundException)
+                {
+                    return null;
+                }
+                catch (IOException)
+                {
+                    if ((DateTime.UtcNow - start).TotalSeconds < 5)
+                        await Task.Delay(0).ConfigureAwait(false);
+                    else
+                        throw;
+                }
             }
         }
 
         public async Task Write(StoreItems changes)
         {
+            // Similar to the Read method, the funky threading in here is due to 
+            // concurrency and async methods. 
+            // 
+            // When this method is called, it may happen (in parallel) from any number of
+            // thread. 
+            //
+            // If an operation is in progress, the Open will fail with an  
+            // IOException. If this happens,the best thing to do is simply wait a moment
+            // and retry. The Retry MUST go through the eTag processing again. 
+            //
+            // Alternate approach in here would be to use a SemaphoreSlim and use the async/await
+            // constructs.
+
             foreach (var change in changes)
             {
-                StoreItem newValue = change.Value as StoreItem;
-                StoreItem oldValue = await this.ReadStoreItem(change.Key);
-                if (oldValue == null ||
-                    newValue.eTag == "*" ||
-                    oldValue.eTag == newValue.eTag)
+                DateTime start = DateTime.UtcNow;
+                while (true)
                 {
-                    string key = SanitizeKey(change.Key);
-                    string path = Path.Combine(this.folder, key);
-                    var oldTag = newValue.eTag;
-                    newValue.eTag = (this.eTag++).ToString();
-                    var json = JsonConvert.SerializeObject(newValue);
-                    newValue.eTag = oldTag;
-                    File.WriteAllText(path, json);
-                }
-                else
-                {
-                    throw new Exception($"etag conflict key={change}");
+                    try
+                    {
+                        StoreItem newValue = change.Value as StoreItem;
+                        StoreItem oldValue = await this.ReadStoreItem(change.Key).ConfigureAwait(false);
+                        if (oldValue == null ||
+                            newValue.eTag == "*" ||
+                            oldValue.eTag == newValue.eTag)
+                        {
+                            string key = SanitizeKey(change.Key);
+                            string path = Path.Combine(this.folder, key);
+                            var oldTag = newValue.eTag;
+                            newValue.eTag = (this.eTag++).ToString();
+                            var json = JsonConvert.SerializeObject(newValue);
+                            newValue.eTag = oldTag;                            
+                            using (TextWriter file = new StreamWriter(path))
+                            {
+                                await file.WriteAsync(json).ConfigureAwait(false);
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            throw new Exception($"etag conflict key={change}");
+                        }
+                    }
+                    catch (IOException)
+                    {
+                        if ((DateTime.UtcNow - start).TotalSeconds < 5)
+                            await Task.Delay(0).ConfigureAwait(false);
+                        else
+                            throw;
+                    }
                 }
             }
-        }
 
+        }
 
         private static Lazy<Dictionary<char, string>> badChars = new Lazy<Dictionary<char, string>>(() =>
         {

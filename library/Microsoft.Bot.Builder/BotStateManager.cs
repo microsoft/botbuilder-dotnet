@@ -88,7 +88,7 @@ namespace Microsoft.Bot.Builder
             context.State.Conversation = items.Get<ConversationState>(conversationKey) ?? new ConversationState();
         }
 
-        protected Task Write (BotContext context)
+        protected async Task Write (BotContext context)
         {
             AssertStorage(context);
 
@@ -112,7 +112,7 @@ namespace Microsoft.Bot.Builder
                 }
             }
 
-            return context.Storage.Write(changes); 
+            await context.Storage.Write(changes).ConfigureAwait(false); 
         }
 
         private string UserKey(BotContext context)
