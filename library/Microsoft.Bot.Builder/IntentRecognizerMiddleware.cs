@@ -162,7 +162,11 @@ namespace Microsoft.Bot.Builder
                 }
             }
             return topIntent;
-        }       
+        }
+        public static string CleanString(string s)
+        {
+            return string.IsNullOrWhiteSpace(s) ? string.Empty : s.Trim();
+        }
     }
 
 }

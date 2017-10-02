@@ -33,24 +33,7 @@ namespace Microsoft.Bot.Builder.Tests
                 Assert.IsTrue(a[0].Type == "message");
                 Assert.IsTrue(a[0].Text == "You selected HelpIntent");
             });
-        }
-       
-        [TestMethod]
-        public async Task ExtractEntityGroupsDefaultTypeName()
-        {
-            Regex r = new Regex(@"how many days until (.*)|how long until (.*)", RegexOptions.IgnoreCase);            
-            string input = "How long until Tuesday";
-
-            Intent i = RegExpRecognizerMiddleware.Recognize(input, r, 1.0);            
-
-            Assert.IsNotNull(i, "Expected an Intent");
-            Assert.IsTrue(i.Entities.Count == 1, "Should match 1 groups");
-            Assert.IsTrue(i.Entities[0].ValueAs<string>() == "Tuesday");
-            Assert.IsTrue(i.Entities[0].Type == RegExpRecognizerMiddleware.DefaultEntityType);
-
-
-        }
-
+        }       
       
         [TestMethod]
         public async Task ExtractEntityGroupsNamedCaptureViaList()
@@ -62,10 +45,10 @@ namespace Microsoft.Bot.Builder.Tests
             Assert.IsNotNull(i, "Expected an Intent");
             Assert.IsTrue(i.Entities.Count == 2, "Should match 2 groups");
             Assert.IsTrue(i.Entities[0].ValueAs<string>() == "11111");
-            Assert.IsTrue(i.Entities[0].Type == "One");
+            Assert.IsTrue(i.Entities[0].GroupName == "One");
 
             Assert.IsTrue(i.Entities[1].ValueAs<string>() == "22222");
-            Assert.IsTrue(i.Entities[1].Type == "Two");
+            Assert.IsTrue(i.Entities[1].GroupName == "Two");
         }
 
         [TestMethod]
@@ -78,10 +61,10 @@ namespace Microsoft.Bot.Builder.Tests
             Assert.IsNotNull(i, "Expected an Intent");
             Assert.IsTrue(i.Entities.Count == 2, "Should match 2 groups");
             Assert.IsTrue(i.Entities[0].ValueAs<string>() == "11111");
-            Assert.IsTrue(i.Entities[0].Type == "One");
+            Assert.IsTrue(i.Entities[0].GroupName == "One");
 
             Assert.IsTrue(i.Entities[1].ValueAs<string>() == "22222");
-            Assert.IsTrue(i.Entities[1].Type == "Two");                     
+            Assert.IsTrue(i.Entities[1].GroupName == "Two");                     
         }
 
 

@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Builder
 {
     public class Entity : FlexObject
     {
-        public string Type { get; set; }        
+        public string GroupName { get; set; }        
         public double Score { get; set; }
 
         public T ValueAs<T>()

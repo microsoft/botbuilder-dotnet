@@ -133,10 +133,6 @@ namespace Microsoft.Bot.Builder
             List<Regex> entry = map.GetLocale(locale);
             return entry;
         }
-        private static string CleanString(string s)
-        {
-            return string.IsNullOrWhiteSpace(s) ? string.Empty : s.Trim();
-        }
 
         public static Intent Recognize(string text, Regex expression, double minScore)
         {
@@ -175,17 +171,27 @@ namespace Microsoft.Bot.Builder
                     if (i == 0)
                         continue;   // First one is always the entire capture, so just skip
 
-                    string groupName = expression.GroupNameFromNumber(i);
-                    if (string.IsNullOrEmpty(groupName))
+                    string groupName = DefaultEntityType;
+                    if (entityTypes.Count > 0)
                     {
+                        // If the dev passed in group names, use them. 
                         groupName = (i - 1) < entityTypes.Count ? entityTypes[i - 1] : DefaultEntityType;
                     }
+                    else
+                    {
+                        groupName = expression.GroupNameFromNumber(i);
+                        if (string.IsNullOrEmpty(groupName))
+                        {
+                            groupName = DefaultEntityType;
+                        }
+                    }
+
                     Group g = match.Groups[i];
                     if (g.Success)
                     {
                         Entity newEntity = new Entity()
                         {
-                            Type = groupName,
+                            GroupName = groupName,
                             Score = 1.0,
                             ["Value"] = match.Groups[i].Value
                         };
