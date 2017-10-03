@@ -16,6 +16,7 @@ namespace Microsoft.Bot.Builder.Ai.Tests
 
 
         [TestMethod]
+        [TestCategory("AI")]
         public async Task TopIntentAndEntities()
         {
             LuisRecognizerMiddleware recognizer = new LuisRecognizerMiddleware(luisAppId, subscriptionKey);
@@ -31,6 +32,7 @@ namespace Microsoft.Bot.Builder.Ai.Tests
         }
 
         [TestMethod]
+        [TestCategory("AI")]
         public async Task TopIntentPopulated()
         {
             TestConnector connector = new TestConnector();
@@ -42,8 +44,8 @@ namespace Microsoft.Bot.Builder.Ai.Tests
                     context.Reply(context.TopIntent.Name);
                     return new ReceiveResponse(true);
                 });
-            await connector.Test("I want ham and cheese sandwich!", 
-                (a) => Assert.IsTrue(a[0].Text == "sandwichorder", "should have sandwichorder as top intent!"));            
+            await connector.Test("I want ham and cheese sandwich!",
+                (a) => Assert.IsTrue(a[0].Text == "sandwichorder", "should have sandwichorder as top intent!"));
         }
     }
 }
