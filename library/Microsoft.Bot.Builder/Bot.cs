@@ -1,6 +1,8 @@
 ﻿using Microsoft.Bot.Connector;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -11,13 +13,47 @@ namespace Microsoft.Bot.Builder
         private IConnector _connector;
         private IBotLogger _logger = new NullLogger();
 
-        public delegate Task<ReceiveResponse> ReceiveDelegate(BotContext context, CancellationToken token);
-        private ReceiveDelegate[] _onReceive = null;
+        public delegate Task<ReceiveResponse> ReceiveDelegate_NoDefault(BotContext context, CancellationToken token);
+        public delegate Task ReceiveDelegate_DefaultHandled(BotContext context, CancellationToken token);
 
-        public Bot OnReceive(params ReceiveDelegate[] receiveHandler)
+        private ReceiveDelegate_NoDefault[] _onReceive = null;
+
+        public Bot OnReceive(params ReceiveDelegate_NoDefault[] receiveHandler)
         {
+            if (receiveHandler == null)
+                throw new ArgumentNullException("receiveHandler");
+
+            if (receiveHandler.Count() == 0)
+                throw new ArgumentOutOfRangeException("No Receive Handlers specified");
+
             _onReceive = receiveHandler;
             return this;
+        }
+
+        public Bot OnReceive(params ReceiveDelegate_DefaultHandled[] receiveHandler)
+        {
+            if (receiveHandler == null)
+                throw new ArgumentNullException("receiveHandler");
+
+            if (receiveHandler.Count() == 0)
+                throw new ArgumentOutOfRangeException("No Receive Handlers specified");
+            
+            IList<ReceiveDelegate_NoDefault> responses = new List<ReceiveDelegate_NoDefault>();            
+
+            // If the user doesn't want to worry about returning Handled / Not Handled, 
+            // these will wrap their delegates and always return "Handled". 
+            foreach(ReceiveDelegate_DefaultHandled nullReturn in receiveHandler)
+            {
+                ReceiveDelegate_NoDefault d = async (context, token) =>
+                {
+                    await nullReturn(context, token);
+                    return new ReceiveResponse(true);
+                };
+
+                responses.Add(d);
+            }
+
+            return OnReceive(responses.ToArray());
         }
 
 

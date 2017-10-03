@@ -30,8 +30,7 @@ namespace Microsoft.Bot.Builder.Tests
                                 string state = context.State["value"];
                                 context.Reply(state);
                                 break;
-                        }
-                        return new ReceiveResponse(true);
+                        }                        
                     }
                 );
             await connector.Test("set value", (a) => Assert.IsTrue(a[0].Text == "value saved", "set value failed"));
@@ -59,8 +58,7 @@ namespace Microsoft.Bot.Builder.Tests
                             case "get value":
                                 context.Reply(context.State.User["value"]);
                                 break;
-                        }
-                        return new ReceiveResponse(true);
+                        }                        
                     }
                 );
 
@@ -89,8 +87,7 @@ namespace Microsoft.Bot.Builder.Tests
                             case "get value":
                                 context.Reply(context.State.Conversation["value"]);
                                 break;
-                        }
-                        return new ReceiveResponse(true);
+                        }                        
                     }
                 );
 

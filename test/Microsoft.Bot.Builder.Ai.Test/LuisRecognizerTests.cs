@@ -14,12 +14,12 @@ namespace Microsoft.Bot.Builder.Ai.Tests
         public const string luisAppId = "165ecd1b-5643-4914-aea8-cddcf2b5d9e3";
         public const string subscriptionKey = "a5f892758b174b32b6d87b7b58f09477";
 
-
         [TestMethod]
         [TestCategory("AI")]
         public async Task TopIntentAndEntities()
         {
-            LuisRecognizerMiddleware recognizer = new LuisRecognizerMiddleware(luisAppId, subscriptionKey);
+            LuisRecognizerMiddleware recognizer = 
+                new LuisRecognizerMiddleware(luisAppId, subscriptionKey);
             var context = TestUtilities.CreateEmptyContext();
             context.Request.Text = "I want a ham and cheese sandwich";
 
@@ -41,8 +41,7 @@ namespace Microsoft.Bot.Builder.Ai.Tests
                 .Use(new BotStateManager())
                 .Use(new LuisRecognizerMiddleware(luisAppId, subscriptionKey))
                 .OnReceive(async (context, token) => {
-                    context.Reply(context.TopIntent.Name);
-                    return new ReceiveResponse(true);
+                    context.Reply(context.TopIntent.Name);                    
                 });
             await connector.Test("I want ham and cheese sandwich!",
                 (a) => Assert.IsTrue(a[0].Text == "sandwichorder", "should have sandwichorder as top intent!"));

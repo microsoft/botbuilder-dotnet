@@ -25,8 +25,6 @@ namespace Microsoft.Bot.Builder.Tests
                 .OnReceive(async (context, token) => {
                     if (context.IfIntent("HelpIntent"))
                         context.Reply("You selected HelpIntent");
-
-                    return new ReceiveResponse(true);
                 });
 
             await connector.Test("help", (a) => {
@@ -85,8 +83,6 @@ namespace Microsoft.Bot.Builder.Tests
                         context.Reply("aaaa Intent");
                     if (context.IfIntent(new Regex("b")))
                         context.Reply("bbbb Intent");
-
-                    return new ReceiveResponse(true);
                 });
 
             await connector.Test("aaaaaaaaa", (a) =>
@@ -116,8 +112,6 @@ namespace Microsoft.Bot.Builder.Tests
                 {
                     if (context.IfIntent("CancelIntent"))
                         context.Reply("You selected CancelIntent");
-
-                    return new ReceiveResponse(true);
                 });
 
             await connector.Test("cancel", (a) =>
@@ -143,8 +137,6 @@ namespace Microsoft.Bot.Builder.Tests
                         context.Reply("You selected CancelIntent");
                     else
                         context.Reply("Bot received request of type message");
-
-                    return new ReceiveResponse(true);
                 });
 
             await connector.Test("tacos", (a) =>
@@ -174,8 +166,6 @@ namespace Microsoft.Bot.Builder.Tests
                         context.Reply("You selected CancelIntent");
                     else if (context.IfIntent("TacoIntent"))
                         context.Reply("You selected TacoIntent");
-
-                    return new ReceiveResponse(true);
                 });
 
             await connector.Test("help", (a) =>
