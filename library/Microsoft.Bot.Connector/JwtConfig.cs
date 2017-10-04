@@ -55,7 +55,12 @@
             new TokenValidationParameters()
             {
                 ValidateIssuer = true,
-                ValidIssuers = new[] { "https://sts.windows.net/72f988bf-86f1-41af-91ab-2d7cd011db47/", "https://sts.windows.net/d6d49420-f39b-4df7-a1dc-d59a935871db/" },
+                ValidIssuers = new[] { 
+                    "https://sts.windows.net/d6d49420-f39b-4df7-a1dc-d59a935871db/",                    // Auth v3.1, 1.0 token
+                    "https://login.microsoftonline.com/d6d49420-f39b-4df7-a1dc-d59a935871db/v2.0",      // Auth v3.1, 2.0 token
+                    "https://sts.windows.net/f8cdef31-a31e-4b4a-93e4-5f571e91255a/",                    // Auth v3.2, 1.0 token
+                    "https://login.microsoftonline.com/f8cdef31-a31e-4b4a-93e4-5f571e91255a/v2.0"       // Auth v3.2, 2.0 token
+                },
                 // Audience validation takes place in JwtTokenExtractor
                 ValidateAudience = false,
                 ValidateLifetime = true,
