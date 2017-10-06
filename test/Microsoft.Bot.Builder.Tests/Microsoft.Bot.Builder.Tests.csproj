@@ -64,6 +64,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BotStateManagerTests.cs" />
+    <Compile Include="DialogTests.cs" />
     <Compile Include="IntentRecognizerTests.cs" />
     <Compile Include="RegExpRecognizerTests.cs" />
     <Compile Include="RouterMiddlewareTests.cs" />

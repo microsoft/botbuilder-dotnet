@@ -115,6 +115,14 @@ namespace Microsoft.Bot.Builder.Prague
             _action = (context) => action(); 
         }
 
+        public SimpleRouter(IHandler handler)
+        {
+            if (handler == null)
+                throw new ArgumentNullException("handler");
+
+            _action = (context) => handler.Execute();
+        }
+
         public Route GetRoute(IBotContext context)
         {
             return new Route(()=> _action(context));
