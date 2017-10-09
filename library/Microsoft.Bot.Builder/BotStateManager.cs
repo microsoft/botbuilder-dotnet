@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Linq;
 
 namespace Microsoft.Bot.Builder
 {
@@ -41,6 +42,10 @@ namespace Microsoft.Bot.Builder
     public class BotStateManager : IMiddleware, IContextCreated, IPostActivity, IContextDone
     {
         private BotStateManagerSettings _settings;
+        private const string UserKeyRoot = @"user";
+        private const string ConversationKeyRoot = @"conversation";
+
+
         public BotStateManager() : this(new BotStateManagerSettings())
         {
         }
@@ -52,27 +57,27 @@ namespace Microsoft.Bot.Builder
 
         public async Task ContextCreated(BotContext context, CancellationToken token)
         {
-            await Read(context).ConfigureAwait(false);            
+            await Read(context, new List<string>()).ConfigureAwait(false);            
         }
 
         public async Task ContextDone(BotContext context, CancellationToken token)
         {
-            await Write(context).ConfigureAwait(false);            
+            await Write(context, new StoreItems()).ConfigureAwait(false);            
         }
 
         public async Task PostActivity(BotContext context, IList<Activity> activities, CancellationToken token)
         {
             if (_settings.WriteBeforePost)
             {
-                await Write(context).ConfigureAwait(false); 
+                await Write(context, new StoreItems()).ConfigureAwait(false); 
             }
         }
 
-        protected async Task Read(BotContext context)
+        protected virtual async Task<StoreItems> Read(BotContext context, IList<String> keys)
         {
             AssertStorage(context);
-            List<String> keys = new List<string>(); 
-
+            AssertValidKeys(keys);
+            
             if (_settings.PersistUserState)
                 keys.Add(UserKey(context));
 
@@ -86,14 +91,16 @@ namespace Microsoft.Bot.Builder
 
             context.State.User = items.Get<UserState>(userKey) ?? new UserState();
             context.State.Conversation = items.Get<ConversationState>(conversationKey) ?? new ConversationState();
+
+            return items;
         }
 
-        protected async Task Write (BotContext context)
+        protected virtual async Task Write (BotContext context, StoreItems changes)
         {
             AssertStorage(context);
-
-            StoreItems changes = new StoreItems();            
-            
+            if (changes == null)
+                throw new ArgumentNullException("changes");            
+                        
             if (this._settings.PersistUserState)
             {
                 changes[this.UserKey(context)] = context.State.User ?? new UserState();
@@ -115,16 +122,30 @@ namespace Microsoft.Bot.Builder
             await context.Storage.Write(changes).ConfigureAwait(false); 
         }
 
+        private static void AssertValidKeys(IList<string> keys)
+        {
+            if (keys == null)
+                throw new ArgumentNullException("keys");
+
+            foreach (string key in keys)
+            {
+                if (key.StartsWith(UserKeyRoot, StringComparison.OrdinalIgnoreCase))
+                    throw new InvalidOperationException($"Keys starting with '{UserKeyRoot}' are reserved.");
+
+                if (key.StartsWith(ConversationKeyRoot, StringComparison.OrdinalIgnoreCase))
+                    throw new InvalidOperationException($"Keys starting with '{ConversationKeyRoot}' are reserved.");
+            }
+        }
         private string UserKey(BotContext context)
         {
             var conversation = context.ConversationReference;
-            return $"user/{conversation.ChannelId}/{conversation.User.Id}";            
+            return $"{UserKeyRoot}/{conversation.ChannelId}/{conversation.User.Id}";            
         }
 
         private string ConversationKey(BotContext context)
         {
             var conversation = context.ConversationReference;
-            return $"conversation/{conversation.ChannelId}/{conversation.Conversation.Id}";
+            return $"{ConversationKeyRoot}/{conversation.ChannelId}/{conversation.Conversation.Id}";
         }
 
         private void AssertStorage(BotContext context)
