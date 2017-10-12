@@ -17,21 +17,21 @@ namespace Microsoft.Bot.Builder.Tests
         {
             TestConnector connector = new TestConnector();
             Bot bot = new Bot(connector)
-                .OnReceive( async (context, token) =>
-                    {
-                        Assert.IsNotNull(context.State, "context.state should exist");
-                        switch (context.Request.Text)
-                        {
-                            case "set value":
-                                context.State["value"] = "test";
-                                context.Reply("value saved");
-                                break;
-                            case "get value":
-                                string state = context.State["value"];
-                                context.Reply(state);
-                                break;
-                        }                        
-                    }
+                .OnReceive(async (context, token) =>
+                   {
+                       Assert.IsNotNull(context.State, "context.state should exist");
+                       switch (context.Request.Text)
+                       {
+                           case "set value":
+                               context.State["value"] = "test";
+                               context.Reply("value saved");
+                               break;
+                           case "get value":
+                               string state = context.State["value"];
+                               context.Reply(state);
+                               break;
+                       }
+                   }
                 );
             await connector.Test("set value", (a) => Assert.IsTrue(a[0].Text == "value saved", "set value failed"));
             await connector.Test("get value", (a) => Assert.IsTrue(a[0].Text == null, "get value was incorrectly defined"));
@@ -58,7 +58,7 @@ namespace Microsoft.Bot.Builder.Tests
                             case "get value":
                                 context.Reply(context.State.User["value"]);
                                 break;
-                        }                        
+                        }
                     }
                 );
 
@@ -87,7 +87,7 @@ namespace Microsoft.Bot.Builder.Tests
                             case "get value":
                                 context.Reply(context.State.Conversation["value"]);
                                 break;
-                        }                        
+                        }
                     }
                 );
 
@@ -107,11 +107,10 @@ namespace Microsoft.Bot.Builder.Tests
                 .OnReceive(
                     async (context, token) =>
                     {
-                        Assert.IsNotNull(context.State.Conversation, "state.conversation should exist");
                         switch (context.Request.Text)
                         {
                             case "set value":
-                                context.State[CustomStateManager.KeyName].CustomString = testGuid; 
+                                context.State[CustomStateManager.KeyName].CustomString = testGuid;
                                 context.Reply("value saved");
                                 break;
                             case "get value":
@@ -130,21 +129,27 @@ namespace Microsoft.Bot.Builder.Tests
             public string CustomString { get; set; }
         }
 
-        public class CustomStateManager: BotStateManager
+        public class CustomStateManager : BotStateManager
         {
-            public const string KeyName = "CustomStateKey";            
+            public const string KeyName = "CustomStateKey";
 
-            protected override async Task<StoreItems> Read(BotContext context, IList<String> keys)
+            protected override async Task<StoreItems> Read(BotContext context, IList<String> keys = null)
             {
-                keys.Add(KeyName);
-                StoreItems items = await base.Read(context, keys);                
+                if (keys == null)
+                    keys = new List<String>();
 
-                context.State[KeyName] = items.Get<CustomState>(KeyName) ?? new CustomState() { } ;
+                keys.Add(KeyName);
+                StoreItems items = await base.Read(context, keys);
+
+                context.State[KeyName] = items.Get<CustomState>(KeyName) ?? new CustomState() { };
                 return items;
             }
 
-            protected override async Task Write(BotContext context, StoreItems changes)
+            protected override async Task Write(BotContext context, StoreItems changes = null)
             {
+                if (changes == null)
+                    changes = new StoreItems();
+
                 changes[KeyName] = context.State[KeyName];
                 await base.Write(context, changes);
             }

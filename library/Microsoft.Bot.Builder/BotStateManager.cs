@@ -57,25 +57,29 @@ namespace Microsoft.Bot.Builder
 
         public async Task ContextCreated(BotContext context, CancellationToken token)
         {
-            await Read(context, new List<string>()).ConfigureAwait(false);            
+            await Read(context).ConfigureAwait(false);            
         }
 
         public async Task ContextDone(BotContext context, CancellationToken token)
         {
-            await Write(context, new StoreItems()).ConfigureAwait(false);            
+            await Write(context).ConfigureAwait(false);            
         }
 
         public async Task PostActivity(BotContext context, IList<Activity> activities, CancellationToken token)
         {
             if (_settings.WriteBeforePost)
             {
-                await Write(context, new StoreItems()).ConfigureAwait(false); 
+                await Write(context).ConfigureAwait(false); 
             }
         }
 
-        protected virtual async Task<StoreItems> Read(BotContext context, IList<String> keys)
+        protected virtual async Task<StoreItems> Read(BotContext context, IList<String> keys = null)
         {
             AssertStorage(context);
+
+            if (keys == null)
+                keys = new List<String>(); 
+
             AssertValidKeys(keys);
             
             if (_settings.PersistUserState)
@@ -95,11 +99,11 @@ namespace Microsoft.Bot.Builder
             return items;
         }
 
-        protected virtual async Task Write (BotContext context, StoreItems changes)
+        protected virtual async Task Write (BotContext context, StoreItems changes = null)
         {
             AssertStorage(context);
             if (changes == null)
-                throw new ArgumentNullException("changes");            
+                changes = new StoreItems(); 
                         
             if (this._settings.PersistUserState)
             {

@@ -6,15 +6,13 @@ using System.Threading.Tasks;
 namespace Microsoft.Bot.Builder.Prague
 {
     public class Route
-    {
-        public delegate void RouteAction();
-
-        public Route(RouteAction action)
+    {        
+        public Route(Func<Task> action)
         {
             this.Action = action ?? throw new ArgumentNullException("action");
         }
 
-        public Route(RouteAction action, double score)
+        public Route(Func<Task> action, double score)
         {
             this.Action = action ?? throw new ArgumentNullException("action");
             if (score < 0 || score > 1.0)
@@ -26,7 +24,7 @@ namespace Microsoft.Bot.Builder.Prague
         public double Score { get; set; } = 1.0;
         public bool Thrown { get; set; } = false;
 
-        public RouteAction Action { get; internal set; }
+        public Func<Task> Action { get; internal set; }
     }
 
     public sealed class MinRoute : Route
@@ -36,14 +34,5 @@ namespace Microsoft.Bot.Builder.Prague
         {
             this.Score = 0;
         }
-    }
-
-
-    //public class Match
-    //{
-    //    public double Score { get; set; } = 1.0;
-
-    //}   
-
-   
+    }   
 }

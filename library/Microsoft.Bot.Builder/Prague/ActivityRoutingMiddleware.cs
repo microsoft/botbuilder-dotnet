@@ -25,11 +25,11 @@ namespace Microsoft.Bot.Builder.Prague
 
         public async Task<ReceiveResponse> ReceiveActivity(BotContext context, CancellationToken token)
         {
-            Route r = _pragueRouter.GetRoute(context);
+            Route r = await _pragueRouter.GetRoute(context).ConfigureAwait(false); 
             if (r == null)
                 return new ReceiveResponse(false);
 
-            r.Action();
+            await r.Action().ConfigureAwait(false);
 
             return new ReceiveResponse(true); 
         }

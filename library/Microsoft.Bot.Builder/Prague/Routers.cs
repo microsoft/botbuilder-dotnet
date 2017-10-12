@@ -1,70 +1,49 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Prague
 {
-    public interface IRouter
-    {
-        Route GetRoute(IBotContext context);
-    }
-
     public abstract class CompoundRouterBase : IRouter
     {
-        private List<IRouter> _routers = new List<IRouter>();
+        private List<IRouterOrHandler> _routerOrHandler = new List<IRouterOrHandler>();
 
-        public CompoundRouterBase Add(params IRouter[] routers)
+        public CompoundRouterBase Add(params IRouterOrHandler[] routerOrHandlers)
         {
-            if (routers == null)
+            if (routerOrHandlers == null)
             {
-                _routers.Add(new NullRouter());
+                _routerOrHandler.Add(new NullRouter());
             }
             else
             {
-                foreach (var r in routers)
+                foreach (IRouterOrHandler item in routerOrHandlers)
                 {
-                    _routers.Add(r ?? new NullRouter());
-                }
-            }
-
-            return this;
-        }
-
-        public CompoundRouterBase Add(params IHandler[] handlers)
-        {
-            if (handlers == null)
-            {
-                _routers.Add(new NullRouter());
-            }
-            else
-            {
-                foreach (var h in handlers)
-                {
-                    if (h == null)
-                        _routers.Add(new NullRouter());
+                    if (item == null)
+                        _routerOrHandler.Add(new NullRouter());
                     else
-                        _routers.Add(new SimpleRouter(h.Execute));
+                        _routerOrHandler.Add(item);
                 }
             }
 
             return this;
         }
 
-        public abstract Route GetRoute(IBotContext context);
+        public abstract Task<Route> GetRoute(IBotContext context);
 
         public void Clear()
         {
-            _routers.Clear();
+            _routerOrHandler.Clear();
         }
 
-        public IList<IRouter> SubRouters { get => _routers; }
+        public IList<IRouterOrHandler> SubRouters { get => _routerOrHandler; }
     }
 
     public sealed class NullRouter : IRouter
     {
-        public Route GetRoute(IBotContext context)
+        public Task<Route> GetRoute(IBotContext context)
         {
-            return null;
+            return Task.FromResult<Route>(null);
         }
     }
 
@@ -75,44 +54,57 @@ namespace Microsoft.Bot.Builder.Prague
     /// </summary>
     public sealed class ErrorRouter : IRouter
     {
-        public Route GetRoute(IBotContext context)
-        {            
-            throw new InvalidOperationException("Error by design");
+        public Task<Route> GetRoute(IBotContext context)
+        {
+            return Task.FromException<Route>(new InvalidOperationException("Error by design"));
         }
     }
 
     public class AnonymousRouter : IRouter
     {
-        private GetRouteDelegate _delegate;
-        public delegate Route GetRouteDelegate(IBotContext context);
-        public AnonymousRouter(GetRouteDelegate getRouteLambda)
+        private Func<IBotContext, Task<Route>> _delegate;
+        public AnonymousRouter(Func<IBotContext, Task<Route>> getRouteLambda)
         {
             _delegate = getRouteLambda ?? throw new ArgumentException("getRouteLambda");
         }
 
-        public Route GetRoute(IBotContext context)
+        public Task<Route> GetRoute(IBotContext context)
         {
             return _delegate(context);
         }
     }
 
     public class SimpleRouter : IRouter
-    {        
-        public delegate void ActionWithContext(IBotContext context);
+    {
+        private Func<IBotContext, Task> _action;
 
-        private ActionWithContext _action;
-
-        public SimpleRouter(ActionWithContext action)
+        public SimpleRouter(Func<IBotContext, Task> action)
         {
             _action = action ?? throw new ArgumentNullException("action");
         }
 
-        public SimpleRouter(Route.RouteAction action)
+        public SimpleRouter(Func<Task> action)
         {
             if (action == null)
                 throw new ArgumentNullException("action");
 
-            _action = (context) => action(); 
+            _action = (context) => action();
+        }
+
+        public SimpleRouter(Action<IBotContext> action)
+        {
+            if (action == null)
+                throw new ArgumentNullException("action");
+
+            _action = async (context) => action(context);
+        }
+
+        public SimpleRouter(Action action)
+        {
+            if (action == null)
+                throw new ArgumentNullException("action");
+
+            _action = async (context) => action();
         }
 
         public SimpleRouter(IHandler handler)
@@ -123,38 +115,50 @@ namespace Microsoft.Bot.Builder.Prague
             _action = (context) => handler.Execute();
         }
 
-        public Route GetRoute(IBotContext context)
+        public async Task<Route> GetRoute(IBotContext context)
         {
-            return new Route(()=> _action(context));
+            return new Route(() => _action(context));
         }
 
-        public static SimpleRouter Create(ActionWithContext a)
-        {
-            return new SimpleRouter(a);
-        }
-
-        public static SimpleRouter Create(Route.RouteAction a)
+        public static SimpleRouter Create(Func<IBotContext, Task> a)
         {
             return new SimpleRouter(a);
         }
 
+        public static SimpleRouter Create(Func<Task> a)
+        {
+            return new SimpleRouter(a);
+        }
+
+        public static SimpleRouter Create(Action a)
+        {
+            return new SimpleRouter(a);
+        }
     }
 
     public class ScoredRouter : IRouter
-    {        
+    {
         private Route _route;
 
-        public ScoredRouter(Route.RouteAction action, double score)
+        public ScoredRouter(Func<Task> action, double score)
         {
-            _route = new Route(action, score);             
+            _route = new Route(action, score);
         }
 
-        public Route GetRoute(IBotContext context)
+        public ScoredRouter(Action action, double score) : this(async () => action(), score)
+        {
+        }
+
+        public async Task<Route> GetRoute(IBotContext context)
         {
             return _route;
         }
 
-        public static ScoredRouter Create(Route.RouteAction a, double score)
+        public static ScoredRouter Create(Action a, double score)
+        {
+            return new ScoredRouter(a, score);
+        }
+        public static ScoredRouter Create(Func<Task> a, double score)
         {
             return new ScoredRouter(a, score);
         }
@@ -162,17 +166,17 @@ namespace Microsoft.Bot.Builder.Prague
 
     public class FirstRouter : CompoundRouterBase
     {
-        public FirstRouter(): base()
+        public FirstRouter() : base()
         { }
-        public FirstRouter(params IRouter[] routers)
+        public FirstRouter(params IRouterOrHandler[] routerOrHandlers)
         {
-            this.Add(routers);
+            this.Add(routerOrHandlers);
         }
-        public override Route GetRoute(IBotContext context)
+        public async override Task<Route> GetRoute(IBotContext context)
         {
-            foreach (IRouter router in this.SubRouters)
+            foreach (IRouterOrHandler rh in this.SubRouters)
             {
-                Route r = router.GetRoute(context);
+                Route r = await rh.AsRouter().GetRoute(context).ConfigureAwait(false);
                 if (r != null)
                     return r;
             }
@@ -186,16 +190,23 @@ namespace Microsoft.Bot.Builder.Prague
         public BestRouter() : base()
         {
         }
-        public BestRouter(params IRouter[] routers)
+        public BestRouter(params IRouterOrHandler[] routerOrHandlers)
         {
-            this.Add(routers);
+            this.Add(routerOrHandlers);
         }
-        public override Route GetRoute(IBotContext context)
+        public async override Task<Route> GetRoute(IBotContext context)
         {
-            Route best = new MinRoute();
-            foreach (var router in this.SubRouters)
+            List<Task<Route>> tasks = new List<Task<Route>>();
+            foreach (IRouterOrHandler rh in this.SubRouters)
             {
-                var route = router.GetRoute(context);
+                tasks.Add(rh.AsRouter().GetRoute(context));
+            }
+
+            var routes = await Task.WhenAll(tasks).ConfigureAwait(false);
+
+            Route best = new MinRoute();
+            foreach (var route in routes)
+            {
                 if (route != null)
                 {
                     if (route.Score >= 1.0)
@@ -214,36 +225,35 @@ namespace Microsoft.Bot.Builder.Prague
 
     public class IfMatch : IRouter
     {
+        public delegate Task<bool> ConditionAsync(IBotContext context);
         public delegate bool Condition(IBotContext context);
-        private Condition _condition = null;
-        private IRouter _ifMatchesRouter = null;
-        private IRouter _elseMatchesRouter = null;
 
-        public IfMatch(Condition condition, IRouter ifMatchesRouter) : this (condition, ifMatchesRouter, new NullRouter())
-        {            
+        private ConditionAsync _condition = null;
+        private IRouterOrHandler _ifMatchesRouterOrHandler = null;
+        private IRouterOrHandler _elseMatchesRouterOrHandler = null;
+
+        public IfMatch(Condition condition, IRouterOrHandler ifMatches, IRouterOrHandler elseMatches = null) : this(async (context) => condition(context), ifMatches, elseMatches)
+        {
         }
 
-        public IfMatch(Condition condition, IRouter ifMatchesRouter, IRouter elseMatchesRouter )
+        public IfMatch(ConditionAsync condition, IRouterOrHandler ifRouterOrHandler, IRouterOrHandler elseRouterOrHandler = null)
         {
             _condition = condition ?? throw new ArgumentNullException("condition");
-            _ifMatchesRouter = ifMatchesRouter ?? throw new ArgumentNullException("ifMatchesRouter");
-            _elseMatchesRouter = elseMatchesRouter ?? throw new ArgumentNullException("elseMatchesRouter");
+            _ifMatchesRouterOrHandler = ifRouterOrHandler ?? throw new ArgumentNullException("ifMatchesRouter");
+            _elseMatchesRouterOrHandler = elseRouterOrHandler ?? new NullRouter();
         }
 
-        public Route GetRoute(IBotContext context)
+        public async Task<Route> GetRoute(IBotContext context)
         {
-            bool matches = _condition(context);
+            bool matches = await _condition(context).ConfigureAwait(false);
             if (matches)
             {
-                return _ifMatchesRouter.GetRoute(context);
+                return await _ifMatchesRouterOrHandler.AsRouter().GetRoute(context).ConfigureAwait(false);
             }
             else
             {
-                return _elseMatchesRouter.GetRoute(context);
+                return await _elseMatchesRouterOrHandler.AsRouter().GetRoute(context).ConfigureAwait(false);
             }
         }
     }
-
-
-
 }

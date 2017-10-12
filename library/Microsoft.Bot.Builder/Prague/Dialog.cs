@@ -26,34 +26,26 @@ namespace Microsoft.Bot.Builder.Prague
   
     public class Dialog
     {
-        private static IDictionary<string, Dialog> _dialogRegistry = new ConcurrentDictionary<string, Dialog>();        
-        private IRouter _router;
+        private static IDictionary<string, Dialog> _dialogRegistry = new Dictionary<string, Dialog>();        
+        private IRouterOrHandler _routerOrHandler;
         private string _dialogName; 
 
-        public Dialog(string name, IRouter router)
+        public Dialog(string name, IRouterOrHandler routerOrHandler)
         {
-            _dialogName = name ?? throw new ArgumentNullException("name");                
-            _router = router ?? throw new ArgumentOutOfRangeException("router");
+            _dialogName = name ?? throw new ArgumentNullException("name");
+            _routerOrHandler = routerOrHandler ?? throw new ArgumentOutOfRangeException("routerOrHandler");
             AddDialogToRegistry(this);            
         }
              
-        public Dialog(string name, IHandler handler) : this(name, new SimpleRouter(handler))
-        {
-        }
-
-        public Dialog(IRouter router)
+        public Dialog(IRouterOrHandler routerOrHandler)
         {
             _dialogName = this.GetType().FullName;
-            _router = router;
+            _routerOrHandler = routerOrHandler;
             AddDialogToRegistry(this);
-        }
-
-        public Dialog(IHandler handler) : this (new SimpleRouter(handler))
-        {
-        }
+        }        
 
         public string Name { get { return _dialogName; } }
-        public IRouter Router {  get { return _router; } }
+        public IRouterOrHandler RouterOrHandler {  get { return _routerOrHandler; } }
  
         private static void AddDialogToRegistry(Dialog d)
         {
@@ -87,24 +79,18 @@ namespace Microsoft.Bot.Builder.Prague
                 _dialogRegistry.Clear();
             }
         }
-        public static IRouter IfActiveDialog(IHandler ifRouter, IHandler elseRouter)
-        {
-            return IfActiveDialog(
-                new SimpleRouter(ifRouter),
-                new SimpleRouter(elseRouter));
-        }
-
-        public static IRouter IfActiveDialog(IRouter ifRouter, IRouter elseRouter)            
+       
+        public static IRouterOrHandler IfActiveDialog(IRouterOrHandler ifRouterOrHandler, IRouterOrHandler elseRouterOrHandler)            
         {
             IfMatch ifMatch = new IfMatch(
-                (context) => {
+                async (context) => {
                     if (context is IDialogContext)
                         return ((IDialogContext)context).IsActiveDialog;
                     else
                         return false;
                     },
-                ifRouter,
-                elseRouter);
+                ifRouterOrHandler,
+                elseRouterOrHandler);
 
             return ifMatch;
         }
