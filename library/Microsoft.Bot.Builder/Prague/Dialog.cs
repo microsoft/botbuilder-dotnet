@@ -32,8 +32,8 @@ namespace Microsoft.Bot.Builder.Prague
 
         public Dialog(string name, IRouterOrHandler routerOrHandler)
         {
-            _dialogName = name ?? throw new ArgumentNullException("name");
-            _routerOrHandler = routerOrHandler ?? throw new ArgumentOutOfRangeException("routerOrHandler");
+            _dialogName = name ?? throw new ArgumentNullException(nameof(name));
+            _routerOrHandler = routerOrHandler ?? throw new ArgumentOutOfRangeException(nameof(routerOrHandler)); 
             AddDialogToRegistry(this);            
         }
              
@@ -61,7 +61,7 @@ namespace Microsoft.Bot.Builder.Prague
         public static Dialog FindDialog(string name)
         {
             if (string.IsNullOrWhiteSpace(name))
-                throw new ArgumentNullException("name");
+                throw new ArgumentNullException(nameof(name));
 
             lock(_dialogRegistry)
             {

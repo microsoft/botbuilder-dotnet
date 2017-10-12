@@ -7,27 +7,27 @@ namespace Microsoft.Bot.Builder.Prague
 {    
     public class SimpleHandler : IHandler
     {
-        Func<Task> _action;
+        private readonly Func<Task> _userFunction;
 
-        public SimpleHandler(Func<Task> action)
+        public SimpleHandler(Func<Task> function)
         {
-            _action = action ?? throw new ArgumentNullException("action");
+            _userFunction = function ?? throw new ArgumentNullException(nameof(function));
         }
 
         public SimpleHandler(Action action)
         {
             if (action == null)
-                throw new ArgumentNullException("action");
+                throw new ArgumentNullException(nameof(action)); 
 
             // This is an Anti-Pattern, wrapping sync code in async code. 
             // However, w/o this, the simple stuff (which is what this class is about) means
             // constantly having to add "async" everything even for "a=b" type code. 
-            _action = async () => { action(); };                        
+            _userFunction = async () => { action(); };                        
         }
 
         public Task Execute()
         {
-            return _action();
+            return _userFunction();
         }
 
         public static IHandler Create(Func<Task> a)

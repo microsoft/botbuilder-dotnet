@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Builder
 
         public PostToConnectorMiddleware(Bot b)
         {
-            _bot = b ?? throw new ArgumentNullException("bot");
+            _bot = b ?? throw new ArgumentNullException(nameof(Bot)); 
         }
                 
         public async Task PostActivity(BotContext context, IList<Activity> activities, CancellationToken token)

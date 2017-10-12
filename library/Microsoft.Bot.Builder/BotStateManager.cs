@@ -41,7 +41,7 @@ namespace Microsoft.Bot.Builder
 
     public class BotStateManager : IMiddleware, IContextCreated, IPostActivity, IContextDone
     {
-        private BotStateManagerSettings _settings;
+        private readonly BotStateManagerSettings _settings;
         private const string UserKeyRoot = @"user";
         private const string ConversationKeyRoot = @"conversation";
 
@@ -107,12 +107,12 @@ namespace Microsoft.Bot.Builder
                         
             if (this._settings.PersistUserState)
             {
-                changes[this.UserKey(context)] = context.State.User ?? new UserState();
+                changes[UserKey(context)] = context.State.User ?? new UserState();
             }
 
             if (this._settings.PersistConversationState)
             {
-                changes[this.ConversationKey(context)] = context.State.Conversation ?? new ConversationState();
+                changes[ConversationKey(context)] = context.State.Conversation ?? new ConversationState();
             }
 
             if (this._settings.LastWriterWins)
@@ -129,7 +129,7 @@ namespace Microsoft.Bot.Builder
         private static void AssertValidKeys(IList<string> keys)
         {
             if (keys == null)
-                throw new ArgumentNullException("keys");
+                throw new ArgumentNullException(nameof(keys));
 
             foreach (string key in keys)
             {
@@ -140,19 +140,19 @@ namespace Microsoft.Bot.Builder
                     throw new InvalidOperationException($"Keys starting with '{ConversationKeyRoot}' are reserved.");
             }
         }
-        private string UserKey(BotContext context)
+        private static string UserKey(BotContext context)
         {
             var conversation = context.ConversationReference;
             return $"{UserKeyRoot}/{conversation.ChannelId}/{conversation.User.Id}";            
         }
 
-        private string ConversationKey(BotContext context)
+        private static string ConversationKey(BotContext context)
         {
             var conversation = context.ConversationReference;
             return $"{ConversationKeyRoot}/{conversation.ChannelId}/{conversation.Conversation.Id}";
         }
 
-        private void AssertStorage(BotContext context)
+        private static void AssertStorage(BotContext context)
         {
             if (context.Storage == null)
                 throw new InvalidOperationException("BotStateManager: context.storage not found.");

@@ -12,13 +12,13 @@ namespace Microsoft.Bot.Builder.Prague
         
         public ActivityRoutingMiddleware(IRouter pragueRouter)
         {
-            _pragueRouter = pragueRouter ?? throw new ArgumentNullException("pragueRouter");
+            _pragueRouter = pragueRouter ?? throw new ArgumentNullException(nameof(pragueRouter));
         }
 
         public ActivityRoutingMiddleware(IHandler pragueHandler)
         {
             if (pragueHandler == null)
-                throw new ArgumentNullException("pragueHandler");
+                throw new ArgumentNullException(nameof(pragueHandler)); 
 
             _pragueRouter = new SimpleRouter(pragueHandler.Execute);
         }

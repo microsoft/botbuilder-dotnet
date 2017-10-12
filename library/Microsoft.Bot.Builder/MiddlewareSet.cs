@@ -18,7 +18,7 @@ namespace Microsoft.Bot.Builder
 
         public MiddlewareSet(IList<IMiddleware> items)
         {
-            _middlewareList = items ?? throw new ArgumentNullException("items");
+            _middlewareList = items ?? throw new ArgumentNullException(nameof(items)); 
         }
 
         public IList<IMiddleware> Middlewares => _middlewareList;
@@ -36,7 +36,7 @@ namespace Microsoft.Bot.Builder
         public MiddlewareSet Use(params IMiddleware[] middlewareItems)
         {
             if (middlewareItems == null)
-                throw new ArgumentNullException("middlewareItems");
+                throw new ArgumentNullException(nameof(middlewareItems)); 
 
             foreach (var m in middlewareItems)
                 _middlewareList.Add(m);

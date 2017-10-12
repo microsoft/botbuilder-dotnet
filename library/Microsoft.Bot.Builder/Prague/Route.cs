@@ -7,16 +7,16 @@ namespace Microsoft.Bot.Builder.Prague
 {
     public class Route
     {        
-        public Route(Func<Task> action)
+        public Route(Func<Task> function)
         {
-            this.Action = action ?? throw new ArgumentNullException("action");
+            this.Action = function ?? throw new ArgumentNullException(nameof(function)); 
         }
 
-        public Route(Func<Task> action, double score)
+        public Route(Func<Task> function, double score)
         {
-            this.Action = action ?? throw new ArgumentNullException("action");
+            this.Action = function ?? throw new ArgumentNullException(nameof(function));
             if (score < 0 || score > 1.0)
-                throw new ArgumentOutOfRangeException("score");
+                throw new ArgumentOutOfRangeException(nameof(score)); 
 
             this.Score = score;
         }
@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Builder.Prague
         public double Score { get; set; } = 1.0;
         public bool Thrown { get; set; } = false;
 
-        public Func<Task> Action { get; internal set; }
+        public Func<Task> Action { get; private set; }
     }
 
     public sealed class MinRoute : Route

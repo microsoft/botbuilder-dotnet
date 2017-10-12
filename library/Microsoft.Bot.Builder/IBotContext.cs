@@ -38,16 +38,17 @@ namespace Microsoft.Bot.Builder
 
     public class BotContext : FlexObject, IBotContext, IPostActivity
     {
-        private Bot _bot;
-        private readonly Activity _request;
+        private readonly Bot _bot;
+        private readonly Activity _request;        
+        private readonly ConversationReference _conversationReference;
+        private readonly BotState _state = new BotState();
+
         private IList<Activity> _responses = new List<Activity>();
-        private ConversationReference _conversationReference;
-        private BotState _state = new BotState(); 
 
         public BotContext(Bot bot, Activity request)
         {
-            _bot = bot ?? throw new ArgumentNullException("bot");
-            _request = request ?? throw new ArgumentNullException("request");
+            _bot = bot ?? throw new ArgumentNullException(nameof(bot));
+            _request = request ?? throw new ArgumentNullException(nameof(request)); 
 
             _conversationReference = new ConversationReference()
             {
@@ -81,7 +82,7 @@ namespace Microsoft.Bot.Builder
         public bool IfIntent(string intentName)
         {
             if (string.IsNullOrWhiteSpace(intentName))
-                throw new ArgumentNullException("intentName"); 
+                throw new ArgumentNullException(nameof(intentName)); 
 
             if (this.TopIntent != null)
             {
@@ -95,8 +96,8 @@ namespace Microsoft.Bot.Builder
         }
         public bool IfIntent(Regex expression)
         {
-            if (expression == null) 
-                throw new ArgumentNullException("expression");
+            if (expression == null)
+                throw new ArgumentNullException(nameof(expression)); 
 
             if (this.TopIntent != null)
             {

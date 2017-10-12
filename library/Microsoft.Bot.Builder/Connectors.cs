@@ -54,7 +54,7 @@ namespace Microsoft.Bot.Builder
         public async Task Receive(IDictionary<string, StringValues> headers, Activity activity, CancellationToken token)
         {
             if (headers == null)
-                throw new ArgumentNullException("headers");
+                throw new ArgumentNullException(nameof(headers)); 
 
             BotAssert.ActivityNotNull(activity);
             BotAssert.CancellationTokenNotNull(token); 

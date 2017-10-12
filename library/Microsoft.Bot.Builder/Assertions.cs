@@ -10,30 +10,30 @@ namespace Microsoft.Bot.Builder
         public static void ActivityNotNull(IActivity activity)
         {
             if (activity == null)
-                throw new ArgumentNullException("activity");
+                throw new ArgumentNullException(nameof(activity));
         }
         public static void ContextNotNull(IBotContext context)
         {
             if (context == null)
-                throw new ArgumentNullException("context");
+                throw new ArgumentNullException(nameof(context)); 
         }
 
         public static void CancellationTokenNotNull(CancellationToken token)
         {
             if (token == null)
-                throw new ArgumentNullException("token");
+                throw new ArgumentNullException(nameof(token)); 
         }
 
         public static void ConnectorNotNull(IConnector connector)
         {
             if (connector == null)
-                throw new ArgumentNullException("connector");
+                throw new ArgumentNullException(nameof(connector)); 
         }
 
         public static void ActivityListNotNull(IList<Activity> activityList)
         {
             if (activityList == null)
-                throw new ArgumentNullException("activityList");
+                throw new ArgumentNullException(nameof(activityList)); 
         }
     }
 }

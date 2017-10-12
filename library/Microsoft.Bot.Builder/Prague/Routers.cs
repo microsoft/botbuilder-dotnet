@@ -7,7 +7,7 @@ namespace Microsoft.Bot.Builder.Prague
 {
     public abstract class CompoundRouterBase : IRouter
     {
-        private List<IRouterOrHandler> _routerOrHandler = new List<IRouterOrHandler>();
+        private readonly List<IRouterOrHandler> _routerOrHandler = new List<IRouterOrHandler>();
 
         public CompoundRouterBase Add(params IRouterOrHandler[] routerOrHandlers)
         {
@@ -49,23 +49,23 @@ namespace Microsoft.Bot.Builder.Prague
 
     /// <summary>
     /// Router that throws an InvalidOperationExcpetion when it's used. 
-    /// This router is primarly used for Unit Testig to insure routing
+    /// This router is primarly used for Unit Testing to insure routing
     /// order and proper error handling. 
     /// </summary>
     public sealed class ErrorRouter : IRouter
     {
         public Task<Route> GetRoute(IBotContext context)
-        {
+        {            
             return Task.FromException<Route>(new InvalidOperationException("Error by design"));
         }
     }
 
     public class AnonymousRouter : IRouter
     {
-        private Func<IBotContext, Task<Route>> _delegate;
+        private readonly Func<IBotContext, Task<Route>> _delegate;
         public AnonymousRouter(Func<IBotContext, Task<Route>> getRouteLambda)
         {
-            _delegate = getRouteLambda ?? throw new ArgumentException("getRouteLambda");
+            _delegate = getRouteLambda ?? throw new ArgumentException(nameof(getRouteLambda)); 
         }
 
         public Task<Route> GetRoute(IBotContext context)
@@ -76,25 +76,25 @@ namespace Microsoft.Bot.Builder.Prague
 
     public class SimpleRouter : IRouter
     {
-        private Func<IBotContext, Task> _action;
+        private readonly Func<IBotContext, Task> _action;
 
-        public SimpleRouter(Func<IBotContext, Task> action)
+        public SimpleRouter(Func<IBotContext, Task> function)
         {
-            _action = action ?? throw new ArgumentNullException("action");
+            _action = function ?? throw new ArgumentNullException(nameof(function)); 
         }
 
-        public SimpleRouter(Func<Task> action)
+        public SimpleRouter(Func<Task> function)
         {
-            if (action == null)
-                throw new ArgumentNullException("action");
+            if (function == null)
+                throw new ArgumentNullException(nameof(function));
 
-            _action = (context) => action();
+            _action = (context) => function();
         }
 
         public SimpleRouter(Action<IBotContext> action)
         {
             if (action == null)
-                throw new ArgumentNullException("action");
+                throw new ArgumentNullException(nameof(action)); 
 
             _action = async (context) => action(context);
         }
@@ -102,7 +102,7 @@ namespace Microsoft.Bot.Builder.Prague
         public SimpleRouter(Action action)
         {
             if (action == null)
-                throw new ArgumentNullException("action");
+                throw new ArgumentNullException(nameof(action));
 
             _action = async (context) => action();
         }
@@ -110,7 +110,7 @@ namespace Microsoft.Bot.Builder.Prague
         public SimpleRouter(IHandler handler)
         {
             if (handler == null)
-                throw new ArgumentNullException("handler");
+                throw new ArgumentNullException(nameof(handler)); 
 
             _action = (context) => handler.Execute();
         }
@@ -138,7 +138,7 @@ namespace Microsoft.Bot.Builder.Prague
 
     public class ScoredRouter : IRouter
     {
-        private Route _route;
+        private readonly Route _route;
 
         public ScoredRouter(Func<Task> action, double score)
         {
@@ -232,14 +232,15 @@ namespace Microsoft.Bot.Builder.Prague
         private IRouterOrHandler _ifMatchesRouterOrHandler = null;
         private IRouterOrHandler _elseMatchesRouterOrHandler = null;
 
-        public IfMatch(Condition condition, IRouterOrHandler ifMatches, IRouterOrHandler elseMatches = null) : this(async (context) => condition(context), ifMatches, elseMatches)
+        public IfMatch(Condition condition, IRouterOrHandler ifMatches, IRouterOrHandler elseMatches = null) 
+            : this(async (context) => condition(context), ifMatches, elseMatches)
         {
         }
 
         public IfMatch(ConditionAsync condition, IRouterOrHandler ifRouterOrHandler, IRouterOrHandler elseRouterOrHandler = null)
         {
-            _condition = condition ?? throw new ArgumentNullException("condition");
-            _ifMatchesRouterOrHandler = ifRouterOrHandler ?? throw new ArgumentNullException("ifMatchesRouter");
+            _condition = condition ?? throw new ArgumentNullException(nameof(condition));
+            _ifMatchesRouterOrHandler = ifRouterOrHandler ?? throw new ArgumentNullException(nameof(ifRouterOrHandler)); 
             _elseMatchesRouterOrHandler = elseRouterOrHandler ?? new NullRouter();
         }
 

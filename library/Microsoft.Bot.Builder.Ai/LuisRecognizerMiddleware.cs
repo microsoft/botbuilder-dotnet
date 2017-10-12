@@ -8,16 +8,31 @@ namespace Microsoft.Bot.Builder.Ai
 {
     public class LuisRecognizerMiddleware : IntentRecognizerMiddleware
     {
-        private LuisClient _luisClient;
+        private readonly LuisClient _luisClient;
         
         public LuisRecognizerMiddleware(string appId, string appKey) : base()
         {
+            if (string.IsNullOrWhiteSpace(appId))
+                throw new ArgumentNullException(nameof(appId));
+
+            if (string.IsNullOrWhiteSpace(appKey))
+                throw new ArgumentNullException(nameof(appKey));
+
             _luisClient = new LuisClient(appId, appKey);
             SetupOnRecognize();
         }
 
         public LuisRecognizerMiddleware(string appId, string appKey, string baseUri) : base()
         {
+            if (string.IsNullOrWhiteSpace(appId))
+                throw new ArgumentNullException(nameof(appId));
+
+            if (string.IsNullOrWhiteSpace(appKey))
+                throw new ArgumentNullException(nameof(appKey));
+
+            if (string.IsNullOrWhiteSpace(baseUri))
+                throw new ArgumentNullException(nameof(baseUri));
+
             _luisClient = new LuisClient(appId, appKey, baseUri);
             SetupOnRecognize();
         }

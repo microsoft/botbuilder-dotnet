@@ -21,7 +21,7 @@ namespace Microsoft.Bot.Builder.Prague
 
     public static class RoutingUtilities
     {
-        private static NullRouter _nullRouter = new NullRouter();
+        private static readonly NullRouter _nullRouter = new NullRouter();
 
         public static async Task RouteMessage(IRouterOrHandler routerOrHandler, IBotContext context)
         {

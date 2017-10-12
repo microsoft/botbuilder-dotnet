@@ -21,7 +21,7 @@ namespace Microsoft.Bot.Builder
         public Bot OnReceive(params ReceiveDelegate_NoDefault[] receiveHandler)
         {
             if (receiveHandler == null)
-                throw new ArgumentNullException("receiveHandler");
+                throw new ArgumentNullException(nameof(receiveHandler)); 
 
             if (receiveHandler.Count() == 0)
                 throw new ArgumentOutOfRangeException("No Receive Handlers specified");
@@ -33,7 +33,7 @@ namespace Microsoft.Bot.Builder
         public Bot OnReceive(params ReceiveDelegate_DefaultHandled[] receiveHandler)
         {
             if (receiveHandler == null)
-                throw new ArgumentNullException("receiveHandler");
+                throw new ArgumentNullException(nameof(receiveHandler)); 
 
             if (receiveHandler.Count() == 0)
                 throw new ArgumentOutOfRangeException("No Receive Handlers specified");
@@ -69,7 +69,7 @@ namespace Microsoft.Bot.Builder
 
         public Bot Use(IBotLogger logger)
         {
-            _logger = logger ?? throw new ArgumentNullException("logger");
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger)); 
             return this;
         }
 
@@ -150,7 +150,7 @@ namespace Microsoft.Bot.Builder
         public virtual async Task<BotContext> CreateBotContext(ConversationReference reference, CancellationToken token)
         {
             if (reference == null)
-                throw new ArgumentNullException("reference");
+                throw new ArgumentNullException(nameof(reference)); 
 
             BotAssert.CancellationTokenNotNull(token);
 

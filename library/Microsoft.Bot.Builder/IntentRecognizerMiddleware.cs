@@ -23,9 +23,9 @@ namespace Microsoft.Bot.Builder
         public delegate Task<IList<Intent>> IntentRecognizer(IBotContext context);
         public delegate Task IntentResultMutator(IBotContext context, IList<Intent> intents);
 
-        private LinkedList<IntentDisabler> _intentDisablers = new LinkedList<IntentDisabler>();
-        private LinkedList<IntentRecognizer> _intentRecognizers = new LinkedList<IntentRecognizer>();
-        private LinkedList<IntentResultMutator> _intentResultMutators = new LinkedList<IntentResultMutator>();
+        private readonly LinkedList<IntentDisabler> _intentDisablers = new LinkedList<IntentDisabler>();
+        private readonly LinkedList<IntentRecognizer> _intentRecognizers = new LinkedList<IntentRecognizer>();
+        private readonly LinkedList<IntentResultMutator> _intentResultMutators = new LinkedList<IntentResultMutator>();
 
         public async Task<ReceiveResponse> ReceiveActivity(BotContext context, CancellationToken token)
         {
@@ -106,7 +106,7 @@ namespace Microsoft.Bot.Builder
         public IntentRecognizerMiddleware OnEnabled(IntentDisabler preCondition)
         {
             if (preCondition == null)
-                throw new ArgumentNullException("preCondition");
+                throw new ArgumentNullException(nameof(preCondition)); 
             
             _intentDisablers.AddLast(preCondition);
 
@@ -119,7 +119,7 @@ namespace Microsoft.Bot.Builder
         public IntentRecognizerMiddleware OnRecognize(IntentRecognizer recognizer)
         {
             if (recognizer == null)
-                throw new ArgumentNullException("recognizer");
+                throw new ArgumentNullException(nameof(recognizer)); 
 
             _intentRecognizers.AddLast(recognizer);
 
@@ -132,7 +132,7 @@ namespace Microsoft.Bot.Builder
         public IntentRecognizerMiddleware OnFilter(IntentResultMutator postCondition)
         {
             if (postCondition == null)
-                throw new ArgumentNullException("postCondition");
+                throw new ArgumentNullException(nameof(postCondition)); 
 
             _intentResultMutators.AddFirst(postCondition);
 
@@ -142,11 +142,11 @@ namespace Microsoft.Bot.Builder
         public static Intent FindTopIntent(IList<Intent> intents)
         {
             if (intents == null)
-                throw new ArgumentNullException("intents");
+                throw new ArgumentNullException(nameof(intents)); 
 
             var enumerator = intents.GetEnumerator();
             if (!enumerator.MoveNext())
-                throw new ArgumentException("No Intents");
+                throw new ArgumentException($"No Intents on '{nameof(intents)}'");
 
             var topIntent = enumerator.Current;
             var topScore = topIntent.Score;
