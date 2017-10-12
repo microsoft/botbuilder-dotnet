@@ -1,126 +1,13 @@
-﻿using System;
-using System.Dynamic;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Storage;
-using System.IO;
 
 namespace Microsoft.Bot.Builder.Tests
 {
-    [TestClass]
-    public class RamStorageTests : StorageTests, IStorageTests
-    {
-        private IStorage storage;
-
-        public RamStorageTests() { }
-
-        [TestInitialize]
-        public void initialize()
-        {
-            storage = new MemoryStorage();
-        }
-
-        [TestMethod]
-        public async Task CreateObjectTest()
-        {
-            await base._createObjectTest(storage);
-        }
-
-        [TestMethod]
-        public async Task ReadUnknownTest()
-        {
-            await base._readUnknownTest(storage);
-        }
-
-        [TestMethod]
-        public async Task UpdateObjectTest()
-        {
-            await base._updateObjectTest(storage);
-        }
-
-        [TestMethod]
-        public async Task DeleteObjectTest()
-        {
-            await base._deleteObjectTest(storage);
-        }
-
-        [TestMethod]
-        public async Task HandleCrazyKeys()
-        {
-            await base._handleCrazyKeys(storage);
-        }
-    }
-
-    [TestClass]
-    public class FileStorageTests : StorageTests, IStorageTests
-    {
-        private IStorage storage;
-        public FileStorageTests() { }
-
-        [TestInitialize]
-        public void initialize()
-        {
-            string path = Path.Combine(Environment.GetEnvironmentVariable("temp"), "FileStorageTest");
-            if (!Directory.Exists(path))
-                Directory.CreateDirectory(path);
-            foreach (var file in Directory.GetFiles(path))
-                File.Delete(file);
-            storage = new FileStorage(path);
-        }
-
-        [TestMethod]
-        public async Task CreateObjectTest()
-        {
-            await base._createObjectTest(this.storage);
-        }
-
-        [TestMethod]
-        public async Task ReadUnknownTest()
-        {
-            await base._readUnknownTest(this.storage);
-        }
-
-        [TestMethod]
-        public async Task UpdateObjectTest()
-        {
-            await base._updateObjectTest(this.storage);
-        }
-
-        [TestMethod]
-        public async Task DeleteObjectTest()
-        {
-            await base._deleteObjectTest(this.storage);
-        }
-
-        [TestMethod]
-        public async Task HandleCrazyKeys()
-        {
-            await base._handleCrazyKeys(this.storage);
-        }
-    }
-
-
-    public class TestItem : StoreItem
-    {
-        public string Id { get; set; }
-
-        public int Count { get; set; }
-    }
-
-    public interface IStorageTests
-    {
-        Task ReadUnknownTest();
-
-        Task CreateObjectTest();
-
-        Task HandleCrazyKeys();
-
-        Task UpdateObjectTest();
-
-        Task DeleteObjectTest();
-    }
-
-    public class StorageTests 
+    public class Storage_BaseTests
     {
         protected async Task _readUnknownTest(IStorage storage)
         {
@@ -152,7 +39,7 @@ namespace Microsoft.Bot.Builder.Tests
             var storeItems = new StoreItems();
             string key = "!@#$%^&*()~/\\><,.?';\"`~";
             storeItems[key] = new TestItem() { Id = "1" };
-            
+
             await storage.Write(storeItems);
 
             dynamic result = await storage.Read(key);
@@ -231,7 +118,5 @@ namespace Microsoft.Bot.Builder.Tests
             StoreItems result2 = await storage.Read("delete1");
             Assert.IsFalse(result2.ContainsKey("delete1"), "delete1 should be null");
         }
-
-
     }
 }

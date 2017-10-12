@@ -11,10 +11,11 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Microsoft.Bot.Builder.Tests
 {
     [TestClass]
-    public class MiddlewareTest
+    [TestCategory("Middleware")]
+    public class Middleware_EchoTests
     {
-        [TestMethod]
-        public async Task EchoMiddleware_Should_Echo()
+        [TestMethod]        
+        public async Task Middleware_Echo()
         {
             string messageText = Guid.NewGuid().ToString();
 

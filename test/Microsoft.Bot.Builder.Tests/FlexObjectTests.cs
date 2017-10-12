@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.Tests
 {
     [TestClass]
+    [TestCategory("Flex Objects")]
     public class FlexObjectTests
     {
         [TestMethod]

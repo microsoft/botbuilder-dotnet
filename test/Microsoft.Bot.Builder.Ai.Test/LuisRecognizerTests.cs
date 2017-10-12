@@ -16,7 +16,8 @@ namespace Microsoft.Bot.Builder.Ai.Tests
 
         [TestMethod]
         [TestCategory("AI")]
-        public async Task TopIntentAndEntities()
+        [TestCategory("Luis")]
+        public async Task Luis_TopIntentAndEntities()
         {
             LuisRecognizerMiddleware recognizer = 
                 new LuisRecognizerMiddleware(luisAppId, subscriptionKey);
@@ -33,7 +34,8 @@ namespace Microsoft.Bot.Builder.Ai.Tests
 
         [TestMethod]
         [TestCategory("AI")]
-        public async Task TopIntentPopulated()
+        [TestCategory("Luis")]
+        public async Task Luis_TopIntentPopulated()
         {
             TestConnector connector = new TestConnector();
             Bot bot = new Bot(connector)

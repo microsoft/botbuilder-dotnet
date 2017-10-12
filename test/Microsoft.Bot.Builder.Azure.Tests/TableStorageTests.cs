@@ -11,7 +11,9 @@ namespace Microsoft.Bot.Builder.Azure.Tests
     /// NOTE: THESE TESTS REQUIRE THAT THE AZURE STORAGE EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
     /// </summary>
     [TestClass]
-    public class TableStorageTests : StorageTests, IStorageTests
+    [TestCategory("Storage")]
+    [TestCategory("Storage - Azure Tables")]
+    public class TableStorageTests : Storage_BaseTests, IStorageTests
     {
         private IStorage storage;
 

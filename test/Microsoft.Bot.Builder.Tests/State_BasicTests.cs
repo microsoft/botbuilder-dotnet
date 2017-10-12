@@ -10,10 +10,11 @@ using System.Threading.Tasks;
 namespace Microsoft.Bot.Builder.Tests
 {
     [TestClass]
-    public class BotStateManagerTests
+    [TestCategory("State Management")]
+    public class State_BasicTests
     {
-        [TestMethod]
-        public async Task DoNOTRememberContextState()
+        [TestMethod]        
+        public async Task State_DoNOTRememberContextState()
         {
             TestConnector connector = new TestConnector();
             Bot bot = new Bot(connector)
@@ -38,7 +39,7 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [TestMethod]
-        public async Task RememberUserState()
+        public async Task State_RememberUserState()
         {
             TestConnector connector = new TestConnector();
 
@@ -67,7 +68,7 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [TestMethod]
-        public async Task RememberConversationState()
+        public async Task State_RememberConversationState()
         {
             TestConnector connector = new TestConnector();
 
@@ -96,7 +97,7 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [TestMethod]
-        public async Task CustomStateManagerTest()
+        public async Task State_CustomStateManagerTest()
         {
             TestConnector connector = new TestConnector();
             string testGuid = Guid.NewGuid().ToString();

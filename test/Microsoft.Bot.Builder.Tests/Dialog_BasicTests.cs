@@ -10,11 +10,11 @@ using System.Threading.Tasks;
 namespace Microsoft.Bot.Builder.Tests
 {
     [TestClass]
-    public class DialogTests
+    [TestCategory("Dialog")]
+    public class Dialog_BasicTests
     {
         [TestMethod]
-        [TestCategory("Dialog")]
-        public void DialogContextActiveTest()
+        public void Dialog_ContextActiveTest()
         {
             TestConnector connector = new TestConnector();
             Bot bot = new Bot(connector);
@@ -26,8 +26,7 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [TestMethod]
-        [TestCategory("Dialog")]
-        public void DialogRegistry_Find()
+        public void Dialog_Registry_Find()
         {   
             //Make sure the registry is empty
             Assert.IsNull(Dialog.FindDialog("dialog"), "Incorrectly found a dialog");
@@ -43,7 +42,6 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [TestMethod]
-        [TestCategory("Dialog")]
         public async Task Dialog_RouterTest()
         {
             bool wasCalled = false;
@@ -59,7 +57,6 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [TestMethod]
-        [TestCategory("Dialog")]
         public async Task Dialog_IfActiveDialogTrue()
         {
             bool ifHandled = false;
@@ -83,7 +80,6 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [TestMethod]
-        [TestCategory("Dialog")]
         public async Task Dialog_IfActiveDialogFalse()
         {
             bool ifHandled = false;

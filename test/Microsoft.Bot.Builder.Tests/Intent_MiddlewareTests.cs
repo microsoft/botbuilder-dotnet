@@ -9,10 +9,12 @@ using System.Threading.Tasks;
 namespace Microsoft.Bot.Builder.Tests
 {
     [TestClass]
-    public class IntentRecognizerTests
+    [TestCategory("Intent Recognizers")]
+    [TestCategory("Middleware")]
+    public class Intent_MiddlewareTests
     {
         [TestMethod]
-        public async Task RecognizeZeroIntents()
+        public async Task Intents_RecognizeZeroIntents()
         {
             IntentRecognizerMiddleware m = new IntentRecognizerMiddleware();
             m.OnRecognize(async (context) =>
@@ -26,7 +28,7 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [TestMethod]
-        public async Task RecognizeZeroIntentsViaNullReturn()
+        public async Task Intents_RecognizeZeroIntentsViaNullReturn()
         {
             IntentRecognizerMiddleware m = new IntentRecognizerMiddleware();
             m.OnRecognize(async (context) =>
@@ -40,7 +42,7 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [TestMethod]
-        public async Task RecognizeSingleIntent()
+        public async Task Intents_RecognizeSingleIntent()
         {
             string targetName = Guid.NewGuid().ToString();
 
@@ -61,7 +63,7 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [TestMethod]
-        public async Task MergeTwoRecognizerResults()
+        public async Task Intents_MergeTwoRecognizerResults()
         {
             string targetName1 = Guid.NewGuid().ToString();
             string targetName2 = Guid.NewGuid().ToString();
@@ -91,7 +93,7 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [TestMethod]
-        public async Task RegognizeTwoIntents()
+        public async Task Intents_RegognizeTwoIntents()
         {
             string targetName1 = Guid.NewGuid().ToString();
             string targetName2 = Guid.NewGuid().ToString();
@@ -114,7 +116,7 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [TestMethod]
-        public async Task DisableIntent()
+        public async Task Intents_DisableIntent()
         {
             string targetName = Guid.NewGuid().ToString();
 
@@ -148,7 +150,7 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [TestMethod]
-        public async Task MutateIntentResult()
+        public async Task Intents_MutateIntentResult()
         {
             string targetName = Guid.NewGuid().ToString();
             string replacedName = Guid.NewGuid().ToString();
@@ -186,7 +188,7 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [TestMethod]
-        public async Task RemoveIntentViaFilter()
+        public async Task Intents_RemoveIntentViaFilter()
         {
             string intentToKeep = Guid.NewGuid().ToString();
             string intentToRemove = Guid.NewGuid().ToString();
@@ -218,7 +220,7 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [TestMethod]
-        public async Task ValidateFilterOrder()
+        public async Task Intents_ValidateFilterOrder()
         {
             IntentRecognizerMiddleware m = new IntentRecognizerMiddleware();
 
@@ -252,7 +254,7 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [TestMethod]
-        public async Task ValidateRecognizerOrder()
+        public async Task Intents_ValidateRecognizerOrder()
         {
             IntentRecognizerMiddleware m = new IntentRecognizerMiddleware();
 
@@ -293,7 +295,7 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [TestMethod]
-        public async Task ValidateEnablerOrder()
+        public async Task Intents_ValidateEnablerOrder()
         {
             IntentRecognizerMiddleware m = new IntentRecognizerMiddleware();
 
@@ -332,7 +334,7 @@ namespace Microsoft.Bot.Builder.Tests
         }
        
         [TestMethod]
-        public void TopIntentsOrdering()
+        public void Intents_TopIntentsOrdering()
         {
             string small = "small";
             string medium = "medium";
@@ -351,9 +353,7 @@ namespace Microsoft.Bot.Builder.Tests
                 Assert.IsTrue(IntentRecognizerMiddleware.FindTopIntent(intents).Name == large, "Not the top intent");
             }
         }
-
-     
-
+    
         private static Random rng = new Random();
 
         public void Shuffle<T>(IList<T> list)
@@ -370,13 +370,5 @@ namespace Microsoft.Bot.Builder.Tests
                 list[n] = value;
             }
         }
-
-        //[TestMethod]
-        //public async Task RegognizeHelpIntent()
-        //{            
-        //    TestConnector connector = new TestConnector();
-        //    RegularExpressionRecognizer helpRecognizer = new builder.RegExpRecognizer({ minScore: 0.0}).addIntent('help', /help/i).onRecognize((context) => {
-        //    context.say('you selected help menu');
-        //});
     }
 }

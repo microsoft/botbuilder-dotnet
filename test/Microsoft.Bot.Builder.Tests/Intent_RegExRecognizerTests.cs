@@ -10,10 +10,12 @@ using System.Threading.Tasks;
 namespace Microsoft.Bot.Builder.Tests
 {
     [TestClass]
-    public class RegExpRecognizerTests
+    public class Intent_RegExRecognizerTests
     {
         [TestMethod]
-        public async Task RecognizeHelpIntent()
+        [TestCategory("Intent Recognizers")]
+        [TestCategory("RegEx Intent Recognizer")]
+        public async Task Regex_RecognizeHelpIntent()
         {
             TestConnector connector = new TestConnector();
 
@@ -34,7 +36,9 @@ namespace Microsoft.Bot.Builder.Tests
         }       
       
         [TestMethod]
-        public async Task ExtractEntityGroupsNamedCaptureViaList()
+        [TestCategory("Intent Recognizers")]
+        [TestCategory("RegEx Intent Recognizer")]
+        public async Task Regex_ExtractEntityGroupsNamedCaptureViaList()
         {
             Regex r = new Regex(@"how (.*) (.*)", RegexOptions.IgnoreCase);
             string input = "How 11111 22222";
@@ -50,7 +54,9 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [TestMethod]
-        public async Task ExtractEntityGroupsNamedCaptureNoList()
+        [TestCategory("Intent Recognizers")]
+        [TestCategory("RegEx Intent Recognizer")]
+        public async Task Regex_ExtractEntityGroupsNamedCaptureNoList()
         {
             Regex r = new Regex(@"how (?<One>.*) (?<Two>.*)");
             string input = "how 11111 22222";
@@ -67,7 +73,9 @@ namespace Microsoft.Bot.Builder.Tests
 
 
         [TestMethod]
-        public async Task RecognizeIntentViaRegex()
+        [TestCategory("Intent Recognizers")]
+        [TestCategory("RegEx Intent Recognizer")]
+        public async Task Regex_RecognizeIntentViaRegex()
         {
             TestConnector connector = new TestConnector();
 
@@ -99,7 +107,9 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [TestMethod]
-        public async Task RecognizeCancelIntent()
+        [TestCategory("Intent Recognizers")]
+        [TestCategory("RegEx Intent Recognizer")]
+        public async Task Regex_RecognizeCancelIntent()
         {
             TestConnector connector = new TestConnector();
 
@@ -122,7 +132,9 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [TestMethod]
-        public async Task DoNotRecognizeCancelIntent()
+        [TestCategory("Intent Recognizers")]
+        [TestCategory("RegEx Intent Recognizer")]
+        public async Task Regex_DoNotRecognizeCancelIntent()
         {
             TestConnector connector = new TestConnector();
 
@@ -147,7 +159,9 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [TestMethod]
-        public async Task MultipleIntents()
+        [TestCategory("Intent Recognizers")]
+        [TestCategory("RegEx Intent Recognizer")]
+        public async Task Regex_MultipleIntents()
         {
             TestConnector connector = new TestConnector();
 

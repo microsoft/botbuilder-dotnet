@@ -9,10 +9,12 @@ using System.Threading.Tasks;
 namespace Microsoft.Bot.Builder.Tests
 {
     [TestClass]
-    public class RouterMiddlewareTests
+    public class Routing_Middleware
     {
         [TestMethod]
-        public async Task SimpleRoute()
+        [TestCategory("Middleware")]
+        [TestCategory("Routing - Basic")]
+        public async Task MiddlwareRouting_SimpleRoute()
         {
             var engine = new ActivityRoutingMiddleware(
                 new SimpleRouter((context) => context.Reply("routed")));
@@ -25,7 +27,9 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [TestMethod]
-        public async Task EvaluteOnlyFirstRule()
+        [TestCategory("Middleware")]
+        [TestCategory("Routing - Basic")]
+        public async Task MiddlwareRouting_EvaluteOnlyFirstRule()
         {
             var engine = new ActivityRoutingMiddleware(
                 new FirstRouter()
@@ -41,7 +45,9 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [TestMethod]
-        public async Task SkipRule()
+        [TestCategory("Middleware")]
+        [TestCategory("Routing - Basic")]
+        public async Task MiddlwareRouting_SkipRule()
         {
             var engine = new ActivityRoutingMiddleware(
                 new FirstRouter()
@@ -58,7 +64,9 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [TestMethod]
-        public async Task MatchOnElseCase()
+        [TestCategory("Middleware")]
+        [TestCategory("Routing - Basic")]
+        public async Task MiddlwareRouting_MatchOnElseCase()
         {
             var engine = new ActivityRoutingMiddleware(
                 new FirstRouter()
