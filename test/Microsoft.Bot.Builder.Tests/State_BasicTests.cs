@@ -34,8 +34,9 @@ namespace Microsoft.Bot.Builder.Tests
                        }
                    }
                 );
-            await connector.Test("set value", (a) => Assert.IsTrue(a[0].Text == "value saved", "set value failed"));
-            await connector.Test("get value", (a) => Assert.IsTrue(a[0].Text == null, "get value was incorrectly defined"));
+            await connector.Say("set value", "value saved", "set value failed")
+                .Say("get value", (a) => Assert.IsTrue(a.Text == null, "get value was incorrectly defined"))
+                .StartTest();
         }
 
         [TestMethod]
@@ -63,8 +64,9 @@ namespace Microsoft.Bot.Builder.Tests
                     }
                 );
 
-            await connector.Test("set value", (a) => Assert.IsTrue(a[0].Text == "value saved"));
-            await connector.Test("get value", (a) => Assert.IsTrue(a[0].Text == "test"));
+            await connector.Say("set value", "value saved")
+                .Say("get value", "test")
+                .StartTest();
         }
 
         [TestMethod]
@@ -92,8 +94,9 @@ namespace Microsoft.Bot.Builder.Tests
                     }
                 );
 
-            await connector.Test("set value", (a) => Assert.IsTrue(a[0].Text == "value saved"));
-            await connector.Test("get value", (a) => Assert.IsTrue(a[0].Text == "test"));
+            await connector.Say("set value", "value saved")
+                .Say("get value", "test")
+                .StartTest();
         }
 
         [TestMethod]
@@ -121,8 +124,9 @@ namespace Microsoft.Bot.Builder.Tests
                     }
                 );
 
-            await connector.Test("set value", (a) => Assert.IsTrue(a[0].Text == "value saved"));
-            await connector.Test("get value", (a) => Assert.IsTrue(a[0].Text == testGuid.ToString()));
+            await connector.Say("set value", "value saved")
+                .Say("get value", testGuid.ToString())
+                .StartTest();
         }
 
         public class CustomState : StoreItem

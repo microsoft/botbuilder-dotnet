@@ -24,17 +24,16 @@ namespace Microsoft.Bot.Builder.Tests
 
             Bot bot = new Bot(connector)
                 .Use(helpRecognizer)
-                .OnReceive(async (context, token) => {
+                .OnReceive(async (context, token) =>
+                {
                     if (context.IfIntent("HelpIntent"))
                         context.Reply("You selected HelpIntent");
                 });
 
-            await connector.Test("help", (a) => {
-                Assert.IsTrue(a[0].Type == "message");
-                Assert.IsTrue(a[0].Text == "You selected HelpIntent");
-            });
-        }       
-      
+            await connector.Say("help", "You selected HelpIntent")
+                .StartTest();
+        }
+
         [TestMethod]
         [TestCategory("Intent Recognizers")]
         [TestCategory("RegEx Intent Recognizer")]
@@ -68,7 +67,7 @@ namespace Microsoft.Bot.Builder.Tests
             Assert.IsTrue(i.Entities[0].GroupName == "One");
 
             Assert.IsTrue(i.Entities[1].ValueAs<string>() == "22222");
-            Assert.IsTrue(i.Entities[1].GroupName == "Two");                     
+            Assert.IsTrue(i.Entities[1].GroupName == "Two");
         }
 
 
@@ -93,17 +92,9 @@ namespace Microsoft.Bot.Builder.Tests
                         context.Reply("bbbb Intent");
                 });
 
-            await connector.Test("aaaaaaaaa", (a) =>
-            {
-                Assert.IsTrue(a[0].Type == "message");
-                Assert.IsTrue(a[0].Text == "aaaa Intent");
-            });
-
-            await connector.Test("bbbbbbbbb", (a) =>
-            {
-                Assert.IsTrue(a[0].Type == "message");
-                Assert.IsTrue(a[0].Text == "bbbb Intent");
-            });
+            await connector.Say("aaaaaaaaa", "aaaa Intent")
+                .Say("bbbbbbbbb", "bbbb Intent")
+                .StartTest();
         }
 
         [TestMethod]
@@ -124,11 +115,8 @@ namespace Microsoft.Bot.Builder.Tests
                         context.Reply("You selected CancelIntent");
                 });
 
-            await connector.Test("cancel", (a) =>
-            {
-                Assert.IsTrue(a[0].Type == "message");
-                Assert.IsTrue(a[0].Text == "You selected CancelIntent");
-            });
+            await connector.Say("cancel", "You selected CancelIntent")
+                .StartTest();
         }
 
         [TestMethod]
@@ -151,11 +139,8 @@ namespace Microsoft.Bot.Builder.Tests
                         context.Reply("Bot received request of type message");
                 });
 
-            await connector.Test("tacos", (a) =>
-            {
-                Assert.IsTrue(a[0].Type == "message");
-                Assert.IsTrue(a[0].Text == "Bot received request of type message");
-            });
+            await connector.Say("tacos", "Bot received request of type message")
+                .StartTest();
         }
 
         [TestMethod]
@@ -182,26 +167,11 @@ namespace Microsoft.Bot.Builder.Tests
                         context.Reply("You selected TacoIntent");
                 });
 
-            await connector.Test("help", (a) =>
-            {
-                Assert.IsTrue(a.Count == 1, "Expecting exactly 1 activity.");
-                Assert.IsTrue(a[0].Type == "message");
-                Assert.IsTrue(a[0].Text == "You selected HelpIntent");
-            });
-
-            await connector.Test("cancel", (a) =>
-            {
-                Assert.IsTrue(a.Count == 1, "Expecting exactly 1 activity.");
-                Assert.IsTrue(a[0].Type == "message");
-                Assert.IsTrue(a[0].Text == "You selected CancelIntent");
-            });
-
-            await connector.Test("taco", (a) =>
-            {
-                Assert.IsTrue(a.Count == 1, "Expecting exactly 1 activity.");
-                Assert.IsTrue(a[0].Type == "message");
-                Assert.IsTrue(a[0].Text == "You selected TacoIntent");
-            });
+            await connector
+                .Send("help").Reply("You selected HelpIntent")
+                .Send("cancel").Reply("You selected CancelIntent")
+                .Send("taco").Reply("You selected TacoIntent")
+                .StartTest();
         }
     }
 }

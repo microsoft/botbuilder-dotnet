@@ -63,6 +63,7 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Connector_TestConnectorTests.cs" />
     <Compile Include="State_BasicTests.cs" />
     <Compile Include="Dialog_BasicTests.cs" />
     <Compile Include="Intent_MiddlewareTests.cs" />

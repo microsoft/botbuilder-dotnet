@@ -20,15 +20,12 @@ namespace Microsoft.Bot.Builder.Tests
             string messageText = Guid.NewGuid().ToString();
 
             TestConnector connector = new TestConnector();
-            connector.ValidationsToRunOnPost(
-                (responses) => Assert.AreEqual(responses.Count, 1),
-                (responses) => Assert.AreEqual(messageText, (responses.First() as IMessageActivity).Text)
-            );
-
             Bot bot = new Bot(connector)
                 .Use(new EchoMiddleWare());
             
-            await connector.Test(messageText);
+            await connector
+                .Send(messageText).Reply(messageText)
+                .StartTest();
         }       
     }
 
