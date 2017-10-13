@@ -34,8 +34,8 @@ namespace Microsoft.Bot.Builder.Tests
                        }
                    }
                 );
-            await connector.Say("set value", "value saved", "set value failed")
-                .Say("get value", (a) => Assert.IsTrue(a.Text == null, "get value was incorrectly defined"))
+            await connector.Test("set value", "value saved", "set value failed")
+                .Test("get value", (a) => Assert.IsTrue(a.Text == null, "get value was incorrectly defined"))
                 .StartTest();
         }
 
@@ -64,8 +64,8 @@ namespace Microsoft.Bot.Builder.Tests
                     }
                 );
 
-            await connector.Say("set value", "value saved")
-                .Say("get value", "test")
+            await connector.Test("set value", "value saved")
+                .Test("get value", "test")
                 .StartTest();
         }
 
@@ -94,8 +94,8 @@ namespace Microsoft.Bot.Builder.Tests
                     }
                 );
 
-            await connector.Say("set value", "value saved")
-                .Say("get value", "test")
+            await connector.Test("set value", "value saved")
+                .Test("get value", "test")
                 .StartTest();
         }
 
@@ -124,8 +124,8 @@ namespace Microsoft.Bot.Builder.Tests
                     }
                 );
 
-            await connector.Say("set value", "value saved")
-                .Say("get value", testGuid.ToString())
+            await connector.Test("set value", "value saved")
+                .Test("get value", testGuid.ToString())
                 .StartTest();
         }
 

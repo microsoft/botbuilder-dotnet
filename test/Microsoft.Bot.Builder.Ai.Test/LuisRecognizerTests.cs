@@ -48,7 +48,7 @@ namespace Microsoft.Bot.Builder.Ai.Tests
                 });
             await connector
                 .Send("I want ham and cheese sandwich!")
-                    .Reply("sandwichorder", "should have sandwichorder as top intent!")
+                    .AssertReply("sandwichorder", "should have sandwichorder as top intent!")
                 .StartTest();
         }
     }

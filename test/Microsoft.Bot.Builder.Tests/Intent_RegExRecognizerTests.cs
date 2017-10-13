@@ -30,7 +30,7 @@ namespace Microsoft.Bot.Builder.Tests
                         context.Reply("You selected HelpIntent");
                 });
 
-            await connector.Say("help", "You selected HelpIntent")
+            await connector.Test("help", "You selected HelpIntent")
                 .StartTest();
         }
 
@@ -92,8 +92,8 @@ namespace Microsoft.Bot.Builder.Tests
                         context.Reply("bbbb Intent");
                 });
 
-            await connector.Say("aaaaaaaaa", "aaaa Intent")
-                .Say("bbbbbbbbb", "bbbb Intent")
+            await connector.Test("aaaaaaaaa", "aaaa Intent")
+                .Test("bbbbbbbbb", "bbbb Intent")
                 .StartTest();
         }
 
@@ -115,7 +115,7 @@ namespace Microsoft.Bot.Builder.Tests
                         context.Reply("You selected CancelIntent");
                 });
 
-            await connector.Say("cancel", "You selected CancelIntent")
+            await connector.Test("cancel", "You selected CancelIntent")
                 .StartTest();
         }
 
@@ -139,7 +139,7 @@ namespace Microsoft.Bot.Builder.Tests
                         context.Reply("Bot received request of type message");
                 });
 
-            await connector.Say("tacos", "Bot received request of type message")
+            await connector.Test("tacos", "Bot received request of type message")
                 .StartTest();
         }
 
@@ -168,9 +168,9 @@ namespace Microsoft.Bot.Builder.Tests
                 });
 
             await connector
-                .Send("help").Reply("You selected HelpIntent")
-                .Send("cancel").Reply("You selected CancelIntent")
-                .Send("taco").Reply("You selected TacoIntent")
+                .Send("help").AssertReply("You selected HelpIntent")
+                .Send("cancel").AssertReply("You selected CancelIntent")
+                .Send("taco").AssertReply("You selected TacoIntent")
                 .StartTest();
         }
     }

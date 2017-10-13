@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Builder.Tests
             Bot bot = new Bot(connector)
                 .Use(engine);
 
-            await connector.Say("test", "routed")
+            await connector.Test("test", "routed")
                 .StartTest();
         }
 
@@ -43,7 +43,7 @@ namespace Microsoft.Bot.Builder.Tests
                 .Use(engine);
 
             await connector
-                .Say("test", "routed")
+                .Test("test", "routed")
                 .StartTest();
         }
 
@@ -63,7 +63,7 @@ namespace Microsoft.Bot.Builder.Tests
             Bot bot = new Bot(connector)
                 .Use(engine);
 
-            await connector.Say("test", "routed")
+            await connector.Test("test", "routed")
                 .StartTest();
         }
 
@@ -86,7 +86,7 @@ namespace Microsoft.Bot.Builder.Tests
             Bot bot = new Bot(connector)
                 .Use(engine);
 
-            await connector.Say("test", "routed")
+            await connector.Test("test", "routed")
                 .StartTest();
         }
     }

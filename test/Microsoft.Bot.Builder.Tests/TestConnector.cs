@@ -12,8 +12,7 @@ namespace Microsoft.Bot.Builder.Tests
     public class TestConnector : Connector
     {
         private int _nextId = 0;
-        //protected delegate void TestValidator(IList<Activity> activities);
-
+        private readonly Queue<Activity> botReplies = new Queue<Activity>();
 
         public TestConnector(ConversationReference reference = null)
         {
@@ -36,11 +35,25 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         public ConversationReference ConversationReference { get; set; }
-        public Queue<Activity> BotReplies { get; set; } = new Queue<Activity>();
+
+
+        /// <summary>
+        /// get next activity or null if none
+        /// </summary>
+        /// <returns></returns>
+        public Activity GetNextReply()
+        {
+            lock (this.botReplies)
+            {
+                if (this.botReplies.Count > 0)
+                    return this.botReplies.Dequeue();
+            }
+            return null;
+        }
 
         public Activity MakeActivity(string text = null)
         {
-            Activity a = new Activity
+            Activity activity = new Activity
             {
                 Type = ActivityTypes.Message,
                 From = ConversationReference.User,
@@ -51,10 +64,7 @@ namespace Microsoft.Bot.Builder.Tests
                 Text = text
             };
 
-            //Attachments = Array.Empty<Attachment>(),
-            //Entities = Array.Empty<Entity>(),
-
-            return a;
+            return activity;
         }
 
         /// <summary>
@@ -65,41 +75,35 @@ namespace Microsoft.Bot.Builder.Tests
         /// <returns></returns>
         public override async Task Post(IList<Activity> activities, CancellationToken token)
         {
-            foreach (var activity in activities)
-                this.BotReplies.Enqueue(activity);
-
-        }
-
-        /** INTERNAL implementation of `Connector.post()`. */
-        public async Task<ReceiveResponse> Post(Activity[] activities)
-        {
-            lock (this.BotReplies)
+            lock (this.botReplies)
             {
                 foreach (var activity in activities)
-                    this.BotReplies.Enqueue(activity);
+                    this.botReplies.Enqueue(activity);
             }
-
-            return new ReceiveResponse() { Status = HttpStatusCode.OK };
         }
 
         /* INTERNAL */
-        internal Task _sendActivityToBot(string userSays)
+        internal Task sendActivityToBot(string userSays)
         {
-            return this._sendActivityToBot(this.MakeActivity(userSays));
+            return this.sendActivityToBot(this.MakeActivity(userSays));
         }
 
-        internal Task _sendActivityToBot(Activity activity)
+        internal Task sendActivityToBot(Activity activity)
         {
-            // ready for next reply
-            if (activity.Type == null)
-                activity.Type = ActivityTypes.Message;
-            activity.ChannelId = this.ConversationReference.ChannelId;
-            activity.From = this.ConversationReference.User;
-            activity.Recipient = this.ConversationReference.Bot;
-            activity.Conversation = this.ConversationReference.Conversation;
-            activity.ServiceUrl = this.ConversationReference.ServiceUrl;
-            var id = activity.Id = (this._nextId++).ToString();
-            return this.Receive(activity, new CancellationToken());
+            lock (this.ConversationReference)
+            {
+                // ready for next reply
+                if (activity.Type == null)
+                    activity.Type = ActivityTypes.Message;
+                activity.ChannelId = this.ConversationReference.ChannelId;
+                activity.From = this.ConversationReference.User;
+                activity.Recipient = this.ConversationReference.Bot;
+                activity.Conversation = this.ConversationReference.Conversation;
+                activity.ServiceUrl = this.ConversationReference.ServiceUrl;
+
+                var id = activity.Id = (this._nextId++).ToString();
+                return this.Receive(activity, new CancellationToken());
+            }
         }
 
         /// <summary>
@@ -107,9 +111,9 @@ namespace Microsoft.Bot.Builder.Tests
         /// </summary>
         /// <param name="userSays"></param>
         /// <returns></returns>
-        public Test Send(string userSays)
+        public TestFlow Send(string userSays)
         {
-            return new Test(this._sendActivityToBot(userSays), this);
+            return new TestFlow(this.sendActivityToBot(userSays), this);
         }
 
         /// <summary>
@@ -117,19 +121,19 @@ namespace Microsoft.Bot.Builder.Tests
         /// </summary>
         /// <param name="userSends"></param>
         /// <returns></returns>
-        public Test Send(Activity userSends)
+        public TestFlow Send(Activity userSends)
         {
-            return new Test(this._sendActivityToBot(userSends), this);
+            return new TestFlow(this.sendActivityToBot(userSends), this);
         }
 
         /// <summary>
         /// Wait for period
         /// </summary>
-        /// <param name="delay"></param>
+        /// <param name="ms"></param>
         /// <returns></returns>
-        public Test Delay(int delay)
+        public TestFlow Delay(UInt32 ms)
         {
-            return new Test(Task.Delay(delay), this);
+            return new TestFlow(Task.Delay((int)ms), this);
         }
 
         /// <summary>
@@ -137,11 +141,11 @@ namespace Microsoft.Bot.Builder.Tests
         /// </summary>
         /// <param name="expected"></param>
         /// <param name="description"></param>
-        /// <param name="delay"></param>
+        /// <param name="timeout"></param>
         /// <returns></returns>
-        public Test Reply(string expected, string description = null, int delay = 3000)
+        public TestFlow AssertReply(string expected, string description = null, UInt32 timeout = 3000)
         {
-            return new Test(Task.CompletedTask, this).Reply(expected, description, delay);
+            return new TestFlow(Task.CompletedTask, this).AssertReply(expected, description, timeout);
         }
 
         /// <summary>
@@ -149,11 +153,11 @@ namespace Microsoft.Bot.Builder.Tests
         /// </summary>
         /// <param name="expected"></param>
         /// <param name="description"></param>
-        /// <param name="delay"></param>
+        /// <param name="timeout"></param>
         /// <returns></returns>
-        public Test Reply(Activity expected, string description = null, int delay = 3000)
+        public TestFlow AssertReply(Activity expected, string description = null, UInt32 timeout = 3000)
         {
-            return new Test(Task.CompletedTask, this).Reply(expected, description, delay);
+            return new TestFlow(Task.CompletedTask, this).AssertReply(expected, description, timeout);
         }
 
         /// <summary>
@@ -161,11 +165,11 @@ namespace Microsoft.Bot.Builder.Tests
         /// </summary>
         /// <param name="expected"></param>
         /// <param name="description"></param>
-        /// <param name="delay"></param>
+        /// <param name="timeout"></param>
         /// <returns></returns>
-        public Test Reply(Action<Activity> expected, string description = null, int delay = 3000)
+        public TestFlow AssertReply(Action<Activity> expected, string description = null, UInt32 timeout = 3000)
         {
-            return new Test(Task.CompletedTask, this).Reply(expected, description, delay);
+            return new TestFlow(Task.CompletedTask, this).AssertReply(expected, description, timeout);
         }
 
         /// <summary>
@@ -173,64 +177,64 @@ namespace Microsoft.Bot.Builder.Tests
         /// </summary>
         /// <param name="candidates"></param>
         /// <param name="description"></param>
-        /// <param name="delay"></param>
+        /// <param name="timeout"></param>
         /// <returns></returns>
-        public Test ReplyOneOf(string[] candidates, string description = null, int delay = 3000)
+        public TestFlow AssertReplyOneOf(string[] candidates, string description = null, UInt32 timeout = 3000)
         {
-            return new Test(Task.CompletedTask, this).ReplyOneOf(candidates, description, delay);
+            return new TestFlow(Task.CompletedTask, this).AssertReplyOneOf(candidates, description, timeout);
         }
 
 
         /// <summary>
-        /// Say() -> shortcut for .Send(user).Reply(Expected)
+        /// Say() -> shortcut for .Send(user).AssertReply(Expected)
         /// </summary>
         /// <param name="userSays"></param>
         /// <param name="expected"></param>
         /// <param name="description"></param>
-        /// <param name="delay"></param>
+        /// <param name="timeout"></param>
         /// <returns></returns>
-        public Test Say(string userSays, string expected, string description = null, int delay = 3000)
+        public TestFlow Test(string userSays, string expected, string description = null, UInt32 timeout = 3000)
         {
-            return new Test(Task.CompletedTask, this).Send(userSays).Reply(expected, description, delay);
+            return new TestFlow(Task.CompletedTask, this).Send(userSays).AssertReply(expected, description, timeout);
         }
 
         /// <summary>
-        /// Say() -> shortcut for .Send(user).Reply(Expected)
+        /// Say() -> shortcut for .Send(user).AssertReply(Expected)
         /// </summary>
         /// <param name="userSays"></param>
         /// <param name="expected"></param>
         /// <param name="description"></param>
-        /// <param name="delay"></param>
+        /// <param name="timeout"></param>
         /// <returns></returns>
-        public Test Say(string userSays, Activity expected, string description = null, int delay = 3000)
+        public TestFlow Test(string userSays, Activity expected, string description = null, UInt32 timeout = 3000)
         {
-            return new Test(Task.CompletedTask, this).Send(userSays).Reply(expected, description, delay);
+            return new TestFlow(Task.CompletedTask, this).Send(userSays).AssertReply(expected, description, timeout);
         }
 
         /// <summary>
-        /// Say() -> shortcut for .Send(user).Reply(Expected)
+        /// Say() -> shortcut for .Send(user).AssertReply(Expected)
         /// </summary>
         /// <param name="userSays"></param>
         /// <param name="expected"></param>
         /// <param name="description"></param>
-        /// <param name="delay"></param>
+        /// <param name="timeout"></param>
         /// <returns></returns>
-        public Test Say(string userSays, Action<Activity> expected, string description = null, int delay = 3000)
+        public TestFlow Test(string userSays, Action<Activity> expected, string description = null, UInt32 timeout = 3000)
         {
-            return new Test(Task.CompletedTask, this).Send(userSays).Reply(expected, description, delay);
+            return new TestFlow(Task.CompletedTask, this).Send(userSays).AssertReply(expected, description, timeout);
         }
     }
 
 
-    public class Test
+    public class TestFlow
     {
-        TestConnector connector;
-        Task previous;
+        readonly TestConnector connector;
+        readonly Task testTask;
 
 
-        public Test(Task previous, TestConnector connector)
+        public TestFlow(Task testTask, TestConnector connector)
         {
-            this.previous = previous ?? Task.CompletedTask;
+            this.testTask = testTask ?? Task.CompletedTask;
             this.connector = connector;
         }
 
@@ -240,7 +244,7 @@ namespace Microsoft.Bot.Builder.Tests
         /// <returns></returns>
         public Task StartTest()
         {
-            return this.previous;
+            return this.testTask;
         }
 
         /// <summary>
@@ -248,12 +252,15 @@ namespace Microsoft.Bot.Builder.Tests
         /// </summary>
         /// <param name="userSays"></param>
         /// <returns></returns>
-        public Test Send(string userSays)
+        public TestFlow Send(string userSays)
         {
-            return new Test(this.previous.ContinueWith((task) =>
+            if (userSays == null)
+                throw new ArgumentNullException("You have to pass a userSays parameter");
+
+            return new TestFlow(this.testTask.ContinueWith((task) =>
             {
                 Assert.IsFalse(task.IsFaulted);
-                return this.connector._sendActivityToBot(userSays);
+                return this.connector.sendActivityToBot(userSays);
             }), this.connector);
         }
 
@@ -262,26 +269,29 @@ namespace Microsoft.Bot.Builder.Tests
         /// </summary>
         /// <param name="userActivity"></param>
         /// <returns></returns>
-        public Test Send(Activity userActivity)
+        public TestFlow Send(Activity userActivity)
         {
-            return new Test(this.previous.ContinueWith((task) =>
+            if (userActivity == null)
+                throw new ArgumentNullException("You have to pass an Activity");
+
+            return new TestFlow(this.testTask.ContinueWith((task) =>
             {
                 Assert.IsFalse(task.IsFaulted);
-                return this.connector._sendActivityToBot(userActivity);
+                return this.connector.sendActivityToBot(userActivity);
             }), this.connector);
         }
 
         /// <summary>
         /// Delay for time period 
         /// </summary>
-        /// <param name="delay"></param>
+        /// <param name="ms"></param>
         /// <returns></returns>
-        public Test Delay(int delay)
+        public TestFlow Delay(UInt32 ms)
         {
-            return new Test(this.previous.ContinueWith((task) =>
+            return new TestFlow(this.testTask.ContinueWith((task) =>
             {
                 Assert.IsFalse(task.IsFaulted);
-                return Task.Delay(delay);
+                return Task.Delay((int)ms);
             }), this.connector);
         }
 
@@ -290,11 +300,11 @@ namespace Microsoft.Bot.Builder.Tests
         /// </summary>
         /// <param name="expected"></param>
         /// <param name="description"></param>
-        /// <param name="delay"></param>
+        /// <param name="timeout"></param>
         /// <returns></returns>
-        public Test Reply(string expected, string description = null, int delay = 3000)
+        public TestFlow AssertReply(string expected, string description = null, UInt32 timeout = 3000)
         {
-            return this.Reply(this.connector.MakeActivity(expected), description, delay);
+            return this.AssertReply(this.connector.MakeActivity(expected), description, timeout);
         }
 
         /// <summary>
@@ -302,28 +312,28 @@ namespace Microsoft.Bot.Builder.Tests
         /// </summary>
         /// <param name="expected"></param>
         /// <param name="description"></param>
-        /// <param name="delay"></param>
+        /// <param name="timeout"></param>
         /// <returns></returns>
-        public Test Reply(Activity expected, string description = null, int delay = 3000)
+        public TestFlow AssertReply(Activity expected, string description = null, UInt32 timeout = 3000)
         {
-            return this.Reply((reply) =>
+            return this.AssertReply((reply) =>
             {
                 Assert.AreEqual(expected.Type, reply.Type, $"{description}: Type should match");
                 Assert.AreEqual(expected.Text, reply.Text, $"{description}: Text should match");
                 // TODO, expand this to do all properties set on expected
-            }, description, delay);
+            }, description, timeout);
         }
 
         /// <summary>
-        /// Asser that the reply matches a custom validation routine
+        /// Assert that the reply matches a custom validation routine
         /// </summary>
         /// <param name="validateActivity"></param>
         /// <param name="description"></param>
-        /// <param name="delay"></param>
+        /// <param name="timeout"></param>
         /// <returns></returns>
-        public Test Reply(Action<Activity> validateActivity, string description, int delay = 3000)
+        public TestFlow AssertReply(Action<Activity> validateActivity, string description, UInt32 timeout = 3000)
         {
-            return new Test(this.previous.ContinueWith((task) =>
+            return new TestFlow(this.testTask.ContinueWith((task) =>
             {
                 Assert.IsFalse(task.IsFaulted);
                 var start = DateTime.UtcNow;
@@ -331,20 +341,13 @@ namespace Microsoft.Bot.Builder.Tests
                 {
                     var current = DateTime.UtcNow;
 
-                    if ((current - start).TotalMilliseconds > delay)
+                    if ((current - start).TotalMilliseconds > timeout)
                     {
-                        Assert.Fail($"{delay}ms Timed out waiting for:${description}");
+                        Assert.Fail($"{timeout}ms Timed out waiting for:${description}");
                     }
 
-                    Activity replyActivity = null;
-                    lock (this.connector.BotReplies)
-                    {
-                        // if we have replies
-                        if (this.connector.BotReplies.Count > 0)
-                        {
-                            replyActivity = this.connector.BotReplies.Dequeue();
-                        }
-                    }
+                    Activity replyActivity = this.connector.GetNextReply();
+                    // if we have a reply
                     if (replyActivity != null)
                     {
                         validateActivity(replyActivity);
@@ -356,54 +359,54 @@ namespace Microsoft.Bot.Builder.Tests
 
 
         /// <summary>
-        /// Say() -> shortcut for .Send(user).Reply(Expected)
+        /// Say() -> shortcut for .Send(user).AssertReply(Expected)
         /// </summary>
         /// <param name="userSays"></param>
         /// <param name="expected"></param>
         /// <param name="description"></param>
-        /// <param name="delay"></param>
+        /// <param name="timeout"></param>
         /// <returns></returns>
-        public Test Say(string userSays, string expected, string description = null, int delay = 3000)
+        public TestFlow Test(string userSays, string expected, string description = null, UInt32 timeout = 3000)
         {
             if (expected == null)
-                throw new Exception(".say() Missing expected parameter");
+                throw new ArgumentNullException(nameof(expected));
 
             return this.Send(userSays)
-                .Reply(expected, description, delay);
+                .AssertReply(expected, description, timeout);
         }
 
         /// <summary>
-        /// Say() -> shortcut for .Send(user).Reply(Expected)
+        /// Test() -> shortcut for .Send(user).AssertReply(Expected)
         /// </summary>
         /// <param name="userSays"></param>
         /// <param name="expected"></param>
         /// <param name="description"></param>
-        /// <param name="delay"></param>
+        /// <param name="timeout"></param>
         /// <returns></returns>
-        public Test Say(string userSays, Activity expected, string description = null, int delay = 3000)
+        public TestFlow Test(string userSays, Activity expected, string description = null, UInt32 timeout = 3000)
         {
             if (expected == null)
-                throw new Exception(".say() Missing expected parameter");
+                throw new ArgumentNullException(nameof(expected));
 
             return this.Send(userSays)
-                .Reply(expected, description, delay);
+                .AssertReply(expected, description, timeout);
         }
 
         /// <summary>
-        /// Say() -> shortcut for .Send(user).Reply(Expected)
+        /// Say() -> shortcut for .Send(user).AssertReply(Expected)
         /// </summary>
         /// <param name="userSays"></param>
         /// <param name="expected"></param>
         /// <param name="description"></param>
-        /// <param name="delay"></param>
+        /// <param name="timeout"></param>
         /// <returns></returns>
-        public Test Say(string userSays, Action<Activity> expected, string description = null, int delay = 3000)
+        public TestFlow Test(string userSays, Action<Activity> expected, string description = null, UInt32 timeout = 3000)
         {
             if (expected == null)
-                throw new Exception(".say() Missing expected parameter");
+                throw new ArgumentNullException(nameof(expected));
 
             return this.Send(userSays)
-                .Reply(expected, description, delay);
+                .AssertReply(expected, description, timeout);
         }
 
         /// <summary>
@@ -411,13 +414,14 @@ namespace Microsoft.Bot.Builder.Tests
         /// </summary>
         /// <param name="candidates"></param>
         /// <param name="description"></param>
-        /// <param name="delay"></param>
+        /// <param name="timeout"></param>
         /// <returns></returns>
-        public Test ReplyOneOf(string[] candidates, string description = null, int delay = 3000)
+        public TestFlow AssertReplyOneOf(string[] candidates, string description = null, UInt32 timeout = 3000)
         {
-            if (candidates == null || candidates.Length == 0)
-                throw new Exception(".replyOneOf() requires canidates");
-            return this.Reply((reply) =>
+            if (candidates == null)
+                throw new ArgumentNullException(nameof(candidates));
+
+            return this.AssertReply((reply) =>
             {
                 foreach (var candidate in candidates)
                 {
@@ -425,7 +429,7 @@ namespace Microsoft.Bot.Builder.Tests
                         return;
                 }
                 Assert.Fail(description ?? $"Not one of candidates: {String.Join("\n", candidates)}");
-            }, description, delay);
+            }, description, timeout);
         }
     }
 }

@@ -14,15 +14,13 @@ namespace Microsoft.Bot.Builder.Tests
     [TestCategory("Connector")]
     public class Connector_TestConnectorTests
     {
-        [TestMethod]
-        public TestConnector CreateConnector()
+        private TestConnector CreateConnector()
         {
             TestConnector connector = new TestConnector();
             Bot bot = new Bot(connector)
                 .OnReceive(
                     async (context, token) =>
                     {
-                        Assert.IsNotNull(context.State.User, "state.user should exist");
                         switch (context.Request.Text)
                         {
                             case "count":
@@ -46,9 +44,9 @@ namespace Microsoft.Bot.Builder.Tests
         {
             var connector = this.CreateConnector();
             await connector
-                .Say("foo", "echo:foo", "say with string works")
-                .Say("foo", new Activity(ActivityTypes.Message, text: "echo:foo"), "say with activity works")
-                .Say("foo", (activity) => Assert.AreEqual("echo:foo", activity.Text), "say with validator works")
+                .Test("foo", "echo:foo", "say with string works")
+                .Test("foo", new Activity(ActivityTypes.Message, text: "echo:foo"), "say with activity works")
+                .Test("foo", (activity) => Assert.AreEqual("echo:foo", activity.Text), "say with validator works")
                 .StartTest();
         }
 
@@ -58,9 +56,9 @@ namespace Microsoft.Bot.Builder.Tests
         {
             var connector = this.CreateConnector();
             await connector
-                .Send("foo").Reply("echo:foo", "send/reply with string works")
-                .Send("foo").Reply(new Activity(ActivityTypes.Message, text: "echo:foo"), "send/reply with activity works")
-                .Send("foo").Reply((activity) => Assert.AreEqual("echo:foo", activity.Text), "send/reply with validator works")
+                .Send("foo").AssertReply("echo:foo", "send/reply with string works")
+                .Send("foo").AssertReply(new Activity(ActivityTypes.Message, text: "echo:foo"), "send/reply with activity works")
+                .Send("foo").AssertReply((activity) => Assert.AreEqual("echo:foo", activity.Text), "send/reply with validator works")
                 .StartTest();
         }
 
@@ -69,7 +67,7 @@ namespace Microsoft.Bot.Builder.Tests
         {
             var connector = this.CreateConnector();
             await connector
-                .Send("foo").ReplyOneOf(new string[] { "echo:bar", "echo:foo", "echo:blat" }, "say with string works")
+                .Send("foo").AssertReplyOneOf(new string[] { "echo:bar", "echo:foo", "echo:blat" }, "say with string works")
                 .StartTest();
         }
 
@@ -79,13 +77,13 @@ namespace Microsoft.Bot.Builder.Tests
         {
             var connector = this.CreateConnector();
             await connector
-                .Send("foo").Reply("echo:foo")
-                .Send("bar").Reply("echo:bar")
+                .Send("foo").AssertReply("echo:foo")
+                .Send("bar").AssertReply("echo:bar")
                 .Send("ignore")
                 .Send("count")
-                    .Reply("one")
-                    .Reply("two")
-                    .Reply("three")
+                    .AssertReply("one")
+                    .AssertReply("two")
+                    .AssertReply("three")
                 .StartTest();
         }
     }

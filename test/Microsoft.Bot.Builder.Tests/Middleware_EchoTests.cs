@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Builder.Tests
                 .Use(new EchoMiddleWare());
             
             await connector
-                .Send(messageText).Reply(messageText)
+                .Send(messageText).AssertReply(messageText)
                 .StartTest();
         }       
     }
