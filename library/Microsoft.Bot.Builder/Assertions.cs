@@ -35,5 +35,13 @@ namespace Microsoft.Bot.Builder
             if (activityList == null)
                 throw new ArgumentNullException(nameof(activityList)); 
         }
+        public static void AssertStorage(BotContext context)
+        {
+            ContextNotNull(context);
+
+            if (context.Storage == null)
+                throw new InvalidOperationException("context.storage not found.");
+        }
+
     }
 }

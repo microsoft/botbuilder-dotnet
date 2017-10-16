@@ -75,7 +75,7 @@ namespace Microsoft.Bot.Builder
 
         protected virtual async Task<StoreItems> Read(BotContext context, IList<String> keys = null)
         {
-            AssertStorage(context);
+            BotAssert.AssertStorage(context);
 
             if (keys == null)
                 keys = new List<String>(); 
@@ -101,7 +101,8 @@ namespace Microsoft.Bot.Builder
 
         protected virtual async Task Write (BotContext context, StoreItems changes = null)
         {
-            AssertStorage(context);
+            BotAssert.AssertStorage(context);
+
             if (changes == null)
                 changes = new StoreItems(); 
                         
@@ -150,12 +151,6 @@ namespace Microsoft.Bot.Builder
         {
             var conversation = context.ConversationReference;
             return $"{ConversationKeyRoot}/{conversation.ChannelId}/{conversation.Conversation.Id}";
-        }
-
-        private static void AssertStorage(BotContext context)
-        {
-            if (context.Storage == null)
-                throw new InvalidOperationException("BotStateManager: context.storage not found.");
         }
     }
 }
