@@ -1,24 +1,31 @@
 ﻿using System;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Tests;
 using System.Collections.Generic;
 using Microsoft.Bot.Builder.Storage;
+using System.IO;
+using System.Diagnostics;
 
 namespace Microsoft.Bot.Builder.Ai.Tests
 {
     [TestClass]
     public class LuisRecognizerTests
     {
-        // Taken from the JS SDK File "LuisRecognizerTests.js"
-        public const string luisAppId = "165ecd1b-5643-4914-aea8-cddcf2b5d9e3";
-        public const string subscriptionKey = "a5f892758b174b32b6d87b7b58f09477";
+        public string luisAppId = TestUtilities.GetKey("LUISAPPID");
+        public string subscriptionKey = TestUtilities.GetKey("LUISAPPKEY");
 
         [TestMethod]
         [TestCategory("AI")]
         [TestCategory("Luis")]
         public async Task Luis_TopIntentAndEntities()
         {
+            if (luisAppId == null || subscriptionKey == null)
+            {
+                Debug.WriteLine($"Missing Luis Key- Skipping test");
+                return;
+            }
             LuisRecognizerMiddleware recognizer =
                 new LuisRecognizerMiddleware(luisAppId, subscriptionKey);
             var context = TestUtilities.CreateEmptyContext();
@@ -37,6 +44,12 @@ namespace Microsoft.Bot.Builder.Ai.Tests
         [TestCategory("Luis")]
         public async Task Luis_TopIntentPopulated()
         {
+            if (luisAppId == null || subscriptionKey == null)
+            {
+                Debug.WriteLine($"Missing Luis Key- Skipping test");
+                return;
+            }
+
             TestConnector connector = new TestConnector();
             Bot bot = new Bot(connector)
                 .Use(new MemoryStorage())

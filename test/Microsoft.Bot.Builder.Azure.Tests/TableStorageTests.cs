@@ -4,12 +4,10 @@ using Microsoft.Bot.Builder.Azure;
 using Microsoft.Bot.Builder.Tests;
 using System;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace Microsoft.Bot.Builder.Azure.Tests
 {
-    /// <summary>
-    /// NOTE: THESE TESTS REQUIRE THAT THE AZURE STORAGE EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
-    /// </summary>
     [TestClass]
     [TestCategory("Storage")]
     [TestCategory("Storage - Azure Tables")]
@@ -21,31 +19,42 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 
         private static TestContext _testContext;
 
+        private static string emulatorPath = Environment.ExpandEnvironmentVariables(@"%ProgramFiles(x86)%\Microsoft SDKs\Azure\Storage Emulator\azurestorageemulator2.exe");
+        private const string noEmulatorMessage = "This test requires Azure Storage Emulator! go to https://go.microsoft.com/fwlink/?LinkId=717179 to download and install.";
+
+        public bool hasStorageEmulator()
+        {
+            return File.Exists(emulatorPath);
+        }
+
         [ClassInitialize]
         public static void SetupTests(TestContext testContext)
         {
             _testContext = testContext;
         }
 
-        // NOTE: THESE TESTS REQUIRE THAT THE AZURE STORAGE EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
         [TestInitialize]
         public void TestInit()
         {
-            storage = new AzureTableStorage("UseDevelopmentStorage=true", TestContext.TestName + TestContext.GetHashCode().ToString("x"));
+            if (hasStorageEmulator())
+                storage = new AzureTableStorage("UseDevelopmentStorage=true", TestContext.TestName + TestContext.GetHashCode().ToString("x"));
         }
 
-        // NOTE: THESE TESTS REQUIRE THAT THE AZURE STORAGE EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
         [TestCleanup]
         public async Task TestCleanUp()
         {
-            AzureTableStorage store = (AzureTableStorage)storage;
-            await store.Table.DeleteIfExistsAsync();
+            if (storage != null)
+            {
+                AzureTableStorage store = (AzureTableStorage)storage;
+                await store.Table.DeleteIfExistsAsync();
+            }
         }
 
         // NOTE: THESE TESTS REQUIRE THAT THE AZURE STORAGE EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
         [TestMethod]
         public async Task CreateObjectTest()
         {
+            Assert.IsTrue(hasStorageEmulator(), noEmulatorMessage);
             await base._createObjectTest(storage);
         }
 
@@ -53,6 +62,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestMethod]
         public async Task ReadUnknownTest()
         {
+            Assert.IsTrue(hasStorageEmulator(), noEmulatorMessage);
             await base._readUnknownTest(storage);
         }
 
@@ -60,6 +70,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestMethod]
         public async Task UpdateObjectTest()
         {
+            Assert.IsTrue(hasStorageEmulator(), noEmulatorMessage);
             await base._updateObjectTest(storage);
         }
 
@@ -67,6 +78,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestMethod]
         public async Task DeleteObjectTest()
         {
+            Assert.IsTrue(hasStorageEmulator(), noEmulatorMessage);
             await base._deleteObjectTest(storage);
         }
 
@@ -74,6 +86,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestMethod]
         public async Task HandleCrazyKeys()
         {
+            Assert.IsTrue(hasStorageEmulator(), noEmulatorMessage);
             await base._handleCrazyKeys(storage);
         }
     }
