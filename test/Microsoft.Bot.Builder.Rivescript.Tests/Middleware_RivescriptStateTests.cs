@@ -1,4 +1,5 @@
-﻿using Microsoft.Bot.Builder.Tests;
+﻿using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.Tests;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Threading.Tasks;
@@ -29,9 +30,9 @@ namespace Microsoft.Bot.Builder.Rivescript.Tests
                            +hello bot
                            -Test <get name>");
 
-            TestConnector connector = new TestConnector();
+            var adapter = new TestAdapter();
 
-            Bot bot = new Bot(connector)
+            Bot bot = new Bot(adapter)
                 .Use(new Storage.MemoryStorage())
                 .Use(new BotStateManager())
                 .Use(new InjectState((context) => {
@@ -40,7 +41,7 @@ namespace Microsoft.Bot.Builder.Rivescript.Tests
                 }))
                 .Use(new RivescriptMiddleware(fileName));
 
-            await connector
+            await adapter
                 .Send("Hello bot").AssertReply("Test " + name)
                 .StartTest();
         }
@@ -63,9 +64,9 @@ namespace Microsoft.Bot.Builder.Rivescript.Tests
                            + value is *
                            - <set test=<star>>value is <get test>");
 
-            TestConnector connector = new TestConnector();
+            var adapter = new TestAdapter();
 
-            Bot bot = new Bot(connector)
+            Bot bot = new Bot(adapter)
                 .Use(new Storage.MemoryStorage())
                 .Use(new BotStateManager())
                 .Use(new RivescriptMiddleware(fileName))
@@ -79,7 +80,7 @@ namespace Microsoft.Bot.Builder.Rivescript.Tests
                     })
                 );
 
-            await connector
+            await adapter
                 .Send("value is " + uglyGuid).AssertReply("value is " + uglyGuid)
                 .StartTest();
 

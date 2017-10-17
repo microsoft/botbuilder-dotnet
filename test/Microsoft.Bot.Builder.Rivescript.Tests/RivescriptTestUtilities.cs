@@ -1,4 +1,5 @@
-﻿using Microsoft.Bot.Builder.Tests;
+﻿using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.Tests;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -55,15 +56,15 @@ namespace Microsoft.Bot.Builder.Rivescript.Tests
 
             return tempFile;
         }
-        public static TestConnector CreateSimpleRivescriptBot(string fileName)
+        public static TestAdapter CreateSimpleRivescriptBot(string fileName)
         {
-            TestConnector connector = new TestConnector();
-            Bot bot = new Bot(connector)
+            var adapter = new TestAdapter();
+            Bot bot = new Bot(adapter)
                 .Use(new Storage.MemoryStorage())
                 .Use(new BotStateManager())
                 .Use(new RivescriptMiddleware(fileName));
 
-            return connector;
+            return adapter;
         }
         public static void CleanupTempFiles()
         {

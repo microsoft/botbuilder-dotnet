@@ -1,3 +1,4 @@
+using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Tests;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Threading.Tasks;
@@ -28,9 +29,9 @@ namespace Microsoft.Bot.Builder.Rivescript.Tests
                            +hello bot
                            -Hello, human!");
 
-            TestConnector connector = CreateSimpleRivescriptBot(fileName);
+            TestAdapter adapter = CreateSimpleRivescriptBot(fileName);
 
-            await connector
+            await adapter
                 .Send("hello bot").AssertReply("Hello, human!")
                 .StartTest();
         }
@@ -47,9 +48,9 @@ namespace Microsoft.Bot.Builder.Rivescript.Tests
                    + my name is *
                    - Nice to meet you, <star1>!");
 
-            TestConnector connector = CreateSimpleRivescriptBot(fileName);
+            var adapter = CreateSimpleRivescriptBot(fileName);
             
-            await connector
+            await adapter
                 .Send("my name is giskard").AssertReply("Nice to meet you, giskard!")
                 .StartTest();
         }
