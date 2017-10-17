@@ -20,11 +20,11 @@ namespace Microsoft.Bot.Builder.Tests
         {
             string messageText = Guid.NewGuid().ToString();
 
-            TestAdapter connector = new TestAdapter();
-            Bot bot = new Bot(connector)
+            TestAdapter adapter = new TestAdapter();
+            Bot bot = new Bot(adapter)
                 .Use(new EchoMiddleWare());
             
-            await connector
+            await adapter
                 .Send(messageText).AssertReply(messageText)
                 .StartTest();
         }       

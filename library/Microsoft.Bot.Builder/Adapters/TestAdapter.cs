@@ -1,15 +1,12 @@
-﻿using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Connector;
+﻿using Microsoft.Bot.Connector;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Adapters
 {
-    public class TestAdapter : ActivityAdapter
+    public class TestAdapter : ActivityAdapterBase
     {
         private int _nextId = 0;
         private readonly Queue<Activity> botReplies = new Queue<Activity>();
@@ -102,7 +99,7 @@ namespace Microsoft.Bot.Builder.Adapters
                 activity.ServiceUrl = this.ConversationReference.ServiceUrl;
 
                 var id = activity.Id = (this._nextId++).ToString();
-                return this.Receive(activity, new CancellationToken());
+                return this.OnReceive(activity, new CancellationToken());
             }
         }
 
@@ -228,14 +225,14 @@ namespace Microsoft.Bot.Builder.Adapters
 
     public class TestFlow
     {
-        readonly TestAdapter connector;
+        readonly TestAdapter _adapter;
         readonly Task testTask;
 
 
-        public TestFlow(Task testTask, TestAdapter connector)
+        public TestFlow(Task testTask, TestAdapter adapter)
         {
             this.testTask = testTask ?? Task.CompletedTask;
-            this.connector = connector;
+            this._adapter = adapter;
         }
 
         /// <summary>
@@ -261,8 +258,8 @@ namespace Microsoft.Bot.Builder.Adapters
             {
                 if (task.IsFaulted)
                     throw new Exception("failed");
-                    return this.connector.sendActivityToBot(userSays);
-            }), this.connector);
+                    return this._adapter.sendActivityToBot(userSays);
+            }), this._adapter);
         }
 
         /// <summary>
@@ -279,8 +276,8 @@ namespace Microsoft.Bot.Builder.Adapters
             {
                 if (task.IsFaulted)
                     throw new Exception("failed");
-                return this.connector.sendActivityToBot(userActivity);
-            }), this.connector);
+                return this._adapter.sendActivityToBot(userActivity);
+            }), this._adapter);
         }
 
         /// <summary>
@@ -295,7 +292,7 @@ namespace Microsoft.Bot.Builder.Adapters
                 if (task.IsFaulted)
                     throw new Exception("failed");
                 return Task.Delay((int)ms);
-            }), this.connector);
+            }), this._adapter);
         }
 
         /// <summary>
@@ -307,7 +304,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <returns></returns>
         public TestFlow AssertReply(string expected, string description = null, UInt32 timeout = 3000)
         {
-            return this.AssertReply(this.connector.MakeActivity(expected), description, timeout);
+            return this.AssertReply(this._adapter.MakeActivity(expected), description, timeout);
         }
 
         /// <summary>
@@ -352,7 +349,7 @@ namespace Microsoft.Bot.Builder.Adapters
                         throw new TimeoutException($"{timeout}ms Timed out waiting for:${description}");
                     }
 
-                    Activity replyActivity = this.connector.GetNextReply();
+                    Activity replyActivity = this._adapter.GetNextReply();
                     // if we have a reply
                     if (replyActivity != null)
                     {
@@ -360,7 +357,7 @@ namespace Microsoft.Bot.Builder.Adapters
                         return;
                     }
                 }
-            }), this.connector);
+            }), this._adapter);
         }
 
 

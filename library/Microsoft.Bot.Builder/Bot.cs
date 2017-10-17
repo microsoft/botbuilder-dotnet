@@ -11,7 +11,7 @@ namespace Microsoft.Bot.Builder
 {
     public class Bot : MiddlewareSet
     {
-        private IActivityAdapter _adapter;
+        private ActivityAdapterBase _adapter;
         private IBotLogger _logger = new NullLogger();
 
         public delegate Task<ReceiveResponse> ReceiveDelegate_NoDefault(BotContext context, CancellationToken token);
@@ -58,11 +58,14 @@ namespace Microsoft.Bot.Builder
         }
 
 
-        public Bot(IActivityAdapter adapter) : base()
+        public Bot(ActivityAdapterBase adapter) : base()
         {
             BotAssert.AdapterNotNull(adapter);
             _adapter = adapter;
-            _adapter.Bot = this;
+
+            // Hook up the Adapter so that incoming data is routed 
+            // through the Middleware Pipeline
+            _adapter.OnReceive = this.RunPipeline;
 
             PostToAdapterMiddleware poster = new PostToAdapterMiddleware(this);
             this.Use(poster);
@@ -82,7 +85,7 @@ namespace Microsoft.Bot.Builder
 
         public IBotLogger Logger => _logger;
 
-        public IActivityAdapter Adapter
+        public ActivityAdapterBase Adapter
         {
             get
             {
@@ -93,14 +96,14 @@ namespace Microsoft.Bot.Builder
                 /** Changes the bots connector. The previous connector will first be disconnected */
                 BotAssert.AdapterNotNull(value);
 
-                // Disconnect from existing connector
+                // Disconnect from existing adapter
                 if (_adapter != null)
                 {
                     // ToDo: How to cancel any existing async / await here and disconnect? 
                 }
 
                 _adapter = value;
-                _adapter.Bot = this;
+                _adapter.OnReceive = this.RunPipeline;                
             }
         }
 

@@ -17,8 +17,8 @@ namespace Microsoft.Bot.Builder.Tests
         [TestMethod]
         public void Dialog_ContextActiveTest()
         {
-            TestAdapter connector = new TestAdapter();
-            Bot bot = new Bot(connector);
+            TestAdapter adapter = new TestAdapter();
+            Bot bot = new Bot(adapter);
             Activity a = new Activity();
 
             IDialogContext dc = new DialogContext(bot, a);

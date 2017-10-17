@@ -18,12 +18,12 @@ namespace Microsoft.Bot.Builder.Tests
         [TestCategory("RegEx Intent Recognizer")]
         public async Task Regex_RecognizeHelpIntent()
         {
-            TestAdapter connector = new TestAdapter();
+            TestAdapter adapter = new TestAdapter();
 
             RegExpRecognizerMiddleware helpRecognizer = new RegExpRecognizerMiddleware()
                 .AddIntent("HelpIntent", new Regex("help", RegexOptions.IgnoreCase));
 
-            Bot bot = new Bot(connector)
+            Bot bot = new Bot(adapter)
                 .Use(helpRecognizer)
                 .OnReceive(async (context, token) =>
                 {
@@ -31,7 +31,7 @@ namespace Microsoft.Bot.Builder.Tests
                         context.Reply("You selected HelpIntent");
                 });
 
-            await connector.Test("help", "You selected HelpIntent")
+            await adapter.Test("help", "You selected HelpIntent")
                 .StartTest();
         }
 
@@ -77,13 +77,13 @@ namespace Microsoft.Bot.Builder.Tests
         [TestCategory("RegEx Intent Recognizer")]
         public async Task Regex_RecognizeIntentViaRegex()
         {
-            TestAdapter connector = new TestAdapter();
+            TestAdapter adapter = new TestAdapter();
 
             RegExpRecognizerMiddleware recognizer = new RegExpRecognizerMiddleware()
                 .AddIntent("aaaaa", new Regex("a", RegexOptions.IgnoreCase))
                 .AddIntent("bbbbb", new Regex("b", RegexOptions.IgnoreCase));
 
-            Bot bot = new Bot(connector)
+            Bot bot = new Bot(adapter)
                 .Use(recognizer)
                 .OnReceive(async (context, token) =>
                 {
@@ -93,7 +93,7 @@ namespace Microsoft.Bot.Builder.Tests
                         context.Reply("bbbb Intent");
                 });
 
-            await connector.Test("aaaaaaaaa", "aaaa Intent")
+            await adapter.Test("aaaaaaaaa", "aaaa Intent")
                 .Test("bbbbbbbbb", "bbbb Intent")
                 .StartTest();
         }
@@ -103,12 +103,12 @@ namespace Microsoft.Bot.Builder.Tests
         [TestCategory("RegEx Intent Recognizer")]
         public async Task Regex_RecognizeCancelIntent()
         {
-            TestAdapter connector = new TestAdapter();
+            TestAdapter adapter = new TestAdapter();
 
             RegExpRecognizerMiddleware helpRecognizer = new RegExpRecognizerMiddleware()
                 .AddIntent("CancelIntent", new Regex("cancel", RegexOptions.IgnoreCase));
 
-            Bot bot = new Bot(connector)
+            Bot bot = new Bot(adapter)
                 .Use(helpRecognizer)
                 .OnReceive(async (context, token) =>
                 {
@@ -116,7 +116,7 @@ namespace Microsoft.Bot.Builder.Tests
                         context.Reply("You selected CancelIntent");
                 });
 
-            await connector.Test("cancel", "You selected CancelIntent")
+            await adapter.Test("cancel", "You selected CancelIntent")
                 .StartTest();
         }
 
@@ -125,12 +125,12 @@ namespace Microsoft.Bot.Builder.Tests
         [TestCategory("RegEx Intent Recognizer")]
         public async Task Regex_DoNotRecognizeCancelIntent()
         {
-            TestAdapter connector = new TestAdapter();
+            TestAdapter adapter = new TestAdapter();
 
             RegExpRecognizerMiddleware helpRecognizer = new RegExpRecognizerMiddleware()
                 .AddIntent("CancelIntent", new Regex("cancel", RegexOptions.IgnoreCase));
 
-            Bot bot = new Bot(connector)
+            Bot bot = new Bot(adapter)
                 .Use(helpRecognizer)
                 .OnReceive(async (context, token) =>
                 {
@@ -140,7 +140,7 @@ namespace Microsoft.Bot.Builder.Tests
                         context.Reply("Bot received request of type message");
                 });
 
-            await connector.Test("tacos", "Bot received request of type message")
+            await adapter.Test("tacos", "Bot received request of type message")
                 .StartTest();
         }
 
@@ -149,14 +149,14 @@ namespace Microsoft.Bot.Builder.Tests
         [TestCategory("RegEx Intent Recognizer")]
         public async Task Regex_MultipleIntents()
         {
-            TestAdapter connector = new TestAdapter();
+            TestAdapter adapter = new TestAdapter();
 
             RegExpRecognizerMiddleware helpRecognizer = new RegExpRecognizerMiddleware()
                 .AddIntent("HelpIntent", new Regex("help", RegexOptions.IgnoreCase))
                 .AddIntent("CancelIntent", new Regex("cancel", RegexOptions.IgnoreCase))
                 .AddIntent("TacoIntent", new Regex("taco", RegexOptions.IgnoreCase));
 
-            Bot bot = new Bot(connector)
+            Bot bot = new Bot(adapter)
                 .Use(helpRecognizer)
                 .OnReceive(async (context, token) =>
                 {
@@ -168,7 +168,7 @@ namespace Microsoft.Bot.Builder.Tests
                         context.Reply("You selected TacoIntent");
                 });
 
-            await connector
+            await adapter
                 .Send("help").AssertReply("You selected HelpIntent")
                 .Send("cancel").AssertReply("You selected CancelIntent")
                 .Send("taco").AssertReply("You selected TacoIntent")

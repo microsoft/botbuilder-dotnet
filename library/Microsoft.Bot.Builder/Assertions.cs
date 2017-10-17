@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Builder
                 throw new ArgumentNullException(nameof(token)); 
         }
 
-        public static void AdapterNotNull(IActivityAdapter adapter)
+        public static void AdapterNotNull(ActivityAdapterBase adapter)
         {
             if (adapter == null)
                 throw new ArgumentNullException(nameof(adapter)); 

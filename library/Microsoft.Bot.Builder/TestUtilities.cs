@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Builder.Tests
     {
         public static BotContext CreateEmptyContext()
         {
-            IActivityAdapter c = new TestAdapter();
+            ActivityAdapterBase c = new TestAdapter();
             Bot b = new Bot(c);
             Activity a = new Activity();
             BotContext bc = new BotContext(b, a);
@@ -25,8 +25,8 @@ namespace Microsoft.Bot.Builder.Tests
 
         public static T CreateEmptyContext<T>() where T:IBotContext
         {
-            IActivityAdapter c = new TestAdapter();
-            Bot b = new Bot(c);
+            var adapter = new TestAdapter();
+            Bot b = new Bot(adapter);
             Activity a = new Activity();
             if (typeof(T).IsAssignableFrom(typeof(IDialogContext)))
             {

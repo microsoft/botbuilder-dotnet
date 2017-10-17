@@ -21,11 +21,11 @@ namespace Microsoft.Bot.Builder.Tests
             var engine = new ActivityRoutingMiddleware(
                 new SimpleRouter((context) => context.Reply("routed")));
 
-            TestAdapter connector = new TestAdapter();
-            Bot bot = new Bot(connector)
+            TestAdapter adapter = new TestAdapter();
+            Bot bot = new Bot(adapter)
                 .Use(engine);
 
-            await connector.Test("test", "routed")
+            await adapter.Test("test", "routed")
                 .StartTest();
         }
 
@@ -40,11 +40,11 @@ namespace Microsoft.Bot.Builder.Tests
                     .Add(new ErrorRouter())
                 );
 
-            TestAdapter connector = new TestAdapter();
-            Bot bot = new Bot(connector)
+            TestAdapter adapter = new TestAdapter();
+            Bot bot = new Bot(adapter)
                 .Use(engine);
 
-            await connector
+            await adapter
                 .Test("test", "routed")
                 .StartTest();
         }
@@ -61,11 +61,11 @@ namespace Microsoft.Bot.Builder.Tests
                     .Add(new ErrorRouter())
                 );
 
-            TestAdapter connector = new TestAdapter();
-            Bot bot = new Bot(connector)
+            TestAdapter adapter = new TestAdapter();
+            Bot bot = new Bot(adapter)
                 .Use(engine);
 
-            await connector.Test("test", "routed")
+            await adapter.Test("test", "routed")
                 .StartTest();
         }
 
@@ -84,11 +84,11 @@ namespace Microsoft.Bot.Builder.Tests
                             ))
                 );
 
-            TestAdapter connector = new TestAdapter();
-            Bot bot = new Bot(connector)
+            TestAdapter adapter = new TestAdapter();
+            Bot bot = new Bot(adapter)
                 .Use(engine);
 
-            await connector.Test("test", "routed")
+            await adapter.Test("test", "routed")
                 .StartTest();
         }
     }

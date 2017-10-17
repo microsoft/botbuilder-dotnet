@@ -16,10 +16,10 @@ namespace Microsoft.Bot.Samples.Connector.EchoBot.Controllers
 
         public MessagesController()
         {
-            var connector = new BotFrameworkAdapter("", "");
+            var adapter = new BotFrameworkAdapter("", "");
 
-            _bot = new Builder.Bot(connector)                
-                .Use(new FileStorage(@"C:\d\DeleteMe\"))
+            _bot = new Builder.Bot(adapter)
+                .Use(new FileStorage(System.IO.Path.GetTempPath()))
                 .Use(new BotStateManager())
                 .Use(new RegExpRecognizerMiddleware()
                     .AddIntent("echoIntent", new Regex("echo (.*)", RegexOptions.IgnoreCase))

@@ -9,7 +9,7 @@ using Microsoft.Bot.Connector;
 
 namespace Microsoft.Bot.Builder.Adapters
 {
-    public class ConsoleAdapter : ActivityAdapter
+    public class ConsoleAdapter : ActivityAdapterBase
     {
         public ConsoleAdapter() : base()
         {
@@ -63,7 +63,8 @@ namespace Microsoft.Bot.Builder.Adapters
                     Type = ActivityTypes.Message
                 };
 
-                await this.Receive(activity, CancellationToken.None);                
+                if (this.OnReceive != null)
+                    await this.OnReceive(activity, CancellationToken.None);                
             }
         }
     }    

@@ -17,8 +17,8 @@ namespace Microsoft.Bot.Builder.Tests
         [TestMethod]        
         public async Task State_DoNOTRememberContextState()
         {
-            TestAdapter connector = new TestAdapter();
-            Bot bot = new Bot(connector)
+            TestAdapter adapter = new TestAdapter();
+            Bot bot = new Bot(adapter)
                 .OnReceive(async (context, token) =>
                    {
                        Assert.IsNotNull(context.State, "context.state should exist");
@@ -35,7 +35,7 @@ namespace Microsoft.Bot.Builder.Tests
                        }
                    }
                 );
-            await connector.Test("set value", "value saved", "set value failed")
+            await adapter.Test("set value", "value saved", "set value failed")
                 .Test("get value", (a) => Assert.IsTrue(a.Text == null, "get value was incorrectly defined"))
                 .StartTest();
         }
@@ -43,9 +43,9 @@ namespace Microsoft.Bot.Builder.Tests
         [TestMethod]
         public async Task State_RememberUserState()
         {
-            TestAdapter connector = new TestAdapter();
+            TestAdapter adapter = new TestAdapter();
 
-            Bot bot = new Bot(connector)
+            Bot bot = new Bot(adapter)
                 .Use(new MemoryStorage())
                 .Use(new BotStateManager())
                 .OnReceive(
@@ -65,7 +65,7 @@ namespace Microsoft.Bot.Builder.Tests
                     }
                 );
 
-            await connector.Test("set value", "value saved")
+            await adapter.Test("set value", "value saved")
                 .Test("get value", "test")
                 .StartTest();
         }
@@ -73,9 +73,9 @@ namespace Microsoft.Bot.Builder.Tests
         [TestMethod]
         public async Task State_RememberConversationState()
         {
-            TestAdapter connector = new TestAdapter();
+            TestAdapter adapter = new TestAdapter();
 
-            Bot bot = new Bot(connector)
+            Bot bot = new Bot(adapter)
                 .Use(new MemoryStorage())
                 .Use(new BotStateManager())
                 .OnReceive(
@@ -95,7 +95,7 @@ namespace Microsoft.Bot.Builder.Tests
                     }
                 );
 
-            await connector.Test("set value", "value saved")
+            await adapter.Test("set value", "value saved")
                 .Test("get value", "test")
                 .StartTest();
         }
@@ -103,10 +103,10 @@ namespace Microsoft.Bot.Builder.Tests
         [TestMethod]
         public async Task State_CustomStateManagerTest()
         {
-            TestAdapter connector = new TestAdapter();
+            TestAdapter adapter = new TestAdapter();
             string testGuid = Guid.NewGuid().ToString();
 
-            Bot bot = new Bot(connector)
+            Bot bot = new Bot(adapter)
                 .Use(new MemoryStorage())
                 .Use(new CustomStateManager())
                 .OnReceive(
@@ -125,7 +125,7 @@ namespace Microsoft.Bot.Builder.Tests
                     }
                 );
 
-            await connector.Test("set value", "value saved")
+            await adapter.Test("set value", "value saved")
                 .Test("get value", testGuid.ToString())
                 .StartTest();
         }

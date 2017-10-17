@@ -2,14 +2,12 @@
 using Microsoft.Extensions.Primitives;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Adapters
 {
-    public class BotFrameworkAdapter : ActivityAdapter, IHttpActivityAdapter
+    public class BotFrameworkAdapter : ActivityAdapterBase
     {
         private readonly MicrosoftAppCredentials _credentials;
         private readonly BotAuthenticator _authenticator;       
@@ -42,7 +40,8 @@ namespace Microsoft.Bot.Builder.Adapters
 
             if (await _authenticator.TryAuthenticateAsync(headers, new[] { activity }, token))
             {
-                await base.Receive(activity, token).ConfigureAwait(false);
+                if (this.OnReceive != null)
+                    await this.OnReceive(activity, token).ConfigureAwait(false);
             }
             else
             {
