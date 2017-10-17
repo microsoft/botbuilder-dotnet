@@ -1,10 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Storage;
-using Microsoft.Bot.Connector;
+using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Samples.Middleware;
 using System.Text.RegularExpressions;
 using System.Threading;
+using Microsoft.Bot.Connector;
 
 namespace Microsoft.Bot.Samples.Connector.EchoBot.Controllers
 {
@@ -15,7 +16,7 @@ namespace Microsoft.Bot.Samples.Connector.EchoBot.Controllers
 
         public MessagesController()
         {
-            var connector = new BotFrameworkConnector("", "");
+            var connector = new BotFrameworkAdapter("", "");
 
             _bot = new Builder.Bot(connector)                
                 .Use(new FileStorage(@"C:\d\DeleteMe\"))
@@ -40,7 +41,7 @@ namespace Microsoft.Bot.Samples.Connector.EchoBot.Controllers
         [HttpPost]
         public async void Post([FromBody]Activity activity)
         {
-            BotFrameworkConnector connector = (BotFrameworkConnector)_bot.Connector; 
+            BotFrameworkAdapter connector = (BotFrameworkAdapter)_bot.Adapter; 
             await connector.Receive(HttpContext.Request.Headers, activity, CancellationToken.None);            
         }      
     }

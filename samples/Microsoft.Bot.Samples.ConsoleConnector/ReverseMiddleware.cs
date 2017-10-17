@@ -2,8 +2,9 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Connector;
 
-namespace Microsoft.Bot.Samples.ConsoleConnector
+namespace Microsoft.Bot.Samples
 {
     public class ReverseMiddleWare : IReceiveActivity
     {

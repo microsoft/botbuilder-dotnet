@@ -4,9 +4,11 @@ using System.Text;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Connector;
+using Microsoft.Bot.Builder;
+using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Cognitive.LUIS;
 using System.Text.RegularExpressions;
+using Microsoft.Bot.Connector;
 
 namespace Microsoft.Bot.Builder.Ai
 {

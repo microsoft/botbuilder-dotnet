@@ -1,4 +1,5 @@
 ﻿using Microsoft.Bot.Connector;
+using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ namespace Microsoft.Bot.Builder
 {
     public class Bot : MiddlewareSet
     {
-        private IConnector _connector;
+        private IActivityAdapter _adapter;
         private IBotLogger _logger = new NullLogger();
 
         public delegate Task<ReceiveResponse> ReceiveDelegate_NoDefault(BotContext context, CancellationToken token);
@@ -57,13 +58,13 @@ namespace Microsoft.Bot.Builder
         }
 
 
-        public Bot(IConnector connector) : base()
+        public Bot(IActivityAdapter adapter) : base()
         {
-            BotAssert.ConnectorNotNull(connector);
-            _connector = connector;
-            _connector.Bot = this;
+            BotAssert.AdapterNotNull(adapter);
+            _adapter = adapter;
+            _adapter.Bot = this;
 
-            PostToConnectorMiddleware poster = new PostToConnectorMiddleware(this);
+            PostToAdapterMiddleware poster = new PostToAdapterMiddleware(this);
             this.Use(poster);
         }
 
@@ -81,25 +82,25 @@ namespace Microsoft.Bot.Builder
 
         public IBotLogger Logger => _logger;
 
-        public IConnector Connector
+        public IActivityAdapter Adapter
         {
             get
             {
-                return _connector;
+                return _adapter;
             }
             set
             {
                 /** Changes the bots connector. The previous connector will first be disconnected */
-                BotAssert.ConnectorNotNull(value);
+                BotAssert.AdapterNotNull(value);
 
                 // Disconnect from existing connector
-                if (_connector != null)
+                if (_adapter != null)
                 {
                     // ToDo: How to cancel any existing async / await here and disconnect? 
                 }
 
-                _connector = value;
-                _connector.Bot = this;
+                _adapter = value;
+                _adapter.Bot = this;
             }
         }
 

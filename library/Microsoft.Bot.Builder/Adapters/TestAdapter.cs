@@ -1,5 +1,5 @@
-﻿using Microsoft.Bot.Connector;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Connector;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -7,14 +7,14 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Microsoft.Bot.Builder.Tests
+namespace Microsoft.Bot.Builder.Adapters
 {
-    public class TestConnector : Connector
+    public class TestAdapter : ActivityAdapter
     {
         private int _nextId = 0;
         private readonly Queue<Activity> botReplies = new Queue<Activity>();
 
-        public TestConnector(ConversationReference reference = null)
+        public TestAdapter(ConversationReference reference = null)
         {
             if (reference != null)
             {
@@ -228,11 +228,11 @@ namespace Microsoft.Bot.Builder.Tests
 
     public class TestFlow
     {
-        readonly TestConnector connector;
+        readonly TestAdapter connector;
         readonly Task testTask;
 
 
-        public TestFlow(Task testTask, TestConnector connector)
+        public TestFlow(Task testTask, TestAdapter connector)
         {
             this.testTask = testTask ?? Task.CompletedTask;
             this.connector = connector;
@@ -259,8 +259,9 @@ namespace Microsoft.Bot.Builder.Tests
 
             return new TestFlow(this.testTask.ContinueWith((task) =>
             {
-                Assert.IsFalse(task.IsFaulted);
-                return this.connector.sendActivityToBot(userSays);
+                if (task.IsFaulted)
+                    throw new Exception("failed");
+                    return this.connector.sendActivityToBot(userSays);
             }), this.connector);
         }
 
@@ -276,7 +277,8 @@ namespace Microsoft.Bot.Builder.Tests
 
             return new TestFlow(this.testTask.ContinueWith((task) =>
             {
-                Assert.IsFalse(task.IsFaulted);
+                if (task.IsFaulted)
+                    throw new Exception("failed");
                 return this.connector.sendActivityToBot(userActivity);
             }), this.connector);
         }
@@ -290,7 +292,8 @@ namespace Microsoft.Bot.Builder.Tests
         {
             return new TestFlow(this.testTask.ContinueWith((task) =>
             {
-                Assert.IsFalse(task.IsFaulted);
+                if (task.IsFaulted)
+                    throw new Exception("failed");
                 return Task.Delay((int)ms);
             }), this.connector);
         }
@@ -318,8 +321,10 @@ namespace Microsoft.Bot.Builder.Tests
         {
             return this.AssertReply((reply) =>
             {
-                Assert.AreEqual(expected.Type, reply.Type, $"{description}: Type should match");
-                Assert.AreEqual(expected.Text, reply.Text, $"{description}: Text should match");
+                if (expected.Type != reply.Type)
+                    throw new Exception($"{description}: Type should match");
+                if (expected.Text != reply.Text)
+                    throw new Exception($"{description}: Text should match");
                 // TODO, expand this to do all properties set on expected
             }, description, timeout);
         }
@@ -335,7 +340,8 @@ namespace Microsoft.Bot.Builder.Tests
         {
             return new TestFlow(this.testTask.ContinueWith((task) =>
             {
-                Assert.IsFalse(task.IsFaulted);
+                if (task.IsFaulted)
+                    throw new Exception("failed");
                 var start = DateTime.UtcNow;
                 while (true)
                 {
@@ -343,7 +349,7 @@ namespace Microsoft.Bot.Builder.Tests
 
                     if ((current - start).TotalMilliseconds > timeout)
                     {
-                        Assert.Fail($"{timeout}ms Timed out waiting for:${description}");
+                        throw new TimeoutException($"{timeout}ms Timed out waiting for:${description}");
                     }
 
                     Activity replyActivity = this.connector.GetNextReply();
@@ -428,7 +434,7 @@ namespace Microsoft.Bot.Builder.Tests
                     if (reply.Text == candidate)
                         return;
                 }
-                Assert.Fail(description ?? $"Not one of candidates: {String.Join("\n", candidates)}");
+                throw new Exception(description ?? $"Not one of candidates: {String.Join("\n", candidates)}");
             }, description, timeout);
         }
     }

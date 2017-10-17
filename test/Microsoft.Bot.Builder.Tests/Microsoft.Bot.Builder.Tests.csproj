@@ -79,8 +79,6 @@
     <Compile Include="FlexObjectTests.cs" />
     <Compile Include="Middleware_EchoTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TestConnector.cs" />
-    <Compile Include="TestUtilities.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -1,6 +1,6 @@
-﻿using Microsoft.Bot.Builder.Prague;
-using Microsoft.Bot.Connector;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.Bot.Connector;
+using Microsoft.Bot.Builder.Prague;
+using Microsoft.Bot.Builder.Adapters;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Builder.Tests
     {
         public static BotContext CreateEmptyContext()
         {
-            IConnector c = new TestConnector();
+            IActivityAdapter c = new TestAdapter();
             Bot b = new Bot(c);
             Activity a = new Activity();
             BotContext bc = new BotContext(b, a);
@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Builder.Tests
 
         public static T CreateEmptyContext<T>() where T:IBotContext
         {
-            IConnector c = new TestConnector();
+            IActivityAdapter c = new TestAdapter();
             Bot b = new Bot(c);
             Activity a = new Activity();
             if (typeof(T).IsAssignableFrom(typeof(IDialogContext)))

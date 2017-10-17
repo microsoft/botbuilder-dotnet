@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Microsoft.Bot.Samples.ConsoleConnector
+namespace Microsoft.Bot.Samples
 {
     public class Routing
     {

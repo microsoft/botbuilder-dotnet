@@ -1,11 +1,12 @@
 ﻿using Microsoft.Bot.Builder.Prague;
-using Microsoft.Bot.Connector;
+using Microsoft.Bot.Builder.Adapters;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Bot.Connector;
 
 namespace Microsoft.Bot.Builder.Tests
 {
@@ -16,7 +17,7 @@ namespace Microsoft.Bot.Builder.Tests
         [TestMethod]
         public void Dialog_ContextActiveTest()
         {
-            TestConnector connector = new TestConnector();
+            TestAdapter connector = new TestAdapter();
             Bot bot = new Bot(connector);
             Activity a = new Activity();
 

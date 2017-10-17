@@ -1,4 +1,5 @@
 ﻿using Microsoft.Bot.Connector;
+using Microsoft.Bot.Builder.Adapters;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -24,10 +25,10 @@ namespace Microsoft.Bot.Builder
                 throw new ArgumentNullException(nameof(token)); 
         }
 
-        public static void ConnectorNotNull(IConnector connector)
+        public static void AdapterNotNull(IActivityAdapter adapter)
         {
-            if (connector == null)
-                throw new ArgumentNullException(nameof(connector)); 
+            if (adapter == null)
+                throw new ArgumentNullException(nameof(adapter)); 
         }
 
         public static void ActivityListNotNull(IList<Activity> activityList)

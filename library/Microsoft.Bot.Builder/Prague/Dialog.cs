@@ -1,4 +1,5 @@
 ﻿using Microsoft.Bot.Connector;
+using Microsoft.Bot.Builder.Adapters;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;

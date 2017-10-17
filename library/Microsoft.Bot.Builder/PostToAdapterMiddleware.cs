@@ -1,4 +1,5 @@
 ﻿using Microsoft.Bot.Connector;
+using Microsoft.Bot.Builder.Adapters;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -6,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder
 {
-    public class PostToConnectorMiddleware : IPostActivity
+    public class PostToAdapterMiddleware : IPostActivity
     {
         private readonly Bot _bot;
 
-        public PostToConnectorMiddleware(Bot b)
+        public PostToAdapterMiddleware(Bot b)
         {
             _bot = b ?? throw new ArgumentNullException(nameof(Bot)); 
         }
@@ -21,7 +22,7 @@ namespace Microsoft.Bot.Builder
             BotAssert.ActivityListNotNull(activities);
             BotAssert.CancellationTokenNotNull(token);
 
-            await _bot.Connector.Post(context.Responses, token).ConfigureAwait(false);
+            await _bot.Adapter.Post(context.Responses, token).ConfigureAwait(false);
         }        
     }
 }

@@ -1,18 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.Bot.Connector;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Microsoft.Bot.Connector;
+using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Storage;
 using Micosoft.Bot.Samples.InjectionBasedBotExample;
-using System.Threading;
 
 namespace InjectionBasedBotExample
 {
@@ -52,7 +46,7 @@ namespace InjectionBasedBotExample
             services.AddSingleton<IStorage>(new MemoryStorage());
             services.AddScoped<Bot>(serviceProvider =>
               {
-                  Bot b = new Bot(new BotFrameworkConnector("", ""))
+                  Bot b = new Bot(new BotFrameworkAdapter("", ""))
                     .Use((IMiddleware)serviceProvider.GetService<IStorage>())
                     .Use(new BotStateManager())
                     .Use(new EchoMiddleware());

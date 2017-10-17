@@ -1,10 +1,12 @@
-﻿using Microsoft.Bot.Builder.Prague;
+﻿using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.Prague;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Bot.Connector;
 
 namespace Microsoft.Bot.Builder.Tests
 {
@@ -19,7 +21,7 @@ namespace Microsoft.Bot.Builder.Tests
             var engine = new ActivityRoutingMiddleware(
                 new SimpleRouter((context) => context.Reply("routed")));
 
-            TestConnector connector = new TestConnector();
+            TestAdapter connector = new TestAdapter();
             Bot bot = new Bot(connector)
                 .Use(engine);
 
@@ -38,7 +40,7 @@ namespace Microsoft.Bot.Builder.Tests
                     .Add(new ErrorRouter())
                 );
 
-            TestConnector connector = new TestConnector();
+            TestAdapter connector = new TestAdapter();
             Bot bot = new Bot(connector)
                 .Use(engine);
 
@@ -59,7 +61,7 @@ namespace Microsoft.Bot.Builder.Tests
                     .Add(new ErrorRouter())
                 );
 
-            TestConnector connector = new TestConnector();
+            TestAdapter connector = new TestAdapter();
             Bot bot = new Bot(connector)
                 .Use(engine);
 
@@ -82,7 +84,7 @@ namespace Microsoft.Bot.Builder.Tests
                             ))
                 );
 
-            TestConnector connector = new TestConnector();
+            TestAdapter connector = new TestAdapter();
             Bot bot = new Bot(connector)
                 .Use(engine);
 

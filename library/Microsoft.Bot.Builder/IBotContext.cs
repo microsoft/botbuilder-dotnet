@@ -1,9 +1,10 @@
-﻿using Microsoft.Bot.Connector;
+﻿using Microsoft.Bot.Builder.Adapters;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
+using Microsoft.Bot.Connector;
 
 namespace Microsoft.Bot.Builder
 {    

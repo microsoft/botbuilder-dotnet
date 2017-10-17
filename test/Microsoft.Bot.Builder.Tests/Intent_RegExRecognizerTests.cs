@@ -1,4 +1,4 @@
-﻿using Microsoft.Bot.Connector;
+﻿using Microsoft.Bot.Builder.Adapters;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Microsoft.Bot.Connector;
 
 namespace Microsoft.Bot.Builder.Tests
 {
@@ -17,7 +18,7 @@ namespace Microsoft.Bot.Builder.Tests
         [TestCategory("RegEx Intent Recognizer")]
         public async Task Regex_RecognizeHelpIntent()
         {
-            TestConnector connector = new TestConnector();
+            TestAdapter connector = new TestAdapter();
 
             RegExpRecognizerMiddleware helpRecognizer = new RegExpRecognizerMiddleware()
                 .AddIntent("HelpIntent", new Regex("help", RegexOptions.IgnoreCase));
@@ -76,7 +77,7 @@ namespace Microsoft.Bot.Builder.Tests
         [TestCategory("RegEx Intent Recognizer")]
         public async Task Regex_RecognizeIntentViaRegex()
         {
-            TestConnector connector = new TestConnector();
+            TestAdapter connector = new TestAdapter();
 
             RegExpRecognizerMiddleware recognizer = new RegExpRecognizerMiddleware()
                 .AddIntent("aaaaa", new Regex("a", RegexOptions.IgnoreCase))
@@ -102,7 +103,7 @@ namespace Microsoft.Bot.Builder.Tests
         [TestCategory("RegEx Intent Recognizer")]
         public async Task Regex_RecognizeCancelIntent()
         {
-            TestConnector connector = new TestConnector();
+            TestAdapter connector = new TestAdapter();
 
             RegExpRecognizerMiddleware helpRecognizer = new RegExpRecognizerMiddleware()
                 .AddIntent("CancelIntent", new Regex("cancel", RegexOptions.IgnoreCase));
@@ -124,7 +125,7 @@ namespace Microsoft.Bot.Builder.Tests
         [TestCategory("RegEx Intent Recognizer")]
         public async Task Regex_DoNotRecognizeCancelIntent()
         {
-            TestConnector connector = new TestConnector();
+            TestAdapter connector = new TestAdapter();
 
             RegExpRecognizerMiddleware helpRecognizer = new RegExpRecognizerMiddleware()
                 .AddIntent("CancelIntent", new Regex("cancel", RegexOptions.IgnoreCase));
@@ -148,7 +149,7 @@ namespace Microsoft.Bot.Builder.Tests
         [TestCategory("RegEx Intent Recognizer")]
         public async Task Regex_MultipleIntents()
         {
-            TestConnector connector = new TestConnector();
+            TestAdapter connector = new TestAdapter();
 
             RegExpRecognizerMiddleware helpRecognizer = new RegExpRecognizerMiddleware()
                 .AddIntent("HelpIntent", new Regex("help", RegexOptions.IgnoreCase))

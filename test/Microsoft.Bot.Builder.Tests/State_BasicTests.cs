@@ -1,11 +1,12 @@
 ﻿using Microsoft.Bot.Builder.Storage;
-using Microsoft.Bot.Connector;
+using Microsoft.Bot.Builder.Adapters;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Bot.Connector;
 
 namespace Microsoft.Bot.Builder.Tests
 {
@@ -16,7 +17,7 @@ namespace Microsoft.Bot.Builder.Tests
         [TestMethod]        
         public async Task State_DoNOTRememberContextState()
         {
-            TestConnector connector = new TestConnector();
+            TestAdapter connector = new TestAdapter();
             Bot bot = new Bot(connector)
                 .OnReceive(async (context, token) =>
                    {
@@ -42,7 +43,7 @@ namespace Microsoft.Bot.Builder.Tests
         [TestMethod]
         public async Task State_RememberUserState()
         {
-            TestConnector connector = new TestConnector();
+            TestAdapter connector = new TestAdapter();
 
             Bot bot = new Bot(connector)
                 .Use(new MemoryStorage())
@@ -72,7 +73,7 @@ namespace Microsoft.Bot.Builder.Tests
         [TestMethod]
         public async Task State_RememberConversationState()
         {
-            TestConnector connector = new TestConnector();
+            TestAdapter connector = new TestAdapter();
 
             Bot bot = new Bot(connector)
                 .Use(new MemoryStorage())
@@ -102,7 +103,7 @@ namespace Microsoft.Bot.Builder.Tests
         [TestMethod]
         public async Task State_CustomStateManagerTest()
         {
-            TestConnector connector = new TestConnector();
+            TestAdapter connector = new TestAdapter();
             string testGuid = Guid.NewGuid().ToString();
 
             Bot bot = new Bot(connector)

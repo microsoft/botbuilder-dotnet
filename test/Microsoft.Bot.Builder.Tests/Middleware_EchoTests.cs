@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Connector;
+using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.Bot.Connector;
 
 namespace Microsoft.Bot.Builder.Tests
 {
@@ -19,7 +20,7 @@ namespace Microsoft.Bot.Builder.Tests
         {
             string messageText = Guid.NewGuid().ToString();
 
-            TestConnector connector = new TestConnector();
+            TestAdapter connector = new TestAdapter();
             Bot bot = new Bot(connector)
                 .Use(new EchoMiddleWare());
             

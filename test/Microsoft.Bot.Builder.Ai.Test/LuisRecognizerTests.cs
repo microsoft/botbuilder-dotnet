@@ -1,11 +1,9 @@
-﻿using System;
-using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Tests;
 using System.Collections.Generic;
+using Microsoft.Bot.Builder.Tests;
 using Microsoft.Bot.Builder.Storage;
-using System.IO;
+using Microsoft.Bot.Builder.Adapters;
 using System.Diagnostics;
 
 namespace Microsoft.Bot.Builder.Ai.Tests
@@ -50,8 +48,8 @@ namespace Microsoft.Bot.Builder.Ai.Tests
                 return;
             }
 
-            TestConnector connector = new TestConnector();
-            Bot bot = new Bot(connector)
+            TestAdapter adapter = new TestAdapter();
+            Bot bot = new Bot(adapter)
                 .Use(new MemoryStorage())
                 .Use(new BotStateManager())
                 .Use(new LuisRecognizerMiddleware(luisAppId, subscriptionKey))
@@ -59,7 +57,7 @@ namespace Microsoft.Bot.Builder.Ai.Tests
                 {
                     context.Reply(context.TopIntent.Name);
                 });
-            await connector
+            await adapter
                 .Send("I want ham and cheese sandwich!")
                     .AssertReply("sandwichorder", "should have sandwichorder as top intent!")
                 .StartTest();

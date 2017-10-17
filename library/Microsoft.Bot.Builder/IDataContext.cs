@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Microsoft.Bot.Connector;
+using Microsoft.Bot.Builder.Adapters;
 
 namespace Microsoft.Bot.Builder
 {

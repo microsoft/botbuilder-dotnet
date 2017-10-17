@@ -1,11 +1,12 @@
-﻿using Microsoft.Bot.Builder;
-using Microsoft.Bot.Samples.Middleware;
+﻿using Microsoft.Bot.Samples.Middleware;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
+using Microsoft.Bot.Builder;
+using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Prague;
 using Microsoft.Bot.Builder.Storage;
 
-namespace Microsoft.Bot.Samples.ConsoleConnector
+namespace Microsoft.Bot.Samples
 {
     class Program
     {
@@ -16,7 +17,7 @@ namespace Microsoft.Bot.Samples.ConsoleConnector
 
         static async Task MainAsync(string[] args)
         {
-            Builder.ConsoleConnector cc = new Builder.ConsoleConnector();
+            ConsoleAdapter cc = new ConsoleAdapter();
           
             Builder.Bot bot = new Builder.Bot(cc)
                 .Use(new MemoryStorage())
