@@ -1,14 +1,12 @@
 ﻿using Microsoft.Bot.Builder;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Connector;
 
 namespace Microsoft.Bot.Samples
 {
     public class ReverseMiddleWare : IReceiveActivity
     {
-        public async Task<ReceiveResponse> ReceiveActivity(BotContext context, CancellationToken token)
+        public async Task<ReceiveResponse> ReceiveActivity(BotContext context)
         {
             if (context.IfIntent("reverseIntent"))
             {

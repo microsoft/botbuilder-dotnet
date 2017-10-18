@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Connector;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Tests
 {
@@ -20,7 +14,7 @@ namespace Microsoft.Bot.Builder.Tests
             TestAdapter adapter = new TestAdapter();
             Bot bot = new Bot(adapter)
                 .OnReceive(
-                    async (context, token) =>
+                    async (context) =>
                     {
                         switch (context.Request.Text)
                         {

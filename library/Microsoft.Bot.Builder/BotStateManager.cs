@@ -1,12 +1,8 @@
 ﻿using Microsoft.Bot.Connector;
-using Microsoft.Bot.Builder.Adapters;
 using System;
 using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder
 {
@@ -56,17 +52,17 @@ namespace Microsoft.Bot.Builder
             _settings = settings ?? throw new ArgumentNullException("settings");
         }
 
-        public async Task ContextCreated(BotContext context, CancellationToken token)
+        public async Task ContextCreated(BotContext context)
         {
             await Read(context).ConfigureAwait(false);            
         }
 
-        public async Task ContextDone(BotContext context, CancellationToken token)
+        public async Task ContextDone(BotContext context)
         {
             await Write(context).ConfigureAwait(false);            
         }
 
-        public async Task PostActivity(BotContext context, IList<Activity> activities, CancellationToken token)
+        public async Task PostActivity(BotContext context, IList<Activity> activities)
         {
             if (_settings.WriteBeforePost)
             {

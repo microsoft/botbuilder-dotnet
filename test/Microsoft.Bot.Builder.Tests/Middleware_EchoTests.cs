@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Bot.Builder.Adapters;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.Bot.Connector;
+using System;
+using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Tests
 {
@@ -39,7 +33,7 @@ namespace Microsoft.Bot.Builder.Tests
             this.handled = handled;
         }
 
-        public Task<ReceiveResponse> ReceiveActivity(BotContext context, CancellationToken token)
+        public Task<ReceiveResponse> ReceiveActivity(BotContext context)
         {
             var response = context.Request.CreateReply();
             response.Text = context.Request.Text;

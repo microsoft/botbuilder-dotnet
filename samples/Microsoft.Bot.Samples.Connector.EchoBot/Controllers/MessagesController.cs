@@ -1,11 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Bot.Builder;
-using Microsoft.Bot.Builder.Storage;
 using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.Storage;
+using Microsoft.Bot.Connector;
 using Microsoft.Bot.Samples.Middleware;
 using System.Text.RegularExpressions;
-using System.Threading;
-using Microsoft.Bot.Connector;
 
 namespace Microsoft.Bot.Samples.Connector.EchoBot.Controllers
 {
@@ -25,7 +24,7 @@ namespace Microsoft.Bot.Samples.Connector.EchoBot.Controllers
                     .AddIntent("echoIntent", new Regex("echo (.*)", RegexOptions.IgnoreCase))
                     .AddIntent("helpIntent", new Regex("help (.*)", RegexOptions.IgnoreCase)))
                 .Use(new EchoMiddleware())
-                .OnReceive( async (context, token) =>
+                .OnReceive( async (context) =>
                     {
                         // Example of handling the Help intent w/o using Middleware
                         if (context.IfIntent("helpIntent"))                            
@@ -42,7 +41,7 @@ namespace Microsoft.Bot.Samples.Connector.EchoBot.Controllers
         public async void Post([FromBody]Activity activity)
         {
             BotFrameworkAdapter connector = (BotFrameworkAdapter)_bot.Adapter; 
-            await connector.Receive(HttpContext.Request.Headers, activity, CancellationToken.None);            
+            await connector.Receive(HttpContext.Request.Headers, activity);
         }      
     }
 }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Storage
@@ -18,7 +17,7 @@ namespace Microsoft.Bot.Builder.Storage
             _memory = dictionary ?? new StoreItems();
         }
 
-        public Task ContextCreated(BotContext context, CancellationToken token)
+        public Task ContextCreated(BotContext context)
         {
             context.Storage = this;
             return Task.CompletedTask;

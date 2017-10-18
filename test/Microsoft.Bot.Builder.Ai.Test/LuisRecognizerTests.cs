@@ -1,10 +1,10 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using Microsoft.Bot.Builder.Tests;
+﻿using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Storage;
-using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.Tests;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Ai.Tests
 {
@@ -53,7 +53,7 @@ namespace Microsoft.Bot.Builder.Ai.Tests
                 .Use(new MemoryStorage())
                 .Use(new BotStateManager())
                 .Use(new LuisRecognizerMiddleware(luisAppId, subscriptionKey))
-                .OnReceive(async (context, token) =>
+                .OnReceive(async (context) =>
                 {
                     context.Reply(context.TopIntent.Name);
                 });

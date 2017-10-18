@@ -1,8 +1,6 @@
 ﻿using Microsoft.Bot.Connector;
-using Microsoft.Bot.Builder.Adapters;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder
@@ -11,22 +9,22 @@ namespace Microsoft.Bot.Builder
 
     public interface IContextCreated : IMiddleware
     {
-        Task ContextCreated(BotContext context, CancellationToken token);
+        Task ContextCreated(BotContext context);
     }
 
     public interface IReceiveActivity : IMiddleware
     {
-        Task<ReceiveResponse> ReceiveActivity(BotContext context, CancellationToken token);
+        Task<ReceiveResponse> ReceiveActivity(BotContext context);
     }
 
     public interface IPostActivity : IMiddleware
     {
-        Task PostActivity(BotContext context, IList<Activity> activities, CancellationToken token);
+        Task PostActivity(BotContext context, IList<Activity> activities);
     }
 
     public interface IContextDone : IMiddleware
     {
-        Task ContextDone(BotContext context, CancellationToken token);
+        Task ContextDone(BotContext context);
     }
 
     public static partial class MiddlewareExtensions

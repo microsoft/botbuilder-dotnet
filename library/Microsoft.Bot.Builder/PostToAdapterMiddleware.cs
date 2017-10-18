@@ -1,8 +1,6 @@
 ﻿using Microsoft.Bot.Connector;
-using Microsoft.Bot.Builder.Adapters;
 using System;
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder
@@ -16,13 +14,12 @@ namespace Microsoft.Bot.Builder
             _bot = b ?? throw new ArgumentNullException(nameof(Bot)); 
         }
                 
-        public async Task PostActivity(BotContext context, IList<Activity> activities, CancellationToken token)
+        public async Task PostActivity(BotContext context, IList<Activity> activities)
         {
             BotAssert.ContextNotNull(context);
-            BotAssert.ActivityListNotNull(activities);
-            BotAssert.CancellationTokenNotNull(token);
+            BotAssert.ActivityListNotNull(activities);            
 
-            await _bot.Adapter.Post(context.Responses, token).ConfigureAwait(false);
+            await _bot.Adapter.Post(context.Responses).ConfigureAwait(false);
         }        
     }
 }

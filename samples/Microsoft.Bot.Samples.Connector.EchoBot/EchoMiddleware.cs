@@ -1,13 +1,11 @@
 ﻿using Microsoft.Bot.Builder;
-using Microsoft.Bot.Builder.Adapters;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Samples.Middleware
 {
     public class EchoMiddleware : IReceiveActivity
     {
-        public async Task<ReceiveResponse> ReceiveActivity(BotContext context, CancellationToken token)
+        public async Task<ReceiveResponse> ReceiveActivity(BotContext context)
         {
             if (context.IfIntent("echoIntent"))
             {

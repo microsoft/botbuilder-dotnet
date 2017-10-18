@@ -1,8 +1,7 @@
-﻿using Microsoft.Bot.Connector;
-using Microsoft.Bot.Builder.Adapters;
+﻿using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Connector;
 using System;
 using System.Collections.Generic;
-using System.Threading;
 
 namespace Microsoft.Bot.Builder
 {
@@ -17,12 +16,6 @@ namespace Microsoft.Bot.Builder
         {
             if (context == null)
                 throw new ArgumentNullException(nameof(context)); 
-        }
-
-        public static void CancellationTokenNotNull(CancellationToken token)
-        {
-            if (token == null)
-                throw new ArgumentNullException(nameof(token)); 
         }
 
         public static void AdapterNotNull(ActivityAdapterBase adapter)
@@ -43,6 +36,5 @@ namespace Microsoft.Bot.Builder
             if (context.Storage == null)
                 throw new InvalidOperationException("context.storage not found.");
         }
-
     }
 }

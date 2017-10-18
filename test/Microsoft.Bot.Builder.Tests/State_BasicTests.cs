@@ -1,12 +1,9 @@
-﻿using Microsoft.Bot.Builder.Storage;
-using Microsoft.Bot.Builder.Adapters;
+﻿using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.Storage;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Bot.Connector;
 
 namespace Microsoft.Bot.Builder.Tests
 {
@@ -19,7 +16,7 @@ namespace Microsoft.Bot.Builder.Tests
         {
             TestAdapter adapter = new TestAdapter();
             Bot bot = new Bot(adapter)
-                .OnReceive(async (context, token) =>
+                .OnReceive(async (context) =>
                    {
                        Assert.IsNotNull(context.State, "context.state should exist");
                        switch (context.Request.Text)
@@ -49,7 +46,7 @@ namespace Microsoft.Bot.Builder.Tests
                 .Use(new MemoryStorage())
                 .Use(new BotStateManager())
                 .OnReceive(
-                    async (context, token) =>
+                    async (context) =>
                     {
                         Assert.IsNotNull(context.State.User, "state.user should exist");
                         switch (context.Request.Text)
@@ -79,7 +76,7 @@ namespace Microsoft.Bot.Builder.Tests
                 .Use(new MemoryStorage())
                 .Use(new BotStateManager())
                 .OnReceive(
-                    async (context, token) =>
+                    async (context) =>
                     {
                         Assert.IsNotNull(context.State.Conversation, "state.conversation should exist");
                         switch (context.Request.Text)
@@ -110,7 +107,7 @@ namespace Microsoft.Bot.Builder.Tests
                 .Use(new MemoryStorage())
                 .Use(new CustomStateManager())
                 .OnReceive(
-                    async (context, token) =>
+                    async (context) =>
                     {
                         switch (context.Request.Text)
                         {

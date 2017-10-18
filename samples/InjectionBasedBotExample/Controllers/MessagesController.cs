@@ -24,7 +24,7 @@ namespace InjectionBasedBotExample.Controllers
         public async void Post([FromBody]Activity activity)
         {
             BotFrameworkAdapter connector = (BotFrameworkAdapter)_bot.Adapter;
-            await connector.Receive(HttpContext.Request.Headers, activity, CancellationToken.None);
+            await connector.Receive(HttpContext.Request.Headers, activity);
         }
     }
 }

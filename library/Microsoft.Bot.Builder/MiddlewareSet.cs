@@ -1,10 +1,8 @@
-﻿using Microsoft.Bot.Builder.Adapters;
+﻿using Microsoft.Bot.Connector;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Connector;
 
 namespace Microsoft.Bot.Builder
 {
@@ -45,72 +43,67 @@ namespace Microsoft.Bot.Builder
             return this;
         }
 
-        public virtual async Task ContextCreated(BotContext context, CancellationToken token)
+        public virtual async Task ContextCreated(BotContext context)
         {
-            BotAssert.ContextNotNull(context);
-            BotAssert.CancellationTokenNotNull(token);
+            BotAssert.ContextNotNull(context);            
 
             context.Bot.Logger.Information($"Middleware: Context Created for {context.Request.Id}.");
 
             foreach (var m in this._middlewareList.Where<IContextCreated>())
-                await m.ContextCreated(context, token).ConfigureAwait(false);
+                await m.ContextCreated(context).ConfigureAwait(false);
         }
 
-        public virtual async Task<ReceiveResponse> ReceiveActivity(BotContext context, CancellationToken token)
+        public virtual async Task<ReceiveResponse> ReceiveActivity(BotContext context)
         {
-            BotAssert.ContextNotNull(context);
-            BotAssert.CancellationTokenNotNull(token);
+            BotAssert.ContextNotNull(context);            
 
             context.Bot.Logger.Information($"Middleware: ReceiveActivity for {context.Request.Id}.");
 
             ReceiveResponse response = new ReceiveResponse(false);
             foreach (var middleware in this._middlewareList.Where<IReceiveActivity>())
             {
-                response = await middleware.ReceiveActivity(context, token).ConfigureAwait(false);
+                response = await middleware.ReceiveActivity(context).ConfigureAwait(false);
                 if (response?.Handled == true) break;
             }
             return response;
         }
 
-        public virtual async Task ContextDone(BotContext context, CancellationToken token)
+        public virtual async Task ContextDone(BotContext context)
         {
-            BotAssert.ContextNotNull(context);
-            BotAssert.CancellationTokenNotNull(token);
+            BotAssert.ContextNotNull(context);            
 
             context.Bot.Logger.Information($"Middleware: ContextDone for {context.Request.Id}.");
             foreach (var m in this._middlewareList.Where<IContextDone>().Reverse())
-                await m.ContextDone(context, token).ConfigureAwait(false);
+                await m.ContextDone(context).ConfigureAwait(false);
         }
 
-        public virtual async Task PostActivity(BotContext context, IList<Activity> activities, CancellationToken token)
+        public virtual async Task PostActivity(BotContext context, IList<Activity> activities)
         {
             BotAssert.ContextNotNull(context);
-            BotAssert.ActivityListNotNull(activities);
-            BotAssert.CancellationTokenNotNull(token);
+            BotAssert.ActivityListNotNull(activities);            
 
             context.Bot.Logger.Information($"Middleware: PostActivity for {context.Request.Id}.");
             foreach (var m in this._middlewareList.Where<IPostActivity>().Reverse())
-                await m.PostActivity(context, activities, token).ConfigureAwait(false);
+                await m.PostActivity(context, activities).ConfigureAwait(false);
         }
 
-        public virtual async Task<bool> RunPipeline(BotContext context, CancellationToken token)
+        public virtual async Task<bool> RunPipeline(BotContext context)
         {
-            BotAssert.ContextNotNull(context);            
-            BotAssert.CancellationTokenNotNull(token);
+            BotAssert.ContextNotNull(context);                        
 
             context.Bot.Logger.Information($"Middleware: Beginning Pipeline for {context.Request.Id}");
 
             //Call any registered Middleware components looking for context creation events.
-            await this.ContextCreated(context, token).ConfigureAwait(false);
+            await this.ContextCreated(context).ConfigureAwait(false);
 
             //Call any registered Middleware Components looking for Received Activities
-            await this.ReceiveActivity(context, token).ConfigureAwait(false);
+            await this.ReceiveActivity(context).ConfigureAwait(false);
 
             //Call any registered Middleware Components looking for handle posting of activities
-            await this.PostActivity(context, context.Responses, token).ConfigureAwait(false);
+            await this.PostActivity(context, context.Responses).ConfigureAwait(false);
 
             //Call any registered Middleware Components looking for handle posting of activities
-            await this.ContextDone(context, token).ConfigureAwait(false);
+            await this.ContextDone(context).ConfigureAwait(false);
 
             context.Bot.Logger.Information($"Middleware: Ending Pipeline for {context.Request.Id}");
 

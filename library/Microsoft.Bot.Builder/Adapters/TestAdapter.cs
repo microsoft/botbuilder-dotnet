@@ -1,7 +1,6 @@
 ﻿using Microsoft.Bot.Connector;
 using System;
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Adapters
@@ -70,7 +69,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <param name="activities"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        public override async Task Post(IList<Activity> activities, CancellationToken token)
+        public override async Task Post(IList<Activity> activities)
         {
             lock (this.botReplies)
             {
@@ -99,7 +98,7 @@ namespace Microsoft.Bot.Builder.Adapters
                 activity.ServiceUrl = this.ConversationReference.ServiceUrl;
 
                 var id = activity.Id = (this._nextId++).ToString();
-                return this.OnReceive(activity, new CancellationToken());
+                return this.OnReceive(activity);
             }
         }
 

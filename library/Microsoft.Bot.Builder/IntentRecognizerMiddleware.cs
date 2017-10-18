@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder
@@ -13,9 +10,7 @@ namespace Microsoft.Bot.Builder
         public double Score { get; set; }
 
         public IList<Entity> Entities { get; } = new List<Entity>();                       
-    }
-
-    
+    }    
 
     public class IntentRecognizerMiddleware : IMiddleware, IReceiveActivity
     {
@@ -27,10 +22,9 @@ namespace Microsoft.Bot.Builder
         private readonly LinkedList<IntentRecognizer> _intentRecognizers = new LinkedList<IntentRecognizer>();
         private readonly LinkedList<IntentResultMutator> _intentResultMutators = new LinkedList<IntentResultMutator>();
 
-        public async Task<ReceiveResponse> ReceiveActivity(BotContext context, CancellationToken token)
+        public async Task<ReceiveResponse> ReceiveActivity(BotContext context)
         {
-            BotAssert.ContextNotNull(context);
-            BotAssert.CancellationTokenNotNull(token);
+            BotAssert.ContextNotNull(context);           
 
             var intents = await this.Recognize(context);
             if (intents.Count != 0)

@@ -1,10 +1,8 @@
-﻿using Microsoft.Bot.Connector;
-using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Connector;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder
@@ -14,8 +12,8 @@ namespace Microsoft.Bot.Builder
         private ActivityAdapterBase _adapter;
         private IBotLogger _logger = new NullLogger();
 
-        public delegate Task<ReceiveResponse> ReceiveDelegate_NoDefault(BotContext context, CancellationToken token);
-        public delegate Task ReceiveDelegate_DefaultHandled(BotContext context, CancellationToken token);
+        public delegate Task<ReceiveResponse> ReceiveDelegate_NoDefault(BotContext context);
+        public delegate Task ReceiveDelegate_DefaultHandled(BotContext context);
 
         private ReceiveDelegate_NoDefault[] _onReceive = null;
 
@@ -45,9 +43,9 @@ namespace Microsoft.Bot.Builder
             // these will wrap their delegates and always return "Handled". 
             foreach(ReceiveDelegate_DefaultHandled nullReturn in receiveHandler)
             {
-                ReceiveDelegate_NoDefault d = async (context, token) =>
+                ReceiveDelegate_NoDefault d = async (context) =>
                 {
-                    await nullReturn(context, token);
+                    await nullReturn(context);
                     return new ReceiveResponse(true);
                 };
 
@@ -107,19 +105,18 @@ namespace Microsoft.Bot.Builder
             }
         }
 
-        public override async Task<ReceiveResponse> ReceiveActivity(BotContext context, CancellationToken token)
+        public override async Task<ReceiveResponse> ReceiveActivity(BotContext context)
         {
-            BotAssert.ContextNotNull(context);
-            BotAssert.CancellationTokenNotNull(token);
+            BotAssert.ContextNotNull(context);            
             
-            var result = await base.ReceiveActivity(context, token);
+            var result = await base.ReceiveActivity(context);
             if (result?.Handled == false)
             {
                 if (_onReceive != null)
                 {
                     foreach (var r in _onReceive)
                     {
-                        result = await r(context, token);
+                        result = await r(context);
                         if (result.Handled == true)
                             break;
                     }
@@ -129,38 +126,34 @@ namespace Microsoft.Bot.Builder
             return result;
         }
 
-        public virtual async Task RunPipeline(Activity activity, CancellationToken token)
+        public virtual async Task RunPipeline(Activity activity)
         {
-            BotAssert.ActivityNotNull(activity);
-            BotAssert.CancellationTokenNotNull(token);
+            BotAssert.ActivityNotNull(activity);            
 
             Logger.Information($"Bot: Pipeline Running for Activity {activity.Id}");
 
-            var context = await this.CreateBotContext(activity, token).ConfigureAwait(false);
-            await base.RunPipeline(context, token).ConfigureAwait(false);
+            var context = await this.CreateBotContext(activity).ConfigureAwait(false);
+            await base.RunPipeline(context).ConfigureAwait(false);
             Logger.Information($"Bot: Pipeline Complete for Activity {activity.Id}");
         }
 
-        public virtual Task<BotContext> CreateBotContext(Activity activity, CancellationToken token)
+        public virtual Task<BotContext> CreateBotContext(Activity activity)
         {
-            BotAssert.ActivityNotNull(activity);
-            BotAssert.CancellationTokenNotNull(token);
+            BotAssert.ActivityNotNull(activity);            
 
             Logger.Information($"Bot: Creating BotContext for {activity.Id}");
 
             return Task.FromResult(new BotContext(this, activity));
         }
 
-        public virtual async Task<BotContext> CreateBotContext(ConversationReference reference, CancellationToken token)
+        public virtual async Task<BotContext> CreateBotContext(ConversationReference reference)
         {
             if (reference == null)
-                throw new ArgumentNullException(nameof(reference)); 
-
-            BotAssert.CancellationTokenNotNull(token);
+                throw new ArgumentNullException(nameof(reference));             
 
             Logger.Information($"Bot: Creating BotContext for {reference.ActivityId}");
 
-            return await this.CreateBotContext(reference.GetPostToBotMessage(), token).ConfigureAwait(false);
+            return await this.CreateBotContext(reference.GetPostToBotMessage()).ConfigureAwait(false);
         }
     }  
 }

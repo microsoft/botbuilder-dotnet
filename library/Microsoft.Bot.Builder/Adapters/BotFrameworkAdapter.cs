@@ -10,38 +10,36 @@ namespace Microsoft.Bot.Builder.Adapters
     public class BotFrameworkAdapter : ActivityAdapterBase
     {
         private readonly MicrosoftAppCredentials _credentials;
-        private readonly BotAuthenticator _authenticator;       
+        private readonly BotAuthenticator _authenticator;
 
         public BotFrameworkAdapter(string appId, string appPassword) : base()
         {
             _authenticator = new BotAuthenticator(appId, appPassword);
-            _credentials = new MicrosoftAppCredentials(appId, appPassword);            
+            _credentials = new MicrosoftAppCredentials(appId, appPassword);
         }
-     
-        public async override Task Post(IList<Activity> activities, CancellationToken token)
+
+        public async override Task Post(IList<Activity> activities)
         {
             BotAssert.ActivityListNotNull(activities);
-            BotAssert.CancellationTokenNotNull(token); 
 
             foreach (Activity activity in activities)
             {
-                var connectorClient = new ConnectorClient(new Uri(activity.ServiceUrl), _credentials); 
-                await connectorClient.Conversations.SendToConversationAsync(activity, token).ConfigureAwait(false);
+                var connectorClient = new ConnectorClient(new Uri(activity.ServiceUrl), _credentials);
+                await connectorClient.Conversations.SendToConversationAsync(activity).ConfigureAwait(false);
             }
         }
 
-        public async Task Receive(IDictionary<string, StringValues> headers, Activity activity, CancellationToken token)
+        public async Task Receive(IDictionary<string, StringValues> headers, Activity activity)
         {
             if (headers == null)
-                throw new ArgumentNullException(nameof(headers)); 
+                throw new ArgumentNullException(nameof(headers));
 
             BotAssert.ActivityNotNull(activity);
-            BotAssert.CancellationTokenNotNull(token); 
 
-            if (await _authenticator.TryAuthenticateAsync(headers, new[] { activity }, token))
+            if (await _authenticator.TryAuthenticateAsync(headers, new[] { activity }, CancellationToken.None))
             {
                 if (this.OnReceive != null)
-                    await this.OnReceive(activity, token).ConfigureAwait(false);
+                    await this.OnReceive(activity).ConfigureAwait(false);
             }
             else
             {
@@ -49,5 +47,4 @@ namespace Microsoft.Bot.Builder.Adapters
             }
         }
     }
-
-    }
+}

@@ -1,13 +1,12 @@
 ﻿using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Table;
-using System;
-using System.Linq;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Azure
 {
@@ -35,7 +34,7 @@ namespace Microsoft.Bot.Builder.Azure
         }
 
 
-        public Task ContextCreated(BotContext context, CancellationToken token)
+        public Task ContextCreated(BotContext context)
         {
             context.Storage = this;
             return Task.CompletedTask;

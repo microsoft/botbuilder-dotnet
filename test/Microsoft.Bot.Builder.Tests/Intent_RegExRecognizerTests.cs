@@ -1,12 +1,8 @@
 ﻿using Microsoft.Bot.Builder.Adapters;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Microsoft.Bot.Connector;
 
 namespace Microsoft.Bot.Builder.Tests
 {
@@ -25,7 +21,7 @@ namespace Microsoft.Bot.Builder.Tests
 
             Bot bot = new Bot(adapter)
                 .Use(helpRecognizer)
-                .OnReceive(async (context, token) =>
+                .OnReceive(async (context) =>
                 {
                     if (context.IfIntent("HelpIntent"))
                         context.Reply("You selected HelpIntent");
@@ -85,7 +81,7 @@ namespace Microsoft.Bot.Builder.Tests
 
             Bot bot = new Bot(adapter)
                 .Use(recognizer)
-                .OnReceive(async (context, token) =>
+                .OnReceive(async (context) =>
                 {
                     if (context.IfIntent(new Regex("a")))
                         context.Reply("aaaa Intent");
@@ -110,7 +106,7 @@ namespace Microsoft.Bot.Builder.Tests
 
             Bot bot = new Bot(adapter)
                 .Use(helpRecognizer)
-                .OnReceive(async (context, token) =>
+                .OnReceive(async (context) =>
                 {
                     if (context.IfIntent("CancelIntent"))
                         context.Reply("You selected CancelIntent");
@@ -132,7 +128,7 @@ namespace Microsoft.Bot.Builder.Tests
 
             Bot bot = new Bot(adapter)
                 .Use(helpRecognizer)
-                .OnReceive(async (context, token) =>
+                .OnReceive(async (context) =>
                 {
                     if (context.IfIntent("CancelIntent"))
                         context.Reply("You selected CancelIntent");
@@ -158,7 +154,7 @@ namespace Microsoft.Bot.Builder.Tests
 
             Bot bot = new Bot(adapter)
                 .Use(helpRecognizer)
-                .OnReceive(async (context, token) =>
+                .OnReceive(async (context) =>
                 {
                     if (context.IfIntent("HelpIntent"))
                         context.Reply("You selected HelpIntent");

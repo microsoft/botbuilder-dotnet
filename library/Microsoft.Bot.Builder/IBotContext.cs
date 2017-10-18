@@ -1,13 +1,11 @@
-﻿using Microsoft.Bot.Builder.Adapters;
+﻿using Microsoft.Bot.Connector;
 using System;
 using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Text.RegularExpressions;
-using Microsoft.Bot.Connector;
+using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder
-{    
+{
     public interface IBotContext
     {
         Activity Request { get; }
@@ -25,10 +23,9 @@ namespace Microsoft.Bot.Builder
 
     public static partial class BotContextExtension
     {
-        public static async Task Post(this BotContext context, CancellationToken token)
-        {
-            BotAssert.CancellationTokenNotNull(token);
-            await context.PostActivity(context, new List<Activity>(), token).ConfigureAwait(false);
+        public static async Task Post(this BotContext context)
+        {            
+            await context.PostActivity(context, new List<Activity>()).ConfigureAwait(false);
         }  
         
         public static BotContext ToBotContext(this IBotContext context)
@@ -63,9 +60,9 @@ namespace Microsoft.Bot.Builder
         }
         
 
-        public async Task PostActivity(BotContext context, IList<Activity> acitivties, CancellationToken token)
+        public async Task PostActivity(BotContext context, IList<Activity> acitivties)
         {
-            await _bot.PostActivity(context, acitivties, token).ConfigureAwait(false);
+            await _bot.PostActivity(context, acitivties).ConfigureAwait(false);
         }
 
         public Activity Request => _request;

@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Builder.Adapters
         {
         }
 
-        public override Task Post(IList<Activity> activities, CancellationToken token)
+        public override Task Post(IList<Activity> activities)
         {
             foreach (Activity activity in activities)
             {
@@ -64,7 +64,7 @@ namespace Microsoft.Bot.Builder.Adapters
                 };
 
                 if (this.OnReceive != null)
-                    await this.OnReceive(activity, CancellationToken.None);                
+                    await this.OnReceive(activity);
             }
         }
     }    

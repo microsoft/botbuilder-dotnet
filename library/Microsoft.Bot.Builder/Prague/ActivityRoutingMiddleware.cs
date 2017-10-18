@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Prague
@@ -23,7 +20,7 @@ namespace Microsoft.Bot.Builder.Prague
             _pragueRouter = new SimpleRouter(pragueHandler.Execute);
         }
 
-        public async Task<ReceiveResponse> ReceiveActivity(BotContext context, CancellationToken token)
+        public async Task<ReceiveResponse> ReceiveActivity(BotContext context)
         {
             Route r = await _pragueRouter.GetRoute(context).ConfigureAwait(false); 
             if (r == null)

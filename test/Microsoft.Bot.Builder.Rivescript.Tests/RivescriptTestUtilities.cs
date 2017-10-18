@@ -1,8 +1,6 @@
 ﻿using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Builder.Tests;
 using System;
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Rivescript.Tests
@@ -19,7 +17,7 @@ namespace Microsoft.Bot.Builder.Rivescript.Tests
             _action = action;
         }
 
-        public async Task ContextCreated(BotContext context, CancellationToken token)
+        public async Task ContextCreated(BotContext context)
         {
             _action(context);
         }
@@ -38,7 +36,7 @@ namespace Microsoft.Bot.Builder.Rivescript.Tests
             _action = action;
         }
 
-        public async Task ContextDone(BotContext context, CancellationToken token)
+        public async Task ContextDone(BotContext context)
         {
             _action(context);
         }

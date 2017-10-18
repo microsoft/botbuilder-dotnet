@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Bot.Builder;
-using Microsoft.Bot.Builder.Adapters;
+﻿using Microsoft.Bot.Connector;
 using Microsoft.Cognitive.LUIS;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
-using Microsoft.Bot.Connector;
+using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Ai
 {
@@ -31,7 +27,7 @@ namespace Microsoft.Bot.Builder.Ai
         /// <param name="context"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        public async Task<ReceiveResponse> ReceiveActivity(BotContext context, CancellationToken token)
+        public async Task<ReceiveResponse> ReceiveActivity(BotContext context)
         {
             IMessageActivity message = context.Request.AsMessageActivity();
             if (message != null)
@@ -64,7 +60,7 @@ namespace Microsoft.Bot.Builder.Ai
         /// <param name="activities"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        public async Task PostActivity(BotContext context, IList<Activity> activities, CancellationToken token)
+        public async Task PostActivity(BotContext context, IList<Activity> activities)
         {
             foreach (var activity in activities)
             {

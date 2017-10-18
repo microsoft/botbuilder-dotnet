@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Rivescript
@@ -65,7 +64,7 @@ namespace Microsoft.Bot.Builder.Rivescript
             return state; 
         }
 
-        public async Task<ReceiveResponse> ReceiveActivity(BotContext context, CancellationToken token)
+        public async Task<ReceiveResponse> ReceiveActivity(BotContext context)
         {
             IDictionary<string, string> userVars;
             userVars = context.State.User[RivescriptState] ?? new Dictionary<string, string>();

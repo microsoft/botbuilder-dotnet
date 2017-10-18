@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Storage
@@ -22,7 +21,7 @@ namespace Microsoft.Bot.Builder.Storage
             this.folder = folder;
         }
 
-        public Task ContextCreated(BotContext context, CancellationToken token)
+        public Task ContextCreated(BotContext context)
         {
             context.Storage = this;
             return Task.CompletedTask;
