@@ -1,7 +1,4 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -12,12 +9,13 @@ namespace Microsoft.Bot.Builder.Storage
     /// </summary>
     public class DictionaryStorage : IStorage, IContextCreated
     {
-        protected StoreItems memory;
-        protected int eTag = 0;
+        private readonly StoreItems _memory;
+        private int _eTag = 0;
+        private object _syncroot = new object(); 
 
         public DictionaryStorage(StoreItems dictionary = null)
         {
-            this.memory = dictionary ?? new StoreItems();
+            _memory = dictionary ?? new StoreItems();
         }
 
         public Task ContextCreated(BotContext context, CancellationToken token)
@@ -28,9 +26,12 @@ namespace Microsoft.Bot.Builder.Storage
 
         public Task Delete(string[] keys)
         {
-            foreach (var key in keys)
+            lock (_syncroot)
             {
-                this.memory.Remove(key);
+                foreach (var key in keys)
+                {
+                    _memory.Remove(key);
+                }
             }
             return Task.CompletedTask;
         }
@@ -38,11 +39,13 @@ namespace Microsoft.Bot.Builder.Storage
         public Task<StoreItems> Read(string[] keys)
         {
             var storeItems = new StoreItems();
-            foreach (var key in keys)
+            lock (_syncroot)
             {
-                object value;
-                if (this.memory.TryGetValue(key, out value))
-                    storeItems[key] = ((ICloneable)value).Clone() as StoreItem;
+                foreach (var key in keys)
+                {                    
+                    if (_memory.TryGetValue(key, out object value))
+                        storeItems[key] = ((ICloneable)value).Clone() as StoreItem;
+                }
             }
             return Task.FromResult(storeItems);
         }
@@ -50,25 +53,28 @@ namespace Microsoft.Bot.Builder.Storage
 
         public Task Write(StoreItems changes)
         {
-            foreach (var change in changes)
+            lock (_syncroot)
             {
-                StoreItem newValue = change.Value as StoreItem;
-                StoreItem oldValue = null;
-                object x;
-                if (this.memory.TryGetValue(change.Key, out x))
-                    oldValue = x as StoreItem;
-                if (oldValue == null ||
-                    newValue.eTag == "*" ||
-                    oldValue.eTag == newValue.eTag)
+                foreach (var change in changes)
                 {
-                    // clone and set etag
-                    newValue = newValue.Clone() as StoreItem;
-                    newValue.eTag = (this.eTag++).ToString();
-                    this.memory[change.Key] = newValue;
-                }
-                else
-                {
-                    throw new Exception("etag conflict");
+                    StoreItem newValue = change.Value as StoreItem;
+                    StoreItem oldValue = null;
+                    
+                    if (_memory.TryGetValue(change.Key, out object x))
+                        oldValue = x as StoreItem;
+                    if (oldValue == null ||
+                        newValue.eTag == "*" ||
+                        oldValue.eTag == newValue.eTag)
+                    {
+                        // clone and set etag
+                        newValue = newValue.Clone() as StoreItem;
+                        newValue.eTag = (_eTag++).ToString();
+                        _memory[change.Key] = newValue;
+                    }
+                    else
+                    {
+                        throw new Exception("etag conflict");
+                    }
                 }
             }
             return Task.CompletedTask;
