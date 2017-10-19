@@ -37,7 +37,7 @@ namespace Microsoft.Bot.Builder.Tests
         {
             public bool Routed { get; set; } = false;
 
-            public async Task<Route> GetRoute(IBotContext context)
+            public async Task<Route> GetRoute(IBotContext context, IList<string> foo = null)
             {
                 return new Route(async () => Routed = true);
             }

@@ -11,7 +11,7 @@ namespace Microsoft.Bot.Builder.Prague
 
     public interface IRouter : IRouterOrHandler
     {
-        Task<Route> GetRoute(IBotContext context);
+        Task<Route> GetRoute(IBotContext context, IList<String> routePath = null);
     }
 
     public interface IHandler : IRouterOrHandler

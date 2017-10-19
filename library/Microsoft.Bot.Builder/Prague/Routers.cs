@@ -29,7 +29,7 @@ namespace Microsoft.Bot.Builder.Prague
             return this;
         }
 
-        public abstract Task<Route> GetRoute(IBotContext context);
+        public abstract Task<Route> GetRoute(IBotContext context, IList<string> foo = null);
 
         public void Clear()
         {
@@ -41,7 +41,7 @@ namespace Microsoft.Bot.Builder.Prague
 
     public sealed class NullRouter : IRouter
     {
-        public Task<Route> GetRoute(IBotContext context)
+        public Task<Route> GetRoute(IBotContext context, IList<string> foo = null)
         {
             return Task.FromResult<Route>(null);
         }
@@ -54,7 +54,7 @@ namespace Microsoft.Bot.Builder.Prague
     /// </summary>
     public sealed class ErrorRouter : IRouter
     {
-        public Task<Route> GetRoute(IBotContext context)
+        public Task<Route> GetRoute(IBotContext context, IList<string> foo = null)
         {            
             return Task.FromException<Route>(new InvalidOperationException("Error by design"));
         }
@@ -68,7 +68,7 @@ namespace Microsoft.Bot.Builder.Prague
             _delegate = getRouteLambda ?? throw new ArgumentException(nameof(getRouteLambda)); 
         }
 
-        public Task<Route> GetRoute(IBotContext context)
+        public Task<Route> GetRoute(IBotContext context, IList<string> foo = null)
         {
             return _delegate(context);
         }
@@ -115,7 +115,7 @@ namespace Microsoft.Bot.Builder.Prague
             _action = (context) => handler.Execute();
         }
 
-        public async Task<Route> GetRoute(IBotContext context)
+        public async Task<Route> GetRoute(IBotContext context, IList<string> foo = null)
         {
             return new Route(() => _action(context));
         }
@@ -149,7 +149,7 @@ namespace Microsoft.Bot.Builder.Prague
         {
         }
 
-        public async Task<Route> GetRoute(IBotContext context)
+        public async Task<Route> GetRoute(IBotContext context, IList<string> foo = null)
         {
             return _route;
         }
@@ -172,7 +172,7 @@ namespace Microsoft.Bot.Builder.Prague
         {
             this.Add(routerOrHandlers);
         }
-        public async override Task<Route> GetRoute(IBotContext context)
+        public async override Task<Route> GetRoute(IBotContext context, IList<string> foo = null)
         {
             foreach (IRouterOrHandler rh in this.SubRouters)
             {
@@ -194,7 +194,7 @@ namespace Microsoft.Bot.Builder.Prague
         {
             this.Add(routerOrHandlers);
         }
-        public async override Task<Route> GetRoute(IBotContext context)
+        public async override Task<Route> GetRoute(IBotContext context, IList<string> foo = null)
         {
             List<Task<Route>> tasks = new List<Task<Route>>();
             foreach (IRouterOrHandler rh in this.SubRouters)
@@ -244,7 +244,7 @@ namespace Microsoft.Bot.Builder.Prague
             _elseMatchesRouterOrHandler = elseRouterOrHandler ?? new NullRouter();
         }
 
-        public async Task<Route> GetRoute(IBotContext context)
+        public async Task<Route> GetRoute(IBotContext context, IList<string> foo = null)
         {
             bool matches = await _condition(context).ConfigureAwait(false);
             if (matches)
