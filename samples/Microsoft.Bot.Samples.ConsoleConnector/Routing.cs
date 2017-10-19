@@ -1,8 +1,6 @@
 ﻿using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Prague;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using static Microsoft.Bot.Builder.Prague.RoutingRules;
 
 namespace Microsoft.Bot.Samples
 {
@@ -10,7 +8,7 @@ namespace Microsoft.Bot.Samples
     {
         public static IRouter BuildHelpRouting()
         {
-            var first = new FirstRouter(            
+            var first = First(
                 new IfMatch(
                     (context) => context.IfIntent("help"),
                     new SimpleRouter((context) => context.Reply("No Help for you!")))
@@ -21,8 +19,7 @@ namespace Microsoft.Bot.Samples
 
         public static IRouter BuildLoggingRouting()
         {
-            var first = new FirstRouter();
-            first.Add(
+            var first = First(
                 new IfMatch(
                     (context) => context.IfIntent("logging"),
                     new SimpleRouter((context) => EnableOrDisableLogging(context)))

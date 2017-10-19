@@ -4,62 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Prague
-{
-    public abstract class CompoundRouterBase : IRouter
-    {
-        private readonly List<IRouterOrHandler> _routerOrHandler = new List<IRouterOrHandler>();
-
-        public CompoundRouterBase Add(params IRouterOrHandler[] routerOrHandlers)
-        {
-            if (routerOrHandlers == null)
-            {
-                _routerOrHandler.Add(new NullRouter());
-            }
-            else
-            {
-                foreach (IRouterOrHandler item in routerOrHandlers)
-                {
-                    if (item == null)
-                        _routerOrHandler.Add(new NullRouter());
-                    else
-                        _routerOrHandler.Add(item);
-                }
-            }
-
-            return this;
-        }
-
-        public abstract Task<Route> GetRoute(IBotContext context);
-
-        public void Clear()
-        {
-            _routerOrHandler.Clear();
-        }
-
-        public IList<IRouterOrHandler> SubRouters { get => _routerOrHandler; }
-    }
-
-    public sealed class NullRouter : IRouter
-    {
-        public Task<Route> GetRoute(IBotContext context)
-        {
-            return Task.FromResult<Route>(null);
-        }
-    }
-
-    /// <summary>
-    /// Router that throws an InvalidOperationExcpetion when it's used. 
-    /// This router is primarly used for Unit Testing to insure routing
-    /// order and proper error handling. 
-    /// </summary>
-    public sealed class ErrorRouter : IRouter
-    {
-        public Task<Route> GetRoute(IBotContext context)
-        {            
-            return Task.FromException<Route>(new InvalidOperationException("Error by design"));
-        }
-    }
-
+{       
     public class AnonymousRouter : IRouter
     {
         private readonly Func<IBotContext, Task<Route>> _delegate;
@@ -68,7 +13,7 @@ namespace Microsoft.Bot.Builder.Prague
             _delegate = getRouteLambda ?? throw new ArgumentException(nameof(getRouteLambda)); 
         }
 
-        public Task<Route> GetRoute(IBotContext context)
+        public Task<Route> GetRoute(IBotContext context, string[] routePath = null)
         {
             return _delegate(context);
         }
@@ -115,7 +60,7 @@ namespace Microsoft.Bot.Builder.Prague
             _action = (context) => handler.Execute();
         }
 
-        public async Task<Route> GetRoute(IBotContext context)
+        public async Task<Route> GetRoute(IBotContext context, string[] routePath = null)
         {
             return new Route(() => _action(context));
         }
@@ -149,7 +94,7 @@ namespace Microsoft.Bot.Builder.Prague
         {
         }
 
-        public async Task<Route> GetRoute(IBotContext context)
+        public async Task<Route> GetRoute(IBotContext context, string[] foo = null)
         {
             return _route;
         }
@@ -162,66 +107,7 @@ namespace Microsoft.Bot.Builder.Prague
         {
             return new ScoredRouter(a, score);
         }
-    }
-
-    public class FirstRouter : CompoundRouterBase
-    {
-        public FirstRouter() : base()
-        { }
-        public FirstRouter(params IRouterOrHandler[] routerOrHandlers)
-        {
-            this.Add(routerOrHandlers);
-        }
-        public async override Task<Route> GetRoute(IBotContext context)
-        {
-            foreach (IRouterOrHandler rh in this.SubRouters)
-            {
-                Route r = await rh.AsRouter().GetRoute(context).ConfigureAwait(false);
-                if (r != null)
-                    return r;
-            }
-
-            return null;
-        }
-    }
-
-    public class BestRouter : CompoundRouterBase
-    {
-        public BestRouter() : base()
-        {
-        }
-        public BestRouter(params IRouterOrHandler[] routerOrHandlers)
-        {
-            this.Add(routerOrHandlers);
-        }
-        public async override Task<Route> GetRoute(IBotContext context)
-        {
-            List<Task<Route>> tasks = new List<Task<Route>>();
-            foreach (IRouterOrHandler rh in this.SubRouters)
-            {
-                tasks.Add(rh.AsRouter().GetRoute(context));
-            }
-
-            var routes = await Task.WhenAll(tasks).ConfigureAwait(false);
-
-            Route best = new MinRoute();
-            foreach (var route in routes)
-            {
-                if (route != null)
-                {
-                    if (route.Score >= 1.0)
-                        return route;
-                    if (route.Score > best.Score)
-                        best = route;
-                }
-            }
-
-            if (best.Score > 0.0 && (!(best is MinRoute)))
-                return best;
-            else
-                return null;
-        }
-    }
+    }  
 
     public class IfMatch : IRouter
     {
@@ -241,19 +127,19 @@ namespace Microsoft.Bot.Builder.Prague
         {
             _condition = condition ?? throw new ArgumentNullException(nameof(condition));
             _ifMatchesRouterOrHandler = ifRouterOrHandler ?? throw new ArgumentNullException(nameof(ifRouterOrHandler)); 
-            _elseMatchesRouterOrHandler = elseRouterOrHandler ?? new NullRouter();
+            _elseMatchesRouterOrHandler = elseRouterOrHandler ?? Router.NoRouter();
         }
 
-        public async Task<Route> GetRoute(IBotContext context)
+        public async Task<Route> GetRoute(IBotContext context, string[] foo = null)
         {
             bool matches = await _condition(context).ConfigureAwait(false);
             if (matches)
             {
-                return await _ifMatchesRouterOrHandler.AsRouter().GetRoute(context).ConfigureAwait(false);
+                return await Router.ToRouter(_ifMatchesRouterOrHandler).GetRoute(context).ConfigureAwait(false);
             }
             else
             {
-                return await _elseMatchesRouterOrHandler.AsRouter().GetRoute(context).ConfigureAwait(false);
+                return await Router.ToRouter(_elseMatchesRouterOrHandler).GetRoute(context).ConfigureAwait(false);
             }
         }
     }

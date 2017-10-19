@@ -50,7 +50,8 @@ namespace Microsoft.Bot.Builder.Tests
             Dialog d = new Dialog("name", h);
 
             // Trigger the action
-            var route = await Dialog.FindDialog("name").RouterOrHandler.AsRouter().GetRoute(null);
+            IRouterOrHandler rh = Dialog.FindDialog("name").RouterOrHandler;
+            var route = await Router.ToRouter(rh).GetRoute(null);
 
             await route.Action();
 
@@ -70,7 +71,7 @@ namespace Microsoft.Bot.Builder.Tests
             IDialogContext dc = TestUtilities.CreateEmptyContext<IDialogContext>();
             dc.IsActiveDialog = true;
 
-            var route = await rh.AsRouter().GetRoute(dc);
+            var route = await Router.ToRouter(rh).GetRoute(dc);
             await route.Action();
 
             // Make sure the route we just ran did actually run
@@ -90,10 +91,12 @@ namespace Microsoft.Bot.Builder.Tests
             SimpleHandler elseHandler = new SimpleHandler(() => elseHandled = true);
 
             IRouterOrHandler rh = Dialog.IfActiveDialog(ifHandler, elseHandler);
+            Assert.IsNotNull(rh);
+
             IDialogContext dc = TestUtilities.CreateEmptyContext<IDialogContext>();
             dc.IsActiveDialog = false;
-
-            var route = await rh.AsRouter().GetRoute(dc);
+            
+            var route = await Router.ToRouter(rh).GetRoute(dc);
             await route.Action();
 
             // Make sure the "if" branch did not run.

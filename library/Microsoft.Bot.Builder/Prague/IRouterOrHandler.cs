@@ -11,7 +11,7 @@ namespace Microsoft.Bot.Builder.Prague
 
     public interface IRouter : IRouterOrHandler
     {
-        Task<Route> GetRoute(IBotContext context);
+        Task<Route> GetRoute(IBotContext context, String[] routePath = null);
     }
 
     public interface IHandler : IRouterOrHandler
@@ -20,33 +20,14 @@ namespace Microsoft.Bot.Builder.Prague
     }
 
     public static class RoutingUtilities
-    {
-        private static readonly NullRouter _nullRouter = new NullRouter();
-
+    {        
         public static async Task RouteMessage(IRouterOrHandler routerOrHandler, IBotContext context)
         {
-            Route r = await routerOrHandler.AsRouter().GetRoute(context).ConfigureAwait(false);
+            Route r = await Router.ToRouter(routerOrHandler).GetRoute(context).ConfigureAwait(false);
             if (r != null)
                 await r.Action().ConfigureAwait(false);
             else
                 return; 
-        }
-
-        public static bool IsRouter(this IRouterOrHandler routerOrHandler)
-        {
-            return (routerOrHandler is IRouter); // Here for Compat with the JS SDK.            
-        }
-
-        public static IRouter AsRouter(this IRouterOrHandler routerOrHandler)
-        {
-            if (routerOrHandler is IHandler h)
-                return new SimpleRouter(h);
-            else if (routerOrHandler is IRouter r)
-                return r;
-            else
-                throw new InvalidOperationException($"Unknown RouteHandler Type: '{routerOrHandler.GetType().FullName}'");
-        }
-
-        public static NullRouter NullRouter { get { return _nullRouter; } }
+        }        
     }
 }
