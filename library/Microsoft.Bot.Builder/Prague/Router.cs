@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Builder.Prague
     public class Router : IRouter, IMiddleware, IReceiveActivity
     {
         public delegate Task<Route> GetRouteDelegate(IBotContext context);
-        public delegate Task<Route> GetRouteDelegateRoutePath(IBotContext context, IList<string> routePath);
+        public delegate Task<Route> GetRouteDelegateRoutePath(IBotContext context, string[] routePath);
 
         private GetRouteDelegateRoutePath _getRoute;
 
@@ -21,12 +21,12 @@ namespace Microsoft.Bot.Builder.Prague
             _getRoute = d ?? throw new ArgumentNullException(nameof(d));
         }
 
-        public Task<Route> GetRoute(IBotContext context, IList<string> routePath = null)
+        public Task<Route> GetRoute(IBotContext context, string[] routePath = null)
         {
             return _getRoute(context, routePath);
         }
 
-        public async Task<ReceiveResponse> Route(IBotContext context, IList<String> routePath = null)
+        public async Task<ReceiveResponse> Route(IBotContext context, string[] routePath = null)
         {
             Route r = await GetRoute(context, routePath).ConfigureAwait(false);
             if (r != null)
@@ -42,7 +42,7 @@ namespace Microsoft.Bot.Builder.Prague
 
         public Task<ReceiveResponse> ReceiveActivity(BotContext context)
         {
-            return Route(context, new List<string>());
+            return Route(context);
         }
 
         public static IRouter DoHandler(IHandler handler)
@@ -84,10 +84,10 @@ namespace Microsoft.Bot.Builder.Prague
 
         public static IRouter DoAfter(IRouterOrHandler firstDo, IHandler thenDo)
         {
-            IRouter firstRouter = ToRouter(firstDo);            
+            IRouter firstRouter = ToRouter(firstDo);
 
             Router r = new Router(async (context, routePath) =>
-            {                
+            {
                 Router.PushPath(routePath, $"DoAfter({thenDo.GetType().Name})");
                 Route result = await firstRouter.GetRoute(context, routePath).ConfigureAwait(false);
                 if (result != null)
@@ -109,41 +109,45 @@ namespace Microsoft.Bot.Builder.Prague
         /// Adds a prefix to the "top" item in the path to make it more readable for debugging. For example
         /// Router.PrefixPath(path, "THEN for")
         /// </summary>
-        public static IList<string> PrefixPath(IList<string> routePath, string prefix)
+        public static string[] PrefixPath(string[] routePath, string prefix)
         {
             if (routePath == null)
                 return null;
 
-            if (string.IsNullOrWhiteSpace(prefix))
-                return routePath;
-
-            if (routePath.Count == 0)
-                return routePath;
-
-            int index = routePath.Count - 1;
-            routePath[index] = prefix + routePath[index];
-            return routePath;
+            List<string> rp = new List<string>(routePath); 
+            int index = rp.Count - 1;
+            rp[index] = prefix + rp[index];
+            return rp.ToArray();
         }
 
         /// <summary>
         /// Pushes a new item into the Path stack. 
+        /// Note: Can't pass in an ArrayList here, as we do NOT want to 
+        /// modify the original. Need to make a new copy for the caller to consume.
         /// </summary>
-        public static IList<string> PushPath(IList<string> routePath, string path)
+        public static string[] PushPath(string[] routePath, string path)
         {
-            if (routePath != null)                          
-                routePath.Add(path);
+            if (routePath == null)
+                return null;
 
-            return routePath;
+            List<string> rp = new List<string>(routePath);
+            rp.Add(path);
+
+            return rp.ToArray();
         }
 
-        public static IList<string> UpdatePath(IList<string> routePath, string entry)
+        public static string[] UpdatePath(string[] routePath, string entry)
         {
-            if (routePath != null && routePath.Count > 0)
-            {
-                routePath[routePath.Count - 1] = entry;                
-            }
+            if (routePath == null)
+                return null;
 
-            return routePath;
+            if (routePath.Length == 0)
+                return new string[0];
+
+            List<string> rp = new List<string>(routePath);
+            rp[rp.Count - 1] = entry;            
+
+            return rp.ToArray();
         }
 
         public static IRouter ToRouter(IRouterOrHandler routerOrHandler)
@@ -152,6 +156,8 @@ namespace Microsoft.Bot.Builder.Prague
                 return new Router(async (context) => new Route(h.Execute, 1.0));
             else if (routerOrHandler is IRouter r)
                 return r;
+            else if (routerOrHandler is null)
+                return NoRouter(); 
             else
                 throw new InvalidOperationException($"Unknown RouteHandler Type: '{routerOrHandler.GetType().FullName}'");
         }

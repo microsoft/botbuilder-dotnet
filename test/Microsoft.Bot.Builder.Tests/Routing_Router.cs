@@ -163,7 +163,7 @@ namespace Microsoft.Bot.Builder.Tests
         public async Task Router_DoAfter_TwoHandlers_PathUpdates()
         {
             IList<string> orderMatters = new List<string>();
-            IList<string> routingPath = new List<string>();
+            string[] routingPath = new List<string>().ToArray();
 
             SimpleHandler one = new SimpleHandler(() => orderMatters.Add("one"));
             SimpleHandler two = new SimpleHandler(() => orderMatters.Add("two"));
@@ -254,11 +254,11 @@ namespace Microsoft.Bot.Builder.Tests
         [TestCategory("Router - PrefixPath")]
         public async Task Router_RoutePath_PrefixEmptyPath()
         {
-            IList<string> routePath = new List<string>();
+            string[] routePath = null;
 
             // Prepend a prefix to an empty route path
-            routePath = Router.PrefixPath(routePath, "should do nothing");
-            Assert.IsTrue(routePath.Count == 0); // no elements in the path currently, so no prefix is possible
+            var result = Router.PrefixPath(routePath, "should do nothing");
+            Assert.IsNull(result); // no elements in the path currently, so no prefix is possible
         }
 
         [TestMethod]
@@ -268,11 +268,11 @@ namespace Microsoft.Bot.Builder.Tests
             string subject = "subject";
             string prefix = "prefix";
 
-            var routePath = new List<string> { subject };
+            var routePath = new string[] { subject };
 
-            Router.PrefixPath(routePath, prefix);
-            Assert.IsTrue(routePath.Count == 1);
-            Assert.IsTrue(routePath[0] == prefix + subject, "Prefix did not properly prefix");
+            var result = Router.PrefixPath(routePath, prefix);
+            Assert.IsTrue(result.Length == 1);
+            Assert.IsTrue(result[0] == prefix + subject, "Prefix did not properly prefix");
         }
 
         [TestMethod]
@@ -288,12 +288,12 @@ namespace Microsoft.Bot.Builder.Tests
         [TestCategory("Router - PushPath")]
         public async Task Router_RoutePath_Push()
         {
-            string subject = "subject";            
-            IList<string> routePath = new List<string>();
+            string subject = "subject";
+            var routePath = new List<string>().ToArray();
             
-            routePath = Router.PushPath(routePath, subject);
-            Assert.IsTrue(routePath.Count == 1, "Should be exactly 1 item in the path");
-            Assert.IsTrue(routePath[0] == subject, $"Item should be '{subject}'");
+            var result = Router.PushPath(routePath, subject);
+            Assert.IsTrue(result.Length == 1, "Should be exactly 1 item in the path");
+            Assert.IsTrue(result[0] == subject, $"Item should be '{subject}'");
         }
 
         [TestMethod]
@@ -308,10 +308,10 @@ namespace Microsoft.Bot.Builder.Tests
         [TestCategory("Router - UpdatePath")]
         public async Task Router_RoutePath_UpdateEmpty()
         {
-            IList<string> routePath = new List<String>();
+            var routePath = new List<String>().ToArray();
             var revisedPath = Router.UpdatePath(routePath, "Should Not Be Added");
-            Assert.IsTrue(routePath.Count == 0);
-            Assert.IsTrue(revisedPath.Count == 0);
+            Assert.IsTrue(routePath.Length == 0);
+            Assert.IsTrue(revisedPath.Length== 0);
         }
 
         [TestMethod]
@@ -319,11 +319,11 @@ namespace Microsoft.Bot.Builder.Tests
         public async Task Router_RoutePath_Update()
         {            
             string revised = "revised";
-            IList<string> routePath = new List<string> { "WillBeRemoved" };
+            var routePath = new string[] { "WillBeRemoved" };
 
-            routePath = Router.UpdatePath(routePath, revised); 
-            Assert.IsTrue(routePath.Count == 1, "Should be exactly 1 item in the path");
-            Assert.IsTrue(routePath[0] == revised, $"Item should be '{revised}'");
+            var result = Router.UpdatePath(routePath, revised); 
+            Assert.IsTrue(result.Length== 1, "Should be exactly 1 item in the path");
+            Assert.IsTrue(result[0] == revised, $"Item should be '{revised}'");
         }
     }
 }

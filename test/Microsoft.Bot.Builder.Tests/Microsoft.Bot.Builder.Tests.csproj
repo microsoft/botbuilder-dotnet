@@ -69,10 +69,9 @@
     <Compile Include="Intent_MiddlewareTests.cs" />
     <Compile Include="Intent_RegExRecognizerTests.cs" />
     <Compile Include="Routing_Middleware.cs" />
-    <Compile Include="Routing_BasicTests.cs" />
     <Compile Include="Routing_BestTests.cs" />
     <Compile Include="Routing_FirstTests.cs" />
-    <Compile Include="Routing_IfMatchTests.cs" />
+    <Compile Include="Routing_IfTrueTests.cs" />
     <Compile Include="Storage_BaseTests.cs" />
     <Compile Include="Storage_FileTests.cs" />
     <Compile Include="Storage_MemoryTests.cs" />
