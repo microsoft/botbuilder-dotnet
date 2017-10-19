@@ -5,6 +5,7 @@ using Microsoft.Bot.Builder.Tests;
 using System;
 using System.Threading.Tasks;
 using System.IO;
+using System.Diagnostics;
 
 namespace Microsoft.Bot.Builder.Azure.Tests
 {
@@ -22,10 +23,22 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         private static string emulatorPath = Environment.ExpandEnvironmentVariables(@"%ProgramFiles(x86)%\Microsoft SDKs\Azure\Storage Emulator\azurestorageemulator.exe");
         private const string noEmulatorMessage = "This test requires Azure Storage Emulator! go to https://go.microsoft.com/fwlink/?LinkId=717179 to download and install.";
 
-        public bool hasStorageEmulator()
+        private static Lazy<bool> hasStorageEmulator = new Lazy<bool>(() =>
         {
-            return File.Exists(emulatorPath);
-        }
+            if (File.Exists(emulatorPath))
+            {
+                Process p = new Process();
+                p.StartInfo.UseShellExecute = false;
+                p.StartInfo.RedirectStandardOutput = true;
+                p.StartInfo.FileName = emulatorPath;
+                p.StartInfo.Arguments = "status";
+                p.Start();
+                var output = p.StandardOutput.ReadToEnd();
+                p.WaitForExit();
+                return output.Contains("IsRunning: True");
+            }
+            return false;
+        });
 
         [ClassInitialize]
         public static void SetupTests(TestContext testContext)
@@ -36,8 +49,10 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestInitialize]
         public void TestInit()
         {
-            if (hasStorageEmulator())
+            if (hasStorageEmulator.Value)
+            {
                 storage = new AzureTableStorage("UseDevelopmentStorage=true", TestContext.TestName + TestContext.GetHashCode().ToString("x"));
+            }
         }
 
         [TestCleanup]
@@ -50,44 +65,53 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             }
         }
 
+        public bool CheckStorageEmulator()
+        {
+            if (!hasStorageEmulator.Value)
+                Debug.WriteLine(noEmulatorMessage);
+            if (Debugger.IsAttached)
+                Assert.IsTrue(hasStorageEmulator.Value, noEmulatorMessage);
+            return hasStorageEmulator.Value;
+        }
+
         // NOTE: THESE TESTS REQUIRE THAT THE AZURE STORAGE EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
         [TestMethod]
         public async Task CreateObjectTest()
         {
-            Assert.IsTrue(hasStorageEmulator(), noEmulatorMessage);
-            await base._createObjectTest(storage);
+            if (CheckStorageEmulator())
+                await base._createObjectTest(storage);
         }
 
         // NOTE: THESE TESTS REQUIRE THAT THE AZURE STORAGE EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
         [TestMethod]
         public async Task ReadUnknownTest()
         {
-            Assert.IsTrue(hasStorageEmulator(), noEmulatorMessage);
-            await base._readUnknownTest(storage);
+            if (CheckStorageEmulator())
+                await base._readUnknownTest(storage);
         }
 
         // NOTE: THESE TESTS REQUIRE THAT THE AZURE STORAGE EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
         [TestMethod]
         public async Task UpdateObjectTest()
         {
-            Assert.IsTrue(hasStorageEmulator(), noEmulatorMessage);
-            await base._updateObjectTest(storage);
+            if (CheckStorageEmulator())
+                await base._updateObjectTest(storage);
         }
 
         // NOTE: THESE TESTS REQUIRE THAT THE AZURE STORAGE EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
         [TestMethod]
         public async Task DeleteObjectTest()
         {
-            Assert.IsTrue(hasStorageEmulator(), noEmulatorMessage);
-            await base._deleteObjectTest(storage);
+            if (CheckStorageEmulator())
+                await base._deleteObjectTest(storage);
         }
 
         // NOTE: THESE TESTS REQUIRE THAT THE AZURE STORAGE EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
         [TestMethod]
         public async Task HandleCrazyKeys()
         {
-            Assert.IsTrue(hasStorageEmulator(), noEmulatorMessage);
-            await base._handleCrazyKeys(storage);
+            if (CheckStorageEmulator())
+                await base._handleCrazyKeys(storage);
         }
     }
 }
