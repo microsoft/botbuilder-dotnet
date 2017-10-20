@@ -7,6 +7,11 @@ namespace Microsoft.Bot.Builder.Prague
 {    
     public class SimpleHandler : IHandler
     {
+        public static implicit operator SimpleHandler(Action a)
+        {
+            return new SimpleHandler(a);
+        }
+
         private readonly Func<Task> _userFunction;
 
         public SimpleHandler(Func<Task> function)

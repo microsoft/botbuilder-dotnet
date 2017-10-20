@@ -21,6 +21,11 @@ namespace Microsoft.Bot.Builder.Prague
             return errorRouter;
         }
 
+        public static IHandler Simple(Action action)
+        {
+            return new SimpleHandler(action);             
+        }
+
         public static IRouter First(params IRouterOrHandler[] routerOrHandlers)
         {
             Router firstRouter = new Router(async (context, routePath) =>

@@ -31,24 +31,16 @@ namespace Microsoft.Bot.Builder.Tests
         public async Task IfTrue_ExecuteOnMatch()
         {
             bool result = false;
-            IRouter r = IfTrue(
-                (context) => true,
-                new SimpleRouter(() => result = true));
-
+            IRouter r = IfTrue((context) => true, new SimpleRouter(() => result = true));
             Route route = await r.GetRoute(null);
             await route.Action();
-
             Assert.IsTrue(result == true, "Expected result to be TRUE");
         }
-      
+
         [TestMethod]
         public async Task IfTrue_NoMatchNoElseClause()
-        {            
-            IRouter r = IfTrue(
-                (context) => false,
-                Error()
-                );
-
+        {
+            IRouter r = IfTrue((context) => false, Error());
             Route route = await r.GetRoute(null);
             Assert.IsNull(route, "Should be no route");
         }
@@ -56,24 +48,16 @@ namespace Microsoft.Bot.Builder.Tests
         [TestMethod]
         public async Task IfTrue_NoMatchRunsElseClauseNullRouter()
         {
-            IRouter r = IfTrue(
-                (context) => false,
-                Error(),
-                Router.NoRouter()
-                );
-
+            IRouter r = IfTrue((context) => false, Error(), Router.NoRouter());
             Route route = await r.GetRoute(null);
             Assert.IsNull(route, "Should be no route");
         }
 
         [TestMethod]
         public async Task IfTrue_NoMatchRunsElseClause()
-        {            
+        {
             bool result = false;
-            IRouter r = IfTrue(
-                (context) => false,
-                Error(),
-                new SimpleRouter(() => result = true));
+            IRouter r = IfTrue((context) => false, Error(), new SimpleRouter(() => result = true));
 
             Route route = await r.GetRoute(null);
             await route.Action();
@@ -85,15 +69,11 @@ namespace Microsoft.Bot.Builder.Tests
         public async Task IfTrue_OnlyTheMainClauseRuns()
         {
             bool result = false;
-            IRouter r = IfTrue(
-                (context) => true,                
-                new SimpleRouter(() => result = true),
-                Error());
-
+            IRouter r = IfTrue((context) => true, new SimpleRouter(() => result = true), Error());
             Route route = await r.GetRoute(null);
             await route.Action();
 
-            Assert.IsTrue(result == true, "If clause did not run");            
-        }       
+            Assert.IsTrue(result == true, "If clause did not run");
+        }
     }
 }

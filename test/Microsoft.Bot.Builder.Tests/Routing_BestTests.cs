@@ -30,8 +30,7 @@ namespace Microsoft.Bot.Builder.Tests
         public async Task Best_RouteToHandler()
         {
             bool routed = false;
-            IRouter r = Best(
-                new SimpleHandler(() => routed = true));
+            IRouter r = Best(new SimpleHandler(() => routed = true));
 
             Route route = await r.GetRoute(null);
             Assert.IsFalse(routed, "should have have routed yet");

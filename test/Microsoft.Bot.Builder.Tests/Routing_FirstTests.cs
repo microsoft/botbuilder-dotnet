@@ -43,8 +43,7 @@ namespace Microsoft.Bot.Builder.Tests
         public async Task First_OneHandler()
         {
             bool fired = false;
-            SimpleHandler h = new SimpleHandler(() => fired = true);
-            IRouter r = First(h);
+            IRouter r = First(Simple(() => fired = true));
 
             Route route = await r.GetRoute(null);
             Assert.IsFalse(fired, "Route should not yet have fired");
@@ -56,17 +55,14 @@ namespace Microsoft.Bot.Builder.Tests
         public async Task First_TwoHandlers()
         {
             string whichHandler = "none";
-            SimpleHandler first = new SimpleHandler(() => whichHandler = "first");
-            SimpleHandler second = new SimpleHandler(() => whichHandler = "second");
-
-            IRouter r = First(first, second);
+            IRouter r = First(
+                Simple(() => whichHandler = "first"),
+                Simple(() => whichHandler = "second"));
 
             Route route = await r.GetRoute(null);
-
             Assert.IsTrue(whichHandler == "none", "No Route should have fired yet");
 
             await route.Action();
-
             Assert.IsTrue(whichHandler == "first", "Incorrect Handler Called");
         }
 
@@ -74,16 +70,14 @@ namespace Microsoft.Bot.Builder.Tests
         public async Task First_TwoHandlersFirstIsNull()
         {
             string whichHandler = "none";
-            SimpleHandler second = new SimpleHandler(() => whichHandler = "second");
-
-            IRouter r = First(Router.NoRouter(), second);
+            IRouter r = First(
+                Router.NoRouter(),
+                Simple(() => whichHandler = "second"));
 
             Route route = await r.GetRoute(null);
-
             Assert.IsTrue(whichHandler == "none", "No Route should have fired yet");
 
             await route.Action();
-
             Assert.IsTrue(whichHandler == "second", "Incorrect Handler Called");
         }
 
@@ -93,15 +87,11 @@ namespace Microsoft.Bot.Builder.Tests
             bool routerFired = false;
             bool routeFired = false;
 
-            IRouter first = new Router(
-               async (context) =>
-               {
-                   routerFired = true;
-                   return new Route(async () =>
-                   {
-                       routeFired = true;
-                   });
-               });
+            IRouter first = new Router(async (context) =>
+            {
+                routerFired = true;
+                return new Route(async () => { routeFired = true; });
+            });
 
             IRouter r = First(first);
 
@@ -120,15 +110,11 @@ namespace Microsoft.Bot.Builder.Tests
             bool routerFired = false;
             bool routeFired = false;
 
-            IRouter second = new Router(
-               async (context) =>
-               {
-                   routerFired = true;
-                   return new Route(async () =>
-                   {
-                       routeFired = true;
-                   });
-               });
+            IRouter second = new Router(async (context) =>
+            {
+                routerFired = true;
+                return new Route(async () => { routeFired = true; });
+            });
 
             IRouter r = First(
                 Router.NoRouter(),
@@ -149,19 +135,19 @@ namespace Microsoft.Bot.Builder.Tests
             string state = string.Empty;
             IBotContext bc = TestUtilities.CreateEmptyContext();
 
-            SimpleRouter fast = new SimpleRouter(() => { Task.Delay(100); state = "fast"; });
-            SimpleRouter slow = new SimpleRouter(() => { Task.Delay(1000); state = "slow"; });
+            IRouterOrHandler fast = Simple(() => { Task.Delay(100); state = "fast"; });
+            IRouterOrHandler slow = Simple(() => { Task.Delay(1000); state = "slow"; });
 
-            IRouter first = First(fast,slow);             
+            IRouter first = First(fast, slow);
             Route r = await first.GetRoute(bc);
             await r.Action();
             Assert.IsTrue(state == "fast", "State is not fast");
 
             state = string.Empty;
-            IRouter second = First(slow, fast); 
+            IRouter second = First(slow, fast);
             Route r2 = await second.GetRoute(bc);
             await r2.Action();
             Assert.IsTrue(state == "slow", "state is not slow");
-        }
+        }      
     }
 }
