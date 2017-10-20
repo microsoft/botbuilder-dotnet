@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Bot.Connector;
+using static Microsoft.Bot.Builder.Prague.Routers;
 
 namespace Microsoft.Bot.Builder.Tests
 {
@@ -28,12 +29,12 @@ namespace Microsoft.Bot.Builder.Tests
 
         [TestMethod]
         public void Dialog_Registry_Find()
-        {   
+        {
             //Make sure the registry is empty
             Assert.IsNull(Dialog.FindDialog("dialog"), "Incorrectly found a dialog");
 
             // Create a dialog, and make sure it's found in the registry
-            Dialog d = new Dialog("dialog", new SimpleHandler(async () => { }));
+            Dialog d = new Dialog("dialog", Simple ( () => { }));
             Dialog found = Dialog.FindDialog("dialog");
             Assert.IsTrue(found.Name == "dialog");
 
@@ -46,16 +47,16 @@ namespace Microsoft.Bot.Builder.Tests
         public async Task Dialog_RouterTest()
         {
             bool wasCalled = false;
-            IHandler h = new SimpleHandler(async () => wasCalled = true );
+            Handler h = Simple(() => wasCalled = true);
             Dialog d = new Dialog("name", h);
 
             // Trigger the action
-            IRouterOrHandler rh = Dialog.FindDialog("name").RouterOrHandler;
+            RouterOrHandler rh = Dialog.FindDialog("name").RouterOrHandler;
             var route = await Router.ToRouter(rh).GetRoute(null);
 
             await route.Action();
 
-            Assert.IsTrue(wasCalled == true, "Dialog didn't find the action");            
+            Assert.IsTrue(wasCalled == true, "Dialog didn't find the action");
         }
 
         [TestMethod]
@@ -64,10 +65,10 @@ namespace Microsoft.Bot.Builder.Tests
             bool ifHandled = false;
             bool elseHandled = false;
 
-            SimpleHandler ifHandler = new SimpleHandler(() => ifHandled = true);
-            SimpleHandler elseHandler = new SimpleHandler(() => elseHandled = true);
+            Handler ifHandler = Simple ( () => ifHandled = true);
+            Handler elseHandler = Simple ( () => elseHandled = true);
 
-            IRouterOrHandler rh = Dialog.IfActiveDialog(ifHandler, elseHandler);
+            RouterOrHandler rh = Dialog.IfActiveDialog(ifHandler, elseHandler);
             IDialogContext dc = TestUtilities.CreateEmptyContext<IDialogContext>();
             dc.IsActiveDialog = true;
 
@@ -87,15 +88,15 @@ namespace Microsoft.Bot.Builder.Tests
             bool ifHandled = false;
             bool elseHandled = false;
 
-            SimpleHandler ifHandler = new SimpleHandler(() => ifHandled = true);
-            SimpleHandler elseHandler = new SimpleHandler(() => elseHandled = true);
+            Handler ifHandler = Simple (() => ifHandled = true);
+            Handler elseHandler = Simple (() => elseHandled = true);
 
-            IRouterOrHandler rh = Dialog.IfActiveDialog(ifHandler, elseHandler);
+            RouterOrHandler rh = Dialog.IfActiveDialog(ifHandler, elseHandler);
             Assert.IsNotNull(rh);
 
             IDialogContext dc = TestUtilities.CreateEmptyContext<IDialogContext>();
             dc.IsActiveDialog = false;
-            
+
             var route = await Router.ToRouter(rh).GetRoute(dc);
             await route.Action();
 

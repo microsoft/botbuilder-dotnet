@@ -17,13 +17,13 @@ namespace Microsoft.Bot.Builder.Tests
         [TestMethod]
         public async Task Best_NullRoutingTests()
         {
-            IRouter r = Best(
+            Router r = Best(
                     Router.NoRouter(),
                     null,
-                    (IHandler)null,
-                    (IRouter)null);
+                    (Handler)null,
+                    (Router)null);
 
-            Route route = await r.GetRoute(null);            
+            Route route = await r.GetRoute(null);
             Assert.IsNull(route);
         }
 
@@ -31,7 +31,7 @@ namespace Microsoft.Bot.Builder.Tests
         public async Task Best_RouteToHandler()
         {
             bool routed = false;
-            IRouter r = Best(new SimpleHandler(() => routed = true));
+            Router r = Best(Simple(() => routed = true));
 
             Route route = await r.GetRoute(null);
             Assert.IsFalse(routed, "should have have routed yet");
@@ -44,23 +44,23 @@ namespace Microsoft.Bot.Builder.Tests
         public async Task Best_RoutePastNullToHandler()
         {
             bool routed = false;
-            IRouter r = Best(
+            Router r = Best(
                     Router.NoRouter(),
-                    (IRouter)null,
-                    (IHandler)null,
-                    new SimpleHandler(() => routed = true));
+                    (Router)null,
+                    (Handler)null,
+                    Simple(() => routed = true));
 
             Route route = await r.GetRoute(null);
             Assert.IsFalse(routed, "should have have routed yet");
             await route.Action();
             Assert.IsTrue(routed, "Expected routed to be TRUE");
         }
-      
+
         [TestMethod]
         [ExpectedException(typeof(InvalidOperationException), "No Exception found. Test failed.")]
         public async Task Best_FailOnExceptionDuringRouting()
         {
-            IRouter r = Best(Error());
+            Router r = Best(Error());
             await r.GetRoute(null);
             Assert.Fail("expected the error router to throw on evaulation");
         }
@@ -69,10 +69,9 @@ namespace Microsoft.Bot.Builder.Tests
         public async Task Best_HigherScoreFirst()
         {
             string whichRan = string.Empty;
-            IRouter r = Best(
-                new ScoredRouter(async () => whichRan = "0.5", 0.5),
-                new ScoredRouter(async () => whichRan = "0.4", 0.4)
-                );
+            Router r = Best(
+                Scored(() => whichRan = "0.5", 0.5),
+                Scored(() => whichRan = "0.4", 0.4));
 
             Route route = await r.GetRoute(null);
             await route.Action();
@@ -84,10 +83,9 @@ namespace Microsoft.Bot.Builder.Tests
         public async Task Best_HigherScoreLast()
         {
             string whichRan = string.Empty;
-            IRouter r = Best(
-                new ScoredRouter(async () => whichRan = "0.4", 0.4),
-                new ScoredRouter(async () => whichRan = "0.5", 0.5)                
-                );
+            Router r = Best(
+                Scored(() => whichRan = "0.4", 0.4),
+                Scored(() => whichRan = "0.5", 0.5));
 
             Route route = await r.GetRoute(null);
             await route.Action();
@@ -98,11 +96,10 @@ namespace Microsoft.Bot.Builder.Tests
         public async Task Best_HigherScoreMiddle()
         {
             string whichRan = string.Empty;
-            IRouter r = Best(
-                new ScoredRouter(async () => whichRan = "0.4", 0.4),
-                new ScoredRouter(async () => whichRan = "0.9", 0.9),
-                new ScoredRouter(async () => whichRan = "0.5", 0.5)
-                );
+            Router r = Best(
+                Scored(() => whichRan = "0.4", 0.4),
+                Scored(() => whichRan = "0.9", 0.9),
+                Scored(() => whichRan = "0.5", 0.5));
 
             Route route = await r.GetRoute(null);
             await route.Action();
@@ -113,10 +110,9 @@ namespace Microsoft.Bot.Builder.Tests
         public async Task Best_TiedScores()
         {
             string whichRan = string.Empty;
-            IRouter r = Best(
-                new ScoredRouter(async () => whichRan = "first", 0.5),
-                new ScoredRouter(async () => whichRan = "second", 0.5)
-                );
+            Router r = Best(
+                Scored(() => whichRan = "first", 0.5),
+                Scored(() => whichRan = "second", 0.5));
 
             Route route = await r.GetRoute(null);
             await route.Action();

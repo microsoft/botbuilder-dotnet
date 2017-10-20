@@ -7,7 +7,7 @@ namespace Microsoft.Bot.Samples
 {
     public class Routing
     {
-        public static IRouter BuildHelpRouting()
+        public static Router BuildHelpRouting()
         {
             var first = First(
                 IfTrue(
@@ -18,7 +18,7 @@ namespace Microsoft.Bot.Samples
             return first;
         }
 
-        public static IRouter BuildLoggingRouting()
+        public static Router BuildLoggingRouting()
         {
             var first = First(
                 IfTrue(

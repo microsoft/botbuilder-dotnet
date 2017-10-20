@@ -5,7 +5,15 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Prague
 {
-    public class Router : IRouter, IMiddleware, IReceiveActivity
+    public abstract class RouterOrHandler
+    {
+        public static implicit operator RouterOrHandler(Action a)
+        {
+            return new Handler(a);
+        }
+    }
+
+    public class Router : RouterOrHandler, IMiddleware, IReceiveActivity
     {
         public delegate Task<Route> GetRouteDelegate(IBotContext context);
         public delegate Task<Route> GetRouteDelegateRoutePath(IBotContext context, string[] routePath);
@@ -45,12 +53,12 @@ namespace Microsoft.Bot.Builder.Prague
             return Route(context);
         }
 
-        public static IRouter DoHandler(IHandler handler)
+        public static Router DoHandler(Handler handler)
         {
             return ToRouter(handler);
         }
 
-        public static IRouter NoRouter()
+        public static Router NoRouter()
         {
             return new Router((context) => Task.FromResult<Route>(null));
         }
@@ -59,9 +67,9 @@ namespace Microsoft.Bot.Builder.Prague
         /// If the "ThenDo()" evaluates to a non-nullRoute, then when the actual route
         /// is fired, execute the firstDo() before doing the thenDo(). 
         /// </summary>
-        public static IRouter DoBefore(IHandler firstDo, IRouterOrHandler thenDo)
+        public static Router DoBefore(Handler firstDo, RouterOrHandler thenDo)
         {
-            IRouter thenRouter = ToRouter(thenDo);
+            Router thenRouter = ToRouter(thenDo);
 
             Router r = new Router(async (context, routePath) =>
                {
@@ -82,9 +90,9 @@ namespace Microsoft.Bot.Builder.Prague
             return r;
         }
 
-        public static IRouter DoAfter(IRouterOrHandler firstDo, IHandler thenDo)
+        public static Router DoAfter(RouterOrHandler firstDo, Handler thenDo)
         {
-            IRouter firstRouter = ToRouter(firstDo);
+            Router firstRouter = ToRouter(firstDo);
 
             Router r = new Router(async (context, routePath) =>
             {
@@ -150,11 +158,11 @@ namespace Microsoft.Bot.Builder.Prague
             return rp.ToArray();
         }
 
-        public static IRouter ToRouter(IRouterOrHandler routerOrHandler)
+        public static Router ToRouter(RouterOrHandler routerOrHandler)
         {
-            if (routerOrHandler is IHandler h)
+            if (routerOrHandler is Handler h)
                 return new Router(async (context) => new Route(h.Execute, 1.0));
-            else if (routerOrHandler is IRouter r)
+            else if (routerOrHandler is Router r)
                 return r;
             else if (routerOrHandler is null)
                 return NoRouter(); 

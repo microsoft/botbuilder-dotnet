@@ -30,17 +30,17 @@ namespace Microsoft.Bot.Builder.Prague
     public class Dialog
     {
         private static IDictionary<string, Dialog> _dialogRegistry = new Dictionary<string, Dialog>();        
-        private IRouterOrHandler _routerOrHandler;
+        private RouterOrHandler _routerOrHandler;
         private string _dialogName; 
 
-        public Dialog(string name, IRouterOrHandler routerOrHandler)
+        public Dialog(string name, RouterOrHandler routerOrHandler)
         {
             _dialogName = name ?? throw new ArgumentNullException(nameof(name));
             _routerOrHandler = routerOrHandler ?? throw new ArgumentOutOfRangeException(nameof(routerOrHandler)); 
             AddDialogToRegistry(this);            
         }
              
-        public Dialog(IRouterOrHandler routerOrHandler)
+        public Dialog(RouterOrHandler routerOrHandler)
         {
             _dialogName = this.GetType().FullName;
             _routerOrHandler = routerOrHandler;
@@ -48,7 +48,7 @@ namespace Microsoft.Bot.Builder.Prague
         }        
 
         public string Name { get { return _dialogName; } }
-        public IRouterOrHandler RouterOrHandler {  get { return _routerOrHandler; } }
+        public RouterOrHandler RouterOrHandler {  get { return _routerOrHandler; } }
  
         private static void AddDialogToRegistry(Dialog d)
         {
@@ -83,9 +83,9 @@ namespace Microsoft.Bot.Builder.Prague
             }
         }
        
-        public static IRouterOrHandler IfActiveDialog(IRouterOrHandler ifRouterOrHandler, IRouterOrHandler elseRouterOrHandler)            
+        public static RouterOrHandler IfActiveDialog(RouterOrHandler ifRouterOrHandler, RouterOrHandler elseRouterOrHandler)            
         {
-            IRouter router = IfTrue(            
+            Router router = IfTrue(            
                 async (context) => {
                     if (context is IDialogContext)
                         return ((IDialogContext)context).IsActiveDialog;

@@ -4,6 +4,7 @@ using Microsoft.Bot.Builder.Prague;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using System.Collections.Generic;
+using static Microsoft.Bot.Builder.Prague.Routers;
 
 namespace Microsoft.Bot.Builder.Tests
 {
@@ -18,7 +19,7 @@ namespace Microsoft.Bot.Builder.Tests
             bool routerFired = false;
             bool routeFired = false;
 
-            IRouter router = new Router(
+            Router router = new Router(
                async (context) =>
                {
                    routerFired = true;
@@ -44,7 +45,7 @@ namespace Microsoft.Bot.Builder.Tests
         {
             bool routerFired = false;
 
-            IRouter router = new Router(
+            Router router = new Router(
                async (context) =>
                {
                    routerFired = true;
@@ -64,10 +65,10 @@ namespace Microsoft.Bot.Builder.Tests
         {
             IList<string> orderMatters = new List<string>();
 
-            SimpleHandler one = new SimpleHandler(() => orderMatters.Add("one"));
-            SimpleHandler two = new SimpleHandler(() => orderMatters.Add("two"));
+            Handler one = Simple(() => orderMatters.Add("one"));
+            Handler two = Simple(() => orderMatters.Add("two"));
 
-            IRouter foo = Router.DoBefore(one, two);
+            Router foo = Router.DoBefore(one, two);
             Route route = await foo.GetRoute(null);
             await route.Action();
 
@@ -83,8 +84,8 @@ namespace Microsoft.Bot.Builder.Tests
             IList<string> orderMatters = new List<string>();
             bool routerFired = false;
 
-            SimpleHandler one = new SimpleHandler(() => orderMatters.Add("one"));
-            IRouter nullRouter = new Router(
+            Handler one = Simple(() => orderMatters.Add("one"));
+            Router nullRouter = new Router(
                async (context) =>
                {
                    routerFired = true;
@@ -95,7 +96,7 @@ namespace Microsoft.Bot.Builder.Tests
                }
            );
 
-            IRouter foo = Router.DoBefore(one, nullRouter);
+            Router foo = Router.DoBefore(one, nullRouter);
             Route route = await foo.GetRoute(null);
             Assert.IsNull(route, "Incorrectly got a route back.");
             Assert.IsTrue(orderMatters.Count == 0);
@@ -107,12 +108,12 @@ namespace Microsoft.Bot.Builder.Tests
         public async Task Router_DoBefore_OneRouter()
         {
             IList<string> orderMatters = new List<string>();
-            SimpleHandler one = new SimpleHandler(() => orderMatters.Add("handler"));
+            Handler one = Simple(() => orderMatters.Add("handler"));
 
             bool routerFired = false;
             bool routeFired = false;
 
-            IRouter router = new Router(
+            Router router = new Router(
                 async (context) =>
                 {
                     routerFired = true;
@@ -124,7 +125,7 @@ namespace Microsoft.Bot.Builder.Tests
                 }
             );
 
-            IRouter foo = Router.DoBefore(one, router);
+            Router foo = Router.DoBefore(one, router);
             Route route = await foo.GetRoute(null);
 
             // At this point, the original router ran and returned a route. 
@@ -146,10 +147,10 @@ namespace Microsoft.Bot.Builder.Tests
         {
             IList<string> orderMatters = new List<string>();
 
-            SimpleHandler one = new SimpleHandler(() => orderMatters.Add("one"));
-            SimpleHandler two = new SimpleHandler(() => orderMatters.Add("two"));
+            var one = Simple(() => orderMatters.Add("one"));
+            var two = Simple(() => orderMatters.Add("two"));
 
-            IRouter foo = Router.DoAfter(one, two);
+            Router foo = Router.DoAfter(one, two);
             Route route = await foo.GetRoute(null);
             await route.Action();
 
@@ -165,10 +166,10 @@ namespace Microsoft.Bot.Builder.Tests
             IList<string> orderMatters = new List<string>();
             string[] routingPath = new List<string>().ToArray();
 
-            SimpleHandler one = new SimpleHandler(() => orderMatters.Add("one"));
-            SimpleHandler two = new SimpleHandler(() => orderMatters.Add("two"));
+            Handler one = Simple(() => orderMatters.Add("one"));
+            Handler two = Simple(() => orderMatters.Add("two"));
 
-            IRouter foo = Router.DoAfter(one, two);
+            Router foo = Router.DoAfter(one, two);
             Route route = await foo.GetRoute(null, routingPath);
             await route.Action();
 
@@ -184,8 +185,8 @@ namespace Microsoft.Bot.Builder.Tests
             IList<string> orderMatters = new List<string>();
             bool routerFired = false;
 
-            SimpleHandler one = new SimpleHandler(() => orderMatters.Add("one"));
-            IRouter nullRouter = new Router(
+            var one = Simple(() => orderMatters.Add("one"));
+            Router nullRouter = new Router(
                async (context) =>
                {
                    routerFired = true;
@@ -196,7 +197,7 @@ namespace Microsoft.Bot.Builder.Tests
                }
            );
 
-            IRouter foo = Router.DoAfter(nullRouter, one);
+            Router foo = Router.DoAfter(nullRouter, one);
             Route route = await foo.GetRoute(null);
             Assert.IsNull(route, "Incorrectly got a route back.");
             Assert.IsTrue(orderMatters.Count == 0);
@@ -208,12 +209,12 @@ namespace Microsoft.Bot.Builder.Tests
         public async Task Router_DoAfter_OneRouter()
         {
             IList<string> orderMatters = new List<string>();
-            SimpleHandler one = new SimpleHandler(() => orderMatters.Add("handler"));
+            var one = Simple(() => orderMatters.Add("handler"));
 
             bool routerFired = false;
             bool routeFired = false;
 
-            IRouter router = new Router(
+            Router router = new Router(
                 async (context) =>
                 {
                     routerFired = true;
@@ -225,7 +226,7 @@ namespace Microsoft.Bot.Builder.Tests
                 }
             );
 
-            IRouter foo = Router.DoAfter(router, one);
+            Router foo = Router.DoAfter(router, one);
             Route route = await foo.GetRoute(null);
 
             // At this point, the original router ran and returned a route. 
@@ -290,7 +291,7 @@ namespace Microsoft.Bot.Builder.Tests
         {
             string subject = "subject";
             var routePath = new List<string>().ToArray();
-            
+
             var result = Router.PushPath(routePath, subject);
             Assert.IsTrue(result.Length == 1, "Should be exactly 1 item in the path");
             Assert.IsTrue(result[0] == subject, $"Item should be '{subject}'");
@@ -311,18 +312,18 @@ namespace Microsoft.Bot.Builder.Tests
             var routePath = new List<String>().ToArray();
             var revisedPath = Router.UpdatePath(routePath, "Should Not Be Added");
             Assert.IsTrue(routePath.Length == 0);
-            Assert.IsTrue(revisedPath.Length== 0);
+            Assert.IsTrue(revisedPath.Length == 0);
         }
 
         [TestMethod]
         [TestCategory("Router - UpdatePath")]
         public async Task Router_RoutePath_Update()
-        {            
+        {
             string revised = "revised";
             var routePath = new string[] { "WillBeRemoved" };
 
-            var result = Router.UpdatePath(routePath, revised); 
-            Assert.IsTrue(result.Length== 1, "Should be exactly 1 item in the path");
+            var result = Router.UpdatePath(routePath, revised);
+            Assert.IsTrue(result.Length == 1, "Should be exactly 1 item in the path");
             Assert.IsTrue(result[0] == revised, $"Item should be '{revised}'");
         }
     }

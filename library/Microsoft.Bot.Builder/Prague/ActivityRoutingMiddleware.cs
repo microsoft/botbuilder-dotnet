@@ -1,23 +1,24 @@
 ﻿using System;
 using System.Threading.Tasks;
+using static Microsoft.Bot.Builder.Prague.Routers;
 
 namespace Microsoft.Bot.Builder.Prague
 {
     public class ActivityRoutingMiddleware : IMiddleware, IReceiveActivity
     {
-        IRouter _pragueRouter;
+        Router _pragueRouter;
         
-        public ActivityRoutingMiddleware(IRouter pragueRouter)
+        public ActivityRoutingMiddleware(Router pragueRouter)
         {
             _pragueRouter = pragueRouter ?? throw new ArgumentNullException(nameof(pragueRouter));
         }
 
-        public ActivityRoutingMiddleware(IHandler pragueHandler)
+        public ActivityRoutingMiddleware(Handler pragueHandler)
         {
             if (pragueHandler == null)
-                throw new ArgumentNullException(nameof(pragueHandler)); 
+                throw new ArgumentNullException(nameof(pragueHandler));
 
-            _pragueRouter = new SimpleRouter(pragueHandler.Execute);
+            _pragueRouter = Router.ToRouter(pragueHandler); 
         }
 
         public async Task<ReceiveResponse> ReceiveActivity(BotContext context)
