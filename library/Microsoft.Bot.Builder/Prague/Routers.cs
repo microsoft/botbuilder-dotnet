@@ -1,21 +1,33 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Prague
-{       
-    public class AnonymousRouter : IRouter
+{
+    public static class Routers
     {
-        private readonly Func<IBotContext, Task<Route>> _delegate;
-        public AnonymousRouter(Func<IBotContext, Task<Route>> getRouteLambda)
+        /// <summary>
+        /// Router that throws an InvalidOperationExcpetion when it's used. 
+        /// This router is primarly used for Unit Testing to insure routing
+        /// order and proper error handling. 
+        /// </summary>
+        public static IRouter Error()
         {
-            _delegate = getRouteLambda ?? throw new ArgumentException(nameof(getRouteLambda)); 
+            Router errorRouter = new Router(async (context, routePath) =>
+            {
+                throw new InvalidOperationException("Error by design");
+            });
+
+            return errorRouter;
         }
 
-        public Task<Route> GetRoute(IBotContext context, string[] routePath = null)
+        public static IHandler Simple(Action action)
         {
-            return _delegate(context);
+            return new SimpleHandler(action);
+        }
+
+        public static IRouter Simple(Action<IBotContext> action)
+        {
+            return new SimpleRouter(action);
         }
     }
 
@@ -107,40 +119,5 @@ namespace Microsoft.Bot.Builder.Prague
         {
             return new ScoredRouter(a, score);
         }
-    }  
-
-    public class IfMatch : IRouter
-    {
-        public delegate Task<bool> ConditionAsync(IBotContext context);
-        public delegate bool Condition(IBotContext context);
-
-        private ConditionAsync _condition = null;
-        private IRouterOrHandler _ifMatchesRouterOrHandler = null;
-        private IRouterOrHandler _elseMatchesRouterOrHandler = null;
-
-        public IfMatch(Condition condition, IRouterOrHandler ifMatches, IRouterOrHandler elseMatches = null) 
-            : this(async (context) => condition(context), ifMatches, elseMatches)
-        {
-        }
-
-        public IfMatch(ConditionAsync condition, IRouterOrHandler ifRouterOrHandler, IRouterOrHandler elseRouterOrHandler = null)
-        {
-            _condition = condition ?? throw new ArgumentNullException(nameof(condition));
-            _ifMatchesRouterOrHandler = ifRouterOrHandler ?? throw new ArgumentNullException(nameof(ifRouterOrHandler)); 
-            _elseMatchesRouterOrHandler = elseRouterOrHandler ?? Router.NoRouter();
-        }
-
-        public async Task<Route> GetRoute(IBotContext context, string[] foo = null)
-        {
-            bool matches = await _condition(context).ConfigureAwait(false);
-            if (matches)
-            {
-                return await Router.ToRouter(_ifMatchesRouterOrHandler).GetRoute(context).ConfigureAwait(false);
-            }
-            else
-            {
-                return await Router.ToRouter(_elseMatchesRouterOrHandler).GetRoute(context).ConfigureAwait(false);
-            }
-        }
-    }
+    }     
 }

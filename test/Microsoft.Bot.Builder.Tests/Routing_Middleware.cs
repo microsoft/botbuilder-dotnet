@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Bot.Connector;
 using static Microsoft.Bot.Builder.Prague.RoutingRules;
+using static Microsoft.Bot.Builder.Prague.Routers;
 
 namespace Microsoft.Bot.Builder.Tests
 {
@@ -19,8 +20,7 @@ namespace Microsoft.Bot.Builder.Tests
         [TestCategory("Routing - Basic")]
         public async Task MiddlwareRouting_SimpleRoute()
         {
-            var engine = new ActivityRoutingMiddleware(
-                new SimpleRouter((context) => context.Reply("routed")));
+            var engine = new ActivityRoutingMiddleware(Simple((context) => context.Reply("routed")));
 
             TestAdapter adapter = new TestAdapter();
             Bot bot = new Bot(adapter)
@@ -37,7 +37,7 @@ namespace Microsoft.Bot.Builder.Tests
         {
             var engine = new ActivityRoutingMiddleware(
                 First(
-                    new SimpleRouter((context) => context.Reply("routed")),
+                    Simple((context) => context.Reply("routed")),
                     Error()
                 ));
 
@@ -58,7 +58,7 @@ namespace Microsoft.Bot.Builder.Tests
             var engine = new ActivityRoutingMiddleware(
                 First(
                     //.Add(new IfMatch((context) => false, new ErrorRouter()))
-                    new SimpleRouter((context) => context.Reply("routed")),
+                    Simple((context) => context.Reply("routed")),
                     Error())
                 );
 

@@ -5,27 +5,7 @@ using System.Threading.Tasks;
 namespace Microsoft.Bot.Builder.Prague
 {
     public static class RoutingRules
-    {
-        /// <summary>
-        /// Router that throws an InvalidOperationExcpetion when it's used. 
-        /// This router is primarly used for Unit Testing to insure routing
-        /// order and proper error handling. 
-        /// </summary>
-        public static IRouter Error()
-        {
-            Router errorRouter = new Router(async (context, routePath) =>
-            {
-                throw new InvalidOperationException("Error by design");
-            });
-
-            return errorRouter;
-        }
-
-        public static IHandler Simple(Action action)
-        {
-            return new SimpleHandler(action);             
-        }
-
+    {        
         public static IRouter First(params IRouterOrHandler[] routerOrHandlers)
         {
             Router firstRouter = new Router(async (context, routePath) =>

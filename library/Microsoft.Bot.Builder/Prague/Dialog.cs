@@ -4,6 +4,8 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Text;
+using static Microsoft.Bot.Builder.Prague.RoutingRules;
+
 
 namespace Microsoft.Bot.Builder.Prague
 {
@@ -83,7 +85,7 @@ namespace Microsoft.Bot.Builder.Prague
        
         public static IRouterOrHandler IfActiveDialog(IRouterOrHandler ifRouterOrHandler, IRouterOrHandler elseRouterOrHandler)            
         {
-            IfMatch ifMatch = new IfMatch(
+            IRouter router = IfTrue(            
                 async (context) => {
                     if (context is IDialogContext)
                         return ((IDialogContext)context).IsActiveDialog;
@@ -93,7 +95,7 @@ namespace Microsoft.Bot.Builder.Prague
                 ifRouterOrHandler,
                 elseRouterOrHandler);
 
-            return ifMatch;
+            return router;
         }
     }
 }

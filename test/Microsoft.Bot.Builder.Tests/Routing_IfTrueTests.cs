@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using static Microsoft.Bot.Builder.Prague.RoutingRules;
+using static Microsoft.Bot.Builder.Prague.Routers;
 
 namespace Microsoft.Bot.Builder.Tests
 {

@@ -29,14 +29,5 @@ namespace Microsoft.Bot.Builder.Prague
         public IList<string> RoutePath { get; private set; } = new List<String>();
 
         public Func<Task> Action { get; set; }
-    }
-
-    public sealed class MinRoute : Route
-    {
-        public MinRoute() : base(
-            () => throw new InvalidOperationException("This shold never be called."))
-        {
-            this.Score = 0;
-        }
-    }   
+    }    
 }
