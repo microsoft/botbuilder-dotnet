@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace Microsoft.Bot.Builder.Prague
+namespace Microsoft.Bot.Builder.Conversation
 {
     public static class Routers
     {

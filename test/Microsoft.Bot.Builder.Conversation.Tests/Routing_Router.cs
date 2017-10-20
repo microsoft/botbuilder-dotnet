@@ -1,12 +1,12 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.Bot.Builder.Prague;
+using Microsoft.Bot.Builder.Conversation;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using System.Collections.Generic;
-using static Microsoft.Bot.Builder.Prague.Routers;
+using static Microsoft.Bot.Builder.Conversation.Routers;
 
-namespace Microsoft.Bot.Builder.Tests
+namespace Microsoft.Bot.Builder.Conversation.Tests
 {
     [TestClass]
     [TestCategory("Router")]

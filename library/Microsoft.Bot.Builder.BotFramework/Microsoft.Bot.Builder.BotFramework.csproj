@@ -8,9 +8,11 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Company>Microsoft</Company>
     <Authors>Microsoft</Authors>
-    <Product>Microsoft Bot Builder SDK</Product>
-    <Description>Classes for using Rivescript to build conversation on the Microsoft Bot Builder SDK</Description>
-    <PackageId>Microsoft.Bot.Builder.Rivescript</PackageId>
+    <Product>Microsoft Bot Framework</Product>
+    <Description>Classes for Microsoft.Bot.Builder to work with Microsoft Bot Framework services</Description>
+    <PackageId>Microsoft.Bot.Builder.BotFramework</PackageId>
+    <AssemblyName>Microsoft.Bot.Builder.BotFramework</AssemblyName>
+    <RootNamespace>Microsoft.Bot.Builder.BotFramework</RootNamespace>
     <Copyright>Microsoft</Copyright>
     <PackageProjectUrl>http://botframework.com</PackageProjectUrl>
     <PackageIconUrl>http://docs.botframework.com/images/bot_icon.png</PackageIconUrl>
@@ -20,16 +22,9 @@
     <NeutralLanguage />
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <NoWarn>1701;1702;1705;1998</NoWarn>
-  </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Rivescript.CSharp" Version="0.1.4" />
-  </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\Microsoft.Bot.Builder\Microsoft.Bot.Builder.csproj" />
+    <ProjectReference Include="..\Microsoft.Bot.Connector\Microsoft.Bot.Connector.csproj" />
   </ItemGroup>
 
 </Project>

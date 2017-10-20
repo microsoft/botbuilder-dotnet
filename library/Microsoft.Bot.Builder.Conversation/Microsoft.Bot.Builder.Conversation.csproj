@@ -9,8 +9,8 @@
     <Company>Microsoft</Company>
     <Authors>Microsoft</Authors>
     <Product>Microsoft Bot Builder SDK</Product>
-    <Description>Classes for using Rivescript to build conversation on the Microsoft Bot Builder SDK</Description>
-    <PackageId>Microsoft.Bot.Builder.Rivescript</PackageId>
+    <Description>Classes for managing conversation on the Microsoft Bot Builder SDK</Description>
+    <PackageId>Microsoft.Bot.Builder.Conversation</PackageId>
     <Copyright>Microsoft</Copyright>
     <PackageProjectUrl>http://botframework.com</PackageProjectUrl>
     <PackageIconUrl>http://docs.botframework.com/images/bot_icon.png</PackageIconUrl>
@@ -19,15 +19,7 @@
     <PackageTags>bots;ai;botframework;botbuilder</PackageTags>
     <NeutralLanguage />
   </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <NoWarn>1701;1702;1705;1998</NoWarn>
-  </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Rivescript.CSharp" Version="0.1.4" />
-  </ItemGroup>
-
+  
   <ItemGroup>
     <ProjectReference Include="..\Microsoft.Bot.Builder\Microsoft.Bot.Builder.csproj" />
   </ItemGroup>

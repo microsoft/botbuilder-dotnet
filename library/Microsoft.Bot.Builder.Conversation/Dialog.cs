@@ -4,10 +4,10 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Text;
-using static Microsoft.Bot.Builder.Prague.RoutingRules;
+using static Microsoft.Bot.Builder.Conversation.RoutingRules;
 
 
-namespace Microsoft.Bot.Builder.Prague
+namespace Microsoft.Bot.Builder.Conversation
 {
     public class DialogState
     {

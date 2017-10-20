@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
-using static Microsoft.Bot.Builder.Prague.Routers;
+using static Microsoft.Bot.Builder.Conversation.Routers;
 
-namespace Microsoft.Bot.Builder.Prague
+namespace Microsoft.Bot.Builder.Conversation
 {
     public class ActivityRoutingMiddleware : IMiddleware, IReceiveActivity
     {

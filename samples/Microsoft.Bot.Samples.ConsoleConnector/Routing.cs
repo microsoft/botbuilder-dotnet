@@ -1,7 +1,7 @@
 ﻿using Microsoft.Bot.Builder;
-using Microsoft.Bot.Builder.Prague;
-using static Microsoft.Bot.Builder.Prague.RoutingRules;
-using static Microsoft.Bot.Builder.Prague.Routers;
+using Microsoft.Bot.Builder.Conversation;
+using static Microsoft.Bot.Builder.Conversation.RoutingRules;
+using static Microsoft.Bot.Builder.Conversation.Routers;
 
 namespace Microsoft.Bot.Samples
 {

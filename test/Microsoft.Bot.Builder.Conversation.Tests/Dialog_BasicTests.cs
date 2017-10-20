@@ -1,4 +1,4 @@
-﻿using Microsoft.Bot.Builder.Prague;
+﻿using Microsoft.Bot.Builder.Conversation;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
@@ -7,9 +7,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Bot.Connector;
-using static Microsoft.Bot.Builder.Prague.Routers;
+using static Microsoft.Bot.Builder.Conversation.Routers;
 
-namespace Microsoft.Bot.Builder.Tests
+namespace Microsoft.Bot.Builder.Conversation.Tests
 {
     [TestClass]
     [TestCategory("Dialog")]
@@ -69,7 +69,7 @@ namespace Microsoft.Bot.Builder.Tests
             Handler elseHandler = Simple ( () => elseHandled = true);
 
             RouterOrHandler rh = Dialog.IfActiveDialog(ifHandler, elseHandler);
-            IDialogContext dc = TestUtilities.CreateEmptyContext<IDialogContext>();
+            IDialogContext dc = DialogTestUtilities.CreateEmptyContext<IDialogContext>();
             dc.IsActiveDialog = true;
 
             var route = await Router.ToRouter(rh).GetRoute(dc);
@@ -94,7 +94,7 @@ namespace Microsoft.Bot.Builder.Tests
             RouterOrHandler rh = Dialog.IfActiveDialog(ifHandler, elseHandler);
             Assert.IsNotNull(rh);
 
-            IDialogContext dc = TestUtilities.CreateEmptyContext<IDialogContext>();
+            IDialogContext dc = DialogTestUtilities.CreateEmptyContext<IDialogContext>();
             dc.IsActiveDialog = false;
 
             var route = await Router.ToRouter(rh).GetRoute(dc);

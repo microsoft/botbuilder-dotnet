@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Builder.Prague;
+using Microsoft.Bot.Builder.Conversation;
 using Microsoft.Bot.Builder.Storage;
 
 namespace Microsoft.Bot.Samples

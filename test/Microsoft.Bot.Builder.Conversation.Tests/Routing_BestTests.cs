@@ -1,14 +1,14 @@
-﻿using Microsoft.Bot.Builder.Prague;
+﻿using Microsoft.Bot.Builder.Conversation;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static Microsoft.Bot.Builder.Prague.RoutingRules;
-using static Microsoft.Bot.Builder.Prague.Routers;
+using static Microsoft.Bot.Builder.Conversation.RoutingRules;
+using static Microsoft.Bot.Builder.Conversation.Routers;
 
-namespace Microsoft.Bot.Builder.Tests
+namespace Microsoft.Bot.Builder.Conversation.Tests
 {
     [TestClass]
     [TestCategory("Routing - Best")]
