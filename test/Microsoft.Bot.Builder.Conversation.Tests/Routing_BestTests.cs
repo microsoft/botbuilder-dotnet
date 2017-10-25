@@ -17,10 +17,9 @@ namespace Microsoft.Bot.Builder.Conversation.Tests
         [TestMethod]
         public async Task Best_NullRoutingTests()
         {
-            Router r = Best(
-                    Router.NoRouter(),
+            Router r = TryBest(
+                    DoNothing(),
                     null,
-                    (Handler)null,
                     (Router)null);
 
             Route route = await r.GetRoute(null);
@@ -31,11 +30,11 @@ namespace Microsoft.Bot.Builder.Conversation.Tests
         public async Task Best_RouteToHandler()
         {
             bool routed = false;
-            Router r = Best(Simple(() => routed = true));
+            Router r = TryBest(Simple((context, match) => routed = true));
 
             Route route = await r.GetRoute(null);
-            Assert.IsFalse(routed, "should have have routed yet");
-            await route.Action();
+            Assert.IsFalse(routed, "should not have have routed yet");
+            await route.Action(null, null);
             Assert.IsTrue(routed, "Expected routed to be TRUE");
         }
 
@@ -44,15 +43,14 @@ namespace Microsoft.Bot.Builder.Conversation.Tests
         public async Task Best_RoutePastNullToHandler()
         {
             bool routed = false;
-            Router r = Best(
-                    Router.NoRouter(),
+            Router r = TryBest(
+                    DoNothing(),
                     (Router)null,
-                    (Handler)null,
-                    Simple(() => routed = true));
+                    Simple((context, result) => routed = true));
 
             Route route = await r.GetRoute(null);
             Assert.IsFalse(routed, "should have have routed yet");
-            await route.Action();
+            await route.Action(null, null);
             Assert.IsTrue(routed, "Expected routed to be TRUE");
         }
 
@@ -60,7 +58,7 @@ namespace Microsoft.Bot.Builder.Conversation.Tests
         [ExpectedException(typeof(InvalidOperationException), "No Exception found. Test failed.")]
         public async Task Best_FailOnExceptionDuringRouting()
         {
-            Router r = Best(Error());
+            Router r = TryBest(Error());
             await r.GetRoute(null);
             Assert.Fail("expected the error router to throw on evaulation");
         }
@@ -69,12 +67,12 @@ namespace Microsoft.Bot.Builder.Conversation.Tests
         public async Task Best_HigherScoreFirst()
         {
             string whichRan = string.Empty;
-            Router r = Best(
-                Scored(() => whichRan = "0.5", 0.5),
-                Scored(() => whichRan = "0.4", 0.4));
+            Router r = TryBest(
+                Scored((context, result) => whichRan = "0.5", 0.5),
+                Scored((context, result) => whichRan = "0.4", 0.4));
 
             Route route = await r.GetRoute(null);
-            await route.Action();
+            await route.Action(null, null);
 
             Assert.IsTrue(whichRan == "0.5", "Incorrect score was run");
         }
@@ -83,12 +81,12 @@ namespace Microsoft.Bot.Builder.Conversation.Tests
         public async Task Best_HigherScoreLast()
         {
             string whichRan = string.Empty;
-            Router r = Best(
-                Scored(() => whichRan = "0.4", 0.4),
-                Scored(() => whichRan = "0.5", 0.5));
+            Router r = TryBest(
+                Scored((context, result) => whichRan = "0.4", 0.4),
+                Scored((context, result) => whichRan = "0.5", 0.5));
 
             Route route = await r.GetRoute(null);
-            await route.Action();
+            await route.Action(null, null);
             Assert.IsTrue(whichRan == "0.5", "Incorrect score was run");
         }
 
@@ -96,13 +94,13 @@ namespace Microsoft.Bot.Builder.Conversation.Tests
         public async Task Best_HigherScoreMiddle()
         {
             string whichRan = string.Empty;
-            Router r = Best(
-                Scored(() => whichRan = "0.4", 0.4),
-                Scored(() => whichRan = "0.9", 0.9),
-                Scored(() => whichRan = "0.5", 0.5));
+            Router r = TryBest(
+                Scored((context, result) => whichRan = "0.4", 0.4),
+                Scored((context, result) => whichRan = "0.9", 0.9),
+                Scored((context, result) => whichRan = "0.5", 0.5));
 
             Route route = await r.GetRoute(null);
-            await route.Action();
+            await route.Action(null, null);
             Assert.IsTrue(whichRan == "0.9", "Incorrect score was run");
         }
 
@@ -110,12 +108,12 @@ namespace Microsoft.Bot.Builder.Conversation.Tests
         public async Task Best_TiedScores()
         {
             string whichRan = string.Empty;
-            Router r = Best(
-                Scored(() => whichRan = "first", 0.5),
-                Scored(() => whichRan = "second", 0.5));
+            Router r = TryBest(
+                Scored((context, result) => whichRan = "first", 0.5),
+                Scored((context, result) => whichRan = "second", 0.5));
 
             Route route = await r.GetRoute(null);
-            await route.Action();
+            await route.Action(null, null);
 
             Assert.IsTrue(whichRan == "first", "Incorrect score was run");
         }

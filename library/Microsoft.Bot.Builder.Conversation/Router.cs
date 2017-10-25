@@ -1,117 +1,83 @@
-﻿using System;
+﻿using Microsoft.Bot.Connector;
+using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Conversation
 {
-    public abstract class RouterOrHandler
+    //public abstract class RouterOrHandler
+    //{
+    //    public static implicit operator RouterOrHandler(Action a)
+    //    {
+    //        return new Handler(a);
+    //    }
+    //}
+
+    public class Router : IMiddleware, IReceiveActivity
     {
-        public static implicit operator RouterOrHandler(Action a)
+        // public delegate Task<Route> GetRouteDelegate(IBotContext context, string[] routePath=null);
+
+        private Func<IBotContext, string[], Task<Route>> _getRoute;
+
+        public Router(Func<IBotContext, string[], Task<Route>> getRoute)
         {
-            return new Handler(a);
-        }
-    }
-
-    public class Router : RouterOrHandler, IMiddleware, IReceiveActivity
-    {
-        public delegate Task<Route> GetRouteDelegate(IBotContext context);
-        public delegate Task<Route> GetRouteDelegateRoutePath(IBotContext context, string[] routePath);
-
-        private GetRouteDelegateRoutePath _getRoute;
-
-        public Router(GetRouteDelegate d) : this((context, routePath) => d(context))
-        {
+            _getRoute = getRoute ?? throw new ArgumentNullException(nameof(getRoute));
         }
 
-        public Router(GetRouteDelegateRoutePath d)
+        public Router(Route route)
         {
-            _getRoute = d ?? throw new ArgumentNullException(nameof(d));
+            _getRoute = (context, routePath) => Task.FromResult(route ?? throw new ArgumentException(nameof(route)));
         }
 
+        /// <summary>
+        /// Get the route from the current router
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="routePath"></param>
+        /// <returns></returns>
         public Task<Route> GetRoute(IBotContext context, string[] routePath = null)
         {
             return _getRoute(context, routePath);
         }
 
-        public async Task<ReceiveResponse> Route(IBotContext context, string[] routePath = null)
+        /// <summary>
+        /// Route the context routePath
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="routePath"></param>
+        /// <returns></returns>
+        public Task<Route> Route(IBotContext context, string[] routePath = null)
         {
-            Route r = await GetRoute(context, routePath).ConfigureAwait(false);
-            if (r != null)
-            {
-                await r.Action();
-                return new ReceiveResponse(true);
-            }
-            else
-            {
-                return new ReceiveResponse(false);
-            }
+            return this.GetRoute(context, routePath);
         }
 
-        public Task<ReceiveResponse> ReceiveActivity(BotContext context)
-        {
-            return Route(context);
-        }
+        //public Router DefaultDo(Func<Task> handler)
+        //{
+        //    return this.DefaultTry(ReadOnlyCollectionBuilder => new )
+        //}
 
-        public static Router DoHandler(Handler handler)
+        /// <summary>
+        /// If the Router evaluates to a non-nullRoute, then when the actual route
+        /// is executed, execute the firstDo() before doing the Do() for the route. 
+        /// </summary>
+        public Router DoBefore(Func<IBotContext, object, Task> firstDo)
         {
-            return ToRouter(handler);
-        }
-
-        public static Router NoRouter()
-        {
-            return new Router((context) => Task.FromResult<Route>(null));
+            return Routers.DoBefore(this, firstDo);
         }
 
         /// <summary>
-        /// If the "ThenDo()" evaluates to a non-nullRoute, then when the actual route
-        /// is fired, execute the firstDo() before doing the thenDo(). 
+        /// If the router evaluates to non-null route, then when the actual route
+        /// is executed, execute the Do() before calling the thenDo()
         /// </summary>
-        public static Router DoBefore(Handler firstDo, RouterOrHandler thenDo)
+        /// <param name="thenDo"></param>
+        /// <returns></returns>
+        public Router DoAfter(Func<IBotContext, object, Task> thenDo)
         {
-            Router thenRouter = ToRouter(thenDo);
-
-            Router r = new Router(async (context, routePath) =>
-               {
-                   Router.PushPath(routePath, $"DoBefore({firstDo.GetType().Name})");
-                   Route result = await thenRouter.GetRoute(context, routePath).ConfigureAwait(false);
-                   if (result != null)
-                   {
-                       var originalAction = result.Action;
-                       result.Action = async () =>
-                       {
-                           await firstDo.Execute().ConfigureAwait(false);
-                           await originalAction().ConfigureAwait(false);
-                       };
-                   }
-                   return result;
-               });
-
-            return r;
+            return Routers.DoAfter(this, thenDo);
         }
 
-        public static Router DoAfter(RouterOrHandler firstDo, Handler thenDo)
-        {
-            Router firstRouter = ToRouter(firstDo);
-
-            Router r = new Router(async (context, routePath) =>
-            {
-                Router.PushPath(routePath, $"DoAfter({thenDo.GetType().Name})");
-                Route result = await firstRouter.GetRoute(context, routePath).ConfigureAwait(false);
-                if (result != null)
-                {
-                    var originalAction = result.Action;
-                    result.Action = async () =>
-                    {
-                        await originalAction().ConfigureAwait(false);
-                        await thenDo.Execute().ConfigureAwait(false);
-                    };
-                }
-                return result;
-            });
-
-            return r;
-        }
 
         /// <summary>
         /// Adds a prefix to the "top" item in the path to make it more readable for debugging. For example
@@ -122,7 +88,7 @@ namespace Microsoft.Bot.Builder.Conversation
             if (routePath == null)
                 return null;
 
-            List<string> rp = new List<string>(routePath); 
+            List<string> rp = new List<string>(routePath);
             int index = rp.Count - 1;
             rp[index] = prefix + rp[index];
             return rp.ToArray();
@@ -153,21 +119,30 @@ namespace Microsoft.Bot.Builder.Conversation
                 return new string[0];
 
             List<string> rp = new List<string>(routePath);
-            rp[rp.Count - 1] = entry;            
+            rp[rp.Count - 1] = entry;
 
             return rp.ToArray();
         }
 
-        public static Router ToRouter(RouterOrHandler routerOrHandler)
+
+        /// <summary>
+        /// Middleware ReceiveActivity handler which routes to the router
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public async Task<ReceiveResponse> ReceiveActivity(BotContext context)
         {
-            if (routerOrHandler is Handler h)
-                return new Router(async (context) => new Route(h.Execute, 1.0));
-            else if (routerOrHandler is Router r)
-                return r;
-            else if (routerOrHandler is null)
-                return NoRouter(); 
+            Route route = await GetRoute(context, new string[] { "ReceiveActivity" }).ConfigureAwait(false);
+            if (route != null)
+            {
+                await route.Action(context, null).ConfigureAwait(false);
+                return new ReceiveResponse(true);
+            }
             else
-                throw new InvalidOperationException($"Unknown RouteHandler Type: '{routerOrHandler.GetType().FullName}'");
+            {
+                return new ReceiveResponse(false);
+            }
         }
+
     }
 }

@@ -19,11 +19,11 @@ namespace Microsoft.Bot.Builder.Conversation.Tests
             var adapter = new TestAdapter();
             Bot b = new Bot(adapter);
             Activity a = new Activity();
-            if (typeof(T).IsAssignableFrom(typeof(IDialogContext)))
-            {
-                IDialogContext dc = new DialogContext(b, a);
-                return (T)dc;
-            }
+            //if (typeof(T).IsAssignableFrom(typeof(IDialogContext)))
+            //{
+            //    IDialogContext dc = new DialogContext(b, a);
+            //    return (T)dc;
+            //}
             if (typeof(T).IsAssignableFrom(typeof(IBotContext)))
             {
                 IBotContext bc = new BotContext(b, a);

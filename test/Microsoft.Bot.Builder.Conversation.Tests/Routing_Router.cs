@@ -20,21 +20,21 @@ namespace Microsoft.Bot.Builder.Conversation.Tests
             bool routeFired = false;
 
             Router router = new Router(
-               async (context) =>
+               async (context, routePaths) =>
                {
                    routerFired = true;
-                   return new Route(async () =>
+                   return new Route(async (ctx, result) =>
                    {
                        routeFired = true;
                    });
                });
 
-            Route r = await router.GetRoute(null);
+            Route route = await router.GetRoute(null);
 
             Assert.IsTrue(routerFired, "Router did not evaluate the Route");
             Assert.IsFalse(routeFired, "Router has incorrectly fired the Route");
 
-            await r.Action();
+            await route.Action(null, null);
 
             Assert.IsTrue(routeFired, "Route Failed to fire");
         }
@@ -46,7 +46,7 @@ namespace Microsoft.Bot.Builder.Conversation.Tests
             bool routerFired = false;
 
             Router router = new Router(
-               async (context) =>
+               async (context, result) =>
                {
                    routerFired = true;
                    return null;
@@ -64,13 +64,9 @@ namespace Microsoft.Bot.Builder.Conversation.Tests
         public async Task Router_DoBefore_TwoHandlers()
         {
             IList<string> orderMatters = new List<string>();
-
-            Handler one = Simple(() => orderMatters.Add("one"));
-            Handler two = Simple(() => orderMatters.Add("two"));
-
-            Router foo = Router.DoBefore(one, two);
+            Router foo = DoBefore(Simple((context, result) => orderMatters.Add("two")), async (c, result) => orderMatters.Add("one"));
             Route route = await foo.GetRoute(null);
-            await route.Action();
+            await route.Action(null, null);
 
             Assert.IsTrue(orderMatters.Count == 2);
             Assert.IsTrue(orderMatters[0] == "one");
@@ -79,14 +75,28 @@ namespace Microsoft.Bot.Builder.Conversation.Tests
 
         [TestMethod]
         [TestCategory("Router - DoBefore")]
+        public async Task Router_DoBefore_TwoHandlersFluent()
+        {
+            IList<string> orderMatters = new List<string>();
+            Router foo = Simple((context, result) => orderMatters.Add("two")).DoBefore(async (c, result) => orderMatters.Add("one"));
+            Route route = await foo.GetRoute(null);
+            await route.Action(null, null);
+
+            Assert.IsTrue(orderMatters.Count == 2);
+            Assert.IsTrue(orderMatters[0] == "one");
+            Assert.IsTrue(orderMatters[1] == "two");
+        }
+
+
+        [TestMethod]
+        [TestCategory("Router - DoBefore")]
         public async Task Router_DoBefore_NullRoute()
         {
             IList<string> orderMatters = new List<string>();
             bool routerFired = false;
 
-            Handler one = Simple(() => orderMatters.Add("one"));
             Router nullRouter = new Router(
-               async (context) =>
+               async (context, routePaths) =>
                {
                    routerFired = true;
 
@@ -96,7 +106,7 @@ namespace Microsoft.Bot.Builder.Conversation.Tests
                }
            );
 
-            Router foo = Router.DoBefore(one, nullRouter);
+            Router foo = DoBefore(nullRouter, async (context, result) => orderMatters.Add("one"));
             Route route = await foo.GetRoute(null);
             Assert.IsNull(route, "Incorrectly got a route back.");
             Assert.IsTrue(orderMatters.Count == 0);
@@ -108,16 +118,15 @@ namespace Microsoft.Bot.Builder.Conversation.Tests
         public async Task Router_DoBefore_OneRouter()
         {
             IList<string> orderMatters = new List<string>();
-            Handler one = Simple(() => orderMatters.Add("handler"));
 
             bool routerFired = false;
             bool routeFired = false;
 
             Router router = new Router(
-                async (context) =>
+                async (context, routePaths) =>
                 {
                     routerFired = true;
-                    return new Route(async () =>
+                    return new Route(async (ctx, result) =>
                     {
                         routeFired = true;
                         orderMatters.Add("router");
@@ -125,7 +134,7 @@ namespace Microsoft.Bot.Builder.Conversation.Tests
                 }
             );
 
-            Router foo = Router.DoBefore(one, router);
+            Router foo = DoBefore(router, async (context, result) => orderMatters.Add("handler"));
             Route route = await foo.GetRoute(null);
 
             // At this point, the original router ran and returned a route. 
@@ -133,7 +142,7 @@ namespace Microsoft.Bot.Builder.Conversation.Tests
             Assert.IsFalse(routeFired, "Route has already fired. Shouldn't happen yet.");
 
             // Now it's time to actually run the route. 
-            await route.Action();
+            await route.Action(null, null);
             Assert.IsTrue(orderMatters.Count == 2);
             Assert.IsTrue(orderMatters[0] == "handler");
             Assert.IsTrue(orderMatters[1] == "router");
@@ -147,12 +156,11 @@ namespace Microsoft.Bot.Builder.Conversation.Tests
         {
             IList<string> orderMatters = new List<string>();
 
-            var one = Simple(() => orderMatters.Add("one"));
-            var two = Simple(() => orderMatters.Add("two"));
+            var one = Simple((context, routePaths) => orderMatters.Add("one"));
 
-            Router foo = Router.DoAfter(one, two);
+            Router foo = DoAfter(one, async (context, result) => orderMatters.Add("two"));
             Route route = await foo.GetRoute(null);
-            await route.Action();
+            await route.Action(null, null);
 
             Assert.IsTrue(orderMatters.Count == 2);
             Assert.IsTrue(orderMatters[0] == "one");
@@ -166,12 +174,11 @@ namespace Microsoft.Bot.Builder.Conversation.Tests
             IList<string> orderMatters = new List<string>();
             string[] routingPath = new List<string>().ToArray();
 
-            Handler one = Simple(() => orderMatters.Add("one"));
-            Handler two = Simple(() => orderMatters.Add("two"));
+            var one = Simple((context, result) => orderMatters.Add("one"));
 
-            Router foo = Router.DoAfter(one, two);
+            Router foo = DoAfter(one, async (context, result) => orderMatters.Add("two"));
             Route route = await foo.GetRoute(null, routingPath);
-            await route.Action();
+            await route.Action(null,null);
 
             Assert.IsTrue(orderMatters.Count == 2);
             Assert.IsTrue(orderMatters[0] == "one");
@@ -185,9 +192,8 @@ namespace Microsoft.Bot.Builder.Conversation.Tests
             IList<string> orderMatters = new List<string>();
             bool routerFired = false;
 
-            var one = Simple(() => orderMatters.Add("one"));
             Router nullRouter = new Router(
-               async (context) =>
+               async (context, result) =>
                {
                    routerFired = true;
 
@@ -197,7 +203,7 @@ namespace Microsoft.Bot.Builder.Conversation.Tests
                }
            );
 
-            Router foo = Router.DoAfter(nullRouter, one);
+            Router foo = DoAfter(nullRouter, async (context, result) => orderMatters.Add("one"));
             Route route = await foo.GetRoute(null);
             Assert.IsNull(route, "Incorrectly got a route back.");
             Assert.IsTrue(orderMatters.Count == 0);
@@ -209,16 +215,15 @@ namespace Microsoft.Bot.Builder.Conversation.Tests
         public async Task Router_DoAfter_OneRouter()
         {
             IList<string> orderMatters = new List<string>();
-            var one = Simple(() => orderMatters.Add("handler"));
 
             bool routerFired = false;
             bool routeFired = false;
 
             Router router = new Router(
-                async (context) =>
+                async (context, routePaths) =>
                 {
                     routerFired = true;
-                    return new Route(async () =>
+                    return new Route(async (c, result) =>
                     {
                         routeFired = true;
                         orderMatters.Add("router");
@@ -226,7 +231,7 @@ namespace Microsoft.Bot.Builder.Conversation.Tests
                 }
             );
 
-            Router foo = Router.DoAfter(router, one);
+            Router foo = DoAfter(router, async (context, result) => orderMatters.Add("handler"));
             Route route = await foo.GetRoute(null);
 
             // At this point, the original router ran and returned a route. 
@@ -234,7 +239,7 @@ namespace Microsoft.Bot.Builder.Conversation.Tests
             Assert.IsFalse(routeFired, "Route has already fired. Shouldn't happen yet.");
 
             // Now it's time to actually run the route. 
-            await route.Action();
+            await route.Action(null, null);
             Assert.IsTrue(orderMatters.Count == 2);
             Assert.IsTrue(orderMatters[0] == "router"); // Route from the Router MUST have fired first
             Assert.IsTrue(orderMatters[1] == "handler"); // Route from the Handler MUST have fired second

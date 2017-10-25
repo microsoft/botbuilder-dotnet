@@ -25,8 +25,8 @@ namespace Microsoft.Bot.Samples
                 .Use(CreateRegEx())
                 .Use(new EchoMiddleware())
                 .Use(new ReverseMiddleWare())
-                .Use(new ActivityRoutingMiddleware(Routing.BuildHelpRouting()))
-                .Use(new ActivityRoutingMiddleware(Routing.BuildLoggingRouting()))                
+                //.Use(new ActivityRoutingMiddleware(Routing.BuildHelpRouting()))
+                //.Use(new ActivityRoutingMiddleware(Routing.BuildLoggingRouting()))                
                 .Use(new ConsoleLogger());
 
             await cc.Listen();
