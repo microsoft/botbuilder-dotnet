@@ -8,17 +8,72 @@ namespace Microsoft.Bot.Builder
 {
     public interface IBotContext
     {
+        /// <summary>
+        /// Incoming request
+        /// </summary>
         Activity Request { get; }
+
+        /// <summary>
+        /// Respones
+        /// </summary>
         IList<Activity> Responses { get; set; }
+
+        /// <summary>
+        /// Conversation reference
+        /// </summary>
         ConversationReference ConversationReference { get; }
-        BotState State { get; }    
+
+        /// <summary>
+        /// Bot state 
+        /// </summary>
+        BotState State { get; }
+
+        /// <summary>
+        /// Registered logger
+        /// </summary>
         IBotLogger Logger { get; }
+
+        /// <summary>
+        /// registered storage
+        /// </summary>
         IStorage Storage { get; set; }
+
         Intent TopIntent { get; set; }
 
+        /// <summary>
+        /// check to see if topIntent matches
+        /// </summary>
+        /// <param name="intentName"></param>
+        /// <returns></returns>
         bool IfIntent(string intentName);
+
+        /// <summary>
+        /// Check to see if intent matches regex
+        /// </summary>
+        /// <param name="expression"></param>
+        /// <returns></returns>
         bool IfIntent(Regex expression);
+
+        /// <summary>
+        /// Send a reply to the sender
+        /// </summary>
+        /// <param name="text"></param>
+        /// <returns></returns>
         BotContext Reply(string text);
+
+        /// <summary>
+        /// Send a reply using a templateId bound to data
+        /// </summary>
+        /// <param name="templateId">template Id</param>
+        /// <param name="data">data object to bind to</param>
+        /// <returns></returns>
+        BotContext ReplyWith(string templateId, object data);
+
+        /// <summary>
+        /// Add a template engine for binding templates
+        /// </summary>
+        /// <param name="engine"></param>
+        void AddTemplateEngine(ITemplateEngine engine);
     }   
 
     public static partial class BotContextExtension
@@ -40,7 +95,7 @@ namespace Microsoft.Bot.Builder
         private readonly Activity _request;        
         private readonly ConversationReference _conversationReference;
         private readonly BotState _state = new BotState();
-
+        private readonly IList<ITemplateEngine> _templateEngines = new List<ITemplateEngine>();
         private IList<Activity> _responses = new List<Activity>();
 
         public BotContext(Bot bot, Activity request)
@@ -118,5 +173,24 @@ namespace Microsoft.Bot.Builder
             this.Responses.Add(reply);
             return this; 
         }
+
+        public BotContext ReplyWith(string templateId, object data)
+        {
+            // queue template activity to be databound when sent
+            var reply = (this.Request as Activity).CreateReply();
+            reply.Type = "template";
+            reply.Text = templateId;
+            reply.Value = data;
+            this.Responses.Add(reply);
+            return this;
+        }
+
+        public void AddTemplateEngine(ITemplateEngine engine)
+        {
+            if (!this._templateEngines.Contains(engine))
+                this._templateEngines.Add(engine);
+        }
+
+        public IList<ITemplateEngine> TemplateEngines { get { return _templateEngines; } }
     }
 }
