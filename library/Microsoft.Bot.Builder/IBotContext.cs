@@ -69,11 +69,6 @@ namespace Microsoft.Bot.Builder
         /// <returns></returns>
         BotContext ReplyWith(string templateId, object data);
 
-        /// <summary>
-        /// Add a template engine for binding templates
-        /// </summary>
-        /// <param name="engine"></param>
-        void AddTemplateEngine(ITemplateEngine engine);
     }   
 
     public static partial class BotContextExtension
@@ -132,6 +127,8 @@ namespace Microsoft.Bot.Builder
 
         public Intent TopIntent { get; set; }
 
+        public TemplateManager TemplateManager { get; set; }
+
         public bool IfIntent(string intentName)
         {
             if (string.IsNullOrWhiteSpace(intentName))
@@ -184,13 +181,5 @@ namespace Microsoft.Bot.Builder
             this.Responses.Add(reply);
             return this;
         }
-
-        public void AddTemplateEngine(ITemplateEngine engine)
-        {
-            if (!this._templateEngines.Contains(engine))
-                this._templateEngines.Add(engine);
-        }
-
-        public IList<ITemplateEngine> TemplateEngines { get { return _templateEngines; } }
     }
 }

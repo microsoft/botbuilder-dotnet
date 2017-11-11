@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Templates
 {
-    public class TemplateIdMap : Dictionary<string, Func<BotContext, object, object>>
+    public class TemplateIdMap : Dictionary<string, Func<BotContext, dynamic, object>>
     {
     }
 
@@ -36,7 +36,7 @@ namespace Microsoft.Bot.Builder.Templates
 
         public async Task ContextCreated(BotContext context)
         {
-            context.AddTemplateEngine(this);
+            context.TemplateManager.Register(this);
         }
 
         public Task<object> RenderTemplate(BotContext context, string language, string templateId, object data)
@@ -48,7 +48,7 @@ namespace Microsoft.Bot.Builder.Templates
                     dynamic result = template(context, data);
                     if (result != null)
                     {
-                        return Task.FromResult(result);
+                        return Task.FromResult(result as object);
                     }
                 }
             }
@@ -56,4 +56,19 @@ namespace Microsoft.Bot.Builder.Templates
             return Task.FromResult((object)null);
         }
     }
+    public static class BotDictionaryTemplateExtensions
+    {
+        /// <summary>
+        /// UseTemplates- Adds templateDictionary to templateManager
+        /// </summary>
+        /// <param name="bot"></param>
+        /// <param name="templates"></param>
+        /// <returns></returns>
+        public static Bot UseTemplates(this Bot bot, TemplateDictionary templates)
+        {
+            return bot.Use(new DictionaryTemplateEngine(templates));
+        }
+
+    }
+
 }

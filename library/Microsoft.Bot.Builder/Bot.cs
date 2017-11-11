@@ -1,4 +1,5 @@
 ﻿using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.Templates;
 using Microsoft.Bot.Connector;
 using System;
 using System.Collections.Generic;
@@ -20,7 +21,7 @@ namespace Microsoft.Bot.Builder
         public Bot OnReceive(params ReceiveDelegate_NoDefault[] receiveHandler)
         {
             if (receiveHandler == null)
-                throw new ArgumentNullException(nameof(receiveHandler)); 
+                throw new ArgumentNullException(nameof(receiveHandler));
 
             if (receiveHandler.Count() == 0)
                 throw new ArgumentOutOfRangeException("No Receive Handlers specified");
@@ -32,16 +33,16 @@ namespace Microsoft.Bot.Builder
         public Bot OnReceive(params ReceiveDelegate_DefaultHandled[] receiveHandler)
         {
             if (receiveHandler == null)
-                throw new ArgumentNullException(nameof(receiveHandler)); 
+                throw new ArgumentNullException(nameof(receiveHandler));
 
             if (receiveHandler.Count() == 0)
                 throw new ArgumentOutOfRangeException("No Receive Handlers specified");
-            
-            IList<ReceiveDelegate_NoDefault> responses = new List<ReceiveDelegate_NoDefault>();            
+
+            IList<ReceiveDelegate_NoDefault> responses = new List<ReceiveDelegate_NoDefault>();
 
             // If the user doesn't want to worry about returning Handled / Not Handled, 
             // these will wrap their delegates and always return "Handled". 
-            foreach(ReceiveDelegate_DefaultHandled nullReturn in receiveHandler)
+            foreach (ReceiveDelegate_DefaultHandled nullReturn in receiveHandler)
             {
                 ReceiveDelegate_NoDefault d = async (context) =>
                 {
@@ -67,15 +68,18 @@ namespace Microsoft.Bot.Builder
 
             PostToAdapterMiddleware poster = new PostToAdapterMiddleware(this);
             this.Use(poster);
+
+            // Add templateManager
+            this.Use(new TemplateManager());
         }
 
         public Bot Use(IBotLogger logger)
         {
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger)); 
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             return this;
         }
 
-        public Bot Use (IMiddleware middleware)
+        public Bot Use(IMiddleware middleware)
         {
             base.Use(middleware);
             return this;
@@ -101,14 +105,14 @@ namespace Microsoft.Bot.Builder
                 }
 
                 _adapter = value;
-                _adapter.OnReceive = this.RunPipeline;                
+                _adapter.OnReceive = this.RunPipeline;
             }
         }
 
         public override async Task<ReceiveResponse> ReceiveActivity(BotContext context)
         {
-            BotAssert.ContextNotNull(context);            
-            
+            BotAssert.ContextNotNull(context);
+
             var result = await base.ReceiveActivity(context);
             if (result?.Handled == false)
             {
@@ -128,7 +132,7 @@ namespace Microsoft.Bot.Builder
 
         public virtual async Task RunPipeline(Activity activity)
         {
-            BotAssert.ActivityNotNull(activity);            
+            BotAssert.ActivityNotNull(activity);
 
             Logger.Information($"Bot: Pipeline Running for Activity {activity.Id}");
 
@@ -139,7 +143,7 @@ namespace Microsoft.Bot.Builder
 
         public virtual Task<BotContext> CreateBotContext(Activity activity)
         {
-            BotAssert.ActivityNotNull(activity);            
+            BotAssert.ActivityNotNull(activity);
 
             Logger.Information($"Bot: Creating BotContext for {activity.Id}");
 
@@ -149,11 +153,11 @@ namespace Microsoft.Bot.Builder
         public virtual async Task<BotContext> CreateBotContext(ConversationReference reference)
         {
             if (reference == null)
-                throw new ArgumentNullException(nameof(reference));             
+                throw new ArgumentNullException(nameof(reference));
 
             Logger.Information($"Bot: Creating BotContext for {reference.ActivityId}");
 
             return await this.CreateBotContext(reference.GetPostToBotMessage()).ConfigureAwait(false);
         }
-    }  
+    }
 }

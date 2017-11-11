@@ -64,6 +64,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Adapter_TestAdapterTests.cs" />
+    <Compile Include="Templates_TemplateManagerTests.cs" />
     <Compile Include="State_BasicTests.cs" />
     <Compile Include="Intent_MiddlewareTests.cs" />
     <Compile Include="Intent_RegExRecognizerTests.cs" />
