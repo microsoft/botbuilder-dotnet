@@ -107,7 +107,7 @@ namespace Microsoft.Bot.Builder.Tests
 
 
         [TestMethod]
-        public async Task Template_Middleware_lookup()
+        public async Task Template_Middleware_defaultlookup()
         {
             TestAdapter adapter = new TestAdapter();
             Bot bot = new Bot(adapter)
@@ -119,9 +119,91 @@ namespace Microsoft.Bot.Builder.Tests
                     return new ReceiveResponse(handled: true);
                 });
 
-            await adapter.Send("stringTemplate").AssertReply("default: joe")
+            await adapter
+                .Send("stringTemplate").AssertReply("default: joe")
                 .Send("activityTemplate").AssertReply("(Activity)default: joe")
                 .StartTest();
         }
+
+        [TestMethod]
+        public async Task Template_Middleware_enLookup()
+        {
+            TestAdapter adapter = new TestAdapter();
+            Bot bot = new Bot(adapter)
+                .UseTemplates(templates1)
+                .UseTemplates(templates2)
+                .OnReceive(async (context) =>
+                {
+                    context.Request.Locale = "en"; // force to english
+                    context.ReplyWith(context.Request.Text.Trim(), new { name = "joe" });
+                    return new ReceiveResponse(handled: true);
+                });
+
+            await adapter
+                .Send("stringTemplate").AssertReply("en: joe")
+                .Send("activityTemplate").AssertReply("(Activity)en: joe")
+                .StartTest();
+        }
+
+        [TestMethod]
+        public async Task Template_Middleware_frLookup()
+        {
+            TestAdapter adapter = new TestAdapter();
+            Bot bot = new Bot(adapter)
+                .UseTemplates(templates1)
+                .UseTemplates(templates2)
+                .OnReceive(async (context) =>
+                {
+                    context.Request.Locale = "fr"; // force to french
+                    context.ReplyWith(context.Request.Text.Trim(), new { name = "joe" });
+                    return new ReceiveResponse(handled: true);
+                });
+
+            await adapter
+                .Send("stringTemplate").AssertReply("fr: joe")
+                .Send("activityTemplate").AssertReply("(Activity)fr: joe")
+                .StartTest();
+        }
+
+        [TestMethod]
+        public async Task Template_Middleware_override()
+        {
+            TestAdapter adapter = new TestAdapter();
+            Bot bot = new Bot(adapter)
+                .UseTemplates(templates1)
+                .UseTemplates(templates2)
+                .OnReceive(async (context) =>
+                {
+                    context.Request.Locale = "fr"; // force to french
+                    context.ReplyWith(context.Request.Text.Trim(), new { name = "joe" });
+                    return new ReceiveResponse(handled: true);
+                });
+
+            await adapter
+                .Send("stringTemplate2").AssertReply("fr: Yo joe")
+                .Send("activityTemplate").AssertReply("(Activity)fr: joe")
+                .StartTest();
+        }
+
+        [TestMethod]
+        public async Task Template_Middleware_useTemplateEngine()
+        {
+            TestAdapter adapter = new TestAdapter();
+            Bot bot = new Bot(adapter)
+                .UseTemplateEngine(new DictionaryTemplateEngine(templates1))
+                .UseTemplateEngine(new DictionaryTemplateEngine(templates2))
+                .OnReceive(async (context) =>
+                {
+                    context.ReplyWith(context.Request.Text.Trim(), new { name = "joe" });
+                    return new ReceiveResponse(handled: true);
+                });
+
+            await adapter
+                .Send("stringTemplate").AssertReply("default: joe")
+                .Send("activityTemplate").AssertReply("(Activity)default: joe")
+                .StartTest();
+        }
+
+
     }
 }
