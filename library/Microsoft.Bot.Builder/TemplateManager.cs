@@ -11,6 +11,7 @@ namespace Microsoft.Bot.Builder
     {
         private readonly Bot _bot;
         private List<ITemplateEngine >_templateEngines = new List<ITemplateEngine>();
+        private List<string> _languageFallback = new List<string>();
 
         public TemplateManager()
         {
@@ -34,6 +35,16 @@ namespace Microsoft.Bot.Builder
         public IList<ITemplateEngine> List()
         {
             return this._templateEngines;
+        }
+
+        public void SetLanguagePolicy(IEnumerable<string> languageFallback)
+        {
+            this._languageFallback = new List<string>(languageFallback);
+        }
+
+        public IEnumerable<string> GetLanguagePolicy()
+        {
+            return this._languageFallback;
         }
 
         public Task ContextCreated(BotContext context)
@@ -79,8 +90,7 @@ namespace Microsoft.Bot.Builder
 
         private async Task bindActivityTemplate(BotContext context, Activity activity)
         {
-            //TODO
-            List<string> fallbackLocales = new List<string>();
+            List<string> fallbackLocales = new List<string>(this._languageFallback);
             if (!String.IsNullOrEmpty(context.Request.Locale))
                 fallbackLocales.Add(context.Request.Locale);
             fallbackLocales.Add("default");
