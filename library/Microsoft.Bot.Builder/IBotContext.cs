@@ -90,7 +90,6 @@ namespace Microsoft.Bot.Builder
         private readonly Activity _request;        
         private readonly ConversationReference _conversationReference;
         private readonly BotState _state = new BotState();
-        private readonly IList<ITemplateEngine> _templateEngines = new List<ITemplateEngine>();
         private IList<Activity> _responses = new List<Activity>();
 
         public BotContext(Bot bot, Activity request)

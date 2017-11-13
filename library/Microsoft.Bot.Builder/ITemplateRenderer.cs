@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Builder
     /// <summary>
     /// Defines interface for data binding to template and rendering a string
     /// </summary>
-    public interface ITemplateEngine
+    public interface ITemplateRenderer
     {
         /// <summary>
         /// render a template to an activity or string

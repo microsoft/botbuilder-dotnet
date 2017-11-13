@@ -25,11 +25,11 @@ namespace Microsoft.Bot.Builder.Templates
     ///   To use, simply add to your pipeline
     ///   bot.use(new DictionaryTemplateEngine(myTemplates))
     /// </summary>
-    public class DictionaryTemplateEngine : ITemplateEngine, IContextCreated
+    public class DictionaryRenderer : ITemplateRenderer, IContextCreated
     {
         private TemplateDictionary languages;
 
-        public DictionaryTemplateEngine(TemplateDictionary templates)
+        public DictionaryRenderer(TemplateDictionary templates)
         {
             this.languages = templates;
         }
@@ -56,6 +56,8 @@ namespace Microsoft.Bot.Builder.Templates
             return Task.FromResult((object)null);
         }
     }
+
+
     public static class BotDictionaryTemplateExtensions
     {
         /// <summary>
@@ -66,7 +68,7 @@ namespace Microsoft.Bot.Builder.Templates
         /// <returns></returns>
         public static Bot UseTemplates(this Bot bot, TemplateDictionary templates)
         {
-            return bot.Use(new DictionaryTemplateEngine(templates));
+            return bot.Use(new DictionaryRenderer(templates));
         }
 
     }

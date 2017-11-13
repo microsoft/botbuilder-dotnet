@@ -10,7 +10,7 @@ namespace Microsoft.Bot.Builder
     public class TemplateManager : IContextCreated, IPostActivity
     {
         private readonly Bot _bot;
-        private List<ITemplateEngine >_templateEngines = new List<ITemplateEngine>();
+        private List<ITemplateRenderer> _templateRenderers = new List<ITemplateRenderer>();
         private List<string> _languageFallback = new List<string>();
 
         public TemplateManager()
@@ -22,19 +22,19 @@ namespace Microsoft.Bot.Builder
         /// </summary>
         /// <param name="engine"></param>
 
-        public void Register(ITemplateEngine engine)
+        public void Register(ITemplateRenderer engine)
         {
-            if (!this._templateEngines.Contains(engine))
-                this._templateEngines.Add(engine);
+            if (!this._templateRenderers.Contains(engine))
+                this._templateRenderers.Add(engine);
         }
 
         /// <summary>
         /// List registered template engines
         /// </summary>
         /// <returns></returns>
-        public IList<ITemplateEngine> List()
+        public IList<ITemplateRenderer> List()
         {
-            return this._templateEngines;
+            return this._templateRenderers;
         }
 
         public void SetLanguagePolicy(IEnumerable<string> languageFallback)
@@ -69,9 +69,9 @@ namespace Microsoft.Bot.Builder
 
         private async Task<Activity> findAndApplyTemplate(BotContext context, string language, string templateId, object data)
         {
-            foreach (var templateEngine in this._templateEngines)
+            foreach (var renderer in this._templateRenderers)
             {
-                object templateOutput = await templateEngine.RenderTemplate(context, language, templateId, data);
+                object templateOutput = await renderer.RenderTemplate(context, language, templateId, data);
                 if (templateOutput != null)
                 {
                     if (templateOutput is string)
@@ -106,7 +106,7 @@ namespace Microsoft.Bot.Builder
                     Activity boundActivity = await this.findAndApplyTemplate(context, locale, activity.Text, activity.Value).ConfigureAwait(false);
                     if (boundActivity != null)
                     {
-                        foreach(var property in typeof(Activity).GetProperties())
+                        foreach (var property in typeof(Activity).GetProperties())
                         {
                             property.SetValue(activity, property.GetValue(boundActivity));
                         }
@@ -119,11 +119,11 @@ namespace Microsoft.Bot.Builder
 
     }
 
-    public class TempleEngineMiddleware : IContextCreated
+    public class TemplateRendererMiddleware : IContextCreated
     {
-        private ITemplateEngine _templateEngine;
+        private ITemplateRenderer _templateEngine;
 
-        public TempleEngineMiddleware(ITemplateEngine templateEngine)
+        public TemplateRendererMiddleware(ITemplateRenderer templateEngine)
         {
             _templateEngine = templateEngine;
         }
@@ -139,14 +139,14 @@ namespace Microsoft.Bot.Builder
     public static class BotTemplateExtensions
     {
         /// <summary>
-        /// Add templateEngine
+        /// Add template renderer
         /// </summary>
         /// <param name="bot"></param>
-        /// <param name="templateEngine"></param>
+        /// <param name="renderer"></param>
         /// <returns></returns>
-        public static Bot UseTemplateEngine(this Bot bot, ITemplateEngine templateEngine)
+        public static Bot UseTemplateRenderer(this Bot bot, ITemplateRenderer renderer)
         {
-            return bot.Use(new TempleEngineMiddleware(templateEngine));
+            return bot.Use(new TemplateRendererMiddleware(renderer));
         }
     }
 }

@@ -56,8 +56,8 @@ namespace Microsoft.Bot.Builder.Tests
         {
             var templateManager = new TemplateManager();
             Assert.AreEqual(templateManager.List().Count, 0, "nothing registered yet");
-            var templateEngine1 = new DictionaryTemplateEngine(templates1);
-            var templateEngine2 = new DictionaryTemplateEngine(templates2);
+            var templateEngine1 = new DictionaryRenderer(templates1);
+            var templateEngine2 = new DictionaryRenderer(templates2);
             templateManager.Register(templateEngine1);
             Assert.AreEqual(templateManager.List().Count, 1, "one registered");
 
@@ -73,8 +73,8 @@ namespace Microsoft.Bot.Builder.Tests
         {
             var templateManager = new TemplateManager();
             Assert.AreEqual(templateManager.List().Count, 0, "nothing registered yet");
-            var templateEngine1 = new DictionaryTemplateEngine(templates1);
-            var templateEngine2 = new DictionaryTemplateEngine(templates2);
+            var templateEngine1 = new DictionaryRenderer(templates1);
+            var templateEngine2 = new DictionaryRenderer(templates2);
             templateManager.Register(templateEngine1);
             Assert.AreEqual(templateManager.List().Count, 1, "one registered");
 
@@ -88,7 +88,7 @@ namespace Microsoft.Bot.Builder.Tests
         [TestMethod]
         public async Task Template_DictionaryTemplateEngine_SimpleStringBinging()
         {
-            var engine = new DictionaryTemplateEngine(templates1);
+            var engine = new DictionaryRenderer(templates1);
             var result = await engine.RenderTemplate(null, "en", "stringTemplate", new { name="joe" });
             Assert.IsInstanceOfType(result, typeof(string));
             Assert.AreEqual("en: joe", (string)result);
@@ -97,7 +97,7 @@ namespace Microsoft.Bot.Builder.Tests
         [TestMethod]
         public async Task Template_DictionaryTemplateEngine_SimpleActivityBinding()
         {
-            var engine = new DictionaryTemplateEngine(templates1);
+            var engine = new DictionaryRenderer(templates1);
             var result = await engine.RenderTemplate(null, "en", "activityTemplate", new { name = "joe" });
             Assert.IsInstanceOfType(result, typeof(Activity));
             var activity = result as Activity;
@@ -190,8 +190,8 @@ namespace Microsoft.Bot.Builder.Tests
         {
             TestAdapter adapter = new TestAdapter();
             Bot bot = new Bot(adapter)
-                .UseTemplateEngine(new DictionaryTemplateEngine(templates1))
-                .UseTemplateEngine(new DictionaryTemplateEngine(templates2))
+                .UseTemplateRenderer(new DictionaryRenderer(templates1))
+                .UseTemplateRenderer(new DictionaryRenderer(templates2))
                 .OnReceive(async (context) =>
                 {
                     context.ReplyWith(context.Request.Text.Trim(), new { name = "joe" });
