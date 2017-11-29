@@ -26,7 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Library\Microsoft.Bot.Builder.BotFramework\Microsoft.Bot.Builder.BotFramework.csproj" />
+    <ProjectReference Include="..\..\library\Microsoft.Bot.Builder.BotFramework\Microsoft.Bot.Builder.BotFramework.csproj" />
     <ProjectReference Include="..\..\library\Microsoft.Bot.Builder\Microsoft.Bot.Builder.csproj" />
     <ProjectReference Include="..\..\library\Microsoft.Bot.Connector\Microsoft.Bot.Connector.csproj" />
   </ItemGroup>
