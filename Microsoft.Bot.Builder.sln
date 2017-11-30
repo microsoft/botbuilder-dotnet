@@ -27,15 +27,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.BotFr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Conversation", "Library\Microsoft.Bot.Builder.Conversation\Microsoft.Bot.Builder.Conversation.csproj", "{EFA2DA64-EF5C-4B1F-AE54-86F2FB6DB817}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Ai.Test", "test\Microsoft.Bot.Builder.Ai.Test\Microsoft.Bot.Builder.Ai.Test.csproj", "{9BDF7020-A19F-4C6C-B329-E4BFEFF6DE6B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Ai.Tests", "tests\Microsoft.Bot.Builder.Ai.Tests\Microsoft.Bot.Builder.Ai.Tests.csproj", "{9BDF7020-A19F-4C6C-B329-E4BFEFF6DE6B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Tests", "test\Microsoft.Bot.Builder.Tests\Microsoft.Bot.Builder.Tests.csproj", "{6AE5D88B-7F99-444E-ADA0-7CEAADFC477C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Tests", "tests\Microsoft.Bot.Builder.Tests\Microsoft.Bot.Builder.Tests.csproj", "{6AE5D88B-7F99-444E-ADA0-7CEAADFC477C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Azure.Tests", "test\Microsoft.Bot.Builder.Azure.Tests\Microsoft.Bot.Builder.Azure.Tests.csproj", "{E325A0E2-716A-49E0-9767-5087CF05727C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Azure.Tests", "tests\Microsoft.Bot.Builder.Azure.Tests\Microsoft.Bot.Builder.Azure.Tests.csproj", "{E325A0E2-716A-49E0-9767-5087CF05727C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Conversation.Tests", "test\Microsoft.Bot.Builder.Conversation.Tests\Microsoft.Bot.Builder.Conversation.Tests.csproj", "{69C619CC-9432-480B-810B-CA64889B30B1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Conversation.Tests", "tests\Microsoft.Bot.Builder.Conversation.Tests\Microsoft.Bot.Builder.Conversation.Tests.csproj", "{69C619CC-9432-480B-810B-CA64889B30B1}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Rivescript.Tests", "test\Microsoft.Bot.Builder.Rivescript.Tests\Microsoft.Bot.Builder.Rivescript.Tests.csproj", "{75E81352-74A7-4597-96E9-CDC96E234BB8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Rivescript.Tests", "tests\Microsoft.Bot.Builder.Rivescript.Tests\Microsoft.Bot.Builder.Rivescript.Tests.csproj", "{75E81352-74A7-4597-96E9-CDC96E234BB8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
