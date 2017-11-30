@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
@@ -13,10 +12,19 @@ namespace Microsoft.Bot.Builder
     /// </summary>
     public class FlexObject : DynamicObject, ICloneable
     {
+        [JsonExtensionData]
         private Dictionary<string, object> dynamicProperties { get; set; } = new Dictionary<string, object>();
-        private string[] _objectProperties = null;
 
-        protected string[] objectProperties
+        /// <remarks>
+        /// If the JsonNameAttribute is used on the method name, that "revised" name is stored here
+        /// so that serialization happens correctly. It's important in that case to serialize the "revised"
+        /// name ("@id"), yet maintain the original name ("id") so the value can be retrieved. 
+        /// 
+        /// The primary scenario here is serialization to JSON. 
+        /// </remarks>
+        private Dictionary<string, string> _objectProperties = null;
+
+        protected IDictionary<string, string> objectProperties
         {
             get
             {
@@ -25,10 +33,28 @@ namespace Microsoft.Bot.Builder
                     lock (dynamicProperties)
                     {
                         if (_objectProperties == null)
-                            _objectProperties = this.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance)
-                                   .Where(pi => pi.Name != "Item")
-                                   .Select(pi => pi.Name)
-                                   .ToArray();
+                        {
+                            Dictionary<string, string> temp = new Dictionary<string, string>();
+                            foreach (var pi in this.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance))
+                            {
+                                if (pi.Name == "Item")
+                                    continue;
+
+                                var customJsonAttributes = pi.GetCustomAttributes<JsonPropertyAttribute>();
+
+                                // If there is a customJsonAttribute, then use the user
+                                // specified name as the method name. This is what will be serialized
+                                // out to JSON ("@id").
+                                // If the Json override is not present, then the actual property
+                                // name is used ("id").                                  
+                                var attributeOrNull = customJsonAttributes.FirstOrDefault();
+                                if (attributeOrNull != null)
+                                    temp[attributeOrNull.PropertyName] = pi.Name;
+                                else
+                                    temp[pi.Name] = null;
+                            }
+                            _objectProperties = temp;
+                        }
                     }
                 }
                 return _objectProperties;
@@ -38,8 +64,8 @@ namespace Microsoft.Bot.Builder
         public override System.Collections.Generic.IEnumerable<string> GetDynamicMemberNames()
         {
             foreach (var p in this.objectProperties)
-                yield return p;
-            foreach (var key in this.dynamicProperties.Keys.Where(key => !this.objectProperties.Contains(key)))
+                yield return p.Key;
+            foreach (var key in this.dynamicProperties.Keys.Where(key => !this.objectProperties.ContainsKey(key)))
                 yield return key;
             yield break;
         }
@@ -53,12 +79,10 @@ namespace Microsoft.Bot.Builder
         {
             return base.TryDeleteMember(binder);
         }
-
         public override bool TrySetMember(SetMemberBinder binder, object value)
         {
             return TrySetMember(binder.Name, value);
         }
-
         public dynamic this[string name]
         {
             get
@@ -77,10 +101,19 @@ namespace Microsoft.Bot.Builder
                 result = this.dynamicProperties[name];
                 return true;
             }
-            else if (this.objectProperties.Contains(name))
+            else if (this.objectProperties.ContainsKey(name))
             {
-                var prop = this.GetType().GetTypeInfo().GetDeclaredProperty(name);
-                result = prop.GetValue(this);
+                if (this.objectProperties[name] == null)
+                {
+                    var prop = this.GetType().GetTypeInfo().GetDeclaredProperty(name);
+                    result = prop.GetValue(this);
+                }
+                else
+                {
+                    string actualPropertyName = this.objectProperties[name];
+                    var prop = this.GetType().GetTypeInfo().GetDeclaredProperty(actualPropertyName);
+                    result = prop.GetValue(this);
+                }
                 return true;
             }
 
@@ -155,7 +188,7 @@ namespace Microsoft.Bot.Builder
         {
             foreach (var x in this.dynamicProperties)
                 yield return x;
-            foreach (var y in this.objectProperties)
+            foreach (var y in this.objectProperties.Keys)
                 yield return new KeyValuePair<string, object>(y, ((dynamic)this)[y]);
         }
 

@@ -2,6 +2,7 @@
 using System.Dynamic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Tests
 {
@@ -104,6 +105,132 @@ namespace Microsoft.Bot.Builder.Tests
             Assert.AreEqual(context4.Name, context2.Name, "typed should roundtrip");
             Assert.AreEqual(context4["Test"], context2["Test"], "indexed should roundtrip");
             Assert.AreEqual(((dynamic)context4).Test, ((dynamic)context2).Test, "dynamic should roundtrip");
+        }
+
+        [TestMethod]
+        public void FlexObject_JsonSimpleSeralizeFormat()
+        {
+            var flex = new FlexObject();
+            flex["test"] = "testProperty";
+
+            var json = JsonConvert.SerializeObject(flex);
+
+            
+            string targetJson = "{'test':'testProperty'}";
+            JObject target = JObject.Parse(targetJson);
+            JObject fromFlexObject = JObject.Parse(json);
+
+            bool areSame = JToken.DeepEquals(target, fromFlexObject);
+            Assert.IsTrue(areSame, "Json documents did not match"); 
+        }
+
+        [TestMethod]
+        public void FlexObject_JsonNestedDynamicSeralizeFormat()
+        {
+            var parent = new FlexObject();
+            parent["test"] = "testProperty";
+
+            var child = new FlexObject();
+            child["prop1"] = "property1";
+
+            parent["nested"] = child; 
+
+            var parentJson = JsonConvert.SerializeObject(parent);
+
+            string targetJson = @"
+                {
+                    'test' : 'testProperty',
+                    'nested' : {
+                        'prop1' : 'property1'
+                    }
+                }";
+
+            JObject target = JObject.Parse(targetJson);
+            JObject fromFlexObject = JObject.Parse(parentJson);
+
+            bool areSame = JToken.DeepEquals(target, fromFlexObject);
+            Assert.IsTrue(areSame, "Json documents did not match");
+        }
+
+        public class Nested
+        {
+            public string Property1 { get; set; } = "one";
+        }
+
+        [TestMethod]
+        public void FlexObject_JsonConcreteSeralizeFormat()
+        {
+            
+            var parent = new FlexObject();
+            parent["test"] = "testProperty";
+            parent["nested"] = new Nested(); 
+            
+            var parentJson = JsonConvert.SerializeObject(parent);
+
+            string correctJson = @"
+                {
+                    'test' : 'testProperty',
+                    'nested' : {
+                        'Property1' : 'one'
+                    }
+                }";
+
+            JObject target = JObject.Parse(correctJson);
+            JObject fromFlexObject = JObject.Parse(parentJson);
+
+            bool areSame = JToken.DeepEquals(target, fromFlexObject);
+            Assert.IsTrue(areSame, "Json documents did not match");
+        }
+
+        
+        public class NestedFlex : FlexObject
+        {
+            public string Property1 { get; set; } = "one";
+        }
+
+        [TestMethod]
+        public void FlexObject_JsonMixedSeralizeFormat()
+        {
+            var parent = new NestedFlex();
+            parent["test"] = "testProperty";            
+
+            var parentJson = JsonConvert.SerializeObject(parent);
+
+            string correctJson = @"
+                {
+                    'Property1' : 'one',
+                    'test' : 'testProperty' 
+                }";
+
+            JObject target = JObject.Parse(correctJson);
+            JObject fromFlexObject = JObject.Parse(parentJson);
+
+            bool areSame = JToken.DeepEquals(target, fromFlexObject);
+            Assert.IsTrue(areSame, "Json documents did not match");
+        }
+
+        public class OverrideDefaultName : FlexObject
+        {
+            [JsonProperty("differentName")]
+            public string Property1 { get; set; } = "one";
+        }
+
+        [TestMethod]
+        public void FlexObject_OverrideDefaultNameViaAttribute()
+        {
+            var parent = new OverrideDefaultName();            
+            var parentJson = JsonConvert.SerializeObject(parent);
+
+            string correctJson = @"
+                {
+                    'differentName' : 'one'
+                }";
+
+            JObject target = JObject.Parse(correctJson);
+            JObject fromFlexObject = JObject.Parse(parentJson);
+
+            bool areSame = JToken.DeepEquals(target, fromFlexObject);
+            Assert.IsTrue(areSame, "Json documents did not match");
         }
     }
 }
