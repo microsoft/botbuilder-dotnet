@@ -39,7 +39,8 @@ namespace InjectionBasedBotExample
 
         public void CreateBot(IServiceCollection services)
         {
-            services.UseBotConnector();
+            // TODO THIS IS DIFFERENT WITH NEW CONNECTOR LIB
+            //services.UseBotConnector();
 
             /*** Create just the Memory state store as a sigleton,
              *      and keep the Bot created on each request **/

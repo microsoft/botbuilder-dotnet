@@ -2,7 +2,6 @@
 using Microsoft.Bot.Builder.Adapters;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -47,7 +46,7 @@ namespace Microsoft.Bot.Builder.Tests
             }
             catch (Exception err)
             {
-                Debug.WriteLine(err.Message);
+                System.Diagnostics.Debug.WriteLine(err.Message);
                 return new Dictionary<string, string>();
             }
         });
