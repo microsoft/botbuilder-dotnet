@@ -108,7 +108,9 @@ namespace Microsoft.Bot.Builder
                     {
                         foreach (var property in typeof(Activity).GetProperties())
                         {
-                            property.SetValue(activity, property.GetValue(boundActivity));
+                            var value = property.GetValue(boundActivity);
+                            if (value != null)
+                                property.SetValue(activity, value);
                         }
                         return;
                     }

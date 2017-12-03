@@ -43,7 +43,7 @@ namespace Microsoft.Bot.Builder.Storage
                 foreach (var key in keys)
                 {                    
                     if (_memory.TryGetValue(key, out object value))
-                        storeItems[key] = ((ICloneable)value).Clone() as StoreItem;
+                        storeItems[key] = (value == null) ? value : ((ICloneable)value).Clone() as StoreItem;
                 }
             }
             return Task.FromResult(storeItems);

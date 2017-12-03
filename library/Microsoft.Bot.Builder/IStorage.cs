@@ -31,6 +31,8 @@ namespace Microsoft.Bot.Builder
 
     public class StoreItem : FlexObject
     {
+        private static JsonSerializerSettings serializationSettings = new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.All };
+
         /// <summary>
         /// eTag for concurrency
         /// </summary>
@@ -38,7 +40,7 @@ namespace Microsoft.Bot.Builder
 
         public T ToObject<T>()
         {
-            return JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(this));
+            return JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(this, serializationSettings), serializationSettings);
         }
     }
 
@@ -46,7 +48,7 @@ namespace Microsoft.Bot.Builder
     {
         public T Get<T>(string name)
         {
-            if (this.ContainsKey(name))
+            if (this.ContainsKey(name) && this[name] != null)
                 return this[name].ToObject<T>();
             return default(T);
         }

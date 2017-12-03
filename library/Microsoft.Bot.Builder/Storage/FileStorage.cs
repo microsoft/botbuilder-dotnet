@@ -12,9 +12,10 @@ namespace Microsoft.Bot.Builder.Storage
     /// </summary>
     public class FileStorage : IStorage, IContextCreated
     {
+        private static JsonSerializerSettings serializationSettings = new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.All };
+
         protected string folder;
         protected int eTag = 0;
-
 
         public FileStorage(string folder)
         {
@@ -74,7 +75,7 @@ namespace Microsoft.Bot.Builder.Storage
                         json = await file.ReadToEndAsync().ConfigureAwait(false);
                     }
 
-                    return JsonConvert.DeserializeObject<StoreItem>(json);
+                    return JsonConvert.DeserializeObject<StoreItem>(json, serializationSettings);
                 }
                 catch (FileNotFoundException)
                 {
@@ -122,8 +123,8 @@ namespace Microsoft.Bot.Builder.Storage
                             string path = Path.Combine(this.folder, key);
                             var oldTag = newValue.eTag;
                             newValue.eTag = (this.eTag++).ToString();
-                            var json = JsonConvert.SerializeObject(newValue);
-                            newValue.eTag = oldTag;                            
+                            var json = JsonConvert.SerializeObject(newValue, serializationSettings);
+                            newValue.eTag = oldTag;
                             using (TextWriter file = new StreamWriter(path))
                             {
                                 await file.WriteAsync(json).ConfigureAwait(false);

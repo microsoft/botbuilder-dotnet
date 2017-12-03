@@ -12,6 +12,8 @@ namespace Microsoft.Bot.Builder
     /// </summary>
     public class FlexObject : DynamicObject, ICloneable
     {
+        private static JsonSerializerSettings serializationSettings = new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.All };
+
         [JsonExtensionData]
         private Dictionary<string, object> dynamicProperties { get; set; } = new Dictionary<string, object>();
 
@@ -118,7 +120,7 @@ namespace Microsoft.Bot.Builder
             }
 
             result = null;
-            return false;
+            return true;
         }
 
         private bool TrySetMember(string name, object value)
@@ -194,7 +196,9 @@ namespace Microsoft.Bot.Builder
 
         public object Clone()
         {
-            return JsonConvert.DeserializeObject<StoreItem>(JsonConvert.SerializeObject(this));
+            return JsonConvert.DeserializeObject<StoreItem>(
+                JsonConvert.SerializeObject(this, serializationSettings), 
+                serializationSettings);
         }
     }
 }

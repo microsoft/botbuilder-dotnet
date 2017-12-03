@@ -113,5 +113,12 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             if (CheckStorageEmulator())
                 await base._handleCrazyKeys(storage);
         }
+
+        [TestMethod]
+        public async Task TypedSerialization()
+        {
+            if (CheckStorageEmulator())
+                await base._typedSerialization(this.storage);
+        }
     }
 }

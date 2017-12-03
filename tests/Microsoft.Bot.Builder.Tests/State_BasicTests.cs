@@ -127,6 +127,41 @@ namespace Microsoft.Bot.Builder.Tests
                 .StartTest();
         }
 
+        public class TypedObject
+        {
+            public string Name { get; set; }
+        }
+
+        [TestMethod]
+        public async Task State_RoundTripTypedObject()
+        {
+            TestAdapter adapter = new TestAdapter();
+
+            Bot bot = new Bot(adapter)
+                .Use(new MemoryStorage())
+                .Use(new BotStateManager())
+                .OnReceive(
+                    async (context) =>
+                    {
+                        Assert.IsNotNull(context.State.Conversation, "state.conversation should exist");
+                        switch (context.Request.Text)
+                        {
+                            case "set value":
+                                context.State.Conversation["value"] = new TypedObject() { Name = "test" };
+                                context.Reply("value saved");
+                                break;
+                            case "get value":
+                                context.Reply(context.State.Conversation["value"].GetType().Name);
+                                break;
+                        }
+                    }
+                );
+
+            await adapter.Test("set value", "value saved")
+                .Test("get value", "TypedObject")
+                .StartTest();
+        }
+
         public class CustomState : StoreItem
         {
             public string CustomString { get; set; }

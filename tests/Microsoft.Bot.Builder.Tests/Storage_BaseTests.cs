@@ -47,6 +47,27 @@ namespace Microsoft.Bot.Builder.Tests
             Assert.AreEqual(result[key].Id, "1", "strong .id should be 1");
         }
 
+        public class TypedObject
+        {
+            public string Name { get; set; }
+        }
+
+        protected async Task _typedSerialization(IStorage storage)
+        {
+            string key = "typed";
+            var storeItems = new StoreItems();
+            dynamic testItem = new TestItem() { Id = "1" };
+            testItem.x = new TypedObject() { Name = "test" };
+            storeItems[key] = testItem;
+
+            await storage.Write(storeItems);
+
+            dynamic result = await storage.Read(key);
+            Assert.IsNotNull(result[key], $"result['{key}'] should not be null");
+            Assert.AreEqual(result[key].x.Name, "test", "typed object property should be 'test'");
+            Assert.AreEqual(result[key].x.GetType(), typeof(TypedObject), "typed object type should be same");
+        }
+
         protected async Task _updateObjectTest(IStorage storage)
         {
             dynamic storeItems = new StoreItems();
@@ -116,7 +137,7 @@ namespace Microsoft.Bot.Builder.Tests
             await storage.Delete("delete1");
 
             StoreItems result2 = await storage.Read("delete1");
-            Assert.IsFalse(result2.ContainsKey("delete1"), "delete1 should be null");
+            Assert.IsNull(result2["delete1"], "delete1 should be null");
         }
     }
 }

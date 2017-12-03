@@ -170,7 +170,7 @@ namespace Microsoft.Bot.Builder
             return this; 
         }
 
-        public BotContext ReplyWith(string templateId, object data)
+        public BotContext ReplyWith(string templateId, object data=null)
         {
             // queue template activity to be databound when sent
             var reply = (this.Request as Activity).CreateReply();

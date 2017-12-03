@@ -95,6 +95,8 @@ namespace Microsoft.Bot.Builder.Azure
 
         protected class StoreItemEntity : TableEntity
         {
+            private static JsonSerializerSettings serializationSettings = new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.All };
+
             public StoreItemEntity() { }
 
             public StoreItemEntity(EntityKey key, StoreItem obj)
@@ -105,7 +107,7 @@ namespace Microsoft.Bot.Builder.Azure
                 : base(partitionKey, rowKey)
             {
                 this.ETag = obj.eTag;
-                this.Json = JsonConvert.SerializeObject(obj);
+                this.Json = JsonConvert.SerializeObject(obj, Formatting.None, serializationSettings);
             }
 
             public string Json { get; set; }
@@ -113,7 +115,7 @@ namespace Microsoft.Bot.Builder.Azure
             public T As<T>()
                 where T : StoreItem
             {
-                return JsonConvert.DeserializeObject<T>(Json);
+                return JsonConvert.DeserializeObject<T>(Json, serializationSettings);
             }
         }
 

@@ -36,16 +36,8 @@ namespace Microsoft.Bot.Builder.Adapters
 
             BotAssert.ActivityNotNull(activity);
 
-            // TODO: WE NEED TO COME UP WITH AUTH
-            //if (await _authenticator.TryAuthenticateAsync(headers, new[] { activity }, CancellationToken.None))
-            //{
-            //    if (this.OnReceive != null)
-            //        await this.OnReceive(activity).ConfigureAwait(false);
-            //}
-            //else
-            //{
-            //    throw new UnauthorizedAccessException();
-            //}
+            if (this.OnReceive != null)
+                await this.OnReceive(activity).ConfigureAwait(false);
         }
     }
 }
