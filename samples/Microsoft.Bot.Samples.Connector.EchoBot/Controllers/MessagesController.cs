@@ -4,6 +4,7 @@ using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Storage;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Samples.Middleware;
+using Microsoft.Extensions.Configuration;
 using System.Text.RegularExpressions;
 
 namespace Microsoft.Bot.Samples.Connector.EchoBot.Controllers
@@ -11,13 +12,16 @@ namespace Microsoft.Bot.Samples.Connector.EchoBot.Controllers
     [Route("api/[controller]")]
     public class MessagesController : Controller
     {
-        Builder.Bot _bot; 
+        Builder.Bot _bot;
+        BotFrameworkAdapter _adapter; 
 
-        public MessagesController()
+        public MessagesController(IConfiguration configuration)
         {
-            var adapter = new BotFrameworkAdapter("", "");
+            string appId = configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppIdKey)?.Value ?? string.Empty;
+            string appKey = configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppPasswordKey).Value ?? string.Empty;
 
-            _bot = new Builder.Bot(adapter)
+            _adapter = new BotFrameworkAdapter(appId, appKey);
+            _bot = new Builder.Bot(_adapter)
                 .Use(new FileStorage(System.IO.Path.GetTempPath()))
                 .Use(new BotStateManager())
                 .Use(new RegExpRecognizerMiddleware()
@@ -39,9 +43,8 @@ namespace Microsoft.Bot.Samples.Connector.EchoBot.Controllers
 
         [HttpPost]
         public async void Post([FromBody]Activity activity)
-        {
-            BotFrameworkAdapter connector = (BotFrameworkAdapter)_bot.Adapter; 
-            await connector.Receive(HttpContext.Request.Headers, activity);
+        {                        
+            await _adapter.Receive(HttpContext.Request.Headers, activity);
         }      
     }
 }
