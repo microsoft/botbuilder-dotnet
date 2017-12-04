@@ -43,7 +43,9 @@ namespace AlarmBot.Topics
         /// <returns></returns>
         public Task<bool> StartTopic(BotContext context)
         {
-            // this.AlarmTitle = context.GetEntity("AlarmTitle");
+            this.AlarmTitle = context.TopIntent?.Entities.Where(entity => entity.GroupName == "AlarmTitle")
+                                .Select(entity => entity.ValueAs<string>()).FirstOrDefault();
+
             return FindAlarm(context);
         }
 

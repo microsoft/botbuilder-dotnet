@@ -116,8 +116,13 @@ namespace AlarmBot.Topics
         {
             this.Alarm = new Alarm()
             {
-                // Title = context.GetEntity("AlarmTitle");
-                // Time = context.GetEntity("AlarmTime"),
+                // initialize from intent entities
+                Title = context.TopIntent?.Entities.Where(entity => entity.GroupName == "AlarmTitle")
+                    .Select(entity => entity.ValueAs<string>()).FirstOrDefault(),
+
+                // initialize from intent entities
+                Time = context.TopIntent?.Entities.Where(entity => entity.GroupName == "AlarmTime")
+                    .Select(entity => entity.ValueAs<string>()).FirstOrDefault()
             };
 
             return PromptForMissingData(context);
