@@ -79,7 +79,7 @@ namespace AlarmBot.Topics
         /// <returns></returns>
         public Task<bool> ContinueTopic(BotContext context)
         {
-            var conversationState = context.State.Conversation.As<IAlarmBotConversationState>();
+            var activeTopic = (ITopic)context.State.Conversation[ConversationProperties.ACTIVETOPIC];
 
             switch (context.Request.Type)
             {
@@ -88,18 +88,21 @@ namespace AlarmBot.Topics
                     {
                         case "addAlarm":
                             // switch to addAlarm topic
-                            conversationState.ActiveTopic = new AddAlarmTopic();
-                            return conversationState.ActiveTopic.StartTopic(context);
+                            activeTopic = new AddAlarmTopic();
+                            context.State.Conversation[ConversationProperties.ACTIVETOPIC] = activeTopic;
+                            return activeTopic.StartTopic(context);
 
                         case "showAlarms":
                             // switch to show alarms topic
-                            conversationState.ActiveTopic = new ShowAlarmsTopic();
-                            return conversationState.ActiveTopic.StartTopic(context);
+                            activeTopic = new ShowAlarmsTopic();
+                            context.State.Conversation[ConversationProperties.ACTIVETOPIC] = activeTopic;
+                            return activeTopic.StartTopic(context);
 
                         case "deleteAlarm":
                             // switch to delete alarm topic
-                            conversationState.ActiveTopic = new DeleteAlarmTopic();
-                            return conversationState.ActiveTopic.StartTopic(context);
+                            activeTopic = new DeleteAlarmTopic();
+                            context.State.Conversation[ConversationProperties.ACTIVETOPIC] = activeTopic;
+                            return activeTopic.StartTopic(context);
 
                         case "help":
                             // show help

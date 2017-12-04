@@ -74,12 +74,15 @@ namespace AlarmBot.Topics
 
         public async Task<bool> FindAlarm(BotContext context)
         {
-            var userState = context.State.User.As<IAlarmBotUserState>();
-            if (userState.Alarms == null)
-                userState.Alarms = new List<Alarm>();
+            var alarms = (List<Alarm>)context.State.User[UserProperties.ALARMS];
+            if (alarms == null)
+            {
+                alarms = new List<Alarm>();
+                context.State.User[UserProperties.ALARMS] = alarms;
+            }
 
             // Ensure there are alarms to delete
-            if (userState.Alarms.Count == 0)
+            if (alarms.Count == 0)
             {
                 context.ReplyWith(NOALARMS);
                 return false;
@@ -89,7 +92,7 @@ namespace AlarmBot.Topics
             if (!String.IsNullOrWhiteSpace(this.AlarmTitle))
             {
                 var parts = this.AlarmTitle.Split(' ');
-                var choices = userState.Alarms.FindAll(alarm => parts.Any(part => alarm.Title.Contains(part)));
+                var choices = alarms.FindAll(alarm => parts.Any(part => alarm.Title.Contains(part)));
 
                 if (choices.Count == 0)
                 {
@@ -99,7 +102,7 @@ namespace AlarmBot.Topics
                 else if (choices.Count == 1)
                 {
                     // Delete selected alarm and end topic
-                    userState.Alarms.Remove(choices.First());
+                    alarms.Remove(choices.First());
                     context.ReplyWith(DELETEDALARM, choices.First());
                     return false; // cancel topic
                 }
@@ -107,7 +110,7 @@ namespace AlarmBot.Topics
 
             // Prompt for title
             await ShowAlarmsTopic.ShowAlarms(context);
-            context.ReplyWith(TITLEPROMPT, userState.Alarms);
+            context.ReplyWith(TITLEPROMPT, alarms);
             return true;
         }
     }

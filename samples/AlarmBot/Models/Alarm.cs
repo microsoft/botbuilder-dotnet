@@ -13,4 +13,5 @@ namespace AlarmBot.Models
         public string Title { get; set; }
         public string Time { get; set; }
     }
+
 }

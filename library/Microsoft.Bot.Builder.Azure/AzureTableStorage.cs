@@ -95,7 +95,11 @@ namespace Microsoft.Bot.Builder.Azure
 
         protected class StoreItemEntity : TableEntity
         {
-            private static JsonSerializerSettings serializationSettings = new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.All };
+            private static JsonSerializerSettings serializationSettings = new JsonSerializerSettings()
+            {
+                // we use all so that we get typed roundtrip out of storage, but we don't use validation because we don't know what types are valid
+                TypeNameHandling = TypeNameHandling.All
+            };
 
             public StoreItemEntity() { }
 

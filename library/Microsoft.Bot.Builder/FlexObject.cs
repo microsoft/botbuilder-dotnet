@@ -12,7 +12,11 @@ namespace Microsoft.Bot.Builder
     /// </summary>
     public class FlexObject : DynamicObject, ICloneable
     {
-        private static JsonSerializerSettings serializationSettings = new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.All };
+        private static JsonSerializerSettings serializationSettings = new JsonSerializerSettings()
+        {
+            // we use all so that we get typed roundtrip out of storage, but we don't use validation because we don't know what types are valid
+            TypeNameHandling = TypeNameHandling.All
+        };
 
         [JsonExtensionData]
         private Dictionary<string, object> dynamicProperties { get; set; } = new Dictionary<string, object>();
@@ -197,7 +201,7 @@ namespace Microsoft.Bot.Builder
         public object Clone()
         {
             return JsonConvert.DeserializeObject<StoreItem>(
-                JsonConvert.SerializeObject(this, serializationSettings), 
+                JsonConvert.SerializeObject(this, serializationSettings),
                 serializationSettings);
         }
     }

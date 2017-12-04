@@ -31,7 +31,11 @@ namespace Microsoft.Bot.Builder
 
     public class StoreItem : FlexObject
     {
-        private static JsonSerializerSettings serializationSettings = new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.All };
+        private static JsonSerializerSettings serializationSettings = new JsonSerializerSettings()
+        {
+            // we use all so that we get typed roundtrip out of storage, but we don't use validation because we don't know what types are valid
+            TypeNameHandling = TypeNameHandling.All
+        };
 
         /// <summary>
         /// eTag for concurrency
@@ -48,8 +52,8 @@ namespace Microsoft.Bot.Builder
     {
         public T Get<T>(string name)
         {
-            if (this.ContainsKey(name) && this[name] != null)
-                return this[name].ToObject<T>();
+            if (this.TryGetValue(name, out dynamic value) && value != null)
+                return value.ToObject<T>();
             return default(T);
         }
     }

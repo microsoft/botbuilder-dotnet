@@ -10,7 +10,7 @@ namespace Microsoft.Bot.Builder.Storage
     {
         private readonly StoreItems _memory;
         private int _eTag = 0;
-        private object _syncroot = new object(); 
+        private object _syncroot = new object();
 
         public DictionaryStorage(StoreItems dictionary = null)
         {
@@ -41,9 +41,14 @@ namespace Microsoft.Bot.Builder.Storage
             lock (_syncroot)
             {
                 foreach (var key in keys)
-                {                    
+                {
                     if (_memory.TryGetValue(key, out object value))
-                        storeItems[key] = (value == null) ? value : ((ICloneable)value).Clone() as StoreItem;
+                    {
+                        if (value != null)
+                            storeItems[key] = (StoreItem)((ICloneable)value).Clone();
+                        else 
+                            storeItems[key] = null;
+                    }
                 }
             }
             return Task.FromResult(storeItems);
@@ -58,7 +63,7 @@ namespace Microsoft.Bot.Builder.Storage
                 {
                     StoreItem newValue = change.Value as StoreItem;
                     StoreItem oldValue = null;
-                    
+
                     if (_memory.TryGetValue(change.Key, out object x))
                         oldValue = x as StoreItem;
                     if (oldValue == null ||

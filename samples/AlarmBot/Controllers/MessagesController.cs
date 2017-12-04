@@ -46,26 +46,28 @@ namespace AlarmBot.Controllers
                     .OnReceive(async (context) =>
                     {
                         bool handled = false;
-                        var conversationState = context.State.Conversation.As<IAlarmBotConversationState>();
+                        var activeTopic = context.State.Conversation[ConversationProperties.ACTIVETOPIC] as ITopic;
 
                         // start with default topic
-                        if (conversationState.ActiveTopic == null)
+                        if (activeTopic == null)
                         {
-                            conversationState.ActiveTopic = new DefaultTopic();
-                            handled = await conversationState.ActiveTopic.StartTopic(context);
+                            activeTopic = new DefaultTopic();
+                            context.State.Conversation[ConversationProperties.ACTIVETOPIC] = activeTopic;
+                            handled = await activeTopic.StartTopic(context);
                         }
                         else
                         {
                             // route to active topic
-                            handled = await conversationState.ActiveTopic.ContinueTopic(context);
+                            handled = await activeTopic.ContinueTopic(context);
 
                             // AlarmBot only needs to transition from defaultTopic -> subTopic and back, so 
                             // if result is false and not default topic, then switch back to default topic
-                            if (handled == false && !(conversationState.ActiveTopic is DefaultTopic))
+                            if (handled == false && !(activeTopic is DefaultTopic))
                             {
                                 // resume default topic
-                                conversationState.ActiveTopic = new DefaultTopic();
-                                handled = await conversationState.ActiveTopic.ResumeTopic(context);
+                                activeTopic = new DefaultTopic(); 
+                                context.State.Conversation[ConversationProperties.ACTIVETOPIC] = activeTopic;
+                                handled = await activeTopic.ResumeTopic(context);
                             }
                         }
                         return new ReceiveResponse(handled);

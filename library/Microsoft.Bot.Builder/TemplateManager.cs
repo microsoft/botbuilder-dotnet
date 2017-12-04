@@ -106,13 +106,16 @@ namespace Microsoft.Bot.Builder
                     Activity boundActivity = await this.findAndApplyTemplate(context, locale, activity.Text, activity.Value).ConfigureAwait(false);
                     if (boundActivity != null)
                     {
-                        foreach (var property in typeof(Activity).GetProperties())
+                        lock (activity)
                         {
-                            var value = property.GetValue(boundActivity);
-                            if (value != null)
-                                property.SetValue(activity, value);
+                            foreach (var property in typeof(Activity).GetProperties())
+                            {
+                                var value = property.GetValue(boundActivity);
+                                if (value != null)
+                                    property.SetValue(activity, value);
+                            }
+                            return;
                         }
-                        return;
                     }
                 }
                 throw new Exception($"Could not resolve template id:{ activity.Text}");

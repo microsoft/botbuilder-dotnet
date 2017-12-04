@@ -62,9 +62,8 @@ namespace AlarmBot.Topics
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
-        public static string AlarmDescription(object data)
+        public static string AlarmDescription(Alarm alarm)
         {
-            Alarm alarm = (Alarm)data;
             StringBuilder sb = new StringBuilder();
             if (!String.IsNullOrWhiteSpace(alarm.Title))
                 sb.AppendLine($"* Title: {alarm.Title}");
@@ -191,10 +190,13 @@ namespace AlarmBot.Topics
                                 if (utterance.Trim() == "y" || utterance.Contains("yes"))
                                 {
                                     // Save alarm
-                                    var userState = context.State.User.As<IAlarmBotUserState>();
-                                    if (userState.Alarms == null)
-                                        userState.Alarms = new List<Alarm>();
-                                    userState.Alarms.Add(this.Alarm);
+                                    var alarms = (List<Alarm>)context.State.User[UserProperties.ALARMS];
+                                    if (alarms == null)
+                                    {
+                                        alarms = new List<Alarm>();
+                                        context.State.User[UserProperties.ALARMS] = alarms;
+                                    }
+                                    alarms.Add(this.Alarm);
 
                                     context.ReplyWith(ADDEDALARM, this.Alarm);
 

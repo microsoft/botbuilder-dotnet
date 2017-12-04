@@ -61,11 +61,14 @@ namespace AlarmBot.Topics
 
         public static Task ShowAlarms(BotContext context)
         {
-            var userState = context.State.User.As<IAlarmBotUserState>();
-            if (userState.Alarms == null)
-                userState.Alarms = new List<Alarm>();
+            var alarms = (List<Alarm>)context.State.User[UserProperties.ALARMS];
+            if (alarms == null)
+            {
+                alarms = new List<Alarm>();
+                context.State.User[UserProperties.ALARMS] = alarms;
+            }
 
-            context.ReplyWith(SHOWALARMS, userState.Alarms);
+            context.ReplyWith(SHOWALARMS, alarms);
             return Task.CompletedTask;
         }
     }
