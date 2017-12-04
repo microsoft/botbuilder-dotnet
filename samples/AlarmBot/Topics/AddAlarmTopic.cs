@@ -76,7 +76,7 @@ namespace AlarmBot.Topics
         /// <summary>
         /// table of language functions which render output in various languages
         /// </summary>
-        public static TemplateDictionary Templates = new TemplateDictionary
+        public static TemplateDictionary ReplyTemplates = new TemplateDictionary
         {
             // Default templates
             ["default"] = new TemplateIdMap

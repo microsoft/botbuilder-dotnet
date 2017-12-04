@@ -10,6 +10,9 @@ namespace AlarmBot.Models
     /// </summary>
     public interface IAlarmBotUserState
     { 
+        /// <summary>
+        ///  saved alarms
+        /// </summary>
         List<Alarm> Alarms { get; set; }
     }
 }

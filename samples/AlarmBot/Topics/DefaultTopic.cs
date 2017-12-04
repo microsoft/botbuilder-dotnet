@@ -20,7 +20,7 @@ namespace AlarmBot.Topics
         public const string CONFUSED = "DefaultTopic.Confusion";
 
         // template functions for rendeing responses in different a languages
-        public static TemplateDictionary Templates = new TemplateDictionary
+        public static TemplateDictionary ReplyTemplates = new TemplateDictionary
         {
             ["default"] = new TemplateIdMap
                 {

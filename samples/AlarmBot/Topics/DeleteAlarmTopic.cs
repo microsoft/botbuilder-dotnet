@@ -20,7 +20,7 @@ namespace AlarmBot.Topics
         public const string DELETEDALARM = "DeleteAlarmTopic.DeletedAlarm";
 
         // per language template functions for creating replies
-        public static TemplateDictionary Templates = new TemplateDictionary
+        public static TemplateDictionary ReplyTemplates = new TemplateDictionary
         {
             ["default"] = new TemplateIdMap
                 {

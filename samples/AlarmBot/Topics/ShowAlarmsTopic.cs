@@ -22,7 +22,7 @@ namespace AlarmBot.Topics
         /// <summary>
         /// Language dictionary of template functions
         /// </summary>
-        public static TemplateDictionary Templates = new TemplateDictionary
+        public static TemplateDictionary ReplyTemplates = new TemplateDictionary
         {
             ["default"] = new TemplateIdMap
                 {

@@ -10,9 +10,9 @@ namespace AlarmBot.Models
     /// </summary>
     public interface IAlarmBotConversationState
     {
-        // active topic
+        /// <summary>
+        /// Active Topic
+        /// </summary>
         ITopic ActiveTopic { get; set; }
     }
-
-
 }

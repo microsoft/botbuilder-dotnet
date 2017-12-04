@@ -11,7 +11,7 @@ namespace AlarmBot
     public static class FlexObjectExtensions
     {
         /// <summary>
-        /// Project an interface view onto a FlexObject.
+        /// Project an interface view onto a FlexObject using the impromptu library.  
         /// </summary>
         /// <typeparam name="T">Interface</typeparam>
         /// <param name="flex">FlexObject</param>

@@ -21,6 +21,7 @@ namespace AlarmBot.Controllers
     public class MessagesController : Controller
     {
         public static BotFrameworkAdapter activityAdapter = null;
+        public static Bot bot = null;
 
         public MessagesController(IConfiguration configuration)
         {
@@ -29,13 +30,13 @@ namespace AlarmBot.Controllers
                 activityAdapter = new BotFrameworkAdapter(configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppIdKey)?.Value,
                                                               configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppPasswordKey)?.Value);
 
-                var bot = new Bot(activityAdapter)
+                bot = new Bot(activityAdapter)
                     .Use(new MemoryStorage())
                     .Use(new BotStateManager())
-                    .UseTemplates(DefaultTopic.Templates)
-                    .UseTemplates(ShowAlarmsTopic.Templates)
-                    .UseTemplates(AddAlarmTopic.Templates)
-                    .UseTemplates(DeleteAlarmTopic.Templates)
+                    .UseTemplates(DefaultTopic.ReplyTemplates)
+                    .UseTemplates(ShowAlarmsTopic.ReplyTemplates)
+                    .UseTemplates(AddAlarmTopic.ReplyTemplates)
+                    .UseTemplates(DeleteAlarmTopic.ReplyTemplates)
                     .Use(new RegExpRecognizerMiddleware()
                         .AddIntent("showAlarms", new Regex("show alarms(.*)", RegexOptions.IgnoreCase))
                         .AddIntent("addAlarm", new Regex("add alarm(.*)", RegexOptions.IgnoreCase))
@@ -55,10 +56,11 @@ namespace AlarmBot.Controllers
                         }
                         else
                         {
-                            // route to topic
+                            // route to active topic
                             handled = await conversationState.ActiveTopic.ContinueTopic(context);
 
-                            // resume default topic if result is false and not default topic
+                            // AlarmBot only needs to transition from defaultTopic -> subTopic and back, so 
+                            // if result is false and not default topic, then switch back to default topic
                             if (handled == false && !(conversationState.ActiveTopic is DefaultTopic))
                             {
                                 // resume default topic
