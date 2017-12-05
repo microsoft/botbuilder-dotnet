@@ -27,50 +27,66 @@ namespace AlarmBot.Controllers
         {
             if (activityAdapter == null)
             {
+                // create the activity adapter that I will use to send/receive Activity objects with the user
                 activityAdapter = new BotFrameworkAdapter(configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppIdKey)?.Value,
                                                               configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppPasswordKey)?.Value);
 
+                // create bot hooked up to the activity adapater
                 bot = new Bot(activityAdapter)
-                    .Use(new MemoryStorage())
-                    .Use(new BotStateManager())
+                    // --- register AzureTableStorage as the IStorage key/object system for any component to store objects
+                    .Use(new AzureTableStorage(
+                        // if debugger is attached, use local storage emulator, otherwise use real table
+                        (System.Diagnostics.Debugger.IsAttached) ? "UseDevelopmentStorage=true;" : configuration.GetSection("DataConnectionString")?.Value,
+                        tableName: "AlarmBot"))
+                    
+                    // --- add Bot State Manager to automatically persist and load the context.State.Conversation and context.State.User objects
+                    .Use(new BotStateManager()) 
+
+                    // --- register reply templates dictionaries for all the components using .ReplyWith() 
                     .UseTemplates(DefaultTopic.ReplyTemplates)
                     .UseTemplates(ShowAlarmsTopic.ReplyTemplates)
                     .UseTemplates(AddAlarmTopic.ReplyTemplates)
                     .UseTemplates(DeleteAlarmTopic.ReplyTemplates)
+
+                    // --- register intent recognizers, 
+                    // These inspect context.Request.Text and will set context.TopIntent based on regular expression based patterns
                     .Use(new RegExpRecognizerMiddleware()
                         .AddIntent("showAlarms", new Regex("show alarms(.*)", RegexOptions.IgnoreCase))
                         .AddIntent("addAlarm", new Regex("add alarm(.*)", RegexOptions.IgnoreCase))
                         .AddIntent("deleteAlarm", new Regex("delete alarm(.*)", RegexOptions.IgnoreCase))
                         .AddIntent("help", new Regex("help(.*)", RegexOptions.IgnoreCase))
                         .AddIntent("cancel", new Regex("cancel(.*)", RegexOptions.IgnoreCase)))
+
+                    // --- Bot logic 
                     .OnReceive(async (context) =>
                     {
                         bool handled = false;
+                        // Get the current ActiveTopic from my conversation state
                         var activeTopic = context.State.Conversation[ConversationProperties.ACTIVETOPIC] as ITopic;
 
-                        // start with default topic
+                        // if there isn't one 
                         if (activeTopic == null)
                         {
+                            // use default topic
                             activeTopic = new DefaultTopic();
                             context.State.Conversation[ConversationProperties.ACTIVETOPIC] = activeTopic;
                             handled = await activeTopic.StartTopic(context);
                         }
                         else
                         {
-                            // route to active topic
+                            // continue to use the active topic
                             handled = await activeTopic.ContinueTopic(context);
-
-                            // AlarmBot only needs to transition from defaultTopic -> subTopic and back, so 
-                            // if result is false and not default topic, then switch back to default topic
-                            if (handled == false && !(activeTopic is DefaultTopic))
-                            {
-                                // resume default topic
-                                activeTopic = new DefaultTopic(); 
-                                context.State.Conversation[ConversationProperties.ACTIVETOPIC] = activeTopic;
-                                handled = await activeTopic.ResumeTopic(context);
-                            }
                         }
-                        return new ReceiveResponse(handled);
+
+                        // AlarmBot only needs to transition from defaultTopic -> subTopic and back, so 
+                        // if activeTopic's result is false and the activeToic is NOT the default topic, we switch back to default topic
+                        if (handled == false && !(context.State.Conversation[ConversationProperties.ACTIVETOPIC] is DefaultTopic))
+                        {
+                            // resume default topic
+                            activeTopic = new DefaultTopic();
+                            context.State.Conversation[ConversationProperties.ACTIVETOPIC] = activeTopic;
+                            handled = await activeTopic.ResumeTopic(context);
+                        }
                     });
             }
         }
@@ -80,6 +96,7 @@ namespace AlarmBot.Controllers
         [HttpPost]
         public async void Post([FromBody]Activity activity)
         {
+            // We have an activity from the user, give it to the activityAdapter/Bot to process it
             await activityAdapter.Receive(HttpContext.Request.Headers, activity);
         }
     }
