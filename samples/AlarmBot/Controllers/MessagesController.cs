@@ -14,6 +14,7 @@ using Microsoft.Extensions.Configuration;
 using AlarmBot.Topics;
 using AlarmBot.Models;
 using Microsoft.Bot.Builder.Templates;
+using AlarmBot.TopicViews;
 
 namespace AlarmBot.Controllers
 {
@@ -23,6 +24,7 @@ namespace AlarmBot.Controllers
         public static BotFrameworkAdapter activityAdapter = null;
         public static Bot bot = null;
 
+        ///
         public MessagesController(IConfiguration configuration)
         {
             if (activityAdapter == null)
@@ -33,35 +35,24 @@ namespace AlarmBot.Controllers
 
                 // create bot hooked up to the activity adapater
                 bot = new Bot(activityAdapter)
-                    // --- register AzureTableStorage as the IStorage key/object system for any component to store objects
-                    .Use(new AzureTableStorage(
-                        // if debugger is attached, use local storage emulator, otherwise use real table
-                        (System.Diagnostics.Debugger.IsAttached) ? "UseDevelopmentStorage=true;" : configuration.GetSection("DataConnectionString")?.Value,
-                        tableName: "AlarmBot"))
-                    
-                    // --- add Bot State Manager to automatically persist and load the context.State.Conversation and context.State.User objects
-                    .Use(new BotStateManager()) 
-
-                    // --- register reply templates dictionaries for all the components using .ReplyWith() 
-                    .UseTemplates(DefaultTopic.ReplyTemplates)
-                    .UseTemplates(ShowAlarmsTopic.ReplyTemplates)
-                    .UseTemplates(AddAlarmTopic.ReplyTemplates)
-                    .UseTemplates(DeleteAlarmTopic.ReplyTemplates)
-
-                    // --- register intent recognizers, 
-                    // These inspect context.Request.Text and will set context.TopIntent based on regular expression based patterns
+                    .Use(new AzureTableStorage((System.Diagnostics.Debugger.IsAttached) ? "UseDevelopmentStorage=true;" : configuration.GetSection("DataConnectionString")?.Value,
+                        tableName: "AlarmBot")) 
+                    .Use(new BotStateManager()) // --- add Bot State Manager to automatically persist and load the context.State.Conversation and context.State.User objects
+                    .Use(new DefaultTopicView())
+                    .Use(new ShowAlarmsTopicView())
+                    .Use(new AddAlarmTopicView())
+                    .Use(new DeleteAlarmTopicView())
                     .Use(new RegExpRecognizerMiddleware()
                         .AddIntent("showAlarms", new Regex("show alarms(.*)", RegexOptions.IgnoreCase))
                         .AddIntent("addAlarm", new Regex("add alarm(.*)", RegexOptions.IgnoreCase))
                         .AddIntent("deleteAlarm", new Regex("delete alarm(.*)", RegexOptions.IgnoreCase))
                         .AddIntent("help", new Regex("help(.*)", RegexOptions.IgnoreCase))
                         .AddIntent("cancel", new Regex("cancel(.*)", RegexOptions.IgnoreCase))
-                        .AddIntent("confirmYes", new Regex("(y|yes|yep)\\w+", RegexOptions.IgnoreCase))
-                        .AddIntent("confirmNo", new Regex("(n|no|nope)\\w+", RegexOptions.IgnoreCase)))
-
-                    // --- Bot logic 
+                        .AddIntent("confirmYes", new Regex("(yes|yep)\\w+", RegexOptions.IgnoreCase))
+                        .AddIntent("confirmNo", new Regex("(no|nope)\\w+", RegexOptions.IgnoreCase)))
                     .OnReceive(async (context) =>
                     {
+                        // --- Bot logic 
                         bool handled = false;
                         // Get the current ActiveTopic from my conversation state
                         var activeTopic = context.State.Conversation[ConversationProperties.ACTIVETOPIC] as ITopic;

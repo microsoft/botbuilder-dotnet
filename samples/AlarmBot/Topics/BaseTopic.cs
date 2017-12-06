@@ -8,6 +8,8 @@ namespace AlarmBot.Topics
 {
     public class BaseTopic : ITopic
     {
+        public string Name { get; set; } = "BaseTopic";
+
         public virtual Task<bool> ContinueTopic(BotContext context)
         {
             return Task.FromResult(false);

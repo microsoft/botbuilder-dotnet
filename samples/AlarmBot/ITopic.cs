@@ -9,6 +9,11 @@ namespace AlarmBot
     public interface ITopic 
     {
         /// <summary>
+        /// Name of the topic
+        /// </summary>
+        string Name { get; set; }
+
+        /// <summary>
         /// Called when topic starts
         /// </summary>
         /// <param name="context"></param>

@@ -6,34 +6,15 @@ using Microsoft.Bot.Builder;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Builder.Templates;
 using AlarmBot.Models;
+using AlarmBot.TopicViews;
 
 namespace AlarmBot.Topics
 {
     public class DefaultTopic : ITopic
     {
-        public const string TopicName = "DefaultTopic";
-
-        // template ids
-        public const string GREETING = "DefaultTopic.StartTopic";
-        public const string RESUMETOPIC = "DefaultTopic.ResumeTopic";
-        public const string HELP = "DefaultTopic.Help";
-        public const string CONFUSED = "DefaultTopic.Confusion";
-
-        // template functions for rendeing responses in different a languages
-        public static TemplateDictionary ReplyTemplates = new TemplateDictionary
-        {
-            ["default"] = new TemplateIdMap
-                {
-                    { DefaultTopic.GREETING, (context, data) => $"Hello, I'm the alarmbot." },
-                    { DefaultTopic.HELP, (context, data) => $"I can add an alarm, show alarms or delete an alarm. " },
-                    { DefaultTopic.RESUMETOPIC, (context, data) => $"What can I do for you?" },
-                    { DefaultTopic.CONFUSED, (context, data) => $"I am sorry, I didn't understand that." },
-                },
-            ["en"] = new TemplateIdMap { },
-            ["fr"] = new TemplateIdMap { }
-        };
-
         public DefaultTopic() { }
+
+        public string Name { get; set; } = "Default";
 
         // track in this topic if we have greeted the user already
         public bool Greeted { get; set; } = false;
@@ -53,8 +34,8 @@ namespace AlarmBot.Topics
                         var activity = context.Request.AsConversationUpdateActivity();
                         if (activity.MembersAdded.Where(m => m.Id == activity.Recipient.Id).Any())
                         {
-                            context.ReplyWith(GREETING);
-                            context.ReplyWith(HELP);
+                            context.ReplyWith(DefaultTopicView.GREETING);
+                            context.ReplyWith(DefaultTopicView.HELP);
                             this.Greeted = true;
                         }
                     }
@@ -64,7 +45,7 @@ namespace AlarmBot.Topics
                     // greet on first message if we haven't already 
                     if (!Greeted)
                     {
-                        context.ReplyWith(GREETING);
+                        context.ReplyWith(DefaultTopicView.GREETING);
                         this.Greeted = true;
                     }
                     return this.ContinueTopic(context);
@@ -106,12 +87,12 @@ namespace AlarmBot.Topics
 
                         case "help":
                             // show help
-                            context.ReplyWith(HELP);
+                            context.ReplyWith(DefaultTopicView.HELP);
                             return Task.FromResult(true);
 
                         default:
                             // show our confusion
-                            context.ReplyWith(CONFUSED);
+                            context.ReplyWith(DefaultTopicView.CONFUSED);
                             return Task.FromResult(true);
                     }
 
@@ -129,7 +110,7 @@ namespace AlarmBot.Topics
         public Task<bool> ResumeTopic(BotContext context)
         {
             // just prompt the user to ask what they want to do
-            context.ReplyWith(RESUMETOPIC);
+            context.ReplyWith(DefaultTopicView.RESUMETOPIC);
             return Task.FromResult(true);
         }
 

@@ -6,30 +6,18 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AlarmBot.TopicViews;
 
 namespace AlarmBot.Topics
 {
     public class DeleteAlarmTopic : ITopic
     {
-        public const string TopicName = "DeleteAlarmTopic";
 
-        // template ids
-        public const string NOALARMS = "DeleteAlarmTopic.NoAlarms";
-        public const string NOALARMSFOUND = "DeleteAlarmTopic.NoAlarmsFound";
-        public const string TITLEPROMPT = "DeleteAlarmTopic.TitlePrompt";
-        public const string DELETEDALARM = "DeleteAlarmTopic.DeletedAlarm";
-
-        // per language template functions for creating replies
-        public static TemplateDictionary ReplyTemplates = new TemplateDictionary
+        public DeleteAlarmTopic()
         {
-            ["default"] = new TemplateIdMap
-                {
-                    { NOALARMS, (context, data) => $"There are no alarms defined." },
-                    { NOALARMSFOUND, (context, data) => $"There were no alarms found for {(string)data}." },
-                    { TITLEPROMPT, (context, data) => $"# Delete Alarm\n\nWhat alarm do you want to delete?" },
-                    { DELETEDALARM, (context, data) => $"I have deleted {((Alarm)data).Title} alarm" },
-                }
-        };
+        }
+
+        public string Name { get; set; } = "DeleteAlarm";
 
         /// <summary>
         /// The alarm title we are searching for
@@ -86,7 +74,7 @@ namespace AlarmBot.Topics
             // Ensure there are alarms to delete
             if (alarms.Count == 0)
             {
-                context.ReplyWith(NOALARMS);
+                context.ReplyWith(DeleteAlarmTopicView.NOALARMS);
                 return false;
             }
 
@@ -98,21 +86,21 @@ namespace AlarmBot.Topics
 
                 if (choices.Count == 0)
                 {
-                    context.ReplyWith(NOALARMSFOUND, this.AlarmTitle);
+                    context.ReplyWith(DeleteAlarmTopicView.NOALARMSFOUND, this.AlarmTitle);
                     return false;
                 }
                 else if (choices.Count == 1)
                 {
                     // Delete selected alarm and end topic
                     alarms.Remove(choices.First());
-                    context.ReplyWith(DELETEDALARM, choices.First());
+                    context.ReplyWith(DeleteAlarmTopicView.DELETEDALARM, choices.First());
                     return false; // cancel topic
                 }
             }
 
             // Prompt for title
             await ShowAlarmsTopic.ShowAlarms(context);
-            context.ReplyWith(TITLEPROMPT, alarms);
+            context.ReplyWith(DeleteAlarmTopicView.TITLEPROMPT, alarms);
             return true;
         }
     }

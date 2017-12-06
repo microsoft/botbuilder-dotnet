@@ -29,15 +29,16 @@ namespace AlarmBot
                     // We only care for those with a date, date and time, or date time period:
                     // date, daterange, datetime, datetimerange
 
-                    var first = results.First();
-                    var resolutionValues = (IList<Dictionary<string, string>>)first.Resolution["values"];
-
-                    var subType = first.TypeName.Split('.').Last();
-                    if (subType.Contains("time") && !subType.Contains("range"))
+                    return results.Where(result =>
                     {
-                        // a date (or date & time) or multiple
-                        times = resolutionValues.Select(v => DateTime.Parse(v["value"])).ToList();
-                    }
+                        var subType = result.TypeName.Split('.').Last();
+                        return subType.Contains("time") && !subType.Contains("range");
+                    })
+                    .Select(result =>
+                    {
+                        var resolutionValues = (IList<Dictionary<string, string>>)result.Resolution["values"];
+                        return resolutionValues.Select(v => DateTime.Parse(v["value"]));
+                    }).SelectMany(l => l).ToList();
                 }
             }
             return times;

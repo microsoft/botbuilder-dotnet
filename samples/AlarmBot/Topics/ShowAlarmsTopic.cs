@@ -1,4 +1,5 @@
 ﻿using AlarmBot.Models;
+using AlarmBot.TopicViews;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Templates;
 using System;
@@ -14,37 +15,10 @@ namespace AlarmBot.Topics
     /// </summary>
     public class ShowAlarmsTopic : BaseTopic
     {
-        public const string TopicName = "ShowAlarmsTopic";
-
-        // Template Ids
-        public const string SHOWALARMS = "ShowAlarmsTopic.ShowAlarms";
-
-        /// <summary>
-        /// Language dictionary of template functions
-        /// </summary>
-        public static TemplateDictionary ReplyTemplates = new TemplateDictionary
+        public ShowAlarmsTopic()
         {
-            ["default"] = new TemplateIdMap
-                {
-                    { SHOWALARMS, (context, data) =>
-                        {
-                            IEnumerable<Alarm> alarms = (IEnumerable<Alarm>)data;
-                            StringBuilder sb = new StringBuilder();
-                            sb.AppendLine("# Current Alarms\n");
-                            if (alarms.Any())
-                            {
-                                foreach(var alarm in alarms)
-                                {
-                                    sb.AppendLine($"* Title: {alarm.Title} Time: {alarm.Time.Value.ToString("f")}");
-                                }
-                            }
-                            else
-                                sb.AppendLine("*There are no alarms defined.*");
-                            return sb.ToString();
-                        }
-                    }
-                }
-        };
+            this.Name = "ShowAlarms";
+        }
 
         /// <summary>
         /// Called when topic is activated (SINGLE TURN)
@@ -68,7 +42,7 @@ namespace AlarmBot.Topics
                 context.State.User[UserProperties.ALARMS] = alarms;
             }
 
-            context.ReplyWith(SHOWALARMS, alarms);
+            context.ReplyWith(ShowAlarmsTopicView.SHOWALARMS, alarms);
             return Task.CompletedTask;
         }
     }

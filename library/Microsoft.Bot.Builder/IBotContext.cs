@@ -180,5 +180,10 @@ namespace Microsoft.Bot.Builder
             this.Responses.Add(reply);
             return this;
         }
+
+        public void ReplyWith(object nOALARMS)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
