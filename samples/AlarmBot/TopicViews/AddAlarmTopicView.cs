@@ -73,7 +73,7 @@ namespace AlarmBot.TopicViews
                     { CANCELREPROMPT, (context, data) => $"# Cancel alarm?\n\nPlease answer the question with a \"yes\" or \"no\" reply. Did you want to cancel the alarm?\n\n{AlarmDescription(context,data)}\n\n" },
                     { TOPICCANCELED, (context, data) => $"OK, I have canceled this alarm." },
                     { TIMEPROMPT, (context, data) => $"# Adding alarm\n\n{AlarmDescription(context,data)}\n\nWhat time would you like to set the alarm for?" },
-                    { TIMEPROMPTFUTURE, (context, data) => $"# Adding alarm\n\n{AlarmDescription(context,data)}\n\nYou need to specify a timein the future. What time would you like to set the alarm?" },
+                    { TIMEPROMPTFUTURE, (context, data) => $"# Adding alarm\n\n{AlarmDescription(context,data)}\n\nYou need to specify a time in the future. What time would you like to set the alarm?" },
                     { TITLEPROMPT, (context, data)=> $"# Adding alarm\n\n{AlarmDescription(context,data)}\n\nWhat would you like to call your alarm ?" },
                     { ADDCONFIRMATION, (context, data)=> $"# Adding Alarm\n\n{AlarmDescription(context,data)}\n\nDo you want to save this alarm?" },
                     { ADDEDALARM, (context, data)=> $"# Alarm Added\n\n{AlarmDescription(context,data)}." }

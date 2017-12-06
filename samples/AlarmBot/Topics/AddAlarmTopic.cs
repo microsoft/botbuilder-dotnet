@@ -217,11 +217,6 @@ namespace AlarmBot.Topics
             if (this.Alarm.Time == null)
             {
                 this.TopicState = TopicStates.TimePrompt;
-                context.ReplyWith(AddAlarmTopicView.TIMEPROMPT, this.Alarm);
-                return true;
-            }
-            else if (this.Alarm.Time < DateTimeOffset.Now)
-            {
                 context.ReplyWith(AddAlarmTopicView.TIMEPROMPTFUTURE, this.Alarm);
                 return true;
             }
