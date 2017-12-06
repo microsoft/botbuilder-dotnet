@@ -30,7 +30,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\library\Microsoft.Bot.Builder.Ai\Microsoft.Bot.Builder.Ai.csproj" />
     <ProjectReference Include="..\..\library\Microsoft.Bot.Builder.Azure\Microsoft.Bot.Builder.Azure.csproj" />
-    <ProjectReference Include="..\..\Library\Microsoft.Bot.Builder.BotFramework\Microsoft.Bot.Builder.BotFramework.csproj" />
+    <ProjectReference Include="..\..\library\Microsoft.Bot.Builder.BotFramework\Microsoft.Bot.Builder.BotFramework.csproj" />
     <ProjectReference Include="..\..\library\Microsoft.Bot.Builder.Rivescript\Microsoft.Bot.Builder.Rivescript.csproj" />
     <ProjectReference Include="..\..\library\Microsoft.Bot.Builder\Microsoft.Bot.Builder.csproj" />
   </ItemGroup>

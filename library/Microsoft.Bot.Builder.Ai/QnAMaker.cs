@@ -38,13 +38,14 @@ namespace Microsoft.Bot.Builder.Ai
         public int Top { get; set; }
     }
 
-    public class QnAMaker : IReceiveActivity
+    public class QnAMaker : IReceiveActivity, IDisposable
     {
         public const string qnaMakerServiceEndpoint = "https://westus.api.cognitive.microsoft.com/qnamaker/v2.0/knowledgebases/";
-        private string answerUrl;                      
+        private string answerUrl;
         private QnAMakerOptions options;
+        private HttpClient httpClient;
 
-        public QnAMaker(QnAMakerOptions options = null)
+        public QnAMaker(QnAMakerOptions options)
         {
             this.answerUrl = $"{qnaMakerServiceEndpoint}{options.KnowledgeBaseId}/generateanswer";
             if (options.ScoreThreshold == 0)
@@ -56,27 +57,29 @@ namespace Microsoft.Bot.Builder.Ai
 
         public async Task<QueryResult[]> GetAnswers(string question)
         {
+            lock (options)
+            {
+                if (httpClient == null)
+                    this.httpClient = new HttpClient();
+            }
             var request = new HttpRequestMessage(HttpMethod.Post, this.answerUrl);
 
-            string json = JsonConvert.SerializeObject(new
+            string jsonRequest = JsonConvert.SerializeObject(new
             {
-                question = question,
+                question,
                 top = this.options.Top
             }, Formatting.None);
 
-            using (HttpClient http = new HttpClient())
+            var content = new StringContent(jsonRequest, System.Text.Encoding.UTF8, "application/json");
+            content.Headers.Add("Ocp-Apim-Subscription-Key", this.options.SubscriptionKey);
+            var response = await httpClient.PostAsync(this.answerUrl, content).ConfigureAwait(false);
+            if (response.IsSuccessStatusCode)
             {
-                var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
-                content.Headers.Add("Ocp-Apim-Subscription-Key", this.options.SubscriptionKey);
-                var response = await http.PostAsync(this.answerUrl, content).ConfigureAwait(false);
-                if (response.IsSuccessStatusCode)
-                {
-                    json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    var results = JsonConvert.DeserializeObject<QueryResults>(json);
-                    foreach(var answer in results.Answers)
-                        answer.Score = answer.Score / 100;
-                    return results.Answers.Where(answer => answer.Score > this.options.ScoreThreshold).ToArray();
-                }
+                var jsonResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                var results = JsonConvert.DeserializeObject<QueryResults>(jsonResponse);
+                foreach (var answer in results.Answers)
+                    answer.Score = answer.Score / 100;
+                return results.Answers.Where(answer => answer.Score > this.options.ScoreThreshold).ToArray();
             }
             return null;
         }
@@ -94,5 +97,19 @@ namespace Microsoft.Bot.Builder.Ai
             }
             return new ReceiveResponse(false);
         }
+
+        public void Dispose()
+        {
+            lock (options)
+            {
+                if (httpClient != null)
+                {
+                    httpClient.Dispose();
+                    httpClient = null;
+                }
+            }
+        }
+
+
     }
 }

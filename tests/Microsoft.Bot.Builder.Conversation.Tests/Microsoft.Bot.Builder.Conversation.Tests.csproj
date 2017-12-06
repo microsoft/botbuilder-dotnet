@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Library\Microsoft.Bot.Builder.Conversation\Microsoft.Bot.Builder.Conversation.csproj" />
+    <ProjectReference Include="..\..\library\Microsoft.Bot.Builder.Conversation\Microsoft.Bot.Builder.Conversation.csproj" />
     <ProjectReference Include="..\..\library\Microsoft.Bot.Builder\Microsoft.Bot.Builder.csproj" />
     <ProjectReference Include="..\Microsoft.Bot.Builder.Tests\Microsoft.Bot.Builder.Tests.csproj" />
   </ItemGroup>
