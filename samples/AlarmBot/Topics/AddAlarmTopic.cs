@@ -7,6 +7,7 @@ using Microsoft.Bot.Connector;
 using Microsoft.Bot.Builder.Templates;
 using System.Text;
 using AlarmBot.Models;
+using Microsoft.Recognizers.Text.DateTime;
 
 namespace AlarmBot.Topics
 {
@@ -25,16 +26,16 @@ namespace AlarmBot.Topics
 
             // we asked for title
             TitlePrompt,
-            
+
             // we asked for time
             TimePrompt,
-            
+
             // we asked for confirmation to cancel
             CancelConfirmation,
-            
+
             // we asked for confirmation to add
             AddConfirmation,
-            
+
             // we asked for confirmation to show help instead of allowing help as the answer
             HelpConfirmation
         };
@@ -56,6 +57,7 @@ namespace AlarmBot.Topics
         public const string TIMEVALIDATIONPROMPT = "AddAlarmTopic.TimeValidationPrompt";
         public const string ADDEDALARM = "AddAlarmTopic.AddedAlarm";
         public const string ADDCONFIRMATION = "AddAlarmTopic.AddConfirmation";
+        public const string TIMEPROMPTFUTURE = "AddAlarmTopic.TimePromptFuture";
 
         /// <summary>
         /// Standard english language alarm description
@@ -67,8 +69,18 @@ namespace AlarmBot.Topics
             StringBuilder sb = new StringBuilder();
             if (!String.IsNullOrWhiteSpace(alarm.Title))
                 sb.AppendLine($"* Title: {alarm.Title}");
-            if (!String.IsNullOrWhiteSpace(alarm.Time))
-                sb.AppendLine($"* Time: {alarm.Time}");
+            else
+                sb.AppendLine($"* Title: -");
+
+            if (alarm.Time != null)
+            {
+                if (alarm.Time.Value.DayOfYear == DateTimeOffset.Now.DayOfYear)
+                    sb.AppendLine($"* Time: {alarm.Time.Value.ToString("t")}");
+                else
+                    sb.AppendLine($"* Time: {alarm.Time.Value.ToString("f")}");
+            }
+            else
+                sb.AppendLine($"* Time: -");
             return sb.ToString();
         }
 
@@ -87,6 +99,7 @@ namespace AlarmBot.Topics
                     { CANCELREPROMPT, (context, data) => $"# Cancel alarm?\n\nPlease answer the question with a \"yes\" or \"no\" reply. Did you want to cancel the alarm?\n\n{AlarmDescription(data)}\n\n" },
                     { TOPICCANCELED, (context, data) => $"OK, I have canceled this alarm." },
                     { TIMEPROMPT, (context, data) => $"# Adding alarm\n\n{AlarmDescription(data)}\n\nWhat time would you like to set the alarm for?" },
+                    { TIMEPROMPTFUTURE, (context, data) => $"# Adding alarm\n\n{AlarmDescription(data)}\n\nYou need to specify a timein the future. What time would you like to set the alarm?" },
                     { TITLEPROMPT, (context, data)=> $"# Adding alarm\n\n{AlarmDescription(data)}\n\nWhat would you like to call your alarm ?" },
                     { ADDCONFIRMATION, (context, data)=> $"# Adding Alarm\n\n{AlarmDescription(data)}\n\nDo you want to save this alarm?" },
                     { ADDEDALARM, (context, data)=> $"# Alarm Added\n\n{AlarmDescription(data)}." }
@@ -114,6 +127,8 @@ namespace AlarmBot.Topics
         /// <returns></returns>
         public Task<bool> StartTopic(BotContext context)
         {
+            var times = context.TopIntent?.Entities.Where(entity => entity.GroupName == "AlarmTime")
+                    .Select(entity => DateTimeOffset.Parse(entity.ValueAs<string>()));
             this.Alarm = new Alarm()
             {
                 // initialize from intent entities
@@ -121,8 +136,7 @@ namespace AlarmBot.Topics
                     .Select(entity => entity.ValueAs<string>()).FirstOrDefault(),
 
                 // initialize from intent entities
-                Time = context.TopIntent?.Entities.Where(entity => entity.GroupName == "AlarmTime")
-                    .Select(entity => entity.ValueAs<string>()).FirstOrDefault()
+                Time = times.Any() ? times.First() : (DateTimeOffset?)null
             };
 
             return PromptForMissingData(context);
@@ -158,75 +172,72 @@ namespace AlarmBot.Topics
                         return true;
 
                     default:
-                        string utterance = (context.Request.Text ?? "").Trim();
-
-                        // we ar eusing TopicState to remember what we last asked
-                        switch (this.TopicState)
-                        {
-                            case TopicStates.TitlePrompt:
-                                this.Alarm.Title = utterance;
-                                return await this.PromptForMissingData(context);
-
-                            case TopicStates.TimePrompt:
-                                this.Alarm.Time = utterance;
-                                return await this.PromptForMissingData(context);
-
-                            case TopicStates.CancelConfirmation:
-                                if (utterance.Trim() == "y" || utterance.Contains("yes"))
-                                {
-                                    // End current topic
-                                    context.ReplyWith(TOPICCANCELED, this.Alarm);
-                                    return false;
-                                }
-                                else if (utterance.Trim() == "n" || utterance.Contains("no"))
-                                {
-                                    // Re-prompt user for current field.
-                                    context.ReplyWith(CANCELCANCELED, this.Alarm);
-                                    return await this.PromptForMissingData(context);
-                                }
-                                else
-                                {
-                                    // prompt again to confirm the cancelation
-                                    context.ReplyWith(CANCELREPROMPT, this.Alarm);
-                                    return true;
-                                }
-
-                            case TopicStates.AddConfirmation:
-                                if (utterance.Trim() == "y" || utterance.Contains("yes"))
-                                {
-                                    // Save alarm
-                                    var alarms = (List<Alarm>)context.State.User[UserProperties.ALARMS];
-                                    if (alarms == null)
-                                    {
-                                        alarms = new List<Alarm>();
-                                        context.State.User[UserProperties.ALARMS] = alarms;
-                                    }
-                                    alarms.Add(this.Alarm);
-
-                                    context.ReplyWith(ADDEDALARM, this.Alarm);
-
-                                    // end topic
-                                    return false;
-                                }
-                                else if (utterance.Trim() == "n" || utterance.Contains("no"))
-                                {
-                                    // Re-prompt user for current field.
-                                    //context.ReplyWith(CORRECTIONPROMPT, this.Alarm);
-                                    return true;
-                                }
-                                else
-                                {
-                                    // figure out if utterance is title or 
-                                    //  context.ReplyWith(CANCELREPROMPT, this.Alarm);
-                                    return true;
-                                }
-
-                            default:
-                                return await this.PromptForMissingData(context);
-                        }
+                        return await ProcessTopicState(context);
                 }
             }
             return true;
+        }
+
+        private async Task<bool> ProcessTopicState(BotContext context)
+        {
+            string utterance = (context.Request.Text ?? "").Trim();
+
+            // we ar eusing TopicState to remember what we last asked
+            switch (this.TopicState)
+            {
+                case TopicStates.TitlePrompt:
+                    this.Alarm.Title = utterance;
+                    return await this.PromptForMissingData(context);
+
+                case TopicStates.TimePrompt:
+                    this.Alarm.Time = context.GetDateTimes().FirstOrDefault();
+                    return await this.PromptForMissingData(context);
+
+                case TopicStates.CancelConfirmation:
+                    switch (context.TopIntent.Name)
+                    {
+                        case "confirmYes":
+                            context.ReplyWith(TOPICCANCELED, this.Alarm);
+                            // End current topic
+                            return false;
+
+                        case "confirmNo":
+                            // Re-prompt user for current field.
+                            context.ReplyWith(CANCELCANCELED, this.Alarm);
+                            return await this.PromptForMissingData(context);
+
+                        default:
+                            // prompt again to confirm the cancelation
+                            context.ReplyWith(CANCELREPROMPT, this.Alarm);
+                            return true;
+                    }
+
+                case TopicStates.AddConfirmation:
+                    switch (context.TopIntent?.Name)
+                    {
+                        case "confirmYes":
+                            var alarms = (List<Alarm>)context.State.User[UserProperties.ALARMS];
+                            if (alarms == null)
+                            {
+                                alarms = new List<Alarm>();
+                                context.State.User[UserProperties.ALARMS] = alarms;
+                            }
+                            alarms.Add(this.Alarm);
+                            context.ReplyWith(ADDEDALARM, this.Alarm);
+                            // end topic
+                            return false;
+
+                        case "confirmNo":
+                            context.ReplyWith(TOPICCANCELED, this.Alarm);
+                            // End current topic
+                            return false;
+                        default:
+                            return await this.PromptForMissingData(context);
+                    }
+
+                default:
+                    return await this.PromptForMissingData(context);
+            }
         }
 
         /// <summary>
@@ -264,13 +275,18 @@ namespace AlarmBot.Topics
             }
 
             // If we don't have a time, prompt the user to get it.
-            if (String.IsNullOrWhiteSpace(this.Alarm.Time))
+            if (this.Alarm.Time == null)
             {
                 this.TopicState = TopicStates.TimePrompt;
                 context.ReplyWith(TIMEPROMPT, this.Alarm);
                 return true;
             }
-
+            else if (this.Alarm.Time < DateTimeOffset.Now)
+            {
+                context.ReplyWith(TIMEPROMPTFUTURE, this.Alarm);
+                return true;
+            }
+            
             // ask for confirmation that we want to add it
             context.ReplyWith(ADDCONFIRMATION, this.Alarm);
             this.TopicState = TopicStates.AddConfirmation;

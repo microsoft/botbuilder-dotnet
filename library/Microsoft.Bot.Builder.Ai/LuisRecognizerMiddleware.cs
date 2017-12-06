@@ -96,35 +96,15 @@ namespace Microsoft.Bot.Builder.Ai
             }
         }
 
-        public string Type
-        {
-            get { return this["type"]; }
-            set { this["type"] = value; }
-        }
+        public string Type { get; set; }
 
-        public string Value
-        {
-            get { return this["value"]; }
-            set { this["value"] = value; }
-        }
+        public string Value { get; set; }
 
-        public int StartIndex
-        {
-            get { return this["startIndex"]; }
-            set { this["startIndex"] = value; }
-        }
+        public int StartIndex { get; set; }
 
-        public int EndIndex
-        {
-            get { return this["endIndex"]; }
-            set { this["endIndex"] = value; }
-        }
+        public int EndIndex { get; set; }
 
-        public FlexObject Resolution
-        {
-            get { return this["resultion"]; }
-            set { this["resolution"] = value; }
-        }
+        public FlexObject Resolution { get; set; }
     }
 }
 

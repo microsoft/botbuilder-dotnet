@@ -55,7 +55,9 @@ namespace AlarmBot.Controllers
                         .AddIntent("addAlarm", new Regex("add alarm(.*)", RegexOptions.IgnoreCase))
                         .AddIntent("deleteAlarm", new Regex("delete alarm(.*)", RegexOptions.IgnoreCase))
                         .AddIntent("help", new Regex("help(.*)", RegexOptions.IgnoreCase))
-                        .AddIntent("cancel", new Regex("cancel(.*)", RegexOptions.IgnoreCase)))
+                        .AddIntent("cancel", new Regex("cancel(.*)", RegexOptions.IgnoreCase))
+                        .AddIntent("confirmYes", new Regex("(y|yes|yep)\\w+", RegexOptions.IgnoreCase))
+                        .AddIntent("confirmNo", new Regex("(n|no|nope)\\w+", RegexOptions.IgnoreCase)))
 
                     // --- Bot logic 
                     .OnReceive(async (context) =>

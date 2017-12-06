@@ -35,7 +35,7 @@ namespace AlarmBot.Topics
                             {
                                 foreach(var alarm in alarms)
                                 {
-                                    sb.AppendLine($"* Title: {alarm.Title} Time: {alarm.Time}");
+                                    sb.AppendLine($"* Title: {alarm.Title} Time: {alarm.Time.Value.ToString("f")}");
                                 }
                             }
                             else

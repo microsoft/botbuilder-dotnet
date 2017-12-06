@@ -25,7 +25,7 @@ namespace AlarmBot.Topics
             ["default"] = new TemplateIdMap
                 {
                     { DefaultTopic.GREETING, (context, data) => $"Hello, I'm the alarmbot." },
-                    { DefaultTopic.HELP, (context, data) => $"I can add an alarm, list alarms or delete an alarm. " },
+                    { DefaultTopic.HELP, (context, data) => $"I can add an alarm, show alarms or delete an alarm. " },
                     { DefaultTopic.RESUMETOPIC, (context, data) => $"What can I do for you?" },
                     { DefaultTopic.CONFUSED, (context, data) => $"I am sorry, I didn't understand that." },
                 },
