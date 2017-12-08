@@ -3,18 +3,26 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Builder;
+using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Bot.Builder.Storage;
+using Microsoft.Bot.Builder;
+using Microsoft.Bot.Builder.Adapters;
 using Micosoft.Bot.Samples.InjectionBasedBotExample;
 
 namespace InjectionBasedBotExample
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IHostingEnvironment env)
         {
-            Configuration = configuration;
+            var builder = new ConfigurationBuilder()
+               .SetBasePath(env.ContentRootPath)
+               .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+               .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
+               .AddEnvironmentVariables();
+
+            Configuration = builder.Build();
         }
 
         public IConfiguration Configuration { get; }
@@ -22,32 +30,54 @@ namespace InjectionBasedBotExample
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc();
+            services.AddSingleton(_ => Configuration);
+            var credentialProvider = new StaticCredentialProvider(
+                Configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppIdKey)?.Value,
+                Configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppPasswordKey)?.Value);
+
+            services.AddAuthentication(
+                    // This can be removed after https://github.com/aspnet/IISIntegration/issues/371
+                    options =>
+                    {
+                        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                    }
+                )
+                .AddBotAuthentication(credentialProvider);
+
+            services.AddSingleton(typeof(ICredentialProvider), credentialProvider);
+            services.AddMvc(options =>
+            {
+                options.Filters.Add(typeof(TrustServiceUrlAttribute));
+            });
+
             CreateBot(services);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
+            loggerFactory.AddConsole(Configuration.GetSection("Logging"));
+            loggerFactory.AddDebug();
 
+            app.UseStaticFiles();
+            app.UseAuthentication();
             app.UseMvc();
         }
 
         public void CreateBot(IServiceCollection services)
         {
-            // TODO THIS IS DIFFERENT WITH NEW CONNECTOR LIB
-            //services.UseBotConnector();
+            string appId = Configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppIdKey)?.Value ?? string.Empty;
+            string appKey = Configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppPasswordKey).Value ?? string.Empty;
 
-            /*** Create just the Memory state store as a sigleton,
-             *      and keep the Bot created on each request **/
+            // Memory state store as a sigleton, so data is recalled across messages
+            
             services.AddSingleton<IStorage>(new MemoryStorage());
+
+            // Bot is created on each request
             services.AddScoped<Bot>(serviceProvider =>
               {
-                  Bot b = new Bot(new BotFrameworkAdapter("", ""))
+                  Bot b = new Bot(new BotFrameworkAdapter(appId, appKey))
                     .Use((IMiddleware)serviceProvider.GetService<IStorage>())
                     .Use(new BotStateManager())
                     .Use(new EchoMiddleware());
@@ -58,7 +88,7 @@ namespace InjectionBasedBotExample
             /*** Create the entire Bot as a Singleton **/
             //services.AddSingleton<Bot>(serviceProvider =>
             //{
-            //    Bot b = new Bot(new BotFrameworkConnector("", ""))
+            //    Bot b = new Bot(new BotFrameworkConnector(appId, appKey))
             //      .Use(new MemoryStorage())
             //      .Use(new BotStateManager())
             //      .Use(new EchoMiddleware());
