@@ -4,8 +4,33 @@ using System.Collections.Generic;
 
 namespace Microsoft.Bot.Builder
 {
+    /// <summary>
+    /// A set of utility functions to assist with the formatting of the various 
+    /// message types a bot can return.
+    /// </summary/>
+    /// <example>
+    /// <code>    
+    /// var message = MessageFactory.Text("Hello World");    
+    /// context.reply(message); // send message    
+    /// </code>
+    /// </example>           
     public static class MessageFactory
     {
+        /// <summary>
+        /// Returns a simple text message.
+        /// </summary/>
+        /// <example>
+        /// <code>    
+        /// var message = MessageFactory.Text("Hello World");    
+        /// context.reply(message);
+        /// </code>
+        /// </example>
+        /// <param name="text">
+        /// Text to include in the message
+        /// </param>
+        /// <param name="ssml">
+        /// (Optional) SSML to include in the message.
+        /// </param>
         public static IMessageActivity Text(string text, string ssml = null)
         {
             IMessageActivity ma = Activity.CreateMessageActivity();
@@ -13,6 +38,24 @@ namespace Microsoft.Bot.Builder
             return ma;
         }
 
+        /// <summary>
+        /// Returns a message that includes a set of suggested actions and optional text.
+        /// </summary/>
+        /// <example>
+        /// <code>    
+        /// var message = MessageFactory.Text("Hello World");    
+        /// context.reply(message);
+        /// </code>
+        /// </example>
+        /// <param name="actions">
+        /// List of actions to include. String Actions are converted to <see cref="Microsoft.Bot.Connector.ActionTypes.ImBack"/>.
+        /// </param>        
+        /// <param name="text">
+        /// (Optional) text of the message. 
+        /// </param>
+        /// <param name="ssml">
+        /// (Optional) SSML to include in the message.
+        /// </param>
         public static IMessageActivity SuggestedActions(IList<string> actions, string text = null, string ssml = null)
         {
             if (actions == null)
@@ -33,6 +76,24 @@ namespace Microsoft.Bot.Builder
 
             return SuggestedActions(cardActions, text, ssml);
         }
+        /// <summary>
+        /// Returns a message that includes a set of suggested actions and optional text.
+        /// </summary/>
+        /// <example>
+        /// <code>    
+        /// var message = MessageFactory.Text("Hello World");    
+        /// context.reply(message);
+        /// </code>
+        /// </example>
+        /// <param name="actions">
+        /// List of <see cref="Microsoft.Bot.Connector.ActionTypes"/> to include.
+        /// </param>        
+        /// <param name="text">
+        /// (Optional) text of the message. 
+        /// </param>
+        /// <param name="ssml">
+        /// (Optional) SSML to include in the message.
+        /// </param>
         public static IMessageActivity SuggestedActions(IList<CardAction> cardActions, string text = null, string ssml = null)
         {
             if (cardActions == null)
@@ -47,6 +108,13 @@ namespace Microsoft.Bot.Builder
             return ma;
         }
 
+        /// <summary>
+        /// Returns a single message activity containing an attachment.
+        /// </summary>
+        /// <param name="attachment">Adaptive card to include in the message</param>
+        /// <param name="text">(Optional) text of the message. </param>
+        /// <param name="ssml">(Optional) SSML to include with the message.</param>
+        /// <returns>Message activity containing an attachment</returns>
         public static IMessageActivity Attachment(Attachment attachment, string text = null, string ssml = null)
         {
             if (attachment == null)
@@ -55,6 +123,13 @@ namespace Microsoft.Bot.Builder
             return Attachment(new List<Attachment> { attachment }, text, ssml);
         }
 
+        /// <summary>
+        /// Returns a message that will display a set of attachments in list form.
+        /// </summary>
+        /// <param name="attachment">List of attachments to include in the message.</param>
+        /// <param name="text">(Optional) text of the message. </param>
+        /// <param name="ssml">(Optional) SSML to include with the message.</param>
+        /// <returns>Message activity containing the attachment list.</returns>
         public static IMessageActivity Attachment(IList<Attachment> attachments, string text = null, string ssml = null)
         {
             if (attachments == null)
@@ -63,6 +138,24 @@ namespace Microsoft.Bot.Builder
             return AttachmentActivity(AttachmentLayoutTypes.List, attachments, text, ssml);
         }
 
+        /// <summary>
+        /// Returns a message that will display a set of attachments using a carousel layout.
+        /// </summary>
+        /// <param name="attachments">List of attachments to include in the message.</param>
+        /// <param name="text">(Optional) text of the message.</param>
+        /// <param name="ssml">(Optional) SSML to include with the message.</param>
+        /// <returns>
+        /// Returns a message that will display a set of attachments using a carousel layout.
+        /// </returns>
+        /// <example>
+        /// <code>
+        ///     IList<Attachment> multipleAttachments = 
+        ///             new List<Attachment> { attachment1, attachment2 };
+        ///             
+        ///     IMessageActivity message = 
+        ///             MessageFactory.Carousel(multipleAttachments, text, ssml);
+        /// </code>
+        /// </example>
         public static IMessageActivity Carousel(IList<Attachment> attachments, string text = null, string ssml = null)
         {
             if (attachments == null)
@@ -71,6 +164,23 @@ namespace Microsoft.Bot.Builder
             return AttachmentActivity(AttachmentLayoutTypes.Carousel, attachments, text, ssml);
         }
 
+        /// <summary>
+        /// Returns a message that will display a single image or video to a user.
+        /// </summary>
+        /// <param name="url">Url of the image/video to send.</param>
+        /// <param name="contentType">The MIME type of the image/video.</param>
+        /// <param name="name">(Optional) Name of the image/video file.</param>
+        /// <param name="text">(Optional) text of the message.</param>
+        /// <param name="ssml">(Optional) SSML to include with the message.</param>
+        /// <returns>
+        /// Returns a message that will display a single image or video to a user.
+        /// </returns>
+        /// <example>
+        /// <code>
+        ///     IMessageActivity message = 
+        ///         MessageFactory.ContentUrl("https://{domainName}/cat.jpg", MediaTypeNames.Image.Jpeg, "Cat Picture");
+        /// </code>
+        /// </example>
         public static IMessageActivity ContentUrl(string url, string contentType, string name = null, string text = null, string ssml = null)
         {
             if (string.IsNullOrWhiteSpace(url))

@@ -2,6 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
+using System.Net.Mime;
 
 namespace Microsoft.Bot.Builder.Tests
 {
@@ -136,6 +137,45 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void CarouselNull()
+        {
+            IMessageActivity message = MessageFactory.Carousel((IList<Attachment>)null);
+            Assert.Fail("Exception not thrown");
+        }
+
+        [TestMethod]
+        
+        public void CarouselTwoAttachments()
+        {
+            string text = Guid.NewGuid().ToString();
+            string ssml = Guid.NewGuid().ToString();
+
+            string attachmentName = Guid.NewGuid().ToString();
+            Attachment attachment1 = new Connector.Attachment
+            {
+                Name = attachmentName
+            };
+
+            string attachmentName2 = Guid.NewGuid().ToString();
+            Attachment attachment2 = new Connector.Attachment
+            {
+                Name = attachmentName2
+            };
+
+            IList<Attachment> multipleAttachments = new List<Attachment> { attachment1, attachment2 };
+            IMessageActivity message = MessageFactory.Carousel(multipleAttachments, text, ssml);
+
+            Assert.AreEqual(message.Text, text, "Message Text does not match");
+            Assert.AreEqual(message.Type, ActivityTypes.Message, "Incorrect Activity Type");
+            Assert.IsTrue(message.AttachmentLayout == AttachmentLayoutTypes.Carousel);
+            Assert.IsTrue(message.Attachments.Count == 2, "Incorrect Attachment Count");
+            Assert.IsTrue(message.Attachments[0].Name == attachmentName, "Incorrect Attachment1 Name");
+            Assert.IsTrue(message.Attachments[1].Name == attachmentName2, "Incorrect Attachment2 Name");
+        }
+
+
+        [TestMethod]
         public void AttachmentMultiple()
         {
             string text = Guid.NewGuid().ToString();
@@ -158,6 +198,7 @@ namespace Microsoft.Bot.Builder.Tests
 
             Assert.AreEqual(message.Text, text, "Message Text does not match");
             Assert.AreEqual(message.Type, ActivityTypes.Message, "Incorrect Activity Type");
+            Assert.IsTrue(message.AttachmentLayout == AttachmentLayoutTypes.List);
             Assert.IsTrue(message.Attachments.Count == 2, "Incorrect Attachment Count");
             Assert.IsTrue(message.Attachments[0].Name == attachmentName, "Incorrect Attachment1 Name");
             Assert.IsTrue(message.Attachments[1].Name == attachmentName2, "Incorrect Attachment2 Name");
@@ -168,11 +209,11 @@ namespace Microsoft.Bot.Builder.Tests
         {
             string text = Guid.NewGuid().ToString();
             string ssml = Guid.NewGuid().ToString();
-            string uri = $"https:// { Guid.NewGuid().ToString()}"; 
-            string contentType = "text/html";
+            string uri = $"https:// { Guid.NewGuid().ToString()}";
+            string contentType = MediaTypeNames.Image.Jpeg;
             string name =  Guid.NewGuid().ToString(); 
 
-            IMessageActivity message = MessageFactory.ContentUrl(uri, contentType, name, text, ssml); 
+            IMessageActivity message = MessageFactory.ContentUrl(uri, contentType, name, text, ssml);            
 
             Assert.AreEqual(message.Text, text, "Message Text does not match");
             Assert.AreEqual(message.Type, ActivityTypes.Message, "Incorrect Activity Type");
