@@ -1,6 +1,7 @@
 ﻿using AlarmBot.Models;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Templates;
+using Microsoft.Bot.Connector;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -57,6 +58,7 @@ namespace AlarmBot.TopicViews
             return sb.ToString();
         }
 
+        public static string[] YesNo = { "Yes", "No" };
 
         /// <summary>
         /// table of language functions which render output in various languages
@@ -69,14 +71,14 @@ namespace AlarmBot.TopicViews
                     { STARTTOPIC, (context, data) => $"Ok, let's add an alarm." },
                     { HELP, (context, data) => $"I am working with you to create an alarm.  To do that I need to know the title and time.\n\n{AlarmDescription(context,data)}"},
                     { CONFUSED, (context, data) => $"I am sorry, I didn't understand: {context.Request.Text}." },
-                    { CANCELPROMPT, (context, data) => $"# Cancel alarm?\n\nDid you want to cancel the alarm?\n\n{AlarmDescription(context,data)}\n\n(Yes or No)" },
-                    { CANCELREPROMPT, (context, data) => $"# Cancel alarm?\n\nPlease answer the question with a \"yes\" or \"no\" reply. Did you want to cancel the alarm?\n\n{AlarmDescription(context,data)}\n\n" },
+                    { CANCELPROMPT, (context, data) => TopicViewHelpers.ReplyWithSuggestions(context, "Cancel Alarm?", $"Did you want to cancel the alarm?\n\n{AlarmDescription(context,data)}", YesNo) },
+                    { CANCELREPROMPT, (context, data) => TopicViewHelpers.ReplyWithSuggestions(context, $"Cancel alarm?", $"Please answer the question with a \"yes\" or \"no\" reply. Did you want to cancel the alarm?\n\n{AlarmDescription(context,data)}", YesNo) },
                     { TOPICCANCELED, (context, data) => $"OK, I have canceled this alarm." },
-                    { TIMEPROMPT, (context, data) => $"# Adding alarm\n\n{AlarmDescription(context,data)}\n\nWhat time would you like to set the alarm for?" },
-                    { TIMEPROMPTFUTURE, (context, data) => $"# Adding alarm\n\n{AlarmDescription(context,data)}\n\nYou need to specify a time in the future. What time would you like to set the alarm?" },
-                    { TITLEPROMPT, (context, data)=> $"# Adding alarm\n\n{AlarmDescription(context,data)}\n\nWhat would you like to call your alarm ?" },
-                    { ADDCONFIRMATION, (context, data)=> $"# Adding Alarm\n\n{AlarmDescription(context,data)}\n\nDo you want to save this alarm?" },
-                    { ADDEDALARM, (context, data)=> $"# Alarm Added\n\n{AlarmDescription(context,data)}." }
+                    { TIMEPROMPT, (context, data) => TopicViewHelpers.ReplyWithTitle(context, $"Adding alarm", $"{AlarmDescription(context,data)}\n\nWhat time would you like to set the alarm for?") },
+                    { TIMEPROMPTFUTURE, (context, data) => TopicViewHelpers.ReplyWithTitle(context, $"Adding alarm",$"{AlarmDescription(context,data)}\n\nYou need to specify a time in the future. What time would you like to set the alarm?") },
+                    { TITLEPROMPT, (context, data)=> TopicViewHelpers.ReplyWithTitle(context, $"Adding alarm",$"{AlarmDescription(context,data)}\n\nWhat would you like to call your alarm ?") },
+                    { ADDCONFIRMATION, (context, data)=> TopicViewHelpers.ReplyWithSuggestions(context, $"Adding Alarm",$"{AlarmDescription(context,data)}\n\nDo you want to save this alarm?", YesNo) },
+                    { ADDEDALARM, (context, data)=> TopicViewHelpers.ReplyWithTitle(context, $"Alarm Added",$"{AlarmDescription(context,data)}.") }
                 }
         };
 

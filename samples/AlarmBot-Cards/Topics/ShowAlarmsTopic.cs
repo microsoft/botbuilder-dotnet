@@ -35,13 +35,6 @@ namespace AlarmBot.Topics
 
         public static Task ShowAlarms(BotContext context)
         {
-            List<Alarm> alarms = GetAlarms(context);
-            context.ReplyWith(ShowAlarmsTopicView.SHOWALARMS, alarms);
-            return Task.CompletedTask;
-        }
-
-        public static List<Alarm> GetAlarms(BotContext context)
-        {
             var alarms = (List<Alarm>)context.State.User[UserProperties.ALARMS];
             if (alarms == null)
             {
@@ -49,7 +42,8 @@ namespace AlarmBot.Topics
                 context.State.User[UserProperties.ALARMS] = alarms;
             }
 
-            return alarms;
+            context.ReplyWith(ShowAlarmsTopicView.SHOWALARMS, alarms);
+            return Task.CompletedTask;
         }
     }
 }

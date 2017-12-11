@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27004.2010
+VisualStudioVersion = 15.0.27130.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder", "library\Microsoft.Bot.Builder\Microsoft.Bot.Builder.csproj", "{74908F42-3842-49B4-9344-60BB791FDE32}"
 EndProject
@@ -38,6 +38,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Rivescript.Tests", "tests\Microsoft.Bot.Builder.Rivescript.Tests\Microsoft.Bot.Builder.Rivescript.Tests.csproj", "{75E81352-74A7-4597-96E9-CDC96E234BB8}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AlarmBot", "Samples\AlarmBot\AlarmBot.csproj", "{AF1A1EAB-9427-4798-A356-65EB4B4BDFCA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AlarmBot-Cards", "samples\AlarmBot-Cards\AlarmBot-Cards.csproj", "{3B5BFCCB-23CF-4849-8B2C-74D05DC3E402}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -105,6 +107,10 @@ Global
 		{AF1A1EAB-9427-4798-A356-65EB4B4BDFCA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AF1A1EAB-9427-4798-A356-65EB4B4BDFCA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AF1A1EAB-9427-4798-A356-65EB4B4BDFCA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3B5BFCCB-23CF-4849-8B2C-74D05DC3E402}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3B5BFCCB-23CF-4849-8B2C-74D05DC3E402}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3B5BFCCB-23CF-4849-8B2C-74D05DC3E402}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3B5BFCCB-23CF-4849-8B2C-74D05DC3E402}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -125,6 +131,7 @@ Global
 		{69C619CC-9432-480B-810B-CA64889B30B1} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 		{75E81352-74A7-4597-96E9-CDC96E234BB8} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 		{AF1A1EAB-9427-4798-A356-65EB4B4BDFCA} = {3ADFB27A-95FA-4330-B211-1D66A29A17AB}
+		{3B5BFCCB-23CF-4849-8B2C-74D05DC3E402} = {3ADFB27A-95FA-4330-B211-1D66A29A17AB}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7173C9F3-A7F9-496E-9078-9156E35D6E16}
