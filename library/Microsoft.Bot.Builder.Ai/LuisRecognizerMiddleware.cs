@@ -48,28 +48,40 @@ namespace Microsoft.Bot.Builder.Ai
         
         private async Task<Intent> RecognizeAndMap(string utterance)
         {
-            utterance = (string.IsNullOrWhiteSpace(utterance)) ? string.Empty : utterance;
-            LuisResult result = await _luisClient.Predict(utterance);
-
             Intent intent = new Intent();
-            if (result.TopScoringIntent == null)
+
+            // LUIS client throws an exception on Predict is the utterance is null / empty
+            // so just skip those cases and return a non-match. 
+            if (string.IsNullOrWhiteSpace(utterance))
             {
                 intent.Name = string.Empty;
                 intent.Score = 0.0;
             }
             else
             {
-                intent.Name = result.TopScoringIntent.Name;
-                intent.Score = result.TopScoringIntent.Score;
-            }
+                LuisResult result = await _luisClient.Predict(utterance);
 
-            foreach (var luisEntityList in result.Entities.Values)
-            {
-                foreach (var luisEntity in luisEntityList)
+                if (result.TopScoringIntent == null)
                 {
-                    intent.Entities.Add(new LuisEntity(luisEntity));
+                    intent.Name = string.Empty;
+                    intent.Score = 0.0;
+                }
+                else
+                {
+                    intent.Name = result.TopScoringIntent.Name;
+                    intent.Score = result.TopScoringIntent.Score;
+                }
+
+                foreach (var luisEntityList in result.Entities.Values)
+                {
+                    foreach (var luisEntity in luisEntityList)
+                    {
+                        intent.Entities.Add(new LuisEntity(luisEntity));
+                    }
                 }
             }
+            
+            
 
             return intent;
         }        
