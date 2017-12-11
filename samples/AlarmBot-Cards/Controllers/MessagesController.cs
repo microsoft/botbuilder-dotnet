@@ -35,8 +35,10 @@ namespace AlarmBot.Controllers
 
                 // create bot hooked up to the activity adapater
                 bot = new Bot(activityAdapter)
-                    .Use(new AzureTableStorage((System.Diagnostics.Debugger.IsAttached) ? "UseDevelopmentStorage=true;" : configuration.GetSection("DataConnectionString")?.Value,
-                        tableName: "AlarmBotCards")) 
+                    // pick your flavor of Key/Value storage
+                    .Use(new FileStorage(System.IO.Path.GetTempPath()))
+                    //.Use(new MemoryStorage())
+                    //.Use(new AzureTableStorage((System.Diagnostics.Debugger.IsAttached) ? "UseDevelopmentStorage=true;" : configuration.GetSection("DataConnectionString")?.Value, tableName: "AlarmBot")) 
                     .Use(new BotStateManager()) // --- add Bot State Manager to automatically persist and load the context.State.Conversation and context.State.User objects
                     .Use(new DefaultTopicView())
                     .Use(new ShowAlarmsTopicView())
