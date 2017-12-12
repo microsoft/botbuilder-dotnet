@@ -23,8 +23,18 @@ namespace Microsoft.Bot.Builder.Adapters
 
             foreach (Activity activity in activities)
             {
-                var connectorClient = new ConnectorClient(new Uri(activity.ServiceUrl), _credentials);
-                await connectorClient.Conversations.SendToConversationAsync(activity).ConfigureAwait(false);
+                if (activity.Type == "delay")
+                {   
+                    // The Activity Schema doesn't have a delay type build in, so it's simulated
+                    // here in the Bot. This matches the behavior in the Node connector. 
+                    int delayMs = (int)activity.Value;
+                    await Task.Delay(delayMs).ConfigureAwait(false);
+                }
+                else
+                {
+                    var connectorClient = new ConnectorClient(new Uri(activity.ServiceUrl), _credentials);
+                    await connectorClient.Conversations.SendToConversationAsync(activity).ConfigureAwait(false);
+                }
             }
         }
 

@@ -71,20 +71,34 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <returns></returns>
         public override async Task Post(IList<Activity> activities)
         {
-            lock (this.botReplies)
+            foreach (var activity in activities)
             {
-                foreach (var activity in activities)
-                    this.botReplies.Enqueue(activity);
+                if (activity.Type == "delay")
+                {
+                    // The BotFrameworkAdapter and Console adapter implement this
+                    // hack directly in the POST method. Replicating that here
+                    // to keep the behavior as close as possible to facillitate
+                    // more realistic tests. 
+                    int delayMs = (int)activity.Value;
+                    await Task.Delay(delayMs);
+                }
+                else
+                {
+                    lock (this.botReplies)
+                    {
+                        this.botReplies.Enqueue(activity);
+                    }
+                }
             }
         }
 
         /* INTERNAL */
-        internal Task sendActivityToBot(string userSays)
+        internal Task SendActivityToBot(string userSays)
         {
-            return this.sendActivityToBot(this.MakeActivity(userSays));
+            return this.SendActivityToBot(this.MakeActivity(userSays));
         }
 
-        internal Task sendActivityToBot(Activity activity)
+        internal Task SendActivityToBot(Activity activity)
         {
             lock (this.ConversationReference)
             {
@@ -109,7 +123,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <returns></returns>
         public TestFlow Send(string userSays)
         {
-            return new TestFlow(this.sendActivityToBot(userSays), this);
+            return new TestFlow(this.SendActivityToBot(userSays), this);
         }
 
         /// <summary>
@@ -119,7 +133,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <returns></returns>
         public TestFlow Send(Activity userSends)
         {
-            return new TestFlow(this.sendActivityToBot(userSends), this);
+            return new TestFlow(this.SendActivityToBot(userSends), this);
         }
 
         /// <summary>
@@ -257,7 +271,7 @@ namespace Microsoft.Bot.Builder.Adapters
             {
                 if (task.IsFaulted)
                     throw new Exception("failed");
-                    return this._adapter.sendActivityToBot(userSays);
+                return this._adapter.SendActivityToBot(userSays);
             }), this._adapter);
         }
 
@@ -275,7 +289,7 @@ namespace Microsoft.Bot.Builder.Adapters
             {
                 if (task.IsFaulted)
                     throw new Exception("failed");
-                return this._adapter.sendActivityToBot(userActivity);
+                return this._adapter.SendActivityToBot(userActivity);
             }), this._adapter);
         }
 
@@ -321,8 +335,8 @@ namespace Microsoft.Bot.Builder.Adapters
                     throw new Exception($"{description}: Type should match");
                 if (expected.Text != reply.Text)
                     throw new Exception($"{description}: Text should match");
-                // TODO, expand this to do all properties set on expected
-            }, description, timeout);
+                    // TODO, expand this to do all properties set on expected
+                }, description, timeout);
         }
 
         /// <summary>
@@ -349,8 +363,8 @@ namespace Microsoft.Bot.Builder.Adapters
                     }
 
                     Activity replyActivity = this._adapter.GetNextReply();
-                    // if we have a reply
-                    if (replyActivity != null)
+                        // if we have a reply
+                        if (replyActivity != null)
                     {
                         validateActivity(replyActivity);
                         return;

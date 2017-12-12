@@ -53,11 +53,8 @@ namespace Microsoft.Bot.Builder.Tests
 
         public static string GetKey(string key)
         {
-            string value = null;
-            environmentKeys.Value.TryGetValue(key, out value);
+            environmentKeys.Value.TryGetValue(key, out string value);
             return value;
-        }
-
-        
+        }   
     }
 }

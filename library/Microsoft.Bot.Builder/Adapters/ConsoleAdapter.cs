@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Builder.Adapters
         {
         }
 
-        public override Task Post(IList<Activity> activities)
+        public async override Task Post(IList<Activity> activities)
         {
             foreach (Activity activity in activities)
             {
@@ -32,13 +32,17 @@ namespace Microsoft.Bot.Builder.Adapters
                             Console.WriteLine($"{activity.Text}");
                         }
                         break;
+                    case "delay":
+                        // The Activity Schema doesn't have a delay type build in, so it's simulated
+                        // here in the Bot. This matches the behavior in the Node connector. 
+                        int delayMs = (int)activity.Value;
+                        await Task.Delay(delayMs);
+                        break;
                     default:
                         Console.WriteLine("Bot: activity type: {0}", activity.Type);
                         break;
-
                 }
             }
-            return Task.CompletedTask;
         }
 
         public async Task Listen()
