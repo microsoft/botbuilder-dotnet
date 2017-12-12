@@ -107,8 +107,13 @@ namespace Microsoft.Bot.Builder
                 ServiceUrl = request.ServiceUrl
             };
         }
-        
 
+        public BotContext(Bot bot, ConversationReference conversationReference)
+        {
+            _bot = bot ?? throw new ArgumentNullException(nameof(bot));
+            _conversationReference = conversationReference ?? throw new ArgumentNullException(nameof(conversationReference));
+        }
+        
         public async Task PostActivity(BotContext context, IList<Activity> acitivties)
         {
             await _bot.PostActivity(context, acitivties).ConfigureAwait(false);
@@ -164,7 +169,7 @@ namespace Microsoft.Bot.Builder
 
         public BotContext Reply(string text)
         {
-            var reply = (this.Request as Activity).CreateReply();
+            var reply = this.ConversationReference.GetPostToUserMessage();
             reply.Text = text;
             this.Responses.Add(reply);
             return this; 
@@ -173,7 +178,7 @@ namespace Microsoft.Bot.Builder
         public BotContext ReplyWith(string templateId, object data=null)
         {
             // queue template activity to be databound when sent
-            var reply = (this.Request as Activity).CreateReply();
+            var reply = this.ConversationReference.GetPostToUserMessage();
             reply.Type = "template";
             reply.Text = templateId;
             reply.Value = data;

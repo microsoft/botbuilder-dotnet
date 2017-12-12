@@ -134,30 +134,23 @@ namespace Microsoft.Bot.Builder
         {
             BotAssert.ActivityNotNull(activity);
 
-            Logger.Information($"Bot: Pipeline Running for Activity {activity.Id}");
+            var context = new BotContext(this, activity);
 
-            var context = await this.CreateBotContext(activity).ConfigureAwait(false);
             await base.RunPipeline(context).ConfigureAwait(false);
-            Logger.Information($"Bot: Pipeline Complete for Activity {activity.Id}");
         }
 
-        public virtual Task<BotContext> CreateBotContext(Activity activity)
+        /// <summary>
+        /// Create proactive context around conversation reference
+        /// All middleware pipelines will be processed
+        /// </summary>
+        /// <param name="reference">reference to create context around</param>
+        /// <param name="proactiveCallback">callback where you can continue the conversation</param>
+        /// <returns>task when completed</returns>
+        public virtual async Task CreateContext(ConversationReference reference, Func<BotContext, Task> proactiveCallback)
         {
-            BotAssert.ActivityNotNull(activity);
+            var context = new BotContext(this, reference);
 
-            Logger.Information($"Bot: Creating BotContext for {activity.Id}");
-
-            return Task.FromResult(new BotContext(this, activity));
-        }
-
-        public virtual async Task<BotContext> CreateBotContext(ConversationReference reference)
-        {
-            if (reference == null)
-                throw new ArgumentNullException(nameof(reference));
-
-            Logger.Information($"Bot: Creating BotContext for {reference.ActivityId}");
-
-            return await this.CreateBotContext(reference.GetPostToBotMessage()).ConfigureAwait(false);
+            await base.RunPipeline(context, proactiveCallback);
         }
     }
 }
