@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Version>4.0.2-alpha</Version>
+    <Version>4.0.3-alpha</Version>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Company>Microsoft</Company>
     <Authors>Microsoft</Authors>
@@ -16,8 +16,8 @@
     <RepositoryType />
     <PackageTags>bots;ai;botframework;botbuilder</PackageTags>
     <NeutralLanguage />
-    <FileVersion>4.0.2.0</FileVersion>
-    <AssemblyVersion>4.0.2.0</AssemblyVersion>
+    <FileVersion>4.0.3.0</FileVersion>
+    <AssemblyVersion>4.0.3.0</AssemblyVersion>
   </PropertyGroup>
 
   <ItemGroup>
