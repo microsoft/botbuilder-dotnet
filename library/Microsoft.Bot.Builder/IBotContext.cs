@@ -179,7 +179,7 @@ namespace Microsoft.Bot.Builder
         {
             // queue template activity to be databound when sent
             var reply = this.ConversationReference.GetPostToUserMessage();
-            reply.Type = "template";
+            reply.Type = TemplateManager.TEMPLATE;
             reply.Text = templateId;
             reply.Value = data;
             this.Responses.Add(reply);

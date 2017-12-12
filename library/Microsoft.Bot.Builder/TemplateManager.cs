@@ -9,6 +9,8 @@ namespace Microsoft.Bot.Builder
 {
     public class TemplateManager : IContextCreated, IPostActivity
     {
+        public const string TEMPLATE = "template";
+
         private readonly Bot _bot;
         private List<ITemplateRenderer> _templateRenderers = new List<ITemplateRenderer>();
         private List<string> _languageFallback = new List<string>();
@@ -60,7 +62,7 @@ namespace Microsoft.Bot.Builder
             // Ensure template activities are bound .
             foreach (var activity in activities)
             {
-                if (activity.Type == "template")
+                if (activity.Type == TEMPLATE)
                 {
                     await this.bindActivityTemplate(context, activity);
                 }
@@ -97,7 +99,7 @@ namespace Microsoft.Bot.Builder
 
             // Ensure activities are well formed.
             // bind any template activity
-            if (activity.Type == "template")
+            if (activity.Type == TemplateManager.TEMPLATE)
             {
                 // try each locale until successful
                 foreach (var locale in fallbackLocales)
