@@ -17,7 +17,7 @@ namespace Microsoft.Bot.Samples
 
         static async Task MainAsync(string[] args)
         {
-            ConsoleAdapter cc = new ConsoleAdapter();
+            var cc = new Microsoft.Bot.Builder.Adapters.ConsoleAdapter();
           
             Builder.Bot bot = new Builder.Bot(cc)
                 .Use(new MemoryStorage())
@@ -25,6 +25,7 @@ namespace Microsoft.Bot.Samples
                 .Use(CreateRegEx())
                 .Use(new EchoMiddleware())
                 .Use(new ReverseMiddleWare())
+                .Use(new ProactiveMiddleware())
                 //.Use(new ActivityRoutingMiddleware(Routing.BuildHelpRouting()))
                 //.Use(new ActivityRoutingMiddleware(Routing.BuildLoggingRouting()))                
                 .Use(new ConsoleLogger());
@@ -37,6 +38,9 @@ namespace Microsoft.Bot.Samples
             RegExpRecognizerMiddleware regExpMiddleware = new RegExpRecognizerMiddleware();
             regExpMiddleware.AddIntent(
                 "echoIntent", new Regex("echo (?<WhatToEcho>.*)", RegexOptions.IgnoreCase));
+
+            regExpMiddleware.AddIntent(
+                "delayIntent", new Regex("delay (?<howLong>.*)", RegexOptions.IgnoreCase));
 
             regExpMiddleware.AddIntent(
                 "reverseIntent", new Regex("reverse", RegexOptions.IgnoreCase));

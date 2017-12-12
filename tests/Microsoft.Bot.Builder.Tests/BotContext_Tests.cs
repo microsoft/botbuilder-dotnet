@@ -38,7 +38,7 @@ namespace Microsoft.Bot.Builder.Tests
                             var reference = context.ConversationReference;
                             Task.Run(async () =>
                             {
-                                await Task.Delay(1000);
+                                await Task.Delay(1000).ConfigureAwait(false);
                                 await bot.CreateContext(reference, async (context2) =>
                                 {
                                     Assert.AreEqual(true, context2.State["ContextCreated"]);
