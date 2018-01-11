@@ -1,4 +1,5 @@
 ﻿using Microsoft.Bot.Connector;
+using Microsoft.Bot.Builder.Middleware;
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
@@ -15,7 +16,7 @@ namespace Microsoft.Bot.Builder.Conversation
     //    }
     //}
 
-    public class Router : IMiddleware, IReceiveActivity
+    public class Router : IReceiveActivity
     {
         // public delegate Task<Route> GetRouteDelegate(IBotContext context, string[] routePath=null);
 
@@ -130,19 +131,19 @@ namespace Microsoft.Bot.Builder.Conversation
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public async Task<ReceiveResponse> ReceiveActivity(BotContext context)
+       
+        public async Task ReceiveActivity(IBotContext context, MiddlewareSet.NextDelegate next)
         {
             Route route = await GetRoute(context, new string[] { "ReceiveActivity" }).ConfigureAwait(false);
             if (route != null)
             {
                 await route.Action(context, null).ConfigureAwait(false);
-                return new ReceiveResponse(true);
+                return; // dont' route
             }
             else
             {
-                return new ReceiveResponse(false);
+                await next().ConfigureAwait(false); 
             }
         }
-
     }
 }

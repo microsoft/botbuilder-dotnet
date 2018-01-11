@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Middleware;
 
 namespace Microsoft.Bot.Builder.Templates
 {
-    public class TemplateIdMap : Dictionary<string, Func<BotContext, dynamic, object>>
+    public class TemplateIdMap : Dictionary<string, Func<IBotContext, dynamic, object>>
     {
     }
 
@@ -25,21 +26,22 @@ namespace Microsoft.Bot.Builder.Templates
     ///   To use, simply add to your pipeline
     ///   bot.use(new DictionaryTemplateEngine(myTemplates))
     /// </summary>
-    public class DictionaryRenderer : ITemplateRenderer, IContextCreated
+    public class DictionaryRenderer : ITemplateRenderer, Middleware.IContextCreated
     {
         private TemplateDictionary languages;
 
         public DictionaryRenderer(TemplateDictionary templates)
         {
             this.languages = templates;
-        }
+        }        
 
-        public async Task ContextCreated(BotContext context)
+        public async Task ContextCreated(IBotContext context, MiddlewareSet.NextDelegate next)
         {
             context.TemplateManager.Register(this);
+            await next().ConfigureAwait(false); 
         }
 
-        public Task<object> RenderTemplate(BotContext context, string language, string templateId, object data)
+        public Task<object> RenderTemplate(IBotContext context, string language, string templateId, object data)
         {
             if (this.languages.TryGetValue(language, out var templates))
             {
@@ -57,7 +59,6 @@ namespace Microsoft.Bot.Builder.Templates
         }
     }
 
-
     public static class BotDictionaryTemplateExtensions
     {
         /// <summary>
@@ -70,7 +71,5 @@ namespace Microsoft.Bot.Builder.Templates
         {
             return bot.Use(new DictionaryRenderer(templates));
         }
-
     }
-
 }

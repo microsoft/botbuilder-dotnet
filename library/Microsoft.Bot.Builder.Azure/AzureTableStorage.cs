@@ -1,4 +1,5 @@
-﻿using Microsoft.WindowsAzure.Storage;
+﻿using Microsoft.Bot.Builder.Middleware;
+using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Table;
 using Newtonsoft.Json;
 using System;
@@ -32,12 +33,11 @@ namespace Microsoft.Bot.Builder.Azure
             if (_checkedTables.Add($"{storageAccount.TableStorageUri.PrimaryUri.Host}-{tableName}"))
                 this.Table.CreateIfNotExistsAsync().Wait();
         }
-
-
-        public Task ContextCreated(BotContext context)
+        
+        public Task ContextCreated(IBotContext context, MiddlewareSet.NextDelegate next)
         {
             context.Storage = this;
-            return Task.CompletedTask;
+            return next();
         }
 
         protected EntityKey GetEntityKey(string key)
@@ -157,6 +157,6 @@ namespace Microsoft.Bot.Builder.Azure
                     sb.Append(ch);
             }
             return sb.ToString();
-        }
+        }        
     }
 }

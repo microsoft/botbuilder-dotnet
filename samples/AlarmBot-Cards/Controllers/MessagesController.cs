@@ -1,20 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.Bot.Connector;
-using Microsoft.Bot.Builder;
-using Microsoft.Bot.Builder.Azure;
-using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Builder.Storage;
-using System.Text.RegularExpressions;
-using Microsoft.Extensions.Configuration;
+﻿using AlarmBot.Models;
 using AlarmBot.Topics;
-using AlarmBot.Models;
-using Microsoft.Bot.Builder.Templates;
 using AlarmBot.TopicViews;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Bot.Builder;
+using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.Middleware;
+using Microsoft.Bot.Builder.Storage;
+using Microsoft.Bot.Connector;
+using Microsoft.Extensions.Configuration;
+using System.Text.RegularExpressions;
 
 namespace AlarmBot.Controllers
 {
@@ -52,7 +47,7 @@ namespace AlarmBot.Controllers
                         .AddIntent("cancel", new Regex("cancel(.*)", RegexOptions.IgnoreCase))
                         .AddIntent("confirmYes", new Regex("(yes|yep|yessir|^y$)", RegexOptions.IgnoreCase))
                         .AddIntent("confirmNo", new Regex("(no|nope|^n$)", RegexOptions.IgnoreCase)))
-                    .OnReceive(async (context) =>
+                    .OnReceive(async (context, next) =>
                     {
                         // --- Bot logic 
                         bool handled = false;
@@ -82,6 +77,8 @@ namespace AlarmBot.Controllers
                             context.State.Conversation[ConversationProperties.ACTIVETOPIC] = activeTopic;
                             handled = await activeTopic.ResumeTopic(context);
                         }
+
+                        await next().ConfigureAwait(false); 
                     });
             }
         }

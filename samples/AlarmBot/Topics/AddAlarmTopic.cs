@@ -63,7 +63,7 @@ namespace AlarmBot.Topics
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public Task<bool> StartTopic(BotContext context)
+        public Task<bool> StartTopic(IBotContext context)
         {
             var times = context.TopIntent?.Entities.Where(entity => entity.GroupName == "AlarmTime")
                     .Select(entity => DateTimeOffset.Parse(entity.ValueAs<string>()));
@@ -86,7 +86,7 @@ namespace AlarmBot.Topics
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public async Task<bool> ContinueTopic(BotContext context)
+        public async Task<bool> ContinueTopic(IBotContext context)
         {
             // for messages
             if (context.Request.Type == ActivityTypes.Message)
@@ -116,9 +116,9 @@ namespace AlarmBot.Topics
             return true;
         }
 
-        private async Task<bool> ProcessTopicState(BotContext context)
+        private async Task<bool> ProcessTopicState(IBotContext context)
         {
-            string utterance = (context.Request.Text ?? "").Trim();
+            string utterance = (context.Request.AsMessageActivity().Text ?? "").Trim();
 
             // we ar eusing TopicState to remember what we last asked
             switch (this.TopicState)
@@ -129,7 +129,7 @@ namespace AlarmBot.Topics
 
                 case TopicStates.TimePrompt:
                     // take first one in the future
-                    this.Alarm.Time = context.GetDateTimes().Where(t => t > DateTimeOffset.Now).FirstOrDefault();
+                    this.Alarm.Time = ((BotContext)context).GetDateTimes().Where(t => t > DateTimeOffset.Now).FirstOrDefault();
                     return await this.PromptForMissingData(context);
 
                 case TopicStates.CancelConfirmation:
@@ -184,7 +184,7 @@ namespace AlarmBot.Topics
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public Task<bool> ResumeTopic(BotContext context)
+        public Task<bool> ResumeTopic(IBotContext context)
         {
             // simply prompt again based on our state
             return this.PromptForMissingData(context);
@@ -195,7 +195,7 @@ namespace AlarmBot.Topics
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        private async Task<bool> PromptForMissingData(BotContext context)
+        private async Task<bool> PromptForMissingData(IBotContext context)
         {
             // If we don't have a title (or if its too long), prompt the user to get it.
             if (String.IsNullOrWhiteSpace(this.Alarm.Title))

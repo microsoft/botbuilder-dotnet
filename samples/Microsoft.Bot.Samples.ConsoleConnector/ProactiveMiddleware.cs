@@ -1,5 +1,7 @@
 ﻿using Microsoft.Bot.Builder;
+using Microsoft.Bot.Builder.Middleware;
 using Microsoft.Bot.Connector;
+
 using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Samples
@@ -8,16 +10,16 @@ namespace Microsoft.Bot.Samples
     {
         private Microsoft.Bot.Builder.Bot _bot;
         private ConversationReference _conversationReference;
-
-        public Task ContextCreated(BotContext context)
+        
+        public async Task ContextCreated(IBotContext context, MiddlewareSet.NextDelegate next)
         {
             // Keep the Bot around, so it can be used later 
             // for sending messages to the user
             _bot = context.Bot;
-            return Task.CompletedTask;
+            await next(); 
         }
-
-        public async Task<ReceiveResponse> ReceiveActivity(BotContext context)
+        
+        public async Task ReceiveActivity(IBotContext context, MiddlewareSet.NextDelegate next)
         {
             if (context.IfIntent("delayIntent"))
             {
@@ -32,12 +34,10 @@ namespace Microsoft.Bot.Samples
                 Task.Delay(delay)
                  .ContinueWith((t) => SendOutOfBandMessage($"--> Delayed {delay} milliseconds. <--"))
                  .ConfigureAwait(false);
-#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-
-                return new ReceiveResponse(true);
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed                
             }
 
-            return new ReceiveResponse(false);
+            await next();            
         }
 
         private async Task SendOutOfBandMessage(string message)

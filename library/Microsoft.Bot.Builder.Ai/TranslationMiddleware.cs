@@ -1,4 +1,5 @@
-﻿using Microsoft.Bot.Connector;
+﻿using Microsoft.Bot.Builder.Middleware;
+using Microsoft.Bot.Connector;
 using Microsoft.Cognitive.LUIS;
 using System;
 using System.Collections.Generic;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Ai
 {
-    public class TranslationMiddleware : IMiddleware, IReceiveActivity, IPostActivity
+    public class TranslationMiddleware : IReceiveActivity, IPostActivity
     {
         private LuisClient luisClient;
         private string[] nativeLanguages;
@@ -26,8 +27,8 @@ namespace Microsoft.Bot.Builder.Ai
         /// </summary>
         /// <param name="context"></param>
         /// <param name="token"></param>
-        /// <returns></returns>
-        public async Task<ReceiveResponse> ReceiveActivity(BotContext context)
+        /// <returns></returns>       
+        public async Task ReceiveActivity(IBotContext context, MiddlewareSet.NextDelegate next)
         {
             IMessageActivity message = context.Request.AsMessageActivity();
             if (message != null)
@@ -41,7 +42,7 @@ namespace Microsoft.Bot.Builder.Ai
                     translationContext.SourceText = message.Text;
                     translationContext.SourceLanguage = sourceLanguage;
                     translationContext.TargetLanguage = (this.nativeLanguages.Contains(sourceLanguage)) ? sourceLanguage : this.nativeLanguages.FirstOrDefault() ?? "en";
-                    context["Translation"] = translationContext;
+                    ((BotContext)context)["Translation"] = translationContext;
 
                     // translate to bots language
                     if (translationContext.SourceLanguage != translationContext.TargetLanguage)
@@ -49,9 +50,8 @@ namespace Microsoft.Bot.Builder.Ai
 
                 }
             }
-            return null;
+            await next().ConfigureAwait(false);
         }
-
 
         /// <summary>
         /// outgoing activities
@@ -60,7 +60,7 @@ namespace Microsoft.Bot.Builder.Ai
         /// <param name="activities"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        public async Task PostActivity(BotContext context, IList<Activity> activities)
+        public async Task PostActivity(IBotContext context, IList<IActivity> activities, MiddlewareSet.NextDelegate next)
         {
             foreach (var activity in activities)
             {
@@ -68,13 +68,14 @@ namespace Microsoft.Bot.Builder.Ai
                 if (!String.IsNullOrWhiteSpace(message?.Text))
                 {
                     // translate to userslanguage
-                    var translationContext = context["Translation"] as TranslationContext;
+                    var translationContext = ((BotContext)context)["Translation"] as TranslationContext;
                     if (translationContext.SourceLanguage != translationContext.TargetLanguage)
                         await TranslateMessageAsync(context, message, translationContext.TargetLanguage, translationContext.SourceLanguage).ConfigureAwait(false);
                 }
             }
+            await next().ConfigureAwait(false);
         }
-
+        
         private static readonly Regex UrlRegex = new Regex(@"(https?://[^\s]*)", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Multiline);
 
         /// <summary>
@@ -83,7 +84,7 @@ namespace Microsoft.Bot.Builder.Ai
         /// <param name="message"></param>
         /// <param name="targetLanguage"></param>
         /// <returns></returns>
-        private async Task TranslateMessageAsync(BotContext context, IMessageActivity message, string sourceLanguage, string targetLanguage)
+        private async Task TranslateMessageAsync(IBotContext context, IMessageActivity message, string sourceLanguage, string targetLanguage)
         {
             // if we have text and a target language
             if (!String.IsNullOrWhiteSpace(message.Text) && !String.IsNullOrEmpty(targetLanguage))
@@ -125,7 +126,6 @@ namespace Microsoft.Bot.Builder.Ai
 
                 message.Text = text;
             }
-        }
-
+        }        
     }
 }

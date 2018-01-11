@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Middleware;
 
 namespace Microsoft.Bot.Builder.Storage
 {
     /// <summary>
     /// Models IStorage around a dictionary 
     /// </summary>
-    public class DictionaryStorage : IStorage, IContextCreated
+    public class DictionaryStorage : IStorage, Middleware.IContextCreated
     {
         private readonly StoreItems _memory;
         private int _eTag = 0;
@@ -16,11 +17,11 @@ namespace Microsoft.Bot.Builder.Storage
         {
             _memory = dictionary ?? new StoreItems();
         }
-
-        public Task ContextCreated(BotContext context)
+        
+        public Task ContextCreated(IBotContext context, MiddlewareSet.NextDelegate next)
         {
             context.Storage = this;
-            return Task.CompletedTask;
+            return next(); 
         }
 
         public Task Delete(string[] keys)

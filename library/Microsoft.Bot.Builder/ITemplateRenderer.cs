@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder
 {
@@ -18,6 +15,6 @@ namespace Microsoft.Bot.Builder
         /// <param name="templateId">tenmplate to render</param>
         /// <param name="data">data object to use to render</param>
         /// <returns></returns>
-        Task<object> RenderTemplate(BotContext context, string language, string templateId, object data);
+        Task<object> RenderTemplate(IBotContext context, string language, string templateId, object data);
     }
 }

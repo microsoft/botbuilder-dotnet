@@ -15,7 +15,10 @@ namespace Microsoft.Bot.Builder.Tests
         {
             ActivityAdapterBase c = new TestAdapter();
             Bot b = new Bot(c);
-            Activity a = new Activity();
+            Activity a = new Activity
+            {
+                Type = ActivityTypes.Message
+            };
             BotContext bc = new BotContext(b, a);
 
             return bc;

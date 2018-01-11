@@ -29,12 +29,39 @@ namespace Microsoft.Bot.Builder
             if (activityList == null)
                 throw new ArgumentNullException(nameof(activityList)); 
         }
+
+        public static void ActivityListNotNull(IList<IActivity> activityList)
+        {
+            if (activityList == null)
+                throw new ArgumentNullException(nameof(activityList));
+        }
+
+        public static void AssertStorage(IBotContext context)
+        {
+            ContextNotNull(context);
+
+            if (context.Storage == null)
+                throw new InvalidOperationException("context.storage not found.");
+        }
+
         public static void AssertStorage(BotContext context)
         {
             ContextNotNull(context);
 
             if (context.Storage == null)
                 throw new InvalidOperationException("context.storage not found.");
+        }
+
+        public static void MiddlewareNotNull(Middleware.IMiddleware middleware)
+        {
+            if (middleware == null)
+                throw new ArgumentNullException(nameof(middleware));
+        }
+
+        public static void MiddlewareNotNull(Middleware.IMiddleware[] middleware)
+        {
+            if (middleware == null)
+                throw new ArgumentNullException(nameof(middleware));
         }
     }
 }

@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Middleware;
 
 namespace Microsoft.Bot.Builder.Rivescript
 {
@@ -15,7 +16,7 @@ namespace Microsoft.Bot.Builder.Rivescript
         public bool Strict { get; set; } = false;
     }
 
-    public class RivescriptMiddleware : IMiddleware, IReceiveActivity, IObjectHandler
+    public class RivescriptMiddleware : Middleware.IReceiveActivity, IObjectHandler
     {
         private readonly RiveScript.RiveScript _engine;
         public const string RivescriptState = "rivescript";
@@ -46,7 +47,7 @@ namespace Microsoft.Bot.Builder.Rivescript
             return true;
         }
 
-        public static IDictionary<string,string> StateDictionary(BotContext context)
+        public static IDictionary<string,string> StateDictionary(IBotContext context)
         {
             BotAssert.AssertStorage(context); 
 
@@ -64,19 +65,19 @@ namespace Microsoft.Bot.Builder.Rivescript
             return state; 
         }
 
-        public async Task<ReceiveResponse> ReceiveActivity(BotContext context)
+        public async Task ReceiveActivity(IBotContext context, MiddlewareSet.NextDelegate next)
         {
             IDictionary<string, string> userVars;
             userVars = context.State.User[RivescriptState] ?? new Dictionary<string, string>();
             _engine.setUservars(context.Request.From.Id, userVars);
 
-            var reply = _engine.reply(context.Request.From.Id, context.Request.Text);
+            var reply = _engine.reply(context.Request.From.Id, context.Request.AsMessageActivity().Text);
 
             IDictionary<string, string> stateAfterReply = _engine.getUserVars(context.Request.From.Id);
             context.State.User[RivescriptState] = stateAfterReply;
             context.Reply(reply);
 
-            return new ReceiveResponse(false); 
+            await next().ConfigureAwait(false);
         }
         
         private RiveScript.RiveScript CreateRivescript(string path, RiveScriptOptions options)
@@ -113,6 +114,6 @@ namespace Microsoft.Bot.Builder.Rivescript
             engine.sortReplies();
 
             return engine;
-        }
+        }        
     }
 }

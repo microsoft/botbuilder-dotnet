@@ -1,4 +1,5 @@
 ﻿using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.Middleware;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
@@ -21,10 +22,12 @@ namespace Microsoft.Bot.Builder.Tests
 
             Bot bot = new Bot(adapter)
                 .Use(helpRecognizer)
-                .OnReceive(async (context) =>
+                .OnReceive(async (context, next) =>
                 {
                     if (context.IfIntent("HelpIntent"))
                         context.Reply("You selected HelpIntent");
+
+                    await next(); 
                 });
 
             await adapter.Test("help", "You selected HelpIntent")
@@ -81,12 +84,14 @@ namespace Microsoft.Bot.Builder.Tests
 
             Bot bot = new Bot(adapter)
                 .Use(recognizer)
-                .OnReceive(async (context) =>
+                .OnReceive(async (context, next) =>
                 {
                     if (context.IfIntent(new Regex("a")))
                         context.Reply("aaaa Intent");
                     if (context.IfIntent(new Regex("b")))
                         context.Reply("bbbb Intent");
+
+                    await next();
                 });
 
             await adapter.Test("aaaaaaaaa", "aaaa Intent")
@@ -106,10 +111,11 @@ namespace Microsoft.Bot.Builder.Tests
 
             Bot bot = new Bot(adapter)
                 .Use(helpRecognizer)
-                .OnReceive(async (context) =>
+                .OnReceive(async (context, next) =>
                 {
                     if (context.IfIntent("CancelIntent"))
                         context.Reply("You selected CancelIntent");
+                    await next(); 
                 });
 
             await adapter.Test("cancel", "You selected CancelIntent")
@@ -128,12 +134,14 @@ namespace Microsoft.Bot.Builder.Tests
 
             Bot bot = new Bot(adapter)
                 .Use(helpRecognizer)
-                .OnReceive(async (context) =>
+                .OnReceive(async (context, next) =>
                 {
                     if (context.IfIntent("CancelIntent"))
                         context.Reply("You selected CancelIntent");
                     else
                         context.Reply("Bot received request of type message");
+
+                    await next(); 
                 });
 
             await adapter.Test("tacos", "Bot received request of type message")
@@ -154,7 +162,7 @@ namespace Microsoft.Bot.Builder.Tests
 
             Bot bot = new Bot(adapter)
                 .Use(helpRecognizer)
-                .OnReceive(async (context) =>
+                .OnReceive(async (context, next) =>
                 {
                     if (context.IfIntent("HelpIntent"))
                         context.Reply("You selected HelpIntent");
@@ -162,6 +170,8 @@ namespace Microsoft.Bot.Builder.Tests
                         context.Reply("You selected CancelIntent");
                     else if (context.IfIntent("TacoIntent"))
                         context.Reply("You selected TacoIntent");
+
+                    await next(); 
                 });
 
             await adapter

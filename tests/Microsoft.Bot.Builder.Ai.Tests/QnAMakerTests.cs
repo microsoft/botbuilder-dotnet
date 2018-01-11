@@ -58,14 +58,13 @@ namespace Microsoft.Bot.Builder.Ai.Tests
         {
             TestAdapter adapter = new TestAdapter();
             Bot bot = new Bot(adapter)
-                .OnReceive(async (context) =>
+                .OnReceive(async (context, next) =>
                 {
-                    if (context.Request.Text == "foo")
+                    if (context.Request.AsMessageActivity().Text == "foo")
                     {
-                        context.Reply(context.Request.Text);
-                        return new ReceiveResponse(true);
+                        context.Reply(context.Request.AsMessageActivity().Text);                        
                     }
-                    return new ReceiveResponse(false);
+                    await next();
                 })
                 .Use(new QnAMaker(new QnAMakerOptions()
                 {

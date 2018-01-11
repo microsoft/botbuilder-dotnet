@@ -2,6 +2,8 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Middleware;
+using Microsoft.Bot.Connector;
 
 namespace Microsoft.Bot.Builder.Tests
 {
@@ -24,21 +26,21 @@ namespace Microsoft.Bot.Builder.Tests
         }       
     }
 
-    public class EchoMiddleWare : IReceiveActivity
+    public class EchoMiddleWare : Middleware.IReceiveActivity
     {
         private readonly bool handled; 
 
         public EchoMiddleWare(bool handled = true)
         {
             this.handled = handled;
-        }
+        }        
 
-        public Task<ReceiveResponse> ReceiveActivity(BotContext context)
-        {
-            var response = context.Request.CreateReply();
-            response.Text = context.Request.Text;
+        public async Task ReceiveActivity(IBotContext context, MiddlewareSet.NextDelegate next)
+        {            
+            var response = ((Activity)context.Request).CreateReply();
+            response.Text = context.Request.AsMessageActivity().Text;
             context.Responses.Add(response);
-            return Task.FromResult(new ReceiveResponse(this.handled));
+            await next();            
         }
     }
 }

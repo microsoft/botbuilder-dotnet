@@ -6,12 +6,12 @@ namespace Microsoft.Bot.Builder.Adapters
 {
     public abstract class ActivityAdapterBase
     {
-        public delegate Task OnReceiveDelegate(Activity activity);
+        public delegate Task OnReceiveDelegate(IActivity activity);
 
         public ActivityAdapterBase() { }
 
         public OnReceiveDelegate OnReceive { get; set; }               
 
-        public abstract Task Post(IList<Activity> activities);
+        public abstract Task Post(IList<IActivity> activities);
     }
 }

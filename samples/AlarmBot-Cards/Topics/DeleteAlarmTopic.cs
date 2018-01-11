@@ -29,7 +29,7 @@ namespace AlarmBot.Topics
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public Task<bool> StartTopic(BotContext context)
+        public Task<bool> StartTopic(IBotContext context)
         {
             this.AlarmTitle = context.TopIntent?.Entities.Where(entity => entity.GroupName == "AlarmTitle")
                                 .Select(entity => entity.ValueAs<string>()).FirstOrDefault();
@@ -42,11 +42,11 @@ namespace AlarmBot.Topics
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public async Task<bool> ContinueTopic(BotContext context)
+        public async Task<bool> ContinueTopic(IBotContext context)
         {
             if (context.Request.Type == ActivityTypes.Message)
             {
-                this.AlarmTitle = context.Request.Text.Trim();
+                this.AlarmTitle = context.Request.AsMessageActivity().Text.Trim();
                 return await this.FindAlarm(context);
             }
             return true;
@@ -57,12 +57,12 @@ namespace AlarmBot.Topics
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public Task<bool> ResumeTopic(BotContext context)
+        public Task<bool> ResumeTopic(IBotContext context)
         {
             return this.FindAlarm(context);
         }
 
-        public async Task<bool> FindAlarm(BotContext context)
+        public async Task<bool> FindAlarm(IBotContext context)
         {
             var alarms = (List<Alarm>)context.State.User[UserProperties.ALARMS];
             if (alarms == null)
@@ -81,8 +81,7 @@ namespace AlarmBot.Topics
             // Validate title
             if (!String.IsNullOrWhiteSpace(this.AlarmTitle))
             {
-                int index = 0;
-                if (int.TryParse(this.AlarmTitle.Split(' ').FirstOrDefault(), out index))
+                if (int.TryParse(this.AlarmTitle.Split(' ').FirstOrDefault(), out int index))
                 {
                     if (index > 0 && index <= alarms.Count)
                     {

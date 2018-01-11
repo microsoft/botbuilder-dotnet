@@ -1,19 +1,25 @@
 ﻿using Microsoft.Bot.Builder;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Middleware;
+using Microsoft.Bot.Connector;
 
 namespace Micosoft.Bot.Samples.InjectionBasedBotExample
 {
-    public class EchoMiddleware : IReceiveActivity
+    public class EchoMiddleware : Microsoft.Bot.Builder.Middleware.IReceiveActivity
     {
-        public async Task<ReceiveResponse> ReceiveActivity(BotContext context)
+        public async Task ReceiveActivity(IBotContext context, MiddlewareSet.NextDelegate next)
         {
-            long turnNumber = context.State.Conversation["turnNumber"] ?? 0;
-            context.State.Conversation["turnNumber"] = ++turnNumber;
+            if (context.Request.Type == ActivityTypes.Message)
+            {
+                long turnNumber = context.State.Conversation["turnNumber"] ?? 0;
+                context.State.Conversation["turnNumber"] = ++turnNumber;
 
-            context.Responses.Add(
-                    context.Request.CreateReply($"[{turnNumber}] echo: {context.Request.Text}"));
+                context.Responses.Add(
+                        ((Activity)context.Request).CreateReply(
+                            $"[{turnNumber}] echo: {context.Request.AsMessageActivity().Text}"));
+            }
 
-            return new ReceiveResponse(true);
+            await next();
         }
     }
 }

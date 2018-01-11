@@ -3,10 +3,11 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder;
 
 namespace Microsoft.Bot.Builder.Ai
 {
-    public class LuisRecognizerMiddleware : IntentRecognizerMiddleware
+    public class LuisRecognizerMiddleware : Middleware.IntentRecognizerMiddleware
     {
         private readonly LuisClient _luisClient;
         
@@ -41,14 +42,14 @@ namespace Microsoft.Bot.Builder.Ai
         {
             this.OnRecognize(async (context) =>
             {
-                Intent i = await RecognizeAndMap(context.Request.Text);
-                return new List<Intent>() { i };
+                Middleware.Intent i = await RecognizeAndMap(context.Request.AsMessageActivity().Text);
+                return new List<Middleware.Intent>() { i };
             });
         }
         
-        private async Task<Intent> RecognizeAndMap(string utterance)
+        private async Task<Middleware.Intent> RecognizeAndMap(string utterance)
         {
-            Intent intent = new Intent();
+            Middleware.Intent intent = new Middleware.Intent();
 
             // LUIS client throws an exception on Predict is the utterance is null / empty
             // so just skip those cases and return a non-match. 
@@ -80,9 +81,7 @@ namespace Microsoft.Bot.Builder.Ai
                     }
                 }
             }
-            
-            
-
+                        
             return intent;
         }        
     }

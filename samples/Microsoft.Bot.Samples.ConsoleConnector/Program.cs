@@ -1,10 +1,9 @@
-﻿using Microsoft.Bot.Samples.Middleware;
-using System.Threading.Tasks;
-using System.Text.RegularExpressions;
-using Microsoft.Bot.Builder;
-using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Builder.Conversation;
+﻿using Microsoft.Bot.Builder;
+using Microsoft.Bot.Builder.Middleware;
 using Microsoft.Bot.Builder.Storage;
+using Microsoft.Bot.Samples.Middleware;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Samples
 {
@@ -26,8 +25,6 @@ namespace Microsoft.Bot.Samples
                 .Use(new EchoMiddleware())
                 .Use(new ReverseMiddleWare())
                 .Use(new ProactiveMiddleware())
-                //.Use(new ActivityRoutingMiddleware(Routing.BuildHelpRouting()))
-                //.Use(new ActivityRoutingMiddleware(Routing.BuildLoggingRouting()))                
                 .Use(new ConsoleLogger());
 
             await cc.Listen();

@@ -10,17 +10,17 @@ namespace AlarmBot.Topics
     {
         public string Name { get; set; } = "BaseTopic";
 
-        public virtual Task<bool> ContinueTopic(BotContext context)
+        public virtual Task<bool> ContinueTopic(IBotContext context)
         {
             return Task.FromResult(false);
         }
 
-        public virtual Task<bool> ResumeTopic(BotContext context)
+        public virtual Task<bool> ResumeTopic(IBotContext context)
         {
             return Task.FromResult(false);
         }
 
-        public virtual Task<bool> StartTopic(BotContext context)
+        public virtual Task<bool> StartTopic(IBotContext context)
         {
             return Task.FromResult(false);
         }

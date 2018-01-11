@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Builder.Adapters
     public class TestAdapter : ActivityAdapterBase
     {
         private int _nextId = 0;
-        private readonly Queue<Activity> botReplies = new Queue<Activity>();
+        private readonly Queue<IActivity> botReplies = new Queue<IActivity>();
 
         public TestAdapter(ConversationReference reference = null)
         {
@@ -37,7 +37,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// get next activity or null if none
         /// </summary>
         /// <returns></returns>
-        public Activity GetNextReply()
+        public IActivity GetNextReply()
         {
             lock (this.botReplies)
             {
@@ -47,7 +47,7 @@ namespace Microsoft.Bot.Builder.Adapters
             return null;
         }
 
-        public Activity MakeActivity(string text = null)
+        public IActivity MakeActivity(string text = null)
         {
             Activity activity = new Activity
             {
@@ -69,7 +69,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <param name="activities"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        public override async Task Post(IList<Activity> activities)
+        public override async Task Post(IList<IActivity> activities)
         {
             foreach (var activity in activities)
             {
@@ -78,8 +78,8 @@ namespace Microsoft.Bot.Builder.Adapters
                     // The BotFrameworkAdapter and Console adapter implement this
                     // hack directly in the POST method. Replicating that here
                     // to keep the behavior as close as possible to facillitate
-                    // more realistic tests. 
-                    int delayMs = (int)activity.Value;
+                    // more realistic tests.                     
+                    int delayMs = (int)((Activity)activity).Value;
                     await Task.Delay(delayMs);
                 }
                 else
@@ -98,7 +98,7 @@ namespace Microsoft.Bot.Builder.Adapters
             return this.SendActivityToBot(this.MakeActivity(userSays));
         }
 
-        internal Task SendActivityToBot(Activity activity)
+        internal Task SendActivityToBot(IActivity activity)
         {
             lock (this.ConversationReference)
             {
@@ -177,7 +177,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <param name="description"></param>
         /// <param name="timeout"></param>
         /// <returns></returns>
-        public TestFlow AssertReply(Action<Activity> expected, string description = null, UInt32 timeout = 3000)
+        public TestFlow AssertReply(Action<IActivity> expected, string description = null, UInt32 timeout = 3000)
         {
             return new TestFlow(Task.CompletedTask, this).AssertReply(expected, description, timeout);
         }
@@ -216,7 +216,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <param name="description"></param>
         /// <param name="timeout"></param>
         /// <returns></returns>
-        public TestFlow Test(string userSays, Activity expected, string description = null, UInt32 timeout = 3000)
+        public TestFlow Test(string userSays, IActivity expected, string description = null, UInt32 timeout = 3000)
         {
             return new TestFlow(Task.CompletedTask, this).Send(userSays).AssertReply(expected, description, timeout);
         }
@@ -229,7 +229,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <param name="description"></param>
         /// <param name="timeout"></param>
         /// <returns></returns>
-        public TestFlow Test(string userSays, Action<Activity> expected, string description = null, UInt32 timeout = 3000)
+        public TestFlow Test(string userSays, Action<IActivity> expected, string description = null, UInt32 timeout = 3000)
         {
             return new TestFlow(Task.CompletedTask, this).Send(userSays).AssertReply(expected, description, timeout);
         }
@@ -327,13 +327,13 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <param name="description"></param>
         /// <param name="timeout"></param>
         /// <returns></returns>
-        public TestFlow AssertReply(Activity expected, string description = null, UInt32 timeout = 3000)
+        public TestFlow AssertReply(IActivity expected, string description = null, UInt32 timeout = 3000)
         {
             return this.AssertReply((reply) =>
             {
                 if (expected.Type != reply.Type)
                     throw new Exception($"{description}: Type should match");
-                if (expected.Text != reply.Text)
+                if (expected.AsMessageActivity().Text != reply.AsMessageActivity().Text)
                     throw new Exception($"{description}: Text should match");
                     // TODO, expand this to do all properties set on expected
                 }, description, timeout);
@@ -346,7 +346,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <param name="description"></param>
         /// <param name="timeout"></param>
         /// <returns></returns>
-        public TestFlow AssertReply(Action<Activity> validateActivity, string description, UInt32 timeout = 3000)
+        public TestFlow AssertReply(Action<IActivity> validateActivity, string description, UInt32 timeout = 3000)
         {
             return new TestFlow(this.testTask.ContinueWith((task) =>
             {
@@ -362,10 +362,10 @@ namespace Microsoft.Bot.Builder.Adapters
                         throw new TimeoutException($"{timeout}ms Timed out waiting for:${description}");
                     }
 
-                    Activity replyActivity = this._adapter.GetNextReply();
-                        // if we have a reply
-                        if (replyActivity != null)
+                    IActivity replyActivity = this._adapter.GetNextReply();                    
+                    if (replyActivity != null)     
                     {
+                        // if we have a reply
                         validateActivity(replyActivity);
                         return;
                     }
@@ -416,7 +416,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <param name="description"></param>
         /// <param name="timeout"></param>
         /// <returns></returns>
-        public TestFlow Test(string userSays, Action<Activity> expected, string description = null, UInt32 timeout = 3000)
+        public TestFlow Test(string userSays, Action<IActivity> expected, string description = null, UInt32 timeout = 3000)
         {
             if (expected == null)
                 throw new ArgumentNullException(nameof(expected));
@@ -441,7 +441,7 @@ namespace Microsoft.Bot.Builder.Adapters
             {
                 foreach (var candidate in candidates)
                 {
-                    if (reply.Text == candidate)
+                    if (reply.AsMessageActivity().Text == candidate)
                         return;
                 }
                 throw new Exception(description ?? $"Not one of candidates: {String.Join("\n", candidates)}");

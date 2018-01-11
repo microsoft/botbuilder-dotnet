@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Microsoft.Bot.Builder
+namespace Microsoft.Bot.Builder.Middleware
 {
     public class PostToAdapterMiddleware : IPostActivity
     {
@@ -12,15 +12,15 @@ namespace Microsoft.Bot.Builder
         public PostToAdapterMiddleware(Bot b)
         {
             _bot = b ?? throw new ArgumentNullException(nameof(Bot));
-        }
+        }        
 
-        public async Task PostActivity(BotContext context, IList<Activity> activities)
+        public async Task PostActivity(IBotContext context, IList<IActivity> activities, Middleware.MiddlewareSet.NextDelegate next)
         {
             BotAssert.ContextNotNull(context);
             BotAssert.ActivityListNotNull(activities);
 
-            await _bot.Adapter.Post(activities).ConfigureAwait(false);
+            await next().ConfigureAwait(false); 
+            await _bot.Adapter.Post(activities).ConfigureAwait(false);            
         }
-
     }
 }

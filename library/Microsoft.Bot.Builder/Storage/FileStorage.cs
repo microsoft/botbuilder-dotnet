@@ -4,13 +4,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Middleware;
 
 namespace Microsoft.Bot.Builder.Storage
 {
     /// <summary>
     /// Models IStorage around a File System
     /// </summary>
-    public class FileStorage : IStorage, IContextCreated
+    public class FileStorage : IStorage, Middleware.IContextCreated
     {
         private static JsonSerializerSettings serializationSettings = new JsonSerializerSettings()
         {
@@ -26,10 +27,10 @@ namespace Microsoft.Bot.Builder.Storage
             this.folder = folder;
         }
 
-        public Task ContextCreated(BotContext context)
+        public Task ContextCreated(IBotContext context, MiddlewareSet.NextDelegate next)
         {
             context.Storage = this;
-            return Task.CompletedTask;
+            return next(); 
         }
 
         public Task Delete(string[] keys)
@@ -172,7 +173,6 @@ namespace Microsoft.Bot.Builder.Storage
                     sb.Append(ch);
             }
             return sb.ToString();
-        }
-
+        }        
     }
 }

@@ -17,7 +17,7 @@ namespace Microsoft.Bot.Builder.Adapters
             _credentials = new MicrosoftAppCredentials(appId, appPassword);
         }
 
-        public async override Task Post(IList<Activity> activities)
+        public async override Task Post(IList<IActivity> activities)
         {
             BotAssert.ActivityListNotNull(activities);
 

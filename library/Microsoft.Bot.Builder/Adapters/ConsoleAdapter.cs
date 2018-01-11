@@ -15,28 +15,33 @@ namespace Microsoft.Bot.Builder.Adapters
         {
         }
 
-        public async override Task Post(IList<Activity> activities)
+        public async override Task Post(IList<IActivity> activities)
         {
-            foreach (Activity activity in activities)
+            foreach (IActivity activity in activities)
             {
                 switch (activity.GetActivityType())
                 {
                     case ActivityTypes.Message:
-                        if (activity.Attachments != null && activity.Attachments.Any())
                         {
-                            var attachment = activity.Attachments.Count == 1 ? "1 attachments" : $"{activity.Attachments.Count()} attachments";
-                            Console.WriteLine($"{activity.Text} with {attachment} ");
-                        }
-                        else
-                        {
-                            Console.WriteLine($"{activity.Text}");
+                            IMessageActivity message = activity.AsMessageActivity();
+                            if (message.Attachments != null && message.Attachments.Any())
+                            {
+                                var attachment = message.Attachments.Count == 1 ? "1 attachments" : $"{message.Attachments.Count()} attachments";
+                                Console.WriteLine($"{message.Text} with {attachment} ");
+                            }
+                            else
+                            {
+                                Console.WriteLine($"{message.Text}");
+                            }
                         }
                         break;
                     case "delay":
-                        // The Activity Schema doesn't have a delay type build in, so it's simulated
-                        // here in the Bot. This matches the behavior in the Node connector. 
-                        int delayMs = (int)activity.Value;
-                        await Task.Delay(delayMs);
+                        {                            
+                            // The Activity Schema doesn't have a delay type build in, so it's simulated
+                            // here in the Bot. This matches the behavior in the Node connector. 
+                            int delayMs = (int) ((Activity)activity).Value;
+                            await Task.Delay(delayMs).ConfigureAwait(false);
+                        }
                         break;
                     default:
                         Console.WriteLine("Bot: activity type: {0}", activity.Type);

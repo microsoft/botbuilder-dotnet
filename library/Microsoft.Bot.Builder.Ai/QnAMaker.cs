@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Linq;
 using Microsoft.Bot.Connector;
+using Microsoft.Bot.Builder.Middleware;
 
 namespace Microsoft.Bot.Builder.Ai
 {
@@ -38,7 +39,7 @@ namespace Microsoft.Bot.Builder.Ai
         public int Top { get; set; }
     }
 
-    public class QnAMaker : IReceiveActivity, IDisposable
+    public class QnAMaker : Middleware.IReceiveActivity, IDisposable
     {
         public const string qnaMakerServiceEndpoint = "https://westus.api.cognitive.microsoft.com/qnamaker/v2.0/knowledgebases/";
         private string answerUrl;
@@ -84,19 +85,20 @@ namespace Microsoft.Bot.Builder.Ai
             return null;
         }
 
-        public async Task<ReceiveResponse> ReceiveActivity(BotContext context)
+        public async Task ReceiveActivity(IBotContext context, MiddlewareSet.NextDelegate next)
         {
             if (context.Request.Type == ActivityTypes.Message)
             {
-                var results = await this.GetAnswers(context.Request.Text.Trim()).ConfigureAwait(false);
+                var results = await this.GetAnswers(context.Request.AsMessageActivity().Text.Trim()).ConfigureAwait(false);
                 if (results.Any())
                 {
-                    context.Reply(results.First().Answer);
-                    return new ReceiveResponse(true);
+                    context.Reply(results.First().Answer);             
                 }
             }
-            return new ReceiveResponse(false);
+
+            await next().ConfigureAwait(false); 
         }
+
 
         public void Dispose()
         {
@@ -109,7 +111,6 @@ namespace Microsoft.Bot.Builder.Ai
                 }
             }
         }
-
 
     }
 }

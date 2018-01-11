@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Middleware;
 
 namespace Microsoft.Bot.Builder.Rivescript.Tests
 {
@@ -9,17 +10,19 @@ namespace Microsoft.Bot.Builder.Rivescript.Tests
     /// Allows an Action<BotContext> to be run when a Context is created. This Action
     /// has full access to the Context, and can inject state that is then used by the pipeline. 
     /// </summary>
-    public class InjectState : IMiddleware, IContextCreated
+    public class InjectState : Middleware.IContextCreated
     {
-        private readonly Action<BotContext> _action;
-        public InjectState(Action<BotContext> action)
+        private readonly Action<IBotContext> _action;
+
+        public InjectState(Action<IBotContext> action)
         {
             _action = action;
         }
 
-        public async Task ContextCreated(BotContext context)
+        public async Task ContextCreated(IBotContext context, MiddlewareSet.NextDelegate next)
         {
             _action(context);
+            await next();
         }
     }
 
@@ -27,18 +30,19 @@ namespace Microsoft.Bot.Builder.Rivescript.Tests
     /// Allows an Action<BotContext> to be run upon the completion of a Middleware Pipeline. This Action
     /// has full access to the Context, and can validate state is as expected.
     /// </summary>
-    public class ValidateState : IMiddleware, IContextDone
+    public class ValidateState : Middleware.IReceiveActivity
     {
-        private readonly Action<BotContext> _action;
+        private readonly Action<IBotContext> _action;
 
-        public ValidateState(Action<BotContext> action)
+        public ValidateState(Action<IBotContext> action)
         {
             _action = action;
-        }
+        }        
 
-        public async Task ContextDone(BotContext context)
+        public async Task ReceiveActivity(IBotContext context, MiddlewareSet.NextDelegate next)
         {
-            _action(context);
+            await next();
+            _action(context);            
         }
     }
 

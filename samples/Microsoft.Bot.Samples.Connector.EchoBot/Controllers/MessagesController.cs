@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Bot.Builder;
+using Microsoft.Bot.Builder.Middleware;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Storage;
 using Microsoft.Bot.Connector;
@@ -28,15 +29,14 @@ namespace Microsoft.Bot.Samples.Connector.EchoBot.Controllers
                     .AddIntent("echoIntent", new Regex("echo (.*)", RegexOptions.IgnoreCase))
                     .AddIntent("helpIntent", new Regex("help (.*)", RegexOptions.IgnoreCase)))
                 .Use(new EchoMiddleware())
-                .OnReceive( async (context) =>
+                .OnReceive( async (context, next) =>
                     {
                         // Example of handling the Help intent w/o using Middleware
                         if (context.IfIntent("helpIntent"))                            
                         {                            
-                            context.Reply("Ask this bot to 'Echo something' and it will!");                                
-                            return new ReceiveResponse(true);
+                            context.Reply("Ask this bot to 'Echo something' and it will!");                                                            
                         }
-                        return new ReceiveResponse(false);
+                        await next(); 
                     }
                 );
         }

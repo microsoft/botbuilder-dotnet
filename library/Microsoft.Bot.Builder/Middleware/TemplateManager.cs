@@ -1,17 +1,13 @@
 ﻿using Microsoft.Bot.Connector;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Microsoft.Bot.Builder
+namespace Microsoft.Bot.Builder.Middleware
 {
     public class TemplateManager : IContextCreated, IPostActivity
     {
-        public const string TEMPLATE = "template";
-
-        private readonly Bot _bot;
+        public const string TEMPLATE = "template";        
         private List<ITemplateRenderer> _templateRenderers = new List<ITemplateRenderer>();
         private List<string> _languageFallback = new List<string>();
 
@@ -48,14 +44,14 @@ namespace Microsoft.Bot.Builder
         {
             return this._languageFallback;
         }
-
-        public Task ContextCreated(BotContext context)
+        
+        public async Task ContextCreated(IBotContext context, Middleware.MiddlewareSet.NextDelegate next)
         {
             context.TemplateManager = this;
-            return Task.CompletedTask;
+            await next().ConfigureAwait(false);             
         }
 
-        public async Task PostActivity(BotContext context, IList<Activity> activities)
+        public async Task PostActivity(IBotContext context, IList<IActivity> activities, Middleware.MiddlewareSet.NextDelegate next)
         {
             BotAssert.ContextNotNull(context);
             BotAssert.ActivityListNotNull(activities);
@@ -64,12 +60,14 @@ namespace Microsoft.Bot.Builder
             {
                 if (activity.Type == TEMPLATE)
                 {
-                    await this.bindActivityTemplate(context, activity);
+                    await this.BindActivityTemplate(context, activity).ConfigureAwait(false);
                 }
             }
+
+            await next().ConfigureAwait(false); 
         }
 
-        private async Task<Activity> findAndApplyTemplate(BotContext context, string language, string templateId, object data)
+        private async Task<Activity> FindAndApplyTemplate(IBotContext context, string language, string templateId, object data)
         {
             foreach (var renderer in this._templateRenderers)
             {
@@ -89,23 +87,29 @@ namespace Microsoft.Bot.Builder
             return null;
         }
 
-
-        private async Task bindActivityTemplate(BotContext context, Activity activity)
+        private async Task BindActivityTemplate(IBotContext context, IActivity activity)
         {
             List<string> fallbackLocales = new List<string>(this._languageFallback);
-            if (!String.IsNullOrEmpty(context.Request.Locale))
-                fallbackLocales.Add(context.Request.Locale);
+            string messageLocale = ((Activity)activity).Locale;
+            if (!String.IsNullOrEmpty(messageLocale))
+                fallbackLocales.Add(messageLocale);
+
             fallbackLocales.Add("default");
 
             // Ensure activities are well formed.
             // bind any template activity
             if (activity.Type == TemplateManager.TEMPLATE)
             {
+                string messageText = ((Activity)activity).Text; 
+                object messageValue = ((Activity)activity).Value;
+
                 // try each locale until successful
                 foreach (var locale in fallbackLocales)
                 {
                     // apply template
-                    Activity boundActivity = await this.findAndApplyTemplate(context, locale, activity.Text, activity.Value).ConfigureAwait(false);
+                    Activity boundActivity = 
+                        await this.FindAndApplyTemplate(context, locale, messageText, messageValue).ConfigureAwait(false);
+
                     if (boundActivity != null)
                     {
                         lock (activity)
@@ -120,13 +124,12 @@ namespace Microsoft.Bot.Builder
                         }
                     }
                 }
-                throw new Exception($"Could not resolve template id:{ activity.Text}");
+                throw new Exception($"Could not resolve template id:{ ((Activity)activity).Text}");
             }
-        }
-
+        }       
     }
 
-    public class TemplateRendererMiddleware : IContextCreated
+    public class TemplateRendererMiddleware : Middleware.IContextCreated
     {
         private ITemplateRenderer _templateEngine;
 
@@ -134,13 +137,12 @@ namespace Microsoft.Bot.Builder
         {
             _templateEngine = templateEngine;
         }
-
-        public Task ContextCreated(BotContext context)
+        
+        public async Task ContextCreated(IBotContext context, Middleware.MiddlewareSet.NextDelegate next)
         {
             context.TemplateManager.Register(_templateEngine);
-            return Task.CompletedTask;
+            await next().ConfigureAwait(false); 
         }
-
     }
 
     public static class BotTemplateExtensions

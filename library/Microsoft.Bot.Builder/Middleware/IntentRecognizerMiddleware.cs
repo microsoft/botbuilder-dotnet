@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Microsoft.Bot.Builder
+namespace Microsoft.Bot.Builder.Middleware
 {
     public class Intent
     {
@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Builder
         public IList<Entity> Entities { get; } = new List<Entity>();                       
     }    
 
-    public class IntentRecognizerMiddleware : IMiddleware, IReceiveActivity
+    public class IntentRecognizerMiddleware : IReceiveActivity
     {
         public delegate Task<Boolean> IntentDisabler(IBotContext context);
         public delegate Task<IList<Intent>> IntentRecognizer(IBotContext context);
@@ -22,9 +22,9 @@ namespace Microsoft.Bot.Builder
         private readonly LinkedList<IntentRecognizer> _intentRecognizers = new LinkedList<IntentRecognizer>();
         private readonly LinkedList<IntentResultMutator> _intentResultMutators = new LinkedList<IntentResultMutator>();
 
-        public async Task<ReceiveResponse> ReceiveActivity(BotContext context)
+        public async Task ReceiveActivity(IBotContext context, MiddlewareSet.NextDelegate next)
         {
-            BotAssert.ContextNotNull(context);           
+            BotAssert.ContextNotNull(context);
 
             var intents = await this.Recognize(context);
             if (intents.Count != 0)
@@ -35,9 +35,9 @@ namespace Microsoft.Bot.Builder
                     context.TopIntent = topIntent;
                 }
             }
-            return new ReceiveResponse(false); 
+            await next().ConfigureAwait(false); 
         }
-
+       
         public async Task<IList<Intent>> Recognize(IBotContext context)
         {
             BotAssert.ContextNotNull(context);
@@ -160,7 +160,7 @@ namespace Microsoft.Bot.Builder
         public static string CleanString(string s)
         {
             return string.IsNullOrWhiteSpace(s) ? string.Empty : s.Trim();
-        }
+        }        
     }
 
 }

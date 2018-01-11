@@ -1,12 +1,9 @@
 ﻿using AlarmBot.Models;
 using Microsoft.Bot.Builder;
+using Microsoft.Bot.Builder.Middleware;
 using Microsoft.Bot.Builder.Templates;
-using Microsoft.Bot.Connector;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace AlarmBot.TopicViews
 {
@@ -38,7 +35,7 @@ namespace AlarmBot.TopicViews
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
-        public static string AlarmDescription(BotContext context, Alarm alarm)
+        public static string AlarmDescription(IBotContext context, Alarm alarm)
         {
             StringBuilder sb = new StringBuilder();
             if (!String.IsNullOrWhiteSpace(alarm.Title))
@@ -70,7 +67,7 @@ namespace AlarmBot.TopicViews
                 {
                     { STARTTOPIC, (context, data) => $"Ok, let's add an alarm." },
                     { HELP, (context, data) => $"I am working with you to create an alarm.  To do that I need to know the title and time.\n\n{AlarmDescription(context,data)}"},
-                    { CONFUSED, (context, data) => $"I am sorry, I didn't understand: {context.Request.Text}." },
+                    { CONFUSED, (context, data) => $"I am sorry, I didn't understand: {context.Request.AsMessageActivity().Text}." },
                     { CANCELPROMPT, (context, data) => TopicViewHelpers.ReplyWithSuggestions(context, "Cancel Alarm?", $"Did you want to cancel the alarm?\n\n{AlarmDescription(context,data)}", YesNo) },
                     { CANCELREPROMPT, (context, data) => TopicViewHelpers.ReplyWithSuggestions(context, $"Cancel alarm?", $"Please answer the question with a \"yes\" or \"no\" reply. Did you want to cancel the alarm?\n\n{AlarmDescription(context,data)}", YesNo) },
                     { TOPICCANCELED, (context, data) => $"OK, I have canceled this alarm." },

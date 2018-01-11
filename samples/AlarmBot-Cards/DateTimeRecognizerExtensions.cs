@@ -1,4 +1,5 @@
 ﻿using Microsoft.Bot.Builder;
+using Microsoft.Bot.Connector;
 using Microsoft.Recognizers.Text.DateTime;
 using System;
 using System.Collections.Generic;
@@ -19,8 +20,8 @@ namespace AlarmBot
             //else
             {
                 // Get DateTime model for English
-                var model = DateTimeRecognizer.GetInstance().GetDateTimeModel(context.Request.Locale ?? "en-us");
-                var results = model.Parse(context.Request.Text);
+                var model = DateTimeRecognizer.GetInstance().GetDateTimeModel(((Activity)context.Request).Locale ?? "en-us");
+                var results = model.Parse(((Activity)context.Request).Text);
 
                 // Check there are valid results
                 if (results.Any() && results.First().TypeName.StartsWith("datetimeV2"))

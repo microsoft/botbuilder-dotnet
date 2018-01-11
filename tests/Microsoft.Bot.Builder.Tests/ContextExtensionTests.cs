@@ -16,9 +16,9 @@ namespace Microsoft.Bot.Builder.Tests
         {
             TestAdapter adapter = new TestAdapter();
             Bot bot = new Bot(adapter)
-                .OnReceive(async (context) =>
+                .OnReceive(async (context, next) =>
                 {
-                    if (context.Request.Text == "wait")
+                    if (context.Request.AsMessageActivity().Text == "wait")
                     {
                         context
                             .Reply("before")
@@ -27,8 +27,9 @@ namespace Microsoft.Bot.Builder.Tests
                     }
                     else
                     {
-                        context.Reply(context.Request.Text);
+                        context.Reply(context.Request.AsMessageActivity().Text);
                     }
+                    await next(); 
                 });
 
             DateTime start = DateTime.Now;
@@ -49,17 +50,18 @@ namespace Microsoft.Bot.Builder.Tests
         {
             TestAdapter adapter = new TestAdapter();
             Bot bot = new Bot(adapter)
-                .OnReceive(async (context) =>
+                .OnReceive(async (context, next) =>
                 {
-                    if (context.Request.Text == "typing")
+                    if (context.Request.AsMessageActivity().Text == "typing")
                     {
                         context.ShowTyping(); 
                         context.Reply("typing done");
                     }
                     else
                     {
-                        context.Reply(context.Request.Text);
+                        context.Reply(context.Request.AsMessageActivity().Text);
                     }
+                    await next(); 
                 });
 
             await adapter

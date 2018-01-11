@@ -24,7 +24,7 @@ namespace AlarmBot.Topics
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public Task<bool> StartTopic(BotContext context)
+        public Task<bool> StartTopic(IBotContext context)
         {
             switch (context.Request.Type)
             {
@@ -58,7 +58,7 @@ namespace AlarmBot.Topics
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public Task<bool> ContinueTopic(BotContext context)
+        public Task<bool> ContinueTopic(IBotContext context)
         {
             var activeTopic = (ITopic)context.State.Conversation[ConversationProperties.ACTIVETOPIC];
 
@@ -107,7 +107,7 @@ namespace AlarmBot.Topics
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public Task<bool> ResumeTopic(BotContext context)
+        public Task<bool> ResumeTopic(IBotContext context)
         {
             // just prompt the user to ask what they want to do
             context.ReplyWith(DefaultTopicView.RESUMETOPIC);

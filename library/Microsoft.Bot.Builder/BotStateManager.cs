@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Middleware;
 
 namespace Microsoft.Bot.Builder
 {
@@ -36,12 +37,11 @@ namespace Microsoft.Bot.Builder
         public bool LastWriterWins { get; set; }
     }
 
-    public class BotStateManager : IMiddleware, IContextCreated, IPostActivity, IContextDone
+    public class BotStateManager : Middleware.IContextCreated, Middleware.IPostActivity
     {
         private readonly BotStateManagerSettings _settings;
         private const string UserKeyRoot = @"user";
         private const string ConversationKeyRoot = @"conversation";
-
 
         public BotStateManager() : this(new BotStateManagerSettings())
         {
@@ -52,25 +52,26 @@ namespace Microsoft.Bot.Builder
             _settings = settings ?? throw new ArgumentNullException("settings");
         }
 
-        public async Task ContextCreated(BotContext context)
+        public async Task ContextCreated(IBotContext context, MiddlewareSet.NextDelegate next)
         {
-            await Read(context).ConfigureAwait(false);            
-        }
+            await Read(context).ConfigureAwait(false);
+            await next().ConfigureAwait(false); 
+        }        
 
-        public async Task ContextDone(BotContext context)
-        {
-            await Write(context).ConfigureAwait(false);            
-        }
-
-        public async Task PostActivity(BotContext context, IList<Activity> activities)
+        public async Task PostActivity(IBotContext context, IList<IActivity> activities, MiddlewareSet.NextDelegate next)
         {
             if (_settings.WriteBeforePost)
             {
-                await Write(context).ConfigureAwait(false); 
+                await Write(context).ConfigureAwait(false);
+            }
+            await next().ConfigureAwait(false);
+            if (!_settings.WriteBeforePost)
+            {
+                await Write(context).ConfigureAwait(false);
             }
         }
 
-        protected virtual async Task<StoreItems> Read(BotContext context, IList<String> keys = null)
+        protected virtual async Task<StoreItems> Read(IBotContext context, IList<String> keys = null)
         {
             BotAssert.AssertStorage(context);
 
@@ -96,7 +97,7 @@ namespace Microsoft.Bot.Builder
             return items;
         }
 
-        protected virtual async Task Write (BotContext context, StoreItems changes = null)
+        protected virtual async Task Write (IBotContext context, StoreItems changes = null)
         {
             BotAssert.AssertStorage(context);
 
@@ -138,16 +139,16 @@ namespace Microsoft.Bot.Builder
                     throw new InvalidOperationException($"Keys starting with '{ConversationKeyRoot}' are reserved.");
             }
         }
-        private static string UserKey(BotContext context)
+        private static string UserKey(IBotContext context)
         {
             var conversation = context.ConversationReference;
             return $"{UserKeyRoot}/{conversation.ChannelId}/{conversation.User.Id}";            
         }
 
-        private static string ConversationKey(BotContext context)
+        private static string ConversationKey(IBotContext context)
         {
             var conversation = context.ConversationReference;
             return $"{ConversationKeyRoot}/{conversation.ChannelId}/{conversation.Conversation.Id}";
-        }
+        }        
     }
 }

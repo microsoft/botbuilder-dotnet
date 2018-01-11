@@ -78,7 +78,7 @@ namespace InjectionBasedBotExample
             services.AddScoped<Bot>(serviceProvider =>
               {
                   Bot b = new Bot(new BotFrameworkAdapter(appId, appKey))
-                    .Use((IMiddleware)serviceProvider.GetService<IStorage>())
+                    .Use((Microsoft.Bot.Builder.Middleware.IMiddleware)serviceProvider.GetService<IStorage>())
                     .Use(new BotStateManager())
                     .Use(new EchoMiddleware());
 

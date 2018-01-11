@@ -1,13 +1,11 @@
 ﻿using AdaptiveCards;
 using AlarmBot.Models;
 using Microsoft.Bot.Builder;
+using Microsoft.Bot.Builder.Middleware;
 using Microsoft.Bot.Builder.Templates;
 using Microsoft.Bot.Connector;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AlarmBot.TopicViews
 {
@@ -21,9 +19,9 @@ namespace AlarmBot.TopicViews
         // Template Ids
         public const string SHOWALARMS = "ShowAlarmsTopic.ShowAlarms";
 
-        public static IMessageActivity AlarmsCard(BotContext context, IEnumerable<Alarm> alarms, string title, string message)
+        public static IMessageActivity AlarmsCard(IBotContext context, IEnumerable<Alarm> alarms, string title, string message)
         {
-            IMessageActivity activity = context.Request.CreateReply(message);
+            IMessageActivity activity = ((Activity)context.Request).CreateReply(message);
             var card = new AdaptiveCard();
             card.Body.Add(new TextBlock() { Text = title, Size = TextSize.Large, Wrap = true, Weight = TextWeight.Bolder });
             if (message != null)

@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Middleware;
 using static Microsoft.Bot.Builder.Conversation.Routers;
 
 namespace Microsoft.Bot.Builder.Conversation
 {
-    public class ActivityRoutingMiddleware : IMiddleware, IReceiveActivity
+    public class ActivityRoutingMiddleware : IReceiveActivity
     {
         Router _router;
         
@@ -19,17 +20,17 @@ namespace Microsoft.Bot.Builder.Conversation
         //        throw new ArgumentNullException(nameof(pragueHandler));
 
         //    _pragueRouter = Router.ToRouter(pragueHandler); 
-        //}
+        //}        
 
-        public async Task<ReceiveResponse> ReceiveActivity(BotContext context)
+        public async Task ReceiveActivity(IBotContext context, MiddlewareSet.NextDelegate next)
         {
-            Route route = await _router.GetRoute(context).ConfigureAwait(false); 
-            if (route == null)
-                return new ReceiveResponse(false);
+            Route route = await _router.GetRoute(context).ConfigureAwait(false);
+            if (route == null) // don't call the next middleware
+                return; 
 
             await route.Action(context, null).ConfigureAwait(false);
 
-            return new ReceiveResponse(true); 
+            await next().ConfigureAwait(false);
         }
     }
 }

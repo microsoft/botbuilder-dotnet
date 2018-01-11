@@ -25,7 +25,7 @@ namespace AlarmBot
             return reply;
         }
 
-        public static IMessageActivity ReplyWithTitle(BotContext context, string title, string message)
+        public static IMessageActivity ReplyWithTitle(IBotContext context, string title, string message)
         {
             StringBuilder sb = new StringBuilder();
             if (title != null)
@@ -34,7 +34,7 @@ namespace AlarmBot
             if (message != null)
                 sb.AppendLine(message);
 
-            return context.Request.CreateReply(sb.ToString());
+            return ((Activity)context.Request).CreateReply(sb.ToString());
         }
 
 
@@ -48,9 +48,9 @@ namespace AlarmBot
         /// <param name="yesLabel">yes label</param>
         /// <param name="noLabel">no label</param>
         /// <returns></returns>
-        public static IMessageActivity CreateMessageBoxCard(BotContext context, string id, string title, string message, string yesLabel, string noLabel)
+        public static IMessageActivity CreateMessageBoxCard(IBotContext context, string id, string title, string message, string yesLabel, string noLabel)
         {
-            IMessageActivity reply = context.Request.CreateReply(message);
+            IMessageActivity reply = ((Activity)context.Request).CreateReply(message);
             var card = new AdaptiveCard();
             card.Body.Add(new TextBlock() { Text = title, Size = TextSize.Large });
             card.Body.Add(new TextBlock() { Text = message });

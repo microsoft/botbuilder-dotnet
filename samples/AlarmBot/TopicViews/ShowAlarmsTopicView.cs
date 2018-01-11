@@ -1,11 +1,9 @@
 ﻿using AlarmBot.Models;
-using Microsoft.Bot.Builder;
+using Microsoft.Bot.Builder.Middleware;
 using Microsoft.Bot.Builder.Templates;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace AlarmBot.TopicViews
 {

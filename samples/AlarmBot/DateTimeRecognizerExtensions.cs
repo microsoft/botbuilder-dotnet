@@ -19,8 +19,8 @@ namespace AlarmBot
             //else
             {
                 // Get DateTime model for English
-                var model = DateTimeRecognizer.GetInstance().GetDateTimeModel(context.Request.Locale ?? "en-us");
-                var results = model.Parse(context.Request.Text);
+                var model = DateTimeRecognizer.GetInstance().GetDateTimeModel(context.Request.AsMessageActivity().Locale ?? "en-us");
+                var results = model.Parse(context.Request.AsMessageActivity().Text);
 
                 // Check there are valid results
                 if (results.Any() && results.First().TypeName.StartsWith("datetimeV2"))

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.Middleware;
 using Microsoft.Bot.Builder.Templates;
 using Microsoft.Bot.Connector;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -48,8 +49,6 @@ namespace Microsoft.Bot.Builder.Tests
                 }
             };
         }
-
-
 
         [TestMethod]
         public async Task Template_TemplateManager_Registration()
@@ -113,10 +112,10 @@ namespace Microsoft.Bot.Builder.Tests
             Bot bot = new Bot(adapter)
                 .UseTemplates(templates1)
                 .UseTemplates(templates2)
-                .OnReceive(async (context) =>
+                .OnReceive(async (context, next) =>
                 {
-                    context.ReplyWith(context.Request.Text.Trim(), new { name = "joe" });
-                    return new ReceiveResponse(handled: true);
+                    context.ReplyWith(context.Request.AsMessageActivity().Text.Trim(), new { name = "joe" });
+                    await next();
                 });
 
             await adapter
@@ -132,11 +131,11 @@ namespace Microsoft.Bot.Builder.Tests
             Bot bot = new Bot(adapter)
                 .UseTemplates(templates1)
                 .UseTemplates(templates2)
-                .OnReceive(async (context) =>
+                .OnReceive(async (context, next) =>
                 {
-                    context.Request.Locale = "en"; // force to english
-                    context.ReplyWith(context.Request.Text.Trim(), new { name = "joe" });
-                    return new ReceiveResponse(handled: true);
+                    context.Request.AsMessageActivity().Locale = "en"; // force to english
+                    context.ReplyWith(context.Request.AsMessageActivity().Text.Trim(), new { name = "joe" });
+                    await next();
                 });
 
             await adapter
@@ -152,11 +151,11 @@ namespace Microsoft.Bot.Builder.Tests
             Bot bot = new Bot(adapter)
                 .UseTemplates(templates1)
                 .UseTemplates(templates2)
-                .OnReceive(async (context) =>
+                .OnReceive(async (context, next) =>
                 {
-                    context.Request.Locale = "fr"; // force to french
-                    context.ReplyWith(context.Request.Text.Trim(), new { name = "joe" });
-                    return new ReceiveResponse(handled: true);
+                    context.Request.AsMessageActivity().Locale = "fr"; // force to french
+                    context.ReplyWith(context.Request.AsMessageActivity().Text.Trim(), new { name = "joe" });
+                    await next(); 
                 });
 
             await adapter
@@ -172,11 +171,11 @@ namespace Microsoft.Bot.Builder.Tests
             Bot bot = new Bot(adapter)
                 .UseTemplates(templates1)
                 .UseTemplates(templates2)
-                .OnReceive(async (context) =>
+                .OnReceive(async (context, next) =>
                 {
-                    context.Request.Locale = "fr"; // force to french
-                    context.ReplyWith(context.Request.Text.Trim(), new { name = "joe" });
-                    return new ReceiveResponse(handled: true);
+                    context.Request.AsMessageActivity().Locale = "fr"; // force to french
+                    context.ReplyWith(context.Request.AsMessageActivity().Text.Trim(), new { name = "joe" });
+                    await next(); 
                 });
 
             await adapter
@@ -192,10 +191,10 @@ namespace Microsoft.Bot.Builder.Tests
             Bot bot = new Bot(adapter)
                 .UseTemplateRenderer(new DictionaryRenderer(templates1))
                 .UseTemplateRenderer(new DictionaryRenderer(templates2))
-                .OnReceive(async (context) =>
+                .OnReceive(async (context, next) =>
                 {
-                    context.ReplyWith(context.Request.Text.Trim(), new { name = "joe" });
-                    return new ReceiveResponse(handled: true);
+                    context.ReplyWith(context.Request.AsMessageActivity().Text.Trim(), new { name = "joe" });
+                    await next();
                 });
 
             await adapter
@@ -203,7 +202,5 @@ namespace Microsoft.Bot.Builder.Tests
                 .Send("activityTemplate").AssertReply("(Activity)default: joe")
                 .StartTest();
         }
-
-
     }
 }

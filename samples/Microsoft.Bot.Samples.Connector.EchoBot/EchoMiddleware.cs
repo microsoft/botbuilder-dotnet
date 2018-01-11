@@ -1,24 +1,26 @@
 ﻿using Microsoft.Bot.Builder;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Middleware;
+using Microsoft.Bot.Connector;
 
 namespace Microsoft.Bot.Samples.Middleware
 {
-    public class EchoMiddleware : IReceiveActivity
-    {
-        public async Task<ReceiveResponse> ReceiveActivity(BotContext context)
+    public class EchoMiddleware : Microsoft.Bot.Builder.Middleware.IReceiveActivity
+    {        
+        public async Task ReceiveActivity(IBotContext context, MiddlewareSet.NextDelegate next)
         {
-            if (context.IfIntent("echoIntent"))
+            // Only deal with messages. Ignore all else. 
+            if (context.Request.Type == ActivityTypes.Message)
             {
-                long turnNumber = context.State.Conversation["turnNumber"] ?? 0;                   
-                context.State.Conversation["turnNumber"] = ++turnNumber;
+                if (context.IfIntent("echoIntent"))
+                {
+                    long turnNumber = context.State.Conversation["turnNumber"] ?? 0;
+                    context.State.Conversation["turnNumber"] = ++turnNumber;
 
-                context.Responses.Add(
-                        context.Request.CreateReply(
-                            $"[{turnNumber}] echo: {context.TopIntent.Entities[0].ValueAs<string>()}"));                
-                
-                return new ReceiveResponse(true);
+                    context.Reply($"[{turnNumber}] echo: {context.TopIntent.Entities[0].ValueAs<string>()}");
+                }
             }
-            return new ReceiveResponse(false);
+            await next();
         }
     }
 }

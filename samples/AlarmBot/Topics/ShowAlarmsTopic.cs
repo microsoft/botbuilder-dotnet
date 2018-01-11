@@ -25,7 +25,7 @@ namespace AlarmBot.Topics
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public override async Task<bool> StartTopic(BotContext context)
+        public override async Task<bool> StartTopic(IBotContext context)
         {
             await ShowAlarms(context);
 
@@ -33,14 +33,14 @@ namespace AlarmBot.Topics
             return false;
         }
 
-        public static Task ShowAlarms(BotContext context)
+        public static Task ShowAlarms(IBotContext context)
         {
             List<Alarm> alarms = GetAlarms(context);
             context.ReplyWith(ShowAlarmsTopicView.SHOWALARMS, alarms);
             return Task.CompletedTask;
         }
 
-        public static List<Alarm> GetAlarms(BotContext context)
+        public static List<Alarm> GetAlarms(IBotContext context)
         {
             var alarms = (List<Alarm>)context.State.User[UserProperties.ALARMS];
             if (alarms == null)

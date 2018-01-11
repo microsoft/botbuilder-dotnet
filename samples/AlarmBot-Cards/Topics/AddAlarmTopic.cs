@@ -60,7 +60,7 @@ namespace AlarmBot.Topics
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public async Task<bool> StartTopic(BotContext context)
+        public async Task<bool> StartTopic(IBotContext context)
         {
             var times = context.TopIntent?.Entities.Where(entity => entity.GroupName == "AlarmTime")
                     .Select(entity => DateTimeOffset.Parse(entity.ValueAs<string>()));
@@ -91,7 +91,7 @@ namespace AlarmBot.Topics
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public async Task<bool> ContinueTopic(BotContext context)
+        public async Task<bool> ContinueTopic(IBotContext context)
         {
             // for messages
             if (context.Request.Type == ActivityTypes.Message)
@@ -121,16 +121,16 @@ namespace AlarmBot.Topics
             return true;
         }
 
-        private async Task<bool> ProcessTopicState(BotContext context)
+        private async Task<bool> ProcessTopicState(IBotContext context)
         {
-            string utterance = (context.Request.Text ?? "").Trim();
+            string utterance = (((Activity)context.Request).Text ?? "").Trim();
 
             // we ar eusing TopicState to remember what we last asked
             switch (this.TopicState)
             {
                 case TopicStates.AddingCard:
                     {
-                        dynamic payload = context.Request.Value;
+                        dynamic payload = ((Activity)context.Request).Value;
                         if (payload != null)
                         {
                             if (payload.Action == "Submit")
@@ -167,7 +167,7 @@ namespace AlarmBot.Topics
                 case TopicStates.CancelConfirmation:
                     {
 
-                        dynamic payload = context.Request.Value;
+                        dynamic payload = ((Activity)context.Request).Value;
                         switch (payload.Action)
                         {
                             case "Yes":
@@ -199,7 +199,7 @@ namespace AlarmBot.Topics
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public Task<bool> ResumeTopic(BotContext context)
+        public Task<bool> ResumeTopic(IBotContext context)
         {
             // simply prompt again based on our state
             this.TopicState = TopicStates.AddingCard;
