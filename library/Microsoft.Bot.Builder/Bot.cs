@@ -9,7 +9,6 @@ namespace Microsoft.Bot.Builder
     public class Bot : Middleware.MiddlewareSet
     {
         private ActivityAdapterBase _adapter;
-        private IBotLogger _logger = new NullLogger();
 
         public new Bot OnReceive(Func<IBotContext, NextDelegate, Task> anonymousMethod)
         {
@@ -30,28 +29,19 @@ namespace Microsoft.Bot.Builder
             this.Use(new Middleware.TemplateManager());
         }
 
-        public Bot Use(IBotLogger logger)
-        {
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            return this;
-        }
-
         public new Bot Use(Middleware.IMiddleware middleware)
         {
             base.Use(middleware);
             return this;
         }
 
-        public IBotLogger Logger { get => _logger; }
-
         public ActivityAdapterBase Adapter { get => _adapter; }
-        
 
         private async Task RunPipeline(IBotContext context, Func<IBotContext, Task> proactiveCallback = null)
         {
             BotAssert.ContextNotNull(context);
 
-            context.Bot.Logger.Information($"Middleware: Beginning Pipeline for {context.ConversationReference.ActivityId}");
+            System.Diagnostics.Trace.TraceInformation($"Middleware: Beginning Pipeline for {context.ConversationReference.ActivityId}");
 
             // Call any registered Middleware Components looking for ContextCreated()
             await this.ContextCreated(context).ConfigureAwait(false);
@@ -68,7 +58,7 @@ namespace Microsoft.Bot.Builder
             if (context.Responses != null && context.Responses.Any())
                 await this.PostActivity(context, context.Responses).ConfigureAwait(false);
 
-            context.Bot.Logger.Information($"Middleware: Ending Pipeline for {context.ConversationReference.ActivityId}");
+            System.Diagnostics.Trace.TraceInformation($"Middleware: Ending Pipeline for {context.ConversationReference.ActivityId}");
         }
 
         public async Task RunPipeline(IActivity activity)

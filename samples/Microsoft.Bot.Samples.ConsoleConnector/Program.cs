@@ -17,15 +17,14 @@ namespace Microsoft.Bot.Samples
         static async Task MainAsync(string[] args)
         {
             var cc = new Microsoft.Bot.Builder.Adapters.ConsoleAdapter();
-          
+
             Builder.Bot bot = new Builder.Bot(cc)
                 .Use(new MemoryStorage())
                 .Use(new BotStateManager())
                 .Use(CreateRegEx())
                 .Use(new EchoMiddleware())
                 .Use(new ReverseMiddleWare())
-                .Use(new ProactiveMiddleware())
-                .Use(new ConsoleLogger());
+                .Use(new ProactiveMiddleware());
 
             await cc.Listen();
         }

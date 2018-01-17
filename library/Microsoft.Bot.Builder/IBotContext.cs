@@ -32,11 +32,6 @@ namespace Microsoft.Bot.Builder
         BotState State { get; }
 
         /// <summary>
-        /// Registered logger
-        /// </summary>
-        IBotLogger Logger { get; }
-
-        /// <summary>
         /// registered storage
         /// </summary>
         IStorage Storage { get; set; }
@@ -128,8 +123,6 @@ namespace Microsoft.Bot.Builder
         public Bot Bot => _bot;
 
         public IList<IActivity> Responses { get => _responses; set => this._responses = value; }
-
-        public IBotLogger Logger => _bot.Logger;
 
         public IStorage Storage { get; set; }
 
