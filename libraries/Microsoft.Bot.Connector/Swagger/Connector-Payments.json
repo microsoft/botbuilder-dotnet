@@ -1,0 +1,366 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "payments",
+    "title": "Bot Connector Payments API",
+    "description": "Bot Framework Payments",
+    "termsOfService": "https://www.microsoft.com/en-us/legal/intellectualproperty/copyright/default.aspx",
+    "contact": {
+      "name": "Bot Framework",
+      "url": "https://botframework.com",
+      "email": "botframework@microsoft.com"
+    },
+    "license": {
+      "name": "The MIT License (MIT)",
+      "url": "https://opensource.org/licenses/MIT"
+    }
+  },
+  "host": "api.botframework.com",
+  "schemes": [ "https" ],
+  "definitions": {
+    "Object": {
+      "type": "object",
+      "properties": {}
+    },
+    "MicrosoftPayMethodData": {
+      "description": "W3C Payment Method Data for Microsoft Pay",
+      "type": "object",
+      "properties": {
+        "merchantId": {
+          "description": "Microsoft Pay Merchant ID",
+          "type": "string"
+        },
+        "supportedNetworks": {
+          "description": "Supported payment networks (e.g., \"visa\" and \"mastercard\")",
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "supportedTypes": {
+          "description": "Supported payment types (e.g., \"credit\")",
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "PaymentAddress": {
+      "description": "Address within a Payment Request",
+      "type": "object",
+      "properties": {
+        "country": {
+          "description": "This is the CLDR (Common Locale Data Repository) region code. For example, US, GB, CN, or JP",
+          "type": "string"
+        },
+        "addressLine": {
+          "description": "This is the most specific part of the address. It can include, for example, a street name, a house number, apartment number, a rural delivery route, descriptive instructions, or a post office box number.",
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "region": {
+          "description": "This is the top level administrative subdivision of the country. For example, this can be a state, a province, an oblast, or a prefecture.",
+          "type": "string"
+        },
+        "city": {
+          "description": "This is the city/town portion of the address.",
+          "type": "string"
+        },
+        "dependentLocality": {
+          "description": "This is the dependent locality or sublocality within a city. For example, used for neighborhoods, boroughs, districts, or UK dependent localities.",
+          "type": "string"
+        },
+        "postalCode": {
+          "description": "This is the postal code or ZIP code, also known as PIN code in India.",
+          "type": "string"
+        },
+        "sortingCode": {
+          "description": "This is the sorting code as used in, for example, France.",
+          "type": "string"
+        },
+        "languageCode": {
+          "description": "This is the BCP-47 language code for the address. It's used to determine the field separators and the order of fields when formatting the address for display.",
+          "type": "string"
+        },
+        "organization": {
+          "description": "This is the organization, firm, company, or institution at this address.",
+          "type": "string"
+        },
+        "recipient": {
+          "description": "This is the name of the recipient or contact person.",
+          "type": "string"
+        },
+        "phone": {
+          "description": "This is the phone number of the recipient or contact person.",
+          "type": "string"
+        }
+      }
+    },
+    "PaymentCurrencyAmount": {
+      "description": "Supplies monetary amounts",
+      "type": "object",
+      "properties": {
+        "currency": {
+          "description": "A currency identifier",
+          "type": "string"
+        },
+        "value": {
+          "description": "Decimal monetary value",
+          "type": "string"
+        },
+        "currencySystem": {
+          "description": "Currency system",
+          "type": "string"
+        }
+      }
+    },
+    "PaymentDetails": {
+      "description": "Provides information about the requested transaction",
+      "type": "object",
+      "properties": {
+        "total": {
+          "$ref": "#/definitions/PaymentItem",
+          "description": "Contains the total amount of the payment request"
+        },
+        "displayItems": {
+          "description": "Contains line items for the payment request that the user agent may display",
+          "type": "array",
+          "items": { "$ref": "#/definitions/PaymentItem" }
+        },
+        "shippingOptions": {
+          "description": "A sequence containing the different shipping options for the user to choose from",
+          "type": "array",
+          "items": { "$ref": "#/definitions/PaymentShippingOption" }
+        },
+        "modifiers": {
+          "description": "Contains modifiers for particular payment method identifiers",
+          "type": "array",
+          "items": { "$ref": "#/definitions/PaymentDetailsModifier" }
+        },
+        "error": {
+          "description": "Error description",
+          "type": "string"
+        }
+      }
+    },
+    "PaymentItem": {
+      "description": "Indicates what the payment request is for and the value asked for",
+      "type": "object",
+      "properties": {
+        "label": {
+          "description": "Human-readable description of the item",
+          "type": "string"
+        },
+        "amount": {
+          "$ref": "#/definitions/PaymentCurrencyAmount",
+          "description": "Monetary amount for the item"
+        },
+        "pending": {
+          "description": "When set to true this flag means that the amount field is not final.",
+          "type": "boolean"
+        }
+      }
+    },
+    "PaymentShippingOption": {
+      "description": "Describes a shipping option",
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "String identifier used to reference this PaymentShippingOption",
+          "type": "string"
+        },
+        "label": {
+          "description": "Human-readable description of the item",
+          "type": "string"
+        },
+        "amount": {
+          "$ref": "#/definitions/PaymentCurrencyAmount",
+          "description": "Contains the monetary amount for the item"
+        },
+        "selected": {
+          "description": "Indicates whether this is the default selected PaymentShippingOption",
+          "type": "boolean"
+        }
+      }
+    },
+    "PaymentDetailsModifier": {
+      "description": "Provides details that modify the PaymentDetails based on payment method identifier",
+      "type": "object",
+      "properties": {
+        "supportedMethods": {
+          "description": "Contains a sequence of payment method identifiers",
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "total": {
+          "$ref": "#/definitions/PaymentItem",
+          "description": "This value overrides the total field in the PaymentDetails dictionary for the payment method identifiers in the supportedMethods field"
+        },
+        "additionalDisplayItems": {
+          "description": "Provides additional display items that are appended to the displayItems field in the PaymentDetails dictionary for the payment method identifiers in the supportedMethods field",
+          "type": "array",
+          "items": { "$ref": "#/definitions/PaymentItem" }
+        },
+        "data": {
+          "$ref": "#/definitions/Object",
+          "description": "A JSON-serializable object that provides optional information that might be needed by the supported payment methods"
+        }
+      }
+    },
+    "PaymentMethodData": {
+      "description": "Indicates a set of supported payment methods and any associated payment method specific data for those methods",
+      "type": "object",
+      "properties": {
+        "supportedMethods": {
+          "description": "Required sequence of strings containing payment method identifiers for payment methods that the merchant web site accepts",
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "data": {
+          "$ref": "#/definitions/Object",
+          "description": "A JSON-serializable object that provides optional information that might be needed by the supported payment methods"
+        }
+      }
+    },
+    "PaymentOptions": {
+      "description": "Provides information about the options desired for the payment request",
+      "type": "object",
+      "properties": {
+        "requestPayerName": {
+          "description": "Indicates whether the user agent should collect and return the payer's name as part of the payment request",
+          "type": "boolean"
+        },
+        "requestPayerEmail": {
+          "description": "Indicates whether the user agent should collect and return the payer's email address as part of the payment request",
+          "type": "boolean"
+        },
+        "requestPayerPhone": {
+          "description": "Indicates whether the user agent should collect and return the payer's phone number as part of the payment request",
+          "type": "boolean"
+        },
+        "requestShipping": {
+          "description": "Indicates whether the user agent should collect and return a shipping address as part of the payment request",
+          "type": "boolean"
+        },
+        "shippingType": {
+          "description": "If requestShipping is set to true, then the shippingType field may be used to influence the way the user agent presents the user interface for gathering the shipping address",
+          "type": "string"
+        }
+      }
+    },
+    "PaymentRequest": {
+      "description": "A request to make a payment",
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "ID of this payment request",
+          "type": "string"
+        },
+        "methodData": {
+          "description": "Allowed payment methods for this request",
+          "type": "array",
+          "items": { "$ref": "#/definitions/PaymentMethodData" }
+        },
+        "details": {
+          "$ref": "#/definitions/PaymentDetails",
+          "description": "Details for this request"
+        },
+        "options": {
+          "$ref": "#/definitions/PaymentOptions",
+          "description": "Provides information about the options desired for the payment request"
+        },
+        "expires": {
+          "description": "Expiration for this request, in ISO 8601 duration format (e.g., 'P1D')",
+          "type": "string"
+        }
+      }
+    },
+    "PaymentRequestComplete": {
+      "description": "Payload delivered when completing a payment request",
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "Payment request ID",
+          "type": "string"
+        },
+        "paymentRequest": {
+          "$ref": "#/definitions/PaymentRequest",
+          "description": "Initial payment request"
+        },
+        "paymentResponse": {
+          "$ref": "#/definitions/PaymentResponse",
+          "description": "Corresponding payment response"
+        }
+      }
+    },
+    "PaymentResponse": {
+      "description": "A PaymentResponse is returned when a user has selected a payment method and approved a payment request",
+      "type": "object",
+      "properties": {
+        "methodName": {
+          "description": "The payment method identifier for the payment method that the user selected to fulfil the transaction",
+          "type": "string"
+        },
+        "details": {
+          "$ref": "#/definitions/Object",
+          "description": "A JSON-serializable object that provides a payment method specific message used by the merchant to process the transaction and determine successful fund transfer"
+        },
+        "shippingAddress": {
+          "$ref": "#/definitions/PaymentAddress",
+          "description": "If the requestShipping flag was set to true in the PaymentOptions passed to the PaymentRequest constructor, then shippingAddress will be the full and final shipping address chosen by the user"
+        },
+        "shippingOption": {
+          "description": "If the requestShipping flag was set to true in the PaymentOptions passed to the PaymentRequest constructor, then shippingOption will be the id attribute of the selected shipping option",
+          "type": "string"
+        },
+        "payerEmail": {
+          "description": "If the requestPayerEmail flag was set to true in the PaymentOptions passed to the PaymentRequest constructor, then payerEmail will be the email address chosen by the user",
+          "type": "string"
+        },
+        "payerPhone": {
+          "description": "If the requestPayerPhone flag was set to true in the PaymentOptions passed to the PaymentRequest constructor, then payerPhone will be the phone number chosen by the user",
+          "type": "string"
+        }
+      }
+    },
+    "PaymentRequestCompleteResult": {
+      "description": "Result from a completed payment request",
+      "type": "object",
+      "properties": {
+        "result": {
+          "description": "Result of the payment request completion",
+          "type": "string"
+        }
+      }
+    },
+    "PaymentRequestUpdate": {
+      "description": "An update to a payment request",
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "ID for the payment request to update",
+          "type": "string"
+        },
+        "details": {
+          "$ref": "#/definitions/PaymentDetails",
+          "description": "Update payment details"
+        },
+        "shippingAddress": {
+          "$ref": "#/definitions/PaymentAddress",
+          "description": "Updated shipping address"
+        },
+        "shippingOption": {
+          "description": "Updated shipping options",
+          "type": "string"
+        }
+      }
+    },
+    "PaymentRequestUpdateResult": {
+      "description": "A result object from a Payment Request Update invoke operation",
+      "type": "object",
+      "properties": {
+        "details": {
+          "$ref": "#/definitions/PaymentDetails",
+          "description": "Update payment details"
+        }
+      }
+    }
+  }
+}
