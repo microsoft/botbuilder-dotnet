@@ -1,0 +1,110 @@
+{
+  "Entries": [
+    {
+      "RequestUri": "/v3/conversations",
+      "EncodedRequestUri": "L3YzL2NvbnZlcnNhdGlvbnM=",
+      "RequestMethod": "POST",
+      "RequestBody": "{\r\n  \"bot\": {\r\n    \"id\": \"B21S8SG7J:T03CWQ0QB\"\r\n  },\r\n  \"members\": [\r\n    {\r\n      \"id\": \"U8H8E2HSB:T03CWQ0QB\"\r\n    }\r\n  ],\r\n  \"activity\": {\r\n    \"type\": \"message\",\r\n    \"from\": {\r\n      \"id\": \"B21S8SG7J:T03CWQ0QB\"\r\n    },\r\n    \"recipient\": {\r\n      \"id\": \"U8H8E2HSB:T03CWQ0QB\"\r\n    },\r\n    \"text\": \"TEST Send to Conversation with invalid conversation id\",\r\n    \"name\": \"acticity\"\r\n  }\r\n}",
+      "RequestHeaders": {
+        "Content-Type": [
+          "application/json; charset=utf-8"
+        ],
+        "Content-Length": [
+          "388"
+        ],
+        "User-Agent": [
+          "FxVersion/4.6.25211.01",
+          "Microsoft.Azure.BotFramework.Connector.BotConnector/2.0.0.0"
+        ]
+      },
+      "ResponseBody": "{\r\n  \"activityId\": \"1515187105.000344\",\r\n  \"id\": \"B21S8SG7J:T03CWQ0QB:D8PNY7UQ7\"\r\n}",
+      "ResponseHeaders": {
+        "Content-Type": [
+          "application/json; charset=utf-8"
+        ],
+        "Expires": [
+          "-1"
+        ],
+        "Cache-Control": [
+          "no-cache"
+        ],
+        "Date": [
+          "Fri, 05 Jan 2018 21:18:24 GMT"
+        ],
+        "Pragma": [
+          "no-cache"
+        ],
+        "Server": [
+          "Microsoft-IIS/10.0"
+        ],
+        "Vary": [
+          "Accept-Encoding"
+        ],
+        "Request-Context": [
+          "appId=cid-v1:6814484e-c0d5-40ea-9dba-74ff29ca4f62"
+        ],
+        "X-Powered-By": [
+          "ASP.NET"
+        ],
+        "Strict-Transport-Security": [
+          "max-age=31536000"
+        ]
+      },
+      "StatusCode": 200
+    },
+    {
+      "RequestUri": "/v3/conversations/B21S8SG7J:T03CWQ0QB:D8PNY7UQ7M/activities",
+      "EncodedRequestUri": "L3YzL2NvbnZlcnNhdGlvbnMvQjIxUzhTRzdKJTNBVDAzQ1dRMFFCJTNBRDhQTlk3VVE3TS9hY3Rpdml0aWVz",
+      "RequestMethod": "POST",
+      "RequestBody": "{\r\n  \"type\": \"message\",\r\n  \"from\": {\r\n    \"id\": \"B21S8SG7J:T03CWQ0QB\"\r\n  },\r\n  \"recipient\": {\r\n    \"id\": \"U8H8E2HSB:T03CWQ0QB\"\r\n  },\r\n  \"text\": \"TEST Send to Conversation with invalid conversation id\",\r\n  \"name\": \"acticity\"\r\n}",
+      "RequestHeaders": {
+        "Content-Type": [
+          "application/json; charset=utf-8"
+        ],
+        "Content-Length": [
+          "226"
+        ],
+        "User-Agent": [
+          "FxVersion/4.6.25211.01",
+          "Microsoft.Azure.BotFramework.Connector.BotConnector/2.0.0.0"
+        ]
+      },
+      "ResponseBody": "{\r\n  \"error\": {\r\n    \"code\": \"ServiceError\",\r\n    \"message\": \"SendActivityToUserAsync FAILED: The specified channel was not found\"\r\n  }\r\n}",
+      "ResponseHeaders": {
+        "Content-Length": [
+          "138"
+        ],
+        "Content-Type": [
+          "application/json; charset=utf-8"
+        ],
+        "Expires": [
+          "-1"
+        ],
+        "Cache-Control": [
+          "no-cache"
+        ],
+        "Date": [
+          "Fri, 05 Jan 2018 21:18:25 GMT"
+        ],
+        "Pragma": [
+          "no-cache"
+        ],
+        "Server": [
+          "Microsoft-IIS/10.0"
+        ],
+        "Request-Context": [
+          "appId=cid-v1:6814484e-c0d5-40ea-9dba-74ff29ca4f62"
+        ],
+        "X-Powered-By": [
+          "ASP.NET"
+        ],
+        "Strict-Transport-Security": [
+          "max-age=31536000"
+        ]
+      },
+      "StatusCode": 400
+    }
+  ],
+  "Names": {},
+  "Variables": {}
+}

@@ -1,0 +1,110 @@
+{
+  "Entries": [
+    {
+      "RequestUri": "/v3/conversations",
+      "EncodedRequestUri": "L3YzL2NvbnZlcnNhdGlvbnM=",
+      "RequestMethod": "POST",
+      "RequestBody": "{\r\n  \"bot\": {\r\n    \"id\": \"B21S8SG7J:T03CWQ0QB\"\r\n  },\r\n  \"members\": [\r\n    {\r\n      \"id\": \"U8H8E2HSB:T03CWQ0QB\"\r\n    }\r\n  ]\r\n}",
+      "RequestHeaders": {
+        "Content-Type": [
+          "application/json; charset=utf-8"
+        ],
+        "Content-Length": [
+          "125"
+        ],
+        "User-Agent": [
+          "FxVersion/4.6.25211.01",
+          "Microsoft.Azure.BotFramework.Connector.BotConnector/2.0.0.0"
+        ]
+      },
+      "ResponseBody": "{\r\n  \"id\": \"B21S8SG7J:T03CWQ0QB:D8PNY7UQ7\"\r\n}",
+      "ResponseHeaders": {
+        "Content-Type": [
+          "application/json; charset=utf-8"
+        ],
+        "Expires": [
+          "-1"
+        ],
+        "Cache-Control": [
+          "no-cache"
+        ],
+        "Date": [
+          "Fri, 05 Jan 2018 21:18:16 GMT"
+        ],
+        "Pragma": [
+          "no-cache"
+        ],
+        "Server": [
+          "Microsoft-IIS/10.0"
+        ],
+        "Vary": [
+          "Accept-Encoding"
+        ],
+        "Request-Context": [
+          "appId=cid-v1:6814484e-c0d5-40ea-9dba-74ff29ca4f62"
+        ],
+        "X-Powered-By": [
+          "ASP.NET"
+        ],
+        "Strict-Transport-Security": [
+          "max-age=31536000"
+        ]
+      },
+      "StatusCode": 200
+    },
+    {
+      "RequestUri": "/v3/conversations/B21S8SG7J:T03CWQ0QB:D8PNY7UQ7/activities",
+      "EncodedRequestUri": "L3YzL2NvbnZlcnNhdGlvbnMvQjIxUzhTRzdKJTNBVDAzQ1dRMFFCJTNBRDhQTlk3VVE3L2FjdGl2aXRpZXM=",
+      "RequestMethod": "POST",
+      "RequestBody": "{\r\n  \"type\": \"message\",\r\n  \"from\": {\r\n    \"id\": \"B21S8SG7J:T03CWQ0QB\"\r\n  },\r\n  \"recipient\": {\r\n    \"id\": \"U8H8E2HSB:T03CWQ0QB\"\r\n  },\r\n  \"text\": \"TEST Send Card to Conversation\",\r\n  \"attachments\": [\r\n    {\r\n      \"contentType\": \"Hero\",\r\n      \"content\": {\r\n        \"title\": \"A static image\",\r\n        \"subtitle\": \"JPEG image\",\r\n        \"images\": [\r\n          {\r\n            \"url\": \"https://docs.microsoft.com/en-us/bot-framework/media/designing-bots/core/dialogs-screens.png\"\r\n          }\r\n        ]\r\n      }\r\n    },\r\n    {\r\n      \"contentType\": \"Hero\",\r\n      \"content\": {\r\n        \"title\": \"An animation\",\r\n        \"subtitle\": \"GIF image\",\r\n        \"images\": [\r\n          {\r\n            \"url\": \"http://i.giphy.com/Ki55RUbOV5njy.gif\"\r\n          }\r\n        ]\r\n      }\r\n    }\r\n  ],\r\n  \"name\": \"acticity\"\r\n}",
+      "RequestHeaders": {
+        "Content-Type": [
+          "application/json; charset=utf-8"
+        ],
+        "Content-Length": [
+          "804"
+        ],
+        "User-Agent": [
+          "FxVersion/4.6.25211.01",
+          "Microsoft.Azure.BotFramework.Connector.BotConnector/2.0.0.0"
+        ]
+      },
+      "ResponseBody": "{\r\n  \"id\": \"1515187097.000484\"\r\n}",
+      "ResponseHeaders": {
+        "Content-Type": [
+          "application/json; charset=utf-8"
+        ],
+        "Expires": [
+          "-1"
+        ],
+        "Cache-Control": [
+          "no-cache"
+        ],
+        "Date": [
+          "Fri, 05 Jan 2018 21:18:17 GMT"
+        ],
+        "Pragma": [
+          "no-cache"
+        ],
+        "Server": [
+          "Microsoft-IIS/10.0"
+        ],
+        "Vary": [
+          "Accept-Encoding"
+        ],
+        "Request-Context": [
+          "appId=cid-v1:6814484e-c0d5-40ea-9dba-74ff29ca4f62"
+        ],
+        "X-Powered-By": [
+          "ASP.NET"
+        ],
+        "Strict-Transport-Security": [
+          "max-age=31536000"
+        ]
+      },
+      "StatusCode": 200
+    }
+  ],
+  "Names": {},
+  "Variables": {}
+}
