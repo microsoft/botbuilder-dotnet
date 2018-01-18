@@ -1,0 +1,1 @@
+for %%s in (*.nupkg) do nuget.exe push %%s %1 -Source http://%2.azurewebsites.net/api/v2/package 
