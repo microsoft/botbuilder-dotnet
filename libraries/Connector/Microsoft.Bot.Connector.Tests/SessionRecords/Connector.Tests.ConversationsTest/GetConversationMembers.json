@@ -1,0 +1,104 @@
+{
+  "Entries": [
+    {
+      "RequestUri": "/v3/conversations",
+      "EncodedRequestUri": "L3YzL2NvbnZlcnNhdGlvbnM=",
+      "RequestMethod": "POST",
+      "RequestBody": "{\r\n  \"bot\": {\r\n    \"id\": \"B21S8SG7J:T03CWQ0QB\"\r\n  },\r\n  \"members\": [\r\n    {\r\n      \"id\": \"U8H8E2HSB:T03CWQ0QB\"\r\n    }\r\n  ]\r\n}",
+      "RequestHeaders": {
+        "Content-Type": [
+          "application/json; charset=utf-8"
+        ],
+        "Content-Length": [
+          "125"
+        ],
+        "User-Agent": [
+          "FxVersion/4.6.25211.01",
+          "Microsoft.Azure.BotFramework.Connector.BotConnector/2.0.0.0"
+        ]
+      },
+      "ResponseBody": "{\r\n  \"id\": \"B21S8SG7J:T03CWQ0QB:D8PNY7UQ7\"\r\n}",
+      "ResponseHeaders": {
+        "Content-Type": [
+          "application/json; charset=utf-8"
+        ],
+        "Expires": [
+          "-1"
+        ],
+        "Cache-Control": [
+          "no-cache"
+        ],
+        "Date": [
+          "Fri, 05 Jan 2018 21:18:32 GMT"
+        ],
+        "Pragma": [
+          "no-cache"
+        ],
+        "Server": [
+          "Microsoft-IIS/10.0"
+        ],
+        "Vary": [
+          "Accept-Encoding"
+        ],
+        "Request-Context": [
+          "appId=cid-v1:6814484e-c0d5-40ea-9dba-74ff29ca4f62"
+        ],
+        "X-Powered-By": [
+          "ASP.NET"
+        ],
+        "Strict-Transport-Security": [
+          "max-age=31536000"
+        ]
+      },
+      "StatusCode": 200
+    },
+    {
+      "RequestUri": "/v3/conversations/B21S8SG7J:T03CWQ0QB:D8PNY7UQ7/members",
+      "EncodedRequestUri": "L3YzL2NvbnZlcnNhdGlvbnMvQjIxUzhTRzdKJTNBVDAzQ1dRMFFCJTNBRDhQTlk3VVE3L21lbWJlcnM=",
+      "RequestMethod": "GET",
+      "RequestBody": "",
+      "RequestHeaders": {
+        "User-Agent": [
+          "FxVersion/4.6.25211.01",
+          "Microsoft.Azure.BotFramework.Connector.BotConnector/2.0.0.0"
+        ]
+      },
+      "ResponseBody": "[\r\n  {\r\n    \"id\": \"B21S8SG7J:T03CWQ0QB\",\r\n    \"name\": \"manxbot\"\r\n  },\r\n  {\r\n    \"id\": \"U8H8E2HSB:T03CWQ0QB\",\r\n    \"name\": \"amit.stein\"\r\n  }\r\n]",
+      "ResponseHeaders": {
+        "Content-Type": [
+          "application/json; charset=utf-8"
+        ],
+        "Expires": [
+          "-1"
+        ],
+        "Cache-Control": [
+          "no-cache"
+        ],
+        "Date": [
+          "Fri, 05 Jan 2018 21:18:32 GMT"
+        ],
+        "Pragma": [
+          "no-cache"
+        ],
+        "Server": [
+          "Microsoft-IIS/10.0"
+        ],
+        "Vary": [
+          "Accept-Encoding"
+        ],
+        "Request-Context": [
+          "appId=cid-v1:6814484e-c0d5-40ea-9dba-74ff29ca4f62"
+        ],
+        "X-Powered-By": [
+          "ASP.NET"
+        ],
+        "Strict-Transport-Security": [
+          "max-age=31536000"
+        ]
+      },
+      "StatusCode": 200
+    }
+  ],
+  "Names": {},
+  "Variables": {}
+}
