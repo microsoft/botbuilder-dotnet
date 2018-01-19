@@ -63,5 +63,10 @@ namespace Microsoft.Bot.Connector
         /// Bot added or removed from channel
         /// </summary>
         public const string InstallationUpdate = "installationUpdate";
+
+        /// <summary>
+        /// Reaction added or removed from activity
+        /// </summary>
+        public const string MessageReaction = "messageReaction";
     }
 }

@@ -47,5 +47,10 @@ namespace Microsoft.Bot.Connector
         /// Signin button
         /// </summary>
         public const string Signin = "signin";
+
+        /// <summary>
+        /// Post message to bot
+        /// </summary>
+        public const string MessageBack = "messageBack";
     }
 }

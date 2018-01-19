@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Text.RegularExpressions;
@@ -29,6 +30,16 @@ namespace Microsoft.Bot.Connector
         /// Content-type for an Activity
         /// </summary>
         public const string ContentType = "application/vnd.microsoft.activity";
+
+        partial void CustomInit()
+        {
+            MembersAdded = MembersAdded ?? new List<ChannelAccount>();
+            MembersRemoved = MembersRemoved ?? new List<ChannelAccount>();
+            Attachments = Attachments ?? new List<Attachment>();
+            Entities = Entities ?? new List<Entity>();
+            ReactionsAdded = ReactionsAdded ?? new List<MessageReaction>();
+            ReactionsRemoved = ReactionsRemoved ?? new List<MessageReaction>();
+        }
 
         /// <summary>
         /// Take a message and create a reply message for it with the routing information 
@@ -207,48 +218,6 @@ namespace Microsoft.Bot.Connector
 
     public static class ActivityExtensions
     {
-        /// <summary>
-        /// Get StateClient appropriate for this activity
-        /// </summary>
-        /// <param name="credentials">credentials for bot to access state api</param>
-        /// <param name="serviceUrl">alternate serviceurl to use for state service</param>
-        /// <param name="handlers"></param>
-        /// <param name="activity"></param>
-        /// <returns></returns>
-        public static StateClient GetStateClient(this IActivity activity, MicrosoftAppCredentials credentials, string serviceUrl = null, params DelegatingHandler[] handlers)
-        {
-            bool useServiceUrl = (activity.ChannelId == "emulator");
-            if (useServiceUrl)
-                return new StateClient(new Uri(activity.ServiceUrl), credentials: credentials, handlers: handlers);
-
-            if (serviceUrl != null)
-                return new StateClient(new Uri(serviceUrl), credentials: credentials, handlers: handlers);
-
-            return new StateClient(credentials, true, handlers);
-        }
-
-        /// <summary>
-        /// Get StateClient appropriate for this activity
-        /// </summary>
-        /// <param name="microsoftAppId"></param>
-        /// <param name="microsoftAppPassword"></param>
-        /// <param name="serviceUrl">alternate serviceurl to use for state service</param>
-        /// <param name="handlers"></param>
-        /// <param name="activity"></param>
-        /// <returns></returns>
-        public static StateClient GetStateClient(this IActivity activity, string microsoftAppId = null, string microsoftAppPassword = null, string serviceUrl = null, params DelegatingHandler[] handlers) => GetStateClient(activity, new MicrosoftAppCredentials(microsoftAppId, microsoftAppPassword), serviceUrl, handlers);
-
-        /// <summary>
-        /// Return the "major" portion of the activity
-        /// </summary>
-        /// <param name="activity"></param>
-        /// <returns>normalized major portion of the activity, aka message/... will return "message"</returns>
-        public static string GetActivityType(this IActivity activity)
-        {
-            var type = activity.Type.Split('/').First();
-            return Activity.GetActivityType(type);
-        }
-
         /// <summary>
         /// Get channeldata as typed structure
         /// </summary>
