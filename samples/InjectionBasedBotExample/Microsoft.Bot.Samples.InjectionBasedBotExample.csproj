@@ -23,9 +23,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\library\Microsoft.Bot.Builder.Ai\Microsoft.Bot.Builder.Ai.csproj" />
-    <ProjectReference Include="..\..\library\Microsoft.Bot.Builder.BotFramework\Microsoft.Bot.Builder.BotFramework.csproj" />
-    <ProjectReference Include="..\..\library\Microsoft.Bot.Builder\Microsoft.Bot.Builder.csproj" />
+    <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Ai\Microsoft.Bot.Builder.Ai.csproj" />
+    <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.BotFramework\Microsoft.Bot.Builder.BotFramework.csproj" />
+    <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder\Microsoft.Bot.Builder.csproj" />
   </ItemGroup>
 
 </Project>
