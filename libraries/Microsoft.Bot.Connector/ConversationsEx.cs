@@ -31,7 +31,7 @@ namespace Microsoft.Bot.Connector
         public static async Task<ConversationResourceResponse> CreateDirectConversationAsync(this IConversations operations, ChannelAccount bot, ChannelAccount user, Activity activity = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             var _result = await operations.CreateConversationWithHttpMessagesAsync(GetDirectParameters(bot, user, activity), null, cancellationToken).ConfigureAwait(false);
-            var res = await _result.HandleErrorAsync<ConversationResourceResponse>().ConfigureAwait(false);
+            var res = _result.Body; 
             MicrosoftAppCredentials.TrustServiceUrl(res.ServiceUrl);
             return res;
         }
@@ -59,7 +59,7 @@ namespace Microsoft.Bot.Connector
         public static async Task<ConversationResourceResponse> CreateDirectConversationAsync(this IConversations operations, string botAddress, string userAddress, Activity activity = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             var _result = await operations.CreateConversationWithHttpMessagesAsync(GetDirectParameters(botAddress, userAddress, activity), null, cancellationToken).ConfigureAwait(false);
-            var res = await _result.HandleErrorAsync<ConversationResourceResponse>().ConfigureAwait(false);
+            var res = _result.Body;
             MicrosoftAppCredentials.TrustServiceUrl(res.ServiceUrl);
             return res;
         }
@@ -123,10 +123,6 @@ namespace Microsoft.Bot.Connector
         /// </param>
         public static Task<ResourceResponse> ReplyToActivityAsync(this IConversations operations, Activity activity, CancellationToken cancellationToken = default(CancellationToken))
         {
-            // TEMP TODO REMOVE THIS AFTER SKYPE DEPLOYS NEW SERVICE WHICH PROPERLY IMPLEMENTS THIS ENDPOINT
-            if (activity.ReplyToId == "0")
-                return operations.SendToConversationAsync(activity);
-
             if (activity.ReplyToId == null)
             {
                 throw new ValidationException(ValidationRules.CannotBeNull, "ReplyToId");

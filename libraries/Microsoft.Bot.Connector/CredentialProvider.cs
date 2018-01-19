@@ -1,5 +1,12 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿#if !NET45
+using Microsoft.Extensions.Configuration;
+#endif
+using System;
 using System.Threading.Tasks;
+
+#if NET45
+using System.Configuration;
+#endif 
 
 namespace Microsoft.Bot.Connector
 {
@@ -60,6 +67,29 @@ namespace Microsoft.Bot.Connector
         }
     }
 
+#if NET45
+    /// <summary>
+    /// Credential provider which uses config settings to lookup appId and password
+    /// </summary>
+    public sealed class SettingsCredentialProvider : SimpleCredentialProvider
+    {
+        public SettingsCredentialProvider(string appIdSettingName = null, string appPasswordSettingName = null)
+        {
+            var appIdKey = appIdSettingName ?? MicrosoftAppCredentials.MicrosoftAppIdKey;
+            var passwordKey = appPasswordSettingName ?? MicrosoftAppCredentials.MicrosoftAppPasswordKey;
+            this.AppId = SettingsUtils.GetAppSettings(appIdKey);
+            this.Password = SettingsUtils.GetAppSettings(passwordKey);
+        }
+    }
+
+    public static class SettingsUtils
+    {
+        public static string GetAppSettings(string key)
+        {
+            return ConfigurationManager.AppSettings[key] ?? Environment.GetEnvironmentVariable(key, EnvironmentVariableTarget.Process);
+        }
+    }
+#else
     /// <summary>
     /// Credential provider which uses <see cref="Microsoft.Extensions.Configuration.IConfiguration"/> to lookup appId and password
     /// </summary>
@@ -75,4 +105,5 @@ namespace Microsoft.Bot.Connector
             this.Password = configuration.GetSection(passwordKey)?.Value;
         }
     }
+#endif
 }

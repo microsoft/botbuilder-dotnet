@@ -18,8 +18,8 @@ namespace Microsoft.Bot.Connector
             if (identity == null)
                 return null;
 
-            // emulator adds appid claim
-            Claim botClaim = identity.Claims.FirstOrDefault(c => c.Type == "appid");
+            // emulator adds appid claim for v1 tokens, or azp for v2 tokens
+            Claim botClaim = identity.Claims.FirstOrDefault(c => c.Type == "appid" || c.Type == "azp");
             if (botClaim != null)
                 return botClaim.Value;
 

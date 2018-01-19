@@ -1,4 +1,4 @@
-﻿using System;
+﻿ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -7,8 +7,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Rest;
 using Newtonsoft.Json;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Configuration;
 
 namespace Microsoft.Bot.Connector
 {
@@ -24,6 +22,7 @@ namespace Microsoft.Bot.Connector
         /// </summary>
         public const string MicrosoftAppPasswordKey = "MicrosoftAppPassword";
 
+        // TODO: Complete list with proper TrustedHostNames
         protected static ConcurrentDictionary<string, DateTime> TrustedHostNames = new ConcurrentDictionary<string, DateTime>(
                                                                                         new Dictionary<string, DateTime>() {
                                                                                             { "state.botframework.com", DateTime.MaxValue }
@@ -31,28 +30,13 @@ namespace Microsoft.Bot.Connector
 
         protected static readonly ConcurrentDictionary<string, OAuthResponse> cache = new ConcurrentDictionary<string, OAuthResponse>();
 
-        protected readonly ILogger logger;
-
-        public MicrosoftAppCredentials(IConfiguration configuration, ILogger logger = null)
-            : this(configuration.GetSection(MicrosoftAppIdKey)?.Value, configuration.GetSection(MicrosoftAppPasswordKey)?.Value, logger)
+        public MicrosoftAppCredentials(string appId, string password)
         {
-        }
+            this.MicrosoftAppId = appId;
 
-        public MicrosoftAppCredentials(string appId = null, string password = null, ILogger logger = null)
-            : this(BotServiceProvider.Instance, appId, password, logger)
-        {
-        }
-
-        public MicrosoftAppCredentials(BotServiceProvider serviceProvider, string appId, string password, ILogger logger)
-        {
-            this.MicrosoftAppId = appId
-                ?? serviceProvider.ConfigurationRoot.GetSection(MicrosoftAppIdKey)?.Value;
-
-            this.MicrosoftAppPassword = password
-                ?? serviceProvider.ConfigurationRoot.GetSection(MicrosoftAppPasswordKey)?.Value;
+            this.MicrosoftAppPassword = password;
 
             this.TokenCacheKey = $"{MicrosoftAppId}-cache";
-            this.logger = logger ?? serviceProvider.CreateLogger();
         }
 
         public string MicrosoftAppId { get; set; }
@@ -102,10 +86,9 @@ namespace Microsoft.Bot.Connector
                     TrustedHostNames.AddOrUpdate(new Uri(serviceUrl).Host, expirationTime, (key, oldValue) => expirationTime);
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                BotServiceProvider.Instance.CreateLogger().LogWarning($"Service url {serviceUrl} is not a well formed Uri!");
-                BotServiceProvider.Instance.CreateLogger().LogWarning(e.ToString());
+
             }
         }
 
@@ -162,8 +145,6 @@ namespace Microsoft.Bot.Connector
             {
                 return true;
             }
-
-            this.logger.LogWarning($"Service url {request.RequestUri.Authority} is not trusted and JwtToken cannot be sent to it.");
 
             return false;
         }

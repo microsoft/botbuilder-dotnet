@@ -26,7 +26,7 @@ namespace Microsoft.Bot.Connector
         /// <summary>
         /// UTC Time when message was sent
         /// </summary>
-        DateTime? Timestamp { get; set; }
+        DateTimeOffset? Timestamp { get; set; }
 
         /// <summary>
         /// Client Time when message was sent Ex: 2016-09-23T13:07:49.4714686-07:00
