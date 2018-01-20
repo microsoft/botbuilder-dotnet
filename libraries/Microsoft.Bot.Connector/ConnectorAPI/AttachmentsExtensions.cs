@@ -7,6 +7,7 @@
 namespace Microsoft.Bot.Connector
 {
     
+    using System.IO;
     using System.Threading;
     using System.Threading.Tasks;
 
@@ -70,7 +71,7 @@ namespace Microsoft.Bot.Connector
             /// <param name='viewId'>
             /// View id from attachmentInfo
             /// </param>
-            public static byte[] GetAttachment(this IAttachments operations, string attachmentId, string viewId)
+            public static Stream GetAttachment(this IAttachments operations, string attachmentId, string viewId)
             {
                 return operations.GetAttachmentAsync(attachmentId, viewId).GetAwaiter().GetResult();
             }
@@ -93,12 +94,11 @@ namespace Microsoft.Bot.Connector
             /// <param name='cancellationToken'>
             /// The cancellation token.
             /// </param>
-            public static async Task<byte[]> GetAttachmentAsync(this IAttachments operations, string attachmentId, string viewId, CancellationToken cancellationToken = default(CancellationToken))
+            public static async Task<Stream> GetAttachmentAsync(this IAttachments operations, string attachmentId, string viewId, CancellationToken cancellationToken = default(CancellationToken))
             {
-                using (var _result = await operations.GetAttachmentWithHttpMessagesAsync(attachmentId, viewId, null, cancellationToken).ConfigureAwait(false))
-                {
-                    return _result.Body;
-                }
+                var _result = await operations.GetAttachmentWithHttpMessagesAsync(attachmentId, viewId, null, cancellationToken).ConfigureAwait(false);
+                _result.Request.Dispose();
+                return _result.Body;
             }
 
     }
