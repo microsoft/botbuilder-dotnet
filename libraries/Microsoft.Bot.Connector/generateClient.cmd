@@ -9,5 +9,4 @@ call ..\node_modules\.bin\replace "FromProperty" "From" . -r --include="*.cs"
 call ..\node_modules\.bin\replace "fromProperty" "from" . -r --include="*.cs"
 cd ..
 
-@echo !!!!! Please review ConversationsExtensions.cs and BotStateExtensions.cs for custom throw code
 pause

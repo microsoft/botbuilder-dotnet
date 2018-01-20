@@ -278,11 +278,11 @@ namespace Microsoft.Bot.Connector
         ///
         /// Use SendToConversation in all other cases.
         /// </remarks>
-        /// <param name='activity'>
-        /// Activity to send
-        /// </param>
         /// <param name='conversationId'>
         /// Conversation ID
+        /// </param>
+        /// <param name='activity'>
+        /// Activity to send
         /// </param>
         /// <param name='customHeaders'>
         /// Headers that will be added to request.
@@ -305,15 +305,15 @@ namespace Microsoft.Bot.Connector
         /// <return>
         /// A response object containing the response body and response headers.
         /// </return>
-        public async Task<HttpOperationResponse<ResourceResponse>> SendToConversationWithHttpMessagesAsync(Activity activity, string conversationId, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<HttpOperationResponse<ResourceResponse>> SendToConversationWithHttpMessagesAsync(string conversationId, Activity activity, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (activity == null)
-            {
-                throw new ValidationException(ValidationRules.CannotBeNull, "activity");
-            }
             if (conversationId == null)
             {
                 throw new ValidationException(ValidationRules.CannotBeNull, "conversationId");
+            }
+            if (activity == null)
+            {
+                throw new ValidationException(ValidationRules.CannotBeNull, "activity");
             }
             // Tracing
             bool _shouldTrace = ServiceClientTracing.IsEnabled;
@@ -322,8 +322,8 @@ namespace Microsoft.Bot.Connector
             {
                 _invocationId = ServiceClientTracing.NextInvocationId.ToString();
                 Dictionary<string, object> tracingParameters = new Dictionary<string, object>();
-                tracingParameters.Add("activity", activity);
                 tracingParameters.Add("conversationId", conversationId);
+                tracingParameters.Add("activity", activity);
                 tracingParameters.Add("cancellationToken", cancellationToken);
                 ServiceClientTracing.Enter(_invocationId, this, "SendToConversation", tracingParameters);
             }
