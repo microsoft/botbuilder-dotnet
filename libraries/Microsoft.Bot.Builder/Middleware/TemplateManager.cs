@@ -90,9 +90,8 @@ namespace Microsoft.Bot.Builder.Middleware
         private async Task BindActivityTemplate(IBotContext context, IActivity activity)
         {
             List<string> fallbackLocales = new List<string>(this._languageFallback);
-            string messageLocale = ((Activity)activity).Locale;
-            if (!String.IsNullOrEmpty(messageLocale))
-                fallbackLocales.Add(messageLocale);
+            if (!String.IsNullOrEmpty(context.Request.AsMessageActivity().Locale))
+                fallbackLocales.Add(context.Request.AsMessageActivity().Locale);
 
             fallbackLocales.Add("default");
 
