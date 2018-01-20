@@ -75,7 +75,7 @@ namespace Microsoft.Bot.Connector
         /// </param>
         public static ResourceResponse SendToConversation(this IConversations operations, Activity activity)
         {
-            return Task.Factory.StartNew(s => ((IConversations)s).SendToConversationAsync(activity, activity.Conversation.Id), operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
+            return Task.Factory.StartNew(s => ((IConversations)s).SendToConversationAsync(activity.Conversation.Id, activity), operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -92,7 +92,7 @@ namespace Microsoft.Bot.Connector
         /// </param>
         public static Task<ResourceResponse> SendToConversationAsync(this IConversations operations, Activity activity, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return operations.SendToConversationAsync(activity, activity.Conversation.Id, cancellationToken);
+            return operations.SendToConversationAsync(activity.Conversation.Id, activity, cancellationToken);
         }
 
         /// <summary>

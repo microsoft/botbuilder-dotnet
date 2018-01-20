@@ -198,7 +198,7 @@
             UseClientFor(async client =>
             {
                 var conversation = await client.Conversations.CreateConversationAsync(createMessage);
-                var response = await client.Conversations.SendToConversationAsync(activity, conversation.Id);
+                var response = await client.Conversations.SendToConversationAsync(conversation.Id, activity);
                 Assert.NotNull(response.Id);
             });
 
