@@ -54,7 +54,7 @@
             }
           },
           "default": {
-            "description": "Content/Responses/Default.md",
+            "description": "The operation failed and the response is an error object describing the status code and failure.",
             "schema": {
               "$ref": "#/definitions/ErrorResponse"
             }
@@ -110,7 +110,7 @@
             "description": "The Location header describes where the content is now."
           },
           "default": {
-            "description": "Content/Responses/Default.md",
+            "description": "The operation failed and the response is an error object describing the status code and failure.",
             "schema": {
               "$ref": "#/definitions/ErrorResponse"
             }
@@ -170,7 +170,7 @@
             }
           },
           "default": {
-            "description": "Content/Responses/Default.md",
+            "description": "The operation failed and the response is an error object describing the status code and failure.",
             "schema": {
               "$ref": "#/definitions/ErrorResponse"
             }
@@ -235,7 +235,7 @@
             }
           },
           "default": {
-            "description": "Content/Responses/Default.md",
+            "description": "The operation failed and the response is an error object describing the status code and failure.",
             "schema": {
               "$ref": "#/definitions/ErrorResponse"
             }
@@ -307,7 +307,7 @@
             }
           },
           "default": {
-            "description": "Content/Responses/Default.md",
+            "description": "The operation failed and the response is an error object describing the status code and failure.",
             "schema": {
               "$ref": "#/definitions/ErrorResponse"
             }
@@ -377,7 +377,7 @@
             }
           },
           "default": {
-            "description": "Content/Responses/Default.md",
+            "description": "The operation failed and the response is an error object describing the status code and failure.",
             "schema": {
               "$ref": "#/definitions/ErrorResponse"
             }
@@ -424,7 +424,7 @@
             "description": "The request has been accepted for processing, but the processing has not been completed"
           },
           "default": {
-            "description": "Content/Responses/Default.md",
+            "description": "The operation failed and the response is an error object describing the status code and failure.",
             "schema": {
               "$ref": "#/definitions/ErrorResponse"
             }
@@ -469,7 +469,7 @@
             }
           },
           "default": {
-            "description": "Content/Responses/Default.md",
+            "description": "The operation failed and the response is an error object describing the status code and failure.",
             "schema": {
               "$ref": "#/definitions/ErrorResponse"
             }
@@ -521,7 +521,7 @@
             }
           },
           "default": {
-            "description": "Content/Responses/Default.md",
+            "description": "The operation failed and the response is an error object describing the status code and failure.",
             "schema": {
               "$ref": "#/definitions/ErrorResponse"
             }
@@ -586,7 +586,7 @@
             }
           },
           "default": {
-            "description": "Content/Responses/Default.md",
+            "description": "The operation failed and the response is an error object describing the status code and failure.",
             "schema": {
               "$ref": "#/definitions/ErrorResponse"
             }
