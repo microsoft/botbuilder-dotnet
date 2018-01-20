@@ -1,4 +1,6 @@
 
+
+
 # Contributing
 
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a
@@ -12,3 +14,10 @@ provided by the bot. You will only need to do this once across all repos using o
 This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
 For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or
 contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
+
+
+## Current Build Status
+| Project  | Status |
+| --- | --- |
+| Microsoft.Bot.Connector | ![Build Status](https://fuselabs.visualstudio.com/_apis/public/build/definitions/86659c66-c9df-418a-a371-7de7aed35064/212/badge) |
+| Microsoft.Bot.Builder | ![Build Status](https://fuselabs.visualstudio.com/_apis/public/build/definitions/86659c66-c9df-418a-a371-7de7aed35064/211/badge) |
