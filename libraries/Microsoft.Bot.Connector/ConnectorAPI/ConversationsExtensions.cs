@@ -122,15 +122,15 @@ namespace Microsoft.Bot.Connector
             /// <param name='operations'>
             /// The operations group for this extension method.
             /// </param>
-            /// <param name='activity'>
-            /// Activity to send
-            /// </param>
             /// <param name='conversationId'>
             /// Conversation ID
             /// </param>
-            public static ResourceResponse SendToConversation(this IConversations operations, Activity activity, string conversationId)
+            /// <param name='activity'>
+            /// Activity to send
+            /// </param>
+            public static ResourceResponse SendToConversation(this IConversations operations, string conversationId, Activity activity)
             {
-                return operations.SendToConversationAsync(activity, conversationId).GetAwaiter().GetResult();
+                return operations.SendToConversationAsync(conversationId, activity).GetAwaiter().GetResult();
             }
 
             /// <summary>
@@ -154,18 +154,18 @@ namespace Microsoft.Bot.Connector
             /// <param name='operations'>
             /// The operations group for this extension method.
             /// </param>
-            /// <param name='activity'>
-            /// Activity to send
-            /// </param>
             /// <param name='conversationId'>
             /// Conversation ID
+            /// </param>
+            /// <param name='activity'>
+            /// Activity to send
             /// </param>
             /// <param name='cancellationToken'>
             /// The cancellation token.
             /// </param>
-            public static async Task<ResourceResponse> SendToConversationAsync(this IConversations operations, Activity activity, string conversationId, CancellationToken cancellationToken = default(CancellationToken))
+            public static async Task<ResourceResponse> SendToConversationAsync(this IConversations operations, string conversationId, Activity activity, CancellationToken cancellationToken = default(CancellationToken))
             {
-                using (var _result = await operations.SendToConversationWithHttpMessagesAsync(activity, conversationId, null, cancellationToken).ConfigureAwait(false))
+                using (var _result = await operations.SendToConversationWithHttpMessagesAsync(conversationId, activity, null, cancellationToken).ConfigureAwait(false))
                 {
                     return _result.Body;
                 }

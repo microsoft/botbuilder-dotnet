@@ -12,12 +12,12 @@ namespace Microsoft.Bot.Connector
     /// <summary>
     /// Mention information (entity type: "mention")
     /// </summary>
-    public partial class Mention 
+    public partial class Mention
     {
         /// <summary>
         /// Initializes a new instance of the Mention class.
         /// </summary>
-        public Mention() 
+        public Mention()
         {
             CustomInit();
         }
