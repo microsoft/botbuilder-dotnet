@@ -88,11 +88,11 @@ namespace Microsoft.Bot.Connector
         ///
         /// Use SendToConversation in all other cases.
         /// </remarks>
-        /// <param name='activity'>
-        /// Activity to send
-        /// </param>
         /// <param name='conversationId'>
         /// Conversation ID
+        /// </param>
+        /// <param name='activity'>
+        /// Activity to send
         /// </param>
         /// <param name='customHeaders'>
         /// The headers that will be added to request.
@@ -109,7 +109,7 @@ namespace Microsoft.Bot.Connector
         /// <exception cref="Microsoft.Rest.ValidationException">
         /// Thrown when a required parameter is null
         /// </exception>
-        Task<HttpOperationResponse<ResourceResponse>> SendToConversationWithHttpMessagesAsync(Activity activity, string conversationId, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
+        Task<HttpOperationResponse<ResourceResponse>> SendToConversationWithHttpMessagesAsync(string conversationId, Activity activity, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
         /// <summary>
         /// UpdateActivity
         /// </summary>
