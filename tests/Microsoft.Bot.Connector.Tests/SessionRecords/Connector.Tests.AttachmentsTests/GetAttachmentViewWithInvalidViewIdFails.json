@@ -13,57 +13,62 @@
           "14108"
         ],
         "User-Agent": [
-          "FxVersion/4.6.25211.01",
-          "Microsoft.Azure.BotFramework.Connector.BotConnector/2.0.0.0"
+          "FxVersion/4.7.2600.0",
+          "OSName/Windows10Enterprise",
+          "OSVersion/6.3.16299",
+          "Microsoft.Bot.Connector.ConnectorClient/0.0.0.0",
+          "Microsoft-BotFramework/4.0",
+          "(BotBuilder .Net/0.0.0.0)"
         ]
       },
-      "ResponseBody": "{\r\n  \"id\": \"at14128-4TrMvEJ1wTk\"\r\n}",
+      "ResponseBody": "{\r\n  \"id\": \"at14442-LRBis1DA4gJ\"\r\n}",
       "ResponseHeaders": {
+        "Content-Length": [
+          "35"
+        ],
         "Content-Type": [
           "application/json; charset=utf-8"
         ],
         "Expires": [
           "-1"
         ],
-        "Cache-Control": [
-          "no-cache"
-        ],
-        "Date": [
-          "Tue, 09 Jan 2018 15:34:37 GMT"
-        ],
         "Pragma": [
           "no-cache"
-        ],
-        "Server": [
-          "Microsoft-IIS/10.0"
-        ],
-        "Set-Cookie": [
-          "ARRAffinity=cfaeda5806a3768888e707969568c07d2824ec67e3dd88e924400998c026e3ff;Path=/;HttpOnly;Domain=slack.botframework.com"
-        ],
-        "Vary": [
-          "Accept-Encoding"
         ],
         "Request-Context": [
           "appId=cid-v1:6814484e-c0d5-40ea-9dba-74ff29ca4f62"
         ],
-        "X-Powered-By": [
-          "ASP.NET"
-        ],
         "Strict-Transport-Security": [
           "max-age=31536000"
+        ],
+        "Cache-Control": [
+          "no-cache"
+        ],
+        "Date": [
+          "Mon, 22 Jan 2018 17:10:56 GMT"
+        ],
+        "Server": [
+          "Microsoft-IIS/10.0"
+        ],
+        "X-Powered-By": [
+          "ASP.NET"
         ]
       },
       "StatusCode": 200
     },
     {
-      "RequestUri": "/v3/attachments/at14128-4TrMvEJ1wTk/views/invalid",
-      "EncodedRequestUri": "L3YzL2F0dGFjaG1lbnRzL2F0MTQxMjgtNFRyTXZFSjF3VGsvdmlld3MvaW52YWxpZA==",
+      "RequestUri": "/v3/attachments/at14442-LRBis1DA4gJ/views/invalid",
+      "EncodedRequestUri": "L3YzL2F0dGFjaG1lbnRzL2F0MTQ0NDItTFJCaXMxREE0Z0ovdmlld3MvaW52YWxpZA==",
       "RequestMethod": "GET",
       "RequestBody": "",
       "RequestHeaders": {
         "User-Agent": [
-          "FxVersion/4.6.25211.01",
-          "Microsoft.Azure.BotFramework.Connector.BotConnector/2.0.0.0"
+          "FxVersion/4.7.2600.0",
+          "OSName/Windows10Enterprise",
+          "OSVersion/6.3.16299",
+          "Microsoft.Bot.Connector.ConnectorClient/0.0.0.0",
+          "Microsoft-BotFramework/4.0",
+          "(BotBuilder .Net/0.0.0.0)"
         ]
       },
       "ResponseBody": "{\r\n  \"error\": {\r\n    \"code\": \"ServiceError\",\r\n    \"message\": \"attachment not found\"\r\n  }\r\n}",
@@ -77,26 +82,26 @@
         "Expires": [
           "-1"
         ],
-        "Cache-Control": [
-          "no-cache"
-        ],
-        "Date": [
-          "Tue, 09 Jan 2018 15:34:38 GMT"
-        ],
         "Pragma": [
           "no-cache"
-        ],
-        "Server": [
-          "Microsoft-IIS/10.0"
         ],
         "Request-Context": [
           "appId=cid-v1:6814484e-c0d5-40ea-9dba-74ff29ca4f62"
         ],
-        "X-Powered-By": [
-          "ASP.NET"
-        ],
         "Strict-Transport-Security": [
           "max-age=31536000"
+        ],
+        "Cache-Control": [
+          "no-cache"
+        ],
+        "Date": [
+          "Mon, 22 Jan 2018 17:10:57 GMT"
+        ],
+        "Server": [
+          "Microsoft-IIS/10.0"
+        ],
+        "X-Powered-By": [
+          "ASP.NET"
         ]
       },
       "StatusCode": 404
