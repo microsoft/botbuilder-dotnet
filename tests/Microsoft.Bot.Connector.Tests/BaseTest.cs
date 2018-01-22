@@ -9,8 +9,8 @@ namespace Connector.Tests
     using System.Runtime.CompilerServices;
     using System.Threading;
     using System.Threading.Tasks;
-    using Microsoft.Bot.Connector;
     using Microsoft.Azure.Test.HttpRecorder;
+    using Microsoft.Bot.Connector;
     using Microsoft.Rest;
     using Microsoft.Rest.ClientRuntime.Azure.TestFramework;
 
@@ -20,8 +20,8 @@ namespace Connector.Tests
 
         protected const string clientId = "[MSAPP_ID]";
         protected const string clientSecret = "[MSAPP_PASSWORD]";
-        protected const string userId = "U8H8E2HSB:T03CWQ0QB";
-        protected const string botId = "B21S8SG7J:T03CWQ0QB";
+        protected const string userId = "U19KH8EHJ:T03CWQ0QB";
+        protected const string botId = "B21UTEF8S:T03CWQ0QB";
         protected static Uri hostUri = new Uri("https://slack.botframework.com", UriKind.Absolute);
 
         private readonly string token;

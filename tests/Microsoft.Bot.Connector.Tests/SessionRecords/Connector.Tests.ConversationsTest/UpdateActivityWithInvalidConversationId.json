@@ -4,7 +4,7 @@
       "RequestUri": "/v3/conversations",
       "EncodedRequestUri": "L3YzL2NvbnZlcnNhdGlvbnM=",
       "RequestMethod": "POST",
-      "RequestBody": "{\r\n  \"bot\": {\r\n    \"id\": \"B21S8SG7J:T03CWQ0QB\"\r\n  },\r\n  \"members\": [\r\n    {\r\n      \"id\": \"U8H8E2HSB:T03CWQ0QB\"\r\n    }\r\n  ]\r\n}",
+      "RequestBody": "{\r\n  \"bot\": {\r\n    \"id\": \"B21UTEF8S:T03CWQ0QB\"\r\n  },\r\n  \"members\": [\r\n    {\r\n      \"id\": \"U19KH8EHJ:T03CWQ0QB\"\r\n    }\r\n  ]\r\n}",
       "RequestHeaders": {
         "Content-Type": [
           "application/json; charset=utf-8"
@@ -13,112 +13,124 @@
           "125"
         ],
         "User-Agent": [
-          "FxVersion/4.6.25211.01",
-          "Microsoft.Azure.BotFramework.Connector.BotConnector/2.0.0.0"
+          "FxVersion/4.7.2600.0",
+          "OSName/Windows10Enterprise",
+          "OSVersion/6.3.16299",
+          "Microsoft.Bot.Connector.ConnectorClient/0.0.0.0",
+          "Microsoft-BotFramework/4.0",
+          "(BotBuilder .Net/0.0.0.0)"
         ]
       },
-      "ResponseBody": "{\r\n  \"id\": \"B21S8SG7J:T03CWQ0QB:D8PNY7UQ7\"\r\n}",
+      "ResponseBody": "{\r\n  \"id\": \"B21UTEF8S:T03CWQ0QB:D2369CT7C\"\r\n}",
       "ResponseHeaders": {
+        "Content-Length": [
+          "45"
+        ],
         "Content-Type": [
           "application/json; charset=utf-8"
         ],
         "Expires": [
           "-1"
         ],
-        "Cache-Control": [
-          "no-cache"
-        ],
-        "Date": [
-          "Fri, 05 Jan 2018 21:18:28 GMT"
-        ],
         "Pragma": [
           "no-cache"
-        ],
-        "Server": [
-          "Microsoft-IIS/10.0"
-        ],
-        "Vary": [
-          "Accept-Encoding"
         ],
         "Request-Context": [
           "appId=cid-v1:6814484e-c0d5-40ea-9dba-74ff29ca4f62"
         ],
-        "X-Powered-By": [
-          "ASP.NET"
-        ],
         "Strict-Transport-Security": [
           "max-age=31536000"
+        ],
+        "Cache-Control": [
+          "no-cache"
+        ],
+        "Date": [
+          "Mon, 22 Jan 2018 17:11:12 GMT"
+        ],
+        "Server": [
+          "Microsoft-IIS/10.0"
+        ],
+        "X-Powered-By": [
+          "ASP.NET"
         ]
       },
       "StatusCode": 200
     },
     {
-      "RequestUri": "/v3/conversations/B21S8SG7J:T03CWQ0QB:D8PNY7UQ7/activities",
-      "EncodedRequestUri": "L3YzL2NvbnZlcnNhdGlvbnMvQjIxUzhTRzdKJTNBVDAzQ1dRMFFCJTNBRDhQTlk3VVE3L2FjdGl2aXRpZXM=",
+      "RequestUri": "/v3/conversations/B21UTEF8S:T03CWQ0QB:D2369CT7C/activities",
+      "EncodedRequestUri": "L3YzL2NvbnZlcnNhdGlvbnMvQjIxVVRFRjhTJTNBVDAzQ1dRMFFCJTNBRDIzNjlDVDdDL2FjdGl2aXRpZXM=",
       "RequestMethod": "POST",
-      "RequestBody": "{\r\n  \"type\": \"message\",\r\n  \"from\": {\r\n    \"id\": \"B21S8SG7J:T03CWQ0QB\"\r\n  },\r\n  \"recipient\": {\r\n    \"id\": \"U8H8E2HSB:T03CWQ0QB\"\r\n  },\r\n  \"text\": \"TEST Activity to be updated with invalid conversation Id\"\r\n}",
+      "RequestBody": "{\r\n  \"type\": \"message\",\r\n  \"from\": {\r\n    \"id\": \"B21UTEF8S:T03CWQ0QB\"\r\n  },\r\n  \"recipient\": {\r\n    \"id\": \"U19KH8EHJ:T03CWQ0QB\"\r\n  },\r\n  \"membersAdded\": [],\r\n  \"membersRemoved\": [],\r\n  \"reactionsAdded\": [],\r\n  \"reactionsRemoved\": [],\r\n  \"text\": \"TEST Activity to be updated with invalid conversation Id\",\r\n  \"attachments\": [],\r\n  \"entities\": []\r\n}",
       "RequestHeaders": {
         "Content-Type": [
           "application/json; charset=utf-8"
         ],
         "Content-Length": [
-          "205"
+          "346"
         ],
         "User-Agent": [
-          "FxVersion/4.6.25211.01",
-          "Microsoft.Azure.BotFramework.Connector.BotConnector/2.0.0.0"
+          "FxVersion/4.7.2600.0",
+          "OSName/Windows10Enterprise",
+          "OSVersion/6.3.16299",
+          "Microsoft.Bot.Connector.ConnectorClient/0.0.0.0",
+          "Microsoft-BotFramework/4.0",
+          "(BotBuilder .Net/0.0.0.0)"
         ]
       },
-      "ResponseBody": "{\r\n  \"id\": \"1515187108.000284\"\r\n}",
+      "ResponseBody": "{\r\n  \"id\": \"1516641072.000312\"\r\n}",
       "ResponseHeaders": {
+        "Content-Length": [
+          "33"
+        ],
         "Content-Type": [
           "application/json; charset=utf-8"
         ],
         "Expires": [
           "-1"
         ],
-        "Cache-Control": [
-          "no-cache"
-        ],
-        "Date": [
-          "Fri, 05 Jan 2018 21:18:28 GMT"
-        ],
         "Pragma": [
           "no-cache"
-        ],
-        "Server": [
-          "Microsoft-IIS/10.0"
-        ],
-        "Vary": [
-          "Accept-Encoding"
         ],
         "Request-Context": [
           "appId=cid-v1:6814484e-c0d5-40ea-9dba-74ff29ca4f62"
         ],
-        "X-Powered-By": [
-          "ASP.NET"
-        ],
         "Strict-Transport-Security": [
           "max-age=31536000"
+        ],
+        "Cache-Control": [
+          "no-cache"
+        ],
+        "Date": [
+          "Mon, 22 Jan 2018 17:11:12 GMT"
+        ],
+        "Server": [
+          "Microsoft-IIS/10.0"
+        ],
+        "X-Powered-By": [
+          "ASP.NET"
         ]
       },
       "StatusCode": 200
     },
     {
-      "RequestUri": "/v3/conversations/B21S8SG7K:T03CWQ0QB/activities/1515187108.000284",
-      "EncodedRequestUri": "L3YzL2NvbnZlcnNhdGlvbnMvQjIxUzhTRzdLJTNBVDAzQ1dRMFFCL2FjdGl2aXRpZXMvMTUxNTE4NzEwOC4wMDAyODQ=",
+      "RequestUri": "/v3/conversations/B21S8SG7K:T03CWQ0QB/activities/1516641072.000312",
+      "EncodedRequestUri": "L3YzL2NvbnZlcnNhdGlvbnMvQjIxUzhTRzdLJTNBVDAzQ1dRMFFCL2FjdGl2aXRpZXMvMTUxNjY0MTA3Mi4wMDAzMTI=",
       "RequestMethod": "PUT",
-      "RequestBody": "{\r\n  \"type\": \"message\",\r\n  \"id\": \"1515187108.000284\",\r\n  \"from\": {\r\n    \"id\": \"B21S8SG7J:T03CWQ0QB\"\r\n  },\r\n  \"recipient\": {\r\n    \"id\": \"U8H8E2HSB:T03CWQ0QB\"\r\n  },\r\n  \"text\": \"TEST Activity mustn't be updated\"\r\n}",
+      "RequestBody": "{\r\n  \"type\": \"message\",\r\n  \"id\": \"1516641072.000312\",\r\n  \"from\": {\r\n    \"id\": \"B21UTEF8S:T03CWQ0QB\"\r\n  },\r\n  \"recipient\": {\r\n    \"id\": \"U19KH8EHJ:T03CWQ0QB\"\r\n  },\r\n  \"membersAdded\": [],\r\n  \"membersRemoved\": [],\r\n  \"reactionsAdded\": [],\r\n  \"reactionsRemoved\": [],\r\n  \"text\": \"TEST Activity mustn't be updated\",\r\n  \"attachments\": [],\r\n  \"entities\": []\r\n}",
       "RequestHeaders": {
         "Content-Type": [
           "application/json; charset=utf-8"
         ],
         "Content-Length": [
-          "211"
+          "352"
         ],
         "User-Agent": [
-          "FxVersion/4.6.25211.01",
-          "Microsoft.Azure.BotFramework.Connector.BotConnector/2.0.0.0"
+          "FxVersion/4.7.2600.0",
+          "OSName/Windows10Enterprise",
+          "OSVersion/6.3.16299",
+          "Microsoft.Bot.Connector.ConnectorClient/0.0.0.0",
+          "Microsoft-BotFramework/4.0",
+          "(BotBuilder .Net/0.0.0.0)"
         ]
       },
       "ResponseBody": "{\r\n  \"error\": {\r\n    \"code\": \"ServiceError\",\r\n    \"message\": \"Invalid ConversationId: B21S8SG7K:T03CWQ0QB\"\r\n  }\r\n}",
@@ -132,26 +144,26 @@
         "Expires": [
           "-1"
         ],
-        "Cache-Control": [
-          "no-cache"
-        ],
-        "Date": [
-          "Fri, 05 Jan 2018 21:18:28 GMT"
-        ],
         "Pragma": [
           "no-cache"
-        ],
-        "Server": [
-          "Microsoft-IIS/10.0"
         ],
         "Request-Context": [
           "appId=cid-v1:6814484e-c0d5-40ea-9dba-74ff29ca4f62"
         ],
-        "X-Powered-By": [
-          "ASP.NET"
-        ],
         "Strict-Transport-Security": [
           "max-age=31536000"
+        ],
+        "Cache-Control": [
+          "no-cache"
+        ],
+        "Date": [
+          "Mon, 22 Jan 2018 17:11:12 GMT"
+        ],
+        "Server": [
+          "Microsoft-IIS/10.0"
+        ],
+        "X-Powered-By": [
+          "ASP.NET"
         ]
       },
       "StatusCode": 400
