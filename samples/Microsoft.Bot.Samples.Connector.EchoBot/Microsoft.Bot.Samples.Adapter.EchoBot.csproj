@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <UserSecretsId>aspnet-Microsoft.Bot.Connector.EchoBot-B439A4B4-7B7D-46D3-AEA8-B385797B34C2</UserSecretsId>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <NoWarn>1701;1702;1705; 1998</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <NoWarn>1701;1702;1705; 1998</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.0" />
+    <PackageReference Include="Microsoft.Bot.Connector" Version="3.12.2.4" />
+    <PackageReference Include="Microsoft.Bot.Connector.AspNetCore" Version="2.0.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.0-preview2-final" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Ai\Microsoft.Bot.Builder.Ai.csproj" />
+    <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Azure\Microsoft.Bot.Builder.Azure.csproj" />
+    <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.BotFramework\Microsoft.Bot.Builder.BotFramework.csproj" />
+    <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Rivescript\Microsoft.Bot.Builder.Rivescript.csproj" />
+    <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder\Microsoft.Bot.Builder.csproj" />
+  </ItemGroup>
+
+</Project>
