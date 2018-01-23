@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 
-namespace Microsoft.Bot.Samples.Connector.EchoBot
+namespace Microsoft.Bot.Samples.EchoBot
 {
     public class Program
     {
