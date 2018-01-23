@@ -1,9 +1,11 @@
-﻿
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System.Security.Claims;
+using System.Linq;
+
 namespace Microsoft.Bot.Connector
 {
-    using System.Security.Claims;
-    using System.Linq;
-
     public static class ClaimsIdentityEx
     {
         public const string AppPasswordClaim = "appPassword";

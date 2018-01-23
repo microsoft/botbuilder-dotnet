@@ -1,4 +1,7 @@
-﻿namespace Connector.Tests
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+namespace Connector.Tests
 {
     using System;
     using System.Net.Http;
@@ -7,7 +10,6 @@
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.Bot.Connector;
-    
     using Microsoft.Azure.Test.HttpRecorder;
     using Microsoft.Rest;
     using Microsoft.Rest.ClientRuntime.Azure.TestFramework;
