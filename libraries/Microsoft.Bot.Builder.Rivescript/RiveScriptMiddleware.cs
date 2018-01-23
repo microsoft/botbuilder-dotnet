@@ -48,9 +48,7 @@ namespace Microsoft.Bot.Builder.Rivescript
         }
 
         public static IDictionary<string,string> StateDictionary(IBotContext context)
-        {
-            BotAssert.AssertStorage(context); 
-
+        {            
             IDictionary<string, string> state;
             if (context.State.User[RivescriptState] == null)
             {

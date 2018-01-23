@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Builder.Azure
     /// <summary>
     /// Models IStorage around a dictionary 
     /// </summary>
-    public class AzureTableStorage : IStorage, IContextCreated
+    public class AzureTableStorage : IStorage
     {
         private static HashSet<string> _checkedTables = new HashSet<string>();
 
@@ -33,13 +33,7 @@ namespace Microsoft.Bot.Builder.Azure
             if (_checkedTables.Add($"{storageAccount.TableStorageUri.PrimaryUri.Host}-{tableName}"))
                 this.Table.CreateIfNotExistsAsync().Wait();
         }
-        
-        public Task ContextCreated(IBotContext context, MiddlewareSet.NextDelegate next)
-        {
-            context.Storage = this;
-            return next();
-        }
-
+                
         protected EntityKey GetEntityKey(string key)
         {
             return new EntityKey() { PartitionKey = SanitizeKey(key), RowKey = "0" };

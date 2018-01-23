@@ -62,8 +62,6 @@ namespace Microsoft.Bot.Builder.Rivescript.Tests
         {
             var adapter = new TestAdapter();
             Bot bot = new Bot(adapter)
-                .Use(new Storage.MemoryStorage())
-                .Use(new BotStateManager())
                 .Use(new RivescriptMiddleware(fileName));
 
             return adapter;
