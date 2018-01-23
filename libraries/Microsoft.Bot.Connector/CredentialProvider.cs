@@ -1,4 +1,7 @@
-﻿#if !NET45
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+#if !NET45
 using Microsoft.Extensions.Configuration;
 #endif
 using System;

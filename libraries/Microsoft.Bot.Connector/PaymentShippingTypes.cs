@@ -1,4 +1,7 @@
-﻿namespace Microsoft.Bot.Connector
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+namespace Microsoft.Bot.Connector
 {
     /// <summary>
     /// Different shipping types. See http://www.w3.org/TR/payment-request/#dom-paymentoptions-shippingtype for more information.

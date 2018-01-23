@@ -1,11 +1,12 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.Rest;
 
 namespace Microsoft.Bot.Connector
 {
-    using System.Threading;
-    using System.Threading.Tasks;
-    using Microsoft.Rest;
-
-
     public static partial class ConversationsExtensions
     {
         /// <summary>
