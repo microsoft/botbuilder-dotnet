@@ -1,7 +1,10 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System.Collections.Generic;
+
 namespace Microsoft.Bot.Connector
 {
-    using System.Collections.Generic;
-
     public partial class SigninCard 
     {
         /// <summary>
