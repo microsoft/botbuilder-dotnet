@@ -25,6 +25,7 @@ csharp:
   namespace: Microsoft.Bot.Connector
   override-client-name: ConnectorClient
   use-datetimeoffset: true
+  sync-methods: None
   license-header: MICROSOFT_MIT_NO_VERSION
   azure-arm: false
   output-folder: ../ConnectorAPI

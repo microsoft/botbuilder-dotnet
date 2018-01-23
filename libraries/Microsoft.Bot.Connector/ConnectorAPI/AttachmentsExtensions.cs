@@ -32,23 +32,6 @@ namespace Microsoft.Bot.Connector
             /// <param name='attachmentId'>
             /// attachment id
             /// </param>
-            public static AttachmentInfo GetAttachmentInfo(this IAttachments operations, string attachmentId)
-            {
-                return operations.GetAttachmentInfoAsync(attachmentId).GetAwaiter().GetResult();
-            }
-
-            /// <summary>
-            /// GetAttachmentInfo
-            /// </summary>
-            /// <remarks>
-            /// Get AttachmentInfo structure describing the attachment views
-            /// </remarks>
-            /// <param name='operations'>
-            /// The operations group for this extension method.
-            /// </param>
-            /// <param name='attachmentId'>
-            /// attachment id
-            /// </param>
             /// <param name='cancellationToken'>
             /// The cancellation token.
             /// </param>
@@ -58,26 +41,6 @@ namespace Microsoft.Bot.Connector
                 {
                     return _result.Body;
                 }
-            }
-
-            /// <summary>
-            /// GetAttachment
-            /// </summary>
-            /// <remarks>
-            /// Get the named view as binary content
-            /// </remarks>
-            /// <param name='operations'>
-            /// The operations group for this extension method.
-            /// </param>
-            /// <param name='attachmentId'>
-            /// attachment id
-            /// </param>
-            /// <param name='viewId'>
-            /// View id from attachmentInfo
-            /// </param>
-            public static Stream GetAttachment(this IAttachments operations, string attachmentId, string viewId)
-            {
-                return operations.GetAttachmentAsync(attachmentId, viewId).GetAwaiter().GetResult();
             }
 
             /// <summary>
