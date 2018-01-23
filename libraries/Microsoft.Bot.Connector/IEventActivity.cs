@@ -23,12 +23,4 @@ namespace Microsoft.Bot.Connector
         /// </summary>
         ConversationReference RelatesTo { get; set; }
     }
-
-    /// <summary>
-    /// NOTE: Trigger activity has been renamed to Event activity
-    /// </summary>
-    [Obsolete]
-    public interface ITriggerActivity : IEventActivity
-    {
-    }
 }

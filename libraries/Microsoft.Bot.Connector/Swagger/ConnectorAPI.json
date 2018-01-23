@@ -28,9 +28,7 @@
         "summary": "GetAttachmentInfo",
         "description": "Get AttachmentInfo structure describing the attachment views",
         "operationId": "Attachments_GetAttachmentInfo",
-        "consumes": [
-
-        ],
+        "consumes": [],
         "produces": [
           "application/json",
           "text/json",
@@ -70,9 +68,7 @@
         "summary": "GetAttachment",
         "description": "Get the named view as binary content",
         "operationId": "Attachments_GetAttachment",
-        "consumes": [
-
-        ],
+        "consumes": [],
         "produces": [
           "application/json",
           "text/json",
@@ -391,9 +387,7 @@
         "summary": "DeleteActivity",
         "description": "Delete an existing activity.\r\n\r\nSome channels allow you to delete an existing activity, and if successful this method will remove the specified activity.",
         "operationId": "Conversations_DeleteActivity",
-        "consumes": [
-
-        ],
+        "consumes": [],
         "produces": [
           "application/json",
           "text/json",
@@ -440,9 +434,7 @@
         "summary": "GetConversationMembers",
         "description": "Enumerate the members of a converstion. \r\n\r\nThis REST API takes a ConversationId and returns an array of ChannelAccount objects representing the members of the conversation.",
         "operationId": "Conversations_GetConversationMembers",
-        "consumes": [
-
-        ],
+        "consumes": [],
         "produces": [
           "application/json",
           "text/json",
@@ -485,9 +477,7 @@
         "summary": "GetActivityMembers",
         "description": "Enumerate the members of an activity. \r\n\r\nThis REST API takes a ConversationId and a ActivityId, returning an array of ChannelAccount objects representing the members of the particular activity in the conversation.",
         "operationId": "Conversations_GetActivityMembers",
-        "consumes": [
-
-        ],
+        "consumes": [],
         "produces": [
           "application/json",
           "text/json",
@@ -854,6 +844,26 @@
         "code": {
           "description": "Code indicating why the conversation has ended",
           "type": "string"
+        },
+        "expiration": {
+          "format": "date-time",
+          "description": "DateTime to expire the activity as ISO 8601 encoded datetime",
+          "type": "string"
+        },
+        "importance": {
+          "description": "Importance of this activity \r\n {Low|Normal|High}, null value indicates Normal importance see ActivityImportance)",
+          "type": "string"
+        },
+        "deliveryMode": {
+          "description": "Hint to describe how this activity should be delivered.  \r\nCurrently: null or \"Default\" = default delivery\r\n\"Notification\" = notification semantics",
+          "type": "string"
+        },
+        "textHighlights": {
+          "description": "TextHighlight in the activity represented in the ReplyToId property",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/TextHighlight"
+          }
         }
       }
     },
@@ -968,6 +978,21 @@
         "serviceUrl": {
           "description": "Service endpoint where operations concerning the referenced conversation may be performed",
           "type": "string"
+        }
+      }
+    },
+    "TextHighlight": {
+      "description": "",
+      "type": "object",
+      "properties": {
+        "text": {
+          "description": "plain text fragment to highlight",
+          "type": "string"
+        },
+        "occurence": {
+          "format": "int32",
+          "description": "index of occurence of the Text (Starting at 1)",
+          "type": "integer"
         }
       }
     },
