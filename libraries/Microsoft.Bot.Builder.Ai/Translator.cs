@@ -1,20 +1,16 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Json;
-using System.Diagnostics;
-using System.ComponentModel;
-using System.Text;
-using System.Web;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Xml.Linq;
 using System.Security;
+using System.Text;
+using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace Microsoft.Bot.Builder.Ai
 {
