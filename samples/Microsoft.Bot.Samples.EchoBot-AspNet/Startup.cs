@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 
-namespace Microsoft.Bot.Samples.Connector.EchoBot
+namespace Microsoft.Bot.Samples.EchoBot
 {
     public class Startup
     {
