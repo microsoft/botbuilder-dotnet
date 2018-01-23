@@ -20,4 +20,3 @@ contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additio
 | Project  | Status |
 | --- | --- |
 | Microsoft.Bot.Connector | ![Build Status](https://fuselabs.visualstudio.com/_apis/public/build/definitions/86659c66-c9df-418a-a371-7de7aed35064/212/badge) |
-| Microsoft.Bot.Builder | ![Build Status](https://fuselabs.visualstudio.com/_apis/public/build/definitions/86659c66-c9df-418a-a371-7de7aed35064/211/badge) |
