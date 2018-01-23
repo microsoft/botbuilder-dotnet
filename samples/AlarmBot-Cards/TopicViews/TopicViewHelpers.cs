@@ -1,11 +1,11 @@
-﻿using AdaptiveCards;
-using Microsoft.Bot.Builder;
-using Microsoft.Bot.Connector;
-using System;
-using System.Collections.Generic;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using AdaptiveCards;
+using Microsoft.Bot.Builder;
+using Microsoft.Bot.Connector;
 
 namespace AlarmBot
 {

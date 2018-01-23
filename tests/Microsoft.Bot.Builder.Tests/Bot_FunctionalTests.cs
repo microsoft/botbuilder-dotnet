@@ -1,10 +1,9 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Middleware;
-using System;
-using Microsoft.Bot.Connector;
-using System.Collections.Generic;
 using Microsoft.Bot.Builder.Adapters;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Bot.Builder.Tests
 {

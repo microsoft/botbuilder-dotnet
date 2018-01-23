@@ -1,12 +1,14 @@
-﻿using AlarmBot.Models;
-using Microsoft.Bot.Builder;
-using Microsoft.Bot.Builder.Templates;
-using Microsoft.Bot.Connector;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AlarmBot.Models;
 using AlarmBot.TopicViews;
+using Microsoft.Bot.Builder;
+using Microsoft.Bot.Connector;
 
 namespace AlarmBot.Topics
 {
