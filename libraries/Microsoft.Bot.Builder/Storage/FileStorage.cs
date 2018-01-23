@@ -11,7 +11,7 @@ namespace Microsoft.Bot.Builder.Storage
     /// <summary>
     /// Models IStorage around a File System
     /// </summary>
-    public class FileStorage : IStorage, Middleware.IContextCreated
+    public class FileStorage : IStorage
     {
         private static JsonSerializerSettings serializationSettings = new JsonSerializerSettings()
         {
@@ -26,13 +26,7 @@ namespace Microsoft.Bot.Builder.Storage
         {
             this.folder = folder;
         }
-
-        public Task ContextCreated(IBotContext context, MiddlewareSet.NextDelegate next)
-        {
-            context.Storage = this;
-            return next(); 
-        }
-
+        
         public Task Delete(string[] keys)
         {
             foreach (var key in keys)

@@ -36,22 +36,6 @@ namespace Microsoft.Bot.Builder
                 throw new ArgumentNullException(nameof(activityList));
         }
 
-        public static void AssertStorage(IBotContext context)
-        {
-            ContextNotNull(context);
-
-            if (context.Storage == null)
-                throw new InvalidOperationException("context.storage not found.");
-        }
-
-        public static void AssertStorage(BotContext context)
-        {
-            ContextNotNull(context);
-
-            if (context.Storage == null)
-                throw new InvalidOperationException("context.storage not found.");
-        }
-
         public static void MiddlewareNotNull(Middleware.IMiddleware middleware)
         {
             if (middleware == null)

@@ -30,12 +30,7 @@ namespace Microsoft.Bot.Builder
         /// Bot state 
         /// </summary>
         BotState State { get; }
-
-        /// <summary>
-        /// registered storage
-        /// </summary>
-        IStorage Storage { get; set; }
-
+    
         Intent TopIntent { get; set; }
 
         /// <summary>

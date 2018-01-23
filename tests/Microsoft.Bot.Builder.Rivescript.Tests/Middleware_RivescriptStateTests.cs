@@ -33,8 +33,6 @@ namespace Microsoft.Bot.Builder.Rivescript.Tests
             var adapter = new TestAdapter();
 
             Bot bot = new Bot(adapter)
-                .Use(new Storage.MemoryStorage())
-                .Use(new BotStateManager())
                 .Use(new InjectState((context) => {
                     var dict = RivescriptMiddleware.StateDictionary(context);
                     dict["name"] = name; 
@@ -66,9 +64,7 @@ namespace Microsoft.Bot.Builder.Rivescript.Tests
 
             var adapter = new TestAdapter();
 
-            Bot bot = new Bot(adapter)
-                .Use(new Storage.MemoryStorage())
-                .Use(new BotStateManager())
+            Bot bot = new Bot(adapter)                                
                 .Use(new RivescriptMiddleware(fileName))
                 .Use(new ValidateState((context) =>
                     {

@@ -77,9 +77,8 @@ namespace InjectionBasedBotExample
             // Bot is created on each request
             services.AddScoped<Bot>(serviceProvider =>
               {
-                  Bot b = new Bot(new BotFrameworkAdapter(appId, appKey))
-                    .Use((Microsoft.Bot.Builder.Middleware.IMiddleware)serviceProvider.GetService<IStorage>())
-                    .Use(new BotStateManager())
+                  Bot b = new Bot(new BotFrameworkAdapter(appId, appKey))                    
+                    .Use(new BotStateManager(serviceProvider.GetService<IStorage>()))
                     .Use(new EchoMiddleware());
 
                   return b;
@@ -88,11 +87,9 @@ namespace InjectionBasedBotExample
             /*** Create the entire Bot as a Singleton **/
             //services.AddSingleton<Bot>(serviceProvider =>
             //{
-            //    Bot b = new Bot(new BotFrameworkConnector(appId, appKey))
-            //      .Use(new MemoryStorage())
-            //      .Use(new BotStateManager())
+            //    Bot b = new Bot(new BotFrameworkConnector(appId, appKey))            
+            //      .Use(new BotStateManager(new MemoryStorage()))
             //      .Use(new EchoMiddleware());
-
             //    return b;
             //});
         }

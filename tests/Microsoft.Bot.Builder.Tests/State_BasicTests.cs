@@ -43,9 +43,8 @@ namespace Microsoft.Bot.Builder.Tests
         {
             TestAdapter adapter = new TestAdapter();
 
-            Bot bot = new Bot(adapter)
-                .Use(new MemoryStorage())
-                .Use(new BotStateManager())
+            Bot bot = new Bot(adapter)                
+                .Use(new BotStateManager(new MemoryStorage()))
                 .OnReceive(
                     async (context, next) =>
                     {
@@ -74,9 +73,8 @@ namespace Microsoft.Bot.Builder.Tests
         {
             TestAdapter adapter = new TestAdapter();
 
-            Bot bot = new Bot(adapter)
-                .Use(new MemoryStorage())
-                .Use(new BotStateManager())
+            Bot bot = new Bot(adapter)                
+                .Use(new BotStateManager(new MemoryStorage()))
                 .OnReceive(
                     async (context, next) =>
                     {
@@ -107,8 +105,7 @@ namespace Microsoft.Bot.Builder.Tests
             string testGuid = Guid.NewGuid().ToString();
 
             Bot bot = new Bot(adapter)
-                .Use(new MemoryStorage())
-                .Use(new CustomStateManager())
+                .Use(new CustomStateManager(new MemoryStorage()))
                 .OnReceive(
                     async (context, next) =>
                     {
@@ -140,9 +137,8 @@ namespace Microsoft.Bot.Builder.Tests
         {
             TestAdapter adapter = new TestAdapter();
 
-            Bot bot = new Bot(adapter)
-                .Use(new MemoryStorage())
-                .Use(new BotStateManager())
+            Bot bot = new Bot(adapter)                
+                .Use(new BotStateManager(new MemoryStorage()))
                 .OnReceive(
                     async (context, next) =>
                     {
@@ -174,6 +170,9 @@ namespace Microsoft.Bot.Builder.Tests
         public class CustomStateManager : BotStateManager
         {
             public const string KeyName = "CustomStateKey";
+            public CustomStateManager(IStorage storage) : base(storage)
+            {
+            }
 
             protected override async Task<StoreItems> Read(IBotContext context, IList<String> keys = null)
             {
