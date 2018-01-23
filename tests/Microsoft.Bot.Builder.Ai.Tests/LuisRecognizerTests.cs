@@ -49,9 +49,7 @@ namespace Microsoft.Bot.Builder.Ai.Tests
             }
 
             TestAdapter adapter = new TestAdapter();
-            Bot bot = new Bot(adapter)
-                .Use(new MemoryStorage())
-                .Use(new BotStateManager())
+            Bot bot = new Bot(adapter)                                
                 .Use(new LuisRecognizerMiddleware(luisAppId, subscriptionKey))
                 .OnReceive(async (context, next) =>
                 {

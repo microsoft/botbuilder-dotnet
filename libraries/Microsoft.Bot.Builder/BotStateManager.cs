@@ -40,15 +40,17 @@ namespace Microsoft.Bot.Builder
     public class BotStateManager : Middleware.IContextCreated, Middleware.IPostActivity
     {
         private readonly BotStateManagerSettings _settings;
+        private readonly IStorage _storage;
         private const string UserKeyRoot = @"user";
         private const string ConversationKeyRoot = @"conversation";
 
-        public BotStateManager() : this(new BotStateManagerSettings())
-        {
+        public BotStateManager(IStorage storage) : this(storage, new BotStateManagerSettings())
+        {            
         }
 
-        public BotStateManager(BotStateManagerSettings settings)
+        public BotStateManager(IStorage storage, BotStateManagerSettings settings)
         {
+            _storage = storage ?? throw new ArgumentNullException(nameof(storage));
             _settings = settings ?? throw new ArgumentNullException("settings");
         }
 
@@ -72,9 +74,7 @@ namespace Microsoft.Bot.Builder
         }
 
         protected virtual async Task<StoreItems> Read(IBotContext context, IList<String> keys = null)
-        {
-            BotAssert.AssertStorage(context);
-
+        {            
             if (keys == null)
                 keys = new List<String>(); 
 
@@ -86,7 +86,7 @@ namespace Microsoft.Bot.Builder
             if (_settings.PersistConversationState)
                 keys.Add(ConversationKey(context));            
 
-            var items = await context.Storage.Read(keys.ToArray());
+            var items = await _storage.Read(keys.ToArray());
 
             string userKey = UserKey(context);
             string conversationKey = ConversationKey(context);
@@ -99,8 +99,6 @@ namespace Microsoft.Bot.Builder
 
         protected virtual async Task Write (IBotContext context, StoreItems changes = null)
         {
-            BotAssert.AssertStorage(context);
-
             if (changes == null)
                 changes = new StoreItems(); 
                         
@@ -122,7 +120,7 @@ namespace Microsoft.Bot.Builder
                 }
             }
 
-            await context.Storage.Write(changes).ConfigureAwait(false); 
+            await _storage.Write(changes).ConfigureAwait(false); 
         }
 
         private static void AssertValidKeys(IList<string> keys)
