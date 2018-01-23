@@ -1,7 +1,8 @@
-﻿namespace Microsoft.Bot.Connector
-{
-    using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
 
+namespace Microsoft.Bot.Connector
+{
     /// <summary>
     /// Configuration for JWT tokens
     /// </summary>

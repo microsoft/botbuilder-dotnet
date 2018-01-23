@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Reflection;
-
 using Microsoft.Rest;
 
 namespace Microsoft.Bot.Connector
