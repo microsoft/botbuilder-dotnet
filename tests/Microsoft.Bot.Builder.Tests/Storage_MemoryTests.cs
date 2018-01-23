@@ -1,9 +1,9 @@
-﻿using System;
-using System.Dynamic;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Storage;
-using System.IO;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Bot.Builder.Tests
 {

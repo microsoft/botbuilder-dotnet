@@ -1,8 +1,11 @@
-﻿using Microsoft.Bot.Connector;
-using Microsoft.Extensions.Primitives;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.Bot.Connector;
+using Microsoft.Extensions.Primitives;
 
 namespace Microsoft.Bot.Builder.Adapters
 {

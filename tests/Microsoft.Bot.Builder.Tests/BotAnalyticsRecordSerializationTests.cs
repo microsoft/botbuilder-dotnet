@@ -1,8 +1,11 @@
-﻿using Microsoft.Bot.Builder.Analytics;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
+using Microsoft.Bot.Builder.Analytics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System;
 
 namespace Microsoft.Bot.Builder.Tests
 {

@@ -1,21 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.Bot.Connector;
-using Microsoft.Bot.Builder;
-using Microsoft.Bot.Builder.Middleware;
-using Microsoft.Bot.Builder.Azure;
-using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Builder.Storage;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
 using System.Text.RegularExpressions;
-using Microsoft.Extensions.Configuration;
-using AlarmBot.Topics;
 using AlarmBot.Models;
-using Microsoft.Bot.Builder.Templates;
+using AlarmBot.Topics;
 using AlarmBot.TopicViews;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Bot.Builder;
+using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.Middleware;
+using Microsoft.Bot.Builder.Storage;
+using Microsoft.Bot.Connector;
+using Microsoft.Extensions.Configuration;
 
 namespace AlarmBot.Controllers
 {
