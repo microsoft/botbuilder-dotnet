@@ -7,7 +7,7 @@ namespace Microsoft.Bot.Builder.Storage
     /// <summary>
     /// Models IStorage around a dictionary 
     /// </summary>
-    public class DictionaryStorage : IStorage, Middleware.IContextCreated
+    public class DictionaryStorage : IStorage
     {
         private readonly StoreItems _memory;
         private int _eTag = 0;
@@ -17,13 +17,7 @@ namespace Microsoft.Bot.Builder.Storage
         {
             _memory = dictionary ?? new StoreItems();
         }
-        
-        public Task ContextCreated(IBotContext context, MiddlewareSet.NextDelegate next)
-        {
-            context.Storage = this;
-            return next(); 
-        }
-
+                
         public Task Delete(string[] keys)
         {
             lock (_syncroot)
