@@ -14,10 +14,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="..\Microsoft.Bot.Samples.Connector.EchoBot\EchoMiddleware.cs" Link="EchoMiddleware.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Microsoft.Bot.Connector" Version="3.12.2.4" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.0.0" />
   </ItemGroup>

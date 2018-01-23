@@ -1,11 +1,8 @@
-﻿using Microsoft.Extensions.Primitives;
+﻿using Microsoft.Bot.Connector;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Connector;
 
 namespace Microsoft.Bot.Builder.Adapters
 {
@@ -55,10 +52,8 @@ namespace Microsoft.Bot.Builder.Adapters
             while (true)
             {
                 var msg = Console.ReadLine();
-                if (msg == null || msg.ToLower() == "quit")
-                {
-                    break;
-                }
+                if (msg == null)
+                    break;                
 
                 var activity = new Activity()
                 {
