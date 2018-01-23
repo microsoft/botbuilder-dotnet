@@ -29,7 +29,6 @@
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Ai\Microsoft.Bot.Builder.Ai.csproj" />
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Azure\Microsoft.Bot.Builder.Azure.csproj" />
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.BotFramework\Microsoft.Bot.Builder.BotFramework.csproj" />
-    <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Rivescript\Microsoft.Bot.Builder.Rivescript.csproj" />
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder\Microsoft.Bot.Builder.csproj" />
   </ItemGroup>
 
