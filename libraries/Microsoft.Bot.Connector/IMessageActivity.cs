@@ -58,14 +58,23 @@ namespace Microsoft.Bot.Connector
         SuggestedActions SuggestedActions { get; set; }
 
         /// <summary>
-        /// Collection of Entity objects, each of which contains metadata about this activity. Each Entity object is typed.
+        /// Importance of the activity 
+        /// Valid values are "low", "normal", and "high". Default value is "normal."
         /// </summary>
-        IList<Entity> Entities { get; set; }
-        
+        string Importance { get; set; }
+
         /// <summary>
-        /// True if this activity has text, attachments, or channelData
+        /// Hint to describe how this activity should be delivered.  
+        /// null or "default" = default delivery
+        /// "notification" = notification semantics
+        /// See DeliveryModes for current constants
         /// </summary>
-        bool HasContent();
+        string DeliveryMode { get; set; }
+
+        /// <summary>
+        /// DateTime to expire the activity as ISO 8601 encoded datetime
+        /// </summary>
+        DateTimeOffset? Expiration { get; set; }
 
         /// <summary>
         /// Get mentions
@@ -76,5 +85,10 @@ namespace Microsoft.Bot.Connector
         /// Value provided with CardAction
         /// </summary>
         object Value { get; set; }
+
+        /// <summary>
+        /// True if this activity has text, attachments, or channelData
+        /// </summary>
+        bool HasContent();
     }
 }
