@@ -18,6 +18,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Connector.Tes
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Schema", "libraries\Microsoft.Bot.Schema\Microsoft.Bot.Schema.csproj", "{27A5A1C4-2590-45D0-AAFC-E3F3245612AB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Connector.EchoBot", "samples\Connector.EchoBot\Connector.EchoBot.csproj", "{BC16078E-0B07-41FD-8454-F0E8BB983FBA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,6 +38,10 @@ Global
 		{27A5A1C4-2590-45D0-AAFC-E3F3245612AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{27A5A1C4-2590-45D0-AAFC-E3F3245612AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{27A5A1C4-2590-45D0-AAFC-E3F3245612AB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BC16078E-0B07-41FD-8454-F0E8BB983FBA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BC16078E-0B07-41FD-8454-F0E8BB983FBA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BC16078E-0B07-41FD-8454-F0E8BB983FBA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BC16078E-0B07-41FD-8454-F0E8BB983FBA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -44,6 +50,7 @@ Global
 		{7F3EBE8C-33DE-41B3-80E5-9C4D86B3FF48} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
 		{8CCD940C-0362-4E2F-B367-D529430D776A} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 		{27A5A1C4-2590-45D0-AAFC-E3F3245612AB} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
+		{BC16078E-0B07-41FD-8454-F0E8BB983FBA} = {3ADFB27A-95FA-4330-B211-1D66A29A17AB}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7173C9F3-A7F9-496E-9078-9156E35D6E16}
