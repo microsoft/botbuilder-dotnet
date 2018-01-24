@@ -254,6 +254,8 @@ namespace Microsoft.Bot.Connector
         {
             if (this.ChannelData == null)
                 return default(TypeT);
+            if (this.ChannelData.GetType() == typeof(TypeT))
+                return (TypeT)this.ChannelData;
             return ((JObject)this.ChannelData).ToObject<TypeT>();
         }
 
@@ -273,9 +275,7 @@ namespace Microsoft.Bot.Connector
             try
             {
                 if (this.ChannelData == null)
-                {
                     return false;
-                }
 
                 instance = this.GetChannelData<TypeT>();
                 return true;
@@ -285,6 +285,7 @@ namespace Microsoft.Bot.Connector
                 return false;
             }
         }
+
 
     }
 
