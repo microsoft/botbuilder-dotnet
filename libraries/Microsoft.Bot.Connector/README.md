@@ -25,7 +25,7 @@ var user = new ChannelAccount() { Id = "<user-id>" };
 
 var activity = new Activity()
 {
-    Type = ActivityType.Message,
+    Type = ActivityTypes.Message,
     Recipient = user,
     FromProperty = bot,
     Text = "this is a message from Bot Connector SDK"
