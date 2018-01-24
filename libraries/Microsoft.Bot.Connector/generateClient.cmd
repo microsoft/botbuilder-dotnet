@@ -1,6 +1,5 @@
 call npm install replace@0.3.0
 
-REM call autorest --input-file=.\Swagger\ConnectorAPI.json --csharp --namespace:Microsoft.Bot.Connector --output-folder=ConnectorAPI --add-credentials --override-client-name=ConnectorClient --use-datetimeoffset
 call autorest .\Swagger\README.md --csharp
 
 cd ConnectorAPI
