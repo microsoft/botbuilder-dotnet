@@ -5,5 +5,9 @@ namespace Microsoft.Bot.Connector
 {
     public partial class Mention : Entity
     {
+        partial void CustomInit()
+        {
+            this.Type = "mention";
+        }
     }
 }
