@@ -83,7 +83,18 @@ namespace Microsoft.Bot.Connector
         /// activity</param>
         /// <param name="code">Code indicating why the conversation has
         /// ended</param>
-        public Activity(string type = default(string), string id = default(string), System.DateTimeOffset? timestamp = default(System.DateTimeOffset?), System.DateTimeOffset? localTimestamp = default(System.DateTimeOffset?), string serviceUrl = default(string), string channelId = default(string), ChannelAccount from = default(ChannelAccount), ConversationAccount conversation = default(ConversationAccount), ChannelAccount recipient = default(ChannelAccount), string textFormat = default(string), string attachmentLayout = default(string), IList<ChannelAccount> membersAdded = default(IList<ChannelAccount>), IList<ChannelAccount> membersRemoved = default(IList<ChannelAccount>), IList<MessageReaction> reactionsAdded = default(IList<MessageReaction>), IList<MessageReaction> reactionsRemoved = default(IList<MessageReaction>), string topicName = default(string), bool? historyDisclosed = default(bool?), string locale = default(string), string text = default(string), string speak = default(string), string inputHint = default(string), string summary = default(string), SuggestedActions suggestedActions = default(SuggestedActions), IList<Attachment> attachments = default(IList<Attachment>), IList<Entity> entities = default(IList<Entity>), object channelData = default(object), string action = default(string), string replyToId = default(string), object value = default(object), string name = default(string), ConversationReference relatesTo = default(ConversationReference), string code = default(string))
+        /// <param name="expiration">DateTime to expire the activity as ISO
+        /// 8601 encoded datetime</param>
+        /// <param name="importance">Importance of this activity
+        /// {Low|Normal|High}, null value indicates Normal importance see
+        /// ActivityImportance)</param>
+        /// <param name="deliveryMode">Hint to describe how this activity
+        /// should be delivered.
+        /// Currently: null or "Default" = default delivery
+        /// "Notification" = notification semantics</param>
+        /// <param name="textHighlights">TextHighlight in the activity
+        /// represented in the ReplyToId property</param>
+        public Activity(string type = default(string), string id = default(string), System.DateTimeOffset? timestamp = default(System.DateTimeOffset?), System.DateTimeOffset? localTimestamp = default(System.DateTimeOffset?), string serviceUrl = default(string), string channelId = default(string), ChannelAccount from = default(ChannelAccount), ConversationAccount conversation = default(ConversationAccount), ChannelAccount recipient = default(ChannelAccount), string textFormat = default(string), string attachmentLayout = default(string), IList<ChannelAccount> membersAdded = default(IList<ChannelAccount>), IList<ChannelAccount> membersRemoved = default(IList<ChannelAccount>), IList<MessageReaction> reactionsAdded = default(IList<MessageReaction>), IList<MessageReaction> reactionsRemoved = default(IList<MessageReaction>), string topicName = default(string), bool? historyDisclosed = default(bool?), string locale = default(string), string text = default(string), string speak = default(string), string inputHint = default(string), string summary = default(string), SuggestedActions suggestedActions = default(SuggestedActions), IList<Attachment> attachments = default(IList<Attachment>), IList<Entity> entities = default(IList<Entity>), object channelData = default(object), string action = default(string), string replyToId = default(string), object value = default(object), string name = default(string), ConversationReference relatesTo = default(ConversationReference), string code = default(string), System.DateTimeOffset? expiration = default(System.DateTimeOffset?), string importance = default(string), string deliveryMode = default(string), IList<TextHighlight> textHighlights = default(IList<TextHighlight>))
         {
             Type = type;
             Id = id;
@@ -117,6 +128,10 @@ namespace Microsoft.Bot.Connector
             Name = name;
             RelatesTo = relatesTo;
             Code = code;
+            Expiration = expiration;
+            Importance = importance;
+            DeliveryMode = deliveryMode;
+            TextHighlights = textHighlights;
             CustomInit();
         }
 
@@ -326,6 +341,37 @@ namespace Microsoft.Bot.Connector
         /// </summary>
         [JsonProperty(PropertyName = "code")]
         public string Code { get; set; }
+
+        /// <summary>
+        /// Gets or sets dateTime to expire the activity as ISO 8601 encoded
+        /// datetime
+        /// </summary>
+        [JsonProperty(PropertyName = "expiration")]
+        public System.DateTimeOffset? Expiration { get; set; }
+
+        /// <summary>
+        /// Gets or sets importance of this activity
+        /// {Low|Normal|High}, null value indicates Normal importance see
+        /// ActivityImportance)
+        /// </summary>
+        [JsonProperty(PropertyName = "importance")]
+        public string Importance { get; set; }
+
+        /// <summary>
+        /// Gets or sets hint to describe how this activity should be
+        /// delivered.
+        /// Currently: null or "Default" = default delivery
+        /// "Notification" = notification semantics
+        /// </summary>
+        [JsonProperty(PropertyName = "deliveryMode")]
+        public string DeliveryMode { get; set; }
+
+        /// <summary>
+        /// Gets or sets textHighlight in the activity represented in the
+        /// ReplyToId property
+        /// </summary>
+        [JsonProperty(PropertyName = "textHighlights")]
+        public IList<TextHighlight> TextHighlights { get; set; }
 
     }
 }

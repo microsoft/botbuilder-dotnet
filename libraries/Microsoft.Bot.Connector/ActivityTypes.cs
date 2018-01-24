@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Connector
     /// <summary>
     /// Types of Activities
     /// </summary>
-    public static class ActivityTypes
+    public class ActivityTypes
     {
         /// <summary>
         /// Message from a user -> bot or bot -> User
@@ -41,12 +41,6 @@ namespace Microsoft.Bot.Connector
         public const string EndOfConversation = "endOfConversation";
 
         /// <summary>
-        /// NOTE: Trigger activity has been renamed to Event activity
-        /// </summary>
-        [Obsolete]
-        public const string Trigger = "trigger";
-
-        /// <summary>
         /// Asynchronous external event
         /// </summary>
         public const string Event = "event";
@@ -62,6 +56,16 @@ namespace Microsoft.Bot.Connector
         public const string DeleteUserData = "deleteUserData";
 
         /// <summary>
+        /// An update to an existing Message Activity
+        /// </summary>
+        public const string MessageUpdate = "messageUpdate";
+
+        /// <summary>
+        /// Indicates a delete of an existing Message Activity
+        /// </summary>
+        public const string MessageDelete = "messageDelete";
+
+        /// <summary>
         /// Bot added or removed from channel
         /// </summary>
         public const string InstallationUpdate = "installationUpdate";
@@ -70,5 +74,10 @@ namespace Microsoft.Bot.Connector
         /// Reaction added or removed from activity
         /// </summary>
         public const string MessageReaction = "messageReaction";
+
+        /// <summary>
+        /// Suggestion activity - private message 
+        /// </summary>
+        public const string Suggestion = "suggestion";
     }
 }

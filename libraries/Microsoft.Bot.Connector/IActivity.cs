@@ -2,6 +2,8 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Microsoft.Bot.Connector
 {
@@ -16,22 +18,22 @@ namespace Microsoft.Bot.Connector
         string Type { get; set; }
 
         /// <summary>
-        /// Id for the activity
+        /// ID for the activity
         /// </summary>
         string Id { get; set; }
 
         /// <summary>
-        /// ServiceUrl
+        /// Service URL where responses to this activity should be sent
         /// </summary>
         string ServiceUrl { get; set; }
 
         /// <summary>
-        /// UTC Time when message was sent
+        /// Timestamp when this message was sent (UTC)
         /// </summary>
         DateTimeOffset? Timestamp { get; set; }
 
         /// <summary>
-        /// Client Time when message was sent Ex: 2016-09-23T13:07:49.4714686-07:00
+        /// Client time when message was sent (local time or UTC)
         /// </summary>
         DateTimeOffset? LocalTimestamp { get; set; }
 
@@ -41,7 +43,7 @@ namespace Microsoft.Bot.Connector
         string ChannelId { get; set; }
 
         /// <summary>
-        /// Sender address data 
+        /// Sender address
         /// </summary>
         ChannelAccount From { get; set; }
 
@@ -56,12 +58,17 @@ namespace Microsoft.Bot.Connector
         ChannelAccount Recipient { get; set; }
 
         /// <summary>
-        /// The original id this message is a response to
+        /// The original ID this activity is a response to
         /// </summary>
         string ReplyToId { get; set; }
 
         /// <summary>
-        /// Channel specific payload
+        /// Collection of Entity objects, each of which contains metadata about this activity. Each Entity object is typed.
+        /// </summary>
+        IList<Entity> Entities { get; set; }
+
+        /// <summary>
+        /// Channel-specific payload
         /// </summary>
         /// <remarks>
         /// Some channels will provide channel specific data.
@@ -71,12 +78,27 @@ namespace Microsoft.Bot.Connector
         /// For a message coming into the channel it might accept a payload allowing you to create a "native" response for the channel.
         /// 
         /// Example:
-        /// * Email - The Email Channel will put the original Email metadata into the ChannelData object for outgoing messages, and will accep
+        /// * Email - The Email Channel will put the original Email metadata into the ChannelData object for outgoing messages, and will accept
         /// on incoming message a Subject property, and a HtmlBody which can contain Html.  
         /// 
         /// The channel data essentially allows a bot to have access to native functionality on a per channel basis.
         /// </remarks>
         dynamic ChannelData { get; set; }
+
+        /// <summary>
+        /// Get the channel data as strongly typed object
+        /// </summary>
+        /// <typeparatm name="TypeT"></typeparam>
+        /// <returns></returns>
+        TypeT GetChannelData<TypeT>();
+
+        /// <summary>
+        /// Try to get the channeldata as a strongly typed object 
+        /// </summary>
+        /// <typeparam name="TypeT"></typeparam>
+        /// <param name="instance"></param>
+        /// <returns>false if there is no valid channeldata available</returns>
+        bool TryGetChannelData<TypeT>(out TypeT instance);
 
         /// <summary>
         /// Return IMessageActivity if this is a message activity, null otherwise
@@ -117,5 +139,25 @@ namespace Microsoft.Bot.Connector
         /// Returns IInvokeActivity if this is an invoke activity, null otherwise
         /// </summary>
         IInvokeActivity AsInvokeActivity();
+
+        /// <summary>
+        /// Returns IMessageUpdateActivity if this is a message update activity, null otherwise
+        /// </summary>
+        IMessageUpdateActivity AsMessageUpdateActivity();
+
+        /// <summary>
+        /// Returns IMessageDeleteActivity if this is a message delete activity, null otherwise
+        /// </summary>
+        IMessageDeleteActivity AsMessageDeleteActivity();
+
+        /// <summary>
+        /// Returns IMessageDeleteActivity if this is a message delete activity, null otherwise
+        /// </summary>
+        IMessageReactionActivity AsMessageReactionActivity();
+
+        /// <summary>
+        /// Returns IMessageDeleteActivity if this is a message delete activity, null otherwise
+        /// </summary>
+        ISuggestionActivity AsSuggestionActivity();
     }
 }
