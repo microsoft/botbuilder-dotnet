@@ -10,7 +10,7 @@ namespace Microsoft.Bot.Connector
 {
     public static class JwtTokenValidation
     {
-        public static async Task<bool> ValidateAuthHeader(string authHeader, string botAppId)
+        public static async Task<bool> ValidateAuthHeader(string authHeader, string appId, string serviceUrl)
         {
             if (string.IsNullOrWhiteSpace(authHeader))
             {
@@ -20,14 +20,21 @@ namespace Microsoft.Bot.Connector
             // Extract identity from token
             var tokenExtractor = new JwtTokenExtractor(ToBotFromChannelTokenValidationParameters, JwtConfig.ToBotFromChannelOpenIdMetadataUrl, JwtConfig.ToBotFromChannelAllowedSigningAlgorithms, null);
             var identity = await tokenExtractor.GetIdentityAsync(authHeader);
-            if (identity == null)
+            if (identity == null || !identity.IsAuthenticated)
             {
                 return false;
             }
 
             // Validate audience
             var audience = identity.Claims.FirstOrDefault(o => o.Type == "aud")?.Value;
-            if (string.IsNullOrWhiteSpace(audience) || !string.Equals(audience, botAppId))
+            if (string.IsNullOrWhiteSpace(audience) || !string.Equals(audience, appId))
+            {
+                return false;
+            }
+
+            // Validate serviceUrl
+            var serviceUrlClaim = identity.Claims.FirstOrDefault(claim => claim.Type == "serviceurl")?.Value;
+            if(string.IsNullOrWhiteSpace(serviceUrlClaim) || !string.Equals(serviceUrlClaim, serviceUrl))
             {
                 return false;
             }

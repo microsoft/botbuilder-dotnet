@@ -24,20 +24,20 @@ namespace Connector.EchoBot.Controllers
         {
             // Validate Authorization Header
             var authHeader = this.Request.Headers["Authorization"].SingleOrDefault();
-            bool isValidIdentity = await JwtTokenValidation.ValidateAuthHeader(authHeader, this.credentials.MicrosoftAppId);
-            if(!isValidIdentity)
+            bool isValidIdentity = await JwtTokenValidation.ValidateAuthHeader(authHeader, this.credentials.MicrosoftAppId, activity.ServiceUrl);
+            if (!isValidIdentity)
             {
                 return this.Unauthorized();
             }
 
             // On message activity, reply with the same text
-            if(activity.Type == ActivityTypes.Message)
+            if (activity.Type == ActivityTypes.Message)
             {
                 var reply = activity.CreateReply($"You said: {activity.Text}");
 
                 // Thrust service Url
                 MicrosoftAppCredentials.TrustServiceUrl(activity.ServiceUrl);
-                
+
                 // Reply to Activity using Connector
                 var connector = new ConnectorClient(new Uri(activity.ServiceUrl, UriKind.Absolute), credentials);
                 await connector.Conversations.ReplyToActivityAsync(reply);
@@ -45,6 +45,5 @@ namespace Connector.EchoBot.Controllers
 
             return this.Ok();
         }
-
     }
 }
