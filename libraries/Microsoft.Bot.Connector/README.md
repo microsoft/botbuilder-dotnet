@@ -1,4 +1,4 @@
-# Azure Bot Framework Connector for .NET
+# Microsoft Bot Framework Connector for .NET
 
 ### Getting Started
 
@@ -7,13 +7,7 @@ Bot Framework Connector allows you to build applications that connects with Bot 
 ### Target Frameworks:
 
 * .NET Framework 4.5.2
-* Netstandard 1.4, based on the NetCore framework
-
-### Installation
-
-Install Bot Framework Connector by launching the command:
-    
-    nuget install Microsoft.Azure.BotFramework.Connector
+* .NET Standard 2.0, based on the NetCore framework
 
 ### API Documentation
 
@@ -43,13 +37,9 @@ var param = new ConversationParameters()
     Bot = bot
 };
 
-using (var client = new BotConnector(serviceUri, credentials))
+using (var client = new ConnectorClient(serviceUri, credentials))
 {
     var conversation = await client.Conversations.CreateConversationAsync(param);
     var response = await client.Conversations.SendToConversationAsync(conversation.Id, activity);
 }
 ````
-
-## Build Instructions:
-
-To build this project, please follow the instructions [here](https://github.com/Azure/azure-sdk-for-net/blob/psSdkJson6/README.md).
