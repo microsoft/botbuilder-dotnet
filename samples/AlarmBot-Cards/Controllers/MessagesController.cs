@@ -1,4 +1,8 @@
-﻿using AlarmBot.Models;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System.Text.RegularExpressions;
+using AlarmBot.Models;
 using AlarmBot.Topics;
 using AlarmBot.TopicViews;
 using Microsoft.AspNetCore.Authorization;
@@ -9,7 +13,6 @@ using Microsoft.Bot.Builder.Middleware;
 using Microsoft.Bot.Builder.Storage;
 using Microsoft.Bot.Connector;
 using Microsoft.Extensions.Configuration;
-using System.Text.RegularExpressions;
 
 namespace AlarmBot.Controllers
 {

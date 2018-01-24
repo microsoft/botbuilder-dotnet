@@ -1,8 +1,10 @@
-﻿using Microsoft.Bot.Connector;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Text.RegularExpressions;
+using Microsoft.Bot.Connector;
 
 namespace Microsoft.Bot.Builder.Middleware
 {

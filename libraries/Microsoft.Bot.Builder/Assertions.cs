@@ -1,7 +1,10 @@
-﻿using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Connector;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
 using System;
 using System.Collections.Generic;
+using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Connector;
 
 namespace Microsoft.Bot.Builder
 {
