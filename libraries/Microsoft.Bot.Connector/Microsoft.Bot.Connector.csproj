@@ -1,13 +1,23 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <AssemblyName>Microsoft.Bot.Connector</AssemblyName>
-    <Copyright>Copyright © Microsoft Corporation 2016</Copyright>
-    <Description>Microsoft Bot Builder</Description>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <Version>4.0.3-alpha</Version>
+    <FileVersion>4.0.3.0</FileVersion>
+    <AssemblyVersion>4.0.3.0</AssemblyVersion>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Company>Microsoft</Company>
+    <Authors>Microsoft</Authors>
+    <Product>Microsoft Bot Connector</Product>
+    <Description>Microsoft Bot Connector</Description>
+    <PackageId>Microsoft.Bot.Connector</PackageId>
+    <Copyright>Microsoft</Copyright>
+    <PackageProjectUrl>http://botframework.com</PackageProjectUrl>
+    <PackageIconUrl>http://docs.botframework.com/images/bot_icon.png</PackageIconUrl>
+    <RepositoryUrl>https://github.com/Microsoft/BotBuilder-DotNet</RepositoryUrl>
+    <RepositoryType />
+    <PackageTags>bots;ai;botframework;botbuilder</PackageTags>
+    <NeutralLanguage />
   </PropertyGroup>
-
 
   <ItemGroup>
     <Compile Remove="node_modules\**" />
@@ -22,8 +32,6 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="2.0.0" />
-    <!--  <PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="2.1.4" /> 
-    -->
     <PackageReference Include="Microsoft.Rest.ClientRuntime" Version="2.3.10" />
     <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />    
   </ItemGroup>
