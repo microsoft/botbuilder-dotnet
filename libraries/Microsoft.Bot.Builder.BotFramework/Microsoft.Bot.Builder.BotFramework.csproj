@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Version>4.0.3-alpha</Version>
+    <FileVersion>4.0.3.0</FileVersion>
+    <AssemblyVersion>4.0.3.0</AssemblyVersion>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Company>Microsoft</Company>
+    <Authors>Microsoft</Authors>
+    <Product>Microsoft Bot Framework</Product>
+    <Description>Classes for Microsoft.Bot.Builder to work with Microsoft Bot Framework services</Description>
+    <PackageId>Microsoft.Bot.Builder.BotFramework</PackageId>
+    <AssemblyName>Microsoft.Bot.Builder.BotFramework</AssemblyName>
+    <RootNamespace>Microsoft.Bot.Builder.BotFramework</RootNamespace>
+    <Copyright>Microsoft</Copyright>
+    <PackageProjectUrl>http://botframework.com</PackageProjectUrl>
+    <PackageIconUrl>http://docs.botframework.com/images/bot_icon.png</PackageIconUrl>
+    <RepositoryUrl>https://github.com/Microsoft/BotBuilder</RepositoryUrl>
+    <RepositoryType />
+    <PackageTags>bots;ai;botframework;botbuilder</PackageTags>
+    <NeutralLanguage />
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Bot.Connector" Version="3.12.2.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Microsoft.Bot.Builder\Microsoft.Bot.Builder.csproj" />
+  </ItemGroup>
+
+</Project>
