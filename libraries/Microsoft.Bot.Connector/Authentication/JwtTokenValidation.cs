@@ -10,8 +10,14 @@ namespace Microsoft.Bot.Connector
 {
     public static class JwtTokenValidation
     {
-        public static async Task<bool> ValidateAuthHeader(string authHeader, string appId, string serviceUrl)
+        public static async Task<bool> ValidateAuthHeader(string authHeader, ICredentialProvider credentials, string serviceUrl)
         {
+            if(string.IsNullOrWhiteSpace(authHeader) && await credentials.IsAuthenticationDisabledAsync())
+            {
+                // Bot authentication is disabled
+                return true;
+            }
+
             if (string.IsNullOrWhiteSpace(authHeader))
             {
                 return false;
@@ -33,9 +39,9 @@ namespace Microsoft.Bot.Connector
                 }
             }
 
-            // Validate audience
-            var audience = identity.Claims.FirstOrDefault(o => o.Type == "aud")?.Value;
-            if (string.IsNullOrWhiteSpace(audience) || !string.Equals(audience, appId))
+            // Validate AppId (Audience claim)
+            var identityAppId = identity.GetAppIdFromClaims();
+            if (!await credentials.IsValidAppIdAsync(identityAppId))
             {
                 return false;
             }

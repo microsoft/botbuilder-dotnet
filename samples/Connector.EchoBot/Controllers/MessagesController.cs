@@ -10,13 +10,11 @@ namespace Connector.EchoBot.Controllers
     [Route("api/messages")]
     public class MessagesController : Controller
     {
-        private readonly MicrosoftAppCredentials credentials;
+        private readonly SimpleCredentialProvider credentials;
 
         public MessagesController(IConfiguration configuration)
         {
-            this.credentials = new MicrosoftAppCredentials(
-                configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppIdKey)?.Value,
-                configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppPasswordKey)?.Value);
+            this.credentials = new ConfigurationCredentialProvider(configuration);
         }
 
         [HttpPost]
@@ -24,7 +22,7 @@ namespace Connector.EchoBot.Controllers
         {
             // Validate Authorization Header
             var authHeader = this.Request.Headers["Authorization"].SingleOrDefault();
-            bool isValidIdentity = await JwtTokenValidation.ValidateAuthHeader(authHeader, this.credentials.MicrosoftAppId, activity.ServiceUrl);
+            bool isValidIdentity = await JwtTokenValidation.ValidateAuthHeader(authHeader, this.credentials, activity.ServiceUrl);
             if (!isValidIdentity)
             {
                 return this.Unauthorized();
@@ -35,11 +33,17 @@ namespace Connector.EchoBot.Controllers
             {
                 var reply = activity.CreateReply($"You said: {activity.Text}");
 
-                // Thrust service Url
-                MicrosoftAppCredentials.TrustServiceUrl(activity.ServiceUrl);
+                // Thrust service Url (for BotConnector Service only, ignore for Emulator
+                if (!await this.credentials.IsAuthenticationDisabledAsync())
+                {
+                    MicrosoftAppCredentials.TrustServiceUrl(activity.ServiceUrl);
+                }
 
                 // Reply to Activity using Connector
-                var connector = new ConnectorClient(new Uri(activity.ServiceUrl, UriKind.Absolute), credentials);
+                var connector = new ConnectorClient(
+                    new Uri(activity.ServiceUrl, UriKind.Absolute),
+                    new MicrosoftAppCredentials(this.credentials.AppId, this.credentials.Password));
+
                 await connector.Conversations.ReplyToActivityAsync(reply);
             }
 
