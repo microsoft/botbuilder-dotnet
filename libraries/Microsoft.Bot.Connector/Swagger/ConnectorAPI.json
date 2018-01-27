@@ -28,7 +28,9 @@
         "summary": "GetAttachmentInfo",
         "description": "Get AttachmentInfo structure describing the attachment views",
         "operationId": "Attachments_GetAttachmentInfo",
-        "consumes": [],
+        "consumes": [
+
+        ],
         "produces": [
           "application/json",
           "text/json",
@@ -68,7 +70,9 @@
         "summary": "GetAttachment",
         "description": "Get the named view as binary content",
         "operationId": "Attachments_GetAttachment",
-        "consumes": [],
+        "consumes": [
+
+        ],
         "produces": [
           "application/json",
           "text/json",
@@ -387,7 +391,9 @@
         "summary": "DeleteActivity",
         "description": "Delete an existing activity.\r\n\r\nSome channels allow you to delete an existing activity, and if successful this method will remove the specified activity.",
         "operationId": "Conversations_DeleteActivity",
-        "consumes": [],
+        "consumes": [
+
+        ],
         "produces": [
           "application/json",
           "text/json",
@@ -434,7 +440,9 @@
         "summary": "GetConversationMembers",
         "description": "Enumerate the members of a converstion. \r\n\r\nThis REST API takes a ConversationId and returns an array of ChannelAccount objects representing the members of the conversation.",
         "operationId": "Conversations_GetConversationMembers",
-        "consumes": [],
+        "consumes": [
+
+        ],
         "produces": [
           "application/json",
           "text/json",
@@ -477,7 +485,9 @@
         "summary": "GetActivityMembers",
         "description": "Enumerate the members of an activity. \r\n\r\nThis REST API takes a ConversationId and a ActivityId, returning an array of ChannelAccount objects representing the members of the particular activity in the conversation.",
         "operationId": "Conversations_GetActivityMembers",
-        "consumes": [],
+        "consumes": [
+
+        ],
         "produces": [
           "application/json",
           "text/json",
@@ -698,8 +708,8 @@
       "type": "object",
       "properties": {
         "type": {
-          "description": "The type of the activity [message|contactRelationUpdate|converationUpdate|typing|endOfConversation|event|invoke]",
-          "type": "string"
+          "$ref": "#/definitions/ActivityTypes",
+          "description": "The type of the activity"
         },
         "id": {
           "description": "ID of this activity",
@@ -736,12 +746,12 @@
           "description": "(Outbound to bot only) Bot's address that received the message"
         },
         "textFormat": {
-          "description": "Format of text fields [plain|markdown] Default:markdown",
-          "type": "string"
+          "$ref": "#/definitions/TextFormatTypes",
+          "description": "Format of text fields Default:markdown"
         },
         "attachmentLayout": {
-          "description": "Hint for how to deal with multiple attachments: [list|carousel] Default:list",
-          "type": "string"
+          "$ref": "#/definitions/AttachmentLayoutTypes",
+          "description": "Hint for how to deal with multiple attachments. Default:list"
         },
         "membersAdded": {
           "description": "Members added to the conversation",
@@ -792,8 +802,8 @@
           "type": "string"
         },
         "inputHint": {
-          "description": "Indicates whether the bot is accepting, expecting, or ignoring input",
-          "type": "string"
+          "$ref": "#/definitions/InputHints",
+          "description": "Input hint to the channel on what the bot is expecting."
         },
         "summary": {
           "description": "Text to display if the channel cannot render cards",
@@ -842,8 +852,8 @@
           "description": "Reference to another conversation or activity"
         },
         "code": {
-          "description": "Code indicating why the conversation has ended",
-          "type": "string"
+          "$ref": "#/definitions/EndOfConversationCodes",
+          "description": "Code indicating why the conversation has ended"
         },
         "expiration": {
           "format": "date-time",
@@ -890,8 +900,8 @@
       "type": "object",
       "properties": {
         "type": {
-          "description": "Message reaction type",
-          "type": "string"
+          "$ref": "#/definitions/MessageReactionTypes",
+          "description": "Message reaction type"
         }
       }
     },
@@ -1001,8 +1011,8 @@
       "type": "object",
       "properties": {
         "type": {
-          "description": "The type of action implemented by this button",
-          "type": "string"
+          "$ref": "#/definitions/ActionTypes",
+          "description": "The type of action implemented by this button"
         },
         "title": {
           "description": "Text description which appears on the button",
@@ -1671,6 +1681,184 @@
         }
       }
     },
+    "ActivityTypes": {
+      "description": "Types of Activities",
+      "enum": [
+        "message",
+        "contactRelationUpdate",
+        "conversationUpdate",
+        "typing",
+        "ping",
+        "endOfConversation",
+        "event",
+        "invoke",
+        "deleteUserData",
+        "messageUpdate",
+        "messageDelete",
+        "installationUpdate",
+        "messageReaction",
+        "suggestion"
+      ],
+      "type": "string",
+      "properties": {
+
+      },
+      "x-ms-enum": {
+        "name": "ActivityTypes",
+        "modelAsString": true
+      }
+    },
+    "AttachmentLayoutTypes": {
+      "description": "Attachment layout types",
+      "enum": [
+        "list",
+        "carousel"
+      ],
+      "type": "string",
+      "properties": {
+
+      },
+      "x-ms-enum": {
+        "name": "AttachmentLayoutTypes",
+        "modelAsString": true
+      }
+    },
+    "ActionTypes": {
+      "description": "Types of actions",
+      "enum": [
+        "openUrl",
+        "imBack",
+        "postBack",
+        "playAudio",
+        "playVideo",
+        "showImage",
+        "downloadFile",
+        "signin",
+        "call",
+        "payment",
+        "messageBack"
+      ],
+      "type": "string",
+      "properties": {
+
+      },
+      "x-ms-enum": {
+        "name": "ActionTypes",
+        "modelAsString": true
+      }
+    },
+    "ContactRelationUpdateActionTypes": {
+      "description": "Action types valid for ContactRelationUpdate activities",
+      "enum": [
+        "add",
+        "remove"
+      ],
+      "type": "string",
+      "properties": {
+
+      },
+      "x-ms-enum": {
+        "name": "ContactRelationUpdateActionTypes",
+        "modelAsString": true
+      }
+    },
+    "InstallationUpdateActionTypes": {
+      "description": "Action types valid for InstallationUpdate activities",
+      "enum": [
+        "add",
+        "remove"
+      ],
+      "type": "string",
+      "properties": {
+
+      },
+      "x-ms-enum": {
+        "name": "InstallationUpdateActionTypes",
+        "modelAsString": true
+      }
+    },
+    "MessageReactionTypes": {
+      "description": "Message reaction types",
+      "enum": [
+        "like",
+        "plusOne"
+      ],
+      "type": "string",
+      "properties": {
+
+      },
+      "x-ms-enum": {
+        "name": "MessageReactionTypes",
+        "modelAsString": true
+      }
+    },
+    "TextFormatTypes": {
+      "description": "Text format types",
+      "enum": [
+        "markdown",
+        "plain",
+        "xml"
+      ],
+      "type": "string",
+      "properties": {
+
+      },
+      "x-ms-enum": {
+        "name": "TextFormatTypes",
+        "modelAsString": true
+      }
+    },
+    "InputHints": {
+      "description": "Indicates whether the bot is accepting, expecting, or ignoring input",
+      "enum": [
+        "acceptingInput",
+        "ignoringInput",
+        "expectingInput"
+      ],
+      "type": "string",
+      "properties": {
+
+      },
+      "x-ms-enum": {
+        "name": "InputHints",
+        "modelAsString": true
+      }
+    },
+    "EndOfConversationCodes": {
+      "description": "Codes indicating why a conversation has ended",
+      "enum": [
+        "unknown",
+        "completedSuccessfully",
+        "userCancelled",
+        "botTimedOut",
+        "botIssuedInvalidMessage",
+        "channelFailed"
+      ],
+      "type": "string",
+      "properties": {
+
+      },
+      "x-ms-enum": {
+        "name": "EndOfConversationCodes",
+        "modelAsString": true
+      }
+    },
+    "ActivityImportance": {
+      "description": "Defines the importance of an Activity",
+      "enum": [
+        "low",
+        "normal",
+        "high"
+      ],
+      "type": "string",
+      "properties": {
+
+      },
+      "x-ms-enum": {
+        "name": "ActivityImportance",
+        "modelAsString": true
+      }
+    },
     "MicrosoftPayMethodData": {
       "description": "W3C Payment Method Data for Microsoft Pay",
       "type": "object",
@@ -2035,7 +2223,7 @@
   "securityDefinitions": {
     "bearer_auth": {
       "type": "apiKey",
-      "description": "Access Token to authenticate calls to the Bot Connector Service.",
+      "description": "Access token to authenticate calls to the Bot Connector Service.",
       "name": "Authorization",
       "in": "header"
     }

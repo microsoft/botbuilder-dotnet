@@ -186,34 +186,6 @@ namespace Microsoft.Bot.Connector
         public ISuggestionActivity AsSuggestionActivity() { return IsActivity(ActivityTypes.Suggestion) ? this : null; }
 
         /// <summary>
-        /// Maps type to activity types 
-        /// </summary>
-        /// <param name="type"> The type.</param>
-        /// <returns> The activity type.</returns>
-        public static string GetActivityType(string type)
-        {
-            if (String.Equals(type, ActivityTypes.Message, StringComparison.OrdinalIgnoreCase))
-                return ActivityTypes.Message;
-
-            if (String.Equals(type, ActivityTypes.ContactRelationUpdate, StringComparison.OrdinalIgnoreCase))
-                return ActivityTypes.ContactRelationUpdate;
-
-            if (String.Equals(type, ActivityTypes.ConversationUpdate, StringComparison.OrdinalIgnoreCase))
-                return ActivityTypes.ConversationUpdate;
-
-            if (String.Equals(type, ActivityTypes.DeleteUserData, StringComparison.OrdinalIgnoreCase))
-                return ActivityTypes.DeleteUserData;
-
-            if (String.Equals(type, ActivityTypes.Typing, StringComparison.OrdinalIgnoreCase))
-                return ActivityTypes.Typing;
-
-            if (String.Equals(type, ActivityTypes.Ping, StringComparison.OrdinalIgnoreCase))
-                return ActivityTypes.Ping;
-
-            return $"{Char.ToLower(type[0])}{type.Substring(1)}";
-        }
-
-        /// <summary>
         /// Checks if this (message) activity has content.
         /// </summary>
         /// <returns>Returns true, if this message has any content to send. False otherwise.</returns>
