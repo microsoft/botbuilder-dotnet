@@ -32,8 +32,11 @@ namespace Microsoft.Bot.Connector
         /// <summary>
         /// Initializes a new instance of the Activity class.
         /// </summary>
-        /// <param name="type">The type of the activity
-        /// [message|contactRelationUpdate|converationUpdate|typing|endOfConversation|event|invoke]</param>
+        /// <param name="type">The type of the activity. Possible values
+        /// include: 'message', 'contactRelationUpdate', 'conversationUpdate',
+        /// 'typing', 'ping', 'endOfConversation', 'event', 'invoke',
+        /// 'deleteUserData', 'messageUpdate', 'messageDelete',
+        /// 'installationUpdate', 'messageReaction', 'suggestion'</param>
         /// <param name="id">ID of this activity</param>
         /// <param name="timestamp">UTC Time when message was sent (set by
         /// service)</param>
@@ -47,10 +50,11 @@ namespace Microsoft.Bot.Connector
         /// <param name="conversation">Conversation</param>
         /// <param name="recipient">(Outbound to bot only) Bot's address that
         /// received the message</param>
-        /// <param name="textFormat">Format of text fields [plain|markdown]
-        /// Default:markdown</param>
+        /// <param name="textFormat">Format of text fields Default:markdown.
+        /// Possible values include: 'markdown', 'plain', 'xml'</param>
         /// <param name="attachmentLayout">Hint for how to deal with multiple
-        /// attachments: [list|carousel] Default:list</param>
+        /// attachments. Default:list. Possible values include: 'list',
+        /// 'carousel'</param>
         /// <param name="membersAdded">Members added to the
         /// conversation</param>
         /// <param name="membersRemoved">Members removed from the
@@ -66,8 +70,9 @@ namespace Microsoft.Bot.Connector
         /// <param name="locale">The language code of the Text field</param>
         /// <param name="text">Content for the message</param>
         /// <param name="speak">SSML Speak for TTS audio response</param>
-        /// <param name="inputHint">Indicates whether the bot is accepting,
-        /// expecting, or ignoring input</param>
+        /// <param name="inputHint">Input hint to the channel on what the bot
+        /// is expecting. Possible values include: 'acceptingInput',
+        /// 'ignoringInput', 'expectingInput'</param>
         /// <param name="summary">Text to display if the channel cannot render
         /// cards</param>
         /// <param name="suggestedActions">SuggestedActions are used to provide
@@ -85,8 +90,10 @@ namespace Microsoft.Bot.Connector
         /// the event</param>
         /// <param name="relatesTo">Reference to another conversation or
         /// activity</param>
-        /// <param name="code">Code indicating why the conversation has
-        /// ended</param>
+        /// <param name="code">Code indicating why the conversation has ended.
+        /// Possible values include: 'unknown', 'completedSuccessfully',
+        /// 'userCancelled', 'botTimedOut', 'botIssuedInvalidMessage',
+        /// 'channelFailed'</param>
         /// <param name="expiration">DateTime to expire the activity as ISO
         /// 8601 encoded datetime</param>
         /// <param name="importance">Importance of this activity
@@ -145,8 +152,11 @@ namespace Microsoft.Bot.Connector
         partial void CustomInit();
 
         /// <summary>
-        /// Gets or sets the type of the activity
-        /// [message|contactRelationUpdate|converationUpdate|typing|endOfConversation|event|invoke]
+        /// Gets or sets the type of the activity. Possible values include:
+        /// 'message', 'contactRelationUpdate', 'conversationUpdate', 'typing',
+        /// 'ping', 'endOfConversation', 'event', 'invoke', 'deleteUserData',
+        /// 'messageUpdate', 'messageDelete', 'installationUpdate',
+        /// 'messageReaction', 'suggestion'
         /// </summary>
         [JsonProperty(PropertyName = "type")]
         public string Type { get; set; }
@@ -203,15 +213,15 @@ namespace Microsoft.Bot.Connector
         public ChannelAccount Recipient { get; set; }
 
         /// <summary>
-        /// Gets or sets format of text fields [plain|markdown]
-        /// Default:markdown
+        /// Gets or sets format of text fields Default:markdown. Possible
+        /// values include: 'markdown', 'plain', 'xml'
         /// </summary>
         [JsonProperty(PropertyName = "textFormat")]
         public string TextFormat { get; set; }
 
         /// <summary>
-        /// Gets or sets hint for how to deal with multiple attachments:
-        /// [list|carousel] Default:list
+        /// Gets or sets hint for how to deal with multiple attachments.
+        /// Default:list. Possible values include: 'list', 'carousel'
         /// </summary>
         [JsonProperty(PropertyName = "attachmentLayout")]
         public string AttachmentLayout { get; set; }
@@ -271,8 +281,9 @@ namespace Microsoft.Bot.Connector
         public string Speak { get; set; }
 
         /// <summary>
-        /// Gets or sets indicates whether the bot is accepting, expecting, or
-        /// ignoring input
+        /// Gets or sets input hint to the channel on what the bot is
+        /// expecting. Possible values include: 'acceptingInput',
+        /// 'ignoringInput', 'expectingInput'
         /// </summary>
         [JsonProperty(PropertyName = "inputHint")]
         public string InputHint { get; set; }
@@ -341,7 +352,10 @@ namespace Microsoft.Bot.Connector
         public ConversationReference RelatesTo { get; set; }
 
         /// <summary>
-        /// Gets or sets code indicating why the conversation has ended
+        /// Gets or sets code indicating why the conversation has ended.
+        /// Possible values include: 'unknown', 'completedSuccessfully',
+        /// 'userCancelled', 'botTimedOut', 'botIssuedInvalidMessage',
+        /// 'channelFailed'
         /// </summary>
         [JsonProperty(PropertyName = "code")]
         public string Code { get; set; }

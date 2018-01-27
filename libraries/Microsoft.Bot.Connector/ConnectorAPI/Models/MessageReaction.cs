@@ -29,7 +29,8 @@ namespace Microsoft.Bot.Connector
         /// <summary>
         /// Initializes a new instance of the MessageReaction class.
         /// </summary>
-        /// <param name="type">Message reaction type</param>
+        /// <param name="type">Message reaction type. Possible values include:
+        /// 'like', 'plusOne'</param>
         public MessageReaction(string type = default(string))
         {
             Type = type;
@@ -42,7 +43,8 @@ namespace Microsoft.Bot.Connector
         partial void CustomInit();
 
         /// <summary>
-        /// Gets or sets message reaction type
+        /// Gets or sets message reaction type. Possible values include:
+        /// 'like', 'plusOne'
         /// </summary>
         [JsonProperty(PropertyName = "type")]
         public string Type { get; set; }
