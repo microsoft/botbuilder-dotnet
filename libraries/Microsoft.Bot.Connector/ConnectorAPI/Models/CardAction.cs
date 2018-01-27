@@ -29,8 +29,10 @@ namespace Microsoft.Bot.Connector
         /// <summary>
         /// Initializes a new instance of the CardAction class.
         /// </summary>
-        /// <param name="type">The type of action implemented by this
-        /// button</param>
+        /// <param name="type">The type of action implemented by this button.
+        /// Possible values include: 'openUrl', 'imBack', 'postBack',
+        /// 'playAudio', 'playVideo', 'showImage', 'downloadFile', 'signin',
+        /// 'call', 'payment', 'messageBack'</param>
         /// <param name="title">Text description which appears on the
         /// button</param>
         /// <param name="image">Image URL which will appear on the button, next
@@ -57,7 +59,10 @@ namespace Microsoft.Bot.Connector
         partial void CustomInit();
 
         /// <summary>
-        /// Gets or sets the type of action implemented by this button
+        /// Gets or sets the type of action implemented by this button.
+        /// Possible values include: 'openUrl', 'imBack', 'postBack',
+        /// 'playAudio', 'playVideo', 'showImage', 'downloadFile', 'signin',
+        /// 'call', 'payment', 'messageBack'
         /// </summary>
         [JsonProperty(PropertyName = "type")]
         public string Type { get; set; }
