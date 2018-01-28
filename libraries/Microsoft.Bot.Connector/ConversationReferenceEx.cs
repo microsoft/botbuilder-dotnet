@@ -5,7 +5,7 @@ using System;
 
 namespace Microsoft.Bot.Connector
 {
-    public partial class ConversationReference : IEquatable<ConversationReference>
+    public partial class ConversationReference 
     {
         /// <summary>
         /// Creates <see cref="Activity"/> from conversation reference as it is posted to bot.
@@ -51,31 +51,6 @@ namespace Microsoft.Bot.Connector
             msg.Recipient = user;
 
             return msg;
-        }
-
-        public bool Equals(ConversationReference other)
-        {
-            return other != null
-                && object.Equals(this.User, other.User)
-                && object.Equals(this.Bot, other.Bot)
-                && object.Equals(this.Conversation, other.Conversation)
-                && this.ChannelId == other.ChannelId
-                && this.ServiceUrl == other.ServiceUrl;
-        }
-
-        public override bool Equals(object other)
-        {
-            return this.Equals(other as ConversationReference);
-        }
-
-        public override int GetHashCode()
-        {
-            var code = this.User.GetHashCode()
-                ^ this.Bot.GetHashCode()
-                ^ this.Conversation.GetHashCode()
-                ^ this.ServiceUrl.GetHashCode()
-                ^ this.ChannelId.GetHashCode();
-            return code;
         }
     }
 }
