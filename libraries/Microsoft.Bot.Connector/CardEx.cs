@@ -3,6 +3,9 @@
 
 namespace Microsoft.Bot.Connector
 {
+    /// <summary>
+    /// Extension methods for converting strongly typed Card objects to Attachement
+    /// </summary>
     public static partial class Extensions
     {
         /// <summary>

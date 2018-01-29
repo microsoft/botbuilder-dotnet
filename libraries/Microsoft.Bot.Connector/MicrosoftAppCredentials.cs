@@ -13,6 +13,9 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Connector
 {
+    /// <summary>
+    /// MicrosoftAppCredentials auth implementation and cache
+    /// </summary>
     public class MicrosoftAppCredentials : ServiceClientCredentials
     {
         /// <summary>
@@ -176,7 +179,7 @@ namespace Microsoft.Bot.Connector
 
         private async Task<OAuthResponse> RefreshTokenAsync()
         {
-            using (HttpClient httpClient = new HttpClient())
+            using (var httpClient = new HttpClient())
             {
                 var content = new FormUrlEncodedContent(new Dictionary<string, string>()
                 {
