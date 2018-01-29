@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Connector
 {
+    /// <summary>
+    /// HttpClient extension to include auth
+    /// </summary>
     public static class HttpClientEx
     {
         /// <summary>

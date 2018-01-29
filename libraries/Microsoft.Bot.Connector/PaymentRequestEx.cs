@@ -3,6 +3,9 @@
 
 namespace Microsoft.Bot.Connector
 {
+    /// <summary>
+    /// Action type names for payment requests
+    /// </summary>
     public partial class PaymentRequest
     {
         /// <summary>

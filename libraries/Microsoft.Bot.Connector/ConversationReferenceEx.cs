@@ -5,6 +5,9 @@ using System;
 
 namespace Microsoft.Bot.Connector
 {
+    /// <summary>
+    /// ConversationReference extensions - helper for creating Activity
+    /// </summary>
     public partial class ConversationReference 
     {
         /// <summary>

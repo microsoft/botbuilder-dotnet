@@ -13,6 +13,9 @@ using System.Configuration;
 
 namespace Microsoft.Bot.Connector
 {
+    /// <summary>
+    /// CredentialProvider interface and various implementations
+    /// </summary>
     public interface ICredentialProvider
     {
         /// <summary>

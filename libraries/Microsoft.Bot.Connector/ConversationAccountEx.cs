@@ -7,6 +7,9 @@ using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Connector
 {
+    /// <summary>
+    /// ConversationAccount extension
+    /// </summary>
     public partial class ConversationAccount 
     {
         /// <summary>

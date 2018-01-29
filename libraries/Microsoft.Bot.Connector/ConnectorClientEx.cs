@@ -9,6 +9,9 @@ using Microsoft.Rest;
 
 namespace Microsoft.Bot.Connector
 {
+    /// <summary>
+    /// ConnectorClient extension
+    /// </summary>
     public partial class ConnectorClient
     {
         /// <summary>
@@ -23,7 +26,9 @@ namespace Microsoft.Bot.Connector
         {
         }
 
-        // client defaults to sending the expect: continue header, which isn't very efficient, 
+        /// <summary>
+        /// client defaults to sending the expect: continue header, which isn't very efficient,
+        /// </summary>
         partial void CustomInitialize()
         {
             AddUserAgent(this);
