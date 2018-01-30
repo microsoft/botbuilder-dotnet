@@ -8,7 +8,6 @@ namespace Microsoft.Bot.Connector
     /// </summary>
     public interface IContactRelationUpdateActivity : IActivity
     {
-
         /// <summary>
         /// add|remove
         /// </summary>

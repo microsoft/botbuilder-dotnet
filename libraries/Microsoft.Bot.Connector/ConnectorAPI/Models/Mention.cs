@@ -62,9 +62,10 @@ namespace Microsoft.Bot.Connector
 
         /// <summary>
         /// Gets or sets entity Type (typically from schema.org types)
+        /// (Compile Warning is suppressed because Type is defined in both peices of generated code referenced: Mention and Entity.)
         /// </summary>
+        #pragma warning disable CS0108
         [JsonProperty(PropertyName = "type")]
         public string Type { get; set; }
-
     }
 }

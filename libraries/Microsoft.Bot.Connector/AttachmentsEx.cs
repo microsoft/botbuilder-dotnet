@@ -9,6 +9,9 @@ using Microsoft.Rest;
 
 namespace Microsoft.Bot.Connector
 {
+    /// <summary>
+    /// Addition helper code for Attachments
+    /// </summary>
     public partial class Attachments
     {
         /// <summary>

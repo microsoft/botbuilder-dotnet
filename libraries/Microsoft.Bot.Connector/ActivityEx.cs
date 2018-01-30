@@ -1,12 +1,11 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Connector
 {
@@ -56,17 +55,19 @@ namespace Microsoft.Bot.Connector
         /// <returns>message set up to route back to the sender</returns>
         public Activity CreateReply(string text = null, string locale = null)
         {
-            Activity reply = new Activity();
-            reply.Type = ActivityTypes.Message;
-            reply.Timestamp = DateTime.UtcNow;
-            reply.From = new ChannelAccount(id: this.Recipient.Id, name: this.Recipient.Name);
-            reply.Recipient = new ChannelAccount(id: this.From.Id, name: this.From.Name);
-            reply.ReplyToId = this.Id;
-            reply.ServiceUrl = this.ServiceUrl;
-            reply.ChannelId = this.ChannelId;
-            reply.Conversation = new ConversationAccount(isGroup: this.Conversation.IsGroup, id: this.Conversation.Id, name: this.Conversation.Name);
-            reply.Text = text ?? String.Empty;
-            reply.Locale = locale ?? this.Locale;
+            var reply = new Activity
+            {
+                Type = ActivityTypes.Message,
+                Timestamp = DateTime.UtcNow,
+                From = new ChannelAccount(id: this.Recipient.Id, name: this.Recipient.Name),
+                Recipient = new ChannelAccount(id: this.From.Id, name: this.From.Name),
+                ReplyToId = this.Id,
+                ServiceUrl = this.ServiceUrl,
+                ChannelId = this.ChannelId,
+                Conversation = new ConversationAccount(isGroup: this.Conversation.IsGroup, id: this.Conversation.Id, name: this.Conversation.Name),
+                Text = text ?? String.Empty,
+                Locale = locale ?? this.Locale
+            };
             return reply;
         }
 
@@ -256,58 +257,6 @@ namespace Microsoft.Bot.Connector
             {
                 return false;
             }
-        }
-
-
-    }
-
-    public static class ActivityExtensions
-    {
-
-        /// <summary>
-        /// Is there a mention of Id in the Text Property 
-        /// </summary>
-        /// <param name="id">ChannelAccount.Id</param>
-        /// <param name="activity"></param>
-        /// <returns>true if this id is mentioned in the text</returns>
-        public static bool MentionsId(this IMessageActivity activity, string id)
-        {
-            return activity.GetMentions().Where(mention => mention.Mentioned.Id == id).Any();
-        }
-
-        /// <summary>
-        /// Is there a mention of Recipient.Id in the Text Property 
-        /// </summary>
-        /// <param name="activity"></param>
-        /// <returns>true if this id is mentioned in the text</returns>
-        public static bool MentionsRecipient(this IMessageActivity activity)
-        {
-            return activity.GetMentions().Where(mention => mention.Mentioned.Id == activity.Recipient.Id).Any();
-        }
-
-        /// <summary>
-        /// Remove recipient mention text from Text property
-        /// </summary>
-        /// <param name="activity"></param>
-        /// <returns>new .Text property value</returns>
-        public static string RemoveRecipientMention(this IMessageActivity activity)
-        {
-            return activity.RemoveMentionText(activity.Recipient.Id);
-        }
-
-        /// <summary>
-        /// Replace any mention text for given id from Text property
-        /// </summary>
-        /// <param name="id">id to match</param>
-        /// <param name="activity"></param>
-        /// <returns>new .Text property value</returns>
-        public static string RemoveMentionText(this IMessageActivity activity, string id)
-        {
-            foreach (var mention in activity.GetMentions().Where(mention => mention.Mentioned.Id == id))
-            {
-                activity.Text = Regex.Replace(activity.Text, mention.Text, "", RegexOptions.IgnoreCase);
-            }
-            return activity.Text;
         }
     }
 }

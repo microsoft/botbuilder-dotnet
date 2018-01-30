@@ -6,6 +6,9 @@ using System.Linq;
 
 namespace Microsoft.Bot.Connector
 {
+    /// <summary>
+    /// Extension methods for ClaimsIdentity
+    /// </summary>
     public static class ClaimsIdentityEx
     {
         public const string AppPasswordClaim = "appPassword";

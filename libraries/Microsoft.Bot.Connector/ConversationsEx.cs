@@ -7,6 +7,9 @@ using Microsoft.Rest;
 
 namespace Microsoft.Bot.Connector
 {
+    /// <summary>
+    /// ConversationsExtensions Conversation extensions
+    /// </summary>
     public static partial class ConversationsExtensions
     {
         /// <summary>
