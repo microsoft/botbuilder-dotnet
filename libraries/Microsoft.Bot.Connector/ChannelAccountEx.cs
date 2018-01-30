@@ -1,12 +1,14 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Connector
 {
+    /// <summary>
+    /// Addition helper code for ChannelAccount objects 
+    /// </summary>
     public partial class ChannelAccount 
     {
         /// <summary>
