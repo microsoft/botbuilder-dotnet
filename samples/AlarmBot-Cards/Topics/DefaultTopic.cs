@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using AlarmBot.Models;
 using AlarmBot.TopicViews;
 using Microsoft.Bot.Builder;
-using Microsoft.Bot.Connector;
+using Microsoft.Bot.Schema;
 
 namespace AlarmBot.Topics
 {

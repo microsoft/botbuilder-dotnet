@@ -4,7 +4,7 @@
 using Microsoft.Bot.Builder;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Middleware;
-using Microsoft.Bot.Connector;
+using Microsoft.Bot.Schema;
 
 namespace Micosoft.Bot.Samples.InjectionBasedBotExample
 {

@@ -12,6 +12,7 @@ using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Middleware;
 using Microsoft.Bot.Builder.Storage;
 using Microsoft.Bot.Connector;
+using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 
 namespace AlarmBot.Controllers
