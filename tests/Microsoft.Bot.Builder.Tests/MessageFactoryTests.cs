@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Microsoft.Bot.Connector;
+using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
@@ -110,7 +110,7 @@ namespace Microsoft.Bot.Builder.Tests
             string ssml = Guid.NewGuid().ToString();
 
             string attachmentName = Guid.NewGuid().ToString();
-            Attachment a = new Connector.Attachment
+            Attachment a = new Attachment
             {
                 Name = attachmentName
             };
@@ -155,13 +155,13 @@ namespace Microsoft.Bot.Builder.Tests
             string ssml = Guid.NewGuid().ToString();
 
             string attachmentName = Guid.NewGuid().ToString();
-            Attachment attachment1 = new Connector.Attachment
+            Attachment attachment1 = new Attachment
             {
                 Name = attachmentName
             };
 
             string attachmentName2 = Guid.NewGuid().ToString();
-            Attachment attachment2 = new Connector.Attachment
+            Attachment attachment2 = new Attachment
             {
                 Name = attachmentName2
             };
@@ -185,13 +185,13 @@ namespace Microsoft.Bot.Builder.Tests
             string ssml = Guid.NewGuid().ToString();
 
             string attachmentName = Guid.NewGuid().ToString();            
-            Attachment a = new Connector.Attachment
+            Attachment a = new Attachment
             {
                 Name = attachmentName
             };
 
             string attachmentName2 = Guid.NewGuid().ToString();
-            Attachment a2 = new Connector.Attachment
+            Attachment a2 = new Attachment
             {
                 Name = attachmentName2
             };

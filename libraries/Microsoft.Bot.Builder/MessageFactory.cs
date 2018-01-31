@@ -3,7 +3,7 @@
 
 using System;
 using System.Collections.Generic;
-using Microsoft.Bot.Connector;
+using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder
 {
@@ -105,7 +105,7 @@ namespace Microsoft.Bot.Builder
             IMessageActivity ma = Activity.CreateMessageActivity();
             SetTextAndSpeak(ma, text, ssml);
 
-            ma.SuggestedActions = new Connector.SuggestedActions();
+            ma.SuggestedActions = new SuggestedActions();
             ma.SuggestedActions.Actions = cardActions;
 
             return ma;
@@ -192,7 +192,7 @@ namespace Microsoft.Bot.Builder
             if (string.IsNullOrWhiteSpace(contentType))
                 throw new ArgumentNullException(nameof(contentType));
 
-            Attachment a = new Connector.Attachment
+            Attachment a = new Attachment
             {
                 ContentType = contentType,
                 ContentUrl = url,

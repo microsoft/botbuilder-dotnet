@@ -9,7 +9,7 @@ using AlarmBot.Topics;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Middleware;
 using Microsoft.Bot.Builder.Templates;
-using Microsoft.Bot.Connector;
+using Microsoft.Bot.Schema;
 
 namespace AlarmBot.TopicViews
 {
