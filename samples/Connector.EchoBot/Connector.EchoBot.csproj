@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Connector\Microsoft.Bot.Connector.csproj" />
+    <ProjectReference Include="..\..\libraries\Microsoft.Bot.Schema\Microsoft.Bot.Schema.csproj" />
   </ItemGroup>
 
 </Project>
