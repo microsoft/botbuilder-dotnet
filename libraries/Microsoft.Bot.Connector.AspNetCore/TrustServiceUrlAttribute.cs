@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Bot.Schema;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.Linq;

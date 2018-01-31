@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Middleware;
-using Microsoft.Bot.Connector;
+using Microsoft.Bot.Schema;
 using Microsoft.Cognitive.LUIS;
 
 namespace Microsoft.Bot.Builder.Ai

@@ -4,7 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using Microsoft.Bot.Connector;
+using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.Middleware
 {

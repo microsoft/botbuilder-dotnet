@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using AdaptiveCards;
 using Microsoft.Bot.Builder;
-using Microsoft.Bot.Connector;
+using Microsoft.Bot.Schema;
 
 namespace AlarmBot
 {

@@ -4,6 +4,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Connector;
+using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 
 namespace Microsoft.Bot.Samples.EchoBot.Controllers
