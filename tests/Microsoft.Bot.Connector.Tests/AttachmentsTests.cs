@@ -2,7 +2,7 @@
 {
     using System.IO;
     using Microsoft.Bot.Connector;
-
+    using Microsoft.Bot.Schema;
     using Microsoft.Rest;
     using Xunit;
 

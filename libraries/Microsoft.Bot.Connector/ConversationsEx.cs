@@ -3,6 +3,7 @@
 
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Schema;
 using Microsoft.Rest;
 
 namespace Microsoft.Bot.Connector
