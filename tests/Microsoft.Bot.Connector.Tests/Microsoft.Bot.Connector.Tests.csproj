@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net462</TargetFramework> 
     <AssemblyName>Microsoft.Bot.Connector.Tests</AssemblyName>
-    <Copyright>Copyright � Microsoft Corporation 2017</Copyright>
+    <Copyright>Copyright © Microsoft Corporation 2018</Copyright>
     <Description>Microsoft Bot Builder</Description>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <IsPackable>false</IsPackable>
