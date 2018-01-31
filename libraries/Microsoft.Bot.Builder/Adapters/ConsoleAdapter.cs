@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Builder.Adapters
         {
             foreach (IActivity activity in activities)
             {
-                switch (activity.GetActivityType())
+                switch (activity.Type)
                 {
                     case ActivityTypes.Message:
                         {
