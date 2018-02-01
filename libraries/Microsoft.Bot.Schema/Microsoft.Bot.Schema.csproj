@@ -2,6 +2,26 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <VersionSuffix>preview</VersionSuffix>
+    <VersionPrefix>4.0.0</VersionPrefix>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Company>Microsoft</Company>
+    <Authors>Microsoft</Authors>
+    <Owners>microsoft, BotFramework, nugetbotbuilder</Owners>
+    <Product>Microsoft Bot Framework</Product>
+    <Description>This library implements C# schema classes for using the Bot Framework.</Description>
+    <Summary>This library implements C# schema classes for using the Bot Framework.</Summary>
+    <PackageId>Microsoft.Bot.Schema</PackageId>
+    <Copyright>© Microsoft Corporation. All rights reserved.</Copyright>
+    <PackageProjectUrl>https://github.com/Microsoft/botbuilder-dotnet</PackageProjectUrl>
+    <PackageIconUrl>http://docs.botframework.com/images/bot_icon.png</PackageIconUrl>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <PackageLicenseUrl>https://github.com/Microsoft/BotBuilder/blob/master/LICENSE</PackageLicenseUrl>
+    <RepositoryUrl>https://github.com/Microsoft/botbuilder-dotnet</RepositoryUrl>
+    <LicenseUrl>https://github.com/Microsoft/BotBuilder-dotnet/blob/master/LICENSE</LicenseUrl>
+    <RepositoryType />
+    <PackageTags>bots;ai;botframework;botbuilder</PackageTags>
+    <NeutralLanguage />
   </PropertyGroup>
 
   <ItemGroup>
