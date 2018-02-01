@@ -37,7 +37,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Connector.Asp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Schema", "libraries\Microsoft.Bot.Schema\Microsoft.Bot.Schema.csproj", "{C1F54CDC-AD1D-45BB-8F7D-F49E411AFAF1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EchoBot", "samples\EchoBot\EchoBot.csproj", "{793916C5-5353-43B0-BECD-5A19E23D4FC6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EchoBot", "samples\EchoBot\EchoBot.csproj", "{793916C5-5353-43B0-BECD-5A19E23D4FC6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
