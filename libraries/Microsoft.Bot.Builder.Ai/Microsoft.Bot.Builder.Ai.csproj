@@ -1,13 +1,19 @@
 <Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <Version Condition=" '$(BUILD_BUILDNUMBER)' == '' ">4.0.0-local</Version>
+    <Version Condition=" '$(BUILD_BUILDNUMBER)' != '' ">$(BUILD_BUILDNUMBER)</Version>
+    <VersionSuffix>preview</VersionSuffix>
+  </PropertyGroup>
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackageId>Microsoft.Bot.Builder.Ai</PackageId>
     <Description>AI classes for using Cognitive Services on the Microsoft Bot Builder SDK</Description>
     <Summary>This library implements C# classes for building bots using Microsoft Cognitive services.</Summary>
-    <VersionPrefix>4.0.0.0</VersionPrefix>
-    <VersionSuffix>preview</VersionSuffix>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <PropertyGroup>
     <Company>Microsoft</Company>
     <Authors>Microsoft</Authors>
     <Owners>microsoft, BotFramework, nugetbotbuilder</Owners>
