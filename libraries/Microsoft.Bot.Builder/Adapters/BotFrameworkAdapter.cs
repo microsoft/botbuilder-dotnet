@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Bot.Connector;
@@ -12,13 +13,13 @@ namespace Microsoft.Bot.Builder.Adapters
 {
     public class BotFrameworkAdapter : ActivityAdapterBase
     {
+        private readonly ICredentialProvider _credentialProvider;
         private readonly MicrosoftAppCredentials _credentials;
-        private readonly BotAuthenticator _authenticator;
 
         public BotFrameworkAdapter(string appId, string appPassword) : base()
         {
-            _authenticator = new BotAuthenticator(appId, appPassword);
             _credentials = new MicrosoftAppCredentials(appId, appPassword);
+            _credentialProvider = new StaticCredentialProvider(appId, appPassword);
         }
 
         public async override Task Post(IList<IActivity> activities)
@@ -28,7 +29,7 @@ namespace Microsoft.Bot.Builder.Adapters
             foreach (Activity activity in activities)
             {
                 if (activity.Type == "delay")
-                {   
+                {
                     // The Activity Schema doesn't have a delay type build in, so it's simulated
                     // here in the Bot. This matches the behavior in the Node connector. 
                     int delayMs = (int)activity.Value;
@@ -48,6 +49,18 @@ namespace Microsoft.Bot.Builder.Adapters
                 throw new ArgumentNullException(nameof(headers));
 
             BotAssert.ActivityNotNull(activity);
+
+            if (await _credentialProvider.IsAuthenticationDisabledAsync() == false)
+            {
+                if (headers.TryGetValue("Authorization", out StringValues values))
+                {
+                    if (!await JwtTokenValidation.ValidateAuthHeader(values.SingleOrDefault(), _credentialProvider, activity.ServiceUrl))
+                        throw new UnauthorizedAccessException("Caller does not have a valid authentication header");
+                    MicrosoftAppCredentials.TrustServiceUrl(activity.ServiceUrl);
+                }
+                else
+                    throw new UnauthorizedAccessException("Caller does not have a valid authentication header");
+            }
 
             if (this.OnReceive != null)
                 await this.OnReceive(activity).ConfigureAwait(false);
