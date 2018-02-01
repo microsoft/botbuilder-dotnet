@@ -12,15 +12,7 @@ namespace Microsoft.Bot.Builder.Middleware
     public class MiddlewareSet : IMiddleware, IReceiveActivity, IPostActivity, IContextCreated
     {
         public delegate Task NextDelegate();
-
-        private IList<IMiddleware> _middleware = new List<IMiddleware>();
-
-        public void Clear()
-        {
-            _middleware.Clear();
-        }
-
-        internal IList<IMiddleware> Middleware {  get { return _middleware; } }
+        private readonly IList<IMiddleware> _middleware = new List<IMiddleware>();        
 
         public MiddlewareSet Use(IMiddleware middleware)
         {
@@ -69,13 +61,14 @@ namespace Microsoft.Bot.Builder.Middleware
 
             if (middleware.Length == 0) // No middleware to run.
                 return;
-            
-            NextDelegate next = async () => {
+
+            async Task next()
+            {
                 // Remove the first item from the list of middleware to call,
                 // so that the next call just has the remaining items to worry about. 
                 IContextCreated[] remainingMiddleware = middleware.Skip(1).ToArray();
                 await ContextCreatedInternal(context, remainingMiddleware).ConfigureAwait(false);
-            };
+            }
 
             // Grab the current middleware, which is the 1st element in the array, and execute it            
             await middleware[0].ContextCreated(context, next).ConfigureAwait(false);
@@ -100,13 +93,13 @@ namespace Microsoft.Bot.Builder.Middleware
                 return;
 
             // Default to "No more Middleware after this"
-            NextDelegate next = async () => 
+            async Task next()
             {
                 // Remove the first item from the list of middleware to call,
                 // so that the next call just has the remaining items to worry about. 
                 IReceiveActivity[] remainingMiddleware = middleware.Skip(1).ToArray();
                 await ReceiveActivityInternal(context, remainingMiddleware).ConfigureAwait(false);
-            };
+            }
 
             // Grab the current middleware, which is the 1st element in the array, and execute it            
             await middleware[0].ReceiveActivity(context, next).ConfigureAwait(false);
@@ -133,13 +126,13 @@ namespace Microsoft.Bot.Builder.Middleware
             if (middleware.Length == 0) // No middleware to run.
                 return;
 
-            NextDelegate next = async () => 
+            async Task next()
             {
                 // Remove the first item from the list of middleware to call,
                 // so that the next call just has the remaining items to worry about. 
                 IPostActivity[] remainingMiddleware = middleware.Skip(1).ToArray();
                 await PostActivityInternal(context, activities, remainingMiddleware).ConfigureAwait(false);
-            };
+            }
 
             // Grab the current middleware, which is the 1st element in the array, and execute it            
             await middleware[0].PostActivity(context, activities, next).ConfigureAwait(false);
