@@ -1,19 +1,22 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Version>4.0.3-alpha</Version>
-    <FileVersion>4.0.3.0</FileVersion>
-    <AssemblyVersion>4.0.3.0</AssemblyVersion>
+    <VersionSuffix>prerelease</VersionSuffix>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Company>Microsoft</Company>
     <Authors>Microsoft</Authors>
+    <Owners>microsoft, BotFramework, nugetbotbuilder</Owners>
     <Product>Microsoft Bot Connector</Product>
-    <Description>Microsoft Bot Connector</Description>
+    <Description>This library implements C# classes for using the Bot Framework Connector REST API.</Description>
+    <Summary>Client REST API library for Microsoft Bot Framework Connector</Summary>
     <PackageId>Microsoft.Bot.Connector</PackageId>
-    <Copyright>Microsoft</Copyright>
-    <PackageProjectUrl>http://botframework.com</PackageProjectUrl>
+    <Copyright>© Microsoft Corporation. All rights reserved.</Copyright>
+    <PackageProjectUrl>https://github.com/Microsoft/botbuilder-dotnet</PackageProjectUrl>
     <PackageIconUrl>http://docs.botframework.com/images/bot_icon.png</PackageIconUrl>
-    <RepositoryUrl>https://github.com/Microsoft/BotBuilder-DotNet</RepositoryUrl>
+    <PackageLicenseUrl>https://github.com/Microsoft/BotBuilder/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <RepositoryUrl>https://github.com/Microsoft/botbuilder-dotnet</RepositoryUrl>
+    <LicenseUrl>https://github.com/Microsoft/BotBuilder-dotnet/blob/master/LICENSE</LicenseUrl>
     <RepositoryType />
     <PackageTags>bots;ai;botframework;botbuilder</PackageTags>
     <NeutralLanguage />
