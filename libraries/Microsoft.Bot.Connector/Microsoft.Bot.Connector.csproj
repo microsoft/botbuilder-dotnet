@@ -1,16 +1,16 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <PackageId>Microsoft.Bot.Connector</PackageId>
+    <Description>This library implements C# classes for using the Bot Framework Connector REST API.</Description>
+    <Summary>Client REST API library for Microsoft Bot Framework Connector</Summary>
     <VersionPrefix>4.0.0.0</VersionPrefix>
-    <VersionSuffix>prerelease</VersionSuffix>
+    <VersionSuffix>preview</VersionSuffix>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Company>Microsoft</Company>
     <Authors>Microsoft</Authors>
     <Owners>microsoft, BotFramework, nugetbotbuilder</Owners>
     <Product>Microsoft Bot Connector</Product>
-    <Description>This library implements C# classes for using the Bot Framework Connector REST API.</Description>
-    <Summary>Client REST API library for Microsoft Bot Framework Connector</Summary>
-    <PackageId>Microsoft.Bot.Connector</PackageId>
     <Copyright>© Microsoft Corporation. All rights reserved.</Copyright>
     <PackageProjectUrl>https://github.com/Microsoft/botbuilder-dotnet</PackageProjectUrl>
     <PackageIconUrl>http://docs.botframework.com/images/bot_icon.png</PackageIconUrl>

@@ -2,21 +2,23 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Version>4.0.3-alpha</Version>
-    <FileVersion>4.0.3.0</FileVersion>
-    <AssemblyVersion>4.0.3.0</AssemblyVersion>
+    <PackageId>Microsoft.Bot.Builder</PackageId>
+    <Description>This library implements C# classes for building bots using the Microsoft Bot Builder.</Description>
+    <Summary>This library implements C# classes for building bots using the Microsoft Bot Builder.</Summary>
+    <VersionPrefix>4.0.0.0</VersionPrefix>
+    <VersionSuffix>preview</VersionSuffix>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Company>Microsoft</Company>
     <Authors>Microsoft</Authors>
+    <Owners>microsoft, BotFramework, nugetbotbuilder</Owners>
     <Product>Microsoft Bot Builder SDK</Product>
-    <Description>Core classes for Microsoft Bot Builder SDK</Description>
-    <PackageId>Microsoft.Bot.Builder</PackageId>
-    <AssemblyName>Microsoft.Bot.Builder</AssemblyName>
-    <RootNamespace>Microsoft.Bot.Builder</RootNamespace>
-    <Copyright>Microsoft</Copyright>
-    <PackageProjectUrl>http://botframework.com</PackageProjectUrl>
+    <Copyright>© Microsoft Corporation. All rights reserved.</Copyright>
+    <PackageProjectUrl>https://github.com/Microsoft/botbuilder-dotnet</PackageProjectUrl>
     <PackageIconUrl>http://docs.botframework.com/images/bot_icon.png</PackageIconUrl>
-    <RepositoryUrl>https://github.com/Microsoft/BotBuilder</RepositoryUrl>
+    <PackageLicenseUrl>https://github.com/Microsoft/BotBuilder/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <RepositoryUrl>https://github.com/Microsoft/botbuilder-dotnet</RepositoryUrl>
+    <LicenseUrl>https://github.com/Microsoft/BotBuilder-dotnet/blob/master/LICENSE</LicenseUrl>
     <RepositoryType />
     <PackageTags>bots;ai;botframework;botbuilder</PackageTags>
     <NeutralLanguage />
@@ -33,6 +35,8 @@
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
     <PackageReference Include="System.Dynamic.Runtime" Version="4.3.0" />
+    <PackageReference Include="Microsoft.Bot.Schema" Version="4.0.0" />
+    <PackageReference Include="Microsoft.Bot.Connector" Version="4.0.0" />
   </ItemGroup>
 
   <ItemGroup>
