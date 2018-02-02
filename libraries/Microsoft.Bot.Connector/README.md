@@ -35,7 +35,7 @@ var activity = new Activity()
     Type = ActivityTypes.Message,
     Recipient = user,
     FromProperty = bot,
-    Text = "this is a message from Bot Connector SDK"
+    Text = "This a message from Bot Connector Client (.Net)"
 };
 
 var param = new ConversationParameters()
