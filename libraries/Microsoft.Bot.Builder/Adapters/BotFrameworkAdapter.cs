@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Primitives;
+using Microsoft.Bot.Connector.Authentication;
 
 namespace Microsoft.Bot.Builder.Adapters
 {
@@ -54,12 +55,13 @@ namespace Microsoft.Bot.Builder.Adapters
             {
                 if (headers.TryGetValue("Authorization", out StringValues values))
                 {
-                    if (!await JwtTokenValidation.ValidateAuthHeader(values.SingleOrDefault(), _credentialProvider, activity.ServiceUrl))
-                        throw new UnauthorizedAccessException("Caller does not have a valid authentication header");
+                    var claims = await JwtTokenValidation.ValidateAuthHeader(values.SingleOrDefault(), _credentialProvider, activity.ServiceUrl);
                     MicrosoftAppCredentials.TrustServiceUrl(activity.ServiceUrl);
                 }
                 else
+                {
                     throw new UnauthorizedAccessException("Caller does not have a valid authentication header");
+                }
             }
 
             if (this.OnReceive != null)

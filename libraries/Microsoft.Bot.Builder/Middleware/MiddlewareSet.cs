@@ -105,8 +105,6 @@ namespace Microsoft.Bot.Builder.Middleware
             await middleware[0].ReceiveActivity(context, next).ConfigureAwait(false);
         }
 
-
-
         public async Task PostActivity(IBotContext context, IList<IActivity> activities)
         {
             await PostActivityInternal(context, activities, this._middleware.OfType<IPostActivity>().ToArray()).ConfigureAwait(false);
