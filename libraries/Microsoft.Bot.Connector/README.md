@@ -51,6 +51,10 @@ using (var client = new ConnectorClient(serviceUri, credentials))
 }
 ````
 
+### Simple EchoBot Example ([source code](../../samples/Connector.EchoBot))
+EchoBot is a minimal bot that recieves message activities and replies with the same content.
+The sample shows how to use a WebAPI Controller for listening to activities and the ConnectorClient for sending activities.
+
 ## Rest API Documentation
 
 For the Connector Service API Documentation, please see our [API reference](https://docs.microsoft.com/en-us/Bot-Framework/rest-api/bot-framework-rest-connector-api-reference).
