@@ -43,8 +43,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="5.2.0" />
-    <PackageReference Include="Microsoft.Rest.ClientRuntime" Version="2.3.10" />
-    <PackageReference Include="Microsoft.Bot.Schema" Version="4.0.0" />
+    <PackageReference Include="Microsoft.Rest.ClientRuntime" Version="2.3.10" />    
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
     <!--<PackageReference Include="Microsoft.Bot.Schema" Version="4.0.0" />-->
   </ItemGroup>
