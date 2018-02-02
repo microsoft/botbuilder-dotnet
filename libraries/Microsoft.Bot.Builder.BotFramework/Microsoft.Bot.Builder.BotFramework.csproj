@@ -1,21 +1,32 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <Version Condition=" '$(BUILD_BUILDNUMBER)' == '' ">4.0.0-local</Version>
+    <Version Condition=" '$(BUILD_BUILDNUMBER)' != '' ">$(BUILD_BUILDNUMBER)</Version>
+    <PackageVersion Condition=" '$(PackageVersion)' == '' ">4.0.0-local</PackageVersion>
+    <PackageVersion Condition=" '$(PackageVersion)' != '' ">$(PackageVersion)</PackageVersion>
+  </PropertyGroup>
+
+  <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Version>4.0.0.0</Version>
-    <VersionSuffix>preview</VersionSuffix>
+    <PackageId>Microsoft.Bot.Builder.BotFramework</PackageId>
+    <Description>This library implements an adapter for running a Microsoft Bot Builder bot using the Bot Framework HTTP prototocol</Description>
+    <Summary>Bot Framework adapter for Bot Builder</Summary>
+  </PropertyGroup>
+
+  <PropertyGroup>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Company>Microsoft</Company>
     <Authors>Microsoft</Authors>
-    <Product>Microsoft Bot Framework</Product>
-    <Description>Classes for Microsoft.Bot.Builder to work with Microsoft Bot Framework services</Description>
-    <PackageId>Microsoft.Bot.Builder.BotFramework</PackageId>
-    <AssemblyName>Microsoft.Bot.Builder.BotFramework</AssemblyName>
-    <RootNamespace>Microsoft.Bot.Builder.BotFramework</RootNamespace>
-    <Copyright>Microsoft</Copyright>
-    <PackageProjectUrl>http://botframework.com</PackageProjectUrl>
+    <Owners>microsoft, BotFramework, nugetbotbuilder</Owners>
+    <Product>Microsoft Bot Builder SDK</Product>
+    <Copyright>© Microsoft Corporation. All rights reserved.</Copyright>
+    <PackageProjectUrl>https://github.com/Microsoft/botbuilder-dotnet</PackageProjectUrl>
     <PackageIconUrl>http://docs.botframework.com/images/bot_icon.png</PackageIconUrl>
-    <RepositoryUrl>https://github.com/Microsoft/BotBuilder</RepositoryUrl>
+    <PackageLicenseUrl>https://github.com/Microsoft/BotBuilder/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <RepositoryUrl>https://github.com/Microsoft/botbuilder-dotnet</RepositoryUrl>
+    <LicenseUrl>https://github.com/Microsoft/BotBuilder-dotnet/blob/master/LICENSE</LicenseUrl>
     <RepositoryType />
     <PackageTags>bots;ai;botframework;botbuilder</PackageTags>
     <NeutralLanguage />
