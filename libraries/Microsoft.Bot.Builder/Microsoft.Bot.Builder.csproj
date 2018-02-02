@@ -43,8 +43,8 @@
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
     <PackageReference Include="System.Dynamic.Runtime" Version="4.3.0" />
-    <PackageReference Include="Microsoft.Bot.Schema" Version="4.0.0" />
-    <PackageReference Include="Microsoft.Bot.Connector" Version="4.0.0" />
+    <!--<PackageReference Include="Microsoft.Bot.Schema" Version="4.0.0" />
+    <PackageReference Include="Microsoft.Bot.Connector" Version="4.0.0" />-->
   </ItemGroup>
 
   <ItemGroup>

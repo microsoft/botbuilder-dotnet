@@ -33,8 +33,8 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Cognitive.LUIS" Version="2.0.2" />
-    <PackageReference Include="Microsoft.Bot.Builder" Version="4.0.0" />
-    <PackageReference Include="Microsoft.Bot.Schema" Version="4.0.0" />
+    <!--<PackageReference Include="Microsoft.Bot.Builder" Version="4.0.0" />
+    <PackageReference Include="Microsoft.Bot.Schema" Version="4.0.0" />-->
   </ItemGroup>
 
   <ItemGroup>
