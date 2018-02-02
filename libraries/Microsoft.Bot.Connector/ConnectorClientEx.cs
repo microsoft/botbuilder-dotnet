@@ -5,6 +5,7 @@ using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Reflection;
+using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Rest;
 
 namespace Microsoft.Bot.Connector

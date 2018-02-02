@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using Microsoft.Bot.Connector.Authentication;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
