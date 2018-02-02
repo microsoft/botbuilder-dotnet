@@ -18,7 +18,7 @@ PM> Install-Package Microsoft.Bot.Connector
 ### Authentication
 Your bot communicates with the Bot Connector service using HTTP over a secured channel (SSL/TLS). When your bot sends a request to the Connector service, it must include information that the Connector service can use to verify its identity.
 
-To authenticate the requests, you'll need configure the Connector with the App ID and password that you obtained for your bot during registration and the SDK will handle the rest.
+To authenticate the requests, you'll need configure the Connector with the App ID and password that you obtained for your bot during registration and the Connector will handle the rest.
 
 More information: https://docs.microsoft.com/en-us/bot-framework/rest-api/bot-framework-rest-connector-authentication
 
