@@ -4,7 +4,7 @@
 using System;
 using Microsoft.IdentityModel.Tokens;
 
-namespace Microsoft.Bot.Connector
+namespace Microsoft.Bot.Connector.Authentication
 {
     /// <summary>
     /// Configuration for JWT tokens
@@ -42,9 +42,9 @@ namespace Microsoft.Bot.Connector
             };
 
         /// <summary>
-        /// TO BOT FROM CHANNEL: Allowed token signing algorithms
+        /// Allowed token signing algorithms. Tokens come from channels to the bot. 
         /// </summary>
-        public static readonly string[] ToBotFromChannelAllowedSigningAlgorithms = new[] { "RS256", "RS384", "RS512" };
+        public static readonly string[] AllowedSigningAlgorithms = new[] { "RS256", "RS384", "RS512" };
 
         /// <summary>
         /// TO BOT FROM EMULATOR: OpenID metadata document for tokens coming from MSA
@@ -61,8 +61,6 @@ namespace Microsoft.Bot.Connector
                 ValidIssuers = new[] {
                     "https://sts.windows.net/d6d49420-f39b-4df7-a1dc-d59a935871db/",                    // Auth v3.1, 1.0 token
                     "https://login.microsoftonline.com/d6d49420-f39b-4df7-a1dc-d59a935871db/v2.0",      // Auth v3.1, 2.0 token
-                    "https://sts.windows.net/f8cdef31-a31e-4b4a-93e4-5f571e91255a/",                    // Auth v3.2, 1.0 token
-                    "https://login.microsoftonline.com/f8cdef31-a31e-4b4a-93e4-5f571e91255a/v2.0"       // Auth v3.2, 2.0 token
                 },
                 // Audience validation takes place in JwtTokenExtractor
                 ValidateAudience = false,
