@@ -11,6 +11,16 @@ namespace Microsoft.Bot.Connector.Authentication
 
         public string Password { get; set; }
 
+        public SimpleCredentialProvider()
+        {
+        }
+
+        public SimpleCredentialProvider(string appId, string password)
+        {
+            this.AppId = appId;
+            this.Password = password;
+        }
+
         public Task<bool> IsValidAppIdAsync(string appId)
         {
             return Task.FromResult(appId == AppId);

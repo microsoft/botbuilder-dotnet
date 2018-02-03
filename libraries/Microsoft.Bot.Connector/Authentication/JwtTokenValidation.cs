@@ -6,12 +6,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.Bot.Schema;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Microsoft.Bot.Connector.Authentication
 {
     public static class JwtTokenValidation
     {
+        public static async Task AssertValidActivity(Activity activity, string authHeader, ICredentialProvider credentials)
+        {            
+            await JwtTokenValidation.ValidateAuthHeader(authHeader, credentials, activity.ServiceUrl);
+            MicrosoftAppCredentials.TrustServiceUrl(activity.ServiceUrl);
+        }
+
         public static async Task<ClaimsIdentity> ValidateAuthHeader(string authHeader, ICredentialProvider credentials, string serviceUrl)
         {            
             if (string.IsNullOrWhiteSpace(authHeader) && await credentials.IsAuthenticationDisabledAsync())
