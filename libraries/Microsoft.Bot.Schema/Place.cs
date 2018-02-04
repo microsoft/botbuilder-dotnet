@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Schema
     /// <summary>
     /// Place (entity type: "https://schema.org/Place")
     /// </summary>
-    public partial class Place
+    public partial class Place : Entity
     {
         /// <summary>
         /// Initializes a new instance of the Place class.
@@ -29,20 +29,21 @@ namespace Microsoft.Bot.Schema
         /// <summary>
         /// Initializes a new instance of the Place class.
         /// </summary>
+        /// <param name="type">Entity Type (typically from schema.org
+        /// types)</param>
         /// <param name="address">Address of the place (may be `string` or
         /// complex object of type `PostalAddress`)</param>
         /// <param name="geo">Geo coordinates of the place (may be complex
         /// object of type `GeoCoordinates` or `GeoShape`)</param>
         /// <param name="hasMap">Map to the place (may be `string` (URL) or
         /// complex object of type `Map`)</param>
-        /// <param name="type">The type of the thing</param>
         /// <param name="name">The name of the thing</param>
-        public Place(object address = default(object), object geo = default(object), object hasMap = default(object), string type = default(string), string name = default(string))
+        public Place(string type = default(string), object address = default(object), object geo = default(object), object hasMap = default(object), string name = default(string))
+            : base(type)
         {
             Address = address;
             Geo = geo;
             HasMap = hasMap;
-            Type = type;
             Name = name;
             CustomInit();
         }
@@ -72,12 +73,6 @@ namespace Microsoft.Bot.Schema
         /// </summary>
         [JsonProperty(PropertyName = "hasMap")]
         public object HasMap { get; set; }
-
-        /// <summary>
-        /// Gets or sets the type of the thing
-        /// </summary>
-        [JsonProperty(PropertyName = "type")]
-        public string Type { get; set; }
 
         /// <summary>
         /// Gets or sets the name of the thing

@@ -13,10 +13,7 @@ namespace Microsoft.Bot.Schema
     using Newtonsoft.Json;
     using System.Linq;
 
-    /// <summary>
-    /// GeoCoordinates (entity type: "https://schema.org/GeoCoordinates")
-    /// </summary>
-    public partial class GeoCoordinates
+    public partial class GeoCoordinates : Entity
     {
         /// <summary>
         /// Initializes a new instance of the GeoCoordinates class.
@@ -29,20 +26,21 @@ namespace Microsoft.Bot.Schema
         /// <summary>
         /// Initializes a new instance of the GeoCoordinates class.
         /// </summary>
+        /// <param name="type">Entity Type (typically from schema.org
+        /// types)</param>
         /// <param name="elevation">Elevation of the location [WGS
         /// 84](https://en.wikipedia.org/wiki/World_Geodetic_System)</param>
         /// <param name="latitude">Latitude of the location [WGS
         /// 84](https://en.wikipedia.org/wiki/World_Geodetic_System)</param>
         /// <param name="longitude">Longitude of the location [WGS
         /// 84](https://en.wikipedia.org/wiki/World_Geodetic_System)</param>
-        /// <param name="type">The type of the thing</param>
         /// <param name="name">The name of the thing</param>
-        public GeoCoordinates(double? elevation = default(double?), double? latitude = default(double?), double? longitude = default(double?), string type = default(string), string name = default(string))
+        public GeoCoordinates(string type = default(string), double? elevation = default(double?), double? latitude = default(double?), double? longitude = default(double?), string name = default(string))
+            : base(type)
         {
             Elevation = elevation;
             Latitude = latitude;
             Longitude = longitude;
-            Type = type;
             Name = name;
             CustomInit();
         }
@@ -72,12 +70,6 @@ namespace Microsoft.Bot.Schema
         /// </summary>
         [JsonProperty(PropertyName = "longitude")]
         public double? Longitude { get; set; }
-
-        /// <summary>
-        /// Gets or sets the type of the thing
-        /// </summary>
-        [JsonProperty(PropertyName = "type")]
-        public string Type { get; set; }
 
         /// <summary>
         /// Gets or sets the name of the thing
