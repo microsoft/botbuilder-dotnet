@@ -2,27 +2,19 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
-#if NET45
 using System.Diagnostics;
-#endif
-
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Net.Http;
 using System.Security.Claims;
-using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
-using System.Collections.Concurrent;
-
 using Microsoft.IdentityModel.Protocols;
-
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 
-
-namespace Microsoft.Bot.Connector
+namespace Microsoft.Bot.Connector.Authentication
 {
     public class JwtTokenExtractor
     {
@@ -80,7 +72,6 @@ namespace Microsoft.Bot.Connector
 
             _openIdMetadata = _openIdMetadataCache.GetOrAdd(metadataUrl, key =>
             {
-
                 return new ConfigurationManager<OpenIdConnectConfiguration>(metadataUrl, new OpenIdConnectConfigurationRetriever());
             });
 
@@ -88,13 +79,16 @@ namespace Microsoft.Bot.Connector
             {
                 var retriever = new EndorsementsRetriever();
                 return new ConfigurationManager<IDictionary<string, string[]>>(metadataUrl, retriever, retriever);
-            }); ;
+            });
         }
 
         public async Task<ClaimsIdentity> GetIdentityAsync(HttpRequestMessage request)
         {
             if (request.Headers.Authorization != null)
-                return await GetIdentityAsync(request.Headers.Authorization.Scheme, request.Headers.Authorization.Parameter).ConfigureAwait(false);
+                return await GetIdentityAsync(
+                    request.Headers.Authorization.Scheme,
+                    request.Headers.Authorization.Parameter).ConfigureAwait(false);
+
             return null;
         }
 
@@ -106,6 +100,7 @@ namespace Microsoft.Bot.Connector
             string[] parts = authorizationHeader?.Split(' ');
             if (parts.Length == 2)
                 return await GetIdentityAsync(parts[0], parts[1]).ConfigureAwait(false);
+
             return null;
         }
 
@@ -126,12 +121,8 @@ namespace Microsoft.Bot.Connector
             }
             catch (Exception e)
             {
-#if NET45
                 Trace.TraceWarning("Invalid token. " + e.ToString());
-#else
-                IdentityModel.Logging.LogHelper.LogException<Exception>($"Invalid token. {e.ToString()}");
-#endif
-                return null;
+                throw;
             }
         }
 
@@ -146,41 +137,7 @@ namespace Microsoft.Bot.Connector
 
             return false;
         }
-
-
-
-        public string GetAppIdFromClaimsIdentity(ClaimsIdentity identity)
-        {
-            if (identity == null)
-                return null;
-
-            Claim botClaim = identity.Claims.FirstOrDefault(c => _tokenValidationParameters.ValidIssuers.Contains(c.Issuer) && c.Type == "aud");
-            return botClaim?.Value;
-        }
-
-        public string GetAppIdFromEmulatorClaimsIdentity(ClaimsIdentity identity)
-        {
-            if (identity == null)
-                return null;
-
-            Claim versionClaim = identity.Claims.FirstOrDefault(c => c.Type == "ver");
-
-            Claim appIdClaim = identity.Claims.FirstOrDefault(c => _tokenValidationParameters.ValidIssuers.Contains(c.Issuer) &&
-                ((versionClaim != null && versionClaim.Value == "2.0" && c.Type == "azp") || c.Type == "appid"));
-            if (appIdClaim == null)
-                return null;
-
-            // v3.1 or v3.2 emulator token
-            if (identity.Claims.Any(c => c.Type == "aud" && c.Value == appIdClaim.Value))
-                return appIdClaim.Value;
-
-            // v3.0 emulator token -- allow this
-            if (identity.Claims.Any(c => c.Type == "aud" && c.Value == "https://graph.microsoft.com"))
-                return appIdClaim.Value;
-
-            return null;
-        }
-
+              
         private async Task<ClaimsPrincipal> ValidateTokenAsync(string jwtToken)
         {
             // _openIdMetadata only does a full refresh when the cache expires every 5 days
@@ -191,11 +148,7 @@ namespace Microsoft.Bot.Connector
             }
             catch (Exception e)
             {
-#if NET45
                 Trace.TraceError($"Error refreshing OpenId configuration: {e}");
-#else
-                IdentityModel.Logging.LogHelper.LogException<Exception>($"Error refreshing OpenId configuration: {e}");
-#endif
 
                 // No config? We can't continue
                 if (config == null)
@@ -205,24 +158,21 @@ namespace Microsoft.Bot.Connector
             // Update the signing tokens from the last refresh
             _tokenValidationParameters.IssuerSigningKeys = config.SigningKeys;
 
-
             JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
-
             try
             {
-                SecurityToken parsedToken;
-                ClaimsPrincipal principal = tokenHandler.ValidateToken(jwtToken, _tokenValidationParameters, out parsedToken);
+                ClaimsPrincipal principal = tokenHandler.ValidateToken(jwtToken, _tokenValidationParameters, out SecurityToken parsedToken);
                 var parsedJwtToken = parsedToken as JwtSecurityToken;
 
                 if (_validator != null)
                 {
-                    string keyId = (string)parsedJwtToken?.Header?["kid"];
+                    string keyId = (string)parsedJwtToken?.Header?[AuthenticationConstants.KeyIdHeader];
                     var endorsements = await _endorsementsData.GetConfigurationAsync();
                     if (!string.IsNullOrEmpty(keyId) && endorsements.ContainsKey(keyId))
                     {
                         if (!_validator(endorsements[keyId]))
                         {
-                            throw new ArgumentException($"Could not validate endorsement for key: {keyId} with endorsements: {string.Join(",", endorsements[keyId])}");
+                            throw new UnauthorizedAccessException($"Could not validate endorsement for key: {keyId} with endorsements: {string.Join(",", endorsements[keyId])}");
                         }
                     }
                 }
@@ -232,7 +182,7 @@ namespace Microsoft.Bot.Connector
                     string algorithm = parsedJwtToken?.Header?.Alg;
                     if (!_allowedSigningAlgorithms.Contains(algorithm))
                     {
-                        throw new ArgumentException($"Token signing algorithm '{algorithm}' not in allowed list");
+                        throw new UnauthorizedAccessException($"Token signing algorithm '{algorithm}' not in allowed list");
                     }
                 }
                 return principal;
@@ -240,70 +190,9 @@ namespace Microsoft.Bot.Connector
             catch (SecurityTokenSignatureKeyNotFoundException)
             {
                 string keys = string.Join(", ", ((config?.SigningKeys) ?? Enumerable.Empty<SecurityKey>()).Select(t => t.KeyId));
-#if NET45
                 Trace.TraceError("Error finding key for token. Available keys: " + keys);
-#else
-                IdentityModel.Logging.LogHelper.LogException<SecurityTokenSignatureKeyNotFoundException>("Error finding key for token.Available keys: " + keys);
-#endif
                 throw;
             }
         }
-    }
-
-    public sealed class EndorsementsRetriever : IDocumentRetriever, IConfigurationRetriever<IDictionary<string, string[]>>
-    {
-        public async Task<IDictionary<string, string[]>> GetConfigurationAsync(string address, IDocumentRetriever retriever, CancellationToken cancel)
-        {
-            var res = await retriever.GetDocumentAsync(address, cancel);
-            var obj = Newtonsoft.Json.JsonConvert.DeserializeObject<JObject>(res);
-            if (obj != null && obj.HasValues && obj["keys"] != null)
-            {
-                var keys = obj.SelectToken("keys").Value<JArray>();
-                var endorsements = keys.Where(key => key["endorsements"] != null).Select(key => Tuple.Create(key.SelectToken("kid").Value<string>(), key.SelectToken("endorsements").Values<string>()));
-                return endorsements.Distinct(new EndorsementsComparer()).ToDictionary(item => item.Item1, item => item.Item2.ToArray());
-            }
-            else
-            {
-                return new Dictionary<string, string[]>();
-            }
-        }
-
-        public async Task<string> GetDocumentAsync(string address, CancellationToken cancel)
-        {
-            using (var client = new HttpClient())
-            using (var response = await client.GetAsync(address, cancel))
-            {
-                response.EnsureSuccessStatusCode();
-                var json = await response.Content.ReadAsStringAsync();
-                JObject obj = Newtonsoft.Json.JsonConvert.DeserializeObject<JObject>(json);
-                if (obj != null && obj.HasValues && obj["jwks_uri"] != null)
-                {
-                    var keysUrl = obj.SelectToken("jwks_uri").Value<string>();
-                    using (var keysResponse = await client.GetAsync(keysUrl, cancel))
-                    {
-                        keysResponse.EnsureSuccessStatusCode();
-                        return await keysResponse.Content.ReadAsStringAsync();
-                    }
-                }
-                else
-                {
-                    return string.Empty;
-                }
-            }
-        }
-
-        private class EndorsementsComparer : IEqualityComparer<Tuple<string, IEnumerable<string>>>
-        {
-            public bool Equals(Tuple<string, IEnumerable<string>> x, Tuple<string, IEnumerable<string>> y)
-            {
-                return x.Item1 == y.Item1;
-            }
-
-            public int GetHashCode(Tuple<string, IEnumerable<string>> obj)
-            {
-                return obj.Item1.GetHashCode();
-            }
-        }
-
     }
 }
