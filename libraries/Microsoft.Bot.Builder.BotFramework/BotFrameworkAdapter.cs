@@ -89,6 +89,16 @@ namespace Microsoft.Bot.Builder.Adapters
                     {
                         requestInfo.Add(AppIdRequestInfo, claimsIdentity.GetAppIdFromClaims());
                     }
+                    else if (_credentialProvider as StaticCredentialProvider != null)
+                    {
+                        // Allowing single bot pipeline for unauthenticated requests as the only way to find bot's app Id is to
+                        // get it from Token.
+                        requestInfo.Add(AppIdRequestInfo, (_credentialProvider as StaticCredentialProvider).AppId);
+                    }
+                    else
+                    {
+                        throw new InvalidOperationException("Only StaticCredentialProvider is supported in UnAuthenticated scenarios");
+                    }
                 }
                 else
                     throw new UnauthorizedAccessException("Caller does not have a valid authentication header");
@@ -113,30 +123,26 @@ namespace Microsoft.Bot.Builder.Adapters
 
             if (botContext.RequestInfo.TryGetValue(AppIdRequestInfo, out StringValues appId))
             {
-                if (!this._appCredentialsMap.ContainsKey(appId.Single()))
+                string botAppId = StringValues.IsNullOrEmpty(appId) ? throw new ArgumentNullException("No valid AppId found", nameof(appId)) : appId.Single();
+
+                if (!this._appCredentialsMap.ContainsKey(botAppId))
                 {
                     // Ideally we can just insert into the dictionary and then access it at next point. But this has a chance in which it can fail.
                     // This can happen if you have multiple threads adding values to dictionary and 2 threads add different value (one for Bot1 second for Bot2).
                     // In this case due to race, value can actually not get added. Hence just returing the object directly while trying to add it to dictionary.
-                    KeyValuePair<string, MicrosoftAppCredentials> appCreds = new KeyValuePair<string, MicrosoftAppCredentials>(appId.Single(), new MicrosoftAppCredentials(appId.Single(), await this._credentialProvider.GetAppPasswordAsync(appId.Single())));
+                    KeyValuePair<string, MicrosoftAppCredentials> appCreds = new KeyValuePair<string, MicrosoftAppCredentials>(
+                        botAppId, 
+                        new MicrosoftAppCredentials(botAppId, await this._credentialProvider.GetAppPasswordAsync(botAppId)));
                     this._appCredentialsMap.Add(appCreds);
 
                     return appCreds.Value;
                 }
 
-                return this._appCredentialsMap[appId.Single()];
+                return this._appCredentialsMap[botAppId];
             }
             else
             {
-                // Unoptimzied pipeline for Unauthenticated scenarios as these are expected to be production.
-                if (this._credentialProvider as StaticCredentialProvider != null)
-                {
-                    StaticCredentialProvider staticCredentialProvider = this._credentialProvider as StaticCredentialProvider;
-
-                    return new MicrosoftAppCredentials(staticCredentialProvider.AppId, staticCredentialProvider.Password);
-                }
-
-                throw new ArgumentException("Failed to get Credentials for post. Only StaticCredentialProvider is supported in unauthenticated scenarios.");
+                throw new ArgumentNullException("AppId was not found in Request Info", nameof(botContext.RequestInfo));
             }
         }
     }
