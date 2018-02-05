@@ -6,7 +6,7 @@ namespace Microsoft.Bot.Connector.Authentication
     /// <summary>
     /// Values and Constants used for Authentication and Authrization by the Bot Framework Protocol.
     /// </summary>
-    public static class AuthorizationConstants
+    public static class AuthenticationConstants
     {
 
         public const string BotFrameworkTokenIssuer = "https://api.botframework.com";

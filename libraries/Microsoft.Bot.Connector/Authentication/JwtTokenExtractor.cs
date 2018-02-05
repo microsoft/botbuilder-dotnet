@@ -166,7 +166,7 @@ namespace Microsoft.Bot.Connector.Authentication
 
                 if (_validator != null)
                 {
-                    string keyId = (string)parsedJwtToken?.Header?[AuthorizationConstants.KeyIdHeader];
+                    string keyId = (string)parsedJwtToken?.Header?[AuthenticationConstants.KeyIdHeader];
                     var endorsements = await _endorsementsData.GetConfigurationAsync();
                     if (!string.IsNullOrEmpty(keyId) && endorsements.ContainsKey(keyId))
                     {

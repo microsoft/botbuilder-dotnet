@@ -46,8 +46,8 @@ namespace Microsoft.Bot.Connector.Authentication
         public string MicrosoftAppId { get; set; }
         public string MicrosoftAppPassword { get; set; }
 
-        public virtual string OAuthEndpoint { get { return AuthorizationConstants.ToChannelFromBotLoginUrl; } }
-        public virtual string OAuthScope { get { return AuthorizationConstants.ToChannelFromBotOAuthScope; } }
+        public virtual string OAuthEndpoint { get { return AuthenticationConstants.ToChannelFromBotLoginUrl; } }
+        public virtual string OAuthScope { get { return AuthenticationConstants.ToChannelFromBotOAuthScope; } }
 
         protected readonly string TokenCacheKey;
 

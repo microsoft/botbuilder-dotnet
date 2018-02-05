@@ -21,7 +21,7 @@ namespace Microsoft.Bot.Connector.Authentication
             new TokenValidationParameters()
             {
                 ValidateIssuer = true,
-                ValidIssuers = new[] { AuthorizationConstants.BotFrameworkTokenIssuer },
+                ValidIssuers = new[] { AuthenticationConstants.BotFrameworkTokenIssuer },
                 // Audience validation takes place in JwtTokenExtractor
                 ValidateAudience = false,
                 ValidateLifetime = true,
@@ -46,8 +46,8 @@ namespace Microsoft.Bot.Connector.Authentication
         {
             var tokenExtractor = new JwtTokenExtractor(
                   ToBotFromChannelTokenValidationParameters,
-                  AuthorizationConstants.ToBotFromChannelOpenIdMetadataUrl,
-                  AuthorizationConstants.AllowedSigningAlgorithms, null);
+                  AuthenticationConstants.ToBotFromChannelOpenIdMetadataUrl,
+                  AuthenticationConstants.AllowedSigningAlgorithms, null);
 
             var identity = await tokenExtractor.GetIdentityAsync(authHeader);
             if (identity == null)
@@ -82,7 +82,7 @@ namespace Microsoft.Bot.Connector.Authentication
 
             // Look for the "aud" claim, but only if issued from the Bot Framework
             Claim audianceClaim = identity.Claims.FirstOrDefault(
-                c => c.Issuer == AuthorizationConstants.BotFrameworkTokenIssuer && c.Type == AuthorizationConstants.AudienceClaim);
+                c => c.Issuer == AuthenticationConstants.BotFrameworkTokenIssuer && c.Type == AuthenticationConstants.AudienceClaim);
 
             if (audianceClaim == null)
             {

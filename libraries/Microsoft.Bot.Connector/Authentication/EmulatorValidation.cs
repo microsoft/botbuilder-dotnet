@@ -108,8 +108,8 @@ namespace Microsoft.Bot.Connector.Authentication
         {
             var tokenExtractor = new JwtTokenExtractor(
                     ToBotFromEmulatorTokenValidationParameters,
-                    AuthorizationConstants.ToBotFromEmulatorOpenIdMetadataUrl,
-                    AuthorizationConstants.AllowedSigningAlgorithms, null);
+                    AuthenticationConstants.ToBotFromEmulatorOpenIdMetadataUrl,
+                    AuthenticationConstants.AllowedSigningAlgorithms, null);
 
             var identity = await tokenExtractor.GetIdentityAsync(authHeader);
             if (identity == null)
@@ -155,7 +155,7 @@ namespace Microsoft.Bot.Connector.Authentication
             else if (tokenVersion == "2.0")
             {
                 // Emulator, "2.0" puts the AppId in the "azp" claim. 
-                Claim appZClaim = identity.Claims.FirstOrDefault(c => c.Type == AuthorizationConstants.AuthorizedParty);
+                Claim appZClaim = identity.Claims.FirstOrDefault(c => c.Type == AuthenticationConstants.AuthorizedParty);
                 if (appZClaim == null)
                 {
                     // No claim around AppID. Not Authorized.
@@ -172,7 +172,7 @@ namespace Microsoft.Bot.Connector.Authentication
             else if (tokenVersion == "3.1" || tokenVersion == "3.2")
             {
                 // The emulator for token versions "3.1" & "3.2" puts the AppId in the "Audiance" claim. 
-                Claim audianceClaim = identity.Claims.FirstOrDefault(c => c.Type == AuthorizationConstants.AudienceClaim);
+                Claim audianceClaim = identity.Claims.FirstOrDefault(c => c.Type == AuthenticationConstants.AudienceClaim);
                 if (audianceClaim == null)
                 {
                     // No claim around AppID. Not Authorized.
