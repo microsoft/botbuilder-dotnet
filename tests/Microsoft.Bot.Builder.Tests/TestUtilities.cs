@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Builder.Tests
             {
                 Type = ActivityTypes.Message
             };
-            BotContext bc = new BotContext(b, a);
+            BotContext bc = new BotContext(b, a, null);
 
             return bc;
         }
@@ -32,7 +32,7 @@ namespace Microsoft.Bot.Builder.Tests
             Activity a = new Activity();
             if (typeof(T).IsAssignableFrom(typeof(IBotContext)))
             {
-                IBotContext bc = new BotContext(b, a);
+                IBotContext bc = new BotContext(b, a, null);
                 return (T)bc;
             }
             else
