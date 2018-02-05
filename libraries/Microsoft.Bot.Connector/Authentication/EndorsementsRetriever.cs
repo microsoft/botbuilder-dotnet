@@ -48,7 +48,7 @@ namespace Microsoft.Bot.Connector.Authentication
                 var keys = obj.SelectToken("keys").Value<JArray>();
                 var endorsements = keys.Where(key => key["endorsements"] != null).Select(
                     key => Tuple.Create(
-                        key.SelectToken(AuthorizationConstants.KeyIdHeader).Value<string>(), 
+                        key.SelectToken(AuthenticationConstants.KeyIdHeader).Value<string>(), 
                         key.SelectToken("endorsements").Values<string>()));
 
                 return endorsements.Distinct(new EndorsementsComparer())
