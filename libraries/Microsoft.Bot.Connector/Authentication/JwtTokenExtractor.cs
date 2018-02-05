@@ -137,53 +137,7 @@ namespace Microsoft.Bot.Connector.Authentication
 
             return false;
         }
-
-        //public string GetAppIdFromClaimsIdentity(ClaimsIdentity identity)
-        //{
-        //    if (identity == null)
-        //        return null;
-
-        //    Claim botClaim = identity.Claims.FirstOrDefault(c => _tokenValidationParameters.ValidIssuers.Contains(c.Issuer) && c.Type == "aud");
-        //    return botClaim?.Value;
-        //}
-
-        //public string GetAppIdFromEmulatorClaimsIdentity(ClaimsIdentity identity)
-        //{
-        //    if (identity == null)
-        //        return null;
-
-        //    Claim versionClaim = identity.Claims.FirstOrDefault(c => c.Type == "ver");
-
-        //    Claim appIdClaim = identity.Claims.FirstOrDefault(c => _tokenValidationParameters.ValidIssuers.Contains(c.Issuer) &&
-        //        ((versionClaim != null && versionClaim.Value == "2.0" && c.Type == "azp") || c.Type == "appid"));
-        //    if (appIdClaim == null)
-        //        return null;
-
-        //    // v3.1 or v3.2 emulator token
-        //    if (identity.Claims.Any(c => c.Type == "aud" && c.Value == appIdClaim.Value))
-        //        return appIdClaim.Value;
-
-        //    // v3.0 emulator token -- allow this
-        //    if (identity.Claims.Any(c => c.Type == "aud" && c.Value == "https://graph.microsoft.com"))
-        //        return appIdClaim.Value;
-
-        //    return null;
-        //}
-
-
-        /// <summary>
-        /// From RFC 7517
-        ///     https://tools.ietf.org/html/rfc7515#section-4.1.4
-        /// The "kid" (key ID) Header Parameter is a hint indicating which key
-        /// was used to secure the JWS. This parameter allows originators to
-        /// explicitly signal a change of key to recipients. The structure of
-        /// the "kid" value is unspecified. Its value MUST be a case-sensitive
-        /// string. Use of this Header Parameter is OPTIONAL.
-        /// When used with a JWK, the "kid" value is used to match a JWK "kid"
-        /// parameter value.
-        /// </summary>
-        private const string KeyIdHeader = "kid";
-
+              
         private async Task<ClaimsPrincipal> ValidateTokenAsync(string jwtToken)
         {
             // _openIdMetadata only does a full refresh when the cache expires every 5 days
@@ -212,13 +166,13 @@ namespace Microsoft.Bot.Connector.Authentication
 
                 if (_validator != null)
                 {
-                    string keyId = (string)parsedJwtToken?.Header?[KeyIdHeader];
+                    string keyId = (string)parsedJwtToken?.Header?[AuthorizationConstants.KeyIdHeader];
                     var endorsements = await _endorsementsData.GetConfigurationAsync();
                     if (!string.IsNullOrEmpty(keyId) && endorsements.ContainsKey(keyId))
                     {
                         if (!_validator(endorsements[keyId]))
                         {
-                            throw new ArgumentException($"Could not validate endorsement for key: {keyId} with endorsements: {string.Join(",", endorsements[keyId])}");
+                            throw new UnauthorizedAccessException($"Could not validate endorsement for key: {keyId} with endorsements: {string.Join(",", endorsements[keyId])}");
                         }
                     }
                 }
@@ -228,7 +182,7 @@ namespace Microsoft.Bot.Connector.Authentication
                     string algorithm = parsedJwtToken?.Header?.Alg;
                     if (!_allowedSigningAlgorithms.Contains(algorithm))
                     {
-                        throw new ArgumentException($"Token signing algorithm '{algorithm}' not in allowed list");
+                        throw new UnauthorizedAccessException($"Token signing algorithm '{algorithm}' not in allowed list");
                     }
                 }
                 return principal;

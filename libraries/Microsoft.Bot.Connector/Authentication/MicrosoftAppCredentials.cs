@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -47,8 +46,8 @@ namespace Microsoft.Bot.Connector.Authentication
         public string MicrosoftAppId { get; set; }
         public string MicrosoftAppPassword { get; set; }
 
-        public virtual string OAuthEndpoint { get { return JwtConfig.ToChannelFromBotLoginUrl; } }
-        public virtual string OAuthScope { get { return JwtConfig.ToChannelFromBotOAuthScope; } }
+        public virtual string OAuthEndpoint { get { return AuthorizationConstants.ToChannelFromBotLoginUrl; } }
+        public virtual string OAuthScope { get { return AuthorizationConstants.ToChannelFromBotOAuthScope; } }
 
         protected readonly string TokenCacheKey;
 
@@ -80,7 +79,7 @@ namespace Microsoft.Bot.Connector.Authentication
         {
             if (Uri.TryCreate(serviceUrl, UriKind.Absolute, out Uri uri))
             {
-                return IsTrustedUri(uri);
+                return IsTrustedUrl(uri);
             }
             return false;
         }
@@ -133,7 +132,7 @@ namespace Microsoft.Bot.Connector.Authentication
 
         private bool ShouldSetToken(HttpRequestMessage request)
         {
-            if (IsTrustedUri(request.RequestUri))
+            if (IsTrustedUrl(request.RequestUri))
             {
                 return true;
             }
@@ -141,7 +140,7 @@ namespace Microsoft.Bot.Connector.Authentication
             return false;
         }
 
-        private static bool IsTrustedUri(Uri uri)
+        private static bool IsTrustedUrl(Uri uri)
         {
             lock (_trustedHostNamesSync)
             {
@@ -197,9 +196,9 @@ namespace Microsoft.Bot.Connector.Authentication
         }
 
 #pragma warning disable IDE1006
-        /// <summary>
+        /// <remarks>
         /// Member variables to this class follow the RFC Naming conventions, rather than C# naming conventions. 
-        /// </summary>
+        /// </remarks>
         protected class OAuthResponse
         {
             public string token_type { get; set; }
