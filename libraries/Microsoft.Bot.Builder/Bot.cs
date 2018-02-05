@@ -2,10 +2,12 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Schema;
+using Microsoft.Extensions.Primitives;
 
 namespace Microsoft.Bot.Builder
 {
@@ -64,11 +66,11 @@ namespace Microsoft.Bot.Builder
             System.Diagnostics.Trace.TraceInformation($"Middleware: Ending Pipeline for {context.ConversationReference.ActivityId}");
         }
 
-        public async Task RunPipeline(IActivity activity)
+        public async Task RunPipeline(IActivity activity, IDictionary<string, StringValues> requestInfo)
         {
             BotAssert.ActivityNotNull(activity);
 
-            var context = new BotContext(this, activity);
+            var context = new BotContext(this, activity, requestInfo);
 
             await RunPipeline(context).ConfigureAwait(false);
         }
