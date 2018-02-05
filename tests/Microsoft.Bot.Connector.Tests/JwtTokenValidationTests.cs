@@ -9,8 +9,8 @@ namespace Microsoft.Bot.Connector.Tests
         public JwtTokenValidationTests()
         {
             // Disable TokenLifetime validation
-            JwtConfig.ToBotFromChannelTokenValidationParameters.ValidateLifetime = false;
-            JwtConfig.ToBotFromEmulatorTokenValidationParameters.ValidateLifetime = false;
+            EmulatorValidation.ToBotFromEmulatorTokenValidationParameters.ValidateLifetime = false;
+            ChannelValidation.ToBotFromChannelTokenValidationParameters.ValidateLifetime = false;
         }
 
         [Fact]
