@@ -96,9 +96,6 @@ namespace AlarmBot.Controllers
         [HttpPost]
         public async Task<IActionResult> Post([FromBody]Activity activity)
         {
-            if (!this.Request.Headers.ContainsKey("Authorization"))
-                return this.Unauthorized();
-
             try
             {
                 await activityAdapter.Receive(this.Request.Headers["Authorization"].FirstOrDefault(), activity);

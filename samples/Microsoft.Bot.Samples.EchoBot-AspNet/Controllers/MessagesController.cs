@@ -45,9 +45,6 @@ namespace Microsoft.Bot.Samples.EchoBot.Controllers
         [HttpPost]
         public async Task<IActionResult> Post([FromBody]Activity activity)
         {
-            if (!this.Request.Headers.ContainsKey("Authorization"))
-                return this.Unauthorized();
-
             try
             {
                 await _adapter.Receive(this.Request.Headers["Authorization"].FirstOrDefault(), activity);
