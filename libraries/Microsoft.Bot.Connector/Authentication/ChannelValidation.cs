@@ -36,13 +36,11 @@ namespace Microsoft.Bot.Connector.Authentication
         /// A token issued by the Bot Framework emulator will FAIL this check. 
         /// </remarks>
         /// <param name="authHeader">The raw HTTP header in the format: "Bearer [longString]"</param>
-        /// <param name="credentials">The user defined set of valid credentials, such as the AppId.</param>
-        /// <param name="serviceUrl">The token contains a "serviceUrl" claim with value that matches the 
-        /// servieUrl property that came in via the Activity object of the incoming request</param>
+        /// <param name="credentials">The user defined set of valid credentials, such as the AppId.</param>        
         /// <returns>
         /// A valid ClaimsIdentity. 
         /// </returns>
-        public static async Task<ClaimsIdentity> AuthenticateChannelToken(string authHeader, ICredentialProvider credentials, string serviceUrl)
+        public static async Task<ClaimsIdentity> AuthenticateChannelToken(string authHeader, ICredentialProvider credentials)
         {
             var tokenExtractor = new JwtTokenExtractor(
                   ToBotFromChannelTokenValidationParameters,
@@ -59,19 +57,6 @@ namespace Microsoft.Bot.Connector.Authentication
             if (!identity.IsAuthenticated)
             {
                 // The token is in some way invalid. Not Authorized. 
-                throw new UnauthorizedAccessException();
-            }
-
-            var serviceUrlClaim = identity.Claims.FirstOrDefault(claim => claim.Type == ServiceUrlClaim)?.Value;
-            if (string.IsNullOrWhiteSpace(serviceUrlClaim))
-            {
-                // Claim must be present. Not Authorized.
-                throw new UnauthorizedAccessException();
-            }
-
-            if (!string.Equals(serviceUrlClaim, serviceUrl))
-            {
-                // Claim must match. Not Authorized.
                 throw new UnauthorizedAccessException();
             }
 
@@ -103,6 +88,26 @@ namespace Microsoft.Bot.Connector.Authentication
             {
                 // The AppId is not valid. Not Authorized. 
                 throw new UnauthorizedAccessException($"Invalid AppId passed on token: {appIdFromClaim}");
+            }
+
+            return identity;
+        }
+
+        public static async Task<ClaimsIdentity> AuthenticateChannelToken(string authHeader, ICredentialProvider credentials, string serviceUrl)
+        {
+            var identity = await AuthenticateChannelToken(authHeader, credentials);      
+
+            var serviceUrlClaim = identity.Claims.FirstOrDefault(claim => claim.Type == ServiceUrlClaim)?.Value;
+            if (string.IsNullOrWhiteSpace(serviceUrlClaim))
+            {
+                // Claim must be present. Not Authorized.
+                throw new UnauthorizedAccessException();
+            }
+
+            if (!string.Equals(serviceUrlClaim, serviceUrl))
+            {
+                // Claim must match. Not Authorized.
+                throw new UnauthorizedAccessException();
             }
 
             return identity;

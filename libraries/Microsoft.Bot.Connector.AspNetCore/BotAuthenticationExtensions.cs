@@ -11,7 +11,7 @@ using Microsoft.Extensions.Options;
 
 namespace Microsoft.Bot.Connector
 {
-    /*
+    
     public static class BotAuthenticationExtensions
     {
         public static AuthenticationBuilder AddBotAuthentication(this AuthenticationBuilder builder, string microsoftAppId, string microsoftAppPassword)
@@ -42,6 +42,5 @@ namespace Microsoft.Bot.Connector
 
             return builder.AddScheme<BotAuthenticationOptions, BotAuthenticationHandler>(authenticationScheme, displayName, wrappedOptions);
         }
-    }
-    */
+    }    
 }

@@ -104,6 +104,31 @@ namespace Microsoft.Bot.Connector.Authentication
             return null;
         }
 
+        public static string ExtractBearerTokenFromAuthHeader(string authorizationHeader)
+        {
+            if (string.IsNullOrWhiteSpace(authorizationHeader))
+                throw new ArgumentException(nameof(authorizationHeader));
+
+            string[] parts = authorizationHeader.Split(' ');
+            if (parts.Length != 2)
+            {
+                // The Auth Header must have exactly 2 parts:
+                // "Bearer [jwtEncodedString]"
+                throw new InvalidOperationException($"Authorization Header has '{parts.Length} Parts. Expected value is 2.");
+            }
+
+            string scheme = parts[0];
+            if (scheme != "Bearer")
+            {
+                // The Auth Header must have exactly 2 parts:
+                // "Bearer [jwtEncodedString]"
+                throw new InvalidOperationException("Incorrect Scheme. Only 'Bearer' is supported."); 
+            }
+
+            return parts[1]; 
+        }
+
+
         public async Task<ClaimsIdentity> GetIdentityAsync(string scheme, string parameter)
         {
             // No header in correct scheme or no token

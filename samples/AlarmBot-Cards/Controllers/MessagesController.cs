@@ -33,9 +33,11 @@ namespace AlarmBot.Controllers
         {
             if (activityAdapter == null)
             {
+                string applicationId = configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppIdKey)?.Value;
+                string applicationPassword = configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppPasswordKey)?.Value;
+
                 // create the activity adapter that I will use to send/receive Activity objects with the user
-                activityAdapter = new BotFrameworkAdapter(configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppIdKey)?.Value,
-                                                              configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppPasswordKey)?.Value);
+                activityAdapter = new BotFrameworkAdapter(applicationId, applicationPassword);
 
                 // pick your flavor of Key/Value storage
                 IStorage storage = new FileStorage(System.IO.Path.GetTempPath());
@@ -92,16 +94,16 @@ namespace AlarmBot.Controllers
                     });
             }
         }
-
-        // TODO refer to issue https://github.com/Microsoft/botbuilder-dotnet/issues/63
-        //[Authorize(Roles = "Bot")]
+                
         [HttpPost]
         public async Task<IActionResult> Post([FromBody]Activity activity)
         {
+            if (!this.Request.Headers.ContainsKey("Authorization"))
+                return this.Unauthorized();
+
             try
             {
-                var authHeader = this.Request.Headers["Authorization"].FirstOrDefault();
-                await activityAdapter.Receive(authHeader, activity);
+                await activityAdapter.Receive(this.Request.Headers["Authorization"].FirstOrDefault(), activity);
                 return this.Ok();
             }
             catch (UnauthorizedAccessException)

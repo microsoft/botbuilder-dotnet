@@ -4,6 +4,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.BotFramework;
@@ -44,10 +45,12 @@ namespace Microsoft.Bot.Samples.EchoBot.Controllers
         [HttpPost]
         public async Task<IActionResult> Post([FromBody]Activity activity)
         {
+            if (!this.Request.Headers.ContainsKey("Authorization"))
+                return this.Unauthorized();
+
             try
             {
-                var authHeader = this.Request.Headers["Authorization"].FirstOrDefault();
-                await _adapter.Receive(authHeader, activity);
+                await _adapter.Receive(this.Request.Headers["Authorization"].FirstOrDefault(), activity);
                 return this.Ok();
             }
             catch (UnauthorizedAccessException)

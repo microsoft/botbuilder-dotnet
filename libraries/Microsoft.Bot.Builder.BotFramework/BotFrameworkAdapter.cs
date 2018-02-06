@@ -22,6 +22,7 @@ namespace Microsoft.Bot.Builder.BotFramework
             _credentialProvider = new ConfigurationCredentialProvider(configuration);
             _credentials = new MicrosoftAppCredentials(this._credentialProvider.AppId, _credentialProvider.Password);                       
         }
+
         public BotFrameworkAdapter(string appId, string appPassword) : base()
         {
             _credentials = new MicrosoftAppCredentials(appId, appPassword);
@@ -52,7 +53,6 @@ namespace Microsoft.Bot.Builder.BotFramework
         public async Task Receive(string authHeader, Activity activity)
         {
             BotAssert.ActivityNotNull(activity);
-
             await JwtTokenValidation.AssertValidActivity(activity, authHeader, _credentialProvider);
 
             if (this.OnReceive != null)
