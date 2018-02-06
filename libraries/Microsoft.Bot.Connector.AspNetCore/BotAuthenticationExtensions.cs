@@ -4,16 +4,18 @@
 using System;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 
 namespace Microsoft.Bot.Connector
 {
+    /*
     public static class BotAuthenticationExtensions
     {
         public static AuthenticationBuilder AddBotAuthentication(this AuthenticationBuilder builder, string microsoftAppId, string microsoftAppPassword)
-            => builder.AddBotAuthentication(new StaticCredentialProvider(microsoftAppId, microsoftAppPassword));
+            => builder.AddBotAuthentication(new SimpleCredentialProvider(microsoftAppId, microsoftAppPassword));
 
         public static AuthenticationBuilder AddBotAuthentication(this AuthenticationBuilder builder, ICredentialProvider credentialProvider)
         {
@@ -41,4 +43,5 @@ namespace Microsoft.Bot.Connector
             return builder.AddScheme<BotAuthenticationOptions, BotAuthenticationHandler>(authenticationScheme, displayName, wrappedOptions);
         }
     }
+    */
 }

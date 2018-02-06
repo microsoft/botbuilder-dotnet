@@ -1,7 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
+using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using AlarmBot.Models;
 using AlarmBot.Topics;
 using AlarmBot.TopicViews;
@@ -9,9 +12,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.BotFramework;
 using Microsoft.Bot.Builder.Middleware;
 using Microsoft.Bot.Builder.Storage;
 using Microsoft.Bot.Connector;
+using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 
@@ -88,14 +93,21 @@ namespace AlarmBot.Controllers
             }
         }
 
-
-        [Authorize(Roles = "Bot")]
+        // TODO refer to issue https://github.com/Microsoft/botbuilder-dotnet/issues/63
+        //[Authorize(Roles = "Bot")]
         [HttpPost]
-        public async void Post([FromBody]Activity activity)
+        public async Task<IActionResult> Post([FromBody]Activity activity)
         {
-            // We have an activity from the user, give it to the activityAdapter/Bot to process it
-            await activityAdapter.Receive(HttpContext.Request.Headers, activity);
+            try
+            {
+                var authHeader = this.Request.Headers["Authorization"].FirstOrDefault();
+                await activityAdapter.Receive(authHeader, activity);
+                return this.Ok();
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return this.Unauthorized();
+            }
         }
     }
-
 }
