@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Bot.Connector.Authentication;
 
 namespace Microsoft.Bot.Connector
 {
@@ -15,7 +16,7 @@ namespace Microsoft.Bot.Connector
         /// <summary>
         /// The OpenId configuation.
         /// </summary>
-        public string OpenIdConfiguration { set; get; } = JwtConfig.ToBotFromChannelOpenIdMetadataUrl;
+        public string OpenIdConfiguration { set; get; } = AuthenticationConstants.ToBotFromChannelOpenIdMetadataUrl;
 
         /// <summary>
         /// Flag indicating if emulator tokens should be disabled.
