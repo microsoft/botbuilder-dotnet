@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Bot.Connector;
+using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -29,7 +30,7 @@ namespace AlarmBot
         {
             services.AddSingleton(_ => Configuration);
 
-            var credentialProvider = new StaticCredentialProvider(Configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppIdKey)?.Value,
+            var credentialProvider = new SimpleCredentialProvider(Configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppIdKey)?.Value,
                                                                   Configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppPasswordKey)?.Value);
             services.AddSingleton(typeof(ICredentialProvider), credentialProvider);
 
@@ -38,7 +39,9 @@ namespace AlarmBot
                         options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                         options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
                     }
-                ).AddBotAuthentication(credentialProvider);
+                );
+            // TODO refer to issue https://github.com/Microsoft/botbuilder-dotnet/issues/63
+            //.AddBotAuthentication(credentialProvider);
 
             services.AddMvc(options =>
             {
@@ -53,6 +56,9 @@ namespace AlarmBot
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseDefaultFiles();
+            app.UseStaticFiles();
             app.UseAuthentication();
             app.UseMvc();
         }

@@ -14,6 +14,7 @@ using Microsoft.Extensions.Options;
 
 namespace Microsoft.Bot.Connector
 {
+    /*
     /// <summary>
     /// Bot authentication hanlder used by <see cref="BotAuthenticationMiddleware"/>.
     /// </summary>
@@ -153,6 +154,7 @@ namespace Microsoft.Bot.Connector
             }
         }
     }
+    */
 
     internal static class LoggingExtensions
     {

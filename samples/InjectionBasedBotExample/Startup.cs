@@ -6,9 +6,10 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Bot.Builder;
-using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.BotFramework;
 using Microsoft.Bot.Builder.Storage;
 using Microsoft.Bot.Connector;
+using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -34,7 +35,7 @@ namespace InjectionBasedBotExample
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton(_ => Configuration);
-            var credentialProvider = new StaticCredentialProvider(
+            var credentialProvider = new SimpleCredentialProvider(
                 Configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppIdKey)?.Value,
                 Configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppPasswordKey)?.Value);
 
@@ -45,8 +46,9 @@ namespace InjectionBasedBotExample
                         options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                         options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
                     }
-                )
-                .AddBotAuthentication(credentialProvider);
+                );
+            // TODO refer to issue https://github.com/Microsoft/botbuilder-dotnet/issues/63
+            //.AddBotAuthentication(credentialProvider);
 
             services.AddSingleton(typeof(ICredentialProvider), credentialProvider);
             services.AddMvc(options =>
@@ -63,6 +65,7 @@ namespace InjectionBasedBotExample
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
+            app.UseDefaultFiles();
             app.UseStaticFiles();
             app.UseAuthentication();
             app.UseMvc();

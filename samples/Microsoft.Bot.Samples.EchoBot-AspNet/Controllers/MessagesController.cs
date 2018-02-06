@@ -1,8 +1,12 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.BotFramework;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
@@ -12,7 +16,7 @@ namespace Microsoft.Bot.Samples.EchoBot.Controllers
     [Route("api/[controller]")]
     public class MessagesController : Controller
     {
-        Builder.Bot _bot;
+        BotFrameworkAdapter _adapter;
 
         /// <summary>
         /// In this Echo Bot, a new instance of the Bot is created by the controller 
@@ -25,26 +29,31 @@ namespace Microsoft.Bot.Samples.EchoBot.Controllers
         /// back the sent text. 
         /// </summary>        
         public MessagesController(IConfiguration configuration)
-        {            
-            string appId = configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppIdKey)?.Value ?? string.Empty;
-            string appKey = configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppPasswordKey).Value ?? string.Empty;
-
-            _bot = new Builder.Bot(new BotFrameworkAdapter(appId, appKey));
-            _bot.OnReceive(async (context, next) =>
+        {
+            var bot = new Builder.Bot(new BotFrameworkAdapter(configuration));
+            _adapter = (BotFrameworkAdapter)bot.Adapter;
+            bot.OnReceive(async (context, next) =>
             {
                 if (context.Request.Type == ActivityTypes.Message)
                 {
                     context.Reply($"echo: {context.Request.AsMessageActivity().Text}");
                 }
-                await next();
             });
         }
 
         [HttpPost]
-        public async void Post([FromBody]Activity activity)
+        public async Task<IActionResult> Post([FromBody]Activity activity)
         {
-            await ((BotFrameworkAdapter)_bot.Adapter)
-                .Receive(HttpContext.Request.Headers, activity);
+            try
+            {
+                var authHeader = this.Request.Headers["Authorization"].FirstOrDefault();
+                await _adapter.Receive(authHeader, activity);
+                return this.Ok();
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return this.Unauthorized();
+            }
         }
     }
 }

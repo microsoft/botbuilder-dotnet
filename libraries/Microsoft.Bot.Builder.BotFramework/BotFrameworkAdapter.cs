@@ -2,25 +2,30 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Connector;
-using Microsoft.Bot.Schema;
-using Microsoft.Extensions.Primitives;
 using Microsoft.Bot.Connector.Authentication;
+using Microsoft.Bot.Schema;
+using Microsoft.Extensions.Configuration;
 
-namespace Microsoft.Bot.Builder.Adapters
+namespace Microsoft.Bot.Builder.BotFramework
 {
     public class BotFrameworkAdapter : ActivityAdapterBase
     {
-        private readonly ICredentialProvider _credentialProvider;
+        private readonly SimpleCredentialProvider _credentialProvider;
         private readonly MicrosoftAppCredentials _credentials;
 
+        public BotFrameworkAdapter(IConfiguration configuration) : base()
+        {
+            _credentialProvider = new ConfigurationCredentialProvider(configuration);
+            _credentials = new MicrosoftAppCredentials(this._credentialProvider.AppId, _credentialProvider.Password);                       
+        }
         public BotFrameworkAdapter(string appId, string appPassword) : base()
         {
             _credentials = new MicrosoftAppCredentials(appId, appPassword);
-            _credentialProvider = new StaticCredentialProvider(appId, appPassword);
+            _credentialProvider = new SimpleCredentialProvider(appId, appPassword);
         }
 
         public async override Task Post(IList<IActivity> activities)
@@ -44,28 +49,16 @@ namespace Microsoft.Bot.Builder.Adapters
             }
         }
 
-        public async Task Receive(IDictionary<string, StringValues> headers, Activity activity)
+        public async Task Receive(string authHeader, Activity activity)
         {
-            if (headers == null)
-                throw new ArgumentNullException(nameof(headers));
-
             BotAssert.ActivityNotNull(activity);
 
-            if (await _credentialProvider.IsAuthenticationDisabledAsync() == false)
-            {
-                if (headers.TryGetValue("Authorization", out StringValues values))
-                {
-                    var claims = await JwtTokenValidation.ValidateAuthHeader(values.SingleOrDefault(), _credentialProvider, activity.ServiceUrl);
-                    MicrosoftAppCredentials.TrustServiceUrl(activity.ServiceUrl);
-                }
-                else
-                {
-                    throw new UnauthorizedAccessException("Caller does not have a valid authentication header");
-                }
-            }
+            await JwtTokenValidation.AssertValidActivity(activity, authHeader, _credentialProvider);
 
             if (this.OnReceive != null)
+            {
                 await this.OnReceive(activity).ConfigureAwait(false);
+            }
         }
     }
 }
