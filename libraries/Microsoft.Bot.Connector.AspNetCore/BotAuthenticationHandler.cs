@@ -9,12 +9,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Microsoft.Bot.Connector
 {
-    /*
+
     /// <summary>
     /// Bot authentication hanlder used by <see cref="BotAuthenticationMiddleware"/>.
     /// </summary>
@@ -38,103 +39,45 @@ namespace Microsoft.Bot.Connector
 
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
         {
-            if (await Options.CredentialProvider.IsAuthenticationDisabledAsync())
-            {
-                var principal = new ClaimsPrincipal(new ClaimsIdentity(new Claim[] { new Claim(ClaimTypes.Role, "Bot") }));
-
-                var tokenValidatedContext = new TokenValidatedContext(Context, Scheme, Options)
-                {
-                    Principal = principal
-                };
-                tokenValidatedContext.Success();
-                return tokenValidatedContext.Result;
-            }
-
-            string token = null;
             try
             {
-                // Give application opportunity to find from a different location, adjust, or reject token
-                var messageReceivedContext = new MessageReceivedContext(Context, Scheme, Options);
-
-                // event can set the token
-                await Events.MessageReceived(messageReceivedContext);
-                if (messageReceivedContext.Result != null)
+                if (await Options.CredentialProvider.IsAuthenticationDisabledAsync())
                 {
-                    return messageReceivedContext.Result;
-                }
-
-                // If application retrieved token from somewhere else, use that.
-                token = messageReceivedContext.Token;
-
-                if (string.IsNullOrEmpty(token))
-                {
-                    string authorization = Request.Headers["Authorization"];
-
-                    // If no authorization header found, nothing to process further
-                    if (string.IsNullOrEmpty(authorization))
+                    var anonymousPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new Claim[] { new Claim(ClaimTypes.Role, "Bot") }));
+                    var anonynousContext = new TokenValidatedContext(Context, Scheme, Options)
                     {
-                        return AuthenticateResult.NoResult();
-                    }
-
-                    if (authorization.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
-                    {
-                        token = authorization.Substring("Bearer ".Length).Trim();
-                    }
-
-                    // If no token found, no further work possible
-                    if (string.IsNullOrEmpty(token))
-                    {
-                        return AuthenticateResult.NoResult();
-                    }
-                }
-
-                // If no token found, no further work possible
-                // and Authentication is not disabled fail
-                if (string.IsNullOrEmpty(token))
-                {
-                    return AuthenticateResult.Fail("No JwtToken is present and BotAuthentication is enabled!");
-                }
-                var authenticator = new BotAuthenticator(Options.CredentialProvider, Options.OpenIdConfiguration, Options.DisableEmulatorTokens);
-                var identityToken = await authenticator.TryAuthenticateAsync(Options.Challenge, token, CancellationToken.None);
-
-                if (identityToken.Authenticated)
-                {
-                    Logger.TokenValidationSucceeded();
-
-                    identityToken.Identity.AddClaim(new Claim(ClaimTypes.Role, "Bot"));
-                    var principal = new ClaimsPrincipal(identityToken.Identity);
-                    Context.User = principal;
-
-                    var tokenValidatedContext = new TokenValidatedContext(Context, Scheme, Options)
-                    {
-                        Principal = principal,
-                        SecurityToken = new JwtSecurityToken(token)
+                        Principal = anonymousPrincipal
                     };
+                    anonynousContext.Success();
+                    return anonynousContext.Result;
+                }
 
-                    await Events.TokenValidated(tokenValidatedContext);
-                    if (tokenValidatedContext.Result != null)
-                    {
-                        return tokenValidatedContext.Result;
-                    }
+                string authHeader = Request.Headers["Authorization"];
+                ClaimsIdentity claimsIdentity = await JwtTokenValidation.ValidateAuthHeader(authHeader, Options.CredentialProvider);
 
-                    if (Options.SaveToken)
-                    {
-                        tokenValidatedContext.Properties.StoreTokens(new[]
-                        {
-                                new AuthenticationToken { Name = "access_token", Value = token }
-                            });
-                    }
+                Logger.TokenValidationSucceeded();
 
-                    tokenValidatedContext.Success();
+                claimsIdentity.AddClaim(new Claim(ClaimTypes.Role, "Bot"));
+                var principal = new ClaimsPrincipal(claimsIdentity);
+
+                Context.User = principal;
+                string jwtToken = JwtTokenExtractor.ExtractBearerTokenFromAuthHeader(authHeader);
+                var tokenValidatedContext = new TokenValidatedContext(Context, Scheme, Options)
+                {
+                    Principal = principal,
+                    SecurityToken = new JwtSecurityToken(jwtToken)
+                };
+
+                await Events.TokenValidated(tokenValidatedContext);
+                if (tokenValidatedContext.Result != null)
+                {
                     return tokenValidatedContext.Result;
                 }
-                else
-                {
-                    Logger.TokenValidationFailed(token, null);
-                    return AuthenticateResult.Fail($"Failed to authenticate JwtToken {token}");
-                }
 
-            }
+
+                tokenValidatedContext.Success();
+                return tokenValidatedContext.Result;
+            }            
             catch (Exception ex)
             {
                 Logger.ErrorProcessingMessage(ex);
@@ -154,7 +97,6 @@ namespace Microsoft.Bot.Connector
             }
         }
     }
-    */
 
     internal static class LoggingExtensions
     {
