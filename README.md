@@ -32,11 +32,11 @@ Add references to the following v4 preview libraries to your project:
 Microsoft.Bot.Builder
 Microsoft.Bot.Builder.BotFramework
 Microsoft.Bot.Connector
+Microsoft.Bot.Connector.AspNetCore
 ```
 
 Add the following NuGet packages to your project:
 ```
-Microsoft.Bot.Connector.AspNetCore
 Newtonsoft.Json
 ```
 
@@ -121,6 +121,7 @@ This is the class that defines your bot's behavior.
   using Microsoft.Bot.Builder;
   using Microsoft.Bot.Builder.Adapters;
   using Microsoft.Bot.Connector;
+  using Microsoft.Bot.Schema;
   using Microsoft.Extensions.Configuration;
   using System.Threading.Tasks;
   ```

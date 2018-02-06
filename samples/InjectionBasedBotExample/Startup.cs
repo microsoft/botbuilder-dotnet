@@ -74,7 +74,7 @@ namespace InjectionBasedBotExample
             /*** Create the entire Bot as a Singleton **/
             //services.AddSingleton<Bot>(serviceProvider =>
             //{
-            //    Bot b = new Bot(new BotFrameworkConnector(appId, appKey))            
+            //    Bot b = new Bot(new BotFrameworkAdapter(appId, appKey))
             //      .Use(new BotStateManager(new MemoryStorage()))
             //      .Use(new EchoMiddleware());
             //    return b;

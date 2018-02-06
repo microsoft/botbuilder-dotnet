@@ -8,7 +8,7 @@ The SDK defines a bot object that can communicate with a user over various chann
 
 ## The bot object and adapter
 The bot constructor requires an adapter, which handles authentication and manages HTTP requests from the connector layer.
-The bot object exposes an incoming request as an activity. You can connect your bot to your business logic from the bot’s receive activity handler. The bot can optionally send activities back to the caller. The adapter sends this information to callback URL provided in the original request.
+The bot object exposes an incoming request as an activity. You can connect your bot to your business logic from the bot’s receive activity handler. The bot can optionally send activities back to the caller. The adapter sends this information to the callback URL provided in the original request.
 
 Note: The bot handles requests asynchronously, and the business logic does not need to be request-response driven.
 ## Middleware
