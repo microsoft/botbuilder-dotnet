@@ -8,14 +8,11 @@ using System.Threading.Tasks;
 using AlarmBot.Models;
 using AlarmBot.Topics;
 using AlarmBot.TopicViews;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Bot.Builder;
-using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.BotFramework;
 using Microsoft.Bot.Builder.Middleware;
 using Microsoft.Bot.Builder.Storage;
-using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
@@ -33,9 +30,11 @@ namespace AlarmBot.Controllers
         {
             if (activityAdapter == null)
             {
+                string applicationId = configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppIdKey)?.Value;
+                string applicationPassword = configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppPasswordKey)?.Value;
+                
                 // create the activity adapter that I will use to send/receive Activity objects with the user
-                activityAdapter = new BotFrameworkAdapter(configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppIdKey)?.Value,
-                                                              configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppPasswordKey)?.Value);
+                activityAdapter = new BotFrameworkAdapter(applicationId, applicationPassword);
 
                 // pick your flavor of Key/Value storage
                 IStorage storage = new FileStorage(System.IO.Path.GetTempPath());
@@ -92,9 +91,7 @@ namespace AlarmBot.Controllers
                     });
             }
         }
-
-        // TODO refer to issue https://github.com/Microsoft/botbuilder-dotnet/issues/63
-        //[Authorize(Roles = "Bot")]
+                
         [HttpPost]
         public async Task<IActionResult> Post([FromBody]Activity activity)
         {

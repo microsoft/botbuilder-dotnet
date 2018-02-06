@@ -39,6 +39,34 @@ namespace Microsoft.Bot.Connector.Authentication
             MicrosoftAppCredentials.TrustServiceUrl(activity.ServiceUrl);
         }
 
+        public static async Task<ClaimsIdentity> ValidateAuthHeader(string authHeader, ICredentialProvider credentials)
+        {
+            if (string.IsNullOrWhiteSpace(authHeader))
+            {
+                bool isAuthDisabled = await credentials.IsAuthenticationDisabledAsync();
+                if (isAuthDisabled)
+                {
+                    // In the scenario where Auth is disabled, we still want to have the 
+                    // IsAuthenticated flag set in the ClaimsIdentity. To do this requires
+                    // adding in an empty claim. 
+                    ClaimsIdentity anonymousAuthenticatedIdentity = new ClaimsIdentity(new List<Claim>(), "anonymous");
+                    return anonymousAuthenticatedIdentity;
+                }
+
+                // No Auth Header. Auth is required. Request is not authorized. 
+                throw new UnauthorizedAccessException();
+            }
+
+            bool usingEmulator = EmulatorValidation.IsTokenFromEmulator(authHeader);
+            if (usingEmulator)
+            {
+                return await EmulatorValidation.AuthenticateEmulatorToken(authHeader, credentials);
+            }
+            else
+            {
+                return await ChannelValidation.AuthenticateChannelToken(authHeader, credentials);
+            }
+        }
 
         public static async Task<ClaimsIdentity> ValidateAuthHeader(string authHeader, ICredentialProvider credentials, string serviceUrl)
         {
