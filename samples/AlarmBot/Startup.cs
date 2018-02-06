@@ -1,11 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Bot.Connector;
-using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -28,25 +25,8 @@ namespace AlarmBot
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton(_ => Configuration);
-
-            var credentialProvider = new SimpleCredentialProvider(Configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppIdKey)?.Value,
-                                                                  Configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppPasswordKey)?.Value);
-            services.AddSingleton(typeof(ICredentialProvider), credentialProvider);
-
-            services.AddAuthentication(options =>
-                    {
-                        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                    }
-                );
-            // TODO refer to issue https://github.com/Microsoft/botbuilder-dotnet/issues/63
-            //.AddBotAuthentication(credentialProvider);
-
-            services.AddMvc(options =>
-            {
-                options.Filters.Add(typeof(TrustServiceUrlAttribute));
-            });
+            services.AddSingleton(_ => Configuration);            
+            services.AddMvc();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -59,7 +39,6 @@ namespace AlarmBot
 
             app.UseDefaultFiles();
             app.UseStaticFiles();
-            app.UseAuthentication();
             app.UseMvc();
         }
     }
