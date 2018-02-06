@@ -24,9 +24,6 @@ namespace InjectionBasedBotExample.Controllers
         [HttpPost]
         public async Task<IActionResult> Post([FromBody]Activity activity)
         {
-            if (!this.Request.Headers.ContainsKey("Authorization"))
-                return this.Unauthorized();
-
             try
             {
                 await ((BotFrameworkAdapter)_bot.Adapter).Receive(this.Request.Headers["Authorization"].FirstOrDefault(), activity);
