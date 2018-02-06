@@ -7,7 +7,7 @@ Production bots should continue to be developed using the [v3 SDK](https://githu
 In addition to the .NET SDK, Bot Builder supports creating bots in other popular programming languages:
 
 - The [v4 JavaScript SDK](https://github.com/Microsoft/botbuilder-js) has a high degree of parity with the .NET SDK 
-  and lets you build rich bots using C# for the Microsoft Bot Framework.
+  and lets you build rich bots using JavaScript for the Microsoft Bot Framework.
 - The [Python Connector](https://github.com/Microsoft/botbuilder-python) provides basic connectivity to the Microsoft Bot Framework 
   and lets developers build bots using Python. **v4 SDK coming soon**.
 - The [Java Connector](https://github.com/Microsoft/botbuilder-java) provides basic connectivity to the Microsoft Bot Framework 
