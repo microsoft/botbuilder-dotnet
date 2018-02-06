@@ -45,10 +45,12 @@ namespace Microsoft.Bot.Samples.EchoBot.Controllers
         [HttpPost]
         public async Task<IActionResult> Post([FromBody]Activity activity)
         {
+            if (!this.Request.Headers.ContainsKey("Authorization"))
+                return this.Unauthorized();
+
             try
             {
-                var authHeader = this.Request.Headers["Authorization"].FirstOrDefault();
-                await _adapter.Receive(authHeader, activity);
+                await _adapter.Receive(this.Request.Headers["Authorization"].FirstOrDefault(), activity);
                 return this.Ok();
             }
             catch (UnauthorizedAccessException)

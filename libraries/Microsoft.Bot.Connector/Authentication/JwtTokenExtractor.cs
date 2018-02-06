@@ -107,7 +107,7 @@ namespace Microsoft.Bot.Connector.Authentication
         public static string ExtractBearerTokenFromAuthHeader(string authorizationHeader)
         {
             if (string.IsNullOrWhiteSpace(authorizationHeader))
-                throw new InvalidArgumentException(nameof(authorizationHeader));
+                throw new ArgumentException(nameof(authorizationHeader));
 
             string[] parts = authorizationHeader.Split(' ');
             if (parts.Length != 2)
