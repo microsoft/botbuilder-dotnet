@@ -13,7 +13,7 @@ In addition to the .NET SDK, Bot Builder supports creating bots in other popular
 - The [Java Connector](https://github.com/Microsoft/botbuilder-java) provides basic connectivity to the Microsoft Bot Framework 
   and lets developers build bots using Java. **v4 SDK coming soon**.
 
-To see our [roadmap](https://github.com/Microsoft/botbuilder-js/blob/master/FAQ.md#q-is-there-a-roadmap-for-this-sdk-when-will-this-be-generally-available) for the v4 SDK and other common questions, consult our [FAQ](FAQ.md).
+To get started see the [wiki](https://github.com/Microsoft/botbuilder-dotnet/wiki) for the v4 SDK.
 
 ## Contributing
 
