@@ -4,11 +4,10 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.BotFramework;
-using Microsoft.Bot.Connector;
+using Microsoft.Bot.Builder.Middleware;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 
@@ -33,13 +32,15 @@ namespace Microsoft.Bot.Samples.EchoBot.Controllers
         {
             var bot = new Builder.Bot(new BotFrameworkAdapter(configuration));
             _adapter = (BotFrameworkAdapter)bot.Adapter;
-            bot.OnReceive(async (context, next) =>
+            bot.OnReceive(BotReceiveHandler);
+        }
+
+        private async Task BotReceiveHandler(IBotContext context, MiddlewareSet.NextDelegate next)
+        {
+            if (context.Request.Type == ActivityTypes.Message)
             {
-                if (context.Request.Type == ActivityTypes.Message)
-                {
-                    context.Reply($"echo: {context.Request.AsMessageActivity().Text}");
-                }
-            });
+                context.Reply($"echo: {context.Request.AsMessageActivity().Text}");
+            }
         }
 
         [HttpPost]
