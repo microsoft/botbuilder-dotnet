@@ -35,29 +35,15 @@ Microsoft.Bot.Builder.BotFramework
 Microsoft.Bot.Connector
 Microsoft.Bot.Schema
 ```
-
-Within the Startup.cs file:
-- Update the using statements:
-
-  ```csharp
-  using Microsoft.AspNetCore.Authentication.JwtBearer;
-  using Microsoft.AspNetCore.Builder;
-  using Microsoft.AspNetCore.Hosting;
-  using Microsoft.Bot.Connector;
-  using Microsoft.Extensions.Configuration;
-  using Microsoft.Extensions.DependencyInjection;
-  ```
-
-- Replace the implementation of the Startup class with the following definition:
-
-  ```csharp
+Update the Startup.cs file to this:
+```
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace Microsoft.Bot.Samples.EchoBot
+namespace Microsoft.Bot.Samples
 {
     public class Startup
     {
@@ -94,10 +80,9 @@ namespace Microsoft.Bot.Samples.EchoBot
         }
     }
 }
-  ```
+```
 The Web API template includes a prebuilt controller. Modify this code as follows:
-
-  ```csharp
+```
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -106,7 +91,7 @@ using Microsoft.Bot.Builder.BotFramework;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 
-namespace Microsoft.Bot.Samples.EchoBot.Controllers
+namespace Microsoft.Bot.Samples
 {
     [Route("api/[controller]")]
     public class ValuesController : Controller
@@ -141,7 +126,7 @@ namespace Microsoft.Bot.Samples.EchoBot.Controllers
         }
     }
 }
-  ```
+```
 
 Now start your bot (with or without debugging).
 
