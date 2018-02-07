@@ -16,7 +16,6 @@ using Microsoft.Bot.Builder.Storage;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Primitives;
 
 namespace AlarmBot.Controllers
 {
@@ -57,40 +56,42 @@ namespace AlarmBot.Controllers
                         .AddIntent("cancel", new Regex("cancel(.*)", RegexOptions.IgnoreCase))
                         .AddIntent("confirmYes", new Regex("(yes|yep|yessir|^y$)", RegexOptions.IgnoreCase))
                         .AddIntent("confirmNo", new Regex("(no|nope|^n$)", RegexOptions.IgnoreCase)))
-                    .OnReceive(async (context, next) =>
-                    {
-                        // --- Bot logic 
-                        bool handled = false;
-                        // Get the current ActiveTopic from my conversation state
-                        var activeTopic = context.State.Conversation[ConversationProperties.ACTIVETOPIC] as ITopic;
-
-                        // if there isn't one 
-                        if (activeTopic == null)
-                        {
-                            // use default topic
-                            activeTopic = new DefaultTopic();
-                            context.State.Conversation[ConversationProperties.ACTIVETOPIC] = activeTopic;
-                            handled = await activeTopic.StartTopic(context);
-                        }
-                        else
-                        {
-                            // continue to use the active topic
-                            handled = await activeTopic.ContinueTopic(context);
-                        }
-
-                        // AlarmBot only needs to transition from defaultTopic -> subTopic and back, so 
-                        // if activeTopic's result is false and the activeToic is NOT the default topic, we switch back to default topic
-                        if (handled == false && !(context.State.Conversation[ConversationProperties.ACTIVETOPIC] is DefaultTopic))
-                        {
-                            // resume default topic
-                            activeTopic = new DefaultTopic();
-                            context.State.Conversation[ConversationProperties.ACTIVETOPIC] = activeTopic;
-                            handled = await activeTopic.ResumeTopic(context);
-                        }
-
-                        await next();
-                    });
+                    .OnReceive(BotReceiveHandler); 
             }
+        }
+
+        private async Task BotReceiveHandler(IBotContext context, MiddlewareSet.NextDelegate next)
+        {
+            // --- Bot logic 
+            bool handled = false;
+            // Get the current ActiveTopic from my conversation state
+            var activeTopic = context.State.Conversation[ConversationProperties.ACTIVETOPIC] as ITopic;
+
+            // if there isn't one 
+            if (activeTopic == null)
+            {
+                // use default topic
+                activeTopic = new DefaultTopic();
+                context.State.Conversation[ConversationProperties.ACTIVETOPIC] = activeTopic;
+                handled = await activeTopic.StartTopic(context);
+            }
+            else
+            {
+                // continue to use the active topic
+                handled = await activeTopic.ContinueTopic(context);
+            }
+
+            // AlarmBot only needs to transition from defaultTopic -> subTopic and back, so 
+            // if activeTopic's result is false and the activeToic is NOT the default topic, we switch back to default topic
+            if (handled == false && !(context.State.Conversation[ConversationProperties.ACTIVETOPIC] is DefaultTopic))
+            {
+                // resume default topic
+                activeTopic = new DefaultTopic();
+                context.State.Conversation[ConversationProperties.ACTIVETOPIC] = activeTopic;
+                handled = await activeTopic.ResumeTopic(context);
+            }
+
+            await next();
         }
 
         [HttpPost]
