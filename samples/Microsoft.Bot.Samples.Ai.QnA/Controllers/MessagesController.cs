@@ -1,4 +1,4 @@
-﻿// Copyright(c) Microsoft Corporation.All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
 using System;
@@ -12,38 +12,34 @@ using Microsoft.Bot.Builder.Middleware;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 
-namespace Microsoft.Bot.Samples.Ai.Luis
+namespace Microsoft.Bot.Samples.Ai.QnA.Controllers
 {
     [Route("api/[controller]")]
     public class MessagesController : Controller
     {
         BotFrameworkAdapter _adapter;
-
-        /// <summary>
-        /// In this sample Bot, a new instance of the Bot is created by the controller 
-        /// on every incoming HTTP reques. The bot is constructed using the credentials
-        /// found in the config file. Note that no credentials are needed if testing
-        /// the bot locally using the emulator. 
-        /// </summary>        
         public MessagesController(IConfiguration configuration)
         {
+            var qnaOptions = new QnAMakerOptions
+            {
+                // add subscription key and knowledge base id
+                SubscriptionKey = "8e18be559aaf41c8a80634394630fa75",
+                KnowledgeBaseId = "a4e78105-c02f-41ea-9af0-6168e473f77b"
+            };
             var bot = new Builder.Bot(new BotFrameworkAdapter(configuration))
-                .Use(new LuisRecognizerMiddleware("xxxxxx", "xxxxxx"))
+                // add QnA middleware 
+                .Use(new QnAMaker(qnaOptions))
                 .OnReceive(BotReceiveHandler);
-
+               
             _adapter = (BotFrameworkAdapter)bot.Adapter;
         }
 
         private Task BotReceiveHandler(IBotContext context, MiddlewareSet.NextDelegate next)
         {
-            if (context.Request.Type == ActivityTypes.Message)
+            if (context.Request.Type == ActivityTypes.Message && context.Responses.Count == 0)
             {
-                context.Reply($"the top intent was: {context.TopIntent.Name}");
-
-                foreach (var entity in context.TopIntent.Entities)
-                {
-                    context.Reply($"entity: {entity.ValueAs<string>()}");
-                }
+                // add app logic when QnA Maker doesn't find an answer
+                context.Reply("No good match found in the KB.");
             }
             return Task.CompletedTask;
         }
