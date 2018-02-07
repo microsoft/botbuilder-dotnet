@@ -13,6 +13,8 @@ In addition to the .NET SDK, Bot Builder supports creating bots in other popular
 - The [Java Connector](https://github.com/Microsoft/botbuilder-java) provides basic connectivity to the Microsoft Bot Framework 
   and lets developers build bots using Java. **v4 SDK coming soon**.
 
+To see our [roadmap](https://github.com/Microsoft/botbuilder-js/blob/master/FAQ.md#q-is-there-a-roadmap-for-this-sdk-when-will-this-be-generally-available) for the v4 SDK and other common questions, consult our [FAQ](FAQ.md).
+
 ## Getting Started
 
 The v4 SDK consists of a series of [libraries](/libraries) which can be installed.
@@ -23,29 +25,16 @@ The v4 SDK consists of a series of [libraries](/libraries) which can be installe
 
 Create a new **ASP.NET Core Web Application**:
 - Target **.NET Core** **ASP.NET Core 2.0**.
-- Use the **Empty** project template.
+- Pick the **Web API** project template.
 - Select **No Authentication**.
-- Do not enable Docker support.
 
-Add references to the following v4 preview libraries to your project:
+Add the following NuGet packages to your project:
 ```
 Microsoft.Bot.Builder
 Microsoft.Bot.Builder.BotFramework
 Microsoft.Bot.Connector
-Microsoft.Bot.Connector.AspNetCore
+Microsoft.Bot.Schema
 ```
-
-Add the following NuGet packages to your project:
-```
-Newtonsoft.Json
-```
-
-Edit your **Properties/launchSettings.json** file:
-- Add a `profiles.IIS Express.launchUrl` property, and set it to "default.html".
-
-To your wwwroot folder:
-- Add a default.html file.
-  This will be the page that IIS Express displays when you start your bot service.
 
 Within the Startup.cs file:
 - Update the using statements:
@@ -62,117 +51,103 @@ Within the Startup.cs file:
 - Replace the implementation of the Startup class with the following definition:
 
   ```csharp
-  public class Startup
-  {
-      public Startup(IHostingEnvironment env)
-      {
-          var builder = new ConfigurationBuilder()
-              .SetBasePath(env.ContentRootPath)
-              .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-              .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
-              .AddEnvironmentVariables();
-          Configuration = builder.Build();
-      }
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
-      public IConfiguration Configuration { get; }
+namespace Microsoft.Bot.Samples.EchoBot
+{
+    public class Startup
+    {
+        public Startup(IHostingEnvironment env)
+        {
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(env.ContentRootPath)
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
+                .AddEnvironmentVariables();
+            Configuration = builder.Build();
+        }
 
-      // This method gets called by the runtime. Use this method to add services to the container.
-      public void ConfigureServices(IServiceCollection services)
-      {
-          services.AddSingleton(_ => Configuration);
-          var credentialProvider = new StaticCredentialProvider(
-              Configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppIdKey)?.Value,
-              Configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppPasswordKey)?.Value);
+        public IConfigurationRoot Configuration { get; }
 
-          services.AddAuthentication(
-                  // This can be removed after https://github.com/aspnet/IISIntegration/issues/371 
-                  options =>
-                  {
-                      options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                      options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                  }
-              )
-              .AddBotAuthentication(credentialProvider);
+        // This method gets called by the runtime. Use this method to add services to the container.
+        public void ConfigureServices(IServiceCollection services)
+        {
+            services.AddSingleton(_ => Configuration);
+            services.AddMvc();
+        }
 
-          services.AddSingleton(typeof(ICredentialProvider), credentialProvider);
-          services.AddMvc(options =>
-          {
-              options.Filters.Add(typeof(TrustServiceUrlAttribute));
-          });
-      }
+        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        {
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
 
-      // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-      public void Configure(
-          IApplicationBuilder app, IHostingEnvironment env)
-      {
-          app.UseStaticFiles();
-          app.UseAuthentication();
-          app.UseMvc();
-      }
-  }
+            app.UseDefaultFiles();
+            app.UseStaticFiles();
+            app.UseMvc();
+        }
+    }
+}
   ```
+The Web API template includes a prebuilt controller. Modify this code as follows:
 
-Add a **Controllers** folder and add a **MessagesController** class to the folder.
-This is the class that defines your bot's behavior.
-- Update the using statements:
   ```csharp
-  using Microsoft.AspNetCore.Authorization;
-  using Microsoft.AspNetCore.Mvc;
-  using Microsoft.Bot.Builder;
-  using Microsoft.Bot.Builder.Adapters;
-  using Microsoft.Bot.Connector;
-  using Microsoft.Bot.Schema;
-  using Microsoft.Extensions.Configuration;
-  using System.Threading.Tasks;
-  ```
-- Replace the definition of the class with the following code:
-  ```csharp
-  [Route("api/[controller]"), Produces("application/json")]
-  public class MessagesController : Controller
-  {
-      Bot _bot;
-      BotFrameworkAdapter _adapter;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Bot.Builder.BotFramework;
+using Microsoft.Bot.Schema;
+using Microsoft.Extensions.Configuration;
 
-      public MessagesController(IConfiguration configuration)
-      {
-          string appId = configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppIdKey)?.Value ?? string.Empty;
-          string appKey = configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppPasswordKey)?.Value ?? string.Empty;
+namespace Microsoft.Bot.Samples.EchoBot.Controllers
+{
+    [Route("api/[controller]")]
+    public class ValuesController : Controller
+    {
+        BotFrameworkAdapter _adapter;
 
-          _adapter = new BotFrameworkAdapter(appId, appKey);
+        public ValuesController(IConfiguration configuration)
+        {
+            var bot = new Builder.Bot(new BotFrameworkAdapter(configuration));
+            _adapter = (BotFrameworkAdapter)bot.Adapter;
+            bot.OnReceive(async (context, next) =>
+            {
+                if (context.Request.Type == ActivityTypes.Message)
+                {
+                    context.Reply($"Hello World");
+                }
+            });
+        }
 
-          // Create the bot using the adapter. 
-          _bot = new Bot(_adapter)
-              .OnReceive(async (context, _) =>
-              {
-                  if (context.Request.Type.Equals(ActivityTypes.Message))
-                  {
-                      context.Reply("Hello World");
-                  }
-
-                  await Task.Yield();
-              });
-      }
-
-      [HttpPost, Authorize(Roles = "Bot")]
-      public async void Post([FromBody]Activity activity)
-      {
-          await _adapter.Receive(HttpContext.Request.Headers, activity);
-      }
-  }
+        [HttpPost]
+        public async Task<IActionResult> Post([FromBody]Activity activity)
+        {
+            try
+            {
+                await _adapter.Receive(this.Request.Headers["Authorization"].FirstOrDefault(), activity);
+                return this.Ok();
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return this.Unauthorized();
+            }
+        }
+    }
+}
   ```
 
 Now start your bot (with or without debugging).
 
 To interact with your bot:
 - Download the [Bot Framework Emulator](https://github.com/Microsoft/BotFramework-Emulator).
-- The start the emulator, connect to your bot, and say "hello".
-  The bot will respond with "Hello World" to every message.
-
-<!--
-## Building
-
-_Instructions on how to build and test the libraries yourself._
--->
+- The start the emulator, connect to your bot, and say "hello" and the bot will respond with "Hello World" to every message.
 
 ## Contributing
 
@@ -197,8 +172,9 @@ Copyright (c) Microsoft Corporation. All rights reserved.
 
 Licensed under the [MIT](https://github.com/Microsoft/vscode/blob/master/LICENSE.txt) License.
 
-
+<!--
 ## Current Build Status
 | Project  | Status |
 | --- | --- |
 | Microsoft.Bot.Connector | ![Build Status](https://fuselabs.visualstudio.com/_apis/public/build/definitions/86659c66-c9df-418a-a371-7de7aed35064/212/badge) |
+-->
