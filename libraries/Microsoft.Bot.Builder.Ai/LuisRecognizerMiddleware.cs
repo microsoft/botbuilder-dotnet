@@ -43,7 +43,7 @@ namespace Microsoft.Bot.Builder.Ai
         {
             this.OnRecognize(async (context) =>
             {
-                Middleware.Intent i = await RecognizeAndMap(context.Request.AsMessageActivity().Text);
+                Middleware.Intent i = await RecognizeAndMap(context.Request.AsMessageActivity()?.Text);
                 return new List<Middleware.Intent>() { i };
             });
         }
@@ -99,6 +99,7 @@ namespace Microsoft.Bot.Builder.Ai
             this.Value = luisEntity.Value;
             this.StartIndex = luisEntity.StartIndex;
             this.EndIndex = luisEntity.EndIndex;
+            this.Resolution = new FlexObject();
             if (luisEntity.Resolution != null)
             {
                 foreach(var key in luisEntity.Resolution.Keys)

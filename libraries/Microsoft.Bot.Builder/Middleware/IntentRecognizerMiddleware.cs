@@ -66,7 +66,9 @@ namespace Microsoft.Bot.Builder.Middleware
             {
                 IList<Intent> intents = await recognizer(context).ConfigureAwait(false);
                 if (intents != null && intents.Count > 0)
+                {
                     allRecognizedIntents.AddRange(intents);
+                }
             }
 
             return allRecognizedIntents;
@@ -78,7 +80,9 @@ namespace Microsoft.Bot.Builder.Middleware
             {
                 bool isEnabled = await userCode(context).ConfigureAwait(false);
                 if (isEnabled == false)
-                    return false; 
+                {
+                    return false;
+                }
             }
 
             return true; 
