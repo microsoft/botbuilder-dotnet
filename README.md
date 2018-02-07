@@ -81,7 +81,7 @@ namespace Microsoft.Bot.Samples
     }
 }
 ```
-The Web API template includes a prebuilt controller. Modify this code as follows:
+The Web API template includes a prebuilt Values controller. By convention bots use /api/messages, so rename ValuesController to MessagesController and add code as follows:
 ```
 using System;
 using System.Linq;
@@ -94,11 +94,11 @@ using Microsoft.Extensions.Configuration;
 namespace Microsoft.Bot.Samples
 {
     [Route("api/[controller]")]
-    public class ValuesController : Controller
+    public class MessagesController : Controller
     {
         BotFrameworkAdapter _adapter;
 
-        public ValuesController(IConfiguration configuration)
+        public MessagesController(IConfiguration configuration)
         {
             var bot = new Builder.Bot(new BotFrameworkAdapter(configuration));
             _adapter = (BotFrameworkAdapter)bot.Adapter;
