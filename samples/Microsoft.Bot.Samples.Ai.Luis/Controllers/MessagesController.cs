@@ -28,7 +28,7 @@ namespace Microsoft.Bot.Samples.Ai.Luis
         public MessagesController(IConfiguration configuration)
         {
             var bot = new Builder.Bot(new BotFrameworkAdapter(configuration))
-                .Use(new LuisRecognizerMiddleware("9ee8a2c4-b1f5-427f-8b83-9efb3ed6f921", "67073e45132a459db515ca04cea325c2"))
+                .Use(new LuisRecognizerMiddleware("xxxxxx", "xxxxxx"))
                 .OnReceive(BotReceiveHandler);
 
             _adapter = (BotFrameworkAdapter)bot.Adapter;
