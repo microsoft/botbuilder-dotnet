@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Samples.CustomMiddleware
     public class ExampleMiddleware : IContextCreated, IReceiveActivity, IPostActivity
     {
         private string _name;
-        private object _syncRoot = new object();
+        private static object _syncRoot = new object();
 
         public ExampleMiddleware(string name)
         {
