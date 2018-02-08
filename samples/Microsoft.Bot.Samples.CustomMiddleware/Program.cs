@@ -4,7 +4,7 @@
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 
-namespace Microsoft.Bot.Samples.Ai.QnA
+namespace Microsoft.Bot.Samples.CustomMiddleware
 {
     public class Program
     {
