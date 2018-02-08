@@ -6,6 +6,12 @@
     <PackageVersion Condition=" '$(PackageVersion)' != '' ">$(PackageVersion)</PackageVersion>
   </PropertyGroup>
 
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <SignAssembly>true</SignAssembly>
+    <DelaySign>true</DelaySign>
+    <AssemblyOriginatorKeyFile>..\..\build\35MSSharedLib1024.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackageId>Microsoft.Bot.Connector</PackageId>
@@ -45,7 +51,8 @@
     <PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="5.2.0" />
     <PackageReference Include="Microsoft.Rest.ClientRuntime" Version="2.3.10" />    
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
-    <!--<PackageReference Include="Microsoft.Bot.Schema" Version="4.0.0" />-->
+    <PackageReference Include="Microsoft.Bot.Schema" Condition=" '$(PackageVersion)' == '' " Version="4.0.0-local" />
+    <PackageReference Include="Microsoft.Bot.Schema" Condition=" '$(PackageVersion)' != '' " Version="$(PackageVersion)" />
   </ItemGroup>
 
   <ItemGroup>

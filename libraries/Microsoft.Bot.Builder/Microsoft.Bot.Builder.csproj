@@ -6,6 +6,12 @@
     <PackageVersion Condition=" '$(PackageVersion)' == '' ">4.0.0-local</PackageVersion>
     <PackageVersion Condition=" '$(PackageVersion)' != '' ">$(PackageVersion)</PackageVersion>
   </PropertyGroup>
+  
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">    
+    <SignAssembly>true</SignAssembly>
+    <DelaySign>true</DelaySign>
+    <AssemblyOriginatorKeyFile>..\..\build\35MSSharedLib1024.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -43,8 +49,8 @@
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
     <PackageReference Include="System.Dynamic.Runtime" Version="4.3.0" />
-    <!--<PackageReference Include="Microsoft.Bot.Schema" Version="4.0.0" />
-    <PackageReference Include="Microsoft.Bot.Connector" Version="4.0.0" />-->
+    <PackageReference Include="Microsoft.Bot.Schema" Condition=" '$(PackageVersion)' == '' " Version="4.0.0-local" />
+    <PackageReference Include="Microsoft.Bot.Schema" Condition=" '$(PackageVersion)' != '' " Version="$(PackageVersion)" />
   </ItemGroup>
 
   <ItemGroup>
