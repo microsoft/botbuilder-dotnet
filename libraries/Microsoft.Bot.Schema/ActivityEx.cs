@@ -97,8 +97,8 @@ namespace Microsoft.Bot.Schema
         {
             return new Activity(ActivityTypes.ConversationUpdate)
             {
-                MembersAdded = new List<ChannelAccount(),
-                MembersRemoved = new List<ChannelAccount(),
+                MembersAdded = new List<ChannelAccount>(),
+                MembersRemoved = new List<ChannelAccount>(),
             };
         }
 
