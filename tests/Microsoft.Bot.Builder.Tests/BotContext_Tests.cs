@@ -105,5 +105,77 @@ namespace Microsoft.Bot.Builder.Tests
                 }, "Assert response came through")
                .StartTest();
         }
+
+        [TestMethod]
+        [TestCategory("Functional Spec")]
+        public async Task Context_ReplyTextOnly()
+        {
+            TestAdapter adapter = new TestAdapter();
+            Bot bot = new Bot(adapter)
+                .OnReceive(async (context, next) =>
+                {
+                    if (context.Request.AsMessageActivity().Text == "hello")
+                    {
+                        context.Reply("world");
+                    }
+                    await next();
+                });
+
+            await adapter
+                .Send("hello")
+                    .AssertReply("world")
+                .StartTest();
+        }
+
+        [TestMethod]
+        [TestCategory("Functional Spec")]
+        public async Task Context_ReplyTextAndSSML()
+        {
+            TestAdapter adapter = new TestAdapter();
+            string ssml = @"<speak><p>hello</p></speak>";
+
+            Bot bot = new Bot(adapter)
+                .OnReceive(async (context, next) =>
+                {
+                    if (context.Request.AsMessageActivity().Text == "hello")
+                    {
+                        context.Reply("use ssml", ssml);
+                    }
+                    await next();
+                });
+
+            await adapter
+                .Send("hello").AssertReply(
+                    (activity) =>
+                    {
+                        Assert.AreEqual("use ssml", activity.AsMessageActivity().Text);
+                        Assert.AreEqual(ssml, activity.AsMessageActivity().Speak);
+                    }
+                    , "send/reply with speak text works")                    
+            .StartTest();
+        }
+
+        [TestMethod]
+        [TestCategory("Functional Spec")]
+        public async Task Context_ReplyActivity()
+        {
+            TestAdapter adapter = new TestAdapter();
+            Bot bot = new Bot(adapter)
+                .OnReceive(async (context, next) =>
+                {
+                    if (context.Request.AsMessageActivity().Text == "hello")
+                    {
+                        IActivity reply = context.ConversationReference.GetPostToUserMessage();
+                        reply.AsMessageActivity().Text = "world";
+                        context.Reply(reply);
+                    }
+                    await next();
+                });
+
+            await adapter
+                .Send("hello")
+                    .AssertReply("world", "send/reply with Activity works")
+                .StartTest();
+        }
     }
 }
