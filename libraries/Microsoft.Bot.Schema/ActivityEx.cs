@@ -38,12 +38,6 @@ namespace Microsoft.Bot.Schema
 
         partial void CustomInit()
         {
-            MembersAdded = MembersAdded ?? new List<ChannelAccount>();
-            MembersRemoved = MembersRemoved ?? new List<ChannelAccount>();
-            Attachments = Attachments ?? new List<Attachment>();
-            Entities = Entities ?? new List<Entity>();
-            ReactionsAdded = ReactionsAdded ?? new List<MessageReaction>();
-            ReactionsRemoved = ReactionsRemoved ?? new List<MessageReaction>();
         }
 
         /// <summary>
@@ -66,7 +60,9 @@ namespace Microsoft.Bot.Schema
                 ChannelId = this.ChannelId,
                 Conversation = new ConversationAccount(isGroup: this.Conversation.IsGroup, id: this.Conversation.Id, name: this.Conversation.Name),
                 Text = text ?? String.Empty,
-                Locale = locale ?? this.Locale
+                Locale = locale ?? this.Locale,
+                Attachments = new List<Attachment>(),
+                Entities = new List<Entity>(),
             };
             return reply;
         }
@@ -80,7 +76,14 @@ namespace Microsoft.Bot.Schema
         /// <summary>
         /// Create an instance of the Activity class with IMessageActivity masking
         /// </summary>
-        public static IMessageActivity CreateMessageActivity() { return new Activity(ActivityTypes.Message); }
+        public static IMessageActivity CreateMessageActivity()
+        {
+            return new Activity(ActivityTypes.Message)
+            {
+                Attachments = new List<Attachment>(),
+                Entities = new List<Entity>(),
+            };
+        }
 
         /// <summary>
         /// Create an instance of the Activity class with IContactRelationUpdateActivity masking
@@ -90,7 +93,14 @@ namespace Microsoft.Bot.Schema
         /// <summary>
         /// Create an instance of the Activity class with IConversationUpdateActivity masking
         /// </summary>
-        public static IConversationUpdateActivity CreateConversationUpdateActivity() { return new Activity(ActivityTypes.ConversationUpdate); }
+        public static IConversationUpdateActivity CreateConversationUpdateActivity()
+        {
+            return new Activity(ActivityTypes.ConversationUpdate)
+            {
+                MembersAdded = new List<ChannelAccount>(),
+                MembersRemoved = new List<ChannelAccount>(),
+            };
+        }
 
         /// <summary>
         /// Create an instance of the Activity class with ITypingActivity masking
