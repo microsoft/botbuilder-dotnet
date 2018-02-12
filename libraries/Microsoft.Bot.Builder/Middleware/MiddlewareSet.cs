@@ -9,7 +9,7 @@ using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.Middleware
 {
-    public class MiddlewareSet : IMiddleware, IReceiveActivity, IPostActivity, IContextCreated
+    public class MiddlewareSet : IMiddleware, IReceiveActivity, ISendActivity, IContextCreated
     {
         public delegate Task NextDelegate();
         private readonly IList<IMiddleware> _middleware = new List<IMiddleware>();        
@@ -37,12 +37,12 @@ namespace Microsoft.Bot.Builder.Middleware
             return this.Use(new AnonymousContextCreatedMiddleware(anonymousMethod));
         }
 
-        public MiddlewareSet OnPostActivity(Func<IBotContext, IList<IActivity>, NextDelegate, Task> anonymousMethod)
+        public MiddlewareSet OnSendActivity(Func<IBotContext, IList<IActivity>, NextDelegate, Task> anonymousMethod)
         {
             if (anonymousMethod == null)
                 throw new ArgumentNullException(nameof(anonymousMethod));
 
-            return this.Use(new AnonymousPostActivityMiddleware(anonymousMethod));
+            return this.Use(new AnonymousSendActivityMiddleware(anonymousMethod));
         }
 
         public async Task ContextCreated(IBotContext context)
@@ -105,18 +105,18 @@ namespace Microsoft.Bot.Builder.Middleware
             await middleware[0].ReceiveActivity(context, next).ConfigureAwait(false);
         }
 
-        public async Task PostActivity(IBotContext context, IList<IActivity> activities)
+        public async Task SendActivity(IBotContext context, IList<IActivity> activities)
         {
-            await PostActivityInternal(context, activities, this._middleware.OfType<IPostActivity>().ToArray()).ConfigureAwait(false);
+            await SendActivityInternal(context, activities, this._middleware.OfType<ISendActivity>().ToArray()).ConfigureAwait(false);
         }
 
-        public async Task PostActivity(IBotContext context, IList<IActivity> activities, NextDelegate next)
+        public async Task SendActivity(IBotContext context, IList<IActivity> activities, NextDelegate next)
         {
-            await PostActivityInternal(context, activities, this._middleware.OfType<IPostActivity>().ToArray()).ConfigureAwait(false);
+            await SendActivityInternal(context, activities, this._middleware.OfType<ISendActivity>().ToArray()).ConfigureAwait(false);
             await next().ConfigureAwait(false);
         }
 
-        private async Task PostActivityInternal(IBotContext context, IList<IActivity> activities, IPostActivity[] middleware)
+        private async Task SendActivityInternal(IBotContext context, IList<IActivity> activities, ISendActivity[] middleware)
         {
             BotAssert.MiddlewareNotNull(middleware);
             BotAssert.ActivityListNotNull(activities); 
@@ -128,12 +128,12 @@ namespace Microsoft.Bot.Builder.Middleware
             {
                 // Remove the first item from the list of middleware to call,
                 // so that the next call just has the remaining items to worry about. 
-                IPostActivity[] remainingMiddleware = middleware.Skip(1).ToArray();
-                await PostActivityInternal(context, activities, remainingMiddleware).ConfigureAwait(false);
+                ISendActivity[] remainingMiddleware = middleware.Skip(1).ToArray();
+                await SendActivityInternal(context, activities, remainingMiddleware).ConfigureAwait(false);
             }
 
             // Grab the current middleware, which is the 1st element in the array, and execute it            
-            await middleware[0].PostActivity(context, activities, next).ConfigureAwait(false);
+            await middleware[0].SendActivity(context, activities, next).ConfigureAwait(false);
         }       
     }
 }

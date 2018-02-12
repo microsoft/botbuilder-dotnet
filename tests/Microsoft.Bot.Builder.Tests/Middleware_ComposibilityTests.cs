@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Middleware;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -18,14 +19,14 @@ namespace Microsoft.Bot.Builder.Tests
         {
             bool innerOnReceiveCalled = false;
 
-            Middleware.MiddlewareSet inner = new Middleware.MiddlewareSet();
+            MiddlewareSet inner = new MiddlewareSet();
             inner.OnReceive(async (context, next) =>
                {
                    innerOnReceiveCalled = true;
                    await next(); 
                });
 
-            Middleware.MiddlewareSet outer = new Middleware.MiddlewareSet();
+            MiddlewareSet outer = new MiddlewareSet();
             outer.Use(inner); 
 
             await outer.ReceiveActivity(null); 
@@ -38,14 +39,14 @@ namespace Microsoft.Bot.Builder.Tests
         {
             bool innerOnCreatedCalled = false;
 
-            Middleware.MiddlewareSet inner = new Middleware.MiddlewareSet();
+            MiddlewareSet inner = new MiddlewareSet();
             inner.OnContextCreated(async (context, next) =>
             {
                 innerOnCreatedCalled = true;
                 await next();
             });
 
-            Middleware.MiddlewareSet outer = new Middleware.MiddlewareSet();
+            MiddlewareSet outer = new MiddlewareSet();
             outer.Use(inner);
 
             await outer.ContextCreated(null);
@@ -56,39 +57,39 @@ namespace Microsoft.Bot.Builder.Tests
         [TestMethod]
         public async Task NestedSet_OnPostActivity()
         {
-            bool innerOnPostCalled = false;
+            bool innerOnSendCalled = false;
 
-            Middleware.MiddlewareSet inner = new Middleware.MiddlewareSet();
+            MiddlewareSet inner = new MiddlewareSet();
 
-            inner.OnPostActivity(async (context, activities, next) =>
+            inner.OnSendActivity(async (context, activities, next) =>
             {
-                innerOnPostCalled = true;
+                innerOnSendCalled = true;
                 await next();
             });
 
-            Middleware.MiddlewareSet outer = new Middleware.MiddlewareSet();
+            MiddlewareSet outer = new MiddlewareSet();
             outer.Use(inner);
 
-            await outer.PostActivity(null, new List<IActivity>());
+            await outer.SendActivity(null, new List<IActivity>());
 
-            Assert.IsTrue(innerOnPostCalled, "Inner Middleware PostActivity was not called.");
+            Assert.IsTrue(innerOnSendCalled, "Inner Middleware SendActivity was not called.");
         }
 
         [TestMethod]
         public async Task NestedSet_AllIsRun()
         {
-            bool innerOnPostCalled = false;
+            bool innerOnSendCalled = false;
             bool innerOnReceiveCalled = false;
             bool innerOnCreatedCalled = false;
             string replyMessage = Guid.NewGuid().ToString();
 
-            Middleware.MiddlewareSet inner = new Middleware.MiddlewareSet();
-            inner.OnPostActivity(async (context, activities, next) =>
+            MiddlewareSet inner = new MiddlewareSet();
+            inner.OnSendActivity(async (context, activities, next) =>
             {
                 Assert.IsTrue(activities.Count == 1, "incorrect activity count");
-                Assert.IsTrue(activities[0].AsMessageActivity().Text == replyMessage, "unexpected message"); 
+                Assert.IsTrue(activities[0].AsMessageActivity().Text == replyMessage, "unexpected message");
 
-                innerOnPostCalled = true;
+                innerOnSendCalled = true;
                 await next();
             });
 
@@ -111,11 +112,11 @@ namespace Microsoft.Bot.Builder.Tests
             IBotContext c = TestUtilities.CreateEmptyContext();
             await outer.ContextCreated(c);
             await outer.ReceiveActivity(c);
-            await outer.PostActivity(c, c.Responses);
+            await outer.SendActivity(c, c.Responses);
 
             Assert.IsTrue(innerOnReceiveCalled, "Inner Middleware Receive Activity was not called.");
             Assert.IsTrue(innerOnCreatedCalled, "Inner Middleware Create Context was not called.");
-            Assert.IsTrue(innerOnPostCalled, "Inner Middleware PostActivity was not called.");
+            Assert.IsTrue(innerOnSendCalled, "Inner Middleware SendActivity was not called.");
         }
     }
 }

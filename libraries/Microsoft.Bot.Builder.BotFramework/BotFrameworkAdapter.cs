@@ -29,7 +29,7 @@ namespace Microsoft.Bot.Builder.BotFramework
             _credentialProvider = new SimpleCredentialProvider(appId, appPassword);
         }
 
-        public async override Task Post(IList<IActivity> activities)
+        public async override Task Send(IList<IActivity> activities)
         {
             BotAssert.ActivityListNotNull(activities);
 
