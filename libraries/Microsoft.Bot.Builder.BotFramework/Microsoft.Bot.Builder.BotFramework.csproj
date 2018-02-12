@@ -23,8 +23,7 @@
   <PropertyGroup>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Company>Microsoft</Company>
-    <Authors>Microsoft</Authors>
-    <Owners>microsoft, BotFramework, nugetbotbuilder</Owners>
+    <Authors>microsoft,BotFramework,nugetbotbuilder</Authors>
     <Product>Microsoft Bot Builder SDK</Product>
     <Copyright>© Microsoft Corporation. All rights reserved.</Copyright>
     <PackageProjectUrl>https://github.com/Microsoft/botbuilder-dotnet</PackageProjectUrl>
