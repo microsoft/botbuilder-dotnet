@@ -1,0 +1,1 @@
+for %%s in (*.nupkg) do unzip %%s -d %%~ns
