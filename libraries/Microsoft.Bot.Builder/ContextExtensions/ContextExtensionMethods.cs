@@ -3,7 +3,7 @@
 
 using Microsoft.Bot.Schema;
 
-namespace Microsoft.Bot.Builder.ContextExtensions
+namespace Microsoft.Bot.Builder
 {
     public static class ContextExtensionMethods
     {
