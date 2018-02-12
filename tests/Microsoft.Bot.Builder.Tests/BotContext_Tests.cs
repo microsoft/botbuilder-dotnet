@@ -11,9 +11,9 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Microsoft.Bot.Builder.Tests
 {
 
-    public class AnnotateMiddleware : Middleware.IContextCreated, Middleware.IReceiveActivity, Middleware.IPostActivity
+    public class AnnotateMiddleware : IContextCreated, IReceiveActivity, ISendActivity
     {                
-        public async Task PostActivity(BotContext context, IList<Activity> activities) { ; }
+        public async Task SendActivity(BotContext context, IList<Activity> activities) { ; }
         public async Task ContextDone(BotContext context) { context.State["ContextDone"] = true; }
 
         public async Task ContextCreated(IBotContext context, MiddlewareSet.NextDelegate next)
@@ -27,9 +27,9 @@ namespace Microsoft.Bot.Builder.Tests
             context.Request.AsMessageActivity().Text += "ReceiveActivity";            
             await next();
         }
-        public async Task PostActivity(IBotContext context, IList<IActivity> activities, MiddlewareSet.NextDelegate next)
+        public async Task SendActivity(IBotContext context, IList<IActivity> activities, MiddlewareSet.NextDelegate next)
         {
-            context.Responses[0].AsMessageActivity().Text += "PostActivity";
+            context.Responses[0].AsMessageActivity().Text += "SendActivity";
             await next();             
         }
     }
@@ -49,7 +49,7 @@ namespace Microsoft.Bot.Builder.Tests
                     {
                         Assert.AreEqual(true, context.State["ContextCreated"]);
                         Assert.IsTrue(context.Request.AsMessageActivity().Text.Contains("ReceiveActivity"));
-                        Assert.IsFalse(context.Request.AsMessageActivity().Text.Contains("PostActivity"));
+                        Assert.IsFalse(context.Request.AsMessageActivity().Text.Contains("SendActivity"));
                         if (context.Request.AsMessageActivity().Text.StartsWith("proactive"))
                         {
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
@@ -87,7 +87,7 @@ namespace Microsoft.Bot.Builder.Tests
                 {
                     Assert.IsTrue(activity.AsMessageActivity().Text.Contains("receive"));
                     Assert.IsTrue(activity.AsMessageActivity().Text.Contains("ReceiveActivity"));
-                    Assert.IsTrue(activity.AsMessageActivity().Text.Contains("PostActivity"));
+                    Assert.IsTrue(activity.AsMessageActivity().Text.Contains("SendActivity"));
                 }, "Assert response came through")
                 .StartTest();
         }
@@ -101,7 +101,7 @@ namespace Microsoft.Bot.Builder.Tests
                 {
                     Assert.IsTrue(activity.AsMessageActivity().Text.Contains("proactive"));
                     Assert.IsFalse(activity.AsMessageActivity().Text.Contains("ReceiveActivity"));
-                    Assert.IsTrue(activity.AsMessageActivity().Text.Contains("PostActivity"));
+                    Assert.IsTrue(activity.AsMessageActivity().Text.Contains("SendActivity"));
                 }, "Assert response came through")
                .StartTest();
         }

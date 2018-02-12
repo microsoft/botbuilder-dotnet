@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Builder.Adapters
         {
         }
 
-        public async override Task Post(IList<IActivity> activities)
+        public async override Task Send(IList<IActivity> activities)
         {
             foreach (IActivity activity in activities)
             {

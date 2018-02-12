@@ -40,9 +40,9 @@ namespace Microsoft.Bot.Builder
             _conversationReference = conversationReference ?? throw new ArgumentNullException(nameof(conversationReference));
         }
 
-        public async Task PostActivity(IBotContext context, IList<IActivity> activities)
+        public async Task SendActivity(IBotContext context, IList<IActivity> activities)
         {
-            await _bot.PostActivity(context, activities).ConfigureAwait(false);
+            await _bot.SendActivity(context, activities).ConfigureAwait(false);
         }
 
         public IActivity Request => _request;

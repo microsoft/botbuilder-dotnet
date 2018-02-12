@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Middleware;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -16,30 +17,30 @@ namespace Microsoft.Bot.Builder.Tests
         [TestMethod]
         public async Task NoMiddleware()
         {
-            Middleware.MiddlewareSet m = new Middleware.MiddlewareSet();
+            MiddlewareSet m = new MiddlewareSet();
             // No middleware. Should not explode. 
-            await m.PostActivity(null, new List<IActivity>());
+            await m.SendActivity(null, new List<IActivity>());
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
         public async Task ThrowOnNullMiddlware()
         {
-            Middleware.MiddlewareSet m = new Middleware.MiddlewareSet();
-            m.Use((Middleware.IPostActivity)null);
+            MiddlewareSet m = new MiddlewareSet();
+            m.Use((ISendActivity)null);
         }
 
         [TestMethod]
         [ExpectedException(typeof(InvalidOperationException))]
         public async Task BubbleUncaughtException()
         {
-            Middleware.MiddlewareSet m = new Middleware.MiddlewareSet();
-            m.OnPostActivity(async (context, activities, next) =>
+            MiddlewareSet m = new MiddlewareSet();
+            m.OnSendActivity(async (context, activities, next) =>
             {
                 throw new InvalidOperationException("test");
             });
 
-            await m.PostActivity(null, new List<IActivity>());
+            await m.SendActivity(null, new List<IActivity>());
             Assert.Fail("Should never have gotten here");
         }
 
@@ -47,12 +48,11 @@ namespace Microsoft.Bot.Builder.Tests
         public async Task OneMiddlewareItem()
         {
             WasCalledMiddlware simple = new WasCalledMiddlware();
-
-            Middleware.MiddlewareSet m = new Middleware.MiddlewareSet();
+            MiddlewareSet m = new MiddlewareSet();
             m.Use(simple);
 
             Assert.IsFalse(simple.Called);
-            await m.PostActivity(null, new List<IActivity>()); 
+            await m.SendActivity(null, new List<IActivity>()); 
             Assert.IsTrue(simple.Called);
         }
 
@@ -62,11 +62,11 @@ namespace Microsoft.Bot.Builder.Tests
             WasCalledMiddlware one = new WasCalledMiddlware();
             WasCalledMiddlware two = new WasCalledMiddlware();
 
-            Middleware.MiddlewareSet m = new Middleware.MiddlewareSet();
+            MiddlewareSet m = new MiddlewareSet();
             m.Use(one);
             m.Use(two);
 
-            await m.PostActivity(null, new List<IActivity>());
+            await m.SendActivity(null, new List<IActivity>());
             Assert.IsTrue(one.Called);
             Assert.IsTrue(two.Called);
         }
@@ -89,11 +89,11 @@ namespace Microsoft.Bot.Builder.Tests
                 called2 = true;
             });
 
-            Middleware.MiddlewareSet m = new Middleware.MiddlewareSet();
+            MiddlewareSet m = new MiddlewareSet();
             m.Use(one);
             m.Use(two);
 
-            await m.PostActivity(null, new List<IActivity>());
+            await m.SendActivity(null, new List<IActivity>());
             Assert.IsTrue(called1);
             Assert.IsTrue(called2);
         }
@@ -104,8 +104,8 @@ namespace Microsoft.Bot.Builder.Tests
             bool didRun = false;
             string message = Guid.NewGuid().ToString(); 
 
-            Middleware.MiddlewareSet m = new Middleware.MiddlewareSet();
-            m.OnPostActivity(async (context, activities, next) =>
+            MiddlewareSet m = new MiddlewareSet();
+            m.OnSendActivity(async (context, activities, next) =>
             {
                 Assert.IsTrue(activities.Count == 1);
                 Assert.IsTrue(activities[0].AsMessageActivity().Text == message); 
@@ -115,7 +115,7 @@ namespace Microsoft.Bot.Builder.Tests
             });
 
             Assert.IsFalse(didRun);
-            await m.PostActivity(null, new List<IActivity> { MessageFactory.Text(message) });
+            await m.SendActivity(null, new List<IActivity> { MessageFactory.Text(message) });
             Assert.IsTrue(didRun);
         }
 
@@ -130,8 +130,8 @@ namespace Microsoft.Bot.Builder.Tests
             string message2 = Guid.NewGuid().ToString();
             string message3 = Guid.NewGuid().ToString();
 
-            Middleware.MiddlewareSet m = new Middleware.MiddlewareSet();
-            m.OnPostActivity(async (context, activities, next) =>
+            MiddlewareSet m = new MiddlewareSet();
+            m.OnSendActivity(async (context, activities, next) =>
             {
                 Assert.IsTrue(activities.Count == 1);
                 Assert.IsTrue(activities[0].AsMessageActivity().Text == message1);
@@ -146,7 +146,7 @@ namespace Microsoft.Bot.Builder.Tests
                 Assert.IsTrue(activities[0].AsMessageActivity().Text == message3);
                 Assert.IsTrue(activities[1].AsMessageActivity().Text == message2);
             });
-            m.OnPostActivity(async (context, activities, next) =>
+            m.OnSendActivity(async (context, activities, next) =>
             {
                 Assert.IsTrue(activities.Count == 2);
                 Assert.IsTrue(activities[0].AsMessageActivity().Text == message1);
@@ -165,7 +165,7 @@ namespace Microsoft.Bot.Builder.Tests
                 Assert.IsTrue(activities[1].AsMessageActivity().Text == message2);
             });
 
-            m.OnPostActivity(async (context, activities, next) =>
+            m.OnSendActivity(async (context, activities, next) =>
             {
                 Assert.IsTrue(activities.Count == 2);
                 
@@ -176,25 +176,25 @@ namespace Microsoft.Bot.Builder.Tests
                 await next();
             });
 
-            await m.PostActivity(null, new List<IActivity> { MessageFactory.Text(message1) });
+            await m.SendActivity(null, new List<IActivity> { MessageFactory.Text(message1) });
             Assert.IsTrue(didRun1);
             Assert.IsTrue(didRun2);
             Assert.IsTrue(didRun3);
         }
 
 
-        public class WasCalledMiddlware : Middleware.IPostActivity
+        public class WasCalledMiddlware : ISendActivity
         {
             public bool Called { get; set; } = false;
 
-            public Task PostActivity(IBotContext context, IList<IActivity> activities, Middleware.MiddlewareSet.NextDelegate next)
+            public Task SendActivity(IBotContext context, IList<IActivity> activities, MiddlewareSet.NextDelegate next)
             {
                 Called = true;
                 return next();
             }            
         }
 
-        public class CallMeMiddlware : Middleware.IPostActivity
+        public class CallMeMiddlware : ISendActivity
         {
             private readonly Action<IList<IActivity>> _callMe;
             public CallMeMiddlware(Action<IList<IActivity>> callMe)
@@ -202,7 +202,7 @@ namespace Microsoft.Bot.Builder.Tests
                 _callMe = callMe;
             }
 
-            public Task PostActivity(IBotContext context, IList<IActivity> activities, Middleware.MiddlewareSet.NextDelegate next)
+            public Task SendActivity(IBotContext context, IList<IActivity> activities, MiddlewareSet.NextDelegate next)
             {
                 _callMe(activities);
                 return next();

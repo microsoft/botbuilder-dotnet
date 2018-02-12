@@ -72,7 +72,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <param name="activities"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        public override async Task Post(IList<IActivity> activities)
+        public override async Task Send(IList<IActivity> activities)
         {
             foreach (var activity in activities)
             {

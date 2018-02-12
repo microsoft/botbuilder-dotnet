@@ -30,17 +30,17 @@ namespace Microsoft.Bot.Builder
         {
             PersistConversationState = true;
             PersistUserState = true;
-            WriteBeforePost = true;
+            WriteBeforeSend = true;
             LastWriterWins = true;
         }
 
         public bool PersistUserState { get; set; }
         public bool PersistConversationState { get; set; }
-        public bool WriteBeforePost { get; set; }
+        public bool WriteBeforeSend { get; set; }
         public bool LastWriterWins { get; set; }
     }
 
-    public class BotStateManager : Middleware.IContextCreated, Middleware.IPostActivity
+    public class BotStateManager : Middleware.IContextCreated, Middleware.ISendActivity
     {
         private readonly BotStateManagerSettings _settings;
         private readonly IStorage _storage;
@@ -63,14 +63,14 @@ namespace Microsoft.Bot.Builder
             await next().ConfigureAwait(false); 
         }        
 
-        public async Task PostActivity(IBotContext context, IList<IActivity> activities, MiddlewareSet.NextDelegate next)
+        public async Task SendActivity(IBotContext context, IList<IActivity> activities, MiddlewareSet.NextDelegate next)
         {
-            if (_settings.WriteBeforePost)
+            if (_settings.WriteBeforeSend)
             {
                 await Write(context).ConfigureAwait(false);
             }
             await next().ConfigureAwait(false);
-            if (!_settings.WriteBeforePost)
+            if (!_settings.WriteBeforeSend)
             {
                 await Write(context).ConfigureAwait(false);
             }

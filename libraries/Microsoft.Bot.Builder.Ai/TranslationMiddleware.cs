@@ -12,7 +12,7 @@ using Microsoft.Cognitive.LUIS;
 
 namespace Microsoft.Bot.Builder.Ai
 {
-    public class TranslationMiddleware : IReceiveActivity, IPostActivity
+    public class TranslationMiddleware : IReceiveActivity, ISendActivity
     {
         private LuisClient luisClient;
         private string[] nativeLanguages;
@@ -41,10 +41,12 @@ namespace Microsoft.Bot.Builder.Ai
                     // determine the language we are using for this conversation
                     var sourceLanguage = "en"; // context.Conversation.Data["Language"]?.ToString() ?? this.nativeLanguages.FirstOrDefault() ?? "en";
 
-                    var translationContext = new TranslationContext();
-                    translationContext.SourceText = message.Text;
-                    translationContext.SourceLanguage = sourceLanguage;
-                    translationContext.TargetLanguage = (this.nativeLanguages.Contains(sourceLanguage)) ? sourceLanguage : this.nativeLanguages.FirstOrDefault() ?? "en";
+                    var translationContext = new TranslationContext
+                    {
+                        SourceText = message.Text,
+                        SourceLanguage = sourceLanguage,
+                        TargetLanguage = (this.nativeLanguages.Contains(sourceLanguage)) ? sourceLanguage : this.nativeLanguages.FirstOrDefault() ?? "en"
+                    };
                     ((BotContext)context)["Translation"] = translationContext;
 
                     // translate to bots language
@@ -63,7 +65,7 @@ namespace Microsoft.Bot.Builder.Ai
         /// <param name="activities"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        public async Task PostActivity(IBotContext context, IList<IActivity> activities, MiddlewareSet.NextDelegate next)
+        public async Task SendActivity(IBotContext context, IList<IActivity> activities, MiddlewareSet.NextDelegate next)
         {
             foreach (var activity in activities)
             {
