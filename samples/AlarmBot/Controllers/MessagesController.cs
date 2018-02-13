@@ -99,7 +99,7 @@ namespace AlarmBot.Controllers
         {
             try
             {
-                await activityAdapter.Receive(this.Request.Headers["Authorization"].FirstOrDefault(), activity);
+                await activityAdapter.Receive(this.Request.Headers, activity);
                 return this.Ok();
             }
             catch (UnauthorizedAccessException)

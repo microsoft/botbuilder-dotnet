@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Middleware;
+using Microsoft.Extensions.Primitives;
 
 namespace Microsoft.Bot.Builder
 {
@@ -14,14 +15,16 @@ namespace Microsoft.Bot.Builder
     {
         private readonly Bot _bot;
         private readonly IActivity _request;
+        private readonly IDictionary<string, StringValues> _requestInfo;
         private readonly ConversationReference _conversationReference;
         private readonly BotState _state = new BotState();
         private IList<IActivity> _responses = new List<IActivity>();
 
-        public BotContext(Bot bot, IActivity request)
+        public BotContext(Bot bot, IActivity request, IDictionary<string, StringValues> requestInfo)
         {
             _bot = bot ?? throw new ArgumentNullException(nameof(bot));
             _request = request ?? throw new ArgumentNullException(nameof(request));
+            _requestInfo = requestInfo ?? new Dictionary<string, StringValues>();
 
             _conversationReference = new ConversationReference()
             {
@@ -46,6 +49,8 @@ namespace Microsoft.Bot.Builder
         }
 
         public IActivity Request => _request;
+
+        public IDictionary<string, StringValues> RequestInfo => _requestInfo;
 
         public Bot Bot => _bot;
 
@@ -111,7 +116,7 @@ namespace Microsoft.Bot.Builder
             this.Responses.Add(activity);
             return this;
         }
-        
+
         public BotContext ReplyWith(string templateId, object data = null)
         {
             // queue template activity to be databound when sent

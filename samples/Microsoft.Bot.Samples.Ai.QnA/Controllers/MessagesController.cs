@@ -26,7 +26,7 @@ namespace Microsoft.Bot.Samples.Ai.QnA.Controllers
                 SubscriptionKey = "xxxxxx",
                 KnowledgeBaseId = "xxxxxx"
             };
-            var bot = new Builder.Bot(new BotFrameworkAdapter(configuration))
+            var bot = new Builder.Bot(new BotFrameworkAdapter(new ConfigurationCredentialProvider(configuration)))
                 // add QnA middleware 
                 .Use(new QnAMaker(qnaOptions))
                 .OnReceive(BotReceiveHandler);
@@ -49,7 +49,7 @@ namespace Microsoft.Bot.Samples.Ai.QnA.Controllers
         {
             try
             {
-                await _adapter.Receive(this.Request.Headers["Authorization"].FirstOrDefault(), activity);
+                await _adapter.Receive(this.Request.Headers, activity);
                 return this.Ok();
             }
             catch (UnauthorizedAccessException)

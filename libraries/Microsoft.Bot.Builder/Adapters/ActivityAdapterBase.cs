@@ -4,17 +4,18 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
+using Microsoft.Extensions.Primitives;
 
 namespace Microsoft.Bot.Builder.Adapters
 {
     public abstract class ActivityAdapterBase
     {
-        public delegate Task OnReceiveDelegate(IActivity activity);
+        public delegate Task OnReceiveDelegate(IActivity activity, IDictionary<string, StringValues> requestInfo);
 
         public ActivityAdapterBase() { }
 
         public OnReceiveDelegate OnReceive { get; set; }               
 
-        public abstract Task Send(IList<IActivity> activities);
+        public abstract Task Send(IList<IActivity> activities, IBotContext botContext);
     }
 }

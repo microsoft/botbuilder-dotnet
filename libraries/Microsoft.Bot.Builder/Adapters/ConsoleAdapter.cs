@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
+using Microsoft.Extensions.Primitives;
 
 namespace Microsoft.Bot.Builder.Adapters
 {
@@ -15,7 +16,7 @@ namespace Microsoft.Bot.Builder.Adapters
         {
         }
 
-        public async override Task Send(IList<IActivity> activities)
+        public async override Task Send(IList<IActivity> activities, IBotContext botContext)
         {
             foreach (IActivity activity in activities)
             {
@@ -71,7 +72,7 @@ namespace Microsoft.Bot.Builder.Adapters
                 };
 
                 if (this.OnReceive != null)
-                    await this.OnReceive(activity);
+                    await this.OnReceive(activity, new Dictionary<string, StringValues>());
             }
         }
     }    

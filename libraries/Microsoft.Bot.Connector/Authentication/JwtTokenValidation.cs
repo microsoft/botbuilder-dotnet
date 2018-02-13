@@ -18,8 +18,8 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <param name="activity">The incoming Activity from the Bot Framework or the Emulator</param>
         /// <param name="authHeader">The Bearer token included as part of the request</param>
         /// <param name="credentials">The set of valid credentials, such as the Bot Application ID</param>
-        /// <returns>Nothing</returns>
-        public static async Task AssertValidActivity(Activity activity, string authHeader, ICredentialProvider credentials)
+        /// <returns>Claims identity</returns>
+        public static async Task<ClaimsIdentity> AssertValidActivity(Activity activity, string authHeader, ICredentialProvider credentials)
         {
             if (string.IsNullOrWhiteSpace(authHeader))
             {
@@ -28,15 +28,17 @@ namespace Microsoft.Bot.Connector.Authentication
                 if (isAuthDisabled)
                 {
                     // We are on the anonymous code path. 
-                    return;
+                    return null;
                 }
             }
 
             // Go through the standard authentication path. 
-            await JwtTokenValidation.ValidateAuthHeader(authHeader, credentials, activity.ServiceUrl);
+            ClaimsIdentity claimsIdentity = await JwtTokenValidation.ValidateAuthHeader(authHeader, credentials, activity.ServiceUrl);
 
             // On the standard Auth path, we need to trust the URL that was incoming. 
             MicrosoftAppCredentials.TrustServiceUrl(activity.ServiceUrl);
+
+            return claimsIdentity;
         }
 
         public static async Task<ClaimsIdentity> ValidateAuthHeader(string authHeader, ICredentialProvider credentials)

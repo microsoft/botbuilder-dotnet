@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
+using Microsoft.Extensions.Primitives;
 
 namespace Microsoft.Bot.Builder.Adapters
 {
@@ -69,10 +70,10 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <summary>
         /// Bot posting an activity back to the source
         /// </summary>
-        /// <param name="activities"></param>
-        /// <param name="token"></param>
-        /// <returns></returns>
-        public override async Task Send(IList<IActivity> activities)
+        /// <param name="activities">Activities to send back.</param>
+        /// <param name="botContext">Request context.</param>
+        /// <returns>Task tracking operation.</returns>
+        public override async Task Send(IList<IActivity> activities, IBotContext botContext)
         {
             foreach (var activity in activities)
             {
@@ -115,7 +116,7 @@ namespace Microsoft.Bot.Builder.Adapters
                 activity.ServiceUrl = this.ConversationReference.ServiceUrl;
 
                 var id = activity.Id = (this._nextId++).ToString();
-                return this.OnReceive(activity);
+                return this.OnReceive(activity, new Dictionary<string, StringValues>());
             }
         }
 

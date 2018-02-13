@@ -30,7 +30,7 @@ namespace Microsoft.Bot.Samples.EchoBot.Controllers
         /// </summary>        
         public MessagesController(IConfiguration configuration)
         {
-            var bot = new Builder.Bot(new BotFrameworkAdapter(configuration));
+            var bot = new Builder.Bot(new BotFrameworkAdapter(new ConfigurationCredentialProvider(configuration)));
             _adapter = (BotFrameworkAdapter)bot.Adapter;
             bot.OnReceive(BotReceiveHandler);
         }
@@ -48,7 +48,7 @@ namespace Microsoft.Bot.Samples.EchoBot.Controllers
         {
             try
             {
-                await _adapter.Receive(this.Request.Headers["Authorization"].FirstOrDefault(), activity);
+                await _adapter.Receive(this.Request.Headers, activity);
                 return this.Ok();
             }
             catch (UnauthorizedAccessException)
