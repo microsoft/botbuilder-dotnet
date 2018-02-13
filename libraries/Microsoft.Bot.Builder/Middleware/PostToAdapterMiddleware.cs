@@ -8,22 +8,22 @@ using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.Middleware
 {
-    public class PostToAdapterMiddleware : IPostActivity
+    public class SendToAdapterMiddleware : ISendActivity
     {
         private readonly Bot _bot;
 
-        public PostToAdapterMiddleware(Bot b)
+        public SendToAdapterMiddleware(Bot b)
         {
             _bot = b ?? throw new ArgumentNullException(nameof(Bot));
         }        
 
-        public async Task PostActivity(IBotContext context, IList<IActivity> activities, Middleware.MiddlewareSet.NextDelegate next)
+        public async Task SendActivity(IBotContext context, IList<IActivity> activities, Middleware.MiddlewareSet.NextDelegate next)
         {
             BotAssert.ContextNotNull(context);
             BotAssert.ActivityListNotNull(activities);
 
             await next().ConfigureAwait(false); 
-            await _bot.Adapter.Post(activities).ConfigureAwait(false);            
+            await _bot.Adapter.Send(activities).ConfigureAwait(false);            
         }
     }
 }

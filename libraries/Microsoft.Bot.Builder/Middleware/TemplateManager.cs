@@ -8,7 +8,7 @@ using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.Middleware
 {
-    public class TemplateManager : IContextCreated, IPostActivity
+    public class TemplateManager : IContextCreated, ISendActivity
     {
         public const string TEMPLATE = "template";        
         private List<ITemplateRenderer> _templateRenderers = new List<ITemplateRenderer>();
@@ -54,7 +54,7 @@ namespace Microsoft.Bot.Builder.Middleware
             await next().ConfigureAwait(false);             
         }
 
-        public async Task PostActivity(IBotContext context, IList<IActivity> activities, Middleware.MiddlewareSet.NextDelegate next)
+        public async Task SendActivity(IBotContext context, IList<IActivity> activities, Middleware.MiddlewareSet.NextDelegate next)
         {
             BotAssert.ContextNotNull(context);
             BotAssert.ActivityListNotNull(activities);

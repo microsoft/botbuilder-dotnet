@@ -28,7 +28,7 @@ namespace Microsoft.Bot.Builder
             // through the Middleware Pipeline
             _adapter.OnReceive = this.RunPipeline;
 
-            this.Use(new Middleware.PostToAdapterMiddleware(this));
+            this.Use(new Middleware.SendToAdapterMiddleware(this));
             this.Use(new Middleware.TemplateManager());
         }
 
@@ -57,9 +57,9 @@ namespace Microsoft.Bot.Builder
             if (proactiveCallback != null)
                 await proactiveCallback(context).ConfigureAwait(false);
 
-            // Call any registered Middleware Components looking for PostActivity()
+            // Call any registered Middleware Components looking for SendActivity()
             if (context.Responses != null && context.Responses.Any())
-                await this.PostActivity(context, context.Responses).ConfigureAwait(false);
+                await this.SendActivity(context, context.Responses).ConfigureAwait(false);
 
             System.Diagnostics.Trace.TraceInformation($"Middleware: Ending Pipeline for {context.ConversationReference.ActivityId}");
         }
