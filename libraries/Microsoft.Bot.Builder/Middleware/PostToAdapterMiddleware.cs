@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Builder.Middleware
             BotAssert.ActivityListNotNull(activities);
 
             await next().ConfigureAwait(false); 
-            await _bot.Adapter.Send(activities).ConfigureAwait(false);            
+            await _bot.Adapter.Send(activities, context).ConfigureAwait(false);            
         }
     }
 }

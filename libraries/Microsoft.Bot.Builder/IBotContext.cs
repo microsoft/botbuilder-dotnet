@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Middleware;
+using Microsoft.Extensions.Primitives;
 
 namespace Microsoft.Bot.Builder
 {
@@ -18,6 +19,11 @@ namespace Microsoft.Bot.Builder
         /// Incoming request
         /// </summary>
         IActivity Request { get; }
+
+        /// <summary>
+        /// Gets the request additional information.
+        /// </summary>
+        IDictionary<string, StringValues> RequestInfo { get; }
 
         /// <summary>
         /// Respones

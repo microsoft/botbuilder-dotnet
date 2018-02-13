@@ -26,7 +26,7 @@ namespace InjectionBasedBotExample.Controllers
         {
             try
             {
-                await ((BotFrameworkAdapter)_bot.Adapter).Receive(this.Request.Headers["Authorization"].FirstOrDefault(), activity);
+                await ((BotFrameworkAdapter)_bot.Adapter).Receive(this.Request.Headers, activity);
                 return this.Ok();
             }
             catch (UnauthorizedAccessException)

@@ -28,7 +28,7 @@ namespace Microsoft.Bot.Samples.Ai.Luis
         /// </summary>        
         public MessagesController(IConfiguration configuration)
         {
-            var bot = new Builder.Bot(new BotFrameworkAdapter(configuration))
+            var bot = new Builder.Bot(new BotFrameworkAdapter(new ConfigurationCredentialProvider(configuration)))
                 .Use(new LuisRecognizerMiddleware("xxxxxx", "xxxxxx"))
                 
                 // LUIS with correct baseUri format example
@@ -58,7 +58,7 @@ namespace Microsoft.Bot.Samples.Ai.Luis
         {
             try
             {
-                await _adapter.Receive(this.Request.Headers["Authorization"].FirstOrDefault(), activity);
+                await _adapter.Receive(this.Request.Headers, activity);
                 return this.Ok();
             }
             catch (UnauthorizedAccessException)
