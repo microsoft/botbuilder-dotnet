@@ -1,4 +1,5 @@
-﻿// Copyright(c) Microsoft Corporation.All rights reserved.
+
+// Copyright(c) Microsoft Corporation.All rights reserved.
 // Licensed under the MIT License.
 
 using System;
@@ -29,6 +30,10 @@ namespace Microsoft.Bot.Samples.Ai.Luis
         {
             var bot = new Builder.Bot(new BotFrameworkAdapter(configuration))
                 .Use(new LuisRecognizerMiddleware("xxxxxx", "xxxxxx"))
+                
+                // LUIS with correct baseUri format example
+                //.Use(new LuisRecognizerMiddleware("xxxxxx", "xxxxxx", "https://xxxxxx.api.cognitive.microsoft.com/luis/v2.0/apps"))
+                
                 .OnReceive(BotReceiveHandler);
 
             _adapter = (BotFrameworkAdapter)bot.Adapter;
