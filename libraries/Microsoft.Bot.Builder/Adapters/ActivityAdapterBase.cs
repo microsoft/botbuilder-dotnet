@@ -15,6 +15,6 @@ namespace Microsoft.Bot.Builder.Adapters
 
         public OnReceiveDelegate OnReceive { get; set; }               
 
-        public abstract Task Post(IList<IActivity> activities);
+        public abstract Task Send(IList<IActivity> activities);
     }
 }

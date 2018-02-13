@@ -21,9 +21,9 @@ namespace Microsoft.Bot.Builder.Middleware
         Task ReceiveActivity(IBotContext context, NextDelegate next);
     }
 
-    public interface IPostActivity : IMiddleware
+    public interface ISendActivity : IMiddleware
     {
-        Task PostActivity(IBotContext context, IList<IActivity> activities, NextDelegate next);
+        Task SendActivity(IBotContext context, IList<IActivity> activities, NextDelegate next);
     }
 
     public class AnonymousReceiveMiddleware : IReceiveActivity
@@ -56,16 +56,16 @@ namespace Microsoft.Bot.Builder.Middleware
         }
     }
 
-    public class AnonymousPostActivityMiddleware : IPostActivity
+    public class AnonymousSendActivityMiddleware : ISendActivity
     {
         private readonly Func<IBotContext, IList<IActivity>, NextDelegate, Task> _toCall;
 
-        public AnonymousPostActivityMiddleware(Func<IBotContext, IList<IActivity>, NextDelegate, Task> anonymousMethod)
+        public AnonymousSendActivityMiddleware(Func<IBotContext, IList<IActivity>, NextDelegate, Task> anonymousMethod)
         {
             _toCall = anonymousMethod ?? throw new ArgumentNullException(nameof(anonymousMethod));
         }
 
-        public Task PostActivity(IBotContext context, IList<IActivity> activities, NextDelegate next)
+        public Task SendActivity(IBotContext context, IList<IActivity> activities, NextDelegate next)
         {
             return _toCall(context, activities, next);
         }

@@ -11,7 +11,7 @@ using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Samples.CustomMiddleware
 {
-    public class ExampleMiddleware : IContextCreated, IReceiveActivity, IPostActivity
+    public class ExampleMiddleware : IContextCreated, IReceiveActivity, ISendActivity
     {
         private string _name;
         private static object _syncRoot = new object();
@@ -35,11 +35,11 @@ namespace Microsoft.Bot.Samples.CustomMiddleware
             Write($"AFTER ReceiveActivity {PrettyPrint(context.Request)}");
         }
 
-        public async Task PostActivity(IBotContext context, IList<IActivity> activities, MiddlewareSet.NextDelegate next)
+        public async Task SendActivity(IBotContext context, IList<IActivity> activities, MiddlewareSet.NextDelegate next)
         {
-            Write($"BEFORE PostActivity {PrettyPrint(context.Responses)}");
+            Write($"BEFORE SendActivity {PrettyPrint(context.Responses)}");
             await next();
-            Write($"AFTER PostActivity {PrettyPrint(context.Responses)}");
+            Write($"AFTER SendActivity {PrettyPrint(context.Responses)}");
         }
 
         private void Write(string message)
