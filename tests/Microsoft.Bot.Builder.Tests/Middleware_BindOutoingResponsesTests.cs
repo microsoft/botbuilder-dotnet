@@ -87,7 +87,7 @@ namespace Microsoft.Bot.Builder.Tests
 
             TestAdapter adapter = new TestAdapter();
             Bot b = new Bot(adapter);
-            b.OnReceive(async (context, next) =>
+            b.OnReceive(async (context) =>
                {
                    Assert.IsTrue(string.IsNullOrEmpty(a.Type));
                    context.Responses.Add(a);
