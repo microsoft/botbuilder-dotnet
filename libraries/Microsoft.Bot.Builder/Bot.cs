@@ -9,14 +9,15 @@ using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder
 {
-    public class Bot : Middleware.MiddlewareSet
+    public class Bot
     {
         private ActivityAdapterBase _adapter;
+        private readonly Middleware.MiddlewareSet _middlewareSet = new Middleware.MiddlewareSet();
+        Func<IBotContext, Task> _onReceive = null; 
 
-        public new Bot OnReceive(Func<IBotContext, NextDelegate, Task> anonymousMethod)
+        public void OnReceive(Func<IBotContext, Task> anonymousMethod)
         {
-            base.OnReceive(anonymousMethod);
-            return this;
+            _onReceive = anonymousMethod;            
         }
 
         public Bot(ActivityAdapterBase adapter) : base()
@@ -33,9 +34,9 @@ namespace Microsoft.Bot.Builder
             this.Use(new Middleware.TemplateManager());
         }
 
-        public new Bot Use(Middleware.IMiddleware middleware)
+        public Bot Use(Middleware.IMiddleware middleware)
         {
-            base.Use(middleware);
+            _middlewareSet.Use(middleware);
             return this;
         }
 
@@ -48,19 +49,31 @@ namespace Microsoft.Bot.Builder
             System.Diagnostics.Trace.TraceInformation($"Middleware: Beginning Pipeline for {context.ConversationReference.ActivityId}");
 
             // Call any registered Middleware Components looking for ContextCreated()
-            await this.ContextCreated(context).ConfigureAwait(false);
+            await _middlewareSet.ContextCreated(context).ConfigureAwait(false);
 
             // Call any registered Middleware Components looking for ReceiveActivity()
             if (context.Request != null)
-                await this.ReceiveActivity(context).ConfigureAwait(false);
+            {
+                await _middlewareSet.ReceiveActivity(context).ConfigureAwait(false);
+
+                // If the dev has registered a Receive Handler, call it. 
+                if (this._onReceive != null)
+                {
+                    await _onReceive(context).ConfigureAwait(false);
+                }
+            }
 
             // call back to caller
             if (proactiveCallback != null)
+            {
                 await proactiveCallback(context).ConfigureAwait(false);
+            }
 
             // Call any registered Middleware Components looking for SendActivity()
             if (context.Responses != null && context.Responses.Any())
-                await this.SendActivity(context, context.Responses).ConfigureAwait(false);
+            {
+                await _middlewareSet.SendActivity(context, context.Responses).ConfigureAwait(false);
+            }
 
             System.Diagnostics.Trace.TraceInformation($"Middleware: Ending Pipeline for {context.ConversationReference.ActivityId}");
         }

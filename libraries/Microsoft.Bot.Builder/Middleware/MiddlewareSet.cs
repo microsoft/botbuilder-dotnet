@@ -21,29 +21,29 @@ namespace Microsoft.Bot.Builder.Middleware
             return this;
         }
 
-        public MiddlewareSet OnReceive(Func<IBotContext, NextDelegate, Task> anonymousMethod)
-        {
-            if (anonymousMethod == null)
-                throw new ArgumentNullException(nameof(anonymousMethod));
+        //public MiddlewareSet OnReceive(Func<IBotContext, NextDelegate, Task> anonymousMethod)
+        //{
+        //    if (anonymousMethod == null)
+        //        throw new ArgumentNullException(nameof(anonymousMethod));
 
-            return this.Use(new AnonymousReceiveMiddleware(anonymousMethod));
-        }
+        //    return this.Use(new AnonymousReceiveMiddleware(anonymousMethod));
+        //}
 
-        public MiddlewareSet OnContextCreated(Func<IBotContext, NextDelegate, Task> anonymousMethod)
-        {
-            if (anonymousMethod == null)
-                throw new ArgumentNullException(nameof(anonymousMethod));
+        //public MiddlewareSet OnContextCreated(Func<IBotContext, NextDelegate, Task> anonymousMethod)
+        //{
+        //    if (anonymousMethod == null)
+        //        throw new ArgumentNullException(nameof(anonymousMethod));
 
-            return this.Use(new AnonymousContextCreatedMiddleware(anonymousMethod));
-        }
+        //    return this.Use(new AnonymousContextCreatedMiddleware(anonymousMethod));
+        //}
 
-        public MiddlewareSet OnSendActivity(Func<IBotContext, IList<IActivity>, NextDelegate, Task> anonymousMethod)
-        {
-            if (anonymousMethod == null)
-                throw new ArgumentNullException(nameof(anonymousMethod));
+        //public MiddlewareSet OnSendActivity(Func<IBotContext, IList<IActivity>, NextDelegate, Task> anonymousMethod)
+        //{
+        //    if (anonymousMethod == null)
+        //        throw new ArgumentNullException(nameof(anonymousMethod));
 
-            return this.Use(new AnonymousSendActivityMiddleware(anonymousMethod));
-        }
+        //    return this.Use(new AnonymousSendActivityMiddleware(anonymousMethod));
+        //}
 
         public async Task ContextCreated(IBotContext context)
         {

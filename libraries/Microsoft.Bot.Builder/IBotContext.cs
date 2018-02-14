@@ -78,10 +78,10 @@ namespace Microsoft.Bot.Builder
 
     public static partial class BotContextExtension
     {
-        public static async Task Send(this BotContext context)
-        {            
-            await context.SendActivity(context, new List<IActivity>()).ConfigureAwait(false);
-        }
+        //public static async Task Send(this BotContext context)
+        //{            
+        //    await context.SendActivity(context, new List<IActivity>()).ConfigureAwait(false);
+        //}
 
         public static BotContext ToBotContext(this IBotContext context)
         {

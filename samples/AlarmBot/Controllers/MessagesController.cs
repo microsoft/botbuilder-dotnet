@@ -55,12 +55,13 @@ namespace AlarmBot.Controllers
                         .AddIntent("help", new Regex("help(.*)", RegexOptions.IgnoreCase))
                         .AddIntent("cancel", new Regex("cancel(.*)", RegexOptions.IgnoreCase))
                         .AddIntent("confirmYes", new Regex("(yes|yep|yessir|^y$)", RegexOptions.IgnoreCase))
-                        .AddIntent("confirmNo", new Regex("(no|nope|^n$)", RegexOptions.IgnoreCase)))
-                    .OnReceive(BotReceiveHandler); 
+                        .AddIntent("confirmNo", new Regex("(no|nope|^n$)", RegexOptions.IgnoreCase)));
+                
+                bot.OnReceive(BotReceiveHandler); 
             }
         }
 
-        private async Task BotReceiveHandler(IBotContext context, MiddlewareSet.NextDelegate next)
+        private async Task BotReceiveHandler(IBotContext context)
         {
             // --- Bot logic 
             bool handled = false;
@@ -90,8 +91,6 @@ namespace AlarmBot.Controllers
                 context.State.Conversation[ConversationProperties.ACTIVETOPIC] = activeTopic;
                 handled = await activeTopic.ResumeTopic(context);
             }
-
-            await next();
         }
 
         [HttpPost]

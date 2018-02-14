@@ -18,8 +18,8 @@ namespace Microsoft.Bot.Builder.Tests
         public async Task ContextDelay()
         {
             TestAdapter adapter = new TestAdapter();
-            Bot bot = new Bot(adapter)
-                .OnReceive(async (context, next) =>
+            Bot bot = new Bot(adapter);
+            bot.OnReceive(async (context) =>
                 {
                     if (context.Request.AsMessageActivity().Text == "wait")
                     {
@@ -31,8 +31,7 @@ namespace Microsoft.Bot.Builder.Tests
                     else
                     {
                         context.Reply(context.Request.AsMessageActivity().Text);
-                    }
-                    await next(); 
+                    }                    
                 });
 
             DateTime start = DateTime.Now;
@@ -52,8 +51,8 @@ namespace Microsoft.Bot.Builder.Tests
         public async Task ContextShowTyping()
         {
             TestAdapter adapter = new TestAdapter();
-            Bot bot = new Bot(adapter)
-                .OnReceive(async (context, next) =>
+            Bot bot = new Bot(adapter);
+            bot.OnReceive(async (context) =>
                 {
                     if (context.Request.AsMessageActivity().Text == "typing")
                     {
@@ -64,7 +63,6 @@ namespace Microsoft.Bot.Builder.Tests
                     {
                         context.Reply(context.Request.AsMessageActivity().Text);
                     }
-                    await next(); 
                 });
 
             await adapter
