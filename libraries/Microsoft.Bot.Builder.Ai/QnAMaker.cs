@@ -89,9 +89,10 @@ namespace Microsoft.Bot.Builder.Ai
         {
             if (context.Request.Type == ActivityTypes.Message)
             {
-                if (!string.IsNullOrEmpty(context.Request.AsMessageActivity().Text))
+                var messageActivity = context.Request.AsMessageActivity();
+                if (!string.IsNullOrEmpty(messageActivity.Text))
                 {
-                    var results = await this.GetAnswers(context.Request.AsMessageActivity().Text.Trim()).ConfigureAwait(false);
+                    var results = await this.GetAnswers(messageActivity.Text.Trim()).ConfigureAwait(false);
                     if (results.Any())
                     {
                         context.Reply(results.First().Answer);
