@@ -58,20 +58,21 @@ namespace Microsoft.Bot.Builder.Ai.Tests
         {
             TestAdapter adapter = new TestAdapter();
             Bot bot = new Bot(adapter)
-                .OnReceive(async (context, next) =>
-                {
-                    if (context.Request.AsMessageActivity().Text == "foo")
-                    {
-                        context.Reply(context.Request.AsMessageActivity().Text);                        
-                    }
-                    await next();
-                })
                 .Use(new QnAMaker(new QnAMakerOptions()
                 {
                     KnowledgeBaseId = knowlegeBaseId,
                     SubscriptionKey = subscriptionKey,
                     Top = 1
                 }));
+
+            bot.OnReceive((context) =>
+                {
+                    if (context.Request.AsMessageActivity().Text == "foo")
+                    {
+                        context.Reply(context.Request.AsMessageActivity().Text);
+                    }
+                    return Task.CompletedTask;
+                });               
 
             await adapter
                 .Send("foo")

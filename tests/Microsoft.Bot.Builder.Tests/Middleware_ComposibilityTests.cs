@@ -20,18 +20,18 @@ namespace Microsoft.Bot.Builder.Tests
             bool innerOnReceiveCalled = false;
 
             MiddlewareSet inner = new MiddlewareSet();
-            inner.OnReceive(async (context, next) =>
-               {
-                   innerOnReceiveCalled = true;
-                   await next(); 
-               });
+            inner.Use(new AnonymousReceiveMiddleware(async (context, next) =>
+            {
+                innerOnReceiveCalled = true;
+                await next();
+            }));
 
             MiddlewareSet outer = new MiddlewareSet();
-            outer.Use(inner); 
+            outer.Use(inner);
 
-            await outer.ReceiveActivity(null); 
+            await outer.ReceiveActivity(null);
 
-            Assert.IsTrue(innerOnReceiveCalled, "Inner Middleware Receive was not called."); 
+            Assert.IsTrue(innerOnReceiveCalled, "Inner Middleware Receive was not called.");
         }
 
         [TestMethod]
@@ -40,11 +40,11 @@ namespace Microsoft.Bot.Builder.Tests
             bool innerOnCreatedCalled = false;
 
             MiddlewareSet inner = new MiddlewareSet();
-            inner.OnContextCreated(async (context, next) =>
+            inner.Use(new AnonymousContextCreatedMiddleware(async (context, next) =>
             {
                 innerOnCreatedCalled = true;
                 await next();
-            });
+            }));
 
             MiddlewareSet outer = new MiddlewareSet();
             outer.Use(inner);
@@ -61,11 +61,11 @@ namespace Microsoft.Bot.Builder.Tests
 
             MiddlewareSet inner = new MiddlewareSet();
 
-            inner.OnSendActivity(async (context, activities, next) =>
-            {
-                innerOnSendCalled = true;
-                await next();
-            });
+            inner.Use(new AnonymousSendActivityMiddleware(async (context, activities, next) =>
+           {
+               innerOnSendCalled = true;
+               await next();
+           }));
 
             MiddlewareSet outer = new MiddlewareSet();
             outer.Use(inner);
@@ -84,27 +84,27 @@ namespace Microsoft.Bot.Builder.Tests
             string replyMessage = Guid.NewGuid().ToString();
 
             MiddlewareSet inner = new MiddlewareSet();
-            inner.OnSendActivity(async (context, activities, next) =>
+            inner.Use(new AnonymousSendActivityMiddleware( async (context, activities, next) =>
             {
                 Assert.IsTrue(activities.Count == 1, "incorrect activity count");
                 Assert.IsTrue(activities[0].AsMessageActivity().Text == replyMessage, "unexpected message");
 
                 innerOnSendCalled = true;
                 await next();
-            });
+            }));
 
-            inner.OnReceive(async (context, next) =>
+            inner.Use( new AnonymousReceiveMiddleware(async (context, next) =>
             {
-                context.Responses.Add(MessageFactory.Text(replyMessage));                
+                context.Responses.Add(MessageFactory.Text(replyMessage));
                 innerOnReceiveCalled = true;
                 await next();
-            });
+            }));
 
-            inner.OnContextCreated(async (context, next) =>
+            inner.Use(new AnonymousContextCreatedMiddleware(async (context, next) =>
             {
                 innerOnCreatedCalled = true;
                 await next();
-            });
+            }));
 
             Middleware.MiddlewareSet outer = new Middleware.MiddlewareSet();
             outer.Use(inner);

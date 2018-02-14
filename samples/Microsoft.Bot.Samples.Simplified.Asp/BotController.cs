@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Samples.Simplified.Asp
             bot.OnReceive(BotReceiveHandler);
         }
 
-        private async Task BotReceiveHandler(IBotContext context, MiddlewareSet.NextDelegate next)
+        private async Task BotReceiveHandler(IBotContext context)
         {
             switch (context.Request.Type)
             {

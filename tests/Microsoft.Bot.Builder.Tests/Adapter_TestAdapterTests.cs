@@ -15,9 +15,9 @@ namespace Microsoft.Bot.Builder.Tests
         private TestAdapter CreateAdapter()
         {
             TestAdapter adapter = new TestAdapter();
-            Bot bot = new Bot(adapter)
-                .OnReceive(
-                    async (context, next) =>
+            Bot bot = new Bot(adapter);
+            bot.OnReceive(
+                    async (context) =>
                     {
                         switch (context.Request.AsMessageActivity().Text)
                         {
@@ -31,8 +31,7 @@ namespace Microsoft.Bot.Builder.Tests
                             default:
                                 context.Reply($"echo:{context.Request.AsMessageActivity().Text}");
                                 break;
-                        }
-                        await next(); 
+                        }                        
                     }
                 );
             return adapter;

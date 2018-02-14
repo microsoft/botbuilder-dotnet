@@ -29,17 +29,17 @@ namespace Microsoft.Bot.Samples.Ai.Luis
         public MessagesController(IConfiguration configuration)
         {
             var bot = new Builder.Bot(new BotFrameworkAdapter(configuration))
-                .Use(new LuisRecognizerMiddleware("xxxxxx", "xxxxxx"))
-                
+                .Use(new LuisRecognizerMiddleware("xxxxxx", "xxxxxx"));
+            
                 // LUIS with correct baseUri format example
                 //.Use(new LuisRecognizerMiddleware("xxxxxx", "xxxxxx", "https://xxxxxx.api.cognitive.microsoft.com/luis/v2.0/apps"))
                 
-                .OnReceive(BotReceiveHandler);
+            bot.OnReceive(BotReceiveHandler);
 
             _adapter = (BotFrameworkAdapter)bot.Adapter;
         }
 
-        private Task BotReceiveHandler(IBotContext context, MiddlewareSet.NextDelegate next)
+        private Task BotReceiveHandler(IBotContext context)
         {
             if (context.Request.Type == ActivityTypes.Message)
             {
