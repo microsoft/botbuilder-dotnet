@@ -1,25 +1,39 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
-using Microsoft.Extensions.Configuration;
 
 namespace Microsoft.Bot.Samples.Simplified.Asp.Controllers
 {
     [Route("api/[controller]")]
     public class MessagesController : BotController
     {
-        public MessagesController(IConfiguration configuration)
-            : base(configuration)
+        public MessagesController(Builder.Bot bot)
+            : base(bot)
         {
         }
 
-        protected override Task<List<IActivity>> Receive(IMessageActivity activity)
+        protected override Task ReceiveMessage(IBotContext context, IMessageActivity activity)
         {
-            return Task.FromResult(new List<IActivity> { new Activity { Text = $"echo: {activity.Text}" } });
+            long turnNumber = context.State.Conversation["turnNumber"] ?? 0;
+            context.State.Conversation["turnNumber"] = ++turnNumber;
+            context.Reply($"[{turnNumber}] echo: {activity.Text}");
+            return Task.CompletedTask;
+        }
+
+        protected override Task ReceiveConversationUpdate(IBotContext context, IConversationUpdateActivity activity)
+        {
+            foreach (var newMember in activity.MembersAdded)
+            {
+                if (newMember.Id != activity.Recipient.Id)
+                {
+                    context.Reply("Hello and welcome to the echo bot.");
+                }
+            }
+            return Task.CompletedTask;
         }
     }
 }
