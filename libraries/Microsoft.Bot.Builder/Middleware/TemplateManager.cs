@@ -94,7 +94,7 @@ namespace Microsoft.Bot.Builder.Middleware
         {
             List<string> fallbackLocales = new List<string>(this._languageFallback);
 
-            string requestLocale = context.Request.AsMessageActivity()?.Locale;
+            string requestLocale = context.Request?.AsMessageActivity()?.Locale;
             if (!String.IsNullOrEmpty(requestLocale))
             {
                 fallbackLocales.Add(requestLocale);
