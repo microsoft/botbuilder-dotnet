@@ -18,14 +18,13 @@ namespace Microsoft.Bot.Samples.EchoBot
         static async Task MainAsync(string[] args)
         {
             var cc = new ConsoleAdapter();
-            Builder.Bot bot = new Builder.Bot(cc)
-                .OnReceive(async (context, next) =>
+            Builder.Bot bot = new Builder.Bot(cc);
+            bot.OnReceive(async (context) =>
                 {
                     if (context.Request.Type == ActivityTypes.Message)
                     {
                         context.Reply($"echo: {context.Request.AsMessageActivity().Text}");
                     }
-                    await next();
                 });
 
             Console.WriteLine("Welcome to the EchoBot.");

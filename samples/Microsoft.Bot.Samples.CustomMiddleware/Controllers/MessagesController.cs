@@ -29,13 +29,13 @@ namespace Microsoft.Bot.Samples.CustomMiddleware
             var bot = new Builder.Bot(new BotFrameworkAdapter(configuration))
                 .Use(new ExampleMiddleware("X"))
                 .Use(new ExampleMiddleware("\tY"))
-                .Use(new ExampleMiddleware("\t\tZ"))
-                .OnReceive(BotReceiveHandler);
+                .Use(new ExampleMiddleware("\t\tZ"));
+            bot.OnReceive(BotReceiveHandler);
 
             _adapter = (BotFrameworkAdapter)bot.Adapter;
         }
 
-        private Task BotReceiveHandler(IBotContext context, MiddlewareSet.NextDelegate next)
+        private Task BotReceiveHandler(IBotContext context)
         {
             if (context.Request.Type == ActivityTypes.Message)
             {

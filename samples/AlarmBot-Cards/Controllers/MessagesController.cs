@@ -42,7 +42,7 @@ namespace AlarmBot.Controllers
                 //IStorage storage = new AzureTableStorage((System.Diagnostics.Debugger.IsAttached) ? "UseDevelopmentStorage=true;" : configuration.GetSection("DataConnectionString")?.Value, tableName: "AlarmBot");
 
                 // create bot hooked up to the activity adapater
-                bot = new Bot(activityAdapter)                                    
+                bot = new Bot(activityAdapter)
                     .Use(new BotStateManager(storage)) // --- add Bot State Manager to automatically persist and load the context.State.Conversation and context.State.User objects
                     .Use(new DefaultTopicView())
                     .Use(new ShowAlarmsTopicView())
@@ -55,12 +55,13 @@ namespace AlarmBot.Controllers
                         .AddIntent("help", new Regex("help(.*)", RegexOptions.IgnoreCase))
                         .AddIntent("cancel", new Regex("cancel(.*)", RegexOptions.IgnoreCase))
                         .AddIntent("confirmYes", new Regex("(yes|yep|yessir|^y$)", RegexOptions.IgnoreCase))
-                        .AddIntent("confirmNo", new Regex("(no|nope|^n$)", RegexOptions.IgnoreCase)))
-                    .OnReceive(BotReceiveHandler);
+                        .AddIntent("confirmNo", new Regex("(no|nope|^n$)", RegexOptions.IgnoreCase)));
+
+                bot.OnReceive(BotReceiveHandler);
             }
         }
 
-        private async Task BotReceiveHandler(IBotContext context, MiddlewareSet.NextDelegate next)
+        private async Task BotReceiveHandler(IBotContext context)
         {
             // --- Bot logic 
             bool handled = false;
@@ -90,8 +91,6 @@ namespace AlarmBot.Controllers
                 context.State.Conversation[ConversationProperties.ACTIVETOPIC] = activeTopic;
                 handled = await activeTopic.ResumeTopic(context);
             }
-
-            await next();
         }
 
         [HttpPost]

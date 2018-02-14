@@ -28,13 +28,13 @@ namespace Microsoft.Bot.Samples.Ai.QnA.Controllers
             };
             var bot = new Builder.Bot(new BotFrameworkAdapter(configuration))
                 // add QnA middleware 
-                .Use(new QnAMaker(qnaOptions))
-                .OnReceive(BotReceiveHandler);
+                .Use(new QnAMaker(qnaOptions));
+            bot.OnReceive(BotReceiveHandler);
                
             _adapter = (BotFrameworkAdapter)bot.Adapter;
         }
 
-        private Task BotReceiveHandler(IBotContext context, MiddlewareSet.NextDelegate next)
+        private Task BotReceiveHandler(IBotContext context)
         {
             if (context.Request.Type == ActivityTypes.Message && context.Responses.Count == 0)
             {
