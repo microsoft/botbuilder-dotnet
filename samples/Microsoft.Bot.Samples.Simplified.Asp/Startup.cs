@@ -3,11 +3,14 @@
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Bot.Builder;
+using Microsoft.Bot.Builder.BotFramework;
+using Microsoft.Bot.Builder.Storage;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace Microsoft.Bot.Samples.EchoBot
+namespace Microsoft.Bot.Samples.Simplified.Asp
 {
     public class Startup
     {
@@ -28,6 +31,12 @@ namespace Microsoft.Bot.Samples.EchoBot
         {
             services.AddSingleton(_ => Configuration);
             services.AddMvc();
+
+            services.AddSingleton<Builder.Bot>(serviceProvider =>
+            {
+                return new Builder.Bot(new BotFrameworkAdapter(Configuration))
+                    .Use(new BotStateManager(new MemoryStorage()));
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
