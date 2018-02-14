@@ -35,11 +35,12 @@ namespace Microsoft.Bot.Builder.Tests
         public async Task BubbleUncaughtException()
         {
             MiddlewareSet m = new MiddlewareSet();
-            m.OnSendActivity(async (context, activities, next) =>
+            m.Use(
+                new AnonymousSendActivityMiddleware(async (context, activities, next) =>
             {
                 throw new InvalidOperationException("test");
-            });
-
+            }));
+            
             await m.SendActivity(null, new List<IActivity>());
             Assert.Fail("Should never have gotten here");
         }
@@ -105,14 +106,14 @@ namespace Microsoft.Bot.Builder.Tests
             string message = Guid.NewGuid().ToString(); 
 
             MiddlewareSet m = new MiddlewareSet();
-            m.OnSendActivity(async (context, activities, next) =>
+            m.Use(new AnonymousSendActivityMiddleware(async (context, activities, next) =>
             {
                 Assert.IsTrue(activities.Count == 1);
                 Assert.IsTrue(activities[0].AsMessageActivity().Text == message); 
 
                 didRun = true;
                 await next();
-            });
+            }));
 
             Assert.IsFalse(didRun);
             await m.SendActivity(null, new List<IActivity> { MessageFactory.Text(message) });
@@ -131,7 +132,7 @@ namespace Microsoft.Bot.Builder.Tests
             string message3 = Guid.NewGuid().ToString();
 
             MiddlewareSet m = new MiddlewareSet();
-            m.OnSendActivity(async (context, activities, next) =>
+            m.Use(new AnonymousSendActivityMiddleware(async (context, activities, next) =>
             {
                 Assert.IsTrue(activities.Count == 1);
                 Assert.IsTrue(activities[0].AsMessageActivity().Text == message1);
@@ -145,8 +146,8 @@ namespace Microsoft.Bot.Builder.Tests
                 Assert.IsTrue(activities.Count == 2);
                 Assert.IsTrue(activities[0].AsMessageActivity().Text == message3);
                 Assert.IsTrue(activities[1].AsMessageActivity().Text == message2);
-            });
-            m.OnSendActivity(async (context, activities, next) =>
+            }));
+            m.Use(new AnonymousSendActivityMiddleware(async (context, activities, next) =>
             {
                 Assert.IsTrue(activities.Count == 2);
                 Assert.IsTrue(activities[0].AsMessageActivity().Text == message1);
@@ -163,9 +164,9 @@ namespace Microsoft.Bot.Builder.Tests
                 Assert.IsTrue(activities.Count == 2);
                 Assert.IsTrue(activities[0].AsMessageActivity().Text == message3);
                 Assert.IsTrue(activities[1].AsMessageActivity().Text == message2);
-            });
+            }));
 
-            m.OnSendActivity(async (context, activities, next) =>
+            m.Use(new AnonymousSendActivityMiddleware(async (context, activities, next) =>
             {
                 Assert.IsTrue(activities.Count == 2);
                 
@@ -174,7 +175,7 @@ namespace Microsoft.Bot.Builder.Tests
                 Assert.IsTrue(activities[1].AsMessageActivity().Text == message2);
                 didRun3 = true;
                 await next();
-            });
+            }));
 
             await m.SendActivity(null, new List<IActivity> { MessageFactory.Text(message1) });
             Assert.IsTrue(didRun1);

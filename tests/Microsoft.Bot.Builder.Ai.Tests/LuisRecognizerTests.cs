@@ -51,12 +51,12 @@ namespace Microsoft.Bot.Builder.Ai.Tests
             }
 
             TestAdapter adapter = new TestAdapter();
-            Bot bot = new Bot(adapter)                                
-                .Use(new LuisRecognizerMiddleware(luisAppId, subscriptionKey))
-                .OnReceive(async (context, next) =>
+            Bot bot = new Bot(adapter)
+                .Use(new LuisRecognizerMiddleware(luisAppId, subscriptionKey));
+            bot.OnReceive((context) =>
                 {
                     context.Reply(context.TopIntent.Name);
-                    await next();
+                    return Task.CompletedTask;
                 });
             await adapter
                 .Send("I want ham and cheese sandwich!")

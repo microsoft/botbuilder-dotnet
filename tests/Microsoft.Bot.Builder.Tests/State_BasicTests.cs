@@ -18,8 +18,8 @@ namespace Microsoft.Bot.Builder.Tests
         public async Task State_DoNOTRememberContextState()
         {
             TestAdapter adapter = new TestAdapter();
-            Bot bot = new Bot(adapter)
-                .OnReceive(async (context, next) =>
+            Bot bot = new Bot(adapter);
+            bot.OnReceive(async (context) =>
                    {
                        Assert.IsNotNull(context.State, "context.state should exist");
                        switch (context.Request.AsMessageActivity().Text)
@@ -32,8 +32,7 @@ namespace Microsoft.Bot.Builder.Tests
                                string state = context.State["value"];
                                context.Reply(state);
                                break;
-                       }
-                       await next(); 
+                       }               
                    }
                 );
             await adapter.Test("set value", "value saved", "set value failed")
@@ -46,10 +45,10 @@ namespace Microsoft.Bot.Builder.Tests
         {
             TestAdapter adapter = new TestAdapter();
 
-            Bot bot = new Bot(adapter)                
-                .Use(new BotStateManager(new MemoryStorage()))
-                .OnReceive(
-                    async (context, next) =>
+            Bot bot = new Bot(adapter)
+                .Use(new BotStateManager(new MemoryStorage()));
+            bot.OnReceive(
+                    async (context) =>
                     {
                         Assert.IsNotNull(context.State.User, "state.user should exist");
                         switch (context.Request.AsMessageActivity().Text)
@@ -62,7 +61,6 @@ namespace Microsoft.Bot.Builder.Tests
                                 context.Reply(context.State.User["value"]);
                                 break;
                         }
-                        await next(); 
                     }
                 );
 
@@ -76,10 +74,10 @@ namespace Microsoft.Bot.Builder.Tests
         {
             TestAdapter adapter = new TestAdapter();
 
-            Bot bot = new Bot(adapter)                
-                .Use(new BotStateManager(new MemoryStorage()))
-                .OnReceive(
-                    async (context, next) =>
+            Bot bot = new Bot(adapter)
+                .Use(new BotStateManager(new MemoryStorage()));
+            bot.OnReceive(
+                    async (context) =>
                     {
                         Assert.IsNotNull(context.State.Conversation, "state.conversation should exist");
                         switch (context.Request.AsMessageActivity().Text)
@@ -92,7 +90,6 @@ namespace Microsoft.Bot.Builder.Tests
                                 context.Reply(context.State.Conversation["value"]);
                                 break;
                         }
-                        await next();
                     }
                 );
 
@@ -108,9 +105,8 @@ namespace Microsoft.Bot.Builder.Tests
             string testGuid = Guid.NewGuid().ToString();
 
             Bot bot = new Bot(adapter)
-                .Use(new CustomStateManager(new MemoryStorage()))
-                .OnReceive(
-                    async (context, next) =>
+                .Use(new CustomStateManager(new MemoryStorage()));
+            bot.OnReceive(async (context) =>
                     {
                         switch (context.Request.AsMessageActivity().Text)
                         {
@@ -140,10 +136,10 @@ namespace Microsoft.Bot.Builder.Tests
         {
             TestAdapter adapter = new TestAdapter();
 
-            Bot bot = new Bot(adapter)                
-                .Use(new BotStateManager(new MemoryStorage()))
-                .OnReceive(
-                    async (context, next) =>
+            Bot bot = new Bot(adapter)
+                .Use(new BotStateManager(new MemoryStorage()));
+            bot.OnReceive(
+                    async (context) =>
                     {
                         Assert.IsNotNull(context.State.Conversation, "state.conversation should exist");
                         switch (context.Request.AsMessageActivity().Text)
@@ -155,8 +151,7 @@ namespace Microsoft.Bot.Builder.Tests
                             case "get value":
                                 context.Reply(context.State.Conversation["value"].GetType().Name);
                                 break;
-                        }
-                        await next();
+                        }                        
                     }
                 );
 

@@ -12,25 +12,25 @@ namespace Microsoft.Bot.Builder.Tests
 {
 
     public class AnnotateMiddleware : IContextCreated, IReceiveActivity, ISendActivity
-    {                
-        public async Task SendActivity(BotContext context, IList<Activity> activities) { ; }
+    {
+        public async Task SendActivity(BotContext context, IList<Activity> activities) {; }
         public async Task ContextDone(BotContext context) { context.State["ContextDone"] = true; }
 
         public async Task ContextCreated(IBotContext context, MiddlewareSet.NextDelegate next)
         {
             context.State["ContextCreated"] = true;
-            await next(); 
+            await next();
         }
 
         public async Task ReceiveActivity(IBotContext context, MiddlewareSet.NextDelegate next)
         {
-            context.Request.AsMessageActivity().Text += "ReceiveActivity";            
+            context.Request.AsMessageActivity().Text += "ReceiveActivity";
             await next();
         }
         public async Task SendActivity(IBotContext context, IList<IActivity> activities, MiddlewareSet.NextDelegate next)
         {
             context.Responses[0].AsMessageActivity().Text += "SendActivity";
-            await next();             
+            await next();
         }
     }
 
@@ -43,9 +43,10 @@ namespace Microsoft.Bot.Builder.Tests
             TestAdapter adapter = new TestAdapter();
             Bot bot = new Bot(adapter);
             bot = bot
-                .Use(new AnnotateMiddleware())
-                .OnReceive(
-                    async (context, next) =>
+                .Use(new AnnotateMiddleware());
+
+            bot.OnReceive(
+                    async (context) =>
                     {
                         Assert.AreEqual(true, context.State["ContextCreated"]);
                         Assert.IsTrue(context.Request.AsMessageActivity().Text.Contains("ReceiveActivity"));
@@ -71,8 +72,6 @@ namespace Microsoft.Bot.Builder.Tests
                         {
                             context.Reply(context.Request.AsMessageActivity().Text);
                         }
-
-                        await next(); 
                     }
                 );
             return adapter;
@@ -111,14 +110,13 @@ namespace Microsoft.Bot.Builder.Tests
         public async Task Context_ReplyTextOnly()
         {
             TestAdapter adapter = new TestAdapter();
-            Bot bot = new Bot(adapter)
-                .OnReceive(async (context, next) =>
+            Bot bot = new Bot(adapter);
+            bot.OnReceive(async (context) =>
                 {
                     if (context.Request.AsMessageActivity().Text == "hello")
                     {
                         context.Reply("world");
                     }
-                    await next();
                 });
 
             await adapter
@@ -134,14 +132,13 @@ namespace Microsoft.Bot.Builder.Tests
             TestAdapter adapter = new TestAdapter();
             string ssml = @"<speak><p>hello</p></speak>";
 
-            Bot bot = new Bot(adapter)
-                .OnReceive(async (context, next) =>
+            Bot bot = new Bot(adapter);
+            bot.OnReceive(async (context) =>
                 {
                     if (context.Request.AsMessageActivity().Text == "hello")
                     {
                         context.Reply("use ssml", ssml);
                     }
-                    await next();
                 });
 
             await adapter
@@ -151,7 +148,7 @@ namespace Microsoft.Bot.Builder.Tests
                         Assert.AreEqual("use ssml", activity.AsMessageActivity().Text);
                         Assert.AreEqual(ssml, activity.AsMessageActivity().Speak);
                     }
-                    , "send/reply with speak text works")                    
+                    , "send/reply with speak text works")
             .StartTest();
         }
 
@@ -160,8 +157,8 @@ namespace Microsoft.Bot.Builder.Tests
         public async Task Context_ReplyActivity()
         {
             TestAdapter adapter = new TestAdapter();
-            Bot bot = new Bot(adapter)
-                .OnReceive(async (context, next) =>
+            Bot bot = new Bot(adapter);
+            bot.OnReceive(async (context) =>
                 {
                     if (context.Request.AsMessageActivity().Text == "hello")
                     {
@@ -169,7 +166,6 @@ namespace Microsoft.Bot.Builder.Tests
                         reply.AsMessageActivity().Text = "world";
                         context.Reply(reply);
                     }
-                    await next();
                 });
 
             await adapter

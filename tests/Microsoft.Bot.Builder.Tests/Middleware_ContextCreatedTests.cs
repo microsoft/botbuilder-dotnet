@@ -3,6 +3,7 @@
 
 using System;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Middleware;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Bot.Builder.Tests
@@ -44,10 +45,10 @@ namespace Microsoft.Bot.Builder.Tests
         public async Task BubbleUncaughtException()
         {
             Middleware.MiddlewareSet m = new Middleware.MiddlewareSet();
-            m.OnContextCreated(async (context, next) =>
+            m.Use(new AnonymousContextCreatedMiddleware(async (context, next) =>
             {
                 throw new InvalidOperationException("test");
-            });
+            }));
 
             await m.ContextCreated(null);
             Assert.Fail("Should never have gotten here");
@@ -100,12 +101,12 @@ namespace Microsoft.Bot.Builder.Tests
         {
             bool didRun = false;
 
-            Middleware.MiddlewareSet m = new Middleware.MiddlewareSet();
-            m.OnContextCreated(async (context, next) =>
+            MiddlewareSet m = new MiddlewareSet();
+            m.Use(new AnonymousContextCreatedMiddleware(async (context, next) =>
             {
                 didRun = true;
                 await next();
-            });
+            }));
 
             Assert.IsFalse(didRun);
             await m.ContextCreated(null);
@@ -119,16 +120,17 @@ namespace Microsoft.Bot.Builder.Tests
             bool didRun2 = false;
 
             Middleware.MiddlewareSet m = new Middleware.MiddlewareSet();
-            m.OnContextCreated(async (context, next) =>
+            m.Use(new AnonymousContextCreatedMiddleware(async (context, next) =>
             {
                 didRun1 = true;
                 await next();
-            });
-            m.OnContextCreated(async (context, next) =>
+            }));
+
+            m.Use(new AnonymousContextCreatedMiddleware(async (context, next) =>
             {
                 didRun2 = true;
                 await next();
-            });
+            }));
 
             await m.ContextCreated(null);
             Assert.IsTrue(didRun1);
@@ -141,19 +143,19 @@ namespace Microsoft.Bot.Builder.Tests
             bool didRun1 = false;
             bool didRun2 = false;
 
-            Middleware.MiddlewareSet m = new Middleware.MiddlewareSet();
-            m.OnContextCreated(async (context, next) =>
+            MiddlewareSet m = new Middleware.MiddlewareSet();
+            m.Use(new AnonymousContextCreatedMiddleware(async (context, next) =>
             {
                 Assert.IsFalse(didRun2, "Looks like the 2nd one has already run");
                 didRun1 = true;
                 await next();
-            });
-            m.OnContextCreated(async (context, next) =>
+            }));
+            m.Use(new AnonymousContextCreatedMiddleware(async (context, next) =>
             {
                 Assert.IsTrue(didRun1, "Looks like the 1nd one has not yet run");
                 didRun2 = true;
                 await next();
-            });
+            }));
 
             await m.ContextCreated(null);
             Assert.IsTrue(didRun1);
@@ -168,12 +170,12 @@ namespace Microsoft.Bot.Builder.Tests
 
             Middleware.MiddlewareSet m = new Middleware.MiddlewareSet();
 
-            m.OnContextCreated(async (context, next) =>
+            m.Use(new AnonymousContextCreatedMiddleware(async (context, next) =>
             {
                 Assert.IsFalse(didRun2, "Looks like the 2nd one has already run");
                 didRun1 = true;
                 await next();
-            });
+            }));
 
             m.Use(
                 new CallMeMiddlware(() =>
@@ -202,12 +204,12 @@ namespace Microsoft.Bot.Builder.Tests
                     didRun1 = true;
                 }));
 
-            m.OnContextCreated(async (context, next) =>
+            m.Use(new AnonymousContextCreatedMiddleware(async (context, next) =>
             {
                 Assert.IsTrue(didRun1, "Looks like the 1st middleware has not been run");
                 didRun2 = true;
                 await next();
-            });
+            }));
 
             await m.ContextCreated(null);
             Assert.IsTrue(didRun1);
@@ -223,22 +225,22 @@ namespace Microsoft.Bot.Builder.Tests
 
             Middleware.MiddlewareSet m = new Middleware.MiddlewareSet();
 
-            m.OnContextCreated(async (context, next) =>
+            m.Use(new AnonymousContextCreatedMiddleware(async (context, next) =>
             {
                 Assert.IsFalse(didRun1, "Looks like the 1st middleware has already run");
                 didRun1 = true;
                 await next();
                 Assert.IsTrue(didRun1, "The 2nd middleware should have run now.");
                 codeafter2run = true;
-            });
+            }));
 
-            m.OnContextCreated(async (context, next) =>
+            m.Use(new AnonymousContextCreatedMiddleware(async (context, next) =>
             {
                 Assert.IsTrue(didRun1, "Looks like the 1st middleware has not been run");
                 Assert.IsFalse(codeafter2run, "The code that runs after middleware 2 is complete has already run.");
                 didRun2 = true;
                 await next();
-            });
+            }));
 
             await m.ContextCreated(null);
             Assert.IsTrue(didRun1);
@@ -252,7 +254,7 @@ namespace Microsoft.Bot.Builder.Tests
             Middleware.MiddlewareSet m = new Middleware.MiddlewareSet();
             bool caughtException = false;
 
-            m.OnContextCreated(async (context, next) =>
+            m.Use( new AnonymousContextCreatedMiddleware(async (context, next) =>
             {
                 try
                 {
@@ -264,12 +266,12 @@ namespace Microsoft.Bot.Builder.Tests
                     Assert.IsTrue(ex.Message == "test");
                     caughtException = true;
                 }
-            });
+            }));
 
-            m.OnContextCreated(async (context, next) =>
+            m.Use(new AnonymousContextCreatedMiddleware(async (context, next) =>
             {
                 throw new Exception("test");
-            });
+            }));
 
             await m.ContextCreated(null);
             Assert.IsTrue(caughtException);

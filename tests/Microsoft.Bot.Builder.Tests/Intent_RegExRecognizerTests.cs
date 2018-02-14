@@ -24,13 +24,12 @@ namespace Microsoft.Bot.Builder.Tests
                 .AddIntent("HelpIntent", new Regex("help", RegexOptions.IgnoreCase));
 
             Bot bot = new Bot(adapter)
-                .Use(helpRecognizer)
-                .OnReceive(async (context, next) =>
+                .Use(helpRecognizer);
+
+            bot.OnReceive(async (context) =>
                 {
                     if (context.IfIntent("HelpIntent"))
                         context.Reply("You selected HelpIntent");
-
-                    await next(); 
                 });
 
             await adapter.Test("help", "You selected HelpIntent")
@@ -86,15 +85,13 @@ namespace Microsoft.Bot.Builder.Tests
                 .AddIntent("bbbbb", new Regex("b", RegexOptions.IgnoreCase));
 
             Bot bot = new Bot(adapter)
-                .Use(recognizer)
-                .OnReceive(async (context, next) =>
+                .Use(recognizer);
+            bot.OnReceive(async (context) =>
                 {
                     if (context.IfIntent(new Regex("a")))
                         context.Reply("aaaa Intent");
                     if (context.IfIntent(new Regex("b")))
                         context.Reply("bbbb Intent");
-
-                    await next();
                 });
 
             await adapter.Test("aaaaaaaaa", "aaaa Intent")
@@ -113,12 +110,11 @@ namespace Microsoft.Bot.Builder.Tests
                 .AddIntent("CancelIntent", new Regex("cancel", RegexOptions.IgnoreCase));
 
             Bot bot = new Bot(adapter)
-                .Use(helpRecognizer)
-                .OnReceive(async (context, next) =>
+                .Use(helpRecognizer);
+            bot.OnReceive(async (context) =>
                 {
                     if (context.IfIntent("CancelIntent"))
-                        context.Reply("You selected CancelIntent");
-                    await next(); 
+                        context.Reply("You selected CancelIntent");                    
                 });
 
             await adapter.Test("cancel", "You selected CancelIntent")
@@ -136,15 +132,14 @@ namespace Microsoft.Bot.Builder.Tests
                 .AddIntent("CancelIntent", new Regex("cancel", RegexOptions.IgnoreCase));
 
             Bot bot = new Bot(adapter)
-                .Use(helpRecognizer)
-                .OnReceive(async (context, next) =>
+                .Use(helpRecognizer);
+
+            bot.OnReceive(async (context) =>
                 {
                     if (context.IfIntent("CancelIntent"))
                         context.Reply("You selected CancelIntent");
                     else
                         context.Reply("Bot received request of type message");
-
-                    await next(); 
                 });
 
             await adapter.Test("tacos", "Bot received request of type message")
@@ -164,8 +159,8 @@ namespace Microsoft.Bot.Builder.Tests
                 .AddIntent("TacoIntent", new Regex("taco", RegexOptions.IgnoreCase));
 
             Bot bot = new Bot(adapter)
-                .Use(helpRecognizer)
-                .OnReceive(async (context, next) =>
+                .Use(helpRecognizer);
+            bot.OnReceive(async (context) =>
                 {
                     if (context.IfIntent("HelpIntent"))
                         context.Reply("You selected HelpIntent");
@@ -173,8 +168,6 @@ namespace Microsoft.Bot.Builder.Tests
                         context.Reply("You selected CancelIntent");
                     else if (context.IfIntent("TacoIntent"))
                         context.Reply("You selected TacoIntent");
-
-                    await next(); 
                 });
 
             await adapter
