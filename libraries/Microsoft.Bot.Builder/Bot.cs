@@ -28,6 +28,7 @@ namespace Microsoft.Bot.Builder
             // through the Middleware Pipeline
             _adapter.OnReceive = this.RunPipeline;
 
+            this.Use(new Middleware.BindOutoingResponsesMiddlware()); 
             this.Use(new Middleware.SendToAdapterMiddleware(this));
             this.Use(new Middleware.TemplateManager());
         }
@@ -84,6 +85,6 @@ namespace Microsoft.Bot.Builder
         {
             var context = new BotContext(this, reference);
             await RunPipeline(context, proactiveCallback).ConfigureAwait(false);
-        }
+        }    
     }
 }

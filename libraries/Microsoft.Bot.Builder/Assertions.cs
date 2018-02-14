@@ -20,6 +20,11 @@ namespace Microsoft.Bot.Builder
             if (context == null)
                 throw new ArgumentNullException(nameof(context)); 
         }
+        public static void ConversationReferenceNotNull(ConversationReference reference)
+        {
+            if (reference == null)
+                throw new ArgumentNullException(nameof(reference));
+        }
 
         public static void AdapterNotNull(ActivityAdapterBase adapter)
         {
