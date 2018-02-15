@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Builder.ContextExtensions
         public static async Task<IBotContext> Delay(this IBotContext context, int duration)
         {
             Activity activity = ((Activity)context.Request).CreateReply();
-            activity.Type = ActivityTypes.Delay;
+            activity.Type = "delay";
             activity.Value = duration;
             await context.Bot.SendActivity(context, new List<IActivity>() { activity });
             return context;
