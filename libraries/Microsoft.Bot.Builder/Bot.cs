@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
@@ -85,6 +86,11 @@ namespace Microsoft.Bot.Builder
             var context = new BotContext(this, activity);
 
             await RunPipeline(context).ConfigureAwait(false);
+        }
+
+        public async Task SendActivity(IBotContext context, List<IActivity> activities)
+        {
+            await _middlewareSet.SendActivity(context, activities);
         }
 
         /// <summary>
