@@ -39,7 +39,7 @@ namespace Microsoft.Bot.Builder.Ai
         public int Top { get; set; }
     }
 
-    public class QnAMakerMiddleware : Middleware.IReceiveActivity, IDisposable
+    public class QnAMakerMiddleware : Middleware.IReceiveActivity
     {
         public const string qnaMakerServiceEndpoint = "https://westus.api.cognitive.microsoft.com/qnamaker/v2.0/knowledgebases/";
         private string answerUrl;
