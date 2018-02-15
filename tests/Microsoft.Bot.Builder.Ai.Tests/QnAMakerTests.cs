@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Builder.Ai.Tests
         [TestCategory("QnAMaker")]
         public async Task QnaMaker_ReturnsAnswer()
         {
-            var qna = new QnAMaker(new QnAMakerOptions()
+            var qna = new QnAMakerMiddleware(new QnAMakerOptions()
             {
                 KnowledgeBaseId = knowlegeBaseId,
                 SubscriptionKey = subscriptionKey,
@@ -38,7 +38,7 @@ namespace Microsoft.Bot.Builder.Ai.Tests
         public async Task QnaMaker_TestThreshold()
         {
 
-            var qna = new QnAMaker(new QnAMakerOptions()
+            var qna = new QnAMakerMiddleware(new QnAMakerOptions()
             {
                 KnowledgeBaseId = knowlegeBaseId,
                 SubscriptionKey = subscriptionKey,
@@ -58,7 +58,7 @@ namespace Microsoft.Bot.Builder.Ai.Tests
         {
             TestAdapter adapter = new TestAdapter();
             Bot bot = new Bot(adapter)
-                .Use(new QnAMaker(new QnAMakerOptions()
+                .Use(new QnAMakerMiddleware(new QnAMakerOptions()
                 {
                     KnowledgeBaseId = knowlegeBaseId,
                     SubscriptionKey = subscriptionKey,
