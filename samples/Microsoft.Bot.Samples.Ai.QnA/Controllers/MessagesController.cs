@@ -3,6 +3,7 @@
 
 using System;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Bot.Builder;
@@ -17,7 +18,16 @@ namespace Microsoft.Bot.Samples.Ai.QnA.Controllers
     [Route("api/[controller]")]
     public class MessagesController : Controller
     {
+
+        private static readonly HttpClient HttpClient;
+
         BotFrameworkAdapter _adapter;
+
+        static MessagesController()
+        {
+            HttpClient = new HttpClient();
+        }
+
         public MessagesController(IConfiguration configuration)
         {
             var qnaOptions = new QnAMakerOptions
@@ -28,7 +38,7 @@ namespace Microsoft.Bot.Samples.Ai.QnA.Controllers
             };
             var bot = new Builder.Bot(new BotFrameworkAdapter(configuration))
                 // add QnA middleware 
-                .Use(new QnAMakerMiddleware(qnaOptions));
+                .Use(new QnAMakerMiddleware(qnaOptions, HttpClient));
             bot.OnReceive(BotReceiveHandler);
                
             _adapter = (BotFrameworkAdapter)bot.Adapter;
