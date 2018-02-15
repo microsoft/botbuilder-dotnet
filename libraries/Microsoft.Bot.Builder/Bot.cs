@@ -3,6 +3,7 @@
 
 using System;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Schema;
@@ -13,7 +14,9 @@ namespace Microsoft.Bot.Builder
     {
         private ActivityAdapterBase _adapter;
         private readonly Middleware.MiddlewareSet _middlewareSet = new Middleware.MiddlewareSet();
-        Func<IBotContext, Task> _onReceive = null; 
+        Func<IBotContext, Task> _onReceive = null;
+
+        private static HttpClient _httpClient;
 
         public void OnReceive(Func<IBotContext, Task> anonymousMethod)
         {
@@ -98,6 +101,17 @@ namespace Microsoft.Bot.Builder
         {
             var context = new BotContext(this, reference);
             await RunPipeline(context, proactiveCallback).ConfigureAwait(false);
-        }    
+        }
+
+        public static HttpClient GetHttpClientInstance()
+        {
+            if (_httpClient == null)
+            {
+                _httpClient = new HttpClient();
+            }
+
+            return _httpClient;
+        }
+
     }
 }
