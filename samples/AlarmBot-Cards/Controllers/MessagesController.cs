@@ -1,8 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
-using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AlarmBot.Models;
@@ -14,7 +12,6 @@ using Microsoft.Bot.Builder.BotFramework;
 using Microsoft.Bot.Builder.Middleware;
 using Microsoft.Bot.Builder.Storage;
 using Microsoft.Bot.Connector.Authentication;
-using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 
 namespace AlarmBot.Controllers
@@ -94,18 +91,7 @@ namespace AlarmBot.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody]Activity activity)
-        {
-            try
-            {
-                await activityAdapter.Receive(this.Request.Headers["Authorization"].FirstOrDefault(), activity);
-                return this.Ok();
-            }
-            catch (UnauthorizedAccessException)
-            {
-                return this.Unauthorized();
-            }
-        }
+        public Task Post() => activityAdapter.Receive(this.Request);
     }
 
 }

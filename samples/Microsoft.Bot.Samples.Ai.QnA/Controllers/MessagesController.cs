@@ -1,8 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
-using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -34,7 +32,7 @@ namespace Microsoft.Bot.Samples.Ai.QnA.Controllers
                 .Use(new QnAMakerMiddleware(qnaMiddlewareOptions, _httpClient));
 
             bot.OnReceive(BotReceiveHandler);
-               
+
             _adapter = (BotFrameworkAdapter)bot.Adapter;
         }
 
@@ -49,17 +47,6 @@ namespace Microsoft.Bot.Samples.Ai.QnA.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody]Activity activity)
-        {
-            try
-            {
-                await _adapter.Receive(this.Request.Headers["Authorization"].FirstOrDefault(), activity);
-                return this.Ok();
-            }
-            catch (UnauthorizedAccessException)
-            {
-                return this.Unauthorized();
-            }
-        }
+        public Task Post() => _adapter.Receive(this.Request);
     }
 }
