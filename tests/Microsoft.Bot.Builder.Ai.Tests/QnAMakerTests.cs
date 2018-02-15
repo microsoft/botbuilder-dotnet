@@ -15,14 +15,7 @@ namespace Microsoft.Bot.Builder.Ai.Tests
         public string knowlegeBaseId = TestUtilities.GetKey("QNAKNOWLEDGEBASEID");
         public string subscriptionKey = TestUtilities.GetKey("QNASUBSCRIPTIONKEY");
 
-        private static readonly HttpClient HttpClient;
-
-        static QnaMakerTests()
-        {
-            HttpClient = new HttpClient();
-        }
-
-        //[TestMethod]
+        [TestMethod]
         [TestCategory("AI")]
         [TestCategory("QnAMaker")]
         public async Task QnaMaker_ReturnsAnswer()
@@ -32,7 +25,7 @@ namespace Microsoft.Bot.Builder.Ai.Tests
                 KnowledgeBaseId = knowlegeBaseId,
                 SubscriptionKey = subscriptionKey,
                 Top = 1
-            }, HttpClient);
+            }, new HttpClient());
 
             var results = await qna.GetAnswers("how do I clean the stove?");
             Assert.IsNotNull(results);
@@ -40,7 +33,7 @@ namespace Microsoft.Bot.Builder.Ai.Tests
             Assert.IsTrue(results[0].Answer.StartsWith("BaseCamp: You can use a damp rag to clean around the Power Pack"));
         }
 
-        //[TestMethod]
+        [TestMethod]
         [TestCategory("AI")]
         [TestCategory("QnAMaker")]
         public async Task QnaMaker_TestThreshold()
@@ -52,14 +45,14 @@ namespace Microsoft.Bot.Builder.Ai.Tests
                 SubscriptionKey = subscriptionKey,
                 Top = 1,
                 ScoreThreshold = 0.99F
-            }, HttpClient);
+            }, new HttpClient());
 
             var results = await qna.GetAnswers("how do I clean the stove?");
             Assert.IsNotNull(results);
             Assert.AreEqual(results.Length, 0, "should get zero result because threshold");
         }
 
-        //[TestMethod]
+        [TestMethod]
         [TestCategory("AI")]
         [TestCategory("QnAMaker")]
         public async Task QnaMaker_TestMiddleware()
@@ -71,7 +64,7 @@ namespace Microsoft.Bot.Builder.Ai.Tests
                     KnowledgeBaseId = knowlegeBaseId,
                     SubscriptionKey = subscriptionKey,
                     Top = 1
-                }, HttpClient));
+                }, new HttpClient()));
 
             bot.OnReceive((context) =>
                 {

@@ -42,41 +42,61 @@ namespace Microsoft.Bot.Builder.Ai
     public class QnAMakerMiddleware : Middleware.IReceiveActivity
     {
         public const string qnaMakerServiceEndpoint = "https://westus.api.cognitive.microsoft.com/qnamaker/v2.0/knowledgebases/";
-        private string answerUrl;
-        private QnAMakerOptions options;
-        private readonly HttpClient httpClient;
+        private readonly string _answerUrl;
+        private readonly QnAMakerOptions _options;
+        private readonly HttpClient _httpClient;
+
+        public const string APIManagementHeader = "Ocp-Apim-Subscription-Key";
+        public const string JsonMimeType = "application/json"; 
 
         public QnAMakerMiddleware(QnAMakerOptions options, HttpClient httpClient)
         {
-            this.answerUrl = $"{qnaMakerServiceEndpoint}{options.KnowledgeBaseId}/generateanswer";
-            if (options.ScoreThreshold == 0)
-                options.ScoreThreshold = 0.3F;
-            if (options.Top == 0)
-                options.Top = 1;
-            this.options = options;
-            this.httpClient = httpClient;
+
+            _options = options ?? throw new ArgumentNullException(nameof(options));
+            this._httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
+
+            if (string.IsNullOrEmpty(options.KnowledgeBaseId))
+            {
+                throw new ArgumentException(nameof(options.KnowledgeBaseId));
+            }
+
+            this._answerUrl = $"{qnaMakerServiceEndpoint}{options.KnowledgeBaseId}/generateanswer";
+
+            if (_options.ScoreThreshold == 0)
+            {
+                _options.ScoreThreshold = 0.3F;
+            }
+
+            if (_options.Top == 0)
+            {
+                _options.Top = 1;
+            }                        
         }
 
         public async Task<QueryResult[]> GetAnswers(string question)
         {
-            var request = new HttpRequestMessage(HttpMethod.Post, this.answerUrl);
-
+            var request = new HttpRequestMessage(HttpMethod.Post, this._answerUrl);
+            
             string jsonRequest = JsonConvert.SerializeObject(new
             {
                 question,
-                top = this.options.Top
+                top = this._options.Top
             }, Formatting.None);
 
-            var content = new StringContent(jsonRequest, System.Text.Encoding.UTF8, "application/json");
-            content.Headers.Add("Ocp-Apim-Subscription-Key", this.options.SubscriptionKey);
-            var response = await this.httpClient.PostAsync(this.answerUrl, content).ConfigureAwait(false);
+            var content = new StringContent(jsonRequest, System.Text.Encoding.UTF8, JsonMimeType);
+            content.Headers.Add(APIManagementHeader, this._options.SubscriptionKey);
+
+            var response = await this._httpClient.PostAsync(this._answerUrl, content).ConfigureAwait(false);
             if (response.IsSuccessStatusCode)
             {
                 var jsonResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                 var results = JsonConvert.DeserializeObject<QueryResults>(jsonResponse);
                 foreach (var answer in results.Answers)
+                {
                     answer.Score = answer.Score / 100;
-                return results.Answers.Where(answer => answer.Score > this.options.ScoreThreshold).ToArray();
+                }
+
+                return results.Answers.Where(answer => answer.Score > this._options.ScoreThreshold).ToArray();
             }
             return null;
         }
@@ -98,6 +118,5 @@ namespace Microsoft.Bot.Builder.Ai
 
             await next().ConfigureAwait(false); 
         }
-
     }
 }
