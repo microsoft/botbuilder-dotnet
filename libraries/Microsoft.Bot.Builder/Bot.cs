@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
@@ -87,14 +88,19 @@ namespace Microsoft.Bot.Builder
             await RunPipeline(context).ConfigureAwait(false);
         }
 
-        /// <summary>
-        /// Create proactive context around conversation reference
-        /// All middleware pipelines will be processed
-        /// </summary>
-        /// <param name="reference">reference to create context around</param>
-        /// <param name="proactiveCallback">callback where you can continue the conversation</param>
-        /// <returns>task when completed</returns>
-        public virtual async Task CreateContext(ConversationReference reference, Func<IBotContext, Task> proactiveCallback)
+        public async Task SendActivity(IBotContext context, List<IActivity> activities)
+        {
+            await _middlewareSet.SendActivity(context, activities);
+        }
+
+    /// <summary>
+    /// Create proactive context around conversation reference
+    /// All middleware pipelines will be processed
+    /// </summary>
+    /// <param name="reference">reference to create context around</param>
+    /// <param name="proactiveCallback">callback where you can continue the conversation</param>
+    /// <returns>task when completed</returns>
+    public virtual async Task CreateContext(ConversationReference reference, Func<IBotContext, Task> proactiveCallback)
         {
             var context = new BotContext(this, reference);
             await RunPipeline(context, proactiveCallback).ConfigureAwait(false);
