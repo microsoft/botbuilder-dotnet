@@ -4,12 +4,14 @@
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.BotFramework
 {
@@ -54,15 +56,34 @@ namespace Microsoft.Bot.Builder.BotFramework
             }
         }
 
-        public async Task Receive(string authHeader, Activity activity)
+        public async Task Receive(AspNetCore.Http.HttpRequest httpRequest)
         {
-            BotAssert.ActivityNotNull(activity);
+            var ser = new JsonSerializer();
+            using (var sr = new System.IO.StreamReader(httpRequest.Body))
+            using (var jtr = new JsonTextReader(sr))
+            {
+                // Should handle if incoming msg isn't an activity - throw some "malformed" error? 400 bad request?
+                var activity = ser.Deserialize<Activity>(jtr);
+                BotAssert.ActivityNotNull(activity);
+
+                try
+                {
+                    var authHeader = httpRequest.Headers[@"Authorization"].FirstOrDefault();
             await JwtTokenValidation.AssertValidActivity(activity, authHeader, _credentialProvider, _httpClient);
 
-            if (this.OnReceive != null)
-            {
+                    if (this.OnReceive != null)
+                    {
                 await OnReceive(activity).ConfigureAwait(false);
+                    }
+
+                    httpRequest.HttpContext.Response.StatusCode = AspNetCore.Http.StatusCodes.Status200OK;
+                }
+                catch (UnauthorizedAccessException)
+                {
+                    httpRequest.HttpContext.Response.StatusCode = AspNetCore.Http.StatusCodes.Status401Unauthorized;
+                }
             }
+
         }
     }
 }
