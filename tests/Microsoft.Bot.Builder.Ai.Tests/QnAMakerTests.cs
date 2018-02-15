@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Tests;
@@ -14,6 +15,13 @@ namespace Microsoft.Bot.Builder.Ai.Tests
         public string knowlegeBaseId = TestUtilities.GetKey("QNAKNOWLEDGEBASEID");
         public string subscriptionKey = TestUtilities.GetKey("QNASUBSCRIPTIONKEY");
 
+        private static readonly HttpClient HttpClient;
+
+        static QnaMakerTests()
+        {
+            HttpClient = new HttpClient();
+        }
+
         //[TestMethod]
         [TestCategory("AI")]
         [TestCategory("QnAMaker")]
@@ -24,7 +32,7 @@ namespace Microsoft.Bot.Builder.Ai.Tests
                 KnowledgeBaseId = knowlegeBaseId,
                 SubscriptionKey = subscriptionKey,
                 Top = 1
-            });
+            }, HttpClient);
 
             var results = await qna.GetAnswers("how do I clean the stove?");
             Assert.IsNotNull(results);
@@ -44,7 +52,7 @@ namespace Microsoft.Bot.Builder.Ai.Tests
                 SubscriptionKey = subscriptionKey,
                 Top = 1,
                 ScoreThreshold = 0.99F
-            });
+            }, HttpClient);
 
             var results = await qna.GetAnswers("how do I clean the stove?");
             Assert.IsNotNull(results);
@@ -63,7 +71,7 @@ namespace Microsoft.Bot.Builder.Ai.Tests
                     KnowledgeBaseId = knowlegeBaseId,
                     SubscriptionKey = subscriptionKey,
                     Top = 1
-                }));
+                }, HttpClient));
 
             bot.OnReceive((context) =>
                 {
