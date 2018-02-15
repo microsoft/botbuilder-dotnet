@@ -28,7 +28,7 @@ namespace Microsoft.Bot.Samples.Ai.QnA.Controllers
             };
             var bot = new Builder.Bot(new BotFrameworkAdapter(configuration))
                 // add QnA middleware 
-                .Use(new QnAMaker(qnaOptions));
+                .Use(new QnAMakerMiddleware(qnaOptions));
             bot.OnReceive(BotReceiveHandler);
                
             _adapter = (BotFrameworkAdapter)bot.Adapter;
