@@ -20,7 +20,6 @@ namespace Microsoft.Bot.Schema
         public const string ContactRelationUpdate = "contactRelationUpdate";
         public const string ConversationUpdate = "conversationUpdate";
         public const string Typing = "typing";
-        public const string Delay = "delay";
         public const string Ping = "ping";
         public const string EndOfConversation = "endOfConversation";
         public const string Event = "event";
