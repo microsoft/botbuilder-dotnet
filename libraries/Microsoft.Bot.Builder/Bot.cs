@@ -103,6 +103,12 @@ namespace Microsoft.Bot.Builder
             await RunPipeline(context, proactiveCallback).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Method to get an HttpClient to promote reuse of the sharable client. This method should be preferred
+        /// over new'ing up a new HttpClient.
+        /// See https://docs.microsoft.com/en-us/azure/architecture/antipatterns/improper-instantiation/#considerations
+        /// </summary>
+        /// <returns>a shared instance of HttpClient</returns>
         public static HttpClient GetHttpClientInstance()
         {
             if (_httpClient == null)
