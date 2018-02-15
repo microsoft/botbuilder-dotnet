@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Builder
         private readonly Middleware.MiddlewareSet _middlewareSet = new Middleware.MiddlewareSet();
         Func<IBotContext, Task> _onReceive = null;
 
-        private static HttpClient _httpClient;
+        private static HttpClient _httpClient = new HttpClient();
 
         public void OnReceive(Func<IBotContext, Task> anonymousMethod)
         {
@@ -111,11 +111,6 @@ namespace Microsoft.Bot.Builder
         /// <returns>a shared instance of HttpClient</returns>
         public static HttpClient GetHttpClientInstance()
         {
-            if (_httpClient == null)
-            {
-                _httpClient = new HttpClient();
-            }
-
             return _httpClient;
         }
 
