@@ -16,8 +16,6 @@ namespace Microsoft.Bot.Builder
         private readonly Middleware.MiddlewareSet _middlewareSet = new Middleware.MiddlewareSet();
         Func<IBotContext, Task> _onReceive = null;
 
-        private static HttpClient _httpClient = new HttpClient();
-
         public void OnReceive(Func<IBotContext, Task> anonymousMethod)
         {
             _onReceive = anonymousMethod;            
@@ -101,17 +99,6 @@ namespace Microsoft.Bot.Builder
         {
             var context = new BotContext(this, reference);
             await RunPipeline(context, proactiveCallback).ConfigureAwait(false);
-        }
-
-        /// <summary>
-        /// Method to get an HttpClient to promote reuse of the sharable client. This method should be preferred
-        /// over new'ing up a new HttpClient.
-        /// See https://docs.microsoft.com/en-us/azure/architecture/antipatterns/improper-instantiation/#considerations
-        /// </summary>
-        /// <returns>a shared instance of HttpClient</returns>
-        public static HttpClient GetHttpClientInstance()
-        {
-            return _httpClient;
         }
 
     }
