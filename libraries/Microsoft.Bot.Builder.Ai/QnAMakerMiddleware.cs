@@ -39,30 +39,45 @@ namespace Microsoft.Bot.Builder.Ai
         public int Top { get; set; }
     }
 
-    public class QnAMakerMiddleware : Middleware.IReceiveActivity, IDisposable
+    public class QnAMakerMiddleware : Middleware.IReceiveActivity
     {
         public const string qnaMakerServiceEndpoint = "https://westus.api.cognitive.microsoft.com/qnamaker/v2.0/knowledgebases/";
-        private string answerUrl;
-        private QnAMakerOptions options;
-        private HttpClient httpClient;
+        public const string JsonMimeType = "application/json";
+        public const string ApiManagementSubscriptionKeyHeader = "Ocp-Apim-Subscription-Key";
+
+        private readonly string answerUrl;
+        private readonly QnAMakerOptions options;
+
+        // HttpClient instances are very expensive to create and tear down. Best
+        // practices dictate the creation of a static instance, which is 
+        // thread safe, and to use that across all relevant calls. 
+        private static HttpClient httpClient = new HttpClient(); 
 
         public QnAMakerMiddleware(QnAMakerOptions options)
         {
+            if (options == null)
+                throw new ArgumentNullException(nameof(options));
+
+            if (string.IsNullOrEmpty(options.KnowledgeBaseId))
+                throw new ArgumentException(nameof(options.KnowledgeBaseId)); 
+
             this.answerUrl = $"{qnaMakerServiceEndpoint}{options.KnowledgeBaseId}/generateanswer";
+            
             if (options.ScoreThreshold == 0)
+            {
                 options.ScoreThreshold = 0.3F;
+            }
+
             if (options.Top == 0)
+            {
                 options.Top = 1;
+            }
+
             this.options = options;
         }
 
         public async Task<QueryResult[]> GetAnswers(string question)
-        {
-            lock (options)
-            {
-                if (httpClient == null)
-                    this.httpClient = new HttpClient();
-            }
+        {            
             var request = new HttpRequestMessage(HttpMethod.Post, this.answerUrl);
 
             string jsonRequest = JsonConvert.SerializeObject(new
@@ -71,15 +86,19 @@ namespace Microsoft.Bot.Builder.Ai
                 top = this.options.Top
             }, Formatting.None);
 
-            var content = new StringContent(jsonRequest, System.Text.Encoding.UTF8, "application/json");
-            content.Headers.Add("Ocp-Apim-Subscription-Key", this.options.SubscriptionKey);
+            var content = new StringContent(jsonRequest, System.Text.Encoding.UTF8, JsonMimeType);
+            content.Headers.Add(ApiManagementSubscriptionKeyHeader, this.options.SubscriptionKey);
+
             var response = await httpClient.PostAsync(this.answerUrl, content).ConfigureAwait(false);
             if (response.IsSuccessStatusCode)
             {
                 var jsonResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                 var results = JsonConvert.DeserializeObject<QueryResults>(jsonResponse);
                 foreach (var answer in results.Answers)
+                {
                     answer.Score = answer.Score / 100;
+                }
+
                 return results.Answers.Where(answer => answer.Score > this.options.ScoreThreshold).ToArray();
             }
             return null;
@@ -101,20 +120,6 @@ namespace Microsoft.Bot.Builder.Ai
             }
 
             await next().ConfigureAwait(false); 
-        }
-
-
-        public void Dispose()
-        {
-            lock (options)
-            {
-                if (httpClient != null)
-                {
-                    httpClient.Dispose();
-                    httpClient = null;
-                }
-            }
-        }
-
+        }       
     }
 }
