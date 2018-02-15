@@ -3,6 +3,7 @@
 
 using System;
 using System.Linq;
+using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.IdentityModel.Tokens;
@@ -37,12 +38,15 @@ namespace Microsoft.Bot.Connector.Authentication
         /// </remarks>
         /// <param name="authHeader">The raw HTTP header in the format: "Bearer [longString]"</param>
         /// <param name="credentials">The user defined set of valid credentials, such as the AppId.</param>        
+        /// <param name="httpClient">Authentication of tokens requires calling out to validate Endorsements and related documents. The
+        /// HttpClient is used for making those calls. Those calls generally require TLS connections, which are expensive to 
+        /// setup and teardown, so a shared HttpClient is recommended.</param>
         /// <returns>
         /// A valid ClaimsIdentity. 
         /// </returns>
-        public static async Task<ClaimsIdentity> AuthenticateChannelToken(string authHeader, ICredentialProvider credentials)
+        public static async Task<ClaimsIdentity> AuthenticateChannelToken(string authHeader, ICredentialProvider credentials, HttpClient httpClient)
         {
-            var tokenExtractor = new JwtTokenExtractor(
+            var tokenExtractor = new JwtTokenExtractor(httpClient,
                   ToBotFromChannelTokenValidationParameters,
                   AuthenticationConstants.ToBotFromChannelOpenIdMetadataUrl,
                   AuthenticationConstants.AllowedSigningAlgorithms, null);
@@ -92,10 +96,19 @@ namespace Microsoft.Bot.Connector.Authentication
 
             return identity;
         }
-
-        public static async Task<ClaimsIdentity> AuthenticateChannelToken(string authHeader, ICredentialProvider credentials, string serviceUrl)
+        /// <summary>        
+        /// Validate the incoming Auth Header as a token sent from the Bot Framework Service.
+        /// </summary>
+        /// <param name="authHeader">The raw HTTP header in the format: "Bearer [longString]"</param>
+        /// <param name="credentials">The user defined set of valid credentials, such as the AppId.</param>        
+        /// <param name="serviceUrl"></param>
+        /// <param name="httpClient">Authentication of tokens requires calling out to validate Endorsements and related documents. The
+        /// HttpClient is used for making those calls. Those calls generally require TLS connections, which are expensive to 
+        /// setup and teardown, so a shared HttpClient is recommended.</param>
+        /// <returns></returns>
+        public static async Task<ClaimsIdentity> AuthenticateChannelToken(string authHeader, ICredentialProvider credentials, string serviceUrl, HttpClient httpClient)
         {
-            var identity = await AuthenticateChannelToken(authHeader, credentials);      
+            var identity = await AuthenticateChannelToken(authHeader, credentials, httpClient);      
 
             var serviceUrlClaim = identity.Claims.FirstOrDefault(claim => claim.Type == ServiceUrlClaim)?.Value;
             if (string.IsNullOrWhiteSpace(serviceUrlClaim))
