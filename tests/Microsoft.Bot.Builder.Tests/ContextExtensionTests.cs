@@ -23,9 +23,9 @@ namespace Microsoft.Bot.Builder.Tests
                 {
                     if (context.Request.AsMessageActivity().Text == "wait")
                     {
-                        context
+                        (await context
                             .Reply("before")
-                            .Delay(1000)
+                            .Delay(1000))
                             .Reply("after");
                     }
                     else
