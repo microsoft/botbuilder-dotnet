@@ -4,6 +4,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Bot.Builder;
+using Microsoft.Bot.Builder.BotFramework;
 using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Samples.Simplified.Asp.Controllers
@@ -11,7 +12,7 @@ namespace Microsoft.Bot.Samples.Simplified.Asp.Controllers
     [Route("api/[controller]")]
     public class MessagesController : BotController
     {
-        public MessagesController(Builder.BotBase bot)
+        public MessagesController(BotFrameworkBot bot)
             : base(bot)
         {
         }
