@@ -62,6 +62,28 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [TestMethod]
+        public async Task TestAdapter_ExceptionInBotOnReceive()
+        {
+            string uniqueExceptionId = Guid.NewGuid().ToString();
+            TestAdapter adapter = new TestAdapter();
+            Bot bot = new Bot(adapter);
+            bot.OnReceive(async (context) => { throw new Exception(uniqueExceptionId); });
+
+            try
+            {
+                await adapter
+                    .Test("test", activity => Assert.IsNull(null), "uh oh!")
+                    .StartTest();
+
+                Assert.Fail("An Exception should have been thrown");
+            }
+            catch (Exception ex)
+            {
+                Assert.IsTrue(ex.InnerException.Message == uniqueExceptionId, "Incorrect Exception Text");
+            }
+        }
+
+        [TestMethod]
         public async Task TestAdapter_ExceptionTypesOnAssertReply()
         {
             string uniqueExceptionId = Guid.NewGuid().ToString();
