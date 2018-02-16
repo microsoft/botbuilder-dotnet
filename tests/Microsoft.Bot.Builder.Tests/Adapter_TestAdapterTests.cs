@@ -137,21 +137,23 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [TestMethod]
-        public async Task TestAdapter_TestFlow()
+        [DataRow(typeof(SecurityException))]
+        [DataRow(typeof(ArgumentException))]
+        [DataRow(typeof(ArgumentNullException))]
+        public async Task TestAdapter_TestFlow(Type exceptionType)
         {
-            try
-            {
-                var promise = new TaskCompletionSource<bool>();
-                promise.SetException(new SecurityException());
-                var adapter = this.CreateAdapter();
+            Exception innerException = (Exception)Activator.CreateInstance(exceptionType);
+            var promise = new TaskCompletionSource<bool>();
+            promise.SetException(innerException);
+            var adapter = this.CreateAdapter();
 
-                TestFlow testFlow = new TestFlow(promise.Task, adapter);
-                testFlow.Send(new Activity());
-            }
-            catch(Exception e)
+            TestFlow testFlow = new TestFlow(promise.Task, adapter);
+            testFlow.Send(new Activity());
+            Task task = testFlow.StartTest();
+            await task.ContinueWith(action =>
             {
-                Assert.IsInstanceOfType(e.InnerException, typeof(SecurityException));
-            }
+                Assert.IsInstanceOfType(action.Exception.InnerException, exceptionType);
+            });
         }
 
     }
