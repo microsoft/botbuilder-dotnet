@@ -9,21 +9,19 @@ namespace Microsoft.Bot.Builder
 {
     public static class ContextExtensionMethods
     {
-        public static async Task<IBotContext> ShowTyping(this IBotContext context)
+        public static IBotContext ShowTyping(this IBotContext context)
         {
             Activity activity = ((Activity)context.Request).CreateReply();
             activity.Type = ActivityTypes.Typing;
-            await context.Bot.SendActivity(context, new List<IActivity>() { activity });
-            return context;
+            return context.Reply((IActivity)activity);
         }
 
-        public static async Task<IBotContext> Delay(this IBotContext context, int duration)
+        public static IBotContext Delay(this IBotContext context, int duration)
         {
             Activity activity = ((Activity)context.Request).CreateReply();
             activity.Type = "delay";
             activity.Value = duration;
-            await context.Bot.SendActivity(context, new List<IActivity>() { activity });
-            return context;
+            return context.Reply(activity);
         }
     }
 }
