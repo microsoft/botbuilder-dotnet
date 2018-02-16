@@ -5,7 +5,7 @@ using Microsoft.Bot.Schema;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Microsoft.Bot.Builder.ContextExtensions
+namespace Microsoft.Bot.Builder
 {
     public static class ContextExtensionMethods
     {
