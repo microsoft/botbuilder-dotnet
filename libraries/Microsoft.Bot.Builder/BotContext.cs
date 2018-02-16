@@ -12,13 +12,13 @@ namespace Microsoft.Bot.Builder
 {
     public class BotContext : FlexObject, IBotContext
     {
-        private readonly Bot _bot;
+        private readonly BotBase _bot;
         private readonly IActivity _request;
         private readonly ConversationReference _conversationReference;
         private readonly BotState _state = new BotState();
         private IList<IActivity> _responses = new List<IActivity>();
 
-        public BotContext(Bot bot, IActivity request)
+        public BotContext(BotBase bot, IActivity request)
         {
             _bot = bot ?? throw new ArgumentNullException(nameof(bot));
             _request = request ?? throw new ArgumentNullException(nameof(request));
@@ -34,7 +34,7 @@ namespace Microsoft.Bot.Builder
             };
         }
 
-        public BotContext(Bot bot, ConversationReference conversationReference)
+        public BotContext(BotBase bot, ConversationReference conversationReference)
         {
             _bot = bot ?? throw new ArgumentNullException(nameof(bot));
             _conversationReference = conversationReference ?? throw new ArgumentNullException(nameof(conversationReference));
@@ -47,7 +47,7 @@ namespace Microsoft.Bot.Builder
 
         public IActivity Request => _request;
 
-        public Bot Bot => _bot;
+        public BotBase Bot => _bot;
 
         public IList<IActivity> Responses { get => _responses; set => this._responses = value; }
 

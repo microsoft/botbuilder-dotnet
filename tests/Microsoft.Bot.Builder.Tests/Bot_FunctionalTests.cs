@@ -15,22 +15,10 @@ namespace Microsoft.Bot.Builder.Tests
         [TestMethod]
         public async Task SingleParameterConstructor()
         {
-            ActivityAdapterBase adapter = new TestAdapter();
-            Bot bot = new Bot(adapter);
+            var adapter = new TestBot();
 
             // If this compiles, the test has passed. :) 
         }
 
-        [TestMethod]
-        public async Task AdapterProperty()
-        {
-            TestAdapter adapter = new TestAdapter();
-            Bot bot = new Bot(adapter);
-
-            ActivityAdapterBase retrievedAdapter = bot.Adapter;
-
-            // Verify the Bot a property to allow retrieving the Adapter. 
-            Assert.AreSame(adapter, retrievedAdapter);
-        }
     }
 }

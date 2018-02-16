@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Samples.CustomMiddleware
     [Route("api/[controller]")]
     public class MessagesController : Controller
     {
-        private BotFrameworkAdapter _adapter;
+        private static BotFrameworkBot bot;
 
         /// <summary>
         /// In this sample Bot, a new instance of the Bot is created by the controller 
@@ -26,13 +26,14 @@ namespace Microsoft.Bot.Samples.CustomMiddleware
         /// </summary>        
         public MessagesController(IConfiguration configuration)
         {
-            var bot = new Builder.Bot(new BotFrameworkAdapter(configuration))
-                .Use(new ExampleMiddleware("X"))
-                .Use(new ExampleMiddleware("\tY"))
-                .Use(new ExampleMiddleware("\t\tZ"));
-            bot.OnReceive(BotReceiveHandler);
+            if (bot == null)
+            {
+                bot = new BotFrameworkBot(configuration)
+                    .Use(new ExampleMiddleware("X"))
+                    .Use(new ExampleMiddleware("\tY"))
+                    .Use(new ExampleMiddleware("\t\tZ"));
 
-            _adapter = (BotFrameworkAdapter)bot.Adapter;
+            }
         }
 
         private Task BotReceiveHandler(IBotContext context)
@@ -49,7 +50,7 @@ namespace Microsoft.Bot.Samples.CustomMiddleware
         {
             try
             {
-                await _adapter.Receive(this.Request.Headers["Authorization"].FirstOrDefault(), activity);
+                await bot.ProcessActivty(this.Request.Headers["Authorization"].FirstOrDefault(), activity, BotReceiveHandler);
                 return this.Ok();
             }
             catch (UnauthorizedAccessException)

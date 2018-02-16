@@ -10,38 +10,30 @@ namespace Microsoft.Bot.Builder.Tests
 {
     [TestClass]
     [TestCategory("Adapter")]
-    public class Adapter_TestAdapterTests
+    public class Adapter_TestBotTests
     {
-        private TestAdapter CreateAdapter()
+        public async Task MyBotLogic(IBotContext context)
         {
-            TestAdapter adapter = new TestAdapter();
-            Bot bot = new Bot(adapter);
-            bot.OnReceive(
-                    async (context) =>
-                    {
-                        switch (context.Request.AsMessageActivity().Text)
-                        {
-                            case "count":
-                                context.Reply("one");
-                                context.Reply("two");
-                                context.Reply("three");
-                                break;
-                            case "ignore":
-                                break;
-                            default:
-                                context.Reply($"echo:{context.Request.AsMessageActivity().Text}");
-                                break;
-                        }                        
-                    }
-                );
-            return adapter;
+            switch (context.Request.AsMessageActivity().Text)
+            {
+                case "count":
+                    context.Reply("one");
+                    context.Reply("two");
+                    context.Reply("three");
+                    break;
+                case "ignore":
+                    break;
+                default:
+                    context.Reply($"echo:{context.Request.AsMessageActivity().Text}");
+                    break;
+            }
         }
-
+    
         [TestMethod]
-        public async Task TestAdapter_Say()
+        public async Task TestBot_Say()
         {
-            var adapter = this.CreateAdapter();
-            await adapter
+            var bot = new TestBot();
+            await new TestFlow(bot, MyBotLogic)
                 .Test("foo", "echo:foo", "say with string works")
                 .Test("foo", new Activity(ActivityTypes.Message, text: "echo:foo"), "say with activity works")
                 .Test("foo", (activity) => Assert.AreEqual("echo:foo", activity.AsMessageActivity().Text), "say with validator works")
@@ -50,10 +42,10 @@ namespace Microsoft.Bot.Builder.Tests
 
 
         [TestMethod]
-        public async Task TestAdapter_SendReply()
+        public async Task TestBot_SendReply()
         {
-            var adapter = this.CreateAdapter();
-            await adapter
+            var bot = new TestBot();
+            await new TestFlow(bot, MyBotLogic)
                 .Send("foo").AssertReply("echo:foo", "send/reply with string works")
                 .Send("foo").AssertReply(new Activity(ActivityTypes.Message, text: "echo:foo"), "send/reply with activity works")
                 .Send("foo").AssertReply((activity) => Assert.AreEqual("echo:foo", activity.AsMessageActivity().Text), "send/reply with validator works")
@@ -61,20 +53,20 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [TestMethod]
-        public async Task TestAdapter_ReplyOneOf()
+        public async Task TestBot_ReplyOneOf()
         {
-            var adapter = this.CreateAdapter();
-            await adapter
+            var bot = new TestBot();
+            await new TestFlow(bot, MyBotLogic)
                 .Send("foo").AssertReplyOneOf(new string[] { "echo:bar", "echo:foo", "echo:blat" }, "say with string works")
                 .StartTest();
         }
 
 
         [TestMethod]
-        public async Task TestAdapter_MultipleReplies()
+        public async Task TestBot_MultipleReplies()
         {
-            var adapter = this.CreateAdapter();
-            await adapter
+            var bot = new TestBot();
+            await new TestFlow(bot, MyBotLogic)
                 .Send("foo").AssertReply("echo:foo")
                 .Send("bar").AssertReply("echo:bar")
                 .Send("ignore")

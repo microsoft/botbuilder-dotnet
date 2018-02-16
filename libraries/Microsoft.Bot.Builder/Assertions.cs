@@ -26,11 +26,11 @@ namespace Microsoft.Bot.Builder
                 throw new ArgumentNullException(nameof(reference));
         }
 
-        public static void AdapterNotNull(ActivityAdapterBase adapter)
-        {
-            if (adapter == null)
-                throw new ArgumentNullException(nameof(adapter)); 
-        }
+        //public static void AdapterNotNull(ActivityAdapterBase adapter)
+        //{
+        //    if (adapter == null)
+        //        throw new ArgumentNullException(nameof(adapter)); 
+        //}
 
         public static void ActivityListNotNull(IList<Activity> activityList)
         {

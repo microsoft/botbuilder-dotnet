@@ -38,49 +38,48 @@ namespace Microsoft.Bot.Builder.Tests
     [TestCategory("Middleware")]
     public class BotContext_Tests
     {
-        private TestAdapter CreateAdapter()
+        private TestBot CreateBot()
         {
-            TestAdapter adapter = new TestAdapter();
-            Bot bot = new Bot(adapter);
+
+            TestBot bot = new TestBot();
             bot = bot
                 .Use(new AnnotateMiddleware());
+            return bot;
+        }
 
-            bot.OnReceive(
-                    async (context) =>
-                    {
-                        Assert.AreEqual(true, context.State["ContextCreated"]);
-                        Assert.IsTrue(context.Request.AsMessageActivity().Text.Contains("ReceiveActivity"));
-                        Assert.IsFalse(context.Request.AsMessageActivity().Text.Contains("SendActivity"));
-                        if (context.Request.AsMessageActivity().Text.StartsWith("proactive"))
-                        {
+        public async Task MyCodeHandler(IBotContext context)
+        {
+            Assert.AreEqual(true, context.State["ContextCreated"]);
+            Assert.IsTrue(context.Request.AsMessageActivity().Text.Contains("ReceiveActivity"));
+            Assert.IsFalse(context.Request.AsMessageActivity().Text.Contains("SendActivity"));
+            if (context.Request.AsMessageActivity().Text.StartsWith("proactive"))
+            {
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-                            var reference = context.ConversationReference;
-                            Task.Run(async () =>
-                            {
-                                await Task.Delay(1000).ConfigureAwait(false);
-                                await bot.CreateContext(reference, async (context2) =>
-                                {
-                                    Assert.AreEqual(true, context2.State["ContextCreated"]);
-                                    Assert.IsNull(context2.Request);
-                                    context2.Reply("proactive");
-                                }).ConfigureAwait(false);
-                            });
+                var reference = context.ConversationReference;
+                Task.Run(async () =>
+                {
+                    await Task.Delay(1000).ConfigureAwait(false);
+                    await context.Bot.ContinueConversation(reference, async (context2) =>
+                    {
+                        Assert.AreEqual(true, context2.State["ContextCreated"]);
+                        Assert.IsNull(context2.Request);
+                        context2.Reply("proactive");
+                    }).ConfigureAwait(false);
+                });
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-                            return;
-                        }
-                        else
-                        {
-                            context.Reply(context.Request.AsMessageActivity().Text);
-                        }
-                    }
-                );
-            return adapter;
+                return;
+            }
+            else
+            {
+                context.Reply(context.Request.AsMessageActivity().Text);
+            }
         }
 
         [TestMethod]
         public async Task TestReceivePipeline()
         {
-            await CreateAdapter()
+            var bot = CreateBot();
+            await new TestFlow(bot, MyCodeHandler)
                 .Send("receive")
                 .AssertReply((activity) =>
                 {
@@ -94,7 +93,8 @@ namespace Microsoft.Bot.Builder.Tests
         [TestMethod]
         public async Task TestProactivePipeline()
         {
-            await CreateAdapter()
+            var bot = CreateBot();
+            await new TestFlow(bot, MyCodeHandler)
                 .Send("proactive")
                 .AssertReply((activity) =>
                 {
@@ -109,17 +109,15 @@ namespace Microsoft.Bot.Builder.Tests
         [TestCategory("Functional Spec")]
         public async Task Context_ReplyTextOnly()
         {
-            TestAdapter adapter = new TestAdapter();
-            Bot bot = new Bot(adapter);
-            bot.OnReceive(async (context) =>
+
+            TestBot bot = new TestBot();
+            await new TestFlow(bot, async (context) =>
                 {
                     if (context.Request.AsMessageActivity().Text == "hello")
                     {
                         context.Reply("world");
                     }
-                });
-
-            await adapter
+                })
                 .Send("hello")
                     .AssertReply("world")
                 .StartTest();
@@ -129,20 +127,19 @@ namespace Microsoft.Bot.Builder.Tests
         [TestCategory("Functional Spec")]
         public async Task Context_ReplyTextAndSSML()
         {
-            TestAdapter adapter = new TestAdapter();
+
             string ssml = @"<speak><p>hello</p></speak>";
 
-            Bot bot = new Bot(adapter);
-            bot.OnReceive(async (context) =>
-                {
-                    if (context.Request.AsMessageActivity().Text == "hello")
-                    {
-                        context.Reply("use ssml", ssml);
-                    }
-                });
+            TestBot bot = new TestBot();
 
-            await adapter
-                .Send("hello").AssertReply(
+            await new TestFlow(bot, async (context) =>
+            {
+                if (context.Request.AsMessageActivity().Text == "hello")
+                {
+                    context.Reply("use ssml", ssml);
+                }
+            })
+            .Send("hello").AssertReply(
                     (activity) =>
                     {
                         Assert.AreEqual("use ssml", activity.AsMessageActivity().Text);
@@ -156,9 +153,9 @@ namespace Microsoft.Bot.Builder.Tests
         [TestCategory("Functional Spec")]
         public async Task Context_ReplyActivity()
         {
-            TestAdapter adapter = new TestAdapter();
-            Bot bot = new Bot(adapter);
-            bot.OnReceive(async (context) =>
+
+            TestBot bot = new TestBot();
+            await new TestFlow(bot, async (context) =>
                 {
                     if (context.Request.AsMessageActivity().Text == "hello")
                     {
@@ -166,9 +163,7 @@ namespace Microsoft.Bot.Builder.Tests
                         reply.AsMessageActivity().Text = "world";
                         context.Reply(reply);
                     }
-                });
-
-            await adapter
+                })
                 .Send("hello")
                     .AssertReply("world", "send/reply with Activity works")
                 .StartTest();

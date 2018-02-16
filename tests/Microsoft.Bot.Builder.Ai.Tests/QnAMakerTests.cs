@@ -57,8 +57,8 @@ namespace Microsoft.Bot.Builder.Ai.Tests
         [TestCategory("QnAMaker")]
         public async Task QnaMaker_TestMiddleware()
         {
-            TestAdapter adapter = new TestAdapter();
-            Bot bot = new Bot(adapter)
+            
+            TestBot bot = new TestBot()
                 .Use(new QnAMakerMiddleware(new QnAMakerOptions()
                 {
                     KnowledgeBaseId = knowlegeBaseId,
@@ -66,16 +66,14 @@ namespace Microsoft.Bot.Builder.Ai.Tests
                     Top = 1
                 }, new HttpClient()));
 
-            bot.OnReceive((context) =>
+            await new TestFlow(bot, (context) =>
                 {
                     if (context.Request.AsMessageActivity().Text == "foo")
                     {
                         context.Reply(context.Request.AsMessageActivity().Text);
                     }
                     return Task.CompletedTask;
-                });               
-
-            await adapter
+                })
                 .Send("foo")
                     .AssertReply("foo", "passthrough")
                 .Send("how do I clean the stove?")

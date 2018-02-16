@@ -19,11 +19,11 @@ namespace Microsoft.Bot.Builder.Tests
         {
             string messageText = Guid.NewGuid().ToString();
 
-            TestAdapter adapter = new TestAdapter();
-            Bot bot = new Bot(adapter)
+            
+            TestBot bot = new TestBot()
                 .Use(new EchoMiddleWare());
             
-            await adapter
+            await new TestFlow(bot)
                 .Send(messageText).AssertReply(messageText)
                 .StartTest();
         }       

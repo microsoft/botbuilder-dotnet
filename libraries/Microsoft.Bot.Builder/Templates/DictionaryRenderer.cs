@@ -61,17 +61,4 @@ namespace Microsoft.Bot.Builder.Templates
         }
     }
 
-    public static class BotDictionaryTemplateExtensions
-    {
-        /// <summary>
-        /// UseTemplates- Adds templateDictionary to templateManager
-        /// </summary>
-        /// <param name="bot"></param>
-        /// <param name="templates"></param>
-        /// <returns></returns>
-        public static Bot UseTemplates(this Bot bot, TemplateDictionary templates)
-        {
-            return bot.Use(new DictionaryRenderer(templates));
-        }
-    }
 }
