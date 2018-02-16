@@ -29,7 +29,7 @@ namespace AlarmBot
                 return results.Where(result =>
                 {
                     var subType = result.TypeName.Split('.').Last();
-                    return subType.Contains("time") && !subType.Contains("range");
+                    return (subType.Contains("date") || subType.Contains("time")) && !subType.Contains("range");
                 })
                 .Select(result =>
                 {

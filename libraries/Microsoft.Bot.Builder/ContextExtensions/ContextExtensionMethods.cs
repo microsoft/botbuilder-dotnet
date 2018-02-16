@@ -2,20 +2,27 @@
 // Licensed under the MIT License.
 
 using Microsoft.Bot.Schema;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
-namespace Microsoft.Bot.Builder.ContextExtensions
+namespace Microsoft.Bot.Builder
 {
     public static class ContextExtensionMethods
     {
-        public static IBotContext ShowTyping(this IBotContext context)
+        public static async Task<IBotContext> ShowTyping(this IBotContext context)
         {
-            context.Responses.Add(new Activity { Type = ActivityTypes.Typing });
+            Activity activity = ((Activity)context.Request).CreateReply();
+            activity.Type = ActivityTypes.Typing;
+            await context.Bot.SendActivity(context, new List<IActivity>() { activity });
             return context;
         }
 
-        public static IBotContext Delay(this IBotContext context, int duration)
+        public static async Task<IBotContext> Delay(this IBotContext context, int duration)
         {
-            context.Responses.Add(new Activity { Type = "delay", Value = duration });
+            Activity activity = ((Activity)context.Request).CreateReply();
+            activity.Type = "delay";
+            activity.Value = duration;
+            await context.Bot.SendActivity(context, new List<IActivity>() { activity });
             return context;
         }
     }
