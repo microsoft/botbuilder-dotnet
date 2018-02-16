@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Schema;
@@ -31,11 +32,59 @@ namespace Microsoft.Bot.Builder.Tests
                             default:
                                 context.Reply($"echo:{context.Request.AsMessageActivity().Text}");
                                 break;
-                        }                        
+                        }
                     }
                 );
             return adapter;
         }
+
+
+        [TestMethod]
+        public async Task TestAdapter_ExceptionTypesOnTest()
+        {
+            string uniqueExceptionId = Guid.NewGuid().ToString();
+            TestAdapter adapter = new TestAdapter();
+            Bot bot = new Bot(adapter);
+            bot.OnReceive(async (context) => { context.Reply("one"); });
+
+            try
+            {
+                await adapter
+                    .Test("foo", (activity) => throw new Exception(uniqueExceptionId))
+                    .StartTest();
+
+                Assert.Fail("An Exception should have been thrown");
+            }
+            catch (Exception ex)
+            {
+                Assert.IsTrue(ex.Message == uniqueExceptionId, "Incorrect Exception Text");
+            }
+        }
+
+        [TestMethod]
+        public async Task TestAdapter_ExceptionTypesOnAssertReply()
+        {
+            string uniqueExceptionId = Guid.NewGuid().ToString();
+            TestAdapter adapter = new TestAdapter();
+            Bot bot = new Bot(adapter);
+            bot.OnReceive(async (context) => { context.Reply("one"); });
+
+            try
+            {
+                await adapter
+                    .Send("foo")
+                    .AssertReply(
+                        (activity) => throw new Exception(uniqueExceptionId), "should throw")
+                    .StartTest();
+
+                Assert.Fail("An Exception should have been thrown");
+            }
+            catch (Exception ex)
+            {
+                Assert.IsTrue(ex.Message == uniqueExceptionId, "Incorrect Exception Text");
+            }
+        }
+
 
         [TestMethod]
         public async Task TestAdapter_Say()

@@ -273,7 +273,8 @@ namespace Microsoft.Bot.Builder.Adapters
             return new TestFlow(this.testTask.ContinueWith((task) =>
             {
                 if (task.IsFaulted)
-                    throw new Exception("failed");
+                    throw new Exception("Send failed. See InnerException for details", task.Exception);
+
                 return this._adapter.SendActivityToBot(userSays);
             }), this._adapter);
         }
@@ -291,7 +292,8 @@ namespace Microsoft.Bot.Builder.Adapters
             return new TestFlow(this.testTask.ContinueWith((task) =>
             {
                 if (task.IsFaulted)
-                    throw new Exception("failed");
+                    throw new Exception("Send failed. See InnerException for details", task.Exception);
+
                 return this._adapter.SendActivityToBot(userActivity);
             }), this._adapter);
         }
@@ -306,7 +308,8 @@ namespace Microsoft.Bot.Builder.Adapters
             return new TestFlow(this.testTask.ContinueWith((task) =>
             {
                 if (task.IsFaulted)
-                    throw new Exception("failed");
+                    throw new Exception("Delay failed. See InnerException for details", task.Exception);
+
                 return Task.Delay((int)ms);
             }), this._adapter);
         }
@@ -354,7 +357,8 @@ namespace Microsoft.Bot.Builder.Adapters
             return new TestFlow(this.testTask.ContinueWith((task) =>
             {
                 if (task.IsFaulted)
-                    throw new Exception("failed");
+                    throw new Exception($"Faulted Task in AssertReply on test '{description}'. See InnerException for details.", task.Exception);
+
                 var start = DateTime.UtcNow;
                 while (true)
                 {
@@ -362,7 +366,7 @@ namespace Microsoft.Bot.Builder.Adapters
 
                     if ((current - start).TotalMilliseconds > timeout)
                     {
-                        throw new TimeoutException($"{timeout}ms Timed out waiting for:${description}");
+                        throw new TimeoutException($"{timeout}ms Timed out waiting for:'{description}'");
                     }
 
                     IActivity replyActivity = this._adapter.GetNextReply();                    
