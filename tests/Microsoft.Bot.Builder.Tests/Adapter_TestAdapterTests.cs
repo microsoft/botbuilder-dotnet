@@ -2,6 +2,8 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Runtime.CompilerServices;
+using System.Security;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Schema;
@@ -133,5 +135,24 @@ namespace Microsoft.Bot.Builder.Tests
                     .AssertReply("three")
                 .StartTest();
         }
+
+        [TestMethod]
+        public async Task TestAdapter_TestFlow()
+        {
+            try
+            {
+                var promise = new TaskCompletionSource<bool>();
+                promise.SetException(new SecurityException());
+                var adapter = this.CreateAdapter();
+
+                TestFlow testFlow = new TestFlow(promise.Task, adapter);
+                testFlow.Send(new Activity());
+            }
+            catch(Exception e)
+            {
+                Assert.IsInstanceOfType(e.InnerException, typeof(SecurityException));
+            }
+        }
+
     }
 }
