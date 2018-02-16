@@ -91,6 +91,95 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [TestMethod]
+        public async Task RunAtEndOfPipeline()
+        {
+            bool called1 = false;
+            bool endCalled = false;
+
+            CallMeMiddlware one = new CallMeMiddlware(() =>
+            {
+                called1 = true;
+            });
+
+            Middleware.MiddlewareSet m = new Middleware.MiddlewareSet();
+            m.Use(one);
+
+            // The middlware in this pipeline calls next(), so this must
+            // be called as the final activity. 
+            await m.ReceiveActivity(null, async () => { endCalled = true; });
+
+            Assert.IsTrue(called1);
+            Assert.IsTrue(endCalled);
+        }
+
+        [TestMethod]
+        public async Task RunAtEndEmptyPipeline()
+        {
+            bool called1 = false;            
+            Middleware.MiddlewareSet m = new Middleware.MiddlewareSet();            
+
+            // With an empty pipeline, the runAtEnd delegate should be called. 
+            await m.ReceiveActivity(null, ()=> { called1 = true; });
+            Assert.IsTrue(called1);
+        }
+
+        [TestMethod]
+        public async Task DoNotRunTwoItems()
+        {
+            bool called1 = false;
+            bool called2 = false;
+            bool runAtEnd = false; 
+
+            CallMeMiddlware one = new CallMeMiddlware(() =>
+            {
+                Assert.IsFalse(called2, "Second Middleware was called");
+                called1 = true;
+            });
+
+            DoNotCallNextMiddleware two = new DoNotCallNextMiddleware(() =>
+            {
+                Assert.IsTrue(called1, "First Middleware was not called");
+                called2 = true;
+            });
+
+            Middleware.MiddlewareSet m = new Middleware.MiddlewareSet();
+            m.Use(one);
+            m.Use(two);
+
+            await m.ReceiveActivity(null, ()=> { runAtEnd = true; } );
+            Assert.IsTrue(called1);
+            Assert.IsTrue(called2);
+
+            // The 2nd middleware did not call next, so the "final" action should not have run. 
+            Assert.IsFalse(runAtEnd);
+        }
+
+        [TestMethod]
+        public async Task DoNotRunAtEndOfPipeline()
+        {
+            bool called1 = false;
+            bool endCalled = false;
+
+            DoNotCallNextMiddleware one = new DoNotCallNextMiddleware(() =>
+            {
+                called1 = true;
+            });
+
+            Middleware.MiddlewareSet m = new Middleware.MiddlewareSet();
+            m.Use(one);
+
+            // The middlware in this pipeline calls next(), so this must
+            // be called as the final activity. 
+            await m.ReceiveActivity(null, () => { endCalled = true; });
+
+            Assert.IsTrue(called1);
+
+            // Our "Final" action MUST NOT have been called, as the Middlware Pipeline
+            // didn't complete. 
+            Assert.IsFalse(endCalled);
+        }
+
+        [TestMethod]
         public async Task AnonymousMiddleware()
         {
             bool didRun = false;
@@ -278,6 +367,21 @@ namespace Microsoft.Bot.Builder.Tests
             {
                 Called = true;
                 return next();
+            }
+        }
+
+        public class DoNotCallNextMiddleware: Middleware.IMiddleware, Middleware.IReceiveActivity
+        {
+            private readonly Action _callMe;
+            public DoNotCallNextMiddleware(Action callMe)
+            {
+                _callMe = callMe;
+            }
+            public Task ReceiveActivity(IBotContext context, Middleware.MiddlewareSet.NextDelegate next)
+            {
+                _callMe();
+                // DO NOT call NEXT
+                return Task.CompletedTask;
             }
         }
 
