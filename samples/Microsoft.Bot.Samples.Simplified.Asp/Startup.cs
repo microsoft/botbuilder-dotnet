@@ -32,9 +32,9 @@ namespace Microsoft.Bot.Samples.Simplified.Asp
             services.AddSingleton(_ => Configuration);
             services.AddMvc();
 
-            services.AddSingleton<Builder.Bot>(serviceProvider =>
+            services.AddSingleton<Builder.BotBase>(serviceProvider =>
             {
-                return new Builder.Bot(new BotFrameworkAdapter(Configuration))
+                return new Builder.BotBase(new BotFrameworkAdapter(Configuration))
                     .Use(new BotStateManager(new MemoryStorage()));
             });
         }

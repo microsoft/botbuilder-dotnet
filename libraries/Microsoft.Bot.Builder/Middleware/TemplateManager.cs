@@ -159,7 +159,7 @@ namespace Microsoft.Bot.Builder.Middleware
         /// <param name="bot"></param>
         /// <param name="renderer"></param>
         /// <returns></returns>
-        public static Bot UseTemplateRenderer(this Bot bot, ITemplateRenderer renderer)
+        public static BotBase UseTemplateRenderer(this BotBase bot, ITemplateRenderer renderer)
         {
             return bot.Use(new TemplateRendererMiddleware(renderer));
         }

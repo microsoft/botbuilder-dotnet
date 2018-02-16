@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Samples.Simplified.Asp
     {
         BotFrameworkAdapter _adapter;
 
-        public BotController(Builder.Bot bot)
+        public BotController(Builder.BotBase bot)
         {
             _adapter = (BotFrameworkAdapter)bot.Adapter;
             bot.OnReceive(BotReceiveHandler);

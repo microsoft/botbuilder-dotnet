@@ -11,7 +11,7 @@ namespace Microsoft.Bot.Samples.Simplified.Asp.Controllers
     [Route("api/[controller]")]
     public class MessagesController : BotController
     {
-        public MessagesController(Builder.Bot bot)
+        public MessagesController(Builder.BotBase bot)
             : base(bot)
         {
         }

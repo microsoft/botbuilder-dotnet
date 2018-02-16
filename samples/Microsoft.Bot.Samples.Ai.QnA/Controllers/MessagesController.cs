@@ -21,7 +21,7 @@ namespace Microsoft.Bot.Samples.Ai.QnA.Controllers
 
         private static readonly HttpClient HttpClient;
 
-        BotFrameworkAdapter _adapter;
+        static BotFrameworkBot bot;
 
         static MessagesController()
         {
@@ -30,18 +30,18 @@ namespace Microsoft.Bot.Samples.Ai.QnA.Controllers
 
         public MessagesController(IConfiguration configuration)
         {
-            var qnaOptions = new QnAMakerOptions
+            if (bot == null)
             {
-                // add subscription key and knowledge base id
-                SubscriptionKey = "xxxxxx",
-                KnowledgeBaseId = "xxxxxx"
-            };
-            var bot = new Builder.Bot(new BotFrameworkAdapter(configuration))
-                // add QnA middleware 
-                .Use(new QnAMakerMiddleware(qnaOptions, HttpClient));
-            bot.OnReceive(BotReceiveHandler);
-               
-            _adapter = (BotFrameworkAdapter)bot.Adapter;
+                var qnaOptions = new QnAMakerOptions
+                {
+                    // add subscription key and knowledge base id
+                    SubscriptionKey = "xxxxxx",
+                    KnowledgeBaseId = "xxxxxx"
+                };
+                bot = new BotFrameworkBot(configuration)
+                    // add QnA middleware 
+                    .Use(new QnAMakerMiddleware(qnaOptions, HttpClient));
+            }
         }
 
         private Task BotReceiveHandler(IBotContext context)
@@ -59,7 +59,7 @@ namespace Microsoft.Bot.Samples.Ai.QnA.Controllers
         {
             try
             {
-                await _adapter.Receive(this.Request.Headers["Authorization"].FirstOrDefault(), activity);
+                await bot.ProcessActivty(this.Request.Headers["Authorization"].FirstOrDefault(), activity, BotReceiveHandler);
                 return this.Ok();
             }
             catch (UnauthorizedAccessException)
