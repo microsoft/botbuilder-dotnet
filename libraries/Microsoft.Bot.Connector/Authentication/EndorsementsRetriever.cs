@@ -22,6 +22,20 @@ namespace Microsoft.Bot.Connector.Authentication
     /// </summary>
     public sealed class EndorsementsRetriever : IDocumentRetriever, IConfigurationRetriever<IDictionary<string, string[]>>
     {
+        private readonly HttpClient _httpClient;
+
+        /// <summary>
+        /// Creates an instance of the Endorsements Retriever class. 
+        /// </summary>
+        /// <param name="httpClient">Allow the calling layer to manage the lifetime of the HttpClient, complete with
+        /// timeouts, pooling, instancing and so on. This is to avoid having to Use/Dispose a new instance
+        /// of the client on each call, which may be very expensive in terms of latency, TLS connections
+        /// and related issues.</param>
+        public EndorsementsRetriever(HttpClient httpClient)
+        {
+            _httpClient = httpClient;
+        }
+
         /// <summary>
         /// JSON Web Key Set Metadata value
         /// From the OpenID Spec at 
@@ -48,7 +62,7 @@ namespace Microsoft.Bot.Connector.Authentication
                 var keys = obj.SelectToken("keys").Value<JArray>();
                 var endorsements = keys.Where(key => key["endorsements"] != null).Select(
                     key => Tuple.Create(
-                        key.SelectToken(AuthenticationConstants.KeyIdHeader).Value<string>(), 
+                        key.SelectToken(AuthenticationConstants.KeyIdHeader).Value<string>(),
                         key.SelectToken("endorsements").Values<string>()));
 
                 return endorsements.Distinct(new EndorsementsComparer())
@@ -62,28 +76,23 @@ namespace Microsoft.Bot.Connector.Authentication
 
         public async Task<string> GetDocumentAsync(string address, CancellationToken cancel)
         {
-            // ToDo: HttpClient use here should be a pooled resource. This is tracked in
-            // GitHub Issue: https://github.com/Microsoft/botbuilder-dotnet/issues/60
-            using (var client = new HttpClient())
+            using (var response = await _httpClient.GetAsync(address, cancel))
             {
-                using (var response = await client.GetAsync(address, cancel))
+                response.EnsureSuccessStatusCode();
+                var json = await response.Content.ReadAsStringAsync();
+                JObject obj = JsonConvert.DeserializeObject<JObject>(json);
+                if (obj != null && obj.HasValues && obj[JsonWebKeySetUri] != null)
                 {
-                    response.EnsureSuccessStatusCode();
-                    var json = await response.Content.ReadAsStringAsync();
-                    JObject obj = JsonConvert.DeserializeObject<JObject>(json);
-                    if (obj != null && obj.HasValues && obj[JsonWebKeySetUri] != null)
+                    var keysUrl = obj.SelectToken(JsonWebKeySetUri).Value<string>();
+                    using (var keysResponse = await _httpClient.GetAsync(keysUrl, cancel))
                     {
-                        var keysUrl = obj.SelectToken(JsonWebKeySetUri).Value<string>();
-                        using (var keysResponse = await client.GetAsync(keysUrl, cancel))
-                        {
-                            keysResponse.EnsureSuccessStatusCode();
-                            return await keysResponse.Content.ReadAsStringAsync();
-                        }
+                        keysResponse.EnsureSuccessStatusCode();
+                        return await keysResponse.Content.ReadAsStringAsync();
                     }
-                    else
-                    {
-                        return string.Empty;
-                    }
+                }
+                else
+                {
+                    return string.Empty;
                 }
             }
         }
