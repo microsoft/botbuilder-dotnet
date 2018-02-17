@@ -61,8 +61,19 @@ namespace Microsoft.Bot.Connector.Authentication
         /// Delegate for validating endorsements extracted from JwtToken
         /// </summary>
         private readonly EndorsementsValidator _validator;
-
-        public JwtTokenExtractor(TokenValidationParameters tokenValidationParameters, string metadataUrl, string[] allowedSigningAlgorithms, EndorsementsValidator validator)
+        
+        /// <summary>
+        /// Extracts relevant data from JWT Tokens
+        /// </summary>
+        /// <param name="httpClient">As part of validating JWT Tokens, endorsements need to be feteched from
+        /// sources specificed by the relevant security URLs. This HttpClient is used to allow for resource
+        /// pooling around those retrievals. As those resources require TLS sharing the HttpClient is 
+        /// important to overall perfomance.</param>
+        /// <param name="tokenValidationParameters"></param>
+        /// <param name="metadataUrl"></param>
+        /// <param name="allowedSigningAlgorithms"></param>
+        /// <param name="validator"></param>
+        public JwtTokenExtractor(HttpClient httpClient, TokenValidationParameters tokenValidationParameters, string metadataUrl, string[] allowedSigningAlgorithms, EndorsementsValidator validator)
         {
             // Make our own copy so we can edit it
             _tokenValidationParameters = tokenValidationParameters.Clone();
@@ -77,7 +88,7 @@ namespace Microsoft.Bot.Connector.Authentication
 
             _endorsementsData = _endorsementsCache.GetOrAdd(metadataUrl, key =>
             {
-                var retriever = new EndorsementsRetriever();
+                var retriever = new EndorsementsRetriever(httpClient);
                 return new ConfigurationManager<IDictionary<string, string[]>>(metadataUrl, retriever, retriever);
             });
         }
@@ -127,7 +138,6 @@ namespace Microsoft.Bot.Connector.Authentication
 
             return parts[1]; 
         }
-
 
         public async Task<ClaimsIdentity> GetIdentityAsync(string scheme, string parameter)
         {
