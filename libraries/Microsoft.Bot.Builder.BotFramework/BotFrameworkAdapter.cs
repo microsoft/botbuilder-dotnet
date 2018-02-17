@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Connector;
@@ -16,15 +17,18 @@ namespace Microsoft.Bot.Builder.BotFramework
     {
         private readonly SimpleCredentialProvider _credentialProvider;
         private readonly MicrosoftAppCredentials _credentials;
+        private readonly HttpClient _httpClient; 
 
-        public BotFrameworkBot(IConfiguration configuration) : base()
+        public BotFrameworkBot(IConfiguration configuration, HttpClient httpClient=null) : base()
         {
+            _httpClient = httpClient ?? new HttpClient();
             _credentialProvider = new ConfigurationCredentialProvider(configuration);
-            _credentials = new MicrosoftAppCredentials(this._credentialProvider.AppId, _credentialProvider.Password);
+            _credentials = new MicrosoftAppCredentials(_credentialProvider.AppId, _credentialProvider.Password);                                   
         }
 
-        public BotFrameworkBot(string appId, string appPassword) : base()
+        public BotFrameworkBot(string appId, string appPassword, HttpClient httpClient = null) : base()
         {
+            _httpClient = httpClient ?? new HttpClient();
             _credentials = new MicrosoftAppCredentials(appId, appPassword);
             _credentialProvider = new SimpleCredentialProvider(appId, appPassword);
         }
@@ -38,7 +42,7 @@ namespace Microsoft.Bot.Builder.BotFramework
         public async Task ProcessActivty(string authHeader, Activity activity, Func<IBotContext,Task> callback)
         {
             BotAssert.ActivityNotNull(activity);
-            await JwtTokenValidation.AssertValidActivity(activity, authHeader, _credentialProvider);
+            await JwtTokenValidation.AssertValidActivity(activity, authHeader, _credentialProvider, _httpClient);
 
             await base.ProcessActivityInternal(activity, callback).ConfigureAwait(false);
         }

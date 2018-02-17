@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Ai;
 using Microsoft.Bot.Builder.BotFramework;
-using Microsoft.Bot.Builder.Middleware;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 
@@ -19,14 +18,9 @@ namespace Microsoft.Bot.Samples.Ai.QnA.Controllers
     public class MessagesController : Controller
     {
 
-        private static readonly HttpClient HttpClient;
+        private static readonly HttpClient _httpClient = new HttpClient();
 
         static BotFrameworkBot bot;
-
-        static MessagesController()
-        {
-            HttpClient = new HttpClient();
-        }
 
         public MessagesController(IConfiguration configuration)
         {
@@ -40,7 +34,7 @@ namespace Microsoft.Bot.Samples.Ai.QnA.Controllers
                 };
                 bot = new BotFrameworkBot(configuration)
                     // add QnA middleware 
-                    .Use(new QnAMakerMiddleware(qnaOptions, HttpClient));
+                    .Use(new QnAMakerMiddleware(qnaOptions, _httpClient));
             }
         }
 
