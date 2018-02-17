@@ -38,7 +38,6 @@ namespace Microsoft.Bot.Builder.Tests
             return adapter;
         }
 
-
         [TestMethod]
         public async Task TestAdapter_ExceptionTypesOnTest()
         {
