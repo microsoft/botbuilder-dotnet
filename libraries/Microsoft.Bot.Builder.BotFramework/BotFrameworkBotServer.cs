@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.Servers;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
@@ -13,27 +13,27 @@ using Microsoft.Extensions.Configuration;
 
 namespace Microsoft.Bot.Builder.BotFramework
 {
-    public class BotFrameworkBot : BotBase
+    public class BotFrameworkBotServer : BotServer
     {
         private readonly SimpleCredentialProvider _credentialProvider;
         private readonly MicrosoftAppCredentials _credentials;
         private readonly HttpClient _httpClient; 
 
-        public BotFrameworkBot(IConfiguration configuration, HttpClient httpClient=null) : base()
+        public BotFrameworkBotServer(IConfiguration configuration, HttpClient httpClient=null) : base()
         {
             _httpClient = httpClient ?? new HttpClient();
             _credentialProvider = new ConfigurationCredentialProvider(configuration);
             _credentials = new MicrosoftAppCredentials(_credentialProvider.AppId, _credentialProvider.Password);                                   
         }
 
-        public BotFrameworkBot(string appId, string appPassword, HttpClient httpClient = null) : base()
+        public BotFrameworkBotServer(string appId, string appPassword, HttpClient httpClient = null) : base()
         {
             _httpClient = httpClient ?? new HttpClient();
             _credentials = new MicrosoftAppCredentials(appId, appPassword);
             _credentialProvider = new SimpleCredentialProvider(appId, appPassword);
         }
 
-        public new BotFrameworkBot Use(Middleware.IMiddleware middleware)
+        public new BotFrameworkBotServer Use(Middleware.IMiddleware middleware)
         {
             base._middlewareSet.Use(middleware);
             return this;

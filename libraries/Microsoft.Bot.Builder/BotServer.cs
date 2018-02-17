@@ -5,17 +5,17 @@ using System;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.Servers;
 using Microsoft.Bot.Builder.Middleware;
 using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder
 {
-    public abstract class BotBase
+    public abstract class BotServer
     {
         protected readonly Middleware.MiddlewareSet _middlewareSet = new Middleware.MiddlewareSet();
 
-        public BotBase() : base()
+        public BotServer() : base()
         {
             this.RegisterMiddleware(new Middleware.BindOutoingResponsesMiddlware());
             this.RegisterMiddleware(new Middleware.TemplateManager());

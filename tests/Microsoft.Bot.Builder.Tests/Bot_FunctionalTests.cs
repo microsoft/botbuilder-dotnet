@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.Servers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Bot.Builder.Tests
@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Builder.Tests
         [TestMethod]
         public async Task SingleParameterConstructor()
         {
-            var adapter = new TestBot();
+            var botServer = new TestBotServer();
 
             // If this compiles, the test has passed. :) 
         }
