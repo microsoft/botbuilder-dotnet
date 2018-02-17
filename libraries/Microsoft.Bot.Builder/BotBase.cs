@@ -6,26 +6,28 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.Middleware;
 using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder
 {
-
     public abstract class BotBase
     {
         protected readonly Middleware.MiddlewareSet _middlewareSet = new Middleware.MiddlewareSet();
 
         public BotBase() : base()
         {
-
-            this.Use(new Middleware.BindOutoingResponsesMiddlware());
-            this.Use(new Middleware.TemplateManager());
+            this.RegisterMiddleware(new Middleware.BindOutoingResponsesMiddlware());
+            this.RegisterMiddleware(new Middleware.TemplateManager());
         }
 
-        public BotBase Use(Middleware.IMiddleware middleware)
+        /// <summary>
+        /// Register middleware with the bot
+        /// </summary>
+        /// <param name="middleware"></param>
+        public void RegisterMiddleware(IMiddleware middleware)
         {
             _middlewareSet.Use(middleware);
-            return this;
         }
 
         /// <summary>

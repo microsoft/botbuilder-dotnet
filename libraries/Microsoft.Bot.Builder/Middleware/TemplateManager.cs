@@ -151,17 +151,4 @@ namespace Microsoft.Bot.Builder.Middleware
         }
     }
 
-    public static class BotTemplateExtensions
-    {
-        /// <summary>
-        /// Add template renderer
-        /// </summary>
-        /// <param name="bot"></param>
-        /// <param name="renderer"></param>
-        /// <returns></returns>
-        public static BotBase UseTemplateRenderer(this BotBase bot, ITemplateRenderer renderer)
-        {
-            return bot.Use(new TemplateRendererMiddleware(renderer));
-        }
-    }
 }
