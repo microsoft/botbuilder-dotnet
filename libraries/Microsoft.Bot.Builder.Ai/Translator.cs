@@ -17,33 +17,42 @@ namespace Microsoft.Bot.Builder.Ai
 
     internal class Translator
     {
-        AzureAuthToken authToken;
+        private readonly AzureAuthToken _authToken;
+        private readonly HttpClient _httpClient;
 
-        internal Translator(string apiKey)
+        internal Translator(string apiKey, HttpClient httpClient)
         {
-            authToken = new AzureAuthToken(apiKey);
+            _authToken = new AzureAuthToken(apiKey);
+            _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
         }
 
         internal async Task<string> Translate(string textToTranslate, string to)
         {
             string url = "http://api.microsofttranslator.com/v2/Http.svc/Translate";
-            string query = $"?text={System.Net.WebUtility.UrlEncode(textToTranslate)}&to={to}&contentType=text/plain";
+            string query = $"?text={WebUtility.UrlEncode(textToTranslate)}&to={to}&contentType=text/plain";
 
-            using (var client = new HttpClient())
+            var accessToken = await _authToken.GetAccessTokenAsync(_httpClient).ConfigureAwait(false);
+
+            // The HTTPClient is shared across multiple requests, meaning we can't simply 
+            // set the default headers for this query. To do that, we create a specific HTTP Request
+            // and add the relevant headers to it. 
+            using (var requestMessage = new HttpRequestMessage(HttpMethod.Get, url + query))
             {
-                var accessToken = await authToken.GetAccessTokenAsync().ConfigureAwait(false);
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-                var response = await client.GetAsync(url + query);
+                // Add the headers into the HTTP Request. 
+                requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
+                var response = await _httpClient.SendAsync(requestMessage);
                 var result = await response.Content.ReadAsStringAsync();
 
                 if (!response.IsSuccessStatusCode)
+                {
                     return "ERROR: " + result;
+                }
 
                 var translatedText = XElement.Parse(result).Value;
                 return translatedText;
             }
         }
-
 
         internal async Task<string[]> TranslateArray(string[] translateArraySourceTexts, string from, string to)
         {
@@ -65,17 +74,16 @@ namespace Microsoft.Bot.Builder.Ai
                            $"<To>{to}</To>" +
                        "</TranslateArrayRequest>";
 
-            var accessToken = await authToken.GetAccessTokenAsync().ConfigureAwait(false);
-
-            using (var client = new HttpClient())
+            var accessToken = await _authToken.GetAccessTokenAsync(_httpClient).ConfigureAwait(false);
+            
             using (var request = new HttpRequestMessage())
             {
                 request.Method = HttpMethod.Post;
                 request.RequestUri = new Uri(uri);
                 request.Content = new StringContent(body, Encoding.UTF8, "text/xml");
                 request.Headers.Add("Authorization", accessToken);
-
-                var response = await client.SendAsync(request);
+                
+                var response = await _httpClient.SendAsync(request);
                 var responseBody = await response.Content.ReadAsStringAsync();
                 switch (response.StatusCode)
                 {
@@ -98,7 +106,6 @@ namespace Microsoft.Bot.Builder.Ai
                 }
             }
         }
-
     }
 
     internal class AzureAuthToken
@@ -149,7 +156,7 @@ namespace Microsoft.Bot.Builder.Ai
         /// invocations of the method return the cached token for the next 5 minutes. After
         /// 5 minutes, a new token is fetched from the token service and the cache is updated.
         /// </remarks>
-        internal async Task<string> GetAccessTokenAsync()
+        internal async Task<string> GetAccessTokenAsync(HttpClient httpClient)
         {
             if (string.IsNullOrWhiteSpace(this.SubscriptionKey))
                 return string.Empty;
@@ -157,16 +164,14 @@ namespace Microsoft.Bot.Builder.Ai
             // Re-use the cached token if there is one.
             if ((DateTime.Now - _storedTokenTime) < TokenCacheDuration)
                 return _storedTokenValue;
-
-            using (var client = new HttpClient())
+            
             using (var request = new HttpRequestMessage())
             {
                 request.Method = HttpMethod.Post;
                 request.RequestUri = ServiceUrl;
                 request.Content = new StringContent(string.Empty);
-                request.Headers.TryAddWithoutValidation(OcpApimSubscriptionKeyHeader, this.SubscriptionKey);
-                client.Timeout = TimeSpan.FromSeconds(2);
-                var response = await client.SendAsync(request);
+                request.Headers.TryAddWithoutValidation(OcpApimSubscriptionKeyHeader, this.SubscriptionKey);                
+                var response = await httpClient.SendAsync(request);
                 this.RequestStatusCode = response.StatusCode;
                 response.EnsureSuccessStatusCode();
                 var token = await response.Content.ReadAsStringAsync();
@@ -176,5 +181,4 @@ namespace Microsoft.Bot.Builder.Ai
             }
         }
     }
-
 }
