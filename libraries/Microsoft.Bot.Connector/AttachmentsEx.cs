@@ -15,6 +15,18 @@ namespace Microsoft.Bot.Connector
     public partial class Attachments
     {
         /// <summary>
+        /// The attachment code uses this client. Ideally, this would be passed in or set via a DI system to 
+        /// allow developer control over behavior / headers / timesouts and such. Unfortunatly this is buried
+        /// pretty deep, the static solution used here is much cleaner. If this becomes an issue we could
+        /// consider circling back and exposing developer control over this HttpClient. 
+        /// </summary>
+        /// <remarks>
+        /// Relativly few bots use attachments, so rather than paying the startup cost, this is
+        /// a Lazy<> simply to avoid paying a static initialization penalty for every bot. 
+        /// </remarks>
+        private static Lazy<HttpClient> _httpClient = new Lazy<HttpClient>(); 
+
+        /// <summary>
         /// Get the URI of an attachment view
         /// </summary>
         /// <param name="attachmentId"></param>
@@ -43,10 +55,7 @@ namespace Microsoft.Bot.Connector
         /// <returns>stream of attachment</returns>
         public Task<Stream> GetAttachmentStreamAsync(string attachmentId, string viewId = "original")
         {
-            using (HttpClient client = new HttpClient())
-            {
-                return client.GetStreamAsync(GetAttachmentUri(attachmentId, viewId));
-            }
+            return _httpClient.Value.GetStreamAsync(GetAttachmentUri(attachmentId, viewId));
         }
     }
 }

@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Middleware;
@@ -16,13 +17,13 @@ namespace Microsoft.Bot.Builder.Ai
     {
         private LuisClient luisClient;
         private string[] nativeLanguages;
-        private Translator translator;
+        private Translator translator;        
 
-        public TranslationMiddleware(string[] nativeLanguages, string translatorKey, string luisAppId, string luisAccessKey)
+        public TranslationMiddleware(HttpClient httpClient, string[] nativeLanguages, string translatorKey, string luisAppId, string luisAccessKey)
         {
             this.nativeLanguages = nativeLanguages;
             this.luisClient = new LuisClient(luisAppId, luisAccessKey);
-            this.translator = new Translator(translatorKey);
+            this.translator = new Translator(translatorKey, httpClient);
         }
 
         /// <summary>

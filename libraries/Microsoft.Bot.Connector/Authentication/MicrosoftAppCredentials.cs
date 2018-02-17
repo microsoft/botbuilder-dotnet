@@ -27,6 +27,14 @@ namespace Microsoft.Bot.Connector.Authentication
         /// </summary>
         public const string MicrosoftAppPasswordKey = "MicrosoftAppPassword";
 
+        /// <summary>
+        /// The token refresh code uses this client. Ideally, this would be passed in or set via a DI system to 
+        /// allow developer control over behavior / headers / timesouts and such. Unfortunatly this is buried
+        /// pretty deep, the static solution used here is much cleaner. If this becomes an issue we could
+        /// consider circling back and exposing developer control over this HttpClient. 
+        /// </summary>
+        private static readonly HttpClient _httpClient = new HttpClient(); 
+
         private static object _trustedHostNamesSync = new object();
         private static readonly IDictionary<string, DateTime> _trustedHostNames = new Dictionary<string, DateTime>()
         {
@@ -40,7 +48,7 @@ namespace Microsoft.Bot.Connector.Authentication
         {
             this.MicrosoftAppId = appId;
             this.MicrosoftAppPassword = password;
-            this.TokenCacheKey = $"{MicrosoftAppId}-cache";
+            this.TokenCacheKey = $"{MicrosoftAppId}-cache";            
         }
 
         public string MicrosoftAppId { get; set; }
@@ -109,7 +117,7 @@ namespace Microsoft.Bot.Connector.Authentication
                     {
                         // we have the token. Is it valid? 
                         if (oAuthToken.expiration_time > DateTime.UtcNow)
-                        { 
+                        {
                             return oAuthToken.access_token;
                         }
                     }
@@ -122,12 +130,12 @@ namespace Microsoft.Bot.Connector.Authentication
             // 3. We don't have it in the cache. 
 
             OAuthResponse token = await RefreshTokenAsync().ConfigureAwait(false);
-            lock(_cacheSync)
-            { 
+            lock (_cacheSync)
+            {
                 _cache[TokenCacheKey] = token;
             }
 
-            return token.access_token; 
+            return token.access_token;
         }
 
         private bool ShouldSetToken(HttpRequestMessage request)
@@ -166,9 +174,7 @@ namespace Microsoft.Bot.Connector.Authentication
 
         private async Task<OAuthResponse> RefreshTokenAsync()
         {
-            using (var httpClient = new HttpClient())
-            {
-                var content = new FormUrlEncodedContent(new Dictionary<string, string>()
+            var content = new FormUrlEncodedContent(new Dictionary<string, string>()
                 {
                     { "grant_type", "client_credentials" },
                     { "client_id", MicrosoftAppId },
@@ -176,21 +182,20 @@ namespace Microsoft.Bot.Connector.Authentication
                     { "scope", OAuthScope }
                 });
 
-                using (var response = await httpClient.PostAsync(OAuthEndpoint, content).ConfigureAwait(false))
+            using (var response = await _httpClient.PostAsync(OAuthEndpoint, content).ConfigureAwait(false))
+            {
+                string body = null;
+                try
                 {
-                    string body = null;
-                    try
-                    {
-                        response.EnsureSuccessStatusCode();
-                        body = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-                        var oauthResponse = JsonConvert.DeserializeObject<OAuthResponse>(body);
-                        oauthResponse.expiration_time = DateTime.UtcNow.AddSeconds(oauthResponse.expires_in).Subtract(TimeSpan.FromSeconds(60));
-                        return oauthResponse;
-                    }
-                    catch (Exception error)
-                    {
-                        throw new OAuthException(body ?? response.ReasonPhrase, error);
-                    }
+                    response.EnsureSuccessStatusCode();
+                    body = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    var oauthResponse = JsonConvert.DeserializeObject<OAuthResponse>(body);
+                    oauthResponse.expiration_time = DateTime.UtcNow.AddSeconds(oauthResponse.expires_in).Subtract(TimeSpan.FromSeconds(60));
+                    return oauthResponse;
+                }
+                catch (Exception error)
+                {
+                    throw new OAuthException(body ?? response.ReasonPhrase, error);
                 }
             }
         }

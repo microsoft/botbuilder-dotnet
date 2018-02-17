@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Connector;
@@ -16,15 +17,18 @@ namespace Microsoft.Bot.Builder.BotFramework
     {
         private readonly SimpleCredentialProvider _credentialProvider;
         private readonly MicrosoftAppCredentials _credentials;
+        private readonly HttpClient _httpClient; 
 
-        public BotFrameworkAdapter(IConfiguration configuration) : base()
+        public BotFrameworkAdapter(IConfiguration configuration, HttpClient httpClient = null) : base()
         {
+            _httpClient = httpClient ?? new HttpClient();
             _credentialProvider = new ConfigurationCredentialProvider(configuration);
-            _credentials = new MicrosoftAppCredentials(this._credentialProvider.AppId, _credentialProvider.Password);                       
+            _credentials = new MicrosoftAppCredentials(_credentialProvider.AppId, _credentialProvider.Password);                                   
         }
 
-        public BotFrameworkAdapter(string appId, string appPassword) : base()
+        public BotFrameworkAdapter(string appId, string appPassword, HttpClient httpClient = null) : base()
         {
+            _httpClient = httpClient ?? new HttpClient();
             _credentials = new MicrosoftAppCredentials(appId, appPassword);
             _credentialProvider = new SimpleCredentialProvider(appId, appPassword);
         }
@@ -53,11 +57,11 @@ namespace Microsoft.Bot.Builder.BotFramework
         public async Task Receive(string authHeader, Activity activity)
         {
             BotAssert.ActivityNotNull(activity);
-            await JwtTokenValidation.AssertValidActivity(activity, authHeader, _credentialProvider);
+            await JwtTokenValidation.AssertValidActivity(activity, authHeader, _credentialProvider, _httpClient);
 
             if (this.OnReceive != null)
             {
-                await this.OnReceive(activity).ConfigureAwait(false);
+                await OnReceive(activity).ConfigureAwait(false);
             }
         }
     }
