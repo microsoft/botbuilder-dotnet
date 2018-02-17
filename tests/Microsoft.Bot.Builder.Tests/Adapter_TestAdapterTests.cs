@@ -157,7 +157,7 @@ namespace Microsoft.Bot.Builder.Tests
                 .StartTest();
         }
 
-        [TestMethod]
+        [DataTestMethod]
         [DataRow(typeof(SecurityException))]
         [DataRow(typeof(ArgumentException))]
         [DataRow(typeof(ArgumentNullException))]
