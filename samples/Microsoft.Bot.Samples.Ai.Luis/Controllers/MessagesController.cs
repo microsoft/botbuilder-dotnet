@@ -18,7 +18,7 @@ namespace Microsoft.Bot.Samples.Ai.Luis
     [Route("api/[controller]")]
     public class MessagesController : Controller
     {
-        static BotFrameworkBot bot;
+        static BotFrameworkBotServer botServer;
 
         /// <summary>
         /// In this sample Bot, a new instance of the Bot is created by the controller 
@@ -28,9 +28,9 @@ namespace Microsoft.Bot.Samples.Ai.Luis
         /// </summary>        
         public MessagesController(IConfiguration configuration)
         {
-            if (bot == null)
+            if (botServer == null)
             {
-                bot = new BotFrameworkBot(configuration)
+                botServer = new BotFrameworkBotServer(configuration)
                     .Use(new LuisRecognizerMiddleware("xxxxxx", "xxxxxx"));
 
                 // LUIS with correct baseUri format example
@@ -58,7 +58,7 @@ namespace Microsoft.Bot.Samples.Ai.Luis
         {
             try
             {
-                await bot.ProcessActivty(this.Request.Headers["Authorization"].FirstOrDefault(), activity, BotReceiveHandler);
+                await botServer.ProcessActivty(this.Request.Headers["Authorization"].FirstOrDefault(), activity, BotReceiveHandler);
                 return this.Ok();
             }
             catch (UnauthorizedAccessException)

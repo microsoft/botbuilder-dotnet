@@ -4,7 +4,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.Servers;
 using Microsoft.Bot.Builder.Tests;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -51,9 +51,9 @@ namespace Microsoft.Bot.Builder.Ai.Tests
             }
 
             
-            TestBot bot = new TestBot()
+            TestBotServer botServer = new TestBotServer()
                 .Use(new LuisRecognizerMiddleware(luisAppId, subscriptionKey));
-            await new TestFlow(bot, (context) =>
+            await new TestFlow(botServer, (context) =>
                 {
                     context.Reply(context.TopIntent.Name);
                     return Task.CompletedTask;

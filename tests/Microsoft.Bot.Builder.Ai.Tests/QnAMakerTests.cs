@@ -3,7 +3,7 @@
 
 using System.Net.Http;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.Servers;
 using Microsoft.Bot.Builder.Tests;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -58,7 +58,7 @@ namespace Microsoft.Bot.Builder.Ai.Tests
         public async Task QnaMaker_TestMiddleware()
         {
             
-            TestBot bot = new TestBot()
+            TestBotServer botServer = new TestBotServer()
                 .Use(new QnAMakerMiddleware(new QnAMakerOptions()
                 {
                     KnowledgeBaseId = knowlegeBaseId,
@@ -66,7 +66,7 @@ namespace Microsoft.Bot.Builder.Ai.Tests
                     Top = 1
                 }, new HttpClient()));
 
-            await new TestFlow(bot, (context) =>
+            await new TestFlow(botServer, (context) =>
                 {
                     if (context.Request.AsMessageActivity().Text == "foo")
                     {

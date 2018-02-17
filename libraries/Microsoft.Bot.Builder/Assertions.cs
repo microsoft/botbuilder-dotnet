@@ -3,7 +3,7 @@
 
 using System;
 using System.Collections.Generic;
-using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.Servers;
 using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder

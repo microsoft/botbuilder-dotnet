@@ -3,7 +3,7 @@
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.Servers;
 using Microsoft.Bot.Builder.Middleware;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -38,13 +38,13 @@ namespace Microsoft.Bot.Builder.Tests
     [TestCategory("Middleware")]
     public class BotContext_Tests
     {
-        private TestBot CreateBot()
+        private TestBotServer CreateBotServer()
         {
 
-            TestBot bot = new TestBot();
-            bot = bot
+            TestBotServer botServer = new TestBotServer();
+            botServer = botServer
                 .Use(new AnnotateMiddleware());
-            return bot;
+            return botServer;
         }
 
         public async Task MyCodeHandler(IBotContext context)
@@ -78,8 +78,8 @@ namespace Microsoft.Bot.Builder.Tests
         [TestMethod]
         public async Task TestReceivePipeline()
         {
-            var bot = CreateBot();
-            await new TestFlow(bot, MyCodeHandler)
+            var botServer = CreateBotServer();
+            await new TestFlow(botServer, MyCodeHandler)
                 .Send("receive")
                 .AssertReply((activity) =>
                 {
@@ -93,8 +93,8 @@ namespace Microsoft.Bot.Builder.Tests
         [TestMethod]
         public async Task TestProactivePipeline()
         {
-            var bot = CreateBot();
-            await new TestFlow(bot, MyCodeHandler)
+            var botServer = CreateBotServer();
+            await new TestFlow(botServer, MyCodeHandler)
                 .Send("proactive")
                 .AssertReply((activity) =>
                 {
@@ -110,8 +110,8 @@ namespace Microsoft.Bot.Builder.Tests
         public async Task Context_ReplyTextOnly()
         {
 
-            TestBot bot = new TestBot();
-            await new TestFlow(bot, async (context) =>
+            TestBotServer botServer = new TestBotServer();
+            await new TestFlow(botServer, async (context) =>
                 {
                     if (context.Request.AsMessageActivity().Text == "hello")
                     {
@@ -130,9 +130,9 @@ namespace Microsoft.Bot.Builder.Tests
 
             string ssml = @"<speak><p>hello</p></speak>";
 
-            TestBot bot = new TestBot();
+            TestBotServer botServer = new TestBotServer();
 
-            await new TestFlow(bot, async (context) =>
+            await new TestFlow(botServer, async (context) =>
             {
                 if (context.Request.AsMessageActivity().Text == "hello")
                 {
@@ -154,8 +154,8 @@ namespace Microsoft.Bot.Builder.Tests
         public async Task Context_ReplyActivity()
         {
 
-            TestBot bot = new TestBot();
-            await new TestFlow(bot, async (context) =>
+            TestBotServer botServer = new TestBotServer();
+            await new TestFlow(botServer, async (context) =>
                 {
                     if (context.Request.AsMessageActivity().Text == "hello")
                     {
