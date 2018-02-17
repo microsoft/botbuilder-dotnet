@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Middleware;
 using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.Adapters
@@ -35,9 +36,9 @@ namespace Microsoft.Bot.Builder.Adapters
         }
 
 
-        public new TestBot Use(Middleware.IMiddleware middleware)
+        public new TestBot Use(IMiddleware middleware)
         {
-            base._middlewareSet.Use(middleware);
+            base.RegisterMiddleware(middleware);
             return this;
         }
 

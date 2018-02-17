@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Middleware;
 using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.Adapters
@@ -13,6 +14,12 @@ namespace Microsoft.Bot.Builder.Adapters
     {
         public ConsoleBot() : base()
         {
+        }
+
+        public ConsoleBot Use(IMiddleware middleware)
+        {
+            base.RegisterMiddleware(middleware);
+            return this;
         }
 
         public async Task ProcessActivity(Func<IBotContext, Task> callback = null)
