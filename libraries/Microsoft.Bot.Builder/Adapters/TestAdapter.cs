@@ -272,11 +272,21 @@ namespace Microsoft.Bot.Builder.Adapters
 
             return new TestFlow(this.testTask.ContinueWith((task) =>
             {
-                if (task.IsFaulted)
-                    throw new Exception("Send failed. See InnerException for details", task.Exception);
+                // NOTE: we need to .Wait() on the original Task to properly observe any exceptions that might have occurred
+                // and to have them propagate correctly up through the chain to whomever is waiting on the parent task
+                // The following StackOverflow answer provides some more details on why you want to do this: 
+                // https://stackoverflow.com/questions/11904821/proper-way-to-use-continuewith-for-tasks/11906865#11906865
+                //
+                // From the Docs:
+                //  https://docs.microsoft.com/en-us/dotnet/standard/parallel-programming/exception-handling-task-parallel-library
+                //  Exceptions are propagated when you use one of the static or instance Task.Wait or Wait 
+                //  methods, and you handle them by enclosing the call in a try/catch statement. If a task is the 
+                //  parent of attached child tasks, or if you are waiting on multiple tasks, multiple exceptions 
+                //  could be thrown.
+                task.Wait();
 
                 return this._adapter.SendActivityToBot(userSays);
-            }), this._adapter);
+            }).Unwrap(), this._adapter);
         }
 
         /// <summary>
@@ -291,11 +301,11 @@ namespace Microsoft.Bot.Builder.Adapters
 
             return new TestFlow(this.testTask.ContinueWith((task) =>
             {
-                if (task.IsFaulted)
-                    throw new Exception("Send failed. See InnerException for details", task.Exception);
+                // NOTE: See details code in above method. 
+                task.Wait();
 
                 return this._adapter.SendActivityToBot(userActivity);
-            }), this._adapter);
+            }).Unwrap(), this._adapter);
         }
 
         /// <summary>
@@ -307,11 +317,11 @@ namespace Microsoft.Bot.Builder.Adapters
         {
             return new TestFlow(this.testTask.ContinueWith((task) =>
             {
-                if (task.IsFaulted)
-                    throw new Exception("Delay failed. See InnerException for details", task.Exception);
+                // NOTE: See details code in above method. 
+                task.Wait();
 
                 return Task.Delay((int)ms);
-            }), this._adapter);
+            }).Unwrap(), this._adapter);
         }
 
         /// <summary>
@@ -356,8 +366,8 @@ namespace Microsoft.Bot.Builder.Adapters
         {
             return new TestFlow(this.testTask.ContinueWith((task) =>
             {
-                if (task.IsFaulted)
-                    throw new Exception($"Faulted Task in AssertReply on test '{description}'. See InnerException for details.", task.Exception);
+                // NOTE: See details code in above method. 
+                task.Wait();
 
                 var start = DateTime.UtcNow;
                 while (true)
