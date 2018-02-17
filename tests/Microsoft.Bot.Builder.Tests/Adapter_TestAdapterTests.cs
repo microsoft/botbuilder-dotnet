@@ -2,6 +2,8 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Runtime.CompilerServices;
+using System.Security;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Schema;
@@ -154,5 +156,26 @@ namespace Microsoft.Bot.Builder.Tests
                     .AssertReply("three")
                 .StartTest();
         }
+
+        [DataTestMethod]
+        [DataRow(typeof(SecurityException))]
+        [DataRow(typeof(ArgumentException))]
+        [DataRow(typeof(ArgumentNullException))]
+        public async Task TestAdapter_TestFlow(Type exceptionType)
+        {
+            Exception innerException = (Exception)Activator.CreateInstance(exceptionType);
+            var promise = new TaskCompletionSource<bool>();
+            promise.SetException(innerException);
+            var adapter = this.CreateAdapter();
+
+            TestFlow testFlow = new TestFlow(promise.Task, adapter);
+            testFlow.Send(new Activity());
+            Task task = testFlow.StartTest();
+            await task.ContinueWith(action =>
+            {
+                Assert.IsInstanceOfType(action.Exception.InnerException, exceptionType);
+            });
+        }
+
     }
 }
