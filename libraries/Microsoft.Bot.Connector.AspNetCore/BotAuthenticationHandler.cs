@@ -3,6 +3,7 @@
 
 using System;
 using System.IdentityModel.Tokens.Jwt;
+using System.Net.Http;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
 using System.Threading;
@@ -15,12 +16,13 @@ using Microsoft.Extensions.Options;
 
 namespace Microsoft.Bot.Connector
 {
-
     /// <summary>
     /// Bot authentication hanlder used by <see cref="BotAuthenticationMiddleware"/>.
     /// </summary>
     public class BotAuthenticationHandler : AuthenticationHandler<BotAuthenticationOptions>
     {
+        private static readonly HttpClient _httpClient = new HttpClient();
+
         public BotAuthenticationHandler(IOptionsMonitor<BotAuthenticationOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock)
             : base(options, logger, encoder, clock)
         {
@@ -53,7 +55,7 @@ namespace Microsoft.Bot.Connector
                 }
 
                 string authHeader = Request.Headers["Authorization"];
-                ClaimsIdentity claimsIdentity = await JwtTokenValidation.ValidateAuthHeader(authHeader, Options.CredentialProvider);
+                ClaimsIdentity claimsIdentity = await JwtTokenValidation.ValidateAuthHeader(authHeader, Options.CredentialProvider, _httpClient);
 
                 Logger.TokenValidationSucceeded();
 
@@ -73,7 +75,6 @@ namespace Microsoft.Bot.Connector
                 {
                     return tokenValidatedContext.Result;
                 }
-
 
                 tokenValidatedContext.Success();
                 return tokenValidatedContext.Result;

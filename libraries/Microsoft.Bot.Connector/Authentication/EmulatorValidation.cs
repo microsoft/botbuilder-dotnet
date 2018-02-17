@@ -4,6 +4,7 @@
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.IdentityModel.Tokens;
@@ -98,15 +99,19 @@ namespace Microsoft.Bot.Connector.Authentication
         /// </summary>
         /// <param name="authHeader">The raw HTTP header in the format: "Bearer [longString]"</param>
         /// <param name="credentials">The user defined set of valid credentials, such as the AppId.</param>
+        /// <param name="httpClient">Authentication of tokens requires calling out to validate Endorsements and related documents. The
+        /// HttpClient is used for making those calls. Those calls generally require TLS connections, which are expensive to 
+        /// setup and teardown, so a shared HttpClient is recommended.</param>
         /// <returns>
         /// A valid ClaimsIdentity. 
         /// </returns>
         /// <remarks>
         /// A token issued by the Bot Framework will FAIL this check. Only Emulator tokens will pass.
         /// </remarks>
-        public static async Task<ClaimsIdentity> AuthenticateEmulatorToken(string authHeader, ICredentialProvider credentials)
+        public static async Task<ClaimsIdentity> AuthenticateEmulatorToken(string authHeader, ICredentialProvider credentials, HttpClient httpClient)
         {
             var tokenExtractor = new JwtTokenExtractor(
+                    httpClient,
                     ToBotFromEmulatorTokenValidationParameters,
                     AuthenticationConstants.ToBotFromEmulatorOpenIdMetadataUrl,
                     AuthenticationConstants.AllowedSigningAlgorithms, null);
