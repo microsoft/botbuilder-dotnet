@@ -20,11 +20,11 @@ namespace Microsoft.Bot.Samples.Ai.QnA.Controllers
 
         private static readonly HttpClient _httpClient = new HttpClient();
 
-        static BotFrameworkBotServer botServer;
+        static BotFrameworkAdapter adapter;
 
         public MessagesController(IConfiguration configuration)
         {
-            if (botServer == null)
+            if (adapter == null)
             {
                 var qnaOptions = new QnAMakerOptions
                 {
@@ -32,7 +32,7 @@ namespace Microsoft.Bot.Samples.Ai.QnA.Controllers
                     SubscriptionKey = "xxxxxx",
                     KnowledgeBaseId = "xxxxxx"
                 };
-                botServer = new BotFrameworkBotServer(configuration)
+                adapter = new BotFrameworkAdapter(configuration)
                     // add QnA middleware 
                     .Use(new QnAMakerMiddleware(qnaOptions, _httpClient));
             }
@@ -53,7 +53,7 @@ namespace Microsoft.Bot.Samples.Ai.QnA.Controllers
         {
             try
             {
-                await botServer.ProcessActivty(this.Request.Headers["Authorization"].FirstOrDefault(), activity, BotReceiveHandler);
+                await adapter.ProcessActivty(this.Request.Headers["Authorization"].FirstOrDefault(), activity, BotReceiveHandler);
                 return this.Ok();
             }
             catch (UnauthorizedAccessException)

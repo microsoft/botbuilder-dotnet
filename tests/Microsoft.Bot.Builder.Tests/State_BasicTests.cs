@@ -4,7 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Servers;
+using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Storage;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -18,9 +18,9 @@ namespace Microsoft.Bot.Builder.Tests
         public async Task State_DoNOTRememberContextState()
         {
 
-            TestBotServer botServer = new TestBotServer();
+            TestAdapter adapter = new TestAdapter();
 
-            await new TestFlow(botServer, async (context) =>
+            await new TestFlow(adapter, async (context) =>
                    {
                        Assert.IsNotNull(context.State, "context.state should exist");
                        switch (context.Request.AsMessageActivity().Text)
@@ -46,9 +46,9 @@ namespace Microsoft.Bot.Builder.Tests
         {
             
 
-            var botServer = new TestBotServer()
+            var adapter = new TestAdapter()
                 .Use(new BotStateManager(new MemoryStorage()));
-            await new TestFlow(botServer, 
+            await new TestFlow(adapter, 
                     async (context) =>
                     {
                         Assert.IsNotNull(context.State.User, "state.user should exist");
@@ -74,9 +74,9 @@ namespace Microsoft.Bot.Builder.Tests
         {
             
 
-            TestBotServer botServer= new TestBotServer()
+            TestAdapter adapter= new TestAdapter()
                 .Use(new BotStateManager(new MemoryStorage()));
-            await new TestFlow(botServer, 
+            await new TestFlow(adapter, 
                     async (context) =>
                     {
                         Assert.IsNotNull(context.State.Conversation, "state.conversation should exist");
@@ -103,9 +103,9 @@ namespace Microsoft.Bot.Builder.Tests
             
             string testGuid = Guid.NewGuid().ToString();
 
-            TestBotServer botServer = new TestBotServer()
+            TestAdapter adapter = new TestAdapter()
                 .Use(new CustomStateManager(new MemoryStorage()));
-            await new TestFlow(botServer, async (context) =>
+            await new TestFlow(adapter, async (context) =>
                     {
                         switch (context.Request.AsMessageActivity().Text)
                         {
@@ -132,10 +132,10 @@ namespace Microsoft.Bot.Builder.Tests
         [TestMethod]
         public async Task State_RoundTripTypedObject()
         {
-            TestBotServer botServer= new TestBotServer()
+            TestAdapter adapter= new TestAdapter()
                 .Use(new BotStateManager(new MemoryStorage()));
 
-            await new TestFlow(botServer, 
+            await new TestFlow(adapter, 
                     async (context) =>
                     {
                         Assert.IsNotNull(context.State.Conversation, "state.conversation should exist");

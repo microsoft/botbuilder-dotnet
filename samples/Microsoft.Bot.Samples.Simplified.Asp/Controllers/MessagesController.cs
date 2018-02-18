@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Samples.Simplified.Asp.Controllers
     [Route("api/[controller]")]
     public class MessagesController : BotController
     {
-        public MessagesController(BotFrameworkBotServer bot)
+        public MessagesController(BotFrameworkAdapter bot)
             : base(bot)
         {
         }

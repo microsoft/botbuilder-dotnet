@@ -3,7 +3,7 @@
 
 using System;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Servers;
+using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Middleware;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -20,10 +20,10 @@ namespace Microsoft.Bot.Builder.Tests
             string messageText = Guid.NewGuid().ToString();
 
             
-            TestBotServer botServer = new TestBotServer()
+            TestAdapter adapter = new TestAdapter()
                 .Use(new EchoMiddleWare());
             
-            await new TestFlow(botServer)
+            await new TestFlow(adapter)
                 .Send(messageText).AssertReply(messageText)
                 .StartTest();
         }       

@@ -4,7 +4,7 @@
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Servers;
+using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Middleware;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -23,10 +23,10 @@ namespace Microsoft.Bot.Builder.Tests
             RegExpRecognizerMiddleware helpRecognizer = new RegExpRecognizerMiddleware()
                 .AddIntent("HelpIntent", new Regex("help", RegexOptions.IgnoreCase));
 
-            TestBotServer botServer = new TestBotServer()
+            TestAdapter adapter = new TestAdapter()
                 .Use(helpRecognizer);
 
-            await new TestFlow(botServer, async (context) =>
+            await new TestFlow(adapter, async (context) =>
                 {
                     if (context.IfIntent("HelpIntent"))
                         context.Reply("You selected HelpIntent");
@@ -77,13 +77,13 @@ namespace Microsoft.Bot.Builder.Tests
         [TestCategory("RegEx Intent Recognizer")]
         public async Task Regex_RecognizeIntentViaRegex()
         {
-            TestBotServer botServer = new TestBotServer()
+            TestAdapter adapter = new TestAdapter()
                 .Use(new RegExpRecognizerMiddleware()
                         .AddIntent("aaaaa", new Regex("a", RegexOptions.IgnoreCase))
                         .AddIntent("bbbbb", new Regex("b", RegexOptions.IgnoreCase))
                 );
 
-            await new TestFlow(botServer, async (context) =>
+            await new TestFlow(adapter, async (context) =>
                 {
                     if (context.IfIntent(new Regex("a")))
                         context.Reply("aaaa Intent");
@@ -105,9 +105,9 @@ namespace Microsoft.Bot.Builder.Tests
             RegExpRecognizerMiddleware helpRecognizer = new RegExpRecognizerMiddleware()
                 .AddIntent("CancelIntent", new Regex("cancel", RegexOptions.IgnoreCase));
 
-            TestBotServer botServer = new TestBotServer()
+            TestAdapter adapter = new TestAdapter()
                 .Use(helpRecognizer);
-            await new TestFlow(botServer, async (context) =>
+            await new TestFlow(adapter, async (context) =>
                 {
                     if (context.IfIntent("CancelIntent"))
                         context.Reply("You selected CancelIntent");
@@ -126,10 +126,10 @@ namespace Microsoft.Bot.Builder.Tests
             RegExpRecognizerMiddleware helpRecognizer = new RegExpRecognizerMiddleware()
                 .AddIntent("CancelIntent", new Regex("cancel", RegexOptions.IgnoreCase));
 
-            TestBotServer botServer = new TestBotServer()
+            TestAdapter adapter = new TestAdapter()
                 .Use(helpRecognizer);
 
-            await new TestFlow(botServer, async (context) =>
+            await new TestFlow(adapter, async (context) =>
                 {
                     if (context.IfIntent("CancelIntent"))
                         context.Reply("You selected CancelIntent");
@@ -150,9 +150,9 @@ namespace Microsoft.Bot.Builder.Tests
                 .AddIntent("CancelIntent", new Regex("cancel", RegexOptions.IgnoreCase))
                 .AddIntent("TacoIntent", new Regex("taco", RegexOptions.IgnoreCase));
 
-            TestBotServer botServer = new TestBotServer()
+            TestAdapter adapter = new TestAdapter()
                 .Use(helpRecognizer);
-            await new TestFlow(botServer, async (context) =>
+            await new TestFlow(adapter, async (context) =>
                 {
                     if (context.IfIntent("HelpIntent"))
                         context.Reply("You selected HelpIntent");

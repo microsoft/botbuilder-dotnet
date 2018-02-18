@@ -3,7 +3,7 @@
 
 using System;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Servers;
+using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Samples.EchoBot
@@ -18,8 +18,8 @@ namespace Microsoft.Bot.Samples.EchoBot
         static Task MainAsync(string[] args)
         {
             Console.WriteLine("Welcome to the EchoBot.");
-            var botServer = new ConsoleBotServer();
-            return botServer.ProcessActivity(async (context) =>
+            var adapter = new ConsoleAdapter();
+            return adapter.ProcessActivity(async (context) =>
             {
                 if (context.Request.Type == ActivityTypes.Message)
                 {

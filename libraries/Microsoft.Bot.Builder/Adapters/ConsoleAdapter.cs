@@ -8,15 +8,15 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Middleware;
 using Microsoft.Bot.Schema;
 
-namespace Microsoft.Bot.Builder.Servers
+namespace Microsoft.Bot.Builder.Adapters
 {
-    public class ConsoleBotServer : BotServer
+    public class ConsoleAdapter : BotAdapter
     {
-        public ConsoleBotServer() : base()
+        public ConsoleAdapter() : base()
         {
         }
 
-        public ConsoleBotServer Use(IMiddleware middleware)
+        public ConsoleAdapter Use(IMiddleware middleware)
         {
             base.RegisterMiddleware(middleware);
             return this;

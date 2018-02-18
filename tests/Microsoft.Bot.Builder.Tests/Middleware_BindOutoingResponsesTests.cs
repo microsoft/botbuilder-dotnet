@@ -4,7 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Servers;
+using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Middleware;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -86,8 +86,8 @@ namespace Microsoft.Bot.Builder.Tests
             IActivity a = new Activity();
 
             
-            TestBotServer botServer = new TestBotServer();
-            await new TestFlow(botServer, async (context) =>
+            TestAdapter adapter = new TestAdapter();
+            await new TestFlow(adapter, async (context) =>
                {
                    Assert.IsTrue(string.IsNullOrEmpty(a.Type));
                    context.Responses.Add(a);

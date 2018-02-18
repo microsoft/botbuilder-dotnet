@@ -7,15 +7,15 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Middleware;
 using Microsoft.Bot.Schema;
 
-namespace Microsoft.Bot.Builder.Servers
+namespace Microsoft.Bot.Builder.Adapters
 {
-    public class TestBotServer : BotServer
+    public class TestAdapter : BotAdapter
     {
         private int _nextId = 0;
         private readonly List<IActivity> botReplies = new List<IActivity>();
         private Func<IBotContext, Task> callback;
 
-        public TestBotServer(ConversationReference reference = null)
+        public TestAdapter(ConversationReference reference = null)
         {
             if (reference != null)
             {
@@ -36,7 +36,7 @@ namespace Microsoft.Bot.Builder.Servers
         }
 
 
-        public new TestBotServer Use(IMiddleware middleware)
+        public new TestAdapter Use(IMiddleware middleware)
         {
             base.RegisterMiddleware(middleware);
             return this;
@@ -175,13 +175,13 @@ namespace Microsoft.Bot.Builder.Servers
 
     public class TestFlow
     {
-        readonly TestBotServer botServer;
+        readonly TestAdapter adapter;
         readonly Task testTask;
         Func<IBotContext, Task> callback;
 
-        public TestFlow(TestBotServer botServer, Func<IBotContext, Task> callback = null)
+        public TestFlow(TestAdapter adapter, Func<IBotContext, Task> callback = null)
         {
-            this.botServer = botServer;
+            this.adapter = adapter;
             this.callback = callback;
             this.testTask = testTask ?? Task.CompletedTask;
         }
@@ -190,7 +190,7 @@ namespace Microsoft.Bot.Builder.Servers
         {
             this.testTask = testTask ?? Task.CompletedTask;
             this.callback = flow.callback;
-            this.botServer = flow.botServer;
+            this.adapter = flow.adapter;
         }
 
         /// <summary>
@@ -227,7 +227,7 @@ namespace Microsoft.Bot.Builder.Servers
                 //  could be thrown.
                 task.Wait();
 
-                return this.botServer.SendTextToBot(userSays, this.callback);
+                return this.adapter.SendTextToBot(userSays, this.callback);
             }).Unwrap(), this);
         }
 
@@ -246,7 +246,7 @@ namespace Microsoft.Bot.Builder.Servers
                 // NOTE: See details code in above method. 
                 task.Wait();
 
-                return this.botServer.ProcessActivity(userActivity, this.callback);
+                return this.adapter.ProcessActivity(userActivity, this.callback);
             }).Unwrap(), this);
         }
 
@@ -275,7 +275,7 @@ namespace Microsoft.Bot.Builder.Servers
         /// <returns></returns>
         public TestFlow AssertReply(string expected, string description = null, UInt32 timeout = 3000)
         {
-            return this.AssertReply(this.botServer.MakeActivity(expected), description, timeout);
+            return this.AssertReply(this.adapter.MakeActivity(expected), description, timeout);
         }
 
         /// <summary>
@@ -321,7 +321,7 @@ namespace Microsoft.Bot.Builder.Servers
                         throw new TimeoutException($"{timeout}ms Timed out waiting for:'{description}'");
                     }
 
-                    IActivity replyActivity = this.botServer.GetNextReply();
+                    IActivity replyActivity = this.adapter.GetNextReply();
                     if (replyActivity != null)
                     {
                         // if we have a reply

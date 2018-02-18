@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Builder
 {
     public interface IBotContext
     {
-        BotServer Bot { get; }
+        BotAdapter Bot { get; }
 
         /// <summary>
         /// Incoming request
