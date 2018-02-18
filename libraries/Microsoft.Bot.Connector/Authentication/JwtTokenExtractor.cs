@@ -21,7 +21,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <summary>
         /// The endorsements validator delegate.
         /// </summary>
-        /// <param name="endorsements"> The endorsements used for validation.</param>
+        /// <param name="endorsements">The endorsements used for validation.</param>
         /// <returns>true if validation passes; false otherwise.</returns>
         public delegate bool EndorsementsValidator(string[] endorsements);
 
@@ -66,7 +66,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// Extracts relevant data from JWT Tokens
         /// </summary>
         /// <param name="httpClient">As part of validating JWT Tokens, endorsements need to be feteched from
-        /// sources specificed by the relevant security URLs. This HttpClient is used to allow for resource
+        /// sources specified by the relevant security URLs. This HttpClient is used to allow for resource
         /// pooling around those retrievals. As those resources require TLS sharing the HttpClient is 
         /// important to overall perfomance.</param>
         /// <param name="tokenValidationParameters"></param>
