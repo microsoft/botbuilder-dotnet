@@ -53,6 +53,30 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [TestMethod]
+        public void TextAndSSMLAndInputHint()
+        {
+            string inputHint = InputHints.ExpectingInput;
+            string messageText = Guid.NewGuid().ToString();
+            string ssml = @"
+                <speak xmlns=""http://www.w3.org/2001/10/synthesis""
+                       xmlns:dc=""http://purl.org/dc/elements/1.1/""
+                       version=""1.0"">
+                  <p>
+                    <s xml:lang=""en-US"">
+                      <voice name=""Bot"" gender=""neutral"" age=""2"">
+                        Bots are <emphasis>Awesome</emphasis>.
+                      </voice>
+                    </s>
+                  </p>
+                </speak>";
+            IMessageActivity message = MessageFactory.Text(messageText, ssml, inputHint);
+            Assert.AreEqual(message.Text, messageText, "Message Text is not an empty string");
+            Assert.AreEqual(message.Speak, ssml, "ssml text is incorrect");
+            Assert.AreEqual(message.InputHint, inputHint, "InputHint is incorrect");
+            Assert.AreEqual(message.Type, ActivityTypes.Message, "Incorrect Activity Type");
+        }
+
+        [TestMethod]
         public void SuggestedActionText()
         {
             string text = Guid.NewGuid().ToString();
