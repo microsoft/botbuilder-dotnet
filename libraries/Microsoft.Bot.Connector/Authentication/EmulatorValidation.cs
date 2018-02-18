@@ -16,10 +16,6 @@ namespace Microsoft.Bot.Connector.Authentication
     /// </summary>
     public static class EmulatorValidation
     {
-        // The AppId Claim is only used during emulator token validation. 
-        private const string AppIdClaim = "appid";
-        private const string VersionClaim = "ver";
-
         /// <summary>
         /// TO BOT FROM EMULATOR: Token validation parameters when connecting to a channel.
         /// </summary>
@@ -133,7 +129,7 @@ namespace Microsoft.Bot.Connector.Authentication
             // what we're looking for. Note that in a multi-tenant bot, this value
             // comes from developer code that may be reaching out to a service, hence the 
             // Async validation. 
-            Claim versionClaim = identity.Claims.FirstOrDefault(c => c.Type == VersionClaim);
+            Claim versionClaim = identity.Claims.FirstOrDefault(c => c.Type == AuthenticationConstants.VersionClaim);
             if (versionClaim == null)
             {
                 throw new UnauthorizedAccessException("'ver' claim is required on Emulator Tokens.");
@@ -148,7 +144,7 @@ namespace Microsoft.Bot.Connector.Authentication
             {
                 // either no Version or a version of "1.0" means we should look for 
                 // the claim in the "appid" claim. 
-                Claim appIdClaim = identity.Claims.FirstOrDefault(c => c.Type == AppIdClaim);
+                Claim appIdClaim = identity.Claims.FirstOrDefault(c => c.Type == AuthenticationConstants.AppIdClaim);
                 if (appIdClaim == null)
                 {
                     // No claim around AppID. Not Authorized.
