@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Servers;
+using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Middleware;
 using Microsoft.Bot.Builder.Templates;
 using Microsoft.Bot.Schema;
@@ -111,10 +111,10 @@ namespace Microsoft.Bot.Builder.Tests
         public async Task Template_Middleware_defaultlookup()
         {
             
-            TestBotServer botServer= new TestBotServer()
+            TestAdapter adapter= new TestAdapter()
                 .Use(new DictionaryRenderer(templates1))
                 .Use(new DictionaryRenderer(templates2));
-            await new TestFlow(botServer, async (context) =>
+            await new TestFlow(adapter, async (context) =>
                 {
                     context.ReplyWith(context.Request.AsMessageActivity().Text.Trim(), new { name = "joe" });                    
                 })
@@ -127,11 +127,11 @@ namespace Microsoft.Bot.Builder.Tests
         public async Task Template_Middleware_enLookup()
         {
             
-            TestBotServer botServer= new TestBotServer()
+            TestAdapter adapter= new TestAdapter()
                 .Use(new DictionaryRenderer(templates1))
                 .Use(new DictionaryRenderer(templates2));
 
-            await new TestFlow(botServer, async (context) =>
+            await new TestFlow(adapter, async (context) =>
                 {
                     context.Request.AsMessageActivity().Locale = "en"; // force to english
                     context.ReplyWith(context.Request.AsMessageActivity().Text.Trim(), new { name = "joe" });                    
@@ -145,11 +145,11 @@ namespace Microsoft.Bot.Builder.Tests
         public async Task Template_Middleware_frLookup()
         {
             
-            TestBotServer botServer= new TestBotServer()
+            TestAdapter adapter= new TestAdapter()
                 .Use(new DictionaryRenderer(templates1))
                 .Use(new DictionaryRenderer(templates2));
 
-            await new TestFlow(botServer, async (context) =>
+            await new TestFlow(adapter, async (context) =>
                 {
                     context.Request.AsMessageActivity().Locale = "fr"; // force to french
                     context.ReplyWith(context.Request.AsMessageActivity().Text.Trim(), new { name = "joe" });
@@ -163,11 +163,11 @@ namespace Microsoft.Bot.Builder.Tests
         public async Task Template_Middleware_override()
         {
             
-            TestBotServer botServer= new TestBotServer()
+            TestAdapter adapter= new TestAdapter()
                 .Use(new DictionaryRenderer(templates1))
                 .Use(new DictionaryRenderer(templates2));
 
-            await new TestFlow(botServer, async (context) =>
+            await new TestFlow(adapter, async (context) =>
                 {
                     context.Request.AsMessageActivity().Locale = "fr"; // force to french
                     context.ReplyWith(context.Request.AsMessageActivity().Text.Trim(), new { name = "joe" });                    
@@ -181,11 +181,11 @@ namespace Microsoft.Bot.Builder.Tests
         public async Task Template_Middleware_useTemplateEngine()
         {
             
-            TestBotServer botServer= new TestBotServer()
+            TestAdapter adapter= new TestAdapter()
                 .Use(new DictionaryRenderer(templates1))
                 .Use(new DictionaryRenderer(templates2));
 
-            await new TestFlow(botServer, async (context) =>
+            await new TestFlow(adapter, async (context) =>
                 {
                     context.ReplyWith(context.Request.AsMessageActivity().Text.Trim(), new { name = "joe" });                    
                 })

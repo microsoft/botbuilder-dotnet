@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Microsoft.Bot.Builder.Servers;
+using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.Tests
@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Builder.Tests
     {
         public static BotContext CreateEmptyContext()
         {
-            TestBotServer b = new TestBotServer();
+            TestAdapter b = new TestAdapter();
             Activity a = new Activity
             {
                 Type = ActivityTypes.Message
@@ -26,7 +26,7 @@ namespace Microsoft.Bot.Builder.Tests
 
         public static T CreateEmptyContext<T>() where T:IBotContext
         {
-            TestBotServer b = new TestBotServer();
+            TestAdapter b = new TestAdapter();
             Activity a = new Activity();
             if (typeof(T).IsAssignableFrom(typeof(IBotContext)))
             {

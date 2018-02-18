@@ -22,12 +22,12 @@ namespace AlarmBot.Controllers
     [Route("api/[controller]")]
     public class MessagesController : Controller
     {
-        public static BotFrameworkBotServer botServer = null;
+        public static BotFrameworkAdapter adapter = null;
 
         ///
         public MessagesController(IConfiguration configuration)
         {
-            if (botServer == null)
+            if (adapter == null)
             {
                 string applicationId = configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppIdKey)?.Value;
                 string applicationPassword = configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppPasswordKey)?.Value;
@@ -40,7 +40,7 @@ namespace AlarmBot.Controllers
                 //IStorage storage = new AzureTableStorage((System.Diagnostics.Debugger.IsAttached) ? "UseDevelopmentStorage=true;" : configuration.GetSection("DataConnectionString")?.Value, tableName: "AlarmBot");
 
                 // create bot hooked up to the activity adapater
-                botServer = new BotFrameworkBotServer(applicationId, applicationPassword)
+                adapter = new BotFrameworkAdapter(applicationId, applicationPassword)
                     .Use(new BotStateManager(storage)) // --- add Bot State Manager to automatically persist and load the context.State.Conversation and context.State.User objects
                     .Use(new DefaultTopicView())
                     .Use(new ShowAlarmsTopicView())
@@ -94,7 +94,7 @@ namespace AlarmBot.Controllers
         {
             try
             {
-                await botServer.ProcessActivty(this.Request.Headers["Authorization"].FirstOrDefault(), activity, this.BotReceiveHandler);
+                await adapter.ProcessActivty(this.Request.Headers["Authorization"].FirstOrDefault(), activity, this.BotReceiveHandler);
                 return this.Ok();
             }
             catch (UnauthorizedAccessException)

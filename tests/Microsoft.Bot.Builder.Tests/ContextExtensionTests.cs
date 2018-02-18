@@ -3,7 +3,7 @@
 
 using System;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Servers;
+using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -18,10 +18,10 @@ namespace Microsoft.Bot.Builder.Tests
         public async Task ContextDelay()
         {
 
-            TestBotServer botServer = new TestBotServer();
+            TestAdapter adapter = new TestAdapter();
 
             DateTime start = DateTime.Now;
-            await new TestFlow(botServer, async (context) =>
+            await new TestFlow(adapter, async (context) =>
             {
                 if (context.Request.AsMessageActivity().Text == "wait")
                 {
@@ -50,9 +50,9 @@ namespace Microsoft.Bot.Builder.Tests
         public async Task ContextShowTyping()
         {
 
-            TestBotServer botServer = new TestBotServer();
+            TestAdapter adapter = new TestAdapter();
 
-            await new TestFlow(botServer, async (context) =>
+            await new TestFlow(adapter, async (context) =>
                 {
                     if (context.Request.AsMessageActivity().Text == "typing")
                     {

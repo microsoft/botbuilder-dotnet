@@ -13,9 +13,9 @@ namespace Microsoft.Bot.Samples.Simplified.Asp
 {
     public class BotController : Controller
     {
-        BotFrameworkBotServer _Bot;
+        BotFrameworkAdapter _Bot;
 
-        public BotController(BotFrameworkBotServer bot)
+        public BotController(BotFrameworkAdapter bot)
         {
             _Bot = bot;
         }

@@ -5,7 +5,7 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Security;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Servers;
+using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -33,14 +33,14 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [TestMethod]
-        public async Task TestBot_ExceptionTypesOnTest()
+        public async Task TestAdapter_ExceptionTypesOnTest()
         {
             string uniqueExceptionId = Guid.NewGuid().ToString();
-            TestBotServer botServer = new TestBotServer();
+            TestAdapter adapter = new TestAdapter();
 
             try
             {
-                await new TestFlow(botServer, async (context) => { context.Reply("one"); })
+                await new TestFlow(adapter, async (context) => { context.Reply("one"); })
                     .Test("foo", (activity) => throw new Exception(uniqueExceptionId))
                     .StartTest();
 
@@ -53,14 +53,14 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [TestMethod]
-        public async Task TestBot_ExceptionInBotOnReceive()
+        public async Task TestAdapter_ExceptionInBotOnReceive()
         {
             string uniqueExceptionId = Guid.NewGuid().ToString();
-            TestBotServer botServer = new TestBotServer();
+            TestAdapter adapter = new TestAdapter();
 
             try
             {
-                await new TestFlow(botServer, async (context) => { throw new Exception(uniqueExceptionId); })
+                await new TestFlow(adapter, async (context) => { throw new Exception(uniqueExceptionId); })
                     .Test("test", activity => Assert.IsNull(null), "uh oh!")
                     .StartTest();
 
@@ -73,14 +73,14 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [TestMethod]
-        public async Task TestBot_ExceptionTypesOnAssertReply()
+        public async Task TestAdapter_ExceptionTypesOnAssertReply()
         {
             string uniqueExceptionId = Guid.NewGuid().ToString();
-            TestBotServer botServer = new TestBotServer();
+            TestAdapter adapter = new TestAdapter();
 
             try
             {
-                await new TestFlow(botServer, async (context) => { context.Reply("one"); })
+                await new TestFlow(adapter, async (context) => { context.Reply("one"); })
                     .Send("foo")
                     .AssertReply(
                         (activity) => throw new Exception(uniqueExceptionId), "should throw")
@@ -96,10 +96,10 @@ namespace Microsoft.Bot.Builder.Tests
 
 
         [TestMethod]
-        public async Task TestBot_Say()
+        public async Task TestAdapter_Say()
         {
-            var botServer = new TestBotServer();
-            await new TestFlow(botServer, MyBotLogic)
+            var adapter = new TestAdapter();
+            await new TestFlow(adapter, MyBotLogic)
                 .Test("foo", "echo:foo", "say with string works")
                 .Test("foo", new Activity(ActivityTypes.Message, text: "echo:foo"), "say with activity works")
                 .Test("foo", (activity) => Assert.AreEqual("echo:foo", activity.AsMessageActivity().Text), "say with validator works")
@@ -108,10 +108,10 @@ namespace Microsoft.Bot.Builder.Tests
 
 
         [TestMethod]
-        public async Task TestBot_SendReply()
+        public async Task TestAdapter_SendReply()
         {
-            var botServer = new TestBotServer();
-            await new TestFlow(botServer, MyBotLogic)
+            var adapter = new TestAdapter();
+            await new TestFlow(adapter, MyBotLogic)
                 .Send("foo").AssertReply("echo:foo", "send/reply with string works")
                 .Send("foo").AssertReply(new Activity(ActivityTypes.Message, text: "echo:foo"), "send/reply with activity works")
                 .Send("foo").AssertReply((activity) => Assert.AreEqual("echo:foo", activity.AsMessageActivity().Text), "send/reply with validator works")
@@ -119,20 +119,20 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [TestMethod]
-        public async Task TestBot_ReplyOneOf()
+        public async Task TestAdapter_ReplyOneOf()
         {
-            var botServer = new TestBotServer();
-            await new TestFlow(botServer, MyBotLogic)
+            var adapter = new TestAdapter();
+            await new TestFlow(adapter, MyBotLogic)
                 .Send("foo").AssertReplyOneOf(new string[] { "echo:bar", "echo:foo", "echo:blat" }, "say with string works")
                 .StartTest();
         }
 
 
         [TestMethod]
-        public async Task TestBot_MultipleReplies()
+        public async Task TestAdapter_MultipleReplies()
         {
-            var botServer = new TestBotServer();
-            await new TestFlow(botServer, MyBotLogic)
+            var adapter = new TestAdapter();
+            await new TestFlow(adapter, MyBotLogic)
                 .Send("foo").AssertReply("echo:foo")
                 .Send("bar").AssertReply("echo:bar")
                 .Send("ignore")
@@ -147,11 +147,11 @@ namespace Microsoft.Bot.Builder.Tests
         [DataRow(typeof(SecurityException))]
         [DataRow(typeof(ArgumentException))]
         [DataRow(typeof(ArgumentNullException))]
-        public async Task TestBot_TestFlow(Type exceptionType)
+        public async Task TestAdapter_TestFlow(Type exceptionType)
         {
-            var botServer = new TestBotServer();
+            var adapter = new TestAdapter();
 
-            TestFlow testFlow = new TestFlow(botServer, (ctx) =>
+            TestFlow testFlow = new TestFlow(adapter, (ctx) =>
                 {
                     Exception innerException = (Exception)Activator.CreateInstance(exceptionType);
                     var taskSource = new TaskCompletionSource<bool>();
