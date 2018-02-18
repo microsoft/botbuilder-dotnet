@@ -31,15 +31,15 @@ namespace Microsoft.Bot.Connector.Authentication
         /// Validate the incoming Auth Header as a token sent from the Bot Framework Service.
         /// </summary>
         /// <remarks>
-        /// A token issued by the Bot Framework emulator will FAIL this check. 
+        /// A token issued by the Bot Framework emulator will FAIL this check.
         /// </remarks>
         /// <param name="authHeader">The raw HTTP header in the format: "Bearer [longString]"</param>
-        /// <param name="credentials">The user defined set of valid credentials, such as the AppId.</param>        
+        /// <param name="credentials">The user defined set of valid credentials, such as the AppId.</param>
         /// <param name="httpClient">Authentication of tokens requires calling out to validate Endorsements and related documents. The
-        /// HttpClient is used for making those calls. Those calls generally require TLS connections, which are expensive to 
+        /// HttpClient is used for making those calls. Those calls generally require TLS connections, which are expensive to
         /// setup and teardown, so a shared HttpClient is recommended.</param>
         /// <returns>
-        /// A valid ClaimsIdentity. 
+        /// A valid ClaimsIdentity.
         /// </returns>
         public static async Task<ClaimsIdentity> AuthenticateChannelToken(string authHeader, ICredentialProvider credentials, HttpClient httpClient)
         {
@@ -93,14 +93,14 @@ namespace Microsoft.Bot.Connector.Authentication
 
             return identity;
         }
-        /// <summary>        
+        /// <summary>
         /// Validate the incoming Auth Header as a token sent from the Bot Framework Service.
         /// </summary>
         /// <param name="authHeader">The raw HTTP header in the format: "Bearer [longString]"</param>
-        /// <param name="credentials">The user defined set of valid credentials, such as the AppId.</param>        
+        /// <param name="credentials">The user defined set of valid credentials, such as the AppId.</param>
         /// <param name="serviceUrl"></param>
         /// <param name="httpClient">Authentication of tokens requires calling out to validate Endorsements and related documents. The
-        /// HttpClient is used for making those calls. Those calls generally require TLS connections, which are expensive to 
+        /// HttpClient is used for making those calls. Those calls generally require TLS connections, which are expensive to
         /// setup and teardown, so a shared HttpClient is recommended.</param>
         /// <returns></returns>
         public static async Task<ClaimsIdentity> AuthenticateChannelToken(string authHeader, ICredentialProvider credentials, string serviceUrl, HttpClient httpClient)
