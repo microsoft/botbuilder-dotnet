@@ -169,23 +169,6 @@ namespace Microsoft.Bot.Connector.Authentication
 
                 appID = appZClaim.Value;
             }
-            else if (tokenVersion == "3.0")
-            {
-                // The v3.0 Token types have been disallowed. Not Authorized. 
-                throw new UnauthorizedAccessException("Emulator token version '3.0' is depricated.");
-            }
-            else if (tokenVersion == "3.1" || tokenVersion == "3.2")
-            {
-                // The emulator for token versions "3.1" & "3.2" puts the AppId in the "Audiance" claim. 
-                Claim audianceClaim = identity.Claims.FirstOrDefault(c => c.Type == AuthenticationConstants.AudienceClaim);
-                if (audianceClaim == null)
-                {
-                    // No claim around AppID. Not Authorized.
-                    throw new UnauthorizedAccessException("'aud' claim is required on Emulator Token version '3.x'.");
-                }
-
-                appID = audianceClaim.Value;
-            }
             else
             {
                 // Unknown Version. Not Authorized. 
