@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Schema;
@@ -56,12 +55,21 @@ namespace Microsoft.Bot.Builder
             // Call any registered Middleware Components looking for ReceiveActivity()
             if (context.Request != null)
             {
-                await _middlewareSet.ReceiveActivity(context).ConfigureAwait(false);
-
-                // If the dev has registered a Receive Handler, call it. 
-                if (this._onReceive != null)
+                bool didAllMiddlewareRun = await _middlewareSet.ReceiveActivityWithStatus(context).ConfigureAwait(false);
+                if (didAllMiddlewareRun)
                 {
-                    await _onReceive(context).ConfigureAwait(false);
+                    // If the dev has registered a Receive Handler, call it. 
+                    if (_onReceive != null)
+                    {
+                        await _onReceive(context).ConfigureAwait(false);
+                    }
+                }
+                else
+                {
+                    // One of the middleware instances did not call Next(). When this happens,
+                    // by design, we do NOT call the OnReceive handler. This allows
+                    // Middleware interceptors to be written that activly prevent certain
+                    // Activites from being run. 
                 }
             }
 
