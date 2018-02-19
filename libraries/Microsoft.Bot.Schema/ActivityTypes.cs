@@ -30,6 +30,5 @@ namespace Microsoft.Bot.Schema
         public const string InstallationUpdate = "installationUpdate";
         public const string MessageReaction = "messageReaction";
         public const string Suggestion = "suggestion";
-        public const string Delay = "delay";
     }
 }
