@@ -76,7 +76,7 @@ namespace Microsoft.Bot.Builder.Adapters
         {
             foreach (var activity in activities)
             {
-                if (activity.Type == ActivityTypes.Delay)
+                if (activity.Type == ActivityTypesEx.Delay)
                 {
                     // The BotFrameworkAdapter and Console adapter implement this
                     // hack directly in the POST method. Replicating that here
