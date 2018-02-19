@@ -39,7 +39,7 @@ namespace Microsoft.Bot.Builder.BotFramework
 
             foreach (Activity activity in activities)
             {
-                if (activity.Type == "delay")
+                if (activity.Type == ActivityTypes.Delay)
                 {
                     // The Activity Schema doesn't have a delay type build in, so it's simulated
                     // here in the Bot. This matches the behavior in the Node connector. 
