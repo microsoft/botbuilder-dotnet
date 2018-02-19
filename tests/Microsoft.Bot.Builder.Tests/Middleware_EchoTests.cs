@@ -29,13 +29,10 @@ namespace Microsoft.Bot.Builder.Tests
         }       
     }
 
-    public class EchoMiddleWare : Middleware.IReceiveActivity
+    public class EchoMiddleWare : IReceiveActivity
     {
-        private readonly bool handled; 
-
-        public EchoMiddleWare(bool handled = true)
+        public EchoMiddleWare()
         {
-            this.handled = handled;
         }        
 
         public async Task ReceiveActivity(IBotContext context, MiddlewareSet.NextDelegate next)
