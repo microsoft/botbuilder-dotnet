@@ -29,7 +29,7 @@ namespace Microsoft.Bot.Connector.Authentication
 
         /// <summary>
         /// The token refresh code uses this client. Ideally, this would be passed in or set via a DI system to 
-        /// allow developer control over behavior / headers / timesouts and such. Unfortunatly this is buried
+        /// allow developer control over behavior / headers / timeouts and such. Unfortunately this is buried
         /// pretty deep, the static solution used here is much cleaner. If this becomes an issue we could
         /// consider circling back and exposing developer control over this HttpClient. 
         /// </summary>
