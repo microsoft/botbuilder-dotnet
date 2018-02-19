@@ -11,7 +11,7 @@ namespace Microsoft.Bot.Builder.Ai
 {
     public class QnAMaker
     {
-        public const string qnaMakerServiceEndpoint = "https://westus.api.cognitive.microsoft.com/qnamaker/v2.0/knowledgebases/";
+        public const string qnaMakerServiceEndpoint = "https://westus.api.cognitive.microsoft.com/qnamaker/v3.0/knowledgebases/";
         public const string APIManagementHeader = "Ocp-Apim-Subscription-Key";
         public const string JsonMimeType = "application/json";
 
@@ -39,6 +39,16 @@ namespace Microsoft.Bot.Builder.Ai
             {
                 _options.Top = 1;
             }
+
+            if (_options.StrictFilters == null)
+            {
+                _options.StrictFilters = new Metadata[] {};
+            }
+
+            if (_options.MetadataBoost == null)
+            {
+                _options.MetadataBoost = new Metadata[] { };
+            }
         }
 
         public async Task<QueryResult[]> GetAnswers(string question)
@@ -48,7 +58,9 @@ namespace Microsoft.Bot.Builder.Ai
             string jsonRequest = JsonConvert.SerializeObject(new
             {
                 question,
-                top = _options.Top
+                top = _options.Top,
+                strictFilters = _options.StrictFilters,
+                metadataBoost = _options.MetadataBoost
             }, Formatting.None);
 
             var content = new StringContent(jsonRequest, System.Text.Encoding.UTF8, JsonMimeType);
@@ -76,6 +88,18 @@ namespace Microsoft.Bot.Builder.Ai
         public string KnowledgeBaseId { get; set; }
         public float ScoreThreshold { get; set; }
         public int Top { get; set; }
+        public Metadata[] StrictFilters { get; set; }
+        public Metadata[] MetadataBoost { get; set; }
+    }
+
+    [Serializable]
+    public class Metadata
+    {
+        [JsonProperty(PropertyName = "name")]
+        public string Name { get; set; }
+
+        [JsonProperty(PropertyName = "value")]
+        public string Value { get; set; }
     }
 
     public class QueryResult
@@ -88,6 +112,15 @@ namespace Microsoft.Bot.Builder.Ai
 
         [JsonProperty("score")]
         public float Score { get; set; }
+
+        [JsonProperty(PropertyName = "metadata")]
+        public Metadata[] Metadata { get; set; }
+
+        [JsonProperty(PropertyName = "source")]
+        public string Source { get; set; }
+
+        [JsonProperty(PropertyName = "qnaId")]
+        public int QnaId { get; set; }
     }
 
     public class QueryResults
