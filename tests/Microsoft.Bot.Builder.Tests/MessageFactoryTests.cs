@@ -49,6 +49,7 @@ namespace Microsoft.Bot.Builder.Tests
             IMessageActivity message = MessageFactory.Text(messageText, ssml);
             Assert.AreEqual(message.Text, messageText, "Message Text is not an empty string");
             Assert.AreEqual(message.Speak, ssml, "ssml text is incorrect");
+            Assert.IsNull(message.InputHint, "InputHint is not null");
             Assert.AreEqual(message.Type, ActivityTypes.Message, "Incorrect Activity Type");
         }
 
@@ -57,11 +58,14 @@ namespace Microsoft.Bot.Builder.Tests
         {
             string text = Guid.NewGuid().ToString();
             string ssml = Guid.NewGuid().ToString();
+            string inputHint = InputHints.ExpectingInput;
             IList<string> textActions = new List<string> { "one", "two" };
 
-            IMessageActivity message = MessageFactory.SuggestedActions(textActions, text, ssml);
+            IMessageActivity message = MessageFactory.SuggestedActions(textActions, text, ssml, inputHint);
             Assert.AreEqual(message.Text, text, "Message Text does not match");
             Assert.AreEqual(message.Type, ActivityTypes.Message, "Incorrect Activity Type");
+            Assert.AreEqual(message.InputHint, inputHint, "InputHint does not match");
+            Assert.AreEqual(message.Speak, ssml, "ssml text is incorrect");
             Assert.IsNotNull(message.SuggestedActions);
             Assert.IsNotNull(message.SuggestedActions.Actions);
             Assert.IsTrue(message.SuggestedActions.Actions.Count == 2);
@@ -78,6 +82,7 @@ namespace Microsoft.Bot.Builder.Tests
         {
             string text = Guid.NewGuid().ToString();
             string ssml = Guid.NewGuid().ToString();
+            string inputHint = InputHints.ExpectingInput;
 
             string cardActionValue = Guid.NewGuid().ToString();
             string cardActionTitle = Guid.NewGuid().ToString();
@@ -91,10 +96,12 @@ namespace Microsoft.Bot.Builder.Tests
 
             IList<CardAction> cardActions = new List<CardAction> { ca };
 
-            IMessageActivity message = MessageFactory.SuggestedActions(cardActions, text, ssml);
+            IMessageActivity message = MessageFactory.SuggestedActions(cardActions, text, ssml, inputHint);
 
             Assert.AreEqual(message.Text, text, "Message Text does not match");
             Assert.AreEqual(message.Type, ActivityTypes.Message, "Incorrect Activity Type");
+            Assert.AreEqual(message.InputHint, inputHint, "InputHint does not match");
+            Assert.AreEqual(message.Speak, ssml, "ssml text is incorrect");
             Assert.IsNotNull(message.SuggestedActions);
             Assert.IsNotNull(message.SuggestedActions.Actions);
             Assert.IsTrue(message.SuggestedActions.Actions.Count == 1);
@@ -108,6 +115,7 @@ namespace Microsoft.Bot.Builder.Tests
         {
             string text = Guid.NewGuid().ToString();
             string ssml = Guid.NewGuid().ToString();
+            string inputHint = InputHints.ExpectingInput;
 
             string attachmentName = Guid.NewGuid().ToString();
             Attachment a = new Attachment
@@ -115,10 +123,12 @@ namespace Microsoft.Bot.Builder.Tests
                 Name = attachmentName
             };
 
-            IMessageActivity message = MessageFactory.Attachment(a, text, ssml);
+            IMessageActivity message = MessageFactory.Attachment(a, text, ssml, inputHint);
 
             Assert.AreEqual(message.Text, text, "Message Text does not match");
             Assert.AreEqual(message.Type, ActivityTypes.Message, "Incorrect Activity Type");
+            Assert.AreEqual(message.InputHint, inputHint, "InputHint does not match");
+            Assert.AreEqual(message.Speak, ssml, "ssml text is incorrect");
             Assert.IsTrue(message.Attachments.Count == 1, "Incorrect Attachment Count");
             Assert.IsTrue(message.Attachments[0].Name == attachmentName, "Incorrect Attachment Name"); 
         }
@@ -153,6 +163,7 @@ namespace Microsoft.Bot.Builder.Tests
         {
             string text = Guid.NewGuid().ToString();
             string ssml = Guid.NewGuid().ToString();
+            string inputHint = InputHints.ExpectingInput;
 
             string attachmentName = Guid.NewGuid().ToString();
             Attachment attachment1 = new Attachment
@@ -167,10 +178,12 @@ namespace Microsoft.Bot.Builder.Tests
             };
 
             IList<Attachment> multipleAttachments = new List<Attachment> { attachment1, attachment2 };
-            IMessageActivity message = MessageFactory.Carousel(multipleAttachments, text, ssml);
+            IMessageActivity message = MessageFactory.Carousel(multipleAttachments, text, ssml, inputHint);
 
             Assert.AreEqual(message.Text, text, "Message Text does not match");
             Assert.AreEqual(message.Type, ActivityTypes.Message, "Incorrect Activity Type");
+            Assert.AreEqual(message.InputHint, inputHint, "InputHint does not match");
+            Assert.AreEqual(message.Speak, ssml, "ssml text is incorrect");
             Assert.IsTrue(message.AttachmentLayout == AttachmentLayoutTypes.Carousel);
             Assert.IsTrue(message.Attachments.Count == 2, "Incorrect Attachment Count");
             Assert.IsTrue(message.Attachments[0].Name == attachmentName, "Incorrect Attachment1 Name");
@@ -183,6 +196,7 @@ namespace Microsoft.Bot.Builder.Tests
         {
             string text = Guid.NewGuid().ToString();
             string ssml = Guid.NewGuid().ToString();
+            string inputHint = InputHints.ExpectingInput;
 
             string attachmentName = Guid.NewGuid().ToString();            
             Attachment a = new Attachment
@@ -197,10 +211,12 @@ namespace Microsoft.Bot.Builder.Tests
             };
 
             IList<Attachment> multipleAttachments = new List<Attachment> { a, a2 };
-            IMessageActivity message = MessageFactory.Attachment(multipleAttachments, text, ssml);
+            IMessageActivity message = MessageFactory.Attachment(multipleAttachments, text, ssml, inputHint);
 
             Assert.AreEqual(message.Text, text, "Message Text does not match");
             Assert.AreEqual(message.Type, ActivityTypes.Message, "Incorrect Activity Type");
+            Assert.AreEqual(message.InputHint, inputHint, "InputHint does not match");
+            Assert.AreEqual(message.Speak, ssml, "ssml text is incorrect");
             Assert.IsTrue(message.AttachmentLayout == AttachmentLayoutTypes.List);
             Assert.IsTrue(message.Attachments.Count == 2, "Incorrect Attachment Count");
             Assert.IsTrue(message.Attachments[0].Name == attachmentName, "Incorrect Attachment1 Name");
@@ -212,14 +228,17 @@ namespace Microsoft.Bot.Builder.Tests
         {
             string text = Guid.NewGuid().ToString();
             string ssml = Guid.NewGuid().ToString();
+            string inputHint = InputHints.ExpectingInput;
             string uri = $"https:// { Guid.NewGuid().ToString()}";
             string contentType = MediaTypeNames.Image.Jpeg;
             string name =  Guid.NewGuid().ToString(); 
 
-            IMessageActivity message = MessageFactory.ContentUrl(uri, contentType, name, text, ssml);            
+            IMessageActivity message = MessageFactory.ContentUrl(uri, contentType, name, text, ssml, inputHint);            
 
             Assert.AreEqual(message.Text, text, "Message Text does not match");
             Assert.AreEqual(message.Type, ActivityTypes.Message, "Incorrect Activity Type");
+            Assert.AreEqual(message.InputHint, inputHint, "InputHint does not match");
+            Assert.AreEqual(message.Speak, ssml, "ssml text is incorrect");
             Assert.IsTrue(message.Attachments.Count == 1);            
             Assert.IsTrue(message.Attachments[0].Name == name, "Incorrect Attachment1 Name");
             Assert.IsTrue(message.Attachments[0].ContentType == contentType, "Incorrect contentType");
