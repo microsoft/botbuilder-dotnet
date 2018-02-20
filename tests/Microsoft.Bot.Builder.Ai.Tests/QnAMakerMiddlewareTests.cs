@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Builder.Ai.Tests
         {
             TestAdapter adapter = new TestAdapter();
             Bot bot = new Bot(adapter)
-                .Use(new QnAMakerMiddleware(new QnAMakerOptions()
+                .Use(new QnAMakerMiddleware(new QnAMakerMiddlewareOptions()
                 {
                     KnowledgeBaseId = knowlegeBaseId,
                     SubscriptionKey = subscriptionKey,
