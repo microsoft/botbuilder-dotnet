@@ -3,7 +3,9 @@ using Microsoft.Bot.Builder.BotFramework;
 using Microsoft.Bot.Builder.Storage;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using System.Configuration;
 using System.Web.Http;
+using Unity;
 
 namespace Microsoft.Bot.Samples.EchoBot_AspNet461
 {
@@ -33,8 +35,13 @@ namespace Microsoft.Bot.Samples.EchoBot_AspNet461
                 defaults: new { id = RouteParameter.Optional }
             );
 
-            config.Services.Add(typeof(Builder.Bot), new Builder.Bot(new BotFrameworkAdapter(string.Empty, string.Empty))
-                .Use(new BotStateManager(new MemoryStorage())));
+            // services
+            UnityConfig.Container.RegisterSingleton<Builder.Bot>(
+                new Unity.Injection.InjectionConstructor(
+                        new BotFrameworkAdapter(ConfigurationManager.AppSettings[@"MicrosoftAppId"], ConfigurationManager.AppSettings[@"MicrosoftAppPassword"])))
+            .Resolve<Builder.Bot>()
+            .Use(new BotStateManager(new MemoryStorage()));
+
         }
     }
 }
