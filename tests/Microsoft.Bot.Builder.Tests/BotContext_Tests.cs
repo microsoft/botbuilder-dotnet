@@ -29,7 +29,10 @@ namespace Microsoft.Bot.Builder.Tests
         }
         public async Task SendActivity(IBotContext context, IList<IActivity> activities, MiddlewareSet.NextDelegate next)
         {
-            context.Responses[0].AsMessageActivity().Text += "SendActivity";
+            if (context.Responses.Count > 0)
+            {
+                context.Responses[0].AsMessageActivity().Text += "SendActivity";
+            }
             await next();
         }
     }

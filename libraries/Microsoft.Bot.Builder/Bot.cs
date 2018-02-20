@@ -79,11 +79,14 @@ namespace Microsoft.Bot.Builder
                 await proactiveCallback(context).ConfigureAwait(false);
             }
 
-            // Call any registered Middleware Components looking for SendActivity()
-            if (context.Responses != null && context.Responses.Any())
-            {
-                await _middlewareSet.SendActivity(context, context.Responses).ConfigureAwait(false);
-            }
+            // Call any registered Middleware Components looking for SendActivity()               
+
+            // Don't pass in null. By default this won't happen, but it's possible that
+            // somone reset the context.Responses object to null. An empty list is much
+            // easier to deal with. 
+            await _middlewareSet.SendActivity(context, 
+                context.Responses ?? new List<IActivity>()).ConfigureAwait(false);
+            
 
             System.Diagnostics.Trace.TraceInformation($"Middleware: Ending Pipeline for {context.ConversationReference.ActivityId}");
         }
