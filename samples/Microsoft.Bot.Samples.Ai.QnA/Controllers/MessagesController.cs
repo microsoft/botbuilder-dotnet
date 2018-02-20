@@ -31,8 +31,14 @@ namespace Microsoft.Bot.Samples.Ai.QnA.Controllers
             };
             var bot = new Builder.Bot(new BotFrameworkAdapter(configuration))
                 // add QnA middleware 
-                .Use(new QnAMakerMiddleware(qnaOptions, _httpClient, new QnAMakerMiddlewareOptions(true, "See this answer....")))
                 .Use(new QnAMakerMiddleware(qnaOptions, _httpClient));
+
+            // You can use the QnAMakerMiddlewareOptions class to allow you to have the middleware 
+            // stop routing (e.g. to additional middleware) if an answer is successfully returned. 
+            // You can also specify a message to be output before an answer is sent back to the user.
+            // The line below shows how you can achieve this.
+            //.Use(new QnAMakerMiddleware(qnaOptions, _httpClient, new QnAMakerMiddlewareOptions(true, "Here is an answer that might help...")))
+
             bot.OnReceive(BotReceiveHandler);
                
             _adapter = (BotFrameworkAdapter)bot.Adapter;
