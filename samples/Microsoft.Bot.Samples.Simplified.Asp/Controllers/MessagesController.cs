@@ -18,8 +18,8 @@ namespace Microsoft.Bot.Samples.Simplified.Asp.Controllers
 
         protected override Task ReceiveMessage(IBotContext context, IMessageActivity activity)
         {
-            long turnNumber = context.State.Conversation["turnNumber"] ?? 0;
-            context.State.Conversation["turnNumber"] = ++turnNumber;
+            long turnNumber = context.State.ConversationProperties["turnNumber"] ?? 0;
+            context.State.ConversationProperties["turnNumber"] = ++turnNumber;
             context.Reply($"[{turnNumber}] echo: {activity.Text}");
             return Task.CompletedTask;
         }

@@ -69,7 +69,7 @@ namespace Microsoft.Bot.Builder.Middleware
             var items = await _storage.Read(keys.ToArray());
 
             string conversationKey = ConversationKey(context);
-            context.State.Conversation = items.Get<ConversationState>(conversationKey) ?? new ConversationState();
+            context.State.ConversationProperties = items.Get<ConversationState>(conversationKey) ?? new ConversationState();
 
             return items;
         }
@@ -81,7 +81,7 @@ namespace Microsoft.Bot.Builder.Middleware
 
             if (this._settings.PersistConversationState)
             {
-                changes[ConversationKey(context)] = context.State.Conversation ?? new ConversationState();
+                changes[ConversationKey(context)] = context.State.ConversationProperties ?? new ConversationState();
             }
 
             if (this._settings.LastWriterWins)

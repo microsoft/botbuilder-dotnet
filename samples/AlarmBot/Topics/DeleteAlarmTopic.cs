@@ -66,11 +66,11 @@ namespace AlarmBot.Topics
 
         public async Task<bool> FindAlarm(IBotContext context)
         {
-            var alarms = (List<Alarm>)context.State.User[UserProperties.ALARMS];
+            var alarms = (List<Alarm>)context.State.UserProperties[UserProperties.ALARMS];
             if (alarms == null)
             {
                 alarms = new List<Alarm>();
-                context.State.User[UserProperties.ALARMS] = alarms;
+                context.State.UserProperties[UserProperties.ALARMS] = alarms;
             }
 
             // Ensure there are alarms to delete
