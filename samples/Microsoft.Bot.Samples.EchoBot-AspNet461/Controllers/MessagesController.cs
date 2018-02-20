@@ -60,7 +60,7 @@ namespace Microsoft.Bot.Samples.EchoBot_AspNet461
         {
             try
             {
-                await _adapter.Receive(this.Request.Headers.Authorization.Parameter, activity);
+                await _adapter.Receive(this.Request.Headers.Authorization?.Parameter, activity);
                 return this.Request.CreateResponse(HttpStatusCode.OK);
             }
             catch (UnauthorizedAccessException e)
