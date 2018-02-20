@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -12,12 +13,23 @@ namespace Microsoft.Bot.Builder.Ai
     public class QnAMakerMiddleware : Middleware.IReceiveActivity
     {
         private readonly QnAMaker _qnaMaker;
-        private readonly QnAMakerMiddlewareOptions _qnaMakerMiddlewareOptions;
+        private readonly QnAMakerMiddlewareOptions _options;
 
-        public QnAMakerMiddleware(QnAMakerOptions options, HttpClient httpClient, QnAMakerMiddlewareOptions middlewareOptions = null)
+        public QnAMakerMiddleware(QnAMakerMiddlewareOptions options, HttpClient httpClient)
         {
-            _qnaMaker = new QnAMaker(options, httpClient);
-            _qnaMakerMiddlewareOptions = middlewareOptions ?? new QnAMakerMiddlewareOptions();
+            _options = options ?? throw new ArgumentNullException(nameof(options));
+
+            var qnaMakerOptions = new QnAMakerOptions()
+            {
+                KnowledgeBaseId = _options.KnowledgeBaseId,
+                SubscriptionKey = _options.SubscriptionKey,
+                ScoreThreshold = _options.ScoreThreshold,
+                Top = _options.Top,
+                MetadataBoost = _options.MetadataBoost,
+                StrictFilters = _options.StrictFilters
+            };
+
+            _qnaMaker = new QnAMaker(qnaMakerOptions, httpClient);
         }
 
         public async Task ReceiveActivity(IBotContext context, MiddlewareSet.NextDelegate next)
@@ -30,12 +42,12 @@ namespace Microsoft.Bot.Builder.Ai
                     var results = await _qnaMaker.GetAnswers(messageActivity.Text.Trim()).ConfigureAwait(false);
                     if (results.Any())
                     {
-                        if (!string.IsNullOrEmpty(_qnaMakerMiddlewareOptions.DefaultAnswerPrefixMessage))
-                            context.Reply(_qnaMakerMiddlewareOptions.DefaultAnswerPrefixMessage);
+                        if (!string.IsNullOrEmpty(_options.DefaultAnswerPrefixMessage))
+                            context.Reply(_options.DefaultAnswerPrefixMessage);
 
                         context.Reply(results.First().Answer);
 
-                        if (_qnaMakerMiddlewareOptions.EndActivityRoutingOnAnswer)
+                        if (_options.EndActivityRoutingOnAnswer)
                             return;
                     }
                 }
