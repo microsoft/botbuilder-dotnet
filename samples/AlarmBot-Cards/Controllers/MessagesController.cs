@@ -1,8 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using AlarmBot.Models;
 using AlarmBot.Topics;
 using AlarmBot.TopicViews;
@@ -13,6 +11,8 @@ using Microsoft.Bot.Builder.Middleware;
 using Microsoft.Bot.Builder.Storage;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.Configuration;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace AlarmBot.Controllers
 {
@@ -91,7 +91,7 @@ namespace AlarmBot.Controllers
         }
 
         [HttpPost]
-        public Task Post() => activityAdapter.Receive(this.Request);
+        public async Task Post([FromBody]Microsoft.Bot.Schema.Activity activity) => this.Response.StatusCode = await activityAdapter.Receive(this.Request.Headers, activity);
     }
 
 }

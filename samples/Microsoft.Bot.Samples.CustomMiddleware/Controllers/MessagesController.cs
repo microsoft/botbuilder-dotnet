@@ -1,12 +1,12 @@
 ﻿// Copyright(c) Microsoft Corporation.All rights reserved.
 // Licensed under the MIT License.
 
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.BotFramework;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
+using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Samples.CustomMiddleware
 {
@@ -42,6 +42,6 @@ namespace Microsoft.Bot.Samples.CustomMiddleware
         }
 
         [HttpPost]
-        public Task Post() => _adapter.Receive(this.Request);
+        public async Task Post([FromBody]Activity activity) => this.Response.StatusCode = await _adapter.Receive(this.Request.Headers, activity);
     }
 }
