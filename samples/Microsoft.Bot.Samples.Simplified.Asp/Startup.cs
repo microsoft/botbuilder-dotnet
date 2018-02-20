@@ -3,8 +3,8 @@
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.BotFramework;
+using Microsoft.Bot.Builder.Middleware;
 using Microsoft.Bot.Builder.Storage;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -35,7 +35,8 @@ namespace Microsoft.Bot.Samples.Simplified.Asp
             services.AddSingleton<Builder.Bot>(serviceProvider =>
             {
                 return new Builder.Bot(new BotFrameworkAdapter(Configuration))
-                    .Use(new BotStateManager(new MemoryStorage()));
+                    .Use(new ConversationStateManagerMiddleware(new MemoryStorage()))
+                    .Use(new UserStateManagerMiddleware(new MemoryStorage()));
             });
         }
 

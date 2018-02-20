@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.Middleware;
 using Microsoft.Bot.Builder.Storage;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -46,7 +47,7 @@ namespace Microsoft.Bot.Builder.Tests
             TestAdapter adapter = new TestAdapter();
 
             Bot bot = new Bot(adapter)
-                .Use(new BotStateManager(new MemoryStorage()));
+                .Use(new UserStateManagerMiddleware(new MemoryStorage()));
             bot.OnReceive(
                     async (context) =>
                     {
@@ -75,7 +76,7 @@ namespace Microsoft.Bot.Builder.Tests
             TestAdapter adapter = new TestAdapter();
 
             Bot bot = new Bot(adapter)
-                .Use(new BotStateManager(new MemoryStorage()));
+                .Use(new ConversationStateManagerMiddleware(new MemoryStorage()));
             bot.OnReceive(
                     async (context) =>
                     {
@@ -105,17 +106,17 @@ namespace Microsoft.Bot.Builder.Tests
             string testGuid = Guid.NewGuid().ToString();
 
             Bot bot = new Bot(adapter)
-                .Use(new CustomStateManager(new MemoryStorage()));
+                .Use(new CustomConversationStateManager(new MemoryStorage()));
             bot.OnReceive(async (context) =>
                     {
                         switch (context.Request.AsMessageActivity().Text)
                         {
                             case "set value":
-                                context.State[CustomStateManager.KeyName].CustomString = testGuid;
+                                context.State[CustomConversationStateManager.KeyName].CustomString = testGuid;
                                 context.Reply("value saved");
                                 break;
                             case "get value":
-                                context.Reply(context.State[CustomStateManager.KeyName].CustomString);
+                                context.Reply(context.State[CustomConversationStateManager.KeyName].CustomString);
                                 break;
                         }
                     }
@@ -137,7 +138,7 @@ namespace Microsoft.Bot.Builder.Tests
             TestAdapter adapter = new TestAdapter();
 
             Bot bot = new Bot(adapter)
-                .Use(new BotStateManager(new MemoryStorage()));
+                .Use(new ConversationStateManagerMiddleware(new MemoryStorage()));
             bot.OnReceive(
                     async (context) =>
                     {
@@ -165,10 +166,10 @@ namespace Microsoft.Bot.Builder.Tests
             public string CustomString { get; set; }
         }
 
-        public class CustomStateManager : BotStateManager
+        public class CustomConversationStateManager : ConversationStateManagerMiddleware
         {
-            public const string KeyName = "CustomStateKey";
-            public CustomStateManager(IStorage storage) : base(storage)
+            public const string KeyName = "CustomConversationStateKey";
+            public CustomConversationStateManager(IStorage storage) : base(storage)
             {
             }
 

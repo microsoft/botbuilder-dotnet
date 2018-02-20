@@ -43,7 +43,8 @@ namespace AlarmBot.Controllers
 
                 // create bot hooked up to the activity adapater
                 bot = new Bot(activityAdapter)
-                    .Use(new BotStateManager(storage)) // --- add Bot State Manager to automatically persist and load the context.State.Conversation and context.State.User objects
+                    .Use(new ConversationStateManagerMiddleware(storage)) // Automatically persist and load the context.State.Conversation 
+                    .Use(new UserStateManagerMiddleware(storage)) // Automatically persist and load the context.State.User objects
                     .Use(new DefaultTopicView())
                     .Use(new ShowAlarmsTopicView())
                     .Use(new AddAlarmTopicView())
