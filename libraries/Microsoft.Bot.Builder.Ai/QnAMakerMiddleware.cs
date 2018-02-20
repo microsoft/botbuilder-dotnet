@@ -12,10 +12,12 @@ namespace Microsoft.Bot.Builder.Ai
     public class QnAMakerMiddleware : Middleware.IReceiveActivity
     {
         private readonly QnAMaker _qnaMaker;
+        private readonly QnAMakerMiddlewareOptions _qnaMakerMiddlewareOptions;
 
-        public QnAMakerMiddleware(QnAMakerOptions options, HttpClient httpClient)
+        public QnAMakerMiddleware(QnAMakerOptions options, HttpClient httpClient, QnAMakerMiddlewareOptions middlewareOptions = null)
         {
             _qnaMaker = new QnAMaker(options, httpClient);
+            _qnaMakerMiddlewareOptions = middlewareOptions ?? new QnAMakerMiddlewareOptions();
         }
 
         public async Task ReceiveActivity(IBotContext context, MiddlewareSet.NextDelegate next)
@@ -28,7 +30,13 @@ namespace Microsoft.Bot.Builder.Ai
                     var results = await _qnaMaker.GetAnswers(messageActivity.Text.Trim()).ConfigureAwait(false);
                     if (results.Any())
                     {
+                        if (!string.IsNullOrEmpty(_qnaMakerMiddlewareOptions.DefaultAnswerPrefixMessage))
+                            context.Reply(_qnaMakerMiddlewareOptions.DefaultAnswerPrefixMessage);
+
                         context.Reply(results.First().Answer);
+
+                        if (_qnaMakerMiddlewareOptions.EndActivityRoutingOnAnswer)
+                            return;
                     }
                 }
             }
