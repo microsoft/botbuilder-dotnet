@@ -1,7 +1,4 @@
-﻿using Microsoft.Bot.Builder;
-using Microsoft.Bot.Builder.BotFramework;
-using Microsoft.Bot.Schema;
-using System;
+﻿using System;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -27,7 +24,12 @@ namespace Microsoft.Bot.Samples.EchoBot_AspNet461
             {
                 long turnNumber = context.State.Conversation["turnNumber"] ?? 0;
                 context.State.Conversation["turnNumber"] = ++turnNumber;
-                context.Reply($"[{turnNumber}] echo: {msgActivity.Text}");
+
+                // calculate something for us to return
+                int length = (msgActivity.Text ?? string.Empty).Length;
+
+                // return our reply to the user
+                context.Reply($"[{turnNumber}] You sent {msgActivity.Text} which was {length} characters");
                 return Task.CompletedTask;
             }
 
