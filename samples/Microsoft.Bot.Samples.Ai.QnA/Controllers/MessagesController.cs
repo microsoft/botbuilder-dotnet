@@ -26,8 +26,8 @@ namespace Microsoft.Bot.Samples.Ai.QnA.Controllers
             var qnaOptions = new QnAMakerOptions
             {
                 // add subscription key and knowledge base id
-                SubscriptionKey = "8f833e867b25443b95d8c23cd367f7ce",
-                KnowledgeBaseId = "ed3318af-4498-4a36-a485-a73f2d95220d"
+                SubscriptionKey = "xxxxxx",
+                KnowledgeBaseId = "xxxxxx"
             };
             var bot = new Builder.Bot(new BotFrameworkAdapter(configuration))
                 // add QnA middleware 
