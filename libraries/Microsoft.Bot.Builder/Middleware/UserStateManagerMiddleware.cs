@@ -69,7 +69,7 @@ namespace Microsoft.Bot.Builder.Middleware
 
             string userKey = UserKey(context);        
 
-            context.State.User = items.Get<UserState>(userKey) ?? new UserState();            
+            context.State.UserProperties = items.Get<UserState>(userKey) ?? new UserState();            
 
             return items;
         }
@@ -81,7 +81,7 @@ namespace Microsoft.Bot.Builder.Middleware
 
             if (this._settings.PersistUserState)
             {
-                changes[UserKey(context)] = context.State.User ?? new UserState();
+                changes[UserKey(context)] = context.State.UserProperties ?? new UserState();
             }
 
             if (this._settings.LastWriterWins)

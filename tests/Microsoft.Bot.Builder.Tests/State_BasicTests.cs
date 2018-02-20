@@ -51,15 +51,15 @@ namespace Microsoft.Bot.Builder.Tests
             bot.OnReceive(
                     async (context) =>
                     {
-                        Assert.IsNotNull(context.State.User, "state.user should exist");
+                        Assert.IsNotNull(context.State.UserProperties, "state.user should exist");
                         switch (context.Request.AsMessageActivity().Text)
                         {
                             case "set value":
-                                context.State.User["value"] = "test";
+                                context.State.UserProperties["value"] = "test";
                                 context.Reply("value saved");
                                 break;
                             case "get value":
-                                context.Reply(context.State.User["value"]);
+                                context.Reply(context.State.UserProperties["value"]);
                                 break;
                         }
                     }
@@ -80,15 +80,15 @@ namespace Microsoft.Bot.Builder.Tests
             bot.OnReceive(
                     async (context) =>
                     {
-                        Assert.IsNotNull(context.State.Conversation, "state.conversation should exist");
+                        Assert.IsNotNull(context.State.ConversationProperties, "state.conversation should exist");
                         switch (context.Request.AsMessageActivity().Text)
                         {
                             case "set value":
-                                context.State.Conversation["value"] = "test";
+                                context.State.ConversationProperties["value"] = "test";
                                 context.Reply("value saved");
                                 break;
                             case "get value":
-                                context.Reply(context.State.Conversation["value"]);
+                                context.Reply(context.State.ConversationProperties["value"]);
                                 break;
                         }
                     }
@@ -142,15 +142,15 @@ namespace Microsoft.Bot.Builder.Tests
             bot.OnReceive(
                     async (context) =>
                     {
-                        Assert.IsNotNull(context.State.Conversation, "state.conversation should exist");
+                        Assert.IsNotNull(context.State.ConversationProperties, "state.conversation should exist");
                         switch (context.Request.AsMessageActivity().Text)
                         {
                             case "set value":
-                                context.State.Conversation["value"] = new TypedObject() { Name = "test" };
+                                context.State.ConversationProperties["value"] = new TypedObject() { Name = "test" };
                                 context.Reply("value saved");
                                 break;
                             case "get value":
-                                context.Reply(context.State.Conversation["value"].GetType().Name);
+                                context.Reply(context.State.ConversationProperties["value"].GetType().Name);
                                 break;
                         }                        
                     }

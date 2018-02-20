@@ -7,7 +7,7 @@ namespace Microsoft.Bot.Builder
 {
     public class BotState : FlexObject
     {
-        public ConversationState Conversation { get; set; } = new ConversationState();
-        public UserState User { get; set; } = new UserState();
+        public ConversationState ConversationProperties { get; set; } = new ConversationState();
+        public UserState UserProperties { get; set; } = new UserState();
     }
 }
