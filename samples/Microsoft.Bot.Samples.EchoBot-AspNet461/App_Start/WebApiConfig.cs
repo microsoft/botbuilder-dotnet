@@ -33,7 +33,7 @@ namespace Microsoft.Bot.Samples.EchoBot_AspNet461
                 defaults: new { id = RouteParameter.Optional }
             );
 
-            config.Services.Add(typeof(Builder.Bot), new Builder.Bot(new BotFrameworkAdapter(null, null))
+            config.Services.Add(typeof(Builder.Bot), new Builder.Bot(new BotFrameworkAdapter(string.Empty, string.Empty))
                 .Use(new BotStateManager(new MemoryStorage())));
         }
     }
