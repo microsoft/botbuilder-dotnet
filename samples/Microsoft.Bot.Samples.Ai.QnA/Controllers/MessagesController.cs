@@ -26,11 +26,12 @@ namespace Microsoft.Bot.Samples.Ai.QnA.Controllers
             var qnaOptions = new QnAMakerOptions
             {
                 // add subscription key and knowledge base id
-                SubscriptionKey = "xxxxxx",
-                KnowledgeBaseId = "xxxxxx"
+                SubscriptionKey = "8f833e867b25443b95d8c23cd367f7ce",
+                KnowledgeBaseId = "ed3318af-4498-4a36-a485-a73f2d95220d"
             };
             var bot = new Builder.Bot(new BotFrameworkAdapter(configuration))
                 // add QnA middleware 
+                .Use(new QnAMakerMiddleware(qnaOptions, _httpClient, new QnAMakerMiddlewareOptions(true, "See this answer....")))
                 .Use(new QnAMakerMiddleware(qnaOptions, _httpClient));
             bot.OnReceive(BotReceiveHandler);
                
