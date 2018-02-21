@@ -1,7 +1,7 @@
 ﻿using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.Configuration;
 
-namespace Connector.EchoBot
+namespace Microsoft.Bot.Samples.Connector.EchoBot
 {
     /// <summary>
     /// Credential provider which uses <see cref="Microsoft.Extensions.Configuration.IConfiguration"/> to lookup appId and password.
