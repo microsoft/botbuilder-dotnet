@@ -3,65 +3,199 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
 namespace Microsoft.Bot.Builder.Ai
 {
-
-    internal class Translator
+    /// <summary>
+    /// PostProcessTranslator  is used to handle translation errors while translating numbers
+    /// and to handle words that needs to be kept same as source language from provided template each line having a regex
+    /// having first group matching the words that needs to be kept
+    /// </summary>
+    internal class PostProcessTranslator
     {
-        private readonly AzureAuthToken _authToken;
-        private readonly HttpClient _httpClient;
+        HashSet<string> noTranslatePatterns; 
 
-        internal Translator(string apiKey, HttpClient httpClient)
+        //Constructor that indexes input template for source language
+        internal PostProcessTranslator(string noTranslateTemplatePath)
         {
-            _authToken = new AzureAuthToken(apiKey);
-            _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
+            noTranslatePatterns = new HashSet<string>();
+            foreach (string line in File.ReadLines(noTranslateTemplatePath))
+            {
+                string processedLine = line.Trim();
+                if (!line.Contains('('))
+                {
+                    processedLine = '(' + processedLine + ')';
+                }
+                noTranslatePatterns.Add(processedLine);
+            }
         }
 
-        internal async Task<string> Translate(string textToTranslate, string to)
+        //Constructor for postprocessor that fixes numbers only
+        internal PostProcessTranslator()
         {
-            string url = "http://api.microsofttranslator.com/v2/Http.svc/Translate";
-            string query = $"?text={WebUtility.UrlEncode(textToTranslate)}&to={to}&contentType=text/plain";
+            noTranslatePatterns = new HashSet<string>();
+        }
 
-            var accessToken = await _authToken.GetAccessTokenAsync(_httpClient).ConfigureAwait(false);
-
-            // The HTTPClient is shared across multiple requests, meaning we can't simply 
-            // set the default headers for this query. To do that, we create a specific HTTP Request
-            // and add the relevant headers to it. 
-            using (var requestMessage = new HttpRequestMessage(HttpMethod.Get, url + query))
+        //parsing alignment information onto a dictionary
+        //dictionary key is character index start of source word  : character index end of source word
+        //value is character index start of target word : length of target word to use substring directly
+        private Dictionary<string, string> wordAlignmentParse(string alignment, string source, string target)
+        {
+            Dictionary<string, string> alignMap = new Dictionary<string, string>();
+            string[] alignments = alignment.Trim().Split(' ');
+            foreach (string alignData in alignments)
             {
-                // Add the headers into the HTTP Request. 
-                requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+                    string[] wordIndexes = alignData.Split('-');
+                    int trgstartIndex = Int32.Parse(wordIndexes[1].Split(':')[0]);
+                    int trgLength = Int32.Parse(wordIndexes[1].Split(':')[1]) - trgstartIndex + 1;
+                    alignMap[wordIndexes[0]] = trgstartIndex + ":" + trgLength;
+            }
+            return alignMap;
+        }
 
-                var response = await _httpClient.SendAsync(requestMessage);
+        //use alignment information source sentence and target sentence 
+        //to keep a specific word from the source onto target translation
+        private string keepSrcWrdInTranslation(Dictionary<string, string> alignment, string source, string target, string srcWrd)
+        {
+            string processedTranslation = target;
+            int wrdStartIndex = source.IndexOf(srcWrd);
+            int wrdEndIndex = wrdStartIndex + srcWrd.Count() - 1;
+            string wrdIndexesString = wrdStartIndex + ":" + wrdEndIndex;
+            if (alignment.ContainsKey(wrdIndexesString))
+            {
+                string[] trgWrdLocation = alignment[wrdIndexesString].Split(':');
+                string targetWrd = target.Substring(Int32.Parse(trgWrdLocation[0]), Int32.Parse(trgWrdLocation[1]));
+                if (targetWrd.Trim().Length == Int32.Parse(trgWrdLocation[1]) && targetWrd != srcWrd)
+                    processedTranslation = processedTranslation.Replace(targetWrd, srcWrd);
+            }
+            return processedTranslation;
+        }
+
+        //Fixing translation  
+        //used to handle numbers and no translate list
+        internal string FixTranslation(string sourceMessage, string alignment, string targetMessage)
+        {
+            string processedTranslation = targetMessage;
+            bool containsNum = Regex.IsMatch(sourceMessage, @"\d");
+
+            if (noTranslatePatterns.Count == 0 && !containsNum)
+                return processedTranslation;
+
+            var toBeReplaced = from result in noTranslatePatterns
+                               where Regex.IsMatch(sourceMessage, result, RegexOptions.Singleline | RegexOptions.IgnoreCase)
+                               select result;
+            Dictionary<string, string> alignMap = wordAlignmentParse(alignment, sourceMessage, targetMessage);
+            if (toBeReplaced.Count() > 0)
+            {
+                foreach (string pattern in toBeReplaced)
+                {
+                    Match matchNoTranslate = Regex.Match(sourceMessage, pattern, RegexOptions.Singleline | RegexOptions.IgnoreCase);
+                    string[] wrdNoTranslate = matchNoTranslate.Groups[1].Value.Split(' ');
+                    foreach (string srcWrd in wrdNoTranslate)
+                    {
+                        processedTranslation = keepSrcWrdInTranslation(alignMap, sourceMessage, processedTranslation, srcWrd);
+                    }
+
+                }
+            }
+            MatchCollection numericMatches = Regex.Matches(sourceMessage, @"\d+", RegexOptions.Singleline);
+            foreach (Match numericMatch in numericMatches)
+            {
+                processedTranslation = keepSrcWrdInTranslation(alignMap, sourceMessage, processedTranslation, numericMatch.Groups[0].Value);
+            }
+
+            return processedTranslation;
+        } 
+
+    }
+
+    /// <summary>
+    /// Translator class 
+    /// contains machine translation APIs 
+    /// uses api key and detect input language translate single sentence or array of sentences then apply translation post processing fix
+    /// </summary>
+    public class Translator
+    {
+        AzureAuthToken authToken;
+        PostProcessTranslator postProcessor;
+
+        public Translator(string apiKey)
+        {
+            authToken = new AzureAuthToken(apiKey);
+            postProcessor = new PostProcessTranslator();
+        }
+
+        //used to set no translate template for post processor
+        public void SetPostProcessorTemplate(string templatePath)
+        {
+            postProcessor = new PostProcessTranslator(templatePath);
+        }
+
+        //detects language of input text 
+        public async Task<string> Detect(string textToDetect)
+        {
+            string url = "http://api.microsofttranslator.com/v2/Http.svc/Detect";
+            string query = $"?text={System.Net.WebUtility.UrlEncode(textToDetect)}";
+
+            using (var client = new HttpClient())
+            using (var request = new HttpRequestMessage())
+            {
+                var accessToken = await authToken.GetAccessTokenAsync().ConfigureAwait(false);
+                request.Headers.Add("Authorization", accessToken);
+                request.RequestUri = new Uri(url + query);
+                var response = await client.SendAsync(request);
                 var result = await response.Content.ReadAsStringAsync();
 
                 if (!response.IsSuccessStatusCode)
-                {
                     return "ERROR: " + result;
-                }
+
+                var detectedLang = XElement.Parse(result).Value;
+                return detectedLang;
+            }
+        }
+
+        //translate single message from source lang to target lang
+        public async Task<string> Translate(string textToTranslate, string from, string to)
+        {
+            string url = "http://api.microsofttranslator.com/v2/Http.svc/Translate";
+            string query = $"?text={System.Net.WebUtility.UrlEncode(textToTranslate)}";
+
+            using (var client = new HttpClient())
+            using (var request = new HttpRequestMessage())
+            {
+                var accessToken = await authToken.GetAccessTokenAsync().ConfigureAwait(false);
+                request.Headers.Add("Authorization", accessToken);
+                request.RequestUri = new Uri(url + query);
+                var response = await client.SendAsync(request);
+                var result = await response.Content.ReadAsStringAsync();
+
+                if (!response.IsSuccessStatusCode)
+                    return "ERROR: " + result;
 
                 var translatedText = XElement.Parse(result).Value;
                 return translatedText;
             }
         }
 
-        internal async Task<string[]> TranslateArray(string[] translateArraySourceTexts, string from, string to)
+        //translate array of strings from source language to target language
+        public async Task<string[]> TranslateArray(string[] translateArraySourceTexts, string from, string to)
         {
-            var uri = "https://api.microsofttranslator.com/v2/Http.svc/TranslateArray";
+            var uri = "https://api.microsofttranslator.com/v2/Http.svc/TranslateArray2";
             var body = $"<TranslateArrayRequest>" +
                            "<AppId />" +
                            $"<From>{from}</From>" +
                            "<Options>" +
-                           " <Category xmlns=\"http://schemas.datacontract.org/2004/07/Microsoft.MT.Web.Service.V2\" />" +
+                           " <Category xmlns=\"http://schemas.datacontract.org/2004/07/Microsoft.MT.Web.Service.V2\" >generalnn</Category>" +
                                "<ContentType xmlns=\"http://schemas.datacontract.org/2004/07/Microsoft.MT.Web.Service.V2\">text/plain</ContentType>" +
                                "<ReservedFlags xmlns=\"http://schemas.datacontract.org/2004/07/Microsoft.MT.Web.Service.V2\" />" +
                                "<State xmlns=\"http://schemas.datacontract.org/2004/07/Microsoft.MT.Web.Service.V2\" />" +
@@ -74,16 +208,17 @@ namespace Microsoft.Bot.Builder.Ai
                            $"<To>{to}</To>" +
                        "</TranslateArrayRequest>";
 
-            var accessToken = await _authToken.GetAccessTokenAsync(_httpClient).ConfigureAwait(false);
-            
+            var accessToken = await authToken.GetAccessTokenAsync().ConfigureAwait(false);
+
+            using (var client = new HttpClient())
             using (var request = new HttpRequestMessage())
             {
                 request.Method = HttpMethod.Post;
                 request.RequestUri = new Uri(uri);
                 request.Content = new StringContent(body, Encoding.UTF8, "text/xml");
                 request.Headers.Add("Authorization", accessToken);
-                
-                var response = await _httpClient.SendAsync(request);
+
+                var response = await client.SendAsync(request);
                 var responseBody = await response.Content.ReadAsStringAsync();
                 switch (response.StatusCode)
                 {
@@ -92,12 +227,13 @@ namespace Microsoft.Bot.Builder.Ai
                         var doc = XDocument.Parse(responseBody);
                         var ns = XNamespace.Get("http://schemas.datacontract.org/2004/07/Microsoft.MT.Web.Service.V2");
                         List<string> results = new List<string>();
-                        foreach (XElement xe in doc.Descendants(ns + "TranslateArrayResponse"))
+                        int sentIndex = 0;
+                        foreach (XElement xe in doc.Descendants(ns + "TranslateArray2Response"))
                         {
-                            foreach (var node in xe.Elements(ns + "TranslatedText"))
-                            {
-                                results.Add(node.Value);
-                            }
+
+                            string translation = xe.Element(ns + "TranslatedText").Value;
+                            translation = postProcessor.FixTranslation(translateArraySourceTexts[sentIndex], xe.Element(ns + "Alignment").Value, translation);
+                            results.Add(translation);
                         }
                         return results.ToArray();
 
@@ -106,6 +242,7 @@ namespace Microsoft.Bot.Builder.Ai
                 }
             }
         }
+
     }
 
     internal class AzureAuthToken
@@ -156,7 +293,7 @@ namespace Microsoft.Bot.Builder.Ai
         /// invocations of the method return the cached token for the next 5 minutes. After
         /// 5 minutes, a new token is fetched from the token service and the cache is updated.
         /// </remarks>
-        internal async Task<string> GetAccessTokenAsync(HttpClient httpClient)
+        internal async Task<string> GetAccessTokenAsync()
         {
             if (string.IsNullOrWhiteSpace(this.SubscriptionKey))
                 return string.Empty;
@@ -164,14 +301,16 @@ namespace Microsoft.Bot.Builder.Ai
             // Re-use the cached token if there is one.
             if ((DateTime.Now - _storedTokenTime) < TokenCacheDuration)
                 return _storedTokenValue;
-            
+
+            using (var client = new HttpClient())
             using (var request = new HttpRequestMessage())
             {
                 request.Method = HttpMethod.Post;
                 request.RequestUri = ServiceUrl;
                 request.Content = new StringContent(string.Empty);
-                request.Headers.TryAddWithoutValidation(OcpApimSubscriptionKeyHeader, this.SubscriptionKey);                
-                var response = await httpClient.SendAsync(request);
+                request.Headers.TryAddWithoutValidation(OcpApimSubscriptionKeyHeader, this.SubscriptionKey);
+                client.Timeout = TimeSpan.FromSeconds(2);
+                var response = await client.SendAsync(request);
                 this.RequestStatusCode = response.StatusCode;
                 response.EnsureSuccessStatusCode();
                 var token = await response.Content.ReadAsStringAsync();
@@ -181,4 +320,5 @@ namespace Microsoft.Bot.Builder.Ai
             }
         }
     }
+
 }
