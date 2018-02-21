@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.BotFramework;
 using Microsoft.Bot.Builder.Middleware;
+using Microsoft.Bot.Samples.CustomMiddleware.Middleware;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 
@@ -29,7 +30,8 @@ namespace Microsoft.Bot.Samples.CustomMiddleware
             var bot = new Builder.Bot(new BotFrameworkAdapter(configuration))
                 .Use(new ExampleMiddleware("X"))
                 .Use(new ExampleMiddleware("\tY"))
-                .Use(new ExampleMiddleware("\t\tZ"));
+                .Use(new ExampleMiddleware("\t\tZ"))
+                .Use(new TypistMiddleware(120));
             bot.OnReceive(BotReceiveHandler);
 
             _adapter = (BotFrameworkAdapter)bot.Adapter;
@@ -39,7 +41,8 @@ namespace Microsoft.Bot.Samples.CustomMiddleware
         {
             if (context.Request.Type == ActivityTypes.Message)
             {
-                context.Reply("hello");
+                context.Reply("Let me check on that...");
+                context.Reply(context.Request.AsMessageActivity().Text);
             }
             return Task.CompletedTask;
         }
