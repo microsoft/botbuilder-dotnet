@@ -12,8 +12,7 @@ namespace Microsoft.Bot.Builder.Adapters
     public class TestAdapter : BotAdapter
     {
         private int _nextId = 0;
-        private readonly List<IActivity> botReplies = new List<IActivity>();
-        private Func<IBotContext, Task> callback;
+        private readonly List<IActivity> botReplies = new List<IActivity>();        
 
         public TestAdapter(ConversationReference reference = null)
         {
@@ -36,7 +35,7 @@ namespace Microsoft.Bot.Builder.Adapters
         }
 
 
-        public new TestAdapter Use(IMiddleware middleware)
+        public TestAdapter Use(IMiddleware middleware)
         {
             base.RegisterMiddleware(middleware);
             return this;
