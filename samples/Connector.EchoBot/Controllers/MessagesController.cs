@@ -3,6 +3,7 @@
 
 using System;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Bot.Connector;
@@ -16,10 +17,12 @@ namespace Connector.EchoBot.Controllers
     public class MessagesController : Controller
     {
         private readonly SimpleCredentialProvider credentials;
+        private readonly HttpClient httpClient;
 
         public MessagesController(IConfiguration configuration)
         {
             this.credentials = new ConfigurationCredentialProvider(configuration);
+            httpClient = new HttpClient();
         }
 
         [HttpPost]
@@ -29,7 +32,7 @@ namespace Connector.EchoBot.Controllers
             var authHeader = this.Request.Headers["Authorization"].SingleOrDefault();
             try
             {
-                await JwtTokenValidation.AssertValidActivity(activity, authHeader, this.credentials);                    
+                await JwtTokenValidation.AssertValidActivity(activity, authHeader, this.credentials, httpClient);                    
             }
             catch (UnauthorizedAccessException)
             {                    
