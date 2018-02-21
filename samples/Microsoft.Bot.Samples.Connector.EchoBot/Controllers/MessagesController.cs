@@ -11,7 +11,7 @@ using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 
-namespace Connector.EchoBot.Controllers
+namespace Microsoft.Bot.Samples.Connector.EchoBot.Controllers
 {
     [Route("api/messages")]
     public class MessagesController : Controller
