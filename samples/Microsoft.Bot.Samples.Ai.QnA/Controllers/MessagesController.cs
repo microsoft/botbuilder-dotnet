@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Samples.Ai.QnA.Controllers
 
         public MessagesController(IConfiguration configuration)
         {
-            var qnaOptions = new QnAMakerOptions
+            var qnaMiddlewareOptions = new QnAMakerMiddlewareOptions
             {
                 // add subscription key and knowledge base id
                 SubscriptionKey = "xxxxxx",
@@ -31,7 +31,8 @@ namespace Microsoft.Bot.Samples.Ai.QnA.Controllers
             };
             var bot = new Builder.Bot(new BotFrameworkAdapter(configuration))
                 // add QnA middleware 
-                .Use(new QnAMakerMiddleware(qnaOptions, _httpClient));
+                .Use(new QnAMakerMiddleware(qnaMiddlewareOptions, _httpClient));
+
             bot.OnReceive(BotReceiveHandler);
                
             _adapter = (BotFrameworkAdapter)bot.Adapter;
