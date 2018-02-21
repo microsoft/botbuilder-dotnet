@@ -3,11 +3,13 @@
 
 using System;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.BotFramework;
 using Microsoft.Bot.Builder.Middleware;
+using Microsoft.Bot.Builder.Storage;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 
@@ -29,7 +31,14 @@ namespace Microsoft.Bot.Samples.CustomMiddleware
             var bot = new Builder.Bot(new BotFrameworkAdapter(configuration))
                 .Use(new ExampleMiddleware("X"))
                 .Use(new ExampleMiddleware("\tY"))
-                .Use(new ExampleMiddleware("\t\tZ"));
+                .Use(new ExampleMiddleware("\t\tZ"))
+                .Use(new BotStateManager(new FileStorage("C:\\temp\\bot\\middleware")))
+                .Use(new ConversationVersionMiddleware(Assembly.GetAssembly(typeof(MessagesController)), (context, version, next) =>
+                {
+                    context.Reply("I'm sorry, my service was upgraded let's start over.");
+                    context.State.Conversation = new ConversationState();
+                    return Task.CompletedTask;
+                }));
             bot.OnReceive(BotReceiveHandler);
 
             _adapter = (BotFrameworkAdapter)bot.Adapter;
