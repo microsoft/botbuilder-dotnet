@@ -18,18 +18,7 @@ namespace Microsoft.Bot.Builder.Ai
         public QnAMakerMiddleware(QnAMakerMiddlewareOptions options, HttpClient httpClient)
         {
             _options = options ?? throw new ArgumentNullException(nameof(options));
-
-            var qnaMakerOptions = new QnAMakerOptions()
-            {
-                KnowledgeBaseId = _options.KnowledgeBaseId,
-                SubscriptionKey = _options.SubscriptionKey,
-                ScoreThreshold = _options.ScoreThreshold,
-                Top = _options.Top,
-                MetadataBoost = _options.MetadataBoost,
-                StrictFilters = _options.StrictFilters
-            };
-
-            _qnaMaker = new QnAMaker(qnaMakerOptions, httpClient);
+            _qnaMaker = new QnAMaker(options, httpClient);
         }
 
         public async Task ReceiveActivity(IBotContext context, MiddlewareSet.NextDelegate next)
@@ -48,6 +37,7 @@ namespace Microsoft.Bot.Builder.Ai
                         context.Reply(results.First().Answer);
 
                         if (_options.EndActivityRoutingOnAnswer)
+                            //Question is answered, don't keep routing
                             return;
                     }
                 }
