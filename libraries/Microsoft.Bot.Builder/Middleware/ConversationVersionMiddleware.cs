@@ -76,7 +76,20 @@ namespace Microsoft.Bot.Builder.Middleware
         /// <returns>a task upon completion</returns>
         public async Task ReceiveActivity(IBotContext context, NextDelegate next)
         {
-            throw new NotImplementedException();
+            int? conversationVersion = (int?) context.State.Conversation[CONVERSATION_VERSION];
+            if(!conversationVersion.HasValue)
+            {
+                context.State.Conversation[CONVERSATION_VERSION] = _majorVersion;
+            }
+            else if(conversationVersion.Value != _majorVersion)
+            {
+                await _handler.Invoke(context, conversationVersion.Value, () => {
+                    context.State.Conversation[CONVERSATION_VERSION] = _majorVersion;
+                    return next();
+                });
+            }
+
+            await next();
         }
     }
 }
