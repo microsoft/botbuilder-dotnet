@@ -3,8 +3,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Middleware;
@@ -15,17 +15,23 @@ namespace Microsoft.Bot.Builder.Ai
 {
     public class TranslationMiddleware : IReceiveActivity, ISendActivity
     {
-        private LuisClient luisClient;
         private string[] nativeLanguages;
-        private Translator translator;        
+        private Translator translator;
+        private string templatesDir;
 
-        public TranslationMiddleware(HttpClient httpClient, string[] nativeLanguages, string translatorKey, string luisAppId, string luisAccessKey)
+        public TranslationMiddleware(string[] nativeLanguages, string translatorKey)
         {
             this.nativeLanguages = nativeLanguages;
-            this.luisClient = new LuisClient(luisAppId, luisAccessKey);
-            this.translator = new Translator(translatorKey, httpClient);
+            this.translator = new Translator(translatorKey);
+            templatesDir = "";
         }
 
+        public TranslationMiddleware(string[] nativeLanguages, string translatorKey, string templatesDir)
+        {
+            this.nativeLanguages = nativeLanguages;
+            this.translator = new Translator(translatorKey);
+            this.templatesDir = templatesDir;
+        }
         /// <summary>
         /// Incoming activity
         /// </summary>
@@ -40,48 +46,33 @@ namespace Microsoft.Bot.Builder.Ai
                 if (!String.IsNullOrWhiteSpace(message.Text))
                 {
                     // determine the language we are using for this conversation
-                    var sourceLanguage = "en"; // context.Conversation.Data["Language"]?.ToString() ?? this.nativeLanguages.FirstOrDefault() ?? "en";
-
-                    var translationContext = new TranslationContext
+                    var sourceLanguage = await Task.Run(() => translator.Detect(message.Text)); // context.Conversation.Data["Language"]?.ToString() ?? this.nativeLanguages.FirstOrDefault() ?? "en";
+                    var templatePath = Path.Combine(new string[] { templatesDir, sourceLanguage + ".template" });
+                    if (File.Exists(templatePath))
                     {
-                        SourceText = message.Text,
-                        SourceLanguage = sourceLanguage,
-                        TargetLanguage = (this.nativeLanguages.Contains(sourceLanguage)) ? sourceLanguage : this.nativeLanguages.FirstOrDefault() ?? "en"
-                    };
-                    ((BotContext)context)["Translation"] = translationContext;
+                        this.translator.SetPostProcessorTemplate(templatePath);
+                    }
+                    if (!nativeLanguages.Contains(sourceLanguage))
+                    {
+                        var translationContext = new TranslationContext
+                        {
+                            SourceText = message.Text,
+                            SourceLanguage = sourceLanguage,
+                            TargetLanguage = (this.nativeLanguages.Contains(sourceLanguage)) ? sourceLanguage : this.nativeLanguages.FirstOrDefault() ?? "en"
+                        };
+                        ((BotContext)context)["Translation"] = translationContext;
 
-                    // translate to bots language
-                    if (translationContext.SourceLanguage != translationContext.TargetLanguage)
-                        await TranslateMessageAsync(context, message, translationContext.SourceLanguage, translationContext.TargetLanguage).ConfigureAwait(false);
+                        // translate to bots language
+                        if (translationContext.SourceLanguage != translationContext.TargetLanguage)
+                            await TranslateMessageAsync(context, message, translationContext.SourceLanguage, translationContext.TargetLanguage).ConfigureAwait(false);
+                    }
 
                 }
             }
             await next().ConfigureAwait(false);
         }
 
-        /// <summary>
-        /// outgoing activities
-        /// </summary>
-        /// <param name="context"></param>
-        /// <param name="activities"></param>
-        /// <param name="token"></param>
-        /// <returns></returns>
-        public async Task SendActivity(IBotContext context, IList<IActivity> activities, MiddlewareSet.NextDelegate next)
-        {
-            foreach (var activity in activities)
-            {
-                IMessageActivity message = context.Request.AsMessageActivity();
-                if (!String.IsNullOrWhiteSpace(message?.Text))
-                {
-                    // translate to userslanguage
-                    var translationContext = ((BotContext)context)["Translation"] as TranslationContext;
-                    if (translationContext.SourceLanguage != translationContext.TargetLanguage)
-                        await TranslateMessageAsync(context, message, translationContext.TargetLanguage, translationContext.SourceLanguage).ConfigureAwait(false);
-                }
-            }
-            await next().ConfigureAwait(false);
-        }
-        
+
         private static readonly Regex UrlRegex = new Regex(@"(https?://[^\s]*)", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Multiline);
 
         /// <summary>
@@ -102,10 +93,6 @@ namespace Microsoft.Bot.Builder.Ai
 
                 // massage mentions and urls so they don't get translated
                 int i = 0;
-                //foreach (var mention in message.Mentions)
-                //{
-                //    text = text.Replace(mention.Text, $"{{{i++}}}");
-                //}
 
                 var urls = new List<string>();
                 while (UrlRegex.IsMatch(text))
@@ -118,13 +105,8 @@ namespace Microsoft.Bot.Builder.Ai
                 string[] lines = text.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None);
                 var translateResult = await this.translator.TranslateArray(lines, sourceLanguage, targetLanguage).ConfigureAwait(false);
                 text = String.Join("\n", translateResult);
-
                 // restore mentions and urls 
                 i = 0;
-                //foreach (var mention in message.Mentions)
-                //{
-                //    text = text.Replace($"{{{i++}}}", mention.Text);
-                //}
                 foreach (var url in urls)
                 {
                     text = text.Replace($"{{{i++}}}", url);
@@ -132,6 +114,22 @@ namespace Microsoft.Bot.Builder.Ai
 
                 message.Text = text;
             }
-        }        
+        }
+
+        public async Task SendActivity(IBotContext context, IList<IActivity> activities, MiddlewareSet.NextDelegate next)
+        {
+            foreach (var activity in activities)
+            {
+                IMessageActivity message = context.Request.AsMessageActivity();
+                if (!String.IsNullOrWhiteSpace(message?.Text))
+                {
+                    // translate to userslanguage
+                    var translationContext = ((BotContext)context)["Translation"] as TranslationContext;
+                    if (translationContext.SourceLanguage != translationContext.TargetLanguage && message.Text != translationContext.SourceText)
+                        await TranslateMessageAsync(context, message, translationContext.TargetLanguage, translationContext.SourceLanguage).ConfigureAwait(false);
+                }
+            }
+            await next().ConfigureAwait(false);
+        }
     }
 }
