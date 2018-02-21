@@ -4,14 +4,16 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Middleware;
 using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.Adapters
 {
-    public class TestAdapter : ActivityAdapterBase
+    public class TestAdapter : BotAdapter
     {
         private int _nextId = 0;
-        private readonly Queue<IActivity> botReplies = new Queue<IActivity>();
+        private readonly List<IActivity> botReplies = new List<IActivity>();
+        private Func<IBotContext, Task> callback;
 
         public TestAdapter(ConversationReference reference = null)
         {
@@ -33,11 +35,94 @@ namespace Microsoft.Bot.Builder.Adapters
             }
         }
 
+
+        public new TestAdapter Use(IMiddleware middleware)
+        {
+            base.RegisterMiddleware(middleware);
+            return this;
+        }
+
+        public Task ProcessActivity(IActivity activity, Func<IBotContext, Task> callback)
+        {
+            lock (this.ConversationReference)
+            {
+                // ready for next reply
+                if (activity.Type == null)
+                    activity.Type = ActivityTypes.Message;
+                activity.ChannelId = this.ConversationReference.ChannelId;
+                activity.From = this.ConversationReference.User;
+                activity.Recipient = this.ConversationReference.Bot;
+                activity.Conversation = this.ConversationReference.Conversation;
+                activity.ServiceUrl = this.ConversationReference.ServiceUrl;
+
+                var id = activity.Id = (this._nextId++).ToString();
+            }
+
+            return base.ProcessActivityInternal(activity, callback);
+        }
+
         public ConversationReference ConversationReference { get; set; }
 
 
+        protected async override Task SendActivityImplementation(IBotContext context, IActivity activity)
+        {
+            if (activity.Type == ActivityTypesEx.Delay)
+            {
+                // The BotFrameworkAdapter and Console adapter implement this
+                // hack directly in the POST method. Replicating that here
+                // to keep the behavior as close as possible to facillitate
+                // more realistic tests.                     
+                int delayMs = (int)((Activity)activity).Value;
+                await Task.Delay(delayMs);
+            }
+            else
+            {
+                lock (this.botReplies)
+                {
+                    this.botReplies.Add(activity);
+                }
+            }
+        }
+
+        protected override Task<ResourceResponse> UpdateActivityImplementation(IBotContext context, IActivity activity)
+        {
+            lock (this.botReplies)
+            {
+                for (int i = 0; i < this.botReplies.Count; i++)
+                {
+                    if (this.botReplies[i].Id == activity.Id)
+                    {
+                        this.botReplies[i] = activity;
+                        return Task.FromResult(new ResourceResponse(activity.Id));
+                    }
+                }
+            }
+            return Task.FromResult(new ResourceResponse());
+        }
+
+        protected override Task DeleteActivityImplementation(IBotContext context, string conversationId, string activityId)
+        {
+            lock (this.botReplies)
+            {
+                for (int i = 0; i < this.botReplies.Count; i++)
+                {
+                    if (this.botReplies[i].Id == activityId)
+                    {
+                        this.botReplies.RemoveAt(i);
+                        break;
+                    }
+                }
+            }
+            return Task.CompletedTask;
+        }
+
+        protected override Task CreateConversationImplementation()
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
-        /// get next activity or null if none
+        /// Called by TestFlow to check next reply
         /// </summary>
         /// <returns></returns>
         public IActivity GetNextReply()
@@ -45,11 +130,20 @@ namespace Microsoft.Bot.Builder.Adapters
             lock (this.botReplies)
             {
                 if (this.botReplies.Count > 0)
-                    return this.botReplies.Dequeue();
+                {
+                    var result = this.botReplies[0];
+                    this.botReplies.RemoveAt(0);
+                    return result;
+                }
             }
             return null;
         }
 
+        /// <summary>
+        /// Called by TestFlow to get appropriate activity for conversationReference of testbot
+        /// </summary>
+        /// <param name="text"></param>
+        /// <returns></returns>
         public IActivity MakeActivity(string text = null)
         {
             Activity activity = new Activity
@@ -66,193 +160,41 @@ namespace Microsoft.Bot.Builder.Adapters
             return activity;
         }
 
-        /// <summary>
-        /// Bot posting an activity back to the source
-        /// </summary>
-        /// <param name="activities"></param>
-        /// <param name="token"></param>
-        /// <returns></returns>
-        public override async Task Send(IList<IActivity> activities)
-        {
-            foreach (var activity in activities)
-            {
-                if (activity.Type == ActivityTypesEx.Delay)
-                {
-                    // The BotFrameworkAdapter and Console adapter implement this
-                    // hack directly in the POST method. Replicating that here
-                    // to keep the behavior as close as possible to facillitate
-                    // more realistic tests.                     
-                    int delayMs = (int)((Activity)activity).Value;
-                    await Task.Delay(delayMs);
-                }
-                else
-                {
-                    lock (this.botReplies)
-                    {
-                        this.botReplies.Enqueue(activity);
-                    }
-                }
-            }
-        }
-
-        /* INTERNAL */
-        internal Task SendActivityToBot(string userSays)
-        {
-            return this.SendActivityToBot(this.MakeActivity(userSays));
-        }
-
-        internal Task SendActivityToBot(IActivity activity)
-        {
-            lock (this.ConversationReference)
-            {
-                // ready for next reply
-                if (activity.Type == null)
-                    activity.Type = ActivityTypes.Message;
-                activity.ChannelId = this.ConversationReference.ChannelId;
-                activity.From = this.ConversationReference.User;
-                activity.Recipient = this.ConversationReference.Bot;
-                activity.Conversation = this.ConversationReference.Conversation;
-                activity.ServiceUrl = this.ConversationReference.ServiceUrl;
-
-                var id = activity.Id = (this._nextId++).ToString();
-                return this.OnReceive(activity);
-            }
-        }
 
         /// <summary>
-        /// Send a message to the bot
+        /// Called by TestFlow to send text to the bot
         /// </summary>
         /// <param name="userSays"></param>
         /// <returns></returns>
-        public TestFlow Send(string userSays)
+        public Task SendTextToBot(string userSays, Func<IBotContext, Task> callback)
         {
-            return new TestFlow(this.SendActivityToBot(userSays), this);
-        }
-
-        /// <summary>
-        /// Send an activity to the bot
-        /// </summary>
-        /// <param name="userSends"></param>
-        /// <returns></returns>
-        public TestFlow Send(Activity userSends)
-        {
-            return new TestFlow(this.SendActivityToBot(userSends), this);
-        }
-
-        /// <summary>
-        /// Wait for period
-        /// </summary>
-        /// <param name="ms"></param>
-        /// <returns></returns>
-        public TestFlow Delay(UInt32 ms)
-        {
-            return new TestFlow(Task.Delay((int)ms), this);
-        }
-
-        /// <summary>
-        /// Assert that the reply matches expected
-        /// </summary>
-        /// <param name="expected"></param>
-        /// <param name="description"></param>
-        /// <param name="timeout"></param>
-        /// <returns></returns>
-        public TestFlow AssertReply(string expected, string description = null, UInt32 timeout = 3000)
-        {
-            return new TestFlow(Task.CompletedTask, this).AssertReply(expected, description, timeout);
-        }
-
-        /// <summary>
-        /// Assert that the reply actiivty matches expected
-        /// </summary>
-        /// <param name="expected"></param>
-        /// <param name="description"></param>
-        /// <param name="timeout"></param>
-        /// <returns></returns>
-        public TestFlow AssertReply(Activity expected, string description = null, UInt32 timeout = 3000)
-        {
-            return new TestFlow(Task.CompletedTask, this).AssertReply(expected, description, timeout);
-        }
-
-        /// <summary>
-        /// Custom validator for the reply activity
-        /// </summary>
-        /// <param name="expected"></param>
-        /// <param name="description"></param>
-        /// <param name="timeout"></param>
-        /// <returns></returns>
-        public TestFlow AssertReply(Action<IActivity> expected, string description = null, UInt32 timeout = 3000)
-        {
-            return new TestFlow(Task.CompletedTask, this).AssertReply(expected, description, timeout);
-        }
-
-        /// <summary>
-        /// Assert that the reply is one of the candidates
-        /// </summary>
-        /// <param name="candidates"></param>
-        /// <param name="description"></param>
-        /// <param name="timeout"></param>
-        /// <returns></returns>
-        public TestFlow AssertReplyOneOf(string[] candidates, string description = null, UInt32 timeout = 3000)
-        {
-            return new TestFlow(Task.CompletedTask, this).AssertReplyOneOf(candidates, description, timeout);
-        }
-
-
-        /// <summary>
-        /// Say() -> shortcut for .Send(user).AssertReply(Expected)
-        /// </summary>
-        /// <param name="userSays"></param>
-        /// <param name="expected"></param>
-        /// <param name="description"></param>
-        /// <param name="timeout"></param>
-        /// <returns></returns>
-        public TestFlow Test(string userSays, string expected, string description = null, UInt32 timeout = 3000)
-        {
-            return new TestFlow(Task.CompletedTask, this).Send(userSays).AssertReply(expected, description, timeout);
-        }
-
-        /// <summary>
-        /// Say() -> shortcut for .Send(user).AssertReply(Expected)
-        /// </summary>
-        /// <param name="userSays"></param>
-        /// <param name="expected"></param>
-        /// <param name="description"></param>
-        /// <param name="timeout"></param>
-        /// <returns></returns>
-        public TestFlow Test(string userSays, IActivity expected, string description = null, UInt32 timeout = 3000)
-        {
-            return new TestFlow(Task.CompletedTask, this).Send(userSays).AssertReply(expected, description, timeout);
-        }
-
-        /// <summary>
-        /// Say() -> shortcut for .Send(user).AssertReply(Expected)
-        /// </summary>
-        /// <param name="userSays"></param>
-        /// <param name="expected"></param>
-        /// <param name="description"></param>
-        /// <param name="timeout"></param>
-        /// <returns></returns>
-        public TestFlow Test(string userSays, Action<IActivity> expected, string description = null, UInt32 timeout = 3000)
-        {
-            return new TestFlow(Task.CompletedTask, this).Send(userSays).AssertReply(expected, description, timeout);
+            return this.ProcessActivity(this.MakeActivity(userSays), callback);
         }
     }
 
 
     public class TestFlow
     {
-        readonly TestAdapter _adapter;
+        readonly TestAdapter adapter;
         readonly Task testTask;
+        Func<IBotContext, Task> callback;
 
+        public TestFlow(TestAdapter adapter, Func<IBotContext, Task> callback = null)
+        {
+            this.adapter = adapter;
+            this.callback = callback;
+            this.testTask = testTask ?? Task.CompletedTask;
+        }
 
-        public TestFlow(Task testTask, TestAdapter adapter)
+        public TestFlow(Task testTask, TestFlow flow)
         {
             this.testTask = testTask ?? Task.CompletedTask;
-            this._adapter = adapter;
+            this.callback = flow.callback;
+            this.adapter = flow.adapter;
         }
 
         /// <summary>
-        /// Start the execution of the test dialog
+        /// Start the execution of the test flow
         /// </summary>
         /// <returns></returns>
         public Task StartTest()
@@ -285,8 +227,8 @@ namespace Microsoft.Bot.Builder.Adapters
                 //  could be thrown.
                 task.Wait();
 
-                return this._adapter.SendActivityToBot(userSays);
-            }).Unwrap(), this._adapter);
+                return this.adapter.SendTextToBot(userSays, this.callback);
+            }).Unwrap(), this);
         }
 
         /// <summary>
@@ -294,7 +236,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// </summary>
         /// <param name="userActivity"></param>
         /// <returns></returns>
-        public TestFlow Send(Activity userActivity)
+        public TestFlow Send(IActivity userActivity)
         {
             if (userActivity == null)
                 throw new ArgumentNullException("You have to pass an Activity");
@@ -304,8 +246,8 @@ namespace Microsoft.Bot.Builder.Adapters
                 // NOTE: See details code in above method. 
                 task.Wait();
 
-                return this._adapter.SendActivityToBot(userActivity);
-            }).Unwrap(), this._adapter);
+                return this.adapter.ProcessActivity(userActivity, this.callback);
+            }).Unwrap(), this);
         }
 
         /// <summary>
@@ -321,7 +263,7 @@ namespace Microsoft.Bot.Builder.Adapters
                 task.Wait();
 
                 return Task.Delay((int)ms);
-            }).Unwrap(), this._adapter);
+            }), this);
         }
 
         /// <summary>
@@ -333,7 +275,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <returns></returns>
         public TestFlow AssertReply(string expected, string description = null, UInt32 timeout = 3000)
         {
-            return this.AssertReply(this._adapter.MakeActivity(expected), description, timeout);
+            return this.AssertReply(this.adapter.MakeActivity(expected), description, timeout);
         }
 
         /// <summary>
@@ -351,8 +293,8 @@ namespace Microsoft.Bot.Builder.Adapters
                     throw new Exception($"{description}: Type should match");
                 if (expected.AsMessageActivity().Text != reply.AsMessageActivity().Text)
                     throw new Exception($"{description}: Text should match");
-                    // TODO, expand this to do all properties set on expected
-                }, description, timeout);
+                // TODO, expand this to do all properties set on expected
+            }, description, timeout);
         }
 
         /// <summary>
@@ -369,6 +311,9 @@ namespace Microsoft.Bot.Builder.Adapters
                 // NOTE: See details code in above method. 
                 task.Wait();
 
+                if (System.Diagnostics.Debugger.IsAttached)
+                    timeout = UInt32.MaxValue;
+
                 var start = DateTime.UtcNow;
                 while (true)
                 {
@@ -379,15 +324,15 @@ namespace Microsoft.Bot.Builder.Adapters
                         throw new TimeoutException($"{timeout}ms Timed out waiting for:'{description}'");
                     }
 
-                    IActivity replyActivity = this._adapter.GetNextReply();                    
-                    if (replyActivity != null)     
+                    IActivity replyActivity = this.adapter.GetNextReply();
+                    if (replyActivity != null)
                     {
                         // if we have a reply
                         validateActivity(replyActivity);
                         return;
                     }
                 }
-            }), this._adapter);
+            }), this);
         }
 
 

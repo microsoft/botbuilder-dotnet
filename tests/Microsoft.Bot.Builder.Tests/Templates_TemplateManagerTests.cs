@@ -110,16 +110,14 @@ namespace Microsoft.Bot.Builder.Tests
         [TestMethod]
         public async Task Template_Middleware_defaultlookup()
         {
-            TestAdapter adapter = new TestAdapter();
-            Bot bot = new Bot(adapter)
-                .UseTemplates(templates1)
-                .UseTemplates(templates2);
-            bot.OnReceive(async (context) =>
+            
+            TestAdapter adapter= new TestAdapter()
+                .Use(new DictionaryRenderer(templates1))
+                .Use(new DictionaryRenderer(templates2));
+            await new TestFlow(adapter, async (context) =>
                 {
                     context.ReplyWith(context.Request.AsMessageActivity().Text.Trim(), new { name = "joe" });                    
-                });
-
-            await adapter
+                })
                 .Send("stringTemplate").AssertReply("default: joe")
                 .Send("activityTemplate").AssertReply("(Activity)default: joe")
                 .StartTest();
@@ -128,18 +126,16 @@ namespace Microsoft.Bot.Builder.Tests
         [TestMethod]
         public async Task Template_Middleware_enLookup()
         {
-            TestAdapter adapter = new TestAdapter();
-            Bot bot = new Bot(adapter)
-                .UseTemplates(templates1)
-                .UseTemplates(templates2);
+            
+            TestAdapter adapter= new TestAdapter()
+                .Use(new DictionaryRenderer(templates1))
+                .Use(new DictionaryRenderer(templates2));
 
-            bot.OnReceive(async (context) =>
+            await new TestFlow(adapter, async (context) =>
                 {
                     context.Request.AsMessageActivity().Locale = "en"; // force to english
                     context.ReplyWith(context.Request.AsMessageActivity().Text.Trim(), new { name = "joe" });                    
-                });
-
-            await adapter
+                })
                 .Send("stringTemplate").AssertReply("en: joe")
                 .Send("activityTemplate").AssertReply("(Activity)en: joe")
                 .StartTest();
@@ -148,18 +144,16 @@ namespace Microsoft.Bot.Builder.Tests
         [TestMethod]
         public async Task Template_Middleware_frLookup()
         {
-            TestAdapter adapter = new TestAdapter();
-            Bot bot = new Bot(adapter)
-                .UseTemplates(templates1)
-                .UseTemplates(templates2);
+            
+            TestAdapter adapter= new TestAdapter()
+                .Use(new DictionaryRenderer(templates1))
+                .Use(new DictionaryRenderer(templates2));
 
-            bot.OnReceive(async (context) =>
+            await new TestFlow(adapter, async (context) =>
                 {
                     context.Request.AsMessageActivity().Locale = "fr"; // force to french
                     context.ReplyWith(context.Request.AsMessageActivity().Text.Trim(), new { name = "joe" });
-                });
-
-            await adapter
+                })
                 .Send("stringTemplate").AssertReply("fr: joe")
                 .Send("activityTemplate").AssertReply("(Activity)fr: joe")
                 .StartTest();
@@ -168,18 +162,16 @@ namespace Microsoft.Bot.Builder.Tests
         [TestMethod]
         public async Task Template_Middleware_override()
         {
-            TestAdapter adapter = new TestAdapter();
-            Bot bot = new Bot(adapter)
-                .UseTemplates(templates1)
-                .UseTemplates(templates2);
+            
+            TestAdapter adapter= new TestAdapter()
+                .Use(new DictionaryRenderer(templates1))
+                .Use(new DictionaryRenderer(templates2));
 
-            bot.OnReceive(async (context) =>
+            await new TestFlow(adapter, async (context) =>
                 {
                     context.Request.AsMessageActivity().Locale = "fr"; // force to french
                     context.ReplyWith(context.Request.AsMessageActivity().Text.Trim(), new { name = "joe" });                    
-                });
-
-            await adapter
+                })
                 .Send("stringTemplate2").AssertReply("fr: Yo joe")
                 .Send("activityTemplate").AssertReply("(Activity)fr: joe")
                 .StartTest();
@@ -188,16 +180,15 @@ namespace Microsoft.Bot.Builder.Tests
         [TestMethod]
         public async Task Template_Middleware_useTemplateEngine()
         {
-            TestAdapter adapter = new TestAdapter();
-            Bot bot = new Bot(adapter)
-                .UseTemplateRenderer(new DictionaryRenderer(templates1))
-                .UseTemplateRenderer(new DictionaryRenderer(templates2));
-            bot.OnReceive(async (context) =>
+            
+            TestAdapter adapter= new TestAdapter()
+                .Use(new DictionaryRenderer(templates1))
+                .Use(new DictionaryRenderer(templates2));
+
+            await new TestFlow(adapter, async (context) =>
                 {
                     context.ReplyWith(context.Request.AsMessageActivity().Text.Trim(), new { name = "joe" });                    
-                });
-
-            await adapter
+                })
                 .Send("stringTemplate").AssertReply("default: joe")
                 .Send("activityTemplate").AssertReply("(Activity)default: joe")
                 .StartTest();

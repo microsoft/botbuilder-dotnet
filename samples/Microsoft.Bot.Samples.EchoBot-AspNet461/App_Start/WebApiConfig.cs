@@ -36,12 +36,12 @@ namespace Microsoft.Bot.Samples.EchoBot_AspNet461
             );
 
             // services
-            UnityConfig.Container.RegisterSingleton<Builder.Bot>(
+            UnityConfig.Container.RegisterSingleton<BotFrameworkAdapter>(
                 new Unity.Injection.InjectionConstructor(
-                        new BotFrameworkAdapter(ConfigurationManager.AppSettings[@"MicrosoftAppId"], ConfigurationManager.AppSettings[@"MicrosoftAppPassword"])))
-            .Resolve<Builder.Bot>()
-            .Use(new BotStateManager(new MemoryStorage()));
-
+                    new BotFrameworkAdapter(ConfigurationManager.AppSettings[@"MicrosoftAppId"], ConfigurationManager.AppSettings[@"MicrosoftAppPassword"])
+                        .Use(new BotStateManager(new MemoryStorage()))
+                )
+            );
         }
     }
 }

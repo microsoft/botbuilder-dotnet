@@ -85,16 +85,14 @@ namespace Microsoft.Bot.Builder.Tests
         {
             IActivity a = new Activity();
 
+            
             TestAdapter adapter = new TestAdapter();
-            Bot b = new Bot(adapter);
-            b.OnReceive(async (context) =>
+            await new TestFlow(adapter, async (context) =>
                {
                    Assert.IsTrue(string.IsNullOrEmpty(a.Type));
                    context.Responses.Add(a);
                    Assert.IsTrue(string.IsNullOrEmpty(a.Type)); 
-               });
-
-            await adapter
+               })
                .Send("test")
                .StartTest();
 
