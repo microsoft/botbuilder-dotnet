@@ -75,13 +75,26 @@ namespace Microsoft.Bot.Builder
             // Call any registered Middleware Components looking for ReceiveActivity()
             if (context.Request != null)
             {
-                await _middlewareSet.ReceiveActivity(context).ConfigureAwait(false);
+                bool didAllMiddlewareRun = await _middlewareSet.ReceiveActivityWithStatus(context).ConfigureAwait(false);
+                if (didAllMiddlewareRun && callback != null)
+                {
+                    await callback(context).ConfigureAwait(false);
+                }
+                else
+                {
+                    // One of the middleware instances did not call Next(). When this happens,
+                    // by design, we do NOT call the callback handler. This allows
+                    // Middleware interceptors to be written that activly prevent certain
+                    // Activites from being run. 
+                }
             }
-
-            // call back to caller
-            if (callback != null)
+            else
             {
-                await callback(context).ConfigureAwait(false);
+                // call back to caller on proactive case
+                if (callback != null)
+                {
+                    await callback(context).ConfigureAwait(false);
+                }
             }
 
             // Call any registered Middleware Components looking for SendActivity()

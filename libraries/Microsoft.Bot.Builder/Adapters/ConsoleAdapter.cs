@@ -64,7 +64,7 @@ namespace Microsoft.Bot.Builder.Adapters
                         }
                     }
                     break;
-                case "delay":
+                case ActivityTypesEx.Delay:
                     {
                         // The Activity Schema doesn't have a delay type build in, so it's simulated
                         // here in the Bot. This matches the behavior in the Node connector. 

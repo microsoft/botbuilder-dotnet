@@ -66,7 +66,7 @@ namespace Microsoft.Bot.Builder.Adapters
 
         protected async override Task SendActivityImplementation(IBotContext context, IActivity activity)
         {
-            if (activity.Type == "delay")
+            if (activity.Type == ActivityTypesEx.Delay)
             {
                 // The BotFrameworkAdapter and Console adapter implement this
                 // hack directly in the POST method. Replicating that here
@@ -310,6 +310,9 @@ namespace Microsoft.Bot.Builder.Adapters
             {
                 // NOTE: See details code in above method. 
                 task.Wait();
+
+                if (System.Diagnostics.Debugger.IsAttached)
+                    timeout = UInt32.MaxValue;
 
                 var start = DateTime.UtcNow;
                 while (true)

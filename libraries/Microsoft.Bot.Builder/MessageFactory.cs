@@ -34,10 +34,15 @@ namespace Microsoft.Bot.Builder
         /// <param name="ssml">
         /// (Optional) SSML to include in the message.
         /// </param>
-        public static IMessageActivity Text(string text, string ssml = null)
+        /// <param name="inputHint">
+        /// (Optional)Input hint to the channel on what the bot is expecting. 
+        /// Possible values include: 'acceptingInput',
+        /// 'ignoringInput', 'expectingInput'
+        /// </param>
+        public static IMessageActivity Text(string text, string ssml = null, string inputHint = null)
         {
             IMessageActivity ma = Activity.CreateMessageActivity();
-            SetTextAndSpeak(ma, text, ssml);
+            SetTextAndSpeak(ma, text, ssml, inputHint);
             return ma;
         }
 
@@ -59,7 +64,12 @@ namespace Microsoft.Bot.Builder
         /// <param name="ssml">
         /// (Optional) SSML to include in the message.
         /// </param>
-        public static IMessageActivity SuggestedActions(IList<string> actions, string text = null, string ssml = null)
+        /// <param name="inputHint">
+        /// (Optional)Input hint to the channel on what the bot is expecting. 
+        /// Possible values include: 'acceptingInput',
+        /// 'ignoringInput', 'expectingInput'
+        /// </param>
+        public static IMessageActivity SuggestedActions(IList<string> actions, string text = null, string ssml = null, string inputHint = null)
         {
             if (actions == null)
                 throw new ArgumentNullException(nameof(actions));
@@ -77,8 +87,9 @@ namespace Microsoft.Bot.Builder
                 cardActions.Add(ca);
             }
 
-            return SuggestedActions(cardActions, text, ssml);
+            return SuggestedActions(cardActions, text, ssml, inputHint);
         }
+
         /// <summary>
         /// Returns a message that includes a set of suggested actions and optional text.
         /// </summary/>
@@ -97,16 +108,20 @@ namespace Microsoft.Bot.Builder
         /// <param name="ssml">
         /// (Optional) SSML to include in the message.
         /// </param>
-        public static IMessageActivity SuggestedActions(IList<CardAction> cardActions, string text = null, string ssml = null)
+        /// <param name="inputHint">
+        /// (Optional)Input hint to the channel on what the bot is expecting. 
+        /// Possible values include: 'acceptingInput',
+        /// 'ignoringInput', 'expectingInput'
+        /// </param>
+        public static IMessageActivity SuggestedActions(IList<CardAction> cardActions, string text = null, string ssml = null, string inputHint = null)
         {
             if (cardActions == null)
                 throw new ArgumentNullException(nameof(cardActions));
 
             IMessageActivity ma = Activity.CreateMessageActivity();
-            SetTextAndSpeak(ma, text, ssml);
+            SetTextAndSpeak(ma, text, ssml, inputHint);
 
-            ma.SuggestedActions = new SuggestedActions();
-            ma.SuggestedActions.Actions = cardActions;
+            ma.SuggestedActions = new SuggestedActions {Actions = cardActions};
 
             return ma;
         }
@@ -117,13 +132,14 @@ namespace Microsoft.Bot.Builder
         /// <param name="attachment">Adaptive card to include in the message</param>
         /// <param name="text">(Optional) text of the message. </param>
         /// <param name="ssml">(Optional) SSML to include with the message.</param>
+        /// <param name="inputHint">(Optional)Input hint to the channel on what the bot is expecting.</param>
         /// <returns>Message activity containing an attachment</returns>
-        public static IMessageActivity Attachment(Attachment attachment, string text = null, string ssml = null)
+        public static IMessageActivity Attachment(Attachment attachment, string text = null, string ssml = null, string inputHint = null)
         {
             if (attachment == null)
                 throw new ArgumentNullException(nameof(attachment));
 
-            return Attachment(new List<Attachment> { attachment }, text, ssml);
+            return Attachment(new List<Attachment> { attachment }, text, ssml, inputHint);
         }
 
         /// <summary>
@@ -132,13 +148,14 @@ namespace Microsoft.Bot.Builder
         /// <param name="attachment">List of attachments to include in the message.</param>
         /// <param name="text">(Optional) text of the message. </param>
         /// <param name="ssml">(Optional) SSML to include with the message.</param>
+        /// <param name="inputHint">(Optional)Input hint to the channel on what the bot is expecting.</param>
         /// <returns>Message activity containing the attachment list.</returns>
-        public static IMessageActivity Attachment(IList<Attachment> attachments, string text = null, string ssml = null)
+        public static IMessageActivity Attachment(IList<Attachment> attachments, string text = null, string ssml = null, string inputHint = null)
         {
             if (attachments == null)
                 throw new ArgumentNullException(nameof(attachments));
 
-            return AttachmentActivity(AttachmentLayoutTypes.List, attachments, text, ssml);
+            return AttachmentActivity(AttachmentLayoutTypes.List, attachments, text, ssml, inputHint);
         }
 
         /// <summary>
@@ -147,6 +164,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="attachments">List of attachments to include in the message.</param>
         /// <param name="text">(Optional) text of the message.</param>
         /// <param name="ssml">(Optional) SSML to include with the message.</param>
+        /// <param name="inputHint">(Optional)Input hint to the channel on what the bot is expecting.</param>
         /// <returns>
         /// Returns a message that will display a set of attachments using a carousel layout.
         /// </returns>
@@ -159,12 +177,12 @@ namespace Microsoft.Bot.Builder
         ///             MessageFactory.Carousel(multipleAttachments, text, ssml);
         /// </code>
         /// </example>
-        public static IMessageActivity Carousel(IList<Attachment> attachments, string text = null, string ssml = null)
+        public static IMessageActivity Carousel(IList<Attachment> attachments, string text = null, string ssml = null, string inputHint = null)
         {
             if (attachments == null)
                 throw new ArgumentNullException(nameof(attachments));
 
-            return AttachmentActivity(AttachmentLayoutTypes.Carousel, attachments, text, ssml);
+            return AttachmentActivity(AttachmentLayoutTypes.Carousel, attachments, text, ssml, inputHint);
         }
 
         /// <summary>
@@ -175,6 +193,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="name">(Optional) Name of the image/video file.</param>
         /// <param name="text">(Optional) text of the message.</param>
         /// <param name="ssml">(Optional) SSML to include with the message.</param>
+        /// <param name="inputHint">(Optional)Input hint to the channel on what the bot is expecting.</param>
         /// <returns>
         /// Returns a message that will display a single image or video to a user.
         /// </returns>
@@ -184,7 +203,7 @@ namespace Microsoft.Bot.Builder
         ///         MessageFactory.ContentUrl("https://{domainName}/cat.jpg", MediaTypeNames.Image.Jpeg, "Cat Picture");
         /// </code>
         /// </example>
-        public static IMessageActivity ContentUrl(string url, string contentType, string name = null, string text = null, string ssml = null)
+        public static IMessageActivity ContentUrl(string url, string contentType, string name = null, string text = null, string ssml = null, string inputHint = null)
         {
             if (string.IsNullOrWhiteSpace(url))
                 throw new ArgumentNullException(nameof(url));
@@ -199,22 +218,23 @@ namespace Microsoft.Bot.Builder
                 Name = !string.IsNullOrWhiteSpace(name) ? name : string.Empty
             };
 
-            return AttachmentActivity(AttachmentLayoutTypes.List, new List<Attachment> { a }, text, ssml);
+            return AttachmentActivity(AttachmentLayoutTypes.List, new List<Attachment> { a }, text, ssml, inputHint);
         }
 
-        private static IMessageActivity AttachmentActivity(string attachmentLayout, IList<Attachment> attachments, string text = null, string ssml = null)
+        private static IMessageActivity AttachmentActivity(string attachmentLayout, IList<Attachment> attachments, string text = null, string ssml = null, string inputHint = null)
         {
             IMessageActivity ma = Activity.CreateMessageActivity();
             ma.AttachmentLayout = attachmentLayout;
             ma.Attachments = attachments;
-            SetTextAndSpeak(ma, text, ssml);
+            SetTextAndSpeak(ma, text, ssml, inputHint);
             return ma;
         }
 
-        private static void SetTextAndSpeak(IMessageActivity ma, string text = null, string ssml = null)
+        private static void SetTextAndSpeak(IMessageActivity ma, string text = null, string ssml = null, string inputHint = null)
         {
             ma.Text = !string.IsNullOrWhiteSpace(text) ? text : string.Empty;
             ma.Speak = !string.IsNullOrWhiteSpace(ssml) ? ssml : string.Empty;
+            ma.InputHint = inputHint;
         }
     }
 }
