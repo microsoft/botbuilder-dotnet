@@ -1,8 +1,6 @@
 ﻿using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.BotFramework;
 using Microsoft.Bot.Schema;
-using System;
-using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
@@ -56,21 +54,6 @@ namespace Microsoft.Bot.Samples.EchoBot_AspNet461
         /// POST: api/Messages
         /// Receive a message from a user and reply to it
         /// </summary>
-        public async Task<HttpResponseMessage> Post([FromBody]Activity activity)
-        {
-            try
-            {
-                await _adapter.Receive(this.Request.Headers.Authorization?.Parameter, activity);
-                return this.Request.CreateResponse(HttpStatusCode.OK);
-            }
-            catch (UnauthorizedAccessException e)
-            {
-                return this.Request.CreateErrorResponse(HttpStatusCode.Unauthorized, e.Message);
-            }
-            catch (InvalidOperationException e)
-            {
-                return this.Request.CreateErrorResponse(HttpStatusCode.NotFound, e.Message);
-            }
-        }
+        public async Task<HttpResponseMessage> Post([FromBody]Activity activity) => new HttpResponseMessage((System.Net.HttpStatusCode)(await _adapter.Receive(this.Request.Headers, activity)));
     }
 }
