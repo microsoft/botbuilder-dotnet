@@ -111,16 +111,6 @@ namespace Microsoft.Bot.Builder
             this.Responses.Add(activity);
             return this;
         }
-        
-        public BotContext ReplyWith(string templateId, object data = null)
-        {
-            // queue template activity to be databound when sent
-            var reply = this.ConversationReference.GetPostToUserMessage();
-            reply.Type = TemplateManager.TEMPLATE;
-            reply.Text = templateId;
-            reply.Value = data;
-            this.Responses.Add(reply);
-            return this;
-        }
+       
     }
 }

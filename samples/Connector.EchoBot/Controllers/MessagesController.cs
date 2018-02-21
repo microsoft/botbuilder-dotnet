@@ -29,7 +29,7 @@ namespace Connector.EchoBot.Controllers
             var authHeader = this.Request.Headers["Authorization"].SingleOrDefault();
             try
             {
-                await JwtTokenValidation.AssertValidActivity(activity, authHeader, this.credentials);                    
+                await JwtTokenValidation.AssertValidActivity(activity, authHeader, this.credentials);
             }
             catch (UnauthorizedAccessException)
             {                    

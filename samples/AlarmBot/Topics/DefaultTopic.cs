@@ -34,8 +34,8 @@ namespace AlarmBot.Topics
                         var activity = context.Request.AsConversationUpdateActivity();
                         if (activity.MembersAdded.Where(m => m.Id == activity.Recipient.Id).Any())
                         {
-                            context.ReplyWith(DefaultTopicView.GREETING);
-                            context.ReplyWith(DefaultTopicView.HELP);
+                            DefaultTopicResponses.ReplyWithGreeting(context);
+                            DefaultTopicResponses.ReplyWithHelp(context);
                             this.Greeted = true;
                         }
                     }
@@ -45,7 +45,7 @@ namespace AlarmBot.Topics
                     // greet on first message if we haven't already 
                     if (!Greeted)
                     {
-                        context.ReplyWith(DefaultTopicView.GREETING);
+                        DefaultTopicResponses.ReplyWithGreeting(context);
                         this.Greeted = true;
                     }
                     return this.ContinueTopic(context);
@@ -87,12 +87,12 @@ namespace AlarmBot.Topics
 
                         case "help":
                             // show help
-                            context.ReplyWith(DefaultTopicView.HELP);
+                            DefaultTopicResponses.ReplyWithHelp(context);
                             return Task.FromResult(true);
 
                         default:
                             // show our confusion
-                            context.ReplyWith(DefaultTopicView.CONFUSED);
+                            DefaultTopicResponses.ReplyWithConfused(context);
                             return Task.FromResult(true);
                     }
 
@@ -110,7 +110,7 @@ namespace AlarmBot.Topics
         public Task<bool> ResumeTopic(IBotContext context)
         {
             // just prompt the user to ask what they want to do
-            context.ReplyWith(DefaultTopicView.RESUMETOPIC);
+            DefaultTopicResponses.ReplyWithResumeTopic(context);
             return Task.FromResult(true);
         }
 

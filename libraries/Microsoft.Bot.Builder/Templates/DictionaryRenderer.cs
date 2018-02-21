@@ -39,7 +39,7 @@ namespace Microsoft.Bot.Builder.Templates
 
         public async Task ContextCreated(IBotContext context, MiddlewareSet.NextDelegate next)
         {
-            context.TemplateManager.Register(this);
+            // context.TemplateManager.Register(this);
             await next().ConfigureAwait(false); 
         }
 
