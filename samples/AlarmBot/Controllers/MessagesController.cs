@@ -44,10 +44,6 @@ namespace AlarmBot.Controllers
                 // create bot hooked up to the activity adapater
                 bot = new Bot(activityAdapter)
                     .Use(new BotStateManager(storage)) // --- add Bot State Manager to automatically persist and load the context.State.Conversation and context.State.User objects
-                    .Use(new DefaultTopicView())
-                    .Use(new ShowAlarmsTopicView())
-                    .Use(new AddAlarmTopicView())
-                    .Use(new DeleteAlarmTopicView())
                     .Use(new RegExpRecognizerMiddleware()
                         .AddIntent("showAlarms", new Regex("show alarms(.*)", RegexOptions.IgnoreCase))
                         .AddIntent("addAlarm", new Regex("add alarm(.*)", RegexOptions.IgnoreCase))
@@ -57,38 +53,42 @@ namespace AlarmBot.Controllers
                         .AddIntent("confirmYes", new Regex("(yes|yep|yessir|^y$)", RegexOptions.IgnoreCase))
                         .AddIntent("confirmNo", new Regex("(no|nope|^n$)", RegexOptions.IgnoreCase)));
                 
-                bot.OnReceive(BotReceiveHandler); 
+                bot.OnReceive(TopicDispatcher); 
             }
         }
 
-        private async Task BotReceiveHandler(IBotContext context)
+        /// <summary>
+        /// This simply handles calling the current conversation ITopic
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        private async Task TopicDispatcher(IBotContext context)
         {
             // --- Bot logic 
             bool handled = false;
-            // Get the current ActiveTopic from my conversation state
+
+            // Get the current ActiveTopic from my persisted conversation state
             var activeTopic = context.State.Conversation[ConversationProperties.ACTIVETOPIC] as ITopic;
 
-            // if there isn't one 
+            // if we don't have an active topic yet
             if (activeTopic == null)
             {
-                // use default topic
+                // use the default topic
                 activeTopic = new DefaultTopic();
                 context.State.Conversation[ConversationProperties.ACTIVETOPIC] = activeTopic;
                 handled = await activeTopic.StartTopic(context);
             }
             else
             {
-                // continue to use the active topic
+                // we do have an active topic, so call it 
                 handled = await activeTopic.ContinueTopic(context);
             }
 
-            // AlarmBot only needs to transition from defaultTopic -> subTopic and back, so 
-            // if activeTopic's result is false and the activeToic is NOT the default topic, we switch back to default topic
-            if (handled == false && !(context.State.Conversation[ConversationProperties.ACTIVETOPIC] is DefaultTopic))
+            // if activeTopic's result is false and the activeTopic is NOT already the default topic
+            if (handled == false && !(activeTopic is DefaultTopic))
             {
-                // resume default topic
-                activeTopic = new DefaultTopic();
-                context.State.Conversation[ConversationProperties.ACTIVETOPIC] = activeTopic;
+                // USe DefaultTopic as the active topic
+                context.State.Conversation[ConversationProperties.ACTIVETOPIC] = new DefaultTopic();
                 handled = await activeTopic.ResumeTopic(context);
             }
         }

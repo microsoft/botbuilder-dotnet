@@ -76,7 +76,7 @@ namespace AlarmBot.Topics
             // Ensure there are alarms to delete
             if (alarms.Count == 0)
             {
-                context.ReplyWith(DeleteAlarmTopicView.NOALARMS);
+                DeleteAlarmTopicView.ReplyWithNoAlarms(context);
                 return false;
             }
 
@@ -91,7 +91,7 @@ namespace AlarmBot.Topics
                         // Delete selected alarm and end topic
                         var alarm = alarms.Skip(index).First();
                         alarms.Remove(alarm);
-                        context.ReplyWith(DeleteAlarmTopicView.DELETEDALARM, alarm);
+                        DeleteAlarmTopicView.ReplyWithDeletedAlarm(context, alarm);
                         return false; // cancel topic
                     }
                 }
@@ -102,7 +102,7 @@ namespace AlarmBot.Topics
 
                     if (choices.Count == 0)
                     {
-                        context.ReplyWith(DeleteAlarmTopicView.NOALARMSFOUND, this.AlarmTitle);
+                        DeleteAlarmTopicView.ReplyWithNoAlarmsFound(context, this.AlarmTitle);
                         return false;
                     }
                     else if (choices.Count == 1)
@@ -110,14 +110,14 @@ namespace AlarmBot.Topics
                         // Delete selected alarm and end topic
                         var alarm = choices.First();
                         alarms.Remove(alarm);
-                        context.ReplyWith(DeleteAlarmTopicView.DELETEDALARM, alarm);
+                        DeleteAlarmTopicView.ReplyWithDeletedAlarm(context, alarm);
                         return false; // cancel topic
                     }
                 }
             }
 
             // Prompt for title
-            context.ReplyWith(DeleteAlarmTopicView.TITLEPROMPT, alarms);
+            DeleteAlarmTopicView.ReplyWithTitlePrompt(context);
             return true;
         }
     }
