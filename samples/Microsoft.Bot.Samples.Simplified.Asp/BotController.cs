@@ -13,12 +13,11 @@ namespace Microsoft.Bot.Samples.Simplified.Asp
 {
     public class BotController : Controller
     {
-        BotFrameworkAdapter _adapter;
+        BotFrameworkAdapter _Bot;
 
-        public BotController(Builder.Bot bot)
+        public BotController(BotFrameworkAdapter bot)
         {
-            _adapter = (BotFrameworkAdapter)bot.Adapter;
-            bot.OnReceive(BotReceiveHandler);
+            _Bot = bot;
         }
 
         private async Task BotReceiveHandler(IBotContext context)
@@ -83,7 +82,7 @@ namespace Microsoft.Bot.Samples.Simplified.Asp
         {
             try
             {
-                await _adapter.Receive(this.Request.Headers["Authorization"].FirstOrDefault(), activity);
+                await _Bot.ProcessActivty(this.Request.Headers["Authorization"].FirstOrDefault(), activity, BotReceiveHandler);
                 return this.Ok();
             }
             catch (UnauthorizedAccessException)

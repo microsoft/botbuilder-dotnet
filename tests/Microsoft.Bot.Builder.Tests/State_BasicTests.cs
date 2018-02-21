@@ -17,9 +17,10 @@ namespace Microsoft.Bot.Builder.Tests
         [TestMethod]        
         public async Task State_DoNOTRememberContextState()
         {
+
             TestAdapter adapter = new TestAdapter();
-            Bot bot = new Bot(adapter);
-            bot.OnReceive(async (context) =>
+
+            await new TestFlow(adapter, async (context) =>
                    {
                        Assert.IsNotNull(context.State, "context.state should exist");
                        switch (context.Request.AsMessageActivity().Text)
@@ -34,8 +35,8 @@ namespace Microsoft.Bot.Builder.Tests
                                break;
                        }               
                    }
-                );
-            await adapter.Test("set value", "value saved", "set value failed")
+                )
+                .Test("set value", "value saved", "set value failed")
                 .Test("get value", (a) => Assert.IsTrue(a.AsMessageActivity().Text == null, "get value was incorrectly defined"))
                 .StartTest();
         }
@@ -43,11 +44,11 @@ namespace Microsoft.Bot.Builder.Tests
         [TestMethod]
         public async Task State_RememberUserState()
         {
-            TestAdapter adapter = new TestAdapter();
+            
 
-            Bot bot = new Bot(adapter)
+            var adapter = new TestAdapter()
                 .Use(new BotStateManager(new MemoryStorage()));
-            bot.OnReceive(
+            await new TestFlow(adapter, 
                     async (context) =>
                     {
                         Assert.IsNotNull(context.State.User, "state.user should exist");
@@ -62,9 +63,8 @@ namespace Microsoft.Bot.Builder.Tests
                                 break;
                         }
                     }
-                );
-
-            await adapter.Test("set value", "value saved")
+                )
+                .Test("set value", "value saved")
                 .Test("get value", "test")
                 .StartTest();
         }
@@ -72,11 +72,11 @@ namespace Microsoft.Bot.Builder.Tests
         [TestMethod]
         public async Task State_RememberConversationState()
         {
-            TestAdapter adapter = new TestAdapter();
+            
 
-            Bot bot = new Bot(adapter)
+            TestAdapter adapter= new TestAdapter()
                 .Use(new BotStateManager(new MemoryStorage()));
-            bot.OnReceive(
+            await new TestFlow(adapter, 
                     async (context) =>
                     {
                         Assert.IsNotNull(context.State.Conversation, "state.conversation should exist");
@@ -91,9 +91,8 @@ namespace Microsoft.Bot.Builder.Tests
                                 break;
                         }
                     }
-                );
-
-            await adapter.Test("set value", "value saved")
+                )
+                .Test("set value", "value saved")
                 .Test("get value", "test")
                 .StartTest();
         }
@@ -101,12 +100,12 @@ namespace Microsoft.Bot.Builder.Tests
         [TestMethod]
         public async Task State_CustomStateManagerTest()
         {
-            TestAdapter adapter = new TestAdapter();
+            
             string testGuid = Guid.NewGuid().ToString();
 
-            Bot bot = new Bot(adapter)
+            TestAdapter adapter = new TestAdapter()
                 .Use(new CustomStateManager(new MemoryStorage()));
-            bot.OnReceive(async (context) =>
+            await new TestFlow(adapter, async (context) =>
                     {
                         switch (context.Request.AsMessageActivity().Text)
                         {
@@ -119,9 +118,8 @@ namespace Microsoft.Bot.Builder.Tests
                                 break;
                         }
                     }
-                );
-
-            await adapter.Test("set value", "value saved")
+                )
+                .Test("set value", "value saved")
                 .Test("get value", testGuid.ToString())
                 .StartTest();
         }
@@ -134,11 +132,10 @@ namespace Microsoft.Bot.Builder.Tests
         [TestMethod]
         public async Task State_RoundTripTypedObject()
         {
-            TestAdapter adapter = new TestAdapter();
-
-            Bot bot = new Bot(adapter)
+            TestAdapter adapter= new TestAdapter()
                 .Use(new BotStateManager(new MemoryStorage()));
-            bot.OnReceive(
+
+            await new TestFlow(adapter, 
                     async (context) =>
                     {
                         Assert.IsNotNull(context.State.Conversation, "state.conversation should exist");
@@ -151,11 +148,10 @@ namespace Microsoft.Bot.Builder.Tests
                             case "get value":
                                 context.Reply(context.State.Conversation["value"].GetType().Name);
                                 break;
-                        }                        
+                        }
                     }
-                );
-
-            await adapter.Test("set value", "value saved")
+                )
+                .Test("set value", "value saved")
                 .Test("get value", "TypedObject")
                 .StartTest();
         }
