@@ -47,7 +47,7 @@ namespace Microsoft.Bot.Builder
 
         public IActivity Request => _request;
 
-        public BotAdapter Bot => _adapter;
+        public BotAdapter Adapter => _adapter;
 
         public IList<IActivity> Responses { get => _responses; set => this._responses = value; }
 

@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Builder
         public static IBotContext Delay(this IBotContext context, int duration)
         {
             Activity activity = ((Activity)context.Request).CreateReply();
-            activity.Type = "delay";
+            activity.Type = ActivityTypesEx.Delay;
             activity.Value = duration;
             return context.Reply(activity);
         }

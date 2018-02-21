@@ -21,10 +21,10 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <param name="activity">The incoming Activity from the Bot Framework or the Emulator</param>
         /// <param name="authHeader">The Bearer token included as part of the request</param>
         /// <param name="credentials">The set of valid credentials, such as the Bot Application ID</param>
-        /// <param name="httpClient">Validing an Activity requires validating the claimset on the security token. This 
+        /// <param name="httpClient">Validating an Activity requires validating the claimset on the security token. This 
         /// validation may require outbound calls for Endorsement validation and other checks. Those calls are made to
         /// TLS services, which are (latency wise) expensive resources. The httpClient passed in here, if shared by the layers
-        /// above from call to call, enables connection reuse which is a signifant performance and resource improvement.</param>
+        /// above from call to call, enables connection reuse which is a significant performance and resource improvement.</param>
         /// <returns>Nothing</returns>
         public static async Task AssertValidActivity(Activity activity, string authHeader, ICredentialProvider credentials, HttpClient httpClient = null)
         {

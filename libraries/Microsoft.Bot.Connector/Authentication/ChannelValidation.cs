@@ -12,9 +12,6 @@ namespace Microsoft.Bot.Connector.Authentication
 {
     public static class ChannelValidation
     {
-        // This claim is ONLY used in the Channel Validation, and not in the emulator validation        
-        private const string ServiceUrlClaim = "serviceurl";
-
         /// <summary>
         /// TO BOT FROM CHANNEL: Token validation parameters when connecting to a bot
         /// </summary>
@@ -22,7 +19,7 @@ namespace Microsoft.Bot.Connector.Authentication
             new TokenValidationParameters()
             {
                 ValidateIssuer = true,
-                ValidIssuers = new[] { AuthenticationConstants.BotFrameworkTokenIssuer },
+                ValidIssuers = new[] { AuthenticationConstants.ToBotFromChannelTokenIssuer },
                 // Audience validation takes place in JwtTokenExtractor
                 ValidateAudience = false,
                 ValidateLifetime = true,
@@ -34,15 +31,15 @@ namespace Microsoft.Bot.Connector.Authentication
         /// Validate the incoming Auth Header as a token sent from the Bot Framework Service.
         /// </summary>
         /// <remarks>
-        /// A token issued by the Bot Framework emulator will FAIL this check. 
+        /// A token issued by the Bot Framework emulator will FAIL this check.
         /// </remarks>
         /// <param name="authHeader">The raw HTTP header in the format: "Bearer [longString]"</param>
-        /// <param name="credentials">The user defined set of valid credentials, such as the AppId.</param>        
+        /// <param name="credentials">The user defined set of valid credentials, such as the AppId.</param>
         /// <param name="httpClient">Authentication of tokens requires calling out to validate Endorsements and related documents. The
-        /// HttpClient is used for making those calls. Those calls generally require TLS connections, which are expensive to 
+        /// HttpClient is used for making those calls. Those calls generally require TLS connections, which are expensive to
         /// setup and teardown, so a shared HttpClient is recommended.</param>
         /// <returns>
-        /// A valid ClaimsIdentity. 
+        /// A valid ClaimsIdentity.
         /// </returns>
         public static async Task<ClaimsIdentity> AuthenticateChannelToken(string authHeader, ICredentialProvider credentials, HttpClient httpClient)
         {
@@ -70,18 +67,18 @@ namespace Microsoft.Bot.Connector.Authentication
             // Async validation. 
 
             // Look for the "aud" claim, but only if issued from the Bot Framework
-            Claim audianceClaim = identity.Claims.FirstOrDefault(
-                c => c.Issuer == AuthenticationConstants.BotFrameworkTokenIssuer && c.Type == AuthenticationConstants.AudienceClaim);
+            Claim audienceClaim = identity.Claims.FirstOrDefault(
+                c => c.Issuer == AuthenticationConstants.ToBotFromChannelTokenIssuer && c.Type == AuthenticationConstants.AudienceClaim);
 
-            if (audianceClaim == null)
+            if (audienceClaim == null)
             {
-                // The relevant Audiance Claim MUST be present. Not Authorized.
+                // The relevant audience Claim MUST be present. Not Authorized.
                 throw new UnauthorizedAccessException();
             }
 
-            // The AppId from the claim in the token must match the AppId specified by the developer. Note that
-            // the Bot Framwork uses the Audiance claim ("aud") to pass the AppID. 
-            string appIdFromClaim = audianceClaim.Value;
+            // The AppId from the claim in the token must match the AppId specified by the developer.
+            // In this case, the token is destined for the app, so we find the app ID in the audience claim.
+            string appIdFromClaim = audienceClaim.Value;
             if (string.IsNullOrWhiteSpace(appIdFromClaim))
             {
                 // Claim is present, but doesn't have a value. Not Authorized. 
@@ -96,21 +93,21 @@ namespace Microsoft.Bot.Connector.Authentication
 
             return identity;
         }
-        /// <summary>        
+        /// <summary>
         /// Validate the incoming Auth Header as a token sent from the Bot Framework Service.
         /// </summary>
         /// <param name="authHeader">The raw HTTP header in the format: "Bearer [longString]"</param>
-        /// <param name="credentials">The user defined set of valid credentials, such as the AppId.</param>        
+        /// <param name="credentials">The user defined set of valid credentials, such as the AppId.</param>
         /// <param name="serviceUrl"></param>
         /// <param name="httpClient">Authentication of tokens requires calling out to validate Endorsements and related documents. The
-        /// HttpClient is used for making those calls. Those calls generally require TLS connections, which are expensive to 
+        /// HttpClient is used for making those calls. Those calls generally require TLS connections, which are expensive to
         /// setup and teardown, so a shared HttpClient is recommended.</param>
         /// <returns></returns>
         public static async Task<ClaimsIdentity> AuthenticateChannelToken(string authHeader, ICredentialProvider credentials, string serviceUrl, HttpClient httpClient)
         {
             var identity = await AuthenticateChannelToken(authHeader, credentials, httpClient);      
 
-            var serviceUrlClaim = identity.Claims.FirstOrDefault(claim => claim.Type == ServiceUrlClaim)?.Value;
+            var serviceUrlClaim = identity.Claims.FirstOrDefault(claim => claim.Type == AuthenticationConstants.ServiceUrlClaim)?.Value;
             if (string.IsNullOrWhiteSpace(serviceUrlClaim))
             {
                 // Claim must be present. Not Authorized.

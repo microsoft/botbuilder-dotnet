@@ -29,7 +29,10 @@ namespace Microsoft.Bot.Builder.Tests
         }
         public async Task SendActivity(IBotContext context, IList<IActivity> activities, MiddlewareSet.NextDelegate next)
         {
-            context.Responses[0].AsMessageActivity().Text += "SendActivity";
+            if (context.Responses.Count > 0)
+            {
+                context.Responses[0].AsMessageActivity().Text += "SendActivity";
+            }
             await next();
         }
     }
@@ -38,7 +41,7 @@ namespace Microsoft.Bot.Builder.Tests
     [TestCategory("Middleware")]
     public class BotContext_Tests
     {
-        private TestAdapter CreateBotServer()
+        private TestAdapter CreateBotAdapter()
         {
 
             TestAdapter adapter = new TestAdapter();
@@ -59,7 +62,7 @@ namespace Microsoft.Bot.Builder.Tests
                 Task.Run(async () =>
                 {
                     await Task.Delay(1000).ConfigureAwait(false);
-                    await context.Bot.ContinueConversation(reference, async (context2) =>
+                    await context.Adapter.ContinueConversation(reference, async (context2) =>
                     {
                         Assert.AreEqual(true, context2.State["ContextCreated"]);
                         Assert.IsNull(context2.Request);
@@ -78,7 +81,7 @@ namespace Microsoft.Bot.Builder.Tests
         [TestMethod]
         public async Task TestReceivePipeline()
         {
-            var adapter = CreateBotServer();
+            var adapter = CreateBotAdapter();
             await new TestFlow(adapter, MyCodeHandler)
                 .Send("receive")
                 .AssertReply((activity) =>
@@ -93,7 +96,7 @@ namespace Microsoft.Bot.Builder.Tests
         [TestMethod]
         public async Task TestProactivePipeline()
         {
-            var adapter = CreateBotServer();
+            var adapter = CreateBotAdapter();
             await new TestFlow(adapter, MyCodeHandler)
                 .Send("proactive")
                 .AssertReply((activity) =>

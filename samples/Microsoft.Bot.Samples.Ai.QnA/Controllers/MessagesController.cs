@@ -26,7 +26,7 @@ namespace Microsoft.Bot.Samples.Ai.QnA.Controllers
         {
             if (adapter == null)
             {
-                var qnaOptions = new QnAMakerOptions
+                var qnaOptions = new QnAMakerMiddlewareOptions
                 {
                     // add subscription key and knowledge base id
                     SubscriptionKey = "xxxxxx",

@@ -49,7 +49,7 @@ namespace Microsoft.Bot.Builder.BotFramework
 
         protected async override Task SendActivityImplementation(IBotContext context, IActivity activity)
         {
-            if (activity.Type == "delay")
+            if (activity.Type == ActivityTypesEx.Delay)
             {
                 // The Activity Schema doesn't have a delay type build in, so it's simulated
                 // here in the Bot. This matches the behavior in the Node connector. 

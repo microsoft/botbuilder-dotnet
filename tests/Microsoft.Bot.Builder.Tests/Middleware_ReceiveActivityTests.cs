@@ -43,7 +43,7 @@ namespace Microsoft.Bot.Builder.Tests
             {
                 throw new InvalidOperationException("test");
             }));
-            
+
             await m.ReceiveActivity(null);
             Assert.Fail("Should never have gotten here");
         }
@@ -88,6 +88,86 @@ namespace Microsoft.Bot.Builder.Tests
             await m.ReceiveActivity(null);
             Assert.IsTrue(called1);
             Assert.IsTrue(called2);
+        }
+
+        [TestMethod]
+        public async Task Status_OneMiddlewareRan()
+        {
+            bool called1 = false;
+
+            CallMeMiddlware one = new CallMeMiddlware(() => { called1 = true; });
+
+            Middleware.MiddlewareSet m = new Middleware.MiddlewareSet();
+            m.Use(one);
+
+            // The middlware in this pipeline calls next(), so the resulting
+            // status should be TRUE. 
+            bool didAllRun = await m.ReceiveActivityWithStatus(null);
+
+            Assert.IsTrue(called1);
+            Assert.IsTrue(didAllRun);
+        }
+
+        [TestMethod]
+        public async Task Status_RunAtEndEmptyPipeline()
+        {
+            Middleware.MiddlewareSet m = new Middleware.MiddlewareSet();
+
+            // This middlware pipeline has no entries. This should result in
+            // the status being TRUE. 
+            bool didAllRun = await m.ReceiveActivityWithStatus(null);
+            Assert.IsTrue(didAllRun);
+        }
+
+        [TestMethod]
+        public async Task Status_TwoItemsOneDoesNotCallNext()
+        {
+            bool called1 = false;
+            bool called2 = false;
+
+            CallMeMiddlware one = new CallMeMiddlware(() =>
+            {
+                Assert.IsFalse(called2, "Second Middleware was called");
+                called1 = true;
+            });
+
+            DoNotCallNextMiddleware two = new DoNotCallNextMiddleware(() =>
+            {
+                Assert.IsTrue(called1, "First Middleware was not called");
+                called2 = true;
+            });
+
+            Middleware.MiddlewareSet m = new Middleware.MiddlewareSet();
+            m.Use(one);
+            m.Use(two);
+
+            bool didAllRun = await m.ReceiveActivityWithStatus(null);
+            Assert.IsTrue(called1);
+            Assert.IsTrue(called2);
+
+            // The 2nd middleware did not call next, so the "final" action should not have run. 
+            Assert.IsFalse(didAllRun);
+        }
+
+        [TestMethod]
+        public async Task Status_OneEntryThatDoesNotCallNext()
+        {
+            bool called1 = false;
+
+            DoNotCallNextMiddleware one = new DoNotCallNextMiddleware(() => { called1 = true; });
+
+            Middleware.MiddlewareSet m = new Middleware.MiddlewareSet();
+            m.Use(one);
+
+            // The middlware in this pipeline calls next(), so this must
+            // be called as the final activity. 
+            bool didAllRun = await m.ReceiveActivityWithStatus(null);
+
+            Assert.IsTrue(called1);
+
+            // Our "Final" action MUST NOT have been called, as the Middlware Pipeline
+            // didn't complete. 
+            Assert.IsFalse(didAllRun);
         }
 
         [TestMethod]
@@ -197,12 +277,12 @@ namespace Microsoft.Bot.Builder.Tests
                     didRun1 = true;
                 }));
 
-            m.Use( new AnonymousReceiveMiddleware(async (context, next) =>
-                {
-                    Assert.IsTrue(didRun1, "Looks like the 1st middleware has not been run");
-                    didRun2 = true;
-                    await next();
-                }));
+            m.Use(new AnonymousReceiveMiddleware(async (context, next) =>
+               {
+                   Assert.IsTrue(didRun1, "Looks like the 1st middleware has not been run");
+                   didRun2 = true;
+                   await next();
+               }));
 
             await m.ReceiveActivity(null);
             Assert.IsTrue(didRun1);
@@ -218,22 +298,22 @@ namespace Microsoft.Bot.Builder.Tests
 
             Middleware.MiddlewareSet m = new Middleware.MiddlewareSet();
 
-            m.Use( new AnonymousReceiveMiddleware(async (context, next) =>
-            {
-                Assert.IsFalse(didRun1, "Looks like the 1st middleware has already run");
-                didRun1 = true;
-                await next();
-                Assert.IsTrue(didRun1, "The 2nd middleware should have run now.");
-                codeafter2run = true;
-            }));
+            m.Use(new AnonymousReceiveMiddleware(async (context, next) =>
+           {
+               Assert.IsFalse(didRun1, "Looks like the 1st middleware has already run");
+               didRun1 = true;
+               await next();
+               Assert.IsTrue(didRun1, "The 2nd middleware should have run now.");
+               codeafter2run = true;
+           }));
 
-            m.Use( new AnonymousReceiveMiddleware(async (context, next) =>
-            {
-                Assert.IsTrue(didRun1, "Looks like the 1st middleware has not been run");
-                Assert.IsFalse(codeafter2run, "The code that runs after middleware 2 is complete has already run.");
-                didRun2 = true;
-                await next();
-            }));
+            m.Use(new AnonymousReceiveMiddleware(async (context, next) =>
+           {
+               Assert.IsTrue(didRun1, "Looks like the 1st middleware has not been run");
+               Assert.IsFalse(codeafter2run, "The code that runs after middleware 2 is complete has already run.");
+               didRun2 = true;
+               await next();
+           }));
 
             await m.ReceiveActivity(null);
             Assert.IsTrue(didRun1);
@@ -261,14 +341,14 @@ namespace Microsoft.Bot.Builder.Tests
                 }
             }));
 
-            m.Use( new AnonymousReceiveMiddleware(async (context, next) =>
-            {
-                throw new Exception("test");
-            }));
+            m.Use(new AnonymousReceiveMiddleware(async (context, next) =>
+           {
+               throw new Exception("test");
+           }));
 
             await m.ReceiveActivity(null);
             Assert.IsTrue(caughtException);
-        }       
+        }
 
         public class WasCalledMiddlware : Middleware.IMiddleware, Middleware.IReceiveActivity
         {
@@ -281,13 +361,28 @@ namespace Microsoft.Bot.Builder.Tests
             }
         }
 
+        public class DoNotCallNextMiddleware : Middleware.IMiddleware, Middleware.IReceiveActivity
+        {
+            private readonly Action _callMe;
+            public DoNotCallNextMiddleware(Action callMe)
+            {
+                _callMe = callMe;
+            }
+            public Task ReceiveActivity(IBotContext context, Middleware.MiddlewareSet.NextDelegate next)
+            {
+                _callMe();
+                // DO NOT call NEXT
+                return Task.CompletedTask;
+            }
+        }
+
         public class CallMeMiddlware : Middleware.IMiddleware, Middleware.IReceiveActivity
         {
             private readonly Action _callMe;
             public CallMeMiddlware(Action callMe)
             {
                 _callMe = callMe;
-            }            
+            }
             public Task ReceiveActivity(IBotContext context, Middleware.MiddlewareSet.NextDelegate next)
             {
                 _callMe();
