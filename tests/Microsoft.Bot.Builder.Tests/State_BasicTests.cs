@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.Middleware;
 using Microsoft.Bot.Builder.Storage;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -43,23 +44,21 @@ namespace Microsoft.Bot.Builder.Tests
 
         [TestMethod]
         public async Task State_RememberUserState()
-        {
-            
-
+        {            
             var adapter = new TestAdapter()
-                .Use(new BotStateManager(new MemoryStorage()));
+                .Use(new UserStateManagerMiddleware(new MemoryStorage()));
             await new TestFlow(adapter, 
                     async (context) =>
                     {
-                        Assert.IsNotNull(context.State.User, "state.user should exist");
+                        Assert.IsNotNull(context.State.UserProperties, "state.user should exist");
                         switch (context.Request.AsMessageActivity().Text)
                         {
                             case "set value":
-                                context.State.User["value"] = "test";
+                                context.State.UserProperties["value"] = "test";
                                 context.Reply("value saved");
                                 break;
                             case "get value":
-                                context.Reply(context.State.User["value"]);
+                                context.Reply(context.State.UserProperties["value"]);
                                 break;
                         }
                     }
@@ -71,23 +70,21 @@ namespace Microsoft.Bot.Builder.Tests
 
         [TestMethod]
         public async Task State_RememberConversationState()
-        {
-            
-
+        {            
             TestAdapter adapter= new TestAdapter()
-                .Use(new BotStateManager(new MemoryStorage()));
+                .Use(new ConversationStateManagerMiddleware(new MemoryStorage()));
             await new TestFlow(adapter, 
                     async (context) =>
                     {
-                        Assert.IsNotNull(context.State.Conversation, "state.conversation should exist");
+                        Assert.IsNotNull(context.State.ConversationProperties, "state.conversation should exist");
                         switch (context.Request.AsMessageActivity().Text)
                         {
                             case "set value":
-                                context.State.Conversation["value"] = "test";
+                                context.State.ConversationProperties["value"] = "test";
                                 context.Reply("value saved");
                                 break;
                             case "get value":
-                                context.Reply(context.State.Conversation["value"]);
+                                context.Reply(context.State.ConversationProperties["value"]);
                                 break;
                         }
                     }
@@ -102,19 +99,18 @@ namespace Microsoft.Bot.Builder.Tests
         {
             
             string testGuid = Guid.NewGuid().ToString();
-
             TestAdapter adapter = new TestAdapter()
-                .Use(new CustomStateManager(new MemoryStorage()));
+                .Use(new CustomConversationStateManager(new MemoryStorage()));
             await new TestFlow(adapter, async (context) =>
                     {
                         switch (context.Request.AsMessageActivity().Text)
                         {
                             case "set value":
-                                context.State[CustomStateManager.KeyName].CustomString = testGuid;
+                                context.State[CustomConversationStateManager.KeyName].CustomString = testGuid;
                                 context.Reply("value saved");
                                 break;
                             case "get value":
-                                context.Reply(context.State[CustomStateManager.KeyName].CustomString);
+                                context.Reply(context.State[CustomConversationStateManager.KeyName].CustomString);
                                 break;
                         }
                     }
@@ -133,20 +129,20 @@ namespace Microsoft.Bot.Builder.Tests
         public async Task State_RoundTripTypedObject()
         {
             TestAdapter adapter= new TestAdapter()
-                .Use(new BotStateManager(new MemoryStorage()));
+                .Use(new ConversationStateManagerMiddleware(new MemoryStorage()));
 
             await new TestFlow(adapter, 
                     async (context) =>
                     {
-                        Assert.IsNotNull(context.State.Conversation, "state.conversation should exist");
+                        Assert.IsNotNull(context.State.ConversationProperties, "state.conversation should exist");
                         switch (context.Request.AsMessageActivity().Text)
                         {
                             case "set value":
-                                context.State.Conversation["value"] = new TypedObject() { Name = "test" };
+                                context.State.ConversationProperties["value"] = new TypedObject() { Name = "test" };
                                 context.Reply("value saved");
                                 break;
                             case "get value":
-                                context.Reply(context.State.Conversation["value"].GetType().Name);
+                                context.Reply(context.State.ConversationProperties["value"].GetType().Name);
                                 break;
                         }
                     }
@@ -161,10 +157,10 @@ namespace Microsoft.Bot.Builder.Tests
             public string CustomString { get; set; }
         }
 
-        public class CustomStateManager : BotStateManager
+        public class CustomConversationStateManager : ConversationStateManagerMiddleware
         {
-            public const string KeyName = "CustomStateKey";
-            public CustomStateManager(IStorage storage) : base(storage)
+            public const string KeyName = "CustomConversationStateKey";
+            public CustomConversationStateManager(IStorage storage) : base(storage)
             {
             }
 

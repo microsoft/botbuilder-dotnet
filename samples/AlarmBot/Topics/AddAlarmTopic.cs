@@ -155,11 +155,11 @@ namespace AlarmBot.Topics
                     switch (context.TopIntent?.Name)
                     {
                         case "confirmYes":
-                            var alarms = (List<Alarm>)context.State.User[UserProperties.ALARMS];
+                            var alarms = (List<Alarm>)context.State.UserProperties[UserProperties.ALARMS];
                             if (alarms == null)
                             {
                                 alarms = new List<Alarm>();
-                                context.State.User[UserProperties.ALARMS] = alarms;
+                                context.State.UserProperties[UserProperties.ALARMS] = alarms;
                             }
                             alarms.Add(this.Alarm);
                             AddAlarmResponses.ReplyWithAddedAlarm(context, this.Alarm);
