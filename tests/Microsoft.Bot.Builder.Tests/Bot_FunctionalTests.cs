@@ -19,35 +19,20 @@ namespace Microsoft.Bot.Builder.Tests
         [TestMethod]
         public async Task SingleParameterConstructor()
         {
-            ActivityAdapterBase adapter = new TestAdapter();
-            Bot bot = new Bot(adapter);
+            var adapter = new TestAdapter();
 
             // If this compiles, the test has passed. :) 
         }
 
-        [TestMethod]
-        public async Task AdapterProperty()
-        {
-            TestAdapter adapter = new TestAdapter();
-            Bot bot = new Bot(adapter);
-
-
-            ActivityAdapterBase retrievedAdapter = bot.Adapter;
-
-            // Verify the Bot a property to allow retrieving the Adapter. 
-            Assert.AreSame(adapter, retrievedAdapter);
-        }
 
         [TestMethod]
         public async Task RunSendPiplineWith0Response()
         {
-            TestAdapter adapter = new TestAdapter();
-            Bot bot = new Bot(adapter);
             WasThisMiddlwareCalled testMiddleware = new WasThisMiddlwareCalled();
-            bot.Use(testMiddleware)
-                .OnReceive(async (context) => { });
+            TestAdapter adapter = new TestAdapter()
+                .Use(testMiddleware);
 
-            await adapter
+            await new TestFlow(adapter)
                 .Send("foo")
                 .StartTest();
 
@@ -62,20 +47,18 @@ namespace Microsoft.Bot.Builder.Tests
         [TestMethod]
         public async Task RunSendPiplineWith1Response()
         {
-            TestAdapter adapter = new TestAdapter();
-            Bot bot = new Bot(adapter);
             WasThisMiddlwareCalled testMiddleware = new WasThisMiddlwareCalled();
-            bot.Use(testMiddleware)
-                .OnReceive(async (context) => { context.Reply("one"); });
+            TestAdapter adapter = new TestAdapter()
+                .Use(testMiddleware);
 
-            await adapter
+            await new TestFlow(adapter, async (context) => { context.Reply("one"); })
                 .Send("foo").AssertReply("one")
                 .StartTest();
 
             Assert.IsTrue(testMiddleware.WasContextCreatedCalled, "Context Created was not called");
             Assert.IsTrue(testMiddleware.WasRecevieActivityCalled, "Receive was not called");
             Assert.IsTrue(testMiddleware.WasSendActivityCalled, "Send was not called");
-        }        
+        }
 
         public class WasThisMiddlwareCalled : IContextCreated, ISendActivity, IReceiveActivity
         {

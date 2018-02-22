@@ -4,6 +4,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Bot.Builder;
+using Microsoft.Bot.Builder.BotFramework;
 using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Samples.Simplified.Asp.Controllers
@@ -11,15 +12,15 @@ namespace Microsoft.Bot.Samples.Simplified.Asp.Controllers
     [Route("api/[controller]")]
     public class MessagesController : BotController
     {
-        public MessagesController(Builder.Bot bot)
+        public MessagesController(BotFrameworkAdapter bot)
             : base(bot)
         {
         }
 
         protected override Task ReceiveMessage(IBotContext context, IMessageActivity activity)
         {
-            long turnNumber = context.State.Conversation["turnNumber"] ?? 0;
-            context.State.Conversation["turnNumber"] = ++turnNumber;
+            long turnNumber = context.State.ConversationProperties["turnNumber"] ?? 0;
+            context.State.ConversationProperties["turnNumber"] = ++turnNumber;
             context.Reply($"[{turnNumber}] echo: {activity.Text}");
             return Task.CompletedTask;
         }

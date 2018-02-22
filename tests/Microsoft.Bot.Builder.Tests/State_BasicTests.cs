@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.Middleware;
 using Microsoft.Bot.Builder.Storage;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -17,9 +18,10 @@ namespace Microsoft.Bot.Builder.Tests
         [TestMethod]        
         public async Task State_DoNOTRememberContextState()
         {
+
             TestAdapter adapter = new TestAdapter();
-            Bot bot = new Bot(adapter);
-            bot.OnReceive(async (context) =>
+
+            await new TestFlow(adapter, async (context) =>
                    {
                        Assert.IsNotNull(context.State, "context.state should exist");
                        switch (context.Request.AsMessageActivity().Text)
@@ -34,66 +36,60 @@ namespace Microsoft.Bot.Builder.Tests
                                break;
                        }               
                    }
-                );
-            await adapter.Test("set value", "value saved", "set value failed")
+                )
+                .Test("set value", "value saved", "set value failed")
                 .Test("get value", (a) => Assert.IsTrue(a.AsMessageActivity().Text == null, "get value was incorrectly defined"))
                 .StartTest();
         }
 
         [TestMethod]
         public async Task State_RememberUserState()
-        {
-            TestAdapter adapter = new TestAdapter();
-
-            Bot bot = new Bot(adapter)
-                .Use(new BotStateManager(new MemoryStorage()));
-            bot.OnReceive(
+        {            
+            var adapter = new TestAdapter()
+                .Use(new UserStateManagerMiddleware(new MemoryStorage()));
+            await new TestFlow(adapter, 
                     async (context) =>
                     {
-                        Assert.IsNotNull(context.State.User, "state.user should exist");
+                        Assert.IsNotNull(context.State.UserProperties, "state.user should exist");
                         switch (context.Request.AsMessageActivity().Text)
                         {
                             case "set value":
-                                context.State.User["value"] = "test";
+                                context.State.UserProperties["value"] = "test";
                                 context.Reply("value saved");
                                 break;
                             case "get value":
-                                context.Reply(context.State.User["value"]);
+                                context.Reply(context.State.UserProperties["value"]);
                                 break;
                         }
                     }
-                );
-
-            await adapter.Test("set value", "value saved")
+                )
+                .Test("set value", "value saved")
                 .Test("get value", "test")
                 .StartTest();
         }
 
         [TestMethod]
         public async Task State_RememberConversationState()
-        {
-            TestAdapter adapter = new TestAdapter();
-
-            Bot bot = new Bot(adapter)
-                .Use(new BotStateManager(new MemoryStorage()));
-            bot.OnReceive(
+        {            
+            TestAdapter adapter= new TestAdapter()
+                .Use(new ConversationStateManagerMiddleware(new MemoryStorage()));
+            await new TestFlow(adapter, 
                     async (context) =>
                     {
-                        Assert.IsNotNull(context.State.Conversation, "state.conversation should exist");
+                        Assert.IsNotNull(context.State.ConversationProperties, "state.conversation should exist");
                         switch (context.Request.AsMessageActivity().Text)
                         {
                             case "set value":
-                                context.State.Conversation["value"] = "test";
+                                context.State.ConversationProperties["value"] = "test";
                                 context.Reply("value saved");
                                 break;
                             case "get value":
-                                context.Reply(context.State.Conversation["value"]);
+                                context.Reply(context.State.ConversationProperties["value"]);
                                 break;
                         }
                     }
-                );
-
-            await adapter.Test("set value", "value saved")
+                )
+                .Test("set value", "value saved")
                 .Test("get value", "test")
                 .StartTest();
         }
@@ -101,27 +97,25 @@ namespace Microsoft.Bot.Builder.Tests
         [TestMethod]
         public async Task State_CustomStateManagerTest()
         {
-            TestAdapter adapter = new TestAdapter();
+            
             string testGuid = Guid.NewGuid().ToString();
-
-            Bot bot = new Bot(adapter)
-                .Use(new CustomStateManager(new MemoryStorage()));
-            bot.OnReceive(async (context) =>
+            TestAdapter adapter = new TestAdapter()
+                .Use(new CustomConversationStateManager(new MemoryStorage()));
+            await new TestFlow(adapter, async (context) =>
                     {
                         switch (context.Request.AsMessageActivity().Text)
                         {
                             case "set value":
-                                context.State[CustomStateManager.KeyName].CustomString = testGuid;
+                                context.State[CustomConversationStateManager.KeyName].CustomString = testGuid;
                                 context.Reply("value saved");
                                 break;
                             case "get value":
-                                context.Reply(context.State[CustomStateManager.KeyName].CustomString);
+                                context.Reply(context.State[CustomConversationStateManager.KeyName].CustomString);
                                 break;
                         }
                     }
-                );
-
-            await adapter.Test("set value", "value saved")
+                )
+                .Test("set value", "value saved")
                 .Test("get value", testGuid.ToString())
                 .StartTest();
         }
@@ -134,28 +128,26 @@ namespace Microsoft.Bot.Builder.Tests
         [TestMethod]
         public async Task State_RoundTripTypedObject()
         {
-            TestAdapter adapter = new TestAdapter();
+            TestAdapter adapter= new TestAdapter()
+                .Use(new ConversationStateManagerMiddleware(new MemoryStorage()));
 
-            Bot bot = new Bot(adapter)
-                .Use(new BotStateManager(new MemoryStorage()));
-            bot.OnReceive(
+            await new TestFlow(adapter, 
                     async (context) =>
                     {
-                        Assert.IsNotNull(context.State.Conversation, "state.conversation should exist");
+                        Assert.IsNotNull(context.State.ConversationProperties, "state.conversation should exist");
                         switch (context.Request.AsMessageActivity().Text)
                         {
                             case "set value":
-                                context.State.Conversation["value"] = new TypedObject() { Name = "test" };
+                                context.State.ConversationProperties["value"] = new TypedObject() { Name = "test" };
                                 context.Reply("value saved");
                                 break;
                             case "get value":
-                                context.Reply(context.State.Conversation["value"].GetType().Name);
+                                context.Reply(context.State.ConversationProperties["value"].GetType().Name);
                                 break;
-                        }                        
+                        }
                     }
-                );
-
-            await adapter.Test("set value", "value saved")
+                )
+                .Test("set value", "value saved")
                 .Test("get value", "TypedObject")
                 .StartTest();
         }
@@ -165,10 +157,10 @@ namespace Microsoft.Bot.Builder.Tests
             public string CustomString { get; set; }
         }
 
-        public class CustomStateManager : BotStateManager
+        public class CustomConversationStateManager : ConversationStateManagerMiddleware
         {
-            public const string KeyName = "CustomStateKey";
-            public CustomStateManager(IStorage storage) : base(storage)
+            public const string KeyName = "CustomConversationStateKey";
+            public CustomConversationStateManager(IStorage storage) : base(storage)
             {
             }
 

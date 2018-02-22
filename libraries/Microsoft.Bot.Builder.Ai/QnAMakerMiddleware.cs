@@ -15,9 +15,10 @@ namespace Microsoft.Bot.Builder.Ai
         private readonly QnAMaker _qnaMaker;
         private readonly QnAMakerMiddlewareOptions _options;
 
-        public QnAMakerMiddleware(QnAMakerMiddlewareOptions options, HttpClient httpClient)
+        public QnAMakerMiddleware(QnAMakerMiddlewareOptions options, HttpClient httpClient = null)
         {
             _options = options ?? throw new ArgumentNullException(nameof(options));
+
             _qnaMaker = new QnAMaker(options, httpClient);
         }
 

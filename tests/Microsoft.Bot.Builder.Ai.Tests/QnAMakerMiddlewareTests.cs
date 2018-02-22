@@ -20,25 +20,23 @@ namespace Microsoft.Bot.Builder.Ai.Tests
         [TestCategory("QnAMaker")]
         public async Task QnaMaker_TestMiddleware()
         {
-            TestAdapter adapter = new TestAdapter();
-            Bot bot = new Bot(adapter)
+            TestAdapter adapter = new TestAdapter()
                 .Use(new QnAMakerMiddleware(new QnAMakerMiddlewareOptions()
                 {
                     KnowledgeBaseId = knowlegeBaseId,
                     SubscriptionKey = subscriptionKey,
                     Top = 1
-                }, new HttpClient()));
+                }));
 
-            bot.OnReceive((context) =>
+
+            await new TestFlow(adapter, (context) =>
                 {
                     if (context.Request.AsMessageActivity().Text == "foo")
                     {
                         context.Reply(context.Request.AsMessageActivity().Text);
                     }
                     return Task.CompletedTask;
-                });               
-
-            await adapter
+                })
                 .Send("foo")
                     .AssertReply("foo", "passthrough")
                 .Send("how do I clean the stove?")

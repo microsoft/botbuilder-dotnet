@@ -15,13 +15,14 @@ namespace Microsoft.Bot.Builder.Ai
         public const string APIManagementHeader = "Ocp-Apim-Subscription-Key";
         public const string JsonMimeType = "application/json";
 
+        private static HttpClient g_httpClient = new HttpClient();
         private readonly HttpClient _httpClient;
         private readonly QnAMakerOptions _options;
         private readonly string _answerUrl;
 
-        public QnAMaker(QnAMakerOptions options, HttpClient httpClient)
+        public QnAMaker(QnAMakerOptions options, HttpClient httpClient = null)
         {
-            _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
+            _httpClient = httpClient ?? g_httpClient;
             _options = options ?? throw new ArgumentNullException(nameof(options));
             if (string.IsNullOrEmpty(options.KnowledgeBaseId))
             {

@@ -13,11 +13,9 @@ namespace Microsoft.Bot.Samples.EchoBot_AspNet461
     {
         private readonly BotFrameworkAdapter _adapter;
 
-        public MessagesController(Builder.Bot bot)
+        public MessagesController(BotFrameworkAdapter adapter)
         {
-            _adapter = bot.Adapter as BotFrameworkAdapter;
-
-            bot.OnReceive(BotReceiveHandler);
+            _adapter = adapter;
         }
 
         private Task BotReceiveHandler(IBotContext context)
@@ -60,7 +58,7 @@ namespace Microsoft.Bot.Samples.EchoBot_AspNet461
         {
             try
             {
-                await _adapter.Receive(this.Request.Headers.Authorization?.Parameter, activity);
+                await _adapter.ProcessActivty(this.Request.Headers.Authorization?.Parameter, activity, BotReceiveHandler);
                 return this.Request.CreateResponse(HttpStatusCode.OK);
             }
             catch (UnauthorizedAccessException e)
