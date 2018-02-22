@@ -36,6 +36,8 @@ namespace Microsoft.Bot.Builder
     
         Intent TopIntent { get; set; }
 
+        IList<Intent> Intents { get; set; }
+
         /// <summary>
         /// check to see if topIntent matches
         /// </summary>

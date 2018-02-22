@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Middleware
@@ -11,7 +12,6 @@ namespace Microsoft.Bot.Builder.Middleware
     {
         public string Name { get; set; }
         public double Score { get; set; }
-
         public IList<Entity> Entities { get; } = new List<Entity>();                       
     }    
 
@@ -30,8 +30,11 @@ namespace Microsoft.Bot.Builder.Middleware
             BotAssert.ContextNotNull(context);
 
             var intents = await this.Recognize(context);
+
             if (intents.Count != 0)
             {
+                context.Intents = intents;
+
                 var topIntent = FindTopIntent(intents);
                 if (topIntent.Score > 0.0)
                 {

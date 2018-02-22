@@ -43,47 +43,46 @@ namespace Microsoft.Bot.Builder.Ai
         {
             this.OnRecognize(async (context) =>
             {
-                Middleware.Intent i = await RecognizeAndMap(context.Request.AsMessageActivity()?.Text);
-                return new List<Middleware.Intent>() { i };
+                List<Middleware.Intent> intents = await RecognizeAndMap(context.Request.AsMessageActivity()?.Text);
+                return intents;
             });
         }
         
-        private async Task<Middleware.Intent> RecognizeAndMap(string utterance)
+        private async Task<List<Middleware.Intent>> RecognizeAndMap(string utterance)
         {
-            Middleware.Intent intent = new Middleware.Intent();
+            var intents = new List<Middleware.Intent>();
 
             // LUIS client throws an exception on Predict is the utterance is null / empty
             // so just skip those cases and return a non-match. 
             if (string.IsNullOrWhiteSpace(utterance))
             {
-                intent.Name = string.Empty;
-                intent.Score = 0.0;
+                return intents;
             }
             else
             {
                 LuisResult result = await _luisClient.Predict(utterance);
 
-                if (result.TopScoringIntent == null)
+                foreach (var intentResult in result.Intents)
                 {
-                    intent.Name = string.Empty;
-                    intent.Score = 0.0;
-                }
-                else
-                {
-                    intent.Name = result.TopScoringIntent.Name;
-                    intent.Score = result.TopScoringIntent.Score;
-                }
-
-                foreach (var luisEntityList in result.Entities.Values)
-                {
-                    foreach (var luisEntity in luisEntityList)
+                    var intent = new Middleware.Intent
                     {
-                        intent.Entities.Add(new LuisEntity(luisEntity));
+                        Name = intentResult.Name,
+                        Score = intentResult.Score
+                    };
+
+                    foreach (var luisEntityList in result.Entities.Values)
+                    {
+                        foreach (var luisEntity in luisEntityList)
+                        {
+                            intent.Entities.Add(new LuisEntity(luisEntity));
+                        }
                     }
+
+                    intents.Add(intent);
                 }
             }
                         
-            return intent;
+            return intents;
         }        
     }
 
