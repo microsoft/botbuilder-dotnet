@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27130.2027
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder", "libraries\Microsoft.Bot.Builder\Microsoft.Bot.Builder.csproj", "{74908F42-3842-49B4-9344-60BB791FDE32}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{4269F3C3-6B42-419B-B64A-3E6DC0F1574A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{AD743B78-D61F-4FBF-B620-FA83CE599A50}"
@@ -14,8 +12,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Azure", "libraries\Microsoft.Bot.Builder.Azure\Microsoft.Bot.Builder.Azure.csproj", "{B2C5EED9-21B2-4763-AB92-C1995B76DA3A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Ai", "libraries\Microsoft.Bot.Builder.Ai\Microsoft.Bot.Builder.Ai.csproj", "{F31CF172-6FEE-4188-9828-E5FDA531C871}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.BotFramework", "libraries\Microsoft.Bot.Builder.BotFramework\Microsoft.Bot.Builder.BotFramework.csproj", "{20DB2748-6562-472F-AD20-E57167913C7D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Ai.Tests", "tests\Microsoft.Bot.Builder.Ai.Tests\Microsoft.Bot.Builder.Ai.Tests.csproj", "{9BDF7020-A19F-4C6C-B329-E4BFEFF6DE6B}"
 EndProject
@@ -31,16 +27,16 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Connector", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Schema", "libraries\Microsoft.Bot.Schema\Microsoft.Bot.Schema.csproj", "{C1F54CDC-AD1D-45BB-8F7D-F49E411AFAF1}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Core", "libraries\Microsoft.Bot.Builder.Core\Microsoft.Bot.Builder.Core.csproj", "{F0C150E2-9B8A-444C-B70E-97AD918CB3D4}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder", "libraries\Microsoft.Bot.Builder\Microsoft.Bot.Builder.csproj", "{ADA8AB8B-2066-4193-B8F7-985669B23E00}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{74908F42-3842-49B4-9344-60BB791FDE32}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{74908F42-3842-49B4-9344-60BB791FDE32}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{74908F42-3842-49B4-9344-60BB791FDE32}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{74908F42-3842-49B4-9344-60BB791FDE32}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B2C5EED9-21B2-4763-AB92-C1995B76DA3A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B2C5EED9-21B2-4763-AB92-C1995B76DA3A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B2C5EED9-21B2-4763-AB92-C1995B76DA3A}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -49,10 +45,6 @@ Global
 		{F31CF172-6FEE-4188-9828-E5FDA531C871}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F31CF172-6FEE-4188-9828-E5FDA531C871}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F31CF172-6FEE-4188-9828-E5FDA531C871}.Release|Any CPU.Build.0 = Release|Any CPU
-		{20DB2748-6562-472F-AD20-E57167913C7D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{20DB2748-6562-472F-AD20-E57167913C7D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{20DB2748-6562-472F-AD20-E57167913C7D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{20DB2748-6562-472F-AD20-E57167913C7D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{9BDF7020-A19F-4C6C-B329-E4BFEFF6DE6B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{9BDF7020-A19F-4C6C-B329-E4BFEFF6DE6B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9BDF7020-A19F-4C6C-B329-E4BFEFF6DE6B}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -81,15 +73,21 @@ Global
 		{C1F54CDC-AD1D-45BB-8F7D-F49E411AFAF1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C1F54CDC-AD1D-45BB-8F7D-F49E411AFAF1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C1F54CDC-AD1D-45BB-8F7D-F49E411AFAF1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F0C150E2-9B8A-444C-B70E-97AD918CB3D4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F0C150E2-9B8A-444C-B70E-97AD918CB3D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F0C150E2-9B8A-444C-B70E-97AD918CB3D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F0C150E2-9B8A-444C-B70E-97AD918CB3D4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ADA8AB8B-2066-4193-B8F7-985669B23E00}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ADA8AB8B-2066-4193-B8F7-985669B23E00}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ADA8AB8B-2066-4193-B8F7-985669B23E00}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ADA8AB8B-2066-4193-B8F7-985669B23E00}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{74908F42-3842-49B4-9344-60BB791FDE32} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
 		{B2C5EED9-21B2-4763-AB92-C1995B76DA3A} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
 		{F31CF172-6FEE-4188-9828-E5FDA531C871} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
-		{20DB2748-6562-472F-AD20-E57167913C7D} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
 		{9BDF7020-A19F-4C6C-B329-E4BFEFF6DE6B} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 		{6AE5D88B-7F99-444E-ADA0-7CEAADFC477C} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 		{E325A0E2-716A-49E0-9767-5087CF05727C} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
@@ -97,6 +95,8 @@ Global
 		{3B5BFCCB-23CF-4849-8B2C-74D05DC3E402} = {3ADFB27A-95FA-4330-B211-1D66A29A17AB}
 		{6462DA5D-27DC-4CD5-9467-5EFB998FD838} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
 		{C1F54CDC-AD1D-45BB-8F7D-F49E411AFAF1} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
+		{F0C150E2-9B8A-444C-B70E-97AD918CB3D4} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
+		{ADA8AB8B-2066-4193-B8F7-985669B23E00} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7173C9F3-A7F9-496E-9078-9156E35D6E16}
