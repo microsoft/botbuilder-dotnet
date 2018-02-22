@@ -33,7 +33,7 @@ namespace Microsoft.Bot.Builder.BotFramework
             _credentialProvider = new SimpleCredentialProvider(appId, appPassword);
         }
 
-        public new BotFrameworkAdapter Use(Middleware.IMiddleware middleware)
+        public BotFrameworkAdapter Use(Middleware.IMiddleware middleware)
         {
             base._middlewareSet.Use(middleware);
             return this;
