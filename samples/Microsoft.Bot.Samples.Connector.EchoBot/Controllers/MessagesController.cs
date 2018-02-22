@@ -17,12 +17,10 @@ namespace Microsoft.Bot.Samples.Connector.EchoBot.Controllers
     public class MessagesController : Controller
     {
         private readonly SimpleCredentialProvider credentials;
-        private readonly HttpClient httpClient;
 
         public MessagesController(IConfiguration configuration)
         {
             this.credentials = new ConfigurationCredentialProvider(configuration);
-            httpClient = new HttpClient();
         }
 
         [HttpPost]
@@ -32,7 +30,7 @@ namespace Microsoft.Bot.Samples.Connector.EchoBot.Controllers
             var authHeader = this.Request.Headers["Authorization"].SingleOrDefault();
             try
             {
-                await JwtTokenValidation.AssertValidActivity(activity, authHeader, this.credentials, httpClient);                    
+                await JwtTokenValidation.AssertValidActivity(activity, authHeader, this.credentials);
             }
             catch (UnauthorizedAccessException)
             {                    
