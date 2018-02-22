@@ -63,7 +63,7 @@ namespace AlarmBot.Topics
         /// <returns></returns>
         public Task<bool> ContinueTopic(IBotContext context)
         {
-            var activeTopic = (ITopic)context.State.Conversation[ConversationProperties.ACTIVETOPIC];
+            var activeTopic = (ITopic)context.State.ConversationProperties[ConversationProperties.ACTIVETOPIC];
 
             switch (context.Request.Type)
             {
@@ -73,19 +73,19 @@ namespace AlarmBot.Topics
                         case "addAlarm":
                             // switch to addAlarm topic
                             activeTopic = new AddAlarmTopic();
-                            context.State.Conversation[ConversationProperties.ACTIVETOPIC] = activeTopic;
+                            context.State.ConversationProperties[ConversationProperties.ACTIVETOPIC] = activeTopic;
                             return activeTopic.StartTopic(context);
 
                         case "showAlarms":
                             // switch to show alarms topic
                             activeTopic = new ShowAlarmsTopic();
-                            context.State.Conversation[ConversationProperties.ACTIVETOPIC] = activeTopic;
+                            context.State.ConversationProperties[ConversationProperties.ACTIVETOPIC] = activeTopic;
                             return activeTopic.StartTopic(context);
 
                         case "deleteAlarm":
                             // switch to delete alarm topic
                             activeTopic = new DeleteAlarmTopic();
-                            context.State.Conversation[ConversationProperties.ACTIVETOPIC] = activeTopic;
+                            context.State.ConversationProperties[ConversationProperties.ACTIVETOPIC] = activeTopic;
                             return activeTopic.StartTopic(context);
 
                         case "help":
