@@ -17,13 +17,13 @@ namespace Microsoft.Bot.Builder.BotFramework
     {
         private readonly SimpleCredentialProvider _credentialProvider;
         private readonly MicrosoftAppCredentials _credentials;
-        private readonly HttpClient _httpClient; 
+        private readonly HttpClient _httpClient;
 
-        public BotFrameworkAdapter(IConfiguration configuration, HttpClient httpClient=null) : base()
+        public BotFrameworkAdapter(IConfiguration configuration, HttpClient httpClient = null) : base()
         {
             _httpClient = httpClient ?? new HttpClient();
             _credentialProvider = new ConfigurationCredentialProvider(configuration);
-            _credentials = new MicrosoftAppCredentials(_credentialProvider.AppId, _credentialProvider.Password);                                   
+            _credentials = new MicrosoftAppCredentials(_credentialProvider.AppId, _credentialProvider.Password);
         }
 
         public BotFrameworkAdapter(string appId, string appPassword, HttpClient httpClient = null) : base()
@@ -39,27 +39,31 @@ namespace Microsoft.Bot.Builder.BotFramework
             return this;
         }
 
-        public async Task ProcessActivty(string authHeader, Activity activity, Func<IBotContext,Task> callback)
+        public async Task ProcessActivty(string authHeader, Activity activity, Func<IBotContext, Task> callback)
         {
             BotAssert.ActivityNotNull(activity);
             await JwtTokenValidation.AssertValidActivity(activity, authHeader, _credentialProvider, _httpClient);
 
-            await base.ProcessActivityInternal(activity, callback).ConfigureAwait(false);
+            var context = new BotContext(this, activity);
+            await base.RunPipeline(context, callback).ConfigureAwait(false);
         }
 
-        protected async override Task SendActivityImplementation(IBotContext context, IActivity activity)
+        protected async override Task SendActivitiesImplementation(IBotContext context, IEnumerable<IActivity> activities)
         {
-            if (activity.Type == ActivityTypesEx.Delay)
+            foreach (var activity in activities)
             {
-                // The Activity Schema doesn't have a delay type build in, so it's simulated
-                // here in the Bot. This matches the behavior in the Node connector. 
-                int delayMs = (int)((Activity)activity).Value;
-                await Task.Delay(delayMs).ConfigureAwait(false);
-            }
-            else
-            {
-                var connectorClient = new ConnectorClient(new Uri(activity.ServiceUrl), _credentials);
-                await connectorClient.Conversations.SendToConversationAsync((Activity)activity).ConfigureAwait(false);
+                if (activity.Type == ActivityTypesEx.Delay)
+                {
+                    // The Activity Schema doesn't have a delay type build in, so it's simulated
+                    // here in the Bot. This matches the behavior in the Node connector. 
+                    int delayMs = (int)((Activity)activity).Value;
+                    await Task.Delay(delayMs).ConfigureAwait(false);
+                }
+                else
+                {
+                    var connectorClient = new ConnectorClient(new Uri(activity.ServiceUrl), _credentials);
+                    await connectorClient.Conversations.SendToConversationAsync((Activity)activity).ConfigureAwait(false);
+                }
             }
         }
 

@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -31,12 +32,12 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
-        /// implement send an activity to the conversation
+        /// implement send activities to the conversation
         /// </summary>
         /// <param name="context"></param>
         /// <param name=""></param>
         /// <returns></returns>
-        protected abstract Task SendActivityImplementation(IBotContext context, IActivity activity);
+        protected abstract Task SendActivitiesImplementation(IBotContext context, IEnumerable<IActivity> activities);
 
         /// <summary>
         /// Implement updating an activity in the conversation
@@ -62,7 +63,12 @@ namespace Microsoft.Bot.Builder
         /// <returns></returns>
         protected abstract Task CreateConversationImplementation();
 
-
+        /// <summary>
+        /// Called by base class to run pipeline around a context
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="callback"></param>
+        /// <returns></returns>
         protected async Task RunPipeline(IBotContext context, Func<IBotContext, Task> callback = null)
         {
             BotAssert.ContextNotNull(context);
@@ -98,32 +104,16 @@ namespace Microsoft.Bot.Builder
             }
 
             // Call any registered Middleware Components looking for SendActivity()
-            if (context.Responses != null && context.Responses.Any())
-            {
-                await _middlewareSet.SendActivity(context, context.Responses).ConfigureAwait(false);
+            await _middlewareSet.SendActivity(context, context.Responses ?? new List<IActivity>()).ConfigureAwait(false);
 
-                foreach (var response in context.Responses)
-                {
-                    await this.SendActivityImplementation(context, response).ConfigureAwait(false);
-                }
+            if (context.Responses != null)
+            {
+                    await this.SendActivitiesImplementation(context, context.Responses).ConfigureAwait(false);
             }
 
             System.Diagnostics.Trace.TraceInformation($"Middleware: Ending Pipeline for {context.ConversationReference.ActivityId}");
         }
 
-        /// <summary>
-        /// Process incoming activity (called by outer program
-        /// </summary>
-        /// <param name="activity"></param>
-        /// <returns></returns>
-        protected async Task ProcessActivityInternal(IActivity activity, Func<IBotContext, Task> callback = null)
-        {
-            BotAssert.ActivityNotNull(activity);
-
-            var context = new BotContext(this, activity);
-
-            await RunPipeline(context, callback).ConfigureAwait(false);
-        }
 
         /// <summary>
         /// Create proactive context around conversation reference

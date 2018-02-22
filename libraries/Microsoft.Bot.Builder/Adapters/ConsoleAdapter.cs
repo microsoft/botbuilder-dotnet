@@ -42,39 +42,43 @@ namespace Microsoft.Bot.Builder.Adapters
                     Type = ActivityTypes.Message
                 };
 
-                await this.ProcessActivityInternal(activity, callback);
+                var context = new BotContext(this, activity);
+                await base.RunPipeline(context, callback);
             }
         }
 
-        protected override async Task SendActivityImplementation(IBotContext context, IActivity activity)
+        protected override async Task SendActivitiesImplementation(IBotContext context, IEnumerable<IActivity> activities)
         {
-            switch (activity.Type)
+            foreach (var activity in activities)
             {
-                case ActivityTypes.Message:
-                    {
-                        IMessageActivity message = activity.AsMessageActivity();
-                        if (message.Attachments != null && message.Attachments.Any())
+                switch (activity.Type)
+                {
+                    case ActivityTypes.Message:
                         {
-                            var attachment = message.Attachments.Count == 1 ? "1 attachments" : $"{message.Attachments.Count()} attachments";
-                            Console.WriteLine($"{message.Text} with {attachment} ");
+                            IMessageActivity message = activity.AsMessageActivity();
+                            if (message.Attachments != null && message.Attachments.Any())
+                            {
+                                var attachment = message.Attachments.Count == 1 ? "1 attachments" : $"{message.Attachments.Count()} attachments";
+                                Console.WriteLine($"{message.Text} with {attachment} ");
+                            }
+                            else
+                            {
+                                Console.WriteLine($"{message.Text}");
+                            }
                         }
-                        else
+                        break;
+                    case ActivityTypesEx.Delay:
                         {
-                            Console.WriteLine($"{message.Text}");
+                            // The Activity Schema doesn't have a delay type build in, so it's simulated
+                            // here in the Bot. This matches the behavior in the Node connector. 
+                            int delayMs = (int)((Activity)activity).Value;
+                            await Task.Delay(delayMs).ConfigureAwait(false);
                         }
-                    }
-                    break;
-                case ActivityTypesEx.Delay:
-                    {
-                        // The Activity Schema doesn't have a delay type build in, so it's simulated
-                        // here in the Bot. This matches the behavior in the Node connector. 
-                        int delayMs = (int)((Activity)activity).Value;
-                        await Task.Delay(delayMs).ConfigureAwait(false);
-                    }
-                    break;
-                default:
-                    Console.WriteLine("Bot: activity type: {0}", activity.Type);
-                    break;
+                        break;
+                    default:
+                        Console.WriteLine("Bot: activity type: {0}", activity.Type);
+                        break;
+                }
             }
         }
 

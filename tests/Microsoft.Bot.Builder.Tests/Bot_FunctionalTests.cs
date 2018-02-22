@@ -41,7 +41,7 @@ namespace Microsoft.Bot.Builder.Tests
             // bot doesn't return anything. 
             Assert.IsTrue(testMiddleware.WasContextCreatedCalled, "Context Created was not called");
             Assert.IsTrue(testMiddleware.WasRecevieActivityCalled, "Receive was not called");
-            Assert.IsFalse(testMiddleware.WasSendActivityCalled, "Send was called");
+            Assert.IsTrue(testMiddleware.WasSendActivityCalled, "Send was not called");
         }
 
         [TestMethod]
