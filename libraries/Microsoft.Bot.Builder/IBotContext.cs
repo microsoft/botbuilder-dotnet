@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Builder
 {
     public interface IBotContext
     {
-        Bot Bot { get; }
+        BotAdapter Adapter { get; }
 
         /// <summary>
         /// Incoming request
@@ -65,15 +65,6 @@ namespace Microsoft.Bot.Builder
         /// <returns></returns>
         BotContext Reply(IActivity activity);
 
-        /// <summary>
-        /// Send a reply using a templateId bound to data
-        /// </summary>
-        /// <param name="templateId">template Id</param>
-        /// <param name="data">data object to bind to</param>
-        /// <returns></returns>
-        BotContext ReplyWith(string templateId, object data=null);
-
-        TemplateManager TemplateManager { get; set; }
     }   
 
     public static partial class BotContextExtension

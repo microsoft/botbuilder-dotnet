@@ -12,15 +12,15 @@ namespace Microsoft.Bot.Builder
 {
     public class BotContext : FlexObject, IBotContext
     {
-        private readonly Bot _bot;
+        private readonly BotAdapter _adapter;
         private readonly IActivity _request;
         private readonly ConversationReference _conversationReference;
         private readonly BotState _state = new BotState();
         private IList<IActivity> _responses = new List<IActivity>();
 
-        public BotContext(Bot bot, IActivity request)
+        public BotContext(BotAdapter adapter, IActivity request)
         {
-            _bot = bot ?? throw new ArgumentNullException(nameof(bot));
+            _adapter = adapter ?? throw new ArgumentNullException(nameof(adapter));
             _request = request ?? throw new ArgumentNullException(nameof(request));
 
             _conversationReference = new ConversationReference()
@@ -34,9 +34,9 @@ namespace Microsoft.Bot.Builder
             };
         }
 
-        public BotContext(Bot bot, ConversationReference conversationReference)
+        public BotContext(BotAdapter bot, ConversationReference conversationReference)
         {
-            _bot = bot ?? throw new ArgumentNullException(nameof(bot));
+            _adapter = bot ?? throw new ArgumentNullException(nameof(bot));
             _conversationReference = conversationReference ?? throw new ArgumentNullException(nameof(conversationReference));
         }
 
@@ -47,7 +47,7 @@ namespace Microsoft.Bot.Builder
 
         public IActivity Request => _request;
 
-        public Bot Bot => _bot;
+        public BotAdapter Adapter => _adapter;
 
         public IList<IActivity> Responses { get => _responses; set => this._responses = value; }
 
@@ -111,16 +111,6 @@ namespace Microsoft.Bot.Builder
             this.Responses.Add(activity);
             return this;
         }
-        
-        public BotContext ReplyWith(string templateId, object data = null)
-        {
-            // queue template activity to be databound when sent
-            var reply = this.ConversationReference.GetPostToUserMessage();
-            reply.Type = TemplateManager.TEMPLATE;
-            reply.Text = templateId;
-            reply.Value = data;
-            this.Responses.Add(reply);
-            return this;
-        }
+       
     }
 }

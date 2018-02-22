@@ -13,17 +13,17 @@ using Microsoft.Extensions.Configuration;
 
 namespace Microsoft.Bot.Builder.BotFramework
 {
-    public class BotFrameworkAdapter : ActivityAdapterBase
+    public class BotFrameworkAdapter : BotAdapter
     {
         private readonly SimpleCredentialProvider _credentialProvider;
         private readonly MicrosoftAppCredentials _credentials;
-        private readonly HttpClient _httpClient; 
+        private readonly HttpClient _httpClient;
 
         public BotFrameworkAdapter(IConfiguration configuration, HttpClient httpClient = null) : base()
         {
             _httpClient = httpClient ?? new HttpClient();
             _credentialProvider = new ConfigurationCredentialProvider(configuration);
-            _credentials = new MicrosoftAppCredentials(_credentialProvider.AppId, _credentialProvider.Password);                                   
+            _credentials = new MicrosoftAppCredentials(_credentialProvider.AppId, _credentialProvider.Password);
         }
 
         public BotFrameworkAdapter(string appId, string appPassword, HttpClient httpClient = null) : base()
@@ -33,36 +33,55 @@ namespace Microsoft.Bot.Builder.BotFramework
             _credentialProvider = new SimpleCredentialProvider(appId, appPassword);
         }
 
-        public async override Task Send(IList<IActivity> activities)
+        public new BotFrameworkAdapter Use(Middleware.IMiddleware middleware)
         {
-            BotAssert.ActivityListNotNull(activities);
+            base._middlewareSet.Use(middleware);
+            return this;
+        }
 
-            foreach (Activity activity in activities)
+        public async Task ProcessActivty(string authHeader, Activity activity, Func<IBotContext, Task> callback)
+        {
+            BotAssert.ActivityNotNull(activity);
+            await JwtTokenValidation.AssertValidActivity(activity, authHeader, _credentialProvider, _httpClient);
+
+            var context = new BotContext(this, activity);
+            await base.RunPipeline(context, callback).ConfigureAwait(false);
+        }
+
+        protected async override Task SendActivitiesImplementation(IBotContext context, IEnumerable<IActivity> activities)
+        {
+            foreach (var activity in activities)
             {
                 if (activity.Type == ActivityTypesEx.Delay)
                 {
                     // The Activity Schema doesn't have a delay type build in, so it's simulated
                     // here in the Bot. This matches the behavior in the Node connector. 
-                    int delayMs = (int)activity.Value;
+                    int delayMs = (int)((Activity)activity).Value;
                     await Task.Delay(delayMs).ConfigureAwait(false);
                 }
                 else
                 {
                     var connectorClient = new ConnectorClient(new Uri(activity.ServiceUrl), _credentials);
-                    await connectorClient.Conversations.SendToConversationAsync(activity).ConfigureAwait(false);
+                    await connectorClient.Conversations.SendToConversationAsync((Activity)activity).ConfigureAwait(false);
                 }
             }
         }
 
-        public async Task Receive(string authHeader, Activity activity)
+        protected override Task<ResourceResponse> UpdateActivityImplementation(IBotContext context, IActivity activity)
         {
-            BotAssert.ActivityNotNull(activity);
-            await JwtTokenValidation.AssertValidActivity(activity, authHeader, _credentialProvider, _httpClient);
+            var connectorClient = new ConnectorClient(new Uri(activity.ServiceUrl), _credentials);
+            return connectorClient.Conversations.UpdateActivityAsync((Activity)activity);
+        }
 
-            if (this.OnReceive != null)
-            {
-                await OnReceive(activity).ConfigureAwait(false);
-            }
+        protected override Task DeleteActivityImplementation(IBotContext context, string conversationId, string activityId)
+        {
+            var connectorClient = new ConnectorClient(new Uri(context.Request.ServiceUrl), _credentials);
+            return connectorClient.Conversations.DeleteActivityAsync(conversationId, activityId);
+        }
+
+        protected override Task CreateConversationImplementation()
+        {
+            throw new NotImplementedException();
         }
     }
 }

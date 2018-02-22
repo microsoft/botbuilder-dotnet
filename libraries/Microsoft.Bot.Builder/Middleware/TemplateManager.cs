@@ -50,7 +50,8 @@ namespace Microsoft.Bot.Builder.Middleware
         
         public async Task ContextCreated(IBotContext context, Middleware.MiddlewareSet.NextDelegate next)
         {
-            context.TemplateManager = this;
+            ((BotContext)context)[nameof(TemplateManager)] = this;
+
             await next().ConfigureAwait(false);             
         }
 
@@ -70,7 +71,7 @@ namespace Microsoft.Bot.Builder.Middleware
             await next().ConfigureAwait(false); 
         }
 
-        private async Task<Activity> FindAndApplyTemplate(IBotContext context, string language, string templateId, object data)
+        public async Task<Activity> FindAndApplyTemplate(IBotContext context, string language, string templateId, object data)
         {
             foreach (var renderer in this._templateRenderers)
             {
@@ -90,7 +91,7 @@ namespace Microsoft.Bot.Builder.Middleware
             return null;
         }
 
-        private async Task BindActivityTemplate(IBotContext context, IActivity activity)
+        public async Task BindActivityTemplate(IBotContext context, IActivity activity)
         {
             List<string> fallbackLocales = new List<string>(this._languageFallback);
 
@@ -146,22 +147,10 @@ namespace Microsoft.Bot.Builder.Middleware
         
         public async Task ContextCreated(IBotContext context, Middleware.MiddlewareSet.NextDelegate next)
         {
-            context.TemplateManager.Register(_templateEngine);
+            TemplateManager templateManager = (TemplateManager)((BotContext)context)[nameof(templateManager)];
+            templateManager.Register(_templateEngine);
             await next().ConfigureAwait(false); 
         }
     }
 
-    public static class BotTemplateExtensions
-    {
-        /// <summary>
-        /// Add template renderer
-        /// </summary>
-        /// <param name="bot"></param>
-        /// <param name="renderer"></param>
-        /// <returns></returns>
-        public static Bot UseTemplateRenderer(this Bot bot, ITemplateRenderer renderer)
-        {
-            return bot.Use(new TemplateRendererMiddleware(renderer));
-        }
-    }
 }

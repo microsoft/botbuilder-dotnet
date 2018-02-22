@@ -50,15 +50,14 @@ namespace Microsoft.Bot.Builder.Ai.Tests
                 return;
             }
 
-            TestAdapter adapter = new TestAdapter();
-            Bot bot = new Bot(adapter)
+            
+            TestAdapter adapter = new TestAdapter()
                 .Use(new LuisRecognizerMiddleware(luisAppId, subscriptionKey));
-            bot.OnReceive((context) =>
+            await new TestFlow(adapter, (context) =>
                 {
                     context.Reply(context.TopIntent.Name);
                     return Task.CompletedTask;
-                });
-            await adapter
+                })
                 .Send("I want ham and cheese sandwich!")
                     .AssertReply("sandwichorder", "should have sandwichorder as top intent!")
                 .StartTest();

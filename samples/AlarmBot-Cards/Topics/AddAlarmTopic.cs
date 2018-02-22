@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AlarmBot.Models;
-using AlarmBot.TopicViews;
+using AlarmBot.Responses;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
 
@@ -81,7 +81,7 @@ namespace AlarmBot.Topics
                 Alarm.Time = new DateTimeOffset(defaultTime.Year, defaultTime.Month, defaultTime.Day, defaultTime.Hour, 0, 0, DateTimeOffset.Now.Offset);
             }
             this.TopicState = TopicStates.AddingCard;
-            context.ReplyWith(AddAlarmTopicView.STARTTOPIC, this.Alarm);
+            AddAlarmTopicResponses.ReplyWithStartTopic(context, this.Alarm);
             return true;
         }
 
@@ -105,12 +105,12 @@ namespace AlarmBot.Topics
 
                     case "help":
                         // show contextual help 
-                        context.ReplyWith(AddAlarmTopicView.HELP, this.Alarm);
+                        AddAlarmTopicResponses.ReplyWithHelp(context, this.Alarm);
                         return true;
 
                     case "cancel":
                         // prompt to cancel
-                        context.ReplyWith(AddAlarmTopicView.CANCELPROMPT, this.Alarm);
+                        AddAlarmTopicResponses.ReplyWithCancelPrompt(context, this.Alarm);
                         this.TopicState = TopicStates.CancelConfirmation;
                         return true;
 
@@ -148,7 +148,7 @@ namespace AlarmBot.Topics
                                             context.State.UserProperties[UserProperties.ALARMS] = alarms;
                                         }
                                         alarms.Add(this.Alarm);
-                                        context.ReplyWith(AddAlarmTopicView.ADDEDALARM, this.Alarm);
+                                        AddAlarmTopicResponses.ReplyWithAddedAlarm(context, this.Alarm);
                                         // end topic
                                         return false;
                                     }
@@ -156,7 +156,7 @@ namespace AlarmBot.Topics
                             }
                             else if (payload.Action == "Cancel")
                             {
-                                context.ReplyWith(AddAlarmTopicView.TOPICCANCELED, this.Alarm);
+                                AddAlarmTopicResponses.ReplyWithTopicCanceled(context, this.Alarm);
                                 // End current topic
                                 return false;
                             }
@@ -168,11 +168,11 @@ namespace AlarmBot.Topics
                     {
 
                         dynamic payload = ((Activity)context.Request).Value;
-                        switch (payload.Action)
+                        switch ((string)payload.Action)
                         {
                             case "Yes":
                                 {
-                                    context.ReplyWith(AddAlarmTopicView.TOPICCANCELED, this.Alarm);
+                                    AddAlarmTopicResponses.ReplyWithTopicCanceled(context, this.Alarm);
                                     // End current topic
                                     return false;
                                 }
@@ -183,7 +183,7 @@ namespace AlarmBot.Topics
                                 }
                             default:
                                 {
-                                    context.ReplyWith(AddAlarmTopicView.CANCELREPROMPT, this.Alarm);
+                                    AddAlarmTopicResponses.ReplyWithCancelReprompt(context, this.Alarm);
                                     return true;
                                 }
                         }
@@ -203,7 +203,7 @@ namespace AlarmBot.Topics
         {
             // simply prompt again based on our state
             this.TopicState = TopicStates.AddingCard;
-            context.ReplyWith(AddAlarmTopicView.STARTTOPIC, this.Alarm);
+            AddAlarmTopicResponses.ReplyWithStartTopic(context, this.Alarm);
             return Task.FromResult(true);
         }
     }
