@@ -15,11 +15,11 @@ namespace Microsoft.Bot.Samples.EchoBot
             MainAsync(args).GetAwaiter().GetResult();
         }
 
-        static Task MainAsync(string[] args)
+        static async Task MainAsync(string[] args)
         {
             Console.WriteLine("Welcome to the EchoBot.");
             var adapter = new ConsoleAdapter();
-            return adapter.ProcessActivity(async (context) =>
+            await adapter.ProcessActivity(async (context) =>
             {
                 if (context.Request.Type == ActivityTypes.Message)
                 {

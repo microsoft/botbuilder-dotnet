@@ -1,5 +1,6 @@
 ﻿using Microsoft.Bot.Builder;
-using Microsoft.Bot.Builder.BotFramework;
+using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.Middleware;
 using Microsoft.Bot.Builder.Storage;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
@@ -39,7 +40,7 @@ namespace Microsoft.Bot.Samples.EchoBot_AspNet461
             UnityConfig.Container.RegisterSingleton<BotFrameworkAdapter>(
                 new Unity.Injection.InjectionConstructor(
                     new BotFrameworkAdapter(ConfigurationManager.AppSettings[@"MicrosoftAppId"], ConfigurationManager.AppSettings[@"MicrosoftAppPassword"])
-                        .Use(new BotStateManager(new MemoryStorage()))
+                        .Use(new ConversationStateManagerMiddleware(new MemoryStorage()))
                 )
             );
         }
