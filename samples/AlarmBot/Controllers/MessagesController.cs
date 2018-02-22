@@ -1,32 +1,21 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
-using System.Linq;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using AlarmBot.Models;
 using AlarmBot.Topics;
-using AlarmBot.Responses;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Builder.Middleware;
-using Microsoft.Bot.Builder.Storage;
-using Microsoft.Bot.Connector.Authentication;
-using Microsoft.Bot.Schema;
-using Microsoft.Extensions.Configuration;
+using System.Threading.Tasks;
 
 namespace AlarmBot.Controllers
 {
     [Route("api/[controller]")]
     public class MessagesController : BotController
     {
-        public MessagesController(BotFrameworkAdapter adapter) : base(adapter)
-        {
-        }
+        public MessagesController(BotFrameworkAdapter adapter) : base(adapter) { }
 
-        public override async Task OnReceiveActivity(IBotContext context)
+        protected override async Task OnReceiveActivity(IBotContext context)
         {
             // --- Our receive handler simply inspects the persisted ITopic class and calls to it as appropriate ---
 
