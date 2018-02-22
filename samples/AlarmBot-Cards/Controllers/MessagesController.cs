@@ -30,16 +30,14 @@ namespace AlarmBot.Controllers
         {
             // --- Bot logic 
             bool handled = false;
-
             // Get the current ActiveTopic from my persisted conversation state
-            var activeTopic = context.State.Conversation[ConversationProperties.ACTIVETOPIC] as ITopic;
-
+            var activeTopic = context.State.ConversationProperties[ConversationProperties.ACTIVETOPIC] as ITopic;
             // if we don't have an active topic yet
             if (activeTopic == null)
             {
                 // use the default topic
                 activeTopic = new DefaultTopic();
-                context.State.Conversation[ConversationProperties.ACTIVETOPIC] = activeTopic;
+                context.State.ConversationProperties[ConversationProperties.ACTIVETOPIC] = activeTopic;
                 handled = await activeTopic.StartTopic(context);
             }
             else
@@ -47,12 +45,12 @@ namespace AlarmBot.Controllers
                 // we do have an active topic, so call it 
                 handled = await activeTopic.ContinueTopic(context);
             }
-
+            
             // if activeTopic's result is false and the activeTopic is NOT already the default topic
             if (handled == false && !(activeTopic is DefaultTopic))
             {
                 // USe DefaultTopic as the active topic
-                context.State.Conversation[ConversationProperties.ACTIVETOPIC] = new DefaultTopic();
+                context.State.ConversationProperties[ConversationProperties.ACTIVETOPIC] = new DefaultTopic();
                 handled = await activeTopic.ResumeTopic(context);
             }
         }

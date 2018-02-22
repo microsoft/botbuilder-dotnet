@@ -141,11 +141,11 @@ namespace AlarmBot.Topics
                                     if (DateTimeOffset.TryParse((string)payload.Time, out DateTimeOffset time))
                                     {
                                         this.Alarm.Time = new DateTimeOffset(date.Year, date.Month, date.Day, time.Hour, time.Minute, time.Second, date.Offset);
-                                        var alarms = (List<Alarm>)context.State.User[UserProperties.ALARMS];
+                                        var alarms = (List<Alarm>)context.State.UserProperties[UserProperties.ALARMS];
                                         if (alarms == null)
                                         {
                                             alarms = new List<Alarm>();
-                                            context.State.User[UserProperties.ALARMS] = alarms;
+                                            context.State.UserProperties[UserProperties.ALARMS] = alarms;
                                         }
                                         alarms.Add(this.Alarm);
                                         AddAlarmTopicResponses.ReplyWithAddedAlarm(context, this.Alarm);
