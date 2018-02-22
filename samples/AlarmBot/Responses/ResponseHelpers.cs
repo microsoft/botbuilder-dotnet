@@ -6,9 +6,9 @@ using System.Text;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
 
-namespace AlarmBot.TopicViews
+namespace AlarmBot.Responses
 {
-    public static class TopicViewHelpers
+    public static class ResponseHelpers
     {
         public static IMessageActivity ReplyWithSuggestions(this IBotContext context, string title, string message, string[] choices)
         {

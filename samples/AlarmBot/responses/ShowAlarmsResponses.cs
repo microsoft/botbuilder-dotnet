@@ -8,12 +8,12 @@ using System.Text;
 using AlarmBot.Models;
 using Microsoft.Bot.Builder;
 
-namespace AlarmBot.TopicViews
+namespace AlarmBot.Responses
 {
     /// <summary>
     /// I organized all of my output responses as functions so it is easy to reuse and evolve the responses over time without having to rewrite my business logic
     /// </summary>
-    public static class ShowAlarmsTopicResponses
+    public static class ShowAlarmsResponses
     {
         public static void ReplyWithShowAlarms(IBotContext context, IEnumerable<Alarm> alarms)
         {

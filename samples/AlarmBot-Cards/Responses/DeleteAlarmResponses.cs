@@ -10,14 +10,10 @@ using Microsoft.Bot.Builder.Middleware;
 using Microsoft.Bot.Builder.Templates;
 using Microsoft.Bot.Schema;
 
-namespace AlarmBot.TopicViews
+namespace AlarmBot.Responses
 {
-    public class DeleteAlarmTopicView : TemplateRendererMiddleware
+    public static class DeleteAlarmTopicResponses 
     {
-        public DeleteAlarmTopicView() : base(new DictionaryRenderer(ReplyTemplates))
-        {
-
-        }
 
         public static IMessageActivity AlarmsCard(IBotContext context, IEnumerable<Alarm> alarms, string title, string message)
         {
@@ -50,23 +46,22 @@ namespace AlarmBot.TopicViews
         }
 
 
-        // template ids
-        public const string NOALARMS = "DeleteAlarmTopic.NoAlarms";
-        public const string NOALARMSFOUND = "DeleteAlarmTopic.NoAlarmsFound";
-        public const string TITLEPROMPT = "DeleteAlarmTopic.TitlePrompt";
-        public const string DELETEDALARM = "DeleteAlarmTopic.DeletedAlarm";
-
-        // per language template functions for creating replies
-        public static TemplateDictionary ReplyTemplates = new TemplateDictionary
+        public static void ReplyWithNoAlarms(IBotContext context)
         {
-            ["default"] = new TemplateIdMap
-                {
-                    { NOALARMS, (context, data) => $"There are no alarms defined." },
-                    { NOALARMSFOUND, (context, data) => $"There were no alarms found for {(string)data}." },
-                    { TITLEPROMPT, (context, data) => AlarmsCard(context, data, "Delete Alarm", "What alarm do you want to delete?") },
-                    { DELETEDALARM, (context, data) => $"I have deleted {((Alarm)data).Title} alarm" },
-                }
-        };
+            context.Reply($"There are no alarms defined.");
+        }
+        public static void ReplyWithNoAlarmsFound(IBotContext context, string data)
+        {
+            context.Reply($"There were no alarms found for {data}.");
+        }
+        public static void ReplyWithTitlePrompt(IBotContext context, IEnumerable<Alarm> data)
+        {
+            context.Reply(AlarmsCard(context, data, "Delete Alarm", "What alarm do you want to delete?"));
+        }
+        public static void ReplyWithDeletedAlarm(IBotContext context, Alarm data)
+        {
+            context.Reply($"I have deleted {data.Title} alarm");
+        }
 
     }
 }

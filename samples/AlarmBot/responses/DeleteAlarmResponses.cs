@@ -10,20 +10,32 @@ using AlarmBot.Topics;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
 
-namespace AlarmBot.TopicViews
+namespace AlarmBot.Responses
 {
     /// <summary>
     /// I organized all of my output responses as functions so it is easy to reuse and evolve the responses over time without having to rewrite my business logic
     /// </summary>
-    public static class DeleteAlarmTopicView
+    public static class DeleteAlarmResponses
     {
-        public static void ReplyWithNoAlarms(IBotContext context) => context.Reply($"There are no alarms defined.");
+        public static void ReplyWithNoAlarms(IBotContext context)
+        {
+            context.Reply($"There are no alarms defined.");
+        }
 
-        public static void ReplyWithNoAlarmsFound(IBotContext context, string text) => context.Reply($"There were no alarms found for {(string)text}.");
+        public static void ReplyWithNoAlarmsFound(IBotContext context, string text)
+        {
+            context.Reply($"There were no alarms found for {(string)text}.");
+        }
 
-        public static void ReplyWithTitlePrompt(IBotContext context) => context.Reply(GetDeleteActivity(context, ShowAlarmsTopic.GetAlarms(context), "Delete Alarms", "What alarm do you want to delete?"));
+        public static void ReplyWithTitlePrompt(IBotContext context)
+        {
+            context.Reply(GetDeleteActivity(context, ShowAlarmsTopic.GetAlarms(context), "Delete Alarms", "What alarm do you want to delete?"));
+        }
 
-        public static void ReplyWithDeletedAlarm(IBotContext context, Alarm alarm = null) => context.Reply($"I have deleted {alarm.Title} alarm");
+        public static void ReplyWithDeletedAlarm(IBotContext context, Alarm alarm = null)
+        {
+            context.Reply($"I have deleted {alarm.Title} alarm");
+        }
 
         public static IMessageActivity GetDeleteActivity(IBotContext context, IEnumerable<Alarm> alarms, string title, string message)
         {
@@ -37,7 +49,7 @@ namespace AlarmBot.TopicViews
             else
                 sb.AppendLine("There are no alarms defined");
             i = 1;
-            return TopicViewHelpers.ReplyWithSuggestions(context,
+            return ResponseHelpers.ReplyWithSuggestions(context,
                 title,
                 $"{message}\n\n{sb.ToString()}",
                 alarms.Select(alarm => $"{i++} {alarm.Title}").ToArray());

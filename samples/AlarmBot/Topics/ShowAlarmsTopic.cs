@@ -4,13 +4,13 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AlarmBot.Models;
-using AlarmBot.TopicViews;
+using AlarmBot.Responses;
 using Microsoft.Bot.Builder;
 
 namespace AlarmBot.Topics
 {
     /// <summary>
-    /// Topic for showing alarms
+    /// Class around topic of listing alarms
     /// </summary>
     public class ShowAlarmsTopic : ITopic
     {
@@ -47,7 +47,7 @@ namespace AlarmBot.Topics
         public static Task ShowAlarms(IBotContext context)
         {
             List<Alarm> alarms = GetAlarms(context);
-            ShowAlarmsTopicResponses.ReplyWithShowAlarms(context, alarms);
+            ShowAlarmsResponses.ReplyWithShowAlarms(context, alarms);
             return Task.CompletedTask;
         }
 
