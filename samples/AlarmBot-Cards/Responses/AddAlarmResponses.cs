@@ -5,28 +5,14 @@ using System;
 using AdaptiveCards;
 using AlarmBot.Models;
 using Microsoft.Bot.Builder;
-using Microsoft.Bot.Builder.Middleware;
-using Microsoft.Bot.Builder.Templates;
 using Microsoft.Bot.Schema;
 
-namespace AlarmBot.TopicViews
+namespace AlarmBot.Responses
 {
-    public class AddAlarmTopicView : TemplateRendererMiddleware
+    public static class AddAlarmTopicResponses
     {
-        public AddAlarmTopicView() : base(new DictionaryRenderer(Templates))
-        {
-        }
-
-        // template ids
-        public const string STARTTOPIC = "AddAlarmTopic.StartTopic";
-        public const string RESUMETOPIC = "AddAlarmTopic.ResumeTopic";
-        public const string HELP = "AddAlarmTopic.Help";
-        public const string CONFUSED = "AddAlarmTopic.Confusion";
         public const string CANCELPROMPT = "AddAlarmTopic.Cancelation";
-        public const string CANCELCANCELED = "AddAlarmTopic.CancelCanceled";
         public const string CANCELREPROMPT = "AddAlarmTopic.CancelReprompt";
-        public const string TOPICCANCELED = "AddAlarmTopic.TopicCanceled";
-        public const string ADDEDALARM = "AddAlarmTopic.AddedAlarm";
 
         /// <summary>
         /// Standard language alarm description
@@ -60,23 +46,33 @@ namespace AlarmBot.TopicViews
         }
 
 
-        /// <summary>
-        /// table of language functions which render output in various languages
-        /// </summary>
-        public static TemplateDictionary Templates = new TemplateDictionary
+        public static void ReplyWithStartTopic(IBotContext context, dynamic data)
         {
-            // Default templates
-            ["default"] = new TemplateIdMap
-                {
-                    { STARTTOPIC, (context, data) => AlarmCardEditor(context, data, "Adding Alarm", "Please describe your alarm:", "Submit", "Cancel" ) },
-                    { HELP, (context, data) => AlarmCardEditor(context, data, "Adding alarm", $"I am working with you to create an alarm.  Please describe your alarm:.\n\n","Submit", "Cancel") },
-                    { CONFUSED, (context, data) => $"I am sorry, I didn't understand: {((Activity)context.Request).Text}." },
-                    { CANCELPROMPT, (context, data) => TopicViewHelpers.CreateMessageBoxCard(context, CANCELPROMPT, "Cancel Alarm?", "Are you sure you want to cancel this alarm?", "Yes", "No") },
-                    { CANCELREPROMPT, (context, data) => TopicViewHelpers.CreateMessageBoxCard(context, CANCELPROMPT, "Cancel Alarm?", "Please answer with a Yes or No. Are you sure you want to cancel this alarm?", "Yes", "No") },
-                    { TOPICCANCELED, (context, data) => $"OK, I have canceled this alarm." },
-                    { ADDEDALARM, (context, data) => $"OK, I have added the alarm {((Alarm)data).Title}." },
-                }
-        };
-
+            context.Reply(AlarmCardEditor(context, data, "Adding Alarm", "Please describe your alarm:", "Submit", "Cancel"));
+        }
+        public static void ReplyWithHelp(IBotContext context, dynamic data)
+        {
+            context.Reply(AlarmCardEditor(context, data, "Adding alarm", $"I am working with you to create an alarm.  Please describe your alarm:.\n\n", "Submit", "Cancel"));
+        }
+        public static void ReplyWithConfused(IBotContext context, dynamic data)
+        {
+            context.Reply($"I am sorry, I didn't understand: {((Activity)context.Request).Text}.");
+        }
+        public static void ReplyWithCancelPrompt(IBotContext context, dynamic data)
+        {
+            context.Reply(TopicResponseHelpers.CreateMessageBoxCard(context, CANCELPROMPT, "Cancel Alarm?", "Are you sure you want to cancel this alarm?", "Yes", "No"));
+        }
+        public static void ReplyWithCancelReprompt(IBotContext context, dynamic data)
+        {
+            context.Reply(TopicResponseHelpers.CreateMessageBoxCard(context, CANCELPROMPT, "Cancel Alarm?", "Please answer with a Yes or No. Are you sure you want to cancel this alarm?", "Yes", "No"));
+        }
+        public static void ReplyWithTopicCanceled(IBotContext context, dynamic data)
+        {
+            context.Reply($"OK, I have canceled creating this alarm.");
+        }
+        public static void ReplyWithAddedAlarm(IBotContext context, dynamic data)
+        {
+            context.Reply($"OK, I have added the alarm {((Alarm)data).Title}.");
+        }
     }
 }

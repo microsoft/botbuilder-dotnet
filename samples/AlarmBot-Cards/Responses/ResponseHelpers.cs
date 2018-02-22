@@ -9,7 +9,7 @@ using Microsoft.Bot.Schema;
 
 namespace AlarmBot
 {
-    public static class TopicViewHelpers
+    public static class TopicResponseHelpers
     {
         public static IMessageActivity ReplyWithSuggestions(BotContext context, string title, string message, string[] choices)
         {

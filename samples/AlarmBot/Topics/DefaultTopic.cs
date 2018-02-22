@@ -4,12 +4,15 @@
 using System.Linq;
 using System.Threading.Tasks;
 using AlarmBot.Models;
-using AlarmBot.TopicViews;
+using AlarmBot.Responses;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
 
 namespace AlarmBot.Topics
 {
+    /// <summary>
+    /// Class around root default topic 
+    /// </summary>
     public class DefaultTopic : ITopic
     {
         public DefaultTopic() { }
@@ -34,8 +37,8 @@ namespace AlarmBot.Topics
                         var activity = context.Request.AsConversationUpdateActivity();
                         if (activity.MembersAdded.Where(m => m.Id == activity.Recipient.Id).Any())
                         {
-                            context.ReplyWith(DefaultTopicView.GREETING);
-                            context.ReplyWith(DefaultTopicView.HELP);
+                            DefaultResponses.ReplyWithGreeting(context);
+                            DefaultResponses.ReplyWithHelp(context);
                             this.Greeted = true;
                         }
                     }
@@ -45,7 +48,7 @@ namespace AlarmBot.Topics
                     // greet on first message if we haven't already 
                     if (!Greeted)
                     {
-                        context.ReplyWith(DefaultTopicView.GREETING);
+                        DefaultResponses.ReplyWithGreeting(context);
                         this.Greeted = true;
                     }
                     return this.ContinueTopic(context);
@@ -87,12 +90,12 @@ namespace AlarmBot.Topics
 
                         case "help":
                             // show help
-                            context.ReplyWith(DefaultTopicView.HELP);
+                            DefaultResponses.ReplyWithHelp(context);
                             return Task.FromResult(true);
 
                         default:
                             // show our confusion
-                            context.ReplyWith(DefaultTopicView.CONFUSED);
+                            DefaultResponses.ReplyWithConfused(context);
                             return Task.FromResult(true);
                     }
 
@@ -110,7 +113,7 @@ namespace AlarmBot.Topics
         public Task<bool> ResumeTopic(IBotContext context)
         {
             // just prompt the user to ask what they want to do
-            context.ReplyWith(DefaultTopicView.RESUMETOPIC);
+            DefaultResponses.ReplyWithResumeTopic(context);
             return Task.FromResult(true);
         }
 

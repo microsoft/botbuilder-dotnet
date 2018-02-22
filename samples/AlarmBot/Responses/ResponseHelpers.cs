@@ -6,11 +6,11 @@ using System.Text;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
 
-namespace AlarmBot
+namespace AlarmBot.Responses
 {
-    public static class TopicViewHelpers
+    public static class ResponseHelpers
     {
-        public static IMessageActivity ReplyWithSuggestions(IBotContext context, string title, string message, string[] choices)
+        public static IMessageActivity ReplyWithSuggestions(this IBotContext context, string title, string message, string[] choices)
         {
             var reply = ReplyWithTitle(context, title, message);
 
@@ -24,7 +24,7 @@ namespace AlarmBot
             return reply;
         }
 
-        public static IMessageActivity ReplyWithTitle(IBotContext context, string title, string message)
+        public static IMessageActivity ReplyWithTitle(this IBotContext context, string title, string message)
         {
             StringBuilder sb = new StringBuilder();
             if (title != null)
@@ -35,7 +35,6 @@ namespace AlarmBot
 
             return ((Activity)context.Request).CreateReply(sb.ToString());
         }
-
 
     }
 }

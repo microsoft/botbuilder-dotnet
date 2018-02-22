@@ -4,27 +4,28 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AlarmBot.Models;
-using AlarmBot.TopicViews;
+using AlarmBot.Responses;
 using Microsoft.Bot.Builder;
 
 namespace AlarmBot.Topics
 {
     /// <summary>
-    /// Topic for showing alarms
+    /// Class around topic of listing alarms
     /// </summary>
-    public class ShowAlarmsTopic : BaseTopic
+    public class ShowAlarmsTopic : ITopic
     {
         public ShowAlarmsTopic()
         {
-            this.Name = "ShowAlarms";
         }
+
+        public string Name { get; set;  } = "ShowAlarms";
 
         /// <summary>
         /// Called when topic is activated (SINGLE TURN)
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public override async Task<bool> StartTopic(IBotContext context)
+        public async Task<bool> StartTopic(IBotContext context)
         {
             await ShowAlarms(context);
 
@@ -32,10 +33,21 @@ namespace AlarmBot.Topics
             return false;
         }
 
+        public Task<bool> ContinueTopic(IBotContext context)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public Task<bool> ResumeTopic(IBotContext context)
+        {
+            throw new System.NotImplementedException();
+        }
+
+
         public static Task ShowAlarms(IBotContext context)
         {
             List<Alarm> alarms = GetAlarms(context);
-            context.ReplyWith(ShowAlarmsTopicView.SHOWALARMS, alarms);
+            ShowAlarmsResponses.ReplyWithShowAlarms(context, alarms);
             return Task.CompletedTask;
         }
 
