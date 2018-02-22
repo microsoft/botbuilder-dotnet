@@ -22,19 +22,17 @@ namespace AlarmBot.Controllers
     [Route("api/[controller]")]
     public class MessagesController : Controller
     {
-        public static BotFrameworkAdapter activityAdapter = null;
-        public static Bot bot = null;
+        public static BotFrameworkAdapter adapter = null;
 
         ///
         public MessagesController(IConfiguration configuration)
         {
-            if (activityAdapter == null)
+            if (adapter == null)
             {
                 string applicationId = configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppIdKey)?.Value;
                 string applicationPassword = configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppPasswordKey)?.Value;
 
                 // create the activity adapter that I will use to send/receive Activity objects with the user
-                activityAdapter = new BotFrameworkAdapter(applicationId, applicationPassword);
 
                 // pick your flavor of Key/Value storage
                 IStorage storage = new FileStorage(System.IO.Path.GetTempPath());
@@ -42,7 +40,7 @@ namespace AlarmBot.Controllers
                 //IStorage storage = new AzureTableStorage((System.Diagnostics.Debugger.IsAttached) ? "UseDevelopmentStorage=true;" : configuration.GetSection("DataConnectionString")?.Value, tableName: "AlarmBot");
 
                 // create bot hooked up to the activity adapater
-                bot = new Bot(activityAdapter)
+                adapter = new BotFrameworkAdapter(applicationId, applicationPassword)
                     .Use(new BotStateManager(storage)) // --- add Bot State Manager to automatically persist and load the context.State.Conversation and context.State.User objects
                     .Use(new RegExpRecognizerMiddleware()
                         .AddIntent("showAlarms", new Regex("show alarms(.*)", RegexOptions.IgnoreCase))
@@ -52,8 +50,6 @@ namespace AlarmBot.Controllers
                         .AddIntent("cancel", new Regex("cancel(.*)", RegexOptions.IgnoreCase))
                         .AddIntent("confirmYes", new Regex("(yes|yep|yessir|^y$)", RegexOptions.IgnoreCase))
                         .AddIntent("confirmNo", new Regex("(no|nope|^n$)", RegexOptions.IgnoreCase)));
-                
-                bot.OnReceive(TopicDispatcher); 
             }
         }
 
@@ -98,7 +94,7 @@ namespace AlarmBot.Controllers
         {
             try
             {
-                await activityAdapter.Receive(this.Request.Headers["Authorization"].FirstOrDefault(), activity);
+                await adapter.ProcessActivty(this.Request.Headers["Authorization"].FirstOrDefault(), activity, this.TopicDispatcher);
                 return this.Ok();
             }
             catch (UnauthorizedAccessException)

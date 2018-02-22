@@ -18,7 +18,7 @@ namespace Microsoft.Bot.Samples.Ai.Luis
     [Route("api/[controller]")]
     public class MessagesController : Controller
     {
-        BotFrameworkAdapter _adapter;
+        static BotFrameworkAdapter adapter;
 
         /// <summary>
         /// In this sample Bot, a new instance of the Bot is created by the controller 
@@ -28,15 +28,15 @@ namespace Microsoft.Bot.Samples.Ai.Luis
         /// </summary>        
         public MessagesController(IConfiguration configuration)
         {
-            var bot = new Builder.Bot(new BotFrameworkAdapter(configuration))
-                .Use(new LuisRecognizerMiddleware("xxxxxx", "xxxxxx"));
-            
+            if (adapter == null)
+            {
+                adapter = new BotFrameworkAdapter(configuration)
+                    .Use(new LuisRecognizerMiddleware("xxxxxx", "xxxxxx"));
+
                 // LUIS with correct baseUri format example
                 //.Use(new LuisRecognizerMiddleware("xxxxxx", "xxxxxx", "https://xxxxxx.api.cognitive.microsoft.com/luis/v2.0/apps"))
-                
-            bot.OnReceive(BotReceiveHandler);
 
-            _adapter = (BotFrameworkAdapter)bot.Adapter;
+            }
         }
 
         private Task BotReceiveHandler(IBotContext context)
@@ -58,7 +58,7 @@ namespace Microsoft.Bot.Samples.Ai.Luis
         {
             try
             {
-                await _adapter.Receive(this.Request.Headers["Authorization"].FirstOrDefault(), activity);
+                await adapter.ProcessActivty(this.Request.Headers["Authorization"].FirstOrDefault(), activity, BotReceiveHandler);
                 return this.Ok();
             }
             catch (UnauthorizedAccessException)

@@ -17,29 +17,28 @@ namespace Microsoft.Bot.Builder.Tests
         [TestMethod]
         public async Task ContextDelay()
         {
+
             TestAdapter adapter = new TestAdapter();
-            Bot bot = new Bot(adapter);
-            bot.OnReceive(async (context) =>
-                {
-                    if (context.Request.AsMessageActivity().Text == "wait")
-                    {
-                        (await context
-                            .Reply("before")
-                            .Delay(1000))
-                            .Reply("after");
-                    }
-                    else
-                    {
-                        context.Reply(context.Request.AsMessageActivity().Text);
-                    }                    
-                });
 
             DateTime start = DateTime.Now;
-            await adapter
-                .Send("wait")
-                    .AssertReply("before")
-                    .AssertReply("after")
-                .StartTest();
+            await new TestFlow(adapter, async (context) =>
+            {
+                if (context.Request.AsMessageActivity().Text == "wait")
+                {
+                    context
+                        .Reply("before")
+                        .Delay(1000)
+                        .Reply("after");
+                }
+                else
+                {
+                    context.Reply(context.Request.AsMessageActivity().Text);
+                }
+            })
+            .Send("wait")
+            .AssertReply("before")
+            .AssertReply("after")
+            .StartTest();
 
             double duration = (DateTime.Now.Subtract(start)).TotalMilliseconds;
 
@@ -50,25 +49,24 @@ namespace Microsoft.Bot.Builder.Tests
         [TestMethod]
         public async Task ContextShowTyping()
         {
+
             TestAdapter adapter = new TestAdapter();
-            Bot bot = new Bot(adapter);
-            bot.OnReceive(async (context) =>
+
+            await new TestFlow(adapter, async (context) =>
                 {
                     if (context.Request.AsMessageActivity().Text == "typing")
                     {
-                        context.ShowTyping(); 
+                        context.ShowTyping();
                         context.Reply("typing done");
                     }
                     else
                     {
                         context.Reply(context.Request.AsMessageActivity().Text);
                     }
-                });
-
-            await adapter
+                })
                 .Send("typing")
-                .AssertReply( 
-                    (activity)=> { Assert.IsTrue(activity.Type == ActivityTypes.Typing); },
+                .AssertReply(
+                    (activity) => { Assert.IsTrue(activity.Type == ActivityTypes.Typing); },
                     "Typing indiciator not set")
                 .AssertReply("typing done")
                 .StartTest();

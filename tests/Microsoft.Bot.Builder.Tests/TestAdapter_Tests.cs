@@ -13,31 +13,23 @@ namespace Microsoft.Bot.Builder.Tests
 {
     [TestClass]
     [TestCategory("Adapter")]
-    public class Adapter_TestAdapterTests
+    public class Adapter_TestBotTests
     {
-        private TestAdapter CreateAdapter()
+        public async Task MyBotLogic(IBotContext context)
         {
-            TestAdapter adapter = new TestAdapter();
-            Bot bot = new Bot(adapter);
-            bot.OnReceive(
-                    async (context) =>
-                    {
-                        switch (context.Request.AsMessageActivity().Text)
-                        {
-                            case "count":
-                                context.Reply("one");
-                                context.Reply("two");
-                                context.Reply("three");
-                                break;
-                            case "ignore":
-                                break;
-                            default:
-                                context.Reply($"echo:{context.Request.AsMessageActivity().Text}");
-                                break;
-                        }
-                    }
-                );
-            return adapter;
+            switch (context.Request.AsMessageActivity().Text)
+            {
+                case "count":
+                    context.Reply("one");
+                    context.Reply("two");
+                    context.Reply("three");
+                    break;
+                case "ignore":
+                    break;
+                default:
+                    context.Reply($"echo:{context.Request.AsMessageActivity().Text}");
+                    break;
+            }
         }
 
         [TestMethod]
@@ -45,12 +37,10 @@ namespace Microsoft.Bot.Builder.Tests
         {
             string uniqueExceptionId = Guid.NewGuid().ToString();
             TestAdapter adapter = new TestAdapter();
-            Bot bot = new Bot(adapter);
-            bot.OnReceive(async (context) => { context.Reply("one"); });
 
             try
             {
-                await adapter
+                await new TestFlow(adapter, async (context) => { context.Reply("one"); })
                     .Test("foo", (activity) => throw new Exception(uniqueExceptionId))
                     .StartTest();
 
@@ -67,12 +57,10 @@ namespace Microsoft.Bot.Builder.Tests
         {
             string uniqueExceptionId = Guid.NewGuid().ToString();
             TestAdapter adapter = new TestAdapter();
-            Bot bot = new Bot(adapter);
-            bot.OnReceive(async (context) => { throw new Exception(uniqueExceptionId); });
 
             try
             {
-                await adapter
+                await new TestFlow(adapter, async (context) => { throw new Exception(uniqueExceptionId); })
                     .Test("test", activity => Assert.IsNull(null), "uh oh!")
                     .StartTest();
 
@@ -89,12 +77,10 @@ namespace Microsoft.Bot.Builder.Tests
         {
             string uniqueExceptionId = Guid.NewGuid().ToString();
             TestAdapter adapter = new TestAdapter();
-            Bot bot = new Bot(adapter);
-            bot.OnReceive(async (context) => { context.Reply("one"); });
 
             try
             {
-                await adapter
+                await new TestFlow(adapter, async (context) => { context.Reply("one"); })
                     .Send("foo")
                     .AssertReply(
                         (activity) => throw new Exception(uniqueExceptionId), "should throw")
@@ -112,8 +98,8 @@ namespace Microsoft.Bot.Builder.Tests
         [TestMethod]
         public async Task TestAdapter_Say()
         {
-            var adapter = this.CreateAdapter();
-            await adapter
+            var adapter = new TestAdapter();
+            await new TestFlow(adapter, MyBotLogic)
                 .Test("foo", "echo:foo", "say with string works")
                 .Test("foo", new Activity(ActivityTypes.Message, text: "echo:foo"), "say with activity works")
                 .Test("foo", (activity) => Assert.AreEqual("echo:foo", activity.AsMessageActivity().Text), "say with validator works")
@@ -124,8 +110,8 @@ namespace Microsoft.Bot.Builder.Tests
         [TestMethod]
         public async Task TestAdapter_SendReply()
         {
-            var adapter = this.CreateAdapter();
-            await adapter
+            var adapter = new TestAdapter();
+            await new TestFlow(adapter, MyBotLogic)
                 .Send("foo").AssertReply("echo:foo", "send/reply with string works")
                 .Send("foo").AssertReply(new Activity(ActivityTypes.Message, text: "echo:foo"), "send/reply with activity works")
                 .Send("foo").AssertReply((activity) => Assert.AreEqual("echo:foo", activity.AsMessageActivity().Text), "send/reply with validator works")
@@ -135,8 +121,8 @@ namespace Microsoft.Bot.Builder.Tests
         [TestMethod]
         public async Task TestAdapter_ReplyOneOf()
         {
-            var adapter = this.CreateAdapter();
-            await adapter
+            var adapter = new TestAdapter();
+            await new TestFlow(adapter, MyBotLogic)
                 .Send("foo").AssertReplyOneOf(new string[] { "echo:bar", "echo:foo", "echo:blat" }, "say with string works")
                 .StartTest();
         }
@@ -145,8 +131,8 @@ namespace Microsoft.Bot.Builder.Tests
         [TestMethod]
         public async Task TestAdapter_MultipleReplies()
         {
-            var adapter = this.CreateAdapter();
-            await adapter
+            var adapter = new TestAdapter();
+            await new TestFlow(adapter, MyBotLogic)
                 .Send("foo").AssertReply("echo:foo")
                 .Send("bar").AssertReply("echo:bar")
                 .Send("ignore")
@@ -163,19 +149,21 @@ namespace Microsoft.Bot.Builder.Tests
         [DataRow(typeof(ArgumentNullException))]
         public async Task TestAdapter_TestFlow(Type exceptionType)
         {
-            Exception innerException = (Exception)Activator.CreateInstance(exceptionType);
-            var promise = new TaskCompletionSource<bool>();
-            promise.SetException(innerException);
-            var adapter = this.CreateAdapter();
+            var adapter = new TestAdapter();
 
-            TestFlow testFlow = new TestFlow(promise.Task, adapter);
-            testFlow.Send(new Activity());
-            Task task = testFlow.StartTest();
-            await task.ContinueWith(action =>
-            {
-                Assert.IsInstanceOfType(action.Exception.InnerException, exceptionType);
-            });
+            TestFlow testFlow = new TestFlow(adapter, (ctx) =>
+                {
+                    Exception innerException = (Exception)Activator.CreateInstance(exceptionType);
+                    var taskSource = new TaskCompletionSource<bool>();
+                    taskSource.SetException(innerException);
+                    return taskSource.Task;
+                })
+                .Send(new Activity());
+                Task task = testFlow.StartTest()
+                    .ContinueWith(action =>
+                    {
+                        Assert.IsInstanceOfType(action.Exception.InnerException, exceptionType);
+                    });
         }
-
     }
 }

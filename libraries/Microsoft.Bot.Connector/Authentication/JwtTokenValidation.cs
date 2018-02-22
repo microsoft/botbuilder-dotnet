@@ -12,7 +12,9 @@ using Microsoft.Bot.Schema;
 namespace Microsoft.Bot.Connector.Authentication
 {
     public static class JwtTokenValidation
-    {       
+    {
+        private static HttpClient _httpClient = new HttpClient();
+
         /// <summary>
         /// Validates the security tokens required by the Bot Framework Protocol. Throws on any exceptions. 
         /// </summary>
@@ -24,7 +26,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// TLS services, which are (latency wise) expensive resources. The httpClient passed in here, if shared by the layers
         /// above from call to call, enables connection reuse which is a significant performance and resource improvement.</param>
         /// <returns>Nothing</returns>
-        public static async Task AssertValidActivity(Activity activity, string authHeader, ICredentialProvider credentials, HttpClient httpClient)
+        public static async Task AssertValidActivity(Activity activity, string authHeader, ICredentialProvider credentials, HttpClient httpClient = null)
         {
             if (string.IsNullOrWhiteSpace(authHeader))
             {
@@ -38,13 +40,13 @@ namespace Microsoft.Bot.Connector.Authentication
             }
 
             // Go through the standard authentication path. 
-            await JwtTokenValidation.ValidateAuthHeader(authHeader, credentials, activity.ServiceUrl, httpClient);
+            await JwtTokenValidation.ValidateAuthHeader(authHeader, credentials, activity.ServiceUrl, httpClient ?? _httpClient);
 
             // On the standard Auth path, we need to trust the URL that was incoming. 
             MicrosoftAppCredentials.TrustServiceUrl(activity.ServiceUrl);
         }
 
-        public static async Task<ClaimsIdentity> ValidateAuthHeader(string authHeader, ICredentialProvider credentials, HttpClient httpClient)
+        public static async Task<ClaimsIdentity> ValidateAuthHeader(string authHeader, ICredentialProvider credentials, HttpClient httpClient = null)
         {
             if (string.IsNullOrWhiteSpace(authHeader))
             {
@@ -65,15 +67,15 @@ namespace Microsoft.Bot.Connector.Authentication
             bool usingEmulator = EmulatorValidation.IsTokenFromEmulator(authHeader);
             if (usingEmulator)
             {
-                return await EmulatorValidation.AuthenticateEmulatorToken(authHeader, credentials, httpClient);
+                return await EmulatorValidation.AuthenticateEmulatorToken(authHeader, credentials, httpClient ?? _httpClient);
             }
             else
             {
-                return await ChannelValidation.AuthenticateChannelToken(authHeader, credentials, httpClient);
+                return await ChannelValidation.AuthenticateChannelToken(authHeader, credentials, httpClient ?? _httpClient);
             }
         }
 
-        public static async Task<ClaimsIdentity> ValidateAuthHeader(string authHeader, ICredentialProvider credentials, string serviceUrl, HttpClient httpClient)
+        public static async Task<ClaimsIdentity> ValidateAuthHeader(string authHeader, ICredentialProvider credentials, string serviceUrl, HttpClient httpClient = null)
         {
             if (string.IsNullOrWhiteSpace(authHeader))
             {
@@ -94,12 +96,12 @@ namespace Microsoft.Bot.Connector.Authentication
             bool usingEmulator = EmulatorValidation.IsTokenFromEmulator(authHeader);
             if (usingEmulator)
             {
-                return await EmulatorValidation.AuthenticateEmulatorToken(authHeader, credentials, httpClient);
+                return await EmulatorValidation.AuthenticateEmulatorToken(authHeader, credentials, httpClient ?? _httpClient);
             }
             else
             {
-                return await ChannelValidation.AuthenticateChannelToken(authHeader, credentials, serviceUrl, httpClient);
+                return await ChannelValidation.AuthenticateChannelToken(authHeader, credentials, serviceUrl, httpClient ?? _httpClient);
             }
-        }             
+        }
     }
 }

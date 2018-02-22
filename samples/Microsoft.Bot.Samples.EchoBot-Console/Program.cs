@@ -15,20 +15,17 @@ namespace Microsoft.Bot.Samples.EchoBot
             MainAsync(args).GetAwaiter().GetResult();
         }
 
-        static async Task MainAsync(string[] args)
+        static Task MainAsync(string[] args)
         {
-            var cc = new ConsoleAdapter();
-            Builder.Bot bot = new Builder.Bot(cc);
-            bot.OnReceive(async (context) =>
-                {
-                    if (context.Request.Type == ActivityTypes.Message)
-                    {
-                        context.Reply($"echo: {context.Request.AsMessageActivity().Text}");
-                    }
-                });
-
             Console.WriteLine("Welcome to the EchoBot.");
-            await cc.Listen();
-        }        
+            var adapter = new ConsoleAdapter();
+            return adapter.ProcessActivity(async (context) =>
+            {
+                if (context.Request.Type == ActivityTypes.Message)
+                {
+                    context.Reply($"echo: {context.Request.AsMessageActivity().Text}");
+                }
+            });
+        }
     }
 }
