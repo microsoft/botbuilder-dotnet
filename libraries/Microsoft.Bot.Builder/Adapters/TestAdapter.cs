@@ -58,28 +58,32 @@ namespace Microsoft.Bot.Builder.Adapters
                 var id = activity.Id = (this._nextId++).ToString();
             }
 
-            return base.ProcessActivityInternal(activity, callback);
+            var context = new BotContext(this, activity);
+            return base.RunPipeline(context, callback);
         }
 
         public ConversationReference ConversationReference { get; set; }
 
 
-        protected async override Task SendActivityImplementation(IBotContext context, IActivity activity)
+        protected async override Task SendActivitiesImplementation(IBotContext context, IEnumerable<IActivity> activities)
         {
-            if (activity.Type == ActivityTypesEx.Delay)
+            foreach (var activity in activities)
             {
-                // The BotFrameworkAdapter and Console adapter implement this
-                // hack directly in the POST method. Replicating that here
-                // to keep the behavior as close as possible to facillitate
-                // more realistic tests.                     
-                int delayMs = (int)((Activity)activity).Value;
-                await Task.Delay(delayMs);
-            }
-            else
-            {
-                lock (this.botReplies)
+                if (activity.Type == ActivityTypesEx.Delay)
                 {
-                    this.botReplies.Add(activity);
+                    // The BotFrameworkAdapter and Console adapter implement this
+                    // hack directly in the POST method. Replicating that here
+                    // to keep the behavior as close as possible to facillitate
+                    // more realistic tests.                     
+                    int delayMs = (int)((Activity)activity).Value;
+                    await Task.Delay(delayMs);
+                }
+                else
+                {
+                    lock (this.botReplies)
+                    {
+                        this.botReplies.Add(activity);
+                    }
                 }
             }
         }
