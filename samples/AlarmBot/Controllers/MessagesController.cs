@@ -28,7 +28,8 @@ namespace AlarmBot.Controllers
 
         public override async Task OnReceiveActivity(IBotContext context)
         {
-            // --- Bot logic 
+            // --- Our receive handler simply inspects the persisted ITopic class and calls to it as appropriate ---
+
             bool handled = false;
             // Get the current ActiveTopic from my persisted conversation state
             var activeTopic = context.State.ConversationProperties[ConversationProperties.ACTIVETOPIC] as ITopic;
@@ -46,7 +47,7 @@ namespace AlarmBot.Controllers
                 // we do have an active topic, so call it 
                 handled = await activeTopic.ContinueTopic(context);
             }
-            
+
             // if activeTopic's result is false and the activeTopic is NOT already the default topic
             if (handled == false && !(activeTopic is DefaultTopic))
             {
