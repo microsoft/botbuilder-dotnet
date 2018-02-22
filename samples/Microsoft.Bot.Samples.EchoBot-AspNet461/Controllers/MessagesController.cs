@@ -1,22 +1,15 @@
-﻿using Microsoft.Bot.Builder;
+﻿using System.Threading.Tasks;
+using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Schema;
-using System;
-using System.Net;
-using System.Net.Http;
-using System.Threading.Tasks;
-using System.Web.Http;
 
 namespace Microsoft.Bot.Samples.EchoBot_AspNet461
 {
     public class MessagesController : BotController
     {
 
-        public MessagesController(BotFrameworkAdapter adapter) : base(adapter)
-        {
-        }
+        public MessagesController(BotFrameworkAdapter adapter) : base(adapter) { }
 
-        public override Task OnReceiveActivity(IBotContext context)
+        protected override Task OnReceiveActivity(IBotContext context)
         {
             var msgActivity = context.Request.AsMessageActivity();
             if (msgActivity != null)
