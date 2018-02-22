@@ -1,5 +1,5 @@
 ﻿using Microsoft.Bot.Builder;
-using Microsoft.Bot.Builder.BotFramework;
+using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Schema;
 using System;
 using System.Net;
@@ -9,22 +9,20 @@ using System.Web.Http;
 
 namespace Microsoft.Bot.Samples.EchoBot_AspNet461
 {
-    public class MessagesController : ApiController
+    public class MessagesController : BotController
     {
-        private readonly BotFrameworkAdapter _adapter;
 
-        public MessagesController(BotFrameworkAdapter adapter)
+        public MessagesController(BotFrameworkAdapter adapter) : base(adapter)
         {
-            _adapter = adapter;
         }
 
-        private Task BotReceiveHandler(IBotContext context)
+        public override Task OnReceiveActivity(IBotContext context)
         {
             var msgActivity = context.Request.AsMessageActivity();
             if (msgActivity != null)
             {
-                long turnNumber = context.State.Conversation["turnNumber"] ?? 0;
-                context.State.Conversation["turnNumber"] = ++turnNumber;
+                long turnNumber = context.State.ConversationProperties["turnNumber"] ?? 0;
+                context.State.ConversationProperties["turnNumber"] = ++turnNumber;
 
                 // calculate something for us to return
                 int length = (msgActivity.Text ?? string.Empty).Length;
@@ -48,27 +46,6 @@ namespace Microsoft.Bot.Samples.EchoBot_AspNet461
             }
 
             return Task.CompletedTask;
-        }
-
-        /// <summary>
-        /// POST: api/Messages
-        /// Receive a message from a user and reply to it
-        /// </summary>
-        public async Task<HttpResponseMessage> Post([FromBody]Activity activity)
-        {
-            try
-            {
-                await _adapter.ProcessActivty(this.Request.Headers.Authorization?.Parameter, activity, BotReceiveHandler);
-                return this.Request.CreateResponse(HttpStatusCode.OK);
-            }
-            catch (UnauthorizedAccessException e)
-            {
-                return this.Request.CreateErrorResponse(HttpStatusCode.Unauthorized, e.Message);
-            }
-            catch (InvalidOperationException e)
-            {
-                return this.Request.CreateErrorResponse(HttpStatusCode.NotFound, e.Message);
-            }
         }
     }
 }
