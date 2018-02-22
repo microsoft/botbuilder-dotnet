@@ -10,7 +10,7 @@ using AlarmBot.Topics;
 using AlarmBot.Responses;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Bot.Builder;
-using Microsoft.Bot.Builder.BotFramework;
+using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Middleware;
 using Microsoft.Bot.Builder.Storage;
 using Microsoft.Bot.Connector.Authentication;

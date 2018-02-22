@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <Version Condition=" '$(BUILD_BUILDNUMBER)' == '' ">4.0.0-local</Version>
@@ -6,8 +6,8 @@
     <PackageVersion Condition=" '$(PackageVersion)' == '' ">4.0.0-local</PackageVersion>
     <PackageVersion Condition=" '$(PackageVersion)' != '' ">$(PackageVersion)</PackageVersion>
   </PropertyGroup>
-
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+  
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">    
     <SignAssembly>true</SignAssembly>
     <DelaySign>true</DelaySign>
     <AssemblyOriginatorKeyFile>..\..\build\35MSSharedLib1024.snk</AssemblyOriginatorKeyFile>
@@ -15,11 +15,11 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <PackageId>Microsoft.Bot.Builder.BotFramework</PackageId>
-    <Description>This library implements an adapter for running a Microsoft Bot Builder bot using the Bot Framework HTTP prototocol</Description>
-    <Summary>Bot Framework adapter for Bot Builder</Summary>
+    <PackageId>Microsoft.Bot.Builder.Core</PackageId>
+    <Description>This library implements core C# classes for building bots using the Microsoft Bot Builder.</Description>
+    <Summary>This library implements core C# classes for building bots using the Microsoft Bot Builder.</Summary>
   </PropertyGroup>
-
+  
   <PropertyGroup>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Company>Microsoft</Company>
@@ -37,17 +37,23 @@
     <NeutralLanguage />
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <NoWarn>1701;1702;1705;1998</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <NoWarn>1701;1702;1705;1998;</NoWarn>
+  </PropertyGroup>
+
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.0.0" />
-    <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(PackageVersion)' == '' " Version="4.0.0-local" />
-    <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(PackageVersion)' != '' " Version="$(PackageVersion)" />
-    <PackageReference Include="Microsoft.Bot.Connector" Condition=" '$(PackageVersion)' == '' " Version="4.0.0-local" />
-    <PackageReference Include="Microsoft.Bot.Connector" Condition=" '$(PackageVersion)' != '' " Version="$(PackageVersion)" />
+    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
+    <PackageReference Include="System.Dynamic.Runtime" Version="4.3.0" />
+    <PackageReference Include="Microsoft.Bot.Schema" Condition=" '$(PackageVersion)' == '' " Version="4.0.0-local" />
+    <PackageReference Include="Microsoft.Bot.Schema" Condition=" '$(PackageVersion)' != '' " Version="$(PackageVersion)" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Microsoft.Bot.Builder\Microsoft.Bot.Builder.csproj" />
-    <ProjectReference Include="..\Microsoft.Bot.Connector\Microsoft.Bot.Connector.csproj" />
+    <ProjectReference Include="..\Microsoft.Bot.Schema\Microsoft.Bot.Schema.csproj" />
   </ItemGroup>
 
 </Project>
