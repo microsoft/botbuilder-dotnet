@@ -5,7 +5,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Bot.Builder;
-using Microsoft.Bot.Builder.BotFramework;
+using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Schema;
 
 namespace AlarmBot

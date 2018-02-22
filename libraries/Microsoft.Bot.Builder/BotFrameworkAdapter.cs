@@ -6,12 +6,13 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.BotFramework;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 
-namespace Microsoft.Bot.Builder.BotFramework
+namespace Microsoft.Bot.Builder.Adapters
 {
     public class BotFrameworkAdapter : BotAdapter
     {
@@ -33,7 +34,7 @@ namespace Microsoft.Bot.Builder.BotFramework
             _credentialProvider = new SimpleCredentialProvider(appId, appPassword);
         }
 
-        public new BotFrameworkAdapter Use(Middleware.IMiddleware middleware)
+        public BotFrameworkAdapter Use(Middleware.IMiddleware middleware)
         {
             base._middlewareSet.Use(middleware);
             return this;
