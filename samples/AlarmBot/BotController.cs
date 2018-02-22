@@ -4,14 +4,13 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Schema;
 
-namespace AlarmBot
+namespace Microsoft.Bot.Builder
 {
     /// <summary>
-    /// Helper controller for boiler plate adapter usage
+    /// Helper Bot Controller for ASP.NET Core
     /// </summary>
     public class BotController : Controller
     {
