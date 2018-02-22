@@ -173,9 +173,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.BotFramework\Microsoft.Bot.Builder.BotFramework.csproj">
-      <Project>{20DB2748-6562-472F-AD20-E57167913C7D}</Project>
-      <Name>Microsoft.Bot.Builder.BotFramework</Name>
+    <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Core\Microsoft.Bot.Builder.Core.csproj">
+      <Project>{F0C150E2-9B8A-444C-B70E-97AD918CB3D4}</Project>
+      <Name>Microsoft.Bot.Builder.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Core\Microsoft.Bot.Builder.Core.csproj">
       <Project>{f0c150e2-9b8a-444c-b70e-97ad918cb3d4}</Project>

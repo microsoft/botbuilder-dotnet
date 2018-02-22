@@ -1,4 +1,6 @@
 ﻿using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.Middleware;
 using Microsoft.Bot.Builder.Middleware;
 using Microsoft.Bot.Builder.Storage;
 using Newtonsoft.Json;
