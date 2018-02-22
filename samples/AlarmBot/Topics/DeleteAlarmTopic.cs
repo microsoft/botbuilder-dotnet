@@ -6,12 +6,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AlarmBot.Models;
-using AlarmBot.TopicViews;
+using AlarmBot.Responses;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
 
 namespace AlarmBot.Topics
 {
+    /// <summary>
+    /// Class around topic of deleting an alarm
+    /// </summary>
     public class DeleteAlarmTopic : ITopic
     {
 
@@ -76,7 +79,7 @@ namespace AlarmBot.Topics
             // Ensure there are alarms to delete
             if (alarms.Count == 0)
             {
-                DeleteAlarmTopicView.ReplyWithNoAlarms(context);
+                DeleteAlarmResponses.ReplyWithNoAlarms(context);
                 return false;
             }
 
@@ -91,7 +94,7 @@ namespace AlarmBot.Topics
                         // Delete selected alarm and end topic
                         var alarm = alarms.Skip(index).First();
                         alarms.Remove(alarm);
-                        DeleteAlarmTopicView.ReplyWithDeletedAlarm(context, alarm);
+                        DeleteAlarmResponses.ReplyWithDeletedAlarm(context, alarm);
                         return false; // cancel topic
                     }
                 }
@@ -102,7 +105,7 @@ namespace AlarmBot.Topics
 
                     if (choices.Count == 0)
                     {
-                        DeleteAlarmTopicView.ReplyWithNoAlarmsFound(context, this.AlarmTitle);
+                        DeleteAlarmResponses.ReplyWithNoAlarmsFound(context, this.AlarmTitle);
                         return false;
                     }
                     else if (choices.Count == 1)
@@ -110,14 +113,14 @@ namespace AlarmBot.Topics
                         // Delete selected alarm and end topic
                         var alarm = choices.First();
                         alarms.Remove(alarm);
-                        DeleteAlarmTopicView.ReplyWithDeletedAlarm(context, alarm);
+                        DeleteAlarmResponses.ReplyWithDeletedAlarm(context, alarm);
                         return false; // cancel topic
                     }
                 }
             }
 
             // Prompt for title
-            DeleteAlarmTopicView.ReplyWithTitlePrompt(context);
+            DeleteAlarmResponses.ReplyWithTitlePrompt(context);
             return true;
         }
     }
