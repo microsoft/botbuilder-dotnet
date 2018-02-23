@@ -27,26 +27,30 @@ namespace Microsoft.Bot.Connector
         {
         }
 
-        /// <summary>
-        /// client defaults to sending the expect: continue header, which isn't very efficient,
-        /// </summary>
+        private HttpClient _originalHttpClient;
+        protected static Lazy<HttpClient> g_httpClient = new Lazy<HttpClient>(() =>
+        {
+            var httpClient = new HttpClient();
+            httpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("Microsoft-BotFramework", "4.0"));
+            httpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue($"(BotBuilder .Net/{typeof(ConnectorClient).GetTypeInfo().Assembly.GetName().Version})"));
+            httpClient.DefaultRequestHeaders.ExpectContinue = false;
+            return httpClient;
+        });
+
         partial void CustomInitialize()
         {
-            AddUserAgent(this);
-            HttpClient.DefaultRequestHeaders.ExpectContinue = false;
+            // save original httpclient so we can replace before we dispose
+            this._originalHttpClient = this.HttpClient;
+            
+            // use singleton 
+            this.HttpClient = g_httpClient.Value;
         }
 
-        internal static void AddUserAgent<T>(T client) where T : ServiceClient<T>
+        protected override void Dispose(bool disposing)
         {
-            client.HttpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("Microsoft-BotFramework", "4.0"));
-            client.HttpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue($"(BotBuilder .Net/{GetClientVersion(client)})"));
-        }
-
-        internal static string GetClientVersion<T>(T client) where T : ServiceClient<T>
-        {
-            var type = client.GetType();
-            var assembly = type.GetTypeInfo().Assembly;
-            return assembly.GetName().Version.ToString();
+            // replace global with original so dispose doesn't dispose the global one
+            this.HttpClient = this._originalHttpClient;
+            base.Dispose(disposing);
         }
     }
 }
