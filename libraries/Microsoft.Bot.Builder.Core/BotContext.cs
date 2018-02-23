@@ -55,6 +55,8 @@ namespace Microsoft.Bot.Builder
 
         public Intent TopIntent { get; set; }
 
+        public IList<Intent> Intents { get; set; }
+
         public TemplateManager TemplateManager { get; set; }
 
         public bool IfIntent(string intentName)
@@ -85,7 +87,6 @@ namespace Microsoft.Bot.Builder
 
             return false;
         }
-
 
         public ConversationReference ConversationReference { get => _conversationReference; }
 
