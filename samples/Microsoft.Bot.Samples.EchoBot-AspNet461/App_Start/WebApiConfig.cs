@@ -1,12 +1,10 @@
-﻿using Microsoft.Bot.Builder.Adapters;
+﻿using System.Configuration;
+using System.Web.Http;
 using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Builder.Middleware;
 using Microsoft.Bot.Builder.Middleware;
 using Microsoft.Bot.Builder.Storage;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using System.Configuration;
-using System.Web.Http;
 using Unity;
 
 namespace Microsoft.Bot.Samples.EchoBot_AspNet461
