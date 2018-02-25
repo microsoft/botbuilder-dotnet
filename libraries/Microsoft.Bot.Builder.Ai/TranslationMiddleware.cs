@@ -48,7 +48,7 @@ namespace Microsoft.Bot.Builder.Ai
                         SourceLanguage = sourceLanguage,
                         TargetLanguage = (this.nativeLanguages.Contains(sourceLanguage)) ? sourceLanguage : this.nativeLanguages.FirstOrDefault() ?? "en"
                     };
-                    ((BotContext)context)["Translation"] = translationContext;
+                    context.Set(translationContext);
 
                     // translate to bots language
                     if (translationContext.SourceLanguage != translationContext.TargetLanguage)
@@ -66,7 +66,7 @@ namespace Microsoft.Bot.Builder.Ai
         /// <param name="activities"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        public async Task SendActivity(IBotContext context, IList<IActivity> activities, MiddlewareSet.NextDelegate next)
+        public async Task SendActivity(IBotContext context, IList<Activity> activities, MiddlewareSet.NextDelegate next)
         {
             foreach (var activity in activities)
             {
@@ -74,7 +74,7 @@ namespace Microsoft.Bot.Builder.Ai
                 if (!String.IsNullOrWhiteSpace(message?.Text))
                 {
                     // translate to userslanguage
-                    var translationContext = ((BotContext)context)["Translation"] as TranslationContext;
+                    var translationContext = context.Get<TranslationContext>();
                     if (translationContext.SourceLanguage != translationContext.TargetLanguage)
                         await TranslateMessageAsync(context, message, translationContext.TargetLanguage, translationContext.SourceLanguage).ConfigureAwait(false);
                 }

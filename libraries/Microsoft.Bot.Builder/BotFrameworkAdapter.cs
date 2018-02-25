@@ -26,7 +26,10 @@ namespace Microsoft.Bot.Builder.Adapters
             _credentials = new MicrosoftAppCredentials(_credentialProvider.AppId, _credentialProvider.Password);
         }
 
-        public BotFrameworkAdapter(string appId, string appPassword) : this(appId, appPassword, null) { }
+        public BotFrameworkAdapter(string appId, string appPassword) : this(appId, appPassword, null)
+        {
+        }
+
         public BotFrameworkAdapter(string appId, string appPassword, HttpClient httpClient) : base()
         {
             _httpClient = httpClient ?? new HttpClient();
@@ -49,7 +52,7 @@ namespace Microsoft.Bot.Builder.Adapters
             await base.RunPipeline(context, callback).ConfigureAwait(false);
         }
 
-        protected async override Task SendActivitiesImplementation(IBotContext context, IEnumerable<IActivity> activities)
+        protected async override Task SendActivitiesImplementation(IBotContext context, IEnumerable<Activity> activities)
         {
             foreach (var activity in activities)
             {
@@ -68,7 +71,7 @@ namespace Microsoft.Bot.Builder.Adapters
             }
         }
 
-        protected override Task<ResourceResponse> UpdateActivityImplementation(IBotContext context, IActivity activity)
+        protected override Task<ResourceResponse> UpdateActivityImplementation(IBotContext context, Activity activity)
         {
             var connectorClient = new ConnectorClient(new Uri(activity.ServiceUrl), _credentials);
             return connectorClient.Conversations.UpdateActivityAsync((Activity)activity);
@@ -78,11 +81,6 @@ namespace Microsoft.Bot.Builder.Adapters
         {
             var connectorClient = new ConnectorClient(new Uri(context.Request.ServiceUrl), _credentials);
             return connectorClient.Conversations.DeleteActivityAsync(conversationId, activityId);
-        }
-
-        protected override Task CreateConversationImplementation()
-        {
-            throw new NotImplementedException();
         }
     }
 }

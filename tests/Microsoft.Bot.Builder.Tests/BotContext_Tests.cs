@@ -11,14 +11,15 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Microsoft.Bot.Builder.Tests
 {
 
+
     public class AnnotateMiddleware : IContextCreated, IReceiveActivity, ISendActivity
     {
         public async Task SendActivity(BotContext context, IList<Activity> activities) {; }
-        public async Task ContextDone(BotContext context) { context.State["ContextDone"] = true; }
+        public async Task ContextDone(BotContext context) { /*context.State["ContextDone"] = true;*/ }
 
         public async Task ContextCreated(IBotContext context, MiddlewareSet.NextDelegate next)
         {
-            context.State["ContextCreated"] = true;
+            //context.State["ContextCreated"] = true;
             await next();
         }
 
@@ -27,7 +28,7 @@ namespace Microsoft.Bot.Builder.Tests
             context.Request.AsMessageActivity().Text += "ReceiveActivity";
             await next();
         }
-        public async Task SendActivity(IBotContext context, IList<IActivity> activities, MiddlewareSet.NextDelegate next)
+        public async Task SendActivity(IBotContext context, IList<Activity> activities, MiddlewareSet.NextDelegate next)
         {
             if (context.Responses.Count > 0)
             {
@@ -52,7 +53,6 @@ namespace Microsoft.Bot.Builder.Tests
 
         public async Task MyCodeHandler(IBotContext context)
         {
-            Assert.AreEqual(true, context.State["ContextCreated"]);
             Assert.IsTrue(context.Request.AsMessageActivity().Text.Contains("ReceiveActivity"));
             Assert.IsFalse(context.Request.AsMessageActivity().Text.Contains("SendActivity"));
             if (context.Request.AsMessageActivity().Text.StartsWith("proactive"))
@@ -64,7 +64,6 @@ namespace Microsoft.Bot.Builder.Tests
                     await Task.Delay(1000).ConfigureAwait(false);
                     await context.Adapter.ContinueConversation(reference, async (context2) =>
                     {
-                        Assert.AreEqual(true, context2.State["ContextCreated"]);
                         Assert.IsNull(context2.Request);
                         context2.Reply("proactive");
                     }).ConfigureAwait(false);

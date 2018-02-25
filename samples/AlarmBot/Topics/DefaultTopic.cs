@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using AlarmBot.Models;
 using AlarmBot.Responses;
 using Microsoft.Bot.Builder;
+using Microsoft.Bot.Builder.Middleware;
 using Microsoft.Bot.Schema;
 
 namespace AlarmBot.Topics
@@ -63,30 +64,28 @@ namespace AlarmBot.Topics
         /// <returns></returns>
         public Task<bool> ContinueTopic(IBotContext context)
         {
-            var activeTopic = (ITopic)context.State.ConversationProperties[ConversationProperties.ACTIVETOPIC];
+            var conversationState = context.GetConversationState<ConversationState>();
+            var recognizedIntents = context.Get<IRecognizedIntents>();
 
             switch (context.Request.Type)
             {
                 case ActivityTypes.Message:
-                    switch (context.TopIntent?.Name)
+                    switch (recognizedIntents.TopIntent?.Name)
                     {
                         case "addAlarm":
                             // switch to addAlarm topic
-                            activeTopic = new AddAlarmTopic();
-                            context.State.ConversationProperties[ConversationProperties.ACTIVETOPIC] = activeTopic;
-                            return activeTopic.StartTopic(context);
+                            conversationState.ActiveTopic = new AddAlarmTopic();
+                            return conversationState.ActiveTopic.StartTopic(context);
 
                         case "showAlarms":
                             // switch to show alarms topic
-                            activeTopic = new ShowAlarmsTopic();
-                            context.State.ConversationProperties[ConversationProperties.ACTIVETOPIC] = activeTopic;
-                            return activeTopic.StartTopic(context);
+                            conversationState.ActiveTopic = new ShowAlarmsTopic();
+                            return conversationState.ActiveTopic.StartTopic(context);
 
                         case "deleteAlarm":
                             // switch to delete alarm topic
-                            activeTopic = new DeleteAlarmTopic();
-                            context.State.ConversationProperties[ConversationProperties.ACTIVETOPIC] = activeTopic;
-                            return activeTopic.StartTopic(context);
+                            conversationState.ActiveTopic = new DeleteAlarmTopic();
+                            return conversationState.ActiveTopic.StartTopic(context);
 
                         case "help":
                             // show help

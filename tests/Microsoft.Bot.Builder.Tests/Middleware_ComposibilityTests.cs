@@ -70,7 +70,7 @@ namespace Microsoft.Bot.Builder.Tests
             MiddlewareSet outer = new MiddlewareSet();
             outer.Use(inner);
 
-            await outer.SendActivity(null, new List<IActivity>());
+            await outer.SendActivity(null, new List<Activity>());
 
             Assert.IsTrue(innerOnSendCalled, "Inner Middleware SendActivity was not called.");
         }

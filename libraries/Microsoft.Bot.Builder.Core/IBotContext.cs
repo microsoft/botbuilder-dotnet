@@ -17,38 +17,17 @@ namespace Microsoft.Bot.Builder
         /// <summary>
         /// Incoming request
         /// </summary>
-        IActivity Request { get; }
+        Activity Request { get; }
 
         /// <summary>
         /// Respones
         /// </summary>
-        IList<IActivity> Responses { get; set; }
+        IList<Activity> Responses { get; set; }
 
         /// <summary>
         /// Conversation reference
         /// </summary>
         ConversationReference ConversationReference { get; }
-
-        /// <summary>
-        /// Bot state 
-        /// </summary>
-        BotState State { get; }
-    
-        Intent TopIntent { get; set; }
-
-        /// <summary>
-        /// check to see if topIntent matches
-        /// </summary>
-        /// <param name="intentName"></param>
-        /// <returns></returns>
-        bool IfIntent(string intentName);
-
-        /// <summary>
-        /// Check to see if intent matches regex
-        /// </summary>
-        /// <param name="expression"></param>
-        /// <returns></returns>
-        bool IfIntent(Regex expression);
 
         /// <summary>
         /// Queues a new "message" responses array.
@@ -65,18 +44,36 @@ namespace Microsoft.Bot.Builder
         /// <returns></returns>
         BotContext Reply(IActivity activity);
 
-    }   
+        /// <summary>
+        /// Set named service
+        /// </summary>
+        /// <param name="serviceId"></param>
+        /// <param name="service"></param>
+        void Set(string serviceId, object service);
+
+        /// <summary>
+        /// Get named service
+        /// </summary>
+        /// <param name="serviceId"></param>
+        /// <returns>service</returns>
+        object Get(string serviceId);
+    }
 
     public static partial class BotContextExtension
     {
-        //public static async Task Send(this BotContext context)
-        //{            
-        //    await context.SendActivity(context, new List<IActivity>()).ConfigureAwait(false);
-        //}
-
-        public static BotContext ToBotContext(this IBotContext context)
+        public static void Set<ServiceT>(this IBotContext context, ServiceT service)
         {
-            return (BotContext)context; 
+            context.Set(typeof(ServiceT).FullName, service);
         }
+
+        public static ServiceT Get<ServiceT>(this IBotContext context, string serviceId = null)
+        {
+            return (ServiceT)context.Get(serviceId ?? typeof(ServiceT).FullName);
+        }
+
+        //public static BotContext ToBotContext(this IBotContext context)
+        //{
+        //    return (BotContext)context; 
+        //}
     }
 }
