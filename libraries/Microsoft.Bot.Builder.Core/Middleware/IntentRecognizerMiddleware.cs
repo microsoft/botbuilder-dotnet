@@ -25,6 +25,27 @@ namespace Microsoft.Bot.Builder.Middleware
         private readonly LinkedList<IntentRecognizer> _intentRecognizers = new LinkedList<IntentRecognizer>();
         private readonly LinkedList<IntentResultMutator> _intentResultMutators = new LinkedList<IntentResultMutator>();
 
+        public delegate Task IntentHandler(IBotContext context, Intent intent);
+
+        public Dictionary<string, IntentHandler> IntentHandlers;
+
+        public bool EndActivityRoutingOnIntentHandled { get; set; }
+
+        public IntentRecognizerMiddleware(bool endActivityRoutingOnIntentHandled = true)
+        {
+            EndActivityRoutingOnIntentHandled = endActivityRoutingOnIntentHandled;
+        }
+
+        public IntentRecognizerMiddleware HandleIntent(string intentName, IntentHandler intentHandler)
+        {
+            if (IntentHandlers == null)
+                IntentHandlers = new Dictionary<string, IntentHandler>();
+
+            IntentHandlers.Add(intentName, intentHandler);
+
+            return this;
+        }
+
         public async Task ReceiveActivity(IBotContext context, MiddlewareSet.NextDelegate next)
         {
             BotAssert.ContextNotNull(context);
@@ -33,9 +54,14 @@ namespace Microsoft.Bot.Builder.Middleware
             if (intents.Count != 0)
             {
                 var topIntent = FindTopIntent(intents);
-                if (topIntent.Score > 0.0)
+                if (topIntent.Score > 0.0 && IntentHandlers.ContainsKey(topIntent.Name))
                 {
-                    context.TopIntent = topIntent;
+                    await IntentHandlers[topIntent.Name].Invoke(context, topIntent);
+
+                    if (EndActivityRoutingOnIntentHandled)
+                    {
+                        return;
+                    }
                 }
             }
             await next().ConfigureAwait(false); 

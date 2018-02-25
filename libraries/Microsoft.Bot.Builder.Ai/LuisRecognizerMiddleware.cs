@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Cognitive.LUIS;
+using Intent = Microsoft.Bot.Builder.Middleware.Intent;
 
 namespace Microsoft.Bot.Builder.Ai
 {
@@ -12,7 +13,7 @@ namespace Microsoft.Bot.Builder.Ai
     {
         private readonly LuisClient _luisClient;
         
-        public LuisRecognizerMiddleware(string appId, string appKey) : base()
+        public LuisRecognizerMiddleware(string appId, string appKey, bool endActivityRoutingOnIntentHandled = true) : base(endActivityRoutingOnIntentHandled)
         {
             if (string.IsNullOrWhiteSpace(appId))
                 throw new ArgumentNullException(nameof(appId));
@@ -24,7 +25,7 @@ namespace Microsoft.Bot.Builder.Ai
             SetupOnRecognize();
         }
 
-        public LuisRecognizerMiddleware(string appId, string appKey, string baseUri) : base()
+        public LuisRecognizerMiddleware(string appId, string appKey, string baseUri, bool endActivityRoutingOnIntentHandled = true) : base(endActivityRoutingOnIntentHandled)
         {
             if (string.IsNullOrWhiteSpace(appId))
                 throw new ArgumentNullException(nameof(appId));
@@ -43,47 +44,45 @@ namespace Microsoft.Bot.Builder.Ai
         {
             this.OnRecognize(async (context) =>
             {
-                Middleware.Intent i = await RecognizeAndMap(context.Request.AsMessageActivity()?.Text);
-                return new List<Middleware.Intent>() { i };
+                return await RecognizeAndMap(context.Request.AsMessageActivity()?.Text);
             });
         }
         
-        private async Task<Middleware.Intent> RecognizeAndMap(string utterance)
+        private async Task<List<Middleware.Intent>> RecognizeAndMap(string utterance)
         {
-            Middleware.Intent intent = new Middleware.Intent();
+            List<Middleware.Intent> intents = new List<Middleware.Intent>();
 
             // LUIS client throws an exception on Predict is the utterance is null / empty
             // so just skip those cases and return a non-match. 
             if (string.IsNullOrWhiteSpace(utterance))
             {
-                intent.Name = string.Empty;
-                intent.Score = 0.0;
+                return new List<Intent>();
             }
             else
             {
                 LuisResult result = await _luisClient.Predict(utterance);
 
-                if (result.TopScoringIntent == null)
+                foreach (var resultIntent in result.Intents)
                 {
-                    intent.Name = string.Empty;
-                    intent.Score = 0.0;
-                }
-                else
-                {
-                    intent.Name = result.TopScoringIntent.Name;
-                    intent.Score = result.TopScoringIntent.Score;
-                }
-
-                foreach (var luisEntityList in result.Entities.Values)
-                {
-                    foreach (var luisEntity in luisEntityList)
+                    var intent = new Intent()
                     {
-                        intent.Entities.Add(new LuisEntity(luisEntity));
+                        Name = resultIntent.Name,
+                        Score = resultIntent.Score
+                    };
+
+                    foreach (var luisEntityList in result.Entities.Values)
+                    {
+                        foreach (var luisEntity in luisEntityList)
+                        {
+                            intent.Entities.Add(new LuisEntity(luisEntity));
+                        }
                     }
+
+                    intents.Add(intent);
                 }
             }
                         
-            return intent;
+            return intents;
         }        
     }
 
