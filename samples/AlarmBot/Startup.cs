@@ -43,8 +43,8 @@ namespace AlarmBot
 
                 // create bot hooked up to the activity adapater
                 return new BotFrameworkAdapter(applicationId, applicationPassword)
-                    .Use(new UserStateMiddleware<UserState>(new MemoryStorage()))
-                    .Use(new ConversationStateMiddleware<ConversationState>(new MemoryStorage()))
+                    .Use(new UserStateMiddleware<AlarmUserState>(new MemoryStorage()))
+                    .Use(new ConversationStateMiddleware<AlarmConversationState>(new MemoryStorage()))
                     .Use(new RegExpRecognizerMiddleware()
                         .AddIntent("showAlarms", new Regex("show alarms(.*)", RegexOptions.IgnoreCase))
                         .AddIntent("addAlarm", new Regex("add alarm(.*)", RegexOptions.IgnoreCase))

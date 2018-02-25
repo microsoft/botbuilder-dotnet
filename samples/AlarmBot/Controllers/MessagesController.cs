@@ -25,7 +25,7 @@ namespace AlarmBot.Controllers
             bool handled = false;
 
             // if we don't have an active topic yet
-            if (context.ConversationState.ActiveTopic== null)
+            if (context.ConversationState.ActiveTopic == null)
             {
                 // use the default topic
                 context.ConversationState.ActiveTopic = new DefaultTopic();

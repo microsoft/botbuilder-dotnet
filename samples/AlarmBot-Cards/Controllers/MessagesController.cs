@@ -22,7 +22,7 @@ namespace AlarmBot.Controllers
 
             bool handled = false;
             // Get the current ActiveTopic from my persisted conversation state
-            var conversationState = context.GetConversationState<ConversationState>();
+            var conversationState = context.GetConversationState<AlarmConversationState>();
 
             // if we don't have an active topic yet
             if (conversationState.ActiveTopic== null)
