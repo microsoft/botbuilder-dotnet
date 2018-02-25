@@ -21,7 +21,6 @@ namespace Microsoft.Bot.Builder.Middleware
     {
         private readonly StateSettings _settings;
         private readonly IStorage _storage;
-        private string _propertyName;
 
         /// <summary>
         /// Create statemiddleware
@@ -29,21 +28,20 @@ namespace Microsoft.Bot.Builder.Middleware
         /// <param name="name">name of the kind of state</param>
         /// <param name="storage">storage provider to use</param>
         /// <param name="settings">settings</param>
-        public StateMiddleware(string name, IStorage storage, StateSettings settings = null)
+        public StateMiddleware(IStorage storage, StateSettings settings = null)
         {
-            _propertyName = name;
             _storage = storage ?? throw new ArgumentNullException(nameof(storage));
             _settings = settings ?? new StateSettings();
         }
 
-        public string PropertyName { get { return this._propertyName; } }
+        public abstract string GetPropertyName();
 
         /// <summary>
         /// The key extracted from the activity which is used to store/retrieve the state
         /// </summary>
         /// <param name="activity"></param>
         /// <returns></returns>
-        public abstract string GetStateKey(IBotContext context);
+        public abstract string GetStorageKey(IBotContext context);
 
         public async Task ContextCreated(IBotContext context, MiddlewareSet.NextDelegate next)
         {
@@ -66,14 +64,14 @@ namespace Microsoft.Bot.Builder.Middleware
 
         protected virtual async Task<StoreItems> Read(IBotContext context)
         {
-            var key = this.GetStateKey(context);
+            var key = this.GetStorageKey(context);
             var keys = new List<String>();
             keys.Add(key);
             var items = await _storage.Read(keys.ToArray());
             var state = items.Get<StateT>(key);
             if (state == null)
                 state = new StateT();
-            context.Set(_propertyName, state);
+            context.Set(GetPropertyName(), state);
             return items;
         }
 
@@ -82,10 +80,10 @@ namespace Microsoft.Bot.Builder.Middleware
             if (changes == null)
                 changes = new StoreItems();
 
-            var state = context.Get<StateT>(_propertyName);
+            var state = context.Get<StateT>(GetPropertyName());
             if (state == null)
-                state =  new StateT();
-            var key = GetStateKey(context);
+                state = new StateT();
+            var key = GetStorageKey(context);
             changes[key] = state;
 
             if (this._settings.LastWriterWins)
@@ -104,13 +102,20 @@ namespace Microsoft.Bot.Builder.Middleware
     public class ConversationStateMiddleware<StateT> : StateMiddleware<StateT>
         where StateT : IStoreItem, new()
     {
-        public ConversationStateMiddleware(IStorage storage, StateSettings settings = null) : base(CONVERSATIONSTATE, storage, settings)
+
+        public ConversationStateMiddleware(IStorage storage, StateSettings settings = null) :
+            base(storage, settings)
         {
         }
 
-        public const string CONVERSATIONSTATE = "ConversationState";
+        public static readonly string PropertyName = $"{typeof(ConversationStateMiddleware<StateT>).Namespace}.{typeof(ConversationStateMiddleware<StateT>).Name}";
 
-        public override string GetStateKey(IBotContext context)
+        public override string GetPropertyName()
+        {
+            return PropertyName;
+        }
+
+        public override string GetStorageKey(IBotContext context)
         {
             var conversation = context.ConversationReference;
             return $"conversation/{conversation.ChannelId}/{conversation.Conversation.Id}";
@@ -120,13 +125,20 @@ namespace Microsoft.Bot.Builder.Middleware
     public class UserStateMiddleware<StateT> : StateMiddleware<StateT>
         where StateT : IStoreItem, new()
     {
-        public UserStateMiddleware(IStorage storage, StateSettings settings = null) : base(USERSTATE, storage, settings)
+
+        public UserStateMiddleware(IStorage storage, StateSettings settings = null) :
+            base(storage, settings)
         {
         }
 
-        public const string USERSTATE = "UserState";
+        public static readonly string PropertyName = $"{typeof(UserStateMiddleware<StateT>).Namespace}.{typeof(UserStateMiddleware<StateT>).Name}";
 
-        public override string GetStateKey(IBotContext context)
+        public override string GetPropertyName()
+        {
+            return PropertyName;
+        }
+
+        public override string GetStorageKey(IBotContext context)
         {
             var conversation = context.ConversationReference;
             return $"user/{conversation.ChannelId}/{conversation.User.Id}";
@@ -138,13 +150,25 @@ namespace Microsoft.Bot.Builder.Middleware
         public static T GetConversationState<T>(this IBotContext context)
             where T : IStoreItem, new()
         {
-            return context.Get<T>(ConversationStateMiddleware<T>.CONVERSATIONSTATE);
+            return context.Get<T>(ConversationStateMiddleware<T>.PropertyName);
+        }
+
+        public static T GetConversationState<T>(this BotContextWrapper context)
+            where T : IStoreItem, new()
+        {
+            return context.Get<T>(ConversationStateMiddleware<T>.PropertyName);
         }
 
         public static T GetUserState<T>(this IBotContext context)
             where T : IStoreItem, new()
         {
-            return context.Get<T>(UserStateMiddleware<T>.USERSTATE);
+            return context.Get<T>(UserStateMiddleware<T>.PropertyName);
+        }
+
+        public static T GetUserState<T>(this BotContextWrapper context)
+            where T : IStoreItem, new()
+        {
+            return context.Get<T>(UserStateMiddleware<T>.PropertyName);
         }
     }
 }

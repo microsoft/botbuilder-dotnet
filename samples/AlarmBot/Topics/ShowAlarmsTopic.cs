@@ -26,7 +26,7 @@ namespace AlarmBot.Topics
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public async Task<bool> StartTopic(IBotContext context)
+        public async Task<bool> StartTopic(AlarmBotContext context)
         {
             await ShowAlarms(context);
 
@@ -34,21 +34,20 @@ namespace AlarmBot.Topics
             return false;
         }
 
-        public Task<bool> ContinueTopic(IBotContext context)
+        public Task<bool> ContinueTopic(AlarmBotContext context)
         {
             throw new System.NotImplementedException();
         }
 
-        public Task<bool> ResumeTopic(IBotContext context)
+        public Task<bool> ResumeTopic(AlarmBotContext context)
         {
             throw new System.NotImplementedException();
         }
 
 
-        public static Task ShowAlarms(IBotContext context)
+        public static Task ShowAlarms(AlarmBotContext context)
         {
-            var userState = context.GetUserState<UserState>();
-            ShowAlarmsResponses.ReplyWithShowAlarms(context, userState.Alarms);
+            ShowAlarmsResponses.ReplyWithShowAlarms(context, context.UserState.Alarms);
             return Task.CompletedTask;
         }
 

@@ -28,7 +28,7 @@ namespace AlarmBot.Topics
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public Task<bool> StartTopic(IBotContext context)
+        public Task<bool> StartTopic(AlarmBotContext context)
         {
             switch (context.Request.Type)
             {
@@ -62,30 +62,27 @@ namespace AlarmBot.Topics
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public Task<bool> ContinueTopic(IBotContext context)
+        public Task<bool> ContinueTopic(AlarmBotContext context)
         {
-            var conversationState = context.GetConversationState<ConversationState>();
-            var recognizedIntents = context.Get<IRecognizedIntents>();
-
             switch (context.Request.Type)
             {
                 case ActivityTypes.Message:
-                    switch (recognizedIntents.TopIntent?.Name)
+                    switch (context.RecognizedIntents.TopIntent?.Name)
                     {
                         case "addAlarm":
                             // switch to addAlarm topic
-                            conversationState.ActiveTopic = new AddAlarmTopic();
-                            return conversationState.ActiveTopic.StartTopic(context);
+                            context.ConversationState.ActiveTopic = new AddAlarmTopic();
+                            return context.ConversationState.ActiveTopic.StartTopic(context);
 
                         case "showAlarms":
                             // switch to show alarms topic
-                            conversationState.ActiveTopic = new ShowAlarmsTopic();
-                            return conversationState.ActiveTopic.StartTopic(context);
+                            context.ConversationState.ActiveTopic = new ShowAlarmsTopic();
+                            return context.ConversationState.ActiveTopic.StartTopic(context);
 
                         case "deleteAlarm":
                             // switch to delete alarm topic
-                            conversationState.ActiveTopic = new DeleteAlarmTopic();
-                            return conversationState.ActiveTopic.StartTopic(context);
+                            context.ConversationState.ActiveTopic = new DeleteAlarmTopic();
+                            return context.ConversationState.ActiveTopic.StartTopic(context);
 
                         case "help":
                             // show help
@@ -109,7 +106,7 @@ namespace AlarmBot.Topics
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public Task<bool> ResumeTopic(IBotContext context)
+        public Task<bool> ResumeTopic(AlarmBotContext context)
         {
             // just prompt the user to ask what they want to do
             DefaultResponses.ReplyWithResumeTopic(context);

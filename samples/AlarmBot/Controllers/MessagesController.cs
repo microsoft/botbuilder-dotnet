@@ -16,33 +16,33 @@ namespace AlarmBot.Controllers
     {
         public MessagesController(BotFrameworkAdapter adapter) : base(adapter) { }
 
-        protected override async Task OnReceiveActivity(IBotContext context)
+        protected override async Task OnReceiveActivity(IBotContext botContext)
         {
+            var context = new AlarmBotContext(botContext);
+
             // --- Our receive handler simply inspects the persisted ITopic class and calls to it as appropriate ---
 
             bool handled = false;
-            // Get the current ActiveTopic from my persisted conversation state
-            var conversationState = context.GetConversationState<ConversationState>();
 
             // if we don't have an active topic yet
-            if (conversationState.ActiveTopic== null)
+            if (context.ConversationState.ActiveTopic== null)
             {
                 // use the default topic
-                conversationState.ActiveTopic = new DefaultTopic();
-                handled = await conversationState.ActiveTopic.StartTopic(context);
+                context.ConversationState.ActiveTopic = new DefaultTopic();
+                handled = await context.ConversationState.ActiveTopic.StartTopic(context);
             }
             else
             {
                 // we do have an active topic, so call it 
-                handled = await conversationState.ActiveTopic.ContinueTopic(context);
+                handled = await context.ConversationState.ActiveTopic.ContinueTopic(context);
             }
 
             // if activeTopic's result is false and the activeTopic is NOT already the default topic
-            if (handled == false && !(conversationState.ActiveTopic is DefaultTopic))
+            if (handled == false && !(context.ConversationState.ActiveTopic is DefaultTopic))
             {
                 // USe DefaultTopic as the active topic
-                conversationState.ActiveTopic = new DefaultTopic();
-                handled = await conversationState.ActiveTopic.ResumeTopic(context);
+                context.ConversationState.ActiveTopic = new DefaultTopic();
+                handled = await context.ConversationState.ActiveTopic.ResumeTopic(context);
             }
         }
     }

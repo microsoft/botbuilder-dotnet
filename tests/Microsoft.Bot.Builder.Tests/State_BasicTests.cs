@@ -99,7 +99,7 @@ namespace Microsoft.Bot.Builder.Tests
                 .Use(new CustomStateMiddleware(new MemoryStorage()));
             await new TestFlow(adapter, async (context) =>
                     {
-                        var customState = context.Get<CustomState>(CustomStateMiddleware.CUSTOMPROPERTY);
+                        var customState = context.Get<CustomState>(CustomStateMiddleware.PropertyName);
                         switch (context.Request.AsMessageActivity().Text)
                         {
                             case "set value":
@@ -157,13 +157,18 @@ namespace Microsoft.Bot.Builder.Tests
 
         public class CustomStateMiddleware : StateMiddleware<CustomState>
         {
-            public CustomStateMiddleware(IStorage storage) : base(CUSTOMPROPERTY, storage)
+            public CustomStateMiddleware(IStorage storage) : base(storage)
             {
             }
 
-            public const string CUSTOMPROPERTY = "CustomState";
+            public const string PropertyName = "CustomState";
 
-            public override string GetStateKey(IBotContext context)
+            public override string GetPropertyName()
+            {
+                return PropertyName;
+            }
+
+            public override string GetStorageKey(IBotContext context)
             {
                 return "CustomStateKey";
             }

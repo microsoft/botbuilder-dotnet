@@ -35,10 +35,9 @@ namespace AlarmBot.Topics
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public Task<bool> StartTopic(IBotContext context)
+        public Task<bool> StartTopic(AlarmBotContext context)
         {
-            var recognizedIntents = context.Get<IRecognizedIntents>();
-            this.AlarmTitle = recognizedIntents.TopIntent.Entities.Where(entity => entity.GroupName == "AlarmTitle")
+            this.AlarmTitle = context.RecognizedIntents.TopIntent.Entities.Where(entity => entity.GroupName == "AlarmTitle")
                                 .Select(entity => entity.ValueAs<string>()).FirstOrDefault();
 
             return FindAlarm(context);
@@ -49,7 +48,7 @@ namespace AlarmBot.Topics
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public async Task<bool> ContinueTopic(IBotContext context)
+        public async Task<bool> ContinueTopic(AlarmBotContext context)
         {
             if (context.Request.Type == ActivityTypes.Message)
             {
@@ -64,21 +63,20 @@ namespace AlarmBot.Topics
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public Task<bool> ResumeTopic(IBotContext context)
+        public Task<bool> ResumeTopic(AlarmBotContext context)
         {
             return this.FindAlarm(context);
         }
 
-        public async Task<bool> FindAlarm(IBotContext context)
+        public async Task<bool> FindAlarm(AlarmBotContext context)
         {
-            UserState userState = context.GetUserState<UserState>();
-            if (userState.Alarms == null)
+            if (context.UserState.Alarms == null)
             {
-                userState.Alarms = new List<Alarm>();
+                context.UserState.Alarms = new List<Alarm>();
             }
 
-            // Ensure there are userState.Alarms to delete
-            if (userState.Alarms.Count == 0)
+            // Ensure there are context.UserState.Alarms to delete
+            if (context.UserState.Alarms.Count == 0)
             {
                 DeleteAlarmResponses.ReplyWithNoAlarms(context);
                 return false;
@@ -89,12 +87,12 @@ namespace AlarmBot.Topics
             {
                 if (int.TryParse(this.AlarmTitle.Split(' ').FirstOrDefault(), out int index))
                 {
-                    if (index > 0 && index <= userState.Alarms.Count)
+                    if (index > 0 && index <= context.UserState.Alarms.Count)
                     {
                         index--;
                         // Delete selected alarm and end topic
-                        var alarm = userState.Alarms.Skip(index).First();
-                        userState.Alarms.Remove(alarm);
+                        var alarm = context.UserState.Alarms.Skip(index).First();
+                        context.UserState.Alarms.Remove(alarm);
                         DeleteAlarmResponses.ReplyWithDeletedAlarm(context, alarm);
                         return false; // cancel topic
                     }
@@ -102,7 +100,7 @@ namespace AlarmBot.Topics
                 else
                 {
                     var parts = this.AlarmTitle.Split(' ');
-                    var choices = userState.Alarms.Where(alarm => parts.Any(part => alarm.Title.Contains(part))).ToList();
+                    var choices = context.UserState.Alarms.Where(alarm => parts.Any(part => alarm.Title.Contains(part))).ToList();
 
                     if (choices.Count == 0)
                     {
@@ -113,7 +111,7 @@ namespace AlarmBot.Topics
                     {
                         // Delete selected alarm and end topic
                         var alarm = choices.First();
-                        userState.Alarms.Remove(alarm);
+                        context.UserState.Alarms.Remove(alarm);
                         DeleteAlarmResponses.ReplyWithDeletedAlarm(context, alarm);
                         return false; // cancel topic
                     }

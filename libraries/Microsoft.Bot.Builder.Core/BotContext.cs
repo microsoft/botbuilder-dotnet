@@ -47,7 +47,7 @@ namespace Microsoft.Bot.Builder
 
         public ConversationReference ConversationReference { get => _conversationReference; }
 
-        public BotContext Reply(string text, string speak = null)
+        public IBotContext Reply(string text, string speak = null)
         {
             var reply = this.ConversationReference.GetPostToUserMessage();
             reply.Text = text;
@@ -60,22 +60,17 @@ namespace Microsoft.Bot.Builder
             return this;
         }
 
-        public BotContext Reply(IActivity activity)
+        public IBotContext Reply(IActivity activity)
         {
             BotAssert.ActivityNotNull(activity);
             this.Responses.Add((Activity)activity);
             return this;
         }
 
-        public BotContext Reply(Activity activity)
-        {
-            BotAssert.ActivityNotNull(activity);
-            this.Responses.Add(activity);
-            return this;
-        }
-
         public void Set(string serviceId, object service)
         {
+            if (String.IsNullOrWhiteSpace(serviceId))
+                throw new ArgumentNullException(nameof(serviceId));
             lock (_services)
             {
                 this._services[serviceId] = service;
@@ -84,12 +79,57 @@ namespace Microsoft.Bot.Builder
 
         public object Get(string serviceId)
         {
+            if (String.IsNullOrWhiteSpace(serviceId))
+                throw new ArgumentNullException(nameof(serviceId));
             object service = null;
             lock (_services)
             {
                 this._services.TryGetValue(serviceId, out service);
             }
             return service;
+        }
+    }
+
+    /// <summary>
+    /// Utility class to allow you to create custom BotContext wrapper
+    /// </summary>
+    public class BotContextWrapper : IBotContext
+    {
+        private IBotContext _innerContext;
+
+        public BotContextWrapper(IBotContext context)
+        {
+            this._innerContext = context;
+        }
+
+        public BotAdapter Adapter => this._innerContext.Adapter; 
+
+        public Activity Request => this._innerContext.Request; 
+
+        public IList<Activity> Responses { get => this._innerContext.Responses; set => this._innerContext.Responses = value; }
+
+        public ConversationReference ConversationReference => this._innerContext.ConversationReference;
+
+        public object Get(string serviceId)
+        {
+            return this._innerContext.Get(serviceId);
+        }
+
+        public IBotContext Reply(string text, string speak = null)
+        {
+            this._innerContext.Reply(text, speak);
+            return this;
+        }
+
+        public IBotContext Reply(IActivity activity)
+        {
+            this._innerContext.Reply(activity);
+            return this;
+        }
+
+        public void Set(string serviceId, object service)
+        {
+            this._innerContext.Set(serviceId, service);
         }
     }
 }

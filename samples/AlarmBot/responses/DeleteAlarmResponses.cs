@@ -18,28 +18,27 @@ namespace AlarmBot.Responses
     /// </summary>
     public static class DeleteAlarmResponses
     {
-        public static void ReplyWithNoAlarms(IBotContext context)
+        public static void ReplyWithNoAlarms(AlarmBotContext context)
         {
             context.Reply($"There are no alarms defined.");
         }
 
-        public static void ReplyWithNoAlarmsFound(IBotContext context, string text)
+        public static void ReplyWithNoAlarmsFound(AlarmBotContext context, string text)
         {
             context.Reply($"There were no alarms found for {(string)text}.");
         }
 
-        public static void ReplyWithTitlePrompt(IBotContext context)
+        public static void ReplyWithTitlePrompt(AlarmBotContext context)
         {
-            var userState = context.GetUserState<UserState>();
-            context.Reply(GetDeleteActivity(context, userState.Alarms, "Delete Alarms", "What alarm do you want to delete?"));
+            context.Reply(GetDeleteActivity(context, context.UserState.Alarms, "Delete Alarms", "What alarm do you want to delete?"));
         }
 
-        public static void ReplyWithDeletedAlarm(IBotContext context, Alarm alarm = null)
+        public static void ReplyWithDeletedAlarm(AlarmBotContext context, Alarm alarm = null)
         {
             context.Reply($"I have deleted {alarm.Title} alarm");
         }
 
-        public static IMessageActivity GetDeleteActivity(IBotContext context, IEnumerable<Alarm> alarms, string title, string message)
+        public static IMessageActivity GetDeleteActivity(AlarmBotContext context, IEnumerable<Alarm> alarms, string title, string message)
         {
             StringBuilder sb = new StringBuilder();
             int i = 1;

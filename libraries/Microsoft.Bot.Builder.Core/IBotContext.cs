@@ -35,14 +35,14 @@ namespace Microsoft.Bot.Builder
         /// <param name="text">Text of a message to send to the user.</param>
         /// <param name="speak">(Optional) SSML that should be spoken to the user on channels that support speech.</param>
         /// <returns></returns>
-        BotContext Reply(string text, string speak = null);
+        IBotContext Reply(string text, string speak = null);
 
         /// <summary>
         /// Queues a new "message" responses array.
         /// </summary>
         /// <param name="activity">Activity object to send to the user.</param>
         /// <returns></returns>
-        BotContext Reply(IActivity activity);
+        IBotContext Reply(IActivity activity);
 
         /// <summary>
         /// Set named service
@@ -61,19 +61,19 @@ namespace Microsoft.Bot.Builder
 
     public static partial class BotContextExtension
     {
-        public static void Set<ServiceT>(this IBotContext context, ServiceT service)
+        public static void Set<ServiceT>(this IBotContext context, ServiceT service, string serviceId = null)
         {
-            context.Set(typeof(ServiceT).FullName, service);
+            if (serviceId == null)
+                serviceId = $"{typeof(ServiceT).Namespace}.{typeof(ServiceT).Name}";
+            context.Set(serviceId, service);
         }
 
         public static ServiceT Get<ServiceT>(this IBotContext context, string serviceId = null)
         {
-            return (ServiceT)context.Get(serviceId ?? typeof(ServiceT).FullName);
+            if (serviceId == null)
+                serviceId = $"{typeof(ServiceT).Namespace}.{typeof(ServiceT).Name}";
+            return (ServiceT)context.Get(serviceId);
         }
 
-        //public static BotContext ToBotContext(this IBotContext context)
-        //{
-        //    return (BotContext)context; 
-        //}
     }
 }
