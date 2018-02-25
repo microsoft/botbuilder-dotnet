@@ -8,6 +8,7 @@ using System.Text;
 using AlarmBot.Models;
 using AlarmBot.Topics;
 using Microsoft.Bot.Builder;
+using Microsoft.Bot.Builder.Middleware;
 using Microsoft.Bot.Schema;
 
 namespace AlarmBot.Responses
@@ -29,7 +30,8 @@ namespace AlarmBot.Responses
 
         public static void ReplyWithTitlePrompt(IBotContext context)
         {
-            context.Reply(GetDeleteActivity(context, ShowAlarmsTopic.GetAlarms(context), "Delete Alarms", "What alarm do you want to delete?"));
+            var userState = context.GetUserState<UserState>();
+            context.Reply(GetDeleteActivity(context, userState.Alarms, "Delete Alarms", "What alarm do you want to delete?"));
         }
 
         public static void ReplyWithDeletedAlarm(IBotContext context, Alarm alarm = null)

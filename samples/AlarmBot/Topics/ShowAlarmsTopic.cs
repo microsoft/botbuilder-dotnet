@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using AlarmBot.Models;
 using AlarmBot.Responses;
 using Microsoft.Bot.Builder;
+using Microsoft.Bot.Builder.Middleware;
 
 namespace AlarmBot.Topics
 {
@@ -46,21 +47,10 @@ namespace AlarmBot.Topics
 
         public static Task ShowAlarms(IBotContext context)
         {
-            List<Alarm> alarms = GetAlarms(context);
-            ShowAlarmsResponses.ReplyWithShowAlarms(context, alarms);
+            var userState = context.GetUserState<UserState>();
+            ShowAlarmsResponses.ReplyWithShowAlarms(context, userState.Alarms);
             return Task.CompletedTask;
         }
 
-        public static List<Alarm> GetAlarms(IBotContext context)
-        {
-            var alarms = (List<Alarm>)context.State.UserProperties[UserProperties.ALARMS];
-            if (alarms == null)
-            {
-                alarms = new List<Alarm>();
-                context.State.UserProperties[UserProperties.ALARMS] = alarms;
-            }
-
-            return alarms;
-        }
     }
 }

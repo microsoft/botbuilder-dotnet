@@ -35,7 +35,7 @@ namespace Microsoft.Bot.Samples.CustomMiddleware
             Write($"AFTER ReceiveActivity {PrettyPrint(context.Request)}");
         }
 
-        public async Task SendActivity(IBotContext context, IList<IActivity> activities, MiddlewareSet.NextDelegate next)
+        public async Task SendActivity(IBotContext context, IList<Activity> activities, MiddlewareSet.NextDelegate next)
         {
             Write($"BEFORE SendActivity {PrettyPrint(context.Responses)}");
             await next();
@@ -62,7 +62,7 @@ namespace Microsoft.Bot.Samples.CustomMiddleware
             return activity.Type;
         }
 
-        private string PrettyPrint(IList<IActivity> activities)
+        private string PrettyPrint(IList<Activity> activities)
         {
             var s = new StringBuilder();
             foreach (var activity in activities)

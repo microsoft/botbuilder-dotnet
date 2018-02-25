@@ -10,15 +10,15 @@ using Microsoft.Bot.Builder.Middleware;
 
 namespace Microsoft.Bot.Builder
 {
-    public class BotContext : FlexObject, IBotContext
+    public class BotContext : IBotContext
     {
         private readonly BotAdapter _adapter;
-        private readonly IActivity _request;
+        private readonly Activity _request;
         private readonly ConversationReference _conversationReference;
-        private readonly BotState _state = new BotState();
-        private IList<IActivity> _responses = new List<IActivity>();
+        private IList<Activity> _responses = new List<Activity>();
+        private Dictionary<string, object> _services = new Dictionary<string, object>();
 
-        public BotContext(BotAdapter adapter, IActivity request)
+        public BotContext(BotAdapter adapter, Activity request)
         {
             _adapter = adapter ?? throw new ArgumentNullException(nameof(adapter));
             _request = request ?? throw new ArgumentNullException(nameof(request));
@@ -39,57 +39,13 @@ namespace Microsoft.Bot.Builder
             _adapter = bot ?? throw new ArgumentNullException(nameof(bot));
             _conversationReference = conversationReference ?? throw new ArgumentNullException(nameof(conversationReference));
         }
-
-        //public async Task SendActivity(IBotContext context, IList<IActivity> activities)
-        //{
-        //    await _bot.SendActivity(context, activities).ConfigureAwait(false);
-        //}
-
-        public IActivity Request => _request;
-
         public BotAdapter Adapter => _adapter;
 
-        public IList<IActivity> Responses { get => _responses; set => this._responses = value; }
+        public Activity Request => _request;
 
-        public IStorage Storage { get; set; }
-
-        public Intent TopIntent { get; set; }
-
-        public TemplateManager TemplateManager { get; set; }
-
-        public bool IfIntent(string intentName)
-        {
-            if (string.IsNullOrWhiteSpace(intentName))
-                throw new ArgumentNullException(nameof(intentName));
-
-            if (this.TopIntent != null)
-            {
-                if (TopIntent.Name == intentName)
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-        public bool IfIntent(Regex expression)
-        {
-            if (expression == null)
-                throw new ArgumentNullException(nameof(expression));
-
-            if (this.TopIntent != null)
-            {
-                if (expression.IsMatch(this.TopIntent.Name))
-                    return true;
-            }
-
-            return false;
-        }
-
+        public IList<Activity> Responses { get => _responses; set => this._responses = value; }
 
         public ConversationReference ConversationReference { get => _conversationReference; }
-
-        public BotState State { get => _state; }
 
         public BotContext Reply(string text, string speak = null)
         {
@@ -99,7 +55,6 @@ namespace Microsoft.Bot.Builder
             {
                 // Developer included SSML to attach to the message.
                 reply.Speak = speak;
-
             }
             this.Responses.Add(reply);
             return this;
@@ -108,9 +63,33 @@ namespace Microsoft.Bot.Builder
         public BotContext Reply(IActivity activity)
         {
             BotAssert.ActivityNotNull(activity);
+            this.Responses.Add((Activity)activity);
+            return this;
+        }
+
+        public BotContext Reply(Activity activity)
+        {
+            BotAssert.ActivityNotNull(activity);
             this.Responses.Add(activity);
             return this;
         }
-       
+
+        public void Set(string serviceId, object service)
+        {
+            lock (_services)
+            {
+                this._services[serviceId] = service;
+            }
+        }
+
+        public object Get(string serviceId)
+        {
+            object service = null;
+            lock (_services)
+            {
+                this._services.TryGetValue(serviceId, out service);
+            }
+            return service;
+        }
     }
 }
