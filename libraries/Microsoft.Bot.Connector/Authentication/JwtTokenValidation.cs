@@ -27,7 +27,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// TLS services, which are (latency wise) expensive resources. The httpClient passed in here, if shared by the layers
         /// above from call to call, enables connection reuse which is a significant performance and resource improvement.</param>
         /// <returns>Claims identity. An anonymous identity is returned if Authentication is disabled.</returns>
-        public static async Task<ClaimsIdentity> EnsureValidActivity(Activity activity, string authHeader, ICredentialProvider credentials, HttpClient httpClient = null)
+        public static async Task<ClaimsIdentity> EnsureValidActivity(IActivity activity, string authHeader, ICredentialProvider credentials, HttpClient httpClient = null)
         {
             if (string.IsNullOrWhiteSpace(authHeader))
             {

@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using Microsoft.Bot.Builder.BotFramework;
+using Microsoft.Bot.Builder.Middleware;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
@@ -21,14 +22,25 @@ namespace Microsoft.Bot.Builder.Adapters
         private readonly HttpClient _httpClient;
         private Dictionary<string, MicrosoftAppCredentials> _appCredentialMap = new Dictionary<string, MicrosoftAppCredentials>();
 
-        public BotFrameworkAdapter(ICredentialProvider credentialProvider, HttpClient httpClient = null)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BotFrameworkAdapter"/> class.
+        /// </summary>
+        /// <param name="credentialProvider">The credential provider.</param>
+        /// <param name="httpClient">The HTTP client.</param>
+        /// <param name="middleware">The middleware to use. Use <see cref="MiddlewareSet" class to register multiple middlewares together./></param>
+        public BotFrameworkAdapter(ICredentialProvider credentialProvider, HttpClient httpClient = null, IMiddleware middleware = null)
         {
             _credentialProvider = credentialProvider;
             _httpClient = httpClient;
+
+            if (middleware != null)
+            {
+                this.Use(middleware);
+            }
         }
 
-        public BotFrameworkAdapter(string appId, string appPassword, HttpClient httpClient = null) 
-            : this(new SimpleCredentialProvider(appId, appPassword), httpClient)
+        public BotFrameworkAdapter(string appId, string appPassword, HttpClient httpClient = null, IMiddleware middleware = null) 
+            : this(new SimpleCredentialProvider(appId, appPassword), httpClient, middleware)
         {
         }
 
@@ -38,7 +50,7 @@ namespace Microsoft.Bot.Builder.Adapters
             return this;
         }
 
-        public async Task ProcessActivty(string authHeader, Activity activity, Func<IBotContext, Task> callback)
+        public async Task ProcessActivty(string authHeader, IActivity activity, Func<IBotContext, Task> callback)
         {
             BotAssert.ActivityNotNull(activity);
             ClaimsIdentity claimsIdentity =  await JwtTokenValidation.EnsureValidActivity(activity, authHeader, _credentialProvider, _httpClient);
