@@ -7,14 +7,14 @@ using System.Collections.Generic;
 
 namespace AlarmBot.Models
 {
-    public class ConversationState : IStoreItem
+    public class AlarmConversationState : IStoreItem
     {
         public string eTag { get; set; }
 
         public ITopic ActiveTopic { get; set; }
     }
 
-    public class UserState : IStoreItem
+    public class AlarmUserState : IStoreItem
     {
         public string eTag { get; set; }
 
