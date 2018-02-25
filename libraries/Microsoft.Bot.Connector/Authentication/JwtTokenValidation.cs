@@ -16,7 +16,8 @@ namespace Microsoft.Bot.Connector.Authentication
         private static HttpClient _httpClient = new HttpClient();
 
         /// <summary>
-        /// Validates the security tokens required by the Bot Framework Protocol. Throws on any exceptions. 
+        /// Validates the security tokens required by the Bot Framework Protocol. Throws on any exceptions. On success returns the claims identity.
+        /// For requests where auth is disabled and no auth header is present, Anonymous identity is returned. Otherwise, actual claims identity is returned.
         /// </summary>
         /// <param name="activity">The incoming Activity from the Bot Framework or the Emulator</param>
         /// <param name="authHeader">The Bearer token included as part of the request</param>
@@ -25,8 +26,8 @@ namespace Microsoft.Bot.Connector.Authentication
         /// validation may require outbound calls for Endorsement validation and other checks. Those calls are made to
         /// TLS services, which are (latency wise) expensive resources. The httpClient passed in here, if shared by the layers
         /// above from call to call, enables connection reuse which is a significant performance and resource improvement.</param>
-        /// <returns>Nothing</returns>
-        public static async Task AssertValidActivity(Activity activity, string authHeader, ICredentialProvider credentials, HttpClient httpClient = null)
+        /// <returns>Claims identity. An anonymous identity is returned if Authentication is disabled.</returns>
+        public static async Task<ClaimsIdentity> EnsureValidActivity(Activity activity, string authHeader, ICredentialProvider credentials, HttpClient httpClient = null)
         {
             if (string.IsNullOrWhiteSpace(authHeader))
             {
@@ -35,15 +36,17 @@ namespace Microsoft.Bot.Connector.Authentication
                 if (isAuthDisabled)
                 {
                     // We are on the anonymous code path. 
-                    return;
+                    return new ClaimsIdentity(new List<Claim>(), "anonymous");
                 }
             }
 
             // Go through the standard authentication path. 
-            await JwtTokenValidation.ValidateAuthHeader(authHeader, credentials, activity.ServiceUrl, httpClient ?? _httpClient);
+            ClaimsIdentity claimsIdentity = await JwtTokenValidation.ValidateAuthHeader(authHeader, credentials, activity.ServiceUrl, httpClient ?? _httpClient);
 
             // On the standard Auth path, we need to trust the URL that was incoming. 
             MicrosoftAppCredentials.TrustServiceUrl(activity.ServiceUrl);
+
+            return claimsIdentity;
         }
 
         public static async Task<ClaimsIdentity> ValidateAuthHeader(string authHeader, ICredentialProvider credentials, HttpClient httpClient = null)
