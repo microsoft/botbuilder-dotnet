@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.BotFramework;
 using Microsoft.Bot.Builder.Middleware;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
@@ -28,7 +29,7 @@ namespace Microsoft.Bot.Samples.CustomMiddleware
         {
             if (adapter == null)
             {
-                adapter = new BotFrameworkAdapter(configuration)
+                adapter = new BotFrameworkAdapter(new ConfigurationCredentialProvider(configuration))
                     .Use(new ExampleMiddleware("X"))
                     .Use(new ExampleMiddleware("\tY"))
                     .Use(new ExampleMiddleware("\t\tZ"));

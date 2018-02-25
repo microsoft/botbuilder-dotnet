@@ -8,30 +8,28 @@ using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Adapters
 {
     public class BotFrameworkAdapter : BotAdapter
     {
-        private readonly SimpleCredentialProvider _credentialProvider;
-        private readonly MicrosoftAppCredentials _credentials;
+        private readonly ICredentialProvider _credentialProvider;
         private readonly HttpClient _httpClient;
+        private Dictionary<string, MicrosoftAppCredentials> _appCredentialMap = new Dictionary<string, MicrosoftAppCredentials>();
 
-        public BotFrameworkAdapter(IConfiguration configuration, HttpClient httpClient = null) : base()
+        public BotFrameworkAdapter(ICredentialProvider credentialProvider, HttpClient httpClient = null)
         {
-            _httpClient = httpClient ?? new HttpClient();
-            _credentialProvider = new ConfigurationCredentialProvider(configuration);
-            _credentials = new MicrosoftAppCredentials(_credentialProvider.AppId, _credentialProvider.Password);
+            _credentialProvider = credentialProvider;
+            _httpClient = httpClient;
         }
 
-        public BotFrameworkAdapter(string appId, string appPassword) : this(appId, appPassword, null) { }
-        public BotFrameworkAdapter(string appId, string appPassword, HttpClient httpClient) : base()
+        public BotFrameworkAdapter(string appId, string appPassword, HttpClient httpClient = null) 
+            : this(new SimpleCredentialProvider(appId, appPassword), httpClient)
         {
-            _httpClient = httpClient ?? new HttpClient();
-            _credentials = new MicrosoftAppCredentials(appId, appPassword);
-            _credentialProvider = new SimpleCredentialProvider(appId, appPassword);
         }
 
         public BotFrameworkAdapter Use(Middleware.IMiddleware middleware)
@@ -43,9 +41,13 @@ namespace Microsoft.Bot.Builder.Adapters
         public async Task ProcessActivty(string authHeader, Activity activity, Func<IBotContext, Task> callback)
         {
             BotAssert.ActivityNotNull(activity);
-            await JwtTokenValidation.AssertValidActivity(activity, authHeader, _credentialProvider, _httpClient);
+            ClaimsIdentity claimsIdentity =  await JwtTokenValidation.EnsureValidActivity(activity, authHeader, _credentialProvider, _httpClient);
 
-            var context = new BotContext(this, activity);
+            // For requests from channel App Id is in Audience claim of JWT token. For emulator it is in AppId claim. For 
+            // unauthenticated requests we have anonymouse identity provided auth is disabled.
+            string botAppId = (claimsIdentity.Claims?.SingleOrDefault(claim => claim.Type == AuthenticationConstants.AudienceClaim) ??
+                claimsIdentity.Claims?.SingleOrDefault(claim => claim.Type == AuthenticationConstants.AppIdClaim))?.Value;
+            var context = new BotFrameworkBotContext(botAppId, this, activity);
             await base.RunPipeline(context, callback).ConfigureAwait(false);
         }
 
@@ -62,27 +64,45 @@ namespace Microsoft.Bot.Builder.Adapters
                 }
                 else
                 {
-                    var connectorClient = new ConnectorClient(new Uri(activity.ServiceUrl), _credentials);
+                    var connectorClient = new ConnectorClient(new Uri(activity.ServiceUrl), await GetAppCredentials((context as BotFrameworkBotContext).BotAppId));
                     await connectorClient.Conversations.SendToConversationAsync((Activity)activity).ConfigureAwait(false);
                 }
             }
         }
 
-        protected override Task<ResourceResponse> UpdateActivityImplementation(IBotContext context, IActivity activity)
+        protected override async Task<ResourceResponse> UpdateActivityImplementation(IBotContext context, IActivity activity)
         {
-            var connectorClient = new ConnectorClient(new Uri(activity.ServiceUrl), _credentials);
-            return connectorClient.Conversations.UpdateActivityAsync((Activity)activity);
+            var connectorClient = new ConnectorClient(new Uri(activity.ServiceUrl), await GetAppCredentials((context as BotFrameworkBotContext).BotAppId));
+            return await connectorClient.Conversations.UpdateActivityAsync((Activity)activity);
         }
 
-        protected override Task DeleteActivityImplementation(IBotContext context, string conversationId, string activityId)
+        protected override async Task DeleteActivityImplementation(IBotContext context, string conversationId, string activityId)
         {
-            var connectorClient = new ConnectorClient(new Uri(context.Request.ServiceUrl), _credentials);
-            return connectorClient.Conversations.DeleteActivityAsync(conversationId, activityId);
+            var connectorClient = new ConnectorClient(new Uri(context.Request.ServiceUrl), await GetAppCredentials((context as BotFrameworkBotContext).BotAppId));
+            await connectorClient.Conversations.DeleteActivityAsync(conversationId, activityId);
         }
 
         protected override Task CreateConversationImplementation()
         {
             throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Gets the application credentials.
+        /// </summary>
+        /// <param name="appId">The application identifier (AAD Id for the bot).</param>
+        /// <returns>App credentials.</returns>
+        protected virtual async Task<MicrosoftAppCredentials> GetAppCredentials(string appId)
+        {
+            MicrosoftAppCredentials appCredentials;
+            if (!_appCredentialMap.TryGetValue(appId, out appCredentials))
+            {
+                string appPassword = await _credentialProvider.GetAppPasswordAsync(appId);
+                appCredentials = new MicrosoftAppCredentials(appId, appPassword);
+                _appCredentialMap[appId] = appCredentials;
+            }
+
+            return appCredentials;
         }
     }
 }
