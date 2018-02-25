@@ -20,11 +20,12 @@ namespace Microsoft.Bot.Builder
         public BotFrameworkBotContext(string botAppId, BotAdapter botAdapter, IActivity requestActivity)
             : base(botAdapter, requestActivity)
         {
+            this.BotAppId = botAppId;
         }
 
         /// <summary>
         /// Gets or sets the bot application identifier. The unqiue Id by which the bot is recognized in AAD.
         /// </summary>
-        public string BotAppId { get; set; }
+        public string BotAppId { get; private set; }
     }
 }
