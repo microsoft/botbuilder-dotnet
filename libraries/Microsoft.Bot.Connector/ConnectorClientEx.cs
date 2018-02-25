@@ -37,19 +37,39 @@ namespace Microsoft.Bot.Connector
             return httpClient;
         });
 
+        public bool UseSharedHttpClient
+        {
+            get { return this._originalHttpClient != null; }
+            set
+            {
+                if (value == false)
+                {
+                    this.HttpClient = this._originalHttpClient;
+                }
+                else
+                {
+                    if (this._originalHttpClient == null)
+                    {
+                        this._originalHttpClient = this.HttpClient;
+                        this.HttpClient = g_httpClient.Value;
+                    }
+                }
+            }
+        }
+
         partial void CustomInitialize()
         {
-            // save original httpclient so we can replace before we dispose
-            this._originalHttpClient = this.HttpClient;
-            
-            // use singleton 
-            this.HttpClient = g_httpClient.Value;
+            this.UseSharedHttpClient = true;
         }
 
         protected override void Dispose(bool disposing)
         {
             // replace global with original so dispose doesn't dispose the global one
-            this.HttpClient = this._originalHttpClient;
+            if (this._originalHttpClient != null)
+            {
+                this.HttpClient = this._originalHttpClient;
+                this._originalHttpClient = null;
+            }
             base.Dispose(disposing);
         }
     }
