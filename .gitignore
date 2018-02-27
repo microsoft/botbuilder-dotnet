@@ -376,14 +376,6 @@ ModelManifest.xml
 /PublishScripts/Scripts/Deploy-AzureResourceGroup-5.ps1
 /PublishScripts
 
-
-
-
-
-
-
-
-
 # User-specific files
 Documentation/Doxygen_warnings.txt
 
@@ -393,4 +385,5 @@ Documentation/docs/
 # Azure publish profiles
 *.pubxml
 PublishProfiles/
->>>>>>> adc0f559ad838ead705dbdd88fcbfae8980f2662
+
+appsettings.local.json
