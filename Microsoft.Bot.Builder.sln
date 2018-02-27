@@ -39,7 +39,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Samples.EchoB
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Samples.EchoBot-Console", "samples\Microsoft.Bot.Samples.EchoBot-Console\Microsoft.Bot.Samples.EchoBot-Console.csproj", "{C8DF8AE3-0A4D-445D-993E-F7A1784BFDD4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Samples.EchoBot-ASPNetCore-DI", "samples\Microsoft.Bot.Samples.EchoBot-ASPNetCore-DI\Microsoft.Bot.Samples.EchoBot-ASPNetCore-DI.csproj", "{659D7FA6-9A27-4557-8598-916E0D5885DD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Samples.EchoBot-ASPNetCore-DI", "samples\Microsoft.Bot.Samples.EchoBot-ASPNetCore-DI\Microsoft.Bot.Samples.EchoBot-ASPNetCore-DI.csproj", "{659D7FA6-9A27-4557-8598-916E0D5885DD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

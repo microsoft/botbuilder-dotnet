@@ -30,8 +30,8 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <param name="middleware">The middleware to use. Use <see cref="MiddlewareSet" class to register multiple middlewares together./></param>
         public BotFrameworkAdapter(ICredentialProvider credentialProvider, HttpClient httpClient = null, IMiddleware middleware = null)
         {
-            _credentialProvider = credentialProvider;
-            _httpClient = httpClient;
+            _credentialProvider = credentialProvider ?? throw new ArgumentNullException(nameof(credentialProvider));
+            _httpClient = httpClient ?? new HttpClient();
 
             if (middleware != null)
             {
@@ -53,7 +53,7 @@ namespace Microsoft.Bot.Builder.Adapters
         public async Task ProcessActivty(string authHeader, IActivity activity, Func<IBotContext, Task> callback)
         {
             BotAssert.ActivityNotNull(activity);
-            ClaimsIdentity claimsIdentity =  await JwtTokenValidation.EnsureValidActivity(activity, authHeader, _credentialProvider, _httpClient);
+            ClaimsIdentity claimsIdentity =  await JwtTokenValidation.AuthenticateRequest(activity, authHeader, _credentialProvider, _httpClient);
 
             // For requests from channel App Id is in Audience claim of JWT token. For emulator it is in AppId claim. For 
             // unauthenticated requests we have anonymouse identity provided auth is disabled.
@@ -76,7 +76,8 @@ namespace Microsoft.Bot.Builder.Adapters
                 }
                 else
                 {
-                    var connectorClient = new ConnectorClient(new Uri(activity.ServiceUrl), await GetAppCredentials((context as BotFrameworkBotContext).BotAppId));
+                    MicrosoftAppCredentials appCredentials = await GetAppCredentials((context as BotFrameworkBotContext).BotAppId);
+                    var connectorClient = new ConnectorClient(new Uri(activity.ServiceUrl), appCredentials);
                     await connectorClient.Conversations.SendToConversationAsync((Activity)activity).ConfigureAwait(false);
                 }
             }
@@ -84,13 +85,15 @@ namespace Microsoft.Bot.Builder.Adapters
 
         protected override async Task<ResourceResponse> UpdateActivityImplementation(IBotContext context, IActivity activity)
         {
-            var connectorClient = new ConnectorClient(new Uri(activity.ServiceUrl), await GetAppCredentials((context as BotFrameworkBotContext).BotAppId));
+            MicrosoftAppCredentials appCredentials = await GetAppCredentials((context as BotFrameworkBotContext).BotAppId);
+            var connectorClient = new ConnectorClient(new Uri(activity.ServiceUrl), appCredentials);
             return await connectorClient.Conversations.UpdateActivityAsync((Activity)activity);
         }
 
         protected override async Task DeleteActivityImplementation(IBotContext context, string conversationId, string activityId)
         {
-            var connectorClient = new ConnectorClient(new Uri(context.Request.ServiceUrl), await GetAppCredentials((context as BotFrameworkBotContext).BotAppId));
+            MicrosoftAppCredentials appCredentials = await GetAppCredentials((context as BotFrameworkBotContext).BotAppId);
+            var connectorClient = new ConnectorClient(new Uri(context.Request.ServiceUrl), appCredentials);
             await connectorClient.Conversations.DeleteActivityAsync(conversationId, activityId);
         }
 
@@ -100,7 +103,8 @@ namespace Microsoft.Bot.Builder.Adapters
         }
 
         /// <summary>
-        /// Gets the application credentials.
+        /// Gets the application credentials. App Credentials are cached so as to ensure we are not refreshing
+        /// token everytime.
         /// </summary>
         /// <param name="appId">The application identifier (AAD Id for the bot).</param>
         /// <returns>App credentials.</returns>

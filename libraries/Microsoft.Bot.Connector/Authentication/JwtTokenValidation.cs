@@ -16,8 +16,7 @@ namespace Microsoft.Bot.Connector.Authentication
         private static HttpClient _httpClient = new HttpClient();
 
         /// <summary>
-        /// Validates the security tokens required by the Bot Framework Protocol. Throws on any exceptions. On success returns the claims identity.
-        /// For requests where auth is disabled and no auth header is present, Anonymous identity is returned. Otherwise, actual claims identity is returned.
+        /// Validates the security tokens required by the Bot Framework Protocol. Throws on any exceptions.
         /// </summary>
         /// <param name="activity">The incoming Activity from the Bot Framework or the Emulator</param>
         /// <param name="authHeader">The Bearer token included as part of the request</param>
@@ -26,8 +25,8 @@ namespace Microsoft.Bot.Connector.Authentication
         /// validation may require outbound calls for Endorsement validation and other checks. Those calls are made to
         /// TLS services, which are (latency wise) expensive resources. The httpClient passed in here, if shared by the layers
         /// above from call to call, enables connection reuse which is a significant performance and resource improvement.</param>
-        /// <returns>Claims identity. An anonymous identity is returned if Authentication is disabled.</returns>
-        public static async Task<ClaimsIdentity> EnsureValidActivity(IActivity activity, string authHeader, ICredentialProvider credentials, HttpClient httpClient = null)
+        /// <returns>Task tracking operation</returns>
+        public static async Task AssertValidActivity(IActivity activity, string authHeader, ICredentialProvider credentials, HttpClient httpClient = null)
         {
             if (string.IsNullOrWhiteSpace(authHeader))
             {
@@ -36,20 +35,33 @@ namespace Microsoft.Bot.Connector.Authentication
                 if (isAuthDisabled)
                 {
                     // We are on the anonymous code path. 
-                    return new ClaimsIdentity(new List<Claim>(), "anonymous");
+                    return;
                 }
             }
 
             // Go through the standard authentication path. 
-            ClaimsIdentity claimsIdentity = await JwtTokenValidation.ValidateAuthHeader(authHeader, credentials, activity.ServiceUrl, httpClient ?? _httpClient);
+            await JwtTokenValidation.AuthenticateRequest(activity, authHeader, credentials, httpClient ?? _httpClient);
+        }
 
+        /// <summary>
+        /// Authenticates the request and sets the service url in the set of trusted urls.
+        /// </summary>
+        /// <param name="activity">The activity.</param>
+        /// <param name="authHeader">The authentication header.</param>
+        /// <param name="credentials">The credentials.</param>
+        /// <param name="httpClient">The HTTP client.</param>
+        /// <returns>ClaimsIdentity for the request.</returns>
+        public static async Task<ClaimsIdentity> AuthenticateRequest(IActivity activity, string authHeader, ICredentialProvider credentials, HttpClient httpClient = null)
+        {
+            ClaimsIdentity claimsIdentity = await ValidateAuthHeader(authHeader, credentials, activity.ServiceUrl, httpClient ?? _httpClient);
+            
             // On the standard Auth path, we need to trust the URL that was incoming. 
             MicrosoftAppCredentials.TrustServiceUrl(activity.ServiceUrl);
 
             return claimsIdentity;
         }
 
-        public static async Task<ClaimsIdentity> ValidateAuthHeader(string authHeader, ICredentialProvider credentials, HttpClient httpClient = null)
+        public static async Task<ClaimsIdentity> ValidateAuthHeader(string authHeader, ICredentialProvider credentials, string serviceUrl = null, HttpClient httpClient = null)
         {
             if (string.IsNullOrWhiteSpace(authHeader))
             {
@@ -74,36 +86,15 @@ namespace Microsoft.Bot.Connector.Authentication
             }
             else
             {
-                return await ChannelValidation.AuthenticateChannelToken(authHeader, credentials, httpClient ?? _httpClient);
-            }
-        }
-
-        public static async Task<ClaimsIdentity> ValidateAuthHeader(string authHeader, ICredentialProvider credentials, string serviceUrl, HttpClient httpClient = null)
-        {
-            if (string.IsNullOrWhiteSpace(authHeader))
-            {
-                bool isAuthDisabled = await credentials.IsAuthenticationDisabledAsync();
-                if (isAuthDisabled)
+                // No empty or null check. Empty can point to issues. Null checks only.
+                if (serviceUrl != null)
                 {
-                    // In the scenario where Auth is disabled, we still want to have the 
-                    // IsAuthenticated flag set in the ClaimsIdentity. To do this requires
-                    // adding in an empty claim. 
-                    ClaimsIdentity anonymousAuthenticatedIdentity = new ClaimsIdentity(new List<Claim>(), "anonymous");
-                    return anonymousAuthenticatedIdentity;
+                    return await ChannelValidation.AuthenticateChannelToken(authHeader, credentials, serviceUrl, httpClient ?? _httpClient);
                 }
-
-                // No Auth Header. Auth is required. Request is not authorized. 
-                throw new UnauthorizedAccessException();
-            }
-
-            bool usingEmulator = EmulatorValidation.IsTokenFromEmulator(authHeader);
-            if (usingEmulator)
-            {
-                return await EmulatorValidation.AuthenticateEmulatorToken(authHeader, credentials, httpClient ?? _httpClient);
-            }
-            else
-            {
-                return await ChannelValidation.AuthenticateChannelToken(authHeader, credentials, serviceUrl, httpClient ?? _httpClient);
+                else
+                {
+                    return await ChannelValidation.AuthenticateChannelToken(authHeader, credentials, httpClient ?? _httpClient);
+                }
             }
         }
     }
