@@ -1,38 +1,34 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Schema;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Bot.Builder;
-using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder
 {
     /// <summary>
     /// Helper Bot Controller for ASP.NET Core
     /// </summary>
-    public class BotController : Controller
+    public abstract class BotController : Controller
     {
-        BotFrameworkAdapter adapter;
+        protected readonly BotFrameworkAdapter _adapter;
 
         public BotController(BotFrameworkAdapter adapter)
         {
-            this.adapter = adapter;
+            this._adapter = adapter;
         }
 
-        public virtual Task OnReceiveActivity(IBotContext context)
-        {
-            return Task.CompletedTask;
-        }
+        protected abstract Task OnReceiveActivity(IBotContext context);
 
         [HttpPost]
         public async Task<IActionResult> Post([FromBody]Activity activity)
         {
             try
             {
-                await adapter.ProcessActivty(this.Request.Headers["Authorization"].FirstOrDefault(), activity, OnReceiveActivity);
+                await _adapter.ProcessActivity(this.Request.Headers["Authorization"].FirstOrDefault(), activity, OnReceiveActivity);
                 return this.Ok();
             }
             catch (UnauthorizedAccessException)

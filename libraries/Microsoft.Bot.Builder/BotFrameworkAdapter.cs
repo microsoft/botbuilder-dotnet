@@ -40,7 +40,7 @@ namespace Microsoft.Bot.Builder.Adapters
             return this;
         }
 
-        public async Task ProcessActivty(string authHeader, Activity activity, Func<IBotContext, Task> callback)
+        public async Task ProcessActivity(string authHeader, Activity activity, Func<IBotContext, Task> callback)
         {
             BotAssert.ActivityNotNull(activity);
             await JwtTokenValidation.AssertValidActivity(activity, authHeader, _credentialProvider, _httpClient);

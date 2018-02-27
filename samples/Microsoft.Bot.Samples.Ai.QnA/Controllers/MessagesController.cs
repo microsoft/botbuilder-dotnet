@@ -7,8 +7,8 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Bot.Builder;
+using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Ai;
-using Microsoft.Bot.Builder.BotFramework;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 
@@ -53,7 +53,7 @@ namespace Microsoft.Bot.Samples.Ai.QnA.Controllers
         {
             try
             {
-                await adapter.ProcessActivty(this.Request.Headers["Authorization"].FirstOrDefault(), activity, BotReceiveHandler);
+                await adapter.ProcessActivity(this.Request.Headers["Authorization"].FirstOrDefault(), activity, BotReceiveHandler);
                 return this.Ok();
             }
             catch (UnauthorizedAccessException)

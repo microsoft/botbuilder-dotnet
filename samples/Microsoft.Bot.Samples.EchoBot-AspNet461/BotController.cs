@@ -1,12 +1,12 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
+using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Schema;
 using System;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
-using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder
 {
@@ -15,11 +15,11 @@ namespace Microsoft.Bot.Builder
     /// </summary>
     public abstract class BotController : ApiController
     {
-        protected readonly BotFrameworkAdapter Adapter;
+        protected readonly BotFrameworkAdapter _adapter;
 
         public BotController(BotFrameworkAdapter adapter)
         {
-            this.Adapter = adapter;
+            this._adapter = adapter;
         }
 
         protected abstract Task OnReceiveActivity(IBotContext context);
@@ -29,7 +29,7 @@ namespace Microsoft.Bot.Builder
         {
             try
             {
-                await Adapter.ProcessActivty(this.Request.Headers.Authorization?.Parameter, activity, OnReceiveActivity);
+                await _adapter.ProcessActivity(this.Request.Headers.Authorization?.Parameter, activity, OnReceiveActivity);
                 return this.Request.CreateResponse(HttpStatusCode.OK);
             }
             catch (UnauthorizedAccessException e)
