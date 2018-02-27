@@ -27,26 +27,50 @@ namespace Microsoft.Bot.Connector
         {
         }
 
-        /// <summary>
-        /// client defaults to sending the expect: continue header, which isn't very efficient,
-        /// </summary>
+        private HttpClient _originalHttpClient;
+        protected static Lazy<HttpClient> g_httpClient = new Lazy<HttpClient>(() =>
+        {
+            var httpClient = new HttpClient();
+            httpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("Microsoft-BotFramework", "4.0"));
+            httpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue($"(BotBuilder .Net/{typeof(ConnectorClient).GetTypeInfo().Assembly.GetName().Version})"));
+            httpClient.DefaultRequestHeaders.ExpectContinue = false;
+            return httpClient;
+        });
+
+        public bool UseSharedHttpClient
+        {
+            get { return this._originalHttpClient != null; }
+            set
+            {
+                if (value == false)
+                {
+                    this.HttpClient = this._originalHttpClient;
+                }
+                else
+                {
+                    if (this._originalHttpClient == null)
+                    {
+                        this._originalHttpClient = this.HttpClient;
+                        this.HttpClient = g_httpClient.Value;
+                    }
+                }
+            }
+        }
+
         partial void CustomInitialize()
         {
-            AddUserAgent(this);
-            HttpClient.DefaultRequestHeaders.ExpectContinue = false;
+            this.UseSharedHttpClient = true;
         }
 
-        internal static void AddUserAgent<T>(T client) where T : ServiceClient<T>
+        protected override void Dispose(bool disposing)
         {
-            client.HttpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("Microsoft-BotFramework", "4.0"));
-            client.HttpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue($"(BotBuilder .Net/{GetClientVersion(client)})"));
-        }
-
-        internal static string GetClientVersion<T>(T client) where T : ServiceClient<T>
-        {
-            var type = client.GetType();
-            var assembly = type.GetTypeInfo().Assembly;
-            return assembly.GetName().Version.ToString();
+            // replace global with original so dispose doesn't dispose the global one
+            if (this._originalHttpClient != null)
+            {
+                this.HttpClient = this._originalHttpClient;
+                this._originalHttpClient = null;
+            }
+            base.Dispose(disposing);
         }
     }
 }
