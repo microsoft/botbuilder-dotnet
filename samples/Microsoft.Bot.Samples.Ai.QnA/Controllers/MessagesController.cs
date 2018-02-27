@@ -53,7 +53,7 @@ namespace Microsoft.Bot.Samples.Ai.QnA.Controllers
         {
             try
             {
-                await adapter.ProcessActivty(this.Request.Headers["Authorization"].FirstOrDefault(), activity, BotReceiveHandler);
+                await adapter.ProcessActivity(this.Request.Headers["Authorization"].FirstOrDefault(), activity, BotReceiveHandler);
                 return this.Ok();
             }
             catch (UnauthorizedAccessException)
