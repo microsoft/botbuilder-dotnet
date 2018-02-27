@@ -102,7 +102,8 @@ namespace Microsoft.Bot.Builder.Tests
 
             // The middlware in this pipeline calls next(), so the resulting
             // status should be TRUE. 
-            bool didAllRun = await m.ReceiveActivityWithStatus(null);
+            bool didAllRun = false;
+            await m.ReceiveActivityWithStatus(null, async (ctx) => didAllRun = true);
 
             Assert.IsTrue(called1);
             Assert.IsTrue(didAllRun);
@@ -112,11 +113,13 @@ namespace Microsoft.Bot.Builder.Tests
         public async Task Status_RunAtEndEmptyPipeline()
         {
             Middleware.MiddlewareSet m = new Middleware.MiddlewareSet();
+            bool didAllRun = false;
 
             // This middlware pipeline has no entries. This should result in
             // the status being TRUE. 
-            bool didAllRun = await m.ReceiveActivityWithStatus(null);
+            await m.ReceiveActivityWithStatus(null, async (ctx) => didAllRun = true); 
             Assert.IsTrue(didAllRun);
+
         }
 
         [TestMethod]
@@ -141,7 +144,8 @@ namespace Microsoft.Bot.Builder.Tests
             m.Use(one);
             m.Use(two);
 
-            bool didAllRun = await m.ReceiveActivityWithStatus(null);
+            bool didAllRun = false;
+            await m.ReceiveActivityWithStatus(null, async (ctx) => didAllRun = true);
             Assert.IsTrue(called1);
             Assert.IsTrue(called2);
 
@@ -159,9 +163,9 @@ namespace Microsoft.Bot.Builder.Tests
             Middleware.MiddlewareSet m = new Middleware.MiddlewareSet();
             m.Use(one);
 
-            // The middlware in this pipeline calls next(), so this must
-            // be called as the final activity. 
-            bool didAllRun = await m.ReceiveActivityWithStatus(null);
+            // The middlware in this pipeline DOES NOT call next(), so this must not be called 
+            bool didAllRun = false;
+            await m.ReceiveActivityWithStatus(null, async (ctx) => didAllRun = true);
 
             Assert.IsTrue(called1);
 
@@ -348,7 +352,7 @@ namespace Microsoft.Bot.Builder.Tests
 
             await m.ReceiveActivity(null);
             Assert.IsTrue(caughtException);
-        }
+        }        
 
         public class WasCalledMiddlware : Middleware.IMiddleware, Middleware.IReceiveActivity
         {
