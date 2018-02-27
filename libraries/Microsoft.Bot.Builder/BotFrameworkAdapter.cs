@@ -57,8 +57,7 @@ namespace Microsoft.Bot.Builder.Adapters
 
             // For requests from channel App Id is in Audience claim of JWT token. For emulator it is in AppId claim. For 
             // unauthenticated requests we have anonymouse identity provided auth is disabled.
-            string botAppId = (claimsIdentity.Claims?.SingleOrDefault(claim => claim.Type == AuthenticationConstants.AudienceClaim) ??
-                claimsIdentity.Claims?.SingleOrDefault(claim => claim.Type == AuthenticationConstants.AppIdClaim))?.Value;
+            string botAppId = GetBotId(claimsIdentity);
             var context = new BotFrameworkBotContext(botAppId, this, activity);
             await base.RunPipeline(context, callback).ConfigureAwait(false);
         }
@@ -119,6 +118,30 @@ namespace Microsoft.Bot.Builder.Adapters
             }
 
             return appCredentials;
+        }
+
+        /// <summary>
+        /// Gets the bot identifier from claims.
+        /// </summary>
+        /// <param name="claimsIdentity">The claims identity.</param>
+        /// <returns>Bot's AAD AppId, if it could be inferred from claims. Null otherwise.</returns>
+        private static string GetBotId(ClaimsIdentity claimsIdentity)
+        {
+            // For requests coming from channels Audience Claim contains the Bot's AAD AppId
+            Claim botAppIdClaim = (claimsIdentity.Claims?.SingleOrDefault(claim => claim.Type == AuthenticationConstants.AudienceClaim) 
+                ??
+                // For requests coming from Emulator AppId claim contains the Bot's AAD AppId.
+                claimsIdentity.Claims?.SingleOrDefault(claim => claim.Type == AuthenticationConstants.AppIdClaim));
+
+            // For anonymous requests (requests with no header) appId is not set in claims.
+            if (botAppIdClaim != null)
+            {
+                return botAppIdClaim.Value;
+            }
+            else
+            {
+                return null;
+            }
         }
     }
 }
