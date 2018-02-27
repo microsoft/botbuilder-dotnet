@@ -26,6 +26,6 @@ namespace Microsoft.Bot.Builder
         /// <summary>
         /// Gets or sets the bot application identifier. The unqiue Id by which the bot is recognized in AAD.
         /// </summary>
-        public string BotAppId { get; private set; }
+        public string BotAppId { get; }
     }
 }
