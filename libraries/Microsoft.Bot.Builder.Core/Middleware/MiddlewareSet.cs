@@ -52,13 +52,13 @@ namespace Microsoft.Bot.Builder.Middleware
 
         public async Task ReceiveActivity(IBotContext context)
         {
-            await ReceiveActivityInternal(context, this._middleware.OfType<IReceiveActivity>().ToArray()).ConfigureAwait(false);
+            await ReceiveActivityInternal(context, this._middleware.OfType<IReceiveActivity>().ToArray(), null).ConfigureAwait(false);
         }
 
         public async Task ReceiveActivity(IBotContext context, NextDelegate next)
         {
-            await ReceiveActivityInternal(context, this._middleware.OfType<IReceiveActivity>().ToArray()).ConfigureAwait(false);
-            await next().ConfigureAwait(false); 
+            await ReceiveActivityInternal(context, this._middleware.OfType<IReceiveActivity>().ToArray(), null).ConfigureAwait(false);
+            await next().ConfigureAwait(false);
         }
 
         /// <summary>
@@ -69,20 +69,30 @@ namespace Microsoft.Bot.Builder.Middleware
         /// <returns>True, if all executed middleware in the pipeline called Next(). 
         /// False, if one of the middleware instances did not call Next(). 
         /// </returns>
-        public async Task<bool> ReceiveActivityWithStatus(IBotContext context)
+        public async Task ReceiveActivityWithStatus(IBotContext context, Func<IBotContext, Task> callback)
         {
-            return await ReceiveActivityInternal(context, this._middleware.OfType<IReceiveActivity>().ToArray()).ConfigureAwait(false);
+            await ReceiveActivityInternal(context, this._middleware.OfType<IReceiveActivity>().ToArray(), callback).ConfigureAwait(false);
         }        
 
-        private async Task<bool> ReceiveActivityInternal(IBotContext context, IReceiveActivity[] middleware)
+        private async Task ReceiveActivityInternal(IBotContext context, IReceiveActivity[] middleware, Func<IBotContext, Task> callback)
         {
             BotAssert.MiddlewareNotNull(middleware);
-            bool didAllRun = false;
 
             if (middleware.Length == 0) // No middleware to run.
             {
-                // If all the Middlware ran, let the caller know. 
-                return true;
+                // If all the Middlware ran, the "leading edge" of the tree is now complete. 
+                // This means it's time to run any developer specified callback. 
+                // Once this callback is done, the "trailing edge" calls are then completed. This
+                // allows code that looks like:
+                //      console.print("before");
+                //      await next();
+                //      console.print("after"); 
+                // to run as expected. 
+
+                if (callback != null)
+                    await callback(context);
+
+                return;
             }
 
             // Default to "No more Middleware after this"
@@ -91,12 +101,11 @@ namespace Microsoft.Bot.Builder.Middleware
                 // Remove the first item from the list of middleware to call,
                 // so that the next call just has the remaining items to worry about. 
                 IReceiveActivity[] remainingMiddleware = middleware.Skip(1).ToArray();
-                didAllRun |= await ReceiveActivityInternal(context, remainingMiddleware).ConfigureAwait(false);
+                await ReceiveActivityInternal(context, remainingMiddleware, callback).ConfigureAwait(false);
             }
 
             // Grab the current middleware, which is the 1st element in the array, and execute it            
             await middleware[0].ReceiveActivity(context, next).ConfigureAwait(false);
-            return didAllRun;
         }
 
         public async Task SendActivity(IBotContext context, IList<Activity> activities)

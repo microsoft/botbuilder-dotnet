@@ -34,9 +34,9 @@ namespace Microsoft.Bot.Builder
             };
         }
 
-        public BotContext(BotAdapter bot, ConversationReference conversationReference)
+        public BotContext(BotAdapter adapter, ConversationReference conversationReference)
         {
-            _adapter = bot ?? throw new ArgumentNullException(nameof(bot));
+            _adapter = adapter ?? throw new ArgumentNullException(nameof(adapter));
             _conversationReference = conversationReference ?? throw new ArgumentNullException(nameof(conversationReference));
         }
         public BotAdapter Adapter => _adapter;

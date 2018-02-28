@@ -29,7 +29,7 @@ namespace Microsoft.Bot.Builder
         {
             try
             {
-                await _adapter.ProcessActivty(this.Request.Headers.Authorization?.Parameter, activity, OnReceiveActivity);
+                await _adapter.ProcessActivity(this.Request.Headers.Authorization?.Parameter, activity, OnReceiveActivity);
                 return this.Request.CreateResponse(HttpStatusCode.OK);
             }
             catch (UnauthorizedAccessException e)
