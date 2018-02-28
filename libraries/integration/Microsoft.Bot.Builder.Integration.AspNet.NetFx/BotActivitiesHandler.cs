@@ -11,7 +11,7 @@ using System.Net.Http.Formatting;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Microsoft.Bot.Samples.EchoBot_AspNet461.Integration
+namespace Microsoft.Bot.Builder.Integration.AspNet
 {
     internal sealed class BotActivitiesHandler : HttpMessageHandler
     {

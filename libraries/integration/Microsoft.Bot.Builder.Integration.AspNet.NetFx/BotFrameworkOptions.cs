@@ -3,7 +3,7 @@
 using Microsoft.Bot.Builder.Middleware;
 using System.Collections.Generic;
 
-namespace Microsoft.Bot.Samples.EchoBot_AspNet461.Integration
+namespace Microsoft.Bot.Builder.Integration.AspNet
 {
     public class BotFrameworkOptions
     {

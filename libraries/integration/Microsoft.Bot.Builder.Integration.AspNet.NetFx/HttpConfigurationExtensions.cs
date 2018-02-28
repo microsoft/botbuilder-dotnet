@@ -4,7 +4,7 @@ using Microsoft.Bot.Builder.Adapters;
 using System;
 using System.Web.Http;
 
-namespace Microsoft.Bot.Samples.EchoBot_AspNet461.Integration
+namespace Microsoft.Bot.Builder.Integration.AspNet
 {
     public static class HttpConfigurationExtensions
     {

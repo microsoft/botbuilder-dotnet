@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 using Microsoft.Bot.Builder.Middleware;
 
-namespace Microsoft.Bot.Samples.EchoBot_AspNet461.Integration
+namespace Microsoft.Bot.Builder.Integration.AspNet
 {
     public class BotFrameworkConfigurationBuilder
     {

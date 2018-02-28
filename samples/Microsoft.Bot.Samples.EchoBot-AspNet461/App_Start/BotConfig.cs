@@ -1,6 +1,6 @@
 ﻿using Microsoft.Bot.Builder.Middleware;
 using Microsoft.Bot.Builder.Storage;
-using Microsoft.Bot.Samples.EchoBot_AspNet461.Integration;
+using Microsoft.Bot.Builder.Integration.AspNet;
 using System;
 using System.Web.Http;
 
