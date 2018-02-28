@@ -40,7 +40,7 @@ namespace Microsoft.Bot.Builder.Tests
         public async Task State_RememberUserState()
         {
             var adapter = new TestAdapter()
-                .Use(new UserStateMiddleware<TestState>(new MemoryStorage()));
+                .Use(new UserState<TestState>(new MemoryStorage()));
             await new TestFlow(adapter,
                     async (context) =>
                     {
@@ -67,7 +67,7 @@ namespace Microsoft.Bot.Builder.Tests
         public async Task State_RememberConversationState()
         {
             TestAdapter adapter = new TestAdapter()
-                .Use(new ConversationStateMiddleware<TestState>(new MemoryStorage()));
+                .Use(new ConversationState<TestState>(new MemoryStorage()));
             await new TestFlow(adapter,
                     async (context) =>
                     {
@@ -96,10 +96,10 @@ namespace Microsoft.Bot.Builder.Tests
 
             string testGuid = Guid.NewGuid().ToString();
             TestAdapter adapter = new TestAdapter()
-                .Use(new CustomStateMiddleware(new MemoryStorage()));
+                .Use(new CustomKeyState(new MemoryStorage()));
             await new TestFlow(adapter, async (context) =>
                     {
-                        var customState = context.Get<CustomState>(CustomStateMiddleware.PropertyName);
+                        var customState = CustomKeyState.Get(context);
                         switch (context.Request.AsMessageActivity().Text)
                         {
                             case "set value":
@@ -126,7 +126,7 @@ namespace Microsoft.Bot.Builder.Tests
         public async Task State_RoundTripTypedObject()
         {
             TestAdapter adapter = new TestAdapter()
-                .Use(new ConversationStateMiddleware<TypedObject>(new MemoryStorage()));
+                .Use(new ConversationState<TypedObject>(new MemoryStorage()));
 
             await new TestFlow(adapter,
                     async (context) =>
@@ -155,23 +155,15 @@ namespace Microsoft.Bot.Builder.Tests
             public string CustomString { get; set; }
         }
 
-        public class CustomStateMiddleware : StateMiddleware<CustomState>
+        public class CustomKeyState : BotState<CustomState>
         {
-            public CustomStateMiddleware(IStorage storage) : base(storage)
+            public CustomKeyState(IStorage storage) : base(storage, "CustomState", (context) => "CustomKey")
             {
             }
 
-            public const string PropertyName = "CustomState";
+            public const string PropertyName = "Microsoft.Bot.Builder.Tests.CustomKeyState";
 
-            public override string GetPropertyName()
-            {
-                return PropertyName;
-            }
-
-            public override string GetStorageKey(IBotContext context)
-            {
-                return "CustomStateKey";
-            }
+            public static CustomState Get(IBotContext context) { return context.Get<CustomState>(PropertyName); }
         }
     }
 }

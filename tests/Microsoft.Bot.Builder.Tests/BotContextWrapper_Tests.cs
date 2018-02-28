@@ -28,7 +28,7 @@ namespace Microsoft.Bot.Builder.Tests
 
     [TestClass]
     [TestCategory("Middleware")]
-    public class BotContextWrapper_Tests
+    public class ContextWrapper_Tests
     {
         private TestAdapter CreateBotAdapter()
         {
@@ -69,7 +69,7 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [TestMethod]
-        public async Task BotContextWrapper_TestReceivePipeline()
+        public async Task ContextWrapper_TestReceivePipeline()
         {
             var adapter = CreateBotAdapter();
             await new TestFlow(adapter, MyCodeHandler)
@@ -84,7 +84,7 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [TestMethod]
-        public async Task BotContextWrapper_TestProactivePipeline()
+        public async Task ContextWrapper_TestProactivePipeline()
         {
             var adapter = CreateBotAdapter();
             await new TestFlow(adapter, MyCodeHandler)
@@ -100,7 +100,7 @@ namespace Microsoft.Bot.Builder.Tests
 
         [TestMethod]
         [TestCategory("Functional Spec")]
-        public async Task BotContextWrapper_ReplyTextOnly()
+        public async Task ContextWrapper_ReplyTextOnly()
         {
 
             TestAdapter adapter = new TestAdapter();
@@ -118,7 +118,7 @@ namespace Microsoft.Bot.Builder.Tests
 
         [TestMethod]
         [TestCategory("Functional Spec")]
-        public async Task BotContextWrapper_ReplyTextAndSSML()
+        public async Task ContextWrapper_ReplyTextAndSSML()
         {
 
             string ssml = @"<speak><p>hello</p></speak>";
@@ -144,7 +144,7 @@ namespace Microsoft.Bot.Builder.Tests
 
         [TestMethod]
         [TestCategory("Functional Spec")]
-        public async Task BotContextWrapper_ReplyActivity()
+        public async Task ContextWrapper_ReplyActivity()
         {
 
             TestAdapter adapter = new TestAdapter();

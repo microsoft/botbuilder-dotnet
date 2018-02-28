@@ -44,6 +44,13 @@ namespace Microsoft.Bot.Builder.Middleware
         private readonly LinkedList<IntentRecognizer> _intentRecognizers = new LinkedList<IntentRecognizer>();
         private readonly LinkedList<IntentResultMutator> _intentResultMutators = new LinkedList<IntentResultMutator>();
 
+        /// <summary>
+        /// method for accessing recognized intents added by middleware to context
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public static IRecognizedIntents Get(IBotContext context) { return context.Get<IRecognizedIntents>(); }
+
         public async Task ReceiveActivity(IBotContext context, MiddlewareSet.NextDelegate next)
         {
             BotAssert.ContextNotNull(context);

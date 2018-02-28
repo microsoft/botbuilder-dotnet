@@ -18,12 +18,24 @@ namespace AlarmBot.Models
         /// <summary>
         /// Persisted AlarmBot Conversation State 
         /// </summary>
-        public AlarmConversationState ConversationState { get { return this.GetConversationState<AlarmConversationState>(); } }
+        public ConversationData ConversationState
+        {
+            get
+            {
+                return ConversationState<ConversationData>.Get(this);
+            }
+        }
 
         /// <summary>
         /// Persisted AlarmBot User State
         /// </summary>
-        public AlarmUserState UserState { get { return this.GetUserState<AlarmUserState>(); } }
+        public UserData UserState
+        {
+            get
+            {
+                return UserState<UserData>.Get(this);
+            }
+        }
 
         /// <summary>
         /// AlarmBot recognized Intents for the incoming request

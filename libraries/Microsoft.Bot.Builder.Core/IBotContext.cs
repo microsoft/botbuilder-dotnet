@@ -45,34 +45,33 @@ namespace Microsoft.Bot.Builder
         IBotContext Reply(IActivity activity);
 
         /// <summary>
-        /// Set named service
+        /// Set object by Id
         /// </summary>
-        /// <param name="serviceId"></param>
-        /// <param name="service"></param>
-        void Set(string serviceId, object service);
+        /// <param name="objectId"></param>
+        /// <param name="object"></param>
+        void Set(string objectId, object @object);
 
         /// <summary>
-        /// Get named service
+        /// Get object by id
         /// </summary>
-        /// <param name="serviceId"></param>
+        /// <param name="objectId"></param>
         /// <returns>service</returns>
-        object Get(string serviceId);
+        object Get(string objectId);
     }
 
     public static partial class BotContextExtension
     {
-        public static void Set<ServiceT>(this IBotContext context, ServiceT service, string serviceId = null)
+        public static void Set<ObjectT>(this IBotContext context, ObjectT service)
         {
-            if (serviceId == null)
-                serviceId = $"{typeof(ServiceT).Namespace}.{typeof(ServiceT).Name}";
-            context.Set(serviceId, service);
+            var objectId = $"{typeof(ObjectT).Namespace}.{typeof(ObjectT).Name}";
+            context.Set(objectId, service);
         }
 
-        public static ServiceT Get<ServiceT>(this IBotContext context, string serviceId = null)
+        public static ObjectT Get<ObjectT>(this IBotContext context, string objectId = null)
         {
-            if (serviceId == null)
-                serviceId = $"{typeof(ServiceT).Namespace}.{typeof(ServiceT).Name}";
-            return (ServiceT)context.Get(serviceId);
+            if (objectId == null)
+                objectId = $"{typeof(ObjectT).Namespace}.{typeof(ObjectT).Name}";
+            return context.Get<ObjectT>(objectId);
         }
 
     }

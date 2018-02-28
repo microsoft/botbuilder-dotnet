@@ -59,7 +59,9 @@ namespace AlarmBot.Topics
 
         public static Task ShowAlarms(IBotContext context)
         {
-            var userState = context.GetUserState<AlarmUserState>();
+            var userState = context.GetUserState<UserData>();
+            // var userState = UserState<UserAlarms>.Get(context);
+
             if (userState.Alarms == null)
             {
                 userState.Alarms = new List<Alarm>();

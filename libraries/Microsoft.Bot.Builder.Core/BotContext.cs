@@ -67,13 +67,13 @@ namespace Microsoft.Bot.Builder
             return this;
         }
 
-        public void Set(string serviceId, object service)
+        public void Set(string objectId, object service)
         {
-            if (String.IsNullOrWhiteSpace(serviceId))
-                throw new ArgumentNullException(nameof(serviceId));
+            if (String.IsNullOrWhiteSpace(objectId))
+                throw new ArgumentNullException(nameof(objectId));
             lock (_services)
             {
-                this._services[serviceId] = service;
+                this._services[objectId] = service;
             }
         }
 
