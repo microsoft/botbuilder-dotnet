@@ -6,6 +6,7 @@ using AlarmBot.Topics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.Middleware;
 using System.Threading.Tasks;
 
 namespace AlarmBot.Controllers
@@ -21,28 +22,28 @@ namespace AlarmBot.Controllers
 
             bool handled = false;
             // Get the current ActiveTopic from my persisted conversation state
-            var activeTopic = context.State.ConversationProperties[ConversationProperties.ACTIVETOPIC] as ITopic;
+            var conversation = ConversationState<ConversationData>.Get(context);
+            //var conversation = context.GetConversationState<ConversationData>();
 
             // if we don't have an active topic yet
-            if (activeTopic == null)
+            if (conversation.ActiveTopic== null)
             {
                 // use the default topic
-                activeTopic = new DefaultTopic();
-                context.State.ConversationProperties[ConversationProperties.ACTIVETOPIC] = activeTopic;
-                handled = await activeTopic.StartTopic(context);
+                conversation.ActiveTopic = new DefaultTopic();
+                handled = await conversation.ActiveTopic.StartTopic(context);
             }
             else
             {
                 // we do have an active topic, so call it 
-                handled = await activeTopic.ContinueTopic(context);
+                handled = await conversation.ActiveTopic.ContinueTopic(context);
             }
 
             // if activeTopic's result is false and the activeTopic is NOT already the default topic
-            if (handled == false && !(activeTopic is DefaultTopic))
+            if (handled == false && !(conversation.ActiveTopic is DefaultTopic))
             {
                 // USe DefaultTopic as the active topic
-                context.State.ConversationProperties[ConversationProperties.ACTIVETOPIC] = new DefaultTopic();
-                handled = await activeTopic.ResumeTopic(context);
+                conversation.ActiveTopic = new DefaultTopic();
+                handled = await conversation.ActiveTopic.ResumeTopic(context);
             }
         }
     }

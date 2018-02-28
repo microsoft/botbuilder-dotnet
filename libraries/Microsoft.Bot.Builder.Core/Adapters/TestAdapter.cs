@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Builder.Adapters
     public class TestAdapter : BotAdapter
     {
         private int _nextId = 0;
-        private readonly List<IActivity> botReplies = new List<IActivity>();        
+        private readonly List<Activity> botReplies = new List<Activity>();        
 
         public TestAdapter(ConversationReference reference = null)
         {
@@ -41,7 +41,7 @@ namespace Microsoft.Bot.Builder.Adapters
             return this;
         }
 
-        public Task ProcessActivity(IActivity activity, Func<IBotContext, Task> callback)
+        public Task ProcessActivity(Activity activity, Func<IBotContext, Task> callback)
         {
             lock (this.ConversationReference)
             {
@@ -64,7 +64,7 @@ namespace Microsoft.Bot.Builder.Adapters
         public ConversationReference ConversationReference { get; set; }
 
 
-        protected async override Task SendActivitiesImplementation(IBotContext context, IEnumerable<IActivity> activities)
+        protected async override Task SendActivitiesImplementation(IBotContext context, IEnumerable<Activity> activities)
         {
             foreach (var activity in activities)
             {
@@ -87,7 +87,7 @@ namespace Microsoft.Bot.Builder.Adapters
             }
         }
 
-        protected override Task<ResourceResponse> UpdateActivityImplementation(IBotContext context, IActivity activity)
+        protected override Task<ResourceResponse> UpdateActivityImplementation(IBotContext context, Activity activity)
         {
             lock (this.botReplies)
             {
@@ -119,11 +119,6 @@ namespace Microsoft.Bot.Builder.Adapters
             return Task.CompletedTask;
         }
 
-        protected override Task CreateConversationImplementation()
-        {
-            throw new NotImplementedException();
-        }
-
         /// <summary>
         /// Called by TestFlow to check next reply
         /// </summary>
@@ -147,7 +142,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// </summary>
         /// <param name="text"></param>
         /// <returns></returns>
-        public IActivity MakeActivity(string text = null)
+        public Activity MakeActivity(string text = null)
         {
             Activity activity = new Activity
             {
@@ -249,7 +244,7 @@ namespace Microsoft.Bot.Builder.Adapters
                 // NOTE: See details code in above method. 
                 task.Wait();
 
-                return this.adapter.ProcessActivity(userActivity, this.callback);
+                return this.adapter.ProcessActivity((Activity)userActivity, this.callback);
             }).Unwrap(), this);
         }
 

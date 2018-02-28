@@ -4,11 +4,12 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Middleware;
 using Microsoft.Cognitive.LUIS;
 
 namespace Microsoft.Bot.Builder.Ai
 {
-    public class LuisRecognizerMiddleware : Middleware.IntentRecognizerMiddleware
+    public class LuisRecognizerMiddleware : IntentRecognizerMiddleware
     {
         private readonly LuisClient _luisClient;
         
@@ -43,14 +44,14 @@ namespace Microsoft.Bot.Builder.Ai
         {
             this.OnRecognize(async (context) =>
             {
-                Middleware.Intent i = await RecognizeAndMap(context.Request.AsMessageActivity()?.Text);
-                return new List<Middleware.Intent>() { i };
+                Intent i = await RecognizeAndMap(context.Request.AsMessageActivity()?.Text);
+                return new List<Intent>() { i };
             });
         }
         
-        private async Task<Middleware.Intent> RecognizeAndMap(string utterance)
+        private async Task<Intent> RecognizeAndMap(string utterance)
         {
-            Middleware.Intent intent = new Middleware.Intent();
+            Intent intent = new Intent();
 
             // LUIS client throws an exception on Predict is the utterance is null / empty
             // so just skip those cases and return a non-match. 
