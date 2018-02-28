@@ -5,15 +5,34 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Microsoft.Bot.Builder.Middleware
+namespace Microsoft.Bot.Builder
 {
+    public interface IRecognizedIntents
+    {
+        Intent TopIntent { get; set; }
+        IList<Intent> Intents { get; set; }
+    }
+    public class IntentRecognition : IRecognizedIntents
+    {
+        public IntentRecognition()
+        {
+        }
+
+        public Intent TopIntent { get; set; }
+        public IList<Intent> Intents { get; set; } = new Intent[0];
+    }
+
     public class Intent
     {
         public string Name { get; set; }
         public double Score { get; set; }
 
-        public IList<Entity> Entities { get; } = new List<Entity>();                       
-    }    
+        public IList<Entity> Entities { get; } = new List<Entity>();
+    }
+}
+
+namespace Microsoft.Bot.Builder.Middleware
+{
 
     public class IntentRecognizerMiddleware : IReceiveActivity
     {
@@ -25,22 +44,32 @@ namespace Microsoft.Bot.Builder.Middleware
         private readonly LinkedList<IntentRecognizer> _intentRecognizers = new LinkedList<IntentRecognizer>();
         private readonly LinkedList<IntentResultMutator> _intentResultMutators = new LinkedList<IntentResultMutator>();
 
+        /// <summary>
+        /// method for accessing recognized intents added by middleware to context
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public static IRecognizedIntents Get(IBotContext context) { return context.Get<IRecognizedIntents>(); }
+
         public async Task ReceiveActivity(IBotContext context, MiddlewareSet.NextDelegate next)
         {
             BotAssert.ContextNotNull(context);
 
             var intents = await this.Recognize(context);
+            var result = new IntentRecognition();
             if (intents.Count != 0)
             {
+                result.Intents = intents;
                 var topIntent = FindTopIntent(intents);
                 if (topIntent.Score > 0.0)
                 {
-                    context.TopIntent = topIntent;
+                    result.TopIntent = topIntent;
                 }
             }
-            await next().ConfigureAwait(false); 
+            context.Set((IRecognizedIntents)result);
+            await next().ConfigureAwait(false);
         }
-       
+
         public async Task<IList<Intent>> Recognize(IBotContext context)
         {
             BotAssert.ContextNotNull(context);
@@ -54,7 +83,7 @@ namespace Microsoft.Bot.Builder.Middleware
             }
             else
             {
-                return new List<Intent>(); 
+                return new List<Intent>();
             }
         }
 
@@ -75,7 +104,7 @@ namespace Microsoft.Bot.Builder.Middleware
         }
 
         private async Task<Boolean> IsRecognizerEnabled(IBotContext context)
-        {            
+        {
             foreach (var userCode in _intentDisablers)
             {
                 bool isEnabled = await userCode(context).ConfigureAwait(false);
@@ -85,7 +114,7 @@ namespace Microsoft.Bot.Builder.Middleware
                 }
             }
 
-            return true; 
+            return true;
         }
 
         private async Task RunFilters(IBotContext context, IList<Intent> intents)
@@ -107,8 +136,8 @@ namespace Microsoft.Bot.Builder.Middleware
         public IntentRecognizerMiddleware OnEnabled(IntentDisabler preCondition)
         {
             if (preCondition == null)
-                throw new ArgumentNullException(nameof(preCondition)); 
-            
+                throw new ArgumentNullException(nameof(preCondition));
+
             _intentDisablers.AddLast(preCondition);
 
             return this;
@@ -120,7 +149,7 @@ namespace Microsoft.Bot.Builder.Middleware
         public IntentRecognizerMiddleware OnRecognize(IntentRecognizer recognizer)
         {
             if (recognizer == null)
-                throw new ArgumentNullException(nameof(recognizer)); 
+                throw new ArgumentNullException(nameof(recognizer));
 
             _intentRecognizers.AddLast(recognizer);
 
@@ -133,7 +162,7 @@ namespace Microsoft.Bot.Builder.Middleware
         public IntentRecognizerMiddleware OnFilter(IntentResultMutator postCondition)
         {
             if (postCondition == null)
-                throw new ArgumentNullException(nameof(postCondition)); 
+                throw new ArgumentNullException(nameof(postCondition));
 
             _intentResultMutators.AddFirst(postCondition);
 
@@ -143,7 +172,7 @@ namespace Microsoft.Bot.Builder.Middleware
         public static Intent FindTopIntent(IList<Intent> intents)
         {
             if (intents == null)
-                throw new ArgumentNullException(nameof(intents)); 
+                throw new ArgumentNullException(nameof(intents));
 
             var enumerator = intents.GetEnumerator();
             if (!enumerator.MoveNext())
@@ -167,7 +196,7 @@ namespace Microsoft.Bot.Builder.Middleware
         public static string CleanString(string s)
         {
             return string.IsNullOrWhiteSpace(s) ? string.Empty : s.Trim();
-        }        
+        }
     }
 
 }

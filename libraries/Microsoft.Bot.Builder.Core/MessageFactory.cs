@@ -39,11 +39,11 @@ namespace Microsoft.Bot.Builder
         /// Possible values include: 'acceptingInput',
         /// 'ignoringInput', 'expectingInput'
         /// </param>
-        public static IMessageActivity Text(string text, string ssml = null, string inputHint = null)
+        public static Activity Text(string text, string ssml = null, string inputHint = null)
         {
             IMessageActivity ma = Activity.CreateMessageActivity();
             SetTextAndSpeak(ma, text, ssml, inputHint);
-            return ma;
+            return (Activity)ma;
         }
 
         /// <summary>
