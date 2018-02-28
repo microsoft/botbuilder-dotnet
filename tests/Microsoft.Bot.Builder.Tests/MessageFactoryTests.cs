@@ -1,11 +1,13 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Net.Mime;
+using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Tests
 {
@@ -17,7 +19,7 @@ namespace Microsoft.Bot.Builder.Tests
         public void NullText()
         {
             IMessageActivity message = MessageFactory.Text(null);
-            Assert.AreEqual(message.Text, string.Empty, "Message Text is not an empty string");
+            Assert.IsNull(message.Text, "Message Text is not null. Null must have been passed through.");
             Assert.AreEqual(message.Type, ActivityTypes.Message, "Incorrect Activity Type");
         }
 
@@ -243,6 +245,78 @@ namespace Microsoft.Bot.Builder.Tests
             Assert.IsTrue(message.Attachments[0].Name == name, "Incorrect Attachment1 Name");
             Assert.IsTrue(message.Attachments[0].ContentType == contentType, "Incorrect contentType");
             Assert.IsTrue(message.Attachments[0].ContentUrl == uri, "Incorrect Uri");
+        }
+
+        [TestMethod]
+        public async Task ValidateIMBackWithText()
+        {
+            TestAdapter adapter = new TestAdapter();                 
+
+            async Task ReplyWithimBackBack(IBotContext ctx)
+            {
+                if (ctx.Request.AsMessageActivity().Text == "test")
+                {
+                    var activity = MessageFactory.SuggestedActions(new CardAction[]
+                    {
+                        new CardAction(type: "imBack", text: "red", title: "redTitle")
+                    }, "Select color");
+                    ctx.Reply(activity); 
+                }
+            }
+
+            void ValidateIMBack(IActivity activity)
+            {
+                Assert.IsTrue(activity.Type == ActivityTypes.Message);
+
+                var messageActivity = activity.AsMessageActivity(); 
+
+                Assert.IsTrue(messageActivity.Text == "Select color");                
+                Assert.IsTrue(messageActivity.SuggestedActions.Actions.Count == 1, "Incorrect Count");
+                Assert.IsTrue(messageActivity.SuggestedActions.Actions[0].Type == ActionTypes.ImBack, "Incorrect Action Type");
+                Assert.IsTrue(messageActivity.SuggestedActions.Actions[0].Text == "red", "incorrect text");
+                Assert.IsTrue(messageActivity.SuggestedActions.Actions[0].Title == "redTitle", "incorrect text");
+            }
+
+            await new TestFlow(adapter, ReplyWithimBackBack)
+                .Send("test")
+                .AssertReply(ValidateIMBack, "IMBack Did not validate")
+                .StartTest();
+        }
+
+        [TestMethod]
+        public async Task ValidateIMBackWithNoTest()
+        {
+            TestAdapter adapter = new TestAdapter();
+
+            async Task ReplyWithimBackBack(IBotContext ctx)
+            {
+                if (ctx.Request.AsMessageActivity().Text == "test")
+                {
+                    var activity = MessageFactory.SuggestedActions(new CardAction[]
+                    {
+                        new CardAction(type: "imBack", text: "red", title: "redTitle")
+                    }, "");
+                    ctx.Reply(activity);
+                }
+            }
+
+            void ValidateIMBack(IActivity activity)
+            {
+                Assert.IsTrue(activity.Type == ActivityTypes.Message);
+
+                var messageActivity = activity.AsMessageActivity();
+
+                Assert.IsTrue(messageActivity.Text == null);
+                Assert.IsTrue(messageActivity.SuggestedActions.Actions.Count == 1, "Incorrect Count");
+                Assert.IsTrue(messageActivity.SuggestedActions.Actions[0].Type == ActionTypes.ImBack, "Incorrect Action Type");
+                Assert.IsTrue(messageActivity.SuggestedActions.Actions[0].Text== "red", "incorrect text");
+                Assert.IsTrue(messageActivity.SuggestedActions.Actions[0].Title == "redTitle", "incorrect text");
+            }
+
+            await new TestFlow(adapter, ReplyWithimBackBack)
+                .Send("test")
+                .AssertReply(ValidateIMBack, "IMBack Did not validate")
+                .StartTest();
         }
     }
 }

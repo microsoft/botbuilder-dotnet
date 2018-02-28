@@ -28,7 +28,7 @@ namespace Microsoft.Bot.Builder
         {
             try
             {
-                await _adapter.ProcessActivty(this.Request.Headers["Authorization"].FirstOrDefault(), activity, OnReceiveActivity);
+                await _adapter.ProcessActivity(this.Request.Headers["Authorization"].FirstOrDefault(), activity, OnReceiveActivity);
                 return this.Ok();
             }
             catch (UnauthorizedAccessException)
