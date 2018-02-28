@@ -22,27 +22,28 @@ namespace AlarmBot.Controllers
 
             bool handled = false;
             // Get the current ActiveTopic from my persisted conversation state
-            var conversationState = context.GetConversationState<AlarmConversationState>();
+            var conversation = ConversationState<ConversationData>.Get(context);
+            //var conversation = context.GetConversationState<ConversationData>();
 
             // if we don't have an active topic yet
-            if (conversationState.ActiveTopic== null)
+            if (conversation.ActiveTopic== null)
             {
                 // use the default topic
-                conversationState.ActiveTopic = new DefaultTopic();
-                handled = await conversationState.ActiveTopic.StartTopic(context);
+                conversation.ActiveTopic = new DefaultTopic();
+                handled = await conversation.ActiveTopic.StartTopic(context);
             }
             else
             {
                 // we do have an active topic, so call it 
-                handled = await conversationState.ActiveTopic.ContinueTopic(context);
+                handled = await conversation.ActiveTopic.ContinueTopic(context);
             }
 
             // if activeTopic's result is false and the activeTopic is NOT already the default topic
-            if (handled == false && !(conversationState.ActiveTopic is DefaultTopic))
+            if (handled == false && !(conversation.ActiveTopic is DefaultTopic))
             {
                 // USe DefaultTopic as the active topic
-                conversationState.ActiveTopic = new DefaultTopic();
-                handled = await conversationState.ActiveTopic.ResumeTopic(context);
+                conversation.ActiveTopic = new DefaultTopic();
+                handled = await conversation.ActiveTopic.ResumeTopic(context);
             }
         }
     }

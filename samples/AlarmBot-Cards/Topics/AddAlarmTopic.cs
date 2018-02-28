@@ -127,7 +127,8 @@ namespace AlarmBot.Topics
         private async Task<bool> ProcessTopicState(IBotContext context)
         {
             string utterance = (((Activity)context.Request).Text ?? "").Trim();
-            var userState = context.GetUserState<AlarmUserState>();
+            var userState = context.GetUserState<UserData>();
+            // var userState = UserState<UserData>.Get(context);
 
             // we ar eusing TopicState to remember what we last asked
             switch (this.TopicState)

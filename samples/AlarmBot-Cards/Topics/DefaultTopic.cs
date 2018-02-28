@@ -64,7 +64,8 @@ namespace AlarmBot.Topics
         /// <returns></returns>
         public Task<bool> ContinueTopic(IBotContext context)
         {
-            var conversationState = context.GetConversationState<AlarmConversationState>();
+            var conversation = ConversationState<ConversationData>.Get(context);
+         // var conversation = context.GetConversationState<ConversationData>();
             var recognizedIntents = context.Get<IRecognizedIntents>();
             switch (context.Request.Type)
             {
@@ -73,18 +74,18 @@ namespace AlarmBot.Topics
                     {
                         case "addAlarm":
                             // switch to addAlarm topic
-                            conversationState.ActiveTopic = new AddAlarmTopic();
-                            return conversationState.ActiveTopic.StartTopic(context);
+                            conversation.ActiveTopic = new AddAlarmTopic();
+                            return conversation.ActiveTopic.StartTopic(context);
 
                         case "showAlarms":
                             // switch to show alarms topic
-                            conversationState.ActiveTopic = new ShowAlarmsTopic();
-                            return conversationState.ActiveTopic.StartTopic(context);
+                            conversation.ActiveTopic = new ShowAlarmsTopic();
+                            return conversation.ActiveTopic.StartTopic(context);
 
                         case "deleteAlarm":
                             // switch to delete alarm topic
-                            conversationState.ActiveTopic = new DeleteAlarmTopic();
-                            return conversationState.ActiveTopic.StartTopic(context);
+                            conversation.ActiveTopic = new DeleteAlarmTopic();
+                            return conversation.ActiveTopic.StartTopic(context);
 
                         case "help":
                             // show help
