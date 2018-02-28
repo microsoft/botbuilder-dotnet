@@ -77,14 +77,14 @@ namespace Microsoft.Bot.Builder
             }
         }
 
-        public object Get(string serviceId)
+        public object Get(string objectId)
         {
-            if (String.IsNullOrWhiteSpace(serviceId))
-                throw new ArgumentNullException(nameof(serviceId));
+            if (String.IsNullOrWhiteSpace(objectId))
+                throw new ArgumentNullException(nameof(objectId));
             object service = null;
             lock (_services)
             {
-                this._services.TryGetValue(serviceId, out service);
+                this._services.TryGetValue(objectId, out service);
             }
             return service;
         }
