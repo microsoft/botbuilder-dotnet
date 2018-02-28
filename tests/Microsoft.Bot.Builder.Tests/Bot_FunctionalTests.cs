@@ -75,7 +75,7 @@ namespace Microsoft.Bot.Builder.Tests
                 await next();
             }
 
-            public async Task SendActivity(IBotContext context, IList<IActivity> activities, NextDelegate next)
+            public async Task SendActivity(IBotContext context, IList<Activity> activities, NextDelegate next)
             {
                 WasSendActivityCalled = true;
                 await next();

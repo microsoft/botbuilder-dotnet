@@ -1,22 +1,53 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License.
-
+﻿using Microsoft.Bot.Builder;
+using Microsoft.Bot.Builder.Middleware;
+using Microsoft.Bot.Schema;
+using Microsoft.Recognizers.Text.DateTime;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Bot.Builder;
-using Microsoft.Recognizers.Text.DateTime;
+using System.Threading.Tasks;
 
-namespace AlarmBot
+namespace AlarmBot.Models
 {
-    public static class DateTimeRecognizerExtensions
+    public class AlarmBotContext : BotContextWrapper
     {
-        public static IList<DateTime> GetDateTimes(this BotContext context)
+        public AlarmBotContext(IBotContext context) : base(context)
+        {
+        }
+
+        /// <summary>
+        /// Persisted AlarmBot Conversation State 
+        /// </summary>
+        public ConversationData ConversationState
+        {
+            get
+            {
+                return ConversationState<ConversationData>.Get(this);
+            }
+        }
+
+        /// <summary>
+        /// Persisted AlarmBot User State
+        /// </summary>
+        public UserData UserState
+        {
+            get
+            {
+                return UserState<UserData>.Get(this);
+            }
+        }
+
+        /// <summary>
+        /// AlarmBot recognized Intents for the incoming request
+        /// </summary>
+        public IRecognizedIntents RecognizedIntents { get { return this.Get<IRecognizedIntents>(); } }
+
+        public IList<DateTime> GetDateTimes()
         {
             IList<DateTime> times = new List<DateTime>();
             // Get DateTime model for English
-            var model = DateTimeRecognizer.GetInstance().GetDateTimeModel(context.Request.AsMessageActivity().Locale ?? "en-us");
-            var results = model.Parse(context.Request.AsMessageActivity().Text);
+            var model = DateTimeRecognizer.GetInstance().GetDateTimeModel(this.Request.Locale ?? "en-us");
+            var results = model.Parse(this.Request.Text);
 
             // Check there are valid results
             if (results.Any() && results.First().TypeName.StartsWith("datetimeV2"))
@@ -38,5 +69,6 @@ namespace AlarmBot
             }
             return times;
         }
+
     }
 }
