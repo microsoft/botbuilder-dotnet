@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using AlarmBot.Models;
 using AlarmBot.Responses;
 using Microsoft.Bot.Builder;
+using Microsoft.Bot.Builder.Middleware;
 using Microsoft.Bot.Schema;
 
 namespace AlarmBot.Topics
@@ -27,7 +28,7 @@ namespace AlarmBot.Topics
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public Task<bool> StartTopic(IBotContext context)
+        public Task<bool> StartTopic(AlarmBotContext context)
         {
             switch (context.Request.Type)
             {
@@ -61,32 +62,27 @@ namespace AlarmBot.Topics
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public Task<bool> ContinueTopic(IBotContext context)
+        public Task<bool> ContinueTopic(AlarmBotContext context)
         {
-            var activeTopic = (ITopic)context.State.ConversationProperties[ConversationProperties.ACTIVETOPIC];
-
             switch (context.Request.Type)
             {
                 case ActivityTypes.Message:
-                    switch (context.TopIntent?.Name)
+                    switch (context.RecognizedIntents.TopIntent?.Name)
                     {
                         case "addAlarm":
                             // switch to addAlarm topic
-                            activeTopic = new AddAlarmTopic();
-                            context.State.ConversationProperties[ConversationProperties.ACTIVETOPIC] = activeTopic;
-                            return activeTopic.StartTopic(context);
+                            context.ConversationState.ActiveTopic = new AddAlarmTopic();
+                            return context.ConversationState.ActiveTopic.StartTopic(context);
 
                         case "showAlarms":
                             // switch to show alarms topic
-                            activeTopic = new ShowAlarmsTopic();
-                            context.State.ConversationProperties[ConversationProperties.ACTIVETOPIC] = activeTopic;
-                            return activeTopic.StartTopic(context);
+                            context.ConversationState.ActiveTopic = new ShowAlarmsTopic();
+                            return context.ConversationState.ActiveTopic.StartTopic(context);
 
                         case "deleteAlarm":
                             // switch to delete alarm topic
-                            activeTopic = new DeleteAlarmTopic();
-                            context.State.ConversationProperties[ConversationProperties.ACTIVETOPIC] = activeTopic;
-                            return activeTopic.StartTopic(context);
+                            context.ConversationState.ActiveTopic = new DeleteAlarmTopic();
+                            return context.ConversationState.ActiveTopic.StartTopic(context);
 
                         case "help":
                             // show help
@@ -110,7 +106,7 @@ namespace AlarmBot.Topics
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public Task<bool> ResumeTopic(IBotContext context)
+        public Task<bool> ResumeTopic(AlarmBotContext context)
         {
             // just prompt the user to ask what they want to do
             DefaultResponses.ReplyWithResumeTopic(context);

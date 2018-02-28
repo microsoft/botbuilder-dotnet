@@ -1,46 +1,34 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
-
+using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Middleware;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
+
 namespace Microsoft.Bot.Builder.Tests
 {
 
-
-    public class AnnotateMiddleware : IContextCreated, IReceiveActivity, ISendActivity
+    public class TestBotContext : BotContextWrapper
     {
-        public async Task SendActivity(BotContext context, IList<Activity> activities) {; }
-        public async Task ContextDone(BotContext context) { /*context.State["ContextDone"] = true;*/ }
+        public TestBotContext(IBotContext context) : base(context) { }
 
-        public async Task ContextCreated(IBotContext context, MiddlewareSet.NextDelegate next)
+        public void ReplyTwice(string text)
         {
-            //context.State["ContextCreated"] = true;
-            await next();
-        }
-
-        public async Task ReceiveActivity(IBotContext context, MiddlewareSet.NextDelegate next)
-        {
-            context.Request.AsMessageActivity().Text += "ReceiveActivity";
-            await next();
-        }
-        public async Task SendActivity(IBotContext context, IList<Activity> activities, MiddlewareSet.NextDelegate next)
-        {
-            if (context.Responses.Count > 0)
-            {
-                context.Responses[0].AsMessageActivity().Text += "SendActivity";
-            }
-            await next();
+            this.Reply(text);
+            this.Reply(text);
         }
     }
 
+
     [TestClass]
     [TestCategory("Middleware")]
-    public class BotContext_Tests
+    public class ContextWrapper_Tests
     {
         private TestAdapter CreateBotAdapter()
         {
@@ -53,6 +41,8 @@ namespace Microsoft.Bot.Builder.Tests
 
         public async Task MyCodeHandler(IBotContext context)
         {
+            context = new TestBotContext(context);
+
             Assert.IsTrue(context.Request.AsMessageActivity().Text.Contains("ReceiveActivity"));
             Assert.IsFalse(context.Request.AsMessageActivity().Text.Contains("SendActivity"));
             if (context.Request.AsMessageActivity().Text.StartsWith("proactive"))
@@ -64,6 +54,7 @@ namespace Microsoft.Bot.Builder.Tests
                     await Task.Delay(1000).ConfigureAwait(false);
                     await context.Adapter.ContinueConversation(reference, async (context2) =>
                     {
+                        context2 = new TestBotContext(context2);
                         Assert.IsNull(context2.Request);
                         context2.Reply("proactive");
                     }).ConfigureAwait(false);
@@ -78,7 +69,7 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [TestMethod]
-        public async Task TestReceivePipeline()
+        public async Task ContextWrapper_TestReceivePipeline()
         {
             var adapter = CreateBotAdapter();
             await new TestFlow(adapter, MyCodeHandler)
@@ -93,7 +84,7 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [TestMethod]
-        public async Task TestProactivePipeline()
+        public async Task ContextWrapper_TestProactivePipeline()
         {
             var adapter = CreateBotAdapter();
             await new TestFlow(adapter, MyCodeHandler)
@@ -109,17 +100,17 @@ namespace Microsoft.Bot.Builder.Tests
 
         [TestMethod]
         [TestCategory("Functional Spec")]
-        public async Task Context_ReplyTextOnly()
+        public async Task ContextWrapper_ReplyTextOnly()
         {
 
             TestAdapter adapter = new TestAdapter();
             await new TestFlow(adapter, async (context) =>
+            {
+                if (context.Request.AsMessageActivity().Text == "hello")
                 {
-                    if (context.Request.AsMessageActivity().Text == "hello")
-                    {
-                        context.Reply("world");
-                    }
-                })
+                    context.Reply("world");
+                }
+            })
                 .Send("hello")
                     .AssertReply("world")
                 .StartTest();
@@ -127,7 +118,7 @@ namespace Microsoft.Bot.Builder.Tests
 
         [TestMethod]
         [TestCategory("Functional Spec")]
-        public async Task Context_ReplyTextAndSSML()
+        public async Task ContextWrapper_ReplyTextAndSSML()
         {
 
             string ssml = @"<speak><p>hello</p></speak>";
@@ -153,22 +144,23 @@ namespace Microsoft.Bot.Builder.Tests
 
         [TestMethod]
         [TestCategory("Functional Spec")]
-        public async Task Context_ReplyActivity()
+        public async Task ContextWrapper_ReplyActivity()
         {
 
             TestAdapter adapter = new TestAdapter();
             await new TestFlow(adapter, async (context) =>
+            {
+                if (context.Request.AsMessageActivity().Text == "hello")
                 {
-                    if (context.Request.AsMessageActivity().Text == "hello")
-                    {
-                        IActivity reply = context.ConversationReference.GetPostToUserMessage();
-                        reply.AsMessageActivity().Text = "world";
-                        context.Reply(reply);
-                    }
-                })
+                    IActivity reply = context.ConversationReference.GetPostToUserMessage();
+                    reply.AsMessageActivity().Text = "world";
+                    context.Reply(reply);
+                }
+            })
                 .Send("hello")
                     .AssertReply("world", "send/reply with Activity works")
                 .StartTest();
         }
     }
 }
+

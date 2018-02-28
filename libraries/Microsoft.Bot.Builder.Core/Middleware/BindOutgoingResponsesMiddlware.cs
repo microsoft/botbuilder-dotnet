@@ -26,7 +26,7 @@ namespace Microsoft.Bot.Builder.Middleware
         {            
         }
 
-        public async Task SendActivity(IBotContext context, IList<IActivity> activities, MiddlewareSet.NextDelegate next)
+        public async Task SendActivity(IBotContext context, IList<Activity> activities, MiddlewareSet.NextDelegate next)
         {
             BotAssert.ContextNotNull(context);
             BotAssert.ActivityListNotNull(activities);

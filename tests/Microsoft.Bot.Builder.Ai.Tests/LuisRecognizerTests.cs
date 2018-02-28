@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.Middleware;
 using Microsoft.Bot.Builder.Tests;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -31,7 +32,7 @@ namespace Microsoft.Bot.Builder.Ai.Tests
             var context = TestUtilities.CreateEmptyContext();
             context.Request.AsMessageActivity().Text = "I want a ham and cheese sandwich";
 
-            IList<Middleware.Intent> res = await recognizer.Recognize(context);
+            IList<Intent> res = await recognizer.Recognize(context);
             Assert.IsTrue(res.Count == 1, "Incorrect number of intents");
             Assert.IsTrue(res[0].Name == "sandwichorder", "Incorrect Name");
             Assert.IsTrue(res[0].Entities.Count > 0, "No Entities Found");
@@ -55,7 +56,8 @@ namespace Microsoft.Bot.Builder.Ai.Tests
                 .Use(new LuisRecognizerMiddleware(luisAppId, subscriptionKey));
             await new TestFlow(adapter, (context) =>
                 {
-                    context.Reply(context.TopIntent.Name);
+                    var recognized = context.Get<IRecognizedIntents>();
+                    context.Reply(recognized.TopIntent.Name);
                     return Task.CompletedTask;
                 })
                 .Send("I want ham and cheese sandwich!")

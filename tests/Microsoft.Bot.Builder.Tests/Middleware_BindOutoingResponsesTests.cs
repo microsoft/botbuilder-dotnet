@@ -83,7 +83,7 @@ namespace Microsoft.Bot.Builder.Tests
         [TestMethod]
         public async Task FixupMessageType()
         {
-            IActivity a = new Activity();
+            Activity a = new Activity();
 
             
             TestAdapter adapter = new TestAdapter();
