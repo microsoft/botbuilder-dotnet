@@ -150,11 +150,15 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="App_Start\BotConfig.cs" />
     <Compile Include="App_Start\UnityConfig.cs" />
     <Compile Include="App_Start\UnityWebApiActivator.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
-    <Compile Include="BotController.cs" />
-    <Compile Include="Controllers\MessagesController.cs" />
+    <Compile Include="BotIntegrationPOC\BotActivitiesHandler.cs" />
+    <Compile Include="BotIntegrationPOC\BotFrameworkConfigurationBuilder.cs" />
+    <Compile Include="BotIntegrationPOC\BotFrameworkOptions.cs" />
+    <Compile Include="BotIntegrationPOC\HttpConfigurationExtensions.cs" />
+    <Compile Include="Bots\MyBot.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -204,7 +208,7 @@
     <VisualStudio>
       <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
         <WebProjectProperties>
-          <UseIIS>True</UseIIS>
+          <UseIIS>False</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>3979</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>

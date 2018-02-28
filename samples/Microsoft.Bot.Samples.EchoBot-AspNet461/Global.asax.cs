@@ -6,7 +6,11 @@ namespace Microsoft.Bot.Samples.EchoBot_AspNet461
     {
         protected void Application_Start()
         {
-            GlobalConfiguration.Configure(WebApiConfig.Register);
+            GlobalConfiguration.Configure(config =>
+            {
+                WebApiConfig.Register(config);
+                BotConfig.Register(config);
+            });
         }
     }
 }
