@@ -34,18 +34,18 @@ namespace Microsoft.Bot.Builder.Integration.AspNet
 
             void ConfigureBotRoute(BotFrameworkAdapter adapter)
             {
-                var botMessagesRouteUrl = options.RouteBaseUrl;
+                var botActivitiesRouteUrl = options.RouteBaseUrl;
 
-                if (!botMessagesRouteUrl.EndsWith("/"))
+                if (!botActivitiesRouteUrl.EndsWith("/"))
                 {
-                    botMessagesRouteUrl += "/";
+                    botActivitiesRouteUrl += "/";
                 }
 
-                botMessagesRouteUrl += "activities";
+                botActivitiesRouteUrl += "activities";
 
                 httpConfiguration.Routes.MapHttpRoute(
                         "BotFrameworkV4 Activities Controller",
-                        botMessagesRouteUrl,
+                        botActivitiesRouteUrl,
                         defaults: null,
                         constraints: null,
                         handler: new BotActivitiesHandler(adapter));
