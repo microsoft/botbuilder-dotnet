@@ -67,24 +67,34 @@ namespace Microsoft.Bot.Builder
             return this;
         }
 
-        public void Set(string objectId, object service)
+        /// <summary>
+        /// Set the value associated with a key.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value to set.</param>
+        public void Set(string key, object value)
         {
-            if (String.IsNullOrWhiteSpace(objectId))
-                throw new ArgumentNullException(nameof(objectId));
+            if (String.IsNullOrWhiteSpace(key))
+                throw new ArgumentNullException(nameof(key));
             lock (_services)
             {
-                this._services[objectId] = service;
+                this._services[key] = value;
             }
         }
 
-        public object Get(string objectId)
+        /// <summary>
+        /// Get a value by a key.
+        /// </summary>
+        /// <param name="key">The key of the value to get.</param>
+        /// <returns>The value.</returns>
+        public object Get(string key)
         {
-            if (String.IsNullOrWhiteSpace(objectId))
-                throw new ArgumentNullException(nameof(objectId));
+            if (String.IsNullOrWhiteSpace(key))
+                throw new ArgumentNullException(nameof(key));
             object service = null;
             lock (_services)
             {
-                this._services.TryGetValue(objectId, out service);
+                this._services.TryGetValue(key, out service);
             }
             return service;
         }
