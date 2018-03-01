@@ -5,10 +5,8 @@ using Microsoft.Bot.Builder.Middleware;
 
 namespace Microsoft.Bot.Samples.EchoBot_AspNet461
 {
-    public class MyBotState : IStoreItem
+    public class MyBotState : StoreItem
     {
-        public string eTag { get; set; }
-
         public int TurnNumber { get; set; }
     }
 
