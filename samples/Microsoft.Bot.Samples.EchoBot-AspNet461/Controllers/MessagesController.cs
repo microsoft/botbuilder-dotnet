@@ -1,9 +1,15 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.Middleware;
 
 namespace Microsoft.Bot.Samples.EchoBot_AspNet461
 {
+    public class MyState : StoreItem
+    {
+        public long TurnNumber { get; set; }
+    }
+
     public class MessagesController : BotController
     {
 
@@ -14,14 +20,14 @@ namespace Microsoft.Bot.Samples.EchoBot_AspNet461
             var msgActivity = context.Request.AsMessageActivity();
             if (msgActivity != null)
             {
-                long turnNumber = context.State.ConversationProperties["turnNumber"] ?? 0;
-                context.State.ConversationProperties["turnNumber"] = ++turnNumber;
+                var myState = context.GetConversationState<MyState>();
+                myState.TurnNumber++;
 
                 // calculate something for us to return
                 int length = (msgActivity.Text ?? string.Empty).Length;
 
                 // return our reply to the user
-                context.Reply($"[{turnNumber}] You sent {msgActivity.Text} which was {length} characters");
+                context.Reply($"[{myState.TurnNumber}] You sent {msgActivity.Text} which was {length} characters");
                 return Task.CompletedTask;
             }
 

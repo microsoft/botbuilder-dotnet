@@ -39,11 +39,11 @@ namespace Microsoft.Bot.Builder
         /// Possible values include: 'acceptingInput',
         /// 'ignoringInput', 'expectingInput'
         /// </param>
-        public static IMessageActivity Text(string text, string ssml = null, string inputHint = null)
+        public static Activity Text(string text, string ssml = null, string inputHint = null)
         {
             IMessageActivity ma = Activity.CreateMessageActivity();
             SetTextAndSpeak(ma, text, ssml, inputHint);
-            return ma;
+            return (Activity)ma;
         }
 
         /// <summary>
@@ -232,8 +232,11 @@ namespace Microsoft.Bot.Builder
 
         private static void SetTextAndSpeak(IMessageActivity ma, string text = null, string ssml = null, string inputHint = null)
         {
-            ma.Text = !string.IsNullOrWhiteSpace(text) ? text : string.Empty;
-            ma.Speak = !string.IsNullOrWhiteSpace(ssml) ? ssml : string.Empty;
+            // Note: we must put NULL in the fields, as the clients will happily render 
+            // an empty string, which is not the behavior people expect to see. 
+            ma.Text = !string.IsNullOrWhiteSpace(text) ? text : null;
+            ma.Speak = !string.IsNullOrWhiteSpace(ssml) ? ssml : null;
+
             ma.InputHint = inputHint;
         }
     }
