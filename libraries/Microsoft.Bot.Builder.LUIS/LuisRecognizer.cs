@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -22,24 +23,30 @@ namespace Microsoft.Bot.Builder.LUIS
         private readonly ILuisOptions _luisOptions;
         private readonly ILuisRecognizerOptions _luisRecognizerOptions;
 
+        private readonly ILuisOptions _defaultLuisOptions = new LuisRequest();
+        private readonly ILuisRecognizerOptions _defaultRecognizerOptions = new LuisRecognizerOptions {Verbose = true};
+
         public LuisRecognizer(ILuisModel luisModel, ILuisRecognizerOptions luisRecognizerOptions = null, ILuisOptions options = null)
         {
             _luisService = new LuisService(luisModel);
-            _luisOptions = options;
-            _luisRecognizerOptions = luisRecognizerOptions;
+            _luisOptions = options ?? _defaultLuisOptions;
+            _luisRecognizerOptions = luisRecognizerOptions ?? _defaultRecognizerOptions;
         }
 
         /// <inheritdoc />
         public Task<RecognizerResult> Recognize(string utterance, CancellationToken ct)
         {
+            if(string.IsNullOrEmpty(utterance))
+                throw new ArgumentNullException(nameof(utterance));
+
             var luisRequest = new LuisRequest(utterance);
-            _luisOptions?.Apply(luisRequest);
-            return Recognize(luisRequest, ct, _luisRecognizerOptions?.Verbose ?? true);
+            _luisOptions.Apply(luisRequest);
+            return Recognize(luisRequest, ct, _luisRecognizerOptions.Verbose);
         }
 
         private async Task<RecognizerResult> Recognize(LuisRequest request, CancellationToken ct, bool verbose)
         {
-            var luisResult = await _luisService.QueryAsync(request, ct);
+            var luisResult = await _luisService.QueryAsync(request, ct).ConfigureAwait(false);
 
             var recognizerResult = new RecognizerResult
             {
@@ -157,38 +164,32 @@ namespace Microsoft.Bot.Builder.LUIS
             }
 
 
-            var filteredEntities = new List<EntityRecommendation>();
-            var coveredSet = new HashSet<int>();
+            var coveredSet = new HashSet<EntityRecommendation>();
             foreach (var child in compositeEntity.Children)
             {
-                for (var i = 0; i < entities.Count; i++)
+                foreach(var entity in entities)
                 {
-                    var entity = entities[i];
-                    if (!coveredSet.Contains(i) &&
-                        child.Type == entity.Type &&
-                        entity.StartIndex >= compositeEntityMetadata.StartIndex &&
-                        entity.EndIndex <= compositeEntityMetadata.EndIndex)
-                    {
-                        // Add to the set to ensure that we don't consider the same child entity more than once per composite
-                        coveredSet.Add(i);
-                        AddProperty(childrenEntites, GetNormalizedEntityType(entity), GetEntityValue(entity));
+                    // We already covered this entity
+                    if (coveredSet.Contains(entity))
+                        continue;
 
-                        if (verbose)
-                        {
-                            AddProperty((JObject)childrenEntites["$instance"], GetNormalizedEntityType(entity), GetEntityMetadata(entity));
-                        }
+                    // This entity doesn't belong to this composite entity
+                    if (child.Type != entity.Type || !CompositeContainsEntity(compositeEntityMetadata, entity))
+                        continue;
+
+                    // Add to the set to ensure that we don't consider the same child entity more than once per composite
+                    coveredSet.Add(entity);
+                    AddProperty(childrenEntites, GetNormalizedEntityType(entity), GetEntityValue(entity));
+
+                    if (verbose)
+                    {
+                        AddProperty((JObject)childrenEntites["$instance"], GetNormalizedEntityType(entity), GetEntityMetadata(entity));
                     }
                 }
             }
 
             // filter entities that were covered by this composite entity
-            for (var i = 0; i < entities.Count; i++)
-            {
-                if (!coveredSet.Contains(i))
-                {
-                    filteredEntities.Add(entities[i]);
-                }
-            }
+            var filteredEntities = entities.Except(coveredSet).ToList();
 
             AddProperty(entitiesAndMetadata, compositeEntity.ParentType, childrenEntites);
             if (verbose)
@@ -197,6 +198,12 @@ namespace Microsoft.Bot.Builder.LUIS
             }
 
             return filteredEntities;
+        }
+
+        private static bool CompositeContainsEntity(EntityRecommendation compositeEntityMetadata, EntityRecommendation entity)
+        {
+            return entity.StartIndex >= compositeEntityMetadata.StartIndex &&
+                   entity.EndIndex <= compositeEntityMetadata.EndIndex;
         }
         
         /// <summary>

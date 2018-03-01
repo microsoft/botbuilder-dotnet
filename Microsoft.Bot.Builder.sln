@@ -44,7 +44,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Integration", "Integration"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Builder.LUIS", "libraries\Microsoft.Bot.Builder.LUIS\Microsoft.Bot.Builder.LUIS.csproj", "{67AA3C00-E2C5-4D13-BA5E-72EB0E5B8DAA}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.LUIS.Tests", "Microsoft.Bot.Builder.LUIS.Tests\Microsoft.Bot.Builder.LUIS.Tests.csproj", "{7BCEBDC1-D57F-4717-9B15-4FACD5473489}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.LUIS.Tests", "tests\Microsoft.Bot.Builder.LUIS.Tests\Microsoft.Bot.Builder.LUIS.Tests.csproj", "{7BCEBDC1-D57F-4717-9B15-4FACD5473489}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Prompts", "libraries\Microsoft.Bot.Builder.Prompts\Microsoft.Bot.Builder.Prompts.csproj", "{7A197F41-3411-47BF-87A6-5BC8A44CDB74}"
 EndProject
