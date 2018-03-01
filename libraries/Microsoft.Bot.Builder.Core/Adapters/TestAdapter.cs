@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Builder.Adapters
     public class TestAdapter : BotAdapter
     {
         private int _nextId = 0;
-        private readonly List<Activity> botReplies = new List<Activity>();        
+        private readonly List<Activity> botReplies = new List<Activity>();
 
         public TestAdapter(ConversationReference reference = null)
         {
@@ -290,7 +290,12 @@ namespace Microsoft.Bot.Builder.Adapters
                 if (expected.Type != reply.Type)
                     throw new Exception($"{description}: Type should match");
                 if (expected.AsMessageActivity().Text != reply.AsMessageActivity().Text)
-                    throw new Exception($"{description}: Text should match");
+                {
+                    if (description == null)
+                        throw new Exception($"Expected:{expected.AsMessageActivity().Text}\nReceived:{reply.AsMessageActivity().Text}");
+                    else
+                        throw new Exception($"{description}: Text should match");
+                }
                 // TODO, expand this to do all properties set on expected
             }, description, timeout);
         }

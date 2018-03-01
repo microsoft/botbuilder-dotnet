@@ -13,7 +13,7 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
     [TestClass]
     [TestCategory("Prompts")]
     [TestCategory("Text Prompts")]
-    public class TextPrompTests
+    public class TextPromptTests
     {
         [TestMethod]
         public async Task SimpleRecognize()
@@ -84,11 +84,11 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
             }
             else
             {
-                var (Passed, Value) = await askForName.Recognize(context); 
-                if (Passed)
+                var text = await askForName.Recognize(context); 
+                if (text != null)
                 {
                     context.Reply("Passed");
-                    context.Reply(Value);
+                    context.Reply(text);
                 }
                 else
                 {
@@ -108,11 +108,11 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
             }
             else
             {
-                var (Passed, Value) = await askForName.Recognize(context);
-                if (Passed)
+                var text = await askForName.Recognize(context);
+                if (text != null)
                 {
                     context.Reply("Passed");
-                    context.Reply(Value);
+                    context.Reply(text);
                 }
                 else
                 {
@@ -121,9 +121,9 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
             }
         }
 
-        public async Task<(bool Passed, string Value)> MinLengthValidator(IBotContext context, string toValidate)
+        public async Task<bool> MinLengthValidator(IBotContext context, string toValidate)
         {
-            return (toValidate.Length > 5, toValidate); 
+            return toValidate.Length > 5; 
         }
     }
 }
