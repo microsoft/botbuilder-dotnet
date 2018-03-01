@@ -3,9 +3,13 @@
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Bot.Builder.Middleware;
+using Microsoft.Bot.Builder.Storage;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Bot.Builder.Integration.NetCore;
+using Microsoft.Bot;
 
 namespace Connector.EchoBot
 {
@@ -27,7 +31,10 @@ namespace Connector.EchoBot
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc();
+            services.AddBotFramework();
+
+            services.AddTransient<IMyService, MyService>();
+            services.AddTransient<IBot, MyBot>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -38,12 +45,14 @@ namespace Connector.EchoBot
                 app.UseDeveloperExceptionPage();
             }
 
-            loggerFactory.AddConsole(Configuration.GetSection("Logging"));
-            loggerFactory.AddDebug();
-
-            app.UseStaticFiles();
-            app.UseAuthentication();
-            app.UseMvc();
+            app.UseDefaultFiles()
+                .UseStaticFiles()
+                .UseBotFramework(botConfig =>
+                {
+                    botConfig
+                        //.UseApplicationIdentity("app123", "appPassword")
+                        .UseMiddleware(new ConversationState<MyBotState>(new MemoryStorage()));
+                });
         }
     }
 }
