@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,11 +17,9 @@ namespace Microsoft.Bot.Builder.Integration.NetCore
     {
         private static readonly JsonSerializer ActivitySerializer = JsonSerializer.Create();
 
-        public static IApplicationBuilder UseBotFramework(this IApplicationBuilder applicationBuilder, Action<IBotFraweworkConfigurationBuilder> botConfig = null)
+        public static IApplicationBuilder UseBotFramework(this IApplicationBuilder applicationBuilder)
         {
             var options = applicationBuilder.ApplicationServices.GetRequiredService<IOptions<BotFrameworkOptions>>().Value;
-
-            botConfig?.Invoke(new BotFrameworkConfigurationBuilder(options));
 
             var botFrameworkAdapter = new BotFrameworkAdapter(options.ApplicationId, options.ApplicationPassword);
 

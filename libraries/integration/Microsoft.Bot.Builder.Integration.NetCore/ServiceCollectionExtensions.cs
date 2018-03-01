@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using System;
 
@@ -8,13 +9,20 @@ namespace Microsoft.Bot.Builder.Integration.NetCore
     {
         private static readonly JsonSerializer ActivitySerializer = JsonSerializer.Create();
 
-        public static IBotFrameworkBuilder AddBotFramework(this IServiceCollection services) => AddBotFramework(services, null);
-
-        public static IBotFrameworkBuilder AddBotFramework(this IServiceCollection services, Action<BotFrameworkOptions> setupAction)
+        public static IBotBuilder AddBot<TBot>(this IServiceCollection services, Action<BotFrameworkOptions> setupAction = null) where TBot : class, IBot
         {
-            services.AddRouting();
+            services.AddTransient<IBot, TBot>();
 
-            return new BotFrameworkBuilder(services);
+            var botBuilder = new BotBuilder(services);
+
+            services.Configure<BotFrameworkOptions>(options =>
+            {
+                options.Middleware.AddRange(botBuilder.Middleware);
+            });
+
+            services.Configure(setupAction);
+
+            return botBuilder;
         }
     }
 }

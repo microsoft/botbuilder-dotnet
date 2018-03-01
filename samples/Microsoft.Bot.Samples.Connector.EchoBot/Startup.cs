@@ -31,10 +31,14 @@ namespace Connector.EchoBot
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddBotFramework();
+            services.AddBot<MyBot>(options =>
+            {
+                //options.ApplicationId = "myApplication123";
+                //options.ApplicationPassword = "myApplicationPasswordXyz";
+                options.Middleware.Add(new ConversationState<MyBotState>(new MemoryStorage()));
+            });
 
             services.AddTransient<IMyService, MyService>();
-            services.AddTransient<IBot, MyBot>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -47,12 +51,7 @@ namespace Connector.EchoBot
 
             app.UseDefaultFiles()
                 .UseStaticFiles()
-                .UseBotFramework(botConfig =>
-                {
-                    botConfig
-                        //.UseApplicationIdentity("app123", "appPassword")
-                        .UseMiddleware(new ConversationState<MyBotState>(new MemoryStorage()));
-                });
+                .UseBotFramework();
         }
     }
 }
