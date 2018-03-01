@@ -11,19 +11,20 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.5.0" />
+    <PackageReference Include="Microsoft.Recognizers.Text" Version="1.0.0.36" />
+    <PackageReference Include="Microsoft.Recognizers.Text.DateTime" Version="1.0.0.36" />
+    <PackageReference Include="Microsoft.Recognizers.Text.Number" Version="1.0.0.36" />
+    <PackageReference Include="Microsoft.Recognizers.Text.NumberWithUnit" Version="1.0.0.36" />
+    <PackageReference Include="Microsoft.Recognizers.Text.Sequence" Version="1.0.0.36" />
     <PackageReference Include="MSTest.TestAdapter" Version="1.2.0" />
     <PackageReference Include="MSTest.TestFramework" Version="1.2.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Core\Microsoft.Bot.Builder.Core.csproj" />
+    <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Prompts\Microsoft.Bot.Builder.Prompts.csproj" />
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder\Microsoft.Bot.Builder.csproj" />
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Schema\Microsoft.Bot.Schema.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Properties\" />
   </ItemGroup>
 
 </Project>
