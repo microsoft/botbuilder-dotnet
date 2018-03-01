@@ -3,11 +3,13 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Cognitive.LUIS;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.Bot.Builder.Tests;
 
 namespace Microsoft.Bot.Builder.LUIS.Tests
 {
@@ -17,9 +19,21 @@ namespace Microsoft.Bot.Builder.LUIS.Tests
      */
     public class LuisRecognizerTests
     {
+
+        private readonly string _luisAppId = TestUtilities.GetKey("LUISAPPID");
+        private readonly string _subscriptionKey = TestUtilities.GetKey("LUISAPPKEY");
+        private readonly string _luisUriBase = TestUtilities.GetKey("LUISURIBASE");
+
+
         [TestMethod]
         public async Task SingleIntent_SimplyEntity()
         {
+            if (_luisAppId == null || _subscriptionKey == null || _luisUriBase == null)
+            {
+                Debug.WriteLine($"Missing Luis Environemnt variables - Skipping test");
+                return;
+            }
+
             var luisRecognizer = GetLuisRecognizer(verbose: true);
             var result = await luisRecognizer.Recognize("My name is Emad", CancellationToken.None);
             Assert.IsNotNull(result);
@@ -27,7 +41,7 @@ namespace Microsoft.Bot.Builder.LUIS.Tests
             Assert.IsNotNull(result.Intents);
             Assert.AreEqual(1, result.Intents.Count);
             Assert.IsNotNull(result.Intents["SpecifyName"]);
-            Assert.IsTrue((double)result.Intents["SpecifyName"] > 0 &&(double) result.Intents["SpecifyName"] <= 1);
+            Assert.IsTrue((double)result.Intents["SpecifyName"] > 0 && (double)result.Intents["SpecifyName"] <= 1);
             Assert.IsNotNull(result.Entities);
             Assert.IsNotNull(result.Entities["Name"]);
             Assert.AreEqual("emad", (string)result.Entities["Name"].First);
@@ -41,7 +55,13 @@ namespace Microsoft.Bot.Builder.LUIS.Tests
         [TestMethod]
         public async Task MultipleIntents_PrebuiltEntity()
         {
-            var luisRecognizer = GetLuisRecognizer(verbose: true, luisOptions: new LuisRequest{Verbose = true});
+            if (_luisAppId == null || _subscriptionKey == null || _luisUriBase == null)
+            {
+                Debug.WriteLine($"Missing Luis Environemnt variables - Skipping test");
+                return;
+            }
+
+            var luisRecognizer = GetLuisRecognizer(verbose: true, luisOptions: new LuisRequest { Verbose = true });
             var result = await luisRecognizer.Recognize("Please deliver February 2nd 2001", CancellationToken.None);
             Assert.IsNotNull(result);
             Assert.AreEqual("Please deliver February 2nd 2001", result.Text);
@@ -67,7 +87,13 @@ namespace Microsoft.Bot.Builder.LUIS.Tests
         [TestMethod]
         public async Task MultipleIntents_PrebuiltEntitiesWithMultiValues()
         {
-            var luisRecognizer = GetLuisRecognizer(verbose: true, luisOptions: new LuisRequest(string.Empty) { Verbose = true });
+            if (_luisAppId == null || _subscriptionKey == null || _luisUriBase == null)
+            {
+                Debug.WriteLine($"Missing Luis Environemnt variables - Skipping test");
+                return;
+            }
+
+            var luisRecognizer = GetLuisRecognizer(verbose: true, luisOptions: new LuisRequest { Verbose = true });
             var result = await luisRecognizer.Recognize("Please deliver February 2nd 2001 in room 201", CancellationToken.None);
             Assert.IsNotNull(result);
             Assert.IsNotNull(result.Text);
@@ -77,7 +103,7 @@ namespace Microsoft.Bot.Builder.LUIS.Tests
             Assert.IsNotNull(result.Entities);
             Assert.IsNotNull(result.Entities["builtin_number"]);
             Assert.AreEqual(2, result.Entities["builtin_number"].Count());
-            Assert.IsTrue(result.Entities["builtin_number"].Any(v =>(int)v == 201));
+            Assert.IsTrue(result.Entities["builtin_number"].Any(v => (int)v == 201));
             Assert.IsTrue(result.Entities["builtin_number"].Any(v => (int)v == 2001));
             Assert.IsNotNull(result.Entities["builtin_datetimeV2_date"]);
             Assert.AreEqual("2001-02-02", (string)result.Entities["builtin_datetimeV2_date"].First);
@@ -86,7 +112,13 @@ namespace Microsoft.Bot.Builder.LUIS.Tests
         [TestMethod]
         public async Task MultipleIntents_ListEntityWithSingleValue()
         {
-            var luisRecognizer = GetLuisRecognizer(verbose: true, luisOptions: new LuisRequest(string.Empty) { Verbose = true });
+            if (_luisAppId == null || _subscriptionKey == null || _luisUriBase == null)
+            {
+                Debug.WriteLine($"Missing Luis Environemnt variables - Skipping test");
+                return;
+            }
+
+            var luisRecognizer = GetLuisRecognizer(verbose: true, luisOptions: new LuisRequest { Verbose = true });
             var result = await luisRecognizer.Recognize("I want to travel on united", CancellationToken.None);
             Assert.IsNotNull(result);
             Assert.IsNotNull(result.Text);
@@ -106,7 +138,13 @@ namespace Microsoft.Bot.Builder.LUIS.Tests
         [TestMethod]
         public async Task MultipleIntents_ListEntityWithMultiValues()
         {
-            var luisRecognizer = GetLuisRecognizer(verbose: true, luisOptions: new LuisRequest(string.Empty) { Verbose = true });
+            if (_luisAppId == null || _subscriptionKey == null || _luisUriBase == null)
+            {
+                Debug.WriteLine($"Missing Luis Environemnt variables - Skipping test");
+                return;
+            }
+
+            var luisRecognizer = GetLuisRecognizer(verbose: true, luisOptions: new LuisRequest { Verbose = true });
             var result = await luisRecognizer.Recognize("I want to travel on DL", CancellationToken.None);
             Assert.IsNotNull(result);
             Assert.IsNotNull(result.Text);
@@ -128,7 +166,13 @@ namespace Microsoft.Bot.Builder.LUIS.Tests
         [TestMethod]
         public async Task MultipleIntens_CompositeEntity()
         {
-            var luisRecognizer = GetLuisRecognizer(verbose: true, luisOptions: new LuisRequest(string.Empty) { Verbose = true });
+            if (_luisAppId == null || _subscriptionKey == null || _luisUriBase == null)
+            {
+                Debug.WriteLine($"Missing Luis Environemnt variables - Skipping test");
+                return;
+            }
+
+            var luisRecognizer = GetLuisRecognizer(verbose: true, luisOptions: new LuisRequest { Verbose = true });
             var result = await luisRecognizer.Recognize("Please deliver it to 98033 WA", CancellationToken.None);
             Assert.IsNotNull(result);
             Assert.IsNotNull(result.Text);
@@ -160,10 +204,10 @@ namespace Microsoft.Bot.Builder.LUIS.Tests
             Assert.IsTrue((double)result.Entities["Address"][0]["$instance"]["State"][0]["score"] >= 0 && (double)result.Entities["Address"][0]["$instance"]["State"][0]["score"] <= 1);
         }
 
-        private static IRecognizer GetLuisRecognizer(bool verbose = false, ILuisOptions luisOptions = null)
+        private IRecognizer GetLuisRecognizer(bool verbose = false, ILuisOptions luisOptions = null)
         {
-            var luisRecognizerOptions = new LuisRecognizerOptions {Verbose = verbose};
-            var luisModel = new LuisModel("6209a76f-e836-413b-ba92-a5772d1b2087", "f2eef6a1cab345b9b4b53743357e869f", new Uri("https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/"), LuisApiVersion.V2);
+            var luisRecognizerOptions = new LuisRecognizerOptions { Verbose = verbose };
+            var luisModel = new LuisModel(_luisAppId, _subscriptionKey, new Uri(_luisUriBase), LuisApiVersion.V2);
             return new LuisRecognizer(luisModel, luisRecognizerOptions, luisOptions);
         }
     }
