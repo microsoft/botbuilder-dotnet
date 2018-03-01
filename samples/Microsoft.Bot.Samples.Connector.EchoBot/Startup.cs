@@ -10,8 +10,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Bot.Builder.Integration.NetCore;
 using Microsoft.Bot;
+using Microsoft.Bot.Samples.Echo;
 
-namespace Connector.EchoBot
+namespace Connector.Echo
 {
     public class Startup
     {
@@ -31,11 +32,11 @@ namespace Connector.EchoBot
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddBot<MyBot>(options =>
+            services.AddBot<EchoBot>(options =>
             {
                 //options.ApplicationId = "myApplication123";
                 //options.ApplicationPassword = "myApplicationPasswordXyz";
-                options.Middleware.Add(new ConversationState<MyBotState>(new MemoryStorage()));
+                options.Middleware.Add(new ConversationState<EchoState>(new MemoryStorage()));
             });
 
             services.AddTransient<IMyService, MyService>();

@@ -1,22 +1,24 @@
-﻿using Microsoft.Bot;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Middleware;
 using System.Threading.Tasks;
 
-namespace Connector.EchoBot
+namespace Microsoft.Bot.Samples.Echo
 {
-    public class MyBotState : StoreItem
+    public class EchoState : StoreItem
     {
         public string eTag { get; set; }
 
         public int TurnNumber { get; set; }
     }
 
-    public class MyBot : IBot
+    public class EchoBot : IBot
     {
         private readonly IMyService _myService;
 
-        public MyBot(IMyService myService)
+        public EchoBot(IMyService myService)
         {
             _myService = myService;
         }
@@ -26,7 +28,7 @@ namespace Connector.EchoBot
             var msgActivity = context.Request.AsMessageActivity();
             if (msgActivity != null)
             {
-                var conversationState = context.GetConversationState<MyBotState>() ?? new MyBotState();
+                var conversationState = context.GetConversationState<EchoState>() ?? new EchoState();
 
                 conversationState.TurnNumber++;
 
@@ -52,15 +54,5 @@ namespace Connector.EchoBot
                 }
             }
         }
-    }
-
-    public interface IMyService
-    {
-        Task DoSomethingAsync();
-    }
-
-    public sealed class MyService : IMyService
-    {
-        public Task DoSomethingAsync() => Task.Delay(500);
     }
 }

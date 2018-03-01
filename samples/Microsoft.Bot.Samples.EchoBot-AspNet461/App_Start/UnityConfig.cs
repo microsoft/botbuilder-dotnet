@@ -1,3 +1,7 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using Microsoft.Bot.Samples.Echo;
 using System;
 
 using Unity;
@@ -37,7 +41,7 @@ namespace Microsoft.Bot.Samples.EchoBot_AspNet461
         public static void RegisterTypes(IUnityContainer container)
         {
             container.RegisterType<IMyService, MyService>();
-            container.RegisterType<IBot, MyBot>();
+            container.RegisterType<IBot, EchoBot>();
         }
     }
 }
