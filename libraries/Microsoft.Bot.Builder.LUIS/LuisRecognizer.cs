@@ -22,6 +22,7 @@ namespace Microsoft.Bot.Builder.LUIS
         private readonly LuisService _luisService;
         private readonly ILuisOptions _luisOptions;
         private readonly ILuisRecognizerOptions _luisRecognizerOptions;
+        private const string MetadataKey = "$instance";
 
         public LuisRecognizer(ILuisModel luisModel, ILuisRecognizerOptions luisRecognizerOptions = null, ILuisOptions options = null)
         {
@@ -67,7 +68,7 @@ namespace Microsoft.Bot.Builder.LUIS
             var entitiesAndMetadata = new JObject();
             if (verbose)
             {
-                entitiesAndMetadata["$instance"] = new JObject();
+                entitiesAndMetadata[MetadataKey] = new JObject();
             }
             var compositeEntityTypes = new HashSet<string>();
 
@@ -88,7 +89,7 @@ namespace Microsoft.Bot.Builder.LUIS
 
                 if (verbose)
                 {
-                    AddProperty((JObject) entitiesAndMetadata["$instance"], GetNormalizedEntityType(entity), GetEntityMetadata(entity));
+                    AddProperty((JObject) entitiesAndMetadata[MetadataKey], GetNormalizedEntityType(entity), GetEntityMetadata(entity));
                 }
             }
 
@@ -144,7 +145,7 @@ namespace Microsoft.Bot.Builder.LUIS
             var childrenEntitiesMetadata = new JObject();
             if (verbose)
             {
-                childrenEntites["$instance"] = new JObject();
+                childrenEntites[MetadataKey] = new JObject();
             }
 
             // This is now implemented as O(n^2) search and can be reduced to O(2n) using a map as an optimization if n grows
@@ -157,7 +158,7 @@ namespace Microsoft.Bot.Builder.LUIS
             if (verbose)
             {
                 childrenEntitiesMetadata = GetEntityMetadata(compositeEntityMetadata);
-                childrenEntites["$instance"] = new JObject();
+                childrenEntites[MetadataKey] = new JObject();
             }
 
 
@@ -180,7 +181,7 @@ namespace Microsoft.Bot.Builder.LUIS
 
                     if (verbose)
                     {
-                        AddProperty((JObject)childrenEntites["$instance"], GetNormalizedEntityType(entity), GetEntityMetadata(entity));
+                        AddProperty((JObject)childrenEntites[MetadataKey], GetNormalizedEntityType(entity), GetEntityMetadata(entity));
                     }
                 }
             }
@@ -191,7 +192,7 @@ namespace Microsoft.Bot.Builder.LUIS
             AddProperty(entitiesAndMetadata, compositeEntity.ParentType, childrenEntites);
             if (verbose)
             {
-                AddProperty((JObject)entitiesAndMetadata["$instance"], compositeEntity.ParentType, childrenEntitiesMetadata);
+                AddProperty((JObject)entitiesAndMetadata[MetadataKey], compositeEntity.ParentType, childrenEntitiesMetadata);
             }
 
             return filteredEntities;
