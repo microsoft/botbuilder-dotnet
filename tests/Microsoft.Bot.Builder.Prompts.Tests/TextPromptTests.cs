@@ -59,20 +59,6 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
         }
 
 
-        [TestMethod]
-        public async Task FailOnWhitespace()
-        {
-            TestAdapter adapter = new TestAdapter()
-                .Use(new ConversationState<StoreItem>(new MemoryStorage()));
-
-            await new TestFlow(adapter, MyTestPrompt)
-                .Send("hello")
-                .AssertReply("Your Name:")
-                .Send(" ")
-                .AssertReply("Failed")                
-                .StartTest();
-        }
-
         public async Task MyTestPrompt(IBotContext context)
         {
             dynamic conversationState = ConversationState<StoreItem>.Get(context);
