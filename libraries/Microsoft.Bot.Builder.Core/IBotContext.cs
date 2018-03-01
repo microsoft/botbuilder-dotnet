@@ -71,7 +71,7 @@ namespace Microsoft.Bot.Builder
         {
             if (objectId == null)
                 objectId = $"{typeof(ObjectT).Namespace}.{typeof(ObjectT).Name}";
-            return context.Get<ObjectT>(objectId);
+            return (ObjectT)context.Get(objectId);
         }
 
     }

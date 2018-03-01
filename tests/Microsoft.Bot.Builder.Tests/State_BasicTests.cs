@@ -157,7 +157,7 @@ namespace Microsoft.Bot.Builder.Tests
 
         public class CustomKeyState : BotState<CustomState>
         {
-            public CustomKeyState(IStorage storage) : base(storage, "CustomState", (context) => "CustomKey")
+            public CustomKeyState(IStorage storage) : base(storage, PropertyName, (context) => "CustomKey")
             {
             }
 
