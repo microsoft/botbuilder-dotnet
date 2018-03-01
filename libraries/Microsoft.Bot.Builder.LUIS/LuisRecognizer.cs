@@ -23,14 +23,11 @@ namespace Microsoft.Bot.Builder.LUIS
         private readonly ILuisOptions _luisOptions;
         private readonly ILuisRecognizerOptions _luisRecognizerOptions;
 
-        private readonly ILuisOptions _defaultLuisOptions = new LuisRequest();
-        private readonly ILuisRecognizerOptions _defaultRecognizerOptions = new LuisRecognizerOptions {Verbose = true};
-
         public LuisRecognizer(ILuisModel luisModel, ILuisRecognizerOptions luisRecognizerOptions = null, ILuisOptions options = null)
         {
             _luisService = new LuisService(luisModel);
-            _luisOptions = options ?? _defaultLuisOptions;
-            _luisRecognizerOptions = luisRecognizerOptions ?? _defaultRecognizerOptions;
+            _luisOptions = options ?? new LuisRequest();
+            _luisRecognizerOptions = luisRecognizerOptions ?? new LuisRecognizerOptions { Verbose = true };
         }
 
         /// <inheritdoc />
