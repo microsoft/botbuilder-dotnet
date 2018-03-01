@@ -1,3 +1,7 @@
+
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
 using System;
 using System.Linq;
 using System.Threading;
@@ -16,8 +20,8 @@ namespace Microsoft.Bot.Builder.LUIS.Tests
         [TestMethod]
         public async Task SingleIntent_SimplyEntity()
         {
-            var luisRecognizer = GetLuisRecognizer();
-            var result = await luisRecognizer.Recognize("My name is Emad", CancellationToken.None, true);
+            var luisRecognizer = GetLuisRecognizer(verbose: true);
+            var result = await luisRecognizer.Recognize("My name is Emad", CancellationToken.None);
             Assert.IsNotNull(result);
             Assert.AreEqual("My name is Emad", result.Text);
             Assert.IsNotNull(result.Intents);
@@ -37,8 +41,8 @@ namespace Microsoft.Bot.Builder.LUIS.Tests
         [TestMethod]
         public async Task MultipleIntents_PrebuiltEntity()
         {
-            var luisRecognizer = GetLuisRecognizer(new LuisRequest(string.Empty){Verbose = true});
-            var result = await luisRecognizer.Recognize("Please deliver February 2nd 2001", CancellationToken.None, true);
+            var luisRecognizer = GetLuisRecognizer(verbose: true, luisOptions: new LuisRequest{Verbose = true});
+            var result = await luisRecognizer.Recognize("Please deliver February 2nd 2001", CancellationToken.None);
             Assert.IsNotNull(result);
             Assert.AreEqual("Please deliver February 2nd 2001", result.Text);
             Assert.IsNotNull(result.Intents);
@@ -63,8 +67,8 @@ namespace Microsoft.Bot.Builder.LUIS.Tests
         [TestMethod]
         public async Task MultipleIntents_PrebuiltEntitiesWithMultiValues()
         {
-            var luisRecognizer = GetLuisRecognizer(new LuisRequest(string.Empty) { Verbose = true });
-            var result = await luisRecognizer.Recognize("Please deliver February 2nd 2001 in room 201", CancellationToken.None, true);
+            var luisRecognizer = GetLuisRecognizer(verbose: true, luisOptions: new LuisRequest(string.Empty) { Verbose = true });
+            var result = await luisRecognizer.Recognize("Please deliver February 2nd 2001 in room 201", CancellationToken.None);
             Assert.IsNotNull(result);
             Assert.IsNotNull(result.Text);
             Assert.AreEqual("Please deliver February 2nd 2001 in room 201", result.Text);
@@ -79,10 +83,88 @@ namespace Microsoft.Bot.Builder.LUIS.Tests
             Assert.AreEqual("2001-02-02", (string)result.Entities["builtin_datetimeV2_date"].First);
         }
 
-        private static IRecognizer GetLuisRecognizer(ILuisOptions luisOptions = null)
+        [TestMethod]
+        public async Task MultipleIntents_ListEntityWithSingleValue()
         {
+            var luisRecognizer = GetLuisRecognizer(verbose: true, luisOptions: new LuisRequest(string.Empty) { Verbose = true });
+            var result = await luisRecognizer.Recognize("I want to travel on united", CancellationToken.None);
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(result.Text);
+            Assert.AreEqual("I want to travel on united", result.Text);
+            Assert.IsNotNull(result.Intents);
+            Assert.IsNotNull(result.Intents["Travel"]);
+            Assert.IsNotNull(result.Entities);
+            Assert.IsNotNull(result.Entities["Airline"]);
+            Assert.AreEqual("United", result.Entities["Airline"][0][0]);
+            Assert.IsNotNull(result.Entities["$instance"]);
+            Assert.IsNotNull(result.Entities["$instance"]["Airline"]);
+            Assert.AreEqual(20, result.Entities["$instance"]["Airline"][0]["startIndex"]);
+            Assert.AreEqual(25, result.Entities["$instance"]["Airline"][0]["endIndex"]);
+            Assert.AreEqual("united", result.Entities["$instance"]["Airline"][0]["text"]);
+        }
+
+        [TestMethod]
+        public async Task MultipleIntents_ListEntityWithMultiValues()
+        {
+            var luisRecognizer = GetLuisRecognizer(verbose: true, luisOptions: new LuisRequest(string.Empty) { Verbose = true });
+            var result = await luisRecognizer.Recognize("I want to travel on DL", CancellationToken.None);
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(result.Text);
+            Assert.AreEqual("I want to travel on DL", result.Text);
+            Assert.IsNotNull(result.Intents);
+            Assert.IsNotNull(result.Intents["Travel"]);
+            Assert.IsNotNull(result.Entities);
+            Assert.IsNotNull(result.Entities["Airline"]);
+            Assert.AreEqual(2, result.Entities["Airline"][0].Count());
+            Assert.IsTrue(result.Entities["Airline"][0].Any(airline => (string)airline == "Delta"));
+            Assert.IsTrue(result.Entities["Airline"][0].Any(airline => (string)airline == "Virgin"));
+            Assert.IsNotNull(result.Entities["$instance"]);
+            Assert.IsNotNull(result.Entities["$instance"]["Airline"]);
+            Assert.AreEqual(20, result.Entities["$instance"]["Airline"][0]["startIndex"]);
+            Assert.AreEqual(21, result.Entities["$instance"]["Airline"][0]["endIndex"]);
+            Assert.AreEqual("dl", result.Entities["$instance"]["Airline"][0]["text"]);
+        }
+
+        [TestMethod]
+        public async Task MultipleIntens_CompositeEntity()
+        {
+            var luisRecognizer = GetLuisRecognizer(verbose: true, luisOptions: new LuisRequest(string.Empty) { Verbose = true });
+            var result = await luisRecognizer.Recognize("Please deliver it to 98033 WA", CancellationToken.None);
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(result.Text);
+            Assert.AreEqual("Please deliver it to 98033 WA", result.Text);
+            Assert.IsNotNull(result.Intents);
+            Assert.IsNotNull(result.Intents["Delivery"]);
+            Assert.IsNotNull(result.Entities);
+            Assert.IsNull(result.Entities["builtin_number"]);
+            Assert.IsNull(result.Entities["State"]);
+            Assert.IsNotNull(result.Entities["Address"]);
+            Assert.AreEqual(98033, result.Entities["Address"][0]["builtin_number"][0]);
+            Assert.AreEqual("wa", result.Entities["Address"][0]["State"][0]);
+            Assert.IsNotNull(result.Entities["$instance"]);
+            Assert.IsNull(result.Entities["$instance"]["builtin_number"]);
+            Assert.IsNull(result.Entities["$instance"]["State"]);
+            Assert.IsNotNull(result.Entities["$instance"]["Address"]);
+            Assert.AreEqual(21, result.Entities["$instance"]["Address"][0]["startIndex"]);
+            Assert.AreEqual(28, result.Entities["$instance"]["Address"][0]["endIndex"]);
+            Assert.IsTrue((double)result.Entities["$instance"]["Address"][0]["score"] >= 0 && (double)result.Entities["$instance"]["Address"][0]["score"] <= 1);
+            Assert.IsNotNull(result.Entities["Address"][0]["$instance"]);
+            Assert.IsNotNull(result.Entities["Address"][0]["$instance"]["builtin_number"]);
+            Assert.AreEqual(21, result.Entities["Address"][0]["$instance"]["builtin_number"][0]["startIndex"]);
+            Assert.AreEqual(25, result.Entities["Address"][0]["$instance"]["builtin_number"][0]["endIndex"]);
+            Assert.AreEqual("98033", result.Entities["Address"][0]["$instance"]["builtin_number"][0]["text"]);
+            Assert.IsNotNull(result.Entities["Address"][0]["$instance"]["State"]);
+            Assert.AreEqual(27, result.Entities["Address"][0]["$instance"]["State"][0]["startIndex"]);
+            Assert.AreEqual(28, result.Entities["Address"][0]["$instance"]["State"][0]["endIndex"]);
+            Assert.AreEqual("wa", result.Entities["Address"][0]["$instance"]["State"][0]["text"]);
+            Assert.IsTrue((double)result.Entities["Address"][0]["$instance"]["State"][0]["score"] >= 0 && (double)result.Entities["Address"][0]["$instance"]["State"][0]["score"] <= 1);
+        }
+
+        private static IRecognizer GetLuisRecognizer(bool verbose = false, ILuisOptions luisOptions = null)
+        {
+            var luisRecognizerOptions = new LuisRecognizerOptions {Verbose = verbose};
             var luisModel = new LuisModel("6209a76f-e836-413b-ba92-a5772d1b2087", "f2eef6a1cab345b9b4b53743357e869f", new Uri("https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/"), LuisApiVersion.V2);
-            return new LuisRecognizer(luisModel, luisOptions);
+            return new LuisRecognizer(luisModel, luisRecognizerOptions, luisOptions);
         }
     }
 }
