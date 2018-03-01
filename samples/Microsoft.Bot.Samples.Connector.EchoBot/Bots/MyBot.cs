@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Connector.EchoBot
 {
-    public class MyBotState : IStoreItem
+    public class MyBotState : StoreItem
     {
         public string eTag { get; set; }
 
