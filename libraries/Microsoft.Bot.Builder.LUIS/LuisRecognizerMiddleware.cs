@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Middleware;
 // Copyright (c) Microsoft Corporation. All rights reserved.
@@ -20,6 +21,9 @@ namespace Microsoft.Bot.Builder.LUIS
 
         public LuisRecognizerMiddleware(ILuisModel luisModel, ILuisRecognizerOptions luisRecognizerOptions = null, ILuisOptions luisOptions = null)
         {
+            if(luisModel == null)
+                throw new ArgumentNullException(nameof(luisModel));
+
             _luisRecognizer = new LuisRecognizer(luisModel, luisRecognizerOptions, luisOptions);
         }
 
