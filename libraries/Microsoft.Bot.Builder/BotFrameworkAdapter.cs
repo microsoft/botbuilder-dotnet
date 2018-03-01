@@ -50,7 +50,7 @@ namespace Microsoft.Bot.Builder.Adapters
             return this;
         }
 
-        public async Task ProcessActivity(string authHeader, IActivity activity, Func<IBotContext, Task> callback)
+        public async Task ProcessActivity(string authHeader, Activity activity, Func<IBotContext, Task> callback)
         {
             BotAssert.ActivityNotNull(activity);
             ClaimsIdentity claimsIdentity =  await JwtTokenValidation.AuthenticateRequest(activity, authHeader, _credentialProvider, _httpClient);
@@ -62,7 +62,7 @@ namespace Microsoft.Bot.Builder.Adapters
             await base.RunPipeline(context, callback).ConfigureAwait(false);
         }
 
-        protected async override Task SendActivitiesImplementation(IBotContext context, IEnumerable<IActivity> activities)
+        protected async override Task SendActivitiesImplementation(IBotContext context, IEnumerable<Activity> activities)
         {
             foreach (var activity in activities)
             {
@@ -82,7 +82,7 @@ namespace Microsoft.Bot.Builder.Adapters
             }
         }
 
-        protected override async Task<ResourceResponse> UpdateActivityImplementation(IBotContext context, IActivity activity)
+        protected override async Task<ResourceResponse> UpdateActivityImplementation(IBotContext context, Activity activity)
         {
             MicrosoftAppCredentials appCredentials = await GetAppCredentials((context as BotFrameworkBotContext).BotAppId);
             var connectorClient = new ConnectorClient(new Uri(activity.ServiceUrl), appCredentials);
@@ -94,11 +94,6 @@ namespace Microsoft.Bot.Builder.Adapters
             MicrosoftAppCredentials appCredentials = await GetAppCredentials((context as BotFrameworkBotContext).BotAppId);
             var connectorClient = new ConnectorClient(new Uri(context.Request.ServiceUrl), appCredentials);
             await connectorClient.Conversations.DeleteActivityAsync(conversationId, activityId);
-        }
-
-        protected override Task CreateConversationImplementation()
-        {
-            throw new NotImplementedException();
         }
 
         /// <summary>

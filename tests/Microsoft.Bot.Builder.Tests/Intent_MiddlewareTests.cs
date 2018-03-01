@@ -130,23 +130,23 @@ namespace Microsoft.Bot.Builder.Tests
                     new Intent() { Name = targetName },
                 };
             });
-
+            bool enabled = false;
             m.OnEnabled(async (context) =>
             {
-                return context.ToBotContext()["isEnabled"];
+                return enabled;
             });
 
             BotContext bc = TestUtilities.CreateEmptyContext();
 
             // Test that the Intent comes back when the OnEnabled method returns true
-            bc["isEnabled"] = true;
+            enabled = true;
             var resultingIntents = await m.Recognize(bc);
 
             Assert.IsTrue(resultingIntents.Count == 1, "Expected exactly 1 intent");
             Assert.IsTrue(resultingIntents.First().Name == targetName, $"Unexpected Intent Name. Expected {targetName}");
 
             // Test that NO Intent comes back when the OnEnabled method returns false
-            bc["isEnabled"] = false;
+            enabled = false;
             var resultingIntents2 = await m.Recognize(bc);
             Assert.IsTrue(resultingIntents2.Count == 0, "Expected exactly 0 intent");
         }
@@ -175,14 +175,13 @@ namespace Microsoft.Bot.Builder.Tests
                 Assert.IsTrue(intentList.First().Name == targetName, $"Unexpected Intent Name. Expected {targetName}");
 
                 // replace the name of the intent. Do this via the Context to vette paremeter passing
-                intentList[0].Name = context.ToBotContext()["replacedName"];
+                intentList[0].Name = replacedName;
             });
 
             BotContext bc = TestUtilities.CreateEmptyContext();
 
             // Test that the Intent comes back has been "filtered" to have the revised name
 
-            bc["replacedName"] = replacedName; // put the "revised" intent name into the context to vette parameter passing
             var resultingIntents = await m.Recognize(bc);
 
             Assert.IsTrue(resultingIntents.Count == 1, "Expected exactly 1 intent");
@@ -225,40 +224,41 @@ namespace Microsoft.Bot.Builder.Tests
         public async Task Intents_ValidateFilterOrder()
         {
             IntentRecognizerMiddleware m = new IntentRecognizerMiddleware();
-
+            string shouldRun = null;
             /*
              *  Filters are required to run in reverse order. This code validates that by registering 3 filters and
              *  running a simple state machine across them. 
              */
             m.OnFilter(async (context, intentList) =>
             {
-                Assert.IsTrue(context.ToBotContext()["shouldRun"] == "third", "1st filter did not run last");
-                context.ToBotContext()["shouldRun"] = "done";
+                Assert.IsTrue(shouldRun == "third", "1st filter did not run last");
+                shouldRun = "done";
             });
 
             m.OnFilter(async (context, intentList) =>
             {
-                Assert.IsTrue(context.ToBotContext()["shouldRun"] == "second", "2nd filter did not run second");
-                context.ToBotContext()["shouldRun"] = "third";
+                Assert.IsTrue(shouldRun == "second", "2nd filter did not run second");
+                shouldRun = "third";
             });
 
             m.OnFilter(async (context, intentList) =>
             {
-                Assert.IsTrue(context.ToBotContext()["shouldRun"] == "first", "last filter did not run first");
-                context.ToBotContext()["shouldRun"] = "second";
+                Assert.IsTrue(shouldRun == "first", "last filter did not run first");
+                shouldRun = "second";
             });
 
             BotContext bc = TestUtilities.CreateEmptyContext();
-            bc["shouldRun"] = "first";
+            shouldRun = "first";
 
             var resultingIntents = await m.Recognize(bc);
-            Assert.IsTrue(bc["shouldRun"] == "done", "Final filter did not run");
+            Assert.IsTrue(shouldRun == "done", "Final filter did not run");
         }
 
         [TestMethod]
         public async Task Intents_ValidateRecognizerOrder()
         {
             IntentRecognizerMiddleware m = new IntentRecognizerMiddleware();
+            string shouldRun = null;
 
             /*
              *  Filters are required to run in reverse order. This code validates that by registering 3 filters and
@@ -266,40 +266,41 @@ namespace Microsoft.Bot.Builder.Tests
              */
             m.OnRecognize(async (context) =>
             {
-                Assert.IsTrue(context.ToBotContext()["shouldRun"] == "first", "1st recognizer did not run first");
-                context.ToBotContext()["shouldRun"] = "second";
+                Assert.IsTrue(shouldRun == "first", "1st recognizer did not run first");
+                shouldRun = "second";
 
                 return new List<Intent>();
             });
 
             m.OnRecognize(async (context) =>
             {
-                Assert.IsTrue(context.ToBotContext()["shouldRun"] == "second", "2st recognizer did not run second");
-                context.ToBotContext()["shouldRun"] = "third";
+                Assert.IsTrue(shouldRun == "second", "2st recognizer did not run second");
+                shouldRun = "third";
 
                 return new List<Intent>();
             });
 
             m.OnRecognize(async (context) =>
             {
-                Assert.IsTrue(context.ToBotContext()["shouldRun"] == "third", "3rd recognizer did not run last");
-                context.ToBotContext()["shouldRun"] = "done";
+                Assert.IsTrue(shouldRun == "third", "3rd recognizer did not run last");
+                shouldRun = "done";
 
                 return new List<Intent>();
             });
 
 
             BotContext bc = TestUtilities.CreateEmptyContext();
-            bc["shouldRun"] = "first";
+            shouldRun = "first";
 
             var resultingIntents = await m.Recognize(bc);
-            Assert.IsTrue(bc["shouldRun"] == "done", "Final recognizer did not run");
+            Assert.IsTrue(shouldRun == "done", "Final recognizer did not run");
         }
 
         [TestMethod]
         public async Task Intents_ValidateEnablerOrder()
         {
             IntentRecognizerMiddleware m = new IntentRecognizerMiddleware();
+            string shouldRun = "first" ;
 
             /*
              *  Filters are required to run in reverse order. This code validates that by registering 3 filters and
@@ -307,32 +308,32 @@ namespace Microsoft.Bot.Builder.Tests
              */
             m.OnEnabled(async (context) =>
             {
-                Assert.IsTrue(context.ToBotContext()["shouldRun"] == "first", "1st enabler did not run first.");
-                context.ToBotContext()["shouldRun"] = "second";
+                Assert.IsTrue(shouldRun == "first", "1st enabler did not run first.");
+                shouldRun  = "second";
                 return true;
             });
 
             m.OnEnabled(async (context) =>
             {
-                Assert.IsTrue(context.ToBotContext()["shouldRun"] == "second", "2nd enabler did not run second");
-                context.ToBotContext()["shouldRun"] = "third";
+                Assert.IsTrue(shouldRun == "second", "2nd enabler did not run second");
+                shouldRun = "third";
 
                 return true;
             });
 
             m.OnEnabled(async (context) =>
             {
-                Assert.IsTrue(context.ToBotContext()["shouldRun"] == "third", "3rd enabler did not run last");
-                context.ToBotContext()["shouldRun"] = "done";
+                Assert.IsTrue(shouldRun == "third", "3rd enabler did not run last");
+                shouldRun = "done";
 
                 return true;
             });
 
             BotContext bc = TestUtilities.CreateEmptyContext();
-            bc["shouldRun"] = "first";
+            shouldRun = "first";
 
             var resultingIntents = await m.Recognize(bc);
-            Assert.IsTrue(bc["shouldRun"] == "done", "Final recognizer did not run");
+            Assert.IsTrue(shouldRun == "done", "Final recognizer did not run");
         }
        
         [TestMethod]

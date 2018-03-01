@@ -42,7 +42,7 @@ namespace Microsoft.Bot.Samples.EchoBot_AspNet461
                     ConfigurationManager.AppSettings[@"MicrosoftAppPassword"])
                 )
             .Resolve<BotFrameworkAdapter>()
-            .Use(new ConversationStateManagerMiddleware(new MemoryStorage()));
+            .Use(new ConversationState<MyState>(new MemoryStorage()));
         }
     }
 }
