@@ -4,7 +4,7 @@
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 
-namespace Connector.EchoBot
+namespace Connector.Echo
 {
     public class Program
     {

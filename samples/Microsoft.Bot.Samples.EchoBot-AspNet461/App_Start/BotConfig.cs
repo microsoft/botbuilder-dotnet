@@ -1,8 +1,11 @@
-﻿using Microsoft.Bot.Builder.Middleware;
-using Microsoft.Bot.Builder.Storage;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
 using Microsoft.Bot.Builder.Integration.AspNet;
-using System;
+using Microsoft.Bot.Builder.Middleware;
+using Microsoft.Bot.Builder.Storage;
 using System.Web.Http;
+using Microsoft.Bot.Samples.Echo;
 
 namespace Microsoft.Bot.Samples.EchoBot_AspNet461
 {
@@ -14,7 +17,7 @@ namespace Microsoft.Bot.Samples.EchoBot_AspNet461
             {
                 botConfig
                     //.UseApplicationIdentity("myApp123", "myAppPasswordXyz")
-                    .UseMiddleware(new ConversationState<MyBotState>(new MemoryStorage()));
+                    .UseMiddleware(new ConversationState<EchoState>(new MemoryStorage()));
             });
         }
     }

@@ -151,7 +151,6 @@
     <Compile Include="App_Start\UnityConfig.cs" />
     <Compile Include="App_Start\UnityWebApiActivator.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
-    <Compile Include="Bots\MyBot.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -189,6 +188,10 @@
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Schema\Microsoft.Bot.Schema.csproj">
       <Project>{C1F54CDC-AD1D-45BB-8F7D-F49E411AFAF1}</Project>
       <Name>Microsoft.Bot.Schema</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\EchoBot\EchoBot.csproj">
+      <Project>{30b77905-0bab-44c1-a011-0245f220c30c}</Project>
+      <Name>EchoBot</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />
