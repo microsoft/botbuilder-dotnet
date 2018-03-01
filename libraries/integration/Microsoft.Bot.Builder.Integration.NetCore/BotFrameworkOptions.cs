@@ -9,13 +9,12 @@ namespace Microsoft.Bot.Builder.Integration.NetCore
         public BotFrameworkOptions()
         {
             RouteBaseUrl = "/bot";
-            Middleware = new List<BotMiddleware.IMiddleware>();
         }
 
         public PathString RouteBaseUrl { get; set; }
         public string ApplicationId { get; set; }
         public string ApplicationPassword { get; set; }
-        public List<BotMiddleware.IMiddleware> Middleware { get; }
+        public List<BotMiddleware.IMiddleware> Middleware => new List<BotMiddleware.IMiddleware>();
 
     }
 }

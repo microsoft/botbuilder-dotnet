@@ -1,10 +1,10 @@
 ﻿using Microsoft.Bot.Builder.Middleware;
+using System.Collections.Generic;
 
 namespace Microsoft.Bot.Builder.Integration.NetCore
 {
-    public interface IBotFraweworkConfigurationBuilder
+    public interface IBotBuilder
     {
-        IBotFraweworkConfigurationBuilder UseApplicationIdentity(string applicationId, string applicationPassword);
-        IBotFraweworkConfigurationBuilder UseMiddleware(IMiddleware middleware);
+        List<IMiddleware> Middleware { get; }
     }
 }
