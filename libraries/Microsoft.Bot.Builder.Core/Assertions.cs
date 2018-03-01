@@ -38,12 +38,6 @@ namespace Microsoft.Bot.Builder
                 throw new ArgumentNullException(nameof(activityList)); 
         }
 
-        public static void ActivityListNotNull(IList<IActivity> activityList)
-        {
-            if (activityList == null)
-                throw new ArgumentNullException(nameof(activityList));
-        }
-
         public static void MiddlewareNotNull(Middleware.IMiddleware middleware)
         {
             if (middleware == null)

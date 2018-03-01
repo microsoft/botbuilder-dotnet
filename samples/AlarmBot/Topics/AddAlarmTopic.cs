@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using AlarmBot.Models;
 using AlarmBot.Responses;
 using Microsoft.Bot.Builder;
+using Microsoft.Bot.Builder.Middleware;
 using Microsoft.Bot.Schema;
 
 namespace AlarmBot.Topics
@@ -63,14 +64,14 @@ namespace AlarmBot.Topics
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public Task<bool> StartTopic(IBotContext context)
+        public Task<bool> StartTopic(AlarmBotContext context)
         {
-            var times = context.TopIntent?.Entities.Where(entity => entity.GroupName == "AlarmTime")
+            var times = context.RecognizedIntents.TopIntent?.Entities.Where(entity => entity.GroupName == "AlarmTime")
                     .Select(entity => DateTimeOffset.Parse(entity.ValueAs<string>()));
             this.Alarm = new Alarm()
             {
                 // initialize from intent entities
-                Title = context.TopIntent?.Entities.Where(entity => entity.GroupName == "AlarmTitle")
+                Title = context.RecognizedIntents.TopIntent?.Entities.Where(entity => entity.GroupName == "AlarmTitle")
                     .Select(entity => entity.ValueAs<string>()).FirstOrDefault(),
 
                 // initialize from intent entities
@@ -86,12 +87,12 @@ namespace AlarmBot.Topics
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public async Task<bool> ContinueTopic(IBotContext context)
+        public async Task<bool> ContinueTopic(AlarmBotContext context)
         {
             // for messages
             if (context.Request.Type == ActivityTypes.Message)
             {
-                switch (context.TopIntent?.Name)
+                switch (context.RecognizedIntents.TopIntent?.Name)
                 {
                     case "showAlarms":
                         // allow show alarm to interrupt, but it's one turn, so we show the data without changing the topic
@@ -116,7 +117,7 @@ namespace AlarmBot.Topics
             return true;
         }
 
-        private async Task<bool> ProcessTopicState(IBotContext context)
+        private async Task<bool> ProcessTopicState(AlarmBotContext context)
         {
             string utterance = (context.Request.AsMessageActivity().Text ?? "").Trim();
 
@@ -129,11 +130,11 @@ namespace AlarmBot.Topics
 
                 case TopicStates.TimePrompt:
                     // take first one in the future
-                    this.Alarm.Time = ((BotContext)context).GetDateTimes().Where(t => t > DateTimeOffset.Now).FirstOrDefault();
+                    this.Alarm.Time = context.GetDateTimes().Where(t => t > DateTimeOffset.Now).FirstOrDefault();
                     return await this.PromptForMissingData(context);
 
                 case TopicStates.CancelConfirmation:
-                    switch (context.TopIntent.Name)
+                    switch (context.RecognizedIntents.TopIntent?.Name)
                     {
                         case "confirmYes":
                             AddAlarmResponses.ReplyWithTopicCanceled(context);
@@ -152,16 +153,14 @@ namespace AlarmBot.Topics
                     }
 
                 case TopicStates.AddConfirmation:
-                    switch (context.TopIntent?.Name)
+                    switch (context.RecognizedIntents.TopIntent?.Name)
                     {
                         case "confirmYes":
-                            var alarms = (List<Alarm>)context.State.UserProperties[UserProperties.ALARMS];
-                            if (alarms == null)
+                            if (context.UserState.Alarms == null)
                             {
-                                alarms = new List<Alarm>();
-                                context.State.UserProperties[UserProperties.ALARMS] = alarms;
+                                context.UserState.Alarms = new List<Alarm>();
                             }
-                            alarms.Add(this.Alarm);
+                            context.UserState.Alarms.Add(this.Alarm);
                             AddAlarmResponses.ReplyWithAddedAlarm(context, this.Alarm);
                             // end topic
                             return false;
@@ -184,7 +183,7 @@ namespace AlarmBot.Topics
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public Task<bool> ResumeTopic(IBotContext context)
+        public Task<bool> ResumeTopic(AlarmBotContext context)
         {
             // simply prompt again based on our state
             return this.PromptForMissingData(context);

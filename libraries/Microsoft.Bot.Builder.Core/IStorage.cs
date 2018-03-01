@@ -28,7 +28,15 @@ namespace Microsoft.Bot.Builder
         Task Delete(params string[] keys);
     }
 
-    public class StoreItem : FlexObject
+    public interface IStoreItem
+    {
+        /// <summary>
+        /// eTag for concurrency
+        /// </summary>
+        string eTag { get; set; }
+    }
+
+    public class StoreItem : FlexObject, IStoreItem
     {
         private static JsonSerializerSettings serializationSettings = new JsonSerializerSettings()
         {
@@ -58,7 +66,7 @@ namespace Microsoft.Bot.Builder
     }
 
     public class StoreItems<StoreItemT> : StoreItems
-        where StoreItemT : StoreItem
+        where StoreItemT : IStoreItem
     {
     }
 

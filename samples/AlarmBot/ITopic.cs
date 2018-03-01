@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Threading.Tasks;
+using AlarmBot.Models;
 using Microsoft.Bot.Builder;
 
 namespace AlarmBot
@@ -18,20 +19,20 @@ namespace AlarmBot
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        Task<bool> StartTopic(IBotContext context);
+        Task<bool> StartTopic(AlarmBotContext context);
 
         /// <summary>
         /// called while topic active
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        Task<bool> ContinueTopic(IBotContext context);
+        Task<bool> ContinueTopic(AlarmBotContext context);
 
         /// <summary>
         ///  Called when a topic is resumed
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        Task<bool> ResumeTopic(IBotContext context);
+        Task<bool> ResumeTopic(AlarmBotContext context);
     }
 }

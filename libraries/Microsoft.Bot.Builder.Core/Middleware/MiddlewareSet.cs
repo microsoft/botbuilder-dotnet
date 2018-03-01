@@ -108,18 +108,18 @@ namespace Microsoft.Bot.Builder.Middleware
             await middleware[0].ReceiveActivity(context, next).ConfigureAwait(false);
         }
 
-        public async Task SendActivity(IBotContext context, IList<IActivity> activities)
+        public async Task SendActivity(IBotContext context, IList<Activity> activities)
         {
             await SendActivityInternal(context, activities, this._middleware.OfType<ISendActivity>().ToArray()).ConfigureAwait(false);
         }
 
-        public async Task SendActivity(IBotContext context, IList<IActivity> activities, NextDelegate next)
+        public async Task SendActivity(IBotContext context, IList<Activity> activities, NextDelegate next)
         {
             await SendActivityInternal(context, activities, this._middleware.OfType<ISendActivity>().ToArray()).ConfigureAwait(false);
             await next().ConfigureAwait(false);
         }
 
-        private async Task SendActivityInternal(IBotContext context, IList<IActivity> activities, ISendActivity[] middleware)
+        private async Task SendActivityInternal(IBotContext context, IList<Activity> activities, ISendActivity[] middleware)
         {
             BotAssert.MiddlewareNotNull(middleware);
             BotAssert.ActivityListNotNull(activities);

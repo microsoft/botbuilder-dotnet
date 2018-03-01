@@ -17,7 +17,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="botAppId">The bot application identifier. Bot's AAD identity.</param>
         /// <param name="botAdapter">The bot adapter.</param>
         /// <param name="requestActivity">The request activity.</param>
-        public BotFrameworkBotContext(string botAppId, BotAdapter botAdapter, IActivity requestActivity)
+        public BotFrameworkBotContext(string botAppId, BotAdapter botAdapter, Activity requestActivity)
             : base(botAdapter, requestActivity)
         {
             this.BotAppId = botAppId;
