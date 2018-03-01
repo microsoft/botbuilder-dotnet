@@ -30,9 +30,14 @@ namespace Microsoft.Bot.Builder
 
         public ConversationReference ConversationReference => this._innerContext.ConversationReference;
 
-        public object Get(string serviceId)
+        /// <summary>
+        /// Get a value by a key.
+        /// </summary>
+        /// <param name="key">The key of the value to get.</param>
+        /// <returns>The value.</returns>
+        public object Get(string key)
         {
-            return this._innerContext.Get(serviceId);
+            return this._innerContext.Get(key);
         }
 
         public IBotContext Reply(string text, string speak = null)
@@ -47,9 +52,14 @@ namespace Microsoft.Bot.Builder
             return this;
         }
 
-        public void Set(string serviceId, object service)
+        /// <summary>
+        /// Set the value associated with a key.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value to set.</param>
+        public void Set(string key, object value)
         {
-            this._innerContext.Set(serviceId, service);
+            this._innerContext.Set(key, value);
         }
     }
 }
