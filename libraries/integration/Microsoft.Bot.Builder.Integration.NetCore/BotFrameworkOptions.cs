@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Builder.Integration.NetCore
     {
         public BotFrameworkOptions()
         {
-            RouteBaseUrl = "/bots";
+            RouteBaseUrl = "/bot";
             Middleware = new List<BotMiddleware.IMiddleware>();
         }
 
