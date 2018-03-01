@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using AlarmBot.Models;
 using AlarmBot.Responses;
 using Microsoft.Bot.Builder;
+using Microsoft.Bot.Builder.Middleware;
 
 namespace AlarmBot.Topics
 {
@@ -25,7 +26,7 @@ namespace AlarmBot.Topics
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public async Task<bool> StartTopic(IBotContext context)
+        public async Task<bool> StartTopic(AlarmBotContext context)
         {
             await ShowAlarms(context);
 
@@ -33,34 +34,22 @@ namespace AlarmBot.Topics
             return false;
         }
 
-        public Task<bool> ContinueTopic(IBotContext context)
+        public Task<bool> ContinueTopic(AlarmBotContext context)
         {
             throw new System.NotImplementedException();
         }
 
-        public Task<bool> ResumeTopic(IBotContext context)
+        public Task<bool> ResumeTopic(AlarmBotContext context)
         {
             throw new System.NotImplementedException();
         }
 
 
-        public static Task ShowAlarms(IBotContext context)
+        public static Task ShowAlarms(AlarmBotContext context)
         {
-            List<Alarm> alarms = GetAlarms(context);
-            ShowAlarmsResponses.ReplyWithShowAlarms(context, alarms);
+            ShowAlarmsResponses.ReplyWithShowAlarms(context, context.UserState.Alarms);
             return Task.CompletedTask;
         }
 
-        public static List<Alarm> GetAlarms(IBotContext context)
-        {
-            var alarms = (List<Alarm>)context.State.UserProperties[UserProperties.ALARMS];
-            if (alarms == null)
-            {
-                alarms = new List<Alarm>();
-                context.State.UserProperties[UserProperties.ALARMS] = alarms;
-            }
-
-            return alarms;
-        }
     }
 }

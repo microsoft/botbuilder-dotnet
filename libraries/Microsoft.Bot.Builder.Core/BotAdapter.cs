@@ -19,7 +19,6 @@ namespace Microsoft.Bot.Builder
         public BotAdapter() : base()
         {
             this.RegisterMiddleware(new Middleware.BindOutoingResponsesMiddlware());
-            this.RegisterMiddleware(new Middleware.TemplateManager());
         }
 
         /// <summary>
@@ -37,7 +36,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="context"></param>
         /// <param name=""></param>
         /// <returns></returns>
-        protected abstract Task SendActivitiesImplementation(IBotContext context, IEnumerable<IActivity> activities);
+        protected abstract Task SendActivitiesImplementation(IBotContext context, IEnumerable<Activity> activities);
 
         /// <summary>
         /// Implement updating an activity in the conversation
@@ -45,7 +44,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="context"></param>
         /// <param name="activity"></param>
         /// <returns></returns>
-        protected abstract Task<ResourceResponse> UpdateActivityImplementation(IBotContext context, IActivity activity);
+        protected abstract Task<ResourceResponse> UpdateActivityImplementation(IBotContext context, Activity activity);
 
         /// <summary>
         /// Implement deleting an activity in the conversation
@@ -56,12 +55,6 @@ namespace Microsoft.Bot.Builder
         /// <returns></returns>
         protected abstract Task DeleteActivityImplementation(IBotContext context, string conversationId, string activityId);
 
-
-        /// <summary>
-        /// Implement createconversation semantics
-        /// </summary>
-        /// <returns></returns>
-        protected abstract Task CreateConversationImplementation();
 
         /// <summary>
         /// Called by base class to run pipeline around a context
@@ -81,18 +74,7 @@ namespace Microsoft.Bot.Builder
             // Call any registered Middleware Components looking for ReceiveActivity()
             if (context.Request != null)
             {
-                bool didAllMiddlewareRun = await _middlewareSet.ReceiveActivityWithStatus(context).ConfigureAwait(false);
-                if (didAllMiddlewareRun && callback != null)
-                {
-                    await callback(context).ConfigureAwait(false);
-                }
-                else
-                {
-                    // One of the middleware instances did not call Next(). When this happens,
-                    // by design, we do NOT call the callback handler. This allows
-                    // Middleware interceptors to be written that activly prevent certain
-                    // Activites from being run. 
-                }
+                await _middlewareSet.ReceiveActivityWithStatus(context, callback).ConfigureAwait(false);                
             }
             else
             {
@@ -104,7 +86,7 @@ namespace Microsoft.Bot.Builder
             }
 
             // Call any registered Middleware Components looking for SendActivity()
-            await _middlewareSet.SendActivity(context, context.Responses ?? new List<IActivity>()).ConfigureAwait(false);
+            await _middlewareSet.SendActivity(context, context.Responses ?? new List<Activity>()).ConfigureAwait(false);
 
             if (context.Responses != null)
             {
@@ -122,11 +104,9 @@ namespace Microsoft.Bot.Builder
         /// <param name="reference">reference to create context around</param>
         /// <param name="callback">callback where you can continue the conversation</param>
         /// <returns>task when completed</returns>
-        public virtual async Task ContinueConversation(ConversationReference reference, Func<IBotContext, Task> callback)
+        public virtual async Task CreateConversation(string channelId, Func<IBotContext, Task> callback)
         {
-            var context = new BotContext(this, reference);
-
-            await RunPipeline(context, callback).ConfigureAwait(false);
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -136,11 +116,10 @@ namespace Microsoft.Bot.Builder
         /// <param name="reference">reference to create context around</param>
         /// <param name="callback">callback where you can continue the conversation</param>
         /// <returns>task when completed</returns>
-        public virtual async Task CreateConversation(string channelId, Func<IBotContext, Task> callback)
+        public virtual async Task ContinueConversation(ConversationReference reference, Func<IBotContext, Task> callback)
         {
-            //   var context = new BotContext(this, reference);
-            //   await RunPipeline(context, proactiveCallback).ConfigureAwait(false);
+            var context = new BotContext(this, reference);
+            await RunPipeline(context, callback).ConfigureAwait(false);
         }
-
     }
 }

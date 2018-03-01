@@ -51,7 +51,7 @@ namespace Microsoft.Bot.Builder.Prompts
         /// </summary>
         public Task Prompt(IBotContext context, IMessageActivity activity)
         {
-            context.Responses.Add(activity);
+            context.Reply(activity);
             return Task.CompletedTask;
         }
 

@@ -28,7 +28,8 @@ namespace Microsoft.Bot.Builder.Tests
 
             await new TestFlow(adapter, async (context) =>
                 {
-                    if (context.IfIntent("HelpIntent"))
+                    var recognized = context.Get<IRecognizedIntents>();
+                    if (recognized.TopIntent.Name == "HelpIntent")
                         context.Reply("You selected HelpIntent");
                 })
                 .Test("help", "You selected HelpIntent")
@@ -85,9 +86,11 @@ namespace Microsoft.Bot.Builder.Tests
 
             await new TestFlow(adapter, async (context) =>
                 {
-                    if (context.IfIntent(new Regex("a")))
+                    var recognized = context.Get<IRecognizedIntents>();
+
+                    if (new Regex("a").IsMatch(context.Request.Text))
                         context.Reply("aaaa Intent");
-                    if (context.IfIntent(new Regex("b")))
+                    if (new Regex("b").IsMatch(context.Request.Text))
                         context.Reply("bbbb Intent");
                 })
                 .Test("aaaaaaaaa", "aaaa Intent")
@@ -109,7 +112,8 @@ namespace Microsoft.Bot.Builder.Tests
                 .Use(helpRecognizer);
             await new TestFlow(adapter, async (context) =>
                 {
-                    if (context.IfIntent("CancelIntent"))
+                    var recognized = context.Get<IRecognizedIntents>();
+                    if (recognized.TopIntent.Name == "CancelIntent")
                         context.Reply("You selected CancelIntent");
                 })
                 .Test("cancel", "You selected CancelIntent")
@@ -131,12 +135,14 @@ namespace Microsoft.Bot.Builder.Tests
 
             await new TestFlow(adapter, async (context) =>
                 {
-                    if (context.IfIntent("CancelIntent"))
+                    var recognized = context.Get<IRecognizedIntents>();
+                    if (recognized.TopIntent?.Name == "CancelIntent")
                         context.Reply("You selected CancelIntent");
                     else
                         context.Reply("Bot received request of type message");
                 })
                 .Test("tacos", "Bot received request of type message")
+                .Test("cancel", "You selected CancelIntent")
                 .StartTest();
         }
 
@@ -154,11 +160,12 @@ namespace Microsoft.Bot.Builder.Tests
                 .Use(helpRecognizer);
             await new TestFlow(adapter, async (context) =>
                 {
-                    if (context.IfIntent("HelpIntent"))
+                    var recognized = context.Get<IRecognizedIntents>();
+                    if (recognized.TopIntent.Name == "HelpIntent")
                         context.Reply("You selected HelpIntent");
-                    else if (context.IfIntent("CancelIntent"))
+                    else if (recognized.TopIntent.Name == "CancelIntent")
                         context.Reply("You selected CancelIntent");
-                    else if (context.IfIntent("TacoIntent"))
+                    else if (recognized.TopIntent.Name == "TacoIntent")
                         context.Reply("You selected TacoIntent");
                 })
                 .Send("help").AssertReply("You selected HelpIntent")

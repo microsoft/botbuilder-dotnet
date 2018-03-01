@@ -17,12 +17,12 @@ namespace Microsoft.Bot.Builder
         /// <summary>
         /// Incoming request
         /// </summary>
-        IActivity Request { get; }
+        Activity Request { get; }
 
         /// <summary>
         /// Respones
         /// </summary>
-        IList<IActivity> Responses { get; set; }
+        IList<Activity> Responses { get; set; }
 
         /// <summary>
         /// Conversation reference
@@ -30,53 +30,49 @@ namespace Microsoft.Bot.Builder
         ConversationReference ConversationReference { get; }
 
         /// <summary>
-        /// Bot state 
-        /// </summary>
-        BotState State { get; }
-    
-        Intent TopIntent { get; set; }
-
-        /// <summary>
-        /// check to see if topIntent matches
-        /// </summary>
-        /// <param name="intentName"></param>
-        /// <returns></returns>
-        bool IfIntent(string intentName);
-
-        /// <summary>
-        /// Check to see if intent matches regex
-        /// </summary>
-        /// <param name="expression"></param>
-        /// <returns></returns>
-        bool IfIntent(Regex expression);
-
-        /// <summary>
         /// Queues a new "message" responses array.
         /// </summary>
         /// <param name="text">Text of a message to send to the user.</param>
         /// <param name="speak">(Optional) SSML that should be spoken to the user on channels that support speech.</param>
         /// <returns></returns>
-        BotContext Reply(string text, string speak = null);
+        IBotContext Reply(string text, string speak = null);
 
         /// <summary>
         /// Queues a new "message" responses array.
         /// </summary>
         /// <param name="activity">Activity object to send to the user.</param>
         /// <returns></returns>
-        BotContext Reply(IActivity activity);
+        IBotContext Reply(IActivity activity);
 
-    }   
+        /// <summary>
+        /// Set object by Id
+        /// </summary>
+        /// <param name="objectId"></param>
+        /// <param name="object"></param>
+        void Set(string objectId, object @object);
+
+        /// <summary>
+        /// Get object by id
+        /// </summary>
+        /// <param name="objectId"></param>
+        /// <returns>service</returns>
+        object Get(string objectId);
+    }
 
     public static partial class BotContextExtension
     {
-        //public static async Task Send(this BotContext context)
-        //{            
-        //    await context.SendActivity(context, new List<IActivity>()).ConfigureAwait(false);
-        //}
-
-        public static BotContext ToBotContext(this IBotContext context)
+        public static void Set<ObjectT>(this IBotContext context, ObjectT service)
         {
-            return (BotContext)context; 
+            var objectId = $"{typeof(ObjectT).Namespace}.{typeof(ObjectT).Name}";
+            context.Set(objectId, service);
         }
+
+        public static ObjectT Get<ObjectT>(this IBotContext context, string objectId = null)
+        {
+            if (objectId == null)
+                objectId = $"{typeof(ObjectT).Namespace}.{typeof(ObjectT).Name}";
+            return (ObjectT)context.Get(objectId);
+        }
+
     }
 }
