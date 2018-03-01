@@ -8,4 +8,8 @@
     <PackageReference Include="Microsoft.Cognitive.LUIS" Version="3.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Microsoft.Bot.Builder.Core\Microsoft.Bot.Builder.Core.csproj" />
+  </ItemGroup>
+
 </Project>
