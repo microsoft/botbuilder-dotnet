@@ -28,7 +28,7 @@ namespace Microsoft.Bot.Builder.LUIS.Tests
         [TestMethod]
         public async Task SingleIntent_SimplyEntity()
         {
-            if (_luisAppId == null || _subscriptionKey == null || _luisUriBase == null)
+            if (EnvironmentVariablesDefined())
             {
                 Debug.WriteLine($"Missing Luis Environemnt variables - Skipping test");
                 return;
@@ -55,7 +55,7 @@ namespace Microsoft.Bot.Builder.LUIS.Tests
         [TestMethod]
         public async Task MultipleIntents_PrebuiltEntity()
         {
-            if (_luisAppId == null || _subscriptionKey == null || _luisUriBase == null)
+            if (EnvironmentVariablesDefined())
             {
                 Debug.WriteLine($"Missing Luis Environemnt variables - Skipping test");
                 return;
@@ -87,7 +87,7 @@ namespace Microsoft.Bot.Builder.LUIS.Tests
         [TestMethod]
         public async Task MultipleIntents_PrebuiltEntitiesWithMultiValues()
         {
-            if (_luisAppId == null || _subscriptionKey == null || _luisUriBase == null)
+            if (EnvironmentVariablesDefined())
             {
                 Debug.WriteLine($"Missing Luis Environemnt variables - Skipping test");
                 return;
@@ -112,7 +112,7 @@ namespace Microsoft.Bot.Builder.LUIS.Tests
         [TestMethod]
         public async Task MultipleIntents_ListEntityWithSingleValue()
         {
-            if (_luisAppId == null || _subscriptionKey == null || _luisUriBase == null)
+            if (EnvironmentVariablesDefined())
             {
                 Debug.WriteLine($"Missing Luis Environemnt variables - Skipping test");
                 return;
@@ -138,7 +138,7 @@ namespace Microsoft.Bot.Builder.LUIS.Tests
         [TestMethod]
         public async Task MultipleIntents_ListEntityWithMultiValues()
         {
-            if (_luisAppId == null || _subscriptionKey == null || _luisUriBase == null)
+            if (EnvironmentVariablesDefined())
             {
                 Debug.WriteLine($"Missing Luis Environemnt variables - Skipping test");
                 return;
@@ -166,7 +166,7 @@ namespace Microsoft.Bot.Builder.LUIS.Tests
         [TestMethod]
         public async Task MultipleIntens_CompositeEntity()
         {
-            if (_luisAppId == null || _subscriptionKey == null || _luisUriBase == null)
+            if (EnvironmentVariablesDefined())
             {
                 Debug.WriteLine($"Missing Luis Environemnt variables - Skipping test");
                 return;
@@ -202,6 +202,11 @@ namespace Microsoft.Bot.Builder.LUIS.Tests
             Assert.AreEqual(28, result.Entities["Address"][0]["$instance"]["State"][0]["endIndex"]);
             Assert.AreEqual("wa", result.Entities["Address"][0]["$instance"]["State"][0]["text"]);
             Assert.IsTrue((double)result.Entities["Address"][0]["$instance"]["State"][0]["score"] >= 0 && (double)result.Entities["Address"][0]["$instance"]["State"][0]["score"] <= 1);
+        }
+
+        private bool EnvironmentVariablesDefined()
+        {
+            return _luisAppId == null || _subscriptionKey == null || _luisUriBase == null;
         }
 
         private IRecognizer GetLuisRecognizer(bool verbose = false, ILuisOptions luisOptions = null)
