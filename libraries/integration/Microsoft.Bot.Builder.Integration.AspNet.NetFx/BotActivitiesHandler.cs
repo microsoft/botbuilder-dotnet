@@ -36,8 +36,25 @@ namespace Microsoft.Bot.Builder.Integration.AspNet
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            var activity = await request.Content.ReadAsAsync<Activity>(BotActivitiesHandler.BotActivityMediaTypeFormatters, cancellationToken);
-            var dependencyScope = request.GetDependencyScope();
+            if (request.Method != HttpMethod.Post)
+            {
+                return request.CreateResponse(HttpStatusCode.MethodNotAllowed);
+            }
+
+            var requestContent = request.Content;
+            var requestContentHeaders = requestContent.Headers;
+
+            if (requestContentHeaders.ContentLength == 0)
+            {
+                return request.CreateErrorResponse(HttpStatusCode.BadRequest, "Request body should not be empty.");
+            }
+
+            if (!BotActivityMediaTypeFormatters[0].SupportedMediaTypes.Contains(requestContentHeaders.ContentType))
+            {
+                return request.CreateErrorResponse(HttpStatusCode.NotAcceptable, $"Expecting Content-Type of \"{BotActivityMediaTypeFormatters[0].SupportedMediaTypes[0].MediaType}\".");
+            }
+
+            var activity = await requestContent.ReadAsAsync<Activity>(BotActivitiesHandler.BotActivityMediaTypeFormatters, cancellationToken);
 
             try
             {
@@ -52,7 +69,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet
 
                         try
                         {
-                            bot = (IBot)dependencyScope.GetService(typeof(IBot));
+                            bot = (IBot)request.GetDependencyScope().GetService(typeof(IBot));
                         }
                         catch
                         {
