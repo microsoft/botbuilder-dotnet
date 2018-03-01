@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Samples.EchoBot_AspNet461
             {
                 botConfig
                     //.UseApplicationIdentity("myApp123", "myAppPasswordXyz")
-                    .UseMiddleware(new ConversationStateManagerMiddleware(new MemoryStorage()));
+                    .UseMiddleware(new ConversationState<MyBotState>(new MemoryStorage()));
             });
         }
     }
