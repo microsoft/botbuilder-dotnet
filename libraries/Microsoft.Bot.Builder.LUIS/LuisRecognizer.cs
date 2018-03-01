@@ -160,8 +160,7 @@ namespace Microsoft.Bot.Builder.LUIS
                 childrenEntitiesMetadata = GetEntityMetadata(compositeEntityMetadata);
                 childrenEntites[MetadataKey] = new JObject();
             }
-
-
+            
             var coveredSet = new HashSet<EntityRecommendation>();
             foreach (var child in compositeEntity.Children)
             {
@@ -185,17 +184,15 @@ namespace Microsoft.Bot.Builder.LUIS
                     }
                 }
             }
-
-            // filter entities that were covered by this composite entity
-            var filteredEntities = entities.Except(coveredSet).ToList();
-
+            
             AddProperty(entitiesAndMetadata, compositeEntity.ParentType, childrenEntites);
             if (verbose)
             {
                 AddProperty((JObject)entitiesAndMetadata[MetadataKey], compositeEntity.ParentType, childrenEntitiesMetadata);
             }
 
-            return filteredEntities;
+            // filter entities that were covered by this composite entity
+            return entities.Except(coveredSet).ToList();
         }
 
         private static bool CompositeContainsEntity(EntityRecommendation compositeEntityMetadata, EntityRecommendation entity)
