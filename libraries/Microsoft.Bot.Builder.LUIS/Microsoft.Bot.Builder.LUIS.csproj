@@ -12,4 +12,10 @@
     <ProjectReference Include="..\Microsoft.Bot.Builder.Core\Microsoft.Bot.Builder.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="System.Design">
+      <HintPath>..\..\..\..\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7\System.Design.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>
