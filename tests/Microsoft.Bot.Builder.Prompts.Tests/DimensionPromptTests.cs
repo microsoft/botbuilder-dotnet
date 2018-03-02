@@ -33,23 +33,23 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                     }
                     else
                     {
-                        var result = await testPrompt.Recognize(context);
-                        if (result == null)
-                            context.Reply("null");
-                        else
+                        var dimensionResult = await testPrompt.Recognize(context);
+                        if (dimensionResult.Succeeded())
                         {
-                            Assert.IsTrue(result.Value != float.NaN);
-                            Assert.IsNotNull(result.Text);
-                            Assert.IsNotNull(result.Unit);
-                            Assert.IsInstanceOfType(result.Value, typeof(float));
-                            context.Reply($"{result.Value} {result.Unit}");
+                            Assert.IsTrue(dimensionResult.Value != float.NaN);
+                            Assert.IsNotNull(dimensionResult.Text);
+                            Assert.IsNotNull(dimensionResult.Unit);
+                            Assert.IsInstanceOfType(dimensionResult.Value, typeof(float));
+                            context.Reply($"{dimensionResult.Value} {dimensionResult.Unit}");
                         }
+                        else
+                            context.Reply(dimensionResult.Status.ToString());
                     }
                 })
                 .Send("hello")
                 .AssertReply("Gimme:")
                 .Send("test test test")
-                    .AssertReply("null")
+                    .AssertReply(RecognitionStatus.NotRecognized.ToString())
                 .Send("I am 4 feet wide")
                     .AssertReply("4 Foot")
                 .Send(" it is 1 foot wide")
@@ -64,27 +64,31 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                 .Use(new ConversationState<TestState>(new MemoryStorage()));
 
             await new TestFlow(adapter, async (context) =>
-            {
-                var state = ConversationState<TestState>.Get(context);
-                var numberPrompt = new DimensionPrompt(Culture.English, async (ctx, result) =>  result.Value > 10);
-                if (!state.InPrompt)
                 {
-                    state.InPrompt = true;
-                    await numberPrompt.Prompt(context, "Gimme:");
-                }
-                else
-                {
-                    var result = await numberPrompt.Recognize(context);
-                    if (result == null)
-                        context.Reply("null");
+                    var state = ConversationState<TestState>.Get(context);
+                    var numberPrompt = new DimensionPrompt(Culture.English, async (ctx, result) =>
+                    {
+                        if (result.Value <= 10)
+                            result.Status = RecognitionStatus.TooSmall;
+                    });
+                    if (!state.InPrompt)
+                    {
+                        state.InPrompt = true;
+                        await numberPrompt.Prompt(context, "Gimme:");
+                    }
                     else
-                        context.Reply($"{result.Value} {result.Unit}");
-                }
-            })
+                    {
+                        var dimensionResult = await numberPrompt.Recognize(context);
+                        if (dimensionResult.Succeeded())
+                            context.Reply($"{dimensionResult.Value} {dimensionResult.Unit}");
+                        else
+                            context.Reply(dimensionResult.Status.ToString());
+                    }
+                })
                 .Send("hello")
                 .AssertReply("Gimme:")
                 .Send(" it is 1 foot wide")
-                    .AssertReply("null")
+                    .AssertReply(RecognitionStatus.TooSmall.ToString())
                 .Send(" it is 40 feet wide")
                     .AssertReply("40 Foot")
                 .StartTest();

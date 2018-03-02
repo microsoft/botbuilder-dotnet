@@ -8,7 +8,7 @@ using static Microsoft.Bot.Builder.Prompts.PromptValidatorEx;
 
 namespace Microsoft.Bot.Builder.Prompts
 {
-    public class RangeResult
+    public class RangeResult : RecognitionResult
     {
         public float Start { get; set; }
 
@@ -25,13 +25,13 @@ namespace Microsoft.Bot.Builder.Prompts
         private IModel _model;
 
         public RangePrompt(string culture, PromptValidator<RangeResult> validator = null)
-            :base(validator)
+            : base(validator)
         {
             _model = NumberRecognizer.Instance.GetNumberRangeModel(culture);
         }
 
         protected RangePrompt(IModel model, PromptValidator<RangeResult> validator = null)
-            :base(validator)
+            : base(validator)
         {
             _model = model ?? throw new ArgumentNullException(nameof(model));
         }
@@ -43,6 +43,7 @@ namespace Microsoft.Bot.Builder.Prompts
             if (context.Request.Type != ActivityTypes.Message)
                 throw new InvalidOperationException("No Message to Recognize");
 
+            RangeResult rangeResult = new RangeResult();
             IMessageActivity message = context.Request.AsMessageActivity();
             var results = _model.Parse(message.Text);
             if (results.Any())
@@ -51,20 +52,17 @@ namespace Microsoft.Bot.Builder.Prompts
                 if (result.TypeName == "numberrange")
                 {
                     string[] values = result.Resolution["value"].ToString().Trim('(', ')').Split(',');
-                    RangeResult rangeResult = new RangeResult()
-                    {
-                        Text = result.Text
-                    };
                     if (float.TryParse(values[0], out float startValue) && float.TryParse(values[1], out float endValue))
                     {
+                        rangeResult.Status = RecognitionStatus.Recognized;
+                        rangeResult.Text = result.Text;
                         rangeResult.Start = startValue;
                         rangeResult.End = endValue;
+                        await Validate(context, rangeResult);
                     }
-                    if (await Validate(context, rangeResult))
-                        return rangeResult;
                 }
             }
-            return null;
+            return rangeResult;
         }
 
     }

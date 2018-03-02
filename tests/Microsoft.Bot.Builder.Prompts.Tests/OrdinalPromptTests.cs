@@ -33,22 +33,22 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                     }
                     else
                     {
-                        var result = await testPrompt.Recognize(context);
-                        if (result == null)
-                            context.Reply("null");
-                        else
+                        var ordinalResult = await testPrompt.Recognize(context);
+                        if (ordinalResult.Succeeded())
                         {
-                            Assert.IsTrue(result.Value != float.NaN);
-                            Assert.IsNotNull(result.Text);
-                            Assert.IsInstanceOfType(result.Value, typeof(int));
-                            context.Reply(result.Value.ToString());
+                            Assert.IsTrue(ordinalResult.Value != float.NaN);
+                            Assert.IsNotNull(ordinalResult.Text);
+                            Assert.IsInstanceOfType(ordinalResult.Value, typeof(int));
+                            context.Reply(ordinalResult.Value.ToString());
                         }
+                        else
+                            context.Reply(ordinalResult.Status.ToString());
                     }
                 })
                 .Send("hello")
                 .AssertReply("Gimme:")
                 .Send("test test test")
-                    .AssertReply("null")
+                    .AssertReply(RecognitionStatus.NotRecognized.ToString())
                 .Send(" the second one please ")
                     .AssertReply("2")
                 .StartTest();
@@ -63,7 +63,11 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
             await new TestFlow(adapter, async (context) =>
             {
                 var state = ConversationState<TestState>.Get(context);
-                var numberPrompt = new OrdinalPrompt(Culture.English, async (ctx, result) =>  result.Value > 2);
+                var numberPrompt = new OrdinalPrompt(Culture.English, async (ctx, result) =>
+                {
+                    if (result.Value <= 2)
+                        result.Status = RecognitionStatus.TooSmall;
+                });
                 if (!state.InPrompt)
                 {
                     state.InPrompt = true;
@@ -71,22 +75,22 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                 }
                 else
                 {
-                    var result = await numberPrompt.Recognize(context);
-                    if (result == null)
-                        context.Reply("null");
-                    else
+                    var ordinalResult = await numberPrompt.Recognize(context);
+                    if (ordinalResult.Succeeded())
                     {
-                        Assert.IsInstanceOfType(result.Value, typeof(int));
-                        Assert.IsTrue(result.Value < 100);
-                        Assert.IsNotNull(result.Text);
-                        context.Reply(result.Value.ToString());
+                        Assert.IsInstanceOfType(ordinalResult.Value, typeof(int));
+                        Assert.IsTrue(ordinalResult.Value < 100);
+                        Assert.IsNotNull(ordinalResult.Text);
+                        context.Reply(ordinalResult.Value.ToString());
                     }
+                    else
+                        context.Reply(ordinalResult.Status.ToString());
                 }
             })
                 .Send("hello")
                 .AssertReply("Gimme:")
                 .Send("the first one")
-                    .AssertReply("null")
+                    .AssertReply(RecognitionStatus.TooSmall.ToString())
                 .Send("the third one")
                     .AssertReply("3")
                 .StartTest();

@@ -40,6 +40,7 @@ namespace Microsoft.Bot.Builder.Prompts
             if (context.Request.Type != ActivityTypes.Message)
                 throw new InvalidOperationException("No Message to Recognize");
 
+            NumberResult<float> numberResult = new NumberResult<float>();
             IMessageActivity message = context.Request.AsMessageActivity();
             var results = _model.Parse(message.Text);
             if (results.Any())
@@ -47,16 +48,13 @@ namespace Microsoft.Bot.Builder.Prompts
                 var result = results.First();
                 if (float.TryParse(result.Resolution["value"].ToString().TrimEnd('%'), out float value))
                 {
-                    NumberResult<float> numberResult = new NumberResult<float>()
-                    {
-                        Value = value,
-                        Text = result.Text
-                    };
-                    if (await Validate(context, numberResult))
-                        return numberResult;
+                    numberResult.Status = RecognitionStatus.Recognized;
+                    numberResult.Value = value;
+                    numberResult.Text = result.Text;
+                    await Validate(context, numberResult);
                 }
             }
-            return null;
+            return numberResult;
         }
     }
 }

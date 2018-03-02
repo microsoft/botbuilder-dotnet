@@ -33,23 +33,23 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                     }
                     else
                     {
-                        var result = await testPrompt.Recognize(context);
-                        if (result == null)
-                            context.Reply("null");
-                        else
+                        var tempResult = await testPrompt.Recognize(context);
+                        if (tempResult.Succeeded())
                         {
-                            Assert.IsTrue(result.Value != float.NaN);
-                            Assert.IsNotNull(result.Text);
-                            Assert.IsNotNull(result.Unit);
-                            Assert.IsInstanceOfType(result.Value, typeof(float));
-                            context.Reply($"{result.Value} {result.Unit}");
+                            Assert.IsTrue(tempResult.Value != float.NaN);
+                            Assert.IsNotNull(tempResult.Text);
+                            Assert.IsNotNull(tempResult.Unit);
+                            Assert.IsInstanceOfType(tempResult.Value, typeof(float));
+                            context.Reply($"{tempResult.Value} {tempResult.Unit}");
                         }
+                        else
+                            context.Reply(tempResult.Status.ToString());
                     }
                 })
                 .Send("hello")
                 .AssertReply("Gimme:")
                 .Send("test test test")
-                    .AssertReply("null")
+                    .AssertReply(RecognitionStatus.NotRecognized.ToString())
                 .Send(" it is 43 degrees")
                     .AssertReply("43 Degree")
                 .StartTest();
@@ -64,7 +64,11 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
             await new TestFlow(adapter, async (context) =>
             {
                 var state = ConversationState<TestState>.Get(context);
-                var numberPrompt = new TemperaturePrompt(Culture.English, async (ctx, result) =>  result.Value > 10);
+                var numberPrompt = new TemperaturePrompt(Culture.English, async (ctx, result) =>
+                {
+                    if (result.Value <= 10)
+                        result.Status = RecognitionStatus.TooSmall;
+                });
                 if (!state.InPrompt)
                 {
                     state.InPrompt = true;
@@ -72,17 +76,17 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                 }
                 else
                 {
-                    var result = await numberPrompt.Recognize(context);
-                    if (result == null)
-                        context.Reply("null");
+                    var tempResult = await numberPrompt.Recognize(context);
+                    if (tempResult.Succeeded())
+                        context.Reply($"{tempResult.Value} {tempResult.Unit}");
                     else
-                        context.Reply($"{result.Value} {result.Unit}");
+                        context.Reply(tempResult.Status.ToString());
                 }
             })
                 .Send("hello")
                 .AssertReply("Gimme:")
                 .Send(" it is 10 degrees")
-                    .AssertReply("null")
+                    .AssertReply(RecognitionStatus.TooSmall.ToString())
                 .Send(" it is 43 degrees")
                     .AssertReply("43 Degree")
                 .StartTest();

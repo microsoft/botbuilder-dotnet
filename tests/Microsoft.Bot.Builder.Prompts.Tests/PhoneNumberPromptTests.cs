@@ -33,23 +33,23 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                     }
                     else
                     {
-                        var result = await testPrompt.Recognize(context);
-                        if (result == null)
-                            context.Reply("null");
-                        else
+                        var phoneResult = await testPrompt.Recognize(context);
+                        if (phoneResult.Succeeded())
                         {
-                            Assert.IsNotNull(result.Text);
-                            Assert.IsNotNull(result.Value);
-                            context.Reply($"{result.Value}");
+                            Assert.IsNotNull(phoneResult.Text);
+                            Assert.IsNotNull(phoneResult.Value);
+                            context.Reply($"{phoneResult.Value}");
                         }
+                        else
+                            context.Reply(phoneResult.Status.ToString());
                     }
                 })
                 .Send("hello")
                 .AssertReply("Gimme:")
                 .Send("test test test")
-                    .AssertReply("null")
+                    .AssertReply(RecognitionStatus.NotRecognized.ToString())
                 .Send("123 123123sdfsdf 123 1asdf23123 123 ")
-                    .AssertReply("null")
+                    .AssertReply(RecognitionStatus.NotRecognized.ToString())
                 .Send("123-456-7890")
                     .AssertReply("123-456-7890")
                 .StartTest();
@@ -64,7 +64,11 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
             await new TestFlow(adapter, async (context) =>
             {
                 var state = ConversationState<TestState>.Get(context);
-                var numberPrompt = new PhoneNumberPrompt(Culture.English, async (ctx, result) =>  result.Value.StartsWith("123"));
+                var numberPrompt = new PhoneNumberPrompt(Culture.English, async (ctx, result) =>
+                {
+                    if (!result.Value.StartsWith("123"))
+                        result.Status = RecognitionStatus.OutOfRange;
+                });
                 if (!state.InPrompt)
                 {
                     state.InPrompt = true;
@@ -72,17 +76,17 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                 }
                 else
                 {
-                    var result = await numberPrompt.Recognize(context);
-                    if (result == null)
-                        context.Reply("null");
+                    var phoneResult = await numberPrompt.Recognize(context);
+                    if (phoneResult.Succeeded())
+                        context.Reply($"{phoneResult.Value}");
                     else
-                        context.Reply($"{result.Value}");
+                        context.Reply(phoneResult.Status.ToString());
                 }
             })
                 .Send("hello")
                 .AssertReply("Gimme:")
                 .Send("888-123-4567")
-                    .AssertReply("null")
+                    .AssertReply(RecognitionStatus.OutOfRange.ToString())
                 .Send("123-123-4567")
                     .AssertReply("123-123-4567")
                 .StartTest();
