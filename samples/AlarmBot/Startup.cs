@@ -12,6 +12,7 @@ using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Text.RegularExpressions;
+using Microsoft.Bot.Builder.Integration.NetCore;
 
 namespace AlarmBot
 {
@@ -33,26 +34,24 @@ namespace AlarmBot
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton(_ => Configuration);            
-            services.AddMvc();
-
-            // register adapater
-            services.AddSingleton<BotFrameworkAdapter>(serviceProvider =>
+            services.AddBot<AlarmBot>(options =>
             {
-                string applicationId = Configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppIdKey)?.Value;
-                string applicationPassword = Configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppPasswordKey)?.Value;
+                options.ApplicationId = Configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppIdKey)?.Value;
+                options.ApplicationPassword = Configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppPasswordKey)?.Value;
 
-                // create bot hooked up to the activity adapater
-                return new BotFrameworkAdapter(applicationId, applicationPassword)
-                    .Use(new UserState<UserData>(new MemoryStorage()))
-                    .Use(new ConversationState<ConversationData>(new MemoryStorage()))
-                    .Use(new RegExpRecognizerMiddleware()
-                        .AddIntent("showAlarms", new Regex("show alarms(.*)", RegexOptions.IgnoreCase))
-                        .AddIntent("addAlarm", new Regex("add alarm(.*)", RegexOptions.IgnoreCase))
-                        .AddIntent("deleteAlarm", new Regex("delete alarm(.*)", RegexOptions.IgnoreCase))
-                        .AddIntent("help", new Regex("help(.*)", RegexOptions.IgnoreCase))
-                        .AddIntent("cancel", new Regex("cancel(.*)", RegexOptions.IgnoreCase))
-                        .AddIntent("confirmYes", new Regex("(yes|yep|yessir|^y$)", RegexOptions.IgnoreCase))
-                        .AddIntent("confirmNo", new Regex("(no|nope|^n$)", RegexOptions.IgnoreCase)));
+                var middleware = options.Middleware;
+
+                middleware.Add(new UserState<UserData>(new MemoryStorage()));
+                middleware.Add(new ConversationState<ConversationData>(new MemoryStorage()));
+                middleware.Add(new RegExpRecognizerMiddleware()
+                                .AddIntent("showAlarms", new Regex("show alarms(.*)", RegexOptions.IgnoreCase))
+                                .AddIntent("addAlarm", new Regex("add alarm(.*)", RegexOptions.IgnoreCase))
+                                .AddIntent("deleteAlarm", new Regex("delete alarm(.*)", RegexOptions.IgnoreCase))
+                                .AddIntent("help", new Regex("help(.*)", RegexOptions.IgnoreCase))
+                                .AddIntent("cancel", new Regex("cancel(.*)", RegexOptions.IgnoreCase))
+                                .AddIntent("confirmYes", new Regex("(yes|yep|yessir|^y$)", RegexOptions.IgnoreCase))
+                                .AddIntent("confirmNo", new Regex("(no|nope|^n$)", RegexOptions.IgnoreCase)));
+                            
             });
         }
 
@@ -66,7 +65,7 @@ namespace AlarmBot
 
             app.UseDefaultFiles();
             app.UseStaticFiles();
-            app.UseMvc();
+            app.UseBotFramework();
         }
     }
 }
