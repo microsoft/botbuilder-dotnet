@@ -56,13 +56,14 @@ namespace Microsoft.Bot.Connector.Tests
         }
 
         [Fact]
-        public async void EmptyHeader_BotWithNoCredentials_ShouldValidate()
+        public async void EmptyHeader_BotWithNoCredentials_ShouldThrow()
         {
             var header = "";
             var credentials = new SimpleCredentialProvider("", "");
-            var result = await JwtTokenValidation.ValidateAuthHeader(header, credentials, null, emptyClient);
 
-            Assert.True(result.IsAuthenticated);
+
+            await Assert.ThrowsAsync<ArgumentNullException>(
+                async () => await JwtTokenValidation.ValidateAuthHeader(header, credentials, null, emptyClient));
         }
 
         [Fact]
@@ -108,7 +109,7 @@ namespace Microsoft.Bot.Connector.Tests
         /// Tests with a valid Token and invalid service url; and ensures that Service url is NOT added to Trusted service url list.
         /// </summary>
         [Fact]
-        public async void Channel_MsaHeader_Invalid_ServiceUrlShouldBeTrusted()
+        public async void Channel_MsaHeader_Invalid_ServiceUrlShouldNotBeTrusted()
         {
             var header = "Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6ImI0eXNPV0l0RDEzaVFmTExlQkZYOWxSUER0ayIsInR5cCI6IkpXVCIsIng1dCI6ImI0eXNPV0l0RDEzaVFmTExlQkZYOWxSUER0ayJ9.eyJzZXJ2aWNldXJsIjoiaHR0cHM6Ly9zbWJhLnRyYWZmaWNtYW5hZ2VyLm5ldC9hbWVyLWNsaWVudC1zcy5tc2cvIiwibmJmIjoxNTE5Njk3OTQ0LCJleHAiOjE1MTk3MDE1NDQsImlzcyI6Imh0dHBzOi8vYXBpLmJvdGZyYW1ld29yay5jb20iLCJhdWQiOiI3Zjc0NTEzZS02Zjk2LTRkYmMtYmU5ZC05YTgxZmVhMjJiODgifQ.wjApM-MBhEIHSRHJGmivfpyFg0-SrTFh6Xta2RrKlZT4urACPX7kdZAb6oGOeDIm0NU16BPcpEqtCm9nBPmwoKKRbLCQ4Q3DGcB_LY15VCYfiiAnaevNNcvq7j_Hu-oyTmKOqpjfzu8qMIsjySClf1qZFucUrqzccePtlb63DAVfv-nF3bp-sm-zFG7RBX32cCygBMvpVENBroAq3ANfUQCmixkExcGr5npV3dFihSE0H9ntLMGseBdW7dRe5xOXDIgCtcCJPid-A6Vz-DxWGabyy2mVXLwYYuDxP4L5aruGwJIl_Z2-_MjhrWVszoeCRoOlx9-LNtbdSYGWmXWSbg";
             var credentials = new SimpleCredentialProvider("7f74513e-6f96-4dbc-be9d-9a81fea22b88", "");
@@ -120,7 +121,43 @@ namespace Microsoft.Bot.Connector.Tests
                 credentials,
                 emptyClient));
 
-            Assert.False(MicrosoftAppCredentials.IsTrustedServiceUrl("https://smba.trafficmanager.net/amer-client-ss.msg/"));
+            Assert.False(MicrosoftAppCredentials.IsTrustedServiceUrl("https://webchat.botframework.com/"));
+        }
+
+        /// <summary>
+        /// Tests with no authentication header and makes sure the service URL is not added to the trusted list.
+        /// </summary>
+        [Fact]
+        public async void Channel_AuthenticationDisabled_ShouldBeAnonymous()
+        {
+            var header = "";
+            var credentials = new SimpleCredentialProvider();
+
+            var claimsPrincipal = await JwtTokenValidation.AuthenticateRequest(
+                new Activity { ServiceUrl = "https://webchat.botframework.com/" },
+                header,
+                credentials,
+                emptyClient);
+
+            Assert.Equal("anonymous", claimsPrincipal.AuthenticationType);
+        }
+
+        /// <summary>
+        /// Tests with no authentication header and makes sure the service URL is not added to the trusted list.
+        /// </summary>
+        [Fact]
+        public async void Channel_AuthenticationDisabled_ServiceUrlShouldNotBeTrusted()
+        {
+            var header = "";
+            var credentials = new SimpleCredentialProvider();
+
+            var claimsPrincipal = await JwtTokenValidation.AuthenticateRequest(
+                new Activity { ServiceUrl = "https://webchat.botframework.com/" },
+                header,
+                credentials,
+                emptyClient);
+
+            Assert.False(MicrosoftAppCredentials.IsTrustedServiceUrl("https://webchat.botframework.com/"));
         }
     }
 }
