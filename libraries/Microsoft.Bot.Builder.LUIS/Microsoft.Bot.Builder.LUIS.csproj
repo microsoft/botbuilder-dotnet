@@ -1,21 +1,49 @@
 <Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <Version Condition=" '$(BUILD_BUILDNUMBER)' == '' ">4.0.0-local</Version>
+    <Version Condition=" '$(BUILD_BUILDNUMBER)' != '' ">$(BUILD_BUILDNUMBER)</Version>
+    <PackageVersion Condition=" '$(PackageVersion)' == '' ">4.0.0-local</PackageVersion>
+    <PackageVersion Condition=" '$(PackageVersion)' != '' ">$(PackageVersion)</PackageVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <SignAssembly>true</SignAssembly>
+    <DelaySign>true</DelaySign>
+    <AssemblyOriginatorKeyFile>..\..\build\35MSSharedLib1024.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <PackageId>Microsoft.Bot.Builder.LUIS</PackageId>
+    <Description>LUIS Middleware and Recognizers for the Microsoft Bot Builder SDK</Description>
+    <Summary>This library implements C# classes for building bots using LUIS.</Summary>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Company>Microsoft</Company>
+    <Authors>microsoft,BotFramework,nugetbotbuilder</Authors>
+    <Product>Microsoft Bot Builder SDK</Product>
+    <Copyright>� Microsoft Corporation. All rights reserved.</Copyright>
+    <PackageProjectUrl>https://github.com/Microsoft/botbuilder-dotnet</PackageProjectUrl>
+    <PackageIconUrl>http://docs.botframework.com/images/bot_icon.png</PackageIconUrl>
+    <PackageLicenseUrl>https://github.com/Microsoft/BotBuilder/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <RepositoryUrl>https://github.com/Microsoft/botbuilder-dotnet</RepositoryUrl>
+    <LicenseUrl>https://github.com/Microsoft/BotBuilder-dotnet/blob/master/LICENSE</LicenseUrl>
+    <RepositoryType />
+    <PackageTags>bots;ai;botframework;botbuilder;luis</PackageTags>
+    <NeutralLanguage />
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Cognitive.LUIS" Version="3.0.0" />
+    <PackageReference Include="Microsoft.Bot.Builder.Core" Condition=" '$(PackageVersion)' == '' " Version="4.0.0-local" />
+    <PackageReference Include="Microsoft.Bot.Builder.Core" Condition=" '$(PackageVersion)' != '' " Version="$(PackageVersion)" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Microsoft.Bot.Builder.Core\Microsoft.Bot.Builder.Core.csproj" />
+    <ProjectReference Include="..\Microsoft.Bot.Schema\Microsoft.Bot.Schema.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="System.Design">
-      <HintPath>..\..\..\..\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7\System.Design.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
 </Project>
