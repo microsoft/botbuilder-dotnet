@@ -45,33 +45,47 @@ namespace Microsoft.Bot.Builder
         IBotContext Reply(IActivity activity);
 
         /// <summary>
-        /// Set object by Id
+        /// Set the value associated with a key.
         /// </summary>
-        /// <param name="objectId"></param>
-        /// <param name="object"></param>
-        void Set(string objectId, object @object);
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value to set.</param>
+        void Set(string key, object value);
 
         /// <summary>
-        /// Get object by id
+        /// Get a value by a key.
         /// </summary>
-        /// <param name="objectId"></param>
-        /// <returns>service</returns>
-        object Get(string objectId);
+        /// <param name="key">The key of the value to get.</param>
+        /// <returns>The value.</returns>
+        object Get(string key);
     }
 
     public static partial class BotContextExtension
     {
-        public static void Set<ObjectT>(this IBotContext context, ObjectT service)
+        /// <summary>
+        /// Set a value of a specific type on a context object.
+        /// </summary>
+        /// <typeparam name="ObjectT">The value's type.</typeparam>
+        /// <param name="context">The context object.</param>
+        /// <param name="value">The value.</param>
+        /// <remarks>Uses the value type's name as the key.</remarks>
+        public static void Set<ObjectT>(this IBotContext context, ObjectT value)
         {
-            var objectId = $"{typeof(ObjectT).Namespace}.{typeof(ObjectT).Name}";
-            context.Set(objectId, service);
+            var key = $"{typeof(ObjectT).Namespace}.{typeof(ObjectT).Name}";
+            context.Set(key, value);
         }
 
-        public static ObjectT Get<ObjectT>(this IBotContext context, string objectId = null)
+        /// <summary>
+        /// Get a value of a specific type from a context object.
+        /// </summary>
+        /// <typeparam name="ObjectT">The value's type.</typeparam>
+        /// <param name="context">The context object.</param>
+        /// <param name="key">An optional lookup key. The default is the value type's name.</param>
+        /// <returns>The value.</returns>
+        public static ObjectT Get<ObjectT>(this IBotContext context, string key = null)
         {
-            if (objectId == null)
-                objectId = $"{typeof(ObjectT).Namespace}.{typeof(ObjectT).Name}";
-            return (ObjectT)context.Get(objectId);
+            if (key == null)
+                key = $"{typeof(ObjectT).Namespace}.{typeof(ObjectT).Name}";
+            return (ObjectT)context.Get(key);
         }
 
     }
