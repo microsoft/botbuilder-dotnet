@@ -11,19 +11,19 @@ namespace Microsoft.Bot.Samples.Echo
 {
     class Program
     {
-        public static async Task Main(string[] args)
+        public static void Main(string[] args)
         {
             Console.WriteLine("Welcome to the EchoBot.");
 
             var adapter = new ConsoleAdapter()
                 .Use(new ConversationState<EchoState>(new MemoryStorage()));
 
-            await adapter.ProcessActivity(async (context) =>
+            adapter.ProcessActivity(async (context) =>
             {
                 var echoBot = new EchoBot(new MyService());
 
                 await echoBot.OnReceiveActivity(context);
-            });
+            }).Wait();
         }
     }
 }
