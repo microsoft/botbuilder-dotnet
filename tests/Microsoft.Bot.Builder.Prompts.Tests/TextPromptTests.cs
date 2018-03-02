@@ -25,7 +25,6 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                 .Send("hello")
                 .AssertReply("Your Name:")
                 .Send("test test test")
-                .AssertReply("Passed")
                 .AssertReply("test test test")                
                 .StartTest();
         }
@@ -40,7 +39,7 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                 .Send("hello")
                 .AssertReply("Your Name:")
                 .Send("1")
-                .AssertReply("Failed")                
+                .AssertReply(RecognitionStatus.TooSmall.ToString())                
                 .StartTest();
         }
         [TestMethod]
@@ -53,7 +52,6 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                 .Send("hello")
                 .AssertReply("Your Name:")
                 .Send("123456")
-                .AssertReply("Passed")
                 .AssertReply("123456")
                 .StartTest();
         }
@@ -70,15 +68,14 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
             }
             else
             {
-                var text = await askForName.Recognize(context); 
-                if (text != null)
+                var textResult = await askForName.Recognize(context); 
+                if (textResult.Succeeded())
                 {
-                    context.Reply("Passed");
-                    context.Reply(text);
+                    context.Reply(textResult.Value);
                 }
                 else
                 {
-                    context.Reply("Failed"); 
+                    context.Reply(textResult.Status.ToString()); 
                 }
             }
         }
@@ -94,22 +91,22 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
             }
             else
             {
-                var text = await askForName.Recognize(context);
-                if (text != null)
+                var textResult = await askForName.Recognize(context);
+                if (textResult.Succeeded())
                 {
-                    context.Reply("Passed");
-                    context.Reply(text);
+                    context.Reply(textResult.Value);
                 }
                 else
                 {
-                    context.Reply("Failed");
+                    context.Reply(textResult.Status.ToString());
                 }
             }
         }
 
-        public async Task<bool> MinLengthValidator(IBotContext context, string toValidate)
+        public async Task MinLengthValidator(IBotContext context, TextResult textResult)
         {
-            return toValidate.Length > 5; 
+            if (textResult.Value.Length <= 5)
+                textResult.Status = RecognitionStatus.TooSmall;
         }
     }
 }

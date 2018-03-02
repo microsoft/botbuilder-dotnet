@@ -7,7 +7,49 @@ using static Microsoft.Bot.Builder.Prompts.PromptValidatorEx;
 
 namespace Microsoft.Bot.Builder.Prompts
 {
+    public enum RecognitionStatus
+    {
+        /// <summary>
+        /// The data type was not recognized at all
+        /// </summary>
+        NotRecognized,
+
+        /// <summary>
+        /// Data type was recognized and validated
+        /// </summary>
+        Recognized,
+
+        /// <summary>
+        /// The validation failed because too small
+        /// </summary>
+        TooSmall,
+
+        /// <summary>
+        /// The validation failed because too big
+        /// </summary>
+        TooBig,
+
+        /// <summary>
+        /// The validation failed because it was out of range
+        /// </summary>
+        OutOfRange
+    }
+
+    public class RecognitionResult
+    {
+        public RecognitionResult()
+        {
+            Status = RecognitionStatus.NotRecognized;
+        }
+
+        public RecognitionStatus Status { get; set; }
+
+        public bool Succeeded() { return Status == RecognitionStatus.Recognized; }
+    }
+
+
     public abstract class BasePrompt<T>
+        where T : RecognitionResult
     {
         private readonly PromptValidator<T> _customValidator = null;
 
@@ -42,15 +84,15 @@ namespace Microsoft.Bot.Builder.Prompts
         /// <returns>null if not recognized</returns>
         public abstract Task<T> Recognize(IBotContext context);
 
-
-        protected virtual Task<bool> Validate(IBotContext context, T value)
+        protected virtual Task Validate(IBotContext context, T value)
         {
             // Validation passed. Return the validated text.
             if (_customValidator != null)
             {
                 return _customValidator(context, value);
             }
-            return Task.FromResult(true);
+            value.Status = RecognitionStatus.Recognized;
+            return Task.CompletedTask;
         }
 
     }

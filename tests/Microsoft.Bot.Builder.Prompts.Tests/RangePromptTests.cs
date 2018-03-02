@@ -33,24 +33,24 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                     }
                     else
                     {
-                        var result = await testPrompt.Recognize(context);
-                        if (result == null)
-                            context.Reply("null");
-                        else
+                        var rangeResult = await testPrompt.Recognize(context);
+                        if (rangeResult.Succeeded())
                         {
-                            Assert.IsTrue(result.Start > 0);
-                            Assert.IsTrue(result.End > result.Start);
-                            Assert.IsNotNull(result.Text);
-                            context.Reply($"{result.Start}-{result.End}");
+                            Assert.IsTrue(rangeResult.Start > 0);
+                            Assert.IsTrue(rangeResult.End > rangeResult.Start);
+                            Assert.IsNotNull(rangeResult.Text);
+                            context.Reply($"{rangeResult.Start}-{rangeResult.End}");
                         }
+                        else
+                            context.Reply(rangeResult.Status.ToString());
                     }
                 })
                 .Send("hello")
                 .AssertReply("Gimme:")
                 .Send("test test test")
-                    .AssertReply("null")
+                    .AssertReply(RecognitionStatus.NotRecognized.ToString())
                 .Send("give me 5 10")
-                    .AssertReply("null")
+                    .AssertReply(RecognitionStatus.NotRecognized.ToString())
                 .Send(" give me between 5 and 10")
                     .AssertReply("5-10")
                 .StartTest();
@@ -65,7 +65,11 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
             await new TestFlow(adapter, async (context) =>
             {
                 var state = ConversationState<TestState>.Get(context);
-                var testPrompt = new RangePrompt<int>(Culture.English, async (c, result) => result.End - result.Start > 5);
+                var testPrompt = new RangePrompt<int>(Culture.English, async (c, result) =>
+                {
+                    if (result.End - result.Start <= 5)
+                        result.Status = RecognitionStatus.OutOfRange;
+                });
                 if (!state.InPrompt)
                 {
                     state.InPrompt = true;
@@ -73,22 +77,22 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                 }
                 else
                 {
-                    var result = await testPrompt.Recognize(context);
-                    if (result == null)
-                        context.Reply("null");
-                    else
+                    var rangeResult = await testPrompt.Recognize(context);
+                    if (rangeResult.Succeeded())
                     {
-                        Assert.IsTrue(result.Start > 0);
-                        Assert.IsTrue(result.End > result.Start);
-                        Assert.IsNotNull(result.Text);
-                        context.Reply($"{result.Start}-{result.End}");
+                        Assert.IsTrue(rangeResult.Start > 0);
+                        Assert.IsTrue(rangeResult.End > rangeResult.Start);
+                        Assert.IsNotNull(rangeResult.Text);
+                        context.Reply($"{rangeResult.Start}-{rangeResult.End}");
                     }
+                    else
+                        context.Reply(rangeResult.Status.ToString());
                 }
             })
                 .Send("hello")
                 .AssertReply("Gimme:")
                 .Send("give me between 1 and 4")
-                    .AssertReply("null")
+                    .AssertReply(RecognitionStatus.OutOfRange.ToString())
                 .Send(" give me between 1 and 10")
                     .AssertReply("1-10")
                 .StartTest();

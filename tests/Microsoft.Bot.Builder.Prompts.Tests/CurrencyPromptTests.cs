@@ -33,23 +33,23 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                     }
                     else
                     {
-                        var result = await testPrompt.Recognize(context);
-                        if (result == null)
-                            context.Reply("null");
-                        else
+                        var currencyResult = await testPrompt.Recognize(context);
+                        if (currencyResult.Succeeded())
                         {
-                            Assert.IsTrue(result.Value != float.NaN);
-                            Assert.IsNotNull(result.Text);
-                            Assert.IsNotNull(result.Unit);
-                            Assert.IsInstanceOfType(result.Value, typeof(float));
-                            context.Reply($"{result.Value} {result.Unit}");
+                            Assert.IsTrue(currencyResult.Value != float.NaN);
+                            Assert.IsNotNull(currencyResult.Text);
+                            Assert.IsNotNull(currencyResult.Unit);
+                            Assert.IsInstanceOfType(currencyResult.Value, typeof(float));
+                            context.Reply($"{currencyResult.Value} {currencyResult.Unit}");
                         }
+                        else
+                            context.Reply(currencyResult.Status.ToString());
                     }
                 })
                 .Send("hello")
                 .AssertReply("Gimme:")
                 .Send("test test test")
-                    .AssertReply("null")
+                    .AssertReply(RecognitionStatus.NotRecognized.ToString())
                 .Send(" I would like $45.50")
                     .AssertReply("45.5 Dollar")
                 .StartTest();
@@ -64,7 +64,12 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
             await new TestFlow(adapter, async (context) =>
             {
                 var state = ConversationState<TestState>.Get(context);
-                var numberPrompt = new CurrencyPrompt(Culture.English, async (ctx, result) =>  result.Value > 10);
+                var numberPrompt = new CurrencyPrompt(Culture.English, async (ctx, result) =>
+                {
+                    if (result.Value <= 10)
+                        result.Status = RecognitionStatus.TooSmall;
+                });
+
                 if (!state.InPrompt)
                 {
                     state.InPrompt = true;
@@ -72,17 +77,17 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                 }
                 else
                 {
-                    var result = await numberPrompt.Recognize(context);
-                    if (result == null)
-                        context.Reply("null");
+                    var currencyPrompt = await numberPrompt.Recognize(context);
+                    if (currencyPrompt.Succeeded())
+                        context.Reply($"{currencyPrompt.Value} {currencyPrompt.Unit}");
                     else
-                        context.Reply($"{result.Value} {result.Unit}");
+                        context.Reply(currencyPrompt.Status.ToString());
                 }
             })
                 .Send("hello")
                 .AssertReply("Gimme:")
                 .Send(" I would like $1.00")
-                    .AssertReply("null")
+                    .AssertReply(RecognitionStatus.TooSmall.ToString())
                 .Send(" I would like $45.50")
                     .AssertReply("45.5 Dollar")
                 .StartTest();
