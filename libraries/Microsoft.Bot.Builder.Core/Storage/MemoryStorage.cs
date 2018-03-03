@@ -43,7 +43,7 @@ namespace Microsoft.Bot.Builder.Storage
                     if (_memory.TryGetValue(key, out object value))
                     {
                         if (value != null)
-                            storeItems[key] = FlexObject.Clone<IStoreItem>(value);
+                            storeItems[key] = FlexObject.Clone(value);
                         else 
                             storeItems[key] = null;
                     }
@@ -59,18 +59,23 @@ namespace Microsoft.Bot.Builder.Storage
             {
                 foreach (var change in changes)
                 {
-                    IStoreItem newValue = change.Value as IStoreItem;
-                    IStoreItem oldValue = null;
+                    object newValue = change.Value;
+                    object oldValue = null;
 
                     if (_memory.TryGetValue(change.Key, out object x))
-                        oldValue = x as IStoreItem;
+                        oldValue = x;
+
+                    IStoreItem newStoreItem = newValue as IStoreItem;
+                    IStoreItem oldStoreItem = oldValue as IStoreItem;
                     if (oldValue == null ||
-                        newValue.eTag == "*" ||
-                        oldValue.eTag == newValue.eTag)
+                        newStoreItem?.eTag == "*" ||
+                        oldStoreItem?.eTag == newStoreItem?.eTag)
                     {
                         // clone and set etag
-                        newValue = FlexObject.Clone<IStoreItem>(newValue);
-                        newValue.eTag = (_eTag++).ToString();
+                        newValue = FlexObject.Clone(newValue);
+                        newStoreItem = newValue as IStoreItem;
+                        if (newStoreItem != null)
+                            newStoreItem.eTag = (_eTag++).ToString();
                         _memory[change.Key] = newValue;
                     }
                     else

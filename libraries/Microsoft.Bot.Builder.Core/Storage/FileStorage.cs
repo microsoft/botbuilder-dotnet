@@ -28,7 +28,7 @@ namespace Microsoft.Bot.Builder.Storage
         {
             this.folder = folder;
         }
-        
+
         public Task Delete(string[] keys)
         {
             foreach (var key in keys)
@@ -50,7 +50,7 @@ namespace Microsoft.Bot.Builder.Storage
             return storeItems;
         }
 
-        private async Task<IStoreItem> ReadIStoreItem(string key)
+        private async Task<object> ReadIStoreItem(string key)
         {
             // The funky threading in here is due to concurrency and async methods. 
             // When this method is called, it may happen (in parallel) from any number of
@@ -76,7 +76,7 @@ namespace Microsoft.Bot.Builder.Storage
                         json = await file.ReadToEndAsync().ConfigureAwait(false);
                     }
 
-                    return JsonConvert.DeserializeObject<IStoreItem>(json, serializationSettings);
+                    return JsonConvert.DeserializeObject(json, serializationSettings);
                 }
                 catch (FileNotFoundException)
                 {
@@ -114,18 +114,22 @@ namespace Microsoft.Bot.Builder.Storage
                 {
                     try
                     {
-                        IStoreItem newValue = (IStoreItem)change.Value;
-                        IStoreItem oldValue = await this.ReadIStoreItem(change.Key).ConfigureAwait(false);
+                        object newValue = change.Value;
+                        object oldValue = await this.ReadIStoreItem(change.Key).ConfigureAwait(false);
+                        IStoreItem newStoreItem = newValue as IStoreItem;
+                        IStoreItem oldStoreItem = oldValue as IStoreItem;
                         if (oldValue == null ||
-                            newValue.eTag == "*" ||
-                            oldValue.eTag == newValue.eTag)
+                            newStoreItem?.eTag == "*" ||
+                            oldStoreItem?.eTag == newStoreItem?.eTag)
                         {
                             string key = SanitizeKey(change.Key);
                             string path = Path.Combine(this.folder, key);
-                            var oldTag = newValue.eTag;
-                            newValue.eTag = (this.eTag++).ToString();
+                            var oldTag = newStoreItem?.eTag;
+                            if (newStoreItem != null)
+                                newStoreItem.eTag = (this.eTag++).ToString();
                             var json = JsonConvert.SerializeObject(newValue, serializationSettings);
-                            newValue.eTag = oldTag;
+                            if (newStoreItem != null)
+                                newStoreItem.eTag = oldTag;
                             using (TextWriter file = new StreamWriter(path))
                             {
                                 await file.WriteAsync(json).ConfigureAwait(false);
@@ -169,6 +173,6 @@ namespace Microsoft.Bot.Builder.Storage
                     sb.Append(ch);
             }
             return sb.ToString();
-        }        
+        }
     }
 }
