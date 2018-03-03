@@ -43,14 +43,14 @@ namespace Microsoft.Bot.Builder.Storage
             var storeItems = new StoreItems();
             foreach (var key in keys)
             {
-                var item = await ReadStoreItem(key).ConfigureAwait(false);
+                var item = await ReadIStoreItem(key).ConfigureAwait(false);
                 if (item != null)
                     storeItems[key] = item;
             }
             return storeItems;
         }
 
-        private async Task<StoreItem> ReadStoreItem(string key)
+        private async Task<IStoreItem> ReadIStoreItem(string key)
         {
             // The funky threading in here is due to concurrency and async methods. 
             // When this method is called, it may happen (in parallel) from any number of
@@ -76,7 +76,7 @@ namespace Microsoft.Bot.Builder.Storage
                         json = await file.ReadToEndAsync().ConfigureAwait(false);
                     }
 
-                    return JsonConvert.DeserializeObject<StoreItem>(json, serializationSettings);
+                    return JsonConvert.DeserializeObject<IStoreItem>(json, serializationSettings);
                 }
                 catch (FileNotFoundException)
                 {
@@ -114,8 +114,8 @@ namespace Microsoft.Bot.Builder.Storage
                 {
                     try
                     {
-                        StoreItem newValue = change.Value as StoreItem;
-                        StoreItem oldValue = await this.ReadStoreItem(change.Key).ConfigureAwait(false);
+                        IStoreItem newValue = (IStoreItem)change.Value;
+                        IStoreItem oldValue = await this.ReadIStoreItem(change.Key).ConfigureAwait(false);
                         if (oldValue == null ||
                             newValue.eTag == "*" ||
                             oldValue.eTag == newValue.eTag)
