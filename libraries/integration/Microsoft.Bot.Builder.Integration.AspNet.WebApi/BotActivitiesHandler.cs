@@ -12,7 +12,7 @@ using System.Net.Http.Formatting;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Microsoft.Bot.Builder.Integration.AspNet
+namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
 {
     internal sealed class BotActivitiesHandler : HttpMessageHandler
     {

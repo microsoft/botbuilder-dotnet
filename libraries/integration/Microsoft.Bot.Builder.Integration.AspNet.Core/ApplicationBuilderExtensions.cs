@@ -14,7 +14,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Microsoft.Bot.Builder.Integration.NetCore
+namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 {
     public static class ApplicationBuilderExtensions
     {

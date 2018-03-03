@@ -5,7 +5,7 @@ using Microsoft.Bot.Builder.Adapters;
 using System;
 using System.Web.Http;
 
-namespace Microsoft.Bot.Builder.Integration.AspNet
+namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
 {
     public static class HttpConfigurationExtensions
     {
