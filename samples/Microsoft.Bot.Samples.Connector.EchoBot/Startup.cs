@@ -8,7 +8,7 @@ using Microsoft.Bot.Builder.Storage;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Bot.Builder.Integration.NetCore;
+using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot;
 using Microsoft.Bot.Samples.Echo;
 

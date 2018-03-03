@@ -12,7 +12,7 @@ using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Text.RegularExpressions;
-using Microsoft.Bot.Builder.Integration.NetCore;
+using Microsoft.Bot.Builder.Integration.AspNet.Core;
 
 namespace AlarmBot
 {

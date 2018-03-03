@@ -6,7 +6,7 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using System;
 
-namespace Microsoft.Bot.Builder.Integration.NetCore
+namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 {
     public static class ServiceCollectionExtensions
     {

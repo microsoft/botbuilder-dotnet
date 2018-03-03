@@ -4,7 +4,7 @@
 using AlarmBot.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Bot.Builder.Integration.NetCore;
+using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Builder.Middleware;
 using Microsoft.Bot.Builder.Storage;
 using Microsoft.Bot.Connector.Authentication;

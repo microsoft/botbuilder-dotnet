@@ -4,7 +4,7 @@
 using Microsoft.Bot.Builder.Middleware;
 using System.Collections.Generic;
 
-namespace Microsoft.Bot.Builder.Integration.AspNet
+namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
 {
     public class BotFrameworkOptions
     {

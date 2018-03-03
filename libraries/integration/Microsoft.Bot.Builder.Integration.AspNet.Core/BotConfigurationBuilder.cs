@@ -5,7 +5,7 @@ using Microsoft.Bot.Builder.Middleware;
 using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Generic;
 
-namespace Microsoft.Bot.Builder.Integration.NetCore
+namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 {
     internal class BotConfigurationBuilder : IBotConfigurationBuilder
     {

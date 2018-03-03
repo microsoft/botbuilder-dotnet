@@ -169,9 +169,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\libraries\integration\Microsoft.Bot.Builder.Integration.AspNet.NetFx\Microsoft.Bot.Builder.Integration.AspNet.NetFx.csproj">
-      <Project>{e875fe31-83c6-4064-b000-641d5a8dbd91}</Project>
-      <Name>Microsoft.Bot.Builder.Integration.AspNet.NetFx</Name>
+    <ProjectReference Include="..\..\libraries\integration\Microsoft.Bot.Builder.Integration.AspNet.WebApi\Microsoft.Bot.Builder.Integration.AspNet.WebApi.csproj">
+      <Project>{bd0b82ef-1601-4e87-b78a-b43de7eb36b0}</Project>
+      <Name>Microsoft.Bot.Builder.Integration.AspNet.WebApi</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Core\Microsoft.Bot.Builder.Core.csproj">
       <Project>{F0C150E2-9B8A-444C-B70E-97AD918CB3D4}</Project>

@@ -3,7 +3,7 @@
 
 using Microsoft.Bot.Builder.Middleware;
 
-namespace Microsoft.Bot.Builder.Integration.AspNet
+namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
 {
     public class BotFrameworkConfigurationBuilder
     {
