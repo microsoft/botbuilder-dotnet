@@ -66,7 +66,6 @@ namespace Microsoft.Bot.Builder
     }
 
     public class StoreItems<StoreItemT> : StoreItems
-        where StoreItemT : IStoreItem
     {
     }
 
