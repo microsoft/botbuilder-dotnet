@@ -1,11 +1,4 @@
-﻿using System.Configuration;
 using System.Web.Http;
-using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Builder.Middleware;
-using Microsoft.Bot.Builder.Storage;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
-using Unity;
 
 namespace Microsoft.Bot.Samples.EchoBot_AspNet461
 {
@@ -13,19 +6,6 @@ namespace Microsoft.Bot.Samples.EchoBot_AspNet461
     {
         public static void Register(HttpConfiguration config)
         {
-            // Json settings
-            config.Formatters.JsonFormatter.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
-            config.Formatters.JsonFormatter.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
-            config.Formatters.JsonFormatter.SerializerSettings.Formatting = Formatting.Indented;
-            JsonConvert.DefaultSettings = () => new JsonSerializerSettings()
-            {
-                ContractResolver = new CamelCasePropertyNamesContractResolver(),
-                Formatting = Newtonsoft.Json.Formatting.Indented,
-                NullValueHandling = NullValueHandling.Ignore,
-            };
-
-            // Web API configuration and services
-
             // Web API routes
             config.MapHttpAttributeRoutes();
 
@@ -34,15 +14,6 @@ namespace Microsoft.Bot.Samples.EchoBot_AspNet461
                 routeTemplate: "api/{controller}/{id}",
                 defaults: new { id = RouteParameter.Optional }
             );
-
-            // services
-            UnityConfig.Container.RegisterSingleton<BotFrameworkAdapter>(
-                new Unity.Injection.InjectionConstructor(
-                    ConfigurationManager.AppSettings[@"MicrosoftAppId"],
-                    ConfigurationManager.AppSettings[@"MicrosoftAppPassword"])
-                )
-            .Resolve<BotFrameworkAdapter>()
-            .Use(new ConversationState<MyState>(new MemoryStorage()));
         }
     }
 }
