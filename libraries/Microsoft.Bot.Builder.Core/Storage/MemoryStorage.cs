@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using Newtonsoft.Json;
 using System;
 using System.Threading.Tasks;
 
@@ -42,7 +43,7 @@ namespace Microsoft.Bot.Builder.Storage
                     if (_memory.TryGetValue(key, out object value))
                     {
                         if (value != null)
-                            storeItems[key] = (StoreItem)((ICloneable)value).Clone();
+                            storeItems[key] = FlexObject.Clone<IStoreItem>(value);
                         else 
                             storeItems[key] = null;
                     }
@@ -58,17 +59,17 @@ namespace Microsoft.Bot.Builder.Storage
             {
                 foreach (var change in changes)
                 {
-                    StoreItem newValue = change.Value as StoreItem;
-                    StoreItem oldValue = null;
+                    IStoreItem newValue = change.Value as IStoreItem;
+                    IStoreItem oldValue = null;
 
                     if (_memory.TryGetValue(change.Key, out object x))
-                        oldValue = x as StoreItem;
+                        oldValue = x as IStoreItem;
                     if (oldValue == null ||
                         newValue.eTag == "*" ||
                         oldValue.eTag == newValue.eTag)
                     {
                         // clone and set etag
-                        newValue = newValue.Clone() as StoreItem;
+                        newValue = FlexObject.Clone<IStoreItem>(newValue);
                         newValue.eTag = (_eTag++).ToString();
                         _memory[change.Key] = newValue;
                     }
@@ -80,6 +81,7 @@ namespace Microsoft.Bot.Builder.Storage
             }
             return Task.CompletedTask;
         }
+
     }
 
     /// <summary>

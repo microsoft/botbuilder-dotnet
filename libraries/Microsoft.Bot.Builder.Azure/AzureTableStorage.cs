@@ -58,7 +58,7 @@ namespace Microsoft.Bot.Builder.Azure
                 var result = await this.Table.ExecuteAsync(TableOperation.Retrieve<StoreItemEntity>(entityKey.PartitionKey, entityKey.RowKey)).ConfigureAwait(false);
                 if ((HttpStatusCode)result.HttpStatusCode == HttpStatusCode.OK)
                 {
-                    var storeItem = ((StoreItemEntity)result.Result).As<StoreItem>();
+                    var storeItem = ((StoreItemEntity)result.Result).As<IStoreItem>();
                     storeItem.eTag = result.Etag;
                     storeItems[key] = storeItem;
                 }
@@ -72,7 +72,7 @@ namespace Microsoft.Bot.Builder.Azure
             foreach (var change in changes)
             {
                 var entityKey = GetEntityKey(change.Key);
-                var storeItem = (StoreItem)change.Value;
+                var storeItem = (IStoreItem)change.Value;
                 StoreItemEntity entity = new StoreItemEntity(entityKey, storeItem);
                 if (entity.ETag == null || entity.ETag == "*")
                 {
@@ -99,11 +99,11 @@ namespace Microsoft.Bot.Builder.Azure
 
             public StoreItemEntity() { }
 
-            public StoreItemEntity(EntityKey key, StoreItem obj)
+            public StoreItemEntity(EntityKey key, IStoreItem obj)
                 : this(key.PartitionKey, key.RowKey, obj)
             { }
 
-            public StoreItemEntity(string partitionKey, string rowKey, StoreItem obj)
+            public StoreItemEntity(string partitionKey, string rowKey, IStoreItem obj)
                 : base(partitionKey, rowKey)
             {
                 this.ETag = obj.eTag;
@@ -113,7 +113,7 @@ namespace Microsoft.Bot.Builder.Azure
             public string Json { get; set; }
 
             public T As<T>()
-                where T : StoreItem
+                where T : IStoreItem
             {
                 return JsonConvert.DeserializeObject<T>(Json, serializationSettings);
             }
