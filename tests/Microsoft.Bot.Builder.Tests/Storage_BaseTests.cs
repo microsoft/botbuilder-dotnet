@@ -20,7 +20,8 @@ namespace Microsoft.Bot.Builder.Tests
         {
             var storeItems = new StoreItems();
             storeItems["create1"] = new TestItem() { Id = "1" };
-            dynamic newItem2 = new TestItem() { Id = "2" };
+            dynamic newItem2 = new StoreItem();
+            newItem2.Id = "2";
             newItem2.dyno = "dynamicStuff";
             storeItems["create2"] = newItem2;
 
@@ -56,7 +57,8 @@ namespace Microsoft.Bot.Builder.Tests
         {
             string key = "typed";
             var storeItems = new StoreItems();
-            dynamic testItem = new TestItem() { Id = "1" };
+            dynamic testItem = new StoreItem();
+            testItem.Id = "1";
             testItem.x = new TypedObject() { Name = "test" };
             storeItems[key] = testItem;
 

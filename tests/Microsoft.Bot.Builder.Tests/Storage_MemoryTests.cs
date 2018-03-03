@@ -59,8 +59,10 @@ namespace Microsoft.Bot.Builder.Tests
         }
     }
 
-    public class TestItem : StoreItem
+    public class TestItem : IStoreItem
     {
+        public string eTag { get; set; }
+
         public string Id { get; set; }
 
         public int Count { get; set; }
