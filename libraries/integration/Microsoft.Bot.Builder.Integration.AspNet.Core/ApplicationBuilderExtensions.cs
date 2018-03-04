@@ -11,8 +11,21 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 {
     public static class ApplicationBuilderExtensions
     {
-        public static IApplicationBuilder UseBotFramework(this IApplicationBuilder applicationBuilder)
+        public static IApplicationBuilder UseBotFramework(this IApplicationBuilder applicationBuilder) =>
+            applicationBuilder.UseBotFramework(paths => {});
+
+        public static IApplicationBuilder UseBotFramework(this IApplicationBuilder applicationBuilder, Action<BotFrameworkPaths> configurePaths)
         {
+            if (applicationBuilder == null)
+            {
+                throw new ArgumentNullException(nameof(applicationBuilder));
+            }
+
+            if (configurePaths == null)
+            {
+                throw new ArgumentNullException(nameof(configurePaths));
+            }
+
             var options = applicationBuilder.ApplicationServices.GetRequiredService<IOptions<BotFrameworkOptions>>().Value;
 
             var botFrameworkAdapter = new BotFrameworkAdapter(options.CredentialProvider);
@@ -22,12 +35,19 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                 botFrameworkAdapter.Use(middleware);
             }
 
-            var botActivitiesPath = new PathString(options.RouteBaseUrl);
+            var paths = new BotFrameworkPaths();
 
-            botActivitiesPath.Add("/messages");
+            configurePaths(paths);
+
+            if (options.EnableProactiveMessages)
+            {
+                applicationBuilder.Map(
+                    paths.BasePath + paths.ProactivePath,
+                    botProactiveAppBuilder => botProactiveAppBuilder.Run(httpContext => { httpContext.Response.StatusCode = (int)HttpStatusCode.OK; return Task.CompletedTask; }));
+            }
 
             applicationBuilder.Map(
-                botActivitiesPath, 
+                paths.BasePath + paths.ActivitiesPath,, 
                 botActivitiesAppBuilder => botActivitiesAppBuilder.Run(new BotActivitiesHandler(botFrameworkAdapter).HandleAsync));
 
             return applicationBuilder;
