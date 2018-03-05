@@ -42,7 +42,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
                     botActivitiesRouteUrl += "/";
                 }
 
-                botActivitiesRouteUrl += "activities";
+                botActivitiesRouteUrl += "messages";
 
                 httpConfiguration.Routes.MapHttpRoute(
                         "BotFrameworkV4 Activities Controller",
