@@ -28,13 +28,18 @@ namespace Microsoft.Bot.Builder.Ai
             {
                 if (!String.IsNullOrWhiteSpace(message.Text))
                 {
+                    ((BotContext)context)["LocaleConversionOriginalMessage"] = message.Text;
                     await ConvertLocaleMessageAsync(message);
                 }
             }
             await next().ConfigureAwait(false);
         }
 
-
+        public static string GetOriginalMessage(IBotContext context)
+        {
+            string message =   ((BotContext)context)["LocaleConversionOriginalMessage"] as string;
+            return message;
+        }
 
         private async Task ConvertLocaleMessageAsync(IMessageActivity message)
         {
