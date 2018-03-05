@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Builder.Tests
     [TestClass]
     [TestCategory("Storage")]
     [TestCategory("Storage - File")]
-    public class Storage_FileTests : Storage_BaseTests, IStorageTests
+    public class Storage_FileTests : Storage_BaseTests
     {
         private IStorage storage;
         public Storage_FileTests() { }
@@ -29,37 +29,37 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [TestMethod]
-        public async Task CreateObjectTest()
+        public async Task FileStorage_CreateObjectTest()
         {
             await base._createObjectTest(this.storage);
         }
 
         [TestMethod]
-        public async Task ReadUnknownTest()
+        public async Task FileStorage_ReadUnknownTest()
         {
             await base._readUnknownTest(this.storage);
         }
 
         [TestMethod]
-        public async Task UpdateObjectTest()
+        public async Task FileStorage_UpdateObjectTest()
         {
             await base._updateObjectTest(this.storage);
         }
 
         [TestMethod]
-        public async Task DeleteObjectTest()
+        public async Task FileStorage_DeleteObjectTest()
         {
             await base._deleteObjectTest(this.storage);
         }
 
         [TestMethod]
-        public async Task HandleCrazyKeys()
+        public async Task FileStorage_HandleCrazyKeys()
         {
             await base._handleCrazyKeys(this.storage);
         }
 
         [TestMethod]
-        public async Task TypedSerialization()
+        public async Task FileStorage_TypedSerialization()
         {
             await base._typedSerialization(this.storage);
         }

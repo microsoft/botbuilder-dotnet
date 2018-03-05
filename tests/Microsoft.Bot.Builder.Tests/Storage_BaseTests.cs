@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -18,28 +19,42 @@ namespace Microsoft.Bot.Builder.Tests
 
         protected async Task _createObjectTest(IStorage storage)
         {
-            var storeItems = new StoreItems();
-            storeItems["create1"] = new TestItem() { Id = "1" };
-            dynamic newItem2 = new StoreItem();
-            newItem2.Id = "2";
-            newItem2.dyno = "dynamicStuff";
-            storeItems["create2"] = newItem2;
+            dynamic storeItems = new StoreItems();
+
+            storeItems.createPoco = new PocoItem() { Id = "1" };
+
+            storeItems.createPocoStoreItem = new PocoStoreItem() { Id = "2" };
+
+            storeItems.createStoreItem = new StoreItem();
+            storeItems.createStoreItem.Id = "3" ;
+            storeItems.createStoreItem.dyno  = "dynamicStuff";
 
             await storage.Write(storeItems);
 
-            dynamic result = await storage.Read(new string[] { "create1", "create2" });
-            Assert.IsNotNull(result.create1, "create1 should not be null");
-            Assert.AreEqual(result.create1.Id, "1", "strong create1.id should be 1");
-            Assert.IsNotNull(result.create2, "create2 should not be null");
-            Assert.AreEqual(result.create2.Id, "2", "create2.id should be 2");
-            Assert.AreEqual(result.create2.dyno, "dynamicStuff", "create2.dyno should be dynoStuff");
+            dynamic result = await storage.Read(((StoreItems)storeItems).GetDynamicMemberNames().ToArray());
+
+            Assert.IsInstanceOfType(result.createPoco, typeof(PocoItem));
+            Assert.IsInstanceOfType(result.createPocoStoreItem, typeof(PocoStoreItem));
+            Assert.IsInstanceOfType(result.createStoreItem, typeof(StoreItem));
+
+            Assert.IsNotNull(result.createPoco, "createPoco should not be null");
+            Assert.AreEqual(result.createPoco.Id, "1", "createPoco.id should be 1");
+
+            Assert.IsNotNull(result.createPocoStoreItem, "createPocoStoreItem should not be null");
+            Assert.AreEqual(result.createPocoStoreItem.Id, "2", "createPocoStoreItem.id should be 2");
+            Assert.IsNotNull(result.createPocoStoreItem.eTag, "createPocoStoreItem.eTag  should not be null");
+
+            Assert.IsNotNull(result.createStoreItem, "createStoreItem should not be null");
+            Assert.AreEqual(result.createStoreItem.Id, "3", "createStoreItem.id should be 3");
+            Assert.IsNotNull(result.createStoreItem.eTag, "CreateStoreItem.eTag should not be null");
+            Assert.AreEqual(result.createStoreItem.dyno, "dynamicStuff", "createStoreItem.dyno should be dynoStuff");
         }
 
         protected async Task _handleCrazyKeys(IStorage storage)
         {
             var storeItems = new StoreItems();
             string key = "!@#$%^&*()~/\\><,.?';\"`~";
-            storeItems[key] = new TestItem() { Id = "1" };
+            storeItems[key] = new PocoStoreItem() { Id = "1" };
 
             await storage.Write(storeItems);
 
@@ -73,61 +88,122 @@ namespace Microsoft.Bot.Builder.Tests
         protected async Task _updateObjectTest(IStorage storage)
         {
             dynamic storeItems = new StoreItems();
-            storeItems.update = new TestItem() { Id = "1", Count = 1 };
+            storeItems.updatePocoItem = new PocoItem() { Id = "1", Count = 1 };
+            storeItems.updatePocoStoreItem = new PocoStoreItem() { Id = "1", Count = 1 };
+            storeItems.updateStoreItem = new StoreItem();
+            storeItems.updateStoreItem.Id = "3";
+            storeItems.updateStoreItem.Count = 1;
 
             //first write should work
             await storage.Write(storeItems);
 
-            dynamic result = await storage.Read("update");
-            Assert.IsTrue(!String.IsNullOrEmpty(result.update.eTag), "etag should be set");
-            Assert.AreEqual(result.update.Count, 1, "count should be 1");
+            dynamic result = await storage.Read(((StoreItems)storeItems).GetDynamicMemberNames().ToArray());
+            Assert.IsNotNull(result.updatePocoStoreItem.eTag, "updatePocoItem.eTag  should not be null");
+            Assert.IsNotNull(result.updateStoreItem.eTag, "updateStoreItem.eTag should not be null");
 
-            // 2nd write should work, because we have new etag
-            result.update.Count++;
+            // 2nd write should work, because we have new etag, or no etag
+            result.updatePocoItem.Count++;
+            result.updatePocoStoreItem.Count++;
+            result.updateStoreItem.Count++;
             await storage.Write(result);
 
-            dynamic result2 = await storage.Read("update");
-            Assert.IsTrue(!String.IsNullOrEmpty(result2.update.eTag), "etag should be set on second write too");
-            Assert.AreNotEqual(result.update.eTag, result2.update.eTag, "etag should be differnt on new write");
-            Assert.AreEqual(result2.update.Count, 2, "Count should be 2");
+            dynamic result2 = await storage.Read(((StoreItems)storeItems).GetDynamicMemberNames().ToArray());
+            Assert.IsNotNull(result2.updatePocoStoreItem.eTag, "updatePocoItem.eTag  should not be null");
+            Assert.IsNotNull(result2.updateStoreItem.eTag, "updateStoreItem.eTag should not be null");
+            Assert.AreNotEqual(result.updatePocoStoreItem.eTag, result2.updatePocoStoreItem.eTag, "updatePocoItem.eTag  should not be different");
+            Assert.AreNotEqual(result.updateStoreItem.eTag, result2.updateStoreItem.eTag, "updateStoreItem.eTag  should not be different");
+            Assert.AreEqual(result2.updatePocoItem.Count, 2, "updatePocoItem.Count should be 2");
+            Assert.AreEqual(result2.updatePocoStoreItem.Count, 2, "updatePocoStoreItem.Count should be 2");
+            Assert.AreEqual(result2.updateStoreItem.Count, 2, "updateStoreItem.Count should be 2");
 
-            // write with old etag should fail
+            // write with old etag should succeed for updatePocoItem, but fail for the other 2
             try
             {
-                await storage.Write(result);
-                Assert.Fail("Should throw exception on write with old etag");
+                dynamic storeItemsUpdate = new StoreItems();
+                storeItemsUpdate.updatePocoItem = result.updatePocoItem;
+                storeItemsUpdate.updatePocoItem.Count++;
+                await storage.Write(storeItemsUpdate);
             }
-            catch { }
+            catch
+            {
+                Assert.Fail("Should not throw exception on write with pocoItem");
+            }
 
-            dynamic result3 = await storage.Read("update");
-            Assert.AreEqual(result3.update.Count, 2, "count should still be be two");
+            try
+            {
+                dynamic storeItemsUpdate = new StoreItems();
+                storeItemsUpdate.updatePocoStoreItem = result.updatePocoStoreItem;
+                storeItemsUpdate.updatePocoStoreItem.Count++;
+                await storage.Write(storeItemsUpdate);
+                Assert.Fail("Should not throw exception on write with pocoStoreItem because of old etag");
+            }
+            catch
+            {
+            }
+            try
+            {
+                dynamic storeItemsUpdate = new StoreItems();
+                storeItemsUpdate.updateStoreItem = result.updateStoreItem;
+                storeItemsUpdate.updateStoreItem.Count++;
+                await storage.Write(storeItemsUpdate);
+                Assert.Fail("Should not throw exception on write with StoreItem because of old etag");
+            }
+            catch
+            {
+            }
+
+            dynamic result3 = await storage.Read(((StoreItems)storeItems).GetDynamicMemberNames().ToArray());
+            Assert.AreEqual(result3.updatePocoItem.Count, 3, "updatePocoItem.Count should be 3");
+            Assert.AreEqual(result3.updatePocoStoreItem.Count, 2, "updatePocoStoreItem.Count should be 2");
+            Assert.AreEqual(result3.updateStoreItem.Count, 2, "updateStoreItem.Count should be 2");
 
             // write with wildcard etag should work
-            result3.update.Count = 100;
-            result3.update.eTag = "*";
+            result3.updatePocoItem.Count = 100;
+            result3.updatePocoStoreItem.Count = 100;
+            result3.updatePocoStoreItem.eTag = "*";
+            result3.updateStoreItem.Count = 100;
+            result3.updateStoreItem.eTag = "*";
             await storage.Write(result3);
 
-            dynamic result4 = await storage.Read("update");
-            Assert.AreEqual(result4.update.Count, 100, "count should be 100");
+            dynamic result4 = await storage.Read(((StoreItems)storeItems).GetDynamicMemberNames().ToArray());
+            Assert.AreEqual(result3.updatePocoItem.Count, 100, "updatePocoItem.Count should be 100");
+            Assert.AreEqual(result3.updatePocoStoreItem.Count, 100, "updatePocoStoreItem.Count should be 100");
+            Assert.AreEqual(result3.updateStoreItem.Count, 100, "updateStoreItem.Count should be 100");
 
             // write with empty etag should not work
-            result4.update.Count = 200;
-            result4.update.eTag = "";
             try
             {
-                await storage.Write(result4);
-                Assert.Fail("Should throw exception on write with empty etag");
+                dynamic storeItemsUpdate = new StoreItems();
+                storeItemsUpdate.updatePocoStoreItem = FlexObject.Clone(result4.updatePocoStoreItem);
+                storeItemsUpdate.updatePocoStoreItem.eTag = "";
+                await storage.Write(result);
+                Assert.Fail("Should not throw exception on write with pocoStoreItem because of empty etag");
             }
-            catch { }
+            catch
+            {
+            }
+            try
+            {
+                dynamic storeItemsUpdate = new StoreItems();
+                storeItemsUpdate.updateStoreItem = FlexObject.Clone(result4.updateStoreItem);
+                storeItemsUpdate.updateStoreItem.eTag = "";
+                await storage.Write(result);
+                Assert.Fail("Should not throw exception on write with storeItem because of empty etag");
+            }
+            catch
+            {
+            }
 
-            dynamic result5 = await storage.Read("update");
-            Assert.AreEqual(result5.update.Count, 100, "count should be 100");
+            dynamic result5 = await storage.Read(((StoreItems)storeItems).GetDynamicMemberNames().ToArray());
+            Assert.AreEqual(result3.updatePocoItem.Count, 100, "updatePocoItem.Count should be 100");
+            Assert.AreEqual(result3.updatePocoStoreItem.Count, 100, "updatePocoStoreItem.Count should be 100");
+            Assert.AreEqual(result3.updateStoreItem.Count, 100, "updateStoreItem.Count should be 100");
         }
 
         protected async Task _deleteObjectTest(IStorage storage)
         {
             dynamic storeItems = new StoreItems();
-            storeItems.delete1 = new TestItem() { Id = "1", Count = 1 };
+            storeItems.delete1 = new PocoStoreItem() { Id = "1", Count = 1 };
 
             //first write should work
             await storage.Write(storeItems);
