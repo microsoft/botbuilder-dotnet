@@ -52,6 +52,8 @@ namespace Microsoft.Bot.Builder.Ai
         private Dictionary<string, string> wordAlignmentParse(string alignment, string source, string target)
         {
             Dictionary<string, string> alignMap = new Dictionary<string, string>();
+            if (alignment.Trim() == "")
+                return alignMap;
             string[] alignments = alignment.Trim().Split(' ');
             foreach (string alignData in alignments)
             {
