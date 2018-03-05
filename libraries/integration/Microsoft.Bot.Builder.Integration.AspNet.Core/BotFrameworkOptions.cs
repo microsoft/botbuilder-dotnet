@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         {
             _middleware = new List<BotMiddleware.IMiddleware>();
 
-            RouteBaseUrl = "/bot";
+            RouteBaseUrl = "/api";
         }
 
         public PathString RouteBaseUrl { get; set; }
