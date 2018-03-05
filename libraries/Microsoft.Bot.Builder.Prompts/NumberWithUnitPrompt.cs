@@ -9,9 +9,12 @@ using static Microsoft.Bot.Builder.Prompts.PromptValidatorEx;
 
 namespace Microsoft.Bot.Builder.Prompts
 {
-    public class NumberWithUnit
+    public class NumberWithUnit : RecognitionResult
     {
-        public NumberWithUnit() { }
+        public NumberWithUnit()
+        {
+            Value = float.NaN;
+        }
 
         public string Unit { get; set; }
 
@@ -29,7 +32,7 @@ namespace Microsoft.Bot.Builder.Prompts
 
 
         protected NumberWithUnitPrompt(IModel model, PromptValidator<NumberWithUnit> validator = null)
-            :base(validator)
+            : base(validator)
         {
             _model = model ?? throw new ArgumentNullException(nameof(model));
         }
@@ -46,23 +49,21 @@ namespace Microsoft.Bot.Builder.Prompts
                 throw new InvalidOperationException("No Message to Recognize");
 
             IMessageActivity message = context.Request.AsMessageActivity();
+            NumberWithUnit value = new NumberWithUnit();
             var results = _model.Parse(message.Text);
             if (results.Any())
             {
                 var result = results.First();
-                NumberWithUnit value = new NumberWithUnit()
-                {
-                    Text = result.Text,
-                    Unit = (string)result.Resolution["unit"],
-                    Value = float.NaN
-                };
+                value.Unit = (string)result.Resolution["unit"];
                 if (float.TryParse(result.Resolution["value"]?.ToString() ?? String.Empty, out float val))
+                {
+                    value.Status = RecognitionStatus.Recognized;
+                    value.Text = result.Text;
                     value.Value = val;
-
-                if (await Validate(context, value))
-                    return value;
+                    await Validate(context, value);
+                }
             }
-            return null;
+            return value;
         }
 
     }

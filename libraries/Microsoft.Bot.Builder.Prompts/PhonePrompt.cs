@@ -15,12 +15,12 @@ namespace Microsoft.Bot.Builder.Prompts
     /// </summary>
     public class PhoneNumberPrompt : ValuePrompt
     {
-        public PhoneNumberPrompt(string culture, PromptValidator<ValueResult> validator = null) :
+        public PhoneNumberPrompt(string culture, PromptValidator<TextResult> validator = null) :
             base(SequenceRecognizer.Instance.GetPhoneNumberModel(culture), validator)
         {
         }
 
-        protected PhoneNumberPrompt(IModel model, PromptValidator<ValueResult> validator = null) :
+        protected PhoneNumberPrompt(IModel model, PromptValidator<TextResult> validator = null) :
             base(model, validator)
         {
         }
