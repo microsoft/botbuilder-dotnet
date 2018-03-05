@@ -60,7 +60,7 @@ namespace Microsoft.Bot.Builder.Ai
                             SourceLanguage = sourceLanguage,
                             TargetLanguage = (this.nativeLanguages.Contains(sourceLanguage)) ? sourceLanguage : this.nativeLanguages.FirstOrDefault() ?? "en"
                         };
-                        ((BotContext)context)["Translation"] = translationContext;
+                        ((BotContext)context)["Microsoft.API.Translation"] = translationContext;
 
                         // translate to bots language
                         if (translationContext.SourceLanguage != translationContext.TargetLanguage)
@@ -124,7 +124,7 @@ namespace Microsoft.Bot.Builder.Ai
                 if (!String.IsNullOrWhiteSpace(message?.Text))
                 {
                     // translate to userslanguage
-                    var translationContext = ((BotContext)context)["Translation"] as TranslationContext;
+                    var translationContext = ((BotContext)context)["Microsoft.API.Translation"] as TranslationContext;
                     if (translationContext.SourceLanguage != translationContext.TargetLanguage && message.Text != translationContext.SourceText)
                         await TranslateMessageAsync(context, message, translationContext.TargetLanguage, translationContext.SourceLanguage).ConfigureAwait(false);
                 }
