@@ -11,61 +11,17 @@ namespace Microsoft.Bot.Builder.Ai
 
     //Struct used to store date format and time format for different locales
     internal struct DateAndTimeLocaleFormat
-    {
-        private string timeFormat;
-        private string dateFormat;
-        public string TimeFormat
-        {
-            get
-            {
-                return timeFormat;
-            }
-            set
-            {
-                timeFormat = value;
-            }
-        }
-        public string DateFormat
-        {
-            get
-            {
-                return dateFormat;
-            }
-            set
-            {
-                dateFormat = value;
-            }
-        }
+    { 
+        public string TimeFormat { get; set; }
+        public string DateFormat { get;set; }
 
     }
 
     //Struct to store  text and date time object from Microsoft Recognizer recognition result
     internal struct TextAndDateTime
-    {
-        private string dateText;
-        private DateTime date;
-        public string Text
-        {
-            get
-            {
-                return dateText;
-            }
-            set
-            {
-                dateText = value;
-            }
-        }
-        public DateTime DateTimeObj
-        {
-            get
-            {
-                return date;
-            }
-            set
-            {
-                date = value;
-            }
-        }
+    { 
+        public string Text { get; set; }
+        public DateTime DateTimeObj { get; set; }
     }
 
     /// <summary>
