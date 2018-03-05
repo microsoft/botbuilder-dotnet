@@ -4,10 +4,10 @@
 using AlarmBot.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Bot.Builder.BotFramework;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Builder.Middleware;
 using Microsoft.Bot.Builder.Storage;
-using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Text.RegularExpressions;
@@ -34,8 +34,7 @@ namespace AlarmBot
             services.AddSingleton(_ => Configuration);
             services.AddBot<AlarmBot>(options =>
             { 
-                options.ApplicationId = Configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppIdKey)?.Value;
-                options.ApplicationPassword = Configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppPasswordKey)?.Value;
+                options.CredentialProvider = new ConfigurationCredentialProvider(Configuration);
 
                 var middleware = options.Middleware;
 

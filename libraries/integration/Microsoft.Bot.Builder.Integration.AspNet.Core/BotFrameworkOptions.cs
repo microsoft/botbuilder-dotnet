@@ -4,6 +4,7 @@
 using Microsoft.AspNetCore.Http;
 using BotMiddleware = Microsoft.Bot.Builder.Middleware;
 using System.Collections.Generic;
+using Microsoft.Bot.Connector.Authentication;
 
 namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 {
@@ -19,8 +20,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         }
 
         public PathString RouteBaseUrl { get; set; }
-        public string ApplicationId { get; set; }
-        public string ApplicationPassword { get; set; }
-        public List<BotMiddleware.IMiddleware> Middleware { get => _middleware; }
+        public ICredentialProvider CredentialProvider { get; set; }
+        public IList<BotMiddleware.IMiddleware> Middleware { get => _middleware; }
     }
 }
