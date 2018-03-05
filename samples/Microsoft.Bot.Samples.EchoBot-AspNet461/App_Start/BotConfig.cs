@@ -4,8 +4,9 @@
 using Microsoft.Bot.Builder.Integration.AspNet.WebApi;
 using Microsoft.Bot.Builder.Middleware;
 using Microsoft.Bot.Builder.Storage;
-using System.Web.Http;
 using Microsoft.Bot.Samples.Echo;
+using System.Configuration;
+using System.Web.Http;
 
 namespace Microsoft.Bot.Samples.EchoBot_AspNet461
 {
@@ -16,7 +17,7 @@ namespace Microsoft.Bot.Samples.EchoBot_AspNet461
             config.MapBotFramework(botConfig =>
             {
                 botConfig
-                    //.UseApplicationIdentity("myApp123", "myAppPasswordXyz")
+                    .UseMicrosoftApplicationIdentity(ConfigurationManager.AppSettings["BotFramework.MicrosoftApplicationId"], ConfigurationManager.AppSettings["BotFramework.MicrosoftApplicationPassword"])
                     .UseMiddleware(new ConversationState<EchoState>(new MemoryStorage()));
             });
         }
