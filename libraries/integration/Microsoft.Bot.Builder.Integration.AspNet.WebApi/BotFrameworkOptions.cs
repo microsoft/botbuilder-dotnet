@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
 
         public BotFrameworkOptions()
         {
-            RouteBaseUrl = "bot/";
+            RouteBaseUrl = "api/";
             _middleware = new List<IMiddleware>();
         }
 
