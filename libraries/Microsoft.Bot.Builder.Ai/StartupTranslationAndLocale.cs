@@ -12,8 +12,8 @@ namespace Microsoft.Bot.Builder.Ai
      */
     public abstract class StartupTranslationAndLocale
     {
-        private void SetLanguage(IBotContext context, string language) => context.State.User[@"translateTo"] =  language ;
-        private void SetLocale(IBotContext context, string locale) => context.State.User[@"fromLocale"] = locale;
+        private void SetLanguage(IBotContext context, string language) => context.State.User[@"Microsoft.API.translateTo"] =  language ;
+        private void SetLocale(IBotContext context, string locale) => context.State.User[@"LocaleConverterMiddleware.fromLocale"] = locale;
 
         protected abstract   bool IsSupportedLanguage(string language);
         protected virtual async Task<bool> SetActiveLanguage(IBotContext context)
@@ -42,9 +42,9 @@ namespace Microsoft.Bot.Builder.Ai
         protected virtual string GetActiveLanguage(IBotContext context)
         {
             if (context.Request.Type == ActivityTypes.Message
-                && context.State.User.ContainsKey(@"translateTo"))
+                && context.State.User.ContainsKey(@"Microsoft.API.translateTo"))
             {
-                return (string)context.State.User[@"translateTo"];
+                return (string)context.State.User[@"Microsoft.API.translateTo"];
             }
 
             return null;
@@ -75,9 +75,9 @@ namespace Microsoft.Bot.Builder.Ai
         protected virtual string GetActiveLocale(IBotContext context)
         {
             if (context.Request.Type == ActivityTypes.Message
-                && context.State.User.ContainsKey(@"fromLocale"))
+                && context.State.User.ContainsKey(@"LocaleConverterMiddleware.fromLocale"))
             {
-                return (string)context.State.User[@"fromLocale"];
+                return (string)context.State.User[@"LocaleConverterMiddleware.fromLocale"];
             }
 
             return null;
