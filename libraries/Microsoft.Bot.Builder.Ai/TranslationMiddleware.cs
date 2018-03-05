@@ -125,7 +125,7 @@ namespace Microsoft.Bot.Builder.Ai
                 {
                     // translate to userslanguage
                     var translationContext = ((BotContext)context)["Microsoft.API.Translation"] as TranslationContext;
-                    if (translationContext.SourceLanguage != translationContext.TargetLanguage && message.Text != translationContext.SourceText)
+                    if (translationContext != null && translationContext.SourceLanguage != translationContext.TargetLanguage && message.Text != translationContext.SourceText)
                         await TranslateMessageAsync(context, message, translationContext.TargetLanguage, translationContext.SourceLanguage).ConfigureAwait(false);
                 }
             }
