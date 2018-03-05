@@ -15,10 +15,13 @@ namespace Microsoft.Bot.Builder.Ai
 {
     public class TranslationMiddleware : IReceiveActivity, ISendActivity
     {
-        private string[] nativeLanguages;
+        private readonly string[] nativeLanguages;
         private Translator translator;
-        private string templatesDir;
+        private readonly string templatesDir;
+        private readonly Func<IBotContext, string> _getUserLanguage;
+        private readonly Func<IBotContext, Task<bool>> _setUserLanguage;
 
+        // Constructor for automatic detection of user messages
         public TranslationMiddleware(string[] nativeLanguages, string translatorKey)
         {
             this.nativeLanguages = nativeLanguages;
@@ -26,12 +29,24 @@ namespace Microsoft.Bot.Builder.Ai
             templatesDir = "";
         }
 
+        // Constructor for automatic detection of user messages and using templates
         public TranslationMiddleware(string[] nativeLanguages, string translatorKey, string templatesDir)
         {
             this.nativeLanguages = nativeLanguages;
             this.translator = new Translator(translatorKey);
             this.templatesDir = templatesDir;
         }
+
+        // Constructor for developer defined detection of user messages and using templates
+        public TranslationMiddleware(string[] nativeLanguages, string translatorKey, string templatesDir, Func<IBotContext, string> getUserLanguage, Func<IBotContext, Task<bool>> setUserLanguage)
+        {
+            this.nativeLanguages = nativeLanguages;
+            this.translator = new Translator(translatorKey);
+            this.templatesDir = templatesDir;
+            _getUserLanguage = getUserLanguage;
+            _setUserLanguage = setUserLanguage;
+        }
+
         /// <summary>
         /// Incoming activity
         /// </summary>
@@ -46,7 +61,13 @@ namespace Microsoft.Bot.Builder.Ai
                 if (!String.IsNullOrWhiteSpace(message.Text))
                 {
                     // determine the language we are using for this conversation
-                    var sourceLanguage = await Task.Run(() => translator.Detect(message.Text)); // context.Conversation.Data["Language"]?.ToString() ?? this.nativeLanguages.FirstOrDefault() ?? "en";
+                    var sourceLanguage = "";
+                    if (_getUserLanguage == null)
+                        sourceLanguage = await Task.Run(() => translator.Detect(message.Text)); // context.Conversation.Data["Language"]?.ToString() ?? this.nativeLanguages.FirstOrDefault() ?? "en";
+                    else
+                    {
+                        sourceLanguage =  _getUserLanguage(context);
+                    }
                     var templatePath = Path.Combine(new string[] { templatesDir, sourceLanguage + ".template" });
                     if (File.Exists(templatePath))
                     {
@@ -65,6 +86,14 @@ namespace Microsoft.Bot.Builder.Ai
                         // translate to bots language
                         if (translationContext.SourceLanguage != translationContext.TargetLanguage)
                             await TranslateMessageAsync(context, message, translationContext.SourceLanguage, translationContext.TargetLanguage).ConfigureAwait(false);
+                    }
+                    if (_setUserLanguage != null)
+                    {
+                        var languageWasChanged = await _setUserLanguage(context);
+                        if (!languageWasChanged)
+                        {   // if what the user said wasn't a directive to change the locale (or that directive failed), continue the pipeline
+                            await next();
+                        }
                     }
 
                 }

@@ -11,7 +11,7 @@ namespace Microsoft.Bot.Builder.Ai
     public class LocaleConverterMiddleware : IReceiveActivity
     {
         private LocaleConverter localeConverter; 
-        private string toLocale;
+        private readonly string toLocale;
         private readonly Func<IBotContext, string> _getUserLocale;
         private readonly Func<IBotContext, Task<bool>> _setUserLocale;
 
