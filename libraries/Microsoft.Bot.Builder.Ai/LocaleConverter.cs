@@ -127,11 +127,11 @@ namespace Microsoft.Bot.Builder.Ai
         }
 
         //Convert a message from locale to another locale
-        public Task<string> Convert(string message, string fromLocale, string toLocale)
+        public async Task<string> Convert(string message, string fromLocale, string toLocale)
         {
             List<TextAndDateTime> dates = extractDate(message, fromLocale);
             if (dates.Count == 0)
-                return Task.FromResult(message);
+                return  message;
             string processedMessage = message;
             foreach (TextAndDateTime date in dates)
             {
@@ -144,7 +144,7 @@ namespace Microsoft.Bot.Builder.Ai
                     processedMessage = processedMessage.Replace(date.Text, String.Format(mapLocaleToFunction[toLocale].DateFormat, date.DateTimeObj));
                 }
             }
-            return Task.FromResult(processedMessage);
+            return  processedMessage;
         }
 
         //Get all supported Locales
