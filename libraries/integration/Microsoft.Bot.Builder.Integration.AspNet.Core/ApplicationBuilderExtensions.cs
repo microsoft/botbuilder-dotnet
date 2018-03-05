@@ -33,7 +33,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 
             var botActivitiesPath = new PathString(options.RouteBaseUrl);
 
-            botActivitiesPath.Add("/activities");
+            botActivitiesPath.Add("/messages");
 
             applicationBuilder.Map(
                 botActivitiesPath, 
