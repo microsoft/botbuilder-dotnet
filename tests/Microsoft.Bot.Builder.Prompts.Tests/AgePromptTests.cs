@@ -33,23 +33,23 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                     }
                     else
                     {
-                        var result = await testPrompt.Recognize(context);
-                        if (result == null)
-                            context.Reply("null");
-                        else
+                        var ageResult = await testPrompt.Recognize(context);
+                        if (ageResult.Succeeded())
                         {
-                            Assert.IsTrue(result.Value != float.NaN);
-                            Assert.IsNotNull(result.Text);
-                            Assert.IsNotNull(result.Unit);
-                            Assert.IsInstanceOfType(result.Value, typeof(float));
-                            context.Reply($"{result.Value} {result.Unit}");
+                            Assert.IsTrue(ageResult.Value != float.NaN);
+                            Assert.IsNotNull(ageResult.Text);
+                            Assert.IsNotNull(ageResult.Unit);
+                            Assert.IsInstanceOfType(ageResult.Value, typeof(float));
+                            context.Reply($"{ageResult.Value} {ageResult.Unit}");
                         }
+                        else
+                            context.Reply(ageResult.Status.ToString());
                     }
                 })
                 .Send("hello")
                 .AssertReply("Gimme:")
                 .Send("test test test")
-                    .AssertReply("null")
+                    .AssertReply(RecognitionStatus.NotRecognized.ToString())
                 .Send("I am 30 years old")
                     .AssertReply("30 Year")
                 .StartTest();
@@ -64,7 +64,11 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
             await new TestFlow(adapter, async (context) =>
             {
                 var state = ConversationState<TestState>.Get(context);
-                var numberPrompt = new AgePrompt(Culture.English, async (ctx, result) =>  result.Value > 10);
+                var numberPrompt = new AgePrompt(Culture.English, async (ctx, result) =>
+                {
+                    if (result.Value <= 10)
+                        result.Status = RecognitionStatus.TooSmall;
+                });
                 if (!state.InPrompt)
                 {
                     state.InPrompt = true;
@@ -72,17 +76,17 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                 }
                 else
                 {
-                    var result = await numberPrompt.Recognize(context);
-                    if (result == null)
-                        context.Reply("null");
+                    var numberResult = await numberPrompt.Recognize(context);
+                    if (numberResult.Succeeded())
+                        context.Reply($"{numberResult.Value} {numberResult.Unit}");
                     else
-                        context.Reply($"{result.Value} {result.Unit}");
+                        context.Reply(numberResult.Status.ToString());
                 }
             })
                 .Send("hello")
                 .AssertReply("Gimme:")
                 .Send(" it is 1 year old")
-                    .AssertReply("null")
+                    .AssertReply(RecognitionStatus.TooSmall.ToString())
                 .Send(" it is 15 year old")
                     .AssertReply("15 Year")
                 .StartTest();

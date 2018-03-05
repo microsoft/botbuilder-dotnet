@@ -5,6 +5,16 @@ using static Microsoft.Bot.Builder.Prompts.PromptValidatorEx;
 
 namespace Microsoft.Bot.Builder.Prompts
 {
+    public class TextResult : RecognitionResult
+    {
+        public TextResult() { }
+
+        public string Value { get; set; }
+
+        public string Text { get; set; }
+    }
+
+
     /// <summary>
     /// Text Prompt provides a simple mechanism to send text to a user
     /// and validate a response. The default validator passes on any 
@@ -15,7 +25,7 @@ namespace Microsoft.Bot.Builder.Prompts
     /// constructor. If the standard validation passes, the custom PromptValidator
     /// will be called. 
     /// </summary>
-    public class TextPrompt : BasePrompt<string>
+    public class TextPrompt : BasePrompt<TextResult>
     {
 
         /// <summary>
@@ -23,7 +33,7 @@ namespace Microsoft.Bot.Builder.Prompts
         /// to be specified. The custom validator will ONLY be called if the
         /// Validate method on the class first passes. 
         /// </summary>
-        public TextPrompt(PromptValidator<string> validator = null) 
+        public TextPrompt(PromptValidator<TextResult> validator = null) 
             :base(validator)
         {
         }
@@ -32,7 +42,7 @@ namespace Microsoft.Bot.Builder.Prompts
         /// Used to validate the incoming text, expected on context.Request, is
         /// valid according to the rules defined in the validation steps. 
         /// </summary>        
-        public override async Task<string> Recognize(IBotContext context)
+        public override async Task<TextResult> Recognize(IBotContext context)
         {
             BotAssert.ContextNotNull(context);
             BotAssert.ActivityNotNull(context.Request);
@@ -40,9 +50,15 @@ namespace Microsoft.Bot.Builder.Prompts
                 throw new InvalidOperationException("No Message to Recognize");
 
             IMessageActivity message = context.Request.AsMessageActivity();
-            if (await Validate(context, message.Text))
-                return message.Text;
-            return null;
+            TextResult textResult = new TextResult();
+            if (message.Text != null)
+            {
+                textResult.Status = RecognitionStatus.Recognized;
+                textResult.Value = message.Text;
+                textResult.Text = message.Text;
+                await Validate(context, textResult);
+            }
+            return textResult;
         }
 
     }

@@ -38,22 +38,22 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                     }
                     else
                     {
-                        var result = await numberPrompt.Recognize(context);
-                        if (result == null)
-                            context.Reply("null");
-                        else
+                        var numberResult = await numberPrompt.Recognize(context);
+                        if (numberResult.Succeeded())
                         {
-                            Assert.IsTrue(result.Value != float.NaN);
-                            Assert.IsNotNull(result.Text);
-                            Assert.IsInstanceOfType(result.Value, typeof(float));
-                            context.Reply(result.Value.ToString());
+                            Assert.IsTrue(numberResult.Value != float.NaN);
+                            Assert.IsNotNull(numberResult.Text);
+                            Assert.IsInstanceOfType(numberResult.Value, typeof(float));
+                            context.Reply(numberResult.Value.ToString());
                         }
+                        else
+                            context.Reply(numberResult.Status.ToString());
                     }
                 })
                 .Send("hello")
                 .AssertReply("Gimme:")
                 .Send("test test test")
-                    .AssertReply("null")
+                    .AssertReply(RecognitionStatus.NotRecognized.ToString())
                 .Send("asdf df 123")
                     .AssertReply("123")
                 .Send(" asdf asd 123.43 adsfsdf ")
@@ -78,25 +78,25 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                 }
                 else
                 {
-                    var result = await numberPrompt.Recognize(context);
-                    if (result == null)
-                        context.Reply("null");
-                    else
+                    var numberResult = await numberPrompt.Recognize(context);
+                    if (numberResult.Succeeded())
                     {
-                        Assert.IsInstanceOfType(result.Value, typeof(int));
-                        Assert.IsNotNull(result.Text);
-                        context.Reply(result.Value.ToString());
+                        Assert.IsInstanceOfType(numberResult.Value, typeof(int));
+                        Assert.IsNotNull(numberResult.Text);
+                        context.Reply(numberResult.Value.ToString());
                     }
+                    else
+                        context.Reply(numberResult.Status.ToString());
                 }
             })
                 .Send("hello")
                 .AssertReply("Gimme:")
                 .Send("test test test")
-                    .AssertReply("null")
+                    .AssertReply(RecognitionStatus.NotRecognized.ToString())
                 .Send("asdf df 123")
                     .AssertReply("123")
                 .Send(" asdf asd 123.43 adsfsdf ")
-                    .AssertReply("null")
+                    .AssertReply(RecognitionStatus.NotRecognized.ToString())
                 .StartTest();
         }
 
@@ -109,7 +109,13 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
             await new TestFlow(adapter, async (context) =>
             {
                 var state = ConversationState<TestState>.Get(context);
-                var numberPrompt = new NumberPrompt<int>(Culture.English, async (ctx, result) =>  result.Value < 100);
+                var numberPrompt = new NumberPrompt<int>(Culture.English, async (ctx, result) =>
+                {
+                    if (result.Value < 0)
+                        result.Status = RecognitionStatus.TooSmall;
+                    if (result.Value > 100)
+                        result.Status = RecognitionStatus.TooBig;
+                });
                 if (!state.InPrompt)
                 {
                     state.InPrompt = true;
@@ -117,22 +123,22 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                 }
                 else
                 {
-                    var result = await numberPrompt.Recognize(context);
-                    if (result == null)
-                        context.Reply("null");
-                    else
+                    var numberResult = await numberPrompt.Recognize(context);
+                    if (numberResult.Succeeded())
                     {
-                        Assert.IsInstanceOfType(result.Value, typeof(int));
-                        Assert.IsTrue(result.Value < 100);
-                        Assert.IsNotNull(result.Text);
-                        context.Reply(result.Value.ToString());
+                        Assert.IsInstanceOfType(numberResult.Value, typeof(int));
+                        Assert.IsTrue(numberResult.Value < 100);
+                        Assert.IsNotNull(numberResult.Text);
+                        context.Reply(numberResult.Value.ToString());
                     }
+                    else
+                        context.Reply(numberResult.Status.ToString());
                 }
             })
                 .Send("hello")
                 .AssertReply("Gimme:")
                 .Send("asdf df 123")
-                    .AssertReply("null")
+                    .AssertReply(RecognitionStatus.TooBig.ToString())
                 .Send(" asdf asd 12 adsfsdf ")
                     .AssertReply("12")
                 .StartTest();

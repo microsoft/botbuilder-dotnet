@@ -13,11 +13,11 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
 {
     [TestClass]
     [TestCategory("Prompts")]
-    [TestCategory("Percentage Prompts")]
-    public class PercentagePromptTests
+    [TestCategory("Confirm Prompts")]
+    public class ConfirmPromptTests
     {
         [TestMethod]
-        public async Task PercentagePrompt_Test()
+        public async Task ConfirmPrompt_Test()
         {
             TestAdapter adapter = new TestAdapter()
                 .Use(new ConversationState<TestState>(new MemoryStorage()));
@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
             await new TestFlow(adapter, async (context) =>
                 {
                     var state = ConversationState<TestState>.Get(context);
-                    var testPrompt = new PercentagePrompt(Culture.English);
+                    var testPrompt = new ConfirmPrompt(Culture.English);
                     if (!state.InPrompt)
                     {
                         state.InPrompt = true;
@@ -33,31 +33,29 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                     }
                     else
                     {
-                        var percentResult = await testPrompt.Recognize(context);
-                        if (percentResult.Succeeded())
+                        var confirmResult = await testPrompt.Recognize(context);
+                        if (confirmResult.Succeeded())
                         {
-                            Assert.IsTrue(percentResult.Value != float.NaN);
-                            Assert.IsNotNull(percentResult.Text);
-                            Assert.IsInstanceOfType(percentResult.Value, typeof(float));
-                            context.Reply($"{percentResult.Value}");
+                            Assert.IsNotNull(confirmResult.Text);
+                            context.Reply($"{confirmResult.Confirmation}");
                         }
                         else
-                            context.Reply(RecognitionStatus.NotRecognized.ToString());
+                            context.Reply(confirmResult.Status.ToString());
                     }
                 })
                 .Send("hello")
                 .AssertReply("Gimme:")
-                .Send("test test test")
+                .Send("tyest tnot")
                     .AssertReply(RecognitionStatus.NotRecognized.ToString())
-                .Send("give me 5")
-                    .AssertReply(RecognitionStatus.NotRecognized.ToString())
-                .Send(" I would like forty five percent")
-                    .AssertReply("45")
+                .Send(".. yes please ")
+                    .AssertReply("True")
+                .Send(".. no thank you")
+                    .AssertReply("False")
                 .StartTest();
         }
 
         [TestMethod]
-        public async Task PercentagePrompt_Validator()
+        public async Task ConfirmPrompt_Validator()
         {
             TestAdapter adapter = new TestAdapter()
                 .Use(new ConversationState<TestState>(new MemoryStorage()));
@@ -65,31 +63,36 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
             await new TestFlow(adapter, async (context) =>
             {
                 var state = ConversationState<TestState>.Get(context);
-                var numberPrompt = new PercentagePrompt(Culture.English, async (ctx, result) =>
+                var confirmPrompt = new ConfirmPrompt(Culture.English, async (ctx, result) =>
                 {
-                    if (result.Value <= 10)
-                        result.Status = RecognitionStatus.TooSmall;
+                    if (ctx.Request.Text.Contains("xxx"))
+                        result.Status = RecognitionStatus.NotRecognized;
                 });
+
                 if (!state.InPrompt)
                 {
                     state.InPrompt = true;
-                    await numberPrompt.Prompt(context, "Gimme:");
+                    await confirmPrompt.Prompt(context, "Gimme:");
                 }
                 else
                 {
-                    var percentResult = await numberPrompt.Recognize(context);
-                    if (percentResult.Succeeded())
-                        context.Reply($"{percentResult.Value}");
+                    var confirmResult = await confirmPrompt.Recognize(context);
+                    if (confirmResult.Succeeded())
+                        context.Reply($"{confirmResult.Confirmation}");
                     else
-                        context.Reply(percentResult.Status.ToString());
+                        context.Reply(confirmResult.Status.ToString());
                 }
             })
                 .Send("hello")
                 .AssertReply("Gimme:")
-                .Send(" I would like 5%")
-                    .AssertReply(RecognitionStatus.TooSmall.ToString())
-                .Send(" I would like 30%")
-                    .AssertReply("30")
+                .Send(" yes you xxx")
+                    .AssertReply(RecognitionStatus.NotRecognized.ToString())
+                .Send(" no way you xxx")
+                    .AssertReply(RecognitionStatus.NotRecognized.ToString())
+                .Send(" yep")
+                    .AssertReply("True")
+                .Send(" nope")
+                    .AssertReply("False")
                 .StartTest();
         }
 
