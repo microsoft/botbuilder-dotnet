@@ -18,6 +18,7 @@ namespace Microsoft.Bot.Samples.EchoBot_AspNet461
             {
                 botConfig
                     .UseMicrosoftApplicationIdentity(ConfigurationManager.AppSettings["BotFramework.MicrosoftApplicationId"], ConfigurationManager.AppSettings["BotFramework.MicrosoftApplicationPassword"])
+                    .EnableProactiveMessages()
                     .UseMiddleware(new ConversationState<EchoState>(new MemoryStorage()));
             });
         }

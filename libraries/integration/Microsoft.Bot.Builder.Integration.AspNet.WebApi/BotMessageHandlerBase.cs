@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System;
@@ -12,11 +11,11 @@ using System.Net.Http.Formatting;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
+namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Handlers
 {
-    internal sealed class BotActivitiesHandler : HttpMessageHandler
+    public abstract class BotMessageHandlerBase : HttpMessageHandler
     {
-        private static readonly MediaTypeFormatter[] BotActivityMediaTypeFormatters = new [] {
+        public static readonly MediaTypeFormatter[] BotMessageMediaTypeFormatters = new [] {
             new JsonMediaTypeFormatter
             {
                 SerializerSettings =
@@ -30,7 +29,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
 
         private readonly BotFrameworkAdapter _botFrameworkAdapter;
 
-        public BotActivitiesHandler(BotFrameworkAdapter botFrameworkAdapter)
+        public BotMessageHandlerBase(BotFrameworkAdapter botFrameworkAdapter)
         {
             _botFrameworkAdapter = botFrameworkAdapter;
         }
@@ -42,26 +41,23 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
                 return request.CreateResponse(HttpStatusCode.MethodNotAllowed);
             }
 
-            var requestContent = request.Content;
-            var requestContentHeaders = requestContent.Headers;
+            var requestContentHeaders = request.Content.Headers;
 
             if (requestContentHeaders.ContentLength == 0)
             {
                 return request.CreateErrorResponse(HttpStatusCode.BadRequest, "Request body should not be empty.");
             }
 
-            if (!BotActivityMediaTypeFormatters[0].SupportedMediaTypes.Contains(requestContentHeaders.ContentType))
+            if (!BotMessageMediaTypeFormatters[0].SupportedMediaTypes.Contains(requestContentHeaders.ContentType))
             {
-                return request.CreateErrorResponse(HttpStatusCode.NotAcceptable, $"Expecting Content-Type of \"{BotActivityMediaTypeFormatters[0].SupportedMediaTypes[0].MediaType}\".");
+                return request.CreateErrorResponse(HttpStatusCode.NotAcceptable, $"Expecting Content-Type of \"{BotMessageMediaTypeFormatters[0].SupportedMediaTypes[0].MediaType}\".");
             }
-
-            var activity = await requestContent.ReadAsAsync<Activity>(BotActivitiesHandler.BotActivityMediaTypeFormatters, cancellationToken);
 
             try
             {
-                await _botFrameworkAdapter.ProcessActivity(
-                    request.Headers.Authorization?.Parameter,
-                    activity,
+                await ProcessMessageRequestAsync(
+                    request,
+                    _botFrameworkAdapter,
                     botContext =>
                     {
                         cancellationToken.ThrowIfCancellationRequested();
@@ -77,13 +73,14 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
                             bot = null;
                         }
 
-                        if(bot == null)
+                        if (bot == null)
                         {
                             throw new InvalidOperationException($"Did not find an {typeof(IBot).Name} service via the dependency resolver. Please make sure you have registered your bot with your dependency injection container.");
                         }
 
                         return bot.OnReceiveActivity(botContext);
-                    });
+                    },
+                    cancellationToken);
 
                 return request.CreateResponse(HttpStatusCode.OK);
             }
@@ -96,5 +93,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
                 return request.CreateErrorResponse(HttpStatusCode.NotFound, e.Message);
             }
         }
+
+        protected abstract Task ProcessMessageRequestAsync(HttpRequestMessage request, BotFrameworkAdapter botFrameworkAdapter, Func<IBotContext, Task> botCallbackHandler, CancellationToken cancellationToken);
     }
 }

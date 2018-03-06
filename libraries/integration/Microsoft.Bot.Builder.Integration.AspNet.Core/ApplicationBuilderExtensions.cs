@@ -2,10 +2,12 @@
 // Licensed under the MIT License.
 
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using System;
+using System.Net;
+using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 {
@@ -47,7 +49,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             }
 
             applicationBuilder.Map(
-                paths.BasePath + paths.ActivitiesPath,, 
+                paths.BasePath + paths.ActivitiesPath, 
                 botActivitiesAppBuilder => botActivitiesAppBuilder.Run(new BotActivitiesHandler(botFrameworkAdapter).HandleAsync));
 
             return applicationBuilder;

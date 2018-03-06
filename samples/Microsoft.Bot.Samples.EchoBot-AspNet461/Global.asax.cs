@@ -8,8 +8,8 @@ namespace Microsoft.Bot.Samples.EchoBot_AspNet461
         {
             GlobalConfiguration.Configure(config =>
             {
-                WebApiConfig.Register(config);
                 BotConfig.Register(config);
+                WebApiConfig.Register(config);
             });
         }
     }
