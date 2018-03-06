@@ -47,7 +47,7 @@ namespace Microsoft.Bot.Builder.Ai
                 return (string)context.State.User[@"Microsoft.API.translateTo"];
             }
 
-            return null;
+            return "en";
         }
         protected virtual async Task<bool> SetActiveLocale(IBotContext context)
         {
@@ -80,7 +80,7 @@ namespace Microsoft.Bot.Builder.Ai
                 return (string)context.State.User[@"LocaleConverterMiddleware.fromLocale"];
             }
 
-            return null;
+            return "en-us";
         }
     }
 }
