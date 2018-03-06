@@ -33,11 +33,7 @@ namespace Microsoft.Bot.Builder.Ai
                     string fromLocale = _getUserLocale(context);
                     ((BotContext)context)["LocaleConversionOriginalMessage"] = message.Text;
                     await ConvertLocaleMessageAsync(message, fromLocale);
-                    var localeWasChanged = await _setUserLocale(context);
-                    if (!localeWasChanged)
-                    {   // if what the user said wasn't a directive to change the locale (or that directive failed), continue the pipeline
-                        await next();
-                    }
+                    await _setUserLocale(context);
                 }
             }
             await next().ConfigureAwait(false);

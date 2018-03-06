@@ -89,11 +89,7 @@ namespace Microsoft.Bot.Builder.Ai
                     }
                     if (_setUserLanguage != null)
                     {
-                        var languageWasChanged = await _setUserLanguage(context);
-                        if (!languageWasChanged)
-                        {   // if what the user said wasn't a directive to change the locale (or that directive failed), continue the pipeline
-                            await next();
-                        }
+                        await _setUserLanguage(context);
                     }
 
                 }
