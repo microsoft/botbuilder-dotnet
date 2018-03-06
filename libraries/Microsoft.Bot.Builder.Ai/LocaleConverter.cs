@@ -28,7 +28,7 @@ namespace Microsoft.Bot.Builder.Ai
     /// Locale Converter Class used to convert between locales
     /// in terms of date and time only
     /// </summary>
-    public class LocaleConverter
+    public class LocaleConverter : ILocaleConverter
     { 
         private Dictionary<string, DateAndTimeLocaleFormat> mapLocaleToFunction = new Dictionary<string, DateAndTimeLocaleFormat>();
 
