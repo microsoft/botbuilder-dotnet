@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using AlarmBot.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -12,6 +13,8 @@ using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Core.Middleware;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 
 namespace AlarmBot
@@ -41,6 +44,7 @@ namespace AlarmBot
 
                 var middleware = options.Middleware;
 
+                middleware.Add(new CatchExceptionMiddleware(HandleException));
                 middleware.Add(new UserState<UserData>(new MemoryStorage()));
                 middleware.Add(new ConversationState<ConversationData>(new MemoryStorage()));
                 middleware.Add(new RegExpRecognizerMiddleware()
@@ -66,6 +70,14 @@ namespace AlarmBot
             app.UseDefaultFiles();
             app.UseStaticFiles();
             app.UseBotFramework();
+        }
+
+        // This handler is used by the CatchExceptionMiddleware to allow you to inform the user
+        // that something went wrong.
+        private Task HandleException(IBotContext context, string phase, Exception exception)
+        {
+            context.Reply("Sorry, but something went wrong.");
+            return Task.CompletedTask;
         }
     }
 }
