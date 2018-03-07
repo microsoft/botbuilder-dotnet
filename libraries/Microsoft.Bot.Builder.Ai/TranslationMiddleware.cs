@@ -60,38 +60,44 @@ namespace Microsoft.Bot.Builder.Ai
             {
                 if (!String.IsNullOrWhiteSpace(message.Text))
                 {
-                    // determine the language we are using for this conversation
-                    var sourceLanguage = "";
-                    if (_getUserLanguage == null)
-                        sourceLanguage = await Task.Run(() => translator.Detect(message.Text)); // context.Conversation.Data["Language"]?.ToString() ?? this.nativeLanguages.FirstOrDefault() ?? "en";
-                    else
-                    {
-                        sourceLanguage =  _getUserLanguage(context);
-                    }
-                    var templatePath = Path.Combine(new string[] { templatesDir, sourceLanguage + ".template" });
-                    if (File.Exists(templatePath))
-                    {
-                        this.translator.SetPostProcessorTemplate(templatePath);
-                    }
-                    if (!nativeLanguages.Contains(sourceLanguage))
-                    {
-                        var translationContext = new TranslationContext
-                        {
-                            SourceText = message.Text,
-                            SourceLanguage = sourceLanguage,
-                            TargetLanguage = (this.nativeLanguages.Contains(sourceLanguage)) ? sourceLanguage : this.nativeLanguages.FirstOrDefault() ?? "en"
-                        };
-                        ((BotContext)context)["Microsoft.API.Translation"] = translationContext;
 
-                        // translate to bots language
-                        if (translationContext.SourceLanguage != translationContext.TargetLanguage)
-                            await TranslateMessageAsync(context, message, translationContext.SourceLanguage, translationContext.TargetLanguage).ConfigureAwait(false);
-                    }
+                    var languageChanged = false;
+
                     if (_setUserLanguage != null)
                     {
-                        await _setUserLanguage(context);
+                        languageChanged = await _setUserLanguage(context);
                     }
 
+                    if (!languageChanged)
+                    {
+                        // determine the language we are using for this conversation
+                        var sourceLanguage = "";
+                        if (_getUserLanguage == null)
+                            sourceLanguage = await Task.Run(() => translator.Detect(message.Text)); // context.Conversation.Data["Language"]?.ToString() ?? this.nativeLanguages.FirstOrDefault() ?? "en";
+                        else
+                        {
+                            sourceLanguage = _getUserLanguage(context);
+                        }
+                        var templatePath = Path.Combine(new string[] { templatesDir, sourceLanguage + ".template" });
+                        if (File.Exists(templatePath))
+                        {
+                            this.translator.SetPostProcessorTemplate(templatePath);
+                        }
+                        if (!nativeLanguages.Contains(sourceLanguage))
+                        {
+                            var translationContext = new TranslationContext
+                            {
+                                SourceText = message.Text,
+                                SourceLanguage = sourceLanguage,
+                                TargetLanguage = (this.nativeLanguages.Contains(sourceLanguage)) ? sourceLanguage : this.nativeLanguages.FirstOrDefault() ?? "en"
+                            };
+                            ((BotContext)context)["Microsoft.API.Translation"] = translationContext;
+
+                            // translate to bots language
+                            if (translationContext.SourceLanguage != translationContext.TargetLanguage)
+                                await TranslateMessageAsync(context, message, translationContext.SourceLanguage, translationContext.TargetLanguage).ConfigureAwait(false);
+                        }
+                    }
                 }
             }
             await next().ConfigureAwait(false);
