@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27130.2027
+VisualStudioVersion = 15.0.27130.2036
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder", "libraries\Microsoft.Bot.Builder\Microsoft.Bot.Builder.csproj", "{74908F42-3842-49B4-9344-60BB791FDE32}"
 EndProject
@@ -44,6 +44,10 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Samples.Simplified.Asp", "samples\Microsoft.Bot.Samples.Simplified.Asp\Microsoft.Bot.Samples.Simplified.Asp.csproj", "{BF6D1EA0-BA3B-4DB3-8247-5CEB18584E59}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Samples.EchoBot-AspNet461", "samples\Microsoft.Bot.Samples.EchoBot-AspNet461\Microsoft.Bot.Samples.EchoBot-AspNet461.csproj", "{AAC0F76C-4114-4D64-A99E-8BE4C43982F9}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Samples.Ai.Luis.Translator", "samples\Microsoft.Bot.Samples.Ai.Luis.Translator\Microsoft.Bot.Samples.Ai.Luis.Translator.csproj", "{CB3E5EC8-F666-4A13-AD9C-DB79E014AA43}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Samples.Ai.QnA.Translator", "samples\Microsoft.Bot.Samples.Ai.QnA.Translator\Microsoft.Bot.Samples.Ai.QnA.Translator.csproj", "{10A00767-431E-4C18-BE26-1FA2AE3D18E2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -123,6 +127,14 @@ Global
 		{AAC0F76C-4114-4D64-A99E-8BE4C43982F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AAC0F76C-4114-4D64-A99E-8BE4C43982F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AAC0F76C-4114-4D64-A99E-8BE4C43982F9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CB3E5EC8-F666-4A13-AD9C-DB79E014AA43}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CB3E5EC8-F666-4A13-AD9C-DB79E014AA43}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CB3E5EC8-F666-4A13-AD9C-DB79E014AA43}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CB3E5EC8-F666-4A13-AD9C-DB79E014AA43}.Release|Any CPU.Build.0 = Release|Any CPU
+		{10A00767-431E-4C18-BE26-1FA2AE3D18E2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{10A00767-431E-4C18-BE26-1FA2AE3D18E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{10A00767-431E-4C18-BE26-1FA2AE3D18E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{10A00767-431E-4C18-BE26-1FA2AE3D18E2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -146,6 +158,8 @@ Global
 		{7DFD2037-A631-48B2-9704-3F9AC9363BF5} = {3ADFB27A-95FA-4330-B211-1D66A29A17AB}
 		{BF6D1EA0-BA3B-4DB3-8247-5CEB18584E59} = {3ADFB27A-95FA-4330-B211-1D66A29A17AB}
 		{AAC0F76C-4114-4D64-A99E-8BE4C43982F9} = {3ADFB27A-95FA-4330-B211-1D66A29A17AB}
+		{CB3E5EC8-F666-4A13-AD9C-DB79E014AA43} = {3ADFB27A-95FA-4330-B211-1D66A29A17AB}
+		{10A00767-431E-4C18-BE26-1FA2AE3D18E2} = {3ADFB27A-95FA-4330-B211-1D66A29A17AB}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7173C9F3-A7F9-496E-9078-9156E35D6E16}
