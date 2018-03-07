@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         {
             var options = applicationBuilder.ApplicationServices.GetRequiredService<IOptions<BotFrameworkOptions>>().Value;
 
-            var botFrameworkAdapter = new BotFrameworkAdapter(options.ApplicationId, options.ApplicationPassword);
+            var botFrameworkAdapter = new BotFrameworkAdapter(options.CredentialProvider);
 
             foreach (var middleware in options.Middleware)
             {

@@ -36,9 +36,7 @@ namespace AlarmBot
             services.AddSingleton(_ => Configuration);            
             services.AddBot<AlarmBot>(options =>
             {
-                options.ApplicationId = Configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppIdKey)?.Value;
-                options.ApplicationPassword = Configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppPasswordKey)?.Value;
-
+                options.CredentialProvider = new SimpleCredentialProvider(Configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppIdKey)?.Value, Configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppPasswordKey)?.Value);
                 var middleware = options.Middleware;
 
                 middleware.Add(new UserState<UserData>(new MemoryStorage()));

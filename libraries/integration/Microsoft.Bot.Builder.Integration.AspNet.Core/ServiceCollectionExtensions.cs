@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
     {
         private static readonly JsonSerializer ActivitySerializer = JsonSerializer.Create();
 
-        public static IBotConfigurationBuilder AddBot<TBot>(this IServiceCollection services, Action<BotFrameworkOptions> setupAction = null) where TBot : class, IBot
+        public static IServiceCollection AddBot<TBot>(this IServiceCollection services, Action<BotFrameworkOptions> setupAction = null) where TBot : class, IBot
         {
             services.AddTransient<IBot, TBot>();
 
@@ -20,12 +20,17 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 
             services.Configure<BotFrameworkOptions>(options =>
             {
-                options.Middleware.AddRange(botBuilder.Middleware);
+                var optionsMiddleware = options.Middleware;
+
+                foreach (var mw in botBuilder.Middleware)
+                {
+                    optionsMiddleware.Add(mw);
+                }
             });
 
             services.Configure(setupAction);
 
-            return botBuilder;
+            return services;
         }
     }
 }

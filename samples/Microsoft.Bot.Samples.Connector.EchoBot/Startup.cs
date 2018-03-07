@@ -3,14 +3,14 @@
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Bot.Builder.BotFramework;
+using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Builder.Middleware;
 using Microsoft.Bot.Builder.Storage;
+using Microsoft.Bot.Samples.Echo;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Bot.Builder.Integration.AspNet.Core;
-using Microsoft.Bot;
-using Microsoft.Bot.Samples.Echo;
 
 namespace Connector.Echo
 {
@@ -34,8 +34,7 @@ namespace Connector.Echo
         {
             services.AddBot<EchoBot>(options =>
             {
-                //options.ApplicationId = "myApplication123";
-                //options.ApplicationPassword = "myApplicationPasswordXyz";
+                options.CredentialProvider = new ConfigurationCredentialProvider(Configuration);
                 options.Middleware.Add(new ConversationState<EchoState>(new MemoryStorage()));
             });
 
