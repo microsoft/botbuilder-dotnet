@@ -130,7 +130,7 @@ namespace AlarmBot.Topics
             var userState = context.GetUserState<UserData>();
             // var userState = UserState<UserData>.Get(context);
 
-            // we ar eusing TopicState to remember what we last asked
+            // we are using TopicState to remember what we last asked
             switch (this.TopicState)
             {
                 case TopicStates.AddingCard:
