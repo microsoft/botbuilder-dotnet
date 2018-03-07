@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.Integration.AspNet.WebApi.Handlers;
 using System;
 using System.Web.Http;
 
@@ -11,13 +12,12 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
     {
         public static HttpConfiguration MapBotFramework(this HttpConfiguration httpConfiguration, Action<BotFrameworkConfigurationBuilder> configurer)
         {
-            var optionsBuilder = new BotFrameworkConfigurationBuilder();
+            var options = new BotFrameworkOptions();
+            var optionsBuilder = new BotFrameworkConfigurationBuilder(options);
 
             configurer(optionsBuilder);
 
-            var options = optionsBuilder.BotFrameworkOptions;
-
-            ConfigureBotRoute(BuildAdapter());
+            ConfigureBotRoutes(BuildAdapter());
 
             return httpConfiguration;
 
@@ -33,23 +33,32 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
                 return adapter;
             }
 
-            void ConfigureBotRoute(BotFrameworkAdapter adapter)
+            void ConfigureBotRoutes(BotFrameworkAdapter adapter)
             {
-                var botActivitiesRouteUrl = options.RouteBaseUrl;
+                var routes = httpConfiguration.Routes;
+                var baseUrl = options.Paths.BasePath;
 
-                if (!botActivitiesRouteUrl.EndsWith("/"))
+                if (!baseUrl.EndsWith("/"))
                 {
-                    botActivitiesRouteUrl += "/";
+                    baseUrl += "/";
                 }
 
-                botActivitiesRouteUrl += "messages";
-
-                httpConfiguration.Routes.MapHttpRoute(
-                        "BotFrameworkV4 Activities Controller",
-                        botActivitiesRouteUrl,
+                if (options.EnableProactiveMessages)
+                {
+                    routes.MapHttpRoute(
+                        "BotFramework - Proactive Message Handler",
+                        baseUrl + options.Paths.ProactiveMessagesPath,
                         defaults: null,
                         constraints: null,
-                        handler: new BotActivitiesHandler(adapter));
+                        handler: new BotProactiveMessageHandler(adapter));
+                }
+
+                routes.MapHttpRoute(
+                        "BotFramework - Message Handler",
+                        baseUrl + options.Paths.MessagesPath,
+                        defaults: null,
+                        constraints: null,
+                        handler: new BotMessageHandler(adapter));
             }
         }        
     }

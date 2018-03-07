@@ -36,6 +36,7 @@ namespace Connector.Echo
             {
                 options.CredentialProvider = new ConfigurationCredentialProvider(Configuration);
                 options.Middleware.Add(new ConversationState<EchoState>(new MemoryStorage()));
+                options.EnableProactiveMessages = true;
             });
 
             services.AddTransient<IMyService, MyService>();

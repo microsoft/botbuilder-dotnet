@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using Microsoft.Bot.Builder.Middleware;
+using System;
 using Microsoft.Bot.Connector.Authentication;
 
 namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
@@ -10,9 +11,9 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
     {
         private BotFrameworkOptions _options;
 
-        public BotFrameworkConfigurationBuilder()
+        public BotFrameworkConfigurationBuilder(BotFrameworkOptions botFrameworkOptions)
         {
-            _options = new BotFrameworkOptions();
+            _options = botFrameworkOptions;
         }
 
         public BotFrameworkOptions BotFrameworkOptions { get => _options; }
@@ -30,6 +31,26 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
         public BotFrameworkConfigurationBuilder UseMiddleware(IMiddleware middleware)
         {
             _options.Middleware.Add(middleware);
+
+            return this;
+        }
+
+        public BotFrameworkConfigurationBuilder EnableProactiveMessages(string proactiveMessagesPath = default(string))
+        {
+            _options.EnableProactiveMessages = true;
+            
+            if (proactiveMessagesPath != null)
+            
+{
+                _options.Paths.ProactiveMessagesPath = proactiveMessagesPath;
+            }
+
+            return this;
+        }
+
+        public BotFrameworkConfigurationBuilder UsePaths(Action<BotFrameworkPaths> configurePaths)
+        {
+            configurePaths(_options.Paths);
 
             return this;
         }

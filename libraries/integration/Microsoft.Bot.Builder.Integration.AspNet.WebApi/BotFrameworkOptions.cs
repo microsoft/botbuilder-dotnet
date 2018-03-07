@@ -10,15 +10,17 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
     public class BotFrameworkOptions
     {
         private readonly List<IMiddleware> _middleware;
+        private readonly BotFrameworkPaths _paths;
 
         public BotFrameworkOptions()
         {
-            RouteBaseUrl = "api/";
             _middleware = new List<IMiddleware>();
+            _paths = new BotFrameworkPaths();
         }
 
-        public string RouteBaseUrl { get; set; }
         public ICredentialProvider CredentialProvider { get; set; }
         public List<IMiddleware> Middleware { get => _middleware; }
+        public bool EnableProactiveMessages { get; set; }
+        public BotFrameworkPaths Paths { get => _paths; }
     }
 }

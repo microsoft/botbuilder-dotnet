@@ -3,22 +3,19 @@
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Schema;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Net.Http.Headers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System;
-using System.IO;
 using System.Net;
-using System.Text;
 using System.Threading.Tasks;
 
-namespace Microsoft.Bot.Builder.Integration.AspNet.Core
+namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Handlers
 {
-    internal class BotActivitiesHandler
+    public abstract class BotMessageHandlerBase
     {
-        private static readonly JsonSerializer ActivitySerializer = JsonSerializer.Create(new JsonSerializerSettings
+        public static readonly JsonSerializer BotMessageSerializer = JsonSerializer.Create(new JsonSerializerSettings
         {
             ContractResolver = new CamelCasePropertyNamesContractResolver(),
             Formatting = Newtonsoft.Json.Formatting.Indented,
@@ -27,7 +24,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 
         private BotFrameworkAdapter _botFrameworkAdapter;
 
-        public BotActivitiesHandler(BotFrameworkAdapter botFrameworkAdapter)
+        public BotMessageHandlerBase(BotFrameworkAdapter botFrameworkAdapter)
         {
             _botFrameworkAdapter = botFrameworkAdapter;
         }
@@ -60,18 +57,11 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                 return;
             }
 
-            var activity = default(Activity);
-
-            using (var bodyReader = new JsonTextReader(new StreamReader(request.Body, Encoding.UTF8)))
-            {
-                activity = ActivitySerializer.Deserialize<Activity>(bodyReader);
-            }
-
             try
             {
-                await _botFrameworkAdapter.ProcessActivity(
-                    request.Headers["Authorization"],
-                    activity,
+                await ProcessMessageRequestAsync(
+                    request,
+                    _botFrameworkAdapter,
                     botContext =>
                     {
                         var bot = httpContext.RequestServices.GetRequiredService<IBot>();
@@ -86,5 +76,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                 response.StatusCode = (int)HttpStatusCode.Forbidden;
             }
         }
+
+        protected abstract Task ProcessMessageRequestAsync(HttpRequest request, BotFrameworkAdapter botFrameworkAdapter, Func<IBotContext, Task> botCallbackHandler);
     }
 }
