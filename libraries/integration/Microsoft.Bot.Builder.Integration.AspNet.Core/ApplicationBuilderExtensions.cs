@@ -44,12 +44,12 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             if (options.EnableProactiveMessages)
             {
                 applicationBuilder.Map(
-                    paths.BasePath + paths.ProactivePath,
+                    paths.BasePath + paths.ProactiveMessagesPath,
                     botProactiveAppBuilder => botProactiveAppBuilder.Run(httpContext => { httpContext.Response.StatusCode = (int)HttpStatusCode.OK; return Task.CompletedTask; }));
             }
 
             applicationBuilder.Map(
-                paths.BasePath + paths.ActivitiesPath, 
+                paths.BasePath + paths.MessagesPath, 
                 botActivitiesAppBuilder => botActivitiesAppBuilder.Run(new BotActivitiesHandler(botFrameworkAdapter).HandleAsync));
 
             return applicationBuilder;
