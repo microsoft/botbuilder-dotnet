@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Microsoft.Bot.Builder
+namespace Microsoft.Bot.Builder.Core.Extensions
 {
     public interface IRecognizedIntents
     {
@@ -29,12 +29,9 @@ namespace Microsoft.Bot.Builder
 
         public IList<Entity> Entities { get; } = new List<Entity>();
     }
-}
 
-namespace Microsoft.Bot.Builder.Middleware
-{
 
-    public class IntentRecognizerMiddleware : IReceiveActivity
+    public class IntentRecognizerMiddleware : IMiddleware
     {
         public delegate Task<Boolean> IntentDisabler(IBotContext context);
         public delegate Task<IList<Intent>> IntentRecognizer(IBotContext context);
@@ -198,5 +195,4 @@ namespace Microsoft.Bot.Builder.Middleware
             return string.IsNullOrWhiteSpace(s) ? string.Empty : s.Trim();
         }
     }
-
 }

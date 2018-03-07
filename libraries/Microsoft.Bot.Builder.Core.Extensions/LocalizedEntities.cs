@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace Microsoft.Bot.Builder
+namespace Microsoft.Bot.Builder.Core.Extensions
 {
     public class LocalizedEntities
     {

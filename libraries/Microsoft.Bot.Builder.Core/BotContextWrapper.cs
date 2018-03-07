@@ -1,7 +1,5 @@
-﻿using Microsoft.Bot.Schema;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Threading.Tasks;
+using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder
 {
@@ -26,9 +24,9 @@ namespace Microsoft.Bot.Builder
 
         public Activity Request => this._innerContext.Request;
 
-        public IList<Activity> Responses { get => this._innerContext.Responses; set => this._innerContext.Responses = value; }
+        public bool Responded { get => _innerContext.Responded; set => _innerContext.Responded = value; }
 
-        public ConversationReference ConversationReference => this._innerContext.ConversationReference;
+        
 
         /// <summary>
         /// Get a value by a key.
@@ -40,17 +38,32 @@ namespace Microsoft.Bot.Builder
             return this._innerContext.Get(key);
         }
 
-        public IBotContext Reply(string text, string speak = null)
+        public Task SendActivity(params Activity[] activities)
         {
-            this._innerContext.Reply(text, speak);
-            return this;
+            return _innerContext.SendActivity(activities); 
         }
 
-        public IBotContext Reply(IActivity activity)
+        public Task UpdateActivity(Activity activity)
         {
-            this._innerContext.Reply(activity);
-            return this;
+            return _innerContext.UpdateActivity(activity);
         }
+
+        public Task DeleteActivity(string activityId)
+        {
+            return _innerContext.DeleteActivity(activityId);
+        }
+
+        //public IBotContext Reply(string text, string speak = null)
+        //{
+        //    this._innerContext.Reply(text, speak);
+        //    return this;
+        //}
+
+        //public IBotContext Reply(IActivity activity)
+        //{
+        //    this._innerContext.Reply(activity);
+        //    return this;
+        //}
 
         /// <summary>
         /// Set the value associated with a key.
@@ -60,6 +73,6 @@ namespace Microsoft.Bot.Builder
         public void Set(string key, object value)
         {
             this._innerContext.Set(key, value);
-        }
+        }        
     }
 }

@@ -2,10 +2,8 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Middleware;
 using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.Adapters
@@ -16,9 +14,9 @@ namespace Microsoft.Bot.Builder.Adapters
         {
         }
 
-        public ConsoleAdapter Use(IMiddleware middleware)
+        public new ConsoleAdapter Use(IMiddleware middleware)
         {
-            base.RegisterMiddleware(middleware);
+            base.Use(middleware);
             return this;
         }
 
@@ -47,7 +45,7 @@ namespace Microsoft.Bot.Builder.Adapters
             }
         }
 
-        protected override async Task SendActivitiesImplementation(IBotContext context, IEnumerable<Activity> activities)
+        public override async Task SendActivity(params Activity[] activities)
         {
             foreach (var activity in activities)
             {
@@ -82,12 +80,12 @@ namespace Microsoft.Bot.Builder.Adapters
             }
         }
 
-        protected override Task<ResourceResponse> UpdateActivityImplementation(IBotContext context, Activity activity)
+        public override Task<ResourceResponse> UpdateActivity(Activity activity)
         {
             throw new NotImplementedException();
         }
 
-        protected override Task DeleteActivityImplementation(IBotContext context, string conversationId, string activityId)
+        public override Task DeleteActivity(ConversationReference reference)
         {
             throw new NotImplementedException();
         }

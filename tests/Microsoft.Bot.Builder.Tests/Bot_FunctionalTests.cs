@@ -16,15 +16,7 @@ namespace Microsoft.Bot.Builder.Tests
     [TestCategory("Functional Spec")]
     public class Bot_FunctionalTests
     {
-        [TestMethod]
-        public async Task SingleParameterConstructor()
-        {
-            var adapter = new TestAdapter();
-
-            // If this compiles, the test has passed. :) 
-        }
-
-
+     
         [TestMethod]
         public async Task RunSendPiplineWith0Response()
         {

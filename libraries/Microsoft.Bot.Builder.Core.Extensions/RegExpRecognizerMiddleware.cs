@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Microsoft.Bot.Schema;
 
-namespace Microsoft.Bot.Builder.Middleware
+namespace Microsoft.Bot.Builder.Core.Extensions
 {
     public class RegExpRecognizerSettings
     {

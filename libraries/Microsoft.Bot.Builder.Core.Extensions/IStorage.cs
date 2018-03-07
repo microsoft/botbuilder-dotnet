@@ -4,7 +4,7 @@
 using Newtonsoft.Json;
 using System.Threading.Tasks;
 
-namespace Microsoft.Bot.Builder
+namespace Microsoft.Bot.Builder.Core.Extensions
 {
     public interface IStorage
     {
