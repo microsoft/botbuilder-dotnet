@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Builder.Middleware
     /// </summary>
     /// <typeparam name="StateT"></typeparam>
     public abstract class BotState<StateT> : IContextCreated, ISendActivity
-        where StateT : new()
+        where StateT : class, new()
     {
         private readonly StateSettings _settings;
         private readonly IStorage _storage;
@@ -86,7 +86,10 @@ namespace Microsoft.Bot.Builder.Middleware
             {
                 foreach (var item in changes)
                 {
-                    ((StoreItem)changes[item.Key]).eTag = "*";
+                    if(item.Value is IStoreItem valueStoreItem)
+                    {
+                        valueStoreItem.eTag = "*";
+                    }
                 }
             }
 
@@ -100,7 +103,7 @@ namespace Microsoft.Bot.Builder.Middleware
     /// </summary>
     /// <typeparam name="StateT"></typeparam>
     public class ConversationState<StateT> : BotState<StateT>
-        where StateT : new()
+        where StateT : class, new()
     {
         public static string PropertyName = $"ConversationState:{typeof(ConversationState<StateT>).Namespace}.{typeof(ConversationState<StateT>).Name}";
 
@@ -124,7 +127,7 @@ namespace Microsoft.Bot.Builder.Middleware
     /// </summary>
     /// <typeparam name="StateT"></typeparam>
     public class UserState<StateT> : BotState<StateT>
-        where StateT : new()
+        where StateT : class, new()
     {
         public static readonly string PropertyName = $"UserState:{typeof(UserState<StateT>).Namespace}.{typeof(UserState<StateT>).Name}";
 
@@ -146,13 +149,13 @@ namespace Microsoft.Bot.Builder.Middleware
     public static class StateContextExtensions
     {
         public static T GetConversationState<T>(this IBotContext context)
-            where T : new()
+            where T : class, new()
         {
             return ConversationState<T>.Get(context);
         }
 
         public static T GetUserState<T>(this IBotContext context)
-            where T : new()
+            where T : class, new()
         {
             return UserState<T>.Get(context);
         }
