@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Bot.Schema;
 
-namespace Microsoft.Bot.Builder
+namespace Microsoft.Bot.Builder.Core.Extensions
 {
     /// <summary>
     /// A set of utility functions to assist with the formatting of the various 

@@ -8,7 +8,7 @@ using System.Linq;
 using System.Reflection;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder
+namespace Microsoft.Bot.Builder.Core.Extensions
 {
     /// <summary>
     /// DynamicObject which seemlessly blends dictionary properties with real properties
@@ -96,8 +96,7 @@ namespace Microsoft.Bot.Builder
         {
             get
             {
-                object value = null;
-                this.TryGetMember(name, out value);
+                this.TryGetMember(name, out object value);
                 return value;
             }
             set { this.TrySetMember(name, value); }

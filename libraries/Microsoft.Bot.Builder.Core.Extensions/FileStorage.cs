@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.Storage
+namespace Microsoft.Bot.Builder.Core.Extensions
 {
     /// <summary>
     /// Models IStorage around a File System

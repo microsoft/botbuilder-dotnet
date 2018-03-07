@@ -1,12 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Microsoft.Bot.Schema;
-using System;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Middleware;
+using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder
 {
@@ -20,29 +16,13 @@ namespace Microsoft.Bot.Builder
         Activity Request { get; }
 
         /// <summary>
-        /// Respones
+        /// 
         /// </summary>
-        IList<Activity> Responses { get; set; }
+        bool Responded { get; set; }
 
-        /// <summary>
-        /// Conversation reference
-        /// </summary>
-        ConversationReference ConversationReference { get; }
-
-        /// <summary>
-        /// Queues a new "message" responses array.
-        /// </summary>
-        /// <param name="text">Text of a message to send to the user.</param>
-        /// <param name="speak">(Optional) SSML that should be spoken to the user on channels that support speech.</param>
-        /// <returns></returns>
-        IBotContext Reply(string text, string speak = null);
-
-        /// <summary>
-        /// Queues a new "message" responses array.
-        /// </summary>
-        /// <param name="activity">Activity object to send to the user.</param>
-        /// <returns></returns>
-        IBotContext Reply(IActivity activity);
+        Task SendActivity(params Activity[] activities);
+        Task UpdateActivity(Activity activity);
+        Task DeleteActivity(string activityId);
 
         /// <summary>
         /// Set the value associated with a key.

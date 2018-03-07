@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Microsoft.Bot.Builder.Middleware
+namespace Microsoft.Bot.Builder.Core.Extensions
 {
     public class StateSettings
     {
@@ -14,11 +14,13 @@ namespace Microsoft.Bot.Builder.Middleware
         public bool LastWriterWins { get; set; } = true;
     }
 
+    //Todo: This is not right
+
     /// <summary>
     /// Abstract Base class which manages details of auto loading/saving of BotState
     /// </summary>
     /// <typeparam name="StateT"></typeparam>
-    public abstract class BotState<StateT> : IContextCreated, ISendActivity
+    public abstract class BotState<StateT> : IMiddleware
         where StateT : class, new()
     {
         private readonly StateSettings _settings;
@@ -46,17 +48,20 @@ namespace Microsoft.Bot.Builder.Middleware
             await next().ConfigureAwait(false);
         }
 
-        public async Task SendActivity(IBotContext context, IList<Activity> activities, MiddlewareSet.NextDelegate next)
+        public async Task ReceiveActivity(IBotContext context, MiddlewareSet.NextDelegate next)
         {
             if (_settings.WriteBeforeSend)
             {
                 await Write(context).ConfigureAwait(false);
             }
+
             await next().ConfigureAwait(false);
+
             if (!_settings.WriteBeforeSend)
             {
                 await Write(context).ConfigureAwait(false);
             }
+
         }
 
         protected virtual async Task<StoreItems> Read(IBotContext context)
@@ -109,7 +114,7 @@ namespace Microsoft.Bot.Builder.Middleware
 
         public ConversationState(IStorage storage, StateSettings settings = null) :
             base(storage, PropertyName,
-                (context) => $"conversation/{context.ConversationReference.ChannelId}/{context.ConversationReference.Conversation.Id}",
+                (context) => $"conversation/{context.Request.ChannelId}/{context.Request.Conversation.Id}",
                 settings)
         {
         }
@@ -134,10 +139,10 @@ namespace Microsoft.Bot.Builder.Middleware
         public UserState(IStorage storage, StateSettings settings = null) :
             base(storage,
                 PropertyName,
-                (context) => $"user/{context.ConversationReference.ChannelId}/{context.ConversationReference.User.Id}")
+                (context) => $"user/{context.Request.ChannelId}/{context.Request.From.Id}")
         {
         }
-
+        
         /// <summary>
         /// get the value of the ConversationState from the context
         /// </summary>

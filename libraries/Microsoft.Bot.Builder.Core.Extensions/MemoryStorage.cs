@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 using System;
 using System.Threading.Tasks;
 
-namespace Microsoft.Bot.Builder.Storage
+namespace Microsoft.Bot.Builder.Core.Extensions
 {
     /// <summary>
     /// Models IStorage around a dictionary 

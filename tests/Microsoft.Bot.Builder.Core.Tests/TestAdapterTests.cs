@@ -2,34 +2,41 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Runtime.CompilerServices;
 using System.Security;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.Bot.Builder.Tests
+namespace Microsoft.Bot.Builder.Core.Tests
 {
     [TestClass]
     [TestCategory("Adapter")]
-    public class Adapter_TestBotTests
+    public class TestAdapterTests
     {
         public async Task MyBotLogic(IBotContext context)
         {
             switch (context.Request.AsMessageActivity().Text)
             {
                 case "count":
-                    context.Reply("one");
-                    context.Reply("two");
-                    context.Reply("three");
+                    await context.SendActivity(context.Request.CreateReply("one"));
+                    await context.SendActivity(context.Request.CreateReply("two"));
+                    await context.SendActivity(context.Request.CreateReply("three"));
                     break;
                 case "ignore":
                     break;
                 default:
-                    context.Reply($"echo:{context.Request.AsMessageActivity().Text}");
+                    await context.SendActivity( 
+                        context.Request.CreateReply($"echo:{context.Request.AsMessageActivity().Text}"));
                     break;
             }
+        }
+        [TestMethod]
+        public async Task SingleParameterConstructor()
+        {
+            var adapter = new TestAdapter();
+
+            // If this compiles, the test has passed. :) 
         }
 
         [TestMethod]
@@ -40,7 +47,10 @@ namespace Microsoft.Bot.Builder.Tests
 
             try
             {
-                await new TestFlow(adapter, async (context) => { context.Reply("one"); })
+                await new TestFlow(adapter, async (context) =>
+                {
+                    await context.SendActivity(context.Request.CreateReply("one"));
+                })
                     .Test("foo", (activity) => throw new Exception(uniqueExceptionId))
                     .StartTest();
 
@@ -80,7 +90,10 @@ namespace Microsoft.Bot.Builder.Tests
 
             try
             {
-                await new TestFlow(adapter, async (context) => { context.Reply("one"); })
+                await new TestFlow(adapter, async (context) => 
+                {
+                    await context.SendActivity(context.Request.CreateReply("one"));
+                })
                     .Send("foo")
                     .AssertReply(
                         (activity) => throw new Exception(uniqueExceptionId), "should throw")
@@ -94,6 +107,14 @@ namespace Microsoft.Bot.Builder.Tests
             }
         }
 
+        [TestMethod]
+        public async Task TestAdapter_SaySimple()
+        {
+            var adapter = new TestAdapter();
+            await new TestFlow(adapter, MyBotLogic)
+                .Test("foo", "echo:foo", "say with string works")
+                .StartTest();
+        }
 
         [TestMethod]
         public async Task TestAdapter_Say()
@@ -159,11 +180,11 @@ namespace Microsoft.Bot.Builder.Tests
                     return taskSource.Task;
                 })
                 .Send(new Activity());
-                Task task = testFlow.StartTest()
-                    .ContinueWith(action =>
-                    {
-                        Assert.IsInstanceOfType(action.Exception.InnerException, exceptionType);
-                    });
+            Task task = testFlow.StartTest()
+                .ContinueWith(action =>
+                {
+                    Assert.IsInstanceOfType(action.Exception.InnerException, exceptionType);
+                });
         }
     }
 }
