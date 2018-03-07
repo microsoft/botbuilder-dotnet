@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using Microsoft.Bot.Builder.Middleware;
+using Microsoft.Bot.Connector.Authentication;
 
 namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
 {
@@ -16,10 +17,12 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
 
         public BotFrameworkOptions BotFrameworkOptions { get => _options; }
 
-        public BotFrameworkConfigurationBuilder UseApplicationIdentity(string applicationId, string applicationPassword)
+        public BotFrameworkConfigurationBuilder UseMicrosoftApplicationIdentity(string applicationId, string applicationPassword) =>
+            UseCredentialProvider(new SimpleCredentialProvider(applicationId, applicationPassword));
+
+        public BotFrameworkConfigurationBuilder UseCredentialProvider(ICredentialProvider credentialProvider)
         {
-            _options.AppId = applicationId;
-            _options.AppPassword = applicationPassword;
+            _options.CredentialProvider = credentialProvider;
 
             return this;
         }

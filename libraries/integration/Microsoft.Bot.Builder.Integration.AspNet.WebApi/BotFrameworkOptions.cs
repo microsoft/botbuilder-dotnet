@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using Microsoft.Bot.Builder.Middleware;
+using Microsoft.Bot.Connector.Authentication;
 using System.Collections.Generic;
 
 namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
@@ -17,8 +18,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
         }
 
         public string RouteBaseUrl { get; set; }
-        public string AppId { get; set; }
-        public string AppPassword { get; set; }
+        public ICredentialProvider CredentialProvider { get; set; }
         public List<IMiddleware> Middleware { get => _middleware; }
     }
 }
