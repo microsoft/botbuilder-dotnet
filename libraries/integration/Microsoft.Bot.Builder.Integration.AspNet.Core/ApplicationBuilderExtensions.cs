@@ -3,11 +3,10 @@
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.Integration.AspNet.Core.Handlers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using System;
-using System.Net;
-using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 {
@@ -45,12 +44,12 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             {
                 applicationBuilder.Map(
                     paths.BasePath + paths.ProactiveMessagesPath,
-                    botProactiveAppBuilder => botProactiveAppBuilder.Run(httpContext => { httpContext.Response.StatusCode = (int)HttpStatusCode.OK; return Task.CompletedTask; }));
+                    botProactiveAppBuilder => botProactiveAppBuilder.Run(new BotProactiveMessageHandler(botFrameworkAdapter).HandleAsync));
             }
 
             applicationBuilder.Map(
                 paths.BasePath + paths.MessagesPath, 
-                botActivitiesAppBuilder => botActivitiesAppBuilder.Run(new BotActivitiesHandler(botFrameworkAdapter).HandleAsync));
+                botActivitiesAppBuilder => botActivitiesAppBuilder.Run(new BotMessageHandler(botFrameworkAdapter).HandleAsync));
 
             return applicationBuilder;
 
