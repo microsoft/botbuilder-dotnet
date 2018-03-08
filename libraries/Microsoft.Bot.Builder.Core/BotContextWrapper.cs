@@ -79,5 +79,23 @@ namespace Microsoft.Bot.Builder
         {
             return this._innerContext.Has(key);
         }
+
+        public IBotContext OnSendActivity(SendActivitiesHandler handler)
+        {
+            this._innerContext.OnSendActivity(handler);
+            return this;
+        }
+
+        public IBotContext OnUpdateActivity(UpdateActivityHandler handler)
+        {
+            this._innerContext.OnUpdateActivity(handler);
+            return this;
+        }
+
+        public IBotContext OnDeleteActivity(DeleteActivityHandler handler)
+        {
+            this._innerContext.OnDeleteActivity(handler);
+            return this;
+        }
     }
 }

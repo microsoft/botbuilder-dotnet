@@ -1,11 +1,17 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder
 {
+    public delegate Task SendActivitiesHandler(List<Activity> activities, Func<Task> next);
+    public delegate Task UpdateActivityHandler(Activity activity, Func<Task> next);
+    public delegate Task DeleteActivityHandler(ConversationReference reference, Func<Task> next);
+
     public interface IBotContext
     {
         BotAdapter Adapter { get; }
@@ -44,6 +50,9 @@ namespace Microsoft.Bot.Builder
         /// <param name="key">The key to lookup in the cache</param>
         bool Has(string key);
 
+        IBotContext OnSendActivity(SendActivitiesHandler handler);
+        IBotContext OnUpdateActivity(UpdateActivityHandler handler);
+        IBotContext OnDeleteActivity(DeleteActivityHandler handler);
     }
 
     public static partial class BotContextExtension
