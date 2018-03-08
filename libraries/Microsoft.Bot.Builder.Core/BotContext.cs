@@ -11,10 +11,6 @@ namespace Microsoft.Bot.Builder
 {
     public class BotContext : IBotContext
     {
-        public delegate Task SendActivitiesHandler(List<Activity> activities, Func<Task> next);
-        public delegate Task UpdateActivityHandler(Activity activity, Func<Task> next);
-        public delegate Task DeleteActivityHandler(ConversationReference reference, Func<Task> next);
-
         private readonly BotAdapter _adapter;
         private readonly Activity _request;
         private bool _responded = false;
@@ -29,6 +25,33 @@ namespace Microsoft.Bot.Builder
         {
             _adapter = adapter ?? throw new ArgumentNullException(nameof(adapter));
             _request = request ?? throw new ArgumentNullException(nameof(request));
+        }
+
+        public IBotContext OnSendActivity(SendActivitiesHandler handler)
+        {
+            if (handler == null)
+                throw new ArgumentNullException(nameof(handler));
+
+            _onSendActivities.Add(handler);             
+            return this;
+        }
+
+        public IBotContext OnUpdateActivity(UpdateActivityHandler handler)
+        {
+            if (handler == null)
+                throw new ArgumentNullException(nameof(handler));
+
+            _onUpdateActivity.Add(handler);
+            return this;
+        }
+
+        public IBotContext OnDeleteActivity(DeleteActivityHandler handler)
+        {
+            if (handler == null)
+                throw new ArgumentNullException(nameof(handler));
+
+            _onDeleteActivity.Add(handler);
+            return this;
         }
 
         public BotAdapter Adapter => _adapter;
