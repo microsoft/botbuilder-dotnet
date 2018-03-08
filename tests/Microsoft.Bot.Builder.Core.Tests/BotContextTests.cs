@@ -388,6 +388,28 @@ namespace Microsoft.Bot.Builder.Core.Tests
             Assert.IsTrue(adapterCalled); // Adapter was called + valided the change
         }
 
+        [TestMethod]
+        public async Task ThrowExceptionInOnSend()
+        {
+            SimpleAdapter a = new SimpleAdapter();
+            BotContext c = new BotContext(a, new Activity());
+            
+            c.OnSendActivity(async (activities, next) =>
+            {
+                throw new Exception("test");                 
+            });
+
+            try
+            {
+                await c.SendActivity(TestMessage());
+                Assert.Fail("Should not get here");
+            }
+            catch(Exception ex)
+            {
+                Assert.IsTrue(ex.Message == "test");
+            }            
+        }
+
 
         private Activity TestMessage()
         {
