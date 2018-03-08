@@ -37,6 +37,13 @@ namespace Microsoft.Bot.Builder
         /// <param name="key">The key of the value to get.</param>
         /// <returns>The value.</returns>
         object Get(string key);
+
+        /// <summary>
+        /// returns 'true' if Set has been called for a key
+        /// </summary>        
+        /// <param name="key">The key to lookup in the cache</param>
+        bool Has(string key);
+
     }
 
     public static partial class BotContextExtension

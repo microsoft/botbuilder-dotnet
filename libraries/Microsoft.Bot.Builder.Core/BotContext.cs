@@ -235,9 +235,10 @@ namespace Microsoft.Bot.Builder
         {
             if (String.IsNullOrWhiteSpace(key))
                 throw new ArgumentNullException(nameof(key));
+
             lock (_services)
             {
-                this._services[key] = value;
+                _services[key] = value;
             }
         }
 
@@ -250,12 +251,29 @@ namespace Microsoft.Bot.Builder
         {
             if (String.IsNullOrWhiteSpace(key))
                 throw new ArgumentNullException(nameof(key));
+
             object service = null;
             lock (_services)
             {
-                this._services.TryGetValue(key, out service);
+                _services.TryGetValue(key, out service);
             }
             return service;
+        }
+
+        /// <summary>
+        /// Determins if a key been set in the Cache
+        /// </summary>
+        /// <param name="key">The key of the value to get.</param>
+        /// <returns>True, if the key is found. False, if not.</returns>
+        public bool Has(string key)
+        {
+            if (String.IsNullOrWhiteSpace(key))
+                throw new ArgumentNullException(nameof(key));
+
+            lock (_services)
+            {
+                return _services.ContainsKey(key);                 
+            }
         }
 
         /// <summary>

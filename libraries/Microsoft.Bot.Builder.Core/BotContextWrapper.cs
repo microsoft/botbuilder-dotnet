@@ -73,6 +73,11 @@ namespace Microsoft.Bot.Builder
         public void Set(string key, object value)
         {
             this._innerContext.Set(key, value);
-        }        
+        }
+
+        public bool Has(string key)
+        {
+            return this._innerContext.Has(key);
+        }
     }
 }
