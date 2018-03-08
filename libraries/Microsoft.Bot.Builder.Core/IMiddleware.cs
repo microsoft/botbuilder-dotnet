@@ -9,7 +9,7 @@ namespace Microsoft.Bot.Builder
 {
     public interface IMiddleware
     {
-        Task ReceiveActivity(IBotContext context, MiddlewareSet.NextDelegate next);
+        Task OnProcessRequest(IBotContext context, MiddlewareSet.NextDelegate next);
     }
 
     public class AnonymousReceiveMiddleware : IMiddleware
@@ -21,7 +21,7 @@ namespace Microsoft.Bot.Builder
             _toCall = anonymousMethod ?? throw new ArgumentNullException(nameof(anonymousMethod));
         }
 
-        public Task ReceiveActivity(IBotContext context, NextDelegate next)
+        public Task OnProcessRequest(IBotContext context, NextDelegate next)
         {
             return _toCall(context, next);
         }

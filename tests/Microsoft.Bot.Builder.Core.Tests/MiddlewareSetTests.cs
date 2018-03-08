@@ -429,7 +429,7 @@ namespace Microsoft.Bot.Builder.Core.Tests
         {
             public bool Called { get; set; } = false;
 
-            public Task ReceiveActivity(IBotContext context, MiddlewareSet.NextDelegate next)
+            public Task OnProcessRequest(IBotContext context, MiddlewareSet.NextDelegate next)
             {
                 Called = true;
                 return next();
@@ -443,7 +443,7 @@ namespace Microsoft.Bot.Builder.Core.Tests
             {
                 _callMe = callMe;
             }
-            public Task ReceiveActivity(IBotContext context, MiddlewareSet.NextDelegate next)
+            public Task OnProcessRequest(IBotContext context, MiddlewareSet.NextDelegate next)
             {
                 _callMe();
                 // DO NOT call NEXT
@@ -458,7 +458,7 @@ namespace Microsoft.Bot.Builder.Core.Tests
             {
                 _callMe = callMe;
             }
-            public Task ReceiveActivity(IBotContext context, MiddlewareSet.NextDelegate next)
+            public Task OnProcessRequest(IBotContext context, MiddlewareSet.NextDelegate next)
             {
                 _callMe();
                 return next();

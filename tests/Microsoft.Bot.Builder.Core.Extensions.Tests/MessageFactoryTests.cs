@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.Net.Mime;
 using System.Threading.Tasks;
 
-namespace Microsoft.Bot.Builder.Tests
+namespace Microsoft.Bot.Builder.Core.Extensions.Tests
 {
     [TestClass]
     [TestCategory("Message")]
@@ -260,7 +260,8 @@ namespace Microsoft.Bot.Builder.Tests
                     {
                         new CardAction(type: "imBack", text: "red", title: "redTitle")
                     }, "Select color");
-                    ctx.Reply(activity); 
+
+                    await ctx.SendActivity((Activity)activity); 
                 }
             }
 
@@ -296,7 +297,8 @@ namespace Microsoft.Bot.Builder.Tests
                     {
                         new CardAction(type: "imBack", text: "red", title: "redTitle")
                     }, "");
-                    ctx.Reply(activity);
+
+                    await ctx.SendActivity((Activity) activity); 
                 }
             }
 

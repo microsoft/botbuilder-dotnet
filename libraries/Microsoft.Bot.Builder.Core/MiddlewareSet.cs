@@ -26,7 +26,7 @@ namespace Microsoft.Bot.Builder
             await ReceiveActivityInternal(context, _middleware, null).ConfigureAwait(false);
         }
 
-        public async Task ReceiveActivity(IBotContext context, NextDelegate next)
+        public async Task OnProcessRequest(IBotContext context, NextDelegate next)
         {
             await ReceiveActivityInternal(context, _middleware, null).ConfigureAwait(false);
             await next().ConfigureAwait(false);
@@ -75,7 +75,7 @@ namespace Microsoft.Bot.Builder
             }
 
             // Grab the current middleware, which is the 1st element in the array, and execute it            
-            await middleware.First().ReceiveActivity(context, next).ConfigureAwait(false);
+            await middleware.First().OnProcessRequest(context, next).ConfigureAwait(false);
         }
 
     }

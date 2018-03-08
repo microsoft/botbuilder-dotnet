@@ -60,7 +60,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Samples.Conne
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Core.Extensions", "libraries\Microsoft.Bot.Builder.Core.Extensions\Microsoft.Bot.Builder.Core.Extensions.csproj", "{183B3324-4CFF-477A-8EAE-73953D3E383D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Builder.Core.Tests", "tests\Microsoft.Bot.Builder.Core.Tests\Microsoft.Bot.Builder.Core.Tests.csproj", "{99100609-26D5-4BBD-ACD7-4CC810977A06}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Core.Tests", "tests\Microsoft.Bot.Builder.Core.Tests\Microsoft.Bot.Builder.Core.Tests.csproj", "{99100609-26D5-4BBD-ACD7-4CC810977A06}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Builder.Core.Extensions.Tests", "tests\Microsoft.Bot.Builder.Core.Extensions.Tests\Microsoft.Bot.Builder.Core.Extensions.Tests.csproj", "{6034B365-C87B-4A90-A8C7-F24374BFE2E7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -176,6 +178,10 @@ Global
 		{99100609-26D5-4BBD-ACD7-4CC810977A06}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{99100609-26D5-4BBD-ACD7-4CC810977A06}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{99100609-26D5-4BBD-ACD7-4CC810977A06}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6034B365-C87B-4A90-A8C7-F24374BFE2E7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6034B365-C87B-4A90-A8C7-F24374BFE2E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6034B365-C87B-4A90-A8C7-F24374BFE2E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6034B365-C87B-4A90-A8C7-F24374BFE2E7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -209,6 +215,7 @@ Global
 		{A4184239-F13F-4A09-B2D3-0B9532609248} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 		{183B3324-4CFF-477A-8EAE-73953D3E383D} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
 		{99100609-26D5-4BBD-ACD7-4CC810977A06} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
+		{6034B365-C87B-4A90-A8C7-F24374BFE2E7} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7173C9F3-A7F9-496E-9078-9156E35D6E16}

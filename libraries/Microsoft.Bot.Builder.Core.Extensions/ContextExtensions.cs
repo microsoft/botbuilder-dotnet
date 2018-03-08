@@ -9,6 +9,14 @@ namespace Microsoft.Bot.Builder.Core.Extensions
 {
     public static class ContextExtensionMethods
     {
+        public static async Task<IBotContext> Reply(this IBotContext context, string text)
+        {
+            Activity activity = context.Request.CreateReply(text);
+            activity.Type = ActivityTypes.Message;
+            await context.SendActivity(activity);
+            return context;
+        }
+
         public static async Task<IBotContext> ShowTyping(this IBotContext context)
         {
             Activity activity = context.Request.CreateReply();
