@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Builder.Middleware;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.Bot.Builder.Tests
+namespace Microsoft.Bot.Builder.Core.Tests
 {
     [TestClass]
     [TestCategory("Middleware")]
-    public class Middleware_BracketingTest
+    public class BotAdapterBracketingTest
     {
 
         /// <summary>
@@ -33,7 +32,8 @@ namespace Microsoft.Bot.Builder.Tests
 
             async Task Echo(IBotContext ctx)
             {
-                ctx.Reply("ECHO:" + ctx.Request.AsMessageActivity().Text);
+                string toEcho = "ECHO:" + ctx.Request.AsMessageActivity().Text;
+                await ctx.SendActivity(ctx.Request.CreateReply(toEcho)); 
             }
 
             await new TestFlow(adapter, Echo)
@@ -60,7 +60,8 @@ namespace Microsoft.Bot.Builder.Tests
 
             async Task EchoWithException(IBotContext ctx)
             {
-                ctx.Reply("ECHO:" + ctx.Request.AsMessageActivity().Text);
+                string toEcho = "ECHO:" + ctx.Request.AsMessageActivity().Text;
+                await ctx.SendActivity(ctx.Request.CreateReply(toEcho));
                 throw new Exception(uniqueId);
             }
 
@@ -73,32 +74,31 @@ namespace Microsoft.Bot.Builder.Tests
                 .StartTest();
         }
 
-        public class CatchExceptionMiddleware : IMiddleware, IReceiveActivity
+        public class CatchExceptionMiddleware : IMiddleware
         {
-            public async Task ReceiveActivity(IBotContext context, MiddlewareSet.NextDelegate next)
+            public async Task OnProcessRequest(IBotContext context, MiddlewareSet.NextDelegate next)
             {
-                context.Reply("BEFORE");
-
+                await context.SendActivity(context.Request.CreateReply("BEFORE"));
                 try
                 {
                     await next();
                 }
                 catch (Exception ex)
                 {
-                    context.Reply("CAUGHT:" + ex.Message);
+                    await context.SendActivity(context.Request.CreateReply("CAUGHT:" + ex.Message));                    
                 }
 
-                context.Reply("AFTER");
-            }
+                await context.SendActivity(context.Request.CreateReply("AFTER"));
+            }            
         }
 
-        public class BeforeAFterMiddlware : IMiddleware, IReceiveActivity
+        public class BeforeAFterMiddlware : IMiddleware
         {
-            public async Task ReceiveActivity(IBotContext context, MiddlewareSet.NextDelegate next)
+            public async Task OnProcessRequest(IBotContext context, MiddlewareSet.NextDelegate next)
             {
-                context.Reply("BEFORE");
+                await context.SendActivity(context.Request.CreateReply("BEFORE"));
                 await next();
-                context.Reply("AFTER");
+                await context.SendActivity(context.Request.CreateReply("AFTER"));
             }
         }
     }

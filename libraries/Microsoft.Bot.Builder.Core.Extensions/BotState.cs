@@ -14,8 +14,6 @@ namespace Microsoft.Bot.Builder.Core.Extensions
         public bool LastWriterWins { get; set; } = true;
     }
 
-    //Todo: This is not right
-
     /// <summary>
     /// Abstract Base class which manages details of auto loading/saving of BotState
     /// </summary>
@@ -42,33 +40,17 @@ namespace Microsoft.Bot.Builder.Core.Extensions
             _settings = settings ?? new StateSettings();
         }
 
-        public async Task ContextCreated(IBotContext context, MiddlewareSet.NextDelegate next)
+        public async Task OnProcessRequest(IBotContext context, MiddlewareSet.NextDelegate next)
         {
             await Read(context).ConfigureAwait(false);
             await next().ConfigureAwait(false);
-        }
-
-        public async Task ReceiveActivity(IBotContext context, MiddlewareSet.NextDelegate next)
-        {
-            if (_settings.WriteBeforeSend)
-            {
-                await Write(context).ConfigureAwait(false);
-            }
-
-            await next().ConfigureAwait(false);
-
-            if (!_settings.WriteBeforeSend)
-            {
-                await Write(context).ConfigureAwait(false);
-            }
-
+            await Write(context).ConfigureAwait(false);
         }
 
         protected virtual async Task<StoreItems> Read(IBotContext context)
         {
             var key = this._keyDelegate(context);
-            var keys = new List<String>();
-            keys.Add(key);
+            var keys = new List<String> { key };
             var items = await _storage.Read(keys.ToArray());
             var state = items.Get<StateT>(key);
             if (state == null)
@@ -100,7 +82,6 @@ namespace Microsoft.Bot.Builder.Core.Extensions
 
             await _storage.Write(changes).ConfigureAwait(false);
         }
-
     }
 
     /// <summary>
@@ -142,7 +123,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions
                 (context) => $"user/{context.Request.ChannelId}/{context.Request.From.Id}")
         {
         }
-        
+
         /// <summary>
         /// get the value of the ConversationState from the context
         /// </summary>

@@ -2,15 +2,15 @@
 // Licensed under the MIT License.
 
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Storage;
+using Microsoft.Bot.Builder.Core.Extensions; 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.Bot.Builder.Tests
+namespace Microsoft.Bot.Builder.Core.Extensions.Tests
 {
     [TestClass]
     [TestCategory("Storage")]
     [TestCategory("Storage - Memory")]
-    public class MemoryStorageTests : Storage_BaseTests
+    public class MemoryStorageTests : StorageBaseTests
     {
         private IStorage storage;
 
@@ -58,21 +58,4 @@ namespace Microsoft.Bot.Builder.Tests
             await base._typedSerialization(this.storage);
         }
     }
-
-    public class PocoItem
-    {
-        public string Id { get; set; }
-
-        public int Count { get; set; }
-    }
-
-    public class PocoStoreItem : IStoreItem
-    {
-        public string eTag { get; set; }
-
-        public string Id { get; set; }
-
-        public int Count { get; set; }
-    }
-
 }

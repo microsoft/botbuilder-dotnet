@@ -6,9 +6,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.Bot.Builder.Tests
+namespace Microsoft.Bot.Builder.Core.Extensions.Tests
 {
-    public class Storage_BaseTests
+    public class StorageBaseTests
     {
         protected async Task _readUnknownTest(IStorage storage)
         {
@@ -217,5 +217,21 @@ namespace Microsoft.Bot.Builder.Tests
             StoreItems result2 = await storage.Read("delete1");
             Assert.IsNull(result2["delete1"], "delete1 should be null");
         }
+    }
+
+    public class PocoItem
+    {
+        public string Id { get; set; }
+
+        public int Count { get; set; }
+    }
+
+    public class PocoStoreItem : IStoreItem
+    {
+        public string eTag { get; set; }
+
+        public string Id { get; set; }
+
+        public int Count { get; set; }
     }
 }

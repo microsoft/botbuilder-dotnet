@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Schema;
@@ -47,8 +45,10 @@ namespace Microsoft.Bot.Builder.Core.Tests
         [ExpectedException(typeof(ArgumentException))]
         public async Task UnableToSetRespondedToFalse()
         {
-            BotContext c = new BotContext(new TestAdapter(), new Activity());
-            c.Responded = false; // should throw
+            BotContext c = new BotContext(new TestAdapter(), new Activity())
+            {
+                Responded = false // should throw
+            };
             Assert.Fail("Should have thrown");
         }
 
@@ -113,7 +113,7 @@ namespace Microsoft.Bot.Builder.Core.Tests
         [TestMethod]
         public async Task RequestIsSet()
         {
-            BotContext c = new BotContext(new SimpleAdapter(), TestMessage());
+            BotContext c = new BotContext(new SimpleAdapter(), TestMessage.Message());
             Assert.IsTrue(c.Request.Id == "1234");
         }
 
@@ -123,7 +123,7 @@ namespace Microsoft.Bot.Builder.Core.Tests
             SimpleAdapter a = new SimpleAdapter();
             BotContext c = new BotContext(a, new Activity());
             Assert.IsFalse(c.Responded);
-            await c.SendActivity(TestMessage());
+            await c.SendActivity(TestMessage.Message());
             Assert.IsTrue(c.Responded);            
         }
 
@@ -141,7 +141,7 @@ namespace Microsoft.Bot.Builder.Core.Tests
 
             SimpleAdapter a = new SimpleAdapter(ValidateResponses);
             BotContext c = new BotContext(a, new Activity());            
-            await c.SendActivity(TestMessage());
+            await c.SendActivity(TestMessage.Message());
             Assert.IsTrue(foundActivity);
         }
 
@@ -159,7 +159,7 @@ namespace Microsoft.Bot.Builder.Core.Tests
                await next(); 
             });
 
-            await c.SendActivity(TestMessage());
+            await c.SendActivity(TestMessage.Message());
 
             Assert.IsTrue(count == 1);
         }
@@ -185,7 +185,7 @@ namespace Microsoft.Bot.Builder.Core.Tests
                 // Do not call next. 
             });
 
-            await c.SendActivity(TestMessage());
+            await c.SendActivity(TestMessage.Message());
 
             Assert.IsTrue(count == 1);
             Assert.IsFalse(responsesSent, "Responses made it to the adapter.");
@@ -215,7 +215,7 @@ namespace Microsoft.Bot.Builder.Core.Tests
                 await next(); 
             });
 
-            await c.SendActivity(TestMessage());
+            await c.SendActivity(TestMessage.Message());
 
             // Intercepted the message, changed it, and sent it on to the Adapter
             Assert.IsTrue(foundIt);            
@@ -235,7 +235,7 @@ namespace Microsoft.Bot.Builder.Core.Tests
 
             SimpleAdapter a = new SimpleAdapter(ValidateUpdate);
             BotContext c = new BotContext(a, new Activity());
-            await c.UpdateActivity(TestMessage());
+            await c.UpdateActivity(TestMessage.Message());
             Assert.IsTrue(foundActivity);
         }
 
@@ -261,7 +261,7 @@ namespace Microsoft.Bot.Builder.Core.Tests
                 wasCalled = true;
                 await next();
             });
-            await c.UpdateActivity(TestMessage());
+            await c.UpdateActivity(TestMessage.Message());
             Assert.IsTrue(wasCalled);            
             Assert.IsTrue(foundActivity);
         }
@@ -287,7 +287,7 @@ namespace Microsoft.Bot.Builder.Core.Tests
                 // Do Not Call Next
             });
 
-            await c.UpdateActivity(TestMessage());
+            await c.UpdateActivity(TestMessage.Message());
             Assert.IsTrue(wasCalled); // Interceptor was called
             Assert.IsFalse(adapterCalled); // Adapter was not                        
         }
@@ -313,7 +313,7 @@ namespace Microsoft.Bot.Builder.Core.Tests
                 await next(); 
             });
 
-            await c.UpdateActivity(TestMessage());
+            await c.UpdateActivity(TestMessage.Message());
             Assert.IsTrue(adapterCalled); // Adapter was not                        
         }
 
@@ -330,7 +330,7 @@ namespace Microsoft.Bot.Builder.Core.Tests
             }
 
             SimpleAdapter a = new SimpleAdapter(ValidateDelete);
-            BotContext c = new BotContext(a, TestMessage()); 
+            BotContext c = new BotContext(a, TestMessage.Message()); 
             await c.DeleteActivity("12345"); 
             Assert.IsTrue(deleteCalled);
         }
@@ -401,7 +401,7 @@ namespace Microsoft.Bot.Builder.Core.Tests
 
             try
             {
-                await c.SendActivity(TestMessage());
+                await c.SendActivity(TestMessage.Message());
                 Assert.Fail("Should not get here");
             }
             catch(Exception ex)
@@ -411,67 +411,8 @@ namespace Microsoft.Bot.Builder.Core.Tests
         }
 
 
-        private Activity TestMessage()
-        {
-            Activity a = new Activity
-            {
-                Type = ActivityTypes.Message,
-                Id = "1234",
-                Text = "test",
-                From = new ChannelAccount()
-                {
-                    Id = "user",
-                    Name = "User Name"
-                },
-                Recipient = new ChannelAccount()
-                {
-                    Id = "bot",
-                    Name = "Bot Name"
-                },
-                Conversation = new ConversationAccount()
-                {
-                    Id = "convo",
-                    Name = "Convo Name"
-                },
-                ChannelId = "UnitTest",
-                ServiceUrl = "https://example.org"
-            };
-            return a;
-        }
 
-        public class SimpleAdapter : BotAdapter
-        {
-            private readonly Action<Activity[]> _callOnSend = null;
-            private readonly Action<Activity> _callOnUpdate = null;
-            private readonly Action<ConversationReference> _callOnDelete = null;
-
-            public SimpleAdapter() { }
-            public SimpleAdapter(Action<Activity[]> callOnSend) { _callOnSend = callOnSend; }
-            public SimpleAdapter(Action<Activity> callOnUpdate) { _callOnUpdate = callOnUpdate; }
-            public SimpleAdapter(Action<ConversationReference> callOnDelete) { _callOnDelete = callOnDelete; }
-
-            public async override Task DeleteActivity(ConversationReference reference)
-            {
-                Assert.IsNotNull(reference, "SimpleAdapter.deleteActivity: missing reference");                
-                _callOnDelete?.Invoke(reference);
-            }
-
-            public async override Task SendActivity(params Activity[] activities)
-            {
-                Assert.IsNotNull(activities, "SimpleAdapter.deleteActivity: missing reference");
-                Assert.IsTrue(activities.Count() > 0, "SimpleAdapter.sendActivities: empty activities array.");
-
-                _callOnSend?.Invoke(activities);
-            }
-
-            public async override Task<ResourceResponse> UpdateActivity(Activity activity)
-            {
-                Assert.IsNotNull(activity, "SimpleAdapter.updateActivity: missing activity");
-                _callOnUpdate?.Invoke(activity); 
-                return new ResourceResponse("testId");
-            }
-        }
-
+        
 
         public async Task MyBotLogic(IBotContext context)
         {

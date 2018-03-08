@@ -2,13 +2,11 @@
 // Licensed under the MIT License.
 
 using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Builder.Middleware;
-using Microsoft.Bot.Builder.Storage;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Threading.Tasks;
 
-namespace Microsoft.Bot.Builder.Tests
+namespace Microsoft.Bot.Builder.Core.Extensions.Tests
 {
     public class TestState : IStoreItem
     {
@@ -23,7 +21,7 @@ namespace Microsoft.Bot.Builder.Tests
 
     [TestClass]
     [TestCategory("State Management")]
-    public class State_BasicTests
+    public class BotStateTests
     {
         [TestMethod]
         public async Task State_DoNOTRememberContextState()
@@ -55,10 +53,10 @@ namespace Microsoft.Bot.Builder.Tests
                         {
                             case "set value":
                                 userState.Value = "test";
-                                context.Reply("value saved");
+                                await context.Reply("value saved");
                                 break;
                             case "get value":
-                                context.Reply(userState.Value);
+                                await context.Reply(userState.Value);
                                 break;
                         }
                     }
@@ -109,10 +107,10 @@ namespace Microsoft.Bot.Builder.Tests
                         {
                             case "set value":
                                 conversationState.Value = "test";
-                                context.Reply("value saved");
+                                await context.Reply("value saved");
                                 break;
                             case "get value":
-                                context.Reply(conversationState.Value);
+                                await context.Reply(conversationState.Value);
                                 break;
                         }
                     }
@@ -163,10 +161,10 @@ namespace Microsoft.Bot.Builder.Tests
                         {
                             case "set value":
                                 customState.CustomString = testGuid;
-                                context.Reply("value saved");
+                                await context.Reply("value saved");
                                 break;
                             case "get value":
-                                context.Reply(customState.CustomString);
+                                await context.Reply(customState.CustomString);
                                 break;
                         }
                     }
@@ -196,10 +194,10 @@ namespace Microsoft.Bot.Builder.Tests
                         {
                             case "set value":
                                 conversation.Name = "test";
-                                context.Reply("value saved");
+                                await context.Reply("value saved");
                                 break;
                             case "get value":
-                                context.Reply(conversation.GetType().Name);
+                                await context.Reply(conversation.GetType().Name);
                                 break;
                         }
                     }
