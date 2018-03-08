@@ -1,0 +1,489 @@
+{
+  "luis_schema_version": "2.1.0",
+  "versionId": "0.1",
+  "name": "Contoso App",
+  "desc": "Default Intents for Azure Bot Service V2",
+  "culture": "en-us",
+  "intents": [
+    {
+      "name": "Cancel"
+    },
+    {
+      "name": "Delivery"
+    },
+    {
+      "name": "Greeting"
+    },
+    {
+      "name": "Help"
+    },
+    {
+      "name": "None"
+    },
+    {
+      "name": "SpecifyName"
+    },
+    {
+      "name": "Travel"
+    }
+  ],
+  "entities": [
+    {
+      "name": "Name"
+    },
+    {
+      "name": "State"
+    },
+    {
+      "name": "City",
+      "children": [
+        "To",
+        "From"
+      ]
+    }
+  ],
+  "composites": [
+    {
+      "name": "Address",
+      "children": [
+        "number",
+        "State"
+      ]
+    }
+  ],
+  "closedLists": [
+    {
+      "name": "Airline",
+      "subLists": [
+        {
+          "canonicalForm": "Delta",
+          "list": [
+            "DL"
+          ]
+        },
+        {
+          "canonicalForm": "Alaska",
+          "list": []
+        },
+        {
+          "canonicalForm": "United",
+          "list": []
+        },
+        {
+          "canonicalForm": "Virgin",
+          "list": [
+            "DL"
+          ]
+        }
+      ]
+    }
+  ],
+  "bing_entities": [
+    "datetimeV2",
+    "money",
+    "number"
+  ],
+  "model_features": [],
+  "regex_features": [],
+  "utterances": [
+    {
+      "text": "abort",
+      "intent": "Cancel",
+      "entities": []
+    },
+    {
+      "text": "cancel",
+      "intent": "Cancel",
+      "entities": []
+    },
+    {
+      "text": "delivery address is in 45654 ga",
+      "intent": "Delivery",
+      "entities": [
+        {
+          "entity": "Address",
+          "startPos": 23,
+          "endPos": 30
+        },
+        {
+          "entity": "State",
+          "startPos": 29,
+          "endPos": 30
+        }
+      ]
+    },
+    {
+      "text": "disregard",
+      "intent": "Cancel",
+      "entities": []
+    },
+    {
+      "text": "do not do it",
+      "intent": "Cancel",
+      "entities": []
+    },
+    {
+      "text": "do not do that",
+      "intent": "Cancel",
+      "entities": []
+    },
+    {
+      "text": "don't",
+      "intent": "Cancel",
+      "entities": []
+    },
+    {
+      "text": "don't do it",
+      "intent": "Cancel",
+      "entities": []
+    },
+    {
+      "text": "don't do that",
+      "intent": "Cancel",
+      "entities": []
+    },
+    {
+      "text": "good afternoon",
+      "intent": "Greeting",
+      "entities": []
+    },
+    {
+      "text": "good evening",
+      "intent": "Greeting",
+      "entities": []
+    },
+    {
+      "text": "good morning",
+      "intent": "Greeting",
+      "entities": []
+    },
+    {
+      "text": "good night",
+      "intent": "Greeting",
+      "entities": []
+    },
+    {
+      "text": "he is yousef",
+      "intent": "SpecifyName",
+      "entities": [
+        {
+          "entity": "Name",
+          "startPos": 6,
+          "endPos": 11
+        }
+      ]
+    },
+    {
+      "text": "hello",
+      "intent": "Greeting",
+      "entities": []
+    },
+    {
+      "text": "hello bot",
+      "intent": "Greeting",
+      "entities": []
+    },
+    {
+      "text": "help",
+      "intent": "Help",
+      "entities": []
+    },
+    {
+      "text": "help me",
+      "intent": "Help",
+      "entities": []
+    },
+    {
+      "text": "help me please",
+      "intent": "Help",
+      "entities": []
+    },
+    {
+      "text": "help please",
+      "intent": "Help",
+      "entities": []
+    },
+    {
+      "text": "hi",
+      "intent": "Greeting",
+      "entities": []
+    },
+    {
+      "text": "hi bot",
+      "intent": "Greeting",
+      "entities": []
+    },
+    {
+      "text": "his name is tom",
+      "intent": "SpecifyName",
+      "entities": [
+        {
+          "entity": "Name",
+          "startPos": 12,
+          "endPos": 14
+        }
+      ]
+    },
+    {
+      "text": "hiya",
+      "intent": "Greeting",
+      "entities": []
+    },
+    {
+      "text": "how are you",
+      "intent": "Greeting",
+      "entities": []
+    },
+    {
+      "text": "how are you doing today?",
+      "intent": "Greeting",
+      "entities": []
+    },
+    {
+      "text": "how are you doing?",
+      "intent": "Greeting",
+      "entities": []
+    },
+    {
+      "text": "how are you today?",
+      "intent": "Greeting",
+      "entities": []
+    },
+    {
+      "text": "i am lili",
+      "intent": "SpecifyName",
+      "entities": [
+        {
+          "entity": "Name",
+          "startPos": 5,
+          "endPos": 8
+        }
+      ]
+    },
+    {
+      "text": "i am stuck",
+      "intent": "Help",
+      "entities": []
+    },
+    {
+      "text": "i want this in 98052 wa",
+      "intent": "Delivery",
+      "entities": [
+        {
+          "entity": "Address",
+          "startPos": 15,
+          "endPos": 22
+        },
+        {
+          "entity": "State",
+          "startPos": 21,
+          "endPos": 22
+        }
+      ]
+    },
+    {
+      "text": "i want to arrive at newyork",
+      "intent": "Travel",
+      "entities": [
+        {
+          "entity": "City::To",
+          "startPos": 20,
+          "endPos": 26
+        }
+      ]
+    },
+    {
+      "text": "i want to fly out of seattle",
+      "intent": "Travel",
+      "entities": [
+        {
+          "entity": "City::From",
+          "startPos": 21,
+          "endPos": 27
+        }
+      ]
+    },
+    {
+      "text": "i want to travel",
+      "intent": "Travel",
+      "entities": []
+    },
+    {
+      "text": "i want to travel from seattle to dallas",
+      "intent": "Travel",
+      "entities": [
+        {
+          "entity": "City::From",
+          "startPos": 22,
+          "endPos": 28
+        },
+        {
+          "entity": "City::To",
+          "startPos": 33,
+          "endPos": 38
+        }
+      ]
+    },
+    {
+      "text": "i would like to cancel",
+      "intent": "Cancel",
+      "entities": []
+    },
+    {
+      "text": "i'll be leaving from cairo to paris",
+      "intent": "Travel",
+      "entities": [
+        {
+          "entity": "City::From",
+          "startPos": 21,
+          "endPos": 25
+        },
+        {
+          "entity": "City::To",
+          "startPos": 30,
+          "endPos": 34
+        }
+      ]
+    },
+    {
+      "text": "i'm stuck",
+      "intent": "Help",
+      "entities": []
+    },
+    {
+      "text": "my name is emad",
+      "intent": "SpecifyName",
+      "entities": [
+        {
+          "entity": "Name",
+          "startPos": 11,
+          "endPos": 14
+        }
+      ]
+    },
+    {
+      "text": "my water bottle is green.",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "never mind",
+      "intent": "Cancel",
+      "entities": []
+    },
+    {
+      "text": "please cancel",
+      "intent": "Cancel",
+      "entities": []
+    },
+    {
+      "text": "please deliver to 98033 wa",
+      "intent": "Delivery",
+      "entities": [
+        {
+          "entity": "Address",
+          "startPos": 18,
+          "endPos": 25
+        },
+        {
+          "entity": "State",
+          "startPos": 24,
+          "endPos": 25
+        }
+      ]
+    },
+    {
+      "text": "please disregard",
+      "intent": "Cancel",
+      "entities": []
+    },
+    {
+      "text": "please help me",
+      "intent": "Help",
+      "entities": []
+    },
+    {
+      "text": "please stop",
+      "intent": "Cancel",
+      "entities": []
+    },
+    {
+      "text": "stop",
+      "intent": "Cancel",
+      "entities": []
+    },
+    {
+      "text": "the address is 66666 fl",
+      "intent": "Delivery",
+      "entities": [
+        {
+          "entity": "Address",
+          "startPos": 15,
+          "endPos": 22
+        },
+        {
+          "entity": "State",
+          "startPos": 21,
+          "endPos": 22
+        }
+      ]
+    },
+    {
+      "text": "there is a large deep dish pizza in your future.",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "this is chris",
+      "intent": "SpecifyName",
+      "entities": [
+        {
+          "entity": "Name",
+          "startPos": 8,
+          "endPos": 12
+        }
+      ]
+    },
+    {
+      "text": "this is requested in 55555 ny",
+      "intent": "Delivery",
+      "entities": [
+        {
+          "entity": "State",
+          "startPos": 27,
+          "endPos": 28
+        }
+      ]
+    },
+    {
+      "text": "what can i say",
+      "intent": "Help",
+      "entities": []
+    },
+    {
+      "text": "what can you do",
+      "intent": "Help",
+      "entities": []
+    },
+    {
+      "text": "what can you help me with",
+      "intent": "Help",
+      "entities": []
+    },
+    {
+      "text": "what do i do now?",
+      "intent": "Help",
+      "entities": []
+    },
+    {
+      "text": "what do i do?",
+      "intent": "Help",
+      "entities": []
+    },
+    {
+      "text": "why doesn't this work ?",
+      "intent": "Help",
+      "entities": []
+    }
+  ]
+}
