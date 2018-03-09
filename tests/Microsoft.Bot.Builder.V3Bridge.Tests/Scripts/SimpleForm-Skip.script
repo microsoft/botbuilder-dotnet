@@ -1,0 +1,21 @@
+en-us
+{"Date":"0001-01-01T00:00:00","Float":4.3,"Integer":0,"SomeChoices":0,"Text":null}
+[]
+FromUser:"hi"
+1
+ToUserText:"Please enter text "
+State:{"Date":"0001-01-01T00:00:00","Float":4.3,"Integer":0,"SomeChoices":0,"Text":null}
+FromUser:"some text"
+1
+ToUserText:"Please enter a number for integer (current choice: 0)"
+State:{"Date":"0001-01-01T00:00:00","Float":4.3,"Integer":0,"SomeChoices":0,"Text":"some text"}
+FromUser:"99"
+1
+ToUserButtons:[{"contentType":"application/vnd.microsoft.card.hero","contentUrl":null,"content":{"title":"","subtitle":null,"text":"Please select a some choices ","images":null,"buttons":[{"type":"imBack","title":"One","image":null,"text":null,"displayText":null,"value":"One"},{"type":"imBack","title":"Two","image":null,"text":null,"displayText":null,"value":"Two"},{"type":"imBack","title":"Three","image":null,"text":null,"displayText":null,"value":"Three"},{"type":"imBack","title":"Four","image":null,"text":null,"displayText":null,"value":"Four"}],"tap":null},"name":null,"thumbnailUrl":null}]
+State:{"Date":"0001-01-01T00:00:00","Float":4.3,"Integer":99,"SomeChoices":0,"Text":"some text"}
+FromUser:"word"
+1
+ToUserText:"Please enter a date and time for date "
+State:{"Date":"0001-01-01T00:00:00","Float":4.3,"Integer":99,"SomeChoices":4,"Text":"some text"}
+FromUser:"quit"
+Exception:Form quit.

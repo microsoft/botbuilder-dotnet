@@ -1,0 +1,65 @@
+en-us
+{"Date":"0001-01-01T00:00:00","Float":null,"Integer":0,"SomeChoices":0,"Text":null}
+[]
+FromUser:"Hi"
+1
+ToUserText:"Please enter text "
+State:{"Date":"0001-01-01T00:00:00","Float":null,"Integer":0,"SomeChoices":0,"Text":null}
+FromUser:"?"
+2
+ToUserText:"* You are filling in the text field. Possible responses:\r\n* You can enter anything (use \"'s to force string).\r\n* Back: Go back to the previous question.\r\n* Help: Show the kinds of responses you can enter.\r\n* Quit: Quit the form without completing it.\r\n* Reset: Start over filling in the form. (With defaults from your previous entries.)\r\n* Status: Show your progress in filling in the form so far.\r\n* You can switch to another field by entering its name. (Text, Integer, Float, Some Choices, or Date). "
+ToUserText:"Please enter text "
+State:{"Date":"0001-01-01T00:00:00","Float":null,"Integer":0,"SomeChoices":0,"Text":null}
+FromUser:"some text here"
+1
+ToUserText:"Please enter a number for integer (current choice: 0)"
+State:{"Date":"0001-01-01T00:00:00","Float":null,"Integer":0,"SomeChoices":0,"Text":"some text here"}
+FromUser:"?"
+2
+ToUserText:"* You are filling in the integer field. Possible responses:\r\n* You can enter a number, Current Choice('c').\r\n* Back: Go back to the previous question.\r\n* Help: Show the kinds of responses you can enter.\r\n* Quit: Quit the form without completing it.\r\n* Reset: Start over filling in the form. (With defaults from your previous entries.)\r\n* Status: Show your progress in filling in the form so far.\r\n* You can switch to another field by entering its name. (Text, Integer, Float, Some Choices, or Date). "
+ToUserText:"Please enter a number for integer (current choice: 0)"
+State:{"Date":"0001-01-01T00:00:00","Float":null,"Integer":0,"SomeChoices":0,"Text":"some text here"}
+FromUser:"99"
+1
+ToUserText:"Please enter a number for float "
+State:{"Date":"0001-01-01T00:00:00","Float":null,"Integer":99,"SomeChoices":0,"Text":"some text here"}
+FromUser:"back"
+1
+ToUserText:"Please enter a number for integer (current choice: 99)"
+State:{"Date":"0001-01-01T00:00:00","Float":null,"Integer":99,"SomeChoices":0,"Text":"some text here"}
+FromUser:"c"
+1
+ToUserText:"Please enter a number for float "
+State:{"Date":"0001-01-01T00:00:00","Float":null,"Integer":99,"SomeChoices":0,"Text":"some text here"}
+FromUser:"?"
+2
+ToUserText:"* You are filling in the float field. Possible responses:\r\n* Please enter a number.\r\n* Back: Go back to the previous question.\r\n* Help: Show the kinds of responses you can enter.\r\n* Quit: Quit the form without completing it.\r\n* Reset: Start over filling in the form. (With defaults from your previous entries.)\r\n* Status: Show your progress in filling in the form so far.\r\n* You can switch to another field by entering its name. (Text, Integer, Float, Some Choices, or Date). "
+ToUserText:"Please enter a number for float "
+State:{"Date":"0001-01-01T00:00:00","Float":null,"Integer":99,"SomeChoices":0,"Text":"some text here"}
+FromUser:"1.5"
+1
+ToUserButtons:[{"contentType":"application/vnd.microsoft.card.hero","contentUrl":null,"content":{"title":"","subtitle":null,"text":"Please select a some choices ","images":null,"buttons":[{"type":"imBack","title":"One","image":null,"text":null,"displayText":null,"value":"One"},{"type":"imBack","title":"Two","image":null,"text":null,"displayText":null,"value":"Two"},{"type":"imBack","title":"Three","image":null,"text":null,"displayText":null,"value":"Three"},{"type":"imBack","title":"Four","image":null,"text":null,"displayText":null,"value":"Four"}],"tap":null},"name":null,"thumbnailUrl":null}]
+State:{"Date":"0001-01-01T00:00:00","Float":1.5,"Integer":99,"SomeChoices":0,"Text":"some text here"}
+FromUser:"?"
+2
+ToUserText:"* You are filling in the some choices field. Possible responses:\r\n* You can enter a number 1-4 or words from the descriptions. (One, Two, Three, or Four)\r\n* Back: Go back to the previous question.\r\n* Help: Show the kinds of responses you can enter.\r\n* Quit: Quit the form without completing it.\r\n* Reset: Start over filling in the form. (With defaults from your previous entries.)\r\n* Status: Show your progress in filling in the form so far.\r\n* You can switch to another field by entering its name. (Text, Integer, Float, Some Choices, or Date). "
+ToUserButtons:[{"contentType":"application/vnd.microsoft.card.hero","contentUrl":null,"content":{"title":"","subtitle":null,"text":"Please select a some choices ","images":null,"buttons":[{"type":"imBack","title":"One","image":null,"text":null,"displayText":null,"value":"One"},{"type":"imBack","title":"Two","image":null,"text":null,"displayText":null,"value":"Two"},{"type":"imBack","title":"Three","image":null,"text":null,"displayText":null,"value":"Three"},{"type":"imBack","title":"Four","image":null,"text":null,"displayText":null,"value":"Four"}],"tap":null},"name":null,"thumbnailUrl":null}]
+State:{"Date":"0001-01-01T00:00:00","Float":1.5,"Integer":99,"SomeChoices":0,"Text":"some text here"}
+FromUser:"one"
+1
+ToUserText:"Please enter a date and time for date "
+State:{"Date":"0001-01-01T00:00:00","Float":1.5,"Integer":99,"SomeChoices":1,"Text":"some text here"}
+FromUser:"help"
+2
+ToUserText:"* You are filling in the date field. Possible responses:\r\n* Please enter a date or time expression.\r\n* Back: Go back to the previous question.\r\n* Help: Show the kinds of responses you can enter.\r\n* Quit: Quit the form without completing it.\r\n* Reset: Start over filling in the form. (With defaults from your previous entries.)\r\n* Status: Show your progress in filling in the form so far.\r\n* You can switch to another field by entering its name. (Text, Integer, Float, Some Choices, or Date). "
+ToUserText:"Please enter a date and time for date "
+State:{"Date":"0001-01-01T00:00:00","Float":1.5,"Integer":99,"SomeChoices":1,"Text":"some text here"}
+FromUser:"status"
+2
+ToUserText:"* Text: some text here\r\n* Integer: 99\r\n* Float: 1.5\r\n* Some Choices: One\r\n* Date: Unspecified\r\n"
+ToUserText:"Please enter a date and time for date "
+State:{"Date":"0001-01-01T00:00:00","Float":1.5,"Integer":99,"SomeChoices":1,"Text":"some text here"}
+FromUser:"1/1/2016"
+0
+State:{"Date":"2016-01-01T00:00:00","Float":1.5,"Integer":99,"SomeChoices":1,"Text":"some text here"}
+Result: {"Text":"some text here","Integer":99,"Float":1.5,"SomeChoices":1,"Date":"2016-01-01T00:00:00"}

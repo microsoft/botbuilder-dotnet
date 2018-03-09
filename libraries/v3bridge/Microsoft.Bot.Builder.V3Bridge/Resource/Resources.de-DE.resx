@@ -1,0 +1,271 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="CommandBack" xml:space="preserve">
+    <value>Zurück</value>
+  </data>
+  <data name="CommandBackHelp" xml:space="preserve">
+    <value>Zurück: Gehe zurück zum letzten Feld.</value>
+  </data>
+  <data name="CommandBackTerms" xml:space="preserve">
+    <value>zurück;gehe zurück;gehe rückwärts;rückwärts</value>
+  </data>
+  <data name="CommandHelp" xml:space="preserve">
+    <value>Hilfe</value>
+  </data>
+  <data name="CommandHelpHelp" xml:space="preserve">
+    <value>Hilfe: Zeigt die verschiedenen Möglichkeiten die du eingeben kannst.</value>
+  </data>
+  <data name="CommandHelpTerms" xml:space="preserve">
+    <value>hilfe;möglichkeiten;\?</value>
+  </data>
+  <data name="CommandQuit" xml:space="preserve">
+    <value>Stop</value>
+  </data>
+  <data name="CommandQuitHelp" xml:space="preserve">
+    <value>Stop: Beendet das Formular ohne es zu vervollständigen.</value>
+  </data>
+  <data name="CommandQuitTerms" xml:space="preserve">
+    <value>stop;halt;tschüss</value>
+  </data>
+  <data name="CommandReset" xml:space="preserve">
+    <value>Neu starten</value>
+  </data>
+  <data name="CommandResetHelp" xml:space="preserve">
+    <value>Neu starten: Das Formular nochmal von Anfang an starten. (Mit den Standardwerten von deinen früheren Eingaben.)</value>
+  </data>
+  <data name="CommandResetTerms" xml:space="preserve">
+    <value>neu starten;reset;neu</value>
+  </data>
+  <data name="CommandStatus" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="CommandStatusHelp" xml:space="preserve">
+    <value>Status: Zeigt deinen jetztigen Stand beim Ausfüllen des Formulars.</value>
+  </data>
+  <data name="CommandStatusTerms" xml:space="preserve">
+    <value>status;stand;fortschritt;ergebnis</value>
+  </data>
+  <data name="Confirmation" xml:space="preserve">
+    <value>Bestätigung</value>
+  </data>
+  <data name="ConfirmChoiceFormat" xml:space="preserve">
+    <value>{1}</value>
+    <comment>0-number, 1-description</comment>
+  </data>
+  <data name="DefaultChoiceFormat" xml:space="preserve">
+    <value>{0}. {1}</value>
+    <comment>0-number, 1-description</comment>
+  </data>
+  <data name="DefaultChoiceLastSeparator" xml:space="preserve">
+    <value>,oder </value>
+  </data>
+  <data name="DefaultChoiceSeparator" xml:space="preserve">
+    <value>,</value>
+  </data>
+  <data name="DefaultLastSeparator" xml:space="preserve">
+    <value>,und </value>
+  </data>
+  <data name="DefaultSeparator" xml:space="preserve">
+    <value>,</value>
+  </data>
+  <data name="LanguageArticles" xml:space="preserve">
+    <value>der;die;das;ein;eine;eines;einer</value>
+  </data>
+  <data name="LanguageStopWords" xml:space="preserve">
+    <value>aber;als;am;an;auch;auf;aus;bei;bin;bis;bist;da;dadurch;daher;darum;das;daß;dass;dein;deine;dem;den;der;des;dessen;deshalb;die;dies;dieser;dieses;doch;dort;du;durch;ein;eine;einem;einen;einer;eines;er;es;euer;eure;für;hatte;hatten;hattest;hattet;hier;hinter;ich;ihr;ihre;im;in;ist;ja;jede;jedem;jeden;jeder;jedes;jener;jenes;jetzt;kann;kannst;können;könnt;machen;mein;meine;mit;muß;mußt;musst;müssen;müßt;nach;nachdem;nein;nicht;nun;oder;seid;sein;seine;sich;sie;sind;soll;sollen;sollst;sollt;sonst;soweit;sowie;und;unser;unsere;unter;vom;von;vor;wann;warum;was;weiter;weitere;wenn;wer;werde;werden;werdet;weshalb;wie;wieder;wieso;wir;wird;wirst;wo;woher;wohin;zu;zum;zur;über
+
+</value>
+  </data>
+  <data name="MatchCurrentChoice" xml:space="preserve">
+    <value>Aktuelle Auswahl('a');aktuell;a;aktuelle auswahl</value>
+  </data>
+  <data name="MatchNo" xml:space="preserve">
+    <value>Nein;n;nö;ne;2</value>
+  </data>
+  <data name="MatchNoPreference" xml:space="preserve">
+    <value>Egal;keine;nichts;mir egal;ist egal</value>
+  </data>
+  <data name="MatchYes" xml:space="preserve">
+    <value>Ja;j;klar;ok;jo;1</value>
+  </data>
+  <data name="Navigation" xml:space="preserve">
+    <value>Feld</value>
+  </data>
+  <data name="PromptRetry" xml:space="preserve">
+    <value>Das hab ich nicht verstanden. Sag nochmal was.</value>
+  </data>
+  <data name="TemplateBool" xml:space="preserve">
+    <value>Möchtest du ein {&amp;}? {||}</value>
+  </data>
+  <data name="TemplateBoolHelp" xml:space="preserve">
+    <value>Bitte gib 'ja' oder 'nein' ein{?,{0}}.</value>
+    <comment>0-current choice, 1-no preference</comment>
+  </data>
+  <data name="TemplateClarify" xml:space="preserve">
+    <value>Mit "{0}" {&amp;} hast du {||} gemeint</value>
+    <comment>0-term being clarified</comment>
+  </data>
+  <data name="TemplateConfirmation" xml:space="preserve">
+    <value>Ist das deine Auswahl?
+{*}</value>
+  </data>
+  <data name="TemplateCurrentChoice" xml:space="preserve">
+    <value>(Aktuelle Auswahl: {})</value>
+  </data>
+  <data name="TemplateDateTime" xml:space="preserve">
+    <value>Bitte gib ein Datum und einer Uhrzeit für {&amp;} ein {||}</value>
+  </data>
+  <data name="TemplateDateTimeHelp" xml:space="preserve">
+    <value>Bitte gib ein Datum oder eine Uhrzeit ein {?,{0}}{?,{1}}.</value>
+    <comment>0-current choice, 1-no preference</comment>
+  </data>
+  <data name="TemplateDouble" xml:space="preserve">
+    <value>Bitte gib eine Nummer zwischen {?between {0:F1} und {1:F1}} für {&amp;} ein {||}</value>
+    <comment>0-min, 1-max</comment>
+  </data>
+  <data name="TemplateDoubleChoiceFormat" xml:space="preserve">
+    <value>{1}</value>
+    <comment>0-number, 1-description</comment>
+  </data>
+  <data name="TemplateDoubleHelp" xml:space="preserve">
+    <value>Bitte gib eine Nummer{? zwischen {2:F1} und {3:F1}} ein{?,{0}}{?,{1}}.</value>
+    <comment>0-current choice, 1-no preference, 2-min, 3-max</comment>
+  </data>
+  <data name="TemplateEnumManyNumberHelp" xml:space="preserve">
+    <value>Du kannst eine oder mehrere Nummern {0}-{1} oder Wörter aus den Beschreibungen eingeben. ({2})</value>
+    <comment>0-min, 1-max and 2-enumerated descriptions</comment>
+  </data>
+  <data name="TemplateEnumManyWordHelp" xml:space="preserve">
+    <value>Du kannst eine Auswahl oder mehrere aus den Beschreibungen treffen. ({2})</value>
+    <comment>2-enumerated descriptions</comment>
+  </data>
+  <data name="TemplateEnumOneNumberHelp" xml:space="preserve">
+    <value>Du kannst eine Zahl von {0}-{1} oder Wörter aus der Beschreibung eingeben. ({2})</value>
+    <comment>0-min, 1-max and 2-enumerated descriptions</comment>
+  </data>
+  <data name="TemplateEnumOneWordHelp" xml:space="preserve">
+    <value>Du kannst alle Wörter aus den Beschreibungen eingeben. ({2})</value>
+    <comment>2-enumerated descriptions</comment>
+  </data>
+  <data name="TemplateEnumSelectMany" xml:space="preserve">
+    <value>Bitte wähle einen oder mehrere {&amp;} {||}</value>
+  </data>
+  <data name="TemplateEnumSelectOne" xml:space="preserve">
+    <value>Bitte wähle ein {&amp;} {||}</value>
+  </data>
+  <data name="TemplateFeedback" xml:space="preserve">
+    <value>Für {&amp;} hab ich {} verstanden. {?"{0}" ist keine Möglichkeit.}</value>
+    <comment>0-not understood term</comment>
+  </data>
+  <data name="TemplateHelp" xml:space="preserve">
+    <value>Du füllst das Feld "{&amp;}". Mögliche Antworten:
+{0}
+{1}</value>
+    <comment>0-recognizer help, 1-command help</comment>
+  </data>
+  <data name="TemplateHelpClarify" xml:space="preserve">
+    <value>Du verdeutlichst ein {&amp;} Wert. Mögliche Antworten:
+{0}
+{1}</value>
+    <comment>0-recognizer help, 1-command help</comment>
+  </data>
+  <data name="TemplateHelpConfirm" xml:space="preserve">
+    <value>Bitte beantworte die Frage. Mögliche Antworten:
+{0}
+{1}</value>
+    <comment>0-recognizer help, 1-command help</comment>
+  </data>
+  <data name="TemplateHelpNavigation" xml:space="preserve">
+    <value>Wähle aus welches Feld du ändern möchtest. Mögliche Antworten:
+{0}
+{1}</value>
+    <comment>0-recognizer help, 1-command help</comment>
+  </data>
+  <data name="TemplateInteger" xml:space="preserve">
+    <value>Bitte gib eine Nummer{? zwischen {0} und {1}} für {&amp;} ein {||}</value>
+    <comment>0-min, 1-max</comment>
+  </data>
+  <data name="TemplateIntegerChoiceFormat" xml:space="preserve">
+    <value>{1}</value>
+    <comment>0-number, 1-description</comment>
+  </data>
+  <data name="TemplateIntegerHelp" xml:space="preserve">
+    <value>Du kannst eine Nummer{? zwischen {2} und {3}} eingeben{?,{0}}{?,{1}}.</value>
+    <comment>0-current choice, 1-no preference, 2-min, 3-max</comment>
+  </data>
+  <data name="TemplateNavigation" xml:space="preserve">
+    <value>Was möchtest du ändern? {||}</value>
+  </data>
+  <data name="TemplateNavigationCommandHelp" xml:space="preserve">
+    <value>Du kannst zu einem anderen Feld wechseln indem du dessen Namen eingibst. ({0}).</value>
+    <comment>0-list of field names</comment>
+  </data>
+  <data name="TemplateNavigationFormat" xml:space="preserve">
+    <value>{&amp;}({})</value>
+    <comment>0-list of field names</comment>
+  </data>
+  <data name="TemplateNavigationHelp" xml:space="preserve">
+    <value>Wähle{? eine Nummer von {0} bis {1},oder} der Name eines Feldes.</value>
+    <comment>0-min, 1-max</comment>
+  </data>
+  <data name="TemplateNoPreference" xml:space="preserve">
+    <value>Egal</value>
+  </data>
+  <data name="TemplateNotUnderstood" xml:space="preserve">
+    <value>"{0}" ist keine Möglichkeit für {&amp;}.</value>
+    <comment>0-is not understood term</comment>
+  </data>
+  <data name="TemplateStatusFormat" xml:space="preserve">
+    <value>{&amp;}: {}</value>
+  </data>
+  <data name="TemplateString" xml:space="preserve">
+    <value>Bitte gib {&amp;} ein{||}</value>
+  </data>
+  <data name="TemplateStringChoiceFormat" xml:space="preserve">
+    <value>{1}</value>
+    <comment>0-number, 1-description</comment>
+  </data>
+  <data name="TemplateStringHelp" xml:space="preserve">
+    <value>Du kannst alles eingeben (verwende Anführungszeichen " um eine Zeichenfolge zu erzwingen){?,{0}}{?,{1}}.</value>
+    <comment>0-current choice, 1-no preference</comment>
+  </data>
+  <data name="TemplateUnspecified" xml:space="preserve">
+    <value>Nicht definiert</value>
+  </data>
+  <data name="TooManyAttempts" xml:space="preserve">
+    <value>Zu viele Versuche.</value>
+  </data>
+  <data name="UnhandledExceptionToUser" xml:space="preserve">
+    <value>Sorry,mein Bot hat ein Problem.</value>
+  </data>
+  <data name="UserProfileDeleted" xml:space="preserve">
+    <value>Benutzerprofil gelöscht!</value>
+  </data>
+  <data name="NumberExpression" xml:space="preserve">
+    <value>[+-]?(?:\d+\.?\d*|\d*\.?\d+)</value>
+  </data>
+  <data name="NumberOrdinals" xml:space="preserve">
+    <value>1=1.,Erstens erste|2=2.,zweitens das zweite|3=3.,drittens dritte|4=4.,Viertens vierte|5=5.,Fünftens fünfte|6=6. Sechster,sechste|7=7.,siebte,siebte|8=8.,achte,achte man|9=9.,Neunter,neunte ein|10=10,zehnte,zehnte ein</value>
+  </data>
+  <data name="NumberReverseOrdinals" xml:space="preserve">
+    <value>-1=letzter,letzte|-2=neben letzte Sekunde zum letzten,Sekunde aus dem letzten|-3=zum letzten,dritten Drittel aus dem letzten|-4=vierte bis zum letzten,vierten aus dem letzten|-5=zum letzten,fünften Fith aus dem letzten</value>
+  </data>
+  <data name="BooleanChoices" xml:space="preserve">
+    <value>True=y,ja,ja,sicher,ok,\u1f44d,\u1f44c|false=n,Nein,Nein,\u1f44e,\\u270b,\\u1f590</value>
+  </data>
+  <data name="NumberTerms" xml:space="preserve">
+    <value>0=Null|1=eins|2=zwei|3=drei|4=vier|5=fünf|6=sechs|7=sieben|8=acht|9=neun|10=10|11=elf|12=zwölf|13=dreizehn|14=14|15=15|16=16|17=17|18=18|19=19|20=20</value>
+  </data>
+</root>

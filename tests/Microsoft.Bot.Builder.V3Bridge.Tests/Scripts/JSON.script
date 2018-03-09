@@ -1,0 +1,85 @@
+en-us
+{}
+[]
+FromUser:"hi"
+2
+ToUserText:"Welcome to the sandwich order bot!"
+ToUserButtons:[{"contentType":"application/vnd.microsoft.card.hero","contentUrl":null,"content":{"title":"","subtitle":null,"text":"What kind of sandwich would you like? ","images":[{"url":"https://placeholdit.imgix.net/~text?txtsize=16&txt=Sandwich&w=125&h=40&txttrack=0&txtclr=000&txtfont=bold","alt":null,"tap":null}],"buttons":[{"type":"imBack","title":"BLT","image":null,"text":null,"displayText":null,"value":"BLT"},{"type":"imBack","title":"Black Forest Ham","image":null,"text":null,"displayText":null,"value":"Black Forest Ham"},{"type":"imBack","title":"Buffalo Chicken","image":null,"text":null,"displayText":null,"value":"Buffalo Chicken"},{"type":"imBack","title":"Chicken And Bacon Ranch Melt","image":null,"text":null,"displayText":null,"value":"Chicken And Bacon Ranch Melt"},{"type":"imBack","title":"Cold Cut Combo","image":null,"text":null,"displayText":null,"value":"Cold Cut Combo"},{"type":"imBack","title":"Meatball Marinara","image":null,"text":null,"displayText":null,"value":"Meatball Marinara"},{"type":"imBack","title":"Oven Roasted Chicken","image":null,"text":null,"displayText":null,"value":"Oven Roasted Chicken"},{"type":"imBack","title":"Roast Beef","image":null,"text":null,"displayText":null,"value":"Roast Beef"},{"type":"imBack","title":"Rotisserie Style Chicken","image":null,"text":null,"displayText":null,"value":"Rotisserie Style Chicken"},{"type":"imBack","title":"Spicy Italian","image":null,"text":null,"displayText":null,"value":"Spicy Italian"},{"type":"imBack","title":"Steak And Cheese","image":null,"text":null,"displayText":null,"value":"Steak And Cheese"},{"type":"imBack","title":"Sweet Onion Teriyaki","image":null,"text":null,"displayText":null,"value":"Sweet Onion Teriyaki"},{"type":"imBack","title":"Tuna","image":null,"text":null,"displayText":null,"value":"Tuna"},{"type":"imBack","title":"Turkey Breast","image":null,"text":null,"displayText":null,"value":"Turkey Breast"},{"type":"imBack","title":"Veggie","image":null,"text":null,"displayText":null,"value":"Veggie"}],"tap":null},"name":null,"thumbnailUrl":null}]
+State:{}
+FromUser:"ham"
+1
+ToUserButtons:[{"contentType":"application/vnd.microsoft.card.hero","contentUrl":null,"content":{"title":"","subtitle":null,"text":"What size of sandwich do you want? ","images":null,"buttons":[{"type":"imBack","title":"Six Inch","image":null,"text":null,"displayText":null,"value":"Six Inch"},{"type":"imBack","title":"Foot Long","image":null,"text":null,"displayText":null,"value":"Foot Long"}],"tap":null},"name":null,"thumbnailUrl":null}]
+State:{"Sandwich":"BlackForestHam"}
+FromUser:"six"
+1
+ToUserButtons:[{"contentType":"application/vnd.microsoft.card.hero","contentUrl":null,"content":{"title":"Sandwich Bot","subtitle":"Bread Picker","text":"What kind of bread would you like on your sandwich? ","images":null,"buttons":[{"type":"imBack","title":"Nine Grain Wheat","image":null,"text":null,"displayText":null,"value":"Nine Grain Wheat"},{"type":"imBack","title":"Nine Grain Honey Oat","image":null,"text":null,"displayText":null,"value":"Nine Grain Honey Oat"},{"type":"imBack","title":"Italian","image":null,"text":null,"displayText":null,"value":"Italian"},{"type":"imBack","title":"Italian Herbs And Cheese","image":null,"text":null,"displayText":null,"value":"Italian Herbs And Cheese"},{"type":"imBack","title":"Flatbread","image":null,"text":null,"displayText":null,"value":"Flatbread"}],"tap":null},"name":null,"thumbnailUrl":null}]
+State:{"Sandwich":"BlackForestHam","Length":"SixInch"}
+FromUser:"nine grain"
+1
+ToUserButtons:[{"contentType":"application/vnd.microsoft.card.hero","contentUrl":null,"content":{"title":"","subtitle":null,"text":"By \"nine grain\" bread did you mean ","images":null,"buttons":[{"type":"imBack","title":"Nine Grain Honey Oat","image":null,"text":null,"displayText":null,"value":"Nine Grain Honey Oat"},{"type":"imBack","title":"Nine Grain Wheat","image":null,"text":null,"displayText":null,"value":"Nine Grain Wheat"}],"tap":null},"name":null,"thumbnailUrl":null}]
+State:{"Sandwich":"BlackForestHam","Length":"SixInch"}
+FromUser:"wheat"
+1
+ToUserButtons:[{"contentType":"application/vnd.microsoft.card.hero","contentUrl":null,"content":{"title":"","subtitle":null,"text":"What kind of cheese would you like on your sandwich? ","images":null,"buttons":[{"type":"imBack","title":"American","image":null,"text":null,"displayText":null,"value":"American"},{"type":"imBack","title":"Monterey Cheddar","image":null,"text":null,"displayText":null,"value":"Monterey Cheddar"},{"type":"imBack","title":"Pepperjack","image":null,"text":null,"displayText":null,"value":"Pepperjack"},{"type":"imBack","title":"No Preference","image":null,"text":null,"displayText":null,"value":"No Preference"}],"tap":null},"name":null,"thumbnailUrl":null}]
+State:{"Sandwich":"BlackForestHam","Length":"SixInch","Ingredients":{"Bread":"NineGrainWheat"}}
+FromUser:"1"
+1
+ToUserText:"Please select one or more toppings (current choice: No Preference) \r\n  1. Everything\r\n  2. Avocado\r\n  3. Banana Peppers\r\n  4. Cucumbers\r\n  5. Green Bell Peppers\r\n  6. Jalapenos\r\n  7. Lettuce\r\n  8. Olives\r\n  9. Pickles\r\n  10. Red Onion\r\n  11. Spinach\r\n  12. Tomatoes\r\n  13. No Preference"
+State:{"Sandwich":"BlackForestHam","Length":"SixInch","Ingredients":{"Bread":"NineGrainWheat","Cheese":"American"}}
+FromUser:"peppers"
+1
+ToUserButtons:[{"contentType":"application/vnd.microsoft.card.hero","contentUrl":null,"content":{"title":"","subtitle":null,"text":"By \"peppers\" toppings did you mean ","images":null,"buttons":[{"type":"imBack","title":"Green Bell Peppers","image":null,"text":null,"displayText":null,"value":"Green Bell Peppers"},{"type":"imBack","title":"Banana Peppers","image":null,"text":null,"displayText":null,"value":"Banana Peppers"}],"tap":null},"name":null,"thumbnailUrl":null}]
+State:{"Sandwich":"BlackForestHam","Length":"SixInch","Ingredients":{"Bread":"NineGrainWheat","Cheese":"American"}}
+FromUser:"1"
+2
+ToUserText:"For sandwich toppings you have selected Green Bell Peppers."
+ToUserText:"Please select one or more sauces (current choice: No Preference) \r\n  1. Chipotle Southwest\r\n  2. Honey Mustard\r\n  3. Light Mayonnaise\r\n  4. Regular Mayonnaise\r\n  5. Mustard\r\n  6. Oil\r\n  7. Pepper\r\n  8. Ranch\r\n  9. Sweet Onion\r\n  10. Vinegar\r\n  11. No Preference"
+State:{"Sandwich":"BlackForestHam","Length":"SixInch","Ingredients":{"Bread":"NineGrainWheat","Cheese":"American","Toppings":["GreenBellPeppers"]}}
+FromUser:"2"
+1
+ToUserText:"Total for your sandwich is $5.00 is that ok?"
+State:{"Sandwich":"BlackForestHam","Length":"SixInch","Ingredients":{"Bread":"NineGrainWheat","Cheese":"American","Toppings":["GreenBellPeppers"],"Sauces":["HoneyMustard"]}}
+FromUser:"n"
+1
+ToUserButtons:[{"contentType":"application/vnd.microsoft.card.hero","contentUrl":null,"content":{"title":"","subtitle":null,"text":"What do you want to change? ","images":null,"buttons":[{"type":"imBack","title":"Sandwich(Black Forest Ham)","image":null,"text":null,"displayText":null,"value":"Sandwich"},{"type":"imBack","title":"Length(Six Inch)","image":null,"text":null,"displayText":null,"value":"Length"},{"type":"imBack","title":"Bread(Nine Grain Wheat)","image":null,"text":null,"displayText":null,"value":"Bread"},{"type":"imBack","title":"Cheese(American)","image":null,"text":null,"displayText":null,"value":"Cheese"},{"type":"imBack","title":"Toppings(Green Bell Peppers)","image":null,"text":null,"displayText":null,"value":"Toppings"},{"type":"imBack","title":"Sauces(Honey Mustard)","image":null,"text":null,"displayText":null,"value":"Sauces"},{"type":"imBack","title":"No Preference","image":null,"text":null,"displayText":null,"value":"No Preference"}],"tap":null},"name":null,"thumbnailUrl":null}]
+State:{"Sandwich":"BlackForestHam","Length":"SixInch","Ingredients":{"Bread":"NineGrainWheat","Cheese":"American","Toppings":["GreenBellPeppers"],"Sauces":["HoneyMustard"]}}
+FromUser:"no"
+1
+ToUserText:"Total for your sandwich is $5.00 is that ok?"
+State:{"Sandwich":"BlackForestHam","Length":"SixInch","Ingredients":{"Bread":"NineGrainWheat","Cheese":"American","Toppings":["GreenBellPeppers"],"Sauces":["HoneyMustard"]}}
+FromUser:"ok"
+1
+ToUserText:"Please enter delivery address "
+State:{"Sandwich":"BlackForestHam","Length":"SixInch","Ingredients":{"Bread":"NineGrainWheat","Cheese":"American","Toppings":["GreenBellPeppers"],"Sauces":["HoneyMustard"]}}
+FromUser:"abc"
+2
+ToUserText:"Address must start with a number."
+ToUserText:"Please enter delivery address "
+State:{"Sandwich":"BlackForestHam","Length":"SixInch","Ingredients":{"Bread":"NineGrainWheat","Cheese":"American","Toppings":["GreenBellPeppers"],"Sauces":["HoneyMustard"]}}
+FromUser:"1 state st"
+1
+ToUserText:"Please enter phone number (current choice: No Preference)"
+State:{"Sandwich":"BlackForestHam","Length":"SixInch","Ingredients":{"Bread":"NineGrainWheat","Cheese":"American","Toppings":["GreenBellPeppers"],"Sauces":["HoneyMustard"]},"DeliveryAddress":"1 state st"}
+FromUser:""
+1
+ToUserText:"Please enter a date and time for delivery time (current choice: No Preference)"
+State:{"Sandwich":"BlackForestHam","Length":"SixInch","Ingredients":{"Bread":"NineGrainWheat","Cheese":"American","Toppings":["GreenBellPeppers"],"Sauces":["HoneyMustard"]},"DeliveryAddress":"1 state st"}
+FromUser:"9/9/2016 1pm"
+1
+ToUserText:"Do you want to order your Six Inch Black Forest Ham on Nine Grain Wheat bread with {[American Green Bell Peppers Honey Mustard to be sent to 1 state st at 9/9/2016 1:00:00 PM?"
+State:{"Sandwich":"BlackForestHam","Length":"SixInch","Ingredients":{"Bread":"NineGrainWheat","Cheese":"American","Toppings":["GreenBellPeppers"],"Sauces":["HoneyMustard"]},"DeliveryAddress":"1 state st","DeliveryTime":"2016-09-09T13:00:00"}
+FromUser:"status"
+2
+ToUserText:"* Sandwich: Black Forest Ham\r\n* Length: Six Inch\r\n* Bread: Nine Grain Wheat\r\n* Cheese: American\r\n* Toppings: Green Bell Peppers\r\n* Sauces: Honey Mustard\r\n* Delivery Address: 1 state st\r\n* Phone Number: No Preference\r\n* Delivery Time: 1:00 PM\r\n* your experience today: No Preference\r\n"
+ToUserText:"Do you want to order your Six Inch Black Forest Ham on Nine Grain Wheat bread with {[American Green Bell Peppers Honey Mustard to be sent to 1 state st at 9/9/2016 1:00:00 PM?"
+State:{"Sandwich":"BlackForestHam","Length":"SixInch","Ingredients":{"Bread":"NineGrainWheat","Cheese":"American","Toppings":["GreenBellPeppers"],"Sauces":["HoneyMustard"]},"DeliveryAddress":"1 state st","DeliveryTime":"2016-09-09T13:00:00"}
+FromUser:"y"
+1
+ToUserText:"Please enter a number between 1.0 and 5.0 for your experience today (current choice: No Preference)"
+State:{"Sandwich":"BlackForestHam","Length":"SixInch","Ingredients":{"Bread":"NineGrainWheat","Cheese":"American","Toppings":["GreenBellPeppers"],"Sauces":["HoneyMustard"]},"DeliveryAddress":"1 state st","DeliveryTime":"2016-09-09T13:00:00"}
+FromUser:"2.5"
+2
+ToUserText:"Thanks for ordering your sandwich!"
+ToUserText:"We are currently processing your sandwich. We will message you the status."
+State:{"Sandwich":"BlackForestHam","Length":"SixInch","Ingredients":{"Bread":"NineGrainWheat","Cheese":"American","Toppings":["GreenBellPeppers"],"Sauces":["HoneyMustard"]},"DeliveryAddress":"1 state st","DeliveryTime":"2016-09-09T13:00:00","Rating":2.5}
+Result: {"Sandwich":"BlackForestHam","Length":"SixInch","Ingredients":{"Bread":"NineGrainWheat","Cheese":"American","Toppings":["GreenBellPeppers"],"Sauces":["HoneyMustard"]},"DeliveryAddress":"1 state st","DeliveryTime":"2016-09-09T13:00:00","Rating":2.5}
