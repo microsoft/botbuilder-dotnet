@@ -43,20 +43,22 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
         public async Task State_RememberIStoreItemUserState()
         {
             var adapter = new TestAdapter()
+                .Use(new BatchOutputMiddleware())
                 .Use(new UserState<TestState>(new MemoryStorage()));
+
             await new TestFlow(adapter,
                     async (context) =>
                     {
                         var userState = context.GetUserState<TestState>();
                         Assert.IsNotNull(userState, "user state should exist");
-                        switch (context.Request.AsMessageActivity().Text)
+                        switch (context.Request.Text)
                         {
                             case "set value":
                                 userState.Value = "test";
-                                await context.Reply("value saved");
+                                context.Batch().Reply("value saved");
                                 break;
                             case "get value":
-                                await context.Reply(userState.Value);
+                                context.Batch().Reply(userState.Value);
                                 break;
                         }
                     }
@@ -97,6 +99,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
         public async Task State_RememberIStoreItemConversationState()
         {
             TestAdapter adapter = new TestAdapter()
+                .Use(new BatchOutputMiddleware())
                 .Use(new ConversationState<TestState>(new MemoryStorage()));
             await new TestFlow(adapter,
                     async (context) =>
@@ -107,10 +110,10 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
                         {
                             case "set value":
                                 conversationState.Value = "test";
-                                await context.Reply("value saved");
+                                context.Batch().Reply("value saved");
                                 break;
                             case "get value":
-                                await context.Reply(conversationState.Value);
+                                context.Batch().Reply(conversationState.Value);
                                 break;
                         }
                     }
@@ -153,6 +156,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
 
             string testGuid = Guid.NewGuid().ToString();
             TestAdapter adapter = new TestAdapter()
+                .Use(new BatchOutputMiddleware())
                 .Use(new CustomKeyState(new MemoryStorage()));
             await new TestFlow(adapter, async (context) =>
                     {
@@ -161,10 +165,10 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
                         {
                             case "set value":
                                 customState.CustomString = testGuid;
-                                await context.Reply("value saved");
+                                context.Batch().Reply("value saved");
                                 break;
                             case "get value":
-                                await context.Reply(customState.CustomString);
+                                context.Batch().Reply(customState.CustomString);
                                 break;
                         }
                     }
@@ -183,6 +187,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
         public async Task State_RoundTripTypedObject()
         {
             TestAdapter adapter = new TestAdapter()
+                .Use(new BatchOutputMiddleware())
                 .Use(new ConversationState<TypedObject>(new MemoryStorage()));
 
             await new TestFlow(adapter,
@@ -194,10 +199,10 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
                         {
                             case "set value":
                                 conversation.Name = "test";
-                                await context.Reply("value saved");
+                                context.Batch().Reply("value saved");
                                 break;
                             case "get value":
-                                await context.Reply(conversation.GetType().Name);
+                                context.Batch().Reply(conversation.GetType().Name);
                                 break;
                         }
                     }
