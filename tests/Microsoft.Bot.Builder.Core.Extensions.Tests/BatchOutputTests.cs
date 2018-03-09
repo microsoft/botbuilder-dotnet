@@ -58,7 +58,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
             BatchOutput bo = new BatchOutput();
             bo.Typing();
             bo.EndOfConversation();
-
+           
             c.OnSendActivity(async (activities, next) =>
             {
                 Assert.IsTrue(activities.Count == 2, "Incorrect Activity Count");

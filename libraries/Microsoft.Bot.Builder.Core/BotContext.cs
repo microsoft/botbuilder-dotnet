@@ -32,7 +32,7 @@ namespace Microsoft.Bot.Builder
             if (handler == null)
                 throw new ArgumentNullException(nameof(handler));
 
-            _onSendActivities.Add(handler);             
+            _onSendActivities.Add(handler);
             return this;
         }
 
@@ -74,13 +74,28 @@ namespace Microsoft.Bot.Builder
             }
         }
 
+        public async Task SendActivity(params string[] textRepliesToSend)
+        {
+            if (textRepliesToSend == null)
+                throw new ArgumentNullException(nameof(textRepliesToSend)); 
+            
+            List<Activity> newActivities = new List<Activity>();
+            foreach (string s in textRepliesToSend)
+            {
+                if (!string.IsNullOrWhiteSpace(s))
+                    newActivities.Add(new Activity(ActivityTypes.Message) { Text = s });
+            }
+
+            await SendActivity(newActivities.ToArray());
+        }
+
         public async Task SendActivity(params Activity[] activities)
         {
             // Bind the relevant Conversation Reference properties, such as URLs and 
             // ChannelId's, to the activities we're about to send. 
+            ConversationReference cr = GetConversationReference(this._request);
             foreach (Activity a in activities)
-            {
-                ConversationReference cr = GetConversationReference(this._request);
+            {                
                 ApplyConversationReference(a, cr);
             }
 
@@ -295,7 +310,7 @@ namespace Microsoft.Bot.Builder
 
             lock (_services)
             {
-                return _services.ContainsKey(key);                 
+                return _services.ContainsKey(key);
             }
         }
 

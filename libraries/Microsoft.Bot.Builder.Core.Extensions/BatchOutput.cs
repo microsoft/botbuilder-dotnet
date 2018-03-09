@@ -169,12 +169,9 @@ namespace Microsoft.Bot.Builder.Core.Extensions
     {
         public static BatchOutput Batch(this IBotContext context)
         {
-            if (!context.Has(BatchOutputMiddleware.BatchOuputKey))
-                throw new InvalidOperationException("No Batch Output found in Context");
-
             BatchOutput bo = context.Get<BatchOutput>(BatchOutputMiddleware.BatchOuputKey);
             if (bo == null)
-                throw new InvalidOperationException("Batch output found in context is invalid");
+                throw new InvalidOperationException("BatchOutputMiddleware does not appear to be setup.");
 
             return bo;
         }
