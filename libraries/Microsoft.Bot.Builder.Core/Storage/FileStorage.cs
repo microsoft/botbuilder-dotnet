@@ -22,7 +22,6 @@ namespace Microsoft.Bot.Builder.Storage
         };
 
         protected string folder;
-        protected int eTag = 0;
 
         public FileStorage(string folder)
         {
@@ -126,7 +125,7 @@ namespace Microsoft.Bot.Builder.Storage
                             string path = Path.Combine(this.folder, key);
                             var oldTag = newStoreItem?.eTag;
                             if (newStoreItem != null)
-                                newStoreItem.eTag = (this.eTag++).ToString();
+                                newStoreItem.eTag = Guid.NewGuid().ToString("n");
                             var json = JsonConvert.SerializeObject(newValue, serializationSettings);
                             if (newStoreItem != null)
                                 newStoreItem.eTag = oldTag;
