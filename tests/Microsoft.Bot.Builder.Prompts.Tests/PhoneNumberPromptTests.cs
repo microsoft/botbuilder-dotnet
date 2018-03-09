@@ -47,9 +47,9 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                 .Send("hello")
                 .AssertReply("Gimme:")
                 .Send("test test test")
-                    .AssertReply(RecognitionStatus.NotRecognized.ToString())
+                    .AssertReply(PromptStatus.NotRecognized.ToString())
                 .Send("123 123123sdfsdf 123 1asdf23123 123 ")
-                    .AssertReply(RecognitionStatus.NotRecognized.ToString())
+                    .AssertReply(PromptStatus.NotRecognized.ToString())
                 .Send("123-456-7890")
                     .AssertReply("123-456-7890")
                 .StartTest();
@@ -67,7 +67,7 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                 var numberPrompt = new PhoneNumberPrompt(Culture.English, async (ctx, result) =>
                 {
                     if (!result.Value.StartsWith("123"))
-                        result.Status = RecognitionStatus.OutOfRange;
+                        result.Status = PromptStatus.OutOfRange;
                 });
                 if (!state.InPrompt)
                 {
@@ -86,7 +86,7 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                 .Send("hello")
                 .AssertReply("Gimme:")
                 .Send("888-123-4567")
-                    .AssertReply(RecognitionStatus.OutOfRange.ToString())
+                    .AssertReply(PromptStatus.OutOfRange.ToString())
                 .Send("123-123-4567")
                     .AssertReply("123-123-4567")
                 .StartTest();

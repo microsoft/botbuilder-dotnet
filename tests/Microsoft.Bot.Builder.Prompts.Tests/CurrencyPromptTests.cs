@@ -49,7 +49,7 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                 .Send("hello")
                 .AssertReply("Gimme:")
                 .Send("test test test")
-                    .AssertReply(RecognitionStatus.NotRecognized.ToString())
+                    .AssertReply(PromptStatus.NotRecognized.ToString())
                 .Send(" I would like $45.50")
                     .AssertReply("45.5 Dollar")
                 .StartTest();
@@ -67,7 +67,7 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                 var numberPrompt = new CurrencyPrompt(Culture.English, async (ctx, result) =>
                 {
                     if (result.Value <= 10)
-                        result.Status = RecognitionStatus.TooSmall;
+                        result.Status = PromptStatus.TooSmall;
                 });
 
                 if (!state.InPrompt)
@@ -87,7 +87,7 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                 .Send("hello")
                 .AssertReply("Gimme:")
                 .Send(" I would like $1.00")
-                    .AssertReply(RecognitionStatus.TooSmall.ToString())
+                    .AssertReply(PromptStatus.TooSmall.ToString())
                 .Send(" I would like $45.50")
                     .AssertReply("45.5 Dollar")
                 .StartTest();

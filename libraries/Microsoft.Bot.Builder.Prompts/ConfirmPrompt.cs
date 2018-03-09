@@ -11,7 +11,7 @@ using static Microsoft.Bot.Builder.Prompts.PromptValidatorEx;
 
 namespace Microsoft.Bot.Builder.Prompts
 {
-    public class ConfirmResult : RecognitionResult
+    public class ConfirmResult : PromptResult
     {
         public ConfirmResult() { }
 
@@ -54,14 +54,14 @@ namespace Microsoft.Bot.Builder.Prompts
             Match noMatch = no.Match(message.Text);
             if (yesMatch.Success)
             {
-                confirmResult.Status = RecognitionStatus.Recognized;
+                confirmResult.Status = PromptStatus.Recognized;
                 confirmResult.Confirmation = true;
                 confirmResult.Text = yesMatch.Value;
                 await Validate(context, confirmResult);
             }
             else if (noMatch.Success)
             {
-                confirmResult.Status = RecognitionStatus.Recognized;
+                confirmResult.Status = PromptStatus.Recognized;
                 confirmResult.Confirmation = false;
                 confirmResult.Text = noMatch.Value;
                 await Validate(context, confirmResult);
