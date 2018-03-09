@@ -1,0 +1,31 @@
+﻿<?xml version="1.0"?>
+<package xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <metadata xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    <id>Microsoft.Bot.Builder.FormFlow.Json</id>
+    <version>$version$</version>
+    <authors>Microsoft</authors>
+    <owners>microsoft, BotFramework, nugetbotbuilder </owners>
+    <copyright>© Microsoft Corporation. All rights reserved.</copyright>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <licenseUrl>https://github.com/Microsoft/BotBuilder/blob/master/LICENSE</licenseUrl>
+    <description>
+      Microsoft Bot Builder extension for specifying a guided FormFlow dialog using an extended JSON Schema. Most of the annotations are declarative but you can
+      also include C# code fragments that are dynamically compiled.
+    </description>
+    <projectUrl>https://github.com/Microsoft/BotBuilder</projectUrl>
+    <iconUrl>http://docs.botframework.com/images/bot_icon.png</iconUrl>
+    <summary>A Microsoft Bot Builder extension for declaratively specifying FormFlow dialogs using JSON Schema.</summary>
+    <language>en-US</language>
+    <dependencies>
+      <dependency id="Microsoft.Bot.Builder" version="$builder$" />
+      <dependency id="Newtonsoft.Json" version="8.0.3" />
+      <dependency id="Microsoft.CodeAnalysis.CSharp.Scripting" version="1.2.2" />
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="bin\release\Microsoft.Bot.Builder.FormFlow.Json.dll" target="lib\net46"/>
+    <file src="bin\release\Microsoft.Bot.Builder.FormFlow.Json.xml" target="lib\net46" />
+    <file src="bin\release\Microsoft.Bot.Builder.FormFlow.Json.pdb" target="lib\net46" />
+    <file src="*.cs" target="src" />
+  </files>
+</package>

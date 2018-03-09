@@ -1,0 +1,9 @@
+1
+ToUserButtons:[{"contentType":"application/vnd.microsoft.card.hero","contentUrl":null,"content":{"title":null,"subtitle":null,"text":"hello there","images":null,"buttons":[{"type":"imBack","title":"choice19","image":null,"text":null,"displayText":null,"value":"19"},{"type":"imBack","title":"choice9","image":null,"text":null,"displayText":null,"value":"9"},{"type":"imBack","title":"choiceelse","image":null,"text":null,"displayText":null,"value":"else"}],"tap":null},"name":null,"thumbnailUrl":null}]
+FromUser:"10"
+1
+ToUserButtons:[{"contentType":"application/vnd.microsoft.card.hero","contentUrl":null,"content":{"title":null,"subtitle":null,"text":"hello there","images":null,"buttons":[{"type":"imBack","title":"choice19","image":null,"text":null,"displayText":null,"value":"19"},{"type":"imBack","title":"choice9","image":null,"text":null,"displayText":null,"value":"9"},{"type":"imBack","title":"choiceelse","image":null,"text":null,"displayText":null,"value":"else"}],"tap":null},"name":null,"thumbnailUrl":null}]
+FromUser:"9"
+1
+ToUserButtons:[{"contentType":"application/vnd.microsoft.card.hero","contentUrl":null,"content":{"title":null,"subtitle":null,"text":"hello there","images":null,"buttons":[{"type":"imBack","title":"choice19","image":null,"text":null,"displayText":null,"value":"19"},{"type":"imBack","title":"choice9","image":null,"text":null,"displayText":null,"value":"9"},{"type":"imBack","title":"choiceelse","image":null,"text":null,"displayText":null,"value":"else"}],"tap":null},"name":null,"thumbnailUrl":null}]
+Result: "9"

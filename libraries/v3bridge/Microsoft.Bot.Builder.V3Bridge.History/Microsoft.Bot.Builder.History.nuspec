@@ -1,0 +1,29 @@
+﻿<?xml version="1.0"?>
+<package xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <metadata xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    <id>Microsoft.Bot.Builder.History</id>
+    <version>$version$</version>
+    <authors>Microsoft</authors>
+    <owners>microsoft, BotFramework, nugetbotbuilder </owners>
+    <copyright>© Microsoft Corporation. All rights reserved.</copyright>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <licenseUrl>https://github.com/Microsoft/BotBuilder/blob/master/LICENSE</licenseUrl>
+    <description>
+      Provide interfaces and classes for working with conversation histories in the Microsoft Bot Builder.  
+			In particular this includes facilities to walk across stored histories and replay them.
+    </description>
+    <projectUrl>https://github.com/Microsoft/BotBuilder</projectUrl>
+    <iconUrl>http://docs.botframework.com/images/bot_icon.png</iconUrl>
+    <summary>Microsoft History extensions for Microsoft.Bot.Builder.</summary>
+    <language>en-US</language>
+    <dependencies>
+      <dependency id="Microsoft.Bot.Builder" version="$builder$"/>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="bin\release\Microsoft.Bot.Builder.History.dll" target="lib\net46"/>
+    <file src="bin\release\Microsoft.Bot.Builder.History.xml" target="lib\net46" />
+    <file src="bin\release\Microsoft.Bot.Builder.History.pdb" target="lib\net46" />
+    <file src="**\*.cs" exclude="**\obj\**\*.cs" target="src" />
+  </files>
+</package>
