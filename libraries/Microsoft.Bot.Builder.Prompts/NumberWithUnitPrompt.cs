@@ -9,7 +9,7 @@ using static Microsoft.Bot.Builder.Prompts.PromptValidatorEx;
 
 namespace Microsoft.Bot.Builder.Prompts
 {
-    public class NumberWithUnit : RecognitionResult
+    public class NumberWithUnit : PromptResult
     {
         public NumberWithUnit()
         {
@@ -57,7 +57,7 @@ namespace Microsoft.Bot.Builder.Prompts
                 value.Unit = (string)result.Resolution["unit"];
                 if (float.TryParse(result.Resolution["value"]?.ToString() ?? String.Empty, out float val))
                 {
-                    value.Status = RecognitionStatus.Recognized;
+                    value.Status = PromptStatus.Recognized;
                     value.Text = result.Text;
                     value.Value = val;
                     await Validate(context, value);

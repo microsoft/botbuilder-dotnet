@@ -53,7 +53,7 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                 .Send("hello")
                 .AssertReply("Gimme:")
                 .Send("test test test")
-                    .AssertReply(RecognitionStatus.NotRecognized.ToString())
+                    .AssertReply(PromptStatus.NotRecognized.ToString())
                 .Send("asdf df 123")
                     .AssertReply("123")
                 .Send(" asdf asd 123.43 adsfsdf ")
@@ -92,11 +92,11 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                 .Send("hello")
                 .AssertReply("Gimme:")
                 .Send("test test test")
-                    .AssertReply(RecognitionStatus.NotRecognized.ToString())
+                    .AssertReply(PromptStatus.NotRecognized.ToString())
                 .Send("asdf df 123")
                     .AssertReply("123")
                 .Send(" asdf asd 123.43 adsfsdf ")
-                    .AssertReply(RecognitionStatus.NotRecognized.ToString())
+                    .AssertReply(PromptStatus.NotRecognized.ToString())
                 .StartTest();
         }
 
@@ -112,9 +112,9 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                 var numberPrompt = new NumberPrompt<int>(Culture.English, async (ctx, result) =>
                 {
                     if (result.Value < 0)
-                        result.Status = RecognitionStatus.TooSmall;
+                        result.Status = PromptStatus.TooSmall;
                     if (result.Value > 100)
-                        result.Status = RecognitionStatus.TooBig;
+                        result.Status = PromptStatus.TooBig;
                 });
                 if (!state.InPrompt)
                 {
@@ -138,7 +138,7 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                 .Send("hello")
                 .AssertReply("Gimme:")
                 .Send("asdf df 123")
-                    .AssertReply(RecognitionStatus.TooBig.ToString())
+                    .AssertReply(PromptStatus.TooBig.ToString())
                 .Send(" asdf asd 12 adsfsdf ")
                     .AssertReply("12")
                 .StartTest();

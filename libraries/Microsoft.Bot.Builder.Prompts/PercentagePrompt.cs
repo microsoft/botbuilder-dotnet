@@ -48,7 +48,7 @@ namespace Microsoft.Bot.Builder.Prompts
                 var result = results.First();
                 if (float.TryParse(result.Resolution["value"].ToString().TrimEnd('%'), out float value))
                 {
-                    numberResult.Status = RecognitionStatus.Recognized;
+                    numberResult.Status = PromptStatus.Recognized;
                     numberResult.Value = value;
                     numberResult.Text = result.Text;
                     await Validate(context, numberResult);

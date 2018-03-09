@@ -7,49 +7,49 @@ using static Microsoft.Bot.Builder.Prompts.PromptValidatorEx;
 
 namespace Microsoft.Bot.Builder.Prompts
 {
-    public enum RecognitionStatus
+    public class PromptStatus
     {
         /// <summary>
         /// The data type was not recognized at all
         /// </summary>
-        NotRecognized,
+        public const string NotRecognized = "NotRecognized";
 
         /// <summary>
         /// Data type was recognized and validated
         /// </summary>
-        Recognized,
+        public const string Recognized = "Recognized";
 
         /// <summary>
         /// The validation failed because too small
         /// </summary>
-        TooSmall,
+        public const string TooSmall = "TooSmall";
 
         /// <summary>
         /// The validation failed because too big
         /// </summary>
-        TooBig,
+        public const string TooBig = "TooBig";
 
         /// <summary>
         /// The validation failed because it was out of range
         /// </summary>
-        OutOfRange
+        public const string OutOfRange = "OutOfRange";
     }
 
-    public class RecognitionResult
+    public class PromptResult
     {
-        public RecognitionResult()
+        public PromptResult()
         {
-            Status = RecognitionStatus.NotRecognized;
+            Status = PromptStatus.NotRecognized;
         }
 
-        public RecognitionStatus Status { get; set; }
+        public string Status { get; set; }
 
-        public bool Succeeded() { return Status == RecognitionStatus.Recognized; }
+        public bool Succeeded() { return Status == PromptStatus.Recognized; }
     }
 
 
     public abstract class BasePrompt<T>
-        where T : RecognitionResult
+        where T : PromptResult
     {
         private readonly PromptValidator<T> _customValidator = null;
 
@@ -91,7 +91,7 @@ namespace Microsoft.Bot.Builder.Prompts
             {
                 return _customValidator(context, value);
             }
-            value.Status = RecognitionStatus.Recognized;
+            value.Status = PromptStatus.Recognized;
             return Task.CompletedTask;
         }
 
