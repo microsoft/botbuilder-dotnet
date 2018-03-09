@@ -5,7 +5,6 @@ using Microsoft.Bot.Builder.V3Bridge.Dialogs.Internals;
 using Microsoft.Bot.Builder.V3Bridge.Internals.Fibers;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
-using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.V3Bridge.ConnectorEx
 {
