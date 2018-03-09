@@ -11,8 +11,8 @@
     <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Microsoft.Bot.Samples.EchoBot_AspNet461</RootNamespace>
-    <AssemblyName>Bot Application</AssemblyName>
+    <RootNamespace>Microsoft.Bot.Samples.Echo.AspNetWebApi</RootNamespace>
+    <AssemblyName>Microsoft.Bot.Samples.EchoBot-AspNetWebApi</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <UseIISExpress>true</UseIISExpress>
     <IISExpressSSLPort />
@@ -150,7 +150,6 @@
     <Compile Include="App_Start\BotConfig.cs" />
     <Compile Include="App_Start\UnityConfig.cs" />
     <Compile Include="App_Start\UnityWebApiActivator.cs" />
-    <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -189,9 +188,9 @@
       <Project>{C1F54CDC-AD1D-45BB-8F7D-F49E411AFAF1}</Project>
       <Name>Microsoft.Bot.Schema</Name>
     </ProjectReference>
-    <ProjectReference Include="..\EchoBot\EchoBot.csproj">
-      <Project>{30b77905-0bab-44c1-a011-0245f220c30c}</Project>
-      <Name>EchoBot</Name>
+    <ProjectReference Include="..\Microsoft.Bot.Samples.EchoBot\Microsoft.Bot.Samples.EchoBot.csproj">
+      <Project>{3aa823e5-ba54-48e8-9fa6-d8f27c8d347e}</Project>
+      <Name>Microsoft.Bot.Samples.EchoBot</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />
