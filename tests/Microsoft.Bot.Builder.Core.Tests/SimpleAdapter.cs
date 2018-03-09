@@ -17,13 +17,13 @@ namespace Microsoft.Bot.Builder.Core.Tests
         public SimpleAdapter(Action<Activity> callOnUpdate) { _callOnUpdate = callOnUpdate; }
         public SimpleAdapter(Action<ConversationReference> callOnDelete) { _callOnDelete = callOnDelete; }
 
-        public async override Task DeleteActivity(ConversationReference reference)
+        public async override Task DeleteActivity(IBotContext context, ConversationReference reference)
         {
             Assert.IsNotNull(reference, "SimpleAdapter.deleteActivity: missing reference");
             _callOnDelete?.Invoke(reference);
         }
 
-        public async override Task SendActivity(params Activity[] activities)
+        public async override Task SendActivity(IBotContext context, params Activity[] activities)
         {
             Assert.IsNotNull(activities, "SimpleAdapter.deleteActivity: missing reference");
             Assert.IsTrue(activities.Count() > 0, "SimpleAdapter.sendActivities: empty activities array.");
@@ -31,7 +31,7 @@ namespace Microsoft.Bot.Builder.Core.Tests
             _callOnSend?.Invoke(activities);
         }
 
-        public async override Task<ResourceResponse> UpdateActivity(Activity activity)
+        public async override Task<ResourceResponse> UpdateActivity(IBotContext context, Activity activity)
         {
             Assert.IsNotNull(activity, "SimpleAdapter.updateActivity: missing activity");
             _callOnUpdate?.Invoke(activity);

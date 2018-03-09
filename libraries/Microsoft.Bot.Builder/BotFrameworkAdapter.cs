@@ -1,12 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Microsoft.Bot.Builder.BotFramework;
-using Microsoft.Bot.Builder.Middleware;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
-using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -44,7 +41,7 @@ namespace Microsoft.Bot.Builder.Adapters
         {
         }
 
-        public BotFrameworkAdapter Use(Middleware.IMiddleware middleware)
+        public new BotFrameworkAdapter Use(IMiddleware middleware)
         {
             base._middlewareSet.Use(middleware);
             return this;
@@ -62,7 +59,7 @@ namespace Microsoft.Bot.Builder.Adapters
             await base.RunPipeline(context, callback).ConfigureAwait(false);
         }
 
-        protected async override Task SendActivitiesImplementation(IBotContext context, IEnumerable<Activity> activities)
+        public override async Task SendActivity(IBotContext context, params Activity[] activities)
         {
             foreach (var activity in activities)
             {
@@ -82,18 +79,18 @@ namespace Microsoft.Bot.Builder.Adapters
             }
         }
 
-        protected override async Task<ResourceResponse> UpdateActivityImplementation(IBotContext context, Activity activity)
+        public override async Task<ResourceResponse> UpdateActivity(IBotContext context, Activity activity)
         {
             MicrosoftAppCredentials appCredentials = await GetAppCredentials((context as BotFrameworkBotContext).BotAppId);
             var connectorClient = new ConnectorClient(new Uri(activity.ServiceUrl), appCredentials);
             return await connectorClient.Conversations.UpdateActivityAsync((Activity)activity);
         }
 
-        protected override async Task DeleteActivityImplementation(IBotContext context, string conversationId, string activityId)
+        public override async Task DeleteActivity(IBotContext context, ConversationReference reference)
         {
             MicrosoftAppCredentials appCredentials = await GetAppCredentials((context as BotFrameworkBotContext).BotAppId);
             var connectorClient = new ConnectorClient(new Uri(context.Request.ServiceUrl), appCredentials);
-            await connectorClient.Conversations.DeleteActivityAsync(conversationId, activityId);
+            await connectorClient.Conversations.DeleteActivityAsync(reference.Conversation.Id, reference.ActivityId);
         }
 
         /// <summary>

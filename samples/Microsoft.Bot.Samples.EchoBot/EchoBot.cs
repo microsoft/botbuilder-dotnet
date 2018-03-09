@@ -3,14 +3,13 @@
 
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Core.Extensions;
+using Microsoft.Bot.Schema;
 using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Samples.Echo
 {
     public class EchoState : StoreItem
     {
-        public string eTag { get; set; }
-
         public int TurnNumber { get; set; }
     }
 
@@ -24,22 +23,22 @@ namespace Microsoft.Bot.Samples.Echo
         }
 
         public async Task OnReceiveActivity(IBotContext context)
-        {
-            var msgActivity = context.Request.AsMessageActivity();
-            if (msgActivity != null)
+        {            
+            if (context.Request.Type == ActivityTypes.Message)
             {
                 var conversationState = context.GetConversationState<EchoState>() ?? new EchoState();
 
                 conversationState.TurnNumber++;
 
                 // calculate something for us to return
-                int length = (msgActivity.Text ?? string.Empty).Length;
+                int length = (context.Request.Text ?? string.Empty).Length;
 
                 // simulate calling a dependent service that was injected
                 await _myService.DoSomethingAsync();
 
                 // return our reply to the user
-                context.Batch().Reply($"[{conversationState.TurnNumber}] You sent {msgActivity.Text} which was {length} characters");
+                string response = $"[{conversationState.TurnNumber}] You sent {context.Request.Text} which was {length} characters";
+                await context.SendActivity(response); 
             }
             
             var convUpdateActivity = context.Request.AsConversationUpdateActivity();
@@ -49,7 +48,7 @@ namespace Microsoft.Bot.Samples.Echo
                 {
                     if (newMember.Id != convUpdateActivity.Recipient.Id)
                     {
-                        context.Batch().Reply("Hello and welcome to the echo bot.");
+                        await context.SendActivity("Hello and welcome to the echo bot.");                         
                     }
                 }
             }

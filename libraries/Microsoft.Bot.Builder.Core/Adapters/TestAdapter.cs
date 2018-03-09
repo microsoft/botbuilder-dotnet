@@ -63,7 +63,7 @@ namespace Microsoft.Bot.Builder.Adapters
         public ConversationReference ConversationReference { get; set; }
 
 
-        public async override Task SendActivity(params Activity[] activities)
+        public async override Task SendActivity(IBotContext context, params Activity[] activities)
         {
             foreach (var activity in activities)
             {
@@ -86,7 +86,7 @@ namespace Microsoft.Bot.Builder.Adapters
             }
         }
 
-        public override Task<ResourceResponse> UpdateActivity(Activity activity)
+        public override Task<ResourceResponse> UpdateActivity(IBotContext context, Activity activity)
         {
             lock (this.botReplies)
             {
@@ -102,7 +102,7 @@ namespace Microsoft.Bot.Builder.Adapters
             return Task.FromResult(new ResourceResponse());
         }
 
-        public override Task DeleteActivity(ConversationReference reference)
+        public override Task DeleteActivity(IBotContext context, ConversationReference reference)
         {
             lock (this.botReplies)
             {

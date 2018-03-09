@@ -107,7 +107,7 @@ namespace Microsoft.Bot.Builder
                 if (activities.Count() > 0)
                     anythingToSend = true;
 
-                await this.Adapter.SendActivity(activities);
+                await this.Adapter.SendActivity(this, activities);
 
                 // If we actually sent something, set the flag. 
                 if (anythingToSend)
@@ -125,7 +125,7 @@ namespace Microsoft.Bot.Builder
         {
             async Task ActuallyUpdateStuff()
             {
-                await this.Adapter.UpdateActivity(activity);
+                await this.Adapter.UpdateActivity(this, activity);
             }
 
             await UpdateActivityInternal(activity, _onUpdateActivity, ActuallyUpdateStuff);
@@ -141,7 +141,7 @@ namespace Microsoft.Bot.Builder
 
             async Task ActuallyDeleteStuff()
             {
-                await this.Adapter.DeleteActivity(cr);
+                await this.Adapter.DeleteActivity(this, cr);
             }
 
             await DeleteActivityInternal(cr, _onDeleteActivity, ActuallyDeleteStuff);

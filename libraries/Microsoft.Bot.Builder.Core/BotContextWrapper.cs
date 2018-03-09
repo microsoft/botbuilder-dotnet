@@ -38,6 +38,10 @@ namespace Microsoft.Bot.Builder
             return this._innerContext.Get(key);
         }
 
+        public Task SendActivity(params string[] textRepliesToSend)
+        {
+            return _innerContext.SendActivity(textRepliesToSend);
+        }
         public Task SendActivity(params Activity[] activities)
         {
             return _innerContext.SendActivity(activities); 
