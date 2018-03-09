@@ -104,8 +104,12 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <returns>App credentials.</returns>
         protected virtual async Task<MicrosoftAppCredentials> GetAppCredentials(string appId)
         {
-            MicrosoftAppCredentials appCredentials;
-            if (!_appCredentialMap.TryGetValue(appId, out appCredentials))
+            if (appId == null)
+            {
+                return MicrosoftAppCredentials.Empty;
+            }
+
+            if (!_appCredentialMap.TryGetValue(appId, out var appCredentials))
             {
                 string appPassword = await _credentialProvider.GetAppPasswordAsync(appId);
                 appCredentials = new MicrosoftAppCredentials(appId, appPassword);

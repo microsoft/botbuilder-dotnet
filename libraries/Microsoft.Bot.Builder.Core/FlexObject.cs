@@ -203,9 +203,17 @@ namespace Microsoft.Bot.Builder
 
         public object Clone()
         {
-            return JsonConvert.DeserializeObject<StoreItem>(
-                JsonConvert.SerializeObject(this, SerializationSettings),
-                SerializationSettings);
+            return JsonConvert.DeserializeObject(JsonConvert.SerializeObject(this, SerializationSettings),SerializationSettings);
+        }
+
+        public static T Clone<T>(object obj)
+        {
+            return JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(obj, SerializationSettings), SerializationSettings);
+        }
+
+        public static object Clone(object obj)
+        {
+            return JsonConvert.DeserializeObject(JsonConvert.SerializeObject(obj, SerializationSettings), SerializationSettings);
         }
     }
 }

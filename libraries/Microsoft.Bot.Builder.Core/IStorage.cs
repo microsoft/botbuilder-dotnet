@@ -1,8 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System.Threading.Tasks;
 using Newtonsoft.Json;
+using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder
 {
@@ -49,7 +49,7 @@ namespace Microsoft.Bot.Builder
         /// </summary>
         public string eTag { get; set; }
 
-        public T ToObject<T>()
+        public T ToObject<T>() where T : class
         {
             return JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(this, serializationSettings), serializationSettings);
         }
@@ -57,16 +57,15 @@ namespace Microsoft.Bot.Builder
 
     public class StoreItems : FlexObject
     {
-        public T Get<T>(string name)
+        public T Get<T>(string name) where T : class
         {
-            if (this.TryGetValue(name, out dynamic value) && value != null)
-                return value.ToObject<T>();
-            return default(T);
+            this.TryGetValue(name, out object value);
+
+            return value as T;
         }
     }
 
-    public class StoreItems<StoreItemT> : StoreItems
-        where StoreItemT : IStoreItem
+    public class StoreItems<StoreItemT> : StoreItems where StoreItemT : class
     {
     }
 
@@ -86,8 +85,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="storage"></param>
         /// <param name="keys"></param>
         /// <returns></returns>
-        public static async Task<StoreItems<StoreItemT>> Read<StoreItemT>(this IStorage storage, params string[] keys)
-            where StoreItemT : StoreItem
+        public static async Task<StoreItems<StoreItemT>> Read<StoreItemT>(this IStorage storage, params string[] keys) where StoreItemT : class
         {
             var storeItems = await storage.Read(keys).ConfigureAwait(false);
             var newResults = new StoreItems<StoreItemT>();

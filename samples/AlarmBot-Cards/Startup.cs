@@ -4,11 +4,10 @@
 using AlarmBot.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Bot.Builder;
-using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.BotFramework;
+using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Builder.Middleware;
 using Microsoft.Bot.Builder.Storage;
-using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Text.RegularExpressions;
@@ -33,18 +32,15 @@ namespace AlarmBot
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton(_ => Configuration);
-            services.AddMvc();
-            // register adapater
-            services.AddSingleton<BotFrameworkAdapter>(serviceProvider =>
-            {
-                string applicationId = Configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppIdKey)?.Value;
-                string applicationPassword = Configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppPasswordKey)?.Value;
+            services.AddBot<AlarmBot>(options =>
+            { 
+                options.CredentialProvider = new ConfigurationCredentialProvider(Configuration);
 
-                // create bot hooked up to the activity adapater
-                return new BotFrameworkAdapter(applicationId, applicationPassword)
-                    .Use(new UserState<UserData>(new MemoryStorage()))
-                    .Use(new ConversationState<ConversationData>(new MemoryStorage()))
-                    .Use(new RegExpRecognizerMiddleware()
+                var middleware = options.Middleware;
+
+                middleware.Add(new UserState<UserData>(new MemoryStorage()));
+                middleware.Add(new ConversationState<ConversationData>(new MemoryStorage()));
+                middleware.Add(new RegExpRecognizerMiddleware()
                         .AddIntent("showAlarms", new Regex("show alarms(.*)", RegexOptions.IgnoreCase))
                         .AddIntent("addAlarm", new Regex("add alarm(.*)", RegexOptions.IgnoreCase))
                         .AddIntent("deleteAlarm", new Regex("delete alarm(.*)", RegexOptions.IgnoreCase))
@@ -64,8 +60,8 @@ namespace AlarmBot
             }
 
             app.UseDefaultFiles();
-            app.UseStaticFiles();            
-            app.UseMvc();
+            app.UseStaticFiles();
+            app.UseBotFramework();
         }
     }
 }
