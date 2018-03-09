@@ -18,6 +18,11 @@ namespace Microsoft.Bot.Connector.Authentication
     public class MicrosoftAppCredentials : ServiceClientCredentials
     {
         /// <summary>
+        /// An empty set of credentials.
+        /// </summary>
+        public static readonly MicrosoftAppCredentials Empty = new MicrosoftAppCredentials(null, null);
+
+        /// <summary>
         /// The key for Microsoft app Id.
         /// </summary>
         public const string MicrosoftAppIdKey = "MicrosoftAppId";

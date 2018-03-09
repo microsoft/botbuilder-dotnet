@@ -10,11 +10,11 @@ namespace Microsoft.Bot.Builder.Tests
     [TestClass]
     [TestCategory("Storage")]
     [TestCategory("Storage - Memory")]
-    public class Storage_MemoryTests : Storage_BaseTests, IStorageTests
+    public class MemoryStorageTests : Storage_BaseTests
     {
         private IStorage storage;
 
-        public Storage_MemoryTests() { }
+        public MemoryStorageTests() { }
 
         [TestInitialize]
         public void initialize()
@@ -23,59 +23,56 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [TestMethod]
-        public async Task CreateObjectTest()
+        public async Task MemoryStorage_CreateObjectTest()
         {
             await base._createObjectTest(storage);
         }
 
         [TestMethod]
-        public async Task ReadUnknownTest()
+        public async Task MemoryStorage_ReadUnknownTest()
         {
             await base._readUnknownTest(storage);
         }
 
         [TestMethod]
-        public async Task UpdateObjectTest()
+        public async Task MemoryStorage_UpdateObjectTest()
         {
             await base._updateObjectTest(storage);
         }
 
         [TestMethod]
-        public async Task DeleteObjectTest()
+        public async Task MemoryStorage_DeleteObjectTest()
         {
             await base._deleteObjectTest(storage);
         }
 
         [TestMethod]
-        public async Task HandleCrazyKeys()
+        public async Task MemoryStorage_HandleCrazyKeys()
         {
             await base._handleCrazyKeys(storage);
         }
 
         [TestMethod]
-        public async Task TypedSerialization()
+        public async Task MemoryStorage_TypedSerialization()
         {
             await base._typedSerialization(this.storage);
         }
     }
 
-    public class TestItem : StoreItem
+    public class PocoItem
     {
         public string Id { get; set; }
 
         public int Count { get; set; }
     }
 
-    public interface IStorageTests
+    public class PocoStoreItem : IStoreItem
     {
-        Task ReadUnknownTest();
+        public string eTag { get; set; }
 
-        Task CreateObjectTest();
+        public string Id { get; set; }
 
-        Task HandleCrazyKeys();
-
-        Task UpdateObjectTest();
-
-        Task DeleteObjectTest();
+        public int Count { get; set; }
     }
+
 }
