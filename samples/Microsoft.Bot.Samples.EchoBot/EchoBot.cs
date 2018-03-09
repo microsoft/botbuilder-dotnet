@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 using Microsoft.Bot.Builder;
-using Microsoft.Bot.Builder.Middleware;
+using Microsoft.Bot.Builder.Core.Extensions;
 using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Samples.Echo
@@ -39,7 +39,7 @@ namespace Microsoft.Bot.Samples.Echo
                 await _myService.DoSomethingAsync();
 
                 // return our reply to the user
-                context.Reply($"[{conversationState.TurnNumber}] You sent {msgActivity.Text} which was {length} characters");
+                context.Batch().Reply($"[{conversationState.TurnNumber}] You sent {msgActivity.Text} which was {length} characters");
             }
             
             var convUpdateActivity = context.Request.AsConversationUpdateActivity();
@@ -49,7 +49,7 @@ namespace Microsoft.Bot.Samples.Echo
                 {
                     if (newMember.Id != convUpdateActivity.Recipient.Id)
                     {
-                        context.Reply("Hello and welcome to the echo bot.");
+                        context.Batch().Reply("Hello and welcome to the echo bot.");
                     }
                 }
             }
