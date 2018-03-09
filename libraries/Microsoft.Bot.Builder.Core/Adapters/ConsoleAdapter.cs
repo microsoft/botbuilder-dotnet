@@ -45,7 +45,7 @@ namespace Microsoft.Bot.Builder.Adapters
             }
         }
 
-        public override async Task SendActivity(params Activity[] activities)
+        public override async Task SendActivity(IBotContext context, params Activity[] activities)
         {
             foreach (var activity in activities)
             {
@@ -80,12 +80,12 @@ namespace Microsoft.Bot.Builder.Adapters
             }
         }
 
-        public override Task<ResourceResponse> UpdateActivity(Activity activity)
+        public override Task<ResourceResponse> UpdateActivity(IBotContext context, Activity activity)
         {
             throw new NotImplementedException();
         }
 
-        public override Task DeleteActivity(ConversationReference reference)
+        public override Task DeleteActivity(IBotContext context, ConversationReference reference)
         {
             throw new NotImplementedException();
         }

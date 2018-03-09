@@ -31,21 +31,21 @@ namespace Microsoft.Bot.Builder
         /// </summary>        
         /// <param name="activities">Set of activities being sent</param>
         /// <returns></returns>
-        public abstract Task SendActivity(params Activity[] activities);
+        public abstract Task SendActivity(IBotContext context, params Activity[] activities);
 
         /// <summary>
         /// Implement updating an activity in the conversation
         /// </summary>        
         /// <param name="activity">New replacement activity. The activity should already have it's ID information populated. </param>
         /// <returns></returns>
-        public abstract Task<ResourceResponse> UpdateActivity(Activity activity);
+        public abstract Task<ResourceResponse> UpdateActivity(IBotContext context, Activity activity);
 
         /// <summary>
         /// Implement deleting an activity in the conversation
         /// </summary>
         /// <param name="reference">Conversation reference of the activity being deleted.  </param>
         /// <returns></returns>
-        public abstract Task DeleteActivity(ConversationReference reference);
+        public abstract Task DeleteActivity(IBotContext context, ConversationReference reference);
 
 
         /// <summary>

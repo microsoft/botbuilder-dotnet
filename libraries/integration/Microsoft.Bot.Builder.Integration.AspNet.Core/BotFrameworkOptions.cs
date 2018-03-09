@@ -9,7 +9,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 {
     public class BotFrameworkOptions
     {
-        private readonly List<BotMiddleware.IMiddleware> _middleware;
+        private readonly List<IMiddleware> _middleware;
 
         public BotFrameworkOptions()
         {
