@@ -8,7 +8,7 @@ using Microsoft.Bot.Samples.Echo;
 using System.Configuration;
 using System.Web.Http;
 
-namespace Microsoft.Bot.Samples.EchoBot_AspNet461
+namespace Microsoft.Bot.Samples.Echo.AspNetWebApi
 {
     public class BotConfig
     {

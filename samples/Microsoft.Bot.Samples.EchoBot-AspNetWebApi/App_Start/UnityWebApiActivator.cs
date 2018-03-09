@@ -2,10 +2,10 @@ using System.Web.Http;
 
 using Unity.AspNet.WebApi;
 
-[assembly: WebActivatorEx.PreApplicationStartMethod(typeof(Microsoft.Bot.Samples.EchoBot_AspNet461.UnityWebApiActivator), nameof(Microsoft.Bot.Samples.EchoBot_AspNet461.UnityWebApiActivator.Start))]
-[assembly: WebActivatorEx.ApplicationShutdownMethod(typeof(Microsoft.Bot.Samples.EchoBot_AspNet461.UnityWebApiActivator), nameof(Microsoft.Bot.Samples.EchoBot_AspNet461.UnityWebApiActivator.Shutdown))]
+[assembly: WebActivatorEx.PreApplicationStartMethod(typeof(Microsoft.Bot.Samples.Echo.AspNetWebApi.UnityWebApiActivator), nameof(Microsoft.Bot.Samples.Echo.AspNetWebApi.UnityWebApiActivator.Start))]
+[assembly: WebActivatorEx.ApplicationShutdownMethod(typeof(Microsoft.Bot.Samples.Echo.AspNetWebApi.UnityWebApiActivator), nameof(Microsoft.Bot.Samples.Echo.AspNetWebApi.UnityWebApiActivator.Shutdown))]
 
-namespace Microsoft.Bot.Samples.EchoBot_AspNet461
+namespace Microsoft.Bot.Samples.Echo.AspNetWebApi
 {
     /// <summary>
     /// Provides the bootstrapping for integrating Unity with WebApi when it is hosted in ASP.NET.
