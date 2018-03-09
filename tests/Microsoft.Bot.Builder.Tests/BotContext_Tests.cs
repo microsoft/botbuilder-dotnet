@@ -125,50 +125,8 @@ namespace Microsoft.Bot.Builder.Tests
                 .StartTest();
         }
 
-        [TestMethod]
-        [TestCategory("Functional Spec")]
-        public async Task Context_ReplyTextAndSSML()
-        {
+        
 
-            string ssml = @"<speak><p>hello</p></speak>";
-
-            TestAdapter adapter = new TestAdapter();
-
-            await new TestFlow(adapter, async (context) =>
-            {
-                if (context.Request.AsMessageActivity().Text == "hello")
-                {
-                    context.Reply("use ssml", ssml);
-                }
-            })
-            .Send("hello").AssertReply(
-                    (activity) =>
-                    {
-                        Assert.AreEqual("use ssml", activity.AsMessageActivity().Text);
-                        Assert.AreEqual(ssml, activity.AsMessageActivity().Speak);
-                    }
-                    , "send/reply with speak text works")
-            .StartTest();
-        }
-
-        [TestMethod]
-        [TestCategory("Functional Spec")]
-        public async Task Context_ReplyActivity()
-        {
-
-            TestAdapter adapter = new TestAdapter();
-            await new TestFlow(adapter, async (context) =>
-                {
-                    if (context.Request.AsMessageActivity().Text == "hello")
-                    {
-                        IActivity reply = context.ConversationReference.GetPostToUserMessage();
-                        reply.AsMessageActivity().Text = "world";
-                        context.Reply(reply);
-                    }
-                })
-                .Send("hello")
-                    .AssertReply("world", "send/reply with Activity works")
-                .StartTest();
-        }
+       
     }
 }
