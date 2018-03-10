@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using AlarmBot.Models;
 using AlarmBot.Responses;
 using Microsoft.Bot.Builder;
-using Microsoft.Bot.Builder.Middleware;
 using Microsoft.Bot.Schema;
 
 namespace AlarmBot.Topics

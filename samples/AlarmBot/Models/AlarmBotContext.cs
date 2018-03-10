@@ -1,5 +1,5 @@
 ﻿using Microsoft.Bot.Builder;
-using Microsoft.Bot.Builder.Middleware;
+using Microsoft.Bot.Builder.Core.Extensions;
 using Microsoft.Bot.Schema;
 using Microsoft.Recognizers.Text.DateTime;
 using System;

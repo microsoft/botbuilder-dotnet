@@ -138,6 +138,14 @@ namespace Microsoft.Bot.Builder.Core.Extensions
             return this;
         }
 
+        public BatchOutput Reply(IMessageActivity message)
+        {
+            if (message == null)
+                throw new ArgumentNullException(nameof(message)); 
+
+            _activities.Add((Activity)message);
+            return this;
+        }
         public BatchOutput Reply(string text, string ssml = null, string inputHunt = null)
         {
             Activity a = MessageFactory.Text(text, ssml, inputHunt);
