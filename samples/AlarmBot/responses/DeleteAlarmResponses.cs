@@ -8,8 +8,8 @@ using System.Text;
 using AlarmBot.Models;
 using AlarmBot.Topics;
 using Microsoft.Bot.Builder;
-using Microsoft.Bot.Builder.Middleware;
 using Microsoft.Bot.Schema;
+using Microsoft.Bot.Builder.Core.Extensions;
 
 namespace AlarmBot.Responses
 {
@@ -20,22 +20,23 @@ namespace AlarmBot.Responses
     {
         public static void ReplyWithNoAlarms(AlarmBotContext context)
         {
-            context.Reply($"There are no alarms defined.");
+            context.Batch().Reply($"There are no alarms defined.");
         }
 
         public static void ReplyWithNoAlarmsFound(AlarmBotContext context, string text)
         {
-            context.Reply($"There were no alarms found for {(string)text}.");
+            context.Batch().Reply($"There were no alarms found for {(string)text}.");
         }
 
         public static void ReplyWithTitlePrompt(AlarmBotContext context)
         {
-            context.Reply(GetDeleteActivity(context, context.UserState.Alarms, "Delete Alarms", "What alarm do you want to delete?"));
+            var deleteActivity = GetDeleteActivity(context, context.UserState.Alarms, "Delete Alarms", "What alarm do you want to delete?");
+            context.Batch().Reply((Activity) deleteActivity); 
         }
 
         public static void ReplyWithDeletedAlarm(AlarmBotContext context, Alarm alarm = null)
         {
-            context.Reply($"I have deleted {alarm.Title} alarm");
+            context.Batch().Reply($"I have deleted {alarm.Title} alarm");
         }
 
         public static IMessageActivity GetDeleteActivity(AlarmBotContext context, IEnumerable<Alarm> alarms, string title, string message)
