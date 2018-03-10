@@ -3,8 +3,7 @@
 
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Builder.Middleware;
-using Microsoft.Bot.Builder.Storage;
+using Microsoft.Bot.Builder.Core.Extensions;
 using Microsoft.Bot.Schema;
 using Microsoft.Recognizers.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -21,7 +20,7 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
         {
             TestAdapter adapter = new TestAdapter()
                 .Use(new ConversationState<TestState>(new MemoryStorage()));
-
+            adapter.Use(new BatchOutputMiddleware());
             await new TestFlow(adapter, async (context) =>
                 {
                     var state = ConversationState<TestState>.Get(context);
@@ -38,10 +37,10 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                         {
                             Assert.IsNotNull(phoneResult.Text);
                             Assert.IsNotNull(phoneResult.Value);
-                            context.Reply($"{phoneResult.Value}");
+                            context.Batch().Reply($"{phoneResult.Value}");
                         }
                         else
-                            context.Reply(phoneResult.Status.ToString());
+                            context.Batch().Reply(phoneResult.Status.ToString());
                     }
                 })
                 .Send("hello")
@@ -60,7 +59,7 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
         {
             TestAdapter adapter = new TestAdapter()
                 .Use(new ConversationState<TestState>(new MemoryStorage()));
-
+            adapter.Use(new BatchOutputMiddleware());
             await new TestFlow(adapter, async (context) =>
             {
                 var state = ConversationState<TestState>.Get(context);
@@ -78,9 +77,9 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                 {
                     var phoneResult = await numberPrompt.Recognize(context);
                     if (phoneResult.Succeeded())
-                        context.Reply($"{phoneResult.Value}");
+                        context.Batch().Reply($"{phoneResult.Value}");
                     else
-                        context.Reply(phoneResult.Status.ToString());
+                        context.Batch().Reply(phoneResult.Status.ToString());
                 }
             })
                 .Send("hello")

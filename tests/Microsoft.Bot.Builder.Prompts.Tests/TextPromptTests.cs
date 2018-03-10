@@ -3,8 +3,7 @@
 
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Builder.Middleware;
-using Microsoft.Bot.Builder.Storage;
+using Microsoft.Bot.Builder.Core.Extensions;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -20,7 +19,7 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
         {
             TestAdapter adapter = new TestAdapter()
                 .Use(new ConversationState<StoreItem>(new MemoryStorage()));
-
+            adapter.Use(new BatchOutputMiddleware());
             await new TestFlow(adapter, MyTestPrompt)
                 .Send("hello")
                 .AssertReply("Your Name:")
@@ -34,7 +33,7 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
         {
             TestAdapter adapter = new TestAdapter()
                 .Use(new ConversationState<StoreItem>(new MemoryStorage()));
-
+            adapter.Use(new BatchOutputMiddleware());
             await new TestFlow(adapter, LengthCheckPromptTest)
                 .Send("hello")
                 .AssertReply("Your Name:")
@@ -47,7 +46,7 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
         {
             TestAdapter adapter = new TestAdapter()
                 .Use(new ConversationState<StoreItem>(new MemoryStorage()));
-
+            adapter.Use(new BatchOutputMiddleware());
             await new TestFlow(adapter, LengthCheckPromptTest)
                 .Send("hello")
                 .AssertReply("Your Name:")
@@ -71,11 +70,11 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                 var textResult = await askForName.Recognize(context); 
                 if (textResult.Succeeded())
                 {
-                    context.Reply(textResult.Value);
+                    context.Batch().Reply(textResult.Value);
                 }
                 else
                 {
-                    context.Reply(textResult.Status.ToString()); 
+                    context.Batch().Reply(textResult.Status.ToString()); 
                 }
             }
         }
@@ -94,11 +93,11 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                 var textResult = await askForName.Recognize(context);
                 if (textResult.Succeeded())
                 {
-                    context.Reply(textResult.Value);
+                    context.Batch().Reply(textResult.Value);
                 }
                 else
                 {
-                    context.Reply(textResult.Status.ToString());
+                    context.Batch().Reply(textResult.Status.ToString());
                 }
             }
         }

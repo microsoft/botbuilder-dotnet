@@ -10,6 +10,7 @@ using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Ai;
 using Microsoft.Bot.Builder.BotFramework;
+using Microsoft.Bot.Builder.Core.Extensions;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 
@@ -34,17 +35,17 @@ namespace Microsoft.Bot.Samples.Ai.QnA.Controllers
                     KnowledgeBaseId = "xxxxxx"
                 };
                 adapter = new BotFrameworkAdapter(new ConfigurationCredentialProvider(configuration))
-                    // add QnA middleware 
+                    .Use(new BatchOutputMiddleware())                    
                     .Use(new QnAMakerMiddleware(qnaOptions, _httpClient));
             }
         }
 
         private Task BotReceiveHandler(IBotContext context)
         {
-            if (context.Request.Type == ActivityTypes.Message && context.Responses.Count == 0)
+            if (context.Request.Type == ActivityTypes.Message && context.Responded == false)
             {
                 // add app logic when QnA Maker doesn't find an answer
-                context.Reply("No good match found in the KB.");
+                context.Batch().Reply("No good match found in the KB.");
             }
             return Task.CompletedTask;
         }
