@@ -172,6 +172,10 @@
       <Project>{bd0b82ef-1601-4e87-b78a-b43de7eb36b0}</Project>
       <Name>Microsoft.Bot.Builder.Integration.AspNet.WebApi</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Core.Extensions\Microsoft.Bot.Builder.Core.Extensions.csproj">
+      <Project>{183b3324-4cff-477a-8eae-73953d3e383d}</Project>
+      <Name>Microsoft.Bot.Builder.Core.Extensions</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Core\Microsoft.Bot.Builder.Core.csproj">
       <Project>{F0C150E2-9B8A-444C-B70E-97AD918CB3D4}</Project>
       <Name>Microsoft.Bot.Builder.Core</Name>
