@@ -21,7 +21,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Handlers
                 SerializerSettings =
                 {
                     ContractResolver = new CamelCasePropertyNamesContractResolver(),
-                    Formatting = Newtonsoft.Json.Formatting.Indented,
+                    Formatting = Formatting.Indented,
                     NullValueHandling = NullValueHandling.Ignore,
                 }
             }
