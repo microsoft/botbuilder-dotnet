@@ -39,7 +39,7 @@ namespace Microsoft.Bot.Builder.Prompts
             if (results.Any())
             {
                 var result = results.First();
-                textResult.Status = RecognitionStatus.Recognized;
+                textResult.Status = PromptStatus.Recognized;
                 textResult.Text = result.Text;
                 textResult.Value = (string)result.Resolution["value"];
                 await Validate(context, textResult);

@@ -5,7 +5,7 @@ using static Microsoft.Bot.Builder.Prompts.PromptValidatorEx;
 
 namespace Microsoft.Bot.Builder.Prompts
 {
-    public class TextResult : RecognitionResult
+    public class TextResult : PromptResult
     {
         public TextResult() { }
 
@@ -53,7 +53,7 @@ namespace Microsoft.Bot.Builder.Prompts
             TextResult textResult = new TextResult();
             if (message.Text != null)
             {
-                textResult.Status = RecognitionStatus.Recognized;
+                textResult.Status = PromptStatus.Recognized;
                 textResult.Value = message.Text;
                 textResult.Text = message.Text;
                 await Validate(context, textResult);

@@ -42,15 +42,15 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                             context.Reply($"{percentResult.Value}");
                         }
                         else
-                            context.Reply(RecognitionStatus.NotRecognized.ToString());
+                            context.Reply(PromptStatus.NotRecognized.ToString());
                     }
                 })
                 .Send("hello")
                 .AssertReply("Gimme:")
                 .Send("test test test")
-                    .AssertReply(RecognitionStatus.NotRecognized.ToString())
+                    .AssertReply(PromptStatus.NotRecognized.ToString())
                 .Send("give me 5")
-                    .AssertReply(RecognitionStatus.NotRecognized.ToString())
+                    .AssertReply(PromptStatus.NotRecognized.ToString())
                 .Send(" I would like forty five percent")
                     .AssertReply("45")
                 .StartTest();
@@ -68,7 +68,7 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                 var numberPrompt = new PercentagePrompt(Culture.English, async (ctx, result) =>
                 {
                     if (result.Value <= 10)
-                        result.Status = RecognitionStatus.TooSmall;
+                        result.Status = PromptStatus.TooSmall;
                 });
                 if (!state.InPrompt)
                 {
@@ -87,7 +87,7 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                 .Send("hello")
                 .AssertReply("Gimme:")
                 .Send(" I would like 5%")
-                    .AssertReply(RecognitionStatus.TooSmall.ToString())
+                    .AssertReply(PromptStatus.TooSmall.ToString())
                 .Send(" I would like 30%")
                     .AssertReply("30")
                 .StartTest();

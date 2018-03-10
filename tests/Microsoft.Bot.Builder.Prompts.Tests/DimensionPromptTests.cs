@@ -49,7 +49,7 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                 .Send("hello")
                 .AssertReply("Gimme:")
                 .Send("test test test")
-                    .AssertReply(RecognitionStatus.NotRecognized.ToString())
+                    .AssertReply(PromptStatus.NotRecognized.ToString())
                 .Send("I am 4 feet wide")
                     .AssertReply("4 Foot")
                 .Send(" it is 1 foot wide")
@@ -69,7 +69,7 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                     var numberPrompt = new DimensionPrompt(Culture.English, async (ctx, result) =>
                     {
                         if (result.Value <= 10)
-                            result.Status = RecognitionStatus.TooSmall;
+                            result.Status = PromptStatus.TooSmall;
                     });
                     if (!state.InPrompt)
                     {
@@ -88,7 +88,7 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                 .Send("hello")
                 .AssertReply("Gimme:")
                 .Send(" it is 1 foot wide")
-                    .AssertReply(RecognitionStatus.TooSmall.ToString())
+                    .AssertReply(PromptStatus.TooSmall.ToString())
                 .Send(" it is 40 feet wide")
                     .AssertReply("40 Foot")
                 .StartTest();

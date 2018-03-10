@@ -49,7 +49,7 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                 .Send("hello")
                 .AssertReply("Gimme:")
                 .Send("test test test")
-                    .AssertReply(RecognitionStatus.NotRecognized.ToString())
+                    .AssertReply(PromptStatus.NotRecognized.ToString())
                 .Send("I am 30 years old")
                     .AssertReply("30 Year")
                 .StartTest();
@@ -67,7 +67,7 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                 var numberPrompt = new AgePrompt(Culture.English, async (ctx, result) =>
                 {
                     if (result.Value <= 10)
-                        result.Status = RecognitionStatus.TooSmall;
+                        result.Status = PromptStatus.TooSmall;
                 });
                 if (!state.InPrompt)
                 {
@@ -86,7 +86,7 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                 .Send("hello")
                 .AssertReply("Gimme:")
                 .Send(" it is 1 year old")
-                    .AssertReply(RecognitionStatus.TooSmall.ToString())
+                    .AssertReply(PromptStatus.TooSmall.ToString())
                 .Send(" it is 15 year old")
                     .AssertReply("15 Year")
                 .StartTest();

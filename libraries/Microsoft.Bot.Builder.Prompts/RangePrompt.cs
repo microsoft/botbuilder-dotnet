@@ -8,7 +8,7 @@ using static Microsoft.Bot.Builder.Prompts.PromptValidatorEx;
 
 namespace Microsoft.Bot.Builder.Prompts
 {
-    public class RangeResult : RecognitionResult
+    public class RangeResult : PromptResult
     {
         public float Start { get; set; }
 
@@ -54,7 +54,7 @@ namespace Microsoft.Bot.Builder.Prompts
                     string[] values = result.Resolution["value"].ToString().Trim('(', ')').Split(',');
                     if (float.TryParse(values[0], out float startValue) && float.TryParse(values[1], out float endValue))
                     {
-                        rangeResult.Status = RecognitionStatus.Recognized;
+                        rangeResult.Status = PromptStatus.Recognized;
                         rangeResult.Text = result.Text;
                         rangeResult.Start = startValue;
                         rangeResult.End = endValue;

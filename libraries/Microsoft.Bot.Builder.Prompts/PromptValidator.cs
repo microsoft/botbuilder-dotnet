@@ -16,6 +16,6 @@ namespace Microsoft.Bot.Builder.Prompts
         /// <param name="toValidate"></param>
         /// <returns>true or false task</returns>
         public delegate Task PromptValidator<InT>(IBotContext context, InT toValidate)
-            where InT : RecognitionResult;
+            where InT : PromptResult;
     }
 }

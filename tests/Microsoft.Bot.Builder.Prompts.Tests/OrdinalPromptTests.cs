@@ -48,7 +48,7 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                 .Send("hello")
                 .AssertReply("Gimme:")
                 .Send("test test test")
-                    .AssertReply(RecognitionStatus.NotRecognized.ToString())
+                    .AssertReply(PromptStatus.NotRecognized.ToString())
                 .Send(" the second one please ")
                     .AssertReply("2")
                 .StartTest();
@@ -66,7 +66,7 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                 var numberPrompt = new OrdinalPrompt(Culture.English, async (ctx, result) =>
                 {
                     if (result.Value <= 2)
-                        result.Status = RecognitionStatus.TooSmall;
+                        result.Status = PromptStatus.TooSmall;
                 });
                 if (!state.InPrompt)
                 {
@@ -90,7 +90,7 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                 .Send("hello")
                 .AssertReply("Gimme:")
                 .Send("the first one")
-                    .AssertReply(RecognitionStatus.TooSmall.ToString())
+                    .AssertReply(PromptStatus.TooSmall.ToString())
                 .Send("the third one")
                     .AssertReply("3")
                 .StartTest();
