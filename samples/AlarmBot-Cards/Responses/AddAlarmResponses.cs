@@ -5,6 +5,7 @@ using System;
 using AdaptiveCards;
 using AlarmBot.Models;
 using Microsoft.Bot.Builder;
+using Microsoft.Bot.Builder.Core.Extensions;
 using Microsoft.Bot.Schema;
 
 namespace AlarmBot.Responses
@@ -48,31 +49,31 @@ namespace AlarmBot.Responses
 
         public static void ReplyWithStartTopic(IBotContext context, dynamic data)
         {
-            context.Reply(AlarmCardEditor(context, data, "Adding Alarm", "Please describe your alarm:", "Submit", "Cancel"));
+            context.Batch().Reply(AlarmCardEditor(context, data, "Adding Alarm", "Please describe your alarm:", "Submit", "Cancel"));
         }
         public static void ReplyWithHelp(IBotContext context, dynamic data)
         {
-            context.Reply(AlarmCardEditor(context, data, "Adding alarm", $"I am working with you to create an alarm.  Please describe your alarm:.\n\n", "Submit", "Cancel"));
+            context.Batch().Reply(AlarmCardEditor(context, data, "Adding alarm", $"I am working with you to create an alarm.  Please describe your alarm:.\n\n", "Submit", "Cancel"));
         }
         public static void ReplyWithConfused(IBotContext context, dynamic data)
         {
-            context.Reply($"I am sorry, I didn't understand: {((Activity)context.Request).Text}.");
+            context.Batch().Reply($"I am sorry, I didn't understand: {((Activity)context.Request).Text}.");
         }
         public static void ReplyWithCancelPrompt(IBotContext context, dynamic data)
         {
-            context.Reply(TopicResponseHelpers.CreateMessageBoxCard(context, CANCELPROMPT, "Cancel Alarm?", "Are you sure you want to cancel this alarm?", "Yes", "No"));
+            context.Batch().Reply(TopicResponseHelpers.CreateMessageBoxCard(context, CANCELPROMPT, "Cancel Alarm?", "Are you sure you want to cancel this alarm?", "Yes", "No"));
         }
         public static void ReplyWithCancelReprompt(IBotContext context, dynamic data)
         {
-            context.Reply(TopicResponseHelpers.CreateMessageBoxCard(context, CANCELPROMPT, "Cancel Alarm?", "Please answer with a Yes or No. Are you sure you want to cancel this alarm?", "Yes", "No"));
+            context.Batch().Reply(TopicResponseHelpers.CreateMessageBoxCard(context, CANCELPROMPT, "Cancel Alarm?", "Please answer with a Yes or No. Are you sure you want to cancel this alarm?", "Yes", "No"));
         }
         public static void ReplyWithTopicCanceled(IBotContext context, dynamic data)
         {
-            context.Reply($"OK, I have canceled creating this alarm.");
+            context.Batch().Reply($"OK, I have canceled creating this alarm.");
         }
         public static void ReplyWithAddedAlarm(IBotContext context, dynamic data)
         {
-            context.Reply($"OK, I have added the alarm {((Alarm)data).Title}.");
+            context.Batch().Reply($"OK, I have added the alarm {((Alarm)data).Title}.");
         }
     }
 }

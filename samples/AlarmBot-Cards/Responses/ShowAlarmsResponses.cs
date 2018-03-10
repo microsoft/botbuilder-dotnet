@@ -4,6 +4,8 @@
 using AdaptiveCards;
 using AlarmBot.Models;
 using Microsoft.Bot.Builder;
+using Microsoft.Bot.Builder.Core.Extensions;
+using Microsoft.Bot.Builder.Templates;
 using Microsoft.Bot.Schema;
 using System.Collections.Generic;
 using System.Linq;
@@ -40,7 +42,7 @@ namespace AlarmBot.Responses
 
         public static void ReplyWithShowAlarms(IBotContext context, dynamic data)
         {
-            context.Reply(AlarmsCard(context, data, "Alarms", null));
+            context.Batch().Reply(AlarmsCard(context, data, "Alarms", null));
         }
     }
 }
