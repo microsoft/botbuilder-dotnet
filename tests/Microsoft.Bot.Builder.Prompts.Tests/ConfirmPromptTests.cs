@@ -46,7 +46,7 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                 .Send("hello")
                 .AssertReply("Gimme:")
                 .Send("tyest tnot")
-                    .AssertReply(RecognitionStatus.NotRecognized.ToString())
+                    .AssertReply(PromptStatus.NotRecognized.ToString())
                 .Send(".. yes please ")
                     .AssertReply("True")
                 .Send(".. no thank you")
@@ -66,7 +66,7 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                 var confirmPrompt = new ConfirmPrompt(Culture.English, async (ctx, result) =>
                 {
                     if (ctx.Request.Text.Contains("xxx"))
-                        result.Status = RecognitionStatus.NotRecognized;
+                        result.Status = PromptStatus.NotRecognized;
                 });
 
                 if (!state.InPrompt)
@@ -86,9 +86,9 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                 .Send("hello")
                 .AssertReply("Gimme:")
                 .Send(" yes you xxx")
-                    .AssertReply(RecognitionStatus.NotRecognized.ToString())
+                    .AssertReply(PromptStatus.NotRecognized.ToString())
                 .Send(" no way you xxx")
-                    .AssertReply(RecognitionStatus.NotRecognized.ToString())
+                    .AssertReply(PromptStatus.NotRecognized.ToString())
                 .Send(" yep")
                     .AssertReply("True")
                 .Send(" nope")

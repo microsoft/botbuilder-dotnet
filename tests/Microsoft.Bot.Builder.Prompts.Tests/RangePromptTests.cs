@@ -48,9 +48,9 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                 .Send("hello")
                 .AssertReply("Gimme:")
                 .Send("test test test")
-                    .AssertReply(RecognitionStatus.NotRecognized.ToString())
+                    .AssertReply(PromptStatus.NotRecognized.ToString())
                 .Send("give me 5 10")
-                    .AssertReply(RecognitionStatus.NotRecognized.ToString())
+                    .AssertReply(PromptStatus.NotRecognized.ToString())
                 .Send(" give me between 5 and 10")
                     .AssertReply("5-10")
                 .StartTest();
@@ -68,7 +68,7 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                 var testPrompt = new RangePrompt<int>(Culture.English, async (c, result) =>
                 {
                     if (result.End - result.Start <= 5)
-                        result.Status = RecognitionStatus.OutOfRange;
+                        result.Status = PromptStatus.OutOfRange;
                 });
                 if (!state.InPrompt)
                 {
@@ -92,7 +92,7 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                 .Send("hello")
                 .AssertReply("Gimme:")
                 .Send("give me between 1 and 4")
-                    .AssertReply(RecognitionStatus.OutOfRange.ToString())
+                    .AssertReply(PromptStatus.OutOfRange.ToString())
                 .Send(" give me between 1 and 10")
                     .AssertReply("1-10")
                 .StartTest();

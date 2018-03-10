@@ -39,7 +39,7 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                 .Send("hello")
                 .AssertReply("Your Name:")
                 .Send("1")
-                .AssertReply(RecognitionStatus.TooSmall.ToString())                
+                .AssertReply(PromptStatus.TooSmall.ToString())                
                 .StartTest();
         }
         [TestMethod]
@@ -106,7 +106,7 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
         public async Task MinLengthValidator(IBotContext context, TextResult textResult)
         {
             if (textResult.Value.Length <= 5)
-                textResult.Status = RecognitionStatus.TooSmall;
+                textResult.Status = PromptStatus.TooSmall;
         }
     }
 }

@@ -8,7 +8,7 @@ using static Microsoft.Bot.Builder.Prompts.PromptValidatorEx;
 
 namespace Microsoft.Bot.Builder.Prompts
 {
-    public class NumberResult<T> : RecognitionResult
+    public class NumberResult<T> : PromptResult
     {
         public T Value { get; set; }
 
@@ -56,7 +56,7 @@ namespace Microsoft.Bot.Builder.Prompts
                 {
                     if (float.TryParse(result.Resolution["value"].ToString(), out float value))
                     {
-                        numberResult.Status = RecognitionStatus.Recognized;
+                        numberResult.Status = PromptStatus.Recognized;
                         numberResult.Value = (T)(object)value;
                         numberResult.Text = result.Text;
                         await Validate(context, numberResult);
@@ -66,7 +66,7 @@ namespace Microsoft.Bot.Builder.Prompts
                 {
                     if (int.TryParse(result.Resolution["value"].ToString(), out int value))
                     {
-                        numberResult.Status = RecognitionStatus.Recognized;
+                        numberResult.Status = PromptStatus.Recognized;
                         numberResult.Value = (T)(object)value;
                         numberResult.Text = result.Text;
                         await Validate(context, numberResult);
