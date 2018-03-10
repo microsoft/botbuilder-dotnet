@@ -5,10 +5,9 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Builder.Middleware;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.Bot.Builder.Tests
+namespace Microsoft.Bot.Builder.Core.Extensions.Tests
 {
     [TestClass]
     public class Intent_RegExRecognizerTests
@@ -18,19 +17,18 @@ namespace Microsoft.Bot.Builder.Tests
         [TestCategory("RegEx Intent Recognizer")]
         public async Task Regex_RecognizeHelpIntent()
         {
-
-
             RegExpRecognizerMiddleware helpRecognizer = new RegExpRecognizerMiddleware()
                 .AddIntent("HelpIntent", new Regex("help", RegexOptions.IgnoreCase));
 
             TestAdapter adapter = new TestAdapter()
+                .Use(new BatchOutputMiddleware())
                 .Use(helpRecognizer);
 
             await new TestFlow(adapter, async (context) =>
                 {
                     var recognized = context.Get<IRecognizedIntents>();
                     if (recognized.TopIntent.Name == "HelpIntent")
-                        context.Reply("You selected HelpIntent");
+                        context.Batch().Reply("You selected HelpIntent");
                 })
                 .Test("help", "You selected HelpIntent")
                 .StartTest();
@@ -79,6 +77,7 @@ namespace Microsoft.Bot.Builder.Tests
         public async Task Regex_RecognizeIntentViaRegex()
         {
             TestAdapter adapter = new TestAdapter()
+                .Use(new BatchOutputMiddleware())
                 .Use(new RegExpRecognizerMiddleware()
                         .AddIntent("aaaaa", new Regex("a", RegexOptions.IgnoreCase))
                         .AddIntent("bbbbb", new Regex("b", RegexOptions.IgnoreCase))
@@ -89,9 +88,9 @@ namespace Microsoft.Bot.Builder.Tests
                     var recognized = context.Get<IRecognizedIntents>();
 
                     if (new Regex("a").IsMatch(context.Request.Text))
-                        context.Reply("aaaa Intent");
+                        context.Batch().Reply("aaaa Intent");
                     if (new Regex("b").IsMatch(context.Request.Text))
-                        context.Reply("bbbb Intent");
+                        context.Batch().Reply("bbbb Intent");
                 })
                 .Test("aaaaaaaaa", "aaaa Intent")
                 .Test("bbbbbbbbb", "bbbb Intent")
@@ -103,18 +102,17 @@ namespace Microsoft.Bot.Builder.Tests
         [TestCategory("RegEx Intent Recognizer")]
         public async Task Regex_RecognizeCancelIntent()
         {
-
-
             RegExpRecognizerMiddleware helpRecognizer = new RegExpRecognizerMiddleware()
                 .AddIntent("CancelIntent", new Regex("cancel", RegexOptions.IgnoreCase));
 
             TestAdapter adapter = new TestAdapter()
+                .Use(new BatchOutputMiddleware())
                 .Use(helpRecognizer);
             await new TestFlow(adapter, async (context) =>
                 {
                     var recognized = context.Get<IRecognizedIntents>();
                     if (recognized.TopIntent.Name == "CancelIntent")
-                        context.Reply("You selected CancelIntent");
+                        context.Batch().Reply("You selected CancelIntent");
                 })
                 .Test("cancel", "You selected CancelIntent")
                 .StartTest();
@@ -125,21 +123,20 @@ namespace Microsoft.Bot.Builder.Tests
         [TestCategory("RegEx Intent Recognizer")]
         public async Task Regex_DoNotRecognizeCancelIntent()
         {
-
-
             RegExpRecognizerMiddleware helpRecognizer = new RegExpRecognizerMiddleware()
                 .AddIntent("CancelIntent", new Regex("cancel", RegexOptions.IgnoreCase));
 
             TestAdapter adapter = new TestAdapter()
+                .Use(new BatchOutputMiddleware())
                 .Use(helpRecognizer);
 
             await new TestFlow(adapter, async (context) =>
                 {
                     var recognized = context.Get<IRecognizedIntents>();
                     if (recognized.TopIntent?.Name == "CancelIntent")
-                        context.Reply("You selected CancelIntent");
+                        context.Batch().Reply("You selected CancelIntent");
                     else
-                        context.Reply("Bot received request of type message");
+                        context.Batch().Reply("Bot received request of type message");
                 })
                 .Test("tacos", "Bot received request of type message")
                 .Test("cancel", "You selected CancelIntent")
@@ -157,16 +154,17 @@ namespace Microsoft.Bot.Builder.Tests
                 .AddIntent("TacoIntent", new Regex("taco", RegexOptions.IgnoreCase));
 
             TestAdapter adapter = new TestAdapter()
+                .Use(new BatchOutputMiddleware())
                 .Use(helpRecognizer);
             await new TestFlow(adapter, async (context) =>
                 {
                     var recognized = context.Get<IRecognizedIntents>();
                     if (recognized.TopIntent.Name == "HelpIntent")
-                        context.Reply("You selected HelpIntent");
+                        context.Batch().Reply("You selected HelpIntent");
                     else if (recognized.TopIntent.Name == "CancelIntent")
-                        context.Reply("You selected CancelIntent");
+                        context.Batch().Reply("You selected CancelIntent");
                     else if (recognized.TopIntent.Name == "TacoIntent")
-                        context.Reply("You selected TacoIntent");
+                        context.Batch().Reply("You selected TacoIntent");
                 })
                 .Send("help").AssertReply("You selected HelpIntent")
                 .Send("cancel").AssertReply("You selected CancelIntent")
