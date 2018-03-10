@@ -4,10 +4,9 @@
 using AlarmBot.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Bot.Builder.BotFramework;
+using Microsoft.Bot.Builder.Core.Extensions;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
-using Microsoft.Bot.Builder.Middleware;
-using Microsoft.Bot.Builder.Storage;
+using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Text.RegularExpressions;
@@ -40,6 +39,7 @@ namespace AlarmBot
 
                 middleware.Add(new UserState<UserData>(new MemoryStorage()));
                 middleware.Add(new ConversationState<ConversationData>(new MemoryStorage()));
+                middleware.Add(new BatchOutputMiddleware());
                 middleware.Add(new RegExpRecognizerMiddleware()
                         .AddIntent("showAlarms", new Regex("show alarm(?:s)*(.*)", RegexOptions.IgnoreCase))
                         .AddIntent("addAlarm", new Regex("add(?: an)* alarm(.*)", RegexOptions.IgnoreCase))
