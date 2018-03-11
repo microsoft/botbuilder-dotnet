@@ -125,6 +125,29 @@ namespace Microsoft.Bot.Builder.V3Bridge.Dialogs.Internals
             await this.client.Conversations.ReplyToActivityAsync((Activity)message, cancellationToken);
         }
     }
+
+    public sealed class V4Bridge_BotToUser : IBotToUser
+    {
+        private readonly Microsoft.Bot.Builder.IBotContext context;
+
+        public V4Bridge_BotToUser(Microsoft.Bot.Builder.IBotContext context)
+        {
+            SetField.NotNull(out this.context, nameof(context), context);
+        }
+
+        IMessageActivity IBotToUser.MakeMessage()
+        {
+            var toBotActivity = (Activity)this.context.Request;
+            return toBotActivity.CreateReply();
+        }
+
+        Task IBotToUser.PostAsync(IMessageActivity message, CancellationToken cancellationToken)
+        {
+            // TODO, change this to context.SendActivity with M2 delta
+            return this.context.Adapter.SendActivities(this.context, new Activity[] { (Activity)message });
+        }
+    }
+
     public interface IMessageQueue
     {
         Task QueueMessageAsync(IBotToUser botToUser, IMessageActivity message, CancellationToken token);
@@ -302,27 +325,6 @@ namespace Microsoft.Bot.Builder.V3Bridge.Dialogs.Internals
         }
     }
 
-    public sealed class BotToUserQueue : IBotToUser
-    {
-        private readonly IMessageActivity toBot;
-        private readonly Queue<IMessageActivity> queue;
-        public BotToUserQueue(IMessageActivity toBot, Queue<IMessageActivity> queue)
-        {
-            SetField.NotNull(out this.toBot, nameof(toBot), toBot);
-            SetField.NotNull(out this.queue, nameof(queue), queue);
-        }
-
-        IMessageActivity IBotToUser.MakeMessage()
-        {
-            var toBotActivity = (Activity)this.toBot;
-            return toBotActivity.CreateReply();
-        }
-
-        async Task IBotToUser.PostAsync(IMessageActivity message, CancellationToken cancellationToken)
-        {
-            this.queue.Enqueue(message);
-        }
-    }
 
     public sealed class BotToUserTextWriter : IBotToUser
     {

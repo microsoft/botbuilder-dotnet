@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Middleware;
@@ -36,7 +37,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="context"></param>
         /// <param name=""></param>
         /// <returns></returns>
-        protected abstract Task SendActivitiesImplementation(IBotContext context, IEnumerable<Activity> activities);
+        public abstract Task SendActivities(IBotContext context, IEnumerable<Activity> activities);
 
         /// <summary>
         /// Implement updating an activity in the conversation
@@ -44,7 +45,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="context"></param>
         /// <param name="activity"></param>
         /// <returns></returns>
-        protected abstract Task<ResourceResponse> UpdateActivityImplementation(IBotContext context, Activity activity);
+        public abstract Task<ResourceResponse> UpdateActivity(IBotContext context, Activity activity);
 
         /// <summary>
         /// Implement deleting an activity in the conversation
@@ -53,7 +54,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="conversationId"></param>
         /// <param name="activityId"></param>
         /// <returns></returns>
-        protected abstract Task DeleteActivityImplementation(IBotContext context, string conversationId, string activityId);
+        public abstract Task DeleteActivity(IBotContext context, string conversationId, string activityId);
 
 
         /// <summary>
@@ -62,7 +63,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="context"></param>
         /// <param name="callback"></param>
         /// <returns></returns>
-        protected async Task RunPipeline(IBotContext context, Func<IBotContext, Task> callback = null)
+        protected async Task RunPipeline(IBotContext context, Func<IBotContext, Task> callback = null, CancellationTokenSource cancelToken = null)
         {
             BotAssert.ContextNotNull(context);
 
@@ -74,7 +75,7 @@ namespace Microsoft.Bot.Builder
             // Call any registered Middleware Components looking for ReceiveActivity()
             if (context.Request != null)
             {
-                await _middlewareSet.ReceiveActivityWithStatus(context, callback).ConfigureAwait(false);                
+                await _middlewareSet.ReceiveActivityWithStatus(context, callback).ConfigureAwait(false);
             }
             else
             {
@@ -90,7 +91,7 @@ namespace Microsoft.Bot.Builder
 
             if (context.Responses != null)
             {
-                    await this.SendActivitiesImplementation(context, context.Responses).ConfigureAwait(false);
+                await this.SendActivities(context, context.Responses).ConfigureAwait(false);
             }
 
             System.Diagnostics.Trace.TraceInformation($"Middleware: Ending Pipeline for {context.ConversationReference.ActivityId}");

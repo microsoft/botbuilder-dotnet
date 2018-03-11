@@ -41,6 +41,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
+using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.V3Bridge.Dialogs;
 using Microsoft.Bot.Builder.V3Bridge.Dialogs.Internals;
 using Microsoft.Bot.Builder.V3Bridge.History;
@@ -65,6 +66,7 @@ namespace Microsoft.Bot.Builder.V3Bridge.Tests
     {
         // TODO: Microsoft.Extensions.DependencyInjection
         public readonly IContainer Container;
+        private TestAdapter adapter;
 
         public Bot()
         {
@@ -81,15 +83,19 @@ namespace Microsoft.Bot.Builder.V3Bridge.Tests
             // for proactive trigger post-to-self
             builder.RegisterInstance(this).As<IBot>();
             this.Container = builder.Build();
+            this.adapter = new TestAdapter();
         }
 
         async Task IBot.PostAsync(Activity activity, CancellationToken token)
         {
-            using (var scope = DialogModule.BeginLifetimeScope(this.Container, activity))
+            await this.adapter.ProcessActivity(activity, async (context) =>
             {
-                var task = scope.Resolve<IPostToBot>();
-                await task.PostAsync(activity, token);
-            }
+                using (var scope = DialogModule.BeginLifetimeScope(this.Container, context))
+                {
+                    var task = scope.Resolve<IPostToBot>();
+                    await task.PostAsync(activity, token);
+                }
+            });
         }
     }
 
@@ -947,20 +953,23 @@ namespace Microsoft.Bot.Builder.V3Bridge.Tests
                 var toBot = MakeTestMessage();
                 toBot.Text = "hi";
 
-                using (var scope = DialogModule.BeginLifetimeScope(container, toBot))
+                await new TestAdapter().ProcessActivity((Activity)toBot, async (context) =>
                 {
-                    DialogModule_MakeRoot.Register(scope, () => dialog);
+                    using (var scope = DialogModule.BeginLifetimeScope(container, context))
+                    {
+                        DialogModule_MakeRoot.Register(scope, () => dialog);
 
-                    var task = scope.Resolve<IPostToBot>();
+                        var task = scope.Resolve<IPostToBot>();
 
-                    await task.PostAsync(toBot, CancellationToken.None);
-                }
+                        await task.PostAsync(toBot, CancellationToken.None);
 
-                await AssertOutgoingActivity(container, (toUser) =>
-                {
-                    Assert.AreEqual("some text", toUser.Text);
-                    Assert.IsNull(toUser.Speak);
-                    Assert.AreEqual(0, toUser.Attachments.Count());
+                        await AssertOutgoingActivity(scope, (toUser) =>
+                        {
+                            Assert.AreEqual("some text", toUser.Text);
+                            Assert.IsNull(toUser.Speak);
+                            Assert.AreEqual(0, toUser.Attachments.Count());
+                        });
+                    }
                 });
             };
         }
@@ -977,21 +986,23 @@ namespace Microsoft.Bot.Builder.V3Bridge.Tests
             {
                 var toBot = MakeTestMessage();
                 toBot.Text = "hi";
-
-                using (var scope = DialogModule.BeginLifetimeScope(container, toBot))
+                await new TestAdapter().ProcessActivity((Activity)toBot, async (context) =>
                 {
-                    DialogModule_MakeRoot.Register(scope, () => dialog);
+                    using (var scope = DialogModule.BeginLifetimeScope(container, context))
+                    {
+                        DialogModule_MakeRoot.Register(scope, () => dialog);
 
-                    var task = scope.Resolve<IPostToBot>();
+                        var task = scope.Resolve<IPostToBot>();
 
-                    await task.PostAsync(toBot, CancellationToken.None);
-                }
+                        await task.PostAsync(toBot, CancellationToken.None);
 
-                await AssertOutgoingActivity(container, (toUser) =>
-                {
-                    Assert.AreEqual("some text", toUser.Text);
-                    Assert.AreEqual("some ssml", toUser.Speak);
-                    Assert.AreEqual(0, toUser.Attachments.Count());
+                        await AssertOutgoingActivity(scope, (toUser) =>
+                        {
+                            Assert.AreEqual("some text", toUser.Text);
+                            Assert.AreEqual("some ssml", toUser.Speak);
+                            Assert.AreEqual(0, toUser.Attachments.Count());
+                        });
+                    }
                 });
             };
         }
@@ -1019,22 +1030,24 @@ namespace Microsoft.Bot.Builder.V3Bridge.Tests
             {
                 var toBot = MakeTestMessage();
                 toBot.Text = "hi";
-
-                using (var scope = DialogModule.BeginLifetimeScope(container, toBot))
+                await new TestAdapter().ProcessActivity((Activity)toBot, async (context) =>
                 {
-                    DialogModule_MakeRoot.Register(scope, () => dialog);
+                    using (var scope = DialogModule.BeginLifetimeScope(container, context))
+                    {
+                        DialogModule_MakeRoot.Register(scope, () => dialog);
 
-                    var task = scope.Resolve<IPostToBot>();
+                        var task = scope.Resolve<IPostToBot>();
 
-                    await task.PostAsync(toBot, CancellationToken.None);
-                }
+                        await task.PostAsync(toBot, CancellationToken.None);
 
-                await AssertOutgoingActivity(container, (toUser) =>
-                {
-                    Assert.AreEqual("some text", toUser.Text);
-                    Assert.IsNull(toUser.Speak);
-                    Assert.AreEqual(1, toUser.Attachments.Count());
-                    Assert.AreEqual("foo", toUser.Attachments[0].ContentType);
+                        await AssertOutgoingActivity(scope, (toUser) =>
+                        {
+                            Assert.AreEqual("some text", toUser.Text);
+                            Assert.IsNull(toUser.Speak);
+                            Assert.AreEqual(1, toUser.Attachments.Count());
+                            Assert.AreEqual("foo", toUser.Attachments[0].ContentType);
+                        });
+                    }
                 });
             };
         }
@@ -1062,22 +1075,23 @@ namespace Microsoft.Bot.Builder.V3Bridge.Tests
             {
                 var toBot = MakeTestMessage();
                 toBot.Text = "hi";
-
-                using (var scope = DialogModule.BeginLifetimeScope(container, toBot))
+                await new TestAdapter().ProcessActivity((Activity)toBot, async (context) =>
                 {
-                    DialogModule_MakeRoot.Register(scope, () => dialog);
+                    using (var scope = DialogModule.BeginLifetimeScope(container, context))
+                    {
+                        DialogModule_MakeRoot.Register(scope, () => dialog);
 
-                    var task = scope.Resolve<IPostToBot>();
+                        var task = scope.Resolve<IPostToBot>();
+                        await task.PostAsync(toBot, CancellationToken.None);
 
-                    await task.PostAsync(toBot, CancellationToken.None);
-                }
-
-                await AssertOutgoingActivity(container, (toUser) =>
-                {
-                    Assert.AreEqual("some text", toUser.Text);
-                    Assert.AreEqual("some ssml", toUser.Speak);
-                    Assert.AreEqual(1, toUser.Attachments.Count());
-                    Assert.AreEqual("foo", toUser.Attachments[0].ContentType);
+                        await AssertOutgoingActivity(scope, (toUser) =>
+                        {
+                            Assert.AreEqual("some text", toUser.Text);
+                            Assert.AreEqual("some ssml", toUser.Speak);
+                            Assert.AreEqual(1, toUser.Attachments.Count());
+                            Assert.AreEqual("foo", toUser.Attachments[0].ContentType);
+                        });
+                    }
                 });
             };
         }
@@ -1109,25 +1123,28 @@ namespace Microsoft.Bot.Builder.V3Bridge.Tests
                 var toBot = MakeTestMessage();
                 toBot.Text = "hi";
 
-                using (var scope = DialogModule.BeginLifetimeScope(container, toBot))
+                await new TestAdapter().ProcessActivity((Activity)toBot, async (context) =>
                 {
-                    DialogModule_MakeRoot.Register(scope, () => dialog);
+                    using (var scope = DialogModule.BeginLifetimeScope(container, context))
+                    {
+                        DialogModule_MakeRoot.Register(scope, () => dialog);
 
-                    var task = scope.Resolve<IPostToBot>();
+                        var task = scope.Resolve<IPostToBot>();
 
-                    await task.PostAsync(toBot, CancellationToken.None);
-                }
+                        await task.PostAsync(toBot, CancellationToken.None);
 
-                await AssertOutgoingActivity(container, (toUser) =>
-                {
-                    Assert.AreEqual("some text", toUser.Text);
-                    Assert.AreEqual(0, toUser.Attachments.Count());
-                    Assert.AreEqual(AttachmentLayoutTypes.Carousel, toUser.AttachmentLayout);
-                    Assert.AreEqual(TextFormatTypes.Plain, toUser.TextFormat);
-                    Assert.AreEqual(InputHints.ExpectingInput, toUser.InputHint);
-                    Assert.AreEqual(1, toUser.Entities.Count());
-                    Assert.IsInstanceOfType(toUser.Entities[0], typeof(Mention));
-                    Assert.AreEqual("foo", ((Mention)toUser.Entities[0]).Text);
+                        await AssertOutgoingActivity(scope, (toUser) =>
+                        {
+                            Assert.AreEqual("some text", toUser.Text);
+                            Assert.AreEqual(0, toUser.Attachments.Count());
+                            Assert.AreEqual(AttachmentLayoutTypes.Carousel, toUser.AttachmentLayout);
+                            Assert.AreEqual(TextFormatTypes.Plain, toUser.TextFormat);
+                            Assert.AreEqual(InputHints.ExpectingInput, toUser.InputHint);
+                            Assert.AreEqual(1, toUser.Entities.Count());
+                            Assert.IsInstanceOfType(toUser.Entities[0], typeof(Mention));
+                            Assert.AreEqual("foo", ((Mention)toUser.Entities[0]).Text);
+                        });
+                    }
                 });
             };
         }

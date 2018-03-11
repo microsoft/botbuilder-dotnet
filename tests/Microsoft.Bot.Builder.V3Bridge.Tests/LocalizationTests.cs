@@ -46,6 +46,7 @@ using Moq;
 using Autofac;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.Bot.Builder.Adapters;
 
 namespace Microsoft.Bot.Builder.V3Bridge.Tests
 {
@@ -88,8 +89,9 @@ namespace Microsoft.Bot.Builder.V3Bridge.Tests
             {
                 var toBot = MakeTestMessage();
                 toBot.Locale = language;
+                var context = new BotContext(new TestAdapter(), (Activity)toBot);
 
-                using (var scope = DialogModule.BeginLifetimeScope(container, toBot))
+                using (var scope = DialogModule.BeginLifetimeScope(container, context))
                 {
                     DialogModule_MakeRoot.Register(scope, MakeRoot);
 

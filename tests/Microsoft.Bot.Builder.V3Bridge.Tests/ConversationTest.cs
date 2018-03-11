@@ -32,6 +32,7 @@
 //
 
 using Autofac;
+using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.V3Bridge;
 using Microsoft.Bot.Builder.V3Bridge.ConnectorEx;
 using Microsoft.Bot.Builder.V3Bridge.Dialogs;
@@ -103,7 +104,7 @@ namespace Microsoft.Bot.Builder.V3Bridge.Tests
             catch (Exception e)
             {
                 _result.Body = null;
-                _result.Response = new HttpResponseMessage { StatusCode = HttpStatusCode.InternalServerError};
+                _result.Response = new HttpResponseMessage { StatusCode = HttpStatusCode.InternalServerError };
                 var ex = new HttpOperationException(e?.Message, e);
                 ex.Request = new HttpRequestMessageWrapper(_result.Request, "");
                 ex.Response = new HttpResponseMessageWrapper(_result.Response, e?.Message);
@@ -216,15 +217,9 @@ namespace Microsoft.Bot.Builder.V3Bridge.Tests
 
             var r =
               builder
-              .Register<Queue<IMessageActivity>>(c => new Queue<IMessageActivity>())
+              .Register<Queue<Activity>>(c => ((TestAdapter)c.Resolve<Microsoft.Bot.Builder.IBotContext>().Adapter).ActiveQueue)
               .AsSelf()
               .InstancePerLifetimeScope();
-
-            // truncate AlwaysSendDirect_BotToUser/IConnectorClient with null implementation
-            builder
-                .RegisterType<BotToUserQueue>()
-                .Keyed<IBotToUser>(typeof(AlwaysSendDirect_BotToUser))
-                .InstancePerLifetimeScope();
 
             if (options.HasFlag(Options.InMemoryBotDataStore))
             {
@@ -297,7 +292,7 @@ namespace Microsoft.Bot.Builder.V3Bridge.Tests
         //            scope.Resolve<Func<IDialog<object>>>(TypedParameter.From(MakeRoot));
 
         //            await Conversation.SendAsync(scope, msg);
-        //            var reply = scope.Resolve<Queue<IMessageActivity>>().Dequeue();
+        //            var reply = scope.Resolve<Queue<Activity>>().Dequeue();
         //            Assert.AreEqual("1:test", reply.Text);
         //            var store = scope.Resolve<CachingBotDataStore>();
         //            Assert.AreEqual(0, store.cache.Count);
@@ -311,7 +306,7 @@ namespace Microsoft.Bot.Builder.V3Bridge.Tests
         //            {
         //                scope.Resolve<Func<IDialog<object>>>(TypedParameter.From(MakeRoot));
         //                await Conversation.SendAsync(scope, msg);
-        //                var reply = scope.Resolve<Queue<IMessageActivity>>().Dequeue();
+        //                var reply = scope.Resolve<Queue<Activity>>().Dequeue();
         //                Assert.AreEqual($"{i + 2}:test", reply.Text);
         //                var store = scope.Resolve<CachingBotDataStore>();
         //                Assert.AreEqual(0, store.cache.Count);
@@ -372,56 +367,64 @@ namespace Microsoft.Bot.Builder.V3Bridge.Tests
             using (new FiberTestBase.ResolveMoqAssembly(chain))
             using (var container = Build(Options.InMemoryBotDataStore | Options.NeedsInputHint, chain))
             {
-
-
                 var msg = DialogTestBase.MakeTestMessage();
                 msg.Text = "test";
-
-                using (var scope = DialogModule.BeginLifetimeScope(container, msg))
+                await new TestAdapter().ProcessActivity((Activity)msg, async (context) =>
                 {
-                    scope.Resolve<Func<IDialog<object>>>(TypedParameter.From(MakeRoot));
-                    await Conversation.SendAsync(scope, msg);
-                    var queue = scope.Resolve<Queue<IMessageActivity>>();
-                    Assert.IsTrue(queue.Count > 0);
-                    while (queue.Count > 0)
+                    using (var scope = DialogModule.BeginLifetimeScope(container, context))
                     {
-                        var toUser = queue.Dequeue();
-                        if (queue.Count > 0)
+                        scope.Resolve<Func<IDialog<object>>>(TypedParameter.From(MakeRoot));
+                        await Conversation.SendAsync(scope, context);
+
+                        var queue = ((TestAdapter)context.Adapter).ActiveQueue;
+                        Assert.IsTrue(queue.Count > 0);
+                        while (queue.Count > 0)
                         {
-                            Assert.IsTrue(toUser.InputHint == InputHints.IgnoringInput);
-                        }
-                        else
-                        {
-                            Assert.IsTrue(toUser.InputHint == InputHints.AcceptingInput);
+                            var toUser = queue.Dequeue();
+                            if (queue.Count > 0)
+                            {
+                                Assert.IsTrue(toUser.InputHint == InputHints.IgnoringInput);
+                            }
+                            else
+                            {
+                                Assert.IsTrue(toUser.InputHint == InputHints.AcceptingInput);
+                            }
                         }
                     }
-                }
+                });
 
 
                 msg.Text = "inputhint";
-                using (var scope = DialogModule.BeginLifetimeScope(container, msg))
+                await new TestAdapter().ProcessActivity((Activity)msg, async (context) =>
                 {
-                    scope.Resolve<Func<IDialog<object>>>(TypedParameter.From(MakeRoot));
-                    await Conversation.SendAsync(scope, msg);
-                    var queue = scope.Resolve<Queue<IMessageActivity>>();
-                    Assert.IsTrue(queue.Count == 2);
-                    var toUser = queue.Dequeue();
-                    Assert.AreEqual("reply", toUser.Text);
-                    Assert.IsTrue(toUser.InputHint == InputHints.ExpectingInput);
-                }
+                    using (var scope = DialogModule.BeginLifetimeScope(container, context))
+                    {
+                        scope.Resolve<Func<IDialog<object>>>(TypedParameter.From(MakeRoot));
+                        await Conversation.SendAsync(scope, context);
+
+                        var queue = ((TestAdapter)context.Adapter).ActiveQueue;
+                        Assert.IsTrue(queue.Count == 2);
+                        var toUser = queue.Dequeue();
+                        Assert.AreEqual("reply", toUser.Text);
+                        Assert.IsTrue(toUser.InputHint == InputHints.ExpectingInput);
+                    }
+                });
 
                 msg.Text = "reset";
-                using (var scope = DialogModule.BeginLifetimeScope(container, msg))
+                await new TestAdapter().ProcessActivity((Activity)msg, async (context) =>
                 {
-                    scope.Resolve<Func<IDialog<object>>>(TypedParameter.From(MakeRoot));
-                    await Conversation.SendAsync(scope, msg);
-                    var queue = scope.Resolve<Queue<IMessageActivity>>();
-                    Assert.IsTrue(queue.Count == 1);
-                    var toUser = queue.Dequeue();
-                    Assert.IsTrue(toUser.InputHint == InputHints.ExpectingInput);
-                    Assert.IsNotNull(toUser.LocalTimestamp);
-                }
+                    using (var scope = DialogModule.BeginLifetimeScope(container, context))
+                    {
+                        scope.Resolve<Func<IDialog<object>>>(TypedParameter.From(MakeRoot));
+                        await Conversation.SendAsync(scope, context);
 
+                        var queue = ((TestAdapter)context.Adapter).ActiveQueue;
+                        Assert.IsTrue(queue.Count == 1);
+                        var toUser = queue.Dequeue();
+                        Assert.IsTrue(toUser.InputHint == InputHints.ExpectingInput);
+                        Assert.IsNotNull(toUser.LocalTimestamp);
+                    }
+                });
             }
         }
 
@@ -438,38 +441,45 @@ namespace Microsoft.Bot.Builder.V3Bridge.Tests
             {
                 var msg = DialogTestBase.MakeTestMessage();
                 msg.Text = "testMsg";
-
-                using (var scope = DialogModule.BeginLifetimeScope(container, msg))
+                await new TestAdapter().ProcessActivity((Activity)msg, async (context) =>
                 {
-                    Func<IDialog<object>> MakeRoot = () => chain;
-                    scope.Resolve<Func<IDialog<object>>>(TypedParameter.From(MakeRoot));
+                    using (var scope = DialogModule.BeginLifetimeScope(container, context))
+                    {
+                        Func<IDialog<object>> MakeRoot = () => chain;
+                        scope.Resolve<Func<IDialog<object>>>(TypedParameter.From(MakeRoot));
 
-                    await Conversation.SendAsync(scope, msg);
-                    var reply = scope.Resolve<Queue<IMessageActivity>>().Dequeue();
+                        await Conversation.SendAsync(scope, context);
+                        var queue = ((TestAdapter)context.Adapter).ActiveQueue;
+                        var reply = queue.Dequeue();
 
-                    var botData = scope.Resolve<IBotData>();
-                    await botData.LoadAsync(default(CancellationToken));
-                    var dataBag = scope.Resolve<Func<IBotDataBag>>()();
-                    Assert.IsTrue(dataBag.ContainsKey(ResumptionContext.RESUMPTION_CONTEXT_KEY));
-                    Assert.IsNotNull(scope.Resolve<ConversationReference>());
-                }
+                        var botData = scope.Resolve<IBotData>();
+                        await botData.LoadAsync(default(CancellationToken));
+                        var dataBag = scope.Resolve<Func<IBotDataBag>>()();
+                        Assert.IsTrue(dataBag.ContainsKey(ResumptionContext.RESUMPTION_CONTEXT_KEY));
+                        Assert.IsNotNull(scope.Resolve<ConversationReference>());
+                    }
+                });
 
                 var conversationReference = msg.ToConversationReference();
                 var continuationMessage = conversationReference.GetPostToBotMessage();
-                using (var scope = DialogModule.BeginLifetimeScope(container, continuationMessage))
+                await new TestAdapter().ProcessActivity((Activity)continuationMessage, async (context) =>
                 {
-                    Func<IDialog<object>> MakeRoot = () => { throw new InvalidOperationException(); };
-                    scope.Resolve<Func<IDialog<object>>>(TypedParameter.From(MakeRoot));
+                    using (var scope = DialogModule.BeginLifetimeScope(container, context))
+                    {
+                        Func<IDialog<object>> MakeRoot = () => { throw new InvalidOperationException(); };
+                        scope.Resolve<Func<IDialog<object>>>(TypedParameter.From(MakeRoot));
 
-                    await scope.Resolve<IPostToBot>().PostAsync(new Activity { Text = "resume" }, CancellationToken.None);
+                        await scope.Resolve<IPostToBot>().PostAsync(new Activity { Text = "resume" }, CancellationToken.None);
 
-                    var reply = scope.Resolve<Queue<IMessageActivity>>().Dequeue();
-                    Assert.AreEqual("resumed!", reply.Text);
+                        var queue = ((TestAdapter)context.Adapter).ActiveQueue;
+                        var reply = queue.Dequeue();
+                        Assert.AreEqual("resumed!", reply.Text);
 
-                    var botData = scope.Resolve<IBotData>();
-                    await botData.LoadAsync(default(CancellationToken));
-                    Assert.IsTrue(botData.UserData.GetValue<bool>("resume"));
-                }
+                        var botData = scope.Resolve<IBotData>();
+                        await botData.LoadAsync(default(CancellationToken));
+                        Assert.IsTrue(botData.UserData.GetValue<bool>("resume"));
+                    }
+                });
             }
         }
     }

@@ -15,6 +15,7 @@ using System.Text.RegularExpressions;
 using Match = System.Text.RegularExpressions.Match;
 using System.Threading.Tasks;
 using System.Threading;
+using Microsoft.Bot.Builder.Adapters;
 
 namespace Microsoft.Bot.Builder.V3Bridge.Tests
 {
@@ -227,11 +228,14 @@ namespace Microsoft.Bot.Builder.V3Bridge.Tests
 
         public override async Task ActAsync()
         {
-            using (var scope = DialogModule.BeginLifetimeScope(this.container, this.activity))
+            await new TestAdapter().ProcessActivity((Activity)this.activity, async (context) =>
             {
-                var task = scope.Resolve<IPostToBot>();
-                await task.PostAsync(this.activity, this.token);
-            }
+                using (var scope = DialogModule.BeginLifetimeScope(this.container, context))
+                {
+                    var task = scope.Resolve<IPostToBot>();
+                    await task.PostAsync(this.activity, this.token);
+                }
+            });
         }
     }
 }

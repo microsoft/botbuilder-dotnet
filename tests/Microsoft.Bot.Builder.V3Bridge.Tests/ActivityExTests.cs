@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Builder.V3Bridge.Tests
         {
             IMessageActivity activity = DialogTestBase.MakeTestMessage();
             Assert.IsFalse(activity.GetMentions().Any());
-            activity.Entities = new List<Entity> { new Mention() { Text = "testMention" } };
+            activity.Entities = new List<Microsoft.Bot.Schema.Entity> { new Mention() { Text = "testMention" } };
             // Cloning activity to resemble the incoming activity to bot
             var clonedActivity = JsonConvert.DeserializeObject<Activity>(JsonConvert.SerializeObject(activity));
             Assert.IsTrue(clonedActivity.GetMentions().Any());

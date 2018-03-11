@@ -49,6 +49,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.XPath;
+using Microsoft.Bot.Builder.Adapters;
 
 namespace Microsoft.Bot.Builder.V3Bridge.Tests
 {
@@ -116,18 +117,19 @@ namespace Microsoft.Bot.Builder.V3Bridge.Tests
                 builder.Update(container);
 
                 var toBot = MakeTestMessage();
+                var context = new BotContext(new TestAdapter(), (Activity)toBot);
 
-                using (var scope = DialogModule.BeginLifetimeScope(container, toBot))
+                using (var scope = DialogModule.BeginLifetimeScope(container, context))
                 {
                     DialogModule_MakeRoot.Register(scope, () => dialog.Object);
 
                     var task = scope.Resolve<IPostToBot>();
                     await task.PostAsync(toBot, CancellationToken.None);
 
-                    AssertMentions(PromptText, scope);
+                    AssertMentions(PromptText, ((TestAdapter)context.Adapter).GetNextReply().AsMessageActivity());
                 }
 
-                using (var scope = DialogModule.BeginLifetimeScope(container, toBot))
+                using (var scope = DialogModule.BeginLifetimeScope(container, context))
                 {
                     DialogModule_MakeRoot.Register(scope, () => dialog.Object);
 
@@ -158,18 +160,19 @@ namespace Microsoft.Bot.Builder.V3Bridge.Tests
                 builder.Update(container);
 
                 var toBot = MakeTestMessage();
+                var context = new BotContext(new TestAdapter(), (Activity)toBot);
 
-                using (var scope = DialogModule.BeginLifetimeScope(container, toBot))
+                using (var scope = DialogModule.BeginLifetimeScope(container, context))
                 {
                     DialogModule_MakeRoot.Register(scope, () => dialog.Object);
 
                     var task = scope.Resolve<IPostToBot>();
                     await task.PostAsync(toBot, CancellationToken.None);
 
-                    AssertMentions(PromptText, scope);
+                    AssertMentions(PromptText, ((TestAdapter)context.Adapter).GetNextReply().AsMessageActivity());
                 }
 
-                using (var scope = DialogModule.BeginLifetimeScope(container, toBot))
+                using (var scope = DialogModule.BeginLifetimeScope(container, context))
                 {
                     DialogModule_MakeRoot.Register(scope, () => dialog.Object);
 

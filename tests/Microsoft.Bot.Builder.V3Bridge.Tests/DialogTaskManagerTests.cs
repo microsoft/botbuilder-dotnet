@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
+using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.V3Bridge.Base;
 using Microsoft.Bot.Builder.V3Bridge.Dialogs;
 using Microsoft.Bot.Builder.V3Bridge.Dialogs.Internals;
@@ -21,7 +22,7 @@ namespace Microsoft.Bot.Builder.V3Bridge.Tests
         public async Task DialogTaskManager_DefaultDialogTask()
         {
             var dialog = new Mock<DialogTaskTests.IDialogFrames<string>>(MockBehavior.Strict);
-            
+
             dialog
                 .Setup(d => d.StartAsync(It.IsAny<IDialogContext>()))
                 .Returns<IDialogContext>(async context => { context.Wait(dialog.Object.ItemReceived); });
@@ -43,45 +44,52 @@ namespace Microsoft.Bot.Builder.V3Bridge.Tests
             {
                 string foo = "foo";
                 string bar = "bar";
-                Queue<IMessageActivity> queue;
-                using (var scope = DialogModule.BeginLifetimeScope(container, toBot))
+                toBot.Text = foo;
+                await new TestAdapter().ProcessActivity((Activity)toBot, async (context) =>
                 {
-                    toBot.Text = foo;
-                    DialogModule_MakeRoot.Register(scope, MakeRoot);
-                    var botData = scope.Resolve<IBotData>();
-                    await botData.LoadAsync(CancellationToken.None);
-                    var stack = scope.Resolve<IDialogStack>();
-                    await scope.Resolve<IPostToBot>().PostAsync(toBot, CancellationToken.None);
-                    var dialogTaskManager = scope.Resolve<IDialogTaskManager>();
-                    Assert.AreEqual(1, dialogTaskManager.DialogTasks.Count);
-                    Assert.AreEqual(stack, dialogTaskManager.DialogTasks[0]);
+                    using (var scope = DialogModule.BeginLifetimeScope(container, context))
+                    {
+                        DialogModule_MakeRoot.Register(scope, MakeRoot);
+                        var botData = scope.Resolve<IBotData>();
+                        await botData.LoadAsync(CancellationToken.None);
+                        var stack = scope.Resolve<IDialogStack>();
+                        await scope.Resolve<IPostToBot>().PostAsync(toBot, CancellationToken.None);
+                        var dialogTaskManager = scope.Resolve<IDialogTaskManager>();
+                        Assert.AreEqual(1, dialogTaskManager.DialogTasks.Count);
+                        Assert.AreEqual(stack, dialogTaskManager.DialogTasks[0]);
 
-                    // check if the task records are persisted!
-                    Assert.IsTrue(botData.PrivateConversationData.ContainsKey(DialogModule.BlobKey));
-                    Assert.IsFalse(
-                        botData.PrivateConversationData.ContainsKey(DialogModule.BlobKey +
-                                                                      dialogTaskManager.DialogTasks.Count));
-                    queue = scope.Resolve<Queue<IMessageActivity>>();
-                    Assert.AreEqual(foo, queue.Dequeue().Text);
-                }
+                        // check if the task records are persisted!
+                        Assert.IsTrue(botData.PrivateConversationData.ContainsKey(DialogModule.BlobKey));
+                        Assert.IsFalse(
+                            botData.PrivateConversationData.ContainsKey(DialogModule.BlobKey +
+                                                                          dialogTaskManager.DialogTasks.Count));
+                        var queue = ((TestAdapter)context.Adapter).ActiveQueue;
+                        Assert.AreEqual(foo, queue.Dequeue().Text);
+                    }
+                });
+
 
                 //create another dialog task and make sure that it is not overriding the default dialog task
-                using (var scope = DialogModule.BeginLifetimeScope(container, toBot))
+                toBot.Text = bar;
+                await new TestAdapter().ProcessActivity((Activity)toBot, async (context) =>
                 {
-                    toBot.Text = bar;
-                    DialogModule_MakeRoot.Register(scope, MakeRoot);
-                    var botData = scope.Resolve<IBotData>();
-                    await botData.LoadAsync(CancellationToken.None);
-                    var dialogTaskManager = scope.Resolve<IDialogTaskManager>();
-                    Assert.AreEqual(1, dialogTaskManager.DialogTasks.Count);
+                    using (var scope = DialogModule.BeginLifetimeScope(container, context))
+                    {
+                        DialogModule_MakeRoot.Register(scope, MakeRoot);
+                        var botData = scope.Resolve<IBotData>();
+                        await botData.LoadAsync(CancellationToken.None);
+                        var dialogTaskManager = scope.Resolve<IDialogTaskManager>();
+                        Assert.AreEqual(1, dialogTaskManager.DialogTasks.Count);
 
-                    var task = dialogTaskManager.CreateDialogTask();
-                    Assert.AreEqual(2, dialogTaskManager.DialogTasks.Count);
-                    await botData.FlushAsync(CancellationToken.None);
-                    var post = scope.Resolve<IPostToBot>();
-                    await post.PostAsync(toBot, CancellationToken.None);
-                    Assert.AreEqual(bar, queue.Dequeue().Text);
-                }
+                        var task = dialogTaskManager.CreateDialogTask();
+                        Assert.AreEqual(2, dialogTaskManager.DialogTasks.Count);
+                        await botData.FlushAsync(CancellationToken.None);
+                        var post = scope.Resolve<IPostToBot>();
+                        await post.PostAsync(toBot, CancellationToken.None);
+                        var queue = ((TestAdapter)context.Adapter).ActiveQueue;
+                        Assert.AreEqual(bar, queue.Dequeue().Text);
+                    }
+                });
             }
         }
 
@@ -137,49 +145,54 @@ namespace Microsoft.Bot.Builder.V3Bridge.Tests
             {
                 string foo = "foo";
                 string bar = "bar";
-                Queue<IMessageActivity> queue;
-                using (var scope = DialogModule.BeginLifetimeScope(container, toBot))
+                toBot.Text = foo;
+                await new TestAdapter().ProcessActivity((Activity)toBot, async (context) =>
                 {
-                    toBot.Text = foo;
-                    DialogModule_MakeRoot.Register(scope, makeRoot);
-                    await scope.Resolve<IPostToBot>().PostAsync(toBot, CancellationToken.None);
+                    using (var scope = DialogModule.BeginLifetimeScope(container, context))
+                    {
+                        DialogModule_MakeRoot.Register(scope, makeRoot);
+                        await scope.Resolve<IPostToBot>().PostAsync(toBot, CancellationToken.None);
 
-                    var botData = scope.Resolve<IBotData>();
-                    await botData.LoadAsync(CancellationToken.None);
-                    var dialogTaskManager = scope.Resolve<IDialogTaskManager>();
+                        var botData = scope.Resolve<IBotData>();
+                        await botData.LoadAsync(CancellationToken.None);
+                        var dialogTaskManager = scope.Resolve<IDialogTaskManager>();
 
-                    //create second dialog task
-                    var secondDialogTask = dialogTaskManager.CreateDialogTask();
-                    var reactiveDialogTask = new ReactiveDialogTask(secondDialogTask, secondStackMakeRoot);
-                    IEventLoop loop = reactiveDialogTask;
-                    await loop.PollAsync(CancellationToken.None);
-                    IEventProducer<IActivity> producer = reactiveDialogTask;
-                    producer.Post(toBot);
-                    await loop.PollAsync(CancellationToken.None);
-                    await botData.FlushAsync(CancellationToken.None);
+                        //create second dialog task
+                        var secondDialogTask = dialogTaskManager.CreateDialogTask();
+                        var reactiveDialogTask = new ReactiveDialogTask(secondDialogTask, secondStackMakeRoot);
+                        IEventLoop loop = reactiveDialogTask;
+                        await loop.PollAsync(CancellationToken.None);
+                        IEventProducer<IActivity> producer = reactiveDialogTask;
+                        producer.Post(toBot);
+                        await loop.PollAsync(CancellationToken.None);
+                        await botData.FlushAsync(CancellationToken.None);
 
-                    queue = scope.Resolve<Queue<IMessageActivity>>();
-                    Assert.AreEqual(foo, queue.Dequeue().Text);
-                    Assert.AreEqual(promptMessage, queue.Dequeue().Text);
-                }
+                        var queue = ((TestAdapter)context.Adapter).ActiveQueue;
+                        Assert.AreEqual(foo, queue.Dequeue().Text);
+                        Assert.AreEqual(promptMessage, queue.Dequeue().Text);
+                    }
+                });
 
-                using (var scope = DialogModule.BeginLifetimeScope(container, toBot))
+                await new TestAdapter().ProcessActivity((Activity)toBot, async (context) =>
                 {
-                    toBot.Text = bar;
-                    DialogModule_MakeRoot.Register(scope, makeRoot);
-                    await scope.Resolve<IPostToBot>().PostAsync(toBot, CancellationToken.None);
+                    using (var scope = DialogModule.BeginLifetimeScope(container, context))
+                    {
+                        toBot.Text = bar;
+                        DialogModule_MakeRoot.Register(scope, makeRoot);
+                        await scope.Resolve<IPostToBot>().PostAsync(toBot, CancellationToken.None);
 
-                    var dialogTaskManager = scope.Resolve<IDialogTaskManager>();
-                    Assert.AreEqual(2, dialogTaskManager.DialogTasks.Count);
-                    var secondDialogTask = dialogTaskManager.DialogTasks[1];
-                    await secondDialogTask.PollAsync(CancellationToken.None);
-                    secondDialogTask.Post(toBot);
-                    await secondDialogTask.PollAsync(CancellationToken.None);
+                        var dialogTaskManager = scope.Resolve<IDialogTaskManager>();
+                        Assert.AreEqual(2, dialogTaskManager.DialogTasks.Count);
+                        var secondDialogTask = dialogTaskManager.DialogTasks[1];
+                        await secondDialogTask.PollAsync(CancellationToken.None);
+                        secondDialogTask.Post(toBot);
+                        await secondDialogTask.PollAsync(CancellationToken.None);
 
-                    queue = scope.Resolve<Queue<IMessageActivity>>();
-                    Assert.AreEqual(bar, queue.Dequeue().Text);
-                    Assert.AreEqual($"from prompt {bar}", queue.Dequeue().Text);
-                }
+                        var queue = ((TestAdapter)context.Adapter).ActiveQueue;
+                        Assert.AreEqual(bar, queue.Dequeue().Text);
+                        Assert.AreEqual($"from prompt {bar}", queue.Dequeue().Text);
+                    }
+                });
             }
         }
     }

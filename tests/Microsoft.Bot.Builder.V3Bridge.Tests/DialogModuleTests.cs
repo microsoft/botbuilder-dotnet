@@ -2,7 +2,9 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Autofac;
+using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.V3Bridge.Dialogs;
+using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Bot.Builder.V3Bridge.Tests
@@ -23,7 +25,7 @@ namespace Microsoft.Bot.Builder.V3Bridge.Tests
                     .As<IDialog<object>>();
                 builder.Update(container);
 
-                Func<ILifetimeScope, Task> Test = async s =>
+                Func<ILifetimeScope, Task> Test = async (s) =>
                 {
                     await AssertScriptAsync(s,
                         "hello",

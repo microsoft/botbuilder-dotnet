@@ -32,6 +32,7 @@
 //
 
 using Autofac;
+using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.V3Bridge.Dialogs;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -130,8 +131,6 @@ namespace Microsoft.Bot.Builder.V3Bridge.Tests
                 {
                 }
 
-                var queue = container.Resolve<Queue<IMessageActivity>>();
-                Assert.AreEqual(1, queue.Count);
             }
         }
     }

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
+using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.V3Bridge.Dialogs;
 using Microsoft.Bot.Builder.V3Bridge.Dialogs.Internals;
 using Microsoft.Bot.Schema;
@@ -22,72 +23,75 @@ namespace Microsoft.Bot.Builder.V3Bridge.Tests
             params string[] inputs)
         {
             var toBot = MakeTestMessage();
-            using (var scope = DialogModule.BeginLifetimeScope(container, toBot))
+            await new TestAdapter().ProcessActivity((Activity)toBot, async (context) =>
             {
-                var task = scope.Resolve<IPostToBot>();
-                var queue = scope.Resolve<Queue<IMessageActivity>>();
-                Action drain = () =>
+                using (var scope = DialogModule.BeginLifetimeScope(container, context))
                 {
-                    stream.WriteLine($"{queue.Count()}");
-                    while (queue.Count > 0)
+                    var task = scope.Resolve<IPostToBot>();
+                    var queue = ((TestAdapter)context.Adapter).ActiveQueue;
+                    Action drain = () =>
                     {
-                        var toUser = queue.Dequeue();
-                        if (!string.IsNullOrEmpty(toUser.Text))
+                        stream.WriteLine($"{queue.Count()}");
+                        while (queue.Count > 0)
                         {
-                            stream.WriteLine($"ToUserText:{JsonConvert.SerializeObject(toUser.Text)}");
+                            var toUser = queue.Dequeue();
+                            if (!string.IsNullOrEmpty(toUser.Text))
+                            {
+                                stream.WriteLine($"ToUserText:{JsonConvert.SerializeObject(toUser.Text)}");
+                            }
+                            else
+                            {
+                                stream.WriteLine($"ToUserButtons:{JsonConvert.SerializeObject(toUser.Attachments)}");
+                            }
                         }
-                        else
-                        {
-                            stream.WriteLine($"ToUserButtons:{JsonConvert.SerializeObject(toUser.Attachments)}");
-                        }
-                    }
-                };
-                string result = null;
-                var root = scope.Resolve<IDialog<object>>().Do(async (context, value) =>
-                    result = JsonConvert.SerializeObject(await value));
-                if (proactive)
-                {
-                    var loop = root.Loop();
-                    var data = scope.Resolve<IBotData>();
-                    await data.LoadAsync(CancellationToken.None);
-                    var stack = scope.Resolve<IDialogTask>();
-                    stack.Call(loop, null);
-                    await stack.PollAsync(CancellationToken.None);
-                    drain();
-                }
-                else
-                {
-                    var builder = new ContainerBuilder();
-                    builder
-                        .RegisterInstance(root)
-                        .AsSelf()
-                        .As<IDialog<object>>();
-                    builder.Update((IContainer)container);
-                }
-                foreach (var input in inputs)
-                {
-                    stream.WriteLine($"FromUser:{JsonConvert.SerializeObject(input)}");
-                    toBot.Text = input;
-                    try
+                    };
+                    string result = null;
+                    var root = scope.Resolve<IDialog<object>>().Do(async (ctx, value) =>
+                        result = JsonConvert.SerializeObject(await value));
+                    if (proactive)
                     {
-                        await task.PostAsync(toBot, CancellationToken.None);
+                        var loop = root.Loop();
+                        var data = scope.Resolve<IBotData>();
+                        await data.LoadAsync(CancellationToken.None);
+                        var stack = scope.Resolve<IDialogTask>();
+                        stack.Call(loop, null);
+                        await stack.PollAsync(CancellationToken.None);
                         drain();
-                        if (extraInfo != null)
+                    }
+                    else
+                    {
+                        var builder = new ContainerBuilder();
+                        builder
+                            .RegisterInstance(root)
+                            .AsSelf()
+                            .As<IDialog<object>>();
+                        builder.Update((IContainer)container);
+                    }
+                    foreach (var input in inputs)
+                    {
+                        stream.WriteLine($"FromUser:{JsonConvert.SerializeObject(input)}");
+                        toBot.Text = input;
+                        try
                         {
-                            var extra = extraInfo();
-                            stream.WriteLine(extra);
+                            await task.PostAsync(toBot, CancellationToken.None);
+                            drain();
+                            if (extraInfo != null)
+                            {
+                                var extra = extraInfo();
+                                stream.WriteLine(extra);
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            stream.WriteLine($"Exception:{e.Message}");
                         }
                     }
-                    catch (Exception e)
+                    if (result != null)
                     {
-                        stream.WriteLine($"Exception:{e.Message}");
+                        stream.WriteLine($"Result: {result}");
                     }
                 }
-                if (result != null)
-                {
-                    stream.WriteLine($"Result: {result}");
-                }
-            }
+            });
         }
 
         public static string ReadLine(StreamReader stream, out string label)
@@ -118,10 +122,12 @@ namespace Microsoft.Bot.Builder.V3Bridge.Tests
             int current = 0;
             while ((input = ReadLine(stream, out label)) != null)
             {
-                using (var scope = DialogModule.BeginLifetimeScope(container, toBot))
+                var ctx = new BotContext(new TestAdapter(), (Activity)toBot);
+
+                using (var scope = DialogModule.BeginLifetimeScope(container, ctx))
                 {
                     var task = scope.Resolve<IPostToBot>();
-                    var queue = scope.Resolve<Queue<IMessageActivity>>();
+                    var queue = scope.Resolve<Queue<Activity>>();
 
                     Action<IDialogStack> check = (stack) =>
                     {
