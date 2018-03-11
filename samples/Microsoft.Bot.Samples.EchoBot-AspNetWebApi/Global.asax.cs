@@ -1,6 +1,6 @@
 ﻿using System.Web.Http;
 
-namespace Microsoft.Bot.Samples.EchoBot_AspNet461
+namespace Microsoft.Bot.Samples.Echo.AspNetWebApi
 {
     public class WebApiApplication : System.Web.HttpApplication
     {
@@ -9,7 +9,6 @@ namespace Microsoft.Bot.Samples.EchoBot_AspNet461
             GlobalConfiguration.Configure(config =>
             {
                 BotConfig.Register(config);
-                WebApiConfig.Register(config);
             });
         }
     }

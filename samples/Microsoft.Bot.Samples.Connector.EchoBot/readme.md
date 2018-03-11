@@ -1,8 +1,6 @@
-﻿# Connector EchoBot Sample
-This is a simple sample showing how to create a POST WebAPI using just 
-* Microsoft.Bot.Connector nuget package
-* Microsoft.Bot.Schema nuget package
+﻿# EchoBot Connector Sample
+This is a simple sample showing how to create a bare bones bot hosted in an ASP.NET Core Controller using only the lower level bot Connector APIs from these NuGet packages:
+ * Microsoft.Bot.Connector
+ * Microsoft.Bot.Schema
 
-In the controller it has a POST  handler which accepts an Activity as the body.  It then:
-* Validates the caller has the correct security token
-* Uses the connector client library to send an echo response.
+The `MessagesController` exposes a single `HttpPost` based action method which accepts an `Activity` in the body, validates the caller has the correct security token and then utilizes a `ConnectorClient` to send an echo response.
