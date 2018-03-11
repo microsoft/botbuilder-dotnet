@@ -170,7 +170,9 @@ namespace Microsoft.Bot.Builder.Ai
         public async Task<string> Translate(string textToTranslate, string from, string to)
         {
             string url = "http://api.microsofttranslator.com/v2/Http.svc/Translate";
-            string query = $"?text={System.Net.WebUtility.UrlEncode(textToTranslate)}";
+            string query = $"?text={System.Net.WebUtility.UrlEncode(textToTranslate)}" +
+                                 $"&from={from}" +
+                                 $"&to={to}";
 
             using (var client = new HttpClient())
             using (var request = new HttpRequestMessage())
@@ -185,6 +187,7 @@ namespace Microsoft.Bot.Builder.Ai
                     return "ERROR: " + result;
 
                 var translatedText = XElement.Parse(result).Value;
+
                 return translatedText;
             }
         }
