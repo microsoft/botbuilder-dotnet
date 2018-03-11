@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Schema
     /// <summary>
     /// Thing (entity type: "https://schema.org/Thing")
     /// </summary>
-    public partial class Thing
+    public partial class Thing : Entity
     {
         /// <summary>
         /// Initializes a new instance of the Thing class.
@@ -29,11 +29,12 @@ namespace Microsoft.Bot.Schema
         /// <summary>
         /// Initializes a new instance of the Thing class.
         /// </summary>
-        /// <param name="type">The type of the thing</param>
+        /// <param name="type">Entity Type (typically from schema.org
+        /// types)</param>
         /// <param name="name">The name of the thing</param>
         public Thing(string type = default(string), string name = default(string))
+            : base(type)
         {
-            Type = type;
             Name = name;
             CustomInit();
         }
@@ -42,12 +43,6 @@ namespace Microsoft.Bot.Schema
         /// An initialization method that performs custom operations like setting defaults
         /// </summary>
         partial void CustomInit();
-
-        /// <summary>
-        /// Gets or sets the type of the thing
-        /// </summary>
-        [JsonProperty(PropertyName = "type")]
-        public string Type { get; set; }
 
         /// <summary>
         /// Gets or sets the name of the thing

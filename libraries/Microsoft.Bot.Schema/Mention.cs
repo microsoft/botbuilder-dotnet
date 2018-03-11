@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Schema
     /// <summary>
     /// Mention information (entity type: "mention")
     /// </summary>
-    public partial class Mention
+    public partial class Mention : Entity
     {
         /// <summary>
         /// Initializes a new instance of the Mention class.
@@ -29,16 +29,16 @@ namespace Microsoft.Bot.Schema
         /// <summary>
         /// Initializes a new instance of the Mention class.
         /// </summary>
+        /// <param name="type">Entity Type (typically from schema.org
+        /// types)</param>
         /// <param name="mentioned">The mentioned user</param>
         /// <param name="text">Sub Text which represents the mention (can be
         /// null or empty)</param>
-        /// <param name="type">Entity Type (typically from schema.org
-        /// types)</param>
-        public Mention(ChannelAccount mentioned = default(ChannelAccount), string text = default(string), string type = default(string))
+        public Mention(string type = default(string), ChannelAccount mentioned = default(ChannelAccount), string text = default(string))
+            : base(type)
         {
             Mentioned = mentioned;
             Text = text;
-            Type = type;
             CustomInit();
         }
 
@@ -59,12 +59,6 @@ namespace Microsoft.Bot.Schema
         /// </summary>
         [JsonProperty(PropertyName = "text")]
         public string Text { get; set; }
-
-        /// <summary>
-        /// Gets or sets entity Type (typically from schema.org types)
-        /// </summary>
-        [JsonProperty(PropertyName = "type")]
-        public string Type { get; set; }
 
     }
 }
