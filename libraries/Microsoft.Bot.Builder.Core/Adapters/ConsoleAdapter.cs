@@ -47,7 +47,7 @@ namespace Microsoft.Bot.Builder.Adapters
             }
         }
 
-        protected override async Task SendActivitiesImplementation(IBotContext context, IEnumerable<Activity> activities)
+        public override async Task SendActivities(IBotContext context, IEnumerable<Activity> activities)
         {
             foreach (var activity in activities)
             {
@@ -82,12 +82,12 @@ namespace Microsoft.Bot.Builder.Adapters
             }
         }
 
-        protected override Task<ResourceResponse> UpdateActivityImplementation(IBotContext context, Activity activity)
+        public override Task<ResourceResponse> UpdateActivity(IBotContext context, Activity activity)
         {
             throw new NotImplementedException();
         }
 
-        protected override Task DeleteActivityImplementation(IBotContext context, string conversationId, string activityId)
+        public override Task DeleteActivity(IBotContext context, string conversationId, string activityId)
         {
             throw new NotImplementedException();
         }

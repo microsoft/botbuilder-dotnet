@@ -229,7 +229,7 @@
 
 //                    scope.Resolve<Func<IDialog<object>>>(TypedParameter.From(MakeRoot));
 //                    await Conversation.SendAsync(scope, msg);
-//                    var reply = scope.Resolve<Queue<IMessageActivity>>().Dequeue();
+//                    var reply = scope.Resolve<Queue<Activity>>().Dequeue();
 //                    Assert.AreEqual("1:test", reply.Text);
 //                    var stateClient = connectorFactory.MakeStateClient();
 //                    var data = await stateClient.BotState.GetPrivateConversationDataAsync(msg.ChannelId, msg.Conversation.Id, msg.From.Id);

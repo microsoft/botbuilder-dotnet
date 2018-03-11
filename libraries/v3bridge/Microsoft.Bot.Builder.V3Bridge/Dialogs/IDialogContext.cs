@@ -92,7 +92,7 @@ namespace Microsoft.Bot.Builder.V3Bridge.Dialogs
             this.TextFormat = TextFormatTypes.Markdown;
             this.AttachmentLayout = AttachmentLayoutTypes.List;
             this.Attachments = new List<Attachment>();
-            this.Entities = new List<Entity>();
+            this.Entities = new List<Microsoft.Bot.Schema.Entity>();
         }
 
         /// <summary>
@@ -118,7 +118,7 @@ namespace Microsoft.Bot.Builder.V3Bridge.Dialogs
         /// <summary>
         /// Collection of Entity objects, each of which contains metadata about this activity. Each Entity object is typed.
         /// </summary>
-        public IList<Entity> Entities { get; set; }
+        public IList<Microsoft.Bot.Schema.Entity> Entities { get; set; }
     }
 
     /// <summary>

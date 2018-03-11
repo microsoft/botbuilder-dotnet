@@ -32,6 +32,7 @@
 //
 
 using Autofac;
+using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.V3Bridge.Dialogs;
 using Microsoft.Bot.Builder.V3Bridge.Dialogs.Internals;
 using Microsoft.Bot.Builder.V3Bridge.Internals.Fibers;
@@ -90,7 +91,7 @@ namespace Microsoft.Bot.Builder.V3Bridge.Tests
             Assert.AreNotEqual(patterns, PromptDialog.PromptConfirm.Patterns);
         }
     }
-    
+
     [TestClass]
     public sealed class PromptTests_Success : PromptTests_Base
     {
@@ -108,30 +109,28 @@ namespace Microsoft.Bot.Builder.V3Bridge.Tests
         {
             var dialogRoot = MockDialog<T>(prompt);
 
-            Func<IDialog<object>> MakeRoot = () => dialogRoot.Object;
-
             using (new FiberTestBase.ResolveMoqAssembly(dialogRoot.Object))
             using (var container = Build(Options.ScopedQueue, dialogRoot.Object))
             {
-                using (var scope = DialogModule.BeginLifetimeScope(container, toBot))
-                {
-                    DialogModule_MakeRoot.Register(scope, MakeRoot);
+                TestAdapter adapter = new TestAdapter();
 
-                    var task = scope.Resolve<IPostToBot>();
+                var testFlow = new TestFlow(adapter, (context) => Conversation.SendAsync(context, () => dialogRoot.Object))
+                    .Send(toBot)
+                    .AssertReply((activity) =>
+                    {
+                        AssertMentions(PromptText, activity.AsMessageActivity());
+                    })
+                    .StartTest();
 
-                    await task.PostAsync(toBot, CancellationToken.None);
-                    AssertMentions(PromptText, scope);
-                }
+                //using (var scope = DialogModule.BeginLifetimeScope(container, toBot))
+                //{
+                //    DialogModule_MakeRoot.Register(scope, MakeRoot);
 
-                using (var scope = DialogModule.BeginLifetimeScope(container, toBot))
-                {
-                    DialogModule_MakeRoot.Register(scope, MakeRoot);
-
-                    var task = scope.Resolve<IPostToBot>();
-                    await task.PostAsync(toBot, CancellationToken.None);
-                    AssertNoMessages(scope);
-                    dialogRoot.Verify(d => d.PromptResult(It.IsAny<IDialogContext>(), It.Is<IAwaitable<T>>(actual => expected(actual.GetAwaiter().GetResult()))), Times.Once);
-                }
+                //    var task = scope.Resolve<IPostToBot>();
+                //    await task.PostAsync(toBot, CancellationToken.None);
+                //    AssertNoMessages(scope);
+                //    dialogRoot.Verify(d => d.PromptResult(It.IsAny<IDialogContext>(), It.Is<IAwaitable<T>>(actual => expected(actual.GetAwaiter().GetResult()))), Times.Once);
+                //}
             }
         }
 
@@ -172,7 +171,7 @@ namespace Microsoft.Bot.Builder.V3Bridge.Tests
         {
             await PromptSuccessAsync((context, resume) => PromptDialog.Confirm(context, resume, PromptText, promptStyle: PromptStyle.None), "Yes", true);
         }
-        
+
         [TestMethod]
         public async Task PromptSuccess_Confirm_Yes_WithLocale()
         {
@@ -243,7 +242,7 @@ namespace Microsoft.Bot.Builder.V3Bridge.Tests
             var choices = new[] { "one", "two", "three" };
             await PromptSuccessAsync((context, resume) => PromptDialog.Choice(context, resume, choices, PromptText, promptStyle: PromptStyle.None), "two", "two");
         }
-        
+
         [TestMethod]
         public async Task PromptSuccess_Choice_MessageCaseInsensitive()
         {
@@ -264,7 +263,7 @@ namespace Microsoft.Bot.Builder.V3Bridge.Tests
             var choices = new[] { "one", "two", "three" };
             await PromptSuccessAsync((context, resume) => PromptDialog.Choice(context, resume, choices, PromptText, promptStyle: PromptStyle.None), "second", "two");
         }
-        
+
         [TestMethod]
         public async Task PromptSuccess_Choice_Ordinal_WithLocale()
         {
@@ -278,7 +277,7 @@ namespace Microsoft.Bot.Builder.V3Bridge.Tests
             var choices = new[] { "one", "two", "three" };
             await PromptSuccessAsync((context, resume) => PromptDialog.Choice(context, resume, choices, PromptText, promptStyle: PromptStyle.None), "the third from last", "one");
         }
-        
+
         [TestMethod]
         public async Task PromptSuccess_Choice_Reverse_Ordinal_SpecialCase()
         {
@@ -329,7 +328,7 @@ namespace Microsoft.Bot.Builder.V3Bridge.Tests
         {
             var choices = new[] { "19", "9", "else" };
             var pathScript = TestFiles.DeploymentItemPathsForCaller(TestContext, this.GetType()).Single();
-            await Script.VerifyDialogScript(pathScript, 
+            await Script.VerifyDialogScript(pathScript,
                 new PromptChoice<string>(choices, PromptText, null, 0, promptStyle: PromptStyle.Auto, descriptions: new List<string>() { "choice19", "choice9", "choiceelse" }), true, "9");
         }
 
@@ -357,41 +356,24 @@ namespace Microsoft.Bot.Builder.V3Bridge.Tests
             var dialogRoot = MockDialog<T>(prompt);
 
             Func<IDialog<object>> MakeRoot = () => dialogRoot.Object;
-            var toBot = MakeTestMessage();
 
             using (new FiberTestBase.ResolveMoqAssembly(dialogRoot.Object))
             using (var container = Build(Options.ScopedQueue, dialogRoot.Object))
             {
-                using (var scope = DialogModule.BeginLifetimeScope(container, toBot))
-                {
-                    DialogModule_MakeRoot.Register(scope, MakeRoot);
+                TestAdapter adapter = new TestAdapter();
 
-                    var task = scope.Resolve<IPostToBot>();
-
-                    await task.PostAsync(toBot, CancellationToken.None);
-                    AssertMentions(PromptText, scope);
-                }
-
-                using (var scope = DialogModule.BeginLifetimeScope(container, toBot))
-                {
-                    DialogModule_MakeRoot.Register(scope, MakeRoot);
-
-                    var task = scope.Resolve<IPostToBot>();
-
-                    await task.PostAsync(toBot, CancellationToken.None);
-                    AssertMentions(RetryText, scope);
-                }
-
-                using (var scope = DialogModule.BeginLifetimeScope(container, toBot))
-                {
-                    DialogModule_MakeRoot.Register(scope, MakeRoot);
-
-                    var task = scope.Resolve<IPostToBot>();
-
-                    await task.PostAsync(toBot, CancellationToken.None);
-                    AssertMentions("too many attempts", scope);
-                    dialogRoot.Verify(d => d.PromptResult(It.IsAny<IDialogContext>(), It.Is<IAwaitable<T>>(actual => actual.ToTask().IsFaulted)), Times.Once);
-                }
+                await new TestFlow(adapter, (context) => Conversation.SendAsync(context, MakeRoot))
+                    .Send("test")
+                    .AssertReply((activity) => AssertMentions(PromptText, activity.AsMessageActivity()))
+                    .Send("test")
+                    .AssertReply((activity) => AssertMentions(RetryText, activity.AsMessageActivity()))
+                    .Send("test")
+                    .AssertReply((activity) =>
+                    {
+                        AssertMentions("too many attempts", activity.AsMessageActivity());
+                        dialogRoot.Verify(d => d.PromptResult(It.IsAny<IDialogContext>(), It.Is<IAwaitable<T>>(actual => actual.ToTask().IsFaulted)), Times.Once);
+                    })
+                    .StartTest();
             }
         }
 

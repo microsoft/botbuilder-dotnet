@@ -37,6 +37,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
+using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.V3Bridge.Dialogs;
 using Microsoft.Bot.Builder.V3Bridge.Dialogs.Internals;
 using Microsoft.Bot.Builder.V3Bridge.Internals.Fibers;
@@ -74,38 +75,24 @@ namespace Microsoft.Bot.Builder.V3Bridge.Tests
                 builder.RegisterModule(new ReflectionSurrogateModule());
             }
 
-            var r =
-                builder
-                .Register<Queue<IMessageActivity>>(c => new Queue<IMessageActivity>())
-                .AsSelf();
+            //var r =
+            //    builder
+            //    .Register<Queue<Activity>>(c =>
+            //    {
+            //        var context = c.Resolve<Microsoft.Bot.Builder.IBotContext>();
+            //        var adapter = ((TestAdapter)context.Adapter);
+            //        return adapter.ActiveQueue;
+            //    })
+            //    .AsSelf()
+            //    .InstancePerLifetimeScope();
 
-            if (options.HasFlag(Options.ScopedQueue))
-            {
-                r.InstancePerLifetimeScope();
-            }
-            else
-            {
-                r.SingleInstance();
-            }
-
-            builder
-                .RegisterType<BotToUserQueue>()
-                .AsSelf()
-                .InstancePerLifetimeScope();
-
-            builder
-                .Register(c => new MapToChannelData_BotToUser(
-                    c.Resolve<BotToUserQueue>(),
-                    new List<IMessageActivityMapper> { new KeyboardCardMapper() }))
-                .As<IBotToUser>()
-                .InstancePerLifetimeScope();
-
-            //if (options.HasFlag(Options.LastWriteWinsCachingBotDataStore))
+            //if (options.HasFlag(Options.ScopedQueue))
             //{
-            //    builder.Register<CachingBotDataStore>(c => new CachingBotDataStore(c.ResolveKeyed<IBotDataStore<BotData>>(typeof(ConnectorStore)), CachingBotDataStoreConsistencyPolicy.LastWriteWins))
-            //        .As<IBotDataStore<BotData>>()
-            //        .AsSelf()
-            //        .InstancePerLifetimeScope();
+            //    r.InstancePerLifetimeScope();
+            //}
+            //else
+            //{
+            //    r.SingleInstance();
             //}
 
             foreach (var singleton in singletons)
@@ -136,18 +123,10 @@ namespace Microsoft.Bot.Builder.V3Bridge.Tests
                 ServiceUrl = "InvalidServiceUrl",
                 ChannelId = "Test",
                 Attachments = Array.Empty<Attachment>(),
-                Entities = Array.Empty<Entity>(),
+                Entities = Array.Empty<Microsoft.Bot.Schema.Entity>(),
             };
         }
 
-        public static async Task PostActivityAsync(ILifetimeScope container, IMessageActivity toBot, CancellationToken token)
-        {
-            using (var scope = DialogModule.BeginLifetimeScope(container, toBot))
-            {
-                var task = scope.Resolve<IPostToBot>();
-                await task.PostAsync(toBot, token);
-            }
-        }
 
         public static async Task AssertScriptAsync(ILifetimeScope container, params string[] pairs)
         {
@@ -160,56 +139,56 @@ namespace Microsoft.Bot.Builder.V3Bridge.Tests
                 var toBotText = pairs[index];
                 toBot.Text = toBotText;
 
-                await PostActivityAsync(container, toBot, CancellationToken.None);
-
-                var queue = container.Resolve<Queue<IMessageActivity>>();
-
-                // if user has more to say, bot should have said something
-                if (index + 1 < pairs.Length)
+                await new TestAdapter().ProcessActivity((Activity)toBot, async (context) =>
                 {
-                    Assert.AreNotEqual(0, queue.Count);
-                }
-
-                while (queue.Count > 0)
-                {
-                    ++index;
-
-                    var toUser = queue.Dequeue();
-                    string actual;
-                    switch (toUser.Type)
+                    using (var scope = DialogModule.BeginLifetimeScope(container, context))
                     {
-                        case ActivityTypes.Message:
-                            actual = toUser.Text;
-                            break;
-                        case ActivityTypes.EndOfConversation:
-                            actual = toUser.AsEndOfConversationActivity().Code;
-                            break;
-                        default:
-                            throw new NotImplementedException();
-                    }
-                    var expected = pairs[index];
+                        var task = scope.Resolve<IPostToBot>();
+                        await task.PostAsync(toBot, CancellationToken.None);
 
-                    Assert.AreEqual(expected, actual);
-                }
+                        var queue = ((TestAdapter)context.Adapter).ActiveQueue;
+
+                        // if user has more to say, bot should have said something
+                        if (index + 1 < pairs.Length)
+                        {
+                            Assert.AreNotEqual(0, queue.Count);
+                        }
+
+                        while (queue.Count > 0)
+                        {
+                            ++index;
+
+                            var toUser = queue.Dequeue();
+                            string actual;
+                            switch (toUser.Type)
+                            {
+                                case ActivityTypes.Message:
+                                    actual = toUser.Text;
+                                    break;
+                                case ActivityTypes.EndOfConversation:
+                                    actual = toUser.AsEndOfConversationActivity().Code;
+                                    break;
+                                default:
+                                    throw new NotImplementedException();
+                            }
+                            var expected = pairs[index];
+
+                            Assert.AreEqual(expected, actual);
+                        }
+                    }
+                });
             }
         }
 
-        public static void AssertMentions(string expectedText, IEnumerable<IMessageActivity> actualToUser)
+        public static void AssertMentions(string expectedText, IMessageActivity actualToUser)
         {
-            Assert.AreEqual(1, actualToUser.Count());
-            var index = actualToUser.Single().Text.IndexOf(expectedText, StringComparison.OrdinalIgnoreCase);
+            var index = actualToUser.Text.IndexOf(expectedText, StringComparison.OrdinalIgnoreCase);
             Assert.IsTrue(index >= 0);
-        }
-
-        public static void AssertMentions(string expectedText, ILifetimeScope scope)
-        {
-            var queue = scope.Resolve<Queue<IMessageActivity>>();
-            AssertMentions(expectedText, queue);
         }
 
         public static void AssertNoMessages(ILifetimeScope scope)
         {
-            var queue = scope.Resolve<Queue<IMessageActivity>>();
+            var queue = ((TestAdapter)scope.Resolve<Microsoft.Bot.Builder.IBotContext>().Adapter).ActiveQueue;
             Assert.AreEqual(0, queue.Count);
         }
 
@@ -220,7 +199,7 @@ namespace Microsoft.Bot.Builder.V3Bridge.Tests
 
         public static async Task AssertOutgoingActivity(ILifetimeScope container, Action<IMessageActivity> asserts)
         {
-            var queue = container.Resolve<Queue<IMessageActivity>>();
+            var queue = ((TestAdapter)container.Resolve<Microsoft.Bot.Builder.IBotContext>().Adapter).ActiveQueue;
 
             if (queue.Count != 1)
             {

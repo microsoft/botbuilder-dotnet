@@ -63,10 +63,11 @@ namespace Microsoft.Bot.Builder.V3Bridge.Dialogs.Internals
         public static readonly object Key_DeleteProfile_Regex = new object();
         public static readonly object Key_Dialog_Router = new object();
 
-        public static ILifetimeScope BeginLifetimeScope(ILifetimeScope scope, IMessageActivity message)
+        public static ILifetimeScope BeginLifetimeScope(ILifetimeScope scope, Microsoft.Bot.Builder.IBotContext context)
         {
             var inner = scope.BeginLifetimeScope(LifetimeScopeTag);
-            inner.Resolve<IMessageActivity>(TypedParameter.From(message));
+            inner.Resolve<Microsoft.Bot.Builder.IBotContext>(TypedParameter.From(context));
+            inner.Resolve<IActivity>(TypedParameter.From((IActivity)context.Request));
             return inner;
         }
 
@@ -83,10 +84,15 @@ namespace Microsoft.Bot.Builder.V3Bridge.Dialogs.Internals
                 .As<ResourceManager>()
                 .SingleInstance();
 
-            // every lifetime scope is driven by a message
+            // every lifetime scope is driven by a context
+            builder
+                .Register((c, p) => p.TypedAs<Microsoft.Bot.Builder.IBotContext>())
+                .AsSelf()
+                .AsImplementedInterfaces()
+                .InstancePerMatchingLifetimeScope(LifetimeScopeTag);
 
             builder
-                .Register((c, p) => p.TypedAs<IMessageActivity>())
+                .Register((c, p) => p.TypedAs<IActivity>())
                 .AsSelf()
                 .AsImplementedInterfaces()
                 .InstancePerMatchingLifetimeScope(LifetimeScopeTag);
@@ -399,6 +405,11 @@ namespace Microsoft.Bot.Builder.V3Bridge.Dialogs.Internals
                 .InstancePerLifetimeScope();
 
             builder
+                .RegisterKeyedType<V4Bridge_BotToUser, IBotToUser>()
+                .AsSelf()
+                .InstancePerLifetimeScope();
+
+            builder
                 .RegisterKeyedType<AutoInputHint_BotToUser, IBotToUser>()
                 .InstancePerLifetimeScope();
 
@@ -412,14 +423,15 @@ namespace Microsoft.Bot.Builder.V3Bridge.Dialogs.Internals
 
 #pragma warning disable CS1587
             /// <see cref="LogBotToUser"/> is composed around <see cref="MapToChannelData_BotToUser"/> is composed around
-            /// <see cref="AlwaysSendDirect_BotToUser"/>.  The complexity of registering each component is pushed to a separate
+            /// <see cref="V4Bridge_BotToUser"/>.  The complexity of registering each component is pushed to a separate
             /// registration method, and each of these components are replaceable without re-registering
             /// the entire adapter chain by registering a new component with the same component key.
 #pragma warning restore CS1587
             builder
                 .RegisterAdapterChain<IBotToUser>
                 (
-                    typeof(AlwaysSendDirect_BotToUser),
+                    //typeof(AlwaysSendDirect_BotToUser),
+                    typeof(V4Bridge_BotToUser),
                     typeof(AutoInputHint_BotToUser),
                     typeof(MapToChannelData_BotToUser),
                     typeof(LogBotToUser)
