@@ -184,7 +184,7 @@ namespace Microsoft.Bot.Builder.Ai
                 var result = await response.Content.ReadAsStringAsync();
 
                 if (!response.IsSuccessStatusCode)
-                    return "ERROR: " + result;
+                    throw new ArgumentException(result);
 
                 var translatedText = XElement.Parse(result).Value;
 
