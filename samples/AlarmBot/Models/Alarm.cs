@@ -13,5 +13,4 @@ namespace AlarmBot.Models
         public string Title { get; set; }
         public DateTimeOffset? Time { get; set; }
     }
-
 }

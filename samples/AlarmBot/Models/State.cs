@@ -1,14 +1,13 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-
 using Microsoft.Bot.Builder;
 using System.Collections.Generic;
 
 namespace AlarmBot.Models
 {
     /// <summary>
-    /// object persisted as conversation state
+    /// Object persisted as conversation state
     /// </summary>
     public class ConversationData : StoreItem
     {
