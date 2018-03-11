@@ -6,11 +6,11 @@ namespace Microsoft.Bot.Schema
     /// <summary>
     /// GeoCoordinates extensions
     /// </summary>
-    public partial class GeoCoordinates : Entity
+    public partial class Place : Entity
     {
         partial void CustomInit()
         {
-            Type = "GeoCoordinates";
+            Type = "Place";
         }
     }
 }
