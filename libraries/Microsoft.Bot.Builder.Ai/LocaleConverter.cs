@@ -98,6 +98,10 @@ namespace Microsoft.Bot.Builder.Ai
             {
                 culture = Culture.Spanish;
             }
+            else if(!fromLocale.StartsWith("en"))
+            {
+                throw (new ArgumentException("Unsupported From Locale"));
+            }
             var model = DateTimeRecognizer.GetInstance().GetDateTimeModel(culture);
             var results = model.Parse(message);
             foreach (ModelResult result in results)
@@ -130,6 +134,10 @@ namespace Microsoft.Bot.Builder.Ai
         public async Task<string> Convert(string message, string fromLocale, string toLocale)
         {
             List<TextAndDateTime> dates = extractDate(message, fromLocale);
+            if (!mapLocaleToFunction.ContainsKey(toLocale))
+            {
+                throw (new ArgumentException("Unsupported To Locale"));
+            }
             if (dates.Count == 0)
                 return  message;
             string processedMessage = message;
