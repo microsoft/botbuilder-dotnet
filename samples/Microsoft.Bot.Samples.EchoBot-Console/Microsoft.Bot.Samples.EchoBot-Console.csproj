@@ -22,7 +22,7 @@
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Core\Microsoft.Bot.Builder.Core.csproj" />
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder\Microsoft.Bot.Builder.csproj" />
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Schema\Microsoft.Bot.Schema.csproj" />
-    <ProjectReference Include="..\EchoBot\EchoBot.csproj" />
+    <ProjectReference Include="..\Microsoft.Bot.Samples.EchoBot\Microsoft.Bot.Samples.EchoBot.csproj" />
   </ItemGroup>
 
 </Project>

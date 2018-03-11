@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Microsoft.Bot.Samples.EchoBot_AspNet461")]
+[assembly: AssemblyTitle("Microsoft.Bot.Samples.Echo.AspNetWebApi")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Microsoft.Bot.Samples.EchoBot_AspNet461")]
+[assembly: AssemblyProduct("Microsoft.Bot.Samples.Echo.AspNetWebApi")]
 [assembly: AssemblyCopyright("Copyright ©  2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

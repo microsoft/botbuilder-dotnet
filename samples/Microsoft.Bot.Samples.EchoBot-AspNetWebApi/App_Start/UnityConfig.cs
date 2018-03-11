@@ -1,12 +1,11 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Microsoft.Bot.Samples.Echo;
 using System;
 
 using Unity;
 
-namespace Microsoft.Bot.Samples.EchoBot_AspNet461
+namespace Microsoft.Bot.Samples.Echo.AspNetWebApi
 {
     /// <summary>
     /// Specifies the Unity configuration for the main container.
