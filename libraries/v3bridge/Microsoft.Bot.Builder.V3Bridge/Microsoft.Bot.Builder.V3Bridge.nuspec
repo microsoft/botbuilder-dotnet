@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0"?>
 <package xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <metadata xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
-    <id>Microsoft.Bot.Builder</id>
+    <id>Microsoft.Bot.Builder.V3Bridge</id>
     <version>$version$</version>
     <authors>Microsoft</authors>
     <owners>microsoft, BotFramework, nugetbotbuilder </owners>
@@ -9,20 +9,18 @@
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <licenseUrl>https://github.com/Microsoft/BotBuilder/blob/master/LICENSE</licenseUrl>
     <description>
-      Microsoft Bot Builder is a powerful framework for constructing bots that can handle both freeform interactions and more guided ones where the possibilities are explicitly shown to the user. It is easy to use and leverages C# to provide a natural way to write bots.
+      This library provides access to Bot Builder V3 style dialog system on the V4 SDK.
 
-      High Level Features:
+      V3 High Level Features:
       * Powerful dialog system with dialogs that are isolated and composable.
       * Built-in dialogs for simple things like Yes/No, strings, numbers, enumerations.
       * Built-in dialogs that utilize powerful AI frameworks like LUIS http://luis.ai.
       * Bots are stateless which helps them scale.
       * Form Flow for automatically generating a Bot from a C# class for filling in the class and that supports help, navigation, clarification and confirmation.
-
-      You might also be interested in the NuGet package Microsoft.Bot.Builder.FormFlow.Json that extends the Bot Builder with the abilitity to declaratively define FormFlow dialogs with JSON Schema.
     </description>
-    <projectUrl>https://github.com/Microsoft/BotBuilder</projectUrl>
+    <projectUrl>https://github.com/Microsoft/BotBuilder-dotnet</projectUrl>
     <iconUrl>http://docs.botframework.com/images/bot_icon.png</iconUrl>
-    <summary>Microsoft.Bot.Builder is a framework for easily building stateless bots that span from regular expressions to AI based natural language.</summary>
+    <summary>Microsoft.Bot.Builder.V3Bridge is a compatibility layer to allow V3 Bot Builder IDialog based bots to run on SDK V4 scaffolding.</summary>
     <language>en-US</language>
     <dependencies>
       <dependency id="Autofac" version="3.5.2"/>
@@ -36,20 +34,20 @@
     </dependencies>
   </metadata>
   <files>
-    <!-- assembly Microsoft.Bot.Builder -->
-    <file src="..\Microsoft.Bot.Builder\bin\release\Microsoft.Bot.Builder.dll" target="lib\net46"/>
-    <file src="..\Microsoft.Bot.Builder\bin\release\Microsoft.Bot.Builder.xml" target="lib\net46" />
-    <file src="..\Microsoft.Bot.Builder\bin\release\Microsoft.Bot.Builder.pdb" target="lib\net46" />
-    <!-- assembly Microsoft.Bot.Builder.Autofac -->
-    <file src="..\Microsoft.Bot.Builder.Autofac\bin\release\Microsoft.Bot.Builder.Autofac.dll"  target="lib\net46" />
-    <file src="..\Microsoft.Bot.Builder.Autofac\bin\release\Microsoft.Bot.Builder.Autofac.xml"  target="lib\net46" />
-    <file src="..\Microsoft.Bot.Builder.Autofac\bin\release\Microsoft.Bot.Builder.Autofac.pdb"  target="lib\net46" />
+    <!-- assembly Microsoft.Bot.Builder.V3Bridge -->
+    <file src="..\Microsoft.Bot.Builder.V3Bridge\bin\release\Microsoft.Bot.Builder.V3Bridge.dll" target="lib\net46"/>
+    <file src="..\Microsoft.Bot.Builder.V3Bridge\bin\release\Microsoft.Bot.Builder.V3Bridge.xml" target="lib\net46" />
+    <file src="..\Microsoft.Bot.Builder.V3Bridge\bin\release\Microsoft.Bot.Builder.V3Bridge.pdb" target="lib\net46" />
+    <!-- assembly Microsoft.Bot.Builder.V3Bridge.Autofac -->
+    <file src="..\Microsoft.Bot.Builder.V3Bridge.Autofac\bin\release\Microsoft.Bot.Builder.V3Bridge.Autofac.dll"  target="lib\net46" />
+    <file src="..\Microsoft.Bot.Builder.V3Bridge.Autofac\bin\release\Microsoft.Bot.Builder.V3Bridge.Autofac.xml"  target="lib\net46" />
+    <file src="..\Microsoft.Bot.Builder.V3Bridge.Autofac\bin\release\Microsoft.Bot.Builder.V3Bridge.Autofac.pdb"  target="lib\net46" />
     <!-- source -->
     <file src="..\**\*.cs"
-          exclude="**\obj\**\*.cs;..\Microsoft.Bot.Builder.Azure\**;..\Microsoft.Bot.Builder.Calling\**;..\Microsoft.Bot.Builder.FormFlow.Json\**;..\Microsoft.Bot.Builder.History\**;..\Microsoft.Bot.Connector.AspNetCore\**;..\Microsoft.Bot.Connector.NetCore\**"
+          exclude="**\obj\**\*.cs;..\Microsoft.Bot.Builder.V3Bridge.Azure\**;..\Microsoft.Bot.Builder.V3Bridge.Calling\**;..\Microsoft.Bot.Builder.V3Bridge.FormFlow.Json\**;..\Microsoft.Bot.Builder.V3Bridge.History\**;..\Microsoft.Bot.Connector.AspNetCore\**;..\Microsoft.Bot.Connector.NetCore\**"
           target="src" />
     <!-- tools -->
-    <file src="..\..\tools\rview\bin\release\RView.exe" target="tools"/>
+    <file src="..\rview\bin\release\RView.exe" target="tools"/>
     <!-- resources -->
     <file src="bin\release\ar\*.dll" target="lib\net46\ar"/>
     <file src="bin\release\cs\*.dll" target="lib\net46\cs"/>

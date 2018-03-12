@@ -124,7 +124,7 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="createpackage.cmd" />
-    <None Include="Microsoft.Bot.Builder.FormFlow.Json.nuspec" />
+    <None Include="Microsoft.Bot.Builder.V3Bridge.FormFlow.Json.nuspec" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

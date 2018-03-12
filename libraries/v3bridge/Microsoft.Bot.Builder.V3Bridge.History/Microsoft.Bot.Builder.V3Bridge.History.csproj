@@ -83,7 +83,7 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="createpackage.cmd" />
-    <None Include="Microsoft.Bot.Builder.History.nuspec" />
+    <None Include="Microsoft.Bot.Builder.V3Bridge.History.nuspec" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
