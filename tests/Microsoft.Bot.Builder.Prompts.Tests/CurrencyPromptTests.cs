@@ -3,8 +3,7 @@
 
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Builder.Middleware;
-using Microsoft.Bot.Builder.Storage;
+using Microsoft.Bot.Builder.Core.Extensions;
 using Microsoft.Bot.Schema;
 using Microsoft.Recognizers.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -21,6 +20,7 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
         {
             TestAdapter adapter = new TestAdapter()
                 .Use(new ConversationState<TestState>(new MemoryStorage()));
+            adapter.Use(new BatchOutputMiddleware());
 
             await new TestFlow(adapter, async (context) =>
                 {
@@ -40,10 +40,10 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                             Assert.IsNotNull(currencyResult.Text);
                             Assert.IsNotNull(currencyResult.Unit);
                             Assert.IsInstanceOfType(currencyResult.Value, typeof(float));
-                            context.Reply($"{currencyResult.Value} {currencyResult.Unit}");
+                            context.Batch().Reply($"{currencyResult.Value} {currencyResult.Unit}");
                         }
                         else
-                            context.Reply(currencyResult.Status.ToString());
+                            context.Batch().Reply(currencyResult.Status.ToString());
                     }
                 })
                 .Send("hello")
@@ -60,7 +60,7 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
         {
             TestAdapter adapter = new TestAdapter()
                 .Use(new ConversationState<TestState>(new MemoryStorage()));
-
+            adapter.Use(new BatchOutputMiddleware());
             await new TestFlow(adapter, async (context) =>
             {
                 var state = ConversationState<TestState>.Get(context);
@@ -79,9 +79,9 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                 {
                     var currencyPrompt = await numberPrompt.Recognize(context);
                     if (currencyPrompt.Succeeded())
-                        context.Reply($"{currencyPrompt.Value} {currencyPrompt.Unit}");
+                        context.Batch().Reply($"{currencyPrompt.Value} {currencyPrompt.Unit}");
                     else
-                        context.Reply(currencyPrompt.Status.ToString());
+                        context.Batch().Reply(currencyPrompt.Status.ToString());
                 }
             })
                 .Send("hello")

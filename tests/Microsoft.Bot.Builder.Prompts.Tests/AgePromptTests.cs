@@ -3,9 +3,7 @@
 
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Builder.Middleware;
-using Microsoft.Bot.Builder.Storage;
-using Microsoft.Bot.Schema;
+using Microsoft.Bot.Builder.Core.Extensions;
 using Microsoft.Recognizers.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -20,8 +18,9 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
         public async Task AgePrompt_Test()
         {
             TestAdapter adapter = new TestAdapter()
-                .Use(new ConversationState<TestState>(new MemoryStorage()));
-
+                .Use(new ConversationState<TestState>(new MemoryStorage()))
+                .Use(new BatchOutputMiddleware());
+                
             await new TestFlow(adapter, async (context) =>
                 {
                     var state = ConversationState<TestState>.Get(context);
@@ -40,10 +39,10 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                             Assert.IsNotNull(ageResult.Text);
                             Assert.IsNotNull(ageResult.Unit);
                             Assert.IsInstanceOfType(ageResult.Value, typeof(float));
-                            context.Reply($"{ageResult.Value} {ageResult.Unit}");
+                            context.Batch().Reply($"{ageResult.Value} {ageResult.Unit}");
                         }
                         else
-                            context.Reply(ageResult.Status.ToString());
+                            context.Batch().Reply(ageResult.Status.ToString());
                     }
                 })
                 .Send("hello")
@@ -60,6 +59,8 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
         {
             TestAdapter adapter = new TestAdapter()
                 .Use(new ConversationState<TestState>(new MemoryStorage()));
+
+            adapter.Use(new BatchOutputMiddleware()); 
 
             await new TestFlow(adapter, async (context) =>
             {
@@ -78,9 +79,9 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                 {
                     var numberResult = await numberPrompt.Recognize(context);
                     if (numberResult.Succeeded())
-                        context.Reply($"{numberResult.Value} {numberResult.Unit}");
+                        context.Batch().Reply($"{numberResult.Value} {numberResult.Unit}");
                     else
-                        context.Reply(numberResult.Status.ToString());
+                        context.Batch().Reply(numberResult.Status.ToString());
                 }
             })
                 .Send("hello")

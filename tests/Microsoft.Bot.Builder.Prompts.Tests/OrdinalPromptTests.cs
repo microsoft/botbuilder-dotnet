@@ -3,8 +3,7 @@
 
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Builder.Middleware;
-using Microsoft.Bot.Builder.Storage;
+using Microsoft.Bot.Builder.Core.Extensions;
 using Microsoft.Bot.Schema;
 using Microsoft.Recognizers.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -21,7 +20,7 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
         {
             TestAdapter adapter = new TestAdapter()
                 .Use(new ConversationState<TestState>(new MemoryStorage()));
-
+            adapter.Use(new BatchOutputMiddleware());
             await new TestFlow(adapter, async (context) =>
                 {
                     var state = ConversationState<TestState>.Get(context);
@@ -39,10 +38,10 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                             Assert.IsTrue(ordinalResult.Value != float.NaN);
                             Assert.IsNotNull(ordinalResult.Text);
                             Assert.IsInstanceOfType(ordinalResult.Value, typeof(int));
-                            context.Reply(ordinalResult.Value.ToString());
+                            context.Batch().Reply(ordinalResult.Value.ToString());
                         }
                         else
-                            context.Reply(ordinalResult.Status.ToString());
+                            context.Batch().Reply(ordinalResult.Status.ToString());
                     }
                 })
                 .Send("hello")
@@ -59,7 +58,7 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
         {
             TestAdapter adapter = new TestAdapter()
                 .Use(new ConversationState<TestState>(new MemoryStorage()));
-
+            adapter.Use(new BatchOutputMiddleware());
             await new TestFlow(adapter, async (context) =>
             {
                 var state = ConversationState<TestState>.Get(context);
@@ -81,10 +80,10 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                         Assert.IsInstanceOfType(ordinalResult.Value, typeof(int));
                         Assert.IsTrue(ordinalResult.Value < 100);
                         Assert.IsNotNull(ordinalResult.Text);
-                        context.Reply(ordinalResult.Value.ToString());
+                        context.Batch().Reply(ordinalResult.Value.ToString());
                     }
                     else
-                        context.Reply(ordinalResult.Status.ToString());
+                        context.Batch().Reply(ordinalResult.Status.ToString());
                 }
             })
                 .Send("hello")

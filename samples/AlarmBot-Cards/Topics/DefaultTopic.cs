@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using AlarmBot.Models;
 using AlarmBot.Responses;
 using Microsoft.Bot.Builder;
-using Microsoft.Bot.Builder.Middleware;
+using Microsoft.Bot.Builder.Core.Extensions;
 using Microsoft.Bot.Schema;
 
 namespace AlarmBot.Topics
@@ -69,8 +69,8 @@ namespace AlarmBot.Topics
             var recognizedIntents = context.Get<IRecognizedIntents>();
             switch (context.Request.Type)
             {
-                case ActivityTypes.Message:
-                    switch (recognizedIntents.TopIntent.Name)
+                case ActivityTypes.Message:                    
+                    switch (recognizedIntents.TopIntent?.Name)
                     {
                         case "addAlarm":
                             // switch to addAlarm topic

@@ -2,9 +2,7 @@
 // Licensed under the MIT License.
 
 using Microsoft.Bot.Builder.Integration.AspNet.WebApi;
-using Microsoft.Bot.Builder.Middleware;
-using Microsoft.Bot.Builder.Storage;
-using Microsoft.Bot.Samples.Echo;
+using Microsoft.Bot.Builder.Core.Extensions;
 using System.Configuration;
 using System.Web.Http;
 

@@ -1,4 +1,5 @@
-﻿using Microsoft.Bot.Schema;
+﻿using Microsoft.Bot.Builder.Core.Extensions;
+using Microsoft.Bot.Schema;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -63,9 +64,11 @@ namespace Microsoft.Bot.Builder.Prompts
         /// </summary>
         public Task Prompt(IBotContext context, string text, string speak = null)
         {
-            IMessageActivity activity = MessageFactory.Text(text, speak);
-            activity.InputHint = InputHints.ExpectingInput;
-            return Prompt(context, activity);
+            IMessageActivity ma = Activity.CreateMessageActivity();
+            ma.Text = !string.IsNullOrWhiteSpace(text) ? text : null;
+            ma.Speak = !string.IsNullOrWhiteSpace(speak) ? speak : null;            
+            ma.InputHint = InputHints.ExpectingInput;
+            return Prompt(context, ma);
         }
 
         /// <summary>
@@ -73,7 +76,7 @@ namespace Microsoft.Bot.Builder.Prompts
         /// </summary>
         public Task Prompt(IBotContext context, IMessageActivity activity)
         {
-            context.Reply(activity);
+            context.Batch().Reply(activity);
             return Task.CompletedTask;
         }
 
