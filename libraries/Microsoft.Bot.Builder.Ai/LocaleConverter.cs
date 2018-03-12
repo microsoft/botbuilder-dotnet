@@ -13,7 +13,7 @@ namespace Microsoft.Bot.Builder.Ai
 {
 
     //Struct used to store date format and time format for different locales
-    internal struct DateAndTimeLocaleFormat
+    internal class DateAndTimeLocaleFormat
     { 
         public string TimeFormat { get; set; }
         public string DateFormat { get;set; }
@@ -21,10 +21,10 @@ namespace Microsoft.Bot.Builder.Ai
     }
 
     //Struct to store  text and date time object from Microsoft Recognizer recognition result
-    internal struct TextAndDateTime
+    internal class TextAndDateTime
     { 
         public string Text { get; set; }
-        public DateTime DateTimeObj { get; set; }
+        public DateTime DateTimeObject { get; set; }
     }
 
     /// <summary>
@@ -136,7 +136,7 @@ namespace Microsoft.Bot.Builder.Ai
                     continue;
                 var curDateTimeText = new TextAndDateTime
                 {
-                    DateTimeObj = moment,
+                    DateTimeObject = moment,
                     Text = result.Text
                 };
                 fndDates.Add(curDateTimeText);
@@ -153,23 +153,25 @@ namespace Microsoft.Bot.Builder.Ai
         /// <returns></returns>
         public async Task<string> Convert(string message, string fromLocale, string toLocale)
         {
+            if (string.IsNullOrEmpty(message))
+            {
+                throw (new ArgumentException("Empty message"));
+            }
             List<TextAndDateTime> dates = extractDate(message, fromLocale);
             if (!IsLocaleAvailable(toLocale))
             {
-                throw (new ArgumentException("Unsupported To Locale"));
+                throw (new ArgumentException("Unsupported  Locale "+toLocale));
             }
-            if (dates.Count == 0)
-                return  message;
             string processedMessage = message;
             foreach (TextAndDateTime date in dates)
             {
-                if (date.DateTimeObj.Date == DateTime.Now.Date)
+                if (date.DateTimeObject.Date == DateTime.Now.Date)
                 {
-                    processedMessage = processedMessage.Replace(date.Text, String.Format(mapLocaleToFunction[toLocale].TimeFormat, date.DateTimeObj));
+                    processedMessage = processedMessage.Replace(date.Text, String.Format(mapLocaleToFunction[toLocale].TimeFormat, date.DateTimeObject));
                 }
                 else
                 {
-                    processedMessage = processedMessage.Replace(date.Text, String.Format(mapLocaleToFunction[toLocale].DateFormat, date.DateTimeObj));
+                    processedMessage = processedMessage.Replace(date.Text, String.Format(mapLocaleToFunction[toLocale].DateFormat, date.DateTimeObject));
                 }
             }
             return  processedMessage;
