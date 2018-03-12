@@ -21,7 +21,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
             BotContext c = new BotContext(new TestAdapter(), new Activity());
             BatchOutput bo = new BatchOutput();
             
-            c.OnSendActivity( async (activities, next) =>
+            c.OnSendActivity( async (context, activities, next) =>
             {
                 Assert.IsTrue(activities.Count == 0, "Incorrect Item Count");
             });
@@ -38,7 +38,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
             BatchOutput bo = new BatchOutput();
             bo.Typing(); 
 
-            c.OnSendActivity(async (activities, next) =>
+            c.OnSendActivity(async (context, activities, next) =>
             {
                 Assert.IsTrue(activities.Count == 1, "Incorrect Activity Count");
                 Assert.IsTrue(activities[0].Type == ActivityTypes.Typing, "Incorrect Activity Type");
@@ -59,7 +59,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
             bo.Typing();
             bo.EndOfConversation();
            
-            c.OnSendActivity(async (activities, next) =>
+            c.OnSendActivity(async (context, activities, next) =>
             {
                 Assert.IsTrue(activities.Count == 2, "Incorrect Activity Count");
                 Assert.IsTrue(activities[0].Type == ActivityTypes.Typing, "Incorrect Activity Type in Slot 0");

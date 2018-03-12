@@ -152,7 +152,7 @@ namespace Microsoft.Bot.Builder.Core.Tests
             BotContext c = new BotContext(a, new Activity());
 
             int count = 0;
-            c.OnSendActivity(async (activities, next) =>
+            c.OnSendActivity(async (context, activities, next) =>
             {               
                Assert.IsNotNull(activities, "Null Array passed in");
                count = activities.Count();
@@ -178,7 +178,7 @@ namespace Microsoft.Bot.Builder.Core.Tests
             BotContext c = new BotContext(a, new Activity());
           
             int count = 0;
-            c.OnSendActivity(async (activities, next) =>
+            c.OnSendActivity(async (context, activities, next) =>
             {
                 Assert.IsNotNull(activities, "Null Array passed in");
                 count = activities.Count();
@@ -206,7 +206,7 @@ namespace Microsoft.Bot.Builder.Core.Tests
             SimpleAdapter a = new SimpleAdapter(ValidateResponses);
             BotContext c = new BotContext(a, new Activity());
             
-            c.OnSendActivity(async (activities, next) =>
+            c.OnSendActivity(async (context, activities, next) =>
             {
                 Assert.IsNotNull(activities, "Null Array passed in");
                 Assert.IsTrue(activities.Count() == 1);
@@ -255,7 +255,7 @@ namespace Microsoft.Bot.Builder.Core.Tests
             BotContext c = new BotContext(a, new Activity());
 
             bool wasCalled = false;
-            c.OnUpdateActivity(async (activity, next) =>
+            c.OnUpdateActivity(async (context, activity, next) =>
             {
                 Assert.IsNotNull(activity, "Null activity passed in");
                 wasCalled = true;
@@ -280,7 +280,7 @@ namespace Microsoft.Bot.Builder.Core.Tests
             BotContext c = new BotContext(a, new Activity());
 
             bool wasCalled = false;
-            c.OnUpdateActivity(async (activity, next) =>
+            c.OnUpdateActivity(async (context, activity, next) =>
             {
                 Assert.IsNotNull(activity, "Null activity passed in");
                 wasCalled = true;
@@ -305,7 +305,7 @@ namespace Microsoft.Bot.Builder.Core.Tests
             SimpleAdapter a = new SimpleAdapter(ValidateUpdate);
             BotContext c = new BotContext(a, new Activity());
 
-            c.OnUpdateActivity(async (activity, next) =>
+            c.OnUpdateActivity(async (context, activity, next) =>
             {
                 Assert.IsNotNull(activity, "Null activity passed in");
                 Assert.IsTrue(activity.Id == "1234");
@@ -350,7 +350,7 @@ namespace Microsoft.Bot.Builder.Core.Tests
             BotContext c = new BotContext(a, new Activity());
 
             bool wasCalled = false;
-            c.OnDeleteActivity(async (convRef, next) =>
+            c.OnDeleteActivity(async (context, convRef, next) =>
             {
                 Assert.IsNotNull(convRef, "Null activity passed in");
                 wasCalled = true;
@@ -376,7 +376,7 @@ namespace Microsoft.Bot.Builder.Core.Tests
             SimpleAdapter a = new SimpleAdapter(ValidateDelete);
             BotContext c = new BotContext(a, new Activity());
             
-            c.OnDeleteActivity(async (convRef, next) =>
+            c.OnDeleteActivity(async (context, convRef, next) =>
             {
                 Assert.IsNotNull(convRef, "Null activity passed in");
                 Assert.IsTrue(convRef.ActivityId == "1234", "Incorrect Activity Id");
@@ -394,7 +394,7 @@ namespace Microsoft.Bot.Builder.Core.Tests
             SimpleAdapter a = new SimpleAdapter();
             BotContext c = new BotContext(a, new Activity());
             
-            c.OnSendActivity(async (activities, next) =>
+            c.OnSendActivity(async (context, activities, next) =>
             {
                 throw new Exception("test");                 
             });
