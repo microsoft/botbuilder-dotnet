@@ -7,9 +7,9 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Core.Extensions.Tests;
 using Microsoft.Cognitive.LUIS;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.Bot.Builder.Tests;
 
 namespace Microsoft.Bot.Builder.LUIS.Tests
 {

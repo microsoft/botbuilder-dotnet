@@ -6,10 +6,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Bot.Builder.Integration.AspNet.Core;
-using Microsoft.Bot;
-using Microsoft.Bot.Samples.Echo;
-using Microsoft.Bot.Builder.Core.Extensions;
 
 namespace Connector.EchoBot
 {
