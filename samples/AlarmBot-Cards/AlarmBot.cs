@@ -5,7 +5,7 @@ using AlarmBot.Models;
 using AlarmBot.Topics;
 using Microsoft.Bot;
 using Microsoft.Bot.Builder;
-using Microsoft.Bot.Builder.Middleware;
+using Microsoft.Bot.Builder.Core.Extensions;
 using System.Threading.Tasks;
 
 namespace AlarmBot

@@ -5,12 +5,10 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Bot.Builder.BotFramework;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
-using Microsoft.Bot.Builder.Middleware;
-using Microsoft.Bot.Builder.Storage;
-using Microsoft.Bot.Samples.Echo;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Bot.Builder.Core.Extensions;
 
 namespace Microsoft.Bot.Samples.Echo.AspNetCore
 {

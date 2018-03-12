@@ -3,8 +3,7 @@
 
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Builder.Middleware;
-using Microsoft.Bot.Builder.Storage;
+using Microsoft.Bot.Builder.Core.Extensions;
 using Microsoft.Bot.Schema;
 using Microsoft.Recognizers.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -21,6 +20,7 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
         {
             TestAdapter adapter = new TestAdapter()
                 .Use(new ConversationState<TestState>(new MemoryStorage()));
+            adapter.Use(new BatchOutputMiddleware());
 
             await new TestFlow(adapter, async (context) =>
                 {
@@ -37,10 +37,10 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                         if (confirmResult.Succeeded())
                         {
                             Assert.IsNotNull(confirmResult.Text);
-                            context.Reply($"{confirmResult.Confirmation}");
+                            context.Batch().Reply($"{confirmResult.Confirmation}");
                         }
                         else
-                            context.Reply(confirmResult.Status.ToString());
+                            context.Batch().Reply(confirmResult.Status.ToString());
                     }
                 })
                 .Send("hello")
@@ -59,7 +59,7 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
         {
             TestAdapter adapter = new TestAdapter()
                 .Use(new ConversationState<TestState>(new MemoryStorage()));
-
+            adapter.Use(new BatchOutputMiddleware());
             await new TestFlow(adapter, async (context) =>
             {
                 var state = ConversationState<TestState>.Get(context);
@@ -78,9 +78,9 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                 {
                     var confirmResult = await confirmPrompt.Recognize(context);
                     if (confirmResult.Succeeded())
-                        context.Reply($"{confirmResult.Confirmation}");
+                        context.Batch().Reply($"{confirmResult.Confirmation}");
                     else
-                        context.Reply(confirmResult.Status.ToString());
+                        context.Batch().Reply(confirmResult.Status.ToString());
                 }
             })
                 .Send("hello")

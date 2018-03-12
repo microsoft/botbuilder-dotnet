@@ -2,7 +2,8 @@
 // Licensed under the MIT License.
 
 using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Builder.Tests;
+using Microsoft.Bot.Builder.Core.Extensions;
+using Microsoft.Bot.Builder.Core.Extensions.Tests;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -59,6 +60,7 @@ namespace Microsoft.Bot.Builder.Ai.Tests
         {
             
             TestAdapter adapter = new TestAdapter()
+                .Use(new BatchOutputMiddleware())
                 .Use(new QnAMakerMiddleware(new QnAMakerMiddlewareOptions()
                 {
                     KnowledgeBaseId = knowlegeBaseId,
@@ -70,7 +72,7 @@ namespace Microsoft.Bot.Builder.Ai.Tests
                 {
                     if (context.Request.AsMessageActivity().Text == "foo")
                     {
-                        context.Reply(context.Request.AsMessageActivity().Text);
+                        context.Batch().Reply(context.Request.AsMessageActivity().Text);
                     }
                     return Task.CompletedTask;
                 })
