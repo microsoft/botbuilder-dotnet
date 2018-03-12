@@ -8,9 +8,9 @@ using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder
 {
-    public delegate Task SendActivitiesHandler(List<Activity> activities, Func<Task> next);
-    public delegate Task UpdateActivityHandler(Activity activity, Func<Task> next);
-    public delegate Task DeleteActivityHandler(ConversationReference reference, Func<Task> next);
+    public delegate Task SendActivitiesHandler(IBotContext context, List<Activity> activities, Func<Task> next);
+    public delegate Task UpdateActivityHandler(IBotContext context, Activity activity, Func<Task> next);
+    public delegate Task DeleteActivityHandler(IBotContext context, ConversationReference reference, Func<Task> next);
 
     public interface IBotContext
     {

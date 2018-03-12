@@ -176,10 +176,10 @@ namespace Microsoft.Bot.Builder
 
             // Grab the current middleware, which is the 1st element in the array, and execute it            
             SendActivitiesHandler caller = sendHandlers.First();
-            await caller(activities, next);
+            await caller(this, activities, next);
         }
 
-        private static async Task UpdateActivityInternal(Activity activity,
+        private async Task UpdateActivityInternal(Activity activity,
             IEnumerable<UpdateActivityHandler> updateHandlers,
             Func<Task> callAtBottom)
         {
@@ -208,10 +208,10 @@ namespace Microsoft.Bot.Builder
 
             // Grab the current middleware, which is the 1st element in the array, and execute it            
             UpdateActivityHandler toCall = updateHandlers.First();
-            await toCall(activity, next);
+            await toCall(this, activity, next);
         }
 
-        private static async Task DeleteActivityInternal(ConversationReference cr,
+        private async Task DeleteActivityInternal(ConversationReference cr,
            IEnumerable<DeleteActivityHandler> updateHandlers,
            Func<Task> callAtBottom)
         {
@@ -240,30 +240,9 @@ namespace Microsoft.Bot.Builder
 
             // Grab the current middleware, which is the 1st element in the array, and execute it            
             DeleteActivityHandler toCall = updateHandlers.First();
-            await toCall(cr, next);
+            await toCall(this, cr, next);
         }
-
-
-        //public IBotContext Reply(string text, string speak = null)
-        //{
-        //    var reply = this.ConversationReference.GetPostToUserMessage();
-        //    reply.Text = text;
-        //    if (!string.IsNullOrWhiteSpace(speak))
-        //    {
-        //        // Developer included SSML to attach to the message.
-        //        reply.Speak = speak;
-        //    }
-        //    this.Responses.Add(reply);
-        //    return this;
-        //}
-
-        //public IBotContext Reply(IActivity activity)
-        //{
-        //    BotAssert.ActivityNotNull(activity);
-        //    this.Responses.Add((Activity)activity);
-        //    return this;
-        //}
-
+       
         /// <summary>
         /// Set the value associated with a key.
         /// </summary>

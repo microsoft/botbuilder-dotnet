@@ -82,10 +82,10 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
                         {
                             case "set value":
                                 userState.Value = "test";
-                                context.Batch().Reply("value saved");
+                                await context.SendActivity("value saved");
                                 break;
                             case "get value":
-                                context.Batch().Reply(userState.Value);
+                                await context.SendActivity(userState.Value);
                                 break;
                         }
                     }
@@ -137,10 +137,10 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
                         {
                             case "set value":
                                 conversationState.Value = "test";
-                                context.Batch().Reply("value saved");
+                                await context.SendActivity("value saved");
                                 break;
                             case "get value":
-                                context.Batch().Reply(conversationState.Value);
+                                await context.SendActivity(conversationState.Value);
                                 break;
                         }
                     }
