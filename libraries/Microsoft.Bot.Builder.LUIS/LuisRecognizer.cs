@@ -206,7 +206,7 @@ namespace Microsoft.Bot.Builder.LUIS
         /// </summary>
         private static void AddProperty(JObject obj, string key, JToken value)
         {
-            if (obj.ContainsKey(key))
+            if (((IDictionary<string, JToken>)obj).ContainsKey(key))
             {
                 ((JArray) obj[key]).Add(value);
             }
