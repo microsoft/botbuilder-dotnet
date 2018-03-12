@@ -93,10 +93,9 @@ namespace Microsoft.Bot.Builder
         /// <param name="reference">reference to create context around</param>
         /// <param name="callback">callback where you can continue the conversation</param>
         /// <returns>task when completed</returns>
-        //public virtual async Task ContinueConversation(ConversationReference reference, Func<IBotContext, Task> callback)
-        //{
-        //    var context = new BotContext(this, reference);
-        //    await RunPipeline(context, callback).ConfigureAwait(false);
-        //}
+        public virtual async Task ContinueConversation(ConversationReference reference, Func<IBotContext, Task> callback)
+        {
+            throw new NotImplementedException("Proactive conversation support is not currently implemented in M2.");
+        }
     }
 }

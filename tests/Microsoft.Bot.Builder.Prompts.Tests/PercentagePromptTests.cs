@@ -41,7 +41,7 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                             context.Batch().Reply($"{percentResult.Value}");
                         }
                         else
-                            context.Batch().Reply(RecognitionStatus.NotRecognized.ToString());
+                            context.Batch().Reply(PromptStatus.NotRecognized.ToString());
                     }
                 })
                 .Send("hello")
