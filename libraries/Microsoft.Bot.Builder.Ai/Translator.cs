@@ -25,7 +25,9 @@ namespace Microsoft.Bot.Builder.Ai
     {
         HashSet<string> noTranslatePatterns; 
 
-        //Constructor that indexes input template for source language
+        /// <summary>
+        ///Constructor that indexes input template for source language
+        /// </summary>
         internal PostProcessTranslator(string noTranslateTemplatePath)
         {
             noTranslatePatterns = new HashSet<string>();
@@ -40,15 +42,23 @@ namespace Microsoft.Bot.Builder.Ai
             }
         }
 
-        //Constructor for postprocessor that fixes numbers only
+        /// <summary>
+        /// Constructor for postprocessor that fixes numbers only
+        /// </summary>
         internal PostProcessTranslator()
         {
             noTranslatePatterns = new HashSet<string>();
         }
 
-        //parsing alignment information onto a dictionary
-        //dictionary key is character index start of source word  : character index end of source word
-        //value is character index start of target word : length of target word to use substring directly
+        /// <summary>
+        ///parsing alignment information onto a dictionary
+        /// dictionary key is character index start of source word  : character index end of source word
+        /// value is character index start of target word : length of target word to use substring directly
+        /// </summary>
+        /// <param name="alignment">String containing phrase alignments</param>
+        /// <param name="source">Source Language</param>
+        /// <param name="target">Target Language</param>
+        /// <returns></returns>
         private Dictionary<string, string> wordAlignmentParse(string alignment, string source, string target)
         {
             Dictionary<string, string> alignMap = new Dictionary<string, string>();
@@ -65,8 +75,16 @@ namespace Microsoft.Bot.Builder.Ai
             return alignMap;
         }
 
-        //use alignment information source sentence and target sentence 
-        //to keep a specific word from the source onto target translation
+
+        /// <summary>
+        /// use alignment information source sentence and target sentence
+        /// to keep a specific word from the source onto target translation
+        /// </summary>
+        /// <param name="alignment">String containing the alignments</param>
+        /// <param name="source">Source Language</param>
+        /// <param name="target">Target Language</param>
+        /// <param name="srcWrd">Source Word</param>
+        /// <returns></returns>
         private string keepSrcWrdInTranslation(Dictionary<string, string> alignment, string source, string target, string srcWrd)
         {
             string processedTranslation = target;
@@ -82,9 +100,15 @@ namespace Microsoft.Bot.Builder.Ai
             }
             return processedTranslation;
         }
-
-        //Fixing translation  
-        //used to handle numbers and no translate list
+        
+        /// <summary>
+        /// Fixing translation
+        /// used to handle numbers and no translate list
+        /// </summary>
+        /// <param name="sourceMessage">Source Message</param>
+        /// <param name="alignment">String containing the Alignments</param>
+        /// <param name="targetMessage">Target Message</param>
+        /// <returns></returns>
         internal string FixTranslation(string sourceMessage, string alignment, string targetMessage)
         {
             string processedTranslation = targetMessage;
@@ -136,14 +160,21 @@ namespace Microsoft.Bot.Builder.Ai
             authToken = new AzureAuthToken(apiKey);
             postProcessor = new PostProcessTranslator();
         }
-
-        //used to set no translate template for post processor
+        
+        /// <summary>
+        /// used to set no translate template for post processor
+        /// </summary>
+        /// <param name="templatePath">Path of directory containing no translate lists</param>
         public void SetPostProcessorTemplate(string templatePath)
         {
             postProcessor = new PostProcessTranslator(templatePath);
         }
-
-        //detects language of input text 
+        
+        /// <summary>
+        /// detects language of input text
+        /// </summary>
+        /// <param name="textToDetect">Input text</param>
+        /// <returns></returns>
         public async Task<string> Detect(string textToDetect)
         {
             string url = "http://api.microsofttranslator.com/v2/Http.svc/Detect";
@@ -165,8 +196,14 @@ namespace Microsoft.Bot.Builder.Ai
                 return detectedLang;
             }
         }
-
-        //translate single message from source lang to target lang
+        
+        /// <summary>
+        /// translate a single message from source language to target language
+        /// </summary>
+        /// <param name="textToTranslate"></param>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        /// <returns></returns>
         public async Task<string> Translate(string textToTranslate, string from, string to)
         {
             string url = "http://api.microsofttranslator.com/v2/Http.svc/Translate";
@@ -191,11 +228,18 @@ namespace Microsoft.Bot.Builder.Ai
                 return translatedText;
             }
         }
-
-        //translate array of strings from source language to target language
+        
+        /// <summary>
+        /// translate array of strings from source language to target language
+        /// </summary>
+        /// <param name="translateArraySourceTexts">Array of strings</param>
+        /// <param name="from">Source Language</param>
+        /// <param name="to">Target Language</param>
+        /// <returns></returns>
         public async Task<string[]> TranslateArray(string[] translateArraySourceTexts, string from, string to)
         {
             var uri = "https://api.microsofttranslator.com/v2/Http.svc/TranslateArray2";
+            //body of http request
             var body = $"<TranslateArrayRequest>" +
                            "<AppId />" +
                            $"<From>{from}</From>" +

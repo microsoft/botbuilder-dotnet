@@ -13,7 +13,7 @@ using Microsoft.Cognitive.LUIS;
 
 namespace Microsoft.Bot.Builder.Ai
 {
-    public class TranslationMiddleware : IReceiveActivity, ISendActivity
+    public class TranslationMiddleware : IReceiveActivity
     {
         private readonly string[] nativeLanguages;
         private Translator translator;
@@ -21,7 +21,11 @@ namespace Microsoft.Bot.Builder.Ai
         private readonly Func<IBotContext, string> _getUserLanguage;
         private readonly Func<IBotContext, Task<bool>> _setUserLanguage;
 
-        // Constructor for automatic detection of user messages
+        /// <summary>
+        /// Constructor for automatic detection of user messages
+        /// </summary>
+        /// <param name="nativeLanguages">List of languages supported by your app</param>
+        /// <param name="translatorKey"></param>
         public TranslationMiddleware(string[] nativeLanguages, string translatorKey)
         {
             this.nativeLanguages = nativeLanguages;
@@ -29,15 +33,27 @@ namespace Microsoft.Bot.Builder.Ai
             templatesDir = "";
         }
 
-        // Constructor for automatic detection of user messages and using templates
+        /// <summary>
+        /// Constructor for automatic of user messages and using templates
+        /// </summary>
+        /// <param name="nativeLanguages">List of languages supported by your app</param>
+        /// <param name="translatorKey"></param>
+        /// <param name="templatesDir">Directory containing no translate templates</param>
         public TranslationMiddleware(string[] nativeLanguages, string translatorKey, string templatesDir)
         {
             this.nativeLanguages = nativeLanguages;
             this.translator = new Translator(translatorKey);
             this.templatesDir = templatesDir;
         }
-
-        // Constructor for developer defined detection of user messages and using templates
+        
+        /// <summary>
+        /// Constructor for developer defined detection of user messages and using templates
+        /// </summary>
+        /// <param name="nativeLanguages">List of languages supported by your app</param>
+        /// <param name="translatorKey"></param>
+        /// <param name="templatesDir">Directory containing no translate templates</param>
+        /// <param name="getUserLanguage">Delegate for getting the user language</param>
+        /// <param name="setUserLanguage">Delegate for setting the user language, returns true if the language was changed (implements logic to change language by intercepting the message)</param>
         public TranslationMiddleware(string[] nativeLanguages, string translatorKey, string templatesDir, Func<IBotContext, string> getUserLanguage, Func<IBotContext, Task<bool>> setUserLanguage)
         {
             this.nativeLanguages = nativeLanguages;
@@ -146,21 +162,6 @@ namespace Microsoft.Bot.Builder.Ai
                 message.Text = text;
             }
         }
-
-        public async Task SendActivity(IBotContext context, IList<IActivity> activities, MiddlewareSet.NextDelegate next)
-        {
-            foreach (var activity in activities)
-            {
-                IMessageActivity message = context.Request.AsMessageActivity();
-                if (!String.IsNullOrWhiteSpace(message?.Text))
-                {
-                    // translate to userslanguage
-                    var translationContext = ((BotContext)context)["Microsoft.API.Translation"] as TranslationContext;
-                    if (translationContext != null && translationContext.SourceLanguage != translationContext.TargetLanguage && message.Text != translationContext.SourceText)
-                        await TranslateMessageAsync(context, message, translationContext.TargetLanguage, translationContext.SourceLanguage).ConfigureAwait(false);
-                }
-            }
-            await next().ConfigureAwait(false);
-        }
+        
     }
 }
