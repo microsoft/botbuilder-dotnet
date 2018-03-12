@@ -46,8 +46,8 @@ namespace Microsoft.Bot.Builder.Ai
             {
                 if (!String.IsNullOrWhiteSpace(message.Text))
                 {
-                    string fromLocale = _getUserLocale(context);
-                    ((BotContext)context)["LocaleConversionOriginalMessage"] = message.Text;
+                    string fromLocale = _getUserLocale(context); 
+                    ((BotContext)context).State.User["LocaleConversionOriginalMessage"] = message.Text;
                     await ConvertLocaleMessageAsync(message, fromLocale);
                     await _setUserLocale(context);
                 }
@@ -57,7 +57,7 @@ namespace Microsoft.Bot.Builder.Ai
 
         public static string GetOriginalMessage(IBotContext context)
         {
-            string message =   ((BotContext)context)["LocaleConversionOriginalMessage"] as string;
+            string message = ((BotContext)context).State.User["LocaleConversionOriginalMessage"] as string;
             return message;
         }
 
