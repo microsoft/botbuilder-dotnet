@@ -1,4 +1,7 @@
-﻿using Microsoft.Bot.Builder.Middleware;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using Microsoft.Bot.Builder.Middleware;
 using Microsoft.Bot.Schema;
 using System;
 using System.Threading.Tasks;
@@ -15,6 +18,13 @@ namespace Microsoft.Bot.Builder.Ai
         private readonly Func<IBotContext, string> _getUserLocale;
         private readonly Func<IBotContext, Task<bool>> _setUserLocale;
 
+        /// <summary>
+        /// Constructor for developer defined detection of user messages
+        /// </summary>
+        /// <param name="getUserLocale">Delegate for getting the user locale</param>
+        /// <param name="setUserLocale">Delegate for setting the user language, returns true if the locale was changed (implements logic to change locale by intercepting the message)</param>
+        /// <param name="toLocale">Target Locale</param>
+        /// <param name="localeConverter">An ILocaleConverter instance</param>
         public LocaleConverterMiddleware(Func<IBotContext, string> getUserLocale, Func<IBotContext, Task<bool>> setUserLocale, string toLocale, ILocaleConverter localeConverter)
         {
             this.localeConverter = localeConverter; 
@@ -23,6 +33,12 @@ namespace Microsoft.Bot.Builder.Ai
             _setUserLocale = setUserLocale;
         }
 
+        /// <summary>
+        /// Incoming activity
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="next"></param>
+        /// <returns></returns>
         public async Task ReceiveActivity(IBotContext context, MiddlewareSet.NextDelegate next)
         {
             IMessageActivity message = context.Request.AsMessageActivity();

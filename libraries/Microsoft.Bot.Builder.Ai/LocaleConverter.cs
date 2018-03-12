@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -36,9 +39,11 @@ namespace Microsoft.Bot.Builder.Ai
         {
             initLocales();
         }
-
-        //Init different locales format
-        //Supporting English ,French deutch and chinese locales
+        
+        /// <summary>
+        /// Init different locales format
+        /// Supporting English, French, Deutsche and Chinese Locales
+        /// </summary>
         private void initLocales()
         {
             DateAndTimeLocaleFormat yearMonthDay = new DateAndTimeLocaleFormat
@@ -66,14 +71,23 @@ namespace Microsoft.Bot.Builder.Ai
             }
             mapLocaleToFunction["en-us"] = monthDayYEar;
         }
-
-        //check if a specific locale is available
+        
+        /// <summary>
+        /// Check if a specific locale is available
+        /// </summary>
+        /// <param name="locale"></param>
+        /// <returns></returns>
         public bool IsLocaleAvailable(string locale)
         {
             return mapLocaleToFunction.ContainsKey(locale);
         }
-
-        //extract date and time from a sentence using Microsoft Recognizer
+        
+        /// <summary>
+        /// Extract date and time from a sentence using Microsoft Recognizer
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="fromLocale">Source Locale</param>
+        /// <returns></returns>
         private List<TextAndDateTime> extractDate(string message, string fromLocale)
         {
             List<TextAndDateTime> fndDates = new List<TextAndDateTime>();
@@ -129,12 +143,18 @@ namespace Microsoft.Bot.Builder.Ai
             }
             return fndDates;
         }
-
-        //Convert a message from locale to another locale
+        
+        /// <summary>
+        /// Convert a message from locale to another locale
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="fromLocale">Source Locale</param>
+        /// <param name="toLocale">Target Locale</param>
+        /// <returns></returns>
         public async Task<string> Convert(string message, string fromLocale, string toLocale)
         {
             List<TextAndDateTime> dates = extractDate(message, fromLocale);
-            if (!mapLocaleToFunction.ContainsKey(toLocale))
+            if (!IsLocaleAvailable(toLocale))
             {
                 throw (new ArgumentException("Unsupported To Locale"));
             }
@@ -155,7 +175,10 @@ namespace Microsoft.Bot.Builder.Ai
             return  processedMessage;
         }
 
-        //Get all supported Locales
+        /// <summary>
+        /// Get all available locales
+        /// </summary>
+        /// <returns></returns>
         public string[] GetAvailableLocales()
         {
             return mapLocaleToFunction.Keys.ToArray();
