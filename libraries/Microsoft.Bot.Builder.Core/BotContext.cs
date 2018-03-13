@@ -74,6 +74,14 @@ namespace Microsoft.Bot.Builder
             }
         }
 
+        public async Task SendActivity(params IMessageActivity[] messagesToSend)
+        {
+            if (messagesToSend == null)
+                throw new ArgumentNullException(nameof(messagesToSend));
+
+            Activity [] activities = Array.ConvertAll(messagesToSend, item => (Activity)item);
+            await SendActivity(activities);
+        }
         public async Task SendActivity(params string[] textRepliesToSend)
         {
             if (textRepliesToSend == null)

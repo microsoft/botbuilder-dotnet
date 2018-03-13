@@ -28,6 +28,8 @@ namespace Microsoft.Bot.Builder
 
         Task SendActivity(params string[] textRepliesToSend);
         Task SendActivity(params Activity[] activities);
+        Task SendActivity(params IMessageActivity[] activities);
+
         Task UpdateActivity(Activity activity);
         Task DeleteActivity(string activityId);
 
