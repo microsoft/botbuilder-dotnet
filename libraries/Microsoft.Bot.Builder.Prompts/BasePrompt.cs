@@ -73,9 +73,17 @@ namespace Microsoft.Bot.Builder.Prompts
         /// <summary>
         /// Creates a new Message Activity, and queues it for sending to the user. 
         /// </summary>
+<<<<<<< HEAD
         public async Task Prompt(IBotContext context, IMessageActivity activity)
         {            
             await context.SendActivity(activity);            
+=======
+        public Task Prompt(IBotContext context, IMessageActivity activity)
+        {
+            // Note: Cast can be removed once PR #284 is merged. Currently in CR. 
+            context.SendActivity((Activity)activity);
+            return Task.CompletedTask;
+>>>>>>> 4ed1d486ef152587cff3c2483cd2440075ac5123
         }
 
         /// <summary>
