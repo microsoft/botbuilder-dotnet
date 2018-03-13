@@ -49,6 +49,7 @@ namespace Microsoft.Bot.Builder.LUIS
             var recognizerResult = new RecognizerResult
             {
                 Text = request.Query,
+                AlteredText = luisResult.AlteredQuery,
                 Intents = GetIntents(luisResult),
                 Entities = GetEntitiesAndMetadata(luisResult.Entities, luisResult.CompositeEntities, verbose)
             };
