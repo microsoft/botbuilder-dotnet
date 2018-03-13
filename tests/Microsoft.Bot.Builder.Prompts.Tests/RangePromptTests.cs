@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
         {
             TestAdapter adapter = new TestAdapter()
                 .Use(new ConversationState<TestState>(new MemoryStorage()));
-            adapter.Use(new BatchOutputMiddleware());
+
             await new TestFlow(adapter, async (context) =>
                 {
                     var state = ConversationState<TestState>.Get(context);
@@ -38,10 +38,10 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                             Assert.IsTrue(rangeResult.Start > 0);
                             Assert.IsTrue(rangeResult.End > rangeResult.Start);
                             Assert.IsNotNull(rangeResult.Text);
-                            context.Batch().Reply($"{rangeResult.Start}-{rangeResult.End}");
+                            await context.SendActivity($"{rangeResult.Start}-{rangeResult.End}");
                         }
                         else
-                            context.Batch().Reply(rangeResult.Status.ToString());
+                            await context.SendActivity(rangeResult.Status.ToString());
                     }
                 })
                 .Send("hello")
@@ -60,7 +60,7 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
         {
             TestAdapter adapter = new TestAdapter()
                 .Use(new ConversationState<TestState>(new MemoryStorage()));
-            adapter.Use(new BatchOutputMiddleware());
+
             await new TestFlow(adapter, async (context) =>
             {
                 var state = ConversationState<TestState>.Get(context);
@@ -82,10 +82,10 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                         Assert.IsTrue(rangeResult.Start > 0);
                         Assert.IsTrue(rangeResult.End > rangeResult.Start);
                         Assert.IsNotNull(rangeResult.Text);
-                        context.Batch().Reply($"{rangeResult.Start}-{rangeResult.End}");
+                        await context.SendActivity($"{rangeResult.Start}-{rangeResult.End}");
                     }
                     else
-                        context.Batch().Reply(rangeResult.Status.ToString());
+                        await context.SendActivity(rangeResult.Status.ToString());
                 }
             })
                 .Send("hello")

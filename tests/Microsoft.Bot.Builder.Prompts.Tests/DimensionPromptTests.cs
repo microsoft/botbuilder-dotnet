@@ -20,7 +20,6 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
         {
             TestAdapter adapter = new TestAdapter()
                 .Use(new ConversationState<TestState>(new MemoryStorage()));
-            adapter.Use(new BatchOutputMiddleware()); 
 
             await new TestFlow(adapter, async (context) =>
                 {
@@ -40,10 +39,10 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                             Assert.IsNotNull(dimensionResult.Text);
                             Assert.IsNotNull(dimensionResult.Unit);
                             Assert.IsInstanceOfType(dimensionResult.Value, typeof(float));
-                            context.Batch().Reply($"{dimensionResult.Value} {dimensionResult.Unit}");
+                            await context.SendActivity($"{dimensionResult.Value} {dimensionResult.Unit}");
                         }
                         else
-                            context.Batch().Reply(dimensionResult.Status.ToString());
+                            await context.SendActivity(dimensionResult.Status.ToString());
                     }
                 })
                 .Send("hello")
@@ -62,7 +61,6 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
         {
             TestAdapter adapter = new TestAdapter()
                 .Use(new ConversationState<TestState>(new MemoryStorage()));
-            adapter.Use(new BatchOutputMiddleware()); 
 
             await new TestFlow(adapter, async (context) =>
                 {
@@ -81,9 +79,9 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                     {
                         var dimensionResult = await numberPrompt.Recognize(context);
                         if (dimensionResult.Succeeded())
-                            context.Batch().Reply($"{dimensionResult.Value} {dimensionResult.Unit}");
+                            await context.SendActivity($"{dimensionResult.Value} {dimensionResult.Unit}");
                         else
-                            context.Batch().Reply(dimensionResult.Status.ToString());
+                            await context.SendActivity(dimensionResult.Status.ToString());
                     }
                 })
                 .Send("hello")
