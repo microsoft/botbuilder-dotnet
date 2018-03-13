@@ -13,11 +13,13 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
         public async Task CatchException_TestMiddleware_TestStackedErrorMiddleware()
         {
             TestAdapter adapter = new TestAdapter()
+                // Add middleware to catch general exceptions
                 .Use(new CatchExceptionMiddleware<Exception>((context, exception) =>
                 {
                     context.SendActivity(context.Request.CreateReply(exception.Message));
                     return Task.CompletedTask;
                 }))
+                // Add middleware to catch NullReferenceExceptions before throwing up to the general exception instance
                 .Use(new CatchExceptionMiddleware<NullReferenceException>((context, exception) =>
                 {
                     context.SendActivity(context.Request.CreateReply("Sorry - Null Reference Exception"));
