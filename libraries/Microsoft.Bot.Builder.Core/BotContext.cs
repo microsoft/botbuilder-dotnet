@@ -74,14 +74,6 @@ namespace Microsoft.Bot.Builder
             }
         }
 
-        public async Task SendActivity(params IMessageActivity[] messagesToSend)
-        {
-            if (messagesToSend == null)
-                throw new ArgumentNullException(nameof(messagesToSend));
-
-            Activity [] activities = Array.ConvertAll(messagesToSend, item => (Activity)item);
-            await SendActivity(activities);
-        }
         public async Task SendActivity(params string[] textRepliesToSend)
         {
             if (textRepliesToSend == null)
@@ -97,7 +89,7 @@ namespace Microsoft.Bot.Builder
             await SendActivity(newActivities.ToArray());
         }
 
-        public async Task SendActivity(params Activity[] activities)
+        public async Task SendActivity(params IActivity[] activities)
         {
             // Bind the relevant Conversation Reference properties, such as URLs and 
             // ChannelId's, to the activities we're about to send. 
@@ -107,7 +99,11 @@ namespace Microsoft.Bot.Builder
                 ApplyConversationReference(a, cr);
             }
 
-            List<Activity> activityList = new List<Activity>(activities);
+            // Convert the IActivities to Activies. 
+            Activity[] activityArray = Array.ConvertAll(activities, (input) => (Activity)input);            
+
+            // Create the list used by the recursive methods. 
+            List<Activity> activityList = new List<Activity>(activityArray);
 
             async Task ActuallySendStuff()
             {
@@ -115,7 +111,8 @@ namespace Microsoft.Bot.Builder
                 if (activities.Count() > 0)
                     anythingToSend = true;
 
-                await this.Adapter.SendActivity(this, activities);
+                // Send from the list, which may have been manipulated via the event handlers. 
+                await this.Adapter.SendActivity(this, activityList.ToArray());
 
                 // If we actually sent something, set the flag. 
                 if (anythingToSend)
@@ -129,14 +126,16 @@ namespace Microsoft.Bot.Builder
         /// Replaces an existing activity. 
         /// </summary>
         /// <param name="activity">New replacement activity. The activity should already have it's ID information populated</param>        
-        public async Task UpdateActivity(Activity activity)
+        public async Task UpdateActivity(IActivity activity)
         {
+            Activity a = (Activity)activity; 
+
             async Task ActuallyUpdateStuff()
             {
-                await this.Adapter.UpdateActivity(this, activity);
+                await this.Adapter.UpdateActivity(this, a);
             }
 
-            await UpdateActivityInternal(activity, _onUpdateActivity, ActuallyUpdateStuff);
+            await UpdateActivityInternal(a, _onUpdateActivity, ActuallyUpdateStuff);
         }
 
         public async Task DeleteActivity(string activityId)
