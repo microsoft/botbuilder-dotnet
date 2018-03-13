@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
         {
             TestAdapter adapter = new TestAdapter()
                 .Use(new ConversationState<TestState>(new MemoryStorage()));
-            adapter.Use(new BatchOutputMiddleware());
+
             await new TestFlow(adapter, async (context) =>
                 {
                     var state = ConversationState<TestState>.Get(context);
@@ -37,10 +37,10 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                         {
                             Assert.IsNotNull(phoneResult.Text);
                             Assert.IsNotNull(phoneResult.Value);
-                            context.Batch().Reply($"{phoneResult.Value}");
+                            await context.SendActivity($"{phoneResult.Value}");
                         }
                         else
-                            context.Batch().Reply(phoneResult.Status.ToString());
+                            await context.SendActivity(phoneResult.Status.ToString());
                     }
                 })
                 .Send("hello")
@@ -59,7 +59,7 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
         {
             TestAdapter adapter = new TestAdapter()
                 .Use(new ConversationState<TestState>(new MemoryStorage()));
-            adapter.Use(new BatchOutputMiddleware());
+
             await new TestFlow(adapter, async (context) =>
             {
                 var state = ConversationState<TestState>.Get(context);
@@ -77,9 +77,9 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                 {
                     var phoneResult = await numberPrompt.Recognize(context);
                     if (phoneResult.Succeeded())
-                        context.Batch().Reply($"{phoneResult.Value}");
+                        await context.SendActivity($"{phoneResult.Value}");
                     else
-                        context.Batch().Reply(phoneResult.Status.ToString());
+                        await context.SendActivity(phoneResult.Status.ToString());
                 }
             })
                 .Send("hello")

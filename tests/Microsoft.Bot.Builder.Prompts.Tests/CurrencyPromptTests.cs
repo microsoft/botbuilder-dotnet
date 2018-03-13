@@ -20,7 +20,6 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
         {
             TestAdapter adapter = new TestAdapter()
                 .Use(new ConversationState<TestState>(new MemoryStorage()));
-            adapter.Use(new BatchOutputMiddleware());
 
             await new TestFlow(adapter, async (context) =>
                 {
@@ -40,10 +39,10 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                             Assert.IsNotNull(currencyResult.Text);
                             Assert.IsNotNull(currencyResult.Unit);
                             Assert.IsInstanceOfType(currencyResult.Value, typeof(float));
-                            context.Batch().Reply($"{currencyResult.Value} {currencyResult.Unit}");
+                            await context.SendActivity($"{currencyResult.Value} {currencyResult.Unit}");
                         }
                         else
-                            context.Batch().Reply(currencyResult.Status.ToString());
+                            await context.SendActivity(currencyResult.Status.ToString());
                     }
                 })
                 .Send("hello")
@@ -60,7 +59,7 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
         {
             TestAdapter adapter = new TestAdapter()
                 .Use(new ConversationState<TestState>(new MemoryStorage()));
-            adapter.Use(new BatchOutputMiddleware());
+
             await new TestFlow(adapter, async (context) =>
             {
                 var state = ConversationState<TestState>.Get(context);
@@ -79,9 +78,9 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                 {
                     var currencyPrompt = await numberPrompt.Recognize(context);
                     if (currencyPrompt.Succeeded())
-                        context.Batch().Reply($"{currencyPrompt.Value} {currencyPrompt.Unit}");
+                        await context.SendActivity($"{currencyPrompt.Value} {currencyPrompt.Unit}");
                     else
-                        context.Batch().Reply(currencyPrompt.Status.ToString());
+                        await context.SendActivity(currencyPrompt.Status.ToString());
                 }
             })
                 .Send("hello")
