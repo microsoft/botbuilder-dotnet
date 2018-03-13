@@ -27,10 +27,9 @@ namespace Microsoft.Bot.Builder
         bool Responded { get; set; }
 
         Task SendActivity(params string[] textRepliesToSend);
-        Task SendActivity(params Activity[] activities);
-        Task SendActivity(params IMessageActivity[] activities);
+        Task SendActivity(params IActivity[] activities);        
 
-        Task UpdateActivity(Activity activity);
+        Task UpdateActivity(IActivity activity);
         Task DeleteActivity(string activityId);
 
         /// <summary>

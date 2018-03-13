@@ -25,9 +25,7 @@ namespace Microsoft.Bot.Builder
         public Activity Request => this._innerContext.Request;
 
         public bool Responded { get => _innerContext.Responded; set => _innerContext.Responded = value; }
-
         
-
         /// <summary>
         /// Get a value by a key.
         /// </summary>
@@ -42,18 +40,13 @@ namespace Microsoft.Bot.Builder
         {
             return _innerContext.SendActivity(textRepliesToSend);
         }
-
-        public Task SendActivity(params IMessageActivity[] messagesToSend)
-        {
-            return _innerContext.SendActivity(messagesToSend);
-        }
-
-        public Task SendActivity(params Activity[] activities)
+        
+        public Task SendActivity(params IActivity[] activities)
         {
             return _innerContext.SendActivity(activities); 
         }
 
-        public Task UpdateActivity(Activity activity)
+        public Task UpdateActivity(IActivity activity)
         {
             return _innerContext.UpdateActivity(activity);
         }
