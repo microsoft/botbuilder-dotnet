@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Connector
         /// <param name="microsoftAppPassword">Optional. Your Microsoft app password. If null, this setting is read from settings["MicrosoftAppPassword"]</param>
         /// <param name="handlers">Optional. The delegating handlers to add to the http client pipeline.</param>
         public ConnectorClient(Uri baseUri, string microsoftAppId = null, string microsoftAppPassword = null, params DelegatingHandler[] handlers)
-            : this(baseUri, new MicrosoftAppCredentials(microsoftAppId, microsoftAppPassword), handlers: handlers)
+            : this(baseUri, new MicrosoftAppCredentials(microsoftAppId, microsoftAppPassword))
         {
         }
 
