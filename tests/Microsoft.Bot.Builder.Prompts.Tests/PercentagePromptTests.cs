@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
         {
             TestAdapter adapter = new TestAdapter()
                 .Use(new ConversationState<TestState>(new MemoryStorage()));
-            adapter.Use(new BatchOutputMiddleware());
+
             await new TestFlow(adapter, async (context) =>
                 {
                     var state = ConversationState<TestState>.Get(context);
@@ -38,10 +38,10 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                             Assert.IsTrue(percentResult.Value != float.NaN);
                             Assert.IsNotNull(percentResult.Text);
                             Assert.IsInstanceOfType(percentResult.Value, typeof(float));
-                            context.Batch().Reply($"{percentResult.Value}");
+                            await context.SendActivity($"{percentResult.Value}");
                         }
                         else
-                            context.Batch().Reply(PromptStatus.NotRecognized.ToString());
+                            await context.SendActivity(PromptStatus.NotRecognized.ToString());
                     }
                 })
                 .Send("hello")
@@ -60,7 +60,7 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
         {
             TestAdapter adapter = new TestAdapter()
                 .Use(new ConversationState<TestState>(new MemoryStorage()));
-            adapter.Use(new BatchOutputMiddleware());
+
             await new TestFlow(adapter, async (context) =>
             {
                 var state = ConversationState<TestState>.Get(context);
@@ -78,9 +78,9 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                 {
                     var percentResult = await numberPrompt.Recognize(context);
                     if (percentResult.Succeeded())
-                        context.Batch().Reply($"{percentResult.Value}");
+                        await context.SendActivity($"{percentResult.Value}");
                     else
-                        context.Batch().Reply(percentResult.Status.ToString());
+                        await context.SendActivity(percentResult.Status.ToString());
                 }
             })
                 .Send("hello")

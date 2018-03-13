@@ -1,5 +1,4 @@
-﻿using Microsoft.Bot.Builder.Core.Extensions;
-using Microsoft.Bot.Schema;
+﻿using Microsoft.Bot.Schema;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -76,7 +75,8 @@ namespace Microsoft.Bot.Builder.Prompts
         /// </summary>
         public Task Prompt(IBotContext context, IMessageActivity activity)
         {
-            context.Batch().Reply(activity);
+            // Note: Cast can be removed once PR #284 is merged. Currently in CR. 
+            context.SendActivity((Activity)activity);
             return Task.CompletedTask;
         }
 
