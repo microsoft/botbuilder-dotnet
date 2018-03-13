@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
         {
             TestAdapter adapter = new TestAdapter()
                 .Use(new ConversationState<TestState>(new MemoryStorage()));
-            adapter.Use(new BatchOutputMiddleware());
+
             await new TestFlow(adapter, async (context) =>
                 {
                     var state = ConversationState<TestState>.Get(context);
@@ -38,10 +38,10 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                             Assert.IsTrue(ordinalResult.Value != float.NaN);
                             Assert.IsNotNull(ordinalResult.Text);
                             Assert.IsInstanceOfType(ordinalResult.Value, typeof(int));
-                            context.Batch().Reply(ordinalResult.Value.ToString());
+                            await context.SendActivity(ordinalResult.Value.ToString());
                         }
                         else
-                            context.Batch().Reply(ordinalResult.Status.ToString());
+                            await context.SendActivity(ordinalResult.Status.ToString());
                     }
                 })
                 .Send("hello")
@@ -58,7 +58,7 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
         {
             TestAdapter adapter = new TestAdapter()
                 .Use(new ConversationState<TestState>(new MemoryStorage()));
-            adapter.Use(new BatchOutputMiddleware());
+
             await new TestFlow(adapter, async (context) =>
             {
                 var state = ConversationState<TestState>.Get(context);
@@ -80,10 +80,10 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                         Assert.IsInstanceOfType(ordinalResult.Value, typeof(int));
                         Assert.IsTrue(ordinalResult.Value < 100);
                         Assert.IsNotNull(ordinalResult.Text);
-                        context.Batch().Reply(ordinalResult.Value.ToString());
+                        await context.SendActivity(ordinalResult.Value.ToString());
                     }
                     else
-                        context.Batch().Reply(ordinalResult.Status.ToString());
+                        await context.SendActivity(ordinalResult.Status.ToString());
                 }
             })
                 .Send("hello")
