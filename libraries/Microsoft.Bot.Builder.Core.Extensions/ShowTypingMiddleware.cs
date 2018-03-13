@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 
@@ -18,6 +19,12 @@ namespace Microsoft.Bot.Builder.Core.Extensions
 
         public ShowTypingMiddleware(int delay = 500, int frequency = 2000)
         {
+            if(delay < 0)
+                throw new ArgumentOutOfRangeException("delay","Delay must be greater than or equal to zero");
+
+            if (frequency <= 0)
+                throw new ArgumentOutOfRangeException("frequency", "Frequency must be greater than zero");
+
             _delay = delay;
             _freqency = frequency;
         }
