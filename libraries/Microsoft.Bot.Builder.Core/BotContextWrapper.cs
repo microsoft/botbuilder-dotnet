@@ -42,6 +42,12 @@ namespace Microsoft.Bot.Builder
         {
             return _innerContext.SendActivity(textRepliesToSend);
         }
+
+        public Task SendActivity(params IMessageActivity[] messagesToSend)
+        {
+            return _innerContext.SendActivity(messagesToSend);
+        }
+
         public Task SendActivity(params Activity[] activities)
         {
             return _innerContext.SendActivity(activities); 
