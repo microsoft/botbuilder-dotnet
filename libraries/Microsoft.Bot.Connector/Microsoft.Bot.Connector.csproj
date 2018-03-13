@@ -13,7 +13,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net461</TargetFrameworks>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <PackageId>Microsoft.Bot.Connector</PackageId>
     <Description>This library implements C# classes for using the Bot Framework Connector REST API.</Description>
     <Summary>Client REST API library for Microsoft Bot Framework Connector</Summary>
