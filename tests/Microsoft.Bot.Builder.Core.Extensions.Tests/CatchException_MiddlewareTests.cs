@@ -10,12 +10,17 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
     {
         [TestMethod]
         [TestCategory("Middleware")]
-        public async Task CatchException_TestMiddleware()
+        public async Task CatchException_TestMiddleware_TestStackedErrorMiddleware()
         {
             TestAdapter adapter = new TestAdapter()
-                .Use(new CatchExceptionMiddleware((context, exception) =>
+                .Use(new CatchExceptionMiddleware<Exception>((context, exception) =>
                 {
-                    context.SendActivity(context.Request.CreateReply("Sorry, something went wrong"));
+                    context.SendActivity(context.Request.CreateReply(exception.Message));
+                    return Task.CompletedTask;
+                }))
+                .Use(new CatchExceptionMiddleware<NullReferenceException>((context, exception) =>
+                {
+                    context.SendActivity(context.Request.CreateReply("Sorry - Null Reference Exception"));
                     return Task.CompletedTask;
                 }));
 
@@ -27,17 +32,55 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
                         context.SendActivity(context.Request.CreateReply(context.Request.AsMessageActivity().Text));
                     }
 
-                    if (context.Request.AsMessageActivity().Text == "error")
+                    if (context.Request.AsMessageActivity().Text == "NotImplementedException")
                     {
-                        throw new Exception();
+                        throw new NotImplementedException("Test");
                     }
 
                     return Task.CompletedTask;
                 })
                 .Send("foo")
                 .AssertReply("foo", "passthrough")
-                .Send("error")
-                .AssertReply("Sorry, something went wrong")
+                .Send("NotImplementedException")
+                .AssertReply("Test")
+                .StartTest();
+        }
+
+        [TestMethod]
+        [TestCategory("Middleware")]
+        public async Task CatchException_TestMiddleware_SpecificExceptionType()
+        {
+            TestAdapter adapter = new TestAdapter()
+                .Use(new CatchExceptionMiddleware<Exception>((context, exception) =>
+                {
+                    context.SendActivity(context.Request.CreateReply("Generic Exception Caught"));
+                    return Task.CompletedTask;
+                }))
+                .Use(new CatchExceptionMiddleware<NullReferenceException>((context, exception) =>
+                {
+                    context.SendActivity(context.Request.CreateReply(exception.Message));
+                    return Task.CompletedTask;
+                }));
+
+
+            await new TestFlow(adapter, (context) =>
+                {
+                    if (context.Request.AsMessageActivity().Text == "foo")
+                    {
+                        context.SendActivity(context.Request.CreateReply(context.Request.AsMessageActivity().Text));
+                    }
+
+                    if (context.Request.AsMessageActivity().Text == "NullReferenceException")
+                    {
+                        throw new NullReferenceException("Test");
+                    }
+
+                    return Task.CompletedTask;
+                })
+                .Send("foo")
+                .AssertReply("foo", "passthrough")
+                .Send("NullReferenceException")
+                .AssertReply("Test")
                 .StartTest();
         }
     }

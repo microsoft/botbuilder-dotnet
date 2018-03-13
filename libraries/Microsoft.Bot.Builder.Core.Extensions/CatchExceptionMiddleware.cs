@@ -3,32 +3,25 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Core.Extensions
 {
-    public class CatchExceptionMiddleware : IMiddleware
+    public class CatchExceptionMiddleware<T> : IMiddleware where T : Exception
     {
-        private readonly CatchExceptionHandler _handler;
+        private readonly Func<IBotContext, T, Task> _handler;
 
-        public CatchExceptionMiddleware(CatchExceptionHandler handler)
+        public CatchExceptionMiddleware(Func<IBotContext, T, Task> callOnException)
         {
-            _handler = handler;
+            _handler = callOnException;
         }
 
         public async Task OnProcessRequest(IBotContext context, MiddlewareSet.NextDelegate next)
-        {
-            await CatchError(context, next);
-        }
-
-        private async Task CatchError(IBotContext context, MiddlewareSet.NextDelegate next)
         {
             try
             {
                 await next();
             }
-            catch (Exception ex)
+            catch (T ex)
             {
                 await _handler.Invoke(context, ex);
             }
         }
-
-        public delegate Task CatchExceptionHandler(IBotContext context, Exception exception);
     }
 }
