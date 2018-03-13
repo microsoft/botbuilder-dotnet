@@ -37,6 +37,7 @@ namespace Microsoft.Bot.Builder.LUIS.Tests
             var luisRecognizer = GetLuisRecognizer(verbose: true);
             var result = await luisRecognizer.Recognize("My name is Emad", CancellationToken.None);
             Assert.IsNotNull(result);
+            Assert.IsNull(result.AlteredText);
             Assert.AreEqual("My name is Emad", result.Text);
             Assert.IsNotNull(result.Intents);
             Assert.AreEqual(1, result.Intents.Count);
@@ -69,6 +70,8 @@ namespace Microsoft.Bot.Builder.LUIS.Tests
             Assert.IsTrue(result.Intents.Count > 1);
             Assert.IsNotNull(result.Intents["Delivery"]);
             Assert.IsTrue((double)result.Intents["Delivery"] > 0 && (double)result.Intents["Delivery"] <= 1);
+            Assert.AreEqual("Delivery", result.GetTopScoringIntent().Item1);
+            Assert.IsTrue(result.GetTopScoringIntent().Item2 > 0);
             Assert.IsNotNull(result.Entities);
             Assert.IsNotNull(result.Entities["builtin_number"]);
             Assert.AreEqual(2001, (int)result.Entities["builtin_number"].First);
