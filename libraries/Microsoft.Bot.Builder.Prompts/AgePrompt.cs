@@ -16,8 +16,12 @@ namespace Microsoft.Bot.Builder.Prompts
     public class AgePrompt : NumberWithUnitPrompt
     {
         public AgePrompt(string culture, PromptValidator<NumberWithUnit> validator = null)
-            : base(NumberWithUnitRecognizer.Instance.GetAgeModel(culture), validator)
+            : base(new NumberWithUnitRecognizer(culture).GetAgeModel(), validator)
         {
+            // ToDo: The creation of the new Recognizer is expensive given all of the
+            // Regex compilation in there. If we need to optimize this, we can add a static 
+            // concurrent dictionary here based on culture. The model.parse() method called 
+            // in the base class is thread safe. 
         }
 
         protected AgePrompt(IModel model, PromptValidator<NumberWithUnit> validator = null)

@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Builder.Prompts
     public class TemperaturePrompt : NumberWithUnitPrompt
     {
         public TemperaturePrompt(string culture, PromptValidator<NumberWithUnit> validator = null) 
-            : base(NumberWithUnitRecognizer.Instance.GetTemperatureModel(culture), validator)
+            : base(new NumberWithUnitRecognizer(culture).GetTemperatureModel(), validator)
         {
         }
 
