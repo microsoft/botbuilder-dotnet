@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
         {
             TestAdapter adapter = new TestAdapter()
                 .Use(new ConversationState<TestState>(new MemoryStorage()));
-            adapter.Use(new BatchOutputMiddleware());
+
             await new TestFlow(adapter, async (context) =>
                 {
                     var state = ConversationState<TestState>.Get(context);
@@ -43,10 +43,10 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                             Assert.IsTrue(numberResult.Value != float.NaN);
                             Assert.IsNotNull(numberResult.Text);
                             Assert.IsInstanceOfType(numberResult.Value, typeof(float));
-                            context.Batch().Reply(numberResult.Value.ToString());
+                            await context.SendActivity(numberResult.Value.ToString());
                         }
                         else
-                            context.Batch().Reply(numberResult.Status.ToString());
+                            await context.SendActivity(numberResult.Status.ToString());
                     }
                 })
                 .Send("hello")
@@ -65,7 +65,7 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
         {
             TestAdapter adapter = new TestAdapter()
                 .Use(new ConversationState<TestState>(new MemoryStorage()));
-            adapter.Use(new BatchOutputMiddleware());
+
             await new TestFlow(adapter, async (context) =>
             {
                 var state = ConversationState<TestState>.Get(context);
@@ -82,10 +82,10 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                     {
                         Assert.IsInstanceOfType(numberResult.Value, typeof(int));
                         Assert.IsNotNull(numberResult.Text);
-                        context.Batch().Reply(numberResult.Value.ToString());
+                        await context.SendActivity(numberResult.Value.ToString());
                     }
                     else
-                        context.Batch().Reply(numberResult.Status.ToString());
+                        await context.SendActivity(numberResult.Status.ToString());
                 }
             })
                 .Send("hello")
@@ -104,7 +104,7 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
         {
             TestAdapter adapter = new TestAdapter()
                 .Use(new ConversationState<TestState>(new MemoryStorage()));
-            adapter.Use(new BatchOutputMiddleware());
+
             await new TestFlow(adapter, async (context) =>
             {
                 var state = ConversationState<TestState>.Get(context);
@@ -128,10 +128,10 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                         Assert.IsInstanceOfType(numberResult.Value, typeof(int));
                         Assert.IsTrue(numberResult.Value < 100);
                         Assert.IsNotNull(numberResult.Text);
-                        context.Batch().Reply(numberResult.Value.ToString());
+                        await context.SendActivity(numberResult.Value.ToString());
                     }
                     else
-                        context.Batch().Reply(numberResult.Status.ToString());
+                        await context.SendActivity(numberResult.Status.ToString());
                 }
             })
                 .Send("hello")

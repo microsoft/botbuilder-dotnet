@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
         {
             TestAdapter adapter = new TestAdapter()
                 .Use(new ConversationState<TestState>(new MemoryStorage()));
-            adapter.Use(new BatchOutputMiddleware());
+
             await new TestFlow(adapter, async (context) =>
                 {
                     var state = ConversationState<TestState>.Get(context);
@@ -39,10 +39,10 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                             Assert.IsNotNull(tempResult.Text);
                             Assert.IsNotNull(tempResult.Unit);
                             Assert.IsInstanceOfType(tempResult.Value, typeof(float));
-                            context.Batch().Reply($"{tempResult.Value} {tempResult.Unit}");
+                            await context.SendActivity($"{tempResult.Value} {tempResult.Unit}");
                         }
                         else
-                            context.Batch().Reply(tempResult.Status.ToString());
+                            await context.SendActivity(tempResult.Status.ToString());
                     }
                 })
                 .Send("hello")
@@ -59,7 +59,7 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
         {
             TestAdapter adapter = new TestAdapter()
                 .Use(new ConversationState<TestState>(new MemoryStorage()));
-            adapter.Use(new BatchOutputMiddleware());
+
             await new TestFlow(adapter, async (context) =>
             {
                 var state = ConversationState<TestState>.Get(context);
@@ -77,9 +77,9 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                 {
                     var tempResult = await numberPrompt.Recognize(context);
                     if (tempResult.Succeeded())
-                        context.Batch().Reply($"{tempResult.Value} {tempResult.Unit}");
+                        await context.SendActivity($"{tempResult.Value} {tempResult.Unit}");
                     else
-                        context.Batch().Reply(tempResult.Status.ToString());
+                        await context.SendActivity(tempResult.Status.ToString());
                 }
             })
                 .Send("hello")
