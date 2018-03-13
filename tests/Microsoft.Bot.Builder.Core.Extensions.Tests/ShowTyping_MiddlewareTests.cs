@@ -12,20 +12,18 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
     {
         [TestMethod]
         [TestCategory("Middleware")]
-        public async Task ShowTyping_TestMiddleware_10SecondResponse_2SecondInterval()
+        public async Task ShowTyping_TestMiddleware_1_Second_Interval()
         {
             TestAdapter adapter = new TestAdapter()
-                .Use(new ShowTypingMiddleware(500, 2000));
+                .Use(new ShowTypingMiddleware(100, 1000));
             
             await new TestFlow(adapter, async (context) =>
                 {
-                    Thread.Sleep(10000);
+                    Thread.Sleep(2500);
                     await context.SendActivity(context.Request.CreateReply("Message sent after delay"));
                     await Task.CompletedTask;
                 })
                 .Send("foo")
-                .AssertReply(ValidateTypingActivity, "check typing activity")
-                .AssertReply(ValidateTypingActivity, "check typing activity")
                 .AssertReply(ValidateTypingActivity, "check typing activity")
                 .AssertReply(ValidateTypingActivity, "check typing activity")
                 .AssertReply(ValidateTypingActivity, "check typing activity")
@@ -35,14 +33,14 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
 
         [TestMethod]
         [TestCategory("Middleware")]
-        public async Task ShowTyping_TestMiddleware_10SecondResponse_5SecondInterval()
+        public async Task ShowTyping_TestMiddleware_2_Second_Interval()
         {
             TestAdapter adapter = new TestAdapter()
-                .Use(new ShowTypingMiddleware(500, 5000));
+                .Use(new ShowTypingMiddleware(100, 2000));
 
             await new TestFlow(adapter, async (context) =>
                 {
-                    Thread.Sleep(10000);
+                    Thread.Sleep(2500);
                     await context.SendActivity(context.Request.CreateReply("Message sent after delay"));
                     await Task.CompletedTask;
                 })
@@ -55,7 +53,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
 
         [TestMethod]
         [TestCategory("Middleware")]
-        public async Task ShowTyping_TestMiddleware_1SecondResponse_5SecondInterval()
+        public async Task ShowTyping_TestMiddleware_Context_Completes_Before_Typing_Interval()
         {
             TestAdapter adapter = new TestAdapter()
                 .Use(new ShowTypingMiddleware(500, 5000));
@@ -77,7 +75,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
         public async Task ShowTyping_TestMiddleware_ImmediateResponse_5SecondInterval()
         {
             TestAdapter adapter = new TestAdapter()
-                .Use(new ShowTypingMiddleware(500, 5000));
+                .Use(new ShowTypingMiddleware(2000, 5000));
 
             await new TestFlow(adapter, async (context) =>
                 {
