@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
         {
             TestAdapter adapter = new TestAdapter()
                 .Use(new ConversationState<StoreItem>(new MemoryStorage()));
-            adapter.Use(new BatchOutputMiddleware());
+
             await new TestFlow(adapter, MyTestPrompt)
                 .Send("hello")
                 .AssertReply("Your Name:")
@@ -33,7 +33,7 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
         {
             TestAdapter adapter = new TestAdapter()
                 .Use(new ConversationState<StoreItem>(new MemoryStorage()));
-            adapter.Use(new BatchOutputMiddleware());
+
             await new TestFlow(adapter, LengthCheckPromptTest)
                 .Send("hello")
                 .AssertReply("Your Name:")
@@ -46,7 +46,7 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
         {
             TestAdapter adapter = new TestAdapter()
                 .Use(new ConversationState<StoreItem>(new MemoryStorage()));
-            adapter.Use(new BatchOutputMiddleware());
+
             await new TestFlow(adapter, LengthCheckPromptTest)
                 .Send("hello")
                 .AssertReply("Your Name:")
@@ -70,11 +70,11 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                 var textResult = await askForName.Recognize(context); 
                 if (textResult.Succeeded())
                 {
-                    context.Batch().Reply(textResult.Value);
+                    await context.SendActivity(textResult.Value);
                 }
                 else
                 {
-                    context.Batch().Reply(textResult.Status.ToString()); 
+                    await context.SendActivity(textResult.Status.ToString()); 
                 }
             }
         }
@@ -93,11 +93,11 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                 var textResult = await askForName.Recognize(context);
                 if (textResult.Succeeded())
                 {
-                    context.Batch().Reply(textResult.Value);
+                    await context.SendActivity(textResult.Value);
                 }
                 else
                 {
-                    context.Batch().Reply(textResult.Status.ToString());
+                    await context.SendActivity(textResult.Status.ToString());
                 }
             }
         }

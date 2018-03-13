@@ -1,5 +1,4 @@
-﻿using Microsoft.Bot.Builder.Core.Extensions;
-using Microsoft.Bot.Schema;
+﻿using Microsoft.Bot.Schema;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -74,10 +73,9 @@ namespace Microsoft.Bot.Builder.Prompts
         /// <summary>
         /// Creates a new Message Activity, and queues it for sending to the user. 
         /// </summary>
-        public Task Prompt(IBotContext context, IMessageActivity activity)
-        {
-            context.Batch().Reply(activity);
-            return Task.CompletedTask;
+        public async Task Prompt(IBotContext context, IMessageActivity activity)
+        {            
+            await context.SendActivity(activity);            
         }
 
         /// <summary>

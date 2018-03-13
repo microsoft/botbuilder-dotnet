@@ -18,8 +18,7 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
         public async Task AgePrompt_Test()
         {
             TestAdapter adapter = new TestAdapter()
-                .Use(new ConversationState<TestState>(new MemoryStorage()))
-                .Use(new BatchOutputMiddleware());
+                .Use(new ConversationState<TestState>(new MemoryStorage()));
                 
             await new TestFlow(adapter, async (context) =>
                 {
@@ -39,10 +38,10 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                             Assert.IsNotNull(ageResult.Text);
                             Assert.IsNotNull(ageResult.Unit);
                             Assert.IsInstanceOfType(ageResult.Value, typeof(float));
-                            context.Batch().Reply($"{ageResult.Value} {ageResult.Unit}");
+                            await context.SendActivity($"{ageResult.Value} {ageResult.Unit}");
                         }
                         else
-                            context.Batch().Reply(ageResult.Status.ToString());
+                            await context.SendActivity(ageResult.Status.ToString());
                     }
                 })
                 .Send("hello")
@@ -59,8 +58,6 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
         {
             TestAdapter adapter = new TestAdapter()
                 .Use(new ConversationState<TestState>(new MemoryStorage()));
-
-            adapter.Use(new BatchOutputMiddleware()); 
 
             await new TestFlow(adapter, async (context) =>
             {
@@ -79,9 +76,9 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                 {
                     var numberResult = await numberPrompt.Recognize(context);
                     if (numberResult.Succeeded())
-                        context.Batch().Reply($"{numberResult.Value} {numberResult.Unit}");
+                        await context.SendActivity($"{numberResult.Value} {numberResult.Unit}");
                     else
-                        context.Batch().Reply(numberResult.Status.ToString());
+                        await context.SendActivity(numberResult.Status.ToString());
                 }
             })
                 .Send("hello")
