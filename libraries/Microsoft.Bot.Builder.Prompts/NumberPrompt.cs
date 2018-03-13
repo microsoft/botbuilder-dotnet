@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Builder.Prompts
         public NumberPrompt(string culture, PromptValidator<NumberResult<T>> validator = null)
             : base(validator)
         {
-            _model = NumberRecognizer.Instance.GetNumberModel(culture);
+            _model = new NumberRecognizer(culture).GetNumberModel(culture);
         }
 
         protected NumberPrompt(IModel model, PromptValidator<NumberResult<T>> validator = null)
