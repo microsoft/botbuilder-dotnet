@@ -27,7 +27,7 @@ namespace Microsoft.Bot.Builder.Prompts
         public RangePrompt(string culture, PromptValidator<RangeResult> validator = null)
             : base(validator)
         {
-            _model = NumberRecognizer.Instance.GetNumberRangeModel(culture);
+            _model = new NumberRecognizer(culture).GetNumberRangeModel();
         }
 
         protected RangePrompt(IModel model, PromptValidator<RangeResult> validator = null)
