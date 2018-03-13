@@ -128,6 +128,18 @@ namespace Microsoft.Bot.Builder.Core.Tests
         }
 
         [TestMethod]
+        public async Task SendAndSetRespondedUsingIMessageActivity()
+        {
+            SimpleAdapter a = new SimpleAdapter();
+            BotContext c = new BotContext(a, new Activity());
+            Assert.IsFalse(c.Responded);
+
+            IMessageActivity msg = TestMessage.Message().AsMessageActivity();
+            await c.SendActivity(msg);
+            Assert.IsTrue(c.Responded);
+        }
+
+        [TestMethod]
         public async Task SendOneActivityToAdapter()
         {
             bool foundActivity = false;
