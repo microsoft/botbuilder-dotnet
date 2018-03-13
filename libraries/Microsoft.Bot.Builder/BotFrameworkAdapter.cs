@@ -94,6 +94,33 @@ namespace Microsoft.Bot.Builder.Adapters
         }
 
         /// <summary>
+        /// Create a conversation on the Bot Framework for the given serviceUrl
+        /// </summary>
+        /// <param name="serviceUrl">serviceUrl you want to use</param>
+        /// <param name="credentials">credentials</param>
+        /// <param name="conversationParameters">arguments for the conversation you want to create</param>
+        /// <param name="callback">callback which will have the context.Request.Conversation.Id in it</param>
+        /// <returns></returns>
+        public virtual async Task CreateConversation(string channelId, string serviceUrl, MicrosoftAppCredentials credentials, ConversationParameters conversationParameters, Func<IBotContext, Task> callback)
+        {
+            var connectorClient = new ConnectorClient(new Uri(serviceUrl), credentials);
+            var result = await connectorClient.Conversations.CreateConversationAsync(conversationParameters);
+
+            // create conversation Update to represent the result of creating the conversation
+            var conversationUpdate = Activity.CreateConversationUpdateActivity();
+            conversationUpdate.ChannelId = channelId;
+            conversationUpdate.TopicName = conversationParameters.TopicName;
+            conversationUpdate.ServiceUrl = serviceUrl;
+            conversationUpdate.MembersAdded = conversationParameters.Members;
+            conversationUpdate.Id = result.ActivityId ?? Guid.NewGuid().ToString("n");
+            conversationUpdate.Conversation = new ConversationAccount(id: result.Id);
+            conversationUpdate.Recipient = conversationParameters.Bot;
+
+            BotContext context = new BotContext(this, (Activity)conversationUpdate);
+            await this.RunPipeline(context, callback);
+        }
+
+        /// <summary>
         /// Gets the application credentials. App Credentials are cached so as to ensure we are not refreshing
         /// token everytime.
         /// </summary>
