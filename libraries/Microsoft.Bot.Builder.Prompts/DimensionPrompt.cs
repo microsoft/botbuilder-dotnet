@@ -16,8 +16,12 @@ namespace Microsoft.Bot.Builder.Prompts
     public class DimensionPrompt : NumberWithUnitPrompt
     {
         public DimensionPrompt(string culture, PromptValidator<NumberWithUnit> validator = null) 
-            : base(NumberWithUnitRecognizer.Instance.GetDimensionModel(culture), validator)
+            : base(new NumberWithUnitRecognizer(culture).GetDimensionModel(), validator)
         {
+            // ToDo: The creation of the new Recognizer is expensive given all of the
+            // Regex compilation in there. If we need to optimize this, we can add a static 
+            // concurrent dictionary here based on culture. The model.parse() method called 
+            // in the base class is thread safe.
         }
 
         protected DimensionPrompt(IModel model, PromptValidator<NumberWithUnit> validator = null)
