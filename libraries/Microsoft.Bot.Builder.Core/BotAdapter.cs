@@ -13,7 +13,6 @@ namespace Microsoft.Bot.Builder
 
         public BotAdapter() : base()
         {
-            //this.RegisterMiddleware(new Middleware.BindOutoingResponsesMiddlware());
         }
 
         /// <summary>
@@ -81,10 +80,10 @@ namespace Microsoft.Bot.Builder
         /// <param name="reference">reference to create context around</param>
         /// <param name="callback">callback where you can continue the conversation</param>
         /// <returns>task when completed</returns>
-        //public virtual async Task CreateConversation(string channelId, Func<IBotContext, Task> callback)
-        //{
-        //    throw new NotImplementedException();
-        //}
+        public virtual async Task CreateConversation(string channelId, Func<IBotContext, Task> callback)
+        {
+            throw new NotImplementedException("Adapter does not support CreateConversation with this arguments");
+        }
 
         /// <summary>
         /// Create proactive context around conversation reference
@@ -93,9 +92,10 @@ namespace Microsoft.Bot.Builder
         /// <param name="reference">reference to create context around</param>
         /// <param name="callback">callback where you can continue the conversation</param>
         /// <returns>task when completed</returns>
-        public virtual async Task ContinueConversation(ConversationReference reference, Func<IBotContext, Task> callback)
+        public virtual Task ContinueConversation(ConversationReference reference, Func<IBotContext, Task> callback)
         {
-            throw new NotImplementedException("Proactive conversation support is not currently implemented in M2.");
+            var context = new BotContext(this, reference.GetPostToBotMessage());
+            return RunPipeline(context, callback);
         }
     }
 }
