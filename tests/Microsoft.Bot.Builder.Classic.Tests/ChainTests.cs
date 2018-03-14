@@ -141,9 +141,12 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                     .StartTest();
 
                 var queue = adapter.ActiveQueue;
-                var texts = queue.Select(m => m.Text).ToArray();
-                Assert.AreEqual(1, texts.Length);
-                Assert.AreEqual(true.ToString(), texts[0]);
+                lock (queue)
+                {
+                    var texts = queue.Select(m => m.Text).ToArray();
+                    Assert.AreEqual(1, texts.Length);
+                    Assert.AreEqual(true.ToString(), texts[0]);
+                }
             }
         }
 
@@ -226,8 +229,11 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                 await testFlow
                     .StartTest();
 
-                var texts = adapter.ActiveQueue.Select(m => m.Text).ToArray();
-                CollectionAssert.AreEqual(expectedReply, texts);
+                lock (adapter.ActiveQueue)
+                {
+                    var texts = adapter.ActiveQueue.Select(m => m.Text).ToArray();
+                    CollectionAssert.AreEqual(expectedReply, texts);
+                }
             }
         }
 
