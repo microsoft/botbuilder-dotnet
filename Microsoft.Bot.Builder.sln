@@ -60,9 +60,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Classic", "Classic", "{2A46
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Builder.Classic.Tests", "tests\Microsoft.Bot.Builder.Classic.Tests\Microsoft.Bot.Builder.Classic.Tests.csproj", "{508661A7-F47A-4D60-8ED6-69E378ED0E74}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Builder.Classic", "libraries\Microsoft.Bot.Builder.Classic\Microsoft.Bot.Builder.Classic\Microsoft.Bot.Builder.Classic.csproj", "{CDFEC7D6-847E-4C13-956B-0A960AE3EB60}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Builder.Classic.Autofac", "libraries\Microsoft.Bot.Builder.Classic\Microsoft.Bot.Builder.Classic.Autofac\Microsoft.Bot.Builder.Classic.Autofac.csproj", "{2C145824-38DD-409C-AB52-B3538997726C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Classic", "libraries\Microsoft.Bot.Builder.Classic\Microsoft.Bot.Builder.Classic\Microsoft.Bot.Builder.Classic.csproj", "{CDFEC7D6-847E-4C13-956B-0A960AE3EB60}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RView", "libraries\Microsoft.Bot.Builder.Classic\RView\RView.csproj", "{12CAE029-7B8D-4928-8504-28746C36ADB3}"
 EndProject
@@ -172,10 +170,6 @@ Global
 		{CDFEC7D6-847E-4C13-956B-0A960AE3EB60}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CDFEC7D6-847E-4C13-956B-0A960AE3EB60}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CDFEC7D6-847E-4C13-956B-0A960AE3EB60}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2C145824-38DD-409C-AB52-B3538997726C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2C145824-38DD-409C-AB52-B3538997726C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2C145824-38DD-409C-AB52-B3538997726C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2C145824-38DD-409C-AB52-B3538997726C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{12CAE029-7B8D-4928-8504-28746C36ADB3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{12CAE029-7B8D-4928-8504-28746C36ADB3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{12CAE029-7B8D-4928-8504-28746C36ADB3}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -212,7 +206,6 @@ Global
 		{2A46FEEF-4FD9-4DD5-8650-39C36CFDF2BB} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
 		{508661A7-F47A-4D60-8ED6-69E378ED0E74} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 		{CDFEC7D6-847E-4C13-956B-0A960AE3EB60} = {2A46FEEF-4FD9-4DD5-8650-39C36CFDF2BB}
-		{2C145824-38DD-409C-AB52-B3538997726C} = {2A46FEEF-4FD9-4DD5-8650-39C36CFDF2BB}
 		{12CAE029-7B8D-4928-8504-28746C36ADB3} = {2A46FEEF-4FD9-4DD5-8650-39C36CFDF2BB}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
