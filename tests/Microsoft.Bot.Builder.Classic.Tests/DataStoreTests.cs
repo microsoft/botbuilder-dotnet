@@ -163,9 +163,9 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                 await dataStore.SaveAsync(address, botStoreType, botData, default(CancellationToken));
                 Assert.Fail("Expected PreconditionFailed exception to throw on bad etag");
             }
-            catch (HttpException err)
+                catch (Exception err)
             {
-                Assert.AreEqual(HttpStatusCode.PreconditionFailed, (HttpStatusCode)err.GetHttpCode(), $"Expected HttpException status code Precondition on bad etag save {botStoreType}");
+                Assert.AreEqual(HttpStatusCode.PreconditionFailed.ToString(), err.Message, $"Expected HttpException status code Precondition on bad etag save {botStoreType}");
             }
 
             botDataGet2.Data = null;

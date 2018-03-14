@@ -64,23 +64,23 @@ namespace Microsoft.Bot.Builder.Classic.Tests
             return MakeAddress().ToConversationReference();
         }
 
-        [TestMethod]
-        public void UrlToken_Can_Serialize_Address()
-        {
-            var expected = MakeAddress();
-            var encoded = UrlToken.Encode(expected);
-            var actual = UrlToken.Decode<Address>(encoded);
-            Assert.AreEqual(expected, actual);
-        }
+        //[TestMethod]
+        //public void UrlToken_Can_Serialize_Address()
+        //{
+        //    var expected = MakeAddress();
+        //    var encoded = UrlToken.Encode(expected);
+        //    var actual = UrlToken.Decode<Address>(encoded);
+        //    Assert.AreEqual(expected, actual);
+        //}
 
-        [TestMethod]
-        public void UrlToken_Can_Serialize_ConversationReference()
-        {
-            // https://github.com/Microsoft/BotBuilder/pull/1279
-            var expected = MakeCookie();
-            var encoded = UrlToken.Encode(expected);
-            var actual = UrlToken.Decode<ConversationReference>(encoded);
-            Assert.AreEqual(JsonConvert.SerializeObject(expected), JsonConvert.SerializeObject(actual));
-        }
+        //[TestMethod]
+        //public void UrlToken_Can_Serialize_ConversationReference()
+        //{
+        //    // https://github.com/Microsoft/BotBuilder/pull/1279
+        //    var expected = MakeCookie();
+        //    var encoded = UrlToken.Encode(expected);
+        //    var actual = UrlToken.Decode<ConversationReference>(encoded);
+        //    Assert.AreEqual(JsonConvert.SerializeObject(expected), JsonConvert.SerializeObject(actual));
+        //}
     }
 }

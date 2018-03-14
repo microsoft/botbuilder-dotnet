@@ -23,12 +23,15 @@ namespace Microsoft.Bot.Builder.Classic.Tests
             params string[] inputs)
         {
             var toBot = MakeTestMessage();
-            await new TestAdapter().ProcessActivity((Activity)toBot, async (context) =>
+
+            var adapter = new TestAdapter();
+            await adapter.ProcessActivity((Activity)toBot, async (ctx) =>
             {
-                using (var scope = DialogModule.BeginLifetimeScope(container, context))
+                using (var scope = DialogModule.BeginLifetimeScope(container, ctx))
                 {
                     var task = scope.Resolve<IPostToBot>();
-                    var queue = ((TestAdapter)context.Adapter).ActiveQueue;
+                    var queue = adapter.ActiveQueue;
+
                     Action drain = () =>
                     {
                         stream.WriteLine($"{queue.Count()}");
@@ -46,7 +49,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                         }
                     };
                     string result = null;
-                    var root = scope.Resolve<IDialog<object>>().Do(async (ctx, value) =>
+                    var root = scope.Resolve<IDialog<object>>().Do(async (context, value) =>
                         result = JsonConvert.SerializeObject(await value));
                     if (proactive)
                     {
@@ -122,78 +125,80 @@ namespace Microsoft.Bot.Builder.Classic.Tests
             int current = 0;
             while ((input = ReadLine(stream, out label)) != null)
             {
-                var ctx = new BotContext(new TestAdapter(), (Activity)toBot);
-
-                using (var scope = DialogModule.BeginLifetimeScope(container, ctx))
+                var adapter = new TestAdapter();
+                await adapter.ProcessActivity((Activity)toBot, async (ctx) =>
                 {
-                    var task = scope.Resolve<IPostToBot>();
-                    var queue = scope.Resolve<Queue<Activity>>();
-
-                    Action<IDialogStack> check = (stack) =>
+                    using (var scope = DialogModule.BeginLifetimeScope(container, ctx))
                     {
-                        var count = int.Parse((proactive && current == 0) ? input : stream.ReadLine());
-                        Assert.AreEqual(count, queue.Count);
-                        for (var i = 0; i < count; ++i)
+                        var task = scope.Resolve<IPostToBot>();
+                        var queue = adapter.ActiveQueue;
+
+                        Action<IDialogStack> check = (stack) =>
                         {
-                            var toUser = queue.Dequeue();
-                            var expectedOut = ReadLine(stream, out label);
-                            if (label == "ToUserText")
+                            var count = int.Parse((proactive && current == 0) ? input : stream.ReadLine());
+                            Assert.AreEqual(count, queue.Count);
+                            for (var i = 0; i < count; ++i)
                             {
-                                Assert.AreEqual(expectedOut, JsonConvert.SerializeObject(toUser.Text));
+                                var toUser = queue.Dequeue();
+                                var expectedOut = ReadLine(stream, out label);
+                                if (label == "ToUserText")
+                                {
+                                    Assert.AreEqual(expectedOut, JsonConvert.SerializeObject(toUser.Text));
+                                }
+                                else
+                                {
+                                    Assert.AreEqual(expectedOut, JsonConvert.SerializeObject(toUser.Attachments));
+                                }
                             }
-                            else
-                            {
-                                Assert.AreEqual(expectedOut, JsonConvert.SerializeObject(toUser.Attachments));
-                            }
-                        }
 
-                        extraCheck?.Invoke(stack, ReadLine(stream, out label));
-                    };
+                            extraCheck?.Invoke(stack, ReadLine(stream, out label));
+                        };
 
-                    Func<IDialog<object>> scriptMakeRoot = () =>
-                    {
-                        return makeRoot().Do(async (context, value) => context.PrivateConversationData.SetValue("result", JsonConvert.SerializeObject(await value)));
-                    };
-                    scope.Resolve<Func<IDialog<object>>>(TypedParameter.From(scriptMakeRoot));
-
-                    if (proactive && current == 0)
-                    {
-                        var loop = scriptMakeRoot().Loop();
-                        var data = scope.Resolve<IBotData>();
-                        await data.LoadAsync(CancellationToken.None);
-                        var stack = scope.Resolve<IDialogTask>();
-                        stack.Call(loop, null);
-                        await stack.PollAsync(CancellationToken.None);
-                        check(stack);
-                        input = ReadLine(stream, out label);
-                    }
-
-                    if (input.StartsWith("\""))
-                    {
-                        try
+                        Func<IDialog<object>> scriptMakeRoot = () =>
                         {
-                            toBot.Text = input.Substring(1, input.Length - 2);
-                            Assert.IsTrue(current < expected.Length && toBot.Text == expected[current++]);
-                            await task.PostAsync(toBot, CancellationToken.None);
+                            return makeRoot().Do(async (context, value) => context.PrivateConversationData.SetValue("result", JsonConvert.SerializeObject(await value)));
+                        };
+                        scope.Resolve<Func<IDialog<object>>>(TypedParameter.From(scriptMakeRoot));
+
+                        if (proactive && current == 0)
+                        {
+                            var loop = scriptMakeRoot().Loop();
                             var data = scope.Resolve<IBotData>();
                             await data.LoadAsync(CancellationToken.None);
-                            var stack = scope.Resolve<IDialogStack>();
+                            var stack = scope.Resolve<IDialogTask>();
+                            stack.Call(loop, null);
+                            await stack.PollAsync(CancellationToken.None);
                             check(stack);
+                            input = ReadLine(stream, out label);
                         }
-                        catch (Exception e)
+
+                        if (input.StartsWith("\""))
                         {
-                            Assert.AreEqual(ReadLine(stream, out label), e.Message);
+                            try
+                            {
+                                toBot.Text = input.Substring(1, input.Length - 2);
+                                Assert.IsTrue(current < expected.Length && toBot.Text == expected[current++]);
+                                await task.PostAsync(toBot, CancellationToken.None);
+                                var data = scope.Resolve<IBotData>();
+                                await data.LoadAsync(CancellationToken.None);
+                                var stack = scope.Resolve<IDialogStack>();
+                                check(stack);
+                            }
+                            catch (Exception e)
+                            {
+                                Assert.AreEqual(ReadLine(stream, out label), e.Message);
+                            }
+                        }
+                        else if (label.ToLower().StartsWith("result"))
+                        {
+                            var data = scope.Resolve<IBotData>();
+                            await data.LoadAsync(CancellationToken.None);
+                            string result;
+                            Assert.IsTrue(data.PrivateConversationData.TryGetValue("result", out result));
+                            Assert.AreEqual(input.Trim(), result);
                         }
                     }
-                    else if (label.ToLower().StartsWith("result"))
-                    {
-                        var data = scope.Resolve<IBotData>();
-                        await data.LoadAsync(CancellationToken.None);
-                        string result;
-                        Assert.IsTrue(data.PrivateConversationData.TryGetValue("result", out result));
-                        Assert.AreEqual(input.Trim(), result);
-                    }
-                }
+                });
             }
         }
 
