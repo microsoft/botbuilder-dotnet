@@ -15,13 +15,26 @@ namespace Microsoft.Bot.Builder.Core.Extensions
         /// </summary>
         private readonly ActivityFilterHandler _activityFilterHandler;
 
+        /// <summary>
+        /// Middleware to call when a matching Activity type is received
+        /// </summary>
+        private readonly IMiddleware _nextMiddleware;
+
         public ActivityFilterMiddleware(string activityType, ActivityFilterHandler handler)
         {
             if (string.IsNullOrEmpty(activityType))
                 throw new ArgumentNullException(nameof(activityType));
 
+            // Activity types can be found in ActivityTypes enum
             _activityType = activityType;
             _activityFilterHandler = handler;
+        }
+
+        public ActivityFilterMiddleware(string activityType, IMiddleware nextMiddleware)
+        {
+            // Activity types can be found in ActivityTypes enum
+            _activityType = activityType;
+            _nextMiddleware = nextMiddleware ?? throw new ArgumentNullException(nameof(activityType));
         }
 
         public delegate Task ActivityFilterHandler(IBotContext context, MiddlewareSet.NextDelegate next);
@@ -31,8 +44,16 @@ namespace Microsoft.Bot.Builder.Core.Extensions
             if (string.Equals(context.Request.Type, _activityType, StringComparison.InvariantCultureIgnoreCase))
             {
                 // if the incoming Activity type matches the type of activity we are checking for then
-                // invoke our handler
-                await _activityFilterHandler.Invoke(context, next);
+                // invoke our handler or next middleware (whevever has been supplied via constructor)
+
+                if (_activityFilterHandler != null)
+                {
+                    await _activityFilterHandler.Invoke(context, next).ConfigureAwait(false);
+                }
+                else
+                {
+                    await _nextMiddleware.OnProcessRequest(context, next).ConfigureAwait(false);
+                }
             }
             else
             {

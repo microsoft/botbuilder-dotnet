@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
                 // Add middleware to catch NullReferenceExceptions before throwing up to the general exception instance
                 .Use(new CatchExceptionMiddleware<NullReferenceException>((context, exception) =>
                 {
-                    context.SendActivity(context.Request.CreateReply("Sorry - Null Reference Exception"));
+                    context.SendActivity("Sorry - Null Reference Exception");
                     return Task.CompletedTask;
                 }));
 
@@ -31,7 +31,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
                 {
                     if (context.Request.AsMessageActivity().Text == "foo")
                     {
-                        context.SendActivity(context.Request.CreateReply(context.Request.AsMessageActivity().Text));
+                        context.SendActivity(context.Request.AsMessageActivity().Text);
                     }
 
                     if (context.Request.AsMessageActivity().Text == "NotImplementedException")
@@ -55,12 +55,12 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
             TestAdapter adapter = new TestAdapter()
                 .Use(new CatchExceptionMiddleware<Exception>((context, exception) =>
                 {
-                    context.SendActivity(context.Request.CreateReply("Generic Exception Caught"));
+                    context.SendActivity("Generic Exception Caught");
                     return Task.CompletedTask;
                 }))
                 .Use(new CatchExceptionMiddleware<NullReferenceException>((context, exception) =>
                 {
-                    context.SendActivity(context.Request.CreateReply(exception.Message));
+                    context.SendActivity(exception.Message);
                     return Task.CompletedTask;
                 }));
 
@@ -69,7 +69,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
                 {
                     if (context.Request.AsMessageActivity().Text == "foo")
                     {
-                        context.SendActivity(context.Request.CreateReply(context.Request.AsMessageActivity().Text));
+                        context.SendActivity(context.Request.AsMessageActivity().Text);
                     }
 
                     if (context.Request.AsMessageActivity().Text == "NullReferenceException")
