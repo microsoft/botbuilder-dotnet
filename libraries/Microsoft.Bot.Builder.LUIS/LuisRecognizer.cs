@@ -104,12 +104,16 @@ namespace Microsoft.Bot.Builder.LUIS
 
             if (entity.Type.StartsWith("builtin.datetimeV2."))
             {
-                return entity.Resolution?.Values != null && entity.Resolution.Values.Count > 0
-                    ? JArray.FromObject(((IList<object>) entity.Resolution.Values.First()).Select(value => ((IDictionary<string, object>) value)["timex"]).Distinct())
-                    : JArray.FromObject(entity.Resolution);
+                if (entity.Resolution?.Values == null || entity.Resolution.Values.Count == 0)
+                    return JArray.FromObject(entity.Resolution);
+
+                var resolutionValues = (IEnumerable<object>)entity.Resolution.Values.First();
+                var timexes = resolutionValues.Select(value => ((IDictionary<string, object>) value)["timex"]);
+                var distinctTimexes = timexes.Distinct();
+                return JArray.FromObject(distinctTimexes);
             }
             
-            if (entity.Type.StartsWith("builtin.number"))
+            if (entity.Type.StartsWith("builtin.number") || entity.Type.StartsWith("builtin.ordinal"))
             {
                 var value = (string) entity.Resolution.Values.First();
                 return long.TryParse(value, out var longVal) ?
