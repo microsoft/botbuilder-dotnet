@@ -35,7 +35,7 @@
 		<RepositoryType />
 		<PackageTags>bots;ai;botframework;botbuilder</PackageTags>
 		<NeutralLanguage />
-		<AssemblyName>Microsoft.Bot.Builder</AssemblyName>
+		<AssemblyName>Microsoft.Bot.Builder.Classic</AssemblyName>
 		<IncludeSymbols>true</IncludeSymbols>
 	</PropertyGroup>
 
@@ -44,6 +44,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<PackageReference Include="Autofac" Version="4.6.2" />
 		<PackageReference Include="Microsoft.Bot.Builder.Core" Condition=" '$(PackageVersion)' == '' " Version="4.0.0-local" />
 		<PackageReference Include="Microsoft.Bot.Builder.Core" Condition=" '$(PackageVersion)' != '' " Version="$(PackageVersion)" />
 		<PackageReference Include="Microsoft.Bot.Connector" Condition=" '$(PackageVersion)' == '' " Version="4.0.0-local" />
@@ -64,6 +65,10 @@
 		<ProjectReference Include="..\..\Microsoft.Bot.Builder.Core\Microsoft.Bot.Builder.Core.csproj" />
 		<ProjectReference Include="..\..\Microsoft.Bot.Connector\Microsoft.Bot.Connector.csproj" />
 		<ProjectReference Include="..\..\Microsoft.Bot.Schema\Microsoft.Bot.Schema.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Autofac\" />
 	</ItemGroup>
 
 </Project>

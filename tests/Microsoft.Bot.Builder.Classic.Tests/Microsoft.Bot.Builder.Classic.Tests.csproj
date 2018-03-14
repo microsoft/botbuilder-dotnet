@@ -157,10 +157,6 @@
     <Compile Include="DispatchTestsBase.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Classic\Microsoft.Bot.Builder.Classic.Autofac\Microsoft.Bot.Builder.Classic.Autofac.csproj">
-      <Project>{2c145824-38dd-409c-ab52-b3538997726c}</Project>
-      <Name>Microsoft.Bot.Builder.Classic.Autofac</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Classic\Microsoft.Bot.Builder.Classic\Microsoft.Bot.Builder.Classic.csproj">
       <Project>{cdfec7d6-847e-4c13-956b-0a960ae3eb60}</Project>
       <Name>Microsoft.Bot.Builder.Classic</Name>
