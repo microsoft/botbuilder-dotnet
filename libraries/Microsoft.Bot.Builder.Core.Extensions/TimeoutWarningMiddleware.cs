@@ -18,19 +18,16 @@ namespace Microsoft.Bot.Builder.Core.Extensions
 
         public async Task OnProcessRequest(IBotContext context, MiddlewareSet.NextDelegate next)
         {
-            Timer timeoutWarningTimer = new Timer(TimeoutWarningTimerCallback, context, _timeoutPeriod, 0);
-
-            await next().ConfigureAwait(false);
-
-            // Once the bot has processed the request, the middleware should dispose of the timer
-            // on the trailing edge of the request
-            timeoutWarningTimer?.Dispose();
+            using (new Timer(TimeoutWarningTimerCallback, context, _timeoutPeriod, 0))
+            {
+                await next().ConfigureAwait(false);
+            }
         }
 
         private void TimeoutWarningTimerCallback(object state)
         {
-            double seconds = (double)_timeoutPeriod / (double)1000;
-            var warning = $"WARNING: The bot has taken longer than {seconds} to respond. After 8-12 seconds some channels may timeout causing message failure or re-delivery.";
+            var seconds = (double)_timeoutPeriod / (double)1000;
+            var warning = $"WARNING: The bot has taken longer than {seconds:F1} to respond. After 8-12 seconds some channels may timeout causing message failure or re-delivery.";
             Trace.TraceWarning(warning);
         }
     }
