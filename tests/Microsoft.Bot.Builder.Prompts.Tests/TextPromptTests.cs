@@ -3,8 +3,7 @@
 
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Builder.Middleware;
-using Microsoft.Bot.Builder.Storage;
+using Microsoft.Bot.Builder.Core.Extensions;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -71,11 +70,11 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                 var textResult = await askForName.Recognize(context); 
                 if (textResult.Succeeded())
                 {
-                    context.Reply(textResult.Value);
+                    await context.SendActivity(textResult.Value);
                 }
                 else
                 {
-                    context.Reply(textResult.Status.ToString()); 
+                    await context.SendActivity(textResult.Status.ToString()); 
                 }
             }
         }
@@ -94,11 +93,11 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                 var textResult = await askForName.Recognize(context);
                 if (textResult.Succeeded())
                 {
-                    context.Reply(textResult.Value);
+                    await context.SendActivity(textResult.Value);
                 }
                 else
                 {
-                    context.Reply(textResult.Status.ToString());
+                    await context.SendActivity(textResult.Status.ToString());
                 }
             }
         }

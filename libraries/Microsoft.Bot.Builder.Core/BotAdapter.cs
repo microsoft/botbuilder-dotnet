@@ -7,54 +7,48 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Builder.Middleware;
 using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder
 {
     public abstract class BotAdapter
     {
-        protected readonly Middleware.MiddlewareSet _middlewareSet = new Middleware.MiddlewareSet();
+        protected readonly MiddlewareSet _middlewareSet = new MiddlewareSet();
 
         public BotAdapter() : base()
         {
-            this.RegisterMiddleware(new Middleware.BindOutoingResponsesMiddlware());
         }
 
         /// <summary>
         /// Register middleware with the bot
         /// </summary>
         /// <param name="middleware"></param>
-        public void RegisterMiddleware(IMiddleware middleware)
+        public BotAdapter Use(IMiddleware middleware)
         {
             _middlewareSet.Use(middleware);
+            return this;
         }
 
         /// <summary>
         /// implement send activities to the conversation
-        /// </summary>
-        /// <param name="context"></param>
-        /// <param name=""></param>
+        /// </summary>        
+        /// <param name="activities">Set of activities being sent</param>
         /// <returns></returns>
-        public abstract Task SendActivities(IBotContext context, IEnumerable<Activity> activities);
+        public abstract Task SendActivity(IBotContext context, params Activity[] activities);
 
         /// <summary>
         /// Implement updating an activity in the conversation
-        /// </summary>
-        /// <param name="context"></param>
-        /// <param name="activity"></param>
+        /// </summary>        
+        /// <param name="activity">New replacement activity. The activity should already have it's ID information populated. </param>
         /// <returns></returns>
         public abstract Task<ResourceResponse> UpdateActivity(IBotContext context, Activity activity);
 
         /// <summary>
         /// Implement deleting an activity in the conversation
         /// </summary>
-        /// <param name="context"></param>
-        /// <param name="conversationId"></param>
-        /// <param name="activityId"></param>
+        /// <param name="reference">Conversation reference of the activity being deleted.  </param>
         /// <returns></returns>
-        public abstract Task DeleteActivity(IBotContext context, string conversationId, string activityId);
+        public abstract Task DeleteActivity(IBotContext context, ConversationReference reference);
 
 
         /// <summary>
@@ -66,12 +60,7 @@ namespace Microsoft.Bot.Builder
         protected async Task RunPipeline(IBotContext context, Func<IBotContext, Task> callback = null, CancellationTokenSource cancelToken = null)
         {
             BotAssert.ContextNotNull(context);
-
-            System.Diagnostics.Trace.TraceInformation($"Middleware: Beginning Pipeline for {context.ConversationReference.ActivityId}");
-
-            // Call any registered Middleware Components looking for ContextCreated()
-            await _middlewareSet.ContextCreated(context).ConfigureAwait(false);
-
+            
             // Call any registered Middleware Components looking for ReceiveActivity()
             if (context.Request != null)
             {
@@ -85,16 +74,6 @@ namespace Microsoft.Bot.Builder
                     await callback(context).ConfigureAwait(false);
                 }
             }
-
-            // Call any registered Middleware Components looking for SendActivity()
-            await _middlewareSet.SendActivity(context, context.Responses ?? new List<Activity>()).ConfigureAwait(false);
-
-            if (context.Responses != null)
-            {
-                await this.SendActivities(context, context.Responses).ConfigureAwait(false);
-            }
-
-            System.Diagnostics.Trace.TraceInformation($"Middleware: Ending Pipeline for {context.ConversationReference.ActivityId}");
         }
 
 
@@ -107,7 +86,7 @@ namespace Microsoft.Bot.Builder
         /// <returns>task when completed</returns>
         public virtual async Task CreateConversation(string channelId, Func<IBotContext, Task> callback)
         {
-            throw new NotImplementedException();
+            throw new NotImplementedException("Adapter does not support CreateConversation with this arguments");
         }
 
         /// <summary>
@@ -117,10 +96,10 @@ namespace Microsoft.Bot.Builder
         /// <param name="reference">reference to create context around</param>
         /// <param name="callback">callback where you can continue the conversation</param>
         /// <returns>task when completed</returns>
-        public virtual async Task ContinueConversation(ConversationReference reference, Func<IBotContext, Task> callback)
+        public virtual Task ContinueConversation(ConversationReference reference, Func<IBotContext, Task> callback)
         {
-            var context = new BotContext(this, reference);
-            await RunPipeline(context, callback).ConfigureAwait(false);
+            var context = new BotContext(this, reference.GetPostToBotMessage());
+            return RunPipeline(context, callback);
         }
     }
 }

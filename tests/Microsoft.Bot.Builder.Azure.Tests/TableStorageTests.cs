@@ -5,7 +5,8 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Tests;
+using Microsoft.Bot.Builder.Core.Extensions;
+using Microsoft.Bot.Builder.Core.Extensions.Tests;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Bot.Builder.Azure.Tests
@@ -13,7 +14,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
     [TestClass]
     [TestCategory("Storage")]
     [TestCategory("Storage - Azure Tables")]
-    public class TableStorageTests : Storage_BaseTests 
+    public class TableStorageTests : StorageBaseTests
     {
         private IStorage storage;
 

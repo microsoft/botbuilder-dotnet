@@ -6,7 +6,6 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Middleware;
 using Microsoft.Bot.Schema;
 using System.Threading;
 
@@ -39,9 +38,9 @@ namespace Microsoft.Bot.Builder.Adapters
 
         public Queue<Activity> ActiveQueue { get { return botReplies; } }
 
-        public TestAdapter Use(IMiddleware middleware)
+        public new TestAdapter Use(IMiddleware middleware)
         {
-            base.RegisterMiddleware(middleware);
+            base.Use(middleware);
             return this;
         }
 
@@ -68,7 +67,7 @@ namespace Microsoft.Bot.Builder.Adapters
         public ConversationReference ConversationReference { get; set; }
 
 
-        public async override Task SendActivities(IBotContext context, IEnumerable<Activity> activities)
+        public async override Task SendActivity(IBotContext context, params Activity[] activities)
         {
             foreach (var activity in activities)
             {
@@ -111,20 +110,19 @@ namespace Microsoft.Bot.Builder.Adapters
             return Task.FromResult(new ResourceResponse());
         }
 
-        public override Task DeleteActivity(IBotContext context, string conversationId, string activityId)
+        public override Task DeleteActivity(IBotContext context, ConversationReference reference)
         {
             lock (this.botReplies)
             {
                 var replies = this.botReplies.ToList();
                 for (int i = 0; i < this.botReplies.Count; i++)
                 {
-                    if (replies[i].Id == activityId)
+                    if (replies[i].Id == reference.ActivityId)
                     {
                         replies.RemoveAt(i);
                         this.botReplies.Clear();
                         foreach (var item in replies)
                             this.botReplies.Enqueue(item);
-
                         break;
                     }
                 }

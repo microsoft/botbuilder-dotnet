@@ -1,8 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Microsoft.Bot.Builder.BotFramework;
-using Microsoft.Bot.Builder.Middleware;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
@@ -46,7 +44,7 @@ namespace Microsoft.Bot.Builder.Adapters
         {
         }
 
-        public BotFrameworkAdapter Use(Middleware.IMiddleware middleware)
+        public new BotFrameworkAdapter Use(IMiddleware middleware)
         {
             base._middlewareSet.Use(middleware);
             return this;
@@ -64,7 +62,7 @@ namespace Microsoft.Bot.Builder.Adapters
             await base.RunPipeline(context, callback).ConfigureAwait(false);
         }
 
-        public async override Task SendActivities(IBotContext context, IEnumerable<Activity> activities)
+        public override async Task SendActivity(IBotContext context, params Activity[] activities)
         {
             foreach (var activity in activities)
             {
@@ -91,11 +89,38 @@ namespace Microsoft.Bot.Builder.Adapters
             return await connectorClient.Conversations.UpdateActivityAsync((Activity)activity);
         }
 
-        public override async Task DeleteActivity(IBotContext context, string conversationId, string activityId)
+        public override async Task DeleteActivity(IBotContext context, ConversationReference reference)
         {
             MicrosoftAppCredentials appCredentials = await GetAppCredentials((context as BotFrameworkBotContext).BotAppId);
             var connectorClient = new ConnectorClient(new Uri(context.Request.ServiceUrl), appCredentials);
-            await connectorClient.Conversations.DeleteActivityAsync(conversationId, activityId);
+            await connectorClient.Conversations.DeleteActivityAsync(reference.Conversation.Id, reference.ActivityId);
+        }
+
+        /// <summary>
+        /// Create a conversation on the Bot Framework for the given serviceUrl
+        /// </summary>
+        /// <param name="serviceUrl">serviceUrl you want to use</param>
+        /// <param name="credentials">credentials</param>
+        /// <param name="conversationParameters">arguments for the conversation you want to create</param>
+        /// <param name="callback">callback which will have the context.Request.Conversation.Id in it</param>
+        /// <returns></returns>
+        public virtual async Task CreateConversation(string channelId, string serviceUrl, MicrosoftAppCredentials credentials, ConversationParameters conversationParameters, Func<IBotContext, Task> callback)
+        {
+            var connectorClient = new ConnectorClient(new Uri(serviceUrl), credentials);
+            var result = await connectorClient.Conversations.CreateConversationAsync(conversationParameters);
+
+            // create conversation Update to represent the result of creating the conversation
+            var conversationUpdate = Activity.CreateConversationUpdateActivity();
+            conversationUpdate.ChannelId = channelId;
+            conversationUpdate.TopicName = conversationParameters.TopicName;
+            conversationUpdate.ServiceUrl = serviceUrl;
+            conversationUpdate.MembersAdded = conversationParameters.Members;
+            conversationUpdate.Id = result.ActivityId ?? Guid.NewGuid().ToString("n");
+            conversationUpdate.Conversation = new ConversationAccount(id: result.Id);
+            conversationUpdate.Recipient = conversationParameters.Bot;
+
+            BotContext context = new BotContext(this, (Activity)conversationUpdate);
+            await this.RunPipeline(context, callback);
         }
 
         /// <summary>

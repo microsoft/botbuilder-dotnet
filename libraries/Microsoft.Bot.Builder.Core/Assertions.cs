@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder
@@ -24,13 +23,7 @@ namespace Microsoft.Bot.Builder
         {
             if (reference == null)
                 throw new ArgumentNullException(nameof(reference));
-        }
-
-        //public static void AdapterNotNull(ActivityAdapterBase adapter)
-        //{
-        //    if (adapter == null)
-        //        throw new ArgumentNullException(nameof(adapter)); 
-        //}
+        }        
 
         public static void ActivityListNotNull(IList<Activity> activityList)
         {
@@ -38,13 +31,13 @@ namespace Microsoft.Bot.Builder
                 throw new ArgumentNullException(nameof(activityList)); 
         }
 
-        public static void MiddlewareNotNull(Middleware.IMiddleware middleware)
+        public static void MiddlewareNotNull(IMiddleware middleware)
         {
             if (middleware == null)
                 throw new ArgumentNullException(nameof(middleware));
         }
 
-        public static void MiddlewareNotNull(Middleware.IMiddleware[] middleware)
+        public static void MiddlewareNotNull(IMiddleware[] middleware)
         {
             if (middleware == null)
                 throw new ArgumentNullException(nameof(middleware));

@@ -1,5 +1,5 @@
 ﻿using Microsoft.Bot.Builder;
-using Microsoft.Bot.Builder.Middleware;
+using Microsoft.Bot.Builder.Core.Extensions;
 using Microsoft.Bot.Schema;
 using Microsoft.Recognizers.Text.DateTime;
 using System;
@@ -46,7 +46,7 @@ namespace AlarmBot.Models
         {
             IList<DateTime> times = new List<DateTime>();
             // Get DateTime model for English
-            var model = DateTimeRecognizer.GetInstance().GetDateTimeModel(this.Request.Locale ?? "en-us");
+            var model = new DateTimeRecognizer(this.Request.Locale ?? "en-us").GetDateTimeModel();
             var results = model.Parse(this.Request.Text);
 
             // Check there are valid results

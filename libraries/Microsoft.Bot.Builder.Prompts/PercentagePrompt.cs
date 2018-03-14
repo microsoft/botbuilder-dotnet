@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Builder.Prompts
         public PercentagePrompt(string culture, PromptValidator<NumberResult<float>> validator = null) 
             : base( validator)
         {
-            _model = NumberRecognizer.Instance.GetPercentageModel(culture);
+            _model = new NumberRecognizer(culture).GetPercentageModel();
         }
 
 

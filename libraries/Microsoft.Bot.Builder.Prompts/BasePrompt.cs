@@ -63,18 +63,19 @@ namespace Microsoft.Bot.Builder.Prompts
         /// </summary>
         public Task Prompt(IBotContext context, string text, string speak = null)
         {
-            IMessageActivity activity = MessageFactory.Text(text, speak);
-            activity.InputHint = InputHints.ExpectingInput;
-            return Prompt(context, activity);
+            IMessageActivity ma = Activity.CreateMessageActivity();
+            ma.Text = !string.IsNullOrWhiteSpace(text) ? text : null;
+            ma.Speak = !string.IsNullOrWhiteSpace(speak) ? speak : null;            
+            ma.InputHint = InputHints.ExpectingInput;
+            return Prompt(context, ma);
         }
 
         /// <summary>
         /// Creates a new Message Activity, and queues it for sending to the user. 
         /// </summary>
-        public Task Prompt(IBotContext context, IMessageActivity activity)
-        {
-            context.Reply(activity);
-            return Task.CompletedTask;
+        public async Task Prompt(IBotContext context, IMessageActivity activity)
+        {            
+            await context.SendActivity(activity);            
         }
 
         /// <summary>

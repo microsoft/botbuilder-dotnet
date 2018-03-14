@@ -3,8 +3,7 @@
 
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Builder.Middleware;
-using Microsoft.Bot.Builder.Storage;
+using Microsoft.Bot.Builder.Core.Extensions;
 using Microsoft.Bot.Schema;
 using Microsoft.Recognizers.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -39,10 +38,10 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                             Assert.IsTrue(percentResult.Value != float.NaN);
                             Assert.IsNotNull(percentResult.Text);
                             Assert.IsInstanceOfType(percentResult.Value, typeof(float));
-                            context.Reply($"{percentResult.Value}");
+                            await context.SendActivity($"{percentResult.Value}");
                         }
                         else
-                            context.Reply(PromptStatus.NotRecognized.ToString());
+                            await context.SendActivity(PromptStatus.NotRecognized.ToString());
                     }
                 })
                 .Send("hello")
@@ -79,9 +78,9 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                 {
                     var percentResult = await numberPrompt.Recognize(context);
                     if (percentResult.Succeeded())
-                        context.Reply($"{percentResult.Value}");
+                        await context.SendActivity($"{percentResult.Value}");
                     else
-                        context.Reply(percentResult.Status.ToString());
+                        await context.SendActivity(percentResult.Status.ToString());
                 }
             })
                 .Send("hello")

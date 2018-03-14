@@ -5,7 +5,7 @@ namespace Microsoft.Bot.Builder.LUIS
 {
     public class LuisModel : ILuisModel
     {
-        public LuisModel(string modelId, string subscriptionKey, Uri uriBase, LuisApiVersion apiVersion)
+        public LuisModel(string modelId, string subscriptionKey, Uri uriBase, LuisApiVersion apiVersion = LuisApiVersion.V2)
         {
             if(string.IsNullOrEmpty(modelId))
                 throw new ArgumentNullException(nameof(modelId));

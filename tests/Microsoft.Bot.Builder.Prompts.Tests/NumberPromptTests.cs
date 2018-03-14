@@ -3,8 +3,7 @@
 
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Builder.Middleware;
-using Microsoft.Bot.Builder.Storage;
+using Microsoft.Bot.Builder.Core.Extensions;
 using Microsoft.Bot.Schema;
 using Microsoft.Recognizers.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -44,10 +43,10 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                             Assert.IsTrue(numberResult.Value != float.NaN);
                             Assert.IsNotNull(numberResult.Text);
                             Assert.IsInstanceOfType(numberResult.Value, typeof(float));
-                            context.Reply(numberResult.Value.ToString());
+                            await context.SendActivity(numberResult.Value.ToString());
                         }
                         else
-                            context.Reply(numberResult.Status.ToString());
+                            await context.SendActivity(numberResult.Status.ToString());
                     }
                 })
                 .Send("hello")
@@ -83,10 +82,10 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                     {
                         Assert.IsInstanceOfType(numberResult.Value, typeof(int));
                         Assert.IsNotNull(numberResult.Text);
-                        context.Reply(numberResult.Value.ToString());
+                        await context.SendActivity(numberResult.Value.ToString());
                     }
                     else
-                        context.Reply(numberResult.Status.ToString());
+                        await context.SendActivity(numberResult.Status.ToString());
                 }
             })
                 .Send("hello")
@@ -129,10 +128,10 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                         Assert.IsInstanceOfType(numberResult.Value, typeof(int));
                         Assert.IsTrue(numberResult.Value < 100);
                         Assert.IsNotNull(numberResult.Text);
-                        context.Reply(numberResult.Value.ToString());
+                        await context.SendActivity(numberResult.Value.ToString());
                     }
                     else
-                        context.Reply(numberResult.Status.ToString());
+                        await context.SendActivity(numberResult.Status.ToString());
                 }
             })
                 .Send("hello")

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Text;
 using AlarmBot.Models;
 using Microsoft.Bot.Builder;
+using Microsoft.Bot.Builder.Core.Extensions;
 using Microsoft.Bot.Schema;
 
 namespace AlarmBot.Responses
@@ -17,59 +18,59 @@ namespace AlarmBot.Responses
     {
         public static void ReplyWithStartTopic(IBotContext context)
         {
-            context.Reply($"Ok, let's add an alarm.");
+            context.Batch().Reply($"Ok, let's add an alarm.");
         }
 
         public static void ReplyWithHelp(IBotContext context, Alarm alarm = null)
         {
-            context.Reply($"I am working with you to create an alarm.  To do that I need to know the title and time.\n\n{AlarmDescription(context, alarm)}");
+            context.Batch().Reply($"I am working with you to create an alarm.  To do that I need to know the title and time.\n\n{AlarmDescription(context, alarm)}");
         }
 
         public static void ReplyWithConfused(IBotContext context)
         {
-            context.Reply($"I am sorry, I didn't understand: {context.Request.AsMessageActivity().Text}.");
+            context.Batch().Reply($"I am sorry, I didn't understand: {context.Request.AsMessageActivity().Text}.");
         }
 
         public static void ReplyWithCancelPrompt(IBotContext context, Alarm alarm)
         {
-            context.Reply(ResponseHelpers.ReplyWithSuggestions(context, "Cancel Alarm?", $"Did you want to cancel the alarm?\n\n{AlarmDescription(context, alarm)}", YesNo));
+            context.Batch().Reply(ResponseHelpers.ReplyWithSuggestions(context, "Cancel Alarm?", $"Did you want to cancel the alarm?\n\n{AlarmDescription(context, alarm)}", YesNo));
         }
 
         public static void ReplyWithCancelReprompt(IBotContext context, Alarm alarm)
         {
-            context.Reply(ResponseHelpers.ReplyWithSuggestions(context, $"Cancel alarm?", $"Please answer the question with a \"yes\" or \"no\" reply. Did you want to cancel the alarm?\n\n{AlarmDescription(context, alarm)}", YesNo));
+            context.Batch().Reply(ResponseHelpers.ReplyWithSuggestions(context, $"Cancel alarm?", $"Please answer the question with a \"yes\" or \"no\" reply. Did you want to cancel the alarm?\n\n{AlarmDescription(context, alarm)}", YesNo));
         }
 
-        public static void ReplyWithTopicCanceled(IBotContext context) => context.Reply($"OK, I have canceled this alarm.");
+        public static void ReplyWithTopicCanceled(IBotContext context) => context.Batch().Reply($"OK, I have canceled this alarm.");
 
         public static void ReplyWithTimePrompt(IBotContext context, Alarm alarm)
         {
-            context.Reply(ResponseHelpers.ReplyWithTitle(context, $"Adding alarm", $"{AlarmDescription(context, alarm)}\n\nWhat time would you like to set the alarm for?"));
+            context.Batch().Reply(ResponseHelpers.ReplyWithTitle(context, $"Adding alarm", $"{AlarmDescription(context, alarm)}\n\nWhat time would you like to set the alarm for?"));
         }
 
         public static void ReplyWithTimePromptFuture(IBotContext context, Alarm alarm)
         {
-            context.Reply(ResponseHelpers.ReplyWithTitle(context, $"Adding alarm", $"{AlarmDescription(context, alarm)}\n\nYou need to specify a time in the future. What time would you like to set the alarm?"));
+            context.Batch().Reply(ResponseHelpers.ReplyWithTitle(context, $"Adding alarm", $"{AlarmDescription(context, alarm)}\n\nYou need to specify a time in the future. What time would you like to set the alarm?"));
         }
 
         public static void ReplyWithTitlePrompt(IBotContext context, Alarm alarm)
         {
-            context.Reply(ResponseHelpers.ReplyWithTitle(context, $"Adding alarm", $"{AlarmDescription(context, alarm)}\n\nWhat would you like to call your alarm ?"));
+            context.Batch().Reply(ResponseHelpers.ReplyWithTitle(context, $"Adding alarm", $"{AlarmDescription(context, alarm)}\n\nWhat would you like to call your alarm ?"));
         }
 
         public static void ReplyWithTitleValidationPrompt(IBotContext context, Alarm alarm)
         {
-            context.Reply(ResponseHelpers.ReplyWithTitle(context, $"Adding alarm", $"Your title needs to be between 1 and 100 characterslong\n\n{AlarmDescription(context, alarm)}\n\nWhat would you like to call your alarm ?"));
+            context.Batch().Reply(ResponseHelpers.ReplyWithTitle(context, $"Adding alarm", $"Your title needs to be between 1 and 100 characterslong\n\n{AlarmDescription(context, alarm)}\n\nWhat would you like to call your alarm ?"));
         }
 
         public static void ReplyWithAddConfirmation(IBotContext context, Alarm alarm)
         {
-            context.Reply(ResponseHelpers.ReplyWithSuggestions(context, $"Adding Alarm", $"{AlarmDescription(context, alarm)}\n\nDo you want to save this alarm?", YesNo));
+            context.Batch().Reply(ResponseHelpers.ReplyWithSuggestions(context, $"Adding Alarm", $"{AlarmDescription(context, alarm)}\n\nDo you want to save this alarm?", YesNo));
         }
 
         public static void ReplyWithAddedAlarm(IBotContext context, Alarm alarm)
         {
-            context.Reply(ResponseHelpers.ReplyWithTitle(context, $"Alarm Added", $"{AlarmDescription(context, alarm)}."));
+            context.Batch().Reply(ResponseHelpers.ReplyWithTitle(context, $"Alarm Added", $"{AlarmDescription(context, alarm)}."));
         }
 
         /// <summary>
