@@ -3,12 +3,10 @@
 
 using AlarmBot.Models;
 using Microsoft.Bot.Builder;
+using Microsoft.Bot.Builder.Core.Extensions;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using AlarmBot.Models;
-using Microsoft.Bot.Builder;
-using Microsoft.Bot.Builder.Core.Extensions;
 
 namespace AlarmBot.Responses
 {

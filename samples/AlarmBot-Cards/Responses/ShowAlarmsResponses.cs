@@ -5,7 +5,6 @@ using AdaptiveCards;
 using AlarmBot.Models;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Core.Extensions;
-using Microsoft.Bot.Builder.Templates;
 using Microsoft.Bot.Schema;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,7 +25,7 @@ namespace AlarmBot.Responses
 
             if (alarms.Any())
             {
-                FactSet factSet = new FactSet();
+                var factSet = new FactSet();
 
                 foreach (var alarm in alarms)
                     factSet.Facts.Add(new AdaptiveCards.Fact(alarm.Title, alarm.Time.Value.ToString("f")));

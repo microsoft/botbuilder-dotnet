@@ -1,10 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System.Linq;
-using System.Text;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
+using System.Linq;
+using System.Text;
 
 namespace AlarmBot.Responses
 {
@@ -35,6 +35,5 @@ namespace AlarmBot.Responses
 
             return ((Activity)context.Request).CreateReply(sb.ToString());
         }
-
     }
 }

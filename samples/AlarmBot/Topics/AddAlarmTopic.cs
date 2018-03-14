@@ -1,14 +1,14 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using AlarmBot.Models;
 using AlarmBot.Responses;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace AlarmBot.Topics
 {
@@ -40,11 +40,6 @@ namespace AlarmBot.Topics
             // we asked for confirmation to show help instead of allowing help as the answer
             HelpConfirmation
         };
-
-
-        public AddAlarmTopic()
-        {
-        }
 
         /// <summary>
         /// Alarm object representing the information being gathered by the conversation before it is committed
@@ -131,7 +126,7 @@ namespace AlarmBot.Topics
                     // take first one in the future if a valid time has been parsed
                     var times = context.GetDateTimes();                    
                     if(times.Any(t => t > DateTimeOffset.Now))
-                        this.Alarm.Time = times.Where(t => t > DateTimeOffset.Now).FirstOrDefault();
+                        this.Alarm.Time = times.FirstOrDefault(t => t > DateTimeOffset.Now);
                     return await this.PromptForMissingData(context);
 
                 case TopicStates.CancelConfirmation:

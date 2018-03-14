@@ -1,13 +1,13 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using AlarmBot.Models;
 using AlarmBot.Responses;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Core.Extensions;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace AlarmBot.Topics
 {
@@ -16,10 +16,6 @@ namespace AlarmBot.Topics
     /// </summary>
     public class ShowAlarmsTopic : ITopic
     {
-        public ShowAlarmsTopic()
-        {
-        }
-
         public string Name { get; set; } = "ShowAlarms";
 
         /// <summary>
@@ -45,7 +41,6 @@ namespace AlarmBot.Topics
             throw new NotImplementedException();
         }
 
-
         /// <summary>
         ///  Called when a topic is resumed
         /// </summary>
@@ -56,11 +51,9 @@ namespace AlarmBot.Topics
             throw new NotImplementedException();
         }
 
-
         public static Task ShowAlarms(IBotContext context)
         {
             var userState = context.GetUserState<UserData>();
-            // var userState = UserState<UserAlarms>.Get(context);
 
             if (userState.Alarms == null)
             {
