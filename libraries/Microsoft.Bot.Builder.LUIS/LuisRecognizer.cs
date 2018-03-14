@@ -104,9 +104,9 @@ namespace Microsoft.Bot.Builder.LUIS
 
             if (entity.Type.StartsWith("builtin.datetimeV2."))
             {
-                return new JValue(entity.Resolution?.Values != null && entity.Resolution.Values.Count > 0
-                            ? ((IDictionary<string, object>)((IList<object>)entity.Resolution.Values.First()).First())["timex"]
-                            : entity.Resolution);
+                return entity.Resolution?.Values != null && entity.Resolution.Values.Count > 0
+                    ? JArray.FromObject(((IList<object>) entity.Resolution.Values.First()).Select(value => ((IDictionary<string, object>) value)["timex"]).Distinct())
+                    : JArray.FromObject(entity.Resolution);
             }
             
             if (entity.Type.StartsWith("builtin.number"))
