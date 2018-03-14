@@ -87,6 +87,36 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
                 .StartTest();
         }
 
+        [TestMethod]
+        [TestCategory("Middleware")]
+        public async Task ShowTyping_TestMiddleware_NegativeDelay()
+        {
+            try
+            {
+                TestAdapter adapter = new TestAdapter()
+                    .Use(new ShowTypingMiddleware(-100, 1000));
+            }
+            catch (Exception ex)
+            {
+                Assert.IsInstanceOfType(ex, typeof(ArgumentOutOfRangeException));
+            }
+        }
+
+        [TestMethod]
+        [TestCategory("Middleware")]
+        public async Task ShowTyping_TestMiddleware_ZeroFrequency()
+        {
+            try
+            {
+                TestAdapter adapter = new TestAdapter()
+                    .Use(new ShowTypingMiddleware(-100, 0));
+            }
+            catch (Exception ex)
+            {
+                Assert.IsInstanceOfType(ex, typeof(ArgumentOutOfRangeException));
+            }
+        }
+
         private void ValidateTypingActivity(IActivity obj)
         {
             var activity = obj.AsTypingActivity();
