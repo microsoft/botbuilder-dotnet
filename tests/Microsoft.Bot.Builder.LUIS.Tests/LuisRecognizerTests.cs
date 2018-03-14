@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Core.Extensions.Tests;
 using Microsoft.Cognitive.LUIS;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.LUIS.Tests
 {
@@ -30,7 +31,7 @@ namespace Microsoft.Bot.Builder.LUIS.Tests
         {
             if (!EnvironmentVariablesDefined())
             {
-                Debug.WriteLine($"Missing Luis Environemnt variables - Skipping test");
+                Debug.WriteLine("Missing Luis Environemnt variables - Skipping test");
                 return;
             }
 
@@ -50,7 +51,7 @@ namespace Microsoft.Bot.Builder.LUIS.Tests
             Assert.IsNotNull(result.Entities["$instance"]["Name"]);
             Assert.AreEqual(11, (int)result.Entities["$instance"]["Name"].First["startIndex"]);
             Assert.AreEqual(14, (int)result.Entities["$instance"]["Name"].First["endIndex"]);
-            Assert.IsTrue((double)result.Entities["$instance"]["Name"].First["score"] > 0 && (double)result.Entities["$instance"]["Name"].First["score"] <= 1);
+            AssertScore(result.Entities["$instance"]["Name"].First["score"]);
         }
 
         [TestMethod]
@@ -58,7 +59,7 @@ namespace Microsoft.Bot.Builder.LUIS.Tests
         {
             if (!EnvironmentVariablesDefined())
             {
-                Debug.WriteLine($"Missing Luis Environemnt variables - Skipping test");
+                Debug.WriteLine("Missing Luis Environemnt variables - Skipping test");
                 return;
             }
 
@@ -75,6 +76,8 @@ namespace Microsoft.Bot.Builder.LUIS.Tests
             Assert.IsNotNull(result.Entities);
             Assert.IsNotNull(result.Entities["builtin_number"]);
             Assert.AreEqual(2001, (int)result.Entities["builtin_number"].First);
+            Assert.IsNotNull(result.Entities["builtin_ordinal"]);
+            Assert.AreEqual(2, (int)result.Entities["builtin_ordinal"].First);
             Assert.IsNotNull(result.Entities["builtin_datetimeV2_date"].First);
             Assert.AreEqual("2001-02-02", (string)result.Entities["builtin_datetimeV2_date"].First.First);
             Assert.IsNotNull(result.Entities["$instance"]["builtin_number"]);
@@ -92,7 +95,7 @@ namespace Microsoft.Bot.Builder.LUIS.Tests
         {
             if (!EnvironmentVariablesDefined())
             {
-                Debug.WriteLine($"Missing Luis Environemnt variables - Skipping test");
+                Debug.WriteLine("Missing Luis Environemnt variables - Skipping test");
                 return;
             }
 
@@ -117,7 +120,7 @@ namespace Microsoft.Bot.Builder.LUIS.Tests
         {
             if (!EnvironmentVariablesDefined())
             {
-                Debug.WriteLine($"Missing Luis Environemnt variables - Skipping test");
+                Debug.WriteLine("Missing Luis Environemnt variables - Skipping test");
                 return;
             }
 
@@ -143,7 +146,7 @@ namespace Microsoft.Bot.Builder.LUIS.Tests
         {
             if (!EnvironmentVariablesDefined())
             {
-                Debug.WriteLine($"Missing Luis Environemnt variables - Skipping test");
+                Debug.WriteLine("Missing Luis Environemnt variables - Skipping test");
                 return;
             }
 
@@ -171,7 +174,7 @@ namespace Microsoft.Bot.Builder.LUIS.Tests
         {
             if (!EnvironmentVariablesDefined())
             {
-                Debug.WriteLine($"Missing Luis Environemnt variables - Skipping test");
+                Debug.WriteLine("Missing Luis Environemnt variables - Skipping test");
                 return;
             }
 
@@ -194,7 +197,7 @@ namespace Microsoft.Bot.Builder.LUIS.Tests
             Assert.IsNotNull(result.Entities["$instance"]["Address"]);
             Assert.AreEqual(21, result.Entities["$instance"]["Address"][0]["startIndex"]);
             Assert.AreEqual(28, result.Entities["$instance"]["Address"][0]["endIndex"]);
-            Assert.IsTrue((double)result.Entities["$instance"]["Address"][0]["score"] >= 0 && (double)result.Entities["$instance"]["Address"][0]["score"] <= 1);
+            AssertScore(result.Entities["$instance"]["Address"][0]["score"]);
             Assert.IsNotNull(result.Entities["Address"][0]["$instance"]);
             Assert.IsNotNull(result.Entities["Address"][0]["$instance"]["builtin_number"]);
             Assert.AreEqual(21, result.Entities["Address"][0]["$instance"]["builtin_number"][0]["startIndex"]);
@@ -204,7 +207,7 @@ namespace Microsoft.Bot.Builder.LUIS.Tests
             Assert.AreEqual(27, result.Entities["Address"][0]["$instance"]["State"][0]["startIndex"]);
             Assert.AreEqual(28, result.Entities["Address"][0]["$instance"]["State"][0]["endIndex"]);
             Assert.AreEqual("wa", result.Entities["Address"][0]["$instance"]["State"][0]["text"]);
-            Assert.IsTrue((double)result.Entities["Address"][0]["$instance"]["State"][0]["score"] >= 0 && (double)result.Entities["Address"][0]["$instance"]["State"][0]["score"] <= 1);
+            AssertScore(result.Entities["Address"][0]["$instance"]["State"][0]["score"]);
         }
 
         [TestMethod]
@@ -212,7 +215,7 @@ namespace Microsoft.Bot.Builder.LUIS.Tests
         {
             if (!EnvironmentVariablesDefined())
             {
-                Debug.WriteLine($"Missing Luis Environemnt variables - Skipping test");
+                Debug.WriteLine("Missing Luis Environemnt variables - Skipping test");
                 return;
             }
 
@@ -231,6 +234,13 @@ namespace Microsoft.Bot.Builder.LUIS.Tests
             Assert.IsTrue(((string)result.Entities["builtin_datetimeV2_datetime"][1][1]).EndsWith("T16"));
             Assert.AreEqual(1, result.Entities["$instance"]["builtin_datetimeV2_date"].Count());
             Assert.AreEqual(2, result.Entities["$instance"]["builtin_datetimeV2_datetime"].Count());
+        }
+
+        private void AssertScore(JToken scoreToken)
+        {
+            var score = (double) scoreToken;
+            Assert.IsTrue(score >= 0);
+            Assert.IsTrue(score <= 1);
         }
 
         private bool EnvironmentVariablesDefined()
