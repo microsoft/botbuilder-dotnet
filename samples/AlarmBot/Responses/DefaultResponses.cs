@@ -3,8 +3,6 @@
 
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Core.Extensions;
-using System;
-using System.Collections.Generic;
 
 namespace AlarmBot.Responses
 {

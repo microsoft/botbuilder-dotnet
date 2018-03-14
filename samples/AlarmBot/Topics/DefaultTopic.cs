@@ -1,12 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System.Linq;
-using System.Threading.Tasks;
 using AlarmBot.Models;
 using AlarmBot.Responses;
-using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace AlarmBot.Topics
 {
@@ -15,8 +14,6 @@ namespace AlarmBot.Topics
     /// </summary>
     public class DefaultTopic : ITopic
     {
-        public DefaultTopic() { }
-
         public string Name { get; set; } = "Default";
 
         // track in this topic if we have greeted the user already
@@ -35,7 +32,7 @@ namespace AlarmBot.Topics
                     {
                         // greet when added to conversation
                         var activity = context.Request.AsConversationUpdateActivity();
-                        if (activity.MembersAdded.Where(m => m.Id == activity.Recipient.Id).Any())
+                        if (activity.MembersAdded.Any(m => m.Id == activity.Recipient.Id))
                         {
                             DefaultResponses.ReplyWithGreeting(context);
                             DefaultResponses.ReplyWithHelp(context);
@@ -111,6 +108,5 @@ namespace AlarmBot.Topics
             DefaultResponses.ReplyWithResumeTopic(context);
             return Task.FromResult(true);
         }
-
     }
 }

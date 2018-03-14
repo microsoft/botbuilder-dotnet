@@ -1,15 +1,15 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using AlarmBot.Models;
 using AlarmBot.Responses;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Core.Extensions;
 using Microsoft.Bot.Schema;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace AlarmBot.Topics
 {
@@ -38,11 +38,6 @@ namespace AlarmBot.Topics
             // we asked for confirmation to show help instead of allowing help as the answer
             HelpConfirmation
         };
-
-
-        public AddAlarmTopic()
-        {
-        }
 
         /// <summary>
         /// Alarm object representing the information being gathered by the conversation before it is committed
@@ -74,7 +69,7 @@ namespace AlarmBot.Topics
                     .Select(entity => entity.ValueAs<string>()).FirstOrDefault(),
 
                 // initialize from intent entities
-                Time = times.Where(t => t > DateTime.Now).FirstOrDefault()
+                Time = times.FirstOrDefault(t => t > DateTime.Now)
             };
             if (Alarm.Time == default(DateTimeOffset))
             {

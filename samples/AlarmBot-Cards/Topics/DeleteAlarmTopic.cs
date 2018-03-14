@@ -1,15 +1,15 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using AlarmBot.Models;
 using AlarmBot.Responses;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Core.Extensions;
 using Microsoft.Bot.Schema;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace AlarmBot.Topics
 {
@@ -18,11 +18,6 @@ namespace AlarmBot.Topics
     /// </summary>
     public class DeleteAlarmTopic : ITopic
     {
-
-        public DeleteAlarmTopic()
-        {
-        }
-
         public string Name { get; set; } = "DeleteAlarm";
 
         /// <summary>
@@ -72,7 +67,7 @@ namespace AlarmBot.Topics
         public async Task<bool> FindAlarm(IBotContext context)
         {
             var userState = context.GetUserState<UserData>();
-            // var userState = UserState<UserAlarms>.Get(context);
+
             if (userState.Alarms == null)
             {
                 userState.Alarms = new List<Alarm>();
