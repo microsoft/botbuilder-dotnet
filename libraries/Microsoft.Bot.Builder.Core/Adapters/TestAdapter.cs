@@ -61,7 +61,7 @@ namespace Microsoft.Bot.Builder.Adapters
                 var id = activity.Id = (this._nextId++).ToString();
             }
 
-            var context = new BotContext(this, activity);
+            var context = new BotContext(this, (Activity)activity);
             return base.RunPipeline(context, callback, cancelToken);
         }
 
@@ -85,7 +85,7 @@ namespace Microsoft.Bot.Builder.Adapters
                 {
                     lock (this.botReplies)
                     {
-                        this.botReplies.Enqueue(activity);
+                        this.botReplies.Enqueue((Activity)activity);
                     }
                 }
             }
@@ -100,7 +100,7 @@ namespace Microsoft.Bot.Builder.Adapters
                 {
                     if (replies[i].Id == activity.Id)
                     {
-                        replies[i] = activity;
+                        replies[i] = (Activity)activity;
                         this.botReplies.Clear();
                         foreach (var item in replies)
                             this.botReplies.Enqueue(item);
@@ -130,6 +130,21 @@ namespace Microsoft.Bot.Builder.Adapters
                 }
             }
             return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// NOTE: this resets the queue, it doesn't actually maintain multiple converstion queues
+        /// </summary>
+        /// <param name="channelId"></param>
+        /// <param name="callback"></param>
+        /// <returns></returns>
+        public override Task CreateConversation(string channelId, Func<IBotContext, Task> callback)
+        {
+            this.ActiveQueue.Clear();
+            var update = Activity.CreateConversationUpdateActivity();
+            update.Conversation = new ConversationAccount() { Id = Guid.NewGuid().ToString("n") };
+            var context = new BotContext(this, (Activity)update);
+            return callback(context);
         }
 
         /// <summary>

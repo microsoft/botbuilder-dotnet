@@ -44,6 +44,7 @@ using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Classic.Dialogs;
 using Microsoft.Bot.Builder.Classic.Dialogs.Internals;
 using Microsoft.Bot.Builder.Classic.Internals.Fibers;
+using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -52,9 +53,8 @@ namespace Microsoft.Bot.Builder.Classic.Tests
     [TestClass]
     public sealed class ChainTests : DialogTestBase
     {
-        public static void AssertQueryText(string expectedText, TestAdapter adapter)
+        public static void AssertQueryText(string expectedText, Queue<Activity> queue)
         {
-            var queue = adapter.ActiveQueue;
             var texts = queue.Select(m => m.Text).ToArray();
             // last message is re-prompt, next-to-last is result of query expression
             var actualText = texts.Reverse().ElementAt(1);
@@ -84,17 +84,28 @@ namespace Microsoft.Bot.Builder.Classic.Tests
 
             using (var container = Build(Options.Reflection))
             {
-                TestAdapter adapter = new TestAdapter();
-                var testFlow = new TestFlow(adapter, (context) => Conversation.SendAsync(context, () => MakeSelectManyQuery()));
+                var adapter = new TestAdapter();
 
                 foreach (var word in words)
                 {
-                    testFlow = testFlow.Send(word);
+                    toBot.Text = word;
+                    await adapter.ProcessActivity((Activity)toBot, async (context) =>
+                    {
+                        using (var scope = DialogModule.BeginLifetimeScope(container, context))
+                        {
+                            DialogModule_MakeRoot.Register(scope, MakeSelectManyQuery);
+
+                            var task = scope.Resolve<IPostToBot>();
+                            // if we inline the query from MakeQuery into this method, and we use an anonymous method to return that query as MakeRoot
+                            // then because in C# all anonymous functions in the same method capture all variables in that method, query will be captured
+                            // with the linq anonymous methods, and the serializer gets confused trying to deserialize it all.
+                            await task.PostAsync(toBot, CancellationToken.None);
+                        }
+                    });
                 }
-                await testFlow.StartTest();
 
                 var expected = string.Join(" ", words);
-                AssertQueryText(expected, adapter);
+                AssertQueryText(expected, adapter.ActiveQueue);
             }
         }
 
@@ -118,13 +129,22 @@ namespace Microsoft.Bot.Builder.Classic.Tests
 
             using (var container = Build(Options.Reflection))
             {
-                TestAdapter adapter = new TestAdapter();
-                await new TestFlow(adapter, (context) => Conversation.SendAsync(context, () => MakeSelectQuery()))
-                    .Send(Phrase)
-                    .StartTest();
+                var toBot = MakeTestMessage();
+                toBot.Text = Phrase;
+                var adapter = new TestAdapter();
+                await adapter.ProcessActivity((Activity)toBot, async (context) =>
+                {
+                    using (var scope = DialogModule.BeginLifetimeScope(container, context))
+                    {
+                        DialogModule_MakeRoot.Register(scope, MakeSelectQuery);
+
+                        var task = scope.Resolve<IPostToBot>();
+                        await task.PostAsync(toBot, CancellationToken.None);
+                    }
+                });
 
                 var expected = new string(Phrase.Reverse().ToArray());
-                AssertQueryText(expected, adapter);
+                AssertQueryText(expected, adapter.ActiveQueue);
             }
         }
 
@@ -135,18 +155,24 @@ namespace Microsoft.Bot.Builder.Classic.Tests
 
             using (var container = Build(Options.Reflection))
             {
-                TestAdapter adapter = new TestAdapter();
-                await new TestFlow(adapter, (context) => Conversation.SendAsync(context, () => query))
-                    .Send(true.ToString())
-                    .StartTest();
+                var toBot = MakeTestMessage();
+                toBot.Text = true.ToString();
 
-                var queue = adapter.ActiveQueue;
-                lock (queue)
+                var adapter = new TestAdapter();
+                await adapter.ProcessActivity((Activity)toBot, async (context) =>
                 {
-                    var texts = queue.Select(m => m.Text).ToArray();
-                    Assert.AreEqual(1, texts.Length);
-                    Assert.AreEqual(true.ToString(), texts[0]);
-                }
+                    using (var scope = DialogModule.BeginLifetimeScope(container, context))
+                    {
+                        DialogModule_MakeRoot.Register(scope, () => query);
+
+                        var task = scope.Resolve<IPostToBot>();
+                        await task.PostAsync(toBot, CancellationToken.None);
+                    }
+                });
+
+                var texts = adapter.ActiveQueue.Select(m => m.Text).ToArray();
+                Assert.AreEqual(1, texts.Length);
+                Assert.AreEqual(true.ToString(), texts[0]);
             }
         }
 
@@ -157,24 +183,29 @@ namespace Microsoft.Bot.Builder.Classic.Tests
 
             using (var container = Build(Options.Reflection))
             {
-                TestAdapter adapter = new TestAdapter();
+                var toBot = MakeTestMessage();
+                toBot.Text = false.ToString();
+                var adapter = new TestAdapter();
+                await adapter.ProcessActivity((Activity)toBot, async (context) =>
+                {
 
-                await new TestFlow(adapter, async (context) =>
+                    using (var scope = DialogModule.BeginLifetimeScope(container, context))
                     {
+                        DialogModule_MakeRoot.Register(scope, () => query);
+
+                        var task = scope.Resolve<IPostToBot>();
                         try
                         {
-                            await Conversation.SendAsync(context, () => query);
-                            Assert.Fail("Should have thrown an exception");
+                            await task.PostAsync(toBot, CancellationToken.None);
+                            Assert.Fail();
                         }
                         catch (Chain.WhereCanceledException)
                         {
                         }
-                    })
-                    .Send(false.ToString())
-                    .StartTest();
+                    }
+                });
 
-                var queue = adapter.ActiveQueue;
-                var texts = queue.Select(m => m.Text).ToArray();
+                var texts = adapter.ActiveQueue.Select(m => m.Text).ToArray();
                 Assert.AreEqual(1, texts.Length);
                 Func<string, string, bool> Contains = (text, q) => text.IndexOf(q, StringComparison.OrdinalIgnoreCase) >= 0;
                 Assert.IsTrue(Contains(texts[0], "exception") || Contains(texts[0], "bot code is having an issue"));
@@ -198,9 +229,9 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                         return "!";
                     }),
                     new DefaultCase<string, string>((context, text) =>
-                   {
-                       return text;
-                   }
+                    {
+                        return text;
+                    }
                 )
             );
 
@@ -219,21 +250,24 @@ namespace Microsoft.Bot.Builder.Classic.Tests
 
             using (var container = Build(Options.Reflection))
             {
-                TestAdapter adapter = new TestAdapter();
-                var testFlow = new TestFlow(adapter, (context) => Conversation.SendAsync(context, MakeSwitchDialog));
-
+                var adapter = new TestAdapter();
                 foreach (var word in words)
                 {
-                    testFlow = testFlow.Send(word);
-                }
-                await testFlow
-                    .StartTest();
+                    toBot.Text = word;
+                    await adapter.ProcessActivity((Activity)toBot, async (context) =>
+                    {
+                        using (var scope = DialogModule.BeginLifetimeScope(container, context))
+                        {
+                            DialogModule_MakeRoot.Register(scope, MakeSwitchDialog);
 
-                lock (adapter.ActiveQueue)
-                {
-                    var texts = adapter.ActiveQueue.Select(m => m.Text).ToArray();
-                    CollectionAssert.AreEqual(expectedReply, texts);
+                            var task = scope.Resolve<IPostToBot>();
+                            await task.PostAsync(toBot, CancellationToken.None);
+                        }
+                    });
                 }
+
+                var texts = adapter.ActiveQueue.Select(m => m.Text).ToArray();
+                CollectionAssert.AreEqual(expectedReply, texts);
             }
         }
 
@@ -253,17 +287,25 @@ namespace Microsoft.Bot.Builder.Classic.Tests
 
             using (var container = Build(Options.Reflection))
             {
-                TestAdapter adapter = new TestAdapter();
-                var testFlow = new TestFlow(adapter, (context) => Conversation.SendAsync(context, MakeUnwrapQuery));
-
+                var adapter = new TestAdapter();
                 foreach (var word in words)
                 {
-                    testFlow = testFlow.Send(word);
+                    toBot.Text = word;
+                    await adapter.ProcessActivity((Activity)toBot, async (context) =>
+                    {
+
+                        using (var scope = DialogModule.BeginLifetimeScope(container, context))
+                        {
+                            DialogModule_MakeRoot.Register(scope, MakeUnwrapQuery);
+
+                            var task = scope.Resolve<IPostToBot>();
+                            await task.PostAsync(toBot, CancellationToken.None);
+                        }
+                    });
                 }
 
-                await testFlow.StartTest();
                 var expected = words.Last();
-                AssertQueryText(expected, adapter);
+                AssertQueryText(expected, adapter.ActiveQueue);
             }
         }
 
@@ -281,18 +323,26 @@ namespace Microsoft.Bot.Builder.Classic.Tests
 
             using (var container = Build(Options.None))
             {
+                var toBot = MakeTestMessage();
 
-                TestAdapter adapter = new TestAdapter();
-                var testFlow = new TestFlow(adapter, (context) => Conversation.SendAsync(context, () => query));
+                var adapter = new TestAdapter();
                 foreach (var word in words)
                 {
-                    testFlow = testFlow.Send(word);
+                    toBot.Text = word;
+                    await adapter.ProcessActivity((Activity)toBot, async (context) =>
+                    {
+                        using (var scope = DialogModule.BeginLifetimeScope(container, context))
+                        {
+                            DialogModule_MakeRoot.Register(scope, () => query);
+
+                            var task = scope.Resolve<IPostToBot>();
+                            await task.PostAsync(toBot, CancellationToken.None);
+                        }
+                    });
                 }
 
-                await testFlow.StartTest();
-
                 var expected = string.Join(" ", words);
-                AssertQueryText(expected, adapter);
+                AssertQueryText(expected, adapter.ActiveQueue);
             }
         }
 

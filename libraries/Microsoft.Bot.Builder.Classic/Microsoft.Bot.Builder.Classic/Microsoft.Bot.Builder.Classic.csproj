@@ -1,284 +1,69 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
-  <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{CDFEC7D6-847E-4C13-956B-0A960AE3EB60}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Microsoft.Bot.Builder.Classic</RootNamespace>
-    <AssemblyName>Microsoft.Bot.Builder.Classic</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <NoWarn>CS1998;CS1591;CS0419</NoWarn>
-    <DocumentationFile>bin\Debug\Microsoft.Bot.Builder.Classic.xml</DocumentationFile>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <NoWarn>CS1998;CS1591;CS0419</NoWarn>
-    <DocumentationFile>bin\Release\Microsoft.Bot.Builder.Classic.xml</DocumentationFile>
-  </PropertyGroup>
-  <PropertyGroup Label="MultilingualAppToolkit">
-    <MultilingualAppToolkitVersion>4.0</MultilingualAppToolkitVersion>
-    <MultilingualFallbackLanguage>en</MultilingualFallbackLanguage>
-  </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="Chronic, Version=0.3.2.0, Culture=neutral, PublicKeyToken=3bd1f1ef638b0d3c, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\Chronic.Signed.0.3.2\lib\net40\Chronic.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.IdentityModel.Logging, Version=5.2.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\Microsoft.IdentityModel.Logging.5.2.1\lib\net451\Microsoft.IdentityModel.Logging.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.IdentityModel.Protocols, Version=5.2.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\Microsoft.IdentityModel.Protocols.5.2.1\lib\net451\Microsoft.IdentityModel.Protocols.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect, Version=5.2.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\Microsoft.IdentityModel.Protocols.OpenIdConnect.5.2.1\lib\net451\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.IdentityModel.Tokens, Version=5.2.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\Microsoft.IdentityModel.Tokens.5.2.1\lib\net451\Microsoft.IdentityModel.Tokens.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Rest.ClientRuntime, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\Microsoft.Rest.ClientRuntime.2.3.10\lib\net452\Microsoft.Rest.ClientRuntime.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Configuration" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.IdentityModel.Tokens.Jwt, Version=5.2.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\System.IdentityModel.Tokens.Jwt.5.2.1\lib\net451\System.IdentityModel.Tokens.Jwt.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Net" />
-    <Reference Include="System.Net.Http.WebRequest" />
-    <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.Web" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Base\EventLoop.cs" />
-    <Compile Include="Base\Extensions.cs" />
-    <Compile Include="Base\LocalizedScope.cs" />
-    <Compile Include="Base\Resolver.cs" />
-    <Compile Include="Base\Types.cs" />
-    <Compile Include="ConnectorEx\BotData.cs" />
-    <Compile Include="ConnectorEx\LocaleFinder.cs" />
-    <Compile Include="ConnectorEx\PostToBot.cs" />
-    <Compile Include="ConnectorEx\KeyboardCard.cs" />
-    <Compile Include="ConnectorEx\ResumptionContext.cs" />
-    <Compile Include="Dialogs\DeleteProfileScorable.cs" />
-    <Compile Include="ConnectorEx\BotDataEx.cs" />
-    <Compile Include="ConnectorEx\BotToUser.cs" />
-    <Compile Include="Dialogs\CommandDialog.cs" />
-    <Compile Include="Dialogs\EndConversation.cs" />
-    <Compile Include="Dialogs\DialogContext.cs" />
-    <Compile Include="Dialogs\Chain.cs" />
-    <Compile Include="Dialogs\DialogRouter.cs" />
-    <Compile Include="Dialogs\DialogSystem.cs" />
-    <Compile Include="Dialogs\Exceptions.cs" />
-    <Compile Include="ConnectorEx\Address.cs" />
-    <Compile Include="ConnectorEx\IActivityLogger.cs" />
-    <Compile Include="Dialogs\DispatchDialog.cs" />
-    <Compile Include="ConnectorEx\ResumptionCookie.cs" />
-    <Compile Include="Dialogs\PromptRecognizer.cs" />
-    <Compile Include="Dialogs\ScoringEventLoop.cs" />
-    <Compile Include="Dialogs\DialogTask.cs" />
-    <Compile Include="ConnectorEx\IBotDataBag.cs" />
-    <Compile Include="ConnectorEx\IChannelCapability.cs" />
-    <Compile Include="ConnectorEx\IConnectorClientFactory.cs" />
-    <Compile Include="Dialogs\IDialogTask.cs" />
-    <Compile Include="Dialogs\LuisDialog.cs" />
-    <Compile Include="ConnectorEx\UrlToken.cs" />
-    <Compile Include="Dialogs\DialogTaskManager.cs" />
-    <Compile Include="Base\Pair.cs" />
-    <Compile Include="Base\Range.cs" />
-    <Compile Include="Base\Scope.cs" />
-    <Compile Include="Fibers\StackStoreFactory.cs" />
-    <Compile Include="Fibers\Store.cs" />
-    <Compile Include="Fibers\IStore.cs" />
-    <Compile Include="Base\SetField.cs" />
-    <Compile Include="ConnectorEx\IBotData.cs" />
-    <Compile Include="Dialogs\IDialog.cs" />
-    <Compile Include="Dialogs\IDialogContext.cs" />
-    <Compile Include="Base\Tasks.cs" />
-    <Compile Include="FormFlow\FieldReflector.cs" />
-    <Compile Include="Base\Traits.cs" />
-    <Compile Include="FormFlow\Localizer.cs" />
-    <Compile Include="FormFlow\MessageActivityHelper.cs" />
-    <Compile Include="Luis\CalendarPlus.cs" />
-    <Compile Include="Luis\EntityToType.cs" />
-    <Compile Include="Luis\Extensions.cs" />
-    <Compile Include="Luis\LuisModel.cs" />
-    <Compile Include="Luis\LuisOptions.cs" />
-    <Compile Include="Luis\Models\CompositeChild.cs" />
-    <Compile Include="Luis\Models\CompositeEntity.cs" />
-    <Compile Include="Luis\Models\DialogResponse.cs" />
-    <Compile Include="Luis\Models\DialogResponseEx.cs" />
-    <Compile Include="Luis\Resolution.cs" />
-    <Compile Include="Luis\LuisService.cs" />
-    <Compile Include="Dialogs\PromptDialog.cs" />
-    <Compile Include="Fibers\Awaitable.cs" />
-    <Compile Include="Fibers\Exceptions.cs" />
-    <Compile Include="Fibers\Extensions.cs" />
-    <Compile Include="Fibers\Fiber.cs" />
-    <Compile Include="Fibers\Methods.cs" />
-    <Compile Include="Fibers\Serialization.cs" />
-    <Compile Include="Fibers\Wait.cs" />
-    <Compile Include="FormFlow\Confirmation.cs" />
-    <Compile Include="FormFlow\Field.cs" />
-    <Compile Include="FormFlow\FormDialog.cs" />
-    <Compile Include="FormFlow\FormBuilder.cs" />
-    <Compile Include="FormFlow\FormState.cs" />
-    <Compile Include="FormFlow\IField.cs" />
-    <Compile Include="FormFlow\ILocalizer.cs" />
-    <Compile Include="FormFlow\IFormBuilder.cs" />
-    <Compile Include="FormFlow\IForm.cs" />
-    <Compile Include="FormFlow\IStep.cs" />
-    <Compile Include="FormFlow\Language.cs" />
-    <Compile Include="FormFlow\MatchAnalyzer.cs" />
-    <Compile Include="FormFlow\Recognize.cs" />
-    <Compile Include="FormFlow\Steps.cs" />
-    <Compile Include="FormFlow\Attributes.cs" />
-    <Compile Include="FormFlow\Extensions.cs" />
-    <Compile Include="FormFlow\IFormDialog.cs" />
-    <Compile Include="FormFlow\IPrompt.cs" />
-    <Compile Include="FormFlow\IRecognize.cs" />
-    <Compile Include="Luis\Models\Action.cs" />
-    <Compile Include="Luis\Models\ActionParameter.cs" />
-    <Compile Include="Luis\Models\EntityRecommendation.cs" />
-    <Compile Include="Luis\Models\IntentRecommendation.cs" />
-    <Compile Include="Luis\Models\LuisResult.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Resource\Extensions.cs" />
-    <Compile Include="Resource\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Scorables\Actions.cs" />
-    <Compile Include="Scorables\Binder.cs" />
-    <Compile Include="Scorables\BindingComparer.cs" />
-    <Compile Include="Scorables\InheritedAttributes.cs" />
-    <Compile Include="Scorables\Binding.cs" />
-    <Compile Include="Scorables\Dispatcher.cs" />
-    <Compile Include="Scorables\ResolverScorable.cs" />
-    <Compile Include="Scorables\Scorable.cs" />
-    <Compile Include="Scorables\ScorableBase.cs" />
-    <Compile Include="Scorables\OrderScorable.cs" />
-    <Compile Include="Scorables\LuisIntentScorable.cs" />
-    <Compile Include="Scorables\MethodScorable.cs" />
-    <Compile Include="Scorables\FoldScorable.cs" />
-    <Compile Include="Scorables\RegexMatchScorable.cs" />
-    <Compile Include="ConnectorEx\Resolver.cs" />
-    <Compile Include="Scorables\Scorables.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="createpackage.cmd" />
-    <None Include="Luis\generateLuisModels.bat" />
-    <None Include="Luis\Luis-q.json" />
-    <None Include="Microsoft.Bot.Builder.Classic.nuspec">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="packages.config">
-      <SubType>Designer</SubType>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Resource\Resources.ar.resx">
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resource\Resources.de-DE.resx" />
-    <EmbeddedResource Include="Resource\Resources.cs.resx" />
-    <EmbeddedResource Include="Resource\Resources.pt-BR.resx">
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resource\Resources.en.resx" />
-    <EmbeddedResource Include="Resource\Resources.es.resx" />
-    <EmbeddedResource Include="Resource\Resources.fa.resx" />
-    <EmbeddedResource Include="Resource\Resources.fr.resx" />
-    <EmbeddedResource Include="Resource\Resources.it.resx" />
-    <EmbeddedResource Include="Resource\Resources.ja.resx" />
-    <EmbeddedResource Include="Resource\Resources.nl.resx" />
-    <EmbeddedResource Include="Resource\Resources.resx">
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resource\Resources.ru.resx" />
-    <EmbeddedResource Include="Resource\Resources.zh-Hans.resx" />
-  </ItemGroup>
-  <ItemGroup>
-    <XliffResource Include="MultilingualResources\Microsoft.Bot.Builder.ar.xlf" />
-    <XliffResource Include="MultilingualResources\Microsoft.Bot.Builder.de-DE.xlf" />
-    <XliffResource Include="MultilingualResources\Microsoft.Bot.Builder.cs.xlf" />
-    <XliffResource Include="MultilingualResources\Microsoft.Bot.Builder.pt-BR.xlf" />
-    <XliffResource Include="MultilingualResources\Microsoft.Bot.Builder.en.xlf" />
-    <XliffResource Include="MultilingualResources\Microsoft.Bot.Builder.es.xlf">
-      <SubType>Designer</SubType>
-    </XliffResource>
-    <XliffResource Include="MultilingualResources\Microsoft.Bot.Builder.fa.xlf" />
-    <XliffResource Include="MultilingualResources\Microsoft.Bot.Builder.fr.xlf" />
-    <XliffResource Include="MultilingualResources\Microsoft.Bot.Builder.it.xlf">
-      <SubType>Designer</SubType>
-    </XliffResource>
-    <XliffResource Include="MultilingualResources\Microsoft.Bot.Builder.ja.xlf" />
-    <XliffResource Include="MultilingualResources\Microsoft.Bot.Builder.nl.xlf" />
-    <XliffResource Include="MultilingualResources\Microsoft.Bot.Builder.ru.xlf" />
-    <XliffResource Include="MultilingualResources\Microsoft.Bot.Builder.zh-Hans.xlf" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\Microsoft.Bot.Builder.Core\Microsoft.Bot.Builder.Core.csproj">
-      <Project>{f0c150e2-9b8a-444c-b70e-97ad918cb3d4}</Project>
-      <Name>Microsoft.Bot.Builder.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Microsoft.Bot.Connector\Microsoft.Bot.Connector.csproj">
-      <Project>{6462da5d-27dc-4cd5-9467-5efb998fd838}</Project>
-      <Name>Microsoft.Bot.Connector</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Microsoft.Bot.Schema\Microsoft.Bot.Schema.csproj">
-      <Project>{c1f54cdc-ad1d-45bb-8f7d-f49e411afaf1}</Project>
-      <Name>Microsoft.Bot.Schema</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="$(MSBuildExtensionsPath)\Microsoft\Multilingual App Toolkit\Microsoft.Multilingual.ResxResources.targets" Label="MultilingualAppToolkit" Condition="Exists('$(MSBuildExtensionsPath)\Microsoft\Multilingual App Toolkit\Microsoft.Multilingual.ResxResources.targets') And Exists('$(MSBuildExtensionsPath)\Microsoft\Multilingual App Toolkit\v$(MultilingualAppToolkitVersion)\Microsoft.Multilingual.ResxResources.targets')" />
-  <Target Name="MATPrerequisite" BeforeTargets="PrepareForBuild" Condition="!Exists('$(MSBuildExtensionsPath)\Microsoft\Multilingual App Toolkit\Microsoft.Multilingual.ResxResources.targets') And !Exists('$(MSBuildExtensionsPath)\Microsoft\Multilingual App Toolkit\v$(MultilingualAppToolkitVersion)\Microsoft.Multilingual.ResxResources.targets')" Label="MultilingualAppToolkit">
-    <Warning Text="$(MSBuildProjectFile) is Multilingual build enabled, but the Multilingual App Toolkit is unavailable during the build. If building with Visual Studio, please check to ensure that toolkit is properly installed." />
-  </Target>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<Version Condition=" '$(BUILD_BUILDNUMBER)' == '' ">4.0.0-local</Version>
+		<Version Condition=" '$(BUILD_BUILDNUMBER)' != '' ">$(BUILD_BUILDNUMBER)</Version>
+		<PackageVersion Condition=" '$(PackageVersion)' == '' ">4.0.0-local</PackageVersion>
+		<PackageVersion Condition=" '$(PackageVersion)' != '' ">$(PackageVersion)</PackageVersion>
+	</PropertyGroup>
+
+	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+		<SignAssembly>true</SignAssembly>
+		<DelaySign>true</DelaySign>
+		<AssemblyOriginatorKeyFile>..\..\build\35MSSharedLib1024.snk</AssemblyOriginatorKeyFile>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<TargetFramework>netstandard2.0</TargetFramework>
+		<PackageId>Microsoft.Bot.Builder.Classic</PackageId>
+		<Description>Library for building bots using Microsoft Bot Framework Connector</Description>
+		<Summary>Library for building bots using Microsoft Bot Framework Connector</Summary>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<Company>Microsoft</Company>
+		<Authors>microsoft,BotFramework,nugetbotbuilder</Authors>
+		<Product>Microsoft Bot Builder SDK</Product>
+		<Copyright>© Microsoft Corporation. All rights reserved.</Copyright>
+		<PackageProjectUrl>https://github.com/Microsoft/botbuilder-dotnet</PackageProjectUrl>
+		<PackageIconUrl>http://docs.botframework.com/images/bot_icon.png</PackageIconUrl>
+		<PackageLicenseUrl>https://github.com/Microsoft/BotBuilder/blob/master/LICENSE</PackageLicenseUrl>
+		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+		<RepositoryUrl>https://github.com/Microsoft/botbuilder-dotnet</RepositoryUrl>
+		<LicenseUrl>https://github.com/Microsoft/BotBuilder-dotnet/blob/master/LICENSE</LicenseUrl>
+		<RepositoryType />
+		<PackageTags>bots;ai;botframework;botbuilder</PackageTags>
+		<NeutralLanguage />
+		<AssemblyName>Microsoft.Bot.Builder</AssemblyName>
+		<IncludeSymbols>true</IncludeSymbols>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+		<NoWarn>1701;1702;1705;1998</NoWarn>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Bot.Builder.Core" Condition=" '$(PackageVersion)' == '' " Version="4.0.0-local" />
+		<PackageReference Include="Microsoft.Bot.Builder.Core" Condition=" '$(PackageVersion)' != '' " Version="$(PackageVersion)" />
+		<PackageReference Include="Microsoft.Bot.Connector" Condition=" '$(PackageVersion)' == '' " Version="4.0.0-local" />
+		<PackageReference Include="Microsoft.Bot.Connector" Condition=" '$(PackageVersion)' != '' " Version="$(PackageVersion)" />
+		<PackageReference Include="Microsoft.Bot.Schema" Condition=" '$(PackageVersion)' == '' " Version="4.0.0-local" />
+		<PackageReference Include="Microsoft.Bot.Schema" Condition=" '$(PackageVersion)' != '' " Version="$(PackageVersion)" />
+		<PackageReference Include="Chronic.Signed" Version="0.3.2" />
+		<PackageReference Include="Microsoft.IdentityModel.Logging" version="5.2.1" />
+		<PackageReference Include="Microsoft.IdentityModel.Protocols" version="5.2.1" />
+		<PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" version="5.2.1" />
+		<PackageReference Include="Microsoft.IdentityModel.Tokens" version="5.2.1" />
+		<PackageReference Include="Microsoft.Rest.ClientRuntime" version="2.3.10" />
+		<PackageReference Include="Newtonsoft.Json" version="10.0.3" />
+		<PackageReference Include="System.IdentityModel.Tokens.Jwt" version="5.2.1" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\Microsoft.Bot.Builder.Core\Microsoft.Bot.Builder.Core.csproj" />
+		<ProjectReference Include="..\..\Microsoft.Bot.Connector\Microsoft.Bot.Connector.csproj" />
+		<ProjectReference Include="..\..\Microsoft.Bot.Schema\Microsoft.Bot.Schema.csproj" />
+	</ItemGroup>
+
 </Project>

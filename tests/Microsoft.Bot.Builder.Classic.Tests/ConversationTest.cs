@@ -92,19 +92,14 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                 var address = AddressFrom(channelId, userId, conversationId);
                 await memoryDataStore.SaveAsync(address, storeType, data, CancellationToken.None);
             }
-            catch (HttpException e)
-            {
-                _result.Body = null;
-                _result.Response = new HttpResponseMessage { StatusCode = HttpStatusCode.PreconditionFailed };
-                var ex = new HttpOperationException(e?.Message, e);
-                ex.Request = new HttpRequestMessageWrapper(_result.Request, "");
-                ex.Response = new HttpResponseMessageWrapper(_result.Response, e?.Message);
-                throw ex;
-            }
             catch (Exception e)
             {
                 _result.Body = null;
-                _result.Response = new HttpResponseMessage { StatusCode = HttpStatusCode.InternalServerError };
+                HttpStatusCode status;
+                if (Enum.TryParse<HttpStatusCode>(e.Message, out status))
+                    _result.Response = new HttpResponseMessage { StatusCode = status };
+                else
+                    _result.Response = new HttpResponseMessage { StatusCode = HttpStatusCode.InternalServerError };
                 var ex = new HttpOperationException(e?.Message, e);
                 ex.Request = new HttpRequestMessageWrapper(_result.Request, "");
                 ex.Response = new HttpResponseMessageWrapper(_result.Response, e?.Message);
