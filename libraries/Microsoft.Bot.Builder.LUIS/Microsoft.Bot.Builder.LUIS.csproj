@@ -13,8 +13,8 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <PackageId>Microsoft.Bot.Builder.LUIS</PackageId>
+	<TargetFramework>netstandard2.0</TargetFramework>
+	<PackageId>Microsoft.Bot.Builder.LUIS</PackageId>
     <Description>LUIS Middleware and Recognizers for the Microsoft Bot Builder SDK</Description>
     <Summary>This library implements C# classes for building bots using LUIS.</Summary>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>

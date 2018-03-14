@@ -13,8 +13,8 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <PackageId>Microsoft.Bot.Builder.Azure</PackageId>
+	<TargetFramework>netstandard2.0</TargetFramework>
+	<PackageId>Microsoft.Bot.Builder.Azure</PackageId>
     <Description>Azure classes for using Azure Services on the Microsoft Bot Builder SDK</Description>
   </PropertyGroup>
 
