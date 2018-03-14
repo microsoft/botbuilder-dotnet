@@ -33,17 +33,26 @@ namespace Microsoft.Bot.Builder.Core.Extensions
         {
             Timer typingActivityTimer = null;
 
-            // If the incoming activity is a MessageActivity, start a timer to periodically send the typing activity
-            if (context.Request.Type == ActivityTypes.Message)
+            try
             {
-                typingActivityTimer = new Timer(SendTypingTimerCallback, context, _delay, _freqency);
+                // If the incoming activity is a MessageActivity, start a timer to periodically send the typing activity
+                if (context.Request.Type == ActivityTypes.Message)
+                {
+                    typingActivityTimer = new Timer(SendTypingTimerCallback, context, _delay, _freqency);
+                }
+
+                await next().ConfigureAwait(false);
             }
-
-            await next().ConfigureAwait(false);
-
-            // Once the bot has processed the request, the middleware should dispose of the timer
-            // on the trailing edge of the request
-            typingActivityTimer?.Dispose();
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                // Once the bot has processed the request, the middleware should dispose of the timer
+                // on the trailing edge of the request
+                typingActivityTimer?.Dispose();
+            }
         }
 
         private void SendTypingTimerCallback(object state)
