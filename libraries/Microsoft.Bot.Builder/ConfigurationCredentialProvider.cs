@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using Microsoft.Bot.Connector.Authentication;
+#if NETSTANDARD2_0
 using Microsoft.Extensions.Configuration;
 
 namespace Microsoft.Bot.Builder.BotFramework
@@ -18,3 +19,4 @@ namespace Microsoft.Bot.Builder.BotFramework
         }
     }
 }
+#endif
