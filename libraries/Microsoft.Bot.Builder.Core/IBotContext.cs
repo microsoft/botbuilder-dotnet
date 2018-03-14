@@ -1,15 +1,17 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Microsoft.Bot.Schema;
 using System;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Middleware;
+using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder
 {
+    public delegate Task SendActivitiesHandler(IBotContext context, List<Activity> activities, Func<Task> next);
+    public delegate Task UpdateActivityHandler(IBotContext context, Activity activity, Func<Task> next);
+    public delegate Task DeleteActivityHandler(IBotContext context, ConversationReference reference, Func<Task> next);
+
     public interface IBotContext
     {
         BotAdapter Adapter { get; }
@@ -20,29 +22,15 @@ namespace Microsoft.Bot.Builder
         Activity Request { get; }
 
         /// <summary>
-        /// Respones
+        /// 
         /// </summary>
-        IList<Activity> Responses { get; set; }
+        bool Responded { get; set; }
 
-        /// <summary>
-        /// Conversation reference
-        /// </summary>
-        ConversationReference ConversationReference { get; }
+        Task SendActivity(params string[] textRepliesToSend);
+        Task SendActivity(params IActivity[] activities);        
 
-        /// <summary>
-        /// Queues a new "message" responses array.
-        /// </summary>
-        /// <param name="text">Text of a message to send to the user.</param>
-        /// <param name="speak">(Optional) SSML that should be spoken to the user on channels that support speech.</param>
-        /// <returns></returns>
-        IBotContext Reply(string text, string speak = null);
-
-        /// <summary>
-        /// Queues a new "message" responses array.
-        /// </summary>
-        /// <param name="activity">Activity object to send to the user.</param>
-        /// <returns></returns>
-        IBotContext Reply(IActivity activity);
+        Task UpdateActivity(IActivity activity);
+        Task DeleteActivity(string activityId);
 
         /// <summary>
         /// Set the value associated with a key.
@@ -57,6 +45,16 @@ namespace Microsoft.Bot.Builder
         /// <param name="key">The key of the value to get.</param>
         /// <returns>The value.</returns>
         object Get(string key);
+
+        /// <summary>
+        /// returns 'true' if Set has been called for a key
+        /// </summary>        
+        /// <param name="key">The key to lookup in the cache</param>
+        bool Has(string key);
+
+        IBotContext OnSendActivity(SendActivitiesHandler handler);
+        IBotContext OnUpdateActivity(UpdateActivityHandler handler);
+        IBotContext OnDeleteActivity(DeleteActivityHandler handler);
     }
 
     public static partial class BotContextExtension

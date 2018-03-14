@@ -3,8 +3,7 @@
 
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Builder.Middleware;
-using Microsoft.Bot.Builder.Storage;
+using Microsoft.Bot.Builder.Core.Extensions;
 using Microsoft.Bot.Schema;
 using Microsoft.Recognizers.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -40,10 +39,10 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                             Assert.IsNotNull(tempResult.Text);
                             Assert.IsNotNull(tempResult.Unit);
                             Assert.IsInstanceOfType(tempResult.Value, typeof(float));
-                            context.Reply($"{tempResult.Value} {tempResult.Unit}");
+                            await context.SendActivity($"{tempResult.Value} {tempResult.Unit}");
                         }
                         else
-                            context.Reply(tempResult.Status.ToString());
+                            await context.SendActivity(tempResult.Status.ToString());
                     }
                 })
                 .Send("hello")
@@ -78,9 +77,9 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                 {
                     var tempResult = await numberPrompt.Recognize(context);
                     if (tempResult.Succeeded())
-                        context.Reply($"{tempResult.Value} {tempResult.Unit}");
+                        await context.SendActivity($"{tempResult.Value} {tempResult.Unit}");
                     else
-                        context.Reply(tempResult.Status.ToString());
+                        await context.SendActivity(tempResult.Status.ToString());
                 }
             })
                 .Send("hello")

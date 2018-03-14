@@ -3,9 +3,7 @@
 
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Builder.Middleware;
-using Microsoft.Bot.Builder.Storage;
-using Microsoft.Bot.Schema;
+using Microsoft.Bot.Builder.Core.Extensions;
 using Microsoft.Recognizers.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -21,7 +19,7 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
         {
             TestAdapter adapter = new TestAdapter()
                 .Use(new ConversationState<TestState>(new MemoryStorage()));
-
+                
             await new TestFlow(adapter, async (context) =>
                 {
                     var state = ConversationState<TestState>.Get(context);
@@ -40,10 +38,10 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                             Assert.IsNotNull(ageResult.Text);
                             Assert.IsNotNull(ageResult.Unit);
                             Assert.IsInstanceOfType(ageResult.Value, typeof(float));
-                            context.Reply($"{ageResult.Value} {ageResult.Unit}");
+                            await context.SendActivity($"{ageResult.Value} {ageResult.Unit}");
                         }
                         else
-                            context.Reply(ageResult.Status.ToString());
+                            await context.SendActivity(ageResult.Status.ToString());
                     }
                 })
                 .Send("hello")
@@ -78,9 +76,9 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                 {
                     var numberResult = await numberPrompt.Recognize(context);
                     if (numberResult.Succeeded())
-                        context.Reply($"{numberResult.Value} {numberResult.Unit}");
+                        await context.SendActivity($"{numberResult.Value} {numberResult.Unit}");
                     else
-                        context.Reply(numberResult.Status.ToString());
+                        await context.SendActivity(numberResult.Status.ToString());
                 }
             })
                 .Send("hello")

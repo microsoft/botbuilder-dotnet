@@ -4,7 +4,6 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Middleware;
 using Microsoft.Bot.Schema;
 using Microsoft.Cognitive.LUIS;
 
@@ -15,7 +14,7 @@ namespace Microsoft.Bot.Builder.LUIS
     /// This could eventually be generalized and moved to the core Bot Builder library
     /// in order to support multiple recognizers
     /// </summary>
-    public class LuisRecognizerMiddleware : IReceiveActivity
+    public class LuisRecognizerMiddleware : IMiddleware
     {
         public const string LuisRecognizerResultKey = "LuisRecognizerResult";
         private readonly IRecognizer _luisRecognizer;
@@ -28,7 +27,7 @@ namespace Microsoft.Bot.Builder.LUIS
             _luisRecognizer = new LuisRecognizer(luisModel, luisRecognizerOptions, luisOptions);
         }
 
-        public async Task ReceiveActivity(IBotContext context, MiddlewareSet.NextDelegate next)
+        public async Task OnProcessRequest(IBotContext context, MiddlewareSet.NextDelegate next)
         {
             BotAssert.ContextNotNull(context);
 

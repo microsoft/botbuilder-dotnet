@@ -6,7 +6,7 @@ using System.Linq;
 using AdaptiveCards;
 using AlarmBot.Models;
 using Microsoft.Bot.Builder;
-using Microsoft.Bot.Builder.Middleware;
+using Microsoft.Bot.Builder.Core.Extensions;
 using Microsoft.Bot.Builder.Templates;
 using Microsoft.Bot.Schema;
 
@@ -48,19 +48,19 @@ namespace AlarmBot.Responses
 
         public static void ReplyWithNoAlarms(IBotContext context)
         {
-            context.Reply($"There are no alarms defined.");
+            context.Batch().Reply($"There are no alarms defined.");
         }
         public static void ReplyWithNoAlarmsFound(IBotContext context, string data)
         {
-            context.Reply($"There were no alarms found for {data}.");
+            context.Batch().Reply($"There were no alarms found for {data}.");
         }
         public static void ReplyWithTitlePrompt(IBotContext context, IEnumerable<Alarm> data)
         {
-            context.Reply(AlarmsCard(context, data, "Delete Alarm", "What alarm do you want to delete?"));
+            context.Batch().Reply(AlarmsCard(context, data, "Delete Alarm", "What alarm do you want to delete?"));
         }
         public static void ReplyWithDeletedAlarm(IBotContext context, Alarm data)
         {
-            context.Reply($"I have deleted {data.Title} alarm");
+            context.Batch().Reply($"I have deleted {data.Title} alarm");
         }
 
     }

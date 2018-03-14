@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using AlarmBot.Models;
 using AlarmBot.Responses;
 using Microsoft.Bot.Builder;
-using Microsoft.Bot.Builder.Middleware;
 using Microsoft.Bot.Schema;
 
 namespace AlarmBot.Topics
@@ -129,8 +128,10 @@ namespace AlarmBot.Topics
                     return await this.PromptForMissingData(context);
 
                 case TopicStates.TimePrompt:
-                    // take first one in the future
-                    this.Alarm.Time = context.GetDateTimes().Where(t => t > DateTimeOffset.Now).FirstOrDefault();
+                    // take first one in the future if a valid time has been parsed
+                    var times = context.GetDateTimes();                    
+                    if(times.Any(t => t > DateTimeOffset.Now))
+                        this.Alarm.Time = times.Where(t => t > DateTimeOffset.Now).FirstOrDefault();
                     return await this.PromptForMissingData(context);
 
                 case TopicStates.CancelConfirmation:

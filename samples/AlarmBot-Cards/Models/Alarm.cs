@@ -2,9 +2,6 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace AlarmBot.Models
 {
@@ -16,5 +13,4 @@ namespace AlarmBot.Models
         public string Title { get; set; }
         public DateTimeOffset? Time { get; set; }
     }
-
 }

@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Builder.Prompts
     {
 
         public OrdinalPrompt(string culture, PromptValidator<NumberResult<int>> validator = null) 
-            : base(NumberRecognizer.Instance.GetOrdinalModel(culture), validator)
+            : base(new NumberRecognizer(culture).GetOrdinalModel(), validator)
         {
         }
 

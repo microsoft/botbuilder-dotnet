@@ -1,12 +1,14 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
+using AlarmBot.Models;
+using Microsoft.Bot.Builder;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using AlarmBot.Models;
 using Microsoft.Bot.Builder;
+using Microsoft.Bot.Builder.Core.Extensions;
 
 namespace AlarmBot.Responses
 {
@@ -17,9 +19,10 @@ namespace AlarmBot.Responses
     {
         public static void ReplyWithShowAlarms(IBotContext context, IEnumerable<Alarm> alarms)
         {
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
             sb.AppendLine("# Current Alarms\n");
-            if (alarms.Any())
+
+            if (alarms != null && alarms.Any())
             {
                 foreach (var alarm in alarms)
                 {
@@ -29,7 +32,7 @@ namespace AlarmBot.Responses
             else
                 sb.AppendLine("*There are no alarms defined.*");
 
-            context.Reply(sb.ToString());
+            context.Batch().Reply(sb.ToString());
         }
     }
 }

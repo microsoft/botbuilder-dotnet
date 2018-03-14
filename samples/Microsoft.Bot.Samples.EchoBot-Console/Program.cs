@@ -2,8 +2,7 @@
 // Licensed under the MIT License.
 
 using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Builder.Middleware;
-using Microsoft.Bot.Builder.Storage;
+using Microsoft.Bot.Builder.Core.Extensions;
 using System;
 using System.Threading.Tasks;
 
@@ -17,7 +16,7 @@ namespace Microsoft.Bot.Samples.Echo
 
             var adapter = new ConsoleAdapter()
                 .Use(new ConversationState<EchoState>(new MemoryStorage()));
-
+            
             adapter.ProcessActivity(async (context) =>
             {
                 var echoBot = new EchoBot(new MyService());

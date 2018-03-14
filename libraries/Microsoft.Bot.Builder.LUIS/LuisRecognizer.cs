@@ -49,6 +49,7 @@ namespace Microsoft.Bot.Builder.LUIS
             var recognizerResult = new RecognizerResult
             {
                 Text = request.Query,
+                AlteredText = luisResult.AlteredQuery,
                 Intents = GetIntents(luisResult),
                 Entities = GetEntitiesAndMetadata(luisResult.Entities, luisResult.CompositeEntities, verbose)
             };
@@ -206,7 +207,7 @@ namespace Microsoft.Bot.Builder.LUIS
         /// </summary>
         private static void AddProperty(JObject obj, string key, JToken value)
         {
-            if (obj.ContainsKey(key))
+            if (((IDictionary<string, JToken>)obj).ContainsKey(key))
             {
                 ((JArray) obj[key]).Add(value);
             }

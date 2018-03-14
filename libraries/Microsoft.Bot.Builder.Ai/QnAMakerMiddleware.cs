@@ -5,12 +5,12 @@ using System;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Middleware;
+using Microsoft.Bot.Builder.Core.Extensions;
 using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.Ai
 {
-    public class QnAMakerMiddleware : Middleware.IReceiveActivity
+    public class QnAMakerMiddleware : IMiddleware
     {
         private readonly QnAMaker _qnaMaker;
         private readonly QnAMakerMiddlewareOptions _options;
@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Builder.Ai
             _qnaMaker = new QnAMaker(options, httpClient);
         }
 
-        public async Task ReceiveActivity(IBotContext context, MiddlewareSet.NextDelegate next)
+        public async Task OnProcessRequest(IBotContext context, MiddlewareSet.NextDelegate next)
         {
             if (context.Request.Type == ActivityTypes.Message)
             {
@@ -33,9 +33,9 @@ namespace Microsoft.Bot.Builder.Ai
                     if (results.Any())
                     {
                         if (!string.IsNullOrEmpty(_options.DefaultAnswerPrefixMessage))
-                            context.Reply(_options.DefaultAnswerPrefixMessage);
+                            context.Batch().Reply(_options.DefaultAnswerPrefixMessage);
 
-                        context.Reply(results.First().Answer);
+                        context.Batch().Reply(results.First().Answer);
 
                         if (_options.EndActivityRoutingOnAnswer)
                             //Question is answered, don't keep routing
