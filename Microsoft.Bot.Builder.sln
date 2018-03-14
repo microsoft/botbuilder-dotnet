@@ -66,6 +66,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Templ
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Builder.TemplateManager.Tests", "tests\Microsoft.Bot.Builder.TemplateManager\Microsoft.Bot.Builder.TemplateManager.Tests.csproj", "{C93F6192-0123-4121-AD92-374A71E4B0F3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Samples.LUIS", "samples\Microsoft.Bot.Samples.LUIS\Microsoft.Bot.Samples.LUIS.csproj", "{4FF52EC9-CE69-4B6D-B24F-0F42D429E708}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -184,6 +186,10 @@ Global
 		{C93F6192-0123-4121-AD92-374A71E4B0F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C93F6192-0123-4121-AD92-374A71E4B0F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C93F6192-0123-4121-AD92-374A71E4B0F3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4FF52EC9-CE69-4B6D-B24F-0F42D429E708}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4FF52EC9-CE69-4B6D-B24F-0F42D429E708}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4FF52EC9-CE69-4B6D-B24F-0F42D429E708}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4FF52EC9-CE69-4B6D-B24F-0F42D429E708}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -218,6 +224,7 @@ Global
 		{6034B365-C87B-4A90-A8C7-F24374BFE2E7} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 		{EED5F0D3-6F00-4ED1-9108-5ADCB10A3734} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
 		{C93F6192-0123-4121-AD92-374A71E4B0F3} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
+		{4FF52EC9-CE69-4B6D-B24F-0F42D429E708} = {3ADFB27A-95FA-4330-B211-1D66A29A17AB}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7173C9F3-A7F9-496E-9078-9156E35D6E16}
