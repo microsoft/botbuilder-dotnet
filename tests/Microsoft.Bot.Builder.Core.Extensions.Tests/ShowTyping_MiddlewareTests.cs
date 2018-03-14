@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
             await new TestFlow(adapter, async (context) =>
                 {
                     Thread.Sleep(2500);
-                    await context.SendActivity(context.Request.CreateReply("Message sent after delay"));
+                    await context.SendActivity("Message sent after delay");
                     await Task.CompletedTask;
                 })
                 .Send("foo")
@@ -41,7 +41,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
             await new TestFlow(adapter, async (context) =>
                 {
                     Thread.Sleep(2500);
-                    await context.SendActivity(context.Request.CreateReply("Message sent after delay"));
+                    await context.SendActivity("Message sent after delay");
                     await Task.CompletedTask;
                 })
                 .Send("foo")
@@ -61,7 +61,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
             await new TestFlow(adapter, async (context) =>
                 {
                     Thread.Sleep(1000);
-                    await context.SendActivity(context.Request.CreateReply("Message sent after delay"));
+                    await context.SendActivity("Message sent after delay");
                     await Task.CompletedTask;
                 })
                 .Send("foo")
@@ -79,7 +79,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
 
             await new TestFlow(adapter, async (context) =>
                 {
-                    await context.SendActivity(context.Request.CreateReply("Message sent after delay"));
+                    await context.SendActivity("Message sent after delay");
                     await Task.CompletedTask;
                 })
                 .Send("foo")
