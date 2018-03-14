@@ -43,10 +43,6 @@ namespace Microsoft.Bot.Builder.Core.Extensions
 
                 await next().ConfigureAwait(false);
             }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
             finally
             {
                 // Once the bot has processed the request, the middleware should dispose of the timer
