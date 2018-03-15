@@ -55,7 +55,11 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
 
         public static string GetKey(string key)
         {
-            environmentKeys.Value.TryGetValue(key, out string value);
+            if (!environmentKeys.Value.TryGetValue(key, out string value))
+            {
+                // fallback to environment variables
+                value = Environment.GetEnvironmentVariable(key);
+            }
             return value;
         }   
     }
