@@ -1,10 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Builder.Core.Extensions;
 using System;
-using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Adapters;
 
 namespace Microsoft.Bot.Samples.Echo
 {
@@ -14,13 +12,10 @@ namespace Microsoft.Bot.Samples.Echo
         {
             Console.WriteLine("Welcome to the EchoBot.");
 
-            var adapter = new ConsoleAdapter()
-                .Use(new ConversationState<EchoState>(new MemoryStorage()));
-            
+            var adapter = new ConsoleAdapter();                            
             adapter.ProcessActivity(async (context) =>
             {
-                var echoBot = new EchoBot(new MyService());
-
+                var echoBot = new EchoBot();
                 await echoBot.OnReceiveActivity(context);
             }).Wait();
         }

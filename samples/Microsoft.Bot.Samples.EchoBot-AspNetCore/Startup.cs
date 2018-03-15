@@ -8,7 +8,6 @@ using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Bot.Builder.Core.Extensions;
 
 namespace Microsoft.Bot.Samples.Echo.AspNetCore
 {
@@ -32,12 +31,9 @@ namespace Microsoft.Bot.Samples.Echo.AspNetCore
         {
             services.AddBot<EchoBot>(options =>
             {
-                options.CredentialProvider = new ConfigurationCredentialProvider(Configuration);
-                options.Middleware.Add(new ConversationState<EchoState>(new MemoryStorage()));
+                options.CredentialProvider = new ConfigurationCredentialProvider(Configuration);                
                 options.EnableProactiveMessages = true;
-            });
-
-            services.AddTransient<IMyService, MyService>();
+            });            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
