@@ -4,6 +4,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using AlarmBot.Models;
 using Microsoft.Bot.Schema;
 
@@ -14,25 +15,25 @@ namespace AlarmBot.Responses
     /// </summary>
     public static class DeleteAlarmResponses
     {
-        public static void ReplyWithNoAlarms(AlarmBotContext context)
+        public static async Task ReplyWithNoAlarms(AlarmBotContext context)
         {
-            context.SendActivity($"There are no alarms defined.");
+            await context.SendActivity($"There are no alarms defined.");
         }
 
-        public static void ReplyWithNoAlarmsFound(AlarmBotContext context, string text)
+        public static async Task ReplyWithNoAlarmsFound(AlarmBotContext context, string text)
         {
-            context.SendActivity($"There were no alarms found for {(string)text}.");
+            await context.SendActivity($"There were no alarms found for {(string)text}.");
         }
 
-        public static void ReplyWithTitlePrompt(AlarmBotContext context)
+        public static async Task ReplyWithTitlePrompt(AlarmBotContext context)
         {
             var deleteActivity = GetDeleteActivity(context, context.UserState.Alarms, "Delete Alarms", "What alarm do you want to delete?");
-            context.SendActivity(deleteActivity); 
+            await context.SendActivity(deleteActivity); 
         }
 
-        public static void ReplyWithDeletedAlarm(AlarmBotContext context, Alarm alarm = null)
+        public static async Task ReplyWithDeletedAlarm(AlarmBotContext context, Alarm alarm = null)
         {
-            context.SendActivity($"I have deleted {alarm.Title} alarm");
+            await context.SendActivity($"I have deleted {alarm.Title} alarm");
         }
 
         public static IMessageActivity GetDeleteActivity(AlarmBotContext context, IEnumerable<Alarm> alarms, string title, string message)

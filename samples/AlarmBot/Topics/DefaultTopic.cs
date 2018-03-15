@@ -27,7 +27,7 @@ namespace AlarmBot.Topics
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public Task<bool> StartTopic(AlarmBotContext context)
+        public async Task<bool> StartTopic(AlarmBotContext context)
         {
             switch (context.Request.Type)
             {
@@ -37,8 +37,8 @@ namespace AlarmBot.Topics
                         var activity = context.Request.AsConversationUpdateActivity();
                         if (activity.MembersAdded.Where(m => m.Id == activity.Recipient.Id).Any())
                         {
-                            DefaultResponses.ReplyWithGreeting(context);
-                            DefaultResponses.ReplyWithHelp(context);
+                            await DefaultResponses.ReplyWithGreeting(context);
+                            await DefaultResponses.ReplyWithHelp(context);
                             this.Greeted = true;
                         }
                     }
@@ -48,12 +48,13 @@ namespace AlarmBot.Topics
                     // greet on first message if we haven't already 
                     if (!Greeted)
                     {
-                        DefaultResponses.ReplyWithGreeting(context);
+                        await DefaultResponses.ReplyWithGreeting(context);
                         this.Greeted = true;
                     }
-                    return this.ContinueTopic(context);
+                    return await this.ContinueTopic(context);
             }
-            return Task.FromResult(true);
+
+            return true;
         }
 
         /// <summary>
@@ -61,7 +62,7 @@ namespace AlarmBot.Topics
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public Task<bool> ContinueTopic(AlarmBotContext context)
+        public async Task<bool> ContinueTopic(AlarmBotContext context)
         {
             switch (context.Request.Type)
             {
@@ -71,33 +72,30 @@ namespace AlarmBot.Topics
                         case "addAlarm":
                             // switch to addAlarm topic
                             context.ConversationState.ActiveTopic = new AddAlarmTopic();
-                            return context.ConversationState.ActiveTopic.StartTopic(context);
-
+                            return await context.ConversationState.ActiveTopic.StartTopic(context);                            
                         case "showAlarms":
                             // switch to show alarms topic
                             context.ConversationState.ActiveTopic = new ShowAlarmsTopic();
-                            return context.ConversationState.ActiveTopic.StartTopic(context);
-
+                            return await context.ConversationState.ActiveTopic.StartTopic(context);                            
                         case "deleteAlarm":
                             // switch to delete alarm topic
                             context.ConversationState.ActiveTopic = new DeleteAlarmTopic();
-                            return context.ConversationState.ActiveTopic.StartTopic(context);
-
+                            return await context.ConversationState.ActiveTopic.StartTopic(context);                            
                         case "help":
                             // show help
-                            DefaultResponses.ReplyWithHelp(context);
-                            return Task.FromResult(true);
+                            await DefaultResponses.ReplyWithHelp(context);
+                            return true;
 
                         default:
                             // show our confusion
-                            DefaultResponses.ReplyWithConfused(context);
-                            return Task.FromResult(true);
-                    }
-
+                            await DefaultResponses.ReplyWithConfused(context);
+                            return true;
+                    }                    
                 default:
                     break;
             }
-            return Task.FromResult(true);
+
+            return true;
         }
 
         /// <summary>
@@ -105,11 +103,11 @@ namespace AlarmBot.Topics
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public Task<bool> ResumeTopic(AlarmBotContext context)
+        public async Task<bool> ResumeTopic(AlarmBotContext context)
         {
             // just prompt the user to ask what they want to do
-            DefaultResponses.ReplyWithResumeTopic(context);
-            return Task.FromResult(true);
+            await DefaultResponses.ReplyWithResumeTopic(context);
+            return true;
         }
 
     }
