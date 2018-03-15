@@ -38,8 +38,7 @@ namespace Microsoft.Bot.Samples.Echo.AspNetWebApi
         /// registered.
         /// </remarks>
         public static void RegisterTypes(IUnityContainer container)
-        {
-            container.RegisterType<IMyService, MyService>();
+        {            
             container.RegisterType<IBot, EchoBot>();
         }
     }

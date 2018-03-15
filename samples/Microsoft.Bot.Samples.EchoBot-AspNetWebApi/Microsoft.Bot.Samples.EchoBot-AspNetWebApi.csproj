@@ -150,6 +150,7 @@
     <Compile Include="App_Start\BotConfig.cs" />
     <Compile Include="App_Start\UnityConfig.cs" />
     <Compile Include="App_Start\UnityWebApiActivator.cs" />
+    <Compile Include="EchoBot.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -172,10 +173,6 @@
       <Project>{bd0b82ef-1601-4e87-b78a-b43de7eb36b0}</Project>
       <Name>Microsoft.Bot.Builder.Integration.AspNet.WebApi</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Core.Extensions\Microsoft.Bot.Builder.Core.Extensions.csproj">
-      <Project>{183b3324-4cff-477a-8eae-73953d3e383d}</Project>
-      <Name>Microsoft.Bot.Builder.Core.Extensions</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Core\Microsoft.Bot.Builder.Core.csproj">
       <Project>{F0C150E2-9B8A-444C-B70E-97AD918CB3D4}</Project>
       <Name>Microsoft.Bot.Builder.Core</Name>
@@ -191,10 +188,6 @@
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Schema\Microsoft.Bot.Schema.csproj">
       <Project>{C1F54CDC-AD1D-45BB-8F7D-F49E411AFAF1}</Project>
       <Name>Microsoft.Bot.Schema</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Microsoft.Bot.Samples.EchoBot\Microsoft.Bot.Samples.EchoBot.csproj">
-      <Project>{3aa823e5-ba54-48e8-9fa6-d8f27c8d347e}</Project>
-      <Name>Microsoft.Bot.Samples.EchoBot</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />
