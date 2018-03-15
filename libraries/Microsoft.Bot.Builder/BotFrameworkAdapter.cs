@@ -76,6 +76,11 @@ namespace Microsoft.Bot.Builder.Adapters
 
         public override async Task SendActivity(IBotContext context, params Activity[] activities)
         {
+            AssertBotFrameworkContext (context);
+
+            BotFrameworkBotContext bfContext = context as BotFrameworkBotContext;
+            MicrosoftAppCredentials appCredentials = await GetAppCredentials(bfContext.BotAppId);
+
             foreach (var activity in activities)
             {
                 if (activity.Type == ActivityTypesEx.Delay)
@@ -86,12 +91,7 @@ namespace Microsoft.Bot.Builder.Adapters
                     await Task.Delay(delayMs).ConfigureAwait(false);
                 }
                 else
-                {
-                    BotFrameworkBotContext bfContext = context as BotFrameworkBotContext;
-                    if (bfContext == null)
-                        throw new InvalidOperationException($"BotFramework Context is required. Incorrect context type: {context.GetType().Name}");
-
-                    MicrosoftAppCredentials appCredentials = await GetAppCredentials(bfContext.BotAppId);
+                {                                        
                     var connectorClient = new ConnectorClient(new Uri(activity.ServiceUrl), appCredentials);
                     await connectorClient.Conversations.SendToConversationAsync(activity).ConfigureAwait(false);
                 }
@@ -100,10 +100,9 @@ namespace Microsoft.Bot.Builder.Adapters
 
         public override async Task<ResourceResponse> UpdateActivity(IBotContext context, Activity activity)
         {
-            BotFrameworkBotContext bfContext = context as BotFrameworkBotContext;
-            if (bfContext == null)
-                throw new InvalidOperationException($"BotFramework Context is required. Incorrect context type: {context.GetType().Name}");
+            AssertBotFrameworkContext(context);
 
+            BotFrameworkBotContext bfContext = context as BotFrameworkBotContext;
             MicrosoftAppCredentials appCredentials = await GetAppCredentials(bfContext.BotAppId);
             var connectorClient = new ConnectorClient(new Uri(activity.ServiceUrl), appCredentials);
             return await connectorClient.Conversations.UpdateActivityAsync(activity);
@@ -111,10 +110,9 @@ namespace Microsoft.Bot.Builder.Adapters
 
         public override async Task DeleteActivity(IBotContext context, ConversationReference reference)
         {
-            BotFrameworkBotContext bfContext = context as BotFrameworkBotContext;
-            if (bfContext == null)
-                throw new InvalidOperationException($"BotFramework Context is required. Incorrect context type: {context.GetType().Name}");
+            AssertBotFrameworkContext(context);
 
+            BotFrameworkBotContext bfContext = context as BotFrameworkBotContext;
             MicrosoftAppCredentials appCredentials = await GetAppCredentials(bfContext.BotAppId);
             var connectorClient = new ConnectorClient(new Uri(context.Request.ServiceUrl), appCredentials);
             await connectorClient.Conversations.DeleteActivityAsync(reference.Conversation.Id, reference.ActivityId);
@@ -192,6 +190,15 @@ namespace Microsoft.Bot.Builder.Adapters
             {
                 return null;
             }
+        }
+
+        public static void AssertBotFrameworkContext(IBotContext context)
+        {
+            BotAssert.ContextNotNull(context); 
+
+            BotFrameworkBotContext bfContext = context as BotFrameworkBotContext;
+            if (bfContext == null)
+                throw new InvalidOperationException($"BotFramework Context is required. Incorrect context type: {context.GetType().Name}");
         }
     }
 }
