@@ -59,6 +59,8 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
             {
                 // fallback to environment variables
                 value = Environment.GetEnvironmentVariable(key);
+                if (String.IsNullOrWhiteSpace(value))
+                    value = null;
             }
             return value;
         }   
