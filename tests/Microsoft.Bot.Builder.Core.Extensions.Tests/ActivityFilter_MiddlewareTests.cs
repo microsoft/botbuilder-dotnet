@@ -39,7 +39,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
             TestAdapter adapter = new TestAdapter()
                 .Use(new ActivityFilterMiddleware(ActivityTypes.ConversationUpdate, async (context, next) =>
                 {
-                    await context.SendActivity("Handling conversation update");
+                    Assert.Fail("Incorrect activity filter ran");
                 }))
                 .Use(new ActivityFilterMiddleware(ActivityTypes.Message, async (context, next) =>
                 {
