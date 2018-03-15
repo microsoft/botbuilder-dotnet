@@ -139,7 +139,7 @@ namespace Microsoft.Bot.Builder.Classic.FormFlow
         private readonly IForm<T> _form;
         private readonly IField<T> _commands;
 
-        internal T State => _state;
+        public T State => _state;
 
         private static IForm<T> BuildDefaultForm()
         {

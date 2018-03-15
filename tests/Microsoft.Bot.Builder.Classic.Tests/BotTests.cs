@@ -33,7 +33,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
+using Diag = System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -388,7 +388,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
         {
             async Task IActivityLogger.LogAsync(IActivity activity)
             {
-                Trace.TraceInformation($"{activity.Type}: {activity.From.Id} -> {activity.Recipient.Id}");
+                Diag.Trace.TraceInformation($"{activity.Type}: {activity.From.Id} -> {activity.Recipient.Id}");
             }
         }
 
@@ -501,7 +501,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                 // echo text back to the user
 
                 Actions
-                .Bind(async (IBotToUser toUser, Capture text, CancellationToken token) =>
+                .Bind(async (IBotToUser toUser, System.Text.RegularExpressions.Capture text, CancellationToken token) =>
                 {
                     await toUser.PostAsync($"echo: {text.Value}");
                 })
@@ -576,7 +576,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                 // start a modal list building dialog
 
                 Actions
-                .Bind(async (IBotToUser toUser, IDialogSystem system, Capture forward, IMessageActivity activity, IDataService<string> service, CancellationToken token) =>
+                .Bind(async (IBotToUser toUser, IDialogSystem system, System.Text.RegularExpressions.Capture forward, IMessageActivity activity, IDataService<string> service, CancellationToken token) =>
                 {
                     var task = system.DialogTasks[0];
                     if (task.Frames.Any(f => f.Target is ListBuilderDialog<string>))

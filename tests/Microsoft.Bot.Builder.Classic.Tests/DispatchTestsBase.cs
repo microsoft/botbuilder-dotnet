@@ -120,13 +120,13 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                 Regex regex,
                 Match match,
                 CaptureCollection captures,
-                [Entity("captureAll")] Capture capture,
+                [Entity("captureAll")] System.Text.RegularExpressions.Capture capture,
                 [Entity("captureAll")] string text);
 
             [RegexPattern("RegexOne (?<captureOne>.*)")]
             [ScorableGroup(0)]
             Task RegexOne(
-                [Entity("captureOne")] Capture capture);
+                [Entity("captureOne")] System.Text.RegularExpressions.Capture capture);
 
             [RegexPattern("RegexTwo (?<captureTwo>.*)")]
             [ScorableGroup(0)]
@@ -285,7 +285,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                         It.IsAny<Regex>(),
                         It.Is<Match>(i => i.Success),
                         It.Is<CaptureCollection>(c => c.Count > 0),
-                        It.Is<Capture>(c => c.Value == "captureThis"),
+                        It.Is<System.Text.RegularExpressions.Capture>(c => c.Value == "captureThis"),
                         It.Is<string>(s => s == "captureThis")
                     ))
                 .Returns(Task.CompletedTask);
@@ -309,7 +309,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
             methods
                 .Setup(m => m.RegexOne
                     (
-                        It.Is<Capture>(c => c.Value == "captureOneValue")))
+                        It.Is<System.Text.RegularExpressions.Capture>(c => c.Value == "captureOneValue")))
                 .Returns(Task.CompletedTask);
 
             // act
