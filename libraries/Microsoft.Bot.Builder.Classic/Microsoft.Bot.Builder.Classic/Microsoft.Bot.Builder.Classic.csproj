@@ -67,8 +67,4 @@
 		<ProjectReference Include="..\..\Microsoft.Bot.Schema\Microsoft.Bot.Schema.csproj" />
 	</ItemGroup>
 
-	<ItemGroup>
-	  <Folder Include="Autofac\" />
-	</ItemGroup>
-
 </Project>
