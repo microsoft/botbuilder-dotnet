@@ -175,7 +175,7 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs
             });
         }
 
-        internal static async Task SendAsync(ILifetimeScope scope, Microsoft.Bot.Builder.IBotContext v4Context, CancellationToken token = default(CancellationToken))
+        public static async Task SendAsync(ILifetimeScope scope, Microsoft.Bot.Builder.IBotContext v4Context, CancellationToken token = default(CancellationToken))
         {
             var task = scope.Resolve<IPostToBot>();
             await task.PostAsync(v4Context.Request.AsMessageActivity(), token);
