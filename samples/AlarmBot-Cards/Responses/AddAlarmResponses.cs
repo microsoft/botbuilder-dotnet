@@ -2,10 +2,10 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Threading.Tasks;
 using AdaptiveCards;
 using AlarmBot.Models;
 using Microsoft.Bot.Builder;
-using Microsoft.Bot.Builder.Core.Extensions;
 using Microsoft.Bot.Schema;
 
 namespace AlarmBot.Responses
@@ -26,7 +26,7 @@ namespace AlarmBot.Responses
         /// <returns>activity ready to submit</returns>
         public static IMessageActivity AlarmCardEditor(IBotContext context, Alarm alarm, string title, string message, string submitLabel, string cancelLabel)
         {
-            IMessageActivity activity = ((Activity)context.Request).CreateReply();
+            IMessageActivity activity = context.Request.CreateReply();
             if (alarm.Time == null)
                 alarm.Time = DateTimeOffset.Now + TimeSpan.FromHours(1);
 
@@ -47,33 +47,33 @@ namespace AlarmBot.Responses
         }
 
 
-        public static void ReplyWithStartTopic(IBotContext context, dynamic data)
+        public static async Task ReplyWithStartTopic(IBotContext context, dynamic data)
         {
-            context.Batch().Reply(AlarmCardEditor(context, data, "Adding Alarm", "Please describe your alarm:", "Submit", "Cancel"));
+            await context.SendActivity(AlarmCardEditor(context, data, "Adding Alarm", "Please describe your alarm:", "Submit", "Cancel"));
         }
-        public static void ReplyWithHelp(IBotContext context, dynamic data)
+        public static async Task ReplyWithHelp(IBotContext context, dynamic data)
         {
-            context.Batch().Reply(AlarmCardEditor(context, data, "Adding alarm", $"I am working with you to create an alarm.  Please describe your alarm:.\n\n", "Submit", "Cancel"));
+            await context.SendActivity(AlarmCardEditor(context, data, "Adding alarm", $"I am working with you to create an alarm.  Please describe your alarm:.\n\n", "Submit", "Cancel"));
         }
-        public static void ReplyWithConfused(IBotContext context, dynamic data)
+        public static async Task ReplyWithConfused(IBotContext context, dynamic data)
         {
-            context.Batch().Reply($"I am sorry, I didn't understand: {((Activity)context.Request).Text}.");
+            await context.SendActivity($"I am sorry, I didn't understand: {context.Request.Text}.");
         }
-        public static void ReplyWithCancelPrompt(IBotContext context, dynamic data)
+        public static async Task ReplyWithCancelPrompt(IBotContext context, dynamic data)
         {
-            context.Batch().Reply(TopicResponseHelpers.CreateMessageBoxCard(context, CANCELPROMPT, "Cancel Alarm?", "Are you sure you want to cancel this alarm?", "Yes", "No"));
+            await context.SendActivity(TopicResponseHelpers.CreateMessageBoxCard(context, CANCELPROMPT, "Cancel Alarm?", "Are you sure you want to cancel this alarm?", "Yes", "No"));
         }
-        public static void ReplyWithCancelReprompt(IBotContext context, dynamic data)
+        public static async Task ReplyWithCancelReprompt(IBotContext context, dynamic data)
         {
-            context.Batch().Reply(TopicResponseHelpers.CreateMessageBoxCard(context, CANCELPROMPT, "Cancel Alarm?", "Please answer with a Yes or No. Are you sure you want to cancel this alarm?", "Yes", "No"));
+            await context.SendActivity(TopicResponseHelpers.CreateMessageBoxCard(context, CANCELPROMPT, "Cancel Alarm?", "Please answer with a Yes or No. Are you sure you want to cancel this alarm?", "Yes", "No"));
         }
-        public static void ReplyWithTopicCanceled(IBotContext context, dynamic data)
+        public static async Task ReplyWithTopicCanceled(IBotContext context, dynamic data)
         {
-            context.Batch().Reply($"OK, I have canceled creating this alarm.");
+            await context.SendActivity($"OK, I have canceled creating this alarm.");
         }
-        public static void ReplyWithAddedAlarm(IBotContext context, dynamic data)
+        public static async Task ReplyWithAddedAlarm(IBotContext context, dynamic data)
         {
-            context.Batch().Reply($"OK, I have added the alarm {((Alarm)data).Title}.");
+            await context.SendActivity($"OK, I have added the alarm {((Alarm)data).Title}.");
         }
     }
 }
