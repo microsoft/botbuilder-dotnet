@@ -36,6 +36,21 @@ namespace Microsoft.Bot.Builder.Adapters
             }
         }
 
+        public Task ContinueConversation(string botAppId, ConversationReference reference, Func<IBotContext, Task> callback)
+        {
+            if (string.IsNullOrWhiteSpace(botAppId))
+                throw new ArgumentNullException(nameof(botAppId));
+
+            if (reference == null)
+                throw new ArgumentNullException(nameof(reference));
+
+            if (callback == null)
+                throw new ArgumentNullException(nameof(callback)); 
+
+            var context = new BotFrameworkBotContext(botAppId, this, reference.GetPostToBotMessage());
+            return RunPipeline(context, callback);
+        }
+
         public BotFrameworkAdapter(string appId, string appPassword, HttpClient httpClient = null, IMiddleware middleware = null) 
             : this(new SimpleCredentialProvider(appId, appPassword), httpClient, middleware)
         {
@@ -67,28 +82,40 @@ namespace Microsoft.Bot.Builder.Adapters
                 {
                     // The Activity Schema doesn't have a delay type build in, so it's simulated
                     // here in the Bot. This matches the behavior in the Node connector. 
-                    int delayMs = (int)((Activity)activity).Value;
+                    int delayMs = (int)activity.Value;
                     await Task.Delay(delayMs).ConfigureAwait(false);
                 }
                 else
                 {
-                    MicrosoftAppCredentials appCredentials = await GetAppCredentials((context as BotFrameworkBotContext).BotAppId);
+                    BotFrameworkBotContext bfContext = context as BotFrameworkBotContext;
+                    if (bfContext == null)
+                        throw new InvalidOperationException($"BotFramework Context is required. Incorrect context type: {context.GetType().Name}");
+
+                    MicrosoftAppCredentials appCredentials = await GetAppCredentials(bfContext.BotAppId);
                     var connectorClient = new ConnectorClient(new Uri(activity.ServiceUrl), appCredentials);
-                    await connectorClient.Conversations.SendToConversationAsync((Activity)activity).ConfigureAwait(false);
+                    await connectorClient.Conversations.SendToConversationAsync(activity).ConfigureAwait(false);
                 }
             }
         }
 
         public override async Task<ResourceResponse> UpdateActivity(IBotContext context, Activity activity)
         {
-            MicrosoftAppCredentials appCredentials = await GetAppCredentials((context as BotFrameworkBotContext).BotAppId);
+            BotFrameworkBotContext bfContext = context as BotFrameworkBotContext;
+            if (bfContext == null)
+                throw new InvalidOperationException($"BotFramework Context is required. Incorrect context type: {context.GetType().Name}");
+
+            MicrosoftAppCredentials appCredentials = await GetAppCredentials(bfContext.BotAppId);
             var connectorClient = new ConnectorClient(new Uri(activity.ServiceUrl), appCredentials);
-            return await connectorClient.Conversations.UpdateActivityAsync((Activity)activity);
+            return await connectorClient.Conversations.UpdateActivityAsync(activity);
         }
 
         public override async Task DeleteActivity(IBotContext context, ConversationReference reference)
         {
-            MicrosoftAppCredentials appCredentials = await GetAppCredentials((context as BotFrameworkBotContext).BotAppId);
+            BotFrameworkBotContext bfContext = context as BotFrameworkBotContext;
+            if (bfContext == null)
+                throw new InvalidOperationException($"BotFramework Context is required. Incorrect context type: {context.GetType().Name}");
+
+            MicrosoftAppCredentials appCredentials = await GetAppCredentials(bfContext.BotAppId);
             var connectorClient = new ConnectorClient(new Uri(context.Request.ServiceUrl), appCredentials);
             await connectorClient.Conversations.DeleteActivityAsync(reference.Conversation.Id, reference.ActivityId);
         }
