@@ -1,11 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
+using System.Text;
 using AlarmBot.Models;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Core.Extensions;
-using System;
-using System.Text;
 
 namespace AlarmBot.Responses
 {
