@@ -51,13 +51,13 @@ namespace Microsoft.Bot.Builder.Core.Extensions
             }
         }
 
-        private void SendTypingTimerCallback(object state)
+        private async void SendTypingTimerCallback(object state)
         {
             var context = (IBotContext) state;
-            SendTypingActivity(context);
+            await SendTypingActivity(context);
         }
 
-        private void SendTypingActivity(IBotContext context)
+        private async Task SendTypingActivity(IBotContext context)
         {
             // create a TypingActivity, associate it with the conversation 
             // and send immediately
@@ -66,7 +66,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions
                 Type = ActivityTypes.Typing,
                 RelatesTo = context.Request.RelatesTo
             };
-            context.SendActivity(typingActivity);
+            await context.SendActivity(typingActivity);
         }
     }
 }
