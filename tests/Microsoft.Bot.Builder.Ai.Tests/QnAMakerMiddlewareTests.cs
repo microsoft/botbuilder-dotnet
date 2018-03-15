@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Builder.Ai.Tests
         public string knowlegeBaseId = TestUtilities.GetKey("QNAKNOWLEDGEBASEID");
         public string subscriptionKey = TestUtilities.GetKey("QNASUBSCRIPTIONKEY");
 
-        //[TestMethod]
+        [TestMethod]
         [TestCategory("AI")]
         [TestCategory("QnAMaker")]
         public async Task QnaMaker_TestMiddleware()
