@@ -4,6 +4,9 @@
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
+#if NETSTANDARD2_0
+using Microsoft.Extensions.Configuration;
+#endif
 using System;
 using System.Collections.Generic;
 using System.Linq;

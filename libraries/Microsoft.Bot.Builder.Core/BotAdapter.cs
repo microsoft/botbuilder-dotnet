@@ -2,6 +2,10 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 
@@ -53,7 +57,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="context"></param>
         /// <param name="callback"></param>
         /// <returns></returns>
-        protected async Task RunPipeline(IBotContext context, Func<IBotContext, Task> callback = null)
+        protected async Task RunPipeline(IBotContext context, Func<IBotContext, Task> callback = null, CancellationTokenSource cancelToken = null)
         {
             BotAssert.ContextNotNull(context);
             

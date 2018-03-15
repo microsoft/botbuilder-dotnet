@@ -1,0 +1,269 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="CommandBack" xml:space="preserve">
+    <value>返回</value>
+  </data>
+  <data name="CommandBackHelp" xml:space="preserve">
+    <value>返回: 回到上一个问题</value>
+  </data>
+  <data name="CommandBackTerms" xml:space="preserve">
+    <value>返回;上去;回去</value>
+  </data>
+  <data name="CommandHelp" xml:space="preserve">
+    <value>提示</value>
+  </data>
+  <data name="CommandHelpHelp" xml:space="preserve">
+    <value>提示: 显示可选回答.</value>
+  </data>
+  <data name="CommandHelpTerms" xml:space="preserve">
+    <value>提示;选项;\?</value>
+  </data>
+  <data name="CommandQuit" xml:space="preserve">
+    <value>退出</value>
+  </data>
+  <data name="CommandQuitHelp" xml:space="preserve">
+    <value>退出: 退出并放弃当前表格</value>
+  </data>
+  <data name="CommandQuitTerms" xml:space="preserve">
+    <value>退出;停止;结束;再见?;再会?;拜拜;滚</value>
+  </data>
+  <data name="CommandReset" xml:space="preserve">
+    <value>从头开始</value>
+  </data>
+  <data name="CommandResetHelp" xml:space="preserve">
+    <value>从头开始: 从头开始填表.  (自动选择之前默认选项.)</value>
+  </data>
+  <data name="CommandResetTerms" xml:space="preserve">
+    <value>从头开始;清零;清除</value>
+  </data>
+  <data name="CommandStatus" xml:space="preserve">
+    <value>进度</value>
+  </data>
+  <data name="CommandStatusHelp" xml:space="preserve">
+    <value>进度: 显示当前填表进展.</value>
+  </data>
+  <data name="CommandStatusTerms" xml:space="preserve">
+    <value>进度;进展;当前位置;结果</value>
+  </data>
+  <data name="ConfirmChoiceFormat" xml:space="preserve">
+    <value>{1}</value>
+    <comment>0-number, 1-description</comment>
+  </data>
+  <data name="DefaultChoiceFormat" xml:space="preserve">
+    <value>{0}. {1}</value>
+    <comment>0-number, 1-description</comment>
+  </data>
+  <data name="DefaultChoiceLastSeparator" xml:space="preserve">
+    <value>, 或 </value>
+  </data>
+  <data name="DefaultChoiceSeparator" xml:space="preserve">
+    <value>, </value>
+  </data>
+  <data name="DefaultLastSeparator" xml:space="preserve">
+    <value>, 且</value>
+  </data>
+  <data name="DefaultSeparator" xml:space="preserve">
+    <value>, </value>
+  </data>
+  <data name="LanguageArticles" xml:space="preserve">
+    <value>一;一个;一只;这;那</value>
+  </data>
+  <data name="LanguageStopWords" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="MatchCurrentChoice" xml:space="preserve">
+    <value>照样('c');原样;一样;老样子;照旧;老规矩</value>
+  </data>
+  <data name="MatchNo" xml:space="preserve">
+    <value>不;不是;不对;不要;2</value>
+  </data>
+  <data name="MatchNoPreference" xml:space="preserve">
+    <value>随便;不足道;都可以;随意</value>
+  </data>
+  <data name="MatchYes" xml:space="preserve">
+    <value>是;好;行;ok;k;对;1</value>
+  </data>
+  <data name="PromptRetry" xml:space="preserve">
+    <value>不好意思，我没听懂. 请换一种表达</value>
+  </data>
+  <data name="TemplateBool" xml:space="preserve">
+    <value>您是需要 {&amp;}? {||}</value>
+  </data>
+  <data name="TemplateBoolHelp" xml:space="preserve">
+    <value>请选择 '是' 或 '否'{?, {0}}.</value>
+    <comment>0-current choice, 1-no preference</comment>
+  </data>
+  <data name="TemplateClarify" xml:space="preserve">
+    <value> "{0}" {&amp;} 是 {||}的意思吗</value>
+    <comment>0-term being clarified</comment>
+  </data>
+  <data name="TemplateCurrentChoice" xml:space="preserve">
+    <value>(当前选择: {})</value>
+  </data>
+  <data name="TemplateDateTime" xml:space="preserve">
+    <value>请选择 {&amp;} 的日期和时间 {||}</value>
+  </data>
+  <data name="TemplateDateTimeHelp" xml:space="preserve">
+    <value>请输入正确的日期时间格式 {?, {0}}{?, {1}}.</value>
+    <comment>0-current choice, 1-no preference</comment>
+  </data>
+  <data name="TemplateDouble" xml:space="preserve">
+    <value>请选择{&amp;} {||} {?between {0:F1} 至 {1:F1}} 的数字 </value>
+    <comment>0-min, 1-max</comment>
+  </data>
+  <data name="TemplateDoubleChoiceFormat" xml:space="preserve">
+    <value>{1}</value>
+    <comment>0-number, 1-description</comment>
+  </data>
+  <data name="TemplateDoubleHelp" xml:space="preserve">
+    <value>请选择{? {2:F1} 至  {3:F1}}{?, {0}}{?, {1}}.</value>
+    <comment>0-current choice, 1-no preference, 2-min, 3-max</comment>
+  </data>
+  <data name="TemplateEnumManyNumberHelp" xml:space="preserve">
+    <value>您可以选择以下任意一项或多项 {0}-{1}的数字或名称. ({2})</value>
+    <comment>0-min, 1-max and 2-enumerated descriptions</comment>
+  </data>
+  <data name="TemplateEnumManyWordHelp" xml:space="preserve">
+    <value>您可以选择以下任意一项或多项. ({2})</value>
+    <comment>2-enumerated descriptions</comment>
+  </data>
+  <data name="TemplateEnumOneNumberHelp" xml:space="preserve">
+    <value>您可以选择以下任意一项 {0}-{1}的数字或名称. ({2})</value>
+    <comment>0-min, 1-max and 2-enumerated descriptions</comment>
+  </data>
+  <data name="TemplateEnumOneWordHelp" xml:space="preserve">
+    <value>您可以选择以下任意一项. ({2})</value>
+    <comment>2-enumerated descriptions</comment>
+  </data>
+  <data name="TemplateEnumSelectMany" xml:space="preserve">
+    <value>Please select one or more {&amp;} {||}</value>
+  </data>
+  <data name="TemplateEnumSelectOne" xml:space="preserve">
+    <value>请选择 {&amp;} {||}</value>
+  </data>
+  <data name="TemplateFeedback" xml:space="preserve">
+    <value>您可以用{}告诉我{&amp;}.  {?"{0}" 不是可选选项.}</value>
+    <comment>0-not understood term</comment>
+  </data>
+  <data name="TemplateHelp" xml:space="preserve">
+    <value>您正在选择 {&amp;} 项.  可选:
+{0}
+{1}</value>
+    <comment>0-recognizer help, 1-command help</comment>
+  </data>
+  <data name="TemplateHelpClarify" xml:space="preserve">
+    <value>请确认{&amp;}选项.  可选答案为:
+{0}
+{1}</value>
+    <comment>0-recognizer help, 1-command help</comment>
+  </data>
+  <data name="TemplateHelpConfirm" xml:space="preserve">
+    <value>请您选择， 可选答案为:
+{0}
+{1}</value>
+    <comment>0-recognizer help, 1-command help</comment>
+  </data>
+  <data name="TemplateHelpNavigation" xml:space="preserve">
+    <value>请选择栏目.  可选选项为:
+{0}
+{1}</value>
+    <comment>0-recognizer help, 1-command help</comment>
+  </data>
+  <data name="TemplateInteger" xml:space="preserve">
+    <value>请选择 {&amp;} {||} {? {0} 至 {1} 的数字}</value>
+    <comment>0-min, 1-max</comment>
+  </data>
+  <data name="TemplateIntegerChoiceFormat" xml:space="preserve">
+    <value>{1}</value>
+    <comment>0-number, 1-description</comment>
+  </data>
+  <data name="TemplateIntegerHelp" xml:space="preserve">
+    <value>您可以选择{?  {2} 至 {3}的数字}{?, {0}}{?, {1}}.</value>
+    <comment>0-current choice, 1-no preference, 2-min, 3-max</comment>
+  </data>
+  <data name="TemplateNavigation" xml:space="preserve">
+    <value>您需要更改哪一栏? {||}</value>
+  </data>
+  <data name="TemplateNavigationCommandHelp" xml:space="preserve">
+    <value>您可以输入栏目名称直接进入. ({0}).</value>
+    <comment>0-list of field names</comment>
+  </data>
+  <data name="TemplateNavigationFormat" xml:space="preserve">
+    <value>{&amp;}({})</value>
+    <comment>0-list of field names</comment>
+  </data>
+  <data name="TemplateNavigationHelp" xml:space="preserve">
+    <value>选择 {? {0}-{1} 的数字或} 选项名称.</value>
+    <comment>0-min, 1-max</comment>
+  </data>
+  <data name="TemplateNoPreference" xml:space="preserve">
+    <value>随便</value>
+  </data>
+  <data name="TemplateNotUnderstood" xml:space="preserve">
+    <value>"{0}" 不是 {&amp;}的选项.</value>
+    <comment>0-is not understood term</comment>
+  </data>
+  <data name="TemplateStatusFormat" xml:space="preserve">
+    <value>{&amp;}: {}</value>
+  </data>
+  <data name="TemplateString" xml:space="preserve">
+    <value>请输入 {&amp;} {||}</value>
+  </data>
+  <data name="TemplateStringChoiceFormat" xml:space="preserve">
+    <value>{1}</value>
+    <comment>0-number, 1-description</comment>
+  </data>
+  <data name="TemplateStringHelp" xml:space="preserve">
+    <value>您可以在"'s后面自由输入{?, {0}}{?, {1}}.</value>
+    <comment>0-current choice, 1-no preference</comment>
+  </data>
+  <data name="TemplateUnspecified" xml:space="preserve">
+    <value>随便</value>
+  </data>
+  <data name="TemplateConfirmation" xml:space="preserve">
+    <value>这是您的选择吗？
+{*}</value>
+  </data>
+  <data name="Navigation" xml:space="preserve">
+    <value>字段名称</value>
+  </data>
+  <data name="TooManyAttempts" xml:space="preserve">
+    <value>太多的尝试</value>
+  </data>
+  <data name="UserProfileDeleted" xml:space="preserve">
+    <value>用户配置文件删除 ！</value>
+  </data>
+  <data name="Confirmation" xml:space="preserve">
+    <value>确认</value>
+  </data>
+  <data name="UnhandledExceptionToUser" xml:space="preserve">
+    <value>对不起，我的 bot 代码时遇到问题。</value>
+  </data>
+  <data name="NumberExpression" xml:space="preserve">
+    <value>[+-]?(?:\d+\.?\d*|\d*\.?\d+)</value>
+  </data>
+  <data name="NumberOrdinals" xml:space="preserve">
+    <value>1 = 1，第一，第一个 | 2 = 2、 第二，第二人 | 3 = 3，第三，第三个 | 4 = 4，第四，第四个 | 5 = 5，第五，第五个 | 6 = 6，第六，第六个 | 7 = 7、 第七、 第七个 | 8 = 8，八，八人 | 9 = 9，第九、 第九一 | 10 = 10，第十，第十一个</value>
+  </data>
+  <data name="NumberReverseOrdinals" xml:space="preserve">
+    <value>-1 = 最后，最后一个 |-2 = 倒数第二到最后，从去年的第二次 |-3 = 从最后的倒数第三个，第三 |-4 = 从去年排名第四至最后，第四 |-5 = 从最后到最后，第五号</value>
+  </data>
+  <data name="BooleanChoices" xml:space="preserve">
+    <value>true = y，是的没错，当然，好的 \u1f44d，\u1f44c|false=n，不，不行，\u1f44e、 \\u270b、 \\u1f590</value>
+  </data>
+  <data name="NumberTerms" xml:space="preserve">
+    <value>0 = 零 | 1 = 一 | 2 = 两个 | 3 = 3 | 4 = 四 | 5 = 五 | 6 = 6 | 7 = 七 | 8 = 八 | 9 = 九 | 10 = 十 | 11 = 11 | 12 = 12 | 13 = 十三 | 14 = 十四岁 | 15 = 十五岁 | 16 = 十六岁 | 17 = 十七岁 | 18 = 十八岁 | 19 = 十九岁 | 20 = 二十</value>
+  </data>
+</root>

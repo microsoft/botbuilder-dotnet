@@ -1,0 +1,270 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="CommandBack" xml:space="preserve">
+    <value>Zpět</value>
+  </data>
+  <data name="CommandBackHelp" xml:space="preserve">
+    <value>Zpět: Vrátit se k předchozí otázce.</value>
+  </data>
+  <data name="CommandBackTerms" xml:space="preserve">
+    <value>backup;back;zpět;zpet</value>
+  </data>
+  <data name="CommandHelp" xml:space="preserve">
+    <value>Nápověda</value>
+  </data>
+  <data name="CommandHelpHelp" xml:space="preserve">
+    <value>Nápověda: Ukázat typy odpovědí,které můžete zadat.</value>
+  </data>
+  <data name="CommandHelpTerms" xml:space="preserve">
+    <value>help;choices;\?;nápověda;napoveda</value>
+  </data>
+  <data name="CommandQuit" xml:space="preserve">
+    <value>Konec</value>
+  </data>
+  <data name="CommandQuitHelp" xml:space="preserve">
+    <value>Konec: Ukončit vyplňování formuláře před dokončením.</value>
+  </data>
+  <data name="CommandQuitTerms" xml:space="preserve">
+    <value>quit;stop;finish;goodby?;good bye?;bye;ciao;adios;bye-bye;so long;cheers;konec</value>
+  </data>
+  <data name="CommandReset" xml:space="preserve">
+    <value>Začít znovu</value>
+  </data>
+  <data name="CommandResetHelp" xml:space="preserve">
+    <value>Reset: Začít s vyplňováním znovu od začátku. (Jako výchozí zůstanou vaše předchozí odpovědi.)</value>
+  </data>
+  <data name="CommandResetTerms" xml:space="preserve">
+    <value>start over;reset;clear;začít znovu;znovu;zacit znovu</value>
+  </data>
+  <data name="CommandStatus" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="CommandStatusHelp" xml:space="preserve">
+    <value>Status: Ukázat,jak postupujete vyplňováním formuláře.</value>
+  </data>
+  <data name="CommandStatusTerms" xml:space="preserve">
+    <value>status;progress;so far;results;stav;postup</value>
+  </data>
+  <data name="ConfirmChoiceFormat" xml:space="preserve">
+    <value>{1}</value>
+    <comment>0-number, 1-description</comment>
+  </data>
+  <data name="DefaultChoiceFormat" xml:space="preserve">
+    <value>{0}. {1}</value>
+    <comment>0-number, 1-description</comment>
+  </data>
+  <data name="DefaultChoiceLastSeparator" xml:space="preserve">
+    <value>nebo</value>
+  </data>
+  <data name="DefaultChoiceSeparator" xml:space="preserve">
+    <value>,</value>
+  </data>
+  <data name="DefaultLastSeparator" xml:space="preserve">
+    <value>a</value>
+  </data>
+  <data name="DefaultSeparator" xml:space="preserve">
+    <value>,</value>
+  </data>
+  <data name="LanguageArticles" xml:space="preserve">
+    <value>ten;ta;to</value>
+  </data>
+  <data name="LanguageStopWords" xml:space="preserve">
+    <value>a;asice;ato;aby;aj;ale;ani;aniz;aniž;asi;az;až;bez;by;ci;co;coz;což;cz;či;do;ho;i;jako;jen;jenz;jenž;jeste;ještě;ji;jí;jine;jiné;jiz;již;k;kazdy;každý;kdyz;když;ke;ktera;která;ktere;které;kteri;kterou;ktery;který;kteří;ku;mezi;na;ná;nad;nam;nám;nas;nebo;necht;nechť;nez;než;ni;nicméně;ní;o;od;ode;on;pak;po;pod;podle;pokud;pouze;prave;právě;pres;pri;pro;proc;proč;prosim;prosím;proto;protoze;protože;před;přede;přes;při;re;s;se;si;sice;ta;tak;take;také;takze;takže;tato;te;té;tedy;těma;ten;tento;teto;této;tim;tím;timto;tímto;to;tohle;toho;tohoto;tom;tomto;tomuto;toto;tu;tuto;tyto;u;uz;už;v;vam;vám;vas;vase;váš;vaše;ve;vice;více;vlastni;vlastní;vsak;však;všichni;vsichni;všechen;vsechen;z;za;zda;zde;ze;ze;že</value>
+  </data>
+  <data name="MatchCurrentChoice" xml:space="preserve">
+    <value>Současná volba ('s');současná;současná volba;aktuální;s;aktuální volba;beze změny
+</value>
+  </data>
+  <data name="MatchNo" xml:space="preserve">
+    <value>Ne;n;2</value>
+  </data>
+  <data name="MatchNoPreference" xml:space="preserve">
+    <value>Bez preference;žádná;žádné;žádný;je mi to jedno</value>
+  </data>
+  <data name="MatchYes" xml:space="preserve">
+    <value>Ano;a;jistě;zajisté;ok;jo;1</value>
+  </data>
+  <data name="PromptRetry" xml:space="preserve">
+    <value>Tomu nerozumím,zkuste to ještě jednou.</value>
+  </data>
+  <data name="TemplateBool" xml:space="preserve">
+    <value>Chcete {&amp;}? {||}</value>
+  </data>
+  <data name="TemplateBoolHelp" xml:space="preserve">
+    <value>Zadejte prosím "ano",nebo "ne"{?,{0}}.</value>
+    <comment>0-current choice, 1-no preference</comment>
+  </data>
+  <data name="TemplateClarify" xml:space="preserve">
+    <value>Když říkáte "{0}",myslíte tím {&amp;}? {||}</value>
+    <comment>0-term being clarified</comment>
+  </data>
+  <data name="TemplateCurrentChoice" xml:space="preserve">
+    <value>(aktuální volba: {})</value>
+  </data>
+  <data name="TemplateDateTime" xml:space="preserve">
+    <value>Zadejte prosím datum a čas pro položku {&amp;} {||}</value>
+  </data>
+  <data name="TemplateDateTimeHelp" xml:space="preserve">
+    <value>Zadejte prosím správně formátované datum nebo čas {?,{0}}{?,{1}}.</value>
+    <comment>0-current choice, 1-no preference</comment>
+  </data>
+  <data name="TemplateDouble" xml:space="preserve">
+    <value>Zadejte prosím číslo {?mezi {0:F1} a {1:F1}} pro položku {&amp;} {||}</value>
+    <comment>0-min, 1-max</comment>
+  </data>
+  <data name="TemplateDoubleChoiceFormat" xml:space="preserve">
+    <value>{1}</value>
+    <comment>0-number, 1-description</comment>
+  </data>
+  <data name="TemplateDoubleHelp" xml:space="preserve">
+    <value>Zadejte prosím číslo{? mezi {2:F1} a {3:F1}}{?,{0}}{?,{1}}.</value>
+    <comment>0-current choice, 1-no preference, 2-min, 3-max</comment>
+  </data>
+  <data name="TemplateEnumManyNumberHelp" xml:space="preserve">
+    <value>Můžete zadat jedno nebo více čísel {0}-{1},případně slova z nabídnutých popisků. ({2})</value>
+    <comment>0-min, 1-max and 2-enumerated descriptions</comment>
+  </data>
+  <data name="TemplateEnumManyWordHelp" xml:space="preserve">
+    <value>Můžete zadat jednu nebo více voleb z nabídnutých popisků. ({2})</value>
+    <comment>2-enumerated descriptions</comment>
+  </data>
+  <data name="TemplateEnumOneNumberHelp" xml:space="preserve">
+    <value>Můžete zadat číslo {0}-{1} nebo slova z nabídnutých popisků. ({2})</value>
+    <comment>0-min, 1-max and 2-enumerated descriptions</comment>
+  </data>
+  <data name="TemplateEnumOneWordHelp" xml:space="preserve">
+    <value>Můžete zadat jakákoliv slova z nabídnutých popisků. ({2})</value>
+    <comment>2-enumerated descriptions</comment>
+  </data>
+  <data name="TemplateEnumSelectMany" xml:space="preserve">
+    <value>Vyberte prosím jednu nebo více voleb {&amp;} {||}</value>
+  </data>
+  <data name="TemplateEnumSelectOne" xml:space="preserve">
+    <value>Vyberte prosím {&amp;} {||}</value>
+  </data>
+  <data name="TemplateFeedback" xml:space="preserve">
+    <value>{&amp;} chápu jako {}. {?"{0}" není na výběr.}</value>
+    <comment>0-not understood term</comment>
+  </data>
+  <data name="TemplateHelp" xml:space="preserve">
+    <value>Vyplňujete položku {&amp;}. Možné varianty:
+{0}
+{1}</value>
+    <comment>0-recognizer help, 1-command help</comment>
+  </data>
+  <data name="TemplateHelpClarify" xml:space="preserve">
+    <value>Upřesňujete položku {&amp;}. Možné varianty:
+{0}
+{1}</value>
+    <comment>0-recognizer help, 1-command help</comment>
+  </data>
+  <data name="TemplateHelpConfirm" xml:space="preserve">
+    <value>Odpovězte prosím na otázku. Možné varianty:
+{0}
+{1}</value>
+    <comment>0-recognizer help, 1-command help</comment>
+  </data>
+  <data name="TemplateHelpNavigation" xml:space="preserve">
+    <value>Zvolte,které pole chcete změnit. Možné varianty:
+{0}
+{1}</value>
+    <comment>0-recognizer help, 1-command help</comment>
+  </data>
+  <data name="TemplateInteger" xml:space="preserve">
+    <value>Zadejte prosím číslo {? mezi {0} a {1}} pro položku {&amp;} {||}</value>
+    <comment>0-min, 1-max</comment>
+  </data>
+  <data name="TemplateIntegerChoiceFormat" xml:space="preserve">
+    <value>{1}</value>
+    <comment>0-number, 1-description</comment>
+  </data>
+  <data name="TemplateIntegerHelp" xml:space="preserve">
+    <value>Můžete zadat číslo{? mezi {2} a {3}}{?,{0}}{?,{1}}.</value>
+    <comment>0-current choice, 1-no preference, 2-min, 3-max</comment>
+  </data>
+  <data name="TemplateNavigation" xml:space="preserve">
+    <value>Co si přejete změnit? {||}</value>
+  </data>
+  <data name="TemplateNavigationCommandHelp" xml:space="preserve">
+    <value>Na jinou položku se přepnete tím,že napíšete její název. ({0}).</value>
+    <comment>0-list of field names</comment>
+  </data>
+  <data name="TemplateNavigationFormat" xml:space="preserve">
+    <value>{&amp;}({})</value>
+    <comment>0-list of field names</comment>
+  </data>
+  <data name="TemplateNavigationHelp" xml:space="preserve">
+    <value>Zvolte {?číslo v rozsahu {0}-{1} nebo} název položky.</value>
+    <comment>0-min, 1-max</comment>
+  </data>
+  <data name="TemplateNoPreference" xml:space="preserve">
+    <value>Bez preference</value>
+  </data>
+  <data name="TemplateNotUnderstood" xml:space="preserve">
+    <value>"{0}" není platná volba pro {&amp;}.</value>
+    <comment>0-is not understood term</comment>
+  </data>
+  <data name="TemplateStatusFormat" xml:space="preserve">
+    <value>{&amp;}: {}</value>
+  </data>
+  <data name="TemplateString" xml:space="preserve">
+    <value>Zadejte prosím {&amp;} {||}</value>
+  </data>
+  <data name="TemplateStringChoiceFormat" xml:space="preserve">
+    <value>{1}</value>
+    <comment>0-number, 1-description</comment>
+  </data>
+  <data name="TemplateStringHelp" xml:space="preserve">
+    <value>Můžete zadat cokoliv (řetězec vynutíte pomocí uvozovek "){?,{0}}{?,{1}}.</value>
+    <comment>0-current choice, 1-no preference</comment>
+  </data>
+  <data name="TemplateUnspecified" xml:space="preserve">
+    <value>Neuvedeno</value>
+  </data>
+  <data name="TemplateConfirmation" xml:space="preserve">
+    <value>Je tohle vaše volba?
+{*}</value>
+  </data>
+  <data name="Navigation" xml:space="preserve">
+    <value>Název položky</value>
+  </data>
+  <data name="TooManyAttempts" xml:space="preserve">
+    <value>příliš mnoho pokusů</value>
+  </data>
+  <data name="UserProfileDeleted" xml:space="preserve">
+    <value>Profil uživatele byl smazán!</value>
+  </data>
+  <data name="Confirmation" xml:space="preserve">
+    <value>Potvrzení</value>
+  </data>
+  <data name="UnhandledExceptionToUser" xml:space="preserve">
+    <value>Omlouvám se,můj botí kód má potíže.</value>
+  </data>
+  <data name="NumberExpression" xml:space="preserve">
+    <value>[+-]?(?:\d+\.?\d*|\d*\.?\d+)</value>
+  </data>
+  <data name="NumberOrdinals" xml:space="preserve">
+    <value>1=1,první,první|2=2,druhé,druhá varianta|3=3,třetí,třetí|4=4,čtvrté,čtvrtý|5=5. Zapáté,pátá|6=6,šesté,šestý|7=7,sedmém|8=8,osmá,osmá,jeden|9=9,devátá,devátého jednoho|10=10,desátá,desátá jeden</value>
+  </data>
+  <data name="NumberReverseOrdinals" xml:space="preserve">
+    <value>-1=poslední,poslední|-2=vedle poslední,druhé do poslední,od konce|-3=třetí,poslední,třetí z posledních|-4=Čtvrtá,poslední,čtvrtý z posledních|-5=k poslední,pátý fith z poslední</value>
+  </data>
+  <data name="BooleanChoices" xml:space="preserve">
+    <value>true=y,ano,ano,jistě,ok,\u1f44d,\u1f44c|false=n,ne,no,\u1f44e,\\u270b,\\u1f590</value>
+  </data>
+  <data name="NumberTerms" xml:space="preserve">
+    <value>0=0|1=jeden|2=dva|3=tři|4=čtyři|5=pět|6=šest|7=sedm|8=osm|9=devět|10=deset|11=jedenáct|12=dvanáct| 13=třináct|14=čtrnáct|15=patnáct|16=šestnáct|17=sedmnáct|18=osmnáct|19=devatenáct|20=dvacet</value>
+  </data>
+</root>

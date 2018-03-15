@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Builder.Ai.Tests
         public string knowlegeBaseId = TestUtilities.GetKey("QNAKNOWLEDGEBASEID");
         public string subscriptionKey = TestUtilities.GetKey("QNASUBSCRIPTIONKEY");
 
-        //[TestMethod]
+        [TestMethod]
         [TestCategory("AI")]
         [TestCategory("QnAMaker")]
         public async Task QnaMaker_ReturnsAnswer()
@@ -34,7 +34,7 @@ namespace Microsoft.Bot.Builder.Ai.Tests
             Assert.IsTrue(results[0].Answer.StartsWith("BaseCamp: You can use a damp rag to clean around the Power Pack"));
         }
 
-        //[TestMethod]
+        [TestMethod]
         [TestCategory("AI")]
         [TestCategory("QnAMaker")]
         public async Task QnaMaker_TestThreshold()
@@ -53,7 +53,7 @@ namespace Microsoft.Bot.Builder.Ai.Tests
             Assert.AreEqual(results.Length, 0, "should get zero result because threshold");
         }
 
-        //[TestMethod]
+        [TestMethod]
         [TestCategory("AI")]
         [TestCategory("QnAMaker")]
         public async Task QnaMaker_TestMiddleware()
