@@ -1,12 +1,12 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using AdaptiveCards;
 using AlarmBot.Models;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Core.Extensions;
 using Microsoft.Bot.Schema;
-using System;
 
 namespace AlarmBot.Responses
 {
@@ -60,7 +60,7 @@ namespace AlarmBot.Responses
 
         public static void ReplyWithConfused(IBotContext context, dynamic data)
         {
-            context.Batch().Reply($"I am sorry, I didn't understand: {((Activity)context.Request).Text}.");
+            context.Batch().Reply($"I am sorry, I didn't understand: {context.Request.Text}.");
         }
 
         public static void ReplyWithCancelPrompt(IBotContext context, dynamic data)

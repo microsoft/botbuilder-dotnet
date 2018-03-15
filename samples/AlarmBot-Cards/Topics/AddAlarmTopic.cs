@@ -1,15 +1,15 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using AlarmBot.Models;
 using AlarmBot.Responses;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Core.Extensions;
 using Microsoft.Bot.Schema;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace AlarmBot.Topics
 {
@@ -121,7 +121,7 @@ namespace AlarmBot.Topics
 
         private async Task<bool> ProcessTopicState(IBotContext context)
         {
-            string utterance = (((Activity)context.Request).Text ?? "").Trim();
+            string utterance = (context.Request.Text ?? "").Trim();
             var userState = context.GetUserState<UserData>();
             // var userState = UserState<UserData>.Get(context);
 
@@ -130,7 +130,7 @@ namespace AlarmBot.Topics
             {
                 case TopicStates.AddingCard:
                     {
-                        dynamic payload = ((Activity)context.Request).Value;
+                        dynamic payload = context.Request.Value;
                         if (payload != null)
                         {
                             if (payload.Action == "Submit")
@@ -165,7 +165,7 @@ namespace AlarmBot.Topics
                 case TopicStates.CancelConfirmation:
                     {
 
-                        dynamic payload = ((Activity)context.Request).Value;
+                        dynamic payload = context.Request.Value;
                         switch ((string)payload.Action)
                         {
                             case "Yes":

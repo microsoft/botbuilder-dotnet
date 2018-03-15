@@ -1,10 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Microsoft.Bot.Builder;
-using Microsoft.Bot.Schema;
 using System.Linq;
 using System.Text;
+using Microsoft.Bot.Builder;
+using Microsoft.Bot.Schema;
 
 namespace AlarmBot.Responses
 {
@@ -33,7 +33,7 @@ namespace AlarmBot.Responses
             if (message != null)
                 sb.AppendLine(message);
 
-            return ((Activity)context.Request).CreateReply(sb.ToString());
+            return context.Request.CreateReply(sb.ToString());
         }
     }
 }
