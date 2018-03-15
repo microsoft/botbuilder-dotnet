@@ -10,9 +10,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.BotFramework;
-using Microsoft.Bot.Builder.Core.Extensions;
 using Microsoft.Bot.Builder.LUIS;
 using Microsoft.Bot.Schema;
+using Microsoft.Cognitive.LUIS;
 using Microsoft.Extensions.Configuration;
 
 namespace Microsoft.Bot.Samples.Ai.Luis.Controllers
@@ -26,11 +26,12 @@ namespace Microsoft.Bot.Samples.Ai.Luis.Controllers
         {
             if (adapter == null)
             {
+                var luisModel = new LuisModel("modelId", "subscriptionKey", new Uri("https://RegionOfYourLuisApp.api.cognitive.microsoft.com/luis/v2.0/apps/"));
+                var options = new LuisRequest { Verbose = true }; // If you want to get all intents scorings, add verbose in luisOptions
+                //LuisRequest options = null;
+                
                 adapter = new BotFrameworkAdapter(new ConfigurationCredentialProvider(configuration))
-                    .Use(new LuisRecognizerMiddleware(new LuisModel("modelId", "subscriptionKey", new Uri("https://xxxxxx.api.cognitive.microsoft.com/luis/v2.0/apps/"))
-                    // If you want to get all intents scorings, add verbose in luisOptions
-                    // .Use(new LuisRecognizerMiddleware(new LuisModel("modelId", "subscriptionKey", new Uri("https://xxxxxx.api.cognitive.microsoft.com/luis/v2.0/apps/")), null, luisOptions: new LuisRequest { Verbose = true }
-                    ));
+                    .Use(new LuisRecognizerMiddleware(luisModel, luisOptions: options));
             }
         }
 
@@ -43,15 +44,15 @@ namespace Microsoft.Bot.Samples.Ai.Luis.Controllers
                 if (luisResult != null)
                 {
                     (string key, double score) topItem = luisResult.GetTopScoringIntent();
-                    context.Batch().Reply($"The **top intent** was: **'{topItem.key}'**, with score **{topItem.score}**");
+                    context.SendActivity($"The **top intent** was: **'{topItem.key}'**, with score **{topItem.score}**");
 
-                    context.Batch().Reply($"Detail of intents scorings:");
+                    context.SendActivity($"Detail of intents scorings:");
                     var intentsResult = new List<string>();
                     foreach (var intent in luisResult.Intents)
                     {
                         intentsResult.Add($"* '{intent.Key}', score {intent.Value}");
                     }
-                    context.Batch().Reply(string.Join("\n\n", intentsResult));
+                    context.SendActivity(string.Join("\n\n", intentsResult));
                 }
             }
             return Task.CompletedTask;
