@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net461</TargetFramework>
+		<TargetFramework>net471</TargetFramework>
 		<IsPackable>false</IsPackable>
 	</PropertyGroup>
 
@@ -46,7 +46,7 @@
 
 	<ItemGroup>
 	  <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework">
-	    <HintPath>..\..\..\..\..\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\PublicAssemblies\Microsoft.VisualStudio.QualityTools.UnitTestFramework.dll</HintPath>
+	    <HintPath>..\Microsoft.VisualStudio.QualityTools.UnitTestFramework.dll</HintPath>
 	  </Reference>
 	</ItemGroup>
 
@@ -105,6 +105,10 @@
 	  <None Update="Scripts\SimpleForm.script">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </None>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
 	</ItemGroup>
 
 </Project>
