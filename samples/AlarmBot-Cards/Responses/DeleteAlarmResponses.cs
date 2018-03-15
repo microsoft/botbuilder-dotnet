@@ -7,21 +7,21 @@ using AdaptiveCards;
 using AlarmBot.Models;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Core.Extensions;
-using Microsoft.Bot.Builder.Templates;
 using Microsoft.Bot.Schema;
 
 namespace AlarmBot.Responses
 {
     public static class DeleteAlarmTopicResponses 
     {
-
         public static IMessageActivity AlarmsCard(IBotContext context, IEnumerable<Alarm> alarms, string title, string message)
         {
-            IMessageActivity reply = ((Activity)context.Request).CreateReply();
+            IMessageActivity reply = context.Request.CreateReply();
+
             var card = new AdaptiveCard();
             card.Body.Add(new TextBlock() { Text = title, Size = TextSize.Large, Wrap = true, Weight = TextWeight.Bolder });
             if (message != null)
                 card.Body.Add(new TextBlock() { Text = message, Wrap = true });
+
             if (alarms.Any())
             {
                 FactSet factSet = new FactSet();
@@ -45,23 +45,24 @@ namespace AlarmBot.Responses
             return reply;
         }
 
-
         public static void ReplyWithNoAlarms(IBotContext context)
         {
             context.Batch().Reply($"There are no alarms defined.");
         }
+
         public static void ReplyWithNoAlarmsFound(IBotContext context, string data)
         {
             context.Batch().Reply($"There were no alarms found for {data}.");
         }
+
         public static void ReplyWithTitlePrompt(IBotContext context, IEnumerable<Alarm> data)
         {
             context.Batch().Reply(AlarmsCard(context, data, "Delete Alarm", "What alarm do you want to delete?"));
         }
+
         public static void ReplyWithDeletedAlarm(IBotContext context, Alarm data)
         {
             context.Batch().Reply($"I have deleted {data.Title} alarm");
         }
-
     }
 }

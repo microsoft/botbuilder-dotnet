@@ -18,11 +18,6 @@ namespace AlarmBot.Topics
     /// </summary>
     public class DeleteAlarmTopic : ITopic
     {
-
-        public DeleteAlarmTopic()
-        {
-        }
-
         public string Name { get; set; } = "DeleteAlarm";
 
         /// <summary>
@@ -72,7 +67,7 @@ namespace AlarmBot.Topics
         public async Task<bool> FindAlarm(IBotContext context)
         {
             var userState = context.GetUserState<UserData>();
-            // var userState = UserState<UserAlarms>.Get(context);
+
             if (userState.Alarms == null)
             {
                 userState.Alarms = new List<Alarm>();
