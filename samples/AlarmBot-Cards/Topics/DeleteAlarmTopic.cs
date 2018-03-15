@@ -81,7 +81,7 @@ namespace AlarmBot.Topics
             // Ensure there are alarms to delete
             if (userState.Alarms.Count == 0)
             {
-                DeleteAlarmTopicResponses.ReplyWithNoAlarms(context);
+                await DeleteAlarmTopicResponses.ReplyWithNoAlarms(context);
                 return false;
             }
 
@@ -96,7 +96,7 @@ namespace AlarmBot.Topics
                         // Delete selected alarm and end topic
                         var alarm = userState.Alarms.Skip(index).First();
                         userState.Alarms.Remove(alarm);
-                        DeleteAlarmTopicResponses.ReplyWithDeletedAlarm(context, alarm);
+                        await DeleteAlarmTopicResponses.ReplyWithDeletedAlarm(context, alarm);
                         return false; // cancel topic
                     }
                 }
@@ -107,7 +107,7 @@ namespace AlarmBot.Topics
 
                     if (choices.Count == 0)
                     {
-                        DeleteAlarmTopicResponses.ReplyWithNoAlarmsFound(context, this.AlarmTitle);
+                        await DeleteAlarmTopicResponses.ReplyWithNoAlarmsFound(context, this.AlarmTitle);
                         return false;
                     }
                     else if (choices.Count == 1)
@@ -115,14 +115,14 @@ namespace AlarmBot.Topics
                         // Delete selected alarm and end topic
                         var alarm = choices.First();
                         userState.Alarms.Remove(alarm);
-                        DeleteAlarmTopicResponses.ReplyWithDeletedAlarm(context, alarm);
+                        await DeleteAlarmTopicResponses.ReplyWithDeletedAlarm(context, alarm);
                         return false; // cancel topic
                     }
                 }
             }
 
             // Prompt for title
-            DeleteAlarmTopicResponses.ReplyWithTitlePrompt(context, userState.Alarms);
+            await DeleteAlarmTopicResponses.ReplyWithTitlePrompt(context, userState.Alarms);
             return true;
         }
     }
