@@ -1,5 +1,5 @@
 @echo off
-echo *** Building Microsoft.Bot.Builder.Classic
+echo *** Building Microsoft.Bot.Builder.Classic ***
 setlocal
 setlocal enabledelayedexpansion
 setlocal enableextensions
@@ -11,5 +11,4 @@ msbuild /property:Configuration=release ..\Microsoft.Bot.Builder.Classic.Autofac
 msbuild /property:Configuration=release ..\rview\rview.csproj
 for /f %%v in ('powershell -noprofile "(Get-Command .\bin\release\Microsoft.Bot.Builder.Classic.dll).FileVersionInfo.FileVersion"') do set version=%%v
 ..\..\..\packages\NuGet.CommandLine.4.1.0\tools\NuGet.exe pack Microsoft.Bot.Builder.Classic.nuspec -symbols -properties version=%version% -OutputDirectory ..\nuget
-echo *** Finished building Microsoft.Bot.Builder.Classic
-
+echo *** Finished building Microsoft.Bot.Builder.Classic 
