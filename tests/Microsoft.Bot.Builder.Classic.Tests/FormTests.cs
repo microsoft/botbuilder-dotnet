@@ -38,21 +38,24 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Autofac;
-using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Builder.Dialogs.Internals;
-using Microsoft.Bot.Builder.FormFlow;
-using Microsoft.Bot.Builder.FormFlow.Advanced;
-using Microsoft.Bot.Builder.FormFlow.Json;
-using Microsoft.Bot.Builder.FormFlowTest;
-using Microsoft.Bot.Builder.Internals.Fibers;
-using Microsoft.Bot.Builder.Luis.Models;
+using Microsoft.Bot.Builder.Classic.Dialogs;
+using Microsoft.Bot.Builder.Classic.Dialogs.Internals;
+using Microsoft.Bot.Builder.Classic.FormFlow;
+using Microsoft.Bot.Builder.Classic.FormFlow.Advanced;
+#if FORMFLOW_JSON
+using Microsoft.Bot.Builder.Classic.FormFlow.Json;
+#endif
+using Microsoft.Bot.Builder.Classic.Internals.Fibers;
+using Microsoft.Bot.Builder.Classic.Luis.Models;
+using Microsoft.Bot.Builder.Classic.FormFlowTest;
 using Microsoft.Bot.Connector;
+using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 
-namespace Microsoft.Bot.Builder.Tests
+namespace Microsoft.Bot.Builder.Classic.Tests
 {
 #pragma warning disable CS1998
 
@@ -127,7 +130,9 @@ namespace Microsoft.Bot.Builder.Tests
             {
                 // There was an error, so record new script and pass on error
                 await RecordFormScript(newPath, locale, buildForm, options, initialState, entities, inputs);
+#if MISSING
                 TestContext.AddResultFile(newPath);
+#endif
                 throw;
             }
         }
@@ -740,6 +745,7 @@ Is this what you wanted? {||}")
                 );
         }
 
+#if FORMFLOWJSON
         [TestMethod]
         public async Task CanResolveDynamicFormFromContainer()
         {
@@ -821,7 +827,7 @@ Is this what you wanted? {||}")
                     );
             }
         }
-
+#endif
 
         private class TestFormAttribute
         {

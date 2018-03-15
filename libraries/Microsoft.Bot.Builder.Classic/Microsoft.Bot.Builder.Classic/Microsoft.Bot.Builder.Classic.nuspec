@@ -40,10 +40,6 @@
     <file src="..\Microsoft.Bot.Builder.Classic\bin\release\Microsoft.Bot.Builder.Classic.dll" target="lib\net46"/>
     <file src="..\Microsoft.Bot.Builder.Classic\bin\release\Microsoft.Bot.Builder.Classic.xml" target="lib\net46" />
     <file src="..\Microsoft.Bot.Builder.Classic\bin\release\Microsoft.Bot.Builder.Classic.pdb" target="lib\net46" />
-    <!-- assembly Microsoft.Bot.Builder.Classic.Autofac -->
-    <file src="..\Microsoft.Bot.Builder.Classic.Autofac\bin\release\Microsoft.Bot.Builder.Classic.Autofac.dll"  target="lib\net46" />
-    <file src="..\Microsoft.Bot.Builder.Classic.Autofac\bin\release\Microsoft.Bot.Builder.Classic.Autofac.xml"  target="lib\net46" />
-    <file src="..\Microsoft.Bot.Builder.Classic.Autofac\bin\release\Microsoft.Bot.Builder.Classic.Autofac.pdb"  target="lib\net46" />
     <!-- source -->
     <file src="..\**\*.cs"
           exclude="**\obj\**\*.cs;..\Microsoft.Bot.Builder.Classic.Azure\**;..\Microsoft.Bot.Builder.Classic.Calling\**;..\Microsoft.Bot.Builder.Classic.FormFlow.Json\**;..\Microsoft.Bot.Builder.Classic.History\**;..\Microsoft.Bot.Connector.AspNetCore\**;..\Microsoft.Bot.Connector.NetCore\**"
