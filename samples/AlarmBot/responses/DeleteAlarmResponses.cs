@@ -1,15 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using AlarmBot.Models;
-using AlarmBot.Topics;
-using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
-using Microsoft.Bot.Builder.Core.Extensions;
 
 namespace AlarmBot.Responses
 {
@@ -20,23 +16,23 @@ namespace AlarmBot.Responses
     {
         public static void ReplyWithNoAlarms(AlarmBotContext context)
         {
-            context.Batch().Reply($"There are no alarms defined.");
+            context.SendActivity($"There are no alarms defined.");
         }
 
         public static void ReplyWithNoAlarmsFound(AlarmBotContext context, string text)
         {
-            context.Batch().Reply($"There were no alarms found for {(string)text}.");
+            context.SendActivity($"There were no alarms found for {(string)text}.");
         }
 
         public static void ReplyWithTitlePrompt(AlarmBotContext context)
         {
             var deleteActivity = GetDeleteActivity(context, context.UserState.Alarms, "Delete Alarms", "What alarm do you want to delete?");
-            context.Batch().Reply((Activity) deleteActivity); 
+            context.SendActivity(deleteActivity); 
         }
 
         public static void ReplyWithDeletedAlarm(AlarmBotContext context, Alarm alarm = null)
         {
-            context.Batch().Reply($"I have deleted {alarm.Title} alarm");
+            context.SendActivity($"I have deleted {alarm.Title} alarm");
         }
 
         public static IMessageActivity GetDeleteActivity(AlarmBotContext context, IEnumerable<Alarm> alarms, string title, string message)

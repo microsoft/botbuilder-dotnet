@@ -1,14 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using AlarmBot.Models;
-using Microsoft.Bot.Builder;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using AlarmBot.Models;
 using Microsoft.Bot.Builder;
-using Microsoft.Bot.Builder.Core.Extensions;
 
 namespace AlarmBot.Responses
 {
@@ -32,7 +29,7 @@ namespace AlarmBot.Responses
             else
                 sb.AppendLine("*There are no alarms defined.*");
 
-            context.Batch().Reply(sb.ToString());
+            context.SendActivity(sb.ToString());
         }
     }
 }
