@@ -100,12 +100,12 @@ namespace AlarmBot.Topics
 
                     case "help":
                         // show contextual help 
-                        AddAlarmResponses.ReplyWithHelp(context, this.Alarm);
+                        await AddAlarmResponses.ReplyWithHelp(context, this.Alarm);
                         return await this.PromptForMissingData(context);
 
                     case "cancel":
                         // prompt to cancel
-                        AddAlarmResponses.ReplyWithCancelPrompt(context, this.Alarm);
+                        await AddAlarmResponses.ReplyWithCancelPrompt(context, this.Alarm);
                         this.TopicState = TopicStates.CancelConfirmation;
                         return true;
 
@@ -138,18 +138,18 @@ namespace AlarmBot.Topics
                     switch (context.RecognizedIntents.TopIntent?.Name)
                     {
                         case "confirmYes":
-                            AddAlarmResponses.ReplyWithTopicCanceled(context);
+                            await AddAlarmResponses.ReplyWithTopicCanceled(context);
                             // End current topic
                             return false;
 
                         case "confirmNo":
                             // Re-prompt user for current field.
-                            AddAlarmResponses.ReplyWithTopicCanceled(context);
+                            await AddAlarmResponses.ReplyWithTopicCanceled(context);
                             return await this.PromptForMissingData(context);
 
                         default:
                             // prompt again to confirm the cancelation
-                            AddAlarmResponses.ReplyWithCancelReprompt(context, this.Alarm);
+                            await AddAlarmResponses.ReplyWithCancelReprompt(context, this.Alarm);
                             return true;
                     }
 
@@ -162,12 +162,12 @@ namespace AlarmBot.Topics
                                 context.UserState.Alarms = new List<Alarm>();
                             }
                             context.UserState.Alarms.Add(this.Alarm);
-                            AddAlarmResponses.ReplyWithAddedAlarm(context, this.Alarm);
+                            await AddAlarmResponses.ReplyWithAddedAlarm(context, this.Alarm);
                             // end topic
                             return false;
 
                         case "confirmNo":
-                            AddAlarmResponses.ReplyWithTopicCanceled(context);
+                            await AddAlarmResponses.ReplyWithTopicCanceled(context);
                             // End current topic
                             return false;
                         default:
@@ -201,7 +201,7 @@ namespace AlarmBot.Topics
             if (String.IsNullOrWhiteSpace(this.Alarm.Title))
             {
                 this.TopicState = TopicStates.TitlePrompt;
-                AddAlarmResponses.ReplyWithTitlePrompt(context, this.Alarm);
+                await AddAlarmResponses.ReplyWithTitlePrompt(context, this.Alarm);
                 return true;
             }
             // if title exists but is not valid, then provide feedback and prompt again
@@ -209,7 +209,7 @@ namespace AlarmBot.Topics
             {
                 this.Alarm.Title = null;
                 this.TopicState = TopicStates.TitlePrompt;
-                AddAlarmResponses.ReplyWithTitleValidationPrompt(context, this.Alarm);
+                await AddAlarmResponses.ReplyWithTitleValidationPrompt(context, this.Alarm);
                 return true;
             }
 
@@ -217,12 +217,12 @@ namespace AlarmBot.Topics
             if (this.Alarm.Time == null)
             {
                 this.TopicState = TopicStates.TimePrompt;
-                AddAlarmResponses.ReplyWithTimePromptFuture(context, this.Alarm);
+                await AddAlarmResponses.ReplyWithTimePromptFuture(context, this.Alarm);
                 return true;
             }
             
             // ask for confirmation that we want to add it
-            AddAlarmResponses.ReplyWithAddConfirmation(context, this.Alarm);
+            await AddAlarmResponses.ReplyWithAddConfirmation(context, this.Alarm);
             this.TopicState = TopicStates.AddConfirmation;
             return true;
         }
