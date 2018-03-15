@@ -126,7 +126,7 @@ namespace AlarmBot.Topics
 
         private async Task<bool> ProcessTopicState(IBotContext context)
         {
-            string utterance = (((Activity)context.Request).Text ?? "").Trim();
+            string utterance = (context.Request.Text ?? "").Trim();
             var userState = context.GetUserState<UserData>();
             // var userState = UserState<UserData>.Get(context);
 
@@ -135,7 +135,7 @@ namespace AlarmBot.Topics
             {
                 case TopicStates.AddingCard:
                     {
-                        dynamic payload = ((Activity)context.Request).Value;
+                        dynamic payload = context.Request.Value;
                         if (payload != null)
                         {
                             if (payload.Action == "Submit")
@@ -170,7 +170,7 @@ namespace AlarmBot.Topics
                 case TopicStates.CancelConfirmation:
                     {
 
-                        dynamic payload = ((Activity)context.Request).Value;
+                        dynamic payload = context.Request.Value;
                         switch ((string)payload.Action)
                         {
                             case "Yes":

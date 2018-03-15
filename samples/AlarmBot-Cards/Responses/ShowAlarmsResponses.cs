@@ -16,7 +16,7 @@ namespace AlarmBot.Responses
     {
         public static IMessageActivity AlarmsCard(IBotContext context, IEnumerable<Alarm> alarms, string title, string message)
         {
-            IMessageActivity activity = ((Activity)context.Request).CreateReply(message);
+            IMessageActivity activity = context.Request.CreateReply(message);
 
             var card = new AdaptiveCard();
             card.Body.Add(new TextBlock() { Text = title, Size = TextSize.Large, Wrap = true, Weight = TextWeight.Bolder });
@@ -42,7 +42,7 @@ namespace AlarmBot.Responses
 
         public static void ReplyWithShowAlarms(IBotContext context, dynamic data)
         {
-            context.Batch().Reply(AlarmsCard(context, data, "Alarms", null));
+            context.SendActivity(AlarmsCard(context, data, "Alarms", null));
         }
     }
 }
