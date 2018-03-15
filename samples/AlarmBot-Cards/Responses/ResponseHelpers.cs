@@ -34,7 +34,7 @@ namespace AlarmBot
             if (message != null)
                 sb.AppendLine(message);
 
-            return ((Activity)context.Request).CreateReply(sb.ToString());
+            return context.Request.CreateReply(sb.ToString());
         }
 
 
@@ -50,7 +50,7 @@ namespace AlarmBot
         /// <returns></returns>
         public static IMessageActivity CreateMessageBoxCard(IBotContext context, string id, string title, string message, string yesLabel, string noLabel)
         {
-            IMessageActivity reply = ((Activity)context.Request).CreateReply(message);
+            IMessageActivity reply = context.Request.CreateReply(message);
             var card = new AdaptiveCard();
             card.Body.Add(new TextBlock() { Text = title, Size = TextSize.Large });
             card.Body.Add(new TextBlock() { Text = message });

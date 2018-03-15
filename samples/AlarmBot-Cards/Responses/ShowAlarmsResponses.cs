@@ -1,14 +1,13 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using AdaptiveCards;
 using AlarmBot.Models;
 using Microsoft.Bot.Builder;
-using Microsoft.Bot.Builder.Core.Extensions;
-using Microsoft.Bot.Builder.Templates;
 using Microsoft.Bot.Schema;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace AlarmBot.Responses
 {
@@ -16,7 +15,7 @@ namespace AlarmBot.Responses
     {
         public static IMessageActivity AlarmsCard(IBotContext context, IEnumerable<Alarm> alarms, string title, string message)
         {
-            IMessageActivity activity = ((Activity)context.Request).CreateReply(message);
+            IMessageActivity activity = context.Request.CreateReply(message);
 
             var card = new AdaptiveCard();
             card.Body.Add(new TextBlock() { Text = title, Size = TextSize.Large, Wrap = true, Weight = TextWeight.Bolder });
@@ -40,9 +39,9 @@ namespace AlarmBot.Responses
             return activity;
         }
 
-        public static void ReplyWithShowAlarms(IBotContext context, dynamic data)
+        public static async Task ReplyWithShowAlarms(IBotContext context, dynamic data)
         {
-            context.Batch().Reply(AlarmsCard(context, data, "Alarms", null));
+            await context.SendActivity(AlarmsCard(context, data, "Alarms", null));
         }
     }
 }
