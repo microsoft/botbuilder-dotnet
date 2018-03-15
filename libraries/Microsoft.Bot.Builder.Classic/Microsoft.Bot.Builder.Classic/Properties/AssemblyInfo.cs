@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 
-[assembly: InternalsVisibleTo("Microsoft.Bot.Builder.Classic.Tests")]
+//[assembly: InternalsVisibleTo("Microsoft.Bot.Builder.Classic.Tests")]
 //[assembly: InternalsVisibleTo("Microsoft.Bot.Sample.Tests")]
 [assembly: NeutralResourcesLanguage("en")]
 
