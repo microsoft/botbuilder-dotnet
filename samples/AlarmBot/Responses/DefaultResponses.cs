@@ -2,9 +2,6 @@
 // Licensed under the MIT License.
 
 using Microsoft.Bot.Builder;
-using Microsoft.Bot.Builder.Core.Extensions;
-using System;
-using System.Collections.Generic;
 
 namespace AlarmBot.Responses
 {
@@ -15,22 +12,22 @@ namespace AlarmBot.Responses
     {
         public static void ReplyWithGreeting(IBotContext context)
         {
-            context.Batch().Reply($"Hello, I'm the alarmbot.");
+            context.SendActivity($"Hello, I'm the alarmbot.");
         }
 
         public static void ReplyWithHelp(IBotContext context)
         {
-            context.Batch().Reply($"I can add an alarm, show alarms or delete an alarm. ");
+            context.SendActivity($"I can add an alarm, show alarms or delete an alarm. ");
         }
 
         public static void ReplyWithResumeTopic(IBotContext context)
         {
-            context.Batch().Reply($"What can I do for you?");
+            context.SendActivity($"What can I do for you?");
         }
 
         public static void ReplyWithConfused(IBotContext context)
         {
-            context.Batch().Reply($"I am sorry, I didn't understand that.");
+            context.SendActivity($"I am sorry, I didn't understand that.");
         }
     }
 }
