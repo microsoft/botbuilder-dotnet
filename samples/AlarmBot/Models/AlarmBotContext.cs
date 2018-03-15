@@ -1,9 +1,9 @@
-﻿using Microsoft.Bot.Builder;
-using Microsoft.Bot.Builder.Core.Extensions;
-using Microsoft.Recognizers.Text.DateTime;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Bot.Builder;
+using Microsoft.Bot.Builder.Core.Extensions;
+using Microsoft.Recognizers.Text.DateTime;
 
 namespace AlarmBot.Models
 {
