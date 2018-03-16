@@ -14,7 +14,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+	<TargetFramework>netstandard2.0</TargetFramework>
     <PackageId>Microsoft.Bot.Builder.Core</PackageId>
     <Description>This library implements core C# classes for building bots using the Microsoft Bot Builder.</Description>
     <Summary>This library implements core C# classes for building bots using the Microsoft Bot Builder.</Summary>

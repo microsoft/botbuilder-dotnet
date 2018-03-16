@@ -1,0 +1,269 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="CommandBack" xml:space="preserve">
+    <value>ارجع</value>
+  </data>
+  <data name="CommandBackHelp" xml:space="preserve">
+    <value>ارجع: ارجع إلى السؤال السابق</value>
+  </data>
+  <data name="CommandBackTerms" xml:space="preserve">
+    <value>ارجع</value>
+  </data>
+  <data name="CommandHelp" xml:space="preserve">
+    <value>مساعدة</value>
+  </data>
+  <data name="CommandHelpHelp" xml:space="preserve">
+    <value>مساعدة: اظهر الاجابات الممكنة</value>
+  </data>
+  <data name="CommandHelpTerms" xml:space="preserve">
+    <value>مساعدة; اختيارات; /؟</value>
+  </data>
+  <data name="CommandQuit" xml:space="preserve">
+    <value>اخرج</value>
+  </data>
+  <data name="CommandQuitHelp" xml:space="preserve">
+    <value>اخرج بدون اكمال الاستمارة</value>
+  </data>
+  <data name="CommandQuitTerms" xml:space="preserve">
+    <value>اخرج; أنهي; توقف; سلام; إلى اللقاء</value>
+  </data>
+  <data name="CommandReset" xml:space="preserve">
+    <value>ابدأ من جديد</value>
+  </data>
+  <data name="CommandResetHelp" xml:space="preserve">
+    <value>ابدأ من جديد:ابدا ملئ الاستمارة من جديد</value>
+  </data>
+  <data name="CommandResetTerms" xml:space="preserve">
+    <value>ابدا من جديد; ابدا من البداية; ابدا من الاول</value>
+  </data>
+  <data name="CommandStatus" xml:space="preserve">
+    <value>الحالة</value>
+  </data>
+  <data name="CommandStatusHelp" xml:space="preserve">
+    <value>الحالة:اظهر موقعك من اكمل الاستمارة</value>
+  </data>
+  <data name="CommandStatusTerms" xml:space="preserve">
+    <value>الحالة; تقدم; نتائج</value>
+  </data>
+  <data name="ConfirmChoiceFormat" xml:space="preserve">
+    <value>{1}</value>
+    <comment>0-number, 1-description</comment>
+  </data>
+  <data name="DefaultChoiceFormat" xml:space="preserve">
+    <value>{0}. {1}</value>
+    <comment>0-number, 1-description</comment>
+  </data>
+  <data name="DefaultChoiceLastSeparator" xml:space="preserve">
+    <value>, أو </value>
+  </data>
+  <data name="DefaultChoiceSeparator" xml:space="preserve">
+    <value>, </value>
+  </data>
+  <data name="DefaultLastSeparator" xml:space="preserve">
+    <value>, و </value>
+  </data>
+  <data name="DefaultSeparator" xml:space="preserve">
+    <value>, </value>
+  </data>
+  <data name="LanguageArticles" xml:space="preserve">
+    <value>ال</value>
+  </data>
+  <data name="LanguageStopWords" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="MatchCurrentChoice" xml:space="preserve">
+    <value>الاختيار الحالي</value>
+  </data>
+  <data name="MatchNo" xml:space="preserve">
+    <value>لا</value>
+  </data>
+  <data name="MatchNoPreference" xml:space="preserve">
+    <value>أي شيء; لا تفرق; لا تفضيل</value>
+  </data>
+  <data name="MatchYes" xml:space="preserve">
+    <value>نعم</value>
+  </data>
+  <data name="PromptRetry" xml:space="preserve">
+    <value>لا أفهم, قل شيء</value>
+  </data>
+  <data name="TemplateBool" xml:space="preserve">
+    <value>هل تحب {&amp;}? {||}</value>
+  </data>
+  <data name="TemplateBoolHelp" xml:space="preserve">
+    <value>رجاءا ادخل 'نعم' أو 'لا'{?, {0}}.</value>
+    <comment>0-current choice, 1-no preference</comment>
+  </data>
+  <data name="TemplateClarify" xml:space="preserve">
+    <value>بقولك "{0}" {&amp;} هل كنت تعني {||}</value>
+    <comment>0-term being clarified</comment>
+  </data>
+  <data name="TemplateCurrentChoice" xml:space="preserve">
+    <value>(الخيار الحالي: {})</value>
+  </data>
+  <data name="TemplateDateTime" xml:space="preserve">
+    <value>رجاءا ادخل يوم وموعد {&amp;} {||}</value>
+  </data>
+  <data name="TemplateDateTimeHelp" xml:space="preserve">
+    <value>رجاءا ادخل تعبير يوم ووقت {?, {0}}{?, {1}}.</value>
+    <comment>0-current choice, 1-no preference</comment>
+  </data>
+  <data name="TemplateDouble" xml:space="preserve">
+    <value>رجاءا ادخل رقم {?بين {0:F1} و {1:F1}} لاجل {&amp;} {||}</value>
+    <comment>0-min, 1-max</comment>
+  </data>
+  <data name="TemplateDoubleChoiceFormat" xml:space="preserve">
+    <value>{1}</value>
+    <comment>0-number, 1-description</comment>
+  </data>
+  <data name="TemplateDoubleHelp" xml:space="preserve">
+    <value>رجاءا ادخل رقم{? بين {2:F1} و {3:F1}}{?, {0}}{?, {1}}.</value>
+    <comment>0-current choice, 1-no preference, 2-min, 3-max</comment>
+  </data>
+  <data name="TemplateEnumManyNumberHelp" xml:space="preserve">
+    <value>يمكنك ادخل أكثر من رقم {0}-{1} أو كلمة من الوصف. ({2})</value>
+    <comment>0-min, 1-max and 2-enumerated descriptions</comment>
+  </data>
+  <data name="TemplateEnumManyWordHelp" xml:space="preserve">
+    <value>يمكنك ادخال أكثر من خيار من الوصف. ({2})</value>
+    <comment>2-enumerated descriptions</comment>
+  </data>
+  <data name="TemplateEnumOneNumberHelp" xml:space="preserve">
+    <value>يمكنك اخدال رقم {0}-{1} أو كلمات من الوصف. ({2})</value>
+    <comment>0-min, 1-max and 2-enumerated descriptions</comment>
+  </data>
+  <data name="TemplateEnumOneWordHelp" xml:space="preserve">
+    <value>يمكنك ادخال أي كلمات من الوصف. ({2})</value>
+    <comment>2-enumerated descriptions</comment>
+  </data>
+  <data name="TemplateEnumSelectMany" xml:space="preserve">
+    <value>رجاءا اختار خيارا أو أكتر {&amp;} {||}</value>
+  </data>
+  <data name="TemplateEnumSelectOne" xml:space="preserve">
+    <value>رجاءا اختار {&amp;} {||}</value>
+  </data>
+  <data name="TemplateFeedback" xml:space="preserve">
+    <value>لاجل {&amp;} فهمت {}. {?"{0}" ليس خيارا.}</value>
+    <comment>0-not understood term</comment>
+  </data>
+  <data name="TemplateHelp" xml:space="preserve">
+    <value>انت تملأ الخانة: {&amp;}.  الاجابات الممكنة:
+{0}
+{1}</value>
+    <comment>0-recognizer help, 1-command help</comment>
+  </data>
+  <data name="TemplateHelpClarify" xml:space="preserve">
+    <value>انت توضح قيمة: {&amp;}.  الخيارات الممكنة:
+{0}
+{1}</value>
+    <comment>0-recognizer help, 1-command help</comment>
+  </data>
+  <data name="TemplateHelpConfirm" xml:space="preserve">
+    <value>رجاءا اجب السوال.  الخيارات الممكنة:
+{0}
+{1}</value>
+    <comment>0-recognizer help, 1-command help</comment>
+  </data>
+  <data name="TemplateHelpNavigation" xml:space="preserve">
+    <value>اختر أي خانة تريد تغيرها.  الاختيارات الممكنة:
+{0}
+{1}</value>
+    <comment>0-recognizer help, 1-command help</comment>
+  </data>
+  <data name="TemplateInteger" xml:space="preserve">
+    <value>رجاءا ادخل رقم {? بين {0} و {1}} لاجل {&amp;} {||}</value>
+    <comment>0-min, 1-max</comment>
+  </data>
+  <data name="TemplateIntegerChoiceFormat" xml:space="preserve">
+    <value>{1}</value>
+    <comment>0-number, 1-description</comment>
+  </data>
+  <data name="TemplateIntegerHelp" xml:space="preserve">
+    <value>يمكنك ادخال رقم {? بين {2} و {3}}{?, {0}}{?, {1}}.</value>
+    <comment>0-current choice, 1-no preference, 2-min, 3-max</comment>
+  </data>
+  <data name="TemplateNavigation" xml:space="preserve">
+    <value>ماذا تريد ان تغير? {||}</value>
+  </data>
+  <data name="TemplateNavigationCommandHelp" xml:space="preserve">
+    <value>يمكنك الانتقال إلى خانة أخرى عن طريق ادخل اسمها. ({0}).</value>
+    <comment>0-list of field names</comment>
+  </data>
+  <data name="TemplateNavigationFormat" xml:space="preserve">
+    <value>{&amp;}({})</value>
+    <comment>0-list of field names</comment>
+  </data>
+  <data name="TemplateNavigationHelp" xml:space="preserve">
+    <value>اختار {?رقم من {0}-{1}, or} اسم خانة.</value>
+    <comment>0-min, 1-max</comment>
+  </data>
+  <data name="TemplateNoPreference" xml:space="preserve">
+    <value>لا تفضيل</value>
+  </data>
+  <data name="TemplateNotUnderstood" xml:space="preserve">
+    <value>"{0}" ليس {&amp;} خيار.</value>
+    <comment>0-is not understood term</comment>
+  </data>
+  <data name="TemplateStatusFormat" xml:space="preserve">
+    <value>{&amp;}: {}</value>
+  </data>
+  <data name="TemplateString" xml:space="preserve">
+    <value>رجاءا ادخل {&amp;} {||}</value>
+  </data>
+  <data name="TemplateStringChoiceFormat" xml:space="preserve">
+    <value>{1}</value>
+    <comment>0-number, 1-description</comment>
+  </data>
+  <data name="TemplateStringHelp" xml:space="preserve">
+    <value>يمكنك ادخال أي شيء (استخدم ' لإجبار كلام){?, {0}}{?, {1}}.</value>
+    <comment>0-current choice, 1-no preference</comment>
+  </data>
+  <data name="TemplateUnspecified" xml:space="preserve">
+    <value>غير محدد</value>
+  </data>
+  <data name="TemplateConfirmation" xml:space="preserve">
+    <value>هذا هو التحديد الخاص بك؟ 
+{*}</value>
+  </data>
+  <data name="Navigation" xml:space="preserve">
+    <value>اسم الحقل</value>
+  </data>
+  <data name="TooManyAttempts" xml:space="preserve">
+    <value>محاولات كثيرة جداً</value>
+  </data>
+  <data name="UserProfileDeleted" xml:space="preserve">
+    <value>حذف التشكيل الجانبي للمستخدم!</value>
+  </data>
+  <data name="Confirmation" xml:space="preserve">
+    <value>تأكيد</value>
+  </data>
+  <data name="UnhandledExceptionToUser" xml:space="preserve">
+    <value>عذراً، رمز بوت هو وجود مشكلة.</value>
+  </data>
+  <data name="NumberExpression" xml:space="preserve">
+    <value>[+-]?(?:\d+\.?\d*|\d*\.?\d+)</value>
+  </data>
+  <data name="NumberOrdinals" xml:space="preserve">
+    <value>1= 1، أولاً، أول واحد | 2 = 2، ثانيا، ثانية واحدة | 3 = 3، ثالثا، ثلث | 4 = 4، رابعا، الرابع | 5 = 5، خامسا، الخامس الذي | 6 = 6، السادسة، واحد السادسة | 7 = 7، سابعا، واحد السابعة | 8 = 8, الثامن, الثامن واحد | 9 = 9، والتاسعة واحد التاسعة | 10 = 10، العاشرة، العاشرة واحد</value>
+  </data>
+  <data name="NumberReverseOrdinals" xml:space="preserve">
+    <value>-1 = آخر، واحد آخر |-2 = بجانب آخر، ثانيا من الماضي، الثاني من آخر |-3 = الثالثة الثالثة إلى آخر، ومن آخر |-4 = الرابعة الرابعة إلى آخر، ومن آخر |-5 = يتسابق الخامسة إلى آخر، من آخر</value>
+  </data>
+  <data name="BooleanChoices" xml:space="preserve">
+    <value>صحيح = نعم، نعم، نعم، \u1f44d بالتأكيد، موافق،، \u1f44c|false=n، لا، كلا، \u1f44e، \\u270b، \\u1f590</value>
+  </data>
+  <data name="NumberTerms" xml:space="preserve">
+    <value>0 = صفر | 1 = واحد | 2 = اثنين | 3 = ثلاثة | 4 = أربعة | 5 = خمسة | 6 = ستة | 7 = سبعة | 8 = ثمانية | 9 = تسعة | 10 = عشرة | 11 = أحد عشر | 12 = اثنا عشر | 13 = ثلاثة عشر | 14 = أربعة عشر | 15 = 15 | 16 = ستة عشر | 17 = سبعة عشر | 18 = 18 | 19 = تسعة عشر | 20 = عشرين</value>
+  </data>
+</root>

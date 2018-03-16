@@ -1,0 +1,114 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net471</TargetFramework>
+		<IsPackable>false</IsPackable>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+	  <NoWarn>1701;1702;1705;CS1998</NoWarn>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <Compile Remove="FormTests.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Autofac" Version="3.5.2" />
+		<PackageReference Include="Chronic.Signed" Version="0.3.2" />
+		<PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.3" targetFramework="net46" />
+		<PackageReference Include="Microsoft.AspNet.WebApi.Core" Version="5.2.3" targetFramework="net46" />
+		<PackageReference Include="Microsoft.IdentityModel.Logging" Version="5.2.1" />
+		<PackageReference Include="Microsoft.IdentityModel.Protocols" Version="5.2.1" />
+		<PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="5.2.1" />
+		<PackageReference Include="Microsoft.IdentityModel.Tokens" Version="5.2.1" />
+		<PackageReference Include="Microsoft.Net.Compilers" Version="1.2.1" targetFramework="net46" developmentDependency="true" />
+		<PackageReference Include="Microsoft.Rest.ClientRuntime" Version="2.3.10" />
+		<PackageReference Include="Microsoft.WindowsAzure.ConfigurationManager" Version="3.2.1" targetFramework="net46" />
+		<PackageReference Include="Moq" Version="4.8.2" targetFramework="net46" />
+		<PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
+		<PackageReference Include="System.CodeDom" Version="4.4.0" />
+		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.2.1" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Folder Include="Properties\" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Classic\Microsoft.Bot.Builder.Classic\Microsoft.Bot.Builder.Classic.csproj" />
+		<ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Core\Microsoft.Bot.Builder.Core.csproj" />
+		<ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder\Microsoft.Bot.Builder.csproj" />
+		<ProjectReference Include="..\..\libraries\Microsoft.Bot.Connector\Microsoft.Bot.Connector.csproj" />
+		<ProjectReference Include="..\..\libraries\Microsoft.Bot.Schema\Microsoft.Bot.Schema.csproj" />
+		<ProjectReference Include="..\FormTest\FormTest.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework">
+	    <HintPath>..\Microsoft.VisualStudio.QualityTools.UnitTestFramework.dll</HintPath>
+	  </Reference>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Update="Scripts\BotDispatcher.script">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Scripts\ChoiceDescriptions.script">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Scripts\ChoiceDescriptionsRetry.script">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Scripts\Form_Term_Matching.script">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Scripts\JSON.script">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Scripts\Optional.script">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Scripts\PizzaForm-entities.script">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Scripts\PizzaForm-fr.script">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Scripts\PizzaForm.script">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Scripts\PizzaFormButton.script">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Scripts\SimpleForm-dependency.script">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Scripts\SimpleForm-Limits.script">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Scripts\SimpleForm-next.script">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Scripts\SimpleForm-NotUnderstood.script">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Scripts\SimpleForm-Preamble.script">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Scripts\SimpleForm-Prompter.script">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Scripts\SimpleForm-Skip.script">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Scripts\SimpleForm.script">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
+	</ItemGroup>
+
+</Project>

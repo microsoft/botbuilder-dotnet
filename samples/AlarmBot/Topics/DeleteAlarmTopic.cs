@@ -45,7 +45,7 @@ namespace AlarmBot.Topics
         {
             if (context.Request.Type == ActivityTypes.Message)
             {
-                this.AlarmTitle = context.Request.AsMessageActivity().Text.Trim();
+                this.AlarmTitle = context.Request.Text.Trim();
                 return await this.FindAlarm(context);
             }
             return true;
@@ -71,7 +71,7 @@ namespace AlarmBot.Topics
             // Ensure there are context.UserState.Alarms to delete
             if (context.UserState.Alarms.Count == 0)
             {
-                DeleteAlarmResponses.ReplyWithNoAlarms(context);
+                await DeleteAlarmResponses.ReplyWithNoAlarms(context);
                 return false;
             }
 
@@ -86,7 +86,7 @@ namespace AlarmBot.Topics
                         // Delete selected alarm and end topic
                         var alarm = context.UserState.Alarms.Skip(index).First();
                         context.UserState.Alarms.Remove(alarm);
-                        DeleteAlarmResponses.ReplyWithDeletedAlarm(context, alarm);
+                        await DeleteAlarmResponses.ReplyWithDeletedAlarm(context, alarm);
                         return false; // cancel topic
                     }
                 }
@@ -97,7 +97,7 @@ namespace AlarmBot.Topics
 
                     if (choices.Count == 0)
                     {
-                        DeleteAlarmResponses.ReplyWithNoAlarmsFound(context, this.AlarmTitle);
+                        await DeleteAlarmResponses.ReplyWithNoAlarmsFound(context, this.AlarmTitle);
                         return false;
                     }
                     else if (choices.Count == 1)
@@ -105,14 +105,14 @@ namespace AlarmBot.Topics
                         // Delete selected alarm and end topic
                         var alarm = choices.First();
                         context.UserState.Alarms.Remove(alarm);
-                        DeleteAlarmResponses.ReplyWithDeletedAlarm(context, alarm);
+                        await DeleteAlarmResponses.ReplyWithDeletedAlarm(context, alarm);
                         return false; // cancel topic
                     }
                 }
             }
 
             // Prompt for title
-            DeleteAlarmResponses.ReplyWithTitlePrompt(context);
+            await DeleteAlarmResponses.ReplyWithTitlePrompt(context);
             return true;
         }
     }

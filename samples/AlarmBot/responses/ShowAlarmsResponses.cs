@@ -4,9 +4,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using AlarmBot.Models;
 using Microsoft.Bot.Builder;
-using Microsoft.Bot.Builder.Core.Extensions;
 
 namespace AlarmBot.Responses
 {
@@ -15,7 +15,7 @@ namespace AlarmBot.Responses
     /// </summary>
     public static class ShowAlarmsResponses
     {
-        public static void ReplyWithShowAlarms(IBotContext context, IEnumerable<Alarm> alarms)
+        public static async Task ReplyWithShowAlarms(IBotContext context, IEnumerable<Alarm> alarms)
         {
             var sb = new StringBuilder();
             sb.AppendLine("# Current Alarms\n");
@@ -30,7 +30,7 @@ namespace AlarmBot.Responses
             else
                 sb.AppendLine("*There are no alarms defined.*");
 
-            context.Batch().Reply(sb.ToString());
+            await context.SendActivity(sb.ToString());
         }
     }
 }

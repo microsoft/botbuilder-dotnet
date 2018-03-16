@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Core.Extensions.Tests;
 using Microsoft.Cognitive.LUIS;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.LUIS.Tests
 {
@@ -28,9 +29,9 @@ namespace Microsoft.Bot.Builder.LUIS.Tests
         [TestMethod]
         public async Task SingleIntent_SimplyEntity()
         {
-            if (EnvironmentVariablesDefined())
+            if (!EnvironmentVariablesDefined())
             {
-                Debug.WriteLine($"Missing Luis Environemnt variables - Skipping test");
+                Debug.WriteLine("Missing Luis Environemnt variables - Skipping test");
                 return;
             }
 
@@ -50,15 +51,15 @@ namespace Microsoft.Bot.Builder.LUIS.Tests
             Assert.IsNotNull(result.Entities["$instance"]["Name"]);
             Assert.AreEqual(11, (int)result.Entities["$instance"]["Name"].First["startIndex"]);
             Assert.AreEqual(14, (int)result.Entities["$instance"]["Name"].First["endIndex"]);
-            Assert.IsTrue((double)result.Entities["$instance"]["Name"].First["score"] > 0 && (double)result.Entities["$instance"]["Name"].First["score"] <= 1);
+            AssertScore(result.Entities["$instance"]["Name"].First["score"]);
         }
 
         [TestMethod]
         public async Task MultipleIntents_PrebuiltEntity()
         {
-            if (EnvironmentVariablesDefined())
+            if (!EnvironmentVariablesDefined())
             {
-                Debug.WriteLine($"Missing Luis Environemnt variables - Skipping test");
+                Debug.WriteLine("Missing Luis Environemnt variables - Skipping test");
                 return;
             }
 
@@ -75,8 +76,10 @@ namespace Microsoft.Bot.Builder.LUIS.Tests
             Assert.IsNotNull(result.Entities);
             Assert.IsNotNull(result.Entities["builtin_number"]);
             Assert.AreEqual(2001, (int)result.Entities["builtin_number"].First);
-            Assert.IsNotNull(result.Entities["builtin_datetimeV2_date"]);
-            Assert.AreEqual("2001-02-02", (string)result.Entities["builtin_datetimeV2_date"].First);
+            Assert.IsNotNull(result.Entities["builtin_ordinal"]);
+            Assert.AreEqual(2, (int)result.Entities["builtin_ordinal"].First);
+            Assert.IsNotNull(result.Entities["builtin_datetimeV2_date"].First);
+            Assert.AreEqual("2001-02-02", (string)result.Entities["builtin_datetimeV2_date"].First.First);
             Assert.IsNotNull(result.Entities["$instance"]["builtin_number"]);
             Assert.AreEqual(28, (int)result.Entities["$instance"]["builtin_number"].First["startIndex"]);
             Assert.AreEqual(31, (int)result.Entities["$instance"]["builtin_number"].First["endIndex"]);
@@ -90,9 +93,9 @@ namespace Microsoft.Bot.Builder.LUIS.Tests
         [TestMethod]
         public async Task MultipleIntents_PrebuiltEntitiesWithMultiValues()
         {
-            if (EnvironmentVariablesDefined())
+            if (!EnvironmentVariablesDefined())
             {
-                Debug.WriteLine($"Missing Luis Environemnt variables - Skipping test");
+                Debug.WriteLine("Missing Luis Environemnt variables - Skipping test");
                 return;
             }
 
@@ -108,16 +111,16 @@ namespace Microsoft.Bot.Builder.LUIS.Tests
             Assert.AreEqual(2, result.Entities["builtin_number"].Count());
             Assert.IsTrue(result.Entities["builtin_number"].Any(v => (int)v == 201));
             Assert.IsTrue(result.Entities["builtin_number"].Any(v => (int)v == 2001));
-            Assert.IsNotNull(result.Entities["builtin_datetimeV2_date"]);
-            Assert.AreEqual("2001-02-02", (string)result.Entities["builtin_datetimeV2_date"].First);
+            Assert.IsNotNull(result.Entities["builtin_datetimeV2_date"].First);
+            Assert.AreEqual("2001-02-02", (string)result.Entities["builtin_datetimeV2_date"].First.First);
         }
 
         [TestMethod]
         public async Task MultipleIntents_ListEntityWithSingleValue()
         {
-            if (EnvironmentVariablesDefined())
+            if (!EnvironmentVariablesDefined())
             {
-                Debug.WriteLine($"Missing Luis Environemnt variables - Skipping test");
+                Debug.WriteLine("Missing Luis Environemnt variables - Skipping test");
                 return;
             }
 
@@ -141,9 +144,9 @@ namespace Microsoft.Bot.Builder.LUIS.Tests
         [TestMethod]
         public async Task MultipleIntents_ListEntityWithMultiValues()
         {
-            if (EnvironmentVariablesDefined())
+            if (!EnvironmentVariablesDefined())
             {
-                Debug.WriteLine($"Missing Luis Environemnt variables - Skipping test");
+                Debug.WriteLine("Missing Luis Environemnt variables - Skipping test");
                 return;
             }
 
@@ -169,9 +172,9 @@ namespace Microsoft.Bot.Builder.LUIS.Tests
         [TestMethod]
         public async Task MultipleIntens_CompositeEntity()
         {
-            if (EnvironmentVariablesDefined())
+            if (!EnvironmentVariablesDefined())
             {
-                Debug.WriteLine($"Missing Luis Environemnt variables - Skipping test");
+                Debug.WriteLine("Missing Luis Environemnt variables - Skipping test");
                 return;
             }
 
@@ -194,7 +197,7 @@ namespace Microsoft.Bot.Builder.LUIS.Tests
             Assert.IsNotNull(result.Entities["$instance"]["Address"]);
             Assert.AreEqual(21, result.Entities["$instance"]["Address"][0]["startIndex"]);
             Assert.AreEqual(28, result.Entities["$instance"]["Address"][0]["endIndex"]);
-            Assert.IsTrue((double)result.Entities["$instance"]["Address"][0]["score"] >= 0 && (double)result.Entities["$instance"]["Address"][0]["score"] <= 1);
+            AssertScore(result.Entities["$instance"]["Address"][0]["score"]);
             Assert.IsNotNull(result.Entities["Address"][0]["$instance"]);
             Assert.IsNotNull(result.Entities["Address"][0]["$instance"]["builtin_number"]);
             Assert.AreEqual(21, result.Entities["Address"][0]["$instance"]["builtin_number"][0]["startIndex"]);
@@ -204,12 +207,45 @@ namespace Microsoft.Bot.Builder.LUIS.Tests
             Assert.AreEqual(27, result.Entities["Address"][0]["$instance"]["State"][0]["startIndex"]);
             Assert.AreEqual(28, result.Entities["Address"][0]["$instance"]["State"][0]["endIndex"]);
             Assert.AreEqual("wa", result.Entities["Address"][0]["$instance"]["State"][0]["text"]);
-            Assert.IsTrue((double)result.Entities["Address"][0]["$instance"]["State"][0]["score"] >= 0 && (double)result.Entities["Address"][0]["$instance"]["State"][0]["score"] <= 1);
+            AssertScore(result.Entities["Address"][0]["$instance"]["State"][0]["score"]);
+        }
+
+        [TestMethod]
+        public async Task MultipleDateTimeEntities()
+        {
+            if (!EnvironmentVariablesDefined())
+            {
+                Debug.WriteLine("Missing Luis Environemnt variables - Skipping test");
+                return;
+            }
+
+            var luisRecognizer = GetLuisRecognizer(verbose: true, luisOptions: new LuisRequest { Verbose = true });
+            var result = await luisRecognizer.Recognize("Book a table on Friday or tomorrow at 5 or tomorrow at 4", CancellationToken.None);
+            Assert.IsNotNull(result.Entities["builtin_datetimeV2_date"]);
+            Assert.AreEqual(1, result.Entities["builtin_datetimeV2_date"].Count());
+            Assert.AreEqual(1, result.Entities["builtin_datetimeV2_date"][0].Count());
+            Assert.AreEqual("XXXX-WXX-5", (string)result.Entities["builtin_datetimeV2_date"][0][0]);
+            Assert.AreEqual(2, result.Entities["builtin_datetimeV2_datetime"].Count());
+            Assert.AreEqual(2, result.Entities["builtin_datetimeV2_datetime"][0].Count());
+            Assert.AreEqual(2, result.Entities["builtin_datetimeV2_datetime"][1].Count());
+            Assert.IsTrue(((string)result.Entities["builtin_datetimeV2_datetime"][0][0]).EndsWith("T05"));
+            Assert.IsTrue(((string)result.Entities["builtin_datetimeV2_datetime"][0][1]).EndsWith("T17"));
+            Assert.IsTrue(((string)result.Entities["builtin_datetimeV2_datetime"][1][0]).EndsWith("T04"));
+            Assert.IsTrue(((string)result.Entities["builtin_datetimeV2_datetime"][1][1]).EndsWith("T16"));
+            Assert.AreEqual(1, result.Entities["$instance"]["builtin_datetimeV2_date"].Count());
+            Assert.AreEqual(2, result.Entities["$instance"]["builtin_datetimeV2_datetime"].Count());
+        }
+
+        private void AssertScore(JToken scoreToken)
+        {
+            var score = (double) scoreToken;
+            Assert.IsTrue(score >= 0);
+            Assert.IsTrue(score <= 1);
         }
 
         private bool EnvironmentVariablesDefined()
         {
-            return _luisAppId == null || _subscriptionKey == null || _luisUriBase == null;
+            return _luisAppId != null && _subscriptionKey != null && _luisUriBase == null;
         }
 
         private IRecognizer GetLuisRecognizer(bool verbose = false, ILuisOptions luisOptions = null)

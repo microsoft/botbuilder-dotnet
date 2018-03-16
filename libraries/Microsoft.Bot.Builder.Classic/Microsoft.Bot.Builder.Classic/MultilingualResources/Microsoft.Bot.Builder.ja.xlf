@@ -1,0 +1,349 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:oasis:names:tc:xliff:document:1.2 xliff-core-1.2-transitional.xsd">
+  <file datatype="xml" source-language="en" target-language="ja" original="MICROSOFT.BOT.BUILDER/RESOURCE/RESOURCES.RESX" tool-id="MultilingualAppToolkit" product-name="n/a" product-version="n/a" build-num="n/a">
+    <header>
+      <tool tool-id="MultilingualAppToolkit" tool-name="Multilingual App Toolkit" tool-version="4.0.1605.0" tool-company="Microsoft" />
+    </header>
+    <body>
+      <group id="MICROSOFT.BOT.BUILDER/RESOURCE/RESOURCES.RESX" datatype="resx">
+        <trans-unit id="CommandBack" translate="yes" xml:space="preserve">
+          <source>Back</source>
+          <target state="final" state-qualifier="tm-suggestion">戻る</target>
+        </trans-unit>
+        <trans-unit id="CommandBackHelp" translate="yes" xml:space="preserve">
+          <source>Back: Go back to the previous question.</source>
+          <target state="final">戻る: 前の質問に戻る。</target>
+        </trans-unit>
+        <trans-unit id="CommandBackTerms" translate="yes" xml:space="preserve">
+          <source>backup;go back;back</source>
+          <target state="final">戻る</target>
+        </trans-unit>
+        <trans-unit id="CommandHelp" translate="yes" xml:space="preserve">
+          <source>Help</source>
+          <target state="final" state-qualifier="tm-suggestion">ヘルプ</target>
+        </trans-unit>
+        <trans-unit id="CommandHelpHelp" translate="yes" xml:space="preserve">
+          <source>Help: Show the kinds of responses you can enter.</source>
+          <target state="final">ヘルプ: いろいろな返答を表示</target>
+        </trans-unit>
+        <trans-unit id="CommandHelpTerms" translate="yes" xml:space="preserve">
+          <source>help;choices;\?</source>
+          <target state="final">ヘルプ; 選択肢; \?</target>
+        </trans-unit>
+        <trans-unit id="CommandQuit" translate="yes" xml:space="preserve">
+          <source>Quit</source>
+          <target state="final" state-qualifier="tm-suggestion">終了</target>
+        </trans-unit>
+        <trans-unit id="CommandQuitHelp" translate="yes" xml:space="preserve">
+          <source>Quit: Quit the form without completing it.</source>
+          <target state="final">終了: 完了せず、フォームを終了</target>
+        </trans-unit>
+        <trans-unit id="CommandQuitTerms" translate="yes" xml:space="preserve">
+          <source>quit;stop;finish;goodby?;good bye?;bye;ciao;adios;bye-bye;so long;cheers</source>
+          <target state="final">終了; 停止; ストップ; さよなら;バイバイ;チャオ;アディオス</target>
+        </trans-unit>
+        <trans-unit id="CommandReset" translate="yes" xml:space="preserve">
+          <source>Start over</source>
+          <target state="final">最初からやり直す</target>
+        </trans-unit>
+        <trans-unit id="CommandResetHelp" translate="yes" xml:space="preserve">
+          <source>Reset: Start over filling in the form.  (With defaults from your previous entries.)</source>
+          <target state="final">リセット: フォームを最初からやり直す。 (前のエントリをデフォルトで)</target>
+        </trans-unit>
+        <trans-unit id="CommandResetTerms" translate="yes" xml:space="preserve">
+          <source>start over;reset;clear</source>
+          <target state="final">やり直す;リセット;クリア</target>
+        </trans-unit>
+        <trans-unit id="CommandStatus" translate="yes" xml:space="preserve">
+          <source>Status</source>
+          <target state="final">ステータス</target>
+        </trans-unit>
+        <trans-unit id="CommandStatusHelp" translate="yes" xml:space="preserve">
+          <source>Status: Show your progress in filling in the form so far.</source>
+          <target state="final">ステータス: フォーム記入の進行状況を表示</target>
+        </trans-unit>
+        <trans-unit id="CommandStatusTerms" translate="yes" xml:space="preserve">
+          <source>status;progress;so far;results</source>
+          <target state="final">ステータス; 進行状況;現在状況; 結果</target>
+        </trans-unit>
+        <trans-unit id="ConfirmChoiceFormat" translate="yes" xml:space="preserve">
+          <source>{1}</source>
+          <target state="final" state-qualifier="mt-suggestion">{1}</target>
+          <note from="MultilingualBuild" annotates="source" priority="2">0-number, 1-description</note>
+        </trans-unit>
+        <trans-unit id="DefaultChoiceFormat" translate="yes" xml:space="preserve">
+          <source>{0}. {1}</source>
+          <target state="final" state-qualifier="mt-suggestion">{0}. {1}</target>
+          <note from="MultilingualBuild" annotates="source" priority="2">0-number, 1-description</note>
+        </trans-unit>
+        <trans-unit id="DefaultChoiceLastSeparator" translate="yes" xml:space="preserve">
+          <source>, or </source>
+          <target state="final" state-qualifier="mt-suggestion">、または</target>
+        </trans-unit>
+        <trans-unit id="DefaultChoiceSeparator" translate="yes" xml:space="preserve">
+          <source>, </source>
+          <target state="final" state-qualifier="mt-suggestion">、</target>
+        </trans-unit>
+        <trans-unit id="DefaultLastSeparator" translate="yes" xml:space="preserve">
+          <source>, and </source>
+          <target state="final" state-qualifier="mt-suggestion">、と</target>
+        </trans-unit>
+        <trans-unit id="DefaultSeparator" translate="yes" xml:space="preserve">
+          <source>, </source>
+          <target state="final" state-qualifier="mt-suggestion">、</target>
+        </trans-unit>
+        <trans-unit id="LanguageArticles" translate="yes" xml:space="preserve">
+          <source>a;an;the</source>
+          <target state="translated">、</target>
+        </trans-unit>
+        <trans-unit id="LanguageStopWords" translate="yes" xml:space="preserve">
+          <source>a;about;above;above;across;after;afterwards;again;against;all;almost;alone;along;already;also;although;always;am;among;amongst;amoungst;amount;an;and;another;any;anyhow;anyone;anything;anyway;anywhere;are;around;as;at;back;be;became;because;become;becomes;becoming;been;before;beforehand;behind;being;below;beside;besides;between;beyond;bill;both;bottom;but;by;call;can;cannot;cant;co;con;could;couldnt;cry;de;describe;detail;do;done;down;due;during;each;eg;eight;either;eleven;else;elsewhere;empty;enough;etc;even;ever;every;everyone;everything;everywhere;except;few;fifteen;fify;fill;find;fire;first;five;for;former;formerly;forty;found;four;from;front;full;further;get;give;go;had;has;hasnt;have;he;hence;her;here;hereafter;hereby;herein;hereupon;hers;herself;him;himself;his;how;however;hundred;ie;if;in;inc;indeed;interest;into;is;it;its;itself;keep;last;latter;latterly;least;less;ltd;made;many;may;me;meanwhile;might;mill;mine;more;moreover;most;mostly;move;much;must;my;myself;name;namely;neither;never;nevertheless;next;nine;no;nobody;none;noone;nor;not;nothing;now;nowhere;of;off;often;on;once;one;only;onto;or;other;others;otherwise;our;ours;ourselves;out;over;own;part;per;perhaps;please;put;rather;re;same;see;seem;seemed;seeming;seems;serious;several;she;should;show;side;since;sincere;six;sixty;so;some;somehow;someone;something;sometime;sometimes;somewhere;still;such;system;take;ten;than;that;the;their;them;themselves;then;thence;there;thereafter;thereby;therefore;therein;thereupon;these;they;thick;thin;third;this;those;though;three;through;throughout;thru;thus;to;together;too;top;toward;towards;twelve;twenty;two;un;under;until;up;upon;us;very;via;was;we;well;were;what;whatever;when;whence;whenever;where;whereafter;whereas;whereby;wherein;whereupon;wherever;whether;which;while;whither;who;whoever;whole;whom;whose;why;will;with;within;without;would;yet;you;your;yours;yourself;yourselves</source>
+          <target state="translated"></target>
+        </trans-unit>
+        <trans-unit id="MatchCurrentChoice" translate="yes" xml:space="preserve">
+          <source>Current Choice('c');current;c;current choice;no change</source>
+          <target state="final">現在の選択('c'); 現在; c; 現在の選択;変更なし</target>
+        </trans-unit>
+        <trans-unit id="MatchNo" translate="yes" xml:space="preserve">
+          <source>No;n;nope;2</source>
+          <target state="final">いいえ;2</target>
+        </trans-unit>
+        <trans-unit id="MatchNoPreference" translate="yes" xml:space="preserve">
+          <source>No Preference;no;none;I don'?t care</source>
+          <target state="final">どちらとも言えない; いいえ; なし; どちらでも良い</target>
+        </trans-unit>
+        <trans-unit id="MatchYes" translate="yes" xml:space="preserve">
+          <source>Yes;y;sure;ok;yep;1</source>
+          <target state="final">はい; もちろん; ok;1</target>
+        </trans-unit>
+        <trans-unit id="PromptRetry" translate="yes" xml:space="preserve">
+          <source>I didn't understand. Say something in reply.</source>
+          <target state="final">わからない。何か返答して下さい。</target>
+        </trans-unit>
+        <trans-unit id="TemplateBool" translate="yes" xml:space="preserve">
+          <source>Would you like a {&amp;}? {||}</source>
+          <target state="final">{&amp;} 欲しいですか{||}</target>
+        </trans-unit>
+        <trans-unit id="TemplateBoolHelp" translate="yes" xml:space="preserve">
+          <source>Please enter 'yes' or 'no'{?, {0}}.</source>
+          <target state="final">'はい' または 'いいえ' を入力してください {?、{0}}。</target>
+          <note from="MultilingualBuild" annotates="source" priority="2">0-current choice, 1-no preference</note>
+        </trans-unit>
+        <trans-unit id="TemplateClarify" translate="yes" xml:space="preserve">
+          <source>By "{0}" {&amp;} did you mean {||}</source>
+          <target state="needs-review-translation" state-qualifier="mt-suggestion">「{0}」{&amp;} {||} を意味するか</target>
+          <note from="MultilingualBuild" annotates="source" priority="2">0-term being clarified</note>
+        </trans-unit>
+        <trans-unit id="TemplateCurrentChoice" translate="yes" xml:space="preserve">
+          <source>(current choice: {})</source>
+          <target state="final" state-qualifier="mt-suggestion">(現在の選択: {})</target>
+        </trans-unit>
+        <trans-unit id="TemplateDateTime" translate="yes" xml:space="preserve">
+          <source>Please enter a date and time for {&amp;} {||}</source>
+          <target state="translated">{&amp;} {||} の日付と時刻 を入力してください。</target>
+        </trans-unit>
+        <trans-unit id="TemplateDateTimeHelp" translate="yes" xml:space="preserve">
+          <source>Please enter a date or time expression {?, {0}}{?, {1}}.</source>
+          <target state="needs-review-translation" state-qualifier="mt-suggestion">日付または時刻の式を入力してください {?、{0}} {?、{1}}。</target>
+          <note from="MultilingualBuild" annotates="source" priority="2">0-current choice, 1-no preference</note>
+        </trans-unit>
+        <trans-unit id="TemplateDouble" translate="yes" xml:space="preserve">
+          <source>Please enter a number {?between {0:F1} and {1:F1}} for {&amp;} {||}</source>
+          <target state="final">{&amp;}の{?{0:F1}と{1:F1}のあいだ}の数を入力してください {||}</target>
+          <note from="MultilingualBuild" annotates="source" priority="2">0-min, 1-max</note>
+        </trans-unit>
+        <trans-unit id="TemplateDoubleChoiceFormat" translate="yes" xml:space="preserve">
+          <source>{1}</source>
+          <target state="final" state-qualifier="mt-suggestion">{1}</target>
+          <note from="MultilingualBuild" annotates="source" priority="2">0-number, 1-description</note>
+        </trans-unit>
+        <trans-unit id="TemplateDoubleHelp" translate="yes" xml:space="preserve">
+          <source>Please enter a number{? between {2:F1} and {3:F1}}{?, {0}}{?, {1}}.</source>
+          <target state="needs-review-translation">数値を入力してください {? {2:F1} の間と {3:F1}} {?、{0}} {?、{1}}。
+{?{2:F1}と{3:F1}のあいだ}の数を入力してください{||}</target>
+          <note from="MultilingualBuild" annotates="source" priority="2">0-current choice, 1-no preference, 2-min, 3-max</note>
+        </trans-unit>
+        <trans-unit id="TemplateEnumManyNumberHelp" translate="yes" xml:space="preserve">
+          <source>You can enter one or more numbers {0}-{1} or words from the descriptions. ({2})</source>
+          <target state="needs-review-translation" state-qualifier="mt-suggestion">1 つを入力することができますまたはより多くの番号 {0}-{1} または言葉の説明から。({2})</target>
+          <note from="MultilingualBuild" annotates="source" priority="2">0-min, 1-max and 2-enumerated descriptions</note>
+        </trans-unit>
+        <trans-unit id="TemplateEnumManyWordHelp" translate="yes" xml:space="preserve">
+          <source>You can enter in one or more selections from the descriptions. ({2})</source>
+          <target state="needs-review-translation" state-qualifier="mt-suggestion">説明から 1 つまたは複数の選択で入力できます。({2})</target>
+          <note from="MultilingualBuild" annotates="source" priority="2">2-enumerated descriptions</note>
+        </trans-unit>
+        <trans-unit id="TemplateEnumOneNumberHelp" translate="yes" xml:space="preserve">
+          <source>You can enter a number {0}-{1} or words from the descriptions. ({2})</source>
+          <target state="needs-review-translation" state-qualifier="mt-suggestion">番号 {0} を入力することができます-{1} または言葉の説明から。({2})</target>
+          <note from="MultilingualBuild" annotates="source" priority="2">0-min, 1-max and 2-enumerated descriptions</note>
+        </trans-unit>
+        <trans-unit id="TemplateEnumOneWordHelp" translate="yes" xml:space="preserve">
+          <source>You can enter in any words from the descriptions. ({2})</source>
+          <target state="needs-review-translation" state-qualifier="mt-suggestion">任意の言葉での説明から入力できます。({2})</target>
+          <note from="MultilingualBuild" annotates="source" priority="2">2-enumerated descriptions</note>
+        </trans-unit>
+        <trans-unit id="TemplateEnumSelectMany" translate="yes" xml:space="preserve">
+          <source>Please select one or more {&amp;} {||}</source>
+          <target state="final">1 つまたは複数 {&amp;}を選択してください {||}</target>
+        </trans-unit>
+        <trans-unit id="TemplateEnumSelectOne" translate="yes" xml:space="preserve">
+          <source>Please select a {&amp;} {||}</source>
+          <target state="final">{&amp;}を選択してください {||}</target>
+        </trans-unit>
+        <trans-unit id="TemplateFeedback" translate="yes" xml:space="preserve">
+          <source>For {&amp;} I understood {}. {?"{0}" is not an option.}</source>
+          <target state="needs-review-translation" state-qualifier="mt-suggestion">{&amp;} に {} がわかった{?」{0}"オプションではありません}。</target>
+          <note from="MultilingualBuild" annotates="source" priority="2">0-not understood term</note>
+        </trans-unit>
+        <trans-unit id="TemplateHelp" translate="yes" xml:space="preserve">
+          <source>You are filling in the {&amp;} field.  Possible responses:
+{0}
+{1}</source>
+          <target state="final">{&amp;}のフィールドに記入しています。 可能な応答:
+{0}
+{1}</target>
+          <note from="MultilingualBuild" annotates="source" priority="2">0-recognizer help, 1-command help</note>
+        </trans-unit>
+        <trans-unit id="TemplateHelpClarify" translate="yes" xml:space="preserve">
+          <source>You are clarifying a {&amp;} value.  Possible responses:
+{0}
+{1}</source>
+          <target state="needs-review-translation">{&amp;} 値を明らかにしています。 可能な応答:
+{0}
+{1}</target>
+          <note from="MultilingualBuild" annotates="source" priority="2">0-recognizer help, 1-command help</note>
+        </trans-unit>
+        <trans-unit id="TemplateHelpConfirm" translate="yes" xml:space="preserve">
+          <source>Please answer the question.  Possible responses:
+{0}
+{1}</source>
+          <target state="final">質問に答えてください。 可能な応答:
+{0}
+{1}</target>
+          <note from="MultilingualBuild" annotates="source" priority="2">0-recognizer help, 1-command help</note>
+        </trans-unit>
+        <trans-unit id="TemplateHelpNavigation" translate="yes" xml:space="preserve">
+          <source>Choose what field to change.  Possible responses:
+{0}
+{1}</source>
+          <target state="final">変更するフィールドを選択。 可能な応答:
+{0}
+{1}</target>
+          <note from="MultilingualBuild" annotates="source" priority="2">0-recognizer help, 1-command help</note>
+        </trans-unit>
+        <trans-unit id="TemplateInteger" translate="yes" xml:space="preserve">
+          <source>Please enter a number{? between {0} and {1}} for {&amp;} {||}</source>
+          <target state="final">{? {0}と{1}の間}の数を入力してください {&amp;} {||} </target>
+          <note from="MultilingualBuild" annotates="source" priority="2">0-min, 1-max</note>
+        </trans-unit>
+        <trans-unit id="TemplateIntegerChoiceFormat" translate="yes" xml:space="preserve">
+          <source>{1}</source>
+          <target state="final" state-qualifier="mt-suggestion">{1}</target>
+          <note from="MultilingualBuild" annotates="source" priority="2">0-number, 1-description</note>
+        </trans-unit>
+        <trans-unit id="TemplateIntegerHelp" translate="yes" xml:space="preserve">
+          <source>You can enter a number{? between {2} and {3}}{?, {0}}{?, {1}}.</source>
+          <target state="final">{? {2}と{3}の間}の数を入力することができます {?、{0}} {?、{1}}。</target>
+          <note from="MultilingualBuild" annotates="source" priority="2">0-current choice, 1-no preference, 2-min, 3-max</note>
+        </trans-unit>
+        <trans-unit id="TemplateNavigation" translate="yes" xml:space="preserve">
+          <source>What do you want to change? {||}</source>
+          <target state="final" state-qualifier="mt-suggestion">何を変更したいですか。{||}</target>
+        </trans-unit>
+        <trans-unit id="TemplateNavigationCommandHelp" translate="yes" xml:space="preserve">
+          <source>You can switch to another field by entering its name. ({0}).</source>
+          <target state="needs-review-translation" state-qualifier="mt-suggestion">その名を入力して、別のフィールドを切り替えることができます。({0})。</target>
+          <note from="MultilingualBuild" annotates="source" priority="2">0-list of field names</note>
+        </trans-unit>
+        <trans-unit id="TemplateNavigationFormat" translate="yes" xml:space="preserve">
+          <source>{&amp;}({})</source>
+          <target state="final" state-qualifier="mt-suggestion">{&amp;}({})</target>
+          <note from="MultilingualBuild" annotates="source" priority="2">0-list of field names</note>
+        </trans-unit>
+        <trans-unit id="TemplateNavigationHelp" translate="yes" xml:space="preserve">
+          <source>Choose {?a number from {0}-{1}, or} a field name.</source>
+          <target state="final">{? {0}から-{1}の数、または} フィールド名を選択</target>
+          <note from="MultilingualBuild" annotates="source" priority="2">0-min, 1-max</note>
+        </trans-unit>
+        <trans-unit id="TemplateNoPreference" translate="yes" xml:space="preserve">
+          <source>No Preference</source>
+          <target state="final" state-qualifier="tm-suggestion">優先設定なし</target>
+        </trans-unit>
+        <trans-unit id="TemplateNotUnderstood" translate="yes" xml:space="preserve">
+          <source>"{0}" is not a {&amp;} option.</source>
+          <target state="final">"{0}"は{&amp;}のオプションではありません。</target>
+          <note from="MultilingualBuild" annotates="source" priority="2">0-is not understood term</note>
+        </trans-unit>
+        <trans-unit id="TemplateStatusFormat" translate="yes" xml:space="preserve">
+          <source>{&amp;}: {}</source>
+          <target state="final" state-qualifier="mt-suggestion">{&amp;}: {}</target>
+        </trans-unit>
+        <trans-unit id="TemplateString" translate="yes" xml:space="preserve">
+          <source>Please enter {&amp;} {||}</source>
+          <target state="final">{&amp;}を入力してください {||}</target>
+        </trans-unit>
+        <trans-unit id="TemplateStringChoiceFormat" translate="yes" xml:space="preserve">
+          <source>{1}</source>
+          <target state="final" state-qualifier="mt-suggestion">{1}</target>
+          <note from="MultilingualBuild" annotates="source" priority="2">0-number, 1-description</note>
+        </trans-unit>
+        <trans-unit id="TemplateStringHelp" translate="yes" xml:space="preserve">
+          <source>You can enter anything (use "'s to force string){?, {0}}{?, {1}}.</source>
+          <target state="needs-review-translation">何でも入力することができます (使用"は文字列を強制的の) {?、{0}} {?、{1}}。</target>
+          <note from="MultilingualBuild" annotates="source" priority="2">0-current choice, 1-no preference</note>
+        </trans-unit>
+        <trans-unit id="TemplateUnspecified" translate="yes" xml:space="preserve">
+          <source>Unspecified</source>
+          <target state="final" state-qualifier="tm-suggestion">指定なし</target>
+        </trans-unit>
+        <trans-unit id="TemplateConfirmation" translate="yes" xml:space="preserve">
+          <source>Is this your selection?
+{*}</source>
+          <target state="needs-review-translation" state-qualifier="mt-suggestion">これはあなたの選択ですか。
+{*}</target>
+        </trans-unit>
+        <trans-unit id="Navigation" translate="yes" xml:space="preserve">
+          <source>Field Name</source>
+          <target state="needs-review-translation" state-qualifier="tm-suggestion">フィールド名</target>
+        </trans-unit>
+        <trans-unit id="TooManyAttempts" translate="yes" xml:space="preserve">
+          <source>too many attempts</source>
+          <target state="needs-review-translation" state-qualifier="mt-suggestion">回数が多すぎます。</target>
+        </trans-unit>
+        <trans-unit id="UserProfileDeleted" translate="yes" xml:space="preserve">
+          <source>User profile deleted!</source>
+          <target state="needs-review-translation" state-qualifier="mt-suggestion">ユーザー プロファイル削除!</target>
+        </trans-unit>
+        <trans-unit id="Confirmation" translate="yes" xml:space="preserve">
+          <source>Confirmation</source>
+          <target state="needs-review-translation" state-qualifier="tm-suggestion">確認</target>
+        </trans-unit>
+        <trans-unit id="UnhandledExceptionToUser" translate="yes" xml:space="preserve">
+          <source>Sorry, my bot code is having an issue.</source>
+          <target state="needs-review-translation" state-qualifier="mt-suggestion">申し訳ありませんが、私のボットのコードは、問題を抱えています。</target>
+        </trans-unit>
+        <trans-unit id="NumberExpression" translate="yes" xml:space="preserve">
+          <source>[+-]?(?:\d+\.?\d*|\d*\.?\d+)</source>
+          <target state="needs-review-translation" state-qualifier="mt-suggestion">[+-]?(?:\d+\.?\d*|\d*\.?\d+)</target>
+        </trans-unit>
+        <trans-unit id="NumberOrdinals" translate="yes" xml:space="preserve">
+          <source>1=1st,first,first one|2=2nd,second,second one|3=3rd,third,third one|4=4th,fourth,fourth one|5=5th,fifth,fifth one|6=6th,sixth,sixth one|7=7th,seventh,seventh one|8=8th,eigth,eigth one|9=9th,ninth,ninth one|10=10th,tenth,tenth one</source>
+          <target state="needs-review-translation" state-qualifier="mt-suggestion">1 = 1、最初に、最初の 1 つ | 2 = 第 2 回、第二に、2 つ目の | 3 = 第 3 回、第三に、3 つ目 | 4 = 第 4 回、第四に、4 分の 1 | 5 = 第 5 回、第五に、5 つ | 6 = 6、6、6 1 | 7 = 7、7、セブンス ・ ワン | 8 = 8、8 番目、8 番目の 1 つ | 9 = 9、9、9 1 | 10 = 10、10、10 1 つ</target>
+        </trans-unit>
+        <trans-unit id="NumberReverseOrdinals" translate="yes" xml:space="preserve">
+          <source>-1=last,last one|-2=next to last,second to last,second from last|-3=third to last,third from last|-4=fourth to last,fourth from last|-5=fifth to last,fith from last</source>
+          <target state="needs-review-translation" state-qualifier="mt-suggestion">-1 = 最後に、最後の 1 つ |-2 最後から 2 番目、最後に 2 番目の最後の横にある = |-3 最後から最後に 3 番目 3 番目 = |-4 最後から最後に 4 番目 4 番目 = |-5 = 最後の最後、5 番目のフィス</target>
+        </trans-unit>
+        <trans-unit id="BooleanChoices" translate="yes" xml:space="preserve">
+          <source>true=y,yes,yep,sure,ok,\u1f44d,\u1f44c|false=n,no,nope,\u1f44e,\\u270b,\\u1f590</source>
+          <target state="needs-review-translation" state-qualifier="mt-suggestion">true = y、yes、うん、ことを確認して、[ok]、\u1f44d、\u1f44c|false=n、いや、いや、\u1f44e、\\u270b、\\u1f590</target>
+        </trans-unit>
+        <trans-unit id="NumberTerms" translate="yes" xml:space="preserve">
+          <source>0=zero|1=one|2=two|3=three|4=four|5=five|6=six|7=seven|8=eight|9=nine|10=ten|11=eleven|12=twelve|13=thirteen|14=fourteen|15=fifteen|16=sixteen|17=seventeen|18=eighteen|19=nineteen|20=twenty</source>
+          <target state="needs-review-translation" state-qualifier="mt-suggestion">0 = 0 | 1 = 1 つ | 2 = 2 | 3 = 3 | 4 = 4 | 5 = 5 | 6 = 6 | 7 = 7 | 8 = 8 | 9 = 9 | 10 = 10 | 11 = 11 | 12 = 12 | 13 = 13 | 14 = 14 | 15 = 15 | 16 = 16 | 17 = 17 | 18 = 18 | 19 = 19 | 20 = 20</target>
+        </trans-unit>
+      </group>
+    </body>
+  </file>
+</xliff>
