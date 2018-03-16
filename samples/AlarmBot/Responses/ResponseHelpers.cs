@@ -35,6 +35,5 @@ namespace AlarmBot.Responses
 
             return context.Request.CreateReply(sb.ToString());
         }
-
     }
 }

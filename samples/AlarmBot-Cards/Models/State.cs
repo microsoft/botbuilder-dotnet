@@ -1,9 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Microsoft.Bot.Builder;
-using Microsoft.Bot.Builder.Core.Extensions;
 using System.Collections.Generic;
+using Microsoft.Bot.Builder.Core.Extensions;
 
 namespace AlarmBot.Models
 {

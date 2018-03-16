@@ -25,7 +25,7 @@ namespace AlarmBot.Responses
 
             if (alarms.Any())
             {
-                FactSet factSet = new FactSet();
+                var factSet = new FactSet();
 
                 foreach (var alarm in alarms)
                     factSet.Facts.Add(new AdaptiveCards.Fact(alarm.Title, alarm.Time.Value.ToString("f")));

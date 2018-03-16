@@ -39,11 +39,6 @@ namespace AlarmBot.Topics
             HelpConfirmation
         };
 
-
-        public AddAlarmTopic()
-        {
-        }
-
         /// <summary>
         /// Alarm object representing the information being gathered by the conversation before it is committed
         /// </summary>
@@ -74,7 +69,7 @@ namespace AlarmBot.Topics
                     .Select(entity => entity.ValueAs<string>()).FirstOrDefault(),
 
                 // initialize from intent entities
-                Time = times.Where(t => t > DateTime.Now).FirstOrDefault()
+                Time = times.FirstOrDefault(t => t > DateTime.Now)
             };
             if (Alarm.Time == default(DateTimeOffset))
             {
