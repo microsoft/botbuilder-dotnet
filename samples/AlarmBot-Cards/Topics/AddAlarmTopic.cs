@@ -78,7 +78,7 @@ namespace AlarmBot.Topics
                 Alarm.Time = new DateTimeOffset(defaultTime.Year, defaultTime.Month, defaultTime.Day, defaultTime.Hour, 0, 0, DateTimeOffset.Now.Offset);
             }
             this.TopicState = TopicStates.AddingCard;
-            AddAlarmTopicResponses.ReplyWithStartTopic(context, this.Alarm);
+            await AddAlarmTopicResponses.ReplyWithStartTopic(context, this.Alarm);
             return true;
         }
 
@@ -103,12 +103,12 @@ namespace AlarmBot.Topics
 
                     case "help":
                         // show contextual help 
-                        AddAlarmTopicResponses.ReplyWithHelp(context, this.Alarm);
+                        await AddAlarmTopicResponses.ReplyWithHelp(context, this.Alarm);
                         return true;
 
                     case "cancel":
                         // prompt to cancel
-                        AddAlarmTopicResponses.ReplyWithCancelPrompt(context, this.Alarm);
+                        await AddAlarmTopicResponses.ReplyWithCancelPrompt(context, this.Alarm);
                         this.TopicState = TopicStates.CancelConfirmation;
                         return true;
 
@@ -123,7 +123,6 @@ namespace AlarmBot.Topics
         {
             string utterance = (context.Request.Text ?? "").Trim();
             var userState = context.GetUserState<UserData>();
-            // var userState = UserState<UserData>.Get(context);
 
             // we are using TopicState to remember what we last asked
             switch (this.TopicState)
@@ -146,7 +145,7 @@ namespace AlarmBot.Topics
                                             userState.Alarms = new List<Alarm>();
                                         }
                                         userState.Alarms.Add(this.Alarm);
-                                        AddAlarmTopicResponses.ReplyWithAddedAlarm(context, this.Alarm);
+                                        await AddAlarmTopicResponses.ReplyWithAddedAlarm(context, this.Alarm);
                                         // end topic
                                         return false;
                                     }
@@ -154,7 +153,7 @@ namespace AlarmBot.Topics
                             }
                             else if (payload.Action == "Cancel")
                             {
-                                AddAlarmTopicResponses.ReplyWithTopicCanceled(context, this.Alarm);
+                                await AddAlarmTopicResponses.ReplyWithTopicCanceled(context, this.Alarm);
                                 // End current topic
                                 return false;
                             }
@@ -170,7 +169,7 @@ namespace AlarmBot.Topics
                         {
                             case "Yes":
                                 {
-                                    AddAlarmTopicResponses.ReplyWithTopicCanceled(context, this.Alarm);
+                                    await AddAlarmTopicResponses.ReplyWithTopicCanceled(context, this.Alarm);
                                     // End current topic
                                     return false;
                                 }
@@ -181,7 +180,7 @@ namespace AlarmBot.Topics
                                 }
                             default:
                                 {
-                                    AddAlarmTopicResponses.ReplyWithCancelReprompt(context, this.Alarm);
+                                    await AddAlarmTopicResponses.ReplyWithCancelReprompt(context, this.Alarm);
                                     return true;
                                 }
                         }
@@ -197,12 +196,12 @@ namespace AlarmBot.Topics
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public Task<bool> ResumeTopic(IBotContext context)
+        public async Task<bool> ResumeTopic(IBotContext context)
         {
             // simply prompt again based on our state
             this.TopicState = TopicStates.AddingCard;
-            AddAlarmTopicResponses.ReplyWithStartTopic(context, this.Alarm);
-            return Task.FromResult(true);
+            await AddAlarmTopicResponses.ReplyWithStartTopic(context, this.Alarm);
+            return true; 
         }
     }
 }

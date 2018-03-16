@@ -1,0 +1,64 @@
+﻿<?xml version="1.0"?>
+<package xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <metadata xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    <id>Microsoft.Bot.Builder.Classic</id>
+    <version>4.0.0-alpha2018031101</version>
+    <authors>Microsoft</authors>
+    <owners>microsoft, BotFramework, nugetbotbuilder </owners>
+    <copyright>© Microsoft Corporation. All rights reserved.</copyright>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <licenseUrl>https://github.com/Microsoft/BotBuilder/blob/master/LICENSE</licenseUrl>
+    <description>
+      This library provides access to Bot Builder V3 style dialog system on the V4 SDK.
+
+      V3 High Level Features:
+      * Powerful dialog system with dialogs that are isolated and composable.
+      * Built-in dialogs for simple things like Yes/No, strings, numbers, enumerations.
+      * Built-in dialogs that utilize powerful AI frameworks like LUIS http://luis.ai.
+      * Bots are stateless which helps them scale.
+      * Form Flow for automatically generating a Bot from a C# class for filling in the class and that supports help, navigation, clarification and confirmation.
+    </description>
+    <projectUrl>https://github.com/Microsoft/BotBuilder-dotnet</projectUrl>
+    <iconUrl>http://docs.botframework.com/images/bot_icon.png</iconUrl>
+    <summary>Microsoft.Bot.Builder.Classic is a compatibility layer to allow V3 Bot Builder IDialog based bots to run on SDK V4 scaffolding.</summary>
+    <language>en-US</language>
+    <dependencies>
+      <dependency id="Autofac" version="3.5.2"/>
+      <dependency id="Chronic.Signed" version="0.3.2" />
+      <dependency id="Microsoft.AspNet.WebAPI.Core" version="5.2.3" />
+      <dependency id="Microsoft.Bot.Builder" version="4.0.0-alpha2018031101" />
+      <dependency id="Microsoft.Bot.Connector" version="4.0.0-alpha2018031101" />
+	  <dependency id="Microsoft.Bot.Schema" version="4.0.0-alpha2018031101" />
+      <dependency id="Microsoft.Rest.ClientRuntime" version="2.3.2" />
+      <dependency id="Newtonsoft.Json" version="9.0.1" />
+      <dependency id="System.IdentityModel.Tokens.Jwt" version="5.1.4" />
+      <dependency id="Microsoft.IdentityModel.Protocols.OpenIdConnect" version="2.1.4" />
+    </dependencies>
+  </metadata>
+  <files>
+    <!-- assembly Microsoft.Bot.Builder.Classic -->
+    <file src="..\Microsoft.Bot.Builder.Classic\bin\release\Microsoft.Bot.Builder.Classic.dll" target="lib\net46"/>
+    <file src="..\Microsoft.Bot.Builder.Classic\bin\release\Microsoft.Bot.Builder.Classic.xml" target="lib\net46" />
+    <file src="..\Microsoft.Bot.Builder.Classic\bin\release\Microsoft.Bot.Builder.Classic.pdb" target="lib\net46" />
+    <!-- source -->
+    <file src="..\**\*.cs"
+          exclude="**\obj\**\*.cs;..\Microsoft.Bot.Builder.Classic.Azure\**;..\Microsoft.Bot.Builder.Classic.Calling\**;..\Microsoft.Bot.Builder.Classic.FormFlow.Json\**;..\Microsoft.Bot.Builder.Classic.History\**;..\Microsoft.Bot.Connector.AspNetCore\**;..\Microsoft.Bot.Connector.NetCore\**"
+          target="src" />
+    <!-- tools -->
+    <file src="..\rview\bin\release\RView.exe" target="tools"/>
+    <!-- resources -->
+    <file src="bin\release\ar\*.dll" target="lib\net46\ar"/>
+    <file src="bin\release\cs\*.dll" target="lib\net46\cs"/>
+    <file src="bin\release\de-dE\*.dll" target="lib\net46\de-dE"/>
+    <file src="bin\release\pt-BR\*.dll" target="lib\net46\pt-BR"/>
+    <file src="bin\release\en\*.dll" target="lib\net46\en"/>
+    <file src="bin\release\es\*.dll" target="lib\net46\es"/>
+    <file src="bin\release\fa\*.dll" target="lib\net46\fa"/>
+    <file src="bin\release\fr\*.dll" target="lib\net46\fr"/>
+    <file src="bin\release\it\*.dll" target="lib\net46\it"/>
+    <file src="bin\release\ja\*.dll" target="lib\net46\ja"/>
+    <file src="bin\release\nl\*.dll" target="lib\net46\nl"/>
+    <file src="bin\release\ru\*.dll" target="lib\net46\ru"/>
+    <file src="bin\release\zh-hans\*.dll" target="lib\net46\zh-hans"/>
+  </files>
+</package>

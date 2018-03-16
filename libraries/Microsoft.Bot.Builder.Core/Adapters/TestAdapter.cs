@@ -2,16 +2,19 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
+using System.Threading;
 
 namespace Microsoft.Bot.Builder.Adapters
 {
     public class TestAdapter : BotAdapter
     {
         private int _nextId = 0;
-        private readonly List<Activity> botReplies = new List<Activity>();
+        private readonly Queue<Activity> botReplies = new Queue<Activity>();
 
         public TestAdapter(ConversationReference reference = null)
         {
@@ -33,6 +36,7 @@ namespace Microsoft.Bot.Builder.Adapters
             }
         }
 
+        public Queue<Activity> ActiveQueue { get { return botReplies; } }
 
         public new TestAdapter Use(IMiddleware middleware)
         {
@@ -40,7 +44,7 @@ namespace Microsoft.Bot.Builder.Adapters
             return this;
         }
 
-        public Task ProcessActivity(Activity activity, Func<IBotContext, Task> callback)
+        public Task ProcessActivity(Activity activity, Func<IBotContext, Task> callback, CancellationTokenSource cancelToken = null)
         {
             lock (this.ConversationReference)
             {
@@ -56,8 +60,8 @@ namespace Microsoft.Bot.Builder.Adapters
                 var id = activity.Id = (this._nextId++).ToString();
             }
 
-            var context = new BotContext(this, activity);
-            return base.RunPipeline(context, callback);
+            var context = new BotContext(this, (Activity)activity);
+            return base.RunPipeline(context, callback, cancelToken);
         }
 
         public ConversationReference ConversationReference { get; set; }
@@ -80,7 +84,7 @@ namespace Microsoft.Bot.Builder.Adapters
                 {
                     lock (this.botReplies)
                     {
-                        this.botReplies.Add(activity);
+                        this.botReplies.Enqueue((Activity)activity);
                     }
                 }
             }
@@ -90,11 +94,15 @@ namespace Microsoft.Bot.Builder.Adapters
         {
             lock (this.botReplies)
             {
+                var replies = this.botReplies.ToList();
                 for (int i = 0; i < this.botReplies.Count; i++)
                 {
-                    if (this.botReplies[i].Id == activity.Id)
+                    if (replies[i].Id == activity.Id)
                     {
-                        this.botReplies[i] = activity;
+                        replies[i] = (Activity)activity;
+                        this.botReplies.Clear();
+                        foreach (var item in replies)
+                            this.botReplies.Enqueue(item);
                         return Task.FromResult(new ResourceResponse(activity.Id));
                     }
                 }
@@ -106,16 +114,35 @@ namespace Microsoft.Bot.Builder.Adapters
         {
             lock (this.botReplies)
             {
+                var replies = this.botReplies.ToList();
                 for (int i = 0; i < this.botReplies.Count; i++)
                 {
-                    if (this.botReplies[i].Id == reference.ActivityId)
+                    if (replies[i].Id == reference.ActivityId)
                     {
-                        this.botReplies.RemoveAt(i);
+                        replies.RemoveAt(i);
+                        this.botReplies.Clear();
+                        foreach (var item in replies)
+                            this.botReplies.Enqueue(item);
                         break;
                     }
                 }
             }
             return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// NOTE: this resets the queue, it doesn't actually maintain multiple converstion queues
+        /// </summary>
+        /// <param name="channelId"></param>
+        /// <param name="callback"></param>
+        /// <returns></returns>
+        public override Task CreateConversation(string channelId, Func<IBotContext, Task> callback)
+        {
+            this.ActiveQueue.Clear();
+            var update = Activity.CreateConversationUpdateActivity();
+            update.Conversation = new ConversationAccount() { Id = Guid.NewGuid().ToString("n") };
+            var context = new BotContext(this, (Activity)update);
+            return callback(context);
         }
 
         /// <summary>
@@ -128,9 +155,7 @@ namespace Microsoft.Bot.Builder.Adapters
             {
                 if (this.botReplies.Count > 0)
                 {
-                    var result = this.botReplies[0];
-                    this.botReplies.RemoveAt(0);
-                    return result;
+                    return this.botReplies.Dequeue();
                 }
             }
             return null;
@@ -282,7 +307,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <param name="description"></param>
         /// <param name="timeout"></param>
         /// <returns></returns>
-        public TestFlow AssertReply(IActivity expected, string description = null, UInt32 timeout = 3000)
+        public TestFlow AssertReply(IActivity expected, [CallerMemberName] string description = null, UInt32 timeout = 3000)
         {
             return this.AssertReply((reply) =>
             {
@@ -306,7 +331,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <param name="description"></param>
         /// <param name="timeout"></param>
         /// <returns></returns>
-        public TestFlow AssertReply(Action<IActivity> validateActivity, string description, UInt32 timeout = 3000)
+        public TestFlow AssertReply(Action<IActivity> validateActivity, [CallerMemberName] string description = null, UInt32 timeout = 3000)
         {
             return new TestFlow(this.testTask.ContinueWith((task) =>
             {

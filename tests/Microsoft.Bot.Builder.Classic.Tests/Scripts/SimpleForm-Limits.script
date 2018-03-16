@@ -1,0 +1,69 @@
+en-us
+{"Date":"0001-01-01T00:00:00","Float":null,"Integer":0,"SomeChoices":0,"Text":null}
+[]
+FromUser:"hi"
+1
+ToUserText:"Please enter text "
+State:{"Date":"0001-01-01T00:00:00","Float":null,"Integer":0,"SomeChoices":0,"Text":null}
+FromUser:"integer"
+1
+ToUserText:"Please enter a number for integer (current choice: 0)"
+State:{"Date":"0001-01-01T00:00:00","Float":null,"Integer":0,"SomeChoices":0,"Text":null}
+FromUser:"2147483648"
+1
+ToUserText:"\"2147483648\" is not an integer option."
+State:{"Date":"0001-01-01T00:00:00","Float":null,"Integer":0,"SomeChoices":0,"Text":null}
+FromUser:"-2147483649"
+1
+ToUserText:"\"-2147483649\" is not an integer option."
+State:{"Date":"0001-01-01T00:00:00","Float":null,"Integer":0,"SomeChoices":0,"Text":null}
+FromUser:"92233720368547758071"
+1
+ToUserText:"\"92233720368547758071\" is not an integer option."
+State:{"Date":"0001-01-01T00:00:00","Float":null,"Integer":0,"SomeChoices":0,"Text":null}
+FromUser:"-92233720368547758081"
+1
+ToUserText:"\"-92233720368547758081\" is not an integer option."
+State:{"Date":"0001-01-01T00:00:00","Float":null,"Integer":0,"SomeChoices":0,"Text":null}
+FromUser:"2147483647"
+1
+ToUserText:"Please enter a number for float "
+State:{"Date":"0001-01-01T00:00:00","Float":null,"Integer":2147483647,"SomeChoices":0,"Text":null}
+FromUser:"back"
+1
+ToUserText:"Please enter a number for integer (current choice: 2147483647)"
+State:{"Date":"0001-01-01T00:00:00","Float":null,"Integer":2147483647,"SomeChoices":0,"Text":null}
+FromUser:"-2147483648"
+1
+ToUserText:"Please enter a number for float "
+State:{"Date":"0001-01-01T00:00:00","Float":null,"Integer":-2147483648,"SomeChoices":0,"Text":null}
+FromUser:"3.40282346638529E+38"
+1
+ToUserText:"\"3.40282346638529E+38\" is not a float option."
+State:{"Date":"0001-01-01T00:00:00","Float":null,"Integer":-2147483648,"SomeChoices":0,"Text":null}
+FromUser:"-6.80564693277058E+38"
+1
+ToUserText:"\"-6.80564693277058E+38\" is not a float option."
+State:{"Date":"0001-01-01T00:00:00","Float":null,"Integer":-2147483648,"SomeChoices":0,"Text":null}
+FromUser:"1.79769313486232E+309"
+1
+ToUserText:"\"1.79769313486232E+309\" is not a float option."
+State:{"Date":"0001-01-01T00:00:00","Float":null,"Integer":-2147483648,"SomeChoices":0,"Text":null}
+FromUser:"-1.79769313486232E+309"
+1
+ToUserText:"\"-1.79769313486232E+309\" is not a float option."
+State:{"Date":"0001-01-01T00:00:00","Float":null,"Integer":-2147483648,"SomeChoices":0,"Text":null}
+FromUser:"3.402823E+38"
+1
+ToUserButtons:[{"contentType":"application/vnd.microsoft.card.hero","contentUrl":null,"content":{"title":"","subtitle":null,"text":"Please select a some choices ","images":null,"buttons":[{"type":"imBack","title":"One","image":null,"text":null,"displayText":null,"value":"One"},{"type":"imBack","title":"Two","image":null,"text":null,"displayText":null,"value":"Two"},{"type":"imBack","title":"Three","image":null,"text":null,"displayText":null,"value":"Three"},{"type":"imBack","title":"Four","image":null,"text":null,"displayText":null,"value":"Four"}],"tap":null},"name":null,"thumbnailUrl":null}]
+State:{"Date":"0001-01-01T00:00:00","Float":3.402823E+38,"Integer":-2147483648,"SomeChoices":0,"Text":null}
+FromUser:"back"
+1
+ToUserText:"Please enter a number for float (current choice: 3.4028230607371E+38)"
+State:{"Date":"0001-01-01T00:00:00","Float":3.402823E+38,"Integer":-2147483648,"SomeChoices":0,"Text":null}
+FromUser:"-3.402823E+38"
+1
+ToUserButtons:[{"contentType":"application/vnd.microsoft.card.hero","contentUrl":null,"content":{"title":"","subtitle":null,"text":"Please select a some choices ","images":null,"buttons":[{"type":"imBack","title":"One","image":null,"text":null,"displayText":null,"value":"One"},{"type":"imBack","title":"Two","image":null,"text":null,"displayText":null,"value":"Two"},{"type":"imBack","title":"Three","image":null,"text":null,"displayText":null,"value":"Three"},{"type":"imBack","title":"Four","image":null,"text":null,"displayText":null,"value":"Four"}],"tap":null},"name":null,"thumbnailUrl":null}]
+State:{"Date":"0001-01-01T00:00:00","Float":-3.402823E+38,"Integer":-2147483648,"SomeChoices":0,"Text":null}
+FromUser:"quit"
+Exception:Form quit.

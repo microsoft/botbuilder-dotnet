@@ -38,8 +38,7 @@ namespace AlarmBot
                 var middleware = options.Middleware;
 
                 middleware.Add(new UserState<UserData>(new MemoryStorage()));
-                middleware.Add(new ConversationState<ConversationData>(new MemoryStorage()));
-                middleware.Add(new BatchOutputMiddleware());
+                middleware.Add(new ConversationState<ConversationData>(new MemoryStorage()));                
                 middleware.Add(new RegExpRecognizerMiddleware()
                         .AddIntent("showAlarms", new Regex("show alarm(?:s)*(.*)", RegexOptions.IgnoreCase))
                         .AddIntent("addAlarm", new Regex("add(?: an)* alarm(.*)", RegexOptions.IgnoreCase))

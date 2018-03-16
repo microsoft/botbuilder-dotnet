@@ -1,0 +1,133 @@
+fr
+{"Available":"0001-01-01T00:00:00","Bottles":null,"BYO":null,"Coupon":0,"Coupons":null,"DeliveryAddress":null,"GourmetDelite":0,"Kind":0,"NumberOfPizzas":1,"Phone":null,"Rating":null,"Signature":0,"Size":null,"Specials":null,"Stuffed":0}
+[]
+FromUser:"bonjour"
+3
+ToUserText:"Bienvenue dans le bot de pizza!!!"
+ToUserText:"Permet de faire une pizza!!!"
+ToUserText:"Veuillez entrer un numéro entre 1 et 10 à nombre de pizzas (choix actuel: 1)"
+State:{"Available":"0001-01-01T00:00:00","Bottles":null,"BYO":null,"Coupon":0,"Coupons":null,"DeliveryAddress":null,"GourmetDelite":0,"Kind":0,"NumberOfPizzas":1,"Phone":null,"Rating":null,"Signature":0,"Size":null,"Specials":null,"Stuffed":0}
+FromUser:"2"
+1
+ToUserText:"Veuillez choisir un taille (choix actuel: Pas de préférence) \r\n  1. Moyen\r\n  2. Grande\r\n  3. Famille\r\n  4. Pas de préférence"
+State:{"Available":"0001-01-01T00:00:00","Bottles":null,"BYO":null,"Coupon":0,"Coupons":null,"DeliveryAddress":null,"GourmetDelite":0,"Kind":0,"NumberOfPizzas":2,"Phone":null,"Rating":null,"Signature":0,"Size":null,"Specials":null,"Stuffed":0}
+FromUser:"moyen"
+1
+ToUserText:"Quel genre de pizza que vous voulez? \r\n  1. Pizza de signature\r\n  2. Gourmet Delite Pizza\r\n  3. Pizza farcie\r\n  4. Créer la vôtre"
+State:{"Available":"0001-01-01T00:00:00","Bottles":null,"BYO":null,"Coupon":0,"Coupons":null,"DeliveryAddress":null,"GourmetDelite":0,"Kind":0,"NumberOfPizzas":2,"Phone":null,"Rating":null,"Signature":0,"Size":0,"Specials":null,"Stuffed":0}
+FromUser:"4"
+1
+ToUserText:"Veuillez choisir un ou plusieurs sous-ensemble de caractères spéciaux (1. Boisson gratuite, ou 2. Pain à l'ail gratuit)"
+State:{"Available":"0001-01-01T00:00:00","Bottles":null,"BYO":null,"Coupon":0,"Coupons":null,"DeliveryAddress":null,"GourmetDelite":0,"Kind":4,"NumberOfPizzas":2,"Phone":null,"Rating":null,"Signature":0,"Size":0,"Specials":null,"Stuffed":0}
+FromUser:"?"
+2
+ToUserText:"* Vous renseignez le champ sous-ensemble de caractères spéciaux. Réponses possibles: \r\n* Vous pouvez saisir un ou plusieurs nombres 1-2 ou des mots de la description. (Boisson gratuite, ou Pain à l'ail gratuit)\r\n* Retourner à la question précédente.\r\n* Assistance: Montrez les réponses possibles.\r\n* Abandonner: Quitter le formulaire sans le compléter.\r\n* Remplir à nouveau le formulaire. (Vos réponses précédentes sont enregistrées.)\r\n* Statut: Montrer le progrès en remplissant le formulaire jusqu'à présent.\r\n* Vous pouvez passer à un autre champ en entrant son nom. (Nombre de Pizzas, Taille, Type de pizza, Sous-ensemble de caractères spéciaux, Moitié-moitié, Croûte, Sauce, Nappages, Adresse de remise, Coupons, Coupon, Notation, Disponibles, Bouteilles, ou Téléphone). "
+ToUserText:"Veuillez choisir un ou plusieurs sous-ensemble de caractères spéciaux (1. Boisson gratuite, ou 2. Pain à l'ail gratuit)"
+State:{"Available":"0001-01-01T00:00:00","Bottles":null,"BYO":null,"Coupon":0,"Coupons":null,"DeliveryAddress":null,"GourmetDelite":0,"Kind":4,"NumberOfPizzas":2,"Phone":null,"Rating":null,"Signature":0,"Size":0,"Specials":null,"Stuffed":0}
+FromUser:"1 2"
+1
+ToUserText:"Voudriez-vous un moitié-moitié? (1. Oui, ou 2. Non)"
+State:{"Available":"0001-01-01T00:00:00","Bottles":null,"BYO":null,"Coupon":0,"Coupons":null,"DeliveryAddress":null,"GourmetDelite":0,"Kind":4,"NumberOfPizzas":2,"Phone":null,"Rating":null,"Signature":0,"Size":0,"Specials":["special1","special2"],"Stuffed":0}
+FromUser:"retourner"
+1
+ToUserText:"« retourner » n'est pas un choix valide moitié-moitié."
+State:{"Available":"0001-01-01T00:00:00","Bottles":null,"BYO":null,"Coupon":0,"Coupons":null,"DeliveryAddress":null,"GourmetDelite":0,"Kind":4,"NumberOfPizzas":2,"Phone":null,"Rating":null,"Signature":0,"Size":0,"Specials":["special1","special2"],"Stuffed":0}
+FromUser:"c"
+1
+ToUserText:"« c » n'est pas un choix valide moitié-moitié."
+State:{"Available":"0001-01-01T00:00:00","Bottles":null,"BYO":null,"Coupon":0,"Coupons":null,"DeliveryAddress":null,"GourmetDelite":0,"Kind":4,"NumberOfPizzas":2,"Phone":null,"Rating":null,"Signature":0,"Size":0,"Specials":["special1","special2"],"Stuffed":0}
+FromUser:"non"
+1
+ToUserText:"Veuillez choisir un croûte \r\n  1. Original\r\n  2. fine\r\n  3. En peluche\r\n  4. Frais Pan\r\n  5. Sans gluten"
+State:{"Available":"0001-01-01T00:00:00","Bottles":null,"BYO":{"Crust":0,"HalfAndHalf":false,"HalfToppings":null,"Sauce":0,"Toppings":null},"Coupon":0,"Coupons":null,"DeliveryAddress":null,"GourmetDelite":0,"Kind":4,"NumberOfPizzas":2,"Phone":null,"Rating":null,"Signature":0,"Size":0,"Specials":["special1","special2"],"Stuffed":0}
+FromUser:"fine"
+1
+ToUserText:"Veuillez choisir un sauce (1. Traditionnel, 2. Crémeuse à l'ail, ou 3. Huile d'olive)"
+State:{"Available":"0001-01-01T00:00:00","Bottles":null,"BYO":{"Crust":2,"HalfAndHalf":false,"HalfToppings":null,"Sauce":0,"Toppings":null},"Coupon":0,"Coupons":null,"DeliveryAddress":null,"GourmetDelite":0,"Kind":4,"NumberOfPizzas":2,"Phone":null,"Rating":null,"Signature":0,"Size":0,"Specials":["special1","special2"],"Stuffed":0}
+FromUser:"1"
+1
+ToUserText:"Veuillez choisir un ou plusieurs nappages \r\n  1. Tous sauf\r\n  2. Viande bovine\r\n  3. Olives noires\r\n  4. Canadian Bacon\r\n  5. Bacon croustillant\r\n  6. Ail\r\n  7. Poivrons verts\r\n  8. Poulet grillé\r\n  9. Fines herbes et le mélange de fromage\r\n  10. Saucisse italienne\r\n  11. Cœurs d'artichauts\r\n  12. Oignons mélangés\r\n  13. Fromage mozzarella\r\n  14. tête bombée\r\n  15. Oignons\r\n  16. Fromage parmesan\r\n  17. Pepperoni\r\n  18. Ananas\r\n  19. Tomates Roma\r\n  20. Salami\r\n  21. Épinards\r\n  22. Tomates séchées au soleil\r\n  23. Courgettes\r\n  24. Extra fromage"
+State:{"Available":"0001-01-01T00:00:00","Bottles":null,"BYO":{"Crust":2,"HalfAndHalf":false,"HalfToppings":null,"Sauce":1,"Toppings":null},"Coupon":0,"Coupons":null,"DeliveryAddress":null,"GourmetDelite":0,"Kind":4,"NumberOfPizzas":2,"Phone":null,"Rating":null,"Signature":0,"Size":0,"Specials":["special1","special2"],"Stuffed":0}
+FromUser:"?"
+2
+ToUserText:"* Vous renseignez le champ nappages. Réponses possibles: \r\n* Vous pouvez saisir un ou plusieurs nombres 1-24 ou des mots de la description. (Tous sauf, Viande bovine, Olives noires, Canadian Bacon, Bacon croustillant, Ail, Poivrons verts, Poulet grillé, Fines herbes et le mélange de fromage, Saucisse italienne, Cœurs d'artichauts, Oignons mélangés, Fromage mozzarella, tête bombée, Oignons, Fromage parmesan, Pepperoni, Ananas, Tomates Roma, Salami, Épinards, Tomates séchées au soleil, Courgettes, ou Extra fromage)\r\n* Retourner à la question précédente.\r\n* Assistance: Montrez les réponses possibles.\r\n* Abandonner: Quitter le formulaire sans le compléter.\r\n* Remplir à nouveau le formulaire. (Vos réponses précédentes sont enregistrées.)\r\n* Statut: Montrer le progrès en remplissant le formulaire jusqu'à présent.\r\n* Vous pouvez passer à un autre champ en entrant son nom. (Nombre de Pizzas, Taille, Type de pizza, Sous-ensemble de caractères spéciaux, Moitié-moitié, Croûte, Sauce, Nappages, Adresse de remise, Coupons, Coupon, Notation, Disponibles, Bouteilles, ou Téléphone). "
+ToUserText:"Veuillez choisir un ou plusieurs nappages \r\n  1. Tous sauf\r\n  2. Viande bovine\r\n  3. Olives noires\r\n  4. Canadian Bacon\r\n  5. Bacon croustillant\r\n  6. Ail\r\n  7. Poivrons verts\r\n  8. Poulet grillé\r\n  9. Fines herbes et le mélange de fromage\r\n  10. Saucisse italienne\r\n  11. Cœurs d'artichauts\r\n  12. Oignons mélangés\r\n  13. Fromage mozzarella\r\n  14. tête bombée\r\n  15. Oignons\r\n  16. Fromage parmesan\r\n  17. Pepperoni\r\n  18. Ananas\r\n  19. Tomates Roma\r\n  20. Salami\r\n  21. Épinards\r\n  22. Tomates séchées au soleil\r\n  23. Courgettes\r\n  24. Extra fromage"
+State:{"Available":"0001-01-01T00:00:00","Bottles":null,"BYO":{"Crust":2,"HalfAndHalf":false,"HalfToppings":null,"Sauce":1,"Toppings":null},"Coupon":0,"Coupons":null,"DeliveryAddress":null,"GourmetDelite":0,"Kind":4,"NumberOfPizzas":2,"Phone":null,"Rating":null,"Signature":0,"Size":0,"Specials":["special1","special2"],"Stuffed":0}
+FromUser:"bovine, oignons, ice cream"
+1
+ToUserText:"Par nappages \"oignons\" vouliez-vous dire (1. Oignons, ou 2. Oignons mélangés)"
+State:{"Available":"0001-01-01T00:00:00","Bottles":null,"BYO":{"Crust":2,"HalfAndHalf":false,"HalfToppings":null,"Sauce":1,"Toppings":null},"Coupon":0,"Coupons":null,"DeliveryAddress":null,"GourmetDelite":0,"Kind":4,"NumberOfPizzas":2,"Phone":null,"Rating":null,"Signature":0,"Size":0,"Specials":["special1","special2"],"Stuffed":0}
+FromUser:"oignons"
+4
+ToUserText:"Pour nappages, j'ai compris Viande Bovine, et Oignons. \" ice cream \"n'est pas un choix valide."
+ToUserText:"Près de là!!! \r\n* Nombre de Pizzas: 2\r\n* Taille: Moyen\r\n* Type de pizza: Créer la vôtre\r\n* Sous-ensemble de caractères spéciaux: Boisson Gratuite, et Pain À L Ail Gratuit\r\n* Moitié-moitié: Non\r\n* Croûte: fine\r\n* Sauce: Traditionnel\r\n* Nappages: Viande Bovine, et Oignons\r\n"
+ToUserText:"Ce que nous avons est un fine croûte Traditionnel sauce Viande Bovine, et Oignons pizza}}}"
+ToUserText:"S'il vous plaît tapez adresse de remise "
+State:{"Available":"0001-01-01T00:00:00","Bottles":null,"BYO":{"Crust":2,"HalfAndHalf":false,"HalfToppings":null,"Sauce":1,"Toppings":[2,15]},"Coupon":0,"Coupons":null,"DeliveryAddress":null,"GourmetDelite":0,"Kind":4,"NumberOfPizzas":2,"Phone":null,"Rating":null,"Signature":0,"Size":0,"Specials":["special1","special2"],"Stuffed":0}
+FromUser:"statut"
+2
+ToUserText:"* Nombre de Pizzas: 2\r\n* Taille: Moyen\r\n* Type de pizza: Créer la vôtre\r\n* Sous-ensemble de caractères spéciaux: Boisson Gratuite, et Pain À L Ail Gratuit\r\n* Moitié-moitié: Non\r\n* Croûte: fine\r\n* Sauce: Traditionnel\r\n* Nappages: Viande Bovine, et Oignons\r\n* Adresse de remise: Pas spécifié\r\n* Coupons: Pas de préférence\r\n* Coupon: Pas de préférence\r\n* Notation: Pas de préférence\r\n* Disponibles: Pas spécifié\r\n* Bouteilles: Pas de préférence\r\n* Téléphone: Pas spécifié\r\n"
+ToUserText:"S'il vous plaît tapez adresse de remise "
+State:{"Available":"0001-01-01T00:00:00","Bottles":null,"BYO":{"Crust":2,"HalfAndHalf":false,"HalfToppings":null,"Sauce":1,"Toppings":[2,15]},"Coupon":0,"Coupons":null,"DeliveryAddress":null,"GourmetDelite":0,"Kind":4,"NumberOfPizzas":2,"Phone":null,"Rating":null,"Signature":0,"Size":0,"Specials":["special1","special2"],"Stuffed":0}
+FromUser:"abc"
+2
+ToUserText:"Adresse doit commencer par un nombre."
+ToUserText:"S'il vous plaît tapez adresse de remise "
+State:{"Available":"0001-01-01T00:00:00","Bottles":null,"BYO":{"Crust":2,"HalfAndHalf":false,"HalfToppings":null,"Sauce":1,"Toppings":[2,15]},"Coupon":0,"Coupons":null,"DeliveryAddress":null,"GourmetDelite":0,"Kind":4,"NumberOfPizzas":2,"Phone":null,"Rating":null,"Signature":0,"Size":0,"Specials":["special1","special2"],"Stuffed":0}
+FromUser:"1 state street"
+3
+ToUserText:"Votre adresse est très bien."
+ToUserText:"Votre pizza vous coûtera 20,00 €"
+ToUserText:"Votre pizza vous coûtera 10,00 € est que OK?"
+State:{"Available":"0001-01-01T00:00:00","Bottles":null,"BYO":{"Crust":2,"HalfAndHalf":false,"HalfToppings":null,"Sauce":1,"Toppings":[2,15]},"Coupon":0,"Coupons":null,"DeliveryAddress":"1 state street","GourmetDelite":0,"Kind":4,"NumberOfPizzas":2,"Phone":null,"Rating":null,"Signature":0,"Size":0,"Specials":["special1","special2"],"Stuffed":0}
+FromUser:"oui"
+1
+ToUserText:"Veuillez choisir un ou plusieurs coupons (1. Grande 20 pour cent, 2. Pepperoni 20 pour cent, ou 3. Pas de préférence) (choix actuel: Pas de préférence)"
+State:{"Available":"0001-01-01T00:00:00","Bottles":null,"BYO":{"Crust":2,"HalfAndHalf":false,"HalfToppings":null,"Sauce":1,"Toppings":[2,15]},"Coupon":0,"Coupons":null,"DeliveryAddress":"1 state street","GourmetDelite":0,"Kind":4,"NumberOfPizzas":2,"Phone":null,"Rating":null,"Signature":0,"Size":0,"Specials":["special1","special2"],"Stuffed":0}
+FromUser:"1 2"
+1
+ToUserText:"Veuillez choisir un coupon (1. Grande 20 pour cent, 2. Pepperoni 20 pour cent, ou 3. Pas de préférence) (choix actuel: Pas de préférence)"
+State:{"Available":"0001-01-01T00:00:00","Bottles":null,"BYO":{"Crust":2,"HalfAndHalf":false,"HalfToppings":null,"Sauce":1,"Toppings":[2,15]},"Coupon":0,"Coupons":[1,2],"DeliveryAddress":"1 state street","GourmetDelite":0,"Kind":4,"NumberOfPizzas":2,"Phone":null,"Rating":null,"Signature":0,"Size":0,"Specials":["special1","special2"],"Stuffed":0}
+FromUser:"non"
+1
+ToUserText:"Veuillez taper un nombre entre 1,0 et 5,0 à notation (choix actuel: Pas de préférence)"
+State:{"Available":"0001-01-01T00:00:00","Bottles":null,"BYO":{"Crust":2,"HalfAndHalf":false,"HalfToppings":null,"Sauce":1,"Toppings":[2,15]},"Coupon":0,"Coupons":[1,2],"DeliveryAddress":"1 state street","GourmetDelite":0,"Kind":4,"NumberOfPizzas":2,"Phone":null,"Rating":null,"Signature":0,"Size":0,"Specials":["special1","special2"],"Stuffed":0}
+FromUser:"2,5"
+1
+ToUserText:"Veuillez taper une date et une heure pour disponibles "
+State:{"Available":"0001-01-01T00:00:00","Bottles":null,"BYO":{"Crust":2,"HalfAndHalf":false,"HalfToppings":null,"Sauce":1,"Toppings":[2,15]},"Coupon":0,"Coupons":[1,2],"DeliveryAddress":"1 state street","GourmetDelite":0,"Kind":4,"NumberOfPizzas":2,"Phone":null,"Rating":2.5,"Signature":0,"Size":0,"Specials":["special1","special2"],"Stuffed":0}
+FromUser:"25/2/1962 3pm"
+1
+ToUserText:"Veuillez entrer un numéro entre 1 et 3 à bouteilles (choix actuel: Pas de préférence)"
+State:{"Available":"1962-02-25T15:00:00","Bottles":null,"BYO":{"Crust":2,"HalfAndHalf":false,"HalfToppings":null,"Sauce":1,"Toppings":[2,15]},"Coupon":0,"Coupons":[1,2],"DeliveryAddress":"1 state street","GourmetDelite":0,"Kind":4,"NumberOfPizzas":2,"Phone":null,"Rating":2.5,"Signature":0,"Size":0,"Specials":["special1","special2"],"Stuffed":0}
+FromUser:"non"
+1
+ToUserText:"S'il vous plaît tapez téléphone "
+State:{"Available":"1962-02-25T15:00:00","Bottles":null,"BYO":{"Crust":2,"HalfAndHalf":false,"HalfToppings":null,"Sauce":1,"Toppings":[2,15]},"Coupon":0,"Coupons":[1,2],"DeliveryAddress":"1 state street","GourmetDelite":0,"Kind":4,"NumberOfPizzas":2,"Phone":null,"Rating":2.5,"Signature":0,"Size":0,"Specials":["special1","special2"],"Stuffed":0}
+FromUser:"1234"
+2
+ToUserText:"« 1234 » n'est pas un choix valide téléphone."
+ToUserText:"S'il vous plaît tapez téléphone "
+State:{"Available":"1962-02-25T15:00:00","Bottles":null,"BYO":{"Crust":2,"HalfAndHalf":false,"HalfToppings":null,"Sauce":1,"Toppings":[2,15]},"Coupon":0,"Coupons":[1,2],"DeliveryAddress":"1 state street","GourmetDelite":0,"Kind":4,"NumberOfPizzas":2,"Phone":null,"Rating":2.5,"Signature":0,"Size":0,"Specials":["special1","special2"],"Stuffed":0}
+FromUser:"123-4567"
+2
+ToUserText:"Note = 2,5 et [2,50]"
+ToUserText:"Vous souhaitez une Moyen, Fine, Traditionnel, Viande Bovine, et Oignons à 1 state street?"
+State:{"Available":"1962-02-25T15:00:00","Bottles":null,"BYO":{"Crust":2,"HalfAndHalf":false,"HalfToppings":null,"Sauce":1,"Toppings":[2,15]},"Coupon":0,"Coupons":[1,2],"DeliveryAddress":"1 state street","GourmetDelite":0,"Kind":4,"NumberOfPizzas":2,"Phone":"123-4567","Rating":2.5,"Signature":0,"Size":0,"Specials":["special1","special2"],"Stuffed":0}
+FromUser:"non"
+1
+ToUserText:"Que voulez-vous changer? (choix actuel: Pas de préférence) \r\n  1. Nombre de Pizzas(2)\r\n  2. Taille(Moyen)\r\n  3. Type de pizza(Créer la vôtre)\r\n  4. Sous-ensemble de caractères spéciaux(Boisson Gratuite, et Pain À L Ail Gratuit)\r\n  5. Moitié-moitié(Non)\r\n  6. Croûte(fine)\r\n  7. Sauce(Traditionnel)\r\n  8. Nappages(Viande Bovine, et Oignons)\r\n  9. Adresse de remise(1 state street)\r\n  10. Coupons(Grande 20 Pour Cent, et Pepperoni 20 Pour Cent)\r\n  11. Coupon(Pas de préférence)\r\n  12. Notation(2,5)\r\n  13. Disponibles(25/02/1962 15:00:00)\r\n  14. Bouteilles(Pas de préférence)\r\n  15. Téléphone(123-4567)\r\n  16. Pas de préférence"
+State:{"Available":"1962-02-25T15:00:00","Bottles":null,"BYO":{"Crust":2,"HalfAndHalf":false,"HalfToppings":null,"Sauce":1,"Toppings":[2,15]},"Coupon":0,"Coupons":[1,2],"DeliveryAddress":"1 state street","GourmetDelite":0,"Kind":4,"NumberOfPizzas":2,"Phone":"123-4567","Rating":2.5,"Signature":0,"Size":0,"Specials":["special1","special2"],"Stuffed":0}
+FromUser:"nappages"
+1
+ToUserText:"Veuillez choisir un ou plusieurs nappages (choix actuel: Viande Bovine, et Oignons) \r\n  1. Tous sauf\r\n  2. Viande bovine\r\n  3. Olives noires\r\n  4. Canadian Bacon\r\n  5. Bacon croustillant\r\n  6. Ail\r\n  7. Poivrons verts\r\n  8. Poulet grillé\r\n  9. Fines herbes et le mélange de fromage\r\n  10. Saucisse italienne\r\n  11. Cœurs d'artichauts\r\n  12. Oignons mélangés\r\n  13. Fromage mozzarella\r\n  14. tête bombée\r\n  15. Oignons\r\n  16. Fromage parmesan\r\n  17. Pepperoni\r\n  18. Ananas\r\n  19. Tomates Roma\r\n  20. Salami\r\n  21. Épinards\r\n  22. Tomates séchées au soleil\r\n  23. Courgettes\r\n  24. Extra fromage"
+State:{"Available":"1962-02-25T15:00:00","Bottles":null,"BYO":{"Crust":2,"HalfAndHalf":false,"HalfToppings":null,"Sauce":1,"Toppings":[2,15]},"Coupon":0,"Coupons":[1,2],"DeliveryAddress":"1 state street","GourmetDelite":0,"Kind":4,"NumberOfPizzas":2,"Phone":"123-4567","Rating":2.5,"Signature":0,"Size":0,"Specials":["special1","special2"],"Stuffed":0}
+FromUser:"non epinards"
+2
+ToUserText:"Pour nappages, j'ai compris Viande Bovine, Olives Noires, Canadian Bacon, Bacon Croustillant, Ail, Poivrons Verts, Poulet Grillé, Fines Herbes Et Le Mélange De Fromage, Saucisse Italienne, Cœurs D Artichauts, Oignons Mélangés, Fromage Mozzarella, Tête Bombée, Oignons, Fromage Parmesan, Pepperoni, Ananas, Tomates Roma, Salami, Épinards, Tomates Séchées Au Soleil, Courgettes, et Extra Fromage. \" epinards \"n'est pas un choix valide."
+ToUserText:"Vous souhaitez une Moyen, Fine, Traditionnel, Viande Bovine, Olives Noires, Canadian Bacon, Bacon Croustillant, Ail, Poivrons Verts, Poulet Grillé, Fines Herbes Et Le Mélange De Fromage, Saucisse Italienne, Cœurs D Artichauts, Oignons Mélangés, Fromage Mozzarella, Tête Bombée, Oignons, Fromage Parmesan, Pepperoni, Ananas, Tomates Roma, Salami, Épinards, Tomates Séchées Au Soleil, Courgettes, et Extra Fromage à 1 state street?"
+State:{"Available":"1962-02-25T15:00:00","Bottles":null,"BYO":{"Crust":2,"HalfAndHalf":false,"HalfToppings":null,"Sauce":1,"Toppings":[2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24]},"Coupon":0,"Coupons":[1,2],"DeliveryAddress":"1 state street","GourmetDelite":0,"Kind":4,"NumberOfPizzas":2,"Phone":"123-4567","Rating":2.5,"Signature":0,"Size":0,"Specials":["special1","special2"],"Stuffed":0}
+FromUser:"oui"
+0
+State:{"Available":"1962-02-25T15:00:00","Bottles":null,"BYO":{"Crust":2,"HalfAndHalf":false,"HalfToppings":null,"Sauce":1,"Toppings":[2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24]},"Coupon":0,"Coupons":[1,2],"DeliveryAddress":"1 state street","GourmetDelite":0,"Kind":4,"NumberOfPizzas":2,"Phone":"123-4567","Rating":2.5,"Signature":0,"Size":0,"Specials":["special1","special2"],"Stuffed":0}
+Result: {"NumberOfPizzas":2,"Size":0,"Kind":4,"Signature":0,"GourmetDelite":0,"Stuffed":0,"BYO":{"Crust":2,"Sauce":1,"HalfAndHalf":false,"Toppings":[2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24],"HalfToppings":null},"Coupons":[1,2],"Coupon":0,"DeliveryAddress":"1 state street","Rating":2.5,"Available":"1962-02-25T15:00:00","Bottles":null,"Specials":["special1","special2"],"Phone":"123-4567"}

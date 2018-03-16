@@ -1,0 +1,354 @@
+// The swagger file that is used to generate Luis models.
+// Look at autorest, https://github.com/Azure/AutoRest, for more information.
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "v1",
+    "title": "Luis Query API"
+  },
+  "host": "westus.api.cognitive.microsoft.com",
+  "basePath": "/luis/",
+  "schemes": [
+    "https"
+  ],
+  "paths": {
+    "/v1/application": {
+      "get": {
+        "operationId": "GetIntentsAndEntities",
+        "description": "Query Luis for intents and entities.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string",
+            "description": "Luis model Id.",
+            "format": "guid",
+            "required": true
+          },
+          {
+            "name": "subscription-key",
+            "in": "query",
+            "type": "string",
+            "description": "Luis subscription key.",
+            "format": "string",
+            "required": true
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "type": "string",
+            "description": "Query submitted to LUIS service.",
+            "format": "string",
+            "required": true
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "intents and entities extracted.",
+            "schema": {
+              "$ref": "#/definitions/LuisResult"
+            }
+          }
+        }
+      }
+    },
+    "/v2.0/apps/{id}": {
+      "get": {
+        "operationId": "GetIntentsAndEntitiesV2",
+        "description": "Query Luis for intents and entities.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "type": "string",
+            "description": "Luis model Id.",
+            "format": "guid",
+            "required": true
+          },
+          {
+            "name": "subscription-key",
+            "in": "query",
+            "type": "string",
+            "description": "Luis subscription key.",
+            "format": "string",
+            "required": true
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "type": "string",
+            "description": "Query submitted to LUIS service.",
+            "format": "string",
+            "required": true
+          },
+          {
+            "name": "timezoneOffset",
+            "in": "query",
+            "type": "number",
+            "description": "The timezone offset for the location of the request.",
+            "required": false
+          },
+          {
+            "name": "contextId",
+            "in": "query",
+            "type": "string",
+            "description": "The conversation id for dialog.",
+            "required": false
+          },
+          {
+            "name": "verbose",
+            "in": "query",
+            "type": "boolean",
+            "description": "If true will return all intents instead of just the topscoring intent.",
+            "required": false
+          },
+          {
+            "name": "forceSet",
+            "in": "query",
+            "type": "string",
+            "description": "A parameter name to override in the action parameters with a new value.",
+            "required": false
+          },
+          {
+            "name": "allowSampling",
+            "in": "query",
+            "type": "string",
+            "description": "A parameter to allow logging the data so they can be accessed.",
+            "required": false
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "intents and entities extracted.",
+            "schema": {
+              "$ref": "#/definitions/LuisResult"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "LuisResult": {
+      "type": "object",
+      "required": [
+        "query",
+        "entities"
+      ],
+      "properties": {
+        "query": {
+          "type": "string",
+          "description": "The query sent to LUIS."
+        },
+        "topScoringIntent": {
+          "$ref": "#/definitions/IntentRecommendation"
+        },
+        "intents": {
+          "type": "array",
+          "description": "The intents found in the query text.",
+          "items": {
+            "$ref": "#/definitions/IntentRecommendation"
+          }
+        },
+        "entities": {
+          "type": "array",
+          "description": "The entities found in the query text.",
+          "items": {
+            "$ref": "#/definitions/EntityRecommendation"
+          }
+        },
+        "compositeEntities": {
+          "type": "array",
+          "description": "The composite entities found in the utterance.",
+          "items": {
+            "$ref": "#/definitions/CompositeEntity"
+          }
+        },
+        "dialog": {
+          "$ref": "#/definitions/DialogResponse"
+        },
+        "alteredQuery": {
+          "type": "string",
+          "description": "The altered query used by LUIS to extract intent and entities. For example, when Bing spell check is enabled for a model, this field will contain the spell checked utterance."
+        }
+      }
+    },
+    "IntentRecommendation": {
+      "description": "LUIS intent recommendation. Look at https://www.luis.ai/Help for more information.",
+      "properties": {
+        "intent": {
+          "type": "string",
+          "description": "The LUIS intent detected by LUIS service in response to a query."
+        },
+        "score": {
+          "type": "number",
+          "description": "The score for the detected intent."
+        },
+        "actions": {
+          "type": "array",
+          "description": "The action associated with this Luis intent.",
+          "items": {
+            "$ref": "#/definitions/Action"
+          }
+        }
+      }
+    },
+    "Action": {
+      "properties": {
+        "triggered": {
+          "type": "boolean",
+          "description": "True if the Luis action is triggered, false otherwise."
+        },
+        "name": {
+          "type": "string",
+          "description": "Name of the action."
+        },
+        "parameters": {
+          "type": "array",
+          "description": "The parameters for the action.",
+          "items": {
+            "$ref": "#/definitions/ActionParameter"
+          }
+        }
+      }
+    },
+    "ActionParameter": {
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Name of the parameter."
+        },
+        "required": {
+          "type": "boolean",
+          "description": "True if the parameter is required, false otherwise."
+        },
+        "value": {
+          "type": "array",
+          "description": "Value of extracted entities for this parameter.",
+          "items": {
+            "$ref": "#/definitions/EntityRecommendation"
+          }
+        }
+      }
+    },
+    "EntityRecommendation": {
+      "description": "Luis entity recommendation. Look at https://www.luis.ai/Help for more information.",
+      "type": "object",
+      "properties": {
+        "role": {
+          "type": "string",
+          "description": "Role of the entity."
+        },
+        "entity": {
+          "type": "string",
+          "description": "Entity extracted by LUIS."
+        },
+        "type": {
+          "type": "string",
+          "description": "Type of the entity."
+        },
+        "startIndex": {
+          "type": "integer",
+          "description": "Start index of the entity in the LUIS query string."
+        },
+        "endIndex": {
+          "type": "integer",
+          "description": "End index of the entity in the LUIS query string."
+        },
+        "score": {
+          "type": "number",
+          "description": "Score assigned by LUIS to detected entity."
+        },
+        "resolution": {
+          "type": "object",
+          "description": "A machine interpretable resolution of the entity.  For example the string \"one thousand\" would have the resolution \"1000\".  The exact form of the resolution is defined by the entity type and is documented here: https://www.luis.ai/Help#PreBuiltEntities.",
+          "additionalProperties": {
+            "type": "object"
+          }
+        }
+      },
+      "required": [
+        "type"
+      ]
+    },
+    "CompositeEntity": {
+      "description": "Luis composite entity. Look at https://www.luis.ai/Help for more information.",
+      "type": "object",
+      "properties": {
+        "parentType": {
+          "type": "string",
+          "description": "Type of parent entity."
+        },
+        "value": {
+          "type": "string",
+          "description": "Value for entity extracted by LUIS."
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/CompositeChild"
+          }
+        }
+      },
+      "required": [
+        "parentType",
+        "value",
+        "children"
+      ]
+    },
+    "CompositeChild": {
+      "description": "Child entity in Luis composite entity.",
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "Type of child entity."
+        },
+        "value": {
+          "type": "string",
+          "description": "Value extracted by Luis."
+        }
+      },
+      "required": [
+        "type",
+        "value"
+      ]
+    },
+    "DialogResponse": {
+      "type": "object",
+      "description": "The dialog response.",
+      "properties": {
+        "prompt": {
+          "type": "string",
+          "description": "Prompt that should be asked."
+        },
+        "parameterName": {
+          "type": "string",
+          "description": "Name of the parameter."
+        },
+        "parameterType": {
+          "type": "string",
+          "description": "Type of the parameter."
+        },
+        "contextId": {
+          "type": "string",
+          "description": "The context id for dialog."
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "Question",
+            "Finished"
+          ],
+          "description": "The dialog status."
+        }
+      }
+    }
+  }
+}

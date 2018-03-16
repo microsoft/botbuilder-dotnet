@@ -13,8 +13,8 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <PackageId>Microsoft.Bot.Schema</PackageId>
+	  <TargetFramework>netstandard2.0</TargetFramework>
+	  <PackageId>Microsoft.Bot.Schema</PackageId>
     <Description>This library implements C# schema classes for using the Bot Framework.</Description>
     <Summary>This library implements C# schema classes for using the Bot Framework.</Summary>
   </PropertyGroup>

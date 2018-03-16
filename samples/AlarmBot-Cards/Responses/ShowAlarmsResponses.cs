@@ -3,10 +3,10 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using AdaptiveCards;
 using AlarmBot.Models;
 using Microsoft.Bot.Builder;
-using Microsoft.Bot.Builder.Core.Extensions;
 using Microsoft.Bot.Schema;
 
 namespace AlarmBot.Responses
@@ -39,9 +39,9 @@ namespace AlarmBot.Responses
             return activity;
         }
 
-        public static void ReplyWithShowAlarms(IBotContext context, dynamic data)
+        public static async Task ReplyWithShowAlarms(IBotContext context, dynamic data)
         {
-            context.Batch().Reply(AlarmsCard(context, data, "Alarms", null));
+            await context.SendActivity(AlarmsCard(context, data, "Alarms", null));
         }
     }
 }

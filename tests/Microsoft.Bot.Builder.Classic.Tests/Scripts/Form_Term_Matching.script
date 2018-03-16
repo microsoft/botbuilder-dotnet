@@ -1,0 +1,79 @@
+en-us
+{"Date":"0001-01-01T00:00:00","Float":null,"Integer":0,"SomeChoices":0,"Text":null}
+[]
+FromUser:"Hi"
+1
+ToUserText:"Please enter text "
+State:{"Date":"0001-01-01T00:00:00","Float":null,"Integer":0,"SomeChoices":0,"Text":null}
+FromUser:"some choices"
+1
+ToUserButtons:[{"contentType":"application/vnd.microsoft.card.hero","contentUrl":null,"content":{"title":"","subtitle":null,"text":"Please select a some choices ","images":null,"buttons":[{"type":"imBack","title":"One","image":null,"text":null,"displayText":null,"value":"One"},{"type":"imBack","title":"Two","image":null,"text":null,"displayText":null,"value":"Two"},{"type":"imBack","title":"Three","image":null,"text":null,"displayText":null,"value":"Three"},{"type":"imBack","title":"Four","image":null,"text":null,"displayText":null,"value":"Four"}],"tap":null},"name":null,"thumbnailUrl":null}]
+State:{"Date":"0001-01-01T00:00:00","Float":null,"Integer":0,"SomeChoices":0,"Text":null}
+FromUser:"aword"
+1
+ToUserButtons:[{"contentType":"application/vnd.microsoft.card.hero","contentUrl":null,"content":{"title":"","subtitle":null,"text":"Choices ","images":null,"buttons":[{"type":"imBack","title":"One","image":null,"text":null,"displayText":null,"value":"One"},{"type":"imBack","title":"Two","image":null,"text":null,"displayText":null,"value":"Two"},{"type":"imBack","title":"Three","image":null,"text":null,"displayText":null,"value":"Three"},{"type":"imBack","title":"Four","image":null,"text":null,"displayText":null,"value":"Four"}],"tap":null},"name":null,"thumbnailUrl":null}]
+State:{"Date":"0001-01-01T00:00:00","Float":null,"Integer":0,"SomeChoices":0,"Text":null}
+FromUser:"wordb"
+1
+ToUserButtons:[{"contentType":"application/vnd.microsoft.card.hero","contentUrl":null,"content":{"title":"","subtitle":null,"text":"Choices ","images":null,"buttons":[{"type":"imBack","title":"One","image":null,"text":null,"displayText":null,"value":"One"},{"type":"imBack","title":"Two","image":null,"text":null,"displayText":null,"value":"Two"},{"type":"imBack","title":"Three","image":null,"text":null,"displayText":null,"value":"Three"},{"type":"imBack","title":"Four","image":null,"text":null,"displayText":null,"value":"Four"}],"tap":null},"name":null,"thumbnailUrl":null}]
+State:{"Date":"0001-01-01T00:00:00","Float":null,"Integer":0,"SomeChoices":0,"Text":null}
+FromUser:"word"
+1
+ToUserText:"Please enter a date and time for date "
+State:{"Date":"0001-01-01T00:00:00","Float":null,"Integer":0,"SomeChoices":4,"Text":null}
+FromUser:"back"
+1
+ToUserButtons:[{"contentType":"application/vnd.microsoft.card.hero","contentUrl":null,"content":{"title":"","subtitle":null,"text":"Please select a some choices ","images":null,"buttons":[{"type":"imBack","title":"One","image":null,"text":null,"displayText":null,"value":"One"},{"type":"imBack","title":"Two","image":null,"text":null,"displayText":null,"value":"Two"},{"type":"imBack","title":"Three","image":null,"text":null,"displayText":null,"value":"Three"},{"type":"imBack","title":"Four","image":null,"text":null,"displayText":null,"value":"Four"}],"tap":null},"name":null,"thumbnailUrl":null}]
+State:{"Date":"0001-01-01T00:00:00","Float":null,"Integer":0,"SomeChoices":4,"Text":null}
+FromUser:"3pword(123)"
+1
+ToUserButtons:[{"contentType":"application/vnd.microsoft.card.hero","contentUrl":null,"content":{"title":"","subtitle":null,"text":"Choices ","images":null,"buttons":[{"type":"imBack","title":"One","image":null,"text":null,"displayText":null,"value":"One"},{"type":"imBack","title":"Two","image":null,"text":null,"displayText":null,"value":"Two"},{"type":"imBack","title":"Three","image":null,"text":null,"displayText":null,"value":"Three"},{"type":"imBack","title":"Four","image":null,"text":null,"displayText":null,"value":"Four"}],"tap":null},"name":null,"thumbnailUrl":null}]
+State:{"Date":"0001-01-01T00:00:00","Float":null,"Integer":0,"SomeChoices":4,"Text":null}
+FromUser:"pword(123)"
+1
+ToUserText:"Please enter a date and time for date "
+State:{"Date":"0001-01-01T00:00:00","Float":null,"Integer":0,"SomeChoices":4,"Text":null}
+FromUser:"back"
+1
+ToUserButtons:[{"contentType":"application/vnd.microsoft.card.hero","contentUrl":null,"content":{"title":"","subtitle":null,"text":"Please select a some choices ","images":null,"buttons":[{"type":"imBack","title":"One","image":null,"text":null,"displayText":null,"value":"One"},{"type":"imBack","title":"Two","image":null,"text":null,"displayText":null,"value":"Two"},{"type":"imBack","title":"Three","image":null,"text":null,"displayText":null,"value":"Three"},{"type":"imBack","title":"Four","image":null,"text":null,"displayText":null,"value":"Four"}],"tap":null},"name":null,"thumbnailUrl":null}]
+State:{"Date":"0001-01-01T00:00:00","Float":null,"Integer":0,"SomeChoices":4,"Text":null}
+FromUser:"32 jumped"
+1
+ToUserButtons:[{"contentType":"application/vnd.microsoft.card.hero","contentUrl":null,"content":{"title":"","subtitle":null,"text":"Choices ","images":null,"buttons":[{"type":"imBack","title":"One","image":null,"text":null,"displayText":null,"value":"One"},{"type":"imBack","title":"Two","image":null,"text":null,"displayText":null,"value":"Two"},{"type":"imBack","title":"Three","image":null,"text":null,"displayText":null,"value":"Three"},{"type":"imBack","title":"Four","image":null,"text":null,"displayText":null,"value":"Four"}],"tap":null},"name":null,"thumbnailUrl":null}]
+State:{"Date":"0001-01-01T00:00:00","Float":null,"Integer":0,"SomeChoices":4,"Text":null}
+FromUser:"32 jump"
+1
+ToUserText:"Please enter a date and time for date "
+State:{"Date":"0001-01-01T00:00:00","Float":null,"Integer":0,"SomeChoices":4,"Text":null}
+FromUser:"back"
+1
+ToUserButtons:[{"contentType":"application/vnd.microsoft.card.hero","contentUrl":null,"content":{"title":"","subtitle":null,"text":"Please select a some choices ","images":null,"buttons":[{"type":"imBack","title":"One","image":null,"text":null,"displayText":null,"value":"One"},{"type":"imBack","title":"Two","image":null,"text":null,"displayText":null,"value":"Two"},{"type":"imBack","title":"Three","image":null,"text":null,"displayText":null,"value":"Three"},{"type":"imBack","title":"Four","image":null,"text":null,"displayText":null,"value":"Four"}],"tap":null},"name":null,"thumbnailUrl":null}]
+State:{"Date":"0001-01-01T00:00:00","Float":null,"Integer":0,"SomeChoices":4,"Text":null}
+FromUser:"this word"
+1
+ToUserText:"Please enter a date and time for date "
+State:{"Date":"0001-01-01T00:00:00","Float":null,"Integer":0,"SomeChoices":4,"Text":null}
+FromUser:"back"
+1
+ToUserButtons:[{"contentType":"application/vnd.microsoft.card.hero","contentUrl":null,"content":{"title":"","subtitle":null,"text":"Please select a some choices ","images":null,"buttons":[{"type":"imBack","title":"One","image":null,"text":null,"displayText":null,"value":"One"},{"type":"imBack","title":"Two","image":null,"text":null,"displayText":null,"value":"Two"},{"type":"imBack","title":"Three","image":null,"text":null,"displayText":null,"value":"Three"},{"type":"imBack","title":"Four","image":null,"text":null,"displayText":null,"value":"Four"}],"tap":null},"name":null,"thumbnailUrl":null}]
+State:{"Date":"0001-01-01T00:00:00","Float":null,"Integer":0,"SomeChoices":4,"Text":null}
+FromUser:"word that"
+1
+ToUserText:"Please enter a date and time for date "
+State:{"Date":"0001-01-01T00:00:00","Float":null,"Integer":0,"SomeChoices":4,"Text":null}
+FromUser:"back"
+1
+ToUserButtons:[{"contentType":"application/vnd.microsoft.card.hero","contentUrl":null,"content":{"title":"","subtitle":null,"text":"Please select a some choices ","images":null,"buttons":[{"type":"imBack","title":"One","image":null,"text":null,"displayText":null,"value":"One"},{"type":"imBack","title":"Two","image":null,"text":null,"displayText":null,"value":"Two"},{"type":"imBack","title":"Three","image":null,"text":null,"displayText":null,"value":"Three"},{"type":"imBack","title":"Four","image":null,"text":null,"displayText":null,"value":"Four"}],"tap":null},"name":null,"thumbnailUrl":null}]
+State:{"Date":"0001-01-01T00:00:00","Float":null,"Integer":0,"SomeChoices":4,"Text":null}
+FromUser:"-word"
+1
+ToUserText:"Please enter a date and time for date "
+State:{"Date":"0001-01-01T00:00:00","Float":null,"Integer":0,"SomeChoices":4,"Text":null}
+FromUser:"back"
+1
+ToUserButtons:[{"contentType":"application/vnd.microsoft.card.hero","contentUrl":null,"content":{"title":"","subtitle":null,"text":"Please select a some choices ","images":null,"buttons":[{"type":"imBack","title":"One","image":null,"text":null,"displayText":null,"value":"One"},{"type":"imBack","title":"Two","image":null,"text":null,"displayText":null,"value":"Two"},{"type":"imBack","title":"Three","image":null,"text":null,"displayText":null,"value":"Three"},{"type":"imBack","title":"Four","image":null,"text":null,"displayText":null,"value":"Four"}],"tap":null},"name":null,"thumbnailUrl":null}]
+State:{"Date":"0001-01-01T00:00:00","Float":null,"Integer":0,"SomeChoices":4,"Text":null}
+FromUser:"word-"
+1
+ToUserText:"Please enter a date and time for date "
+State:{"Date":"0001-01-01T00:00:00","Float":null,"Integer":0,"SomeChoices":4,"Text":null}

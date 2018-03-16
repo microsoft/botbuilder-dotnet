@@ -51,7 +51,8 @@ namespace AlarmBot.Topics
             throw new NotImplementedException();
         }
 
-        public static Task ShowAlarms(IBotContext context)
+
+        public static async Task ShowAlarms(IBotContext context)
         {
             var userState = context.GetUserState<UserData>();
 
@@ -60,8 +61,7 @@ namespace AlarmBot.Topics
                 userState.Alarms = new List<Alarm>();
             }
 
-            ShowAlarmsTopicResponses.ReplyWithShowAlarms(context, userState.Alarms);
-            return Task.CompletedTask;
+            await ShowAlarmsTopicResponses.ReplyWithShowAlarms(context, userState.Alarms);            
         }
     }
 }
