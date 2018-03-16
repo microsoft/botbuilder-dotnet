@@ -16,10 +16,6 @@ namespace AlarmBot.Topics
     /// </summary>
     public class ShowAlarmsTopic : ITopic
     {
-        public ShowAlarmsTopic()
-        {
-        }
-
         public string Name { get; set; } = "ShowAlarms";
 
         /// <summary>
@@ -45,7 +41,6 @@ namespace AlarmBot.Topics
             throw new NotImplementedException();
         }
 
-
         /// <summary>
         ///  Called when a topic is resumed
         /// </summary>
@@ -60,7 +55,6 @@ namespace AlarmBot.Topics
         public static async Task ShowAlarms(IBotContext context)
         {
             var userState = context.GetUserState<UserData>();
-            // var userState = UserState<UserAlarms>.Get(context);
 
             if (userState.Alarms == null)
             {

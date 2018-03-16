@@ -41,11 +41,6 @@ namespace AlarmBot.Topics
             HelpConfirmation
         };
 
-
-        public AddAlarmTopic()
-        {
-        }
-
         /// <summary>
         /// Alarm object representing the information being gathered by the conversation before it is committed
         /// </summary>
@@ -131,7 +126,7 @@ namespace AlarmBot.Topics
                     // take first one in the future if a valid time has been parsed
                     var times = context.GetDateTimes();                    
                     if(times.Any(t => t > DateTimeOffset.Now))
-                        this.Alarm.Time = times.Where(t => t > DateTimeOffset.Now).FirstOrDefault();
+                        this.Alarm.Time = times.FirstOrDefault(t => t > DateTimeOffset.Now);
                     return await this.PromptForMissingData(context);
 
                 case TopicStates.CancelConfirmation:

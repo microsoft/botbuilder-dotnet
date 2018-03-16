@@ -18,6 +18,7 @@ namespace AlarmBot.Responses
         /// <summary>
         /// Standard language alarm description
         /// </summary>
+        /// <param name="context">bot context</param>
         /// <param name="alarm">the alarm to put on card</param>
         /// <param name="title">title for the card</param>
         /// <param name="message">message for the card </param> 
@@ -30,8 +31,8 @@ namespace AlarmBot.Responses
             if (alarm.Time == null)
                 alarm.Time = DateTimeOffset.Now + TimeSpan.FromHours(1);
 
-            string time = alarm.Time.Value.ToString("t");
-            string date = alarm.Time.Value.ToString("d");
+            var time = alarm.Time.Value.ToString("t");
+            var date = alarm.Time.Value.ToString("d");
 
             var card = new AdaptiveCard();
             card.Body.Add(new TextBlock() { Text = title, Size = TextSize.Large, Wrap = true, Weight = TextWeight.Bolder });
