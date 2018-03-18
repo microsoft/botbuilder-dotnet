@@ -43,23 +43,28 @@ namespace Microsoft.Bot.Builder
 
         private Task ReceiveActivityInternal(IBotContext context, Func<IBotContext, Task> callback, int nextMiddlewareIndex = 0)
         {
+            // Check if we're at the end of the middleware list yet
             if(nextMiddlewareIndex == _middleware.Count)
             {
                 // If all the Middlware ran, the "leading edge" of the tree is now complete. 
                 // This means it's time to run any developer specified callback. 
                 // Once this callback is done, the "trailing edge" calls are then completed. This
                 // allows code that looks like:
-                //      console.print("before");
+                //      Trace.TraceInformation("before");
                 //      await next();
-                //      console.print("after"); 
+                //      Trace.TraceInformation("after"); 
                 // to run as expected.
 
-
+                // If a callback was provided invoke it now and return its task, otherwise just return the completed task
                 return callback?.Invoke(context) ?? Task.CompletedTask;
             }
 
-            // Grab the current middleware, which is the 1st element in the array, and execute it            
-            return _middleware[nextMiddlewareIndex].OnProcessRequest(
+            // Get the next piece of middleware 
+            var nextMiddleware = _middleware[nextMiddlewareIndex];
+
+
+            // Execute the next middleware passing a closure that will recurse back into this method at the next piece of middlware as the NextDelegate
+            return nextMiddleware.OnProcessRequest(
                 context,
                 () => ReceiveActivityInternal(context, callback, nextMiddlewareIndex + 1));
         }
