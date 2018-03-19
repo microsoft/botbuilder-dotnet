@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
@@ -45,14 +46,19 @@ namespace Microsoft.Bot.Builder.Adapters
             }
         }
 
-        public override async Task SendActivity(IBotContext context, params Activity[] activities)
+        public override async Task<ResourceResponse[]> SendActivity(IBotContext context, Activity[] activities)
         {
+            List<ResourceResponse> responses = new List<ResourceResponse>();
+
             foreach (var activity in activities)
             {
+                responses.Add(new ResourceResponse(activity.Id));
+
                 switch (activity.Type)
                 {
                     case ActivityTypes.Message:
-                        {
+                        {                            
+
                             IMessageActivity message = activity.AsMessageActivity();
                             if (message.Attachments != null && message.Attachments.Any())
                             {
@@ -78,6 +84,8 @@ namespace Microsoft.Bot.Builder.Adapters
                         break;
                 }
             }
+
+            return responses.ToArray();
         }
 
         public override Task<ResourceResponse> UpdateActivity(IBotContext context, Activity activity)

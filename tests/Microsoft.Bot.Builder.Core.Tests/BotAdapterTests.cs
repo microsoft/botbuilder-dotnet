@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Bot.Builder.Core.Tests
@@ -25,7 +26,26 @@ namespace Microsoft.Bot.Builder.Core.Tests
             SimpleAdapter a = new SimpleAdapter();
             a.Use(new CallCountingMiddleware()).Use(new CallCountingMiddleware());
             // Compiled. Test passed. 
-        }      
+        }
+
+        [TestMethod]
+        public async Task PassResourceResponsesThrough()
+        {
+            void ValidateResponses(Activity[] activities)
+            {
+                // no need to do anything. 
+            }
+
+            SimpleAdapter a = new SimpleAdapter(ValidateResponses);
+            BotContext c = new BotContext(a, new Activity());
+
+            string activityId = Guid.NewGuid().ToString();
+            var activity = TestMessage.Message();
+            activity.Id = activityId;
+
+            var resourceResponse = await c.SendActivity(activity);
+            Assert.IsTrue(resourceResponse.Id == activityId, "Incorrect response Id returned"); 
+        }
     }
 
     public class CallCountingMiddleware : IMiddleware

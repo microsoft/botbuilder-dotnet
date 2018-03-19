@@ -34,7 +34,7 @@ namespace Microsoft.Bot.Builder
         /// </summary>        
         /// <param name="activities">Set of activities being sent</param>
         /// <returns></returns>
-        public abstract Task SendActivity(IBotContext context, params Activity[] activities);
+        public abstract Task<ResourceResponse[]> SendActivity(IBotContext context, Activity[] activities);
 
         /// <summary>
         /// Implement updating an activity in the conversation

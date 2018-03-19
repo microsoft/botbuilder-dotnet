@@ -122,9 +122,29 @@ namespace Microsoft.Bot.Builder.Core.Tests
         {
             SimpleAdapter a = new SimpleAdapter();
             BotContext c = new BotContext(a, new Activity());
+            Assert.IsFalse(c.Responded);            
+            var response = await c.SendActivity(TestMessage.Message("testtest"));
+
+            Assert.IsTrue(c.Responded);
+            Assert.IsTrue(response.Id == "testtest");
+        }
+
+        [TestMethod]
+        public async Task SendBatchOfActivities()
+        {
+            SimpleAdapter a = new SimpleAdapter();
+            BotContext c = new BotContext(a, new Activity());
             Assert.IsFalse(c.Responded);
-            await c.SendActivity(TestMessage.Message());
-            Assert.IsTrue(c.Responded);            
+
+            var message1 = TestMessage.Message("message1");
+            var message2 = TestMessage.Message("message2");
+
+            var response = await c.SendActivities(new IActivity[] { message1, message2 } );
+
+            Assert.IsTrue(c.Responded);
+            Assert.IsTrue(response.Length == 2);
+            Assert.IsTrue(response[0].Id == "message1");
+            Assert.IsTrue(response[1].Id == "message2");
         }
 
         [TestMethod]
@@ -241,14 +261,18 @@ namespace Microsoft.Bot.Builder.Core.Tests
             void ValidateUpdate(Activity activity)
             {
                 Assert.IsNotNull(activity);
-                Assert.IsTrue(activity.Id == "1234");
+                Assert.IsTrue(activity.Id == "test");
                 foundActivity = true;
             }
 
             SimpleAdapter a = new SimpleAdapter(ValidateUpdate);
             BotContext c = new BotContext(a, new Activity());
-            await c.UpdateActivity(TestMessage.Message());
+            
+            var message = TestMessage.Message("test");            
+            var updateResult = await c.UpdateActivity(message);
+
             Assert.IsTrue(foundActivity);
+            Assert.IsTrue(updateResult.Id == "test");
         }
 
         [TestMethod]

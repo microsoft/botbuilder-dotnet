@@ -26,10 +26,11 @@ namespace Microsoft.Bot.Builder
         /// </summary>
         bool Responded { get; set; }
 
-        Task SendActivity(params string[] textRepliesToSend);
-        Task SendActivity(params IActivity[] activities);        
+        Task<ResourceResponse> SendActivity(string textRepliesToSend);
+        Task<ResourceResponse> SendActivity(IActivity activity);
+        Task<ResourceResponse[]> SendActivities(IActivity[] activities);        
 
-        Task UpdateActivity(IActivity activity);
+        Task<ResourceResponse> UpdateActivity(IActivity activity);
         Task DeleteActivity(string activityId);
 
         /// <summary>

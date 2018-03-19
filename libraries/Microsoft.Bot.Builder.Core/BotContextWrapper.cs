@@ -36,17 +36,22 @@ namespace Microsoft.Bot.Builder
             return this._innerContext.Get(key);
         }
 
-        public Task SendActivity(params string[] textRepliesToSend)
+        public Task<ResourceResponse> SendActivity(string textRepliesToSend)
         {
             return _innerContext.SendActivity(textRepliesToSend);
         }
         
-        public Task SendActivity(params IActivity[] activities)
+        public Task<ResourceResponse> SendActivity(IActivity activity)
         {
-            return _innerContext.SendActivity(activities); 
+            return _innerContext.SendActivity(activity); 
         }
 
-        public Task UpdateActivity(IActivity activity)
+        public Task<ResourceResponse[]> SendActivities(params IActivity[] activities)
+        {
+            return _innerContext.SendActivities(activities);
+        }
+
+        public Task<ResourceResponse> UpdateActivity(IActivity activity)
         {
             return _innerContext.UpdateActivity(activity);
         }
