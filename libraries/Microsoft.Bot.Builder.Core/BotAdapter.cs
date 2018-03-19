@@ -30,13 +30,13 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
-        /// implement send activities to the conversation
+        /// Implement send activities to the conversation
         /// </summary>        
         /// <param name="activities">Set of activities being sent</param>
         /// <returns>Array of ResourcesResponse containing the Ids of the sent activities. For
         /// most bots, these Ids are server-generated and enable Update and Delete to be 
         /// called against the remote resources.</returns>
-        public abstract Task<ResourceResponse[]> SendActivity(IBotContext context, Activity[] activities);
+        public abstract Task<ResourceResponse[]> SendActivities(IBotContext context, Activity[] activities);
 
         /// <summary>
         /// Implement updating an activity in the conversation

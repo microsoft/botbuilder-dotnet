@@ -60,19 +60,7 @@ namespace Microsoft.Bot.Builder
         {
             return _innerContext.DeleteActivity(activityId);
         }
-
-        //public IBotContext Reply(string text, string speak = null)
-        //{
-        //    this._innerContext.Reply(text, speak);
-        //    return this;
-        //}
-
-        //public IBotContext Reply(IActivity activity)
-        //{
-        //    this._innerContext.Reply(activity);
-        //    return this;
-        //}
-
+    
         /// <summary>
         /// Set the value associated with a key.
         /// </summary>
@@ -88,9 +76,9 @@ namespace Microsoft.Bot.Builder
             return this._innerContext.Has(key);
         }
 
-        public IBotContext OnSendActivity(SendActivitiesHandler handler)
+        public IBotContext OnSendActivities(SendActivitiesHandler handler)
         {
-            this._innerContext.OnSendActivity(handler);
+            this._innerContext.OnSendActivities(handler);
             return this;
         }
 

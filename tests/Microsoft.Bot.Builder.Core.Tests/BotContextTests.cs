@@ -184,7 +184,7 @@ namespace Microsoft.Bot.Builder.Core.Tests
             BotContext c = new BotContext(a, new Activity());
 
             int count = 0;
-            c.OnSendActivity(async (context, activities, next) =>
+            c.OnSendActivities(async (context, activities, next) =>
             {               
                Assert.IsNotNull(activities, "Null Array passed in");
                count = activities.Count();
@@ -210,7 +210,7 @@ namespace Microsoft.Bot.Builder.Core.Tests
             BotContext c = new BotContext(a, new Activity());
           
             int count = 0;
-            c.OnSendActivity(async (context, activities, next) =>
+            c.OnSendActivities(async (context, activities, next) =>
             {
                 Assert.IsNotNull(activities, "Null Array passed in");
                 count = activities.Count();
@@ -238,7 +238,7 @@ namespace Microsoft.Bot.Builder.Core.Tests
             SimpleAdapter a = new SimpleAdapter(ValidateResponses);
             BotContext c = new BotContext(a, new Activity());
             
-            c.OnSendActivity(async (context, activities, next) =>
+            c.OnSendActivities(async (context, activities, next) =>
             {
                 Assert.IsNotNull(activities, "Null Array passed in");
                 Assert.IsTrue(activities.Count() == 1);
@@ -430,7 +430,7 @@ namespace Microsoft.Bot.Builder.Core.Tests
             SimpleAdapter a = new SimpleAdapter();
             BotContext c = new BotContext(a, new Activity());
             
-            c.OnSendActivity(async (context, activities, next) =>
+            c.OnSendActivities(async (context, activities, next) =>
             {
                 throw new Exception("test");                 
             });
