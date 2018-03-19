@@ -60,34 +60,40 @@ namespace Microsoft.Bot.Builder.Adapters
                 var id = activity.Id = (this._nextId++).ToString();
             }
 
-            var context = new BotContext(this, (Activity)activity);
+            var context = new BotContext(this, activity);
             return base.RunPipeline(context, callback, cancelToken);
         }
 
         public ConversationReference ConversationReference { get; set; }
 
 
-        public async override Task SendActivity(IBotContext context, params Activity[] activities)
+        public async override Task<ResourceResponse[]> SendActivity(IBotContext context, Activity[] activities)
         {
+            List<ResourceResponse> responses = new List<ResourceResponse>();
+
             foreach (var activity in activities)
-            {
+            {                
+                responses.Add(new ResourceResponse(activity.Id));
+
                 if (activity.Type == ActivityTypesEx.Delay)
                 {
                     // The BotFrameworkAdapter and Console adapter implement this
                     // hack directly in the POST method. Replicating that here
                     // to keep the behavior as close as possible to facillitate
                     // more realistic tests.                     
-                    int delayMs = (int)((Activity)activity).Value;
+                    int delayMs = (int)activity.Value;
                     await Task.Delay(delayMs);
                 }
                 else
                 {
                     lock (this.botReplies)
                     {
-                        this.botReplies.Enqueue((Activity)activity);
+                        this.botReplies.Enqueue(activity);
                     }
                 }
             }
+
+            return responses.ToArray();
         }
 
         public override Task<ResourceResponse> UpdateActivity(IBotContext context, Activity activity)
@@ -99,10 +105,12 @@ namespace Microsoft.Bot.Builder.Adapters
                 {
                     if (replies[i].Id == activity.Id)
                     {
-                        replies[i] = (Activity)activity;
+                        replies[i] = activity;
                         this.botReplies.Clear();
                         foreach (var item in replies)
+                        {
                             this.botReplies.Enqueue(item);
+                        }
                         return Task.FromResult(new ResourceResponse(activity.Id));
                     }
                 }
@@ -122,7 +130,9 @@ namespace Microsoft.Bot.Builder.Adapters
                         replies.RemoveAt(i);
                         this.botReplies.Clear();
                         foreach (var item in replies)
+                        {
                             this.botReplies.Enqueue(item);
+                        }
                         break;
                     }
                 }

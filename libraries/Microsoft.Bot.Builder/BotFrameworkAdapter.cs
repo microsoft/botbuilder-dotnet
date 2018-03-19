@@ -77,28 +77,39 @@ namespace Microsoft.Bot.Builder.Adapters
             await base.RunPipeline(context, callback).ConfigureAwait(false);
         }
 
-        public override async Task SendActivity(IBotContext context, params Activity[] activities)
+        public override async Task<ResourceResponse[]> SendActivity(IBotContext context, Activity[] activities)
         {
             AssertBotFrameworkContext (context);
+            List<ResourceResponse> responses = new List<ResourceResponse>(); 
 
             BotFrameworkBotContext bfContext = context as BotFrameworkBotContext;
             MicrosoftAppCredentials appCredentials = await GetAppCredentials(bfContext.BotAppId);
 
             foreach (var activity in activities)
             {
+                ResourceResponse response;
+
                 if (activity.Type == ActivityTypesEx.Delay)
                 {
                     // The Activity Schema doesn't have a delay type build in, so it's simulated
                     // here in the Bot. This matches the behavior in the Node connector. 
                     int delayMs = (int)activity.Value;
                     await Task.Delay(delayMs).ConfigureAwait(false);
+
+                    // In the case of a Delay, just create a fake one. Match the incoming activityId if it's there. 
+                    response = new ResourceResponse(activity.Id ?? string.Empty); 
                 }
                 else
                 {                                        
                     var connectorClient = new ConnectorClient(new Uri(activity.ServiceUrl), appCredentials);
-                    await connectorClient.Conversations.SendToConversationAsync(activity).ConfigureAwait(false);
+                    response = await connectorClient.Conversations.SendToConversationAsync(activity).ConfigureAwait(false);
                 }
+
+                // Collect all the responses that come from the service. 
+                responses.Add(response); 
             }
+
+            return responses.ToArray();
         }
 
         public override async Task<ResourceResponse> UpdateActivity(IBotContext context, Activity activity)

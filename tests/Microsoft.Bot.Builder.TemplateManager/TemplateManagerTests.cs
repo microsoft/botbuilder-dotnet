@@ -52,7 +52,7 @@ namespace Microsoft.Bot.Builder.TemplateManager.Tests
         }
 
         [TestMethod]
-        public async Task TemplateManager_Registration()
+        public void TemplateManager_Registration()
         {
             var templateManager = new TemplateManager();
             Assert.AreEqual(templateManager.List().Count, 0, "nothing registered yet");
@@ -69,7 +69,7 @@ namespace Microsoft.Bot.Builder.TemplateManager.Tests
         }
 
         [TestMethod]
-        public async Task TemplateManager_MultiTemplate()
+        public void TemplateManager_MultiTemplate()
         {
             var templateManager = new TemplateManager();
             Assert.AreEqual(templateManager.List().Count, 0, "nothing registered yet");
