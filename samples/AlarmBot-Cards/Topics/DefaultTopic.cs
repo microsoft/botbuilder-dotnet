@@ -63,7 +63,7 @@ namespace AlarmBot.Topics
         public async Task<bool> ContinueTopic(ITurnContext context)
         {
             var conversation = ConversationState<ConversationData>.Get(context);         
-            var recognizedIntents = context.Get<IRecognizedIntents>();
+            var recognizedIntents = context.Services.Get<IRecognizedIntents>();
             switch (context.Request.Type)
             {
                 case ActivityTypes.Message:                    

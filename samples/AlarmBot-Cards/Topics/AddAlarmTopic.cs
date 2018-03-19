@@ -58,7 +58,7 @@ namespace AlarmBot.Topics
         /// <returns></returns>
         public async Task<bool> StartTopic(ITurnContext context)
         {
-            var recognizedIntents = context.Get<IRecognizedIntents>();
+            var recognizedIntents = context.Services.Get<IRecognizedIntents>();
             var times = recognizedIntents.TopIntent?.Entities.Where(entity => entity.GroupName == "AlarmTime")
                     .Select(entity => DateTimeOffset.Parse(entity.ValueAs<string>()));
 
@@ -90,7 +90,7 @@ namespace AlarmBot.Topics
         /// <returns></returns>
         public async Task<bool> ContinueTopic(ITurnContext context)
         {
-            var recognizedIntents = context.Get<IRecognizedIntents>();
+            var recognizedIntents = context.Services.Get<IRecognizedIntents>();
             // for messages
             if (context.Request.Type == ActivityTypes.Message)
             {

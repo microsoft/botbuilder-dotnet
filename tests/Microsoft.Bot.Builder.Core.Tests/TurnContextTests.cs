@@ -63,11 +63,18 @@ namespace Microsoft.Bot.Builder.Core.Tests
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
-        public async Task GetThrowsOnEmptyKey()
+        public async Task GetThrowsOnNullKey()
         {
             TurnContext c = new TurnContext(new SimpleAdapter(), new Activity());
-            c.Get(string.Empty); // empty key. Throw
-            Assert.Fail("Did not throw");
+            c.Services.Get<object>(null);
+        }
+
+        [TestMethod]
+        public async Task GetReturnsNullOnEmptyKey()
+        {
+            TurnContext c = new TurnContext(new SimpleAdapter(), new Activity());
+            object service = c.Services.Get<object>(string.Empty); // empty key
+            Assert.IsNull(service, "Should not have found a service under an empty key");
         }
 
 
@@ -75,7 +82,7 @@ namespace Microsoft.Bot.Builder.Core.Tests
         public async Task GetReturnsNullWithUnknownKey()
         {
             TurnContext c = new TurnContext(new SimpleAdapter(), new Activity());
-            object o = c.Get("test");
+            object o = c.Services.Get<object>("test");
             Assert.IsNull(o);
         }
 
@@ -84,8 +91,8 @@ namespace Microsoft.Bot.Builder.Core.Tests
         {
             TurnContext c = new TurnContext(new SimpleAdapter(), new Activity());
 
-            c.Set("bar", "foo");
-            var result = c.Get("bar");
+            c.Services.Add("bar", "foo");
+            var result = c.Services.Get<string>("bar");
 
             Assert.AreEqual("foo", result);
         }
@@ -94,20 +101,10 @@ namespace Microsoft.Bot.Builder.Core.Tests
         {
             TurnContext c = new TurnContext(new SimpleAdapter(), new Activity());
 
-            c.Set<string>("foo");
-            string result = c.Get<string>();
+            c.Services.Add<string>("foo");
+            string result = c.Services.Get<string>();
 
             Assert.AreEqual("foo", result);
-        }
-
-        [TestMethod]
-        public async Task InspectKeyUsingHas()
-        {
-            TurnContext c = new TurnContext(new SimpleAdapter(), new Activity());
-
-            Assert.IsFalse(c.Has("bar"), "Key should not exist");
-            c.Set("bar", "foo");
-            Assert.IsTrue(c.Has("bar"), "Key should exist");
         }
 
         [TestMethod]

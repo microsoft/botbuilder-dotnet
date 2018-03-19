@@ -24,17 +24,10 @@ namespace Microsoft.Bot.Builder
 
         public Activity Request => this._innerContext.Request;
 
+        public ITurnContextServiceCollection Services => this._innerContext.Services;
+
         public bool Responded { get => _innerContext.Responded; set => _innerContext.Responded = value; }
         
-        /// <summary>
-        /// Get a value by a key.
-        /// </summary>
-        /// <param name="key">The key of the value to get.</param>
-        /// <returns>The value.</returns>
-        public object Get(string key)
-        {
-            return this._innerContext.Get(key);
-        }
 
         public Task<ResourceResponse> SendActivity(string textRepliesToSend)
         {
@@ -60,21 +53,18 @@ namespace Microsoft.Bot.Builder
         {
             return _innerContext.DeleteActivity(activityId);
         }
-    
-        /// <summary>
-        /// Set the value associated with a key.
-        /// </summary>
-        /// <param name="key">The key.</param>
-        /// <param name="value">The value to set.</param>
-        public void Set(string key, object value)
-        {
-            this._innerContext.Set(key, value);
-        }
 
-        public bool Has(string key)
-        {
-            return this._innerContext.Has(key);
-        }
+        //public IBotContext Reply(string text, string speak = null)
+        //{
+        //    this._innerContext.Reply(text, speak);
+        //    return this;
+        //}
+
+        //public IBotContext Reply(IActivity activity)
+        //{
+        //    this._innerContext.Reply(activity);
+        //    return this;
+        //}
 
         public ITurnContext OnSendActivities(SendActivitiesHandler handler)
         {

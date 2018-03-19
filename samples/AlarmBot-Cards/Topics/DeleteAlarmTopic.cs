@@ -32,7 +32,7 @@ namespace AlarmBot.Topics
         /// <returns></returns>
         public Task<bool> StartTopic(ITurnContext context)
         {
-            var recognizedIntents = context.Get<IRecognizedIntents>();
+            var recognizedIntents = context.Services.Get<IRecognizedIntents>();
             this.AlarmTitle = recognizedIntents.TopIntent?.Entities.Where(entity => entity.GroupName == "AlarmTitle")
                                 .Select(entity => entity.ValueAs<string>()).FirstOrDefault();
 
