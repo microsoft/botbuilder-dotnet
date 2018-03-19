@@ -35,7 +35,7 @@ namespace Microsoft.Bot.Builder.LUIS
             {
                 var utterance = context.Request.AsMessageActivity().Text;
                 var result = await _luisRecognizer.Recognize(utterance, CancellationToken.None).ConfigureAwait(false);
-                context.Set(LuisRecognizerResultKey, result);
+                context.Services.Add(LuisRecognizerResultKey, result);
             }
             await next().ConfigureAwait(false);
         }

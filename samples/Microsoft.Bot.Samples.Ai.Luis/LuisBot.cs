@@ -18,7 +18,7 @@ namespace Microsoft.Bot.Samples.Ai.Luis
             {
                 case ActivityTypes.Message:
 
-                    var luisResult = context.Get<RecognizerResult>(LuisRecognizerMiddleware.LuisRecognizerResultKey);
+                    var luisResult = context.Services.Get<RecognizerResult>(LuisRecognizerMiddleware.LuisRecognizerResultKey);
 
                     if (luisResult != null)
                     {
