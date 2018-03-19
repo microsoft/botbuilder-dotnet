@@ -27,7 +27,7 @@ namespace Microsoft.Bot.Builder
             _request = request ?? throw new ArgumentNullException(nameof(request));
         }
 
-        public IBotContext OnSendActivity(SendActivitiesHandler handler)
+        public IBotContext OnSendActivities(SendActivitiesHandler handler)
         {
             if (handler == null)
                 throw new ArgumentNullException(nameof(handler));
@@ -130,7 +130,7 @@ namespace Microsoft.Bot.Builder
                 // Send from the list, which may have been manipulated via the event handlers. 
                 // Note that 'responses' was captured from the root of the call, and will be
                 // returned to the original caller
-                responses = await this.Adapter.SendActivity(this, activityList.ToArray());
+                responses = await this.Adapter.SendActivities(this, activityList.ToArray());
 
                 // If we actually sent something, set the flag. 
                 if (anythingToSend)

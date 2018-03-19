@@ -53,7 +53,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="key">The key to lookup in the cache</param>
         bool Has(string key);
 
-        IBotContext OnSendActivity(SendActivitiesHandler handler);
+        IBotContext OnSendActivities(SendActivitiesHandler handler);
         IBotContext OnUpdateActivity(UpdateActivityHandler handler);
         IBotContext OnDeleteActivity(DeleteActivityHandler handler);
     }

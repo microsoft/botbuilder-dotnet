@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Builder.Core.Tests
             _callOnDelete?.Invoke(reference);
         }
 
-        public async override Task<ResourceResponse[]> SendActivity(IBotContext context, Activity[] activities)
+        public async override Task<ResourceResponse[]> SendActivities(IBotContext context, Activity[] activities)
         {
             Assert.IsNotNull(activities, "SimpleAdapter.deleteActivity: missing reference");
             Assert.IsTrue(activities.Count() > 0, "SimpleAdapter.sendActivities: empty activities array.");

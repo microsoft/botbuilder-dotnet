@@ -46,7 +46,7 @@ namespace Microsoft.Bot.Builder.Adapters
             }
         }
 
-        public override async Task<ResourceResponse[]> SendActivity(IBotContext context, Activity[] activities)
+        public override async Task<ResourceResponse[]> SendActivities(IBotContext context, Activity[] activities)
         {
             List<ResourceResponse> responses = new List<ResourceResponse>();
 

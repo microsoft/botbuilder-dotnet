@@ -77,7 +77,7 @@ namespace Microsoft.Bot.Builder.Adapters
             await base.RunPipeline(context, callback).ConfigureAwait(false);
         }
 
-        public override async Task<ResourceResponse[]> SendActivity(IBotContext context, Activity[] activities)
+        public override async Task<ResourceResponse[]> SendActivities(IBotContext context, Activity[] activities)
         {
             AssertBotFrameworkContext (context);
             List<ResourceResponse> responses = new List<ResourceResponse>(); 
