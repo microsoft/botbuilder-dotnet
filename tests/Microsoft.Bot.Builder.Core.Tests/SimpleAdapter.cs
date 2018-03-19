@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
@@ -23,19 +24,26 @@ namespace Microsoft.Bot.Builder.Core.Tests
             _callOnDelete?.Invoke(reference);
         }
 
-        public async override Task SendActivity(IBotContext context, params Activity[] activities)
+        public async override Task<ResourceResponse[]> SendActivities(IBotContext context, Activity[] activities)
         {
             Assert.IsNotNull(activities, "SimpleAdapter.deleteActivity: missing reference");
             Assert.IsTrue(activities.Count() > 0, "SimpleAdapter.sendActivities: empty activities array.");
 
             _callOnSend?.Invoke(activities);
+            List<ResourceResponse> responses = new List<ResourceResponse>();
+            foreach(var activity in activities)
+            {
+                responses.Add(new ResourceResponse(activity.Id));
+            }
+
+            return responses.ToArray();
         }
 
         public async override Task<ResourceResponse> UpdateActivity(IBotContext context, Activity activity)
         {
             Assert.IsNotNull(activity, "SimpleAdapter.updateActivity: missing activity");
             _callOnUpdate?.Invoke(activity);
-            return new ResourceResponse("testId");
+            return new ResourceResponse(activity.Id); // echo back the Id
         }
 
         public async Task ProcessRequest(Activity activty, Func<IBotContext, Task> callback)

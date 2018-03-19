@@ -26,10 +26,11 @@ namespace Microsoft.Bot.Builder
         /// </summary>
         bool Responded { get; set; }
 
-        Task SendActivity(params string[] textRepliesToSend);
-        Task SendActivity(params IActivity[] activities);        
+        Task<ResourceResponse> SendActivity(string textRepliesToSend);
+        Task<ResourceResponse> SendActivity(IActivity activity);
+        Task<ResourceResponse[]> SendActivities(IActivity[] activities);        
 
-        Task UpdateActivity(IActivity activity);
+        Task<ResourceResponse> UpdateActivity(IActivity activity);
         Task DeleteActivity(string activityId);
 
         /// <summary>
@@ -52,7 +53,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="key">The key to lookup in the cache</param>
         bool Has(string key);
 
-        IBotContext OnSendActivity(SendActivitiesHandler handler);
+        IBotContext OnSendActivities(SendActivitiesHandler handler);
         IBotContext OnUpdateActivity(UpdateActivityHandler handler);
         IBotContext OnDeleteActivity(DeleteActivityHandler handler);
     }

@@ -4,12 +4,12 @@ namespace Microsoft.Bot.Builder.Core.Tests
 {
     public static class TestMessage
     {
-        public static Activity Message()
+        public static Activity Message(string id = "1234")
         {
             Activity a = new Activity
             {
                 Type = ActivityTypes.Message,
-                Id = "1234",
+                Id = id,
                 Text = "test",
                 From = new ChannelAccount()
                 {

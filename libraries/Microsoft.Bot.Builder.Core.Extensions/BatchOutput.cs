@@ -111,13 +111,13 @@ namespace Microsoft.Bot.Builder.Core.Extensions
             return this;
         }
 
-        public async Task Flush(IBotContext context)
+        public async Task<ResourceResponse[]> Flush(IBotContext context)
         {
             // ToDo: addin the ResourceResponses when this is plumbed through
             Activity[] toSend = _activities.ToArray();
             _activities.Clear();
 
-            await context.SendActivity(toSend);            
+            return await context.SendActivities(toSend);            
         }
 
         /// <summary>
