@@ -33,7 +33,9 @@ namespace Microsoft.Bot.Builder
         /// implement send activities to the conversation
         /// </summary>        
         /// <param name="activities">Set of activities being sent</param>
-        /// <returns></returns>
+        /// <returns>Array of ResourcesResponse containing the Ids of the sent activities. For
+        /// most bots, these Ids are server-generated and enable Update and Delete to be 
+        /// called against the remote resources.</returns>
         public abstract Task<ResourceResponse[]> SendActivity(IBotContext context, Activity[] activities);
 
         /// <summary>
@@ -41,6 +43,9 @@ namespace Microsoft.Bot.Builder
         /// </summary>        
         /// <param name="activity">New replacement activity. The activity should already have it's ID information populated. </param>
         /// <returns></returns>
+        /// <returns>ResourcesResponses containing the Id of the sent activity. For
+        /// most bots, this Id is server-generated and enables future Update and Delete calls
+        /// against the remote resources.</returns>
         public abstract Task<ResourceResponse> UpdateActivity(IBotContext context, Activity activity);
 
         /// <summary>
