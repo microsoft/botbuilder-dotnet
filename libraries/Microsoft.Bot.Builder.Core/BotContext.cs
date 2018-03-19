@@ -27,7 +27,7 @@ namespace Microsoft.Bot.Builder
             _request = request ?? throw new ArgumentNullException(nameof(request));
         }
 
-        public IBotContext OnSendActivity(SendActivitiesHandler handler)
+        public IBotContext OnSendActivities(SendActivitiesHandler handler)
         {
             if (handler == null)
                 throw new ArgumentNullException(nameof(handler));
@@ -74,22 +74,35 @@ namespace Microsoft.Bot.Builder
             }
         }
 
-        public async Task SendActivity(params string[] textRepliesToSend)
+        public async Task<ResourceResponse> SendActivity(string textReplyToSend)
         {
-            if (textRepliesToSend == null)
-                throw new ArgumentNullException(nameof(textRepliesToSend)); 
+            if (string.IsNullOrWhiteSpace(textReplyToSend))
+                throw new ArgumentNullException(nameof(textReplyToSend)); 
             
-            List<Activity> newActivities = new List<Activity>();
-            foreach (string s in textRepliesToSend)
-            {
-                if (!string.IsNullOrWhiteSpace(s))
-                    newActivities.Add(new Activity(ActivityTypes.Message) { Text = s });
-            }
+            var activityToSend = new Activity(ActivityTypes.Message) { Text = textReplyToSend };
 
-            await SendActivity(newActivities.ToArray());
+            return await SendActivity(activityToSend);
         }
 
-        public async Task SendActivity(params IActivity[] activities)
+        public async Task<ResourceResponse> SendActivity(IActivity activity)
+        {
+            if (activity == null)
+                throw new ArgumentNullException(nameof(activity));
+
+            ResourceResponse[] responses = await SendActivities(new IActivity[] { activity });
+            if (responses == null || responses.Length == 0)
+            {
+                // It's possible an interceptor prevented the activity from having been sent. 
+                // Just return an empty response in that case. 
+                return new ResourceResponse();
+            }
+            else
+            {
+                return responses[0];
+            }            
+        }
+
+        public async Task<ResourceResponse[]> SendActivities(IActivity[] activities)
         {
             // Bind the relevant Conversation Reference properties, such as URLs and 
             // ChannelId's, to the activities we're about to send. 
@@ -105,6 +118,9 @@ namespace Microsoft.Bot.Builder
             // Create the list used by the recursive methods. 
             List<Activity> activityList = new List<Activity>(activityArray);
 
+            // provide a variable to capture the set of responses returned from the adapter.
+            ResourceResponse[] responses = null; 
+
             async Task ActuallySendStuff()
             {
                 bool anythingToSend = false;
@@ -112,30 +128,37 @@ namespace Microsoft.Bot.Builder
                     anythingToSend = true;
 
                 // Send from the list, which may have been manipulated via the event handlers. 
-                await this.Adapter.SendActivity(this, activityList.ToArray());
+                // Note that 'responses' was captured from the root of the call, and will be
+                // returned to the original caller
+                responses = await this.Adapter.SendActivities(this, activityList.ToArray());
 
                 // If we actually sent something, set the flag. 
                 if (anythingToSend)
-                    this.Responded = true;
+                    this.Responded = true;                
             }
 
             await SendActivitiesInternal(activityList, _onSendActivities, ActuallySendStuff);
+
+            return responses;
         }
 
         /// <summary>
         /// Replaces an existing activity. 
         /// </summary>
         /// <param name="activity">New replacement activity. The activity should already have it's ID information populated</param>        
-        public async Task UpdateActivity(IActivity activity)
+        public async Task<ResourceResponse> UpdateActivity(IActivity activity)
         {
-            Activity a = (Activity)activity; 
+            Activity a = (Activity)activity;
+            ResourceResponse response = null;
 
             async Task ActuallyUpdateStuff()
             {
-                await this.Adapter.UpdateActivity(this, a);
+                response = await this.Adapter.UpdateActivity(this, a);
             }
 
             await UpdateActivityInternal(a, _onUpdateActivity, ActuallyUpdateStuff);
+
+            return response; 
         }
 
         public async Task DeleteActivity(string activityId)

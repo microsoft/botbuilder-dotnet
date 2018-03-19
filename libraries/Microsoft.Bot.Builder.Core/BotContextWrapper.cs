@@ -36,17 +36,22 @@ namespace Microsoft.Bot.Builder
             return this._innerContext.Get(key);
         }
 
-        public Task SendActivity(params string[] textRepliesToSend)
+        public Task<ResourceResponse> SendActivity(string textRepliesToSend)
         {
             return _innerContext.SendActivity(textRepliesToSend);
         }
         
-        public Task SendActivity(params IActivity[] activities)
+        public Task<ResourceResponse> SendActivity(IActivity activity)
         {
-            return _innerContext.SendActivity(activities); 
+            return _innerContext.SendActivity(activity); 
         }
 
-        public Task UpdateActivity(IActivity activity)
+        public Task<ResourceResponse[]> SendActivities(params IActivity[] activities)
+        {
+            return _innerContext.SendActivities(activities);
+        }
+
+        public Task<ResourceResponse> UpdateActivity(IActivity activity)
         {
             return _innerContext.UpdateActivity(activity);
         }
@@ -55,19 +60,7 @@ namespace Microsoft.Bot.Builder
         {
             return _innerContext.DeleteActivity(activityId);
         }
-
-        //public IBotContext Reply(string text, string speak = null)
-        //{
-        //    this._innerContext.Reply(text, speak);
-        //    return this;
-        //}
-
-        //public IBotContext Reply(IActivity activity)
-        //{
-        //    this._innerContext.Reply(activity);
-        //    return this;
-        //}
-
+    
         /// <summary>
         /// Set the value associated with a key.
         /// </summary>
@@ -83,9 +76,9 @@ namespace Microsoft.Bot.Builder
             return this._innerContext.Has(key);
         }
 
-        public IBotContext OnSendActivity(SendActivitiesHandler handler)
+        public IBotContext OnSendActivities(SendActivitiesHandler handler)
         {
-            this._innerContext.OnSendActivity(handler);
+            this._innerContext.OnSendActivities(handler);
             return this;
         }
 
