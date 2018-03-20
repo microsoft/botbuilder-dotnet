@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 using Microsoft.Cognitive.LUIS;
 
-namespace Microsoft.Bot.Builder.LUIS
+namespace Microsoft.Bot.Builder.Ai.LUIS
 {
     /// <summary>
     /// A Middleware for running the Luis recognizer

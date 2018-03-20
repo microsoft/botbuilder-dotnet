@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.BotFramework;
-using Microsoft.Bot.Builder.LUIS;
+using Microsoft.Bot.Builder.Ai.LUIS;
 using Microsoft.Bot.Schema;
 using Microsoft.Cognitive.LUIS;
 using Microsoft.Extensions.Configuration;

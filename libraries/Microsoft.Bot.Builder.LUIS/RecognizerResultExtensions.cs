@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Microsoft.Bot.Builder.LUIS
+namespace Microsoft.Bot.Builder.Ai.LUIS
 {
     public static class RecognizerResultExtensions
     {
