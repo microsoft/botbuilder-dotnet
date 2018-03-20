@@ -42,7 +42,8 @@ namespace AlarmBot
                     {
                         await context.SendActivity("Sorry, it looks like something went wrong!");
                     }));
-                // Add middleware to send periodic typing activities until the bot responds
+                // Add middleware to send periodic typing activities until the bot responds. The initial
+                // delay before sending a typing activity and the frequency of additional activities can also be specified
                 middleware.Add(new ShowTypingMiddleware());
                 middleware.Add(new UserState<UserData>(new MemoryStorage()));
                 middleware.Add(new ConversationState<ConversationData>(new MemoryStorage()));
