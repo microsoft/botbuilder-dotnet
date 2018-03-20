@@ -43,7 +43,6 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
         public async Task State_RememberIStoreItemUserState()
         {
             var adapter = new TestAdapter()
-                .Use(new BatchOutputMiddleware())
                 .Use(new UserState<TestState>(new MemoryStorage()));
 
             await new TestFlow(adapter,
@@ -55,10 +54,10 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
                         {
                             case "set value":
                                 userState.Value = "test";
-                                context.Batch().Reply("value saved");
+                                await context.SendActivity("value saved");
                                 break;
                             case "get value":
-                                context.Batch().Reply(userState.Value);
+                                await context.SendActivity(userState.Value);
                                 break;
                         }
                     }
@@ -99,7 +98,6 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
         public async Task State_RememberIStoreItemConversationState()
         {
             TestAdapter adapter = new TestAdapter()
-                .Use(new BatchOutputMiddleware())
                 .Use(new ConversationState<TestState>(new MemoryStorage()));
             await new TestFlow(adapter,
                     async (context) =>
@@ -110,10 +108,10 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
                         {
                             case "set value":
                                 conversationState.Value = "test";
-                                context.Batch().Reply("value saved");
+                                await context.SendActivity("value saved");
                                 break;
                             case "get value":
-                                context.Batch().Reply(conversationState.Value);
+                                await context.SendActivity(conversationState.Value);
                                 break;
                         }
                     }
@@ -156,7 +154,6 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
 
             string testGuid = Guid.NewGuid().ToString();
             TestAdapter adapter = new TestAdapter()
-                .Use(new BatchOutputMiddleware())
                 .Use(new CustomKeyState(new MemoryStorage()));
             await new TestFlow(adapter, async (context) =>
                     {
@@ -165,10 +162,10 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
                         {
                             case "set value":
                                 customState.CustomString = testGuid;
-                                context.Batch().Reply("value saved");
+                                await context.SendActivity("value saved");
                                 break;
                             case "get value":
-                                context.Batch().Reply(customState.CustomString);
+                                await context.SendActivity(customState.CustomString);
                                 break;
                         }
                     }
@@ -187,7 +184,6 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
         public async Task State_RoundTripTypedObject()
         {
             TestAdapter adapter = new TestAdapter()
-                .Use(new BatchOutputMiddleware())
                 .Use(new ConversationState<TypedObject>(new MemoryStorage()));
 
             await new TestFlow(adapter,
@@ -199,10 +195,10 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
                         {
                             case "set value":
                                 conversation.Name = "test";
-                                context.Batch().Reply("value saved");
+                                await context.SendActivity("value saved");
                                 break;
                             case "get value":
-                                context.Batch().Reply(conversation.GetType().Name);
+                                await context.SendActivity(conversation.GetType().Name);
                                 break;
                         }
                     }
