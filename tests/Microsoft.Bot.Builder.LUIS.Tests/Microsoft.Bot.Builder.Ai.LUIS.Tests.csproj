@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.LUIS\Microsoft.Bot.Builder.LUIS.csproj" />
+    <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.LUIS\Microsoft.Bot.Builder.Ai.LUIS.csproj" />
     <ProjectReference Include="..\Microsoft.Bot.Builder.Core.Extensions.Tests\Microsoft.Bot.Builder.Core.Extensions.Tests.csproj" />
   </ItemGroup>
 

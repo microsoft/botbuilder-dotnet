@@ -10,7 +10,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{3ADF
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Azure", "libraries\Microsoft.Bot.Builder.Azure\Microsoft.Bot.Builder.Azure.csproj", "{B2C5EED9-21B2-4763-AB92-C1995B76DA3A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Translation", "libraries\Microsoft.Bot.Builder.Ai\Microsoft.Bot.Builder.Translation.csproj", "{F31CF172-6FEE-4188-9828-E5FDA531C871}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Ai.Translation", "libraries\Microsoft.Bot.Builder.Ai\Microsoft.Bot.Builder.Ai.Translation.csproj", "{F31CF172-6FEE-4188-9828-E5FDA531C871}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Ai.QnA.Tests", "tests\Microsoft.Bot.Builder.Ai.Tests\Microsoft.Bot.Builder.Ai.QnA.Tests.csproj", "{9BDF7020-A19F-4C6C-B329-E4BFEFF6DE6B}"
 EndProject
@@ -36,9 +36,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Samples.Ai.Qn
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Integration", "Integration", "{276EBE79-A13A-46BD-A566-B01DC0477A9B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.LUIS", "libraries\Microsoft.Bot.Builder.LUIS\Microsoft.Bot.Builder.LUIS.csproj", "{67AA3C00-E2C5-4D13-BA5E-72EB0E5B8DAA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Ai.LUIS", "libraries\Microsoft.Bot.Builder.LUIS\Microsoft.Bot.Builder.Ai.LUIS.csproj", "{67AA3C00-E2C5-4D13-BA5E-72EB0E5B8DAA}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.LUIS.Tests", "tests\Microsoft.Bot.Builder.LUIS.Tests\Microsoft.Bot.Builder.LUIS.Tests.csproj", "{7BCEBDC1-D57F-4717-9B15-4FACD5473489}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Ai.LUIS.Tests", "tests\Microsoft.Bot.Builder.LUIS.Tests\Microsoft.Bot.Builder.Ai.LUIS.Tests.csproj", "{7BCEBDC1-D57F-4717-9B15-4FACD5473489}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Prompts", "libraries\Microsoft.Bot.Builder.Prompts\Microsoft.Bot.Builder.Prompts.csproj", "{7A197F41-3411-47BF-87A6-5BC8A44CDB74}"
 EndProject
@@ -82,7 +82,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Samples.Ai.Lu
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AI", "AI", "{3DA7FDC7-168A-4C0D-9E29-CFDFACCAAC93}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.QnA", "libraries\Microsoft.Bot.Builder.QnA\Microsoft.Bot.Builder.QnA.csproj", "{337B371C-5C7C-4ADD-A8E7-D701F3EEAEE2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Ai.QnA", "libraries\Microsoft.Bot.Builder.QnA\Microsoft.Bot.Builder.Ai.QnA.csproj", "{337B371C-5C7C-4ADD-A8E7-D701F3EEAEE2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

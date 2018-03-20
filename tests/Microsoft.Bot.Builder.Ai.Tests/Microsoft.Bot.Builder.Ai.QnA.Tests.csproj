@@ -14,7 +14,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Azure\Microsoft.Bot.Builder.Azure.csproj" />
-    <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.QnA\Microsoft.Bot.Builder.QnA.csproj" />
+    <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.QnA\Microsoft.Bot.Builder.Ai.QnA.csproj" />
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Schema\Microsoft.Bot.Schema.csproj" />
     <ProjectReference Include="..\Microsoft.Bot.Builder.Core.Extensions.Tests\Microsoft.Bot.Builder.Core.Extensions.Tests.csproj" />
   </ItemGroup>
