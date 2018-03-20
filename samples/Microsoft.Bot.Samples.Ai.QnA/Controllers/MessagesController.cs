@@ -35,7 +35,6 @@ namespace Microsoft.Bot.Samples.Ai.QnA.Controllers
                     KnowledgeBaseId = "xxxxxx"
                 };
                 adapter = new BotFrameworkAdapter(new ConfigurationCredentialProvider(configuration))
-                    .Use(new BatchOutputMiddleware())                    
                     .Use(new QnAMakerMiddleware(qnaOptions, _httpClient));
             }
         }
@@ -45,7 +44,7 @@ namespace Microsoft.Bot.Samples.Ai.QnA.Controllers
             if (context.Request.Type == ActivityTypes.Message && context.Responded == false)
             {
                 // add app logic when QnA Maker doesn't find an answer
-                context.Batch().Reply("No good match found in the KB.");
+                return context.SendActivity("No good match found in the KB.");
             }
             return Task.CompletedTask;
         }
