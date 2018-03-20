@@ -13,8 +13,8 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <PackageId>Microsoft.Bot.Builder.Ai</PackageId>
+	  <TargetFramework>netstandard2.0</TargetFramework>
+	  <PackageId>Microsoft.Bot.Builder.Ai</PackageId>
     <Description>AI classes for using Cognitive Services on the Microsoft Bot Builder SDK</Description>
     <Summary>This library implements C# classes for building bots using Microsoft Cognitive services.</Summary>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -45,7 +45,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Microsoft.Bot.Builder\Microsoft.Bot.Builder.csproj" />
+    <ProjectReference Include="..\Microsoft.Bot.Builder.Core.Extensions\Microsoft.Bot.Builder.Core.Extensions.csproj" />
+    <ProjectReference Include="..\Microsoft.Bot.Builder.Core\Microsoft.Bot.Builder.Core.csproj" />
     <ProjectReference Include="..\Microsoft.Bot.Schema\Microsoft.Bot.Schema.csproj" />
   </ItemGroup>
 </Project>

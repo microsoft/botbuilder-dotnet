@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AlarmBot.Models;
-using AlarmBot.TopicViews;
+using AlarmBot.Responses;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
 
@@ -41,11 +41,6 @@ namespace AlarmBot.Topics
             HelpConfirmation
         };
 
-
-        public AddAlarmTopic()
-        {
-        }
-
         /// <summary>
         /// Alarm object representing the information being gathered by the conversation before it is committed
         /// </summary>
@@ -63,14 +58,14 @@ namespace AlarmBot.Topics
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public Task<bool> StartTopic(IBotContext context)
+        public Task<bool> StartTopic(AlarmBotContext context)
         {
-            var times = context.TopIntent?.Entities.Where(entity => entity.GroupName == "AlarmTime")
+            var times = context.RecognizedIntents.TopIntent?.Entities.Where(entity => entity.GroupName == "AlarmTime")
                     .Select(entity => DateTimeOffset.Parse(entity.ValueAs<string>()));
             this.Alarm = new Alarm()
             {
                 // initialize from intent entities
-                Title = context.TopIntent?.Entities.Where(entity => entity.GroupName == "AlarmTitle")
+                Title = context.RecognizedIntents.TopIntent?.Entities.Where(entity => entity.GroupName == "AlarmTitle")
                     .Select(entity => entity.ValueAs<string>()).FirstOrDefault(),
 
                 // initialize from intent entities
@@ -86,12 +81,12 @@ namespace AlarmBot.Topics
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public async Task<bool> ContinueTopic(IBotContext context)
+        public async Task<bool> ContinueTopic(AlarmBotContext context)
         {
             // for messages
             if (context.Request.Type == ActivityTypes.Message)
             {
-                switch (context.TopIntent?.Name)
+                switch (context.RecognizedIntents.TopIntent?.Name)
                 {
                     case "showAlarms":
                         // allow show alarm to interrupt, but it's one turn, so we show the data without changing the topic
@@ -100,12 +95,12 @@ namespace AlarmBot.Topics
 
                     case "help":
                         // show contextual help 
-                        context.ReplyWith(AddAlarmTopicView.HELP, this.Alarm);
+                        await AddAlarmResponses.ReplyWithHelp(context, this.Alarm);
                         return await this.PromptForMissingData(context);
 
                     case "cancel":
                         // prompt to cancel
-                        context.ReplyWith(AddAlarmTopicView.CANCELPROMPT, this.Alarm);
+                        await AddAlarmResponses.ReplyWithCancelPrompt(context, this.Alarm);
                         this.TopicState = TopicStates.CancelConfirmation;
                         return true;
 
@@ -116,7 +111,7 @@ namespace AlarmBot.Topics
             return true;
         }
 
-        private async Task<bool> ProcessTopicState(IBotContext context)
+        private async Task<bool> ProcessTopicState(AlarmBotContext context)
         {
             string utterance = (context.Request.AsMessageActivity().Text ?? "").Trim();
 
@@ -128,46 +123,46 @@ namespace AlarmBot.Topics
                     return await this.PromptForMissingData(context);
 
                 case TopicStates.TimePrompt:
-                    // take first one in the future
-                    this.Alarm.Time = ((BotContext)context).GetDateTimes().Where(t => t > DateTimeOffset.Now).FirstOrDefault();
+                    // take first one in the future if a valid time has been parsed
+                    var times = context.GetDateTimes();                    
+                    if(times.Any(t => t > DateTimeOffset.Now))
+                        this.Alarm.Time = times.FirstOrDefault(t => t > DateTimeOffset.Now);
                     return await this.PromptForMissingData(context);
 
                 case TopicStates.CancelConfirmation:
-                    switch (context.TopIntent.Name)
+                    switch (context.RecognizedIntents.TopIntent?.Name)
                     {
                         case "confirmYes":
-                            context.ReplyWith(AddAlarmTopicView.TOPICCANCELED, this.Alarm);
+                            await AddAlarmResponses.ReplyWithTopicCanceled(context);
                             // End current topic
                             return false;
 
                         case "confirmNo":
                             // Re-prompt user for current field.
-                            context.ReplyWith(AddAlarmTopicView.CANCELCANCELED, this.Alarm);
+                            await AddAlarmResponses.ReplyWithTopicCanceled(context);
                             return await this.PromptForMissingData(context);
 
                         default:
                             // prompt again to confirm the cancelation
-                            context.ReplyWith(AddAlarmTopicView.CANCELREPROMPT, this.Alarm);
+                            await AddAlarmResponses.ReplyWithCancelReprompt(context, this.Alarm);
                             return true;
                     }
 
                 case TopicStates.AddConfirmation:
-                    switch (context.TopIntent?.Name)
+                    switch (context.RecognizedIntents.TopIntent?.Name)
                     {
                         case "confirmYes":
-                            var alarms = (List<Alarm>)context.State.User[UserProperties.ALARMS];
-                            if (alarms == null)
+                            if (context.UserState.Alarms == null)
                             {
-                                alarms = new List<Alarm>();
-                                context.State.User[UserProperties.ALARMS] = alarms;
+                                context.UserState.Alarms = new List<Alarm>();
                             }
-                            alarms.Add(this.Alarm);
-                            context.ReplyWith(AddAlarmTopicView.ADDEDALARM, this.Alarm);
+                            context.UserState.Alarms.Add(this.Alarm);
+                            await AddAlarmResponses.ReplyWithAddedAlarm(context, this.Alarm);
                             // end topic
                             return false;
 
                         case "confirmNo":
-                            context.ReplyWith(AddAlarmTopicView.TOPICCANCELED, this.Alarm);
+                            await AddAlarmResponses.ReplyWithTopicCanceled(context);
                             // End current topic
                             return false;
                         default:
@@ -184,7 +179,7 @@ namespace AlarmBot.Topics
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public Task<bool> ResumeTopic(IBotContext context)
+        public Task<bool> ResumeTopic(AlarmBotContext context)
         {
             // simply prompt again based on our state
             return this.PromptForMissingData(context);
@@ -201,7 +196,7 @@ namespace AlarmBot.Topics
             if (String.IsNullOrWhiteSpace(this.Alarm.Title))
             {
                 this.TopicState = TopicStates.TitlePrompt;
-                context.ReplyWith(AddAlarmTopicView.TITLEPROMPT, this.Alarm);
+                await AddAlarmResponses.ReplyWithTitlePrompt(context, this.Alarm);
                 return true;
             }
             // if title exists but is not valid, then provide feedback and prompt again
@@ -209,7 +204,7 @@ namespace AlarmBot.Topics
             {
                 this.Alarm.Title = null;
                 this.TopicState = TopicStates.TitlePrompt;
-                context.ReplyWith(AddAlarmTopicView.TITLEVALIDATIONPROMPT, this.Alarm);
+                await AddAlarmResponses.ReplyWithTitleValidationPrompt(context, this.Alarm);
                 return true;
             }
 
@@ -217,12 +212,12 @@ namespace AlarmBot.Topics
             if (this.Alarm.Time == null)
             {
                 this.TopicState = TopicStates.TimePrompt;
-                context.ReplyWith(AddAlarmTopicView.TIMEPROMPTFUTURE, this.Alarm);
+                await AddAlarmResponses.ReplyWithTimePromptFuture(context, this.Alarm);
                 return true;
             }
             
             // ask for confirmation that we want to add it
-            context.ReplyWith(AddAlarmTopicView.ADDCONFIRMATION, this.Alarm);
+            await AddAlarmResponses.ReplyWithAddConfirmation(context, this.Alarm);
             this.TopicState = TopicStates.AddConfirmation;
             return true;
         }

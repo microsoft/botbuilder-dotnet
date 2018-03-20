@@ -1,0 +1,269 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="CommandBack" xml:space="preserve">
+    <value>بازگشت</value>
+  </data>
+  <data name="CommandBackHelp" xml:space="preserve">
+    <value>بازگشت: بازگشت به سوال قبلی.</value>
+  </data>
+  <data name="CommandBackTerms" xml:space="preserve">
+    <value>پشتیبان گیری; برو عقب; بازگشت</value>
+  </data>
+  <data name="CommandHelp" xml:space="preserve">
+    <value>راهنما</value>
+  </data>
+  <data name="CommandHelpHelp" xml:space="preserve">
+    <value>راهنما: نمایش انواع پاسخی که می توانید وارد کنید.</value>
+  </data>
+  <data name="CommandHelpTerms" xml:space="preserve">
+    <value>کمک; انتخاب; \?</value>
+  </data>
+  <data name="CommandQuit" xml:space="preserve">
+    <value>ترک کردن</value>
+  </data>
+  <data name="CommandQuitHelp" xml:space="preserve">
+    <value>ترک: ترک فرم بدون تکمیل آن.</value>
+  </data>
+  <data name="CommandQuitTerms" xml:space="preserve">
+    <value>ترک; توقف; پایان; goodby?; خداحافظ?; خداحافظ؛ ciao adios; -؛ طولانی؛ خسته نباشید</value>
+  </data>
+  <data name="CommandReset" xml:space="preserve">
+    <value>شروع مجدد</value>
+  </data>
+  <data name="CommandResetHelp" xml:space="preserve">
+    <value>تنظیم مجدد: بیش از پر کردن فرم شروع.  (با فرض از نوشته های قبلی شما.)</value>
+  </data>
+  <data name="CommandResetTerms" xml:space="preserve">
+    <value>بیش از شروع; تنظیم مجدد; روشن</value>
+  </data>
+  <data name="CommandStatus" xml:space="preserve">
+    <value>وضعیت</value>
+  </data>
+  <data name="CommandStatusHelp" xml:space="preserve">
+    <value>وضعیت: پیشرفت شما را در پر کردن فرم تا کنون نشان می دهد.</value>
+  </data>
+  <data name="CommandStatusTerms" xml:space="preserve">
+    <value>وضعیت; پیشرفت; تا کنون؛ نتیجه</value>
+  </data>
+  <data name="ConfirmChoiceFormat" xml:space="preserve">
+    <value>{1}</value>
+    <comment>0-number, 1-description</comment>
+  </data>
+  <data name="DefaultChoiceFormat" xml:space="preserve">
+    <value>{0}. {1}</value>
+    <comment>0-number, 1-description</comment>
+  </data>
+  <data name="DefaultChoiceLastSeparator" xml:space="preserve">
+    <value>، یا </value>
+  </data>
+  <data name="DefaultChoiceSeparator" xml:space="preserve">
+    <value>، </value>
+  </data>
+  <data name="DefaultLastSeparator" xml:space="preserve">
+    <value>، و </value>
+  </data>
+  <data name="DefaultSeparator" xml:space="preserve">
+    <value>، </value>
+  </data>
+  <data name="LanguageArticles" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="LanguageStopWords" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="MatchCurrentChoice" xml:space="preserve">
+    <value>انتخاب فعلی ('c'); جریان ج; انتخاب فعلی; بدون تغییر</value>
+  </data>
+  <data name="MatchNo" xml:space="preserve">
+    <value>نه; n; نوچ</value>
+  </data>
+  <data name="MatchNoPreference" xml:space="preserve">
+    <value>بدون اولویت; نه; هیچ کدام; من دان '? t مراقبت</value>
+  </data>
+  <data name="MatchYes" xml:space="preserve">
+    <value>بله؛ y; مطمئن خوب; بله</value>
+  </data>
+  <data name="PromptRetry" xml:space="preserve">
+    <value>من متوجه نشدم، لطفا پاسخی دهید</value>
+  </data>
+  <data name="TemplateBool" xml:space="preserve">
+    <value>{&amp;} داری؟ {||}</value>
+  </data>
+  <data name="TemplateBoolHelp" xml:space="preserve">
+    <value>لطفا "بله" یا "خیر" را وارد کنید {?، {0}}.</value>
+    <comment>0-current choice, 1-no preference</comment>
+  </data>
+  <data name="TemplateClarify" xml:space="preserve">
+    <value>توسط "{0}" {&amp;} منظور شما {||}</value>
+    <comment>0-term being clarified</comment>
+  </data>
+  <data name="TemplateCurrentChoice" xml:space="preserve">
+    <value>(انتخاب فعلی: {})</value>
+  </data>
+  <data name="TemplateDateTime" xml:space="preserve">
+    <value>لطفا وارد کنید تاریخ و زمان برای {&amp;} {||}</value>
+  </data>
+  <data name="TemplateDateTimeHelp" xml:space="preserve">
+    <value>لطفا وارد کنید تاریخ یا زمان بیان {?، {0}} {?, {1}}.</value>
+    <comment>0-current choice, 1-no preference</comment>
+  </data>
+  <data name="TemplateDouble" xml:space="preserve">
+    <value>لطفا شماره را وارد کنید {?آیا بین {0:F1} و {1:F1}} برای {&amp;} {||}</value>
+    <comment>0-min, 1-max</comment>
+  </data>
+  <data name="TemplateDoubleChoiceFormat" xml:space="preserve">
+    <value>{1}</value>
+    <comment>0-number, 1-description</comment>
+  </data>
+  <data name="TemplateDoubleHelp" xml:space="preserve">
+    <value>لطفا شماره را وارد کنید {?آیا بین {2:F1} و }3F1:}} {?، {0}} {?, {1}}.</value>
+    <comment>0-current choice, 1-no preference, 2-min, 3-max</comment>
+  </data>
+  <data name="TemplateEnumManyNumberHelp" xml:space="preserve">
+    <value>شما می توانید یکی را وارد کنید و یا اعداد بیشتر {0}-{1} یا کلمات از شرح. ({2})</value>
+    <comment>0-min, 1-max and 2-enumerated descriptions</comment>
+  </data>
+  <data name="TemplateEnumManyWordHelp" xml:space="preserve">
+    <value>شما می توانید وارد کنید در یک یا چند انتخاب از شرح. ({2})</value>
+    <comment>2-enumerated descriptions</comment>
+  </data>
+  <data name="TemplateEnumOneNumberHelp" xml:space="preserve">
+    <value>شما می توانید وارد کنید شماره {0}-{1} یا کلمات از شرح. ({2})</value>
+    <comment>0-min, 1-max and 2-enumerated descriptions</comment>
+  </data>
+  <data name="TemplateEnumOneWordHelp" xml:space="preserve">
+    <value>شما می توانید در هر واژه ای از شرح وارد کنید. ({2})</value>
+    <comment>2-enumerated descriptions</comment>
+  </data>
+  <data name="TemplateEnumSelectMany" xml:space="preserve">
+    <value>لطفا انتخاب یک یا چند {&amp;} {||}</value>
+  </data>
+  <data name="TemplateEnumSelectOne" xml:space="preserve">
+    <value>لطفا انتخاب کنید {&amp;} {||}</value>
+  </data>
+  <data name="TemplateFeedback" xml:space="preserve">
+    <value>برای {&amp;} من درک {. {? " {0} "گزینه نیست.}</value>
+    <comment>0-not understood term</comment>
+  </data>
+  <data name="TemplateHelp" xml:space="preserve">
+    <value>شما فیلد {&amp;} را پر کردید. پاسخ های احتمالی:
+{0}
+{1}</value>
+    <comment>0-recognizer help, 1-command help</comment>
+  </data>
+  <data name="TemplateHelpClarify" xml:space="preserve">
+    <value>شما مقدار {&amp;} را وارد کردید است. پاسخ های احتمالی:
+{0}
+{1}</value>
+    <comment>0-recognizer help, 1-command help</comment>
+  </data>
+  <data name="TemplateHelpConfirm" xml:space="preserve">
+    <value>لطفا جواب این سوال را بدهید.  پاسخ های احتمالی:
+{0}
+{1}</value>
+    <comment>0-recognizer help, 1-command help</comment>
+  </data>
+  <data name="TemplateHelpNavigation" xml:space="preserve">
+    <value>انتخاب کنید کدام فیلد را تغییر میدهید.  پاسخ های احتمالی:
+{0}
+{1}</value>
+    <comment>0-recognizer help, 1-command help</comment>
+  </data>
+  <data name="TemplateInteger" xml:space="preserve">
+    <value>لطفا شماره را وارد کنید {?آیا بین {0} و {1}} برای {&amp;} {||}</value>
+    <comment>0-min, 1-max</comment>
+  </data>
+  <data name="TemplateIntegerChoiceFormat" xml:space="preserve">
+    <value>{1}</value>
+    <comment>0-number, 1-description</comment>
+  </data>
+  <data name="TemplateIntegerHelp" xml:space="preserve">
+    <value>می توانید شماره را وارد کنید {?آیا بین {2} و {3}} {?، {0}} {?, {1}}.</value>
+    <comment>0-current choice, 1-no preference, 2-min, 3-max</comment>
+  </data>
+  <data name="TemplateNavigation" xml:space="preserve">
+    <value>چه تغییری دارید؟ {||}</value>
+  </data>
+  <data name="TemplateNavigationCommandHelp" xml:space="preserve">
+    <value>شما با وارد کردن نام آن به میدان دیگری تعویض کنید. ({0}).</value>
+    <comment>0-list of field names</comment>
+  </data>
+  <data name="TemplateNavigationFormat" xml:space="preserve">
+    <value>{&amp;}({})</value>
+    <comment>0-list of field names</comment>
+  </data>
+  <data name="TemplateNavigationHelp" xml:space="preserve">
+    <value>انتخاب {? تعدادی از {0}-{1}، یا} نام زمینه.</value>
+    <comment>0-min, 1-max</comment>
+  </data>
+  <data name="TemplateNoPreference" xml:space="preserve">
+    <value>بدون اولویت</value>
+  </data>
+  <data name="TemplateNotUnderstood" xml:space="preserve">
+    <value>"{0}" {&amp;} گزینه نیست.</value>
+    <comment>0-is not understood term</comment>
+  </data>
+  <data name="TemplateStatusFormat" xml:space="preserve">
+    <value>{&amp;}: {</value>
+  </data>
+  <data name="TemplateString" xml:space="preserve">
+    <value>لطفا وارد کنید {&amp;} {||}</value>
+  </data>
+  <data name="TemplateStringChoiceFormat" xml:space="preserve">
+    <value>{1}</value>
+    <comment>0-number, 1-description</comment>
+  </data>
+  <data name="TemplateStringHelp" xml:space="preserve">
+    <value>شما می توانید هر چیزی را وارد کنید (استفاده از "را به رشته) {?، {0}} {?, {1}}.</value>
+    <comment>0-current choice, 1-no preference</comment>
+  </data>
+  <data name="TemplateUnspecified" xml:space="preserve">
+    <value>نامشخص</value>
+  </data>
+  <data name="TemplateConfirmation" xml:space="preserve">
+    <value>این انتخاب شما است؟ 
+{*}</value>
+  </data>
+  <data name="Navigation" xml:space="preserve">
+    <value>نام قسمت</value>
+  </data>
+  <data name="TooManyAttempts" xml:space="preserve">
+    <value>تلاش های زیادی</value>
+  </data>
+  <data name="UserProfileDeleted" xml:space="preserve">
+    <value>مشخصات کاربر حذف شد!</value>
+  </data>
+  <data name="Confirmation" xml:space="preserve">
+    <value>تأیید</value>
+  </data>
+  <data name="UnhandledExceptionToUser" xml:space="preserve">
+    <value>با عرض پوزش، کد ربات من با مشکل روبرو شده است.</value>
+  </data>
+  <data name="NumberExpression" xml:space="preserve">
+    <value>[+-]?(?:\d+\.?\d*|\d*\.?\d+)</value>
+  </data>
+  <data name="NumberOrdinals" xml:space="preserve">
+    <value>1=1، اول، یکی از اولین | 2 = 2, دوم, دوم یکی | 3 = 3 سوم، یک سوم | 4 = 4 چهارم، یک چهارم | 5 = 5 پنجم، یک پنجم | 6 = 6، ششم، یک ششم | 7 = 7 هفتم، یک هفتم | 8 = 8 هشتم, ودر یکی | 9 = 9 نهم، یکی از نهم | 10 = 10 دهم، یک دهم</value>
+  </data>
+  <data name="NumberReverseOrdinals" xml:space="preserve">
+    <value>-1 = آخرین، یکی از آخرین | -2 = کنار گذشته، دوم به گذشته، دوم از آخرین | -3 = سوم سوم به گذشته، از آخرین | -4 = چهارم چهارم به گذشته، از آخرین | -5 = fith پنجم به گذشته، از آخرین به روز رسانی</value>
+  </data>
+  <data name="BooleanChoices" xml:space="preserve">
+    <value>درست = y، بله، بله، مطمئن، خوب، \u1f44d، \u1f44c|false=n، نه، جواب منفی، \u1f44e، \\u270b، \\u1f590</value>
+  </data>
+  <data name="NumberTerms" xml:space="preserve">
+    <value>0 = صفر | 1 = یکی | 2 = دو | 3 = سه | 4 = چهار | 5 پنج = | 6 = شش | 7 = هفت | 8 = هشت | 9 = 9 | 10 ده = | 11 یازده = | 12 = دوازده | 13 = 13 | 14 = چهارده | 15 = پانزده | 16 = شانزده | 17 = هفده | 18 = 18 | 19 نوزده = | 20 = بیست</value>
+  </data>
+</root>

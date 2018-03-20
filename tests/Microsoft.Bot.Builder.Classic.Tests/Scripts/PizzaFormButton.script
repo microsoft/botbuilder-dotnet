@@ -1,0 +1,166 @@
+en-us
+{"Available":"0001-01-01T00:00:00","Bottles":null,"BYO":null,"Coupon":0,"Coupons":null,"DeliveryAddress":null,"GourmetDelite":0,"Kind":0,"NumberOfPizzas":1,"Phone":null,"Rating":null,"Signature":0,"Size":null,"Specials":null,"Stuffed":0}
+[]
+FromUser:"hi"
+3
+ToUserText:"Welcome to the pizza bot!!!"
+ToUserText:"Lets make pizza!!!"
+ToUserText:"Please enter a number between 1 and 10 for number of pizzas (current choice: 1)"
+State:{"Available":"0001-01-01T00:00:00","Bottles":null,"BYO":null,"Coupon":0,"Coupons":null,"DeliveryAddress":null,"GourmetDelite":0,"Kind":0,"NumberOfPizzas":1,"Phone":null,"Rating":null,"Signature":0,"Size":null,"Specials":null,"Stuffed":0}
+FromUser:"garbage"
+1
+ToUserText:"\"garbage\" is not a number of pizzas option."
+State:{"Available":"0001-01-01T00:00:00","Bottles":null,"BYO":null,"Coupon":0,"Coupons":null,"DeliveryAddress":null,"GourmetDelite":0,"Kind":0,"NumberOfPizzas":1,"Phone":null,"Rating":null,"Signature":0,"Size":null,"Specials":null,"Stuffed":0}
+FromUser:"2"
+1
+ToUserButtons:[{"contentType":"application/vnd.microsoft.card.hero","contentUrl":null,"content":{"title":"","subtitle":null,"text":"Please select a size ","images":null,"buttons":[{"type":"imBack","title":"Medium","image":null,"text":null,"displayText":null,"value":"Medium"},{"type":"imBack","title":"Large","image":null,"text":null,"displayText":null,"value":"Large"},{"type":"imBack","title":"Family","image":null,"text":null,"displayText":null,"value":"Family"},{"type":"imBack","title":"No Preference","image":null,"text":null,"displayText":null,"value":"No Preference"}],"tap":null},"name":null,"thumbnailUrl":null}]
+State:{"Available":"0001-01-01T00:00:00","Bottles":null,"BYO":null,"Coupon":0,"Coupons":null,"DeliveryAddress":null,"GourmetDelite":0,"Kind":0,"NumberOfPizzas":2,"Phone":null,"Rating":null,"Signature":0,"Size":null,"Specials":null,"Stuffed":0}
+FromUser:"med"
+1
+ToUserButtons:[{"contentType":"application/vnd.microsoft.card.hero","contentUrl":null,"content":{"title":"","subtitle":null,"text":"What kind of pizza do you want? ","images":null,"buttons":[{"type":"imBack","title":"Signature Pizza","image":null,"text":null,"displayText":null,"value":"Signature Pizza"},{"type":"imBack","title":"Gourmet Delite Pizza","image":null,"text":null,"displayText":null,"value":"Gourmet Delite Pizza"},{"type":"imBack","title":"Stuffed Pizza","image":null,"text":null,"displayText":null,"value":"Stuffed Pizza"},{"type":"imBack","title":"Build your own","image":null,"text":null,"displayText":null,"value":"Build your own"}],"tap":null},"name":null,"thumbnailUrl":null}]
+State:{"Available":"0001-01-01T00:00:00","Bottles":null,"BYO":null,"Coupon":0,"Coupons":null,"DeliveryAddress":null,"GourmetDelite":0,"Kind":0,"NumberOfPizzas":2,"Phone":null,"Rating":null,"Signature":0,"Size":0,"Specials":null,"Stuffed":0}
+FromUser:"4"
+1
+ToUserText:"Please select one or more specials (1. Free drink, or 2. Free garlic bread)"
+State:{"Available":"0001-01-01T00:00:00","Bottles":null,"BYO":null,"Coupon":0,"Coupons":null,"DeliveryAddress":null,"GourmetDelite":0,"Kind":4,"NumberOfPizzas":2,"Phone":null,"Rating":null,"Signature":0,"Size":0,"Specials":null,"Stuffed":0}
+FromUser:"help"
+2
+ToUserText:"* You are filling in the specials field. Possible responses:\r\n* You can enter one or more numbers 1-2 or words from the descriptions. (Free drink, or Free garlic bread)\r\n* Back: Go back to the previous question.\r\n* Help: Show the kinds of responses you can enter.\r\n* Quit: Quit the form without completing it.\r\n* Reset: Start over filling in the form. (With defaults from your previous entries.)\r\n* Status: Show your progress in filling in the form so far.\r\n* You can switch to another field by entering its name. (Number Of Pizzas, Size, Kind of pizza, Specials, Half And Half, Crust, Sauce, Toppings, Delivery Address, Coupons, Coupon, Rating, Available, Bottles, or Phone). "
+ToUserText:"Please select one or more specials (1. Free drink, or 2. Free garlic bread)"
+State:{"Available":"0001-01-01T00:00:00","Bottles":null,"BYO":null,"Coupon":0,"Coupons":null,"DeliveryAddress":null,"GourmetDelite":0,"Kind":4,"NumberOfPizzas":2,"Phone":null,"Rating":null,"Signature":0,"Size":0,"Specials":null,"Stuffed":0}
+FromUser:"drink bread"
+1
+ToUserButtons:[{"contentType":"application/vnd.microsoft.card.hero","contentUrl":null,"content":{"title":"","subtitle":null,"text":"Would you like a half and half? ","images":null,"buttons":[{"type":"imBack","title":"Yes","image":null,"text":null,"displayText":null,"value":"Yes"},{"type":"imBack","title":"No","image":null,"text":null,"displayText":null,"value":"No"}],"tap":null},"name":null,"thumbnailUrl":null}]
+State:{"Available":"0001-01-01T00:00:00","Bottles":null,"BYO":null,"Coupon":0,"Coupons":null,"DeliveryAddress":null,"GourmetDelite":0,"Kind":4,"NumberOfPizzas":2,"Phone":null,"Rating":null,"Signature":0,"Size":0,"Specials":["special1","special2"],"Stuffed":0}
+FromUser:"back"
+1
+ToUserText:"Please select one or more specials (1. Free drink, or 2. Free garlic bread) (current choice: Free Drink, and Free Garlic Bread)"
+State:{"Available":"0001-01-01T00:00:00","Bottles":null,"BYO":null,"Coupon":0,"Coupons":null,"DeliveryAddress":null,"GourmetDelite":0,"Kind":4,"NumberOfPizzas":2,"Phone":null,"Rating":null,"Signature":0,"Size":0,"Specials":["special1","special2"],"Stuffed":0}
+FromUser:"c"
+1
+ToUserButtons:[{"contentType":"application/vnd.microsoft.card.hero","contentUrl":null,"content":{"title":"","subtitle":null,"text":"Would you like a half and half? ","images":null,"buttons":[{"type":"imBack","title":"Yes","image":null,"text":null,"displayText":null,"value":"Yes"},{"type":"imBack","title":"No","image":null,"text":null,"displayText":null,"value":"No"}],"tap":null},"name":null,"thumbnailUrl":null}]
+State:{"Available":"0001-01-01T00:00:00","Bottles":null,"BYO":null,"Coupon":0,"Coupons":null,"DeliveryAddress":null,"GourmetDelite":0,"Kind":4,"NumberOfPizzas":2,"Phone":null,"Rating":null,"Signature":0,"Size":0,"Specials":["special1","special2"],"Stuffed":0}
+FromUser:"garbage"
+1
+ToUserText:"\"garbage\" is not a half and half option."
+State:{"Available":"0001-01-01T00:00:00","Bottles":null,"BYO":null,"Coupon":0,"Coupons":null,"DeliveryAddress":null,"GourmetDelite":0,"Kind":4,"NumberOfPizzas":2,"Phone":null,"Rating":null,"Signature":0,"Size":0,"Specials":["special1","special2"],"Stuffed":0}
+FromUser:"no"
+1
+ToUserButtons:[{"contentType":"application/vnd.microsoft.card.hero","contentUrl":null,"content":{"title":"","subtitle":null,"text":"Please select a crust ","images":null,"buttons":[{"type":"imBack","title":"Original","image":null,"text":null,"displayText":null,"value":"Original"},{"type":"imBack","title":"Thin","image":null,"text":null,"displayText":null,"value":"Thin"},{"type":"imBack","title":"Stuffed","image":null,"text":null,"displayText":null,"value":"Stuffed"},{"type":"imBack","title":"Fresh Pan","image":null,"text":null,"displayText":null,"value":"Fresh Pan"},{"type":"imBack","title":"Gluten Free","image":null,"text":null,"displayText":null,"value":"Gluten Free"}],"tap":null},"name":null,"thumbnailUrl":null}]
+State:{"Available":"0001-01-01T00:00:00","Bottles":null,"BYO":{"Crust":0,"HalfAndHalf":false,"HalfToppings":null,"Sauce":0,"Toppings":null},"Coupon":0,"Coupons":null,"DeliveryAddress":null,"GourmetDelite":0,"Kind":4,"NumberOfPizzas":2,"Phone":null,"Rating":null,"Signature":0,"Size":0,"Specials":["special1","special2"],"Stuffed":0}
+FromUser:"thin"
+1
+ToUserButtons:[{"contentType":"application/vnd.microsoft.card.hero","contentUrl":null,"content":{"title":"","subtitle":null,"text":"Please select a sauce ","images":null,"buttons":[{"type":"imBack","title":"Traditional","image":null,"text":null,"displayText":null,"value":"Traditional"},{"type":"imBack","title":"Creamy Garlic","image":null,"text":null,"displayText":null,"value":"Creamy Garlic"},{"type":"imBack","title":"Olive Oil","image":null,"text":null,"displayText":null,"value":"Olive Oil"}],"tap":null},"name":null,"thumbnailUrl":null}]
+State:{"Available":"0001-01-01T00:00:00","Bottles":null,"BYO":{"Crust":2,"HalfAndHalf":false,"HalfToppings":null,"Sauce":0,"Toppings":null},"Coupon":0,"Coupons":null,"DeliveryAddress":null,"GourmetDelite":0,"Kind":4,"NumberOfPizzas":2,"Phone":null,"Rating":null,"Signature":0,"Size":0,"Specials":["special1","special2"],"Stuffed":0}
+FromUser:"1"
+1
+ToUserText:"Please select one or more toppings \r\n  1. All except\r\n  2. Beef\r\n  3. Black Olives\r\n  4. Canadian Bacon\r\n  5. Crispy Bacon\r\n  6. Garlic\r\n  7. Green Peppers\r\n  8. Grilled Chicken\r\n  9. Herb And Cheese Blend\r\n  10. Italian Sausage\r\n  11. Artichoke Hearts\r\n  12. Mixed Onions\r\n  13. Mozzarella Cheese\r\n  14. Mushroom\r\n  15. Onions\r\n  16. Parmesan Cheese\r\n  17. Pepperoni\r\n  18. Pineapple\r\n  19. Roma Tomatoes\r\n  20. Salami\r\n  21. Spinach\r\n  22. Sun Dried Tomatoes\r\n  23. Zucchini\r\n  24. Extra Cheese"
+State:{"Available":"0001-01-01T00:00:00","Bottles":null,"BYO":{"Crust":2,"HalfAndHalf":false,"HalfToppings":null,"Sauce":1,"Toppings":null},"Coupon":0,"Coupons":null,"DeliveryAddress":null,"GourmetDelite":0,"Kind":4,"NumberOfPizzas":2,"Phone":null,"Rating":null,"Signature":0,"Size":0,"Specials":["special1","special2"],"Stuffed":0}
+FromUser:"?"
+2
+ToUserText:"* You are filling in the toppings field. Possible responses:\r\n* You can enter one or more numbers 1-24 or words from the descriptions. (All except, Beef, Black Olives, Canadian Bacon, Crispy Bacon, Garlic, Green Peppers, Grilled Chicken, Herb And Cheese Blend, Italian Sausage, Artichoke Hearts, Mixed Onions, Mozzarella Cheese, Mushroom, Onions, Parmesan Cheese, Pepperoni, Pineapple, Roma Tomatoes, Salami, Spinach, Sun Dried Tomatoes, Zucchini, or Extra Cheese)\r\n* Back: Go back to the previous question.\r\n* Help: Show the kinds of responses you can enter.\r\n* Quit: Quit the form without completing it.\r\n* Reset: Start over filling in the form. (With defaults from your previous entries.)\r\n* Status: Show your progress in filling in the form so far.\r\n* You can switch to another field by entering its name. (Number Of Pizzas, Size, Kind of pizza, Specials, Half And Half, Crust, Sauce, Toppings, Delivery Address, Coupons, Coupon, Rating, Available, Bottles, or Phone). "
+ToUserText:"Please select one or more toppings \r\n  1. All except\r\n  2. Beef\r\n  3. Black Olives\r\n  4. Canadian Bacon\r\n  5. Crispy Bacon\r\n  6. Garlic\r\n  7. Green Peppers\r\n  8. Grilled Chicken\r\n  9. Herb And Cheese Blend\r\n  10. Italian Sausage\r\n  11. Artichoke Hearts\r\n  12. Mixed Onions\r\n  13. Mozzarella Cheese\r\n  14. Mushroom\r\n  15. Onions\r\n  16. Parmesan Cheese\r\n  17. Pepperoni\r\n  18. Pineapple\r\n  19. Roma Tomatoes\r\n  20. Salami\r\n  21. Spinach\r\n  22. Sun Dried Tomatoes\r\n  23. Zucchini\r\n  24. Extra Cheese"
+State:{"Available":"0001-01-01T00:00:00","Bottles":null,"BYO":{"Crust":2,"HalfAndHalf":false,"HalfToppings":null,"Sauce":1,"Toppings":null},"Coupon":0,"Coupons":null,"DeliveryAddress":null,"GourmetDelite":0,"Kind":4,"NumberOfPizzas":2,"Phone":null,"Rating":null,"Signature":0,"Size":0,"Specials":["special1","special2"],"Stuffed":0}
+FromUser:"garbage"
+1
+ToUserText:"\"garbage\" is not a toppings option."
+State:{"Available":"0001-01-01T00:00:00","Bottles":null,"BYO":{"Crust":2,"HalfAndHalf":false,"HalfToppings":null,"Sauce":1,"Toppings":null},"Coupon":0,"Coupons":null,"DeliveryAddress":null,"GourmetDelite":0,"Kind":4,"NumberOfPizzas":2,"Phone":null,"Rating":null,"Signature":0,"Size":0,"Specials":["special1","special2"],"Stuffed":0}
+FromUser:"beef, onion, ice cream"
+1
+ToUserButtons:[{"contentType":"application/vnd.microsoft.card.hero","contentUrl":null,"content":{"title":"","subtitle":null,"text":"By \"onion\" toppings did you mean ","images":null,"buttons":[{"type":"imBack","title":"Onions","image":null,"text":null,"displayText":null,"value":"Onions"},{"type":"imBack","title":"Mixed Onions","image":null,"text":null,"displayText":null,"value":"Mixed Onions"}],"tap":null},"name":null,"thumbnailUrl":null}]
+State:{"Available":"0001-01-01T00:00:00","Bottles":null,"BYO":{"Crust":2,"HalfAndHalf":false,"HalfToppings":null,"Sauce":1,"Toppings":null},"Coupon":0,"Coupons":null,"DeliveryAddress":null,"GourmetDelite":0,"Kind":4,"NumberOfPizzas":2,"Phone":null,"Rating":null,"Signature":0,"Size":0,"Specials":["special1","special2"],"Stuffed":0}
+FromUser:"garbage"
+1
+ToUserText:"\"garbage\" is not a toppings option."
+State:{"Available":"0001-01-01T00:00:00","Bottles":null,"BYO":{"Crust":2,"HalfAndHalf":false,"HalfToppings":null,"Sauce":1,"Toppings":null},"Coupon":0,"Coupons":null,"DeliveryAddress":null,"GourmetDelite":0,"Kind":4,"NumberOfPizzas":2,"Phone":null,"Rating":null,"Signature":0,"Size":0,"Specials":["special1","special2"],"Stuffed":0}
+FromUser:"onions"
+4
+ToUserText:"For toppings I understood Beef, and Onions. \"ice cream\" is not an option."
+ToUserText:"Almost there!!! \r\n* Number Of Pizzas: 2\r\n* Size: Medium\r\n* Kind of pizza: Build your own\r\n* Specials: Free Drink, and Free Garlic Bread\r\n* Half And Half: No\r\n* Crust: Thin\r\n* Sauce: Traditional\r\n* Toppings: Beef, and Onions\r\n"
+ToUserText:"What we have is a Thin crust Traditional sauce Beef, and Onions pizza"
+ToUserText:"Please enter delivery address "
+State:{"Available":"0001-01-01T00:00:00","Bottles":null,"BYO":{"Crust":2,"HalfAndHalf":false,"HalfToppings":null,"Sauce":1,"Toppings":[2,15]},"Coupon":0,"Coupons":null,"DeliveryAddress":null,"GourmetDelite":0,"Kind":4,"NumberOfPizzas":2,"Phone":null,"Rating":null,"Signature":0,"Size":0,"Specials":["special1","special2"],"Stuffed":0}
+FromUser:"status"
+2
+ToUserText:"* Number Of Pizzas: 2\r\n* Size: Medium\r\n* Kind of pizza: Build your own\r\n* Specials: Free Drink, and Free Garlic Bread\r\n* Half And Half: No\r\n* Crust: Thin\r\n* Sauce: Traditional\r\n* Toppings: Beef, and Onions\r\n* Delivery Address: Unspecified\r\n* Coupons: No Preference\r\n* Coupon: No Preference\r\n* Rating: No Preference\r\n* Available: Unspecified\r\n* Bottles: No Preference\r\n* Phone: Unspecified\r\n"
+ToUserText:"Please enter delivery address "
+State:{"Available":"0001-01-01T00:00:00","Bottles":null,"BYO":{"Crust":2,"HalfAndHalf":false,"HalfToppings":null,"Sauce":1,"Toppings":[2,15]},"Coupon":0,"Coupons":null,"DeliveryAddress":null,"GourmetDelite":0,"Kind":4,"NumberOfPizzas":2,"Phone":null,"Rating":null,"Signature":0,"Size":0,"Specials":["special1","special2"],"Stuffed":0}
+FromUser:"abc"
+2
+ToUserText:"Address must start with a number."
+ToUserText:"Please enter delivery address "
+State:{"Available":"0001-01-01T00:00:00","Bottles":null,"BYO":{"Crust":2,"HalfAndHalf":false,"HalfToppings":null,"Sauce":1,"Toppings":[2,15]},"Coupon":0,"Coupons":null,"DeliveryAddress":null,"GourmetDelite":0,"Kind":4,"NumberOfPizzas":2,"Phone":null,"Rating":null,"Signature":0,"Size":0,"Specials":["special1","special2"],"Stuffed":0}
+FromUser:"2"
+3
+ToUserText:"Your address is fine."
+ToUserText:"Please enter delivery address "
+ToUserButtons:[{"contentType":"application/vnd.microsoft.card.hero","contentUrl":null,"content":{"title":"","subtitle":null,"text":"By \"2\" delivery address did you mean ","images":null,"buttons":[{"type":"imBack","title":"2 Iowa St","image":null,"text":null,"displayText":null,"value":"2 Iowa St"},{"type":"imBack","title":"2 Kansas St","image":null,"text":null,"displayText":null,"value":"2 Kansas St"}],"tap":null},"name":null,"thumbnailUrl":null}]
+State:{"Available":"0001-01-01T00:00:00","Bottles":null,"BYO":{"Crust":2,"HalfAndHalf":false,"HalfToppings":null,"Sauce":1,"Toppings":[2,15]},"Coupon":0,"Coupons":null,"DeliveryAddress":null,"GourmetDelite":0,"Kind":4,"NumberOfPizzas":2,"Phone":null,"Rating":null,"Signature":0,"Size":0,"Specials":["special1","special2"],"Stuffed":0}
+FromUser:"garbage"
+1
+ToUserText:"\"garbage\" is not a delivery address option."
+State:{"Available":"0001-01-01T00:00:00","Bottles":null,"BYO":{"Crust":2,"HalfAndHalf":false,"HalfToppings":null,"Sauce":1,"Toppings":[2,15]},"Coupon":0,"Coupons":null,"DeliveryAddress":null,"GourmetDelite":0,"Kind":4,"NumberOfPizzas":2,"Phone":null,"Rating":null,"Signature":0,"Size":0,"Specials":["special1","special2"],"Stuffed":0}
+FromUser:"iowa"
+3
+ToUserText:"Your address is fine."
+ToUserText:"Your pizza will cost $20.00"
+ToUserText:"Your pizza will cost $10.00 is that OK?"
+State:{"Available":"0001-01-01T00:00:00","Bottles":null,"BYO":{"Crust":2,"HalfAndHalf":false,"HalfToppings":null,"Sauce":1,"Toppings":[2,15]},"Coupon":0,"Coupons":null,"DeliveryAddress":"2 Iowa St","GourmetDelite":0,"Kind":4,"NumberOfPizzas":2,"Phone":null,"Rating":null,"Signature":0,"Size":0,"Specials":["special1","special2"],"Stuffed":0}
+FromUser:"y"
+1
+ToUserText:"Please select one or more coupons (1. Large 20 Percent, 2. Pepperoni 20 Percent, or 3. No Preference) (current choice: No Preference)"
+State:{"Available":"0001-01-01T00:00:00","Bottles":null,"BYO":{"Crust":2,"HalfAndHalf":false,"HalfToppings":null,"Sauce":1,"Toppings":[2,15]},"Coupon":0,"Coupons":null,"DeliveryAddress":"2 Iowa St","GourmetDelite":0,"Kind":4,"NumberOfPizzas":2,"Phone":null,"Rating":null,"Signature":0,"Size":0,"Specials":["special1","special2"],"Stuffed":0}
+FromUser:"1 2"
+1
+ToUserButtons:[{"contentType":"application/vnd.microsoft.card.hero","contentUrl":null,"content":{"title":"","subtitle":null,"text":"Please select a coupon ","images":null,"buttons":[{"type":"imBack","title":"Large 20 Percent","image":null,"text":null,"displayText":null,"value":"Large 20 Percent"},{"type":"imBack","title":"Pepperoni 20 Percent","image":null,"text":null,"displayText":null,"value":"Pepperoni 20 Percent"},{"type":"imBack","title":"No Preference","image":null,"text":null,"displayText":null,"value":"No Preference"}],"tap":null},"name":null,"thumbnailUrl":null}]
+State:{"Available":"0001-01-01T00:00:00","Bottles":null,"BYO":{"Crust":2,"HalfAndHalf":false,"HalfToppings":null,"Sauce":1,"Toppings":[2,15]},"Coupon":0,"Coupons":[1,2],"DeliveryAddress":"2 Iowa St","GourmetDelite":0,"Kind":4,"NumberOfPizzas":2,"Phone":null,"Rating":null,"Signature":0,"Size":0,"Specials":["special1","special2"],"Stuffed":0}
+FromUser:"none"
+1
+ToUserText:"Please enter a number between 1.0 and 5.0 for rating (current choice: No Preference)"
+State:{"Available":"0001-01-01T00:00:00","Bottles":null,"BYO":{"Crust":2,"HalfAndHalf":false,"HalfToppings":null,"Sauce":1,"Toppings":[2,15]},"Coupon":0,"Coupons":[1,2],"DeliveryAddress":"2 Iowa St","GourmetDelite":0,"Kind":4,"NumberOfPizzas":2,"Phone":null,"Rating":null,"Signature":0,"Size":0,"Specials":["special1","special2"],"Stuffed":0}
+FromUser:"garbage"
+1
+ToUserText:"\"garbage\" is not a rating option."
+State:{"Available":"0001-01-01T00:00:00","Bottles":null,"BYO":{"Crust":2,"HalfAndHalf":false,"HalfToppings":null,"Sauce":1,"Toppings":[2,15]},"Coupon":0,"Coupons":[1,2],"DeliveryAddress":"2 Iowa St","GourmetDelite":0,"Kind":4,"NumberOfPizzas":2,"Phone":null,"Rating":null,"Signature":0,"Size":0,"Specials":["special1","special2"],"Stuffed":0}
+FromUser:"2.5"
+1
+ToUserText:"Please enter a date and time for available "
+State:{"Available":"0001-01-01T00:00:00","Bottles":null,"BYO":{"Crust":2,"HalfAndHalf":false,"HalfToppings":null,"Sauce":1,"Toppings":[2,15]},"Coupon":0,"Coupons":[1,2],"DeliveryAddress":"2 Iowa St","GourmetDelite":0,"Kind":4,"NumberOfPizzas":2,"Phone":null,"Rating":2.5,"Signature":0,"Size":0,"Specials":["special1","special2"],"Stuffed":0}
+FromUser:"garbage"
+1
+ToUserText:"\"garbage\" is not an available option."
+State:{"Available":"0001-01-01T00:00:00","Bottles":null,"BYO":{"Crust":2,"HalfAndHalf":false,"HalfToppings":null,"Sauce":1,"Toppings":[2,15]},"Coupon":0,"Coupons":[1,2],"DeliveryAddress":"2 Iowa St","GourmetDelite":0,"Kind":4,"NumberOfPizzas":2,"Phone":null,"Rating":2.5,"Signature":0,"Size":0,"Specials":["special1","special2"],"Stuffed":0}
+FromUser:"2/25/1962 3pm"
+1
+ToUserText:"Please enter a number between 1 and 3 for bottles (current choice: No Preference)"
+State:{"Available":"1962-02-25T15:00:00","Bottles":null,"BYO":{"Crust":2,"HalfAndHalf":false,"HalfToppings":null,"Sauce":1,"Toppings":[2,15]},"Coupon":0,"Coupons":[1,2],"DeliveryAddress":"2 Iowa St","GourmetDelite":0,"Kind":4,"NumberOfPizzas":2,"Phone":null,"Rating":2.5,"Signature":0,"Size":0,"Specials":["special1","special2"],"Stuffed":0}
+FromUser:"no"
+1
+ToUserText:"Please enter phone "
+State:{"Available":"1962-02-25T15:00:00","Bottles":null,"BYO":{"Crust":2,"HalfAndHalf":false,"HalfToppings":null,"Sauce":1,"Toppings":[2,15]},"Coupon":0,"Coupons":[1,2],"DeliveryAddress":"2 Iowa St","GourmetDelite":0,"Kind":4,"NumberOfPizzas":2,"Phone":null,"Rating":2.5,"Signature":0,"Size":0,"Specials":["special1","special2"],"Stuffed":0}
+FromUser:"1234"
+2
+ToUserText:"\"1234\" is not a phone option."
+ToUserText:"Please enter phone "
+State:{"Available":"1962-02-25T15:00:00","Bottles":null,"BYO":{"Crust":2,"HalfAndHalf":false,"HalfToppings":null,"Sauce":1,"Toppings":[2,15]},"Coupon":0,"Coupons":[1,2],"DeliveryAddress":"2 Iowa St","GourmetDelite":0,"Kind":4,"NumberOfPizzas":2,"Phone":null,"Rating":2.5,"Signature":0,"Size":0,"Specials":["special1","special2"],"Stuffed":0}
+FromUser:"123-4567"
+2
+ToUserText:"Rating = 2.5 and [2.50]"
+ToUserText:"Would you like a Medium, Thin, Traditional, Beef, and Onions pizza delivered to 2 Iowa St?"
+State:{"Available":"1962-02-25T15:00:00","Bottles":null,"BYO":{"Crust":2,"HalfAndHalf":false,"HalfToppings":null,"Sauce":1,"Toppings":[2,15]},"Coupon":0,"Coupons":[1,2],"DeliveryAddress":"2 Iowa St","GourmetDelite":0,"Kind":4,"NumberOfPizzas":2,"Phone":"123-4567","Rating":2.5,"Signature":0,"Size":0,"Specials":["special1","special2"],"Stuffed":0}
+FromUser:"no"
+1
+ToUserButtons:[{"contentType":"application/vnd.microsoft.card.hero","contentUrl":null,"content":{"title":"","subtitle":null,"text":"What do you want to change? ","images":null,"buttons":[{"type":"imBack","title":"Number Of Pizzas(2)","image":null,"text":null,"displayText":null,"value":"Number Of Pizzas"},{"type":"imBack","title":"Size(Medium)","image":null,"text":null,"displayText":null,"value":"Size"},{"type":"imBack","title":"Kind of pizza(Build your own)","image":null,"text":null,"displayText":null,"value":"Kind of pizza"},{"type":"imBack","title":"Specials(Free Drink, and Free Garlic Bread)","image":null,"text":null,"displayText":null,"value":"Specials"},{"type":"imBack","title":"Half And Half(No)","image":null,"text":null,"displayText":null,"value":"Half And Half"},{"type":"imBack","title":"Crust(Thin)","image":null,"text":null,"displayText":null,"value":"Crust"},{"type":"imBack","title":"Sauce(Traditional)","image":null,"text":null,"displayText":null,"value":"Sauce"},{"type":"imBack","title":"Toppings(Beef, and Onions)","image":null,"text":null,"displayText":null,"value":"Toppings"},{"type":"imBack","title":"Delivery Address(2 Iowa St)","image":null,"text":null,"displayText":null,"value":"Delivery Address"},{"type":"imBack","title":"Coupons(Large 20 Percent, and Pepperoni 20 Percent)","image":null,"text":null,"displayText":null,"value":"Coupons"},{"type":"imBack","title":"Coupon(No Preference)","image":null,"text":null,"displayText":null,"value":"Coupon"},{"type":"imBack","title":"Rating(2.5)","image":null,"text":null,"displayText":null,"value":"Rating"},{"type":"imBack","title":"Available(2/25/1962 3:00:00 PM)","image":null,"text":null,"displayText":null,"value":"Available"},{"type":"imBack","title":"Bottles(No Preference)","image":null,"text":null,"displayText":null,"value":"Bottles"},{"type":"imBack","title":"Phone(123-4567)","image":null,"text":null,"displayText":null,"value":"Phone"},{"type":"imBack","title":"No Preference","image":null,"text":null,"displayText":null,"value":"No Preference"}],"tap":null},"name":null,"thumbnailUrl":null}]
+State:{"Available":"1962-02-25T15:00:00","Bottles":null,"BYO":{"Crust":2,"HalfAndHalf":false,"HalfToppings":null,"Sauce":1,"Toppings":[2,15]},"Coupon":0,"Coupons":[1,2],"DeliveryAddress":"2 Iowa St","GourmetDelite":0,"Kind":4,"NumberOfPizzas":2,"Phone":"123-4567","Rating":2.5,"Signature":0,"Size":0,"Specials":["special1","special2"],"Stuffed":0}
+FromUser:"toppings"
+1
+ToUserText:"Please select one or more toppings (current choice: Beef, and Onions) \r\n  1. All except\r\n  2. Beef\r\n  3. Black Olives\r\n  4. Canadian Bacon\r\n  5. Crispy Bacon\r\n  6. Garlic\r\n  7. Green Peppers\r\n  8. Grilled Chicken\r\n  9. Herb And Cheese Blend\r\n  10. Italian Sausage\r\n  11. Artichoke Hearts\r\n  12. Mixed Onions\r\n  13. Mozzarella Cheese\r\n  14. Mushroom\r\n  15. Onions\r\n  16. Parmesan Cheese\r\n  17. Pepperoni\r\n  18. Pineapple\r\n  19. Roma Tomatoes\r\n  20. Salami\r\n  21. Spinach\r\n  22. Sun Dried Tomatoes\r\n  23. Zucchini\r\n  24. Extra Cheese"
+State:{"Available":"1962-02-25T15:00:00","Bottles":null,"BYO":{"Crust":2,"HalfAndHalf":false,"HalfToppings":null,"Sauce":1,"Toppings":[2,15]},"Coupon":0,"Coupons":[1,2],"DeliveryAddress":"2 Iowa St","GourmetDelite":0,"Kind":4,"NumberOfPizzas":2,"Phone":"123-4567","Rating":2.5,"Signature":0,"Size":0,"Specials":["special1","special2"],"Stuffed":0}
+FromUser:"everything but spinach"
+1
+ToUserText:"Would you like a Medium, Thin, Traditional, Beef, Black Olives, Canadian Bacon, Crispy Bacon, Garlic, Green Peppers, Grilled Chicken, Herb And Cheese Blend, Italian Sausage, Artichoke Hearts, Mixed Onions, Mozzarella Cheese, Mushroom, Onions, Parmesan Cheese, Pepperoni, Pineapple, Roma Tomatoes, Salami, Sun Dried Tomatoes, Zucchini, and Extra Cheese pizza delivered to 2 Iowa St?"
+State:{"Available":"1962-02-25T15:00:00","Bottles":null,"BYO":{"Crust":2,"HalfAndHalf":false,"HalfToppings":null,"Sauce":1,"Toppings":[2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,22,23,24]},"Coupon":0,"Coupons":[1,2],"DeliveryAddress":"2 Iowa St","GourmetDelite":0,"Kind":4,"NumberOfPizzas":2,"Phone":"123-4567","Rating":2.5,"Signature":0,"Size":0,"Specials":["special1","special2"],"Stuffed":0}
+FromUser:"y"
+0
+State:{"Available":"1962-02-25T15:00:00","Bottles":null,"BYO":{"Crust":2,"HalfAndHalf":false,"HalfToppings":null,"Sauce":1,"Toppings":[2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,22,23,24]},"Coupon":0,"Coupons":[1,2],"DeliveryAddress":"2 Iowa St","GourmetDelite":0,"Kind":4,"NumberOfPizzas":2,"Phone":"123-4567","Rating":2.5,"Signature":0,"Size":0,"Specials":["special1","special2"],"Stuffed":0}
+Result: {"NumberOfPizzas":2,"Size":0,"Kind":4,"Signature":0,"GourmetDelite":0,"Stuffed":0,"BYO":{"Crust":2,"Sauce":1,"HalfAndHalf":false,"Toppings":[2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,22,23,24],"HalfToppings":null},"Coupons":[1,2],"Coupon":0,"DeliveryAddress":"2 Iowa St","Rating":2.5,"Available":"1962-02-25T15:00:00","Bottles":null,"Specials":["special1","special2"],"Phone":"123-4567"}

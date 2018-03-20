@@ -1,0 +1,239 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{CDFEC7D6-847E-4C13-956B-0A960AE3EB60}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Microsoft.Bot.Builder.Classic</RootNamespace>
+    <AssemblyName>Microsoft.Bot.Builder.Classic</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <NoWarn>1998</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Autofac">
+      <HintPath>..\..\..\packages\Autofac.3.5.2\lib\net40\Autofac.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Chronic">
+      <HintPath>..\..\..\packages\Chronic.Signed.0.3.2\lib\net40\Chronic.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Rest.ClientRuntime, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Microsoft.Rest.ClientRuntime.2.3.10\lib\net452\Microsoft.Rest.ClientRuntime.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Autofac\Base\Extensions.cs" />
+    <Compile Include="Autofac\Dialogs\Conversation.cs" />
+    <Compile Include="Autofac\Dialogs\DialogModule.cs" />
+    <Compile Include="Autofac\Fibers\DoNotSerializeResolver.cs" />
+    <Compile Include="Autofac\Fibers\FiberModule.cs" />
+    <Compile Include="Autofac\Scorables\Resolver.cs" />
+    <Compile Include="Base\EventLoop.cs" />
+    <Compile Include="Base\Extensions.cs" />
+    <Compile Include="Base\LocalizedScope.cs" />
+    <Compile Include="Base\Pair.cs" />
+    <Compile Include="Base\Range.cs" />
+    <Compile Include="Base\Resolver.cs" />
+    <Compile Include="Base\Scope.cs" />
+    <Compile Include="Base\SetField.cs" />
+    <Compile Include="Base\Tasks.cs" />
+    <Compile Include="Base\Traits.cs" />
+    <Compile Include="Base\Types.cs" />
+    <Compile Include="ConnectorEx\Address.cs" />
+    <Compile Include="ConnectorEx\BotData.cs" />
+    <Compile Include="ConnectorEx\BotDataEx.cs" />
+    <Compile Include="ConnectorEx\BotToUser.cs" />
+    <Compile Include="ConnectorEx\IActivityLogger.cs" />
+    <Compile Include="ConnectorEx\IBotData.cs" />
+    <Compile Include="ConnectorEx\IBotDataBag.cs" />
+    <Compile Include="ConnectorEx\IChannelCapability.cs" />
+    <Compile Include="ConnectorEx\IConnectorClientFactory.cs" />
+    <Compile Include="ConnectorEx\KeyboardCard.cs" />
+    <Compile Include="ConnectorEx\LocaleFinder.cs" />
+    <Compile Include="ConnectorEx\PostToBot.cs" />
+    <Compile Include="ConnectorEx\Resolver.cs" />
+    <Compile Include="ConnectorEx\ResumptionContext.cs" />
+    <Compile Include="ConnectorEx\ResumptionCookie.cs" />
+    <Compile Include="ConnectorEx\UrlToken.cs" />
+    <Compile Include="Dialogs\Chain.cs" />
+    <Compile Include="Dialogs\CommandDialog.cs" />
+    <Compile Include="Dialogs\DeleteProfileScorable.cs" />
+    <Compile Include="Dialogs\DialogContext.cs" />
+    <Compile Include="Dialogs\DialogRouter.cs" />
+    <Compile Include="Dialogs\DialogSystem.cs" />
+    <Compile Include="Dialogs\DialogTask.cs" />
+    <Compile Include="Dialogs\DialogTaskManager.cs" />
+    <Compile Include="Dialogs\DispatchDialog.cs" />
+    <Compile Include="Dialogs\EndConversation.cs" />
+    <Compile Include="Dialogs\Exceptions.cs" />
+    <Compile Include="Dialogs\IDialog.cs" />
+    <Compile Include="Dialogs\IDialogContext.cs" />
+    <Compile Include="Dialogs\IDialogTask.cs" />
+    <Compile Include="Dialogs\LuisDialog.cs" />
+    <Compile Include="Dialogs\PromptDialog.cs" />
+    <Compile Include="Dialogs\PromptRecognizer.cs" />
+    <Compile Include="Dialogs\ScoringEventLoop.cs" />
+    <Compile Include="Fibers\Awaitable.cs" />
+    <Compile Include="Fibers\Exceptions.cs" />
+    <Compile Include="Fibers\Extensions.cs" />
+    <Compile Include="Fibers\Fiber.cs" />
+    <Compile Include="Fibers\IStore.cs" />
+    <Compile Include="Fibers\Methods.cs" />
+    <Compile Include="Fibers\Serialization.cs" />
+    <Compile Include="Fibers\StackStoreFactory.cs" />
+    <Compile Include="Fibers\Store.cs" />
+    <Compile Include="Fibers\Wait.cs" />
+    <Compile Include="FormFlow\Attributes.cs" />
+    <Compile Include="FormFlow\Confirmation.cs" />
+    <Compile Include="FormFlow\Extensions.cs" />
+    <Compile Include="FormFlow\Field.cs" />
+    <Compile Include="FormFlow\FieldJson.cs" />
+    <Compile Include="FormFlow\FieldReflector.cs" />
+    <Compile Include="FormFlow\FormBuilder.cs" />
+    <Compile Include="FormFlow\FormBuilderJson.cs" />
+    <Compile Include="FormFlow\FormDialog.cs" />
+    <Compile Include="FormFlow\FormState.cs" />
+    <Compile Include="FormFlow\IField.cs" />
+    <Compile Include="FormFlow\IForm.cs" />
+    <Compile Include="FormFlow\IFormBuilder.cs" />
+    <Compile Include="FormFlow\IFormDialog.cs" />
+    <Compile Include="FormFlow\ILocalizer.cs" />
+    <Compile Include="FormFlow\IPrompt.cs" />
+    <Compile Include="FormFlow\IRecognize.cs" />
+    <Compile Include="FormFlow\IStep.cs" />
+    <Compile Include="FormFlow\Language.cs" />
+    <Compile Include="FormFlow\Localizer.cs" />
+    <Compile Include="FormFlow\MatchAnalyzer.cs" />
+    <Compile Include="FormFlow\MessageActivityHelper.cs" />
+    <Compile Include="FormFlow\Recognize.cs" />
+    <Compile Include="FormFlow\Steps.cs" />
+    <Compile Include="Luis\CalendarPlus.cs" />
+    <Compile Include="Luis\EntityToType.cs" />
+    <Compile Include="Luis\Extensions.cs" />
+    <Compile Include="Luis\LuisModel.cs" />
+    <Compile Include="Luis\LuisOptions.cs" />
+    <Compile Include="Luis\LuisService.cs" />
+    <Compile Include="Luis\Models\Action.cs" />
+    <Compile Include="Luis\Models\ActionParameter.cs" />
+    <Compile Include="Luis\Models\CompositeChild.cs" />
+    <Compile Include="Luis\Models\CompositeEntity.cs" />
+    <Compile Include="Luis\Models\DialogResponse.cs" />
+    <Compile Include="Luis\Models\DialogResponseEx.cs" />
+    <Compile Include="Luis\Models\EntityRecommendation.cs" />
+    <Compile Include="Luis\Models\IntentRecommendation.cs" />
+    <Compile Include="Luis\Models\LuisResult.cs" />
+    <Compile Include="Luis\Resolution.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Resource\Extensions.cs" />
+    <Compile Include="Resource\Resources.Designer.cs" />
+    <Compile Include="Scorables\Actions.cs" />
+    <Compile Include="Scorables\Binder.cs" />
+    <Compile Include="Scorables\Binding.cs" />
+    <Compile Include="Scorables\BindingComparer.cs" />
+    <Compile Include="Scorables\Dispatcher.cs" />
+    <Compile Include="Scorables\FoldScorable.cs" />
+    <Compile Include="Scorables\InheritedAttributes.cs" />
+    <Compile Include="Scorables\LuisIntentScorable.cs" />
+    <Compile Include="Scorables\MethodScorable.cs" />
+    <Compile Include="Scorables\OrderScorable.cs" />
+    <Compile Include="Scorables\RegexMatchScorable.cs" />
+    <Compile Include="Scorables\ResolverScorable.cs" />
+    <Compile Include="Scorables\Scorable.cs" />
+    <Compile Include="Scorables\ScorableBase.cs" />
+    <Compile Include="Scorables\Scorables.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Luis\Luis-q.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resource\Resources.ar.resx" />
+    <EmbeddedResource Include="Resource\Resources.cs.resx" />
+    <EmbeddedResource Include="Resource\Resources.de-DE.resx" />
+    <EmbeddedResource Include="Resource\Resources.en.resx" />
+    <EmbeddedResource Include="Resource\Resources.es.resx" />
+    <EmbeddedResource Include="Resource\Resources.fa.resx" />
+    <EmbeddedResource Include="Resource\Resources.fr.resx" />
+    <EmbeddedResource Include="Resource\Resources.it.resx" />
+    <EmbeddedResource Include="Resource\Resources.ja.resx" />
+    <EmbeddedResource Include="Resource\Resources.nl.resx" />
+    <EmbeddedResource Include="Resource\Resources.pt-BR.resx" />
+    <EmbeddedResource Include="Resource\Resources.resx" />
+    <EmbeddedResource Include="Resource\Resources.ru.resx" />
+    <EmbeddedResource Include="Resource\Resources.zh-Hans.resx" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="createpackage.cmd" />
+    <None Include="Luis\generateLuisModels.bat" />
+    <None Include="Microsoft.Bot.Builder.Classic.nuspec" />
+    <None Include="MultilingualResources\Microsoft.Bot.Builder.ar.xlf" />
+    <None Include="MultilingualResources\Microsoft.Bot.Builder.cs.xlf" />
+    <None Include="MultilingualResources\Microsoft.Bot.Builder.de-DE.xlf" />
+    <None Include="MultilingualResources\Microsoft.Bot.Builder.en.xlf" />
+    <None Include="MultilingualResources\Microsoft.Bot.Builder.es.xlf" />
+    <None Include="MultilingualResources\Microsoft.Bot.Builder.fa.xlf" />
+    <None Include="MultilingualResources\Microsoft.Bot.Builder.fr.xlf" />
+    <None Include="MultilingualResources\Microsoft.Bot.Builder.it.xlf" />
+    <None Include="MultilingualResources\Microsoft.Bot.Builder.ja.xlf" />
+    <None Include="MultilingualResources\Microsoft.Bot.Builder.nl.xlf" />
+    <None Include="MultilingualResources\Microsoft.Bot.Builder.pt-BR.xlf" />
+    <None Include="MultilingualResources\Microsoft.Bot.Builder.ru.xlf" />
+    <None Include="MultilingualResources\Microsoft.Bot.Builder.zh-Hans.xlf" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Microsoft.Bot.Builder.Core\Microsoft.Bot.Builder.Core.csproj">
+      <Project>{f0c150e2-9b8a-444c-b70e-97ad918cb3d4}</Project>
+      <Name>Microsoft.Bot.Builder.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Microsoft.Bot.Builder\Microsoft.Bot.Builder.csproj">
+      <Project>{ada8ab8b-2066-4193-b8f7-985669b23e00}</Project>
+      <Name>Microsoft.Bot.Builder</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Microsoft.Bot.Connector\Microsoft.Bot.Connector.csproj">
+      <Project>{6462da5d-27dc-4cd5-9467-5efb998fd838}</Project>
+      <Name>Microsoft.Bot.Connector</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Microsoft.Bot.Schema\Microsoft.Bot.Schema.csproj">
+      <Project>{c1f54cdc-ad1d-45bb-8f7d-f49e411afaf1}</Project>
+      <Name>Microsoft.Bot.Schema</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

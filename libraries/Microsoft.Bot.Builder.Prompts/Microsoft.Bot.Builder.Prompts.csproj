@@ -1,0 +1,57 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<Version Condition=" '$(BUILD_BUILDNUMBER)' == '' ">4.0.0-local</Version>
+		<Version Condition=" '$(BUILD_BUILDNUMBER)' != '' ">$(BUILD_BUILDNUMBER)</Version>
+		<PackageVersion Condition=" '$(PackageVersion)' == '' ">4.0.0-local</PackageVersion>
+		<PackageVersion Condition=" '$(PackageVersion)' != '' ">$(PackageVersion)</PackageVersion>
+	</PropertyGroup>
+
+	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+		<SignAssembly>true</SignAssembly>
+		<DelaySign>true</DelaySign>
+		<AssemblyOriginatorKeyFile>..\..\build\35MSSharedLib1024.snk</AssemblyOriginatorKeyFile>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<TargetFramework>netstandard2.0</TargetFramework>
+		<PackageId>Microsoft.Bot.Builder.Prompts</PackageId>
+		<Description>This library implements .NET Prompt classes using Microsoft.Text.Recognizers libraries</Description>
+		<Summary>This library implements .NET Prompt classes using Microsoft.Text.Recognizers libraries</Summary>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<Company>Microsoft</Company>
+		<Authors>microsoft,BotFramework,nugetbotbuilder</Authors>
+		<Product>Microsoft Bot Builder SDK</Product>
+		<Copyright>© Microsoft Corporation. All rights reserved.</Copyright>
+		<PackageProjectUrl>https://github.com/Microsoft/botbuilder-dotnet</PackageProjectUrl>
+		<PackageIconUrl>http://docs.botframework.com/images/bot_icon.png</PackageIconUrl>
+		<PackageLicenseUrl>https://github.com/Microsoft/BotBuilder/blob/master/LICENSE</PackageLicenseUrl>
+		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+		<RepositoryUrl>https://github.com/Microsoft/botbuilder-dotnet</RepositoryUrl>
+		<LicenseUrl>https://github.com/Microsoft/BotBuilder-dotnet/blob/master/LICENSE</LicenseUrl>
+		<RepositoryType />
+		<PackageTags>bots;ai;botframework;botbuilder</PackageTags>
+		<NeutralLanguage />
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Bot.Builder.Core" Condition=" '$(PackageVersion)' == '' " Version="4.0.0-local" />
+		<PackageReference Include="Microsoft.Bot.Builder.Core" Condition=" '$(PackageVersion)' != '' " Version="$(PackageVersion)" />
+		<PackageReference Include="Microsoft.Bot.Schema" Condition=" '$(PackageVersion)' == '' " Version="4.0.0-local" />
+		<PackageReference Include="Microsoft.Bot.Schema" Condition=" '$(PackageVersion)' != '' " Version="$(PackageVersion)" />
+		<PackageReference Include="Microsoft.Recognizers.Text" Version="1.0.1.1" />
+		<PackageReference Include="Microsoft.Recognizers.Text.DateTime" Version="1.0.1.1" />
+		<PackageReference Include="Microsoft.Recognizers.Text.Number" Version="1.0.1.1" />
+		<PackageReference Include="Microsoft.Recognizers.Text.NumberWithUnit" Version="1.0.1.1" />
+		<PackageReference Include="Microsoft.Recognizers.Text.Sequence" Version="1.0.1.1" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Microsoft.Bot.Builder.Core\Microsoft.Bot.Builder.Core.csproj" />
+		<ProjectReference Include="..\Microsoft.Bot.Schema\Microsoft.Bot.Schema.csproj" />
+	</ItemGroup>
+
+</Project>

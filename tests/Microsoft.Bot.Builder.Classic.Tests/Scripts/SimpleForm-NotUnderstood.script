@@ -1,0 +1,35 @@
+en-us
+{"Date":"0001-01-01T00:00:00","Float":null,"Integer":0,"SomeChoices":0,"Text":null}
+[]
+FromUser:"Hi"
+1
+ToUserText:"Please enter text "
+State:{"Date":"0001-01-01T00:00:00","Float":null,"Integer":0,"SomeChoices":0,"Text":null}
+FromUser:"some text here"
+1
+ToUserText:"Please enter a number for integer (current choice: 0)"
+State:{"Date":"0001-01-01T00:00:00","Float":null,"Integer":0,"SomeChoices":0,"Text":"some text here"}
+FromUser:"99"
+1
+ToUserText:"Please enter a number for float "
+State:{"Date":"0001-01-01T00:00:00","Float":null,"Integer":99,"SomeChoices":0,"Text":"some text here"}
+FromUser:"1.5"
+1
+ToUserButtons:[{"contentType":"application/vnd.microsoft.card.hero","contentUrl":null,"content":{"title":"","subtitle":null,"text":"Please select a some choices ","images":null,"buttons":[{"type":"imBack","title":"One","image":null,"text":null,"displayText":null,"value":"One"},{"type":"imBack","title":"Two","image":null,"text":null,"displayText":null,"value":"Two"},{"type":"imBack","title":"Three","image":null,"text":null,"displayText":null,"value":"Three"},{"type":"imBack","title":"Four","image":null,"text":null,"displayText":null,"value":"Four"}],"tap":null},"name":null,"thumbnailUrl":null}]
+State:{"Date":"0001-01-01T00:00:00","Float":1.5,"Integer":99,"SomeChoices":0,"Text":"some text here"}
+FromUser:"more than one"
+1
+ToUserButtons:[{"contentType":"application/vnd.microsoft.card.hero","contentUrl":null,"content":{"title":"","subtitle":null,"text":"By \"more than one\" some choices did you mean ","images":null,"buttons":[{"type":"imBack","title":"Three","image":null,"text":null,"displayText":null,"value":"Three"},{"type":"imBack","title":"Two","image":null,"text":null,"displayText":null,"value":"Two"}],"tap":null},"name":null,"thumbnailUrl":null}]
+State:{"Date":"0001-01-01T00:00:00","Float":1.5,"Integer":99,"SomeChoices":0,"Text":"some text here"}
+FromUser:"foo"
+1
+ToUserButtons:[{"contentType":"application/vnd.microsoft.card.hero","contentUrl":null,"content":{"title":"","subtitle":null,"text":"Choices ","images":null,"buttons":[{"type":"imBack","title":"Three","image":null,"text":null,"displayText":null,"value":"Three"},{"type":"imBack","title":"Two","image":null,"text":null,"displayText":null,"value":"Two"}],"tap":null},"name":null,"thumbnailUrl":null}]
+State:{"Date":"0001-01-01T00:00:00","Float":1.5,"Integer":99,"SomeChoices":0,"Text":"some text here"}
+FromUser:"two"
+1
+ToUserText:"Please enter a date and time for date "
+State:{"Date":"0001-01-01T00:00:00","Float":1.5,"Integer":99,"SomeChoices":2,"Text":"some text here"}
+FromUser:"1/1/2016"
+0
+State:{"Date":"2016-01-01T00:00:00","Float":1.5,"Integer":99,"SomeChoices":2,"Text":"some text here"}
+Result: {"Text":"some text here","Integer":99,"Float":1.5,"SomeChoices":2,"Date":"2016-01-01T00:00:00"}

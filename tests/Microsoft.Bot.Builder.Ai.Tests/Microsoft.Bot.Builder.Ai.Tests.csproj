@@ -15,9 +15,8 @@
   <ItemGroup>
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Ai\Microsoft.Bot.Builder.Ai.csproj" />
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Azure\Microsoft.Bot.Builder.Azure.csproj" />
-    <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder\Microsoft.Bot.Builder.csproj" />
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Schema\Microsoft.Bot.Schema.csproj" />
-    <ProjectReference Include="..\Microsoft.Bot.Builder.Tests\Microsoft.Bot.Builder.Tests.csproj" />
+    <ProjectReference Include="..\Microsoft.Bot.Builder.Core.Extensions.Tests\Microsoft.Bot.Builder.Core.Extensions.Tests.csproj" />
   </ItemGroup>
 
   <ItemGroup>
