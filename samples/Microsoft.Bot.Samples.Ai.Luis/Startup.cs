@@ -1,8 +1,13 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Bot.Builder.BotFramework;
+using Microsoft.Bot.Builder.Integration.AspNet.Core;
+using Microsoft.Bot.Builder.LUIS;
+using Microsoft.Cognitive.LUIS;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -26,8 +31,22 @@ namespace Microsoft.Bot.Samples.Ai.Luis
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton(_ => Configuration);
-            services.AddMvc();
+            services.AddBot<LuisBot>(options =>
+            {
+                options.CredentialProvider = new ConfigurationCredentialProvider(Configuration);
+
+                string luisModelId = "<Your Model Here>";
+                string luisSubscriptionKey = "<Your Key here>";
+                Uri luisUri = new Uri("https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/");
+
+                var luisModel = new LuisModel(luisModelId, luisSubscriptionKey, luisUri);
+
+                // If you want to get all intents scorings, add verbose in luisOptions
+                var luisOptions = new LuisRequest { Verbose = true };
+
+                var middleware = options.Middleware;
+                middleware.Add(new LuisRecognizerMiddleware(luisModel, luisOptions: luisOptions));                
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -38,9 +57,9 @@ namespace Microsoft.Bot.Samples.Ai.Luis
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseDefaultFiles();
-            app.UseStaticFiles();
-            app.UseMvc();
+            app.UseDefaultFiles()
+                .UseStaticFiles()
+                .UseBotFramework();
         }
     }
 }
