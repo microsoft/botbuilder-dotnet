@@ -2,13 +2,10 @@
 // Licensed under the MIT License.
 
 using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Builder.Storage;
-using Microsoft.Bot.Builder.Tests;
+using Microsoft.Bot.Builder.Core.Extensions;
+using Microsoft.Bot.Builder.Core.Extensions.Tests;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Ai.Tests
@@ -23,26 +20,23 @@ namespace Microsoft.Bot.Builder.Ai.Tests
         [TestCategory("Translator")]
         public async Task TranslatorMiddleware_DetectAndTranslateToEnglish()
         {
+            
+            TestAdapter adapter = new TestAdapter()
+            .Use(new BatchOutputMiddleware())
+            .Use(new TranslationMiddleware(new string[] { "en-us" }, translatorKey));
 
-            TestAdapter adapter = new TestAdapter();
-            Bot bot = new Bot(adapter)
-                .Use(new BotStateManager(new FileStorage(System.IO.Path.GetTempPath()))) //store user state in a temp directory
-                .Use(new TranslationMiddleware(new string[] { "en-us" }, translatorKey));
-
-            bot.OnReceive((context) =>
+            await new TestFlow(adapter, (context) =>
             {
-                if (context.Responses.Count == 0)
+                if (context.Request.AsMessageActivity().Text == "foo")
                 {
-                    context.Reply(context.Request.AsMessageActivity().Text);
+                    context.Batch().Reply(context.Request.AsMessageActivity().Text);
                 }
                 return Task.CompletedTask;
-            });
-
-            await adapter
-                .Send("salut")
-                    .AssertReply("Hello")
-                .Send("salut 10-20")
-                    .AssertReply("Hi 10-20")
+            })
+            .Send("salut")
+                .AssertReply("Hello")
+            .Send("salut 10-20")
+                .AssertReply("Hi 10-20")
                 .StartTest();
         }
 
@@ -52,29 +46,26 @@ namespace Microsoft.Bot.Builder.Ai.Tests
         public async Task TranslatorMiddleware_TranslateFrenchToEnglish()
         {
 
-            TestAdapter adapter = new TestAdapter();
-            Bot bot = new Bot(adapter)
-                .Use(new BotStateManager(new FileStorage(System.IO.Path.GetTempPath()))) //store user state in a temp directory
+            TestAdapter adapter = new TestAdapter()
+                .Use(new BatchOutputMiddleware())
                 .Use(new TranslationMiddleware(new string[] { "en-us" }, translatorKey, "", GetActiveLanguage, SetActiveLanguage));
 
-            bot.OnReceive((context) =>
+            await new TestFlow(adapter, (context) =>
             {
-                if (context.Responses.Count == 0)
+                if (context.Request.AsMessageActivity().Text == "foo")
                 {
-                    context.Reply(context.Request.AsMessageActivity().Text);
+                    context.Batch().Reply(context.Request.AsMessageActivity().Text);
                 }
                 return Task.CompletedTask;
-            });
-
-            await adapter
-                .Send("set my language to fr")
-                    .AssertReply("Changing your language to fr")
-                .Send("salut")
-                    .AssertReply("Hello")
+            })
+            .Send("set my language to fr")
+                .AssertReply("Changing your language to fr")
+            .Send("salut")
+                .AssertReply("Hello")
                 .StartTest();
         }
 
-        private void SetLanguage(IBotContext context, string language) => context.State.User[@"Microsoft.API.translateTo"] = language;
+        private void SetLanguage(IBotContext context, string language) => context.Set(@"Microsoft.API.translateTo",language);
        
         protected async Task<bool> SetActiveLanguage(IBotContext context)
         {
@@ -91,11 +82,11 @@ namespace Microsoft.Bot.Builder.Ai.Tests
                 if (!string.IsNullOrWhiteSpace(newLang))
                 {
                     SetLanguage(context, newLang);
-                    context.Reply($@"Changing your language to {newLang}");
+                    await context.SendActivity($@"Changing your language to {newLang}");
                 }
                 else
                 {
-                    context.Reply($@"{newLang} is not a supported language.");
+                    await context.SendActivity($@"{newLang} is not a supported language.");
                 }
                 //intercepts message
                 return true;
@@ -106,9 +97,9 @@ namespace Microsoft.Bot.Builder.Ai.Tests
         protected string GetActiveLanguage(IBotContext context)
         {
             if (context.Request.Type == ActivityTypes.Message
-                && context.State.User.ContainsKey(@"Microsoft.API.translateTo"))
+                && context.Has(@"Microsoft.API.translateTo"))
             {
-                return (string)context.State.User[@"Microsoft.API.translateTo"];
+                return (string)context.Get(@"Microsoft.API.translateTo");
             }
 
             return "en";

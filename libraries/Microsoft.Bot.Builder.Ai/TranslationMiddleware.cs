@@ -7,13 +7,11 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Middleware;
 using Microsoft.Bot.Schema;
-using Microsoft.Cognitive.LUIS;
 
 namespace Microsoft.Bot.Builder.Ai
 {
-    public class TranslationMiddleware : IReceiveActivity
+    public class TranslationMiddleware : IMiddleware
     {
         private readonly string[] nativeLanguages;
         private Translator translator;
@@ -69,7 +67,7 @@ namespace Microsoft.Bot.Builder.Ai
         /// <param name="context"></param>
         /// <param name="token"></param>
         /// <returns></returns>       
-        public async Task ReceiveActivity(IBotContext context, MiddlewareSet.NextDelegate next)
+        public async Task OnProcessRequest(IBotContext context, MiddlewareSet.NextDelegate next)
         {
             IMessageActivity message = context.Request.AsMessageActivity();
             if (message != null)
@@ -107,7 +105,7 @@ namespace Microsoft.Bot.Builder.Ai
                                 SourceLanguage = sourceLanguage,
                                 TargetLanguage = (this.nativeLanguages.Contains(sourceLanguage)) ? sourceLanguage : this.nativeLanguages.FirstOrDefault() ?? "en"
                             };
-                            ((BotContext)context)["Microsoft.API.Translation"] = translationContext;
+                            ((BotContext)context).Set("Microsoft.API.Translation", translationContext);
 
                             // translate to bots language
                             if (translationContext.SourceLanguage != translationContext.TargetLanguage)
@@ -162,6 +160,5 @@ namespace Microsoft.Bot.Builder.Ai
                 message.Text = text;
             }
         }
-        
     }
 }

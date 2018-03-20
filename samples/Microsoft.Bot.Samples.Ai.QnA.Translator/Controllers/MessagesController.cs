@@ -11,7 +11,8 @@ using Microsoft.Bot.Builder.Ai;
 using Microsoft.Bot.Builder.BotFramework;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Bot.Builder.Storage;
+using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.Core.Extensions;
 
 namespace Microsoft.Bot.Samples.Ai.QnA.Controllers
 {
@@ -20,7 +21,7 @@ namespace Microsoft.Bot.Samples.Ai.QnA.Controllers
     {
 
         private static readonly HttpClient _httpClient = new HttpClient();
-        BotFrameworkAdapter _adapter;
+        BotFrameworkAdapter adapter;
 
         //supported langauges and locales
         private static readonly string[] _supportedLanguages = new string[] { "en", "fr" };
@@ -31,35 +32,29 @@ namespace Microsoft.Bot.Samples.Ai.QnA.Controllers
 
         public MessagesController(IConfiguration configuration)
         {
-            var qnaMiddlewareOptions = new QnAMakerMiddlewareOptions
+            if (adapter == null)
             {
-                // add subscription key and knowledge base id
-                SubscriptionKey = "xxxxxx",
-                KnowledgeBaseId = "xxxxxx"
-            };
-
-
-            var bot = new Builder.Bot(new BotFrameworkAdapter(configuration))
-                .Use(new BotStateManager(new FileStorage(System.IO.Path.GetTempPath()))) //store user state in a temp directory
-                .Use(new TranslationMiddleware(new string[] { "en" }, "xxxxxx", "templates", GetActiveLanguage, SetActiveLanguage))
-                .Use(new LocaleConverterMiddleware(GetActiveLocale, SetActiveLocale, "en-us", new LocaleConverter()))
-                //LocaleConverter and Translation middleware use default values for source language and from locale
-                // add QnA middleware 
-                .Use(new QnAMakerMiddleware(qnaMiddlewareOptions, _httpClient));
-
-            bot.OnReceive(BotReceiveHandler);
-
-            _adapter = (BotFrameworkAdapter)bot.Adapter;
+                var qnaOptions = new QnAMakerMiddlewareOptions
+                {
+                    // add subscription key and knowledge base id
+                    SubscriptionKey = "xxxxxx",
+                    KnowledgeBaseId = "xxxxxx"
+                };
+                adapter = new BotFrameworkAdapter(new ConfigurationCredentialProvider(configuration))
+                    .Use(new BatchOutputMiddleware())
+                    .Use(new TranslationMiddleware(new string[] { "en" }, "xxxxxx", "templates", GetActiveLanguage, SetActiveLanguage))
+                    .Use(new LocaleConverterMiddleware(GetActiveLocale, SetActiveLocale, "en-us", new LocaleConverter()))
+                    .Use(new QnAMakerMiddleware(qnaOptions, _httpClient));
+            }
         }
 
         private Task BotReceiveHandler(IBotContext context)
         {
-            if (context.Request.Type == ActivityTypes.Message && context.Responses.Count == 0)
+            if (context.Request.Type == ActivityTypes.Message && context.Responded == false)
             {
                 // add app logic when QnA Maker doesn't find an answer
-                context.Reply("No good match found in the KB.");
+                context.Batch().Reply("No good match found in the KB.");
             }
-            //context.Reply(context.Request.AsMessageActivity().Text);
             return Task.CompletedTask;
         }
 
@@ -68,7 +63,7 @@ namespace Microsoft.Bot.Samples.Ai.QnA.Controllers
         {
             try
             {
-                await _adapter.Receive(this.Request.Headers["Authorization"].FirstOrDefault(), activity);
+                await adapter.ProcessActivity(this.Request.Headers["Authorization"].FirstOrDefault(), activity, BotReceiveHandler);
                 return this.Ok();
             }
             catch (UnauthorizedAccessException)
@@ -86,8 +81,8 @@ namespace Microsoft.Bot.Samples.Ai.QnA.Controllers
             return new ObjectResult("Success!");
         }
 
-        private void SetLanguage(IBotContext context, string language) => context.State.User[@"Microsoft.API.translateTo"] = language;
-        private void SetLocale(IBotContext context, string locale) => context.State.User[@"LocaleConverterMiddleware.fromLocale"] = locale;
+        private void SetLanguage(IBotContext context, string language) => context.Set(@"Microsoft.API.translateTo", language);
+        private void SetLocale(IBotContext context, string locale) => context.Set(@"LocaleConverterMiddleware.fromLocale", locale);
 
         protected bool IsSupportedLanguage(string language) => _supportedLanguages.Contains(language);
         protected async Task<bool> SetActiveLanguage(IBotContext context)
@@ -106,11 +101,11 @@ namespace Microsoft.Bot.Samples.Ai.QnA.Controllers
                         && IsSupportedLanguage(newLang))
                 {
                     SetLanguage(context, newLang);
-                    context.Reply($@"Changing your language to {newLang}");
+                    await context.SendActivity($@"Changing your language to {newLang}");
                 }
                 else
                 {
-                    context.Reply($@"{newLang} is not a supported language.");
+                    await context.SendActivity($@"{newLang} is not a supported language.");
                 }
                 //intercepts message
                 return true;
@@ -123,15 +118,15 @@ namespace Microsoft.Bot.Samples.Ai.QnA.Controllers
             if (currentLanguage != null)
             {
                 //user has specified a different language so update the bot state
-                if (currentLanguage != (string)context.State.User[@"Microsoft.API.translateTo"])
+                if (currentLanguage != (string)context.Get(@"Microsoft.API.translateTo"))
                 {
                     SetLanguage(context, currentLanguage);
                 }
             }
             if (context.Request.Type == ActivityTypes.Message
-                && context.State.User.ContainsKey(@"Microsoft.API.translateTo"))
+                && context.Has(@"Microsoft.API.translateTo"))
             {
-                return (string)context.State.User[@"Microsoft.API.translateTo"];
+                return (string)context.Get(@"Microsoft.API.translateTo");
             }
 
             return "en";
@@ -152,11 +147,11 @@ namespace Microsoft.Bot.Samples.Ai.QnA.Controllers
                         && IsSupportedLanguage(newLocale))
                 {
                     SetLocale(context, newLocale);
-                    context.Reply($@"Changing your language to {newLocale}");
+                    await context.SendActivity($@"Changing your language to {newLocale}");
                 }
                 else
                 {
-                    context.Reply($@"{newLocale} is not a supported locale.");
+                    await context.SendActivity($@"{newLocale} is not a supported locale.");
                 }
                 //intercepts message
                 return true;
@@ -169,15 +164,15 @@ namespace Microsoft.Bot.Samples.Ai.QnA.Controllers
             if (currentLocale != null)
             {
                 //the user has specified a different locale so update the bot state
-                if (currentLocale != (string)context.State.User[@"LocaleConverterMiddleware.fromLocale"])
+                if (currentLocale != (string)context.Get(@"LocaleConverterMiddleware.fromLocale"))
                 {
                     SetLocale(context, currentLocale);
                 }
             }
             if (context.Request.Type == ActivityTypes.Message
-                && context.State.User.ContainsKey(@"LocaleConverterMiddleware.fromLocale"))
+                && context.Has(@"LocaleConverterMiddleware.fromLocale"))
             {
-                return (string)context.State.User[@"LocaleConverterMiddleware.fromLocale"];
+                return (string)context.Get(@"LocaleConverterMiddleware.fromLocale");
             }
 
             return "en-us";
