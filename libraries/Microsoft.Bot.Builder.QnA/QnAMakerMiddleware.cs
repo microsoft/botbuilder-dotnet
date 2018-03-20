@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Core.Extensions;
 using Microsoft.Bot.Schema;
 
-namespace Microsoft.Bot.Builder.Ai
+namespace Microsoft.Bot.Builder.Ai.QnA
 {
     public class QnAMakerMiddleware : IMiddleware
     {

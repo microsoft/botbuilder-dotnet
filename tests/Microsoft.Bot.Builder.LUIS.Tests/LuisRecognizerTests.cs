@@ -12,7 +12,7 @@ using Microsoft.Cognitive.LUIS;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json.Linq;
 
-namespace Microsoft.Bot.Builder.LUIS.Tests
+namespace Microsoft.Bot.Builder.Ai.LUIS.Tests
 {
     [TestClass]
     /*

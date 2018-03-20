@@ -11,7 +11,7 @@ using Microsoft.Cognitive.LUIS.Models;
 using Newtonsoft.Json.Linq;
 using System.Text.RegularExpressions;
 
-namespace Microsoft.Bot.Builder.LUIS
+namespace Microsoft.Bot.Builder.Ai.LUIS
 {
     /// <inheritdoc />
     /// <summary>

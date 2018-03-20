@@ -1,12 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
-using System.Collections.Generic;
-using System.Text;
 using Microsoft.Bot.Builder.Core.Extensions;
 
-namespace Microsoft.Bot.Builder.Ai
+namespace Microsoft.Bot.Builder.Ai.Translation
 {
     public class TranslationContext : FlexObject
     {

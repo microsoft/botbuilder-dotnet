@@ -8,7 +8,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace Microsoft.Bot.Builder.Ai.Tests
+namespace Microsoft.Bot.Builder.Ai.QnA.Tests
 {
     [TestClass]
     public class QnAMakerTests
