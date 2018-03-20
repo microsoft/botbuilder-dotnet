@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Microsoft.Bot.Builder.Middleware;
+
 using Microsoft.Bot.Schema;
 using System;
 using System.Threading.Tasks;
@@ -11,7 +11,7 @@ namespace Microsoft.Bot.Builder.Ai
     /// <summary>
     /// Middleware to convert messages between different locales specified
     /// </summary>
-    public class LocaleConverterMiddleware : IReceiveActivity
+    public class LocaleConverterMiddleware : IMiddleware
     {
         private ILocaleConverter localeConverter; 
         private readonly string toLocale;
@@ -39,15 +39,15 @@ namespace Microsoft.Bot.Builder.Ai
         /// <param name="context"></param>
         /// <param name="next"></param>
         /// <returns></returns>
-        public async Task ReceiveActivity(IBotContext context, MiddlewareSet.NextDelegate next)
+        public async Task OnProcessRequest(IBotContext context, MiddlewareSet.NextDelegate next)
         {
             IMessageActivity message = context.Request.AsMessageActivity();
             if (message != null)
             {
                 if (!String.IsNullOrWhiteSpace(message.Text))
                 {
-                    string fromLocale = _getUserLocale(context); 
-                    ((BotContext)context).State.User["LocaleConversionOriginalMessage"] = message.Text;
+                    string fromLocale = _getUserLocale(context);
+                    ((BotContext)context).Set("LocaleConversionOriginalMessage",message.Text);
                     await ConvertLocaleMessageAsync(message, fromLocale);
                     await _setUserLocale(context);
                 }
@@ -57,7 +57,7 @@ namespace Microsoft.Bot.Builder.Ai
 
         public static string GetOriginalMessage(IBotContext context)
         {
-            string message = ((BotContext)context).State.User["LocaleConversionOriginalMessage"] as string;
+            string message = ((BotContext)context).Get("LocaleConversionOriginalMessage") as string;
             return message;
         }
 
@@ -69,5 +69,7 @@ namespace Microsoft.Bot.Builder.Ai
                 message.Text = await localeConverter.Convert(message.Text, fromLocale, toLocale);
             }
         }
+
+
     }
 }
