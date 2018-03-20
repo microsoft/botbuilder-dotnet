@@ -61,6 +61,7 @@ namespace Connector.Tests
 
                 using (var client = new ConnectorClient(hostUri, new BotAccessTokenStub(token), handlers: HttpMockServer.CreateInstance()))
                 {
+                    client.UseSharedHttpClient = false;
                     await doTest(client);
                 }
 

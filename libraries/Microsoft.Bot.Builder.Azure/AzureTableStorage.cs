@@ -7,6 +7,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Core.Extensions;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Table;
 using Newtonsoft.Json;
@@ -35,7 +36,7 @@ namespace Microsoft.Bot.Builder.Azure
             if (_checkedTables.Add($"{storageAccount.TableStorageUri.PrimaryUri.Host}-{tableName}"))
                 this.Table.CreateIfNotExistsAsync().Wait();
         }
-                
+
         protected EntityKey GetEntityKey(string key)
         {
             return new EntityKey() { PartitionKey = SanitizeKey(key), RowKey = "0" };
@@ -58,9 +59,11 @@ namespace Microsoft.Bot.Builder.Azure
                 var result = await this.Table.ExecuteAsync(TableOperation.Retrieve<StoreItemEntity>(entityKey.PartitionKey, entityKey.RowKey)).ConfigureAwait(false);
                 if ((HttpStatusCode)result.HttpStatusCode == HttpStatusCode.OK)
                 {
-                    var storeItem = ((StoreItemEntity)result.Result).As<StoreItem>();
-                    storeItem.eTag = result.Etag;
-                    storeItems[key] = storeItem;
+                    var value = ((StoreItemEntity)result.Result).AsObject();
+                    IStoreItem valueStoreItem = value as IStoreItem;
+                    if (valueStoreItem != null)
+                        valueStoreItem.eTag = result.Etag;
+                    storeItems[key] = value;
                 }
             }
             return storeItems;
@@ -72,8 +75,8 @@ namespace Microsoft.Bot.Builder.Azure
             foreach (var change in changes)
             {
                 var entityKey = GetEntityKey(change.Key);
-                var storeItem = (StoreItem)change.Value;
-                StoreItemEntity entity = new StoreItemEntity(entityKey, storeItem);
+                var newValue = change.Value;
+                StoreItemEntity entity = new StoreItemEntity(entityKey, newValue);
                 if (entity.ETag == null || entity.ETag == "*")
                 {
                     var result = await this.Table.ExecuteAsync(TableOperation.InsertOrReplace(entity)).ConfigureAwait(false);
@@ -99,23 +102,26 @@ namespace Microsoft.Bot.Builder.Azure
 
             public StoreItemEntity() { }
 
-            public StoreItemEntity(EntityKey key, StoreItem obj)
+            public StoreItemEntity(EntityKey key, object obj)
                 : this(key.PartitionKey, key.RowKey, obj)
             { }
 
-            public StoreItemEntity(string partitionKey, string rowKey, StoreItem obj)
+            public StoreItemEntity(string partitionKey, string rowKey, object obj)
                 : base(partitionKey, rowKey)
             {
-                this.ETag = obj.eTag;
+                this.ETag = (obj as IStoreItem)?.eTag;
                 this.Json = JsonConvert.SerializeObject(obj, Formatting.None, serializationSettings);
             }
 
             public string Json { get; set; }
 
-            public T As<T>()
-                where T : StoreItem
+            public object AsObject()
             {
-                return JsonConvert.DeserializeObject<T>(Json, serializationSettings);
+                var obj = JsonConvert.DeserializeObject(Json, serializationSettings);
+                IStoreItem storeItem = obj as IStoreItem;
+                if (storeItem != null)
+                    storeItem.eTag = this.ETag;
+                return obj;
             }
         }
 
@@ -153,6 +159,6 @@ namespace Microsoft.Bot.Builder.Azure
                     sb.Append(ch);
             }
             return sb.ToString();
-        }        
+        }
     }
 }

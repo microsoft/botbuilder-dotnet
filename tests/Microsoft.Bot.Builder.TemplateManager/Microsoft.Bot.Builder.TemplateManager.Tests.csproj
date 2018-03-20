@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>netcoreapp2.0</TargetFramework>
+
+		<IsPackable>false</IsPackable>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+	  <NoWarn>1701;1702;17051908</NoWarn>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.5.0" />
+		<PackageReference Include="MSTest.TestAdapter" Version="1.2.0" />
+		<PackageReference Include="MSTest.TestFramework" Version="1.2.0" />
+		<PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
+
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.TemplateManager\Microsoft.Bot.Builder.TemplateManager.csproj" />
+		<ProjectReference Include="..\..\libraries\Microsoft.Bot.Schema\Microsoft.Bot.Schema.csproj" />
+	</ItemGroup>
+
+</Project>
