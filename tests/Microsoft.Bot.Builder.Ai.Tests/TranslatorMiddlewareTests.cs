@@ -27,7 +27,7 @@ namespace Microsoft.Bot.Builder.Ai.Tests
 
             await new TestFlow(adapter, (context) =>
             {
-                if (context.Request.AsMessageActivity().Text == "foo")
+                if (!context.Responded)
                 {
                     context.Batch().Reply(context.Request.AsMessageActivity().Text);
                 }
@@ -52,9 +52,9 @@ namespace Microsoft.Bot.Builder.Ai.Tests
 
             await new TestFlow(adapter, (context) =>
             {
-                if (context.Request.AsMessageActivity().Text == "foo")
+                if (!context.Responded)
                 {
-                    context.Batch().Reply(context.Request.AsMessageActivity().Text);
+                    context.Batch().Reply(context.Request.AsMessageActivity().Text);  
                 }
                 return Task.CompletedTask;
             })
@@ -70,7 +70,7 @@ namespace Microsoft.Bot.Builder.Ai.Tests
         protected async Task<bool> SetActiveLanguage(IBotContext context)
         {
             bool changeLang = false;//logic implemented by developper to make a signal for language changing 
-            //use a specific message from user to change language
+            //use a specific message from user to change language 
             var messageActivity = context.Request.AsMessageActivity();
             if (messageActivity.Text.ToLower().StartsWith("set my language to"))
             {

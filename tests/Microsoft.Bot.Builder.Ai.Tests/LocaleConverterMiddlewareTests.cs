@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Builder.Ai.Tests
 
             await new TestFlow(adapter, (context) =>
             {
-                if (context.Request.AsMessageActivity().Text == "foo")
+                if (!context.Responded)
                 {
                     context.Batch().Reply(context.Request.AsMessageActivity().Text);
                 }
@@ -49,7 +49,7 @@ namespace Microsoft.Bot.Builder.Ai.Tests
 
             await new TestFlow(adapter, (context) =>
             {
-                if (context.Request.AsMessageActivity().Text == "foo")
+                if (!context.Responded)
                 {
                     context.Batch().Reply(context.Request.AsMessageActivity().Text);
                 }
