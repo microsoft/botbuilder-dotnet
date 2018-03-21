@@ -21,7 +21,7 @@ namespace Microsoft.Bot.Builder.Adapters
             return this;
         }
 
-        public async Task ProcessActivity(Func<IBotContext, Task> callback = null)
+        public async Task ProcessActivity(Func<ITurnContext, Task> callback = null)
         {
             while (true)
             {
@@ -41,12 +41,12 @@ namespace Microsoft.Bot.Builder.Adapters
                     Type = ActivityTypes.Message
                 };
 
-                var context = new BotContext(this, activity);
+                var context = new TurnContext(this, activity);
                 await base.RunPipeline(context, callback);
             }
         }
 
-        public override async Task<ResourceResponse[]> SendActivities(IBotContext context, Activity[] activities)
+        public override async Task<ResourceResponse[]> SendActivities(ITurnContext context, Activity[] activities)
         {
             List<ResourceResponse> responses = new List<ResourceResponse>();
 
@@ -88,12 +88,12 @@ namespace Microsoft.Bot.Builder.Adapters
             return responses.ToArray();
         }
 
-        public override Task<ResourceResponse> UpdateActivity(IBotContext context, Activity activity)
+        public override Task<ResourceResponse> UpdateActivity(ITurnContext context, Activity activity)
         {
             throw new NotImplementedException();
         }
 
-        public override Task DeleteActivity(IBotContext context, ConversationReference reference)
+        public override Task DeleteActivity(ITurnContext context, ConversationReference reference)
         {
             throw new NotImplementedException();
         }

@@ -56,7 +56,7 @@ namespace AlarmBot.Topics
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public async Task<bool> StartTopic(IBotContext context)
+        public async Task<bool> StartTopic(ITurnContext context)
         {
             var recognizedIntents = context.Get<IRecognizedIntents>();
             var times = recognizedIntents.TopIntent?.Entities.Where(entity => entity.GroupName == "AlarmTime")
@@ -88,7 +88,7 @@ namespace AlarmBot.Topics
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public async Task<bool> ContinueTopic(IBotContext context)
+        public async Task<bool> ContinueTopic(ITurnContext context)
         {
             var recognizedIntents = context.Get<IRecognizedIntents>();
             // for messages
@@ -119,7 +119,7 @@ namespace AlarmBot.Topics
             return true;
         }
 
-        private async Task<bool> ProcessTopicState(IBotContext context)
+        private async Task<bool> ProcessTopicState(ITurnContext context)
         {
             string utterance = (context.Request.Text ?? "").Trim();
             var userState = context.GetUserState<UserData>();
@@ -196,7 +196,7 @@ namespace AlarmBot.Topics
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public async Task<bool> ResumeTopic(IBotContext context)
+        public async Task<bool> ResumeTopic(ITurnContext context)
         {
             // simply prompt again based on our state
             this.TopicState = TopicStates.AddingCard;

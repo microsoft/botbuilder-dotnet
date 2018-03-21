@@ -42,7 +42,7 @@ namespace Microsoft.Bot.Builder.Prompts
         /// Used to validate the incoming text, expected on context.Request, is
         /// valid according to the rules defined in the validation steps. 
         /// </summary>        
-        public override async Task<TextResult> Recognize(IBotContext context)
+        public override async Task<TextResult> Recognize(ITurnContext context)
         {
             BotAssert.ContextNotNull(context);
             BotAssert.ActivityNotNull(context.Request);

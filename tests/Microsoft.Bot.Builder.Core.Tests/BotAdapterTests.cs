@@ -37,7 +37,7 @@ namespace Microsoft.Bot.Builder.Core.Tests
             }
 
             SimpleAdapter a = new SimpleAdapter(ValidateResponses);
-            BotContext c = new BotContext(a, new Activity());
+            TurnContext c = new TurnContext(a, new Activity());
 
             string activityId = Guid.NewGuid().ToString();
             var activity = TestMessage.Message();
@@ -51,7 +51,7 @@ namespace Microsoft.Bot.Builder.Core.Tests
     public class CallCountingMiddleware : IMiddleware
     {
         public int Calls { get; set; }
-        public async Task OnProcessRequest(IBotContext context, MiddlewareSet.NextDelegate next)
+        public async Task OnProcessRequest(ITurnContext context, MiddlewareSet.NextDelegate next)
         {
             Calls++;
             await next();

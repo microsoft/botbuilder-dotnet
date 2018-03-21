@@ -63,10 +63,10 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs.Internals
         public static readonly object Key_DeleteProfile_Regex = new object();
         public static readonly object Key_Dialog_Router = new object();
 
-        public static ILifetimeScope BeginLifetimeScope(ILifetimeScope scope, Microsoft.Bot.Builder.IBotContext context)
+        public static ILifetimeScope BeginLifetimeScope(ILifetimeScope scope, Microsoft.Bot.Builder.ITurnContext context)
         {
             var inner = scope.BeginLifetimeScope(LifetimeScopeTag);
-            inner.Resolve<Microsoft.Bot.Builder.IBotContext>(TypedParameter.From(context));
+            inner.Resolve<Microsoft.Bot.Builder.ITurnContext>(TypedParameter.From(context));
             inner.Resolve<IActivity>(TypedParameter.From((IActivity)context.Request));
             return inner;
         }
@@ -86,7 +86,7 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs.Internals
 
             // every lifetime scope is driven by a context
             builder
-                .Register((c, p) => p.TypedAs<Microsoft.Bot.Builder.IBotContext>())
+                .Register((c, p) => p.TypedAs<Microsoft.Bot.Builder.ITurnContext>())
                 .AsSelf()
                 .AsImplementedInterfaces()
                 .InstancePerMatchingLifetimeScope(LifetimeScopeTag);

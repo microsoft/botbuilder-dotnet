@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Samples.Echo.AspNetCore
     {
         public EchoBot() { }
 
-        public async Task OnReceiveActivity(IBotContext context)
+        public async Task OnReceiveActivity(ITurnContext context)
         {
             switch (context.Request.Type)
             {

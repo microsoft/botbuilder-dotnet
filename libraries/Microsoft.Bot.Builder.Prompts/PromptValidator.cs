@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Builder.Prompts
         /// <param name="context">Context for the current turn of conversation.</param>
         /// <param name="toValidate"></param>
         /// <returns>true or false task</returns>
-        public delegate Task PromptValidator<InT>(IBotContext context, InT toValidate)
+        public delegate Task PromptValidator<InT>(ITurnContext context, InT toValidate)
             where InT : PromptResult;
     }
 }

@@ -8,16 +8,16 @@ namespace Microsoft.Bot.Builder
     /// <summary>
     /// Extended bot context adding fields which are only valid for BotFramework.
     /// </summary>
-    /// <seealso cref="Microsoft.Bot.Builder.BotContext" />
-    public class BotFrameworkBotContext : BotContext
+    /// <seealso cref="Microsoft.Bot.Builder.TurnContext" />
+    public class BotFrameworkTurnContext : TurnContext
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="BotFrameworkBotContext"/> class.
+        /// Initializes a new instance of the <see cref="BotFrameworkTurnContext"/> class.
         /// </summary>
         /// <param name="botAppId">The bot application identifier. Bot's AAD identity.</param>
         /// <param name="botAdapter">The bot adapter.</param>
         /// <param name="requestActivity">The request activity.</param>
-        public BotFrameworkBotContext(string botAppId, BotAdapter botAdapter, Activity requestActivity)
+        public BotFrameworkTurnContext(string botAppId, BotAdapter botAdapter, Activity requestActivity)
             : base(botAdapter, requestActivity)
         {
             this.BotAppId = botAppId;

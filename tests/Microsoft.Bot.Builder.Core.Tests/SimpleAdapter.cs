@@ -18,13 +18,13 @@ namespace Microsoft.Bot.Builder.Core.Tests
         public SimpleAdapter(Action<Activity> callOnUpdate) { _callOnUpdate = callOnUpdate; }
         public SimpleAdapter(Action<ConversationReference> callOnDelete) { _callOnDelete = callOnDelete; }
 
-        public async override Task DeleteActivity(IBotContext context, ConversationReference reference)
+        public async override Task DeleteActivity(ITurnContext context, ConversationReference reference)
         {
             Assert.IsNotNull(reference, "SimpleAdapter.deleteActivity: missing reference");
             _callOnDelete?.Invoke(reference);
         }
 
-        public async override Task<ResourceResponse[]> SendActivities(IBotContext context, Activity[] activities)
+        public async override Task<ResourceResponse[]> SendActivities(ITurnContext context, Activity[] activities)
         {
             Assert.IsNotNull(activities, "SimpleAdapter.deleteActivity: missing reference");
             Assert.IsTrue(activities.Count() > 0, "SimpleAdapter.sendActivities: empty activities array.");
@@ -39,16 +39,16 @@ namespace Microsoft.Bot.Builder.Core.Tests
             return responses.ToArray();
         }
 
-        public async override Task<ResourceResponse> UpdateActivity(IBotContext context, Activity activity)
+        public async override Task<ResourceResponse> UpdateActivity(ITurnContext context, Activity activity)
         {
             Assert.IsNotNull(activity, "SimpleAdapter.updateActivity: missing activity");
             _callOnUpdate?.Invoke(activity);
             return new ResourceResponse(activity.Id); // echo back the Id
         }
 
-        public async Task ProcessRequest(Activity activty, Func<IBotContext, Task> callback)
+        public async Task ProcessRequest(Activity activty, Func<ITurnContext, Task> callback)
         {
-            BotContext ctx = new BotContext(this, activty);
+            TurnContext ctx = new TurnContext(this, activty);
             await this.RunPipeline(ctx, callback); 
         }
     }

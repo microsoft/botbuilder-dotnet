@@ -26,7 +26,7 @@ namespace AlarmBot.Topics
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public async Task<bool> StartTopic(IBotContext context)
+        public async Task<bool> StartTopic(ITurnContext context)
         {
             switch (context.Request.Type)
             {
@@ -60,7 +60,7 @@ namespace AlarmBot.Topics
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public async Task<bool> ContinueTopic(IBotContext context)
+        public async Task<bool> ContinueTopic(ITurnContext context)
         {
             var conversation = ConversationState<ConversationData>.Get(context);         
             var recognizedIntents = context.Get<IRecognizedIntents>();
@@ -106,7 +106,7 @@ namespace AlarmBot.Topics
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public async Task<bool> ResumeTopic(IBotContext context)
+        public async Task<bool> ResumeTopic(ITurnContext context)
         {
             // just prompt the user to ask what they want to do
             await DefaultTopicResponses.ReplyWithResumeTopic(context);
