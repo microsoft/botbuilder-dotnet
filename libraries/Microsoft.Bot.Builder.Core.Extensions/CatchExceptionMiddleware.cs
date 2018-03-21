@@ -16,14 +16,14 @@ namespace Microsoft.Bot.Builder.Core.Extensions
     /// </typeparam>
     public class CatchExceptionMiddleware<T> : IMiddleware where T : Exception
     {
-        private readonly Func<IBotContext, T, Task> _handler;
+        private readonly Func<ITurnContext, T, Task> _handler;
 
-        public CatchExceptionMiddleware(Func<IBotContext, T, Task> callOnException)
+        public CatchExceptionMiddleware(Func<ITurnContext, T, Task> callOnException)
         {
             _handler = callOnException;
         }
 
-        public async Task OnProcessRequest(IBotContext context, MiddlewareSet.NextDelegate next)
+        public async Task OnProcessRequest(ITurnContext context, MiddlewareSet.NextDelegate next)
         {
             try
             {

@@ -21,7 +21,7 @@ namespace Microsoft.Bot.Builder.Ai
             _qnaMaker = new QnAMaker(options, httpClient);
         }
 
-        public async Task OnProcessRequest(IBotContext context, MiddlewareSet.NextDelegate next)
+        public async Task OnProcessRequest(ITurnContext context, MiddlewareSet.NextDelegate next)
         {
             if (context.Request.Type == ActivityTypes.Message)
             {

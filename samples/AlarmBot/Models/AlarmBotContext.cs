@@ -7,9 +7,9 @@ using Microsoft.Recognizers.Text.DateTime;
 
 namespace AlarmBot.Models
 {
-    public class AlarmBotContext : BotContextWrapper
+    public class AlarmBotContext : TurnContextWrapper
     {
-        public AlarmBotContext(IBotContext context) : base(context)
+        public AlarmBotContext(ITurnContext context) : base(context)
         {
         }
 
