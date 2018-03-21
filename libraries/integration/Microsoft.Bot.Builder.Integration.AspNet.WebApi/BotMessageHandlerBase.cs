@@ -58,7 +58,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Handlers
                 await ProcessMessageRequestAsync(
                     request,
                     _botFrameworkAdapter,
-                    botContext =>
+                    context =>
                     {
                         cancellationToken.ThrowIfCancellationRequested();
 
@@ -78,7 +78,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Handlers
                             throw new InvalidOperationException($"Did not find an {typeof(IBot).Name} service via the dependency resolver. Please make sure you have registered your bot with your dependency injection container.");
                         }
 
-                        return bot.OnReceiveActivity(botContext);
+                        return bot.OnReceiveActivity(context);
                     },
                     cancellationToken);
 
@@ -94,6 +94,6 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Handlers
             }
         }
 
-        protected abstract Task ProcessMessageRequestAsync(HttpRequestMessage request, BotFrameworkAdapter botFrameworkAdapter, Func<IBotContext, Task> botCallbackHandler, CancellationToken cancellationToken);
+        protected abstract Task ProcessMessageRequestAsync(HttpRequestMessage request, BotFrameworkAdapter botFrameworkAdapter, Func<ITurnContext, Task> botCallbackHandler, CancellationToken cancellationToken);
     }
 }

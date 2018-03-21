@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Builder.TemplateManager
     /// <summary>
     /// Map of Template Ids-> Template Function()
     /// </summary>
-    public class TemplateIdMap : Dictionary<string, Func<IBotContext, dynamic, object>>
+    public class TemplateIdMap : Dictionary<string, Func<ITurnContext, dynamic, object>>
     {
     }
     
@@ -40,7 +40,7 @@ namespace Microsoft.Bot.Builder.TemplateManager
             this.languages = templates;
         }
 
-        public Task<object> RenderTemplate(IBotContext context, string language, string templateId, object data)
+        public Task<object> RenderTemplate(ITurnContext context, string language, string templateId, object data)
         {
             if (this.languages.TryGetValue(language, out var templates))
             {

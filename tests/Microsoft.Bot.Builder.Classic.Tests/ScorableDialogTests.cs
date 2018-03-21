@@ -117,7 +117,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                 builder.Update(container);
 
                 var toBot = MakeTestMessage();
-                var context = new BotContext(new TestAdapter(), (Activity)toBot);
+                var context = new TurnContext(new TestAdapter(), (Activity)toBot);
 
                 using (var scope = DialogModule.BeginLifetimeScope(container, context))
                 {
@@ -160,7 +160,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                 builder.Update(container);
 
                 var toBot = MakeTestMessage();
-                var context = new BotContext(new TestAdapter(), (Activity)toBot);
+                var context = new TurnContext(new TestAdapter(), (Activity)toBot);
 
                 using (var scope = DialogModule.BeginLifetimeScope(container, context))
                 {

@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions
     {
         private readonly StateSettings _settings;
         private readonly IStorage _storage;
-        private readonly Func<IBotContext, string> _keyDelegate;
+        private readonly Func<ITurnContext, string> _keyDelegate;
         private readonly string _propertyName;
 
         /// <summary>
@@ -32,7 +32,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions
         /// <param name="name">name of the kind of state</param>
         /// <param name="storage">storage provider to use</param>
         /// <param name="settings">settings</param>
-        public BotState(IStorage storage, string propertyName, Func<IBotContext, string> keyDelegate, StateSettings settings = null)
+        public BotState(IStorage storage, string propertyName, Func<ITurnContext, string> keyDelegate, StateSettings settings = null)
         {
             _storage = storage ?? throw new ArgumentNullException(nameof(storage));
             _propertyName = propertyName ?? throw new ArgumentNullException(nameof(propertyName));
@@ -40,14 +40,14 @@ namespace Microsoft.Bot.Builder.Core.Extensions
             _settings = settings ?? new StateSettings();
         }
 
-        public async Task OnProcessRequest(IBotContext context, MiddlewareSet.NextDelegate next)
+        public async Task OnProcessRequest(ITurnContext context, MiddlewareSet.NextDelegate next)
         {
             await Read(context).ConfigureAwait(false);
             await next().ConfigureAwait(false);
             await Write(context).ConfigureAwait(false);
         }
 
-        protected virtual async Task<StoreItems> Read(IBotContext context)
+        protected virtual async Task<StoreItems> Read(ITurnContext context)
         {
             var key = this._keyDelegate(context);
             var keys = new List<String> { key };
@@ -59,7 +59,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions
             return items;
         }
 
-        protected virtual async Task Write(IBotContext context)
+        protected virtual async Task Write(ITurnContext context)
         {
             StoreItems changes = new StoreItems();
 
@@ -105,7 +105,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public static StateT Get(IBotContext context) { return context.Get<StateT>(PropertyName); }
+        public static StateT Get(ITurnContext context) { return context.Get<StateT>(PropertyName); }
     }
 
     /// <summary>
@@ -129,18 +129,18 @@ namespace Microsoft.Bot.Builder.Core.Extensions
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public static StateT Get(IBotContext context) { return context.Get<StateT>(PropertyName); }
+        public static StateT Get(ITurnContext context) { return context.Get<StateT>(PropertyName); }
     }
 
     public static class StateContextExtensions
     {
-        public static T GetConversationState<T>(this IBotContext context)
+        public static T GetConversationState<T>(this ITurnContext context)
             where T : class, new()
         {
             return ConversationState<T>.Get(context);
         }
 
-        public static T GetUserState<T>(this IBotContext context)
+        public static T GetUserState<T>(this ITurnContext context)
             where T : class, new()
         {
             return UserState<T>.Get(context);

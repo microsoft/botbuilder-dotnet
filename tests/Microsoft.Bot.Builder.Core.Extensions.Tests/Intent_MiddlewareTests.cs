@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
                 return new List<Intent>();
             });
 
-            BotContext bc = TestUtilities.CreateEmptyContext();
+            TurnContext bc = TestUtilities.CreateEmptyContext();
             var resultingIntents = await m.Recognize(bc);
             Assert.IsTrue(resultingIntents.Count == 0, "Expected zero intents");
         }
@@ -37,7 +37,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
                 return null;
             });
 
-            BotContext bc = TestUtilities.CreateEmptyContext();
+            TurnContext bc = TestUtilities.CreateEmptyContext();
             var resultingIntents = await m.Recognize(bc);
             Assert.IsTrue(resultingIntents.Count == 0, "Expected zero intents");
         }
@@ -57,7 +57,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
                 return result;
             });
 
-            BotContext bc = TestUtilities.CreateEmptyContext();
+            TurnContext bc = TestUtilities.CreateEmptyContext();
             var resultingIntents = await m.Recognize(bc);
             Assert.IsTrue(resultingIntents.Count == 1, "Expected a sigle intent");
             Assert.IsTrue(resultingIntents.First().Name == targetName, "Unexpected Intent Name");
@@ -86,7 +86,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
                 };
             });
 
-            BotContext bc = TestUtilities.CreateEmptyContext();
+            TurnContext bc = TestUtilities.CreateEmptyContext();
             var resultingIntents = await m.Recognize(bc);
             Assert.IsTrue(resultingIntents.Count == 2, "Expected a two intents");
             Assert.IsTrue(resultingIntents[0].Name == targetName1, $"Unexpected Intent Name. Expected {targetName1}");
@@ -109,7 +109,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
                 };
             });
 
-            BotContext bc = TestUtilities.CreateEmptyContext();
+            TurnContext bc = TestUtilities.CreateEmptyContext();
             var resultingIntents = await m.Recognize(bc);
             Assert.IsTrue(resultingIntents.Count == 2, "Expected exactly 2 intents");
             Assert.IsTrue(resultingIntents[0].Name == targetName1, $"Unexpected Intent Name. Expected {targetName1}");
@@ -135,7 +135,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
                 return enabled;
             });
 
-            BotContext bc = TestUtilities.CreateEmptyContext();
+            TurnContext bc = TestUtilities.CreateEmptyContext();
 
             // Test that the Intent comes back when the OnEnabled method returns true
             enabled = true;
@@ -177,7 +177,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
                 intentList[0].Name = replacedName;
             });
 
-            BotContext bc = TestUtilities.CreateEmptyContext();
+            TurnContext bc = TestUtilities.CreateEmptyContext();
 
             // Test that the Intent comes back has been "filtered" to have the revised name
 
@@ -212,7 +212,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
                 intentList.RemoveAt(1);
             });
 
-            BotContext bc = TestUtilities.CreateEmptyContext();
+            TurnContext bc = TestUtilities.CreateEmptyContext();
             var resultingIntents = await m.Recognize(bc);
 
             Assert.IsTrue(resultingIntents.Count == 1, "Expected exactly 1 intent");
@@ -246,7 +246,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
                 shouldRun = "second";
             });
 
-            BotContext bc = TestUtilities.CreateEmptyContext();
+            TurnContext bc = TestUtilities.CreateEmptyContext();
             shouldRun = "first";
 
             var resultingIntents = await m.Recognize(bc);
@@ -288,7 +288,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
             });
 
 
-            BotContext bc = TestUtilities.CreateEmptyContext();
+            TurnContext bc = TestUtilities.CreateEmptyContext();
             shouldRun = "first";
 
             var resultingIntents = await m.Recognize(bc);
@@ -328,7 +328,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
                 return true;
             });
 
-            BotContext bc = TestUtilities.CreateEmptyContext();
+            TurnContext bc = TestUtilities.CreateEmptyContext();
             shouldRun = "first";
 
             var resultingIntents = await m.Recognize(bc);

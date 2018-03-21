@@ -18,6 +18,6 @@ namespace Microsoft.Bot.Builder.TemplateManager
         /// <param name="templateId">tenmplate to render</param>
         /// <param name="data">data object to use to render</param>
         /// <returns></returns>
-        Task<object> RenderTemplate(IBotContext context, string language, string templateId, object data);
+        Task<object> RenderTemplate(ITurnContext context, string language, string templateId, object data);
     }
 }

@@ -56,7 +56,7 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
         }
 
 
-        public async Task MyTestPrompt(IBotContext context)
+        public async Task MyTestPrompt(ITurnContext context)
         {
             dynamic conversationState = ConversationState<StoreItem>.Get(context);
             TextPrompt askForName = new TextPrompt();
@@ -79,7 +79,7 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
             }
         }
 
-        public async Task LengthCheckPromptTest(IBotContext context)
+        public async Task LengthCheckPromptTest(ITurnContext context)
         {
             dynamic conversationState = ConversationState<StoreItem>.Get(context);
             TextPrompt askForName = new TextPrompt(MinLengthValidator);
@@ -102,7 +102,7 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
             }
         }
 
-        public async Task MinLengthValidator(IBotContext context, TextResult textResult)
+        public async Task MinLengthValidator(ITurnContext context, TextResult textResult)
         {
             if (textResult.Value.Length <= 5)
                 textResult.Status = PromptStatus.TooSmall;

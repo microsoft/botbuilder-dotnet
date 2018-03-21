@@ -36,7 +36,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions
             _freqency = frequency;
         }
 
-        public async Task OnProcessRequest(IBotContext context, MiddlewareSet.NextDelegate next)
+        public async Task OnProcessRequest(ITurnContext context, MiddlewareSet.NextDelegate next)
         {
             Timer typingActivityTimer = null;
 
@@ -60,11 +60,11 @@ namespace Microsoft.Bot.Builder.Core.Extensions
 
         private async void SendTypingTimerCallback(object state)
         {
-            var context = (IBotContext) state;
+            var context = (ITurnContext) state;
             await SendTypingActivity(context);
         }
 
-        private async Task SendTypingActivity(IBotContext context)
+        private async Task SendTypingActivity(ITurnContext context)
         {
             // create a TypingActivity, associate it with the conversation 
             // and send immediately

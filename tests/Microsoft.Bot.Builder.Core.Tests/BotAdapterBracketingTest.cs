@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Builder.Core.Tests
 
         /// <summary>
         /// Developer authored Middleware that looks like this:
-        /// public async Task ReceiveActivity(IBotContext context, 
+        /// public async Task ReceiveActivity(ITurnContext context, 
         ///    MiddlewareSet.NextDelegate next)
         /// {
         ///    context.Reply("BEFORE");
@@ -30,7 +30,7 @@ namespace Microsoft.Bot.Builder.Core.Tests
             TestAdapter adapter = new TestAdapter()
                 .Use(new BeforeAFterMiddlware());
 
-            async Task Echo(IBotContext ctx)
+            async Task Echo(ITurnContext ctx)
             {
                 string toEcho = "ECHO:" + ctx.Request.AsMessageActivity().Text;
                 await ctx.SendActivity(ctx.Request.CreateReply(toEcho)); 
@@ -58,7 +58,7 @@ namespace Microsoft.Bot.Builder.Core.Tests
             TestAdapter adapter = new TestAdapter()
                 .Use(new CatchExceptionMiddleware());
 
-            async Task EchoWithException(IBotContext ctx)
+            async Task EchoWithException(ITurnContext ctx)
             {
                 string toEcho = "ECHO:" + ctx.Request.AsMessageActivity().Text;
                 await ctx.SendActivity(ctx.Request.CreateReply(toEcho));
@@ -76,7 +76,7 @@ namespace Microsoft.Bot.Builder.Core.Tests
 
         public class CatchExceptionMiddleware : IMiddleware
         {
-            public async Task OnProcessRequest(IBotContext context, MiddlewareSet.NextDelegate next)
+            public async Task OnProcessRequest(ITurnContext context, MiddlewareSet.NextDelegate next)
             {
                 await context.SendActivity(context.Request.CreateReply("BEFORE"));
                 try
@@ -94,7 +94,7 @@ namespace Microsoft.Bot.Builder.Core.Tests
 
         public class BeforeAFterMiddlware : IMiddleware
         {
-            public async Task OnProcessRequest(IBotContext context, MiddlewareSet.NextDelegate next)
+            public async Task OnProcessRequest(ITurnContext context, MiddlewareSet.NextDelegate next)
             {
                 await context.SendActivity(context.Request.CreateReply("BEFORE"));
                 await next();

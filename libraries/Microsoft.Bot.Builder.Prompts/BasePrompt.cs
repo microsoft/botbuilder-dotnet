@@ -61,7 +61,7 @@ namespace Microsoft.Bot.Builder.Prompts
         /// <summary>
         /// Creates a new Message, and queues it for sending to the user. 
         /// </summary>
-        public Task Prompt(IBotContext context, string text, string speak = null)
+        public Task Prompt(ITurnContext context, string text, string speak = null)
         {
             IMessageActivity ma = Activity.CreateMessageActivity();
             ma.Text = !string.IsNullOrWhiteSpace(text) ? text : null;
@@ -73,7 +73,7 @@ namespace Microsoft.Bot.Builder.Prompts
         /// <summary>
         /// Creates a new Message Activity, and queues it for sending to the user. 
         /// </summary>
-        public async Task Prompt(IBotContext context, IMessageActivity activity)
+        public async Task Prompt(ITurnContext context, IMessageActivity activity)
         {            
             await context.SendActivity(activity);            
         }
@@ -83,9 +83,9 @@ namespace Microsoft.Bot.Builder.Prompts
         /// </summary>
         /// <param name="context"></param>
         /// <returns>null if not recognized</returns>
-        public abstract Task<T> Recognize(IBotContext context);
+        public abstract Task<T> Recognize(ITurnContext context);
 
-        protected virtual Task Validate(IBotContext context, T value)
+        protected virtual Task Validate(ITurnContext context, T value)
         {
             // Validation passed. Return the validated text.
             if (_customValidator != null)

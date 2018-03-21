@@ -4,18 +4,18 @@ using Microsoft.Bot.Schema;
 namespace Microsoft.Bot.Builder
 {
     /// <summary>
-    /// Utility class to allow you to create custom BotContext wrapper which wraps someone elses BotContext 
+    /// Utility class to allow you to create custom TurnContext wrapper which wraps someone elses TurnContext 
     /// </summary>
     /// <remarks>
-    /// Adapters create the IBotContext implementation which is then passed to the bot's logic handler
-    /// This class allows you to create your own IBotContext which delegates to the BotContext passed to you
-    /// It simply passes all IBotContext calls through to the inner IBotContext.
+    /// Adapters create the ITurnContext implementation which is then passed to the bot's logic handler
+    /// This class allows you to create your own ITurnContext which delegates to the BotContext passed to you
+    /// It simply passes all ITurnContext calls through to the inner ITurnContext.
     /// </remarks>
-    public class BotContextWrapper : IBotContext
+    public class TurnContextWrapper : ITurnContext
     {
-        private IBotContext _innerContext;
+        private ITurnContext _innerContext;
 
-        public BotContextWrapper(IBotContext context)
+        public TurnContextWrapper(ITurnContext context)
         {
             this._innerContext = context;
         }
@@ -76,19 +76,19 @@ namespace Microsoft.Bot.Builder
             return this._innerContext.Has(key);
         }
 
-        public IBotContext OnSendActivities(SendActivitiesHandler handler)
+        public ITurnContext OnSendActivities(SendActivitiesHandler handler)
         {
             this._innerContext.OnSendActivities(handler);
             return this;
         }
 
-        public IBotContext OnUpdateActivity(UpdateActivityHandler handler)
+        public ITurnContext OnUpdateActivity(UpdateActivityHandler handler)
         {
             this._innerContext.OnUpdateActivity(handler);
             return this;
         }
 
-        public IBotContext OnDeleteActivity(DeleteActivityHandler handler)
+        public ITurnContext OnDeleteActivity(DeleteActivityHandler handler)
         {
             this._innerContext.OnDeleteActivity(handler);
             return this;

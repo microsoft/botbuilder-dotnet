@@ -9,7 +9,7 @@ using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder
 {
-    public class BotContext : IBotContext
+    public class TurnContext : ITurnContext
     {
         private readonly BotAdapter _adapter;
         private readonly Activity _request;
@@ -21,13 +21,13 @@ namespace Microsoft.Bot.Builder
 
         private Dictionary<string, object> _services = new Dictionary<string, object>();
 
-        public BotContext(BotAdapter adapter, Activity request)
+        public TurnContext(BotAdapter adapter, Activity request)
         {
             _adapter = adapter ?? throw new ArgumentNullException(nameof(adapter));
             _request = request ?? throw new ArgumentNullException(nameof(request));
         }
 
-        public IBotContext OnSendActivities(SendActivitiesHandler handler)
+        public ITurnContext OnSendActivities(SendActivitiesHandler handler)
         {
             if (handler == null)
                 throw new ArgumentNullException(nameof(handler));
@@ -36,7 +36,7 @@ namespace Microsoft.Bot.Builder
             return this;
         }
 
-        public IBotContext OnUpdateActivity(UpdateActivityHandler handler)
+        public ITurnContext OnUpdateActivity(UpdateActivityHandler handler)
         {
             if (handler == null)
                 throw new ArgumentNullException(nameof(handler));
@@ -45,7 +45,7 @@ namespace Microsoft.Bot.Builder
             return this;
         }
 
-        public IBotContext OnDeleteActivity(DeleteActivityHandler handler)
+        public ITurnContext OnDeleteActivity(DeleteActivityHandler handler)
         {
             if (handler == null)
                 throw new ArgumentNullException(nameof(handler));
