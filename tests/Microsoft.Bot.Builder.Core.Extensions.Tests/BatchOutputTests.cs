@@ -18,7 +18,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
         [TestMethod]        
         public async Task Add0Items()
         {
-            BotContext c = new BotContext(new TestAdapter(), new Activity());
+            TurnContext c = new TurnContext(new TestAdapter(), new Activity());
             BatchOutput bo = new BatchOutput();
             
             c.OnSendActivities( async (context, activities, next) =>
@@ -34,7 +34,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
         {
             bool checksPassed = false;
 
-            BotContext c = new BotContext(new TestAdapter(), new Activity());
+            TurnContext c = new TurnContext(new TestAdapter(), new Activity());
             BatchOutput bo = new BatchOutput();
             bo.Typing(); 
 
@@ -54,7 +54,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
         {
             bool checksPassed = false;
 
-            BotContext c = new BotContext(new TestAdapter(), new Activity());
+            TurnContext c = new TurnContext(new TestAdapter(), new Activity());
             BatchOutput bo = new BatchOutput();
             bo.Typing();
             bo.EndOfConversation();
@@ -77,7 +77,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
             TestAdapter adapter = new TestAdapter()
                 .Use(new BatchOutputMiddleware());
 
-            async Task Echo(IBotContext ctx)
+            async Task Echo(ITurnContext ctx)
             {
                 ctx.Batch().Reply("ECHO:" + ctx.Request.Text);                                 
             }
@@ -98,7 +98,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
             // cause the Batch() extension method below to fail
             // as the required state is missing on the Context. 
 
-            async Task DoSomething(IBotContext ctx)
+            async Task DoSomething(ITurnContext ctx)
             {
                 // Should throw in the Extension Method
                 ctx.Batch().Reply("foo");

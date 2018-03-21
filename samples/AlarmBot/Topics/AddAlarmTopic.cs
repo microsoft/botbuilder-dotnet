@@ -190,7 +190,7 @@ namespace AlarmBot.Topics
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        private async Task<bool> PromptForMissingData(IBotContext context)
+        private async Task<bool> PromptForMissingData(ITurnContext context)
         {
             // If we don't have a title (or if its too long), prompt the user to get it.
             if (String.IsNullOrWhiteSpace(this.Alarm.Title))

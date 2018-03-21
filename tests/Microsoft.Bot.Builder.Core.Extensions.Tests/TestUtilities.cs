@@ -12,25 +12,25 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
 {
     public class TestUtilities
     {
-        public static BotContext CreateEmptyContext()
+        public static TurnContext CreateEmptyContext()
         {
             TestAdapter b = new TestAdapter();
             Activity a = new Activity
             {
                 Type = ActivityTypes.Message
             };
-            BotContext bc = new BotContext(b, a);
+            TurnContext bc = new TurnContext(b, a);
 
             return bc;
         }
 
-        public static T CreateEmptyContext<T>() where T:IBotContext
+        public static T CreateEmptyContext<T>() where T:ITurnContext
         {
             TestAdapter b = new TestAdapter();
             Activity a = new Activity();
-            if (typeof(T).IsAssignableFrom(typeof(IBotContext)))
+            if (typeof(T).IsAssignableFrom(typeof(ITurnContext)))
             {
-                IBotContext bc = new BotContext(b, a);
+                ITurnContext bc = new TurnContext(b, a);
                 return (T)bc;
             }
             else

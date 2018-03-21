@@ -27,7 +27,7 @@ namespace Microsoft.Bot.Builder.LUIS
             _luisRecognizer = new LuisRecognizer(luisModel, luisRecognizerOptions, luisOptions);
         }
 
-        public async Task OnProcessRequest(IBotContext context, MiddlewareSet.NextDelegate next)
+        public async Task OnProcessRequest(ITurnContext context, MiddlewareSet.NextDelegate next)
         {
             BotAssert.ContextNotNull(context);
 

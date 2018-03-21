@@ -13,7 +13,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions
     {
         public const string BatchOuputKey = "Extensions.Middleware.BatchOutput";
 
-        public async Task OnProcessRequest(IBotContext context, MiddlewareSet.NextDelegate next)
+        public async Task OnProcessRequest(ITurnContext context, MiddlewareSet.NextDelegate next)
         {
             BatchOutput batch = new BatchOutput();
             if (context.Has(BatchOuputKey))
@@ -111,7 +111,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions
             return this;
         }
 
-        public async Task<ResourceResponse[]> Flush(IBotContext context)
+        public async Task<ResourceResponse[]> Flush(ITurnContext context)
         {
             // ToDo: addin the ResourceResponses when this is plumbed through
             Activity[] toSend = _activities.ToArray();
@@ -175,7 +175,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions
 
     public static class BatchOutputExtensions
     {
-        public static BatchOutput Batch(this IBotContext context)
+        public static BatchOutput Batch(this ITurnContext context)
         {
             BatchOutput bo = context.Get<BatchOutput>(BatchOutputMiddleware.BatchOuputKey);
             if (bo == null)

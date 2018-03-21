@@ -131,7 +131,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions
 
             return this;
         }
-        private List<Regex> GetExpressions(IBotContext context, RegExLocaleMap map)
+        private List<Regex> GetExpressions(ITurnContext context, RegExLocaleMap map)
         {
             
             var locale = string.IsNullOrWhiteSpace(context.Request.Locale) ? "*" : context.Request.Locale;
