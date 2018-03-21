@@ -6,6 +6,7 @@ using Microsoft.Bot.Builder.Core.Extensions;
 using Microsoft.Bot.Builder.Core.Extensions.Tests;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Ai.Tests
@@ -53,7 +54,7 @@ namespace Microsoft.Bot.Builder.Ai.Tests
             TestAdapter adapter = new TestAdapter()
                 .Use(new BatchOutputMiddleware())
                 .Use(new UserState<LanguageState>(new MemoryStorage()))
-                .Use(new TranslationMiddleware(new string[] { "en-us" }, translatorKey, "", GetActiveLanguage, SetActiveLanguage));
+                .Use(new TranslationMiddleware(new string[] { "en-us" }, translatorKey, new Dictionary<string, List<string>>(), GetActiveLanguage, SetActiveLanguage));
 
             await new TestFlow(adapter, (context) =>
             {
