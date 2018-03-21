@@ -128,7 +128,7 @@ namespace Microsoft.Bot.Builder.Adapters
 
             BotFrameworkTurnContext bfContext = context as BotFrameworkTurnContext;
             MicrosoftAppCredentials appCredentials = await GetAppCredentials(bfContext.BotAppId);
-            var connectorClient = new ConnectorClient(new Uri(context.Request.ServiceUrl), appCredentials);
+            var connectorClient = new ConnectorClient(new Uri(context.Activity.ServiceUrl), appCredentials);
             await connectorClient.Conversations.DeleteActivityAsync(reference.Conversation.Id, reference.ActivityId);
         }
 
@@ -189,10 +189,10 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <returns>Bot's AAD AppId, if it could be inferred from claims. Null otherwise.</returns>
         private static string GetBotId(ClaimsIdentity claimsIdentity)
         {
-            // For requests coming from channels Audience Claim contains the Bot's AAD AppId
+            // For Activities coming from channels Audience Claim contains the Bot's AAD AppId
             Claim botAppIdClaim = (claimsIdentity.Claims?.SingleOrDefault(claim => claim.Type == AuthenticationConstants.AudienceClaim) 
                 ??
-                // For requests coming from Emulator AppId claim contains the Bot's AAD AppId.
+                // For Activities coming from Emulator AppId claim contains the Bot's AAD AppId.
                 claimsIdentity.Claims?.SingleOrDefault(claim => claim.Type == AuthenticationConstants.AppIdClaim));
 
             // For anonymous requests (requests with no header) appId is not set in claims.

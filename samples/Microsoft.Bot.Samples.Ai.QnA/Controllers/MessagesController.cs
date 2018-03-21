@@ -41,7 +41,7 @@ namespace Microsoft.Bot.Samples.Ai.QnA.Controllers
 
         private Task BotReceiveHandler(ITurnContext context)
         {
-            if (context.Request.Type == ActivityTypes.Message && context.Responded == false)
+            if (context.Activity.Type == ActivityTypes.Message && context.Responded == false)
             {
                 // add app logic when QnA Maker doesn't find an answer
                 return context.SendActivity("No good match found in the KB.");

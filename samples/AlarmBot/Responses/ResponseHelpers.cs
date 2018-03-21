@@ -33,7 +33,7 @@ namespace AlarmBot.Responses
             if (message != null)
                 sb.AppendLine(message);
 
-            return context.Request.CreateReply(sb.ToString());
+            return context.Activity.CreateReply(sb.ToString());
         }
     }
 }
