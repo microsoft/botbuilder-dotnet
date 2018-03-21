@@ -40,7 +40,7 @@ namespace Microsoft.Bot.Samples.Ai.QnA.Controllers
             }
         }
 
-        private Task BotReceiveHandler(IBotContext context)
+        private Task BotReceiveHandler(ITurnContext context)
         {
             if (context.Request.Type == ActivityTypes.Message && context.Responded == false)
             {

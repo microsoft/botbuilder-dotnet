@@ -13,7 +13,7 @@ namespace AlarmBot.Responses
 {
     public static class ShowAlarmsTopicResponses 
     {
-        public static IMessageActivity AlarmsCard(IBotContext context, IEnumerable<Alarm> alarms, string title, string message)
+        public static IMessageActivity AlarmsCard(ITurnContext context, IEnumerable<Alarm> alarms, string title, string message)
         {
             IMessageActivity activity = context.Request.CreateReply(message);
 
@@ -39,7 +39,7 @@ namespace AlarmBot.Responses
             return activity;
         }
 
-        public static async Task ReplyWithShowAlarms(IBotContext context, dynamic data)
+        public static async Task ReplyWithShowAlarms(ITurnContext context, dynamic data)
         {
             await context.SendActivity(AlarmsCard(context, data, "Alarms", null));
         }

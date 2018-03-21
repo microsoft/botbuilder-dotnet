@@ -44,7 +44,7 @@ namespace Microsoft.Bot.Builder.Adapters
             return this;
         }
 
-        public Task ProcessActivity(Activity activity, Func<IBotContext, Task> callback, CancellationTokenSource cancelToken = null)
+        public Task ProcessActivity(Activity activity, Func<ITurnContext, Task> callback, CancellationTokenSource cancelToken = null)
         {
             lock (this.ConversationReference)
             {
@@ -60,14 +60,14 @@ namespace Microsoft.Bot.Builder.Adapters
                 var id = activity.Id = (this._nextId++).ToString();
             }
 
-            var context = new BotContext(this, activity);
+            var context = new TurnContext(this, activity);
             return base.RunPipeline(context, callback, cancelToken);
         }
 
         public ConversationReference ConversationReference { get; set; }
 
 
-        public async override Task<ResourceResponse[]> SendActivities(IBotContext context, Activity[] activities)
+        public async override Task<ResourceResponse[]> SendActivities(ITurnContext context, Activity[] activities)
         {
             List<ResourceResponse> responses = new List<ResourceResponse>();
 
@@ -96,7 +96,7 @@ namespace Microsoft.Bot.Builder.Adapters
             return responses.ToArray();
         }
 
-        public override Task<ResourceResponse> UpdateActivity(IBotContext context, Activity activity)
+        public override Task<ResourceResponse> UpdateActivity(ITurnContext context, Activity activity)
         {
             lock (this.botReplies)
             {
@@ -118,7 +118,7 @@ namespace Microsoft.Bot.Builder.Adapters
             return Task.FromResult(new ResourceResponse());
         }
 
-        public override Task DeleteActivity(IBotContext context, ConversationReference reference)
+        public override Task DeleteActivity(ITurnContext context, ConversationReference reference)
         {
             lock (this.botReplies)
             {
@@ -146,12 +146,12 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <param name="channelId"></param>
         /// <param name="callback"></param>
         /// <returns></returns>
-        public override Task CreateConversation(string channelId, Func<IBotContext, Task> callback)
+        public override Task CreateConversation(string channelId, Func<ITurnContext, Task> callback)
         {
             this.ActiveQueue.Clear();
             var update = Activity.CreateConversationUpdateActivity();
             update.Conversation = new ConversationAccount() { Id = Guid.NewGuid().ToString("n") };
-            var context = new BotContext(this, (Activity)update);
+            var context = new TurnContext(this, (Activity)update);
             return callback(context);
         }
 
@@ -198,7 +198,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// </summary>
         /// <param name="userSays"></param>
         /// <returns></returns>
-        public Task SendTextToBot(string userSays, Func<IBotContext, Task> callback)
+        public Task SendTextToBot(string userSays, Func<ITurnContext, Task> callback)
         {
             return this.ProcessActivity(this.MakeActivity(userSays), callback);
         }
@@ -209,9 +209,9 @@ namespace Microsoft.Bot.Builder.Adapters
     {
         readonly TestAdapter adapter;
         readonly Task testTask;
-        Func<IBotContext, Task> callback;
+        Func<ITurnContext, Task> callback;
 
-        public TestFlow(TestAdapter adapter, Func<IBotContext, Task> callback = null)
+        public TestFlow(TestAdapter adapter, Func<ITurnContext, Task> callback = null)
         {
             this.adapter = adapter;
             this.callback = callback;

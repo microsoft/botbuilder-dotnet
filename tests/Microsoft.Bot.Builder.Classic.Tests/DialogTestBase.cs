@@ -75,26 +75,6 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                 builder.RegisterModule(new ReflectionSurrogateModule());
             }
 
-            //var r =
-            //    builder
-            //    .Register<Queue<Activity>>(c =>
-            //    {
-            //        var context = c.Resolve<Microsoft.Bot.Builder.IBotContext>();
-            //        var adapter = ((TestAdapter)context.Adapter);
-            //        return adapter.ActiveQueue;
-            //    })
-            //    .AsSelf()
-            //    .InstancePerLifetimeScope();
-
-            //if (options.HasFlag(Options.ScopedQueue))
-            //{
-            //    r.InstancePerLifetimeScope();
-            //}
-            //else
-            //{
-            //    r.SingleInstance();
-            //}
-
             foreach (var singleton in singletons)
             {
                 builder
@@ -188,7 +168,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
 
         public static void AssertNoMessages(ILifetimeScope scope)
         {
-            var queue = ((TestAdapter)scope.Resolve<Microsoft.Bot.Builder.IBotContext>().Adapter).ActiveQueue;
+            var queue = ((TestAdapter)scope.Resolve<Microsoft.Bot.Builder.ITurnContext>().Adapter).ActiveQueue;
             Assert.AreEqual(0, queue.Count);
         }
 
@@ -199,7 +179,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
 
         public static async Task AssertOutgoingActivity(ILifetimeScope container, Action<IMessageActivity> asserts)
         {
-            var queue = ((TestAdapter)container.Resolve<Microsoft.Bot.Builder.IBotContext>().Adapter).ActiveQueue;
+            var queue = ((TestAdapter)container.Resolve<Microsoft.Bot.Builder.ITurnContext>().Adapter).ActiveQueue;
 
             if (queue.Count != 1)
             {

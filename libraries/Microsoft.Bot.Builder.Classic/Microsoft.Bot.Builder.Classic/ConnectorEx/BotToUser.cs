@@ -128,9 +128,9 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs.Internals
 
     public sealed class V4Bridge_BotToUser : IBotToUser
     {
-        private readonly Microsoft.Bot.Builder.IBotContext context;
+        private readonly Microsoft.Bot.Builder.ITurnContext context;
 
-        public V4Bridge_BotToUser(Microsoft.Bot.Builder.IBotContext context)
+        public V4Bridge_BotToUser(Microsoft.Bot.Builder.ITurnContext context)
         {
             SetField.NotNull(out this.context, nameof(context), context);
         }

@@ -8,11 +8,11 @@ using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder
 {
-    public delegate Task SendActivitiesHandler(IBotContext context, List<Activity> activities, Func<Task> next);
-    public delegate Task UpdateActivityHandler(IBotContext context, Activity activity, Func<Task> next);
-    public delegate Task DeleteActivityHandler(IBotContext context, ConversationReference reference, Func<Task> next);
+    public delegate Task SendActivitiesHandler(ITurnContext context, List<Activity> activities, Func<Task> next);
+    public delegate Task UpdateActivityHandler(ITurnContext context, Activity activity, Func<Task> next);
+    public delegate Task DeleteActivityHandler(ITurnContext context, ConversationReference reference, Func<Task> next);
 
-    public interface IBotContext
+    public interface ITurnContext
     {
         BotAdapter Adapter { get; }
 
@@ -53,12 +53,12 @@ namespace Microsoft.Bot.Builder
         /// <param name="key">The key to lookup in the cache</param>
         bool Has(string key);
 
-        IBotContext OnSendActivities(SendActivitiesHandler handler);
-        IBotContext OnUpdateActivity(UpdateActivityHandler handler);
-        IBotContext OnDeleteActivity(DeleteActivityHandler handler);
+        ITurnContext OnSendActivities(SendActivitiesHandler handler);
+        ITurnContext OnUpdateActivity(UpdateActivityHandler handler);
+        ITurnContext OnDeleteActivity(DeleteActivityHandler handler);
     }
 
-    public static partial class BotContextExtension
+    public static partial class TurnContextExtension
     {
         /// <summary>
         /// Set a value of a specific type on a context object.
@@ -67,7 +67,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="context">The context object.</param>
         /// <param name="value">The value.</param>
         /// <remarks>Uses the value type's name as the key.</remarks>
-        public static void Set<ObjectT>(this IBotContext context, ObjectT value)
+        public static void Set<ObjectT>(this ITurnContext context, ObjectT value)
         {
             var key = $"{typeof(ObjectT).Namespace}.{typeof(ObjectT).Name}";
             context.Set(key, value);
@@ -80,7 +80,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="context">The context object.</param>
         /// <param name="key">An optional lookup key. The default is the value type's name.</param>
         /// <returns>The value.</returns>
-        public static ObjectT Get<ObjectT>(this IBotContext context, string key = null)
+        public static ObjectT Get<ObjectT>(this ITurnContext context, string key = null)
         {
             if (key == null)
                 key = $"{typeof(ObjectT).Namespace}.{typeof(ObjectT).Name}";

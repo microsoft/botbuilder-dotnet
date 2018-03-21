@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Builder.Core.Tests
     [TestCategory("Adapter")]
     public class TestAdapterTests
     {
-        public async Task MyBotLogic(IBotContext context)
+        public async Task MyBotLogic(ITurnContext context)
         {
             switch (context.Request.AsMessageActivity().Text)
             {

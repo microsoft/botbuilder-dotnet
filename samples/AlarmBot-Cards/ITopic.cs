@@ -18,20 +18,20 @@ namespace AlarmBot
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        Task<bool> StartTopic(IBotContext context);
+        Task<bool> StartTopic(ITurnContext context);
 
         /// <summary>
         /// called while topic active
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        Task<bool> ContinueTopic(IBotContext context);
+        Task<bool> ContinueTopic(ITurnContext context);
 
         /// <summary>
         ///  Called when a topic is resumed
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        Task<bool> ResumeTopic(IBotContext context);
+        Task<bool> ResumeTopic(ITurnContext context);
     }
 }

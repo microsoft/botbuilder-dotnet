@@ -7,6 +7,6 @@ namespace Microsoft.Bot
 {
     public interface IBot
     {
-        Task OnReceiveActivity(IBotContext botContext);
+        Task OnReceiveActivity(ITurnContext turnContext);
     }
 }
