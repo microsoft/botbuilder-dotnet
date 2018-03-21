@@ -5,7 +5,6 @@ using System;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Core.Extensions;
 using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.Ai
@@ -33,9 +32,9 @@ namespace Microsoft.Bot.Builder.Ai
                     if (results.Any())
                     {
                         if (!string.IsNullOrEmpty(_options.DefaultAnswerPrefixMessage))
-                            context.Batch().Reply(_options.DefaultAnswerPrefixMessage);
+                            await context.SendActivity(_options.DefaultAnswerPrefixMessage);
 
-                        context.Batch().Reply(results.First().Answer);
+                        await context.SendActivity(results.First().Answer);
 
                         if (_options.EndActivityRoutingOnAnswer)
                             //Question is answered, don't keep routing
