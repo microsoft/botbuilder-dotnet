@@ -9,6 +9,10 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Ai.Tests
 {
+    class LocaleState
+    {
+        public string Locale { get; set; }
+    }
     [TestClass]
     public class LocaleConverterMiddlewareTests
     {
@@ -19,6 +23,7 @@ namespace Microsoft.Bot.Builder.Ai.Tests
         {
             TestAdapter adapter = new TestAdapter()
              .Use(new BatchOutputMiddleware())
+             .Use(new UserState<LocaleState>(new MemoryStorage()))
              .Use(new LocaleConverterMiddleware(GetActiveLocale, SetActiveLocale, "en-us", new LocaleConverter()));
 
 
@@ -62,7 +67,7 @@ namespace Microsoft.Bot.Builder.Ai.Tests
                 .StartTest();
         }
 
-        private void SetLocale(IBotContext context, string locale) => context.Set(@"LocaleConverterMiddleware.fromLocale",locale);
+        private void SetLocale(IBotContext context, string locale) => context.GetUserState<LocaleState>().Locale  = locale;
 
         protected async Task<bool> SetActiveLocale(IBotContext context)
         {
@@ -94,9 +99,9 @@ namespace Microsoft.Bot.Builder.Ai.Tests
         protected string GetActiveLocale(IBotContext context)
         {
             if (context.Request.Type == ActivityTypes.Message
-                && context.Has(@"LocaleConverterMiddleware.fromLocale"))
+                && !string.IsNullOrEmpty(context.GetUserState<LocaleState>().Locale))
             {
-                return (string)context.Get(@"LocaleConverterMiddleware.fromLocale");
+                return context.GetUserState<LocaleState>().Locale;
             }
 
             return "en-us";

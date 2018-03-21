@@ -10,6 +10,10 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Ai.Tests
 {
+    class LanguageState { 
+        public string Language { get; set; }
+    }
+
     [TestClass]
     public class TranslatorMiddlewareTests
     {
@@ -22,7 +26,7 @@ namespace Microsoft.Bot.Builder.Ai.Tests
         {
             
             TestAdapter adapter = new TestAdapter()
-            .Use(new BatchOutputMiddleware())
+            .Use(new BatchOutputMiddleware()) 
             .Use(new TranslationMiddleware(new string[] { "en-us" }, translatorKey));
 
             await new TestFlow(adapter, (context) =>
@@ -48,6 +52,7 @@ namespace Microsoft.Bot.Builder.Ai.Tests
 
             TestAdapter adapter = new TestAdapter()
                 .Use(new BatchOutputMiddleware())
+                .Use(new UserState<LanguageState>(new MemoryStorage()))
                 .Use(new TranslationMiddleware(new string[] { "en-us" }, translatorKey, "", GetActiveLanguage, SetActiveLanguage));
 
             await new TestFlow(adapter, (context) =>
@@ -65,7 +70,7 @@ namespace Microsoft.Bot.Builder.Ai.Tests
                 .StartTest();
         }
 
-        private void SetLanguage(IBotContext context, string language) => context.Set(@"Microsoft.API.translateTo",language);
+        private void SetLanguage(IBotContext context, string language) =>context.GetUserState<LanguageState>().Language = language ; 
        
         protected async Task<bool> SetActiveLanguage(IBotContext context)
         {
@@ -97,9 +102,9 @@ namespace Microsoft.Bot.Builder.Ai.Tests
         protected string GetActiveLanguage(IBotContext context)
         {
             if (context.Request.Type == ActivityTypes.Message
-                && context.Has(@"Microsoft.API.translateTo"))
+                && !string.IsNullOrEmpty(context.GetUserState<LanguageState>().Language))
             {
-                return (string)context.Get(@"Microsoft.API.translateTo");
+                return context.GetUserState<LanguageState>().Language;
             }
 
             return "en";
