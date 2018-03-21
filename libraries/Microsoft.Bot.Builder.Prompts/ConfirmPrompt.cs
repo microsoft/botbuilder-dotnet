@@ -44,11 +44,11 @@ namespace Microsoft.Bot.Builder.Prompts
         public override async Task<ConfirmResult> Recognize(ITurnContext context)
         {
             BotAssert.ContextNotNull(context);
-            BotAssert.ActivityNotNull(context.Request);
-            if (context.Request.Type != ActivityTypes.Message)
+            BotAssert.ActivityNotNull(context.Activity);
+            if (context.Activity.Type != ActivityTypes.Message)
                 throw new InvalidOperationException("No Message to Recognize");
 
-            IMessageActivity message = context.Request.AsMessageActivity();
+            IMessageActivity message = context.Activity.AsMessageActivity();
             var confirmResult = new ConfirmResult();
             Match yesMatch = yes.Match(message.Text);
             Match noMatch = no.Match(message.Text);

@@ -27,7 +27,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions
         {
             try
             {
-                // Continue to route the request through the pipeline
+                // Continue to route the activity through the pipeline
                 // any errors further down the pipeline will be caught by
                 // this try / catch
                 await next().ConfigureAwait(false);

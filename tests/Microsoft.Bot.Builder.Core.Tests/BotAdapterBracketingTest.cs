@@ -32,8 +32,8 @@ namespace Microsoft.Bot.Builder.Core.Tests
 
             async Task Echo(ITurnContext ctx)
             {
-                string toEcho = "ECHO:" + ctx.Request.AsMessageActivity().Text;
-                await ctx.SendActivity(ctx.Request.CreateReply(toEcho)); 
+                string toEcho = "ECHO:" + ctx.Activity.AsMessageActivity().Text;
+                await ctx.SendActivity(ctx.Activity.CreateReply(toEcho)); 
             }
 
             await new TestFlow(adapter, Echo)
@@ -60,8 +60,8 @@ namespace Microsoft.Bot.Builder.Core.Tests
 
             async Task EchoWithException(ITurnContext ctx)
             {
-                string toEcho = "ECHO:" + ctx.Request.AsMessageActivity().Text;
-                await ctx.SendActivity(ctx.Request.CreateReply(toEcho));
+                string toEcho = "ECHO:" + ctx.Activity.AsMessageActivity().Text;
+                await ctx.SendActivity(ctx.Activity.CreateReply(toEcho));
                 throw new Exception(uniqueId);
             }
 
@@ -78,17 +78,17 @@ namespace Microsoft.Bot.Builder.Core.Tests
         {
             public async Task OnProcessRequest(ITurnContext context, MiddlewareSet.NextDelegate next)
             {
-                await context.SendActivity(context.Request.CreateReply("BEFORE"));
+                await context.SendActivity(context.Activity.CreateReply("BEFORE"));
                 try
                 {
                     await next();
                 }
                 catch (Exception ex)
                 {
-                    await context.SendActivity(context.Request.CreateReply("CAUGHT:" + ex.Message));                    
+                    await context.SendActivity(context.Activity.CreateReply("CAUGHT:" + ex.Message));                    
                 }
 
-                await context.SendActivity(context.Request.CreateReply("AFTER"));
+                await context.SendActivity(context.Activity.CreateReply("AFTER"));
             }            
         }
 
@@ -96,9 +96,9 @@ namespace Microsoft.Bot.Builder.Core.Tests
         {
             public async Task OnProcessRequest(ITurnContext context, MiddlewareSet.NextDelegate next)
             {
-                await context.SendActivity(context.Request.CreateReply("BEFORE"));
+                await context.SendActivity(context.Activity.CreateReply("BEFORE"));
                 await next();
-                await context.SendActivity(context.Request.CreateReply("AFTER"));
+                await context.SendActivity(context.Activity.CreateReply("AFTER"));
             }
         }
     }

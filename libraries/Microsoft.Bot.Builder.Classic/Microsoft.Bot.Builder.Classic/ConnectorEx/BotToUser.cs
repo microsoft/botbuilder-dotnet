@@ -137,7 +137,7 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs.Internals
 
         IMessageActivity IBotToUser.MakeMessage()
         {
-            var toBotActivity = (Activity)this.context.Request;
+            var toBotActivity = (Activity)this.context.Activity;
             return toBotActivity.CreateReply();
         }
 

@@ -36,7 +36,7 @@ namespace AlarmBot.Models
         }
 
         /// <summary>
-        /// AlarmBot recognized Intents for the incoming request
+        /// AlarmBot recognized Intents for the incoming activity
         /// </summary>
         public IRecognizedIntents RecognizedIntents { get { return this.Get<IRecognizedIntents>(); } }
 
@@ -44,8 +44,8 @@ namespace AlarmBot.Models
         {
             IList<DateTime> times = new List<DateTime>();
             // Get DateTime model for English
-            var model = new DateTimeRecognizer(this.Request.Locale ?? "en-us").GetDateTimeModel();
-            var results = model.Parse(this.Request.Text);
+            var model = new DateTimeRecognizer(this.Activity.Locale ?? "en-us").GetDateTimeModel();
+            var results = model.Parse(this.Activity.Text);
 
             // Check there are valid results
             if (results.Any() && results.First().TypeName.StartsWith("datetimeV2"))

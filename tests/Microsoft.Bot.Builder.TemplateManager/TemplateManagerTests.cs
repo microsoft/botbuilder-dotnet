@@ -118,7 +118,7 @@ namespace Microsoft.Bot.Builder.TemplateManager.Tests
 
             await new TestFlow(adapter, async (context) =>
                 {
-                    var templateId = context.Request.AsMessageActivity().Text.Trim();
+                    var templateId = context.Activity.AsMessageActivity().Text.Trim();
                     await templateManager.ReplyWith(context, templateId, new { name = "joe" });
                 })
                 .Send("stringTemplate").AssertReply("default: joe")
@@ -137,8 +137,8 @@ namespace Microsoft.Bot.Builder.TemplateManager.Tests
 
             await new TestFlow(adapter, async (context) =>
             {
-                context.Request.AsMessageActivity().Locale = "en"; // force to english
-                var templateId = context.Request.AsMessageActivity().Text.Trim();
+                context.Activity.AsMessageActivity().Locale = "en"; // force to english
+                var templateId = context.Activity.AsMessageActivity().Text.Trim();
                 await templateManager.ReplyWith(context, templateId, new { name = "joe" });
             })
                 .Send("stringTemplate").AssertReply("en: joe")
@@ -157,8 +157,8 @@ namespace Microsoft.Bot.Builder.TemplateManager.Tests
 
             await new TestFlow(adapter, async (context) =>
                 {
-                    context.Request.AsMessageActivity().Locale = "fr"; // force to french
-                    var templateId = context.Request.AsMessageActivity().Text.Trim();
+                    context.Activity.AsMessageActivity().Locale = "fr"; // force to french
+                    var templateId = context.Activity.AsMessageActivity().Text.Trim();
                     await templateManager.ReplyWith(context, templateId, new { name = "joe" });
                 })
                 .Send("stringTemplate").AssertReply("fr: joe")
@@ -177,8 +177,8 @@ namespace Microsoft.Bot.Builder.TemplateManager.Tests
 
             await new TestFlow(adapter, async (context) =>
                 {
-                    context.Request.AsMessageActivity().Locale = "fr"; // force to french
-                    var templateId = context.Request.AsMessageActivity().Text.Trim();
+                    context.Activity.AsMessageActivity().Locale = "fr"; // force to french
+                    var templateId = context.Activity.AsMessageActivity().Text.Trim();
                     await templateManager.ReplyWith(context, templateId, new { name = "joe" });
                 })
                 .Send("stringTemplate2").AssertReply("fr: Yo joe")
@@ -197,7 +197,7 @@ namespace Microsoft.Bot.Builder.TemplateManager.Tests
 
             await new TestFlow(adapter, async (context) =>
                 {
-                    var templateId = context.Request.AsMessageActivity().Text.Trim();
+                    var templateId = context.Activity.AsMessageActivity().Text.Trim();
                     await templateManager.ReplyWith(context, templateId, new { name = "joe" });
                 })
                 .Send("stringTemplate").AssertReply("default: joe")

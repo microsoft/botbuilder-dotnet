@@ -254,7 +254,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
 
             async Task ReplyWithimBackBack(ITurnContext ctx)
             {
-                if (ctx.Request.AsMessageActivity().Text == "test")
+                if (ctx.Activity.AsMessageActivity().Text == "test")
                 {
                     var activity = MessageFactory.SuggestedActions(new CardAction[]
                     {
@@ -291,7 +291,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
 
             async Task ReplyWithimBackBack(ITurnContext ctx)
             {
-                if (ctx.Request.AsMessageActivity().Text == "test")
+                if (ctx.Activity.AsMessageActivity().Text == "test")
                 {
                     var activity = MessageFactory.SuggestedActions(new CardAction[]
                     {
