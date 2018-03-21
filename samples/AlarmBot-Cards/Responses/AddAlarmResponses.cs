@@ -25,7 +25,7 @@ namespace AlarmBot.Responses
         /// <param name="submitLabel">label for submit button</param>
         /// <param name="cancelLabel">label for cancel button</param>
         /// <returns>activity ready to submit</returns>
-        public static IMessageActivity AlarmCardEditor(IBotContext context, Alarm alarm, string title, string message, string submitLabel, string cancelLabel)
+        public static IMessageActivity AlarmCardEditor(ITurnContext context, Alarm alarm, string title, string message, string submitLabel, string cancelLabel)
         {
             IMessageActivity activity = context.Request.CreateReply();
             if (alarm.Time == null)
@@ -48,31 +48,31 @@ namespace AlarmBot.Responses
         }
 
 
-        public static async Task ReplyWithStartTopic(IBotContext context, dynamic data)
+        public static async Task ReplyWithStartTopic(ITurnContext context, dynamic data)
         {
             await context.SendActivity(AlarmCardEditor(context, data, "Adding Alarm", "Please describe your alarm:", "Submit", "Cancel"));
         }
-        public static async Task ReplyWithHelp(IBotContext context, dynamic data)
+        public static async Task ReplyWithHelp(ITurnContext context, dynamic data)
         {
             await context.SendActivity(AlarmCardEditor(context, data, "Adding alarm", $"I am working with you to create an alarm.  Please describe your alarm:.\n\n", "Submit", "Cancel"));
         }
-        public static async Task ReplyWithConfused(IBotContext context, dynamic data)
+        public static async Task ReplyWithConfused(ITurnContext context, dynamic data)
         {
             await context.SendActivity($"I am sorry, I didn't understand: {context.Request.Text}.");
         }
-        public static async Task ReplyWithCancelPrompt(IBotContext context, dynamic data)
+        public static async Task ReplyWithCancelPrompt(ITurnContext context, dynamic data)
         {
             await context.SendActivity(TopicResponseHelpers.CreateMessageBoxCard(context, CANCELPROMPT, "Cancel Alarm?", "Are you sure you want to cancel this alarm?", "Yes", "No"));
         }
-        public static async Task ReplyWithCancelReprompt(IBotContext context, dynamic data)
+        public static async Task ReplyWithCancelReprompt(ITurnContext context, dynamic data)
         {
             await context.SendActivity(TopicResponseHelpers.CreateMessageBoxCard(context, CANCELPROMPT, "Cancel Alarm?", "Please answer with a Yes or No. Are you sure you want to cancel this alarm?", "Yes", "No"));
         }
-        public static async Task ReplyWithTopicCanceled(IBotContext context, dynamic data)
+        public static async Task ReplyWithTopicCanceled(ITurnContext context, dynamic data)
         {
             await context.SendActivity($"OK, I have canceled creating this alarm.");
         }
-        public static async Task ReplyWithAddedAlarm(IBotContext context, dynamic data)
+        public static async Task ReplyWithAddedAlarm(ITurnContext context, dynamic data)
         {
             await context.SendActivity($"OK, I have added the alarm {((Alarm)data).Title}.");
         }

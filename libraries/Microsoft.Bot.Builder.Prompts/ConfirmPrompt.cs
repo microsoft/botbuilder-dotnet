@@ -41,7 +41,7 @@ namespace Microsoft.Bot.Builder.Prompts
         //    this._model = model;
         //}
 
-        public override async Task<ConfirmResult> Recognize(IBotContext context)
+        public override async Task<ConfirmResult> Recognize(ITurnContext context)
         {
             BotAssert.ContextNotNull(context);
             BotAssert.ActivityNotNull(context.Request);

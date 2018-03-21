@@ -252,7 +252,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
         {
             TestAdapter adapter = new TestAdapter();                 
 
-            async Task ReplyWithimBackBack(IBotContext ctx)
+            async Task ReplyWithimBackBack(ITurnContext ctx)
             {
                 if (ctx.Request.AsMessageActivity().Text == "test")
                 {
@@ -289,7 +289,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
         {
             TestAdapter adapter = new TestAdapter();
 
-            async Task ReplyWithimBackBack(IBotContext ctx)
+            async Task ReplyWithimBackBack(ITurnContext ctx)
             {
                 if (ctx.Request.AsMessageActivity().Text == "test")
                 {

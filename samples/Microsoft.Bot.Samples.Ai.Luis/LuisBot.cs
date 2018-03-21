@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Samples.Ai.Luis
     {
         public LuisBot() { }
 
-        public async Task OnReceiveActivity(IBotContext context)
+        public async Task OnReceiveActivity(ITurnContext context)
         {
             switch (context.Request.Type)
             {

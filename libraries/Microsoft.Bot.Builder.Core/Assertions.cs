@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Builder
             if (activity == null)
                 throw new ArgumentNullException(nameof(activity));
         }
-        public static void ContextNotNull(IBotContext context)
+        public static void ContextNotNull(ITurnContext context)
         {
             if (context == null)
                 throw new ArgumentNullException(nameof(context)); 

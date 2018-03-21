@@ -15,7 +15,7 @@ namespace AlarmBot.Responses
     /// </summary>
     public static class ShowAlarmsResponses
     {
-        public static async Task ReplyWithShowAlarms(IBotContext context, IEnumerable<Alarm> alarms)
+        public static async Task ReplyWithShowAlarms(ITurnContext context, IEnumerable<Alarm> alarms)
         {
             var sb = new StringBuilder();
             sb.AppendLine("# Current Alarms\n");
