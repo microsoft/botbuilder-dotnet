@@ -29,7 +29,7 @@ namespace Microsoft.Bot.Builder.Ai
 
     /// <summary>
     /// Locale Converter Class used to convert between locales
-    /// in terms of date and time only
+    /// in terms of date and time only.
     /// </summary>
     public class LocaleConverter : ILocaleConverter
     { 
@@ -41,8 +41,8 @@ namespace Microsoft.Bot.Builder.Ai
         }
         
         /// <summary>
-        /// Init different locales format
-        /// Supporting English, French, Deutsche and Chinese Locales
+        /// Init different locales format,
+        /// Supporting English, French, Deutsche and Chinese Locales.
         /// </summary>
         private void initLocales()
         {
@@ -133,7 +133,9 @@ namespace Microsoft.Bot.Builder.Ai
                     moment = DateTime.Parse(resolutionValues.First()["start"]);
                 }
                 else
+                {
                     continue;
+                }
                 var curDateTimeText = new TextAndDateTime
                 {
                     DateTimeObject = moment,
