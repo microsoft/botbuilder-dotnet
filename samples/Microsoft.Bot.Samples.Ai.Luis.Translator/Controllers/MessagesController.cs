@@ -43,9 +43,11 @@ namespace Microsoft.Bot.Samples.Ai.Luis.Translator
                 var luisModel = new LuisModel("modelId", "subscriptionKey", new Uri("https://RegionOfYourLuisApp.api.cognitive.microsoft.com/luis/v2.0/apps/"));
                 var options = new LuisRequest { Verbose = true }; // If you want to get all intents scorings, add verbose in luisOptions
                                                                   //LuisRequest options = null;
-
+                Dictionary<string, List<string>> patterns = new Dictionary<string, List<string>>();
+                patterns["fr"].Add("mon nom est (.+)");//single pattern for fr language
+                //Check templates forlder for more pattern examples for fr language
                 _adapter = new BotFrameworkAdapter(new ConfigurationCredentialProvider(configuration))
-                    .Use(new TranslationMiddleware(new string[] { "en" }, "xxxxxx", "templates", GetActiveLanguage, SetActiveLanguage))
+                    .Use(new TranslationMiddleware(new string[] { "en" }, "xxxxxx", patterns, GetActiveLanguage, SetActiveLanguage))
                     .Use(new LocaleConverterMiddleware(GetActiveLocale, SetActiveLocale, "en-us", new LocaleConverter()))
                     .Use(new LuisRecognizerMiddleware(luisModel, luisOptions: options));
             }   

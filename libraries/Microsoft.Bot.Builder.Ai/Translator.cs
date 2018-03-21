@@ -23,22 +23,24 @@ namespace Microsoft.Bot.Builder.Ai
     /// </summary>
     internal class PostProcessTranslator
     {
-        HashSet<string> noTranslatePatterns; 
+        private readonly HashSet<string> _patterns;
+
 
         /// <summary>
-        ///Constructor that indexes input template for source language
+        /// Constructor that indexes input template for source language
         /// </summary>
-        internal PostProcessTranslator(string noTranslateTemplatePath)
+        /// <param name="noTranslateTemplatePath">Path of no translate patterns</param> 
+        internal PostProcessTranslator(List<string> patterns)
         {
-            noTranslatePatterns = new HashSet<string>();
-            foreach (string line in File.ReadLines(noTranslateTemplatePath))
+            _patterns = new HashSet<string>();
+            foreach (string pattern in patterns)
             {
-                string processedLine = line.Trim();
-                if (!line.Contains('('))
+                string processedLine = pattern.Trim();
+                if (!pattern.Contains('('))
                 {
-                    processedLine = '(' + processedLine + ')';
+                    processedLine = '(' + pattern + ')';
                 }
-                noTranslatePatterns.Add(processedLine);
+                _patterns.Add(processedLine);
             }
         }
 
@@ -47,7 +49,7 @@ namespace Microsoft.Bot.Builder.Ai
         /// </summary>
         internal PostProcessTranslator()
         {
-            noTranslatePatterns = new HashSet<string>();
+            _patterns = new HashSet<string>();
         }
 
         /// <summary>
@@ -59,7 +61,7 @@ namespace Microsoft.Bot.Builder.Ai
         /// <param name="source">Source Language</param>
         /// <param name="target">Target Language</param>
         /// <returns></returns>
-        private Dictionary<string, string> wordAlignmentParse(string alignment, string source, string target)
+        private Dictionary<string, string> wordAlignmentParse(string alignment)
         {
             Dictionary<string, string> alignMap = new Dictionary<string, string>();
             if (alignment.Trim() == "")
@@ -114,14 +116,14 @@ namespace Microsoft.Bot.Builder.Ai
             string processedTranslation = targetMessage;
             bool containsNum = Regex.IsMatch(sourceMessage, @"\d");
 
-            if (noTranslatePatterns.Count == 0 && !containsNum)
+            if (_patterns.Count == 0 && !containsNum)
                 return processedTranslation;
 
-            var toBeReplaced = from result in noTranslatePatterns
+            var toBeReplaced = from result in _patterns
                                where Regex.IsMatch(sourceMessage, result, RegexOptions.Singleline | RegexOptions.IgnoreCase)
                                select result;
-            Dictionary<string, string> alignMap = wordAlignmentParse(alignment, sourceMessage, targetMessage);
-            if (toBeReplaced.Count() > 0)
+            Dictionary<string, string> alignMap = wordAlignmentParse(alignment);
+            if (!toBeReplaced.Any())
             {
                 foreach (string pattern in toBeReplaced)
                 {
@@ -147,27 +149,27 @@ namespace Microsoft.Bot.Builder.Ai
 
     /// <summary>
     /// Translator class 
-    /// contains machine translation APIs 
-    /// uses api key and detect input language translate single sentence or array of sentences then apply translation post processing fix
+    /// contains machine translation APIs .
+    /// Uses api key and detect input language translate single sentence or array of sentences then apply translation post processing fix.
     /// </summary>
     public class Translator
     {
-        AzureAuthToken authToken;
-        PostProcessTranslator postProcessor;
+        private readonly AzureAuthToken _authToken;
+        PostProcessTranslator _postProcessor;
 
         public Translator(string apiKey)
         {
-            authToken = new AzureAuthToken(apiKey);
-            postProcessor = new PostProcessTranslator();
+            _authToken = new AzureAuthToken(apiKey);
+            _postProcessor = new PostProcessTranslator();
         }
         
         /// <summary>
         /// used to set no translate template for post processor
         /// </summary>
-        /// <param name="templatePath">Path of directory containing no translate lists</param>
-        public void SetPostProcessorTemplate(string templatePath)
+        /// <param name="patterns">List of patterns for current language</param>
+        public void SetPostProcessorTemplate(List<string> patterns)
         {
-            postProcessor = new PostProcessTranslator(templatePath);
+            _postProcessor = new PostProcessTranslator(patterns);
         }
         
         /// <summary>
@@ -183,7 +185,7 @@ namespace Microsoft.Bot.Builder.Ai
             using (var client = new HttpClient())
             using (var request = new HttpRequestMessage())
             {
-                var accessToken = await authToken.GetAccessTokenAsync().ConfigureAwait(false);
+                var accessToken = await _authToken.GetAccessTokenAsync().ConfigureAwait(false);
                 request.Headers.Add("Authorization", accessToken);
                 request.RequestUri = new Uri(url + query);
                 var response = await client.SendAsync(request);
@@ -198,7 +200,7 @@ namespace Microsoft.Bot.Builder.Ai
         }
         
         /// <summary>
-        /// translate a single message from source language to target language
+        /// Translate a single message from source language to target language.
         /// </summary>
         /// <param name="textToTranslate"></param>
         /// <param name="from"></param>
@@ -214,7 +216,7 @@ namespace Microsoft.Bot.Builder.Ai
             using (var client = new HttpClient())
             using (var request = new HttpRequestMessage())
             {
-                var accessToken = await authToken.GetAccessTokenAsync().ConfigureAwait(false);
+                var accessToken = await _authToken.GetAccessTokenAsync().ConfigureAwait(false);
                 request.Headers.Add("Authorization", accessToken);
                 request.RequestUri = new Uri(url + query);
                 var response = await client.SendAsync(request);
@@ -230,7 +232,7 @@ namespace Microsoft.Bot.Builder.Ai
         }
         
         /// <summary>
-        /// translate array of strings from source language to target language
+        /// Translate array of strings from source language to target language.
         /// </summary>
         /// <param name="translateArraySourceTexts">Array of strings</param>
         /// <param name="from">Source Language</param>
@@ -257,7 +259,7 @@ namespace Microsoft.Bot.Builder.Ai
                            $"<To>{to}</To>" +
                        "</TranslateArrayRequest>";
 
-            var accessToken = await authToken.GetAccessTokenAsync().ConfigureAwait(false);
+            var accessToken = await _authToken.GetAccessTokenAsync().ConfigureAwait(false);
 
             using (var client = new HttpClient())
             using (var request = new HttpRequestMessage())
@@ -281,7 +283,7 @@ namespace Microsoft.Bot.Builder.Ai
                         {
 
                             string translation = xe.Element(ns + "TranslatedText").Value;
-                            translation = postProcessor.FixTranslation(translateArraySourceTexts[sentIndex], xe.Element(ns + "Alignment").Value, translation);
+                            translation = _postProcessor.FixTranslation(translateArraySourceTexts[sentIndex], xe.Element(ns + "Alignment").Value, translation);
                             results.Add(translation);
                         }
                         return results.ToArray();

@@ -49,7 +49,8 @@ namespace Microsoft.Bot.Builder.Ai.Tests
         {
             TestAdapter adapter = new TestAdapter()
                 .Use(new BatchOutputMiddleware())
-             .Use(new LocaleConverterMiddleware(GetActiveLocale, SetActiveLocale, "zh-cn", new LocaleConverter()));
+                .Use(new UserState<LocaleState>(new MemoryStorage()))
+                .Use(new LocaleConverterMiddleware(GetActiveLocale, SetActiveLocale, "zh-cn", new LocaleConverter()));
 
 
             await new TestFlow(adapter, (context) =>

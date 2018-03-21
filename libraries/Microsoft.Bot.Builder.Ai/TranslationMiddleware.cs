@@ -13,9 +13,9 @@ namespace Microsoft.Bot.Builder.Ai
 {
     public class TranslationMiddleware : IMiddleware
     {
-        private readonly string[] nativeLanguages;
-        private Translator translator;
-        private readonly string templatesDir;
+        private readonly string[] _nativeLanguages;
+        private readonly Translator _translator;
+        private readonly Dictionary<string,List<string>> _patterns;
         private readonly Func<IBotContext, string> _getUserLanguage;
         private readonly Func<IBotContext, Task<bool>> _setUserLanguage;
 
@@ -26,9 +26,9 @@ namespace Microsoft.Bot.Builder.Ai
         /// <param name="translatorKey"></param>
         public TranslationMiddleware(string[] nativeLanguages, string translatorKey)
         {
-            this.nativeLanguages = nativeLanguages;
-            this.translator = new Translator(translatorKey);
-            templatesDir = "";
+            this._nativeLanguages = nativeLanguages;
+            this._translator = new Translator(translatorKey);
+            _patterns = new Dictionary<string, List<string>>();
         }
 
         /// <summary>
@@ -36,27 +36,27 @@ namespace Microsoft.Bot.Builder.Ai
         /// </summary>
         /// <param name="nativeLanguages">List of languages supported by your app</param>
         /// <param name="translatorKey"></param>
-        /// <param name="templatesDir">Directory containing no translate templates</param>
-        public TranslationMiddleware(string[] nativeLanguages, string translatorKey, string templatesDir)
+        /// <param name="patterns">Dictionary with language as a key and list of patterns as value</param>
+        public TranslationMiddleware(string[] nativeLanguages, string translatorKey, Dictionary<string, List<string>> patterns)
         {
-            this.nativeLanguages = nativeLanguages;
-            this.translator = new Translator(translatorKey);
-            this.templatesDir = templatesDir;
+            this._nativeLanguages = nativeLanguages;
+            this._translator = new Translator(translatorKey);
+            this._patterns = patterns;
         }
-        
+
         /// <summary>
         /// Constructor for developer defined detection of user messages and using templates
         /// </summary>
         /// <param name="nativeLanguages">List of languages supported by your app</param>
         /// <param name="translatorKey"></param>
-        /// <param name="templatesDir">Directory containing no translate templates</param>
+        /// <param name="patterns">Dictionary with language as a key and list of patterns as value</param>
         /// <param name="getUserLanguage">Delegate for getting the user language</param>
         /// <param name="setUserLanguage">Delegate for setting the user language, returns true if the language was changed (implements logic to change language by intercepting the message)</param>
-        public TranslationMiddleware(string[] nativeLanguages, string translatorKey, string templatesDir, Func<IBotContext, string> getUserLanguage, Func<IBotContext, Task<bool>> setUserLanguage)
+        public TranslationMiddleware(string[] nativeLanguages, string translatorKey, Dictionary<string, List<string>> patterns, Func<IBotContext, string> getUserLanguage, Func<IBotContext, Task<bool>> setUserLanguage)
         {
-            this.nativeLanguages = nativeLanguages;
-            this.translator = new Translator(translatorKey);
-            this.templatesDir = templatesDir;
+            this._nativeLanguages = nativeLanguages;
+            this._translator = new Translator(translatorKey);
+            this._patterns = patterns;
             _getUserLanguage = getUserLanguage;
             _setUserLanguage = setUserLanguage;
         }
@@ -65,7 +65,7 @@ namespace Microsoft.Bot.Builder.Ai
         /// Incoming activity
         /// </summary>
         /// <param name="context"></param>
-        /// <param name="token"></param>
+        /// <param name="next"></param>
         /// <returns></returns>       
         public async Task OnProcessRequest(IBotContext context, MiddlewareSet.NextDelegate next)
         {
@@ -87,23 +87,22 @@ namespace Microsoft.Bot.Builder.Ai
                         // determine the language we are using for this conversation
                         var sourceLanguage = "";
                         if (_getUserLanguage == null)
-                            sourceLanguage = await Task.Run(() => translator.Detect(message.Text)); // context.Conversation.Data["Language"]?.ToString() ?? this.nativeLanguages.FirstOrDefault() ?? "en";
+                            sourceLanguage = await Task.Run(() => _translator.Detect(message.Text)); // context.Conversation.Data["Language"]?.ToString() ?? this._nativeLanguages.FirstOrDefault() ?? "en";
                         else
                         {
                             sourceLanguage = _getUserLanguage(context);
-                        }
-                        var templatePath = Path.Combine(new string[] { templatesDir, sourceLanguage + ".template" });
-                        if (File.Exists(templatePath))
+                        } 
+                        if (_patterns.ContainsKey(sourceLanguage) && _patterns[sourceLanguage].Count>0)
                         {
-                            this.translator.SetPostProcessorTemplate(templatePath);
+                            this._translator.SetPostProcessorTemplate(_patterns[sourceLanguage]);
                         }
-                        if (!nativeLanguages.Contains(sourceLanguage))
+                        if (!_nativeLanguages.Contains(sourceLanguage))
                         {
                             var translationContext = new TranslationContext
                             {
                                 SourceText = message.Text,
                                 SourceLanguage = sourceLanguage,
-                                TargetLanguage = (this.nativeLanguages.Contains(sourceLanguage)) ? sourceLanguage : this.nativeLanguages.FirstOrDefault() ?? "en"
+                                TargetLanguage = (this._nativeLanguages.Contains(sourceLanguage)) ? sourceLanguage : this._nativeLanguages.FirstOrDefault() ?? "en"
                             };
                             ((BotContext)context).Set("Microsoft.API.Translation", translationContext);
 
@@ -123,7 +122,9 @@ namespace Microsoft.Bot.Builder.Ai
         /// <summary>
         /// Translate .Text field of a message
         /// </summary>
+        /// <param name="context"/>
         /// <param name="message"></param>
+        /// <param name="sourceLanguage"/>
         /// <param name="targetLanguage"></param>
         /// <returns></returns>
         private async Task TranslateMessageAsync(IBotContext context, IMessageActivity message, string sourceLanguage, string targetLanguage)
@@ -148,7 +149,7 @@ namespace Microsoft.Bot.Builder.Ai
                 }
 
                 string[] lines = text.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None);
-                var translateResult = await this.translator.TranslateArray(lines, sourceLanguage, targetLanguage).ConfigureAwait(false);
+                var translateResult = await this._translator.TranslateArray(lines, sourceLanguage, targetLanguage).ConfigureAwait(false);
                 text = String.Join("\n", translateResult);
                 // restore mentions and urls 
                 i = 0;

@@ -13,6 +13,7 @@ using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Core.Extensions;
+using System.Collections.Generic;
 
 namespace Microsoft.Bot.Samples.Ai.QnA.Controllers
 {
@@ -40,9 +41,12 @@ namespace Microsoft.Bot.Samples.Ai.QnA.Controllers
                     SubscriptionKey = "xxxxxx",
                     KnowledgeBaseId = "xxxxxx"
                 };
+                Dictionary<string, List<string>> patterns = new Dictionary<string, List<string>>();
+                patterns["fr"].Add("mon nom est (.+)");//single pattern for fr language
+                //Check templates forlder for more pattern examples for fr language
                 adapter = new BotFrameworkAdapter(new ConfigurationCredentialProvider(configuration))
                     .Use(new BatchOutputMiddleware())
-                    .Use(new TranslationMiddleware(new string[] { "en" }, "xxxxxx", "templates", GetActiveLanguage, SetActiveLanguage))
+                    .Use(new TranslationMiddleware(new string[] { "en" }, "xxxxxx", patterns, GetActiveLanguage, SetActiveLanguage))
                     .Use(new LocaleConverterMiddleware(GetActiveLocale, SetActiveLocale, "en-us", new LocaleConverter()))
                     .Use(new QnAMakerMiddleware(qnaOptions, _httpClient));
             }
