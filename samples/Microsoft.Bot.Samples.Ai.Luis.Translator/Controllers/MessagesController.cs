@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Samples.Ai.Luis.Translator
 
         /// <summary>
         /// In this sample Bot, a new instance of the Bot is created by the controller 
-        /// on every incoming HTTP reques. The bot is constructed using the credentials
+        /// on every incoming HTTP request. The bot is constructed using the credentials
         /// found in the config file. Note that no credentials are needed if testing
         /// the bot locally using the emulator. 
         /// </summary>
