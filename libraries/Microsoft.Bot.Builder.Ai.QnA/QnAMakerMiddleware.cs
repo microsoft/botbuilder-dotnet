@@ -7,7 +7,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 
-namespace Microsoft.Bot.Builder.Ai
+namespace Microsoft.Bot.Builder.Ai.QnA
 {
     public class QnAMakerMiddleware : IMiddleware
     {

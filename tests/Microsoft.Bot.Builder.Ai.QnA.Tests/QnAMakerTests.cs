@@ -7,7 +7,7 @@ using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Core.Extensions.Tests;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.Bot.Builder.Ai.Tests
+namespace Microsoft.Bot.Builder.Ai.QnA.Tests
 {
     [TestClass]
     public class QnAMakerTests

@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.Cognitive.LUIS;
 
-namespace Microsoft.Bot.Builder.LUIS
+namespace Microsoft.Bot.Builder.Ai.LUIS
 {
     public class LuisModel : ILuisModel
     {

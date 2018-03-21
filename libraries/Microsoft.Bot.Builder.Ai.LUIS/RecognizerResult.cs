@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 
-namespace Microsoft.Bot.Builder.LUIS
+namespace Microsoft.Bot.Builder.Ai.LUIS
 {
     public class RecognizerResult
     {
