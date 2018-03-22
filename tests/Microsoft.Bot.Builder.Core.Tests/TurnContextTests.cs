@@ -111,7 +111,7 @@ namespace Microsoft.Bot.Builder.Core.Tests
         public async Task RequestIsSet()
         {
             TurnContext c = new TurnContext(new SimpleAdapter(), TestMessage.Message());
-            Assert.IsTrue(c.Request.Id == "1234");
+            Assert.IsTrue(c.Activity.Id == "1234");
         }
 
         [TestMethod]
@@ -445,12 +445,12 @@ namespace Microsoft.Bot.Builder.Core.Tests
 
         public async Task MyBotLogic(ITurnContext context)
         {
-            switch (context.Request.AsMessageActivity().Text)
+            switch (context.Activity.AsMessageActivity().Text)
             {
                 case "count":
-                    await context.SendActivity(context.Request.CreateReply("one"));
-                    await context.SendActivity(context.Request.CreateReply("two"));
-                    await context.SendActivity(context.Request.CreateReply("three"));
+                    await context.SendActivity(context.Activity.CreateReply("one"));
+                    await context.SendActivity(context.Activity.CreateReply("two"));
+                    await context.SendActivity(context.Activity.CreateReply("three"));
                     break;
                 case "ignore":
                     break;
@@ -458,14 +458,14 @@ namespace Microsoft.Bot.Builder.Core.Tests
                     if (context.Responded == true)
                         throw new InvalidOperationException("Responded Is True");
 
-                    await context.SendActivity(context.Request.CreateReply("one"));
+                    await context.SendActivity(context.Activity.CreateReply("one"));
 
                     if (context.Responded == false)
                         throw new InvalidOperationException("Responded Is True");
                     break;
                 default:
                     await context.SendActivity(
-                        context.Request.CreateReply($"echo:{context.Request.Text}"));
+                        context.Activity.CreateReply($"echo:{context.Activity.Text}"));
                     break;
             }
         }

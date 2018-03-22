@@ -15,7 +15,7 @@ namespace AlarmBot.Responses
     {
         public static IMessageActivity AlarmsCard(ITurnContext context, IEnumerable<Alarm> alarms, string title, string message)
         {
-            IMessageActivity activity = context.Request.CreateReply(message);
+            IMessageActivity activity = context.Activity.CreateReply(message);
 
             var card = new AdaptiveCard();
             card.Body.Add(new TextBlock() { Text = title, Size = TextSize.Large, Wrap = true, Weight = TextWeight.Bolder });

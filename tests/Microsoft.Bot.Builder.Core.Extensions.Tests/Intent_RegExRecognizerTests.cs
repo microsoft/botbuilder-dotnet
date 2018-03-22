@@ -85,9 +85,9 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
                 {
                     var recognized = context.Services.Get<IRecognizedIntents>();
 
-                    if (new Regex("a").IsMatch(context.Request.Text))
+                    if (new Regex("a").IsMatch(context.Activity.Text))
                         await context.SendActivity("aaaa Intent");
-                    if (new Regex("b").IsMatch(context.Request.Text))
+                    if (new Regex("b").IsMatch(context.Activity.Text))
                         await context.SendActivity("bbbb Intent");
                 })
                 .Test("aaaaaaaaa", "aaaa Intent")
@@ -132,9 +132,9 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
                     if (recognized.TopIntent?.Name == "CancelIntent")
                         await context.SendActivity("You selected CancelIntent");
                     else
-                        await context.SendActivity("Bot received request of type message");
+                        await context.SendActivity("Bot received activity of type message");
                 })
-                .Test("tacos", "Bot received request of type message")
+                .Test("tacos", "Bot received activity of type message")
                 .Test("cancel", "You selected CancelIntent")
                 .StartTest();
         }

@@ -27,7 +27,7 @@ namespace AlarmBot.Responses
         /// <returns>activity ready to submit</returns>
         public static IMessageActivity AlarmCardEditor(ITurnContext context, Alarm alarm, string title, string message, string submitLabel, string cancelLabel)
         {
-            IMessageActivity activity = context.Request.CreateReply();
+            IMessageActivity activity = context.Activity.CreateReply();
             if (alarm.Time == null)
                 alarm.Time = DateTimeOffset.Now + TimeSpan.FromHours(1);
 
@@ -58,7 +58,7 @@ namespace AlarmBot.Responses
         }
         public static async Task ReplyWithConfused(ITurnContext context, dynamic data)
         {
-            await context.SendActivity($"I am sorry, I didn't understand: {context.Request.Text}.");
+            await context.SendActivity($"I am sorry, I didn't understand: {context.Activity.Text}.");
         }
         public static async Task ReplyWithCancelPrompt(ITurnContext context, dynamic data)
         {
