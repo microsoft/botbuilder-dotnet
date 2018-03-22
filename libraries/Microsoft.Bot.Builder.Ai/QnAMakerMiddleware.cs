@@ -23,9 +23,9 @@ namespace Microsoft.Bot.Builder.Ai
 
         public async Task OnProcessRequest(ITurnContext context, MiddlewareSet.NextDelegate next)
         {
-            if (context.Request.Type == ActivityTypes.Message)
+            if (context.Activity.Type == ActivityTypes.Message)
             {
-                var messageActivity = context.Request.AsMessageActivity();
+                var messageActivity = context.Activity.AsMessageActivity();
                 if (!string.IsNullOrEmpty(messageActivity.Text))
                 {
                     var results = await _qnaMaker.GetAnswers(messageActivity.Text.Trim()).ConfigureAwait(false);

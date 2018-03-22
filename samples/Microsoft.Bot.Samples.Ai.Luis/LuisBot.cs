@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Samples.Ai.Luis
 
         public async Task OnReceiveActivity(ITurnContext context)
         {
-            switch (context.Request.Type)
+            switch (context.Activity.Type)
             {
                 case ActivityTypes.Message:
 
@@ -35,9 +35,9 @@ namespace Microsoft.Bot.Samples.Ai.Luis
                     }
                     break;
                 case ActivityTypes.ConversationUpdate:
-                    foreach (var newMember in context.Request.MembersAdded)
+                    foreach (var newMember in context.Activity.MembersAdded)
                     {
-                        if (newMember.Id != context.Request.Recipient.Id)
+                        if (newMember.Id != context.Activity.Recipient.Id)
                         {
                             await context.SendActivity("Hello and welcome to the Luis Sample bot.");
                         }

@@ -50,7 +50,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
                     {
                         var userState = context.GetUserState<TestState>();
                         Assert.IsNotNull(userState, "user state should exist");
-                        switch (context.Request.Text)
+                        switch (context.Activity.Text)
                         {
                             case "set value":
                                 userState.Value = "test";
@@ -77,7 +77,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
                     {
                         var userState = context.GetUserState<TestPocoState>();
                         Assert.IsNotNull(userState, "user state should exist");
-                        switch (context.Request.AsMessageActivity().Text)
+                        switch (context.Activity.AsMessageActivity().Text)
                         {
                             case "set value":
                                 userState.Value = "test";
@@ -104,7 +104,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
                     {
                         var conversationState = context.GetConversationState<TestState>();
                         Assert.IsNotNull(conversationState, "state.conversation should exist");
-                        switch (context.Request.AsMessageActivity().Text)
+                        switch (context.Activity.AsMessageActivity().Text)
                         {
                             case "set value":
                                 conversationState.Value = "test";
@@ -131,7 +131,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
                     {
                         var conversationState = context.GetConversationState<TestPocoState>();
                         Assert.IsNotNull(conversationState, "state.conversation should exist");
-                        switch (context.Request.AsMessageActivity().Text)
+                        switch (context.Activity.AsMessageActivity().Text)
                         {
                             case "set value":
                                 conversationState.Value = "test";
@@ -158,7 +158,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
             await new TestFlow(adapter, async (context) =>
                     {
                         var customState = CustomKeyState.Get(context);
-                        switch (context.Request.AsMessageActivity().Text)
+                        switch (context.Activity.AsMessageActivity().Text)
                         {
                             case "set value":
                                 customState.CustomString = testGuid;
@@ -191,7 +191,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
                     {
                         var conversation = context.GetConversationState<TypedObject>();
                         Assert.IsNotNull(conversation, "conversationstate should exist");
-                        switch (context.Request.AsMessageActivity().Text)
+                        switch (context.Activity.AsMessageActivity().Text)
                         {
                             case "set value":
                                 conversation.Name = "test";

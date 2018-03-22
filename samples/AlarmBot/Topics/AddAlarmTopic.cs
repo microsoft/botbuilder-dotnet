@@ -84,7 +84,7 @@ namespace AlarmBot.Topics
         public async Task<bool> ContinueTopic(AlarmBotContext context)
         {
             // for messages
-            if (context.Request.Type == ActivityTypes.Message)
+            if (context.Activity.Type == ActivityTypes.Message)
             {
                 switch (context.RecognizedIntents.TopIntent?.Name)
                 {
@@ -113,7 +113,7 @@ namespace AlarmBot.Topics
 
         private async Task<bool> ProcessTopicState(AlarmBotContext context)
         {
-            string utterance = (context.Request.AsMessageActivity().Text ?? "").Trim();
+            string utterance = (context.Activity.AsMessageActivity().Text ?? "").Trim();
 
             // we ar eusing TopicState to remember what we last asked
             switch (this.TopicState)

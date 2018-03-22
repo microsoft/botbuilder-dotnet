@@ -169,7 +169,7 @@ namespace Microsoft.Bot.Builder
             if (string.IsNullOrWhiteSpace(activityId))
                 throw new ArgumentNullException(nameof(activityId));
 
-            ConversationReference cr = GetConversationReference(this.Request);
+            ConversationReference cr = GetConversationReference(this.Activity);
             cr.ActivityId = activityId;
 
             async Task ActuallyDeleteStuff()

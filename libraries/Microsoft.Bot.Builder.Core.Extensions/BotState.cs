@@ -85,7 +85,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions
     }
 
     /// <summary>
-    /// Handles persistence of StateT object using Context.Request.Conversation.Id as the key
+    /// Handles persistence of StateT object using Context.Activity.Conversation.Id as the key
     /// </summary>
     /// <typeparam name="StateT"></typeparam>
     public class ConversationState<StateT> : BotState<StateT>
@@ -95,7 +95,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions
 
         public ConversationState(IStorage storage, StateSettings settings = null) :
             base(storage, PropertyName,
-                (context) => $"conversation/{context.Request.ChannelId}/{context.Request.Conversation.Id}",
+                (context) => $"conversation/{context.Activity.ChannelId}/{context.Activity.Conversation.Id}",
                 settings)
         {
         }
@@ -109,7 +109,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions
     }
 
     /// <summary>
-    /// Handles persistence of StateT object using Context.Request.From.Id (aka user id) as the key
+    /// Handles persistence of StateT object using Context.Activity.From.Id (aka user id) as the key
     /// </summary>
     /// <typeparam name="StateT"></typeparam>
     public class UserState<StateT> : BotState<StateT>
@@ -120,7 +120,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions
         public UserState(IStorage storage, StateSettings settings = null) :
             base(storage,
                 PropertyName,
-                (context) => $"user/{context.Request.ChannelId}/{context.Request.From.Id}")
+                (context) => $"user/{context.Activity.ChannelId}/{context.Activity.From.Id}")
         {
         }
 

@@ -65,7 +65,7 @@ namespace Microsoft.Bot.Builder.TemplateManager
             BotAssert.ContextNotNull(context);
 
             // apply template
-            Activity boundActivity = await this.RenderTemplate(context, context.Request?.AsMessageActivity()?.Locale, templateId, data).ConfigureAwait(false);
+            Activity boundActivity = await this.RenderTemplate(context, context.Activity?.AsMessageActivity()?.Locale, templateId, data).ConfigureAwait(false);
             if (boundActivity != null)
             {
                 await context.SendActivity(boundActivity);
