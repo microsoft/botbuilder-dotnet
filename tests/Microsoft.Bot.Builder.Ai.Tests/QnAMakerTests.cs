@@ -68,9 +68,9 @@ namespace Microsoft.Bot.Builder.Ai.Tests
 
             await new TestFlow(adapter, async (context) =>
                 {
-                    if (context.Request.Text == "foo")
+                    if (context.Activity.Text == "foo")
                     {
-                        await context.SendActivity(context.Request.Text);
+                        await context.SendActivity(context.Activity.Text);
                     }                    
                 })
                 .Send("foo")

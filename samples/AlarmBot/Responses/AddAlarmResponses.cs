@@ -26,7 +26,7 @@ namespace AlarmBot.Responses
 
         public static async Task ReplyWithConfused(ITurnContext context)
         {
-            await context.SendActivity($"I am sorry, I didn't understand: {context.Request.AsMessageActivity().Text}.");
+            await context.SendActivity($"I am sorry, I didn't understand: {context.Activity.AsMessageActivity().Text}.");
         }
 
         public static async Task ReplyWithCancelPrompt(ITurnContext context, Alarm alarm)

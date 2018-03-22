@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
                 // Add middleware to catch general exceptions
                 .Use(new CatchExceptionMiddleware<Exception>((context, exception) =>
                 {
-                    context.SendActivity(context.Request.CreateReply(exception.Message));
+                    context.SendActivity(context.Activity.CreateReply(exception.Message));
                     return Task.CompletedTask;
                 }))
                 // Add middleware to catch NullReferenceExceptions before throwing up to the general exception instance
@@ -29,12 +29,12 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
 
             await new TestFlow(adapter, (context) =>
                 {
-                    if (context.Request.AsMessageActivity().Text == "foo")
+                    if (context.Activity.AsMessageActivity().Text == "foo")
                     {
-                        context.SendActivity(context.Request.AsMessageActivity().Text);
+                        context.SendActivity(context.Activity.AsMessageActivity().Text);
                     }
 
-                    if (context.Request.AsMessageActivity().Text == "NotImplementedException")
+                    if (context.Activity.AsMessageActivity().Text == "NotImplementedException")
                     {
                         throw new NotImplementedException("Test");
                     }
@@ -67,12 +67,12 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
 
             await new TestFlow(adapter, (context) =>
                 {
-                    if (context.Request.AsMessageActivity().Text == "foo")
+                    if (context.Activity.AsMessageActivity().Text == "foo")
                     {
-                        context.SendActivity(context.Request.AsMessageActivity().Text);
+                        context.SendActivity(context.Activity.AsMessageActivity().Text);
                     }
 
-                    if (context.Request.AsMessageActivity().Text == "NullReferenceException")
+                    if (context.Activity.AsMessageActivity().Text == "NullReferenceException")
                     {
                         throw new NullReferenceException("Test");
                     }

@@ -67,7 +67,7 @@ namespace Microsoft.Bot.Builder
             BotAssert.ContextNotNull(context);
             
             // Call any registered Middleware Components looking for ReceiveActivity()
-            if (context.Request != null)
+            if (context.Activity != null)
             {
                 await _middlewareSet.ReceiveActivityWithStatus(context, callback).ConfigureAwait(false);
             }

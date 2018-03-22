@@ -46,9 +46,9 @@ namespace AlarmBot.Topics
         /// <returns></returns>
         public async Task<bool> ContinueTopic(ITurnContext context)
         {
-            if (context.Request.Type == ActivityTypes.Message)
+            if (context.Activity.Type == ActivityTypes.Message)
             {
-                this.AlarmTitle = context.Request.AsMessageActivity().Text.Trim();
+                this.AlarmTitle = context.Activity.AsMessageActivity().Text.Trim();
                 return await this.FindAlarm(context);
             }
             return true;
