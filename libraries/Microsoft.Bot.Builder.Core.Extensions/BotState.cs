@@ -55,7 +55,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions
             var state = items.Get<StateT>(key);
             if (state == null)
                 state = new StateT();
-            context.Set(this._propertyName, state);
+            context.Services.Add(this._propertyName, state);
             return items;
         }
 
@@ -63,7 +63,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions
         {
             StoreItems changes = new StoreItems();
 
-            var state = context.Get<StateT>(this._propertyName);
+            var state = context.Services.Get<StateT>(this._propertyName);
             if (state == null)
                 state = new StateT();
             var key = _keyDelegate(context);
@@ -105,7 +105,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public static StateT Get(ITurnContext context) { return context.Get<StateT>(PropertyName); }
+        public static StateT Get(ITurnContext context) { return context.Services.Get<StateT>(PropertyName); }
     }
 
     /// <summary>
@@ -129,7 +129,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public static StateT Get(ITurnContext context) { return context.Get<StateT>(PropertyName); }
+        public static StateT Get(ITurnContext context) { return context.Services.Get<StateT>(PropertyName); }
     }
 
     public static class StateContextExtensions
