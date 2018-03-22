@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Builder
 
         public BotAdapter Adapter => this._innerContext.Adapter;
 
-        public Activity Request => this._innerContext.Request;
+        public Activity Activity => this._innerContext.Activity;
 
         public bool Responded { get => _innerContext.Responded; set => _innerContext.Responded = value; }
         

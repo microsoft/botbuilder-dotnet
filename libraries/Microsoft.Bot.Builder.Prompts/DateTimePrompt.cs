@@ -46,11 +46,11 @@
 //        {
 
 //            BotAssert.ContextNotNull(context);
-//            BotAssert.ActivityNotNull(context.Request);
+//            BotAssert.ActivityNotNull(context.Activity);
 //            if (context.Request.Type != ActivityTypes.Message)
 //                throw new InvalidOperationException("No Message to Recognize");
 
-//            IMessageActivity message = context.Request.AsMessageActivity();
+//            IMessageActivity message = context.Activity.AsMessageActivity();
 //            var results = _model.Parse(message.Text);
 //            if (results.Any())
 //            {

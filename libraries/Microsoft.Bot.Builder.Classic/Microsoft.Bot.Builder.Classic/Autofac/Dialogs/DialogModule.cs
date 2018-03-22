@@ -67,7 +67,7 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs.Internals
         {
             var inner = scope.BeginLifetimeScope(LifetimeScopeTag);
             inner.Resolve<Microsoft.Bot.Builder.ITurnContext>(TypedParameter.From(context));
-            inner.Resolve<IActivity>(TypedParameter.From((IActivity)context.Request));
+            inner.Resolve<IActivity>(TypedParameter.From((IActivity)context.Activity));
             return inner;
         }
 

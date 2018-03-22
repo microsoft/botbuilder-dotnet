@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Builder
         /// <summary>
         /// Incoming request
         /// </summary>
-        Activity Request { get; }
+        Activity Activity { get; }
 
         /// <summary>
         /// 

@@ -56,7 +56,7 @@ namespace Microsoft.Bot.Builder
 
         public BotAdapter Adapter => _adapter;
 
-        public Activity Request => _request;
+        public Activity Activity => _request;
 
         /// <summary>
         /// If true at least one response has been sent for the current turn of conversation.
@@ -166,7 +166,7 @@ namespace Microsoft.Bot.Builder
             if (string.IsNullOrWhiteSpace(activityId))
                 throw new ArgumentNullException(nameof(activityId));
 
-            ConversationReference cr = GetConversationReference(this.Request);
+            ConversationReference cr = GetConversationReference(this.Activity);
             cr.ActivityId = activityId;
 
             async Task ActuallyDeleteStuff()
