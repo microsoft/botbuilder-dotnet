@@ -46,7 +46,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public static IRecognizedIntents Get(ITurnContext context) { return context.Get<IRecognizedIntents>(); }
+        public static IRecognizedIntents Get(ITurnContext context) { return context.Services.Get<IRecognizedIntents>(); }
 
         public async Task OnProcessRequest(ITurnContext context, MiddlewareSet.NextDelegate next)
         {
@@ -63,7 +63,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions
                     result.TopIntent = topIntent;
                 }
             }
-            context.Set((IRecognizedIntents)result);
+            context.Services.Add((IRecognizedIntents)result);
             await next().ConfigureAwait(false);
         }
 

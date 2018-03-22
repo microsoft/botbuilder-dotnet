@@ -38,7 +38,7 @@ namespace AlarmBot.Models
         /// <summary>
         /// AlarmBot recognized Intents for the incoming activity
         /// </summary>
-        public IRecognizedIntents RecognizedIntents { get { return this.Get<IRecognizedIntents>(); } }
+        public IRecognizedIntents RecognizedIntents { get { return this.Services.Get<IRecognizedIntents>(); } }
 
         public IList<DateTime> GetDateTimes()
         {

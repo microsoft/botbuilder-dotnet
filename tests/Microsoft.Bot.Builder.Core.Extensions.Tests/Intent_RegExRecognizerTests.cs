@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
 
             await new TestFlow(adapter, async (context) =>
                 {
-                    var recognized = context.Get<IRecognizedIntents>();
+                    var recognized = context.Services.Get<IRecognizedIntents>();
                     if (recognized.TopIntent.Name == "HelpIntent")
                         await context.SendActivity("You selected HelpIntent");
                 })
@@ -83,7 +83,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
 
             await new TestFlow(adapter, async (context) =>
                 {
-                    var recognized = context.Get<IRecognizedIntents>();
+                    var recognized = context.Services.Get<IRecognizedIntents>();
 
                     if (new Regex("a").IsMatch(context.Activity.Text))
                         await context.SendActivity("aaaa Intent");
@@ -107,7 +107,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
                 .Use(helpRecognizer);
             await new TestFlow(adapter, async (context) =>
                 {
-                    var recognized = context.Get<IRecognizedIntents>();
+                    var recognized = context.Services.Get<IRecognizedIntents>();
                     if (recognized.TopIntent.Name == "CancelIntent")
                         await context.SendActivity("You selected CancelIntent");
                 })
@@ -128,7 +128,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
 
             await new TestFlow(adapter, async (context) =>
                 {
-                    var recognized = context.Get<IRecognizedIntents>();
+                    var recognized = context.Services.Get<IRecognizedIntents>();
                     if (recognized.TopIntent?.Name == "CancelIntent")
                         await context.SendActivity("You selected CancelIntent");
                     else
@@ -153,7 +153,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
                 .Use(helpRecognizer);
             await new TestFlow(adapter, async (context) =>
                 {
-                    var recognized = context.Get<IRecognizedIntents>();
+                    var recognized = context.Services.Get<IRecognizedIntents>();
                     if (recognized.TopIntent.Name == "HelpIntent")
                         await context.SendActivity("You selected HelpIntent");
                     else if (recognized.TopIntent.Name == "CancelIntent")

@@ -16,6 +16,8 @@ namespace Microsoft.Bot.Builder
     {
         BotAdapter Adapter { get; }
 
+        ITurnContextServiceCollection Services { get; }
+
         /// <summary>
         /// Incoming request
         /// </summary>
@@ -33,59 +35,8 @@ namespace Microsoft.Bot.Builder
         Task<ResourceResponse> UpdateActivity(IActivity activity);
         Task DeleteActivity(string activityId);
 
-        /// <summary>
-        /// Set the value associated with a key.
-        /// </summary>
-        /// <param name="key">The key.</param>
-        /// <param name="value">The value to set.</param>
-        void Set(string key, object value);
-
-        /// <summary>
-        /// Get a value by a key.
-        /// </summary>
-        /// <param name="key">The key of the value to get.</param>
-        /// <returns>The value.</returns>
-        object Get(string key);
-
-        /// <summary>
-        /// returns 'true' if Set has been called for a key
-        /// </summary>        
-        /// <param name="key">The key to lookup in the cache</param>
-        bool Has(string key);
-
         ITurnContext OnSendActivities(SendActivitiesHandler handler);
         ITurnContext OnUpdateActivity(UpdateActivityHandler handler);
         ITurnContext OnDeleteActivity(DeleteActivityHandler handler);
-    }
-
-    public static partial class TurnContextExtension
-    {
-        /// <summary>
-        /// Set a value of a specific type on a context object.
-        /// </summary>
-        /// <typeparam name="ObjectT">The value's type.</typeparam>
-        /// <param name="context">The context object.</param>
-        /// <param name="value">The value.</param>
-        /// <remarks>Uses the value type's name as the key.</remarks>
-        public static void Set<ObjectT>(this ITurnContext context, ObjectT value)
-        {
-            var key = $"{typeof(ObjectT).Namespace}.{typeof(ObjectT).Name}";
-            context.Set(key, value);
-        }
-
-        /// <summary>
-        /// Get a value of a specific type from a context object.
-        /// </summary>
-        /// <typeparam name="ObjectT">The value's type.</typeparam>
-        /// <param name="context">The context object.</param>
-        /// <param name="key">An optional lookup key. The default is the value type's name.</param>
-        /// <returns>The value.</returns>
-        public static ObjectT Get<ObjectT>(this ITurnContext context, string key = null)
-        {
-            if (key == null)
-                key = $"{typeof(ObjectT).Namespace}.{typeof(ObjectT).Name}";
-            return (ObjectT)context.Get(key);
-        }
-
     }
 }
