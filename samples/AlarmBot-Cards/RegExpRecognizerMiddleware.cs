@@ -198,7 +198,7 @@ namespace AlarmBot
                         {
                             GroupName = groupName,
                             Score = 1.0,
-                            ["Value"] = match.Groups[i].Value
+                            Value = match.Groups[i].Value
                         };
                         intent.Entities.Add(newEntity);
                     }

@@ -7,6 +7,7 @@ using AlarmBot.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Bot.Builder.Core.Extensions;
+using Microsoft.Bot.Builder.Core.State;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.Configuration;
@@ -42,11 +43,18 @@ namespace AlarmBot
                     {
                         await context.SendActivity("Sorry, it looks like something went wrong!");
                     }));
+
+                // Add and configure state management middleware
+                middleware.Add(new StateManagementMiddleware()
+                                .UseDefaultStorageProvider(new MemoryStateStorageProvider())
+                                .UseConversationState()
+                                .UseUserState()
+                                .AutoLoadAll()
+                                .AutoSaveAll());
+
                 // Add middleware to send periodic typing activities until the bot responds. The initial
                 // delay before sending a typing activity and the frequency of additional activities can also be specified
                 middleware.Add(new ShowTypingMiddleware());
-                middleware.Add(new UserState<UserData>(new MemoryStorage()));
-                middleware.Add(new ConversationState<ConversationData>(new MemoryStorage()));
                 middleware.Add(new RegExpRecognizerMiddleware()
                                 .AddIntent("showAlarms", new Regex("show alarm(?:s)*(.*)", RegexOptions.IgnoreCase))
                                 .AddIntent("addAlarm", new Regex("add(?: an)* alarm(.*)", RegexOptions.IgnoreCase))
@@ -57,6 +65,8 @@ namespace AlarmBot
                                 .AddIntent("confirmNo", new Regex("(no|nope|^n$)", RegexOptions.IgnoreCase)));
                             
             });
+
+            services.AddSingleton<IStateStorageProvider>(new MemoryStateStorageProvider());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

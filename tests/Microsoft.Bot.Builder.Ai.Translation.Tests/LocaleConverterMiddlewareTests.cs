@@ -3,6 +3,7 @@
 
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Core.Extensions;
+using Microsoft.Bot.Builder.Core.State;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting; 
 using System.Threading.Tasks;
@@ -22,7 +23,9 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
         public async Task LocaleConverterMiddleware_ConvertFromFrench()
         {
             TestAdapter adapter = new TestAdapter()
-             .Use(new UserState<LocaleState>(new MemoryStorage()))
+             .Use(new StateManagementMiddleware()
+                    .UseDefaultStorageProvider(new MemoryStateStorageProvider())
+                    .UseUserState())
              .Use(new LocaleConverterMiddleware(GetActiveLocale, SetActiveLocale, "en-us", LocaleConverter.Converter));
 
 
@@ -47,7 +50,9 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
         public async Task LocaleConverterMiddleware_ConvertToChinese()
         {
             TestAdapter adapter = new TestAdapter()
-                .Use(new UserState<LocaleState>(new MemoryStorage()))
+                .Use(new StateManagementMiddleware()
+                    .UseDefaultStorageProvider(new MemoryStateStorageProvider())
+                    .UseUserState())
                 .Use(new LocaleConverterMiddleware(GetActiveLocale, SetActiveLocale, "zh-cn", LocaleConverter.Converter));
 
 
@@ -66,7 +71,14 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
                 .StartTest();
         }
 
-        private void SetLocale(ITurnContext context, string locale) => context.GetUserState<LocaleState>().Locale  = locale;
+        private async Task SetLocale(IStateManager stateManager, string locale)
+        {
+            var localeState = await stateManager.GetOrCreate<LocaleState>();
+            localeState.Locale = locale;
+
+            stateManager.Set(localeState);
+            await stateManager.SaveChanges();
+        }
 
         protected async Task<bool> SetActiveLocale(ITurnContext context)
         {
@@ -82,7 +94,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
                 var newLocale = messageActivity.Text.ToLower().Replace("set my locale to", "").Trim(); //extracted by the user using user state 
                 if (!string.IsNullOrWhiteSpace(newLocale))
                 {
-                    SetLocale(context, newLocale);
+                    await SetLocale(context.UserState(), newLocale);
                     await context.SendActivity($@"Changing your locale to {newLocale}");
                 }
                 else
@@ -95,12 +107,14 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
 
             return false;
         }
-        protected string GetActiveLocale(ITurnContext context)
+        protected async Task<string> GetActiveLocale(ITurnContext context)
         {
+            var localeState = await context.UserState().Get<LocaleState>();
+
             if (context.Activity.Type == ActivityTypes.Message
-                && !string.IsNullOrEmpty(context.GetUserState<LocaleState>().Locale))
+                && !string.IsNullOrEmpty(localeState?.Locale))
             {
-                return context.GetUserState<LocaleState>().Locale;
+                return localeState.Locale;
             }
 
             return "en-us";

@@ -8,6 +8,7 @@ using AlarmBot.Models;
 using AlarmBot.Responses;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Core.Extensions;
+using Microsoft.Bot.Builder.Core.State;
 
 namespace AlarmBot.Topics
 {
@@ -54,7 +55,7 @@ namespace AlarmBot.Topics
 
         public static async Task ShowAlarms(ITurnContext context)
         {
-            var userState = context.GetUserState<UserData>();
+            var userState = await context.UserState().GetOrCreate<AlarmUserState>();
 
             if (userState.Alarms == null)
             {

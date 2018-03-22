@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AlarmBot.Models;
 using AlarmBot.Responses;
+using Microsoft.Bot.Builder.Core.State;
 using Microsoft.Bot.Schema;
 
 namespace AlarmBot.Topics
@@ -64,30 +65,49 @@ namespace AlarmBot.Topics
             switch (context.Activity.Type)
             {
                 case ActivityTypes.Message:
+                    var conversationStateManager = context.ConversationState();
+                    var conversationData = await conversationStateManager.GetOrCreate<AlarmTopicState>();
+                    var result = true;
+
                     switch (context.RecognizedIntents.TopIntent?.Name)
                     {
                         case "addAlarm":
                             // switch to addAlarm topic
-                            context.ConversationState.ActiveTopic = new AddAlarmTopic();
-                            return await context.ConversationState.ActiveTopic.StartTopic(context);                            
+                            conversationData.ActiveTopic = new AddAlarmTopic();
+                            result = await conversationData.ActiveTopic.StartTopic(context);
+
+                            break;
+
                         case "showAlarms":
                             // switch to show alarms topic
-                            context.ConversationState.ActiveTopic = new ShowAlarmsTopic();
-                            return await context.ConversationState.ActiveTopic.StartTopic(context);                            
+                            conversationData.ActiveTopic = new ShowAlarmsTopic();
+                            result = await conversationData.ActiveTopic.StartTopic(context);
+
+                            break;
+
                         case "deleteAlarm":
                             // switch to delete alarm topic
-                            context.ConversationState.ActiveTopic = new DeleteAlarmTopic();
-                            return await context.ConversationState.ActiveTopic.StartTopic(context);                            
+                            conversationData.ActiveTopic = new DeleteAlarmTopic();
+                            result = await conversationData.ActiveTopic.StartTopic(context);
+
+                            break;
+
                         case "help":
                             // show help
                             await DefaultResponses.ReplyWithHelp(context);
-                            return true;
+
+                            break;
 
                         default:
                             // show our confusion
                             await DefaultResponses.ReplyWithConfused(context);
-                            return true;
-                    }                    
+
+                            break;
+                    }
+
+                    conversationStateManager.Set(conversationData);
+
+                    return result;
                 default:
                     break;
             }

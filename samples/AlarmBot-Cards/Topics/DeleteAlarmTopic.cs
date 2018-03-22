@@ -9,6 +9,7 @@ using AlarmBot.Models;
 using AlarmBot.Responses;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Core.Extensions;
+using Microsoft.Bot.Builder.Core.State;
 using Microsoft.Bot.Schema;
 
 namespace AlarmBot.Topics
@@ -34,7 +35,7 @@ namespace AlarmBot.Topics
         {
             var recognizedIntents = context.Services.Get<IRecognizedIntents>();
             this.AlarmTitle = recognizedIntents.TopIntent?.Entities.Where(entity => entity.GroupName == "AlarmTitle")
-                                .Select(entity => entity.ValueAs<string>()).FirstOrDefault();
+                                .Select(entity => (string)entity.Value).FirstOrDefault();
 
             return FindAlarm(context);
         }
@@ -66,7 +67,8 @@ namespace AlarmBot.Topics
 
         public async Task<bool> FindAlarm(ITurnContext context)
         {
-            var userState = context.GetUserState<UserData>();
+            var userStateManager = context.UserState();
+            var userState = await userStateManager.GetOrCreate<AlarmUserState>();
 
             if (userState.Alarms == null)
             {
@@ -91,6 +93,7 @@ namespace AlarmBot.Topics
                         // Delete selected alarm and end topic
                         var alarm = userState.Alarms.Skip(index).First();
                         userState.Alarms.Remove(alarm);
+                        userStateManager.Set(userState);
                         await DeleteAlarmTopicResponses.ReplyWithDeletedAlarm(context, alarm);
                         return false; // cancel topic
                     }
@@ -110,6 +113,7 @@ namespace AlarmBot.Topics
                         // Delete selected alarm and end topic
                         var alarm = choices.First();
                         userState.Alarms.Remove(alarm);
+                        userStateManager.Set(userState);
                         await DeleteAlarmTopicResponses.ReplyWithDeletedAlarm(context, alarm);
                         return false; // cancel topic
                     }

@@ -49,6 +49,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Microsoft.Bot.Builder.Core.Extensions\Microsoft.Bot.Builder.Core.Extensions.csproj" />
+    <ProjectReference Include="..\Microsoft.Bot.Builder.Core.State\Microsoft.Bot.Builder.Core.State.csproj" />
     <ProjectReference Include="..\Microsoft.Bot.Builder.Core\Microsoft.Bot.Builder.Core.csproj" />
     <ProjectReference Include="..\Microsoft.Bot.Connector\Microsoft.Bot.Connector.csproj" />
   </ItemGroup>

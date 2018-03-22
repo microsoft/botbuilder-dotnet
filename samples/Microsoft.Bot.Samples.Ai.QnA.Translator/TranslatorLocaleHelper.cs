@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 using Microsoft.Bot.Builder.Core.Extensions;
+using Microsoft.Bot.Builder.Core.State;
 
 namespace Microsoft.Bot.Samples.Ai.QnA.Translator
 {
@@ -17,8 +18,23 @@ namespace Microsoft.Bot.Samples.Ai.QnA.Translator
         private static readonly string[] _supportedLocales = new string[] { "fr-fr", "en-us" }; //Define supported locales
         private static string currentLanguage = null;
         private static string currentLocale = null;
-        public static void SetLanguage(ITurnContext context, string language) => context.GetConversationState<CurrentUserState>().Language = language;
-        public static void SetLocale(ITurnContext context, string locale) => context.GetConversationState<CurrentUserState>().Locale = locale;
+        public static async Task SetLanguage(IConversationStateManager conversationState, string language)
+        {
+            var currentUserState = await conversationState.Get<CurrentUserState>();
+            currentUserState.Language = language;
+
+            conversationState.Set(currentUserState);
+            await conversationState.SaveChanges();
+        }
+
+        public static async Task SetLocale(IConversationStateManager conversationState, string locale)
+        {
+            var currentUserState = await conversationState.GetOrCreate<CurrentUserState>();
+            currentUserState.Locale = locale;
+
+            conversationState.Set(currentUserState);
+            await conversationState.SaveChanges();
+        }
         public static bool IsSupportedLanguage(string language) => _supportedLanguages.Contains(language);
         public static async Task<bool> CheckUserChangedLanguage(ITurnContext context)
         {
@@ -37,7 +53,7 @@ namespace Microsoft.Bot.Samples.Ai.QnA.Translator
                     if (!string.IsNullOrWhiteSpace(newLang)
                             && IsSupportedLanguage(newLang))
                     {
-                        SetLanguage(context, newLang);
+                        await SetLanguage(context.ConversationState(), newLang);
                         await context.SendActivity($@"Changing your language to {newLang}");
                     }
                     else
@@ -51,20 +67,23 @@ namespace Microsoft.Bot.Samples.Ai.QnA.Translator
 
             return false;
         }
-        public static string GetActiveLanguage(ITurnContext context)
+        public static async Task<string> GetActiveLanguage(ITurnContext context)
         {
+            var conversationState = context.ConversationState();
+            var currentUserState = await conversationState.Get<CurrentUserState>();
+
             if (currentLanguage != null)
             {
                 //user has specified a different language so update the bot state
-                if (context.GetConversationState<CurrentUserState>() != null && currentLanguage != context.GetConversationState<CurrentUserState>().Language)
+                if (currentUserState != null && currentLanguage != currentUserState.Language)
                 {
-                    SetLanguage(context, currentLanguage);
+                    await SetLanguage(conversationState, currentLanguage);
                 }
             }
             if (context.Activity.Type == ActivityTypes.Message
-                && context.GetConversationState<CurrentUserState>() != null && context.GetConversationState<CurrentUserState>().Language != null)
+                && currentUserState != null && currentUserState.Language != null)
             {
-                return context.GetConversationState<CurrentUserState>().Language;
+                return currentUserState.Language;
             }
 
             return "en";
@@ -86,7 +105,7 @@ namespace Microsoft.Bot.Samples.Ai.QnA.Translator
                     if (!string.IsNullOrWhiteSpace(newLocale)
                             && IsSupportedLanguage(newLocale))
                     {
-                        SetLocale(context, newLocale);
+                        await SetLocale(context.ConversationState(), newLocale);
                         await context.SendActivity($@"Changing your language to {newLocale}");
                     }
                     else
@@ -100,21 +119,24 @@ namespace Microsoft.Bot.Samples.Ai.QnA.Translator
 
             return false;
         }
-        public static string GetActiveLocale(ITurnContext context)
+        public static async Task<string> GetActiveLocale(ITurnContext context)
         {
+            var conversationState = context.ConversationState();
+            var currentUserState = await conversationState.Get<CurrentUserState>();
+
             if (currentLocale != null)
             {
                 //the user has specified a different locale so update the bot state
-                if (context.GetConversationState<CurrentUserState>() != null
-                    && currentLocale != context.GetConversationState<CurrentUserState>().Locale)
+                if (currentUserState != null
+                    && currentLocale != currentUserState.Locale)
                 {
-                    SetLocale(context, currentLocale);
+                    await SetLocale(conversationState, currentLocale);
                 }
             }
             if (context.Activity.Type == ActivityTypes.Message
-                && context.GetConversationState<CurrentUserState>() != null && context.GetConversationState<CurrentUserState>().Locale != null)
+                && currentUserState != null && currentUserState.Locale != null)
             {
-                return context.GetConversationState<CurrentUserState>().Locale;
+                return currentUserState.Locale;
             }
 
             return "en-us";

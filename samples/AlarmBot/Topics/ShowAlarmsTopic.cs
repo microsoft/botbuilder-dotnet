@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using AlarmBot.Models;
 using AlarmBot.Responses;
 using Microsoft.Bot.Builder;
+using Microsoft.Bot.Builder.Core.State;
 
 namespace AlarmBot.Topics
 {
@@ -46,7 +47,7 @@ namespace AlarmBot.Topics
 
         public static async Task ShowAlarms(AlarmBotContext context)
         {
-            await ShowAlarmsResponses.ReplyWithShowAlarms(context, context.UserState.Alarms);            
+            await ShowAlarmsResponses.ReplyWithShowAlarms(context, (await context.UserState().GetOrCreate<AlarmUserState>()).Alarms);            
         }
 
     }

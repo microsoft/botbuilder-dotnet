@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         private readonly string[] _nativeLanguages;
         private readonly Translator _translator;
         private readonly Dictionary<string, List<string>> _patterns;
-        private readonly Func<ITurnContext, string> _getUserLanguage;
+        private readonly Func<ITurnContext, Task<string>> _getUserLanguage;
         private readonly Func<ITurnContext, Task<bool>> _isUserLanguageChanged;
         private readonly bool _toUserLanguage;
 
@@ -56,7 +56,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         /// <param name="patterns">Dictionary with language as a key and list of patterns as value</param>
         /// <param name="getUserLanguage">Delegate for getting the user language</param>
         /// <param name="isUserLanguageChanged">Delegate for checking if  the user language is changed, returns true if the language was changed (implements logic to change language by intercepting the message)</param>
-        public TranslationMiddleware(string[] nativeLanguages, string translatorKey, Dictionary<string, List<string>> patterns, Func<ITurnContext, string> getUserLanguage, Func<ITurnContext, Task<bool>> isUserLanguageChanged, bool toUserLanguage = false) : this(nativeLanguages, translatorKey, patterns, toUserLanguage)
+        public TranslationMiddleware(string[] nativeLanguages, string translatorKey, Dictionary<string, List<string>> patterns, Func<ITurnContext, Task<string>> getUserLanguage, Func<ITurnContext, Task<bool>> isUserLanguageChanged, bool toUserLanguage = false) : this(nativeLanguages, translatorKey, patterns, toUserLanguage)
         {
             this._getUserLanguage = getUserLanguage ?? throw new ArgumentNullException(nameof(getUserLanguage));
             this._isUserLanguageChanged = isUserLanguageChanged ?? throw new ArgumentNullException(nameof(isUserLanguageChanged));

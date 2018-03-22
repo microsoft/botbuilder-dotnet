@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Bot.Builder.BotFramework;
 using Microsoft.Bot.Builder.Core.Extensions;
+using Microsoft.Bot.Builder.Core.State;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -48,7 +49,9 @@ namespace Microsoft.Bot.Samples.Ai.QnA.Translator
                 var middleware = options.Middleware;
                 Dictionary<string, List<string>> patterns = new Dictionary<string, List<string>>();
                 patterns.Add("fr", new List<string> { "mon nom est (.+)" });//single pattern for fr language
-                middleware.Add(new ConversationState<CurrentUserState>(new MemoryStorage()));
+                middleware.Add(new StateManagementMiddleware()
+                             .UseDefaultStorageProvider(new MemoryStateStorageProvider())
+                             .UseConversationState());
                 middleware.Add(new TranslationMiddleware(new string[] { "en" }, "<your translator key here>", patterns, TranslatorLocaleHelper.GetActiveLanguage, TranslatorLocaleHelper.CheckUserChangedLanguage,true));
                 middleware.Add(new LocaleConverterMiddleware(TranslatorLocaleHelper.GetActiveLocale, TranslatorLocaleHelper.CheckUserChangedLocale, "en-us", LocaleConverter.Converter));
                 middleware.Add(new QnAMakerMiddleware(qnaOptions));
