@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Builder
     public class TurnContext : ITurnContext
     {
         private readonly BotAdapter _adapter;
-        private readonly Activity _request;
+        private readonly Activity _activity;
         private bool _responded = false;
 
         private readonly IList<SendActivitiesHandler> _onSendActivities = new List<SendActivitiesHandler>();
@@ -21,10 +21,10 @@ namespace Microsoft.Bot.Builder
 
         private readonly TurnContextServiceCollection _services = new TurnContextServiceCollection();
 
-        public TurnContext(BotAdapter adapter, Activity request)
+        public TurnContext(BotAdapter adapter, Activity activity)
         {
             _adapter = adapter ?? throw new ArgumentNullException(nameof(adapter));
-            _request = request ?? throw new ArgumentNullException(nameof(request));
+            _activity = activity ?? throw new ArgumentNullException(nameof(activity));
         }
 
         public ITurnContext OnSendActivities(SendActivitiesHandler handler)
@@ -58,7 +58,7 @@ namespace Microsoft.Bot.Builder
 
         public ITurnContextServiceCollection Services => _services;
 
-        public Activity Request => _request;
+        public Activity Activity => _activity;
 
 
         /// <summary>
@@ -109,7 +109,7 @@ namespace Microsoft.Bot.Builder
         {
             // Bind the relevant Conversation Reference properties, such as URLs and 
             // ChannelId's, to the activities we're about to send. 
-            ConversationReference cr = GetConversationReference(this._request);
+            ConversationReference cr = GetConversationReference(this._activity);
             foreach (Activity a in activities)
             {                
                 ApplyConversationReference(a, cr);
