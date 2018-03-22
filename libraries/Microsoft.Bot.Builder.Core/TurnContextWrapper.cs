@@ -54,18 +54,6 @@ namespace Microsoft.Bot.Builder
             return _innerContext.DeleteActivity(activityId);
         }
 
-        //public IBotContext Reply(string text, string speak = null)
-        //{
-        //    this._innerContext.Reply(text, speak);
-        //    return this;
-        //}
-
-        //public IBotContext Reply(IActivity activity)
-        //{
-        //    this._innerContext.Reply(activity);
-        //    return this;
-        //}
-
         public ITurnContext OnSendActivities(SendActivitiesHandler handler)
         {
             this._innerContext.OnSendActivities(handler);
