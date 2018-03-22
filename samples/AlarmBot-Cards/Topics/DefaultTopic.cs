@@ -7,6 +7,7 @@ using AlarmBot.Models;
 using AlarmBot.Responses;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Core.Extensions;
+using Microsoft.Bot.Builder.Core.State;
 using Microsoft.Bot.Schema;
 
 namespace AlarmBot.Topics
@@ -62,7 +63,7 @@ namespace AlarmBot.Topics
         /// <returns></returns>
         public async Task<bool> ContinueTopic(ITurnContext context)
         {
-            var conversation = ConversationState<ConversationData>.Get(context);         
+            var conversation = await context.ConversationState().GetOrCreate<AlarmTopicState>();
             var recognizedIntents = context.Services.Get<IRecognizedIntents>();
             switch (context.Activity.Type)
             {

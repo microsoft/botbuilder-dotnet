@@ -7,6 +7,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Core.Extensions;
 using Microsoft.Bot.Builder.Core.Extensions.Tests;
+using Microsoft.Bot.Builder.Core.State;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Bot.Builder.Azure.Tests
@@ -16,7 +17,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
     [TestCategory("Storage - Azure Tables")]
     public class TableStorageTests : StorageBaseTests
     {
-        private IStorage storage;
+        private IStateStorageProvider stateStore;
 
         public TestContext TestContext { get; set; }
 
@@ -53,16 +54,16 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             if (hasStorageEmulator.Value)
             {
-                storage = new AzureTableStorage("UseDevelopmentStorage=true", TestContext.TestName.Replace("_","") + TestContext.GetHashCode().ToString("x"));
+                stateStore = new AzureTableStorageStateStorageProvider("UseDevelopmentStorage=true", TestContext.TestName.Replace("_","") + TestContext.GetHashCode().ToString("x"));
             }
         }
 
         [TestCleanup]
         public async Task TableStorage_TestCleanUp()
         {
-            if (storage != null)
+            if (stateStore != null)
             {
-                AzureTableStorage store = (AzureTableStorage)storage;
+                AzureTableStorageStateStorageProvider store = (AzureTableStorageStateStorageProvider)stateStore;
                 await store.Table.DeleteIfExistsAsync();
             }
         }
@@ -70,7 +71,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         public bool CheckStorageEmulator()
         {
             if (!hasStorageEmulator.Value)
-                Debug.WriteLine(noEmulatorMessage);
+                Assert.Inconclusive(noEmulatorMessage);
             if (Debugger.IsAttached)
                 Assert.IsTrue(hasStorageEmulator.Value, noEmulatorMessage);
             return hasStorageEmulator.Value;
@@ -80,8 +81,9 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestMethod]
         public async Task TableStorage_CreateObjectTest()
         {
+
             if (CheckStorageEmulator())
-                await base._createObjectTest(storage);
+                await base._createObjectTest(stateStore);
         }
 
         // NOTE: THESE TESTS REQUIRE THAT THE AZURE STORAGE EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
@@ -89,7 +91,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         public async Task TableStorage_ReadUnknownTest()
         {
             if (CheckStorageEmulator())
-                await base._readUnknownTest(storage);
+                await base._readUnknownTest(stateStore);
         }
 
         // NOTE: THESE TESTS REQUIRE THAT THE AZURE STORAGE EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
@@ -97,7 +99,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         public async Task TableStorage_UpdateObjectTest()
         {
             if (CheckStorageEmulator())
-                await base._updateObjectTest(storage);
+                await base._updateObjectTest(stateStore);
         }
 
         // NOTE: THESE TESTS REQUIRE THAT THE AZURE STORAGE EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
@@ -105,7 +107,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         public async Task TableStorage_DeleteObjectTest()
         {
             if (CheckStorageEmulator())
-                await base._deleteObjectTest(storage);
+                await base._deleteObjectTest(stateStore);
         }
 
         // NOTE: THESE TESTS REQUIRE THAT THE AZURE STORAGE EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
@@ -113,14 +115,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         public async Task TableStorage_HandleCrazyKeys()
         {
             if (CheckStorageEmulator())
-                await base._handleCrazyKeys(storage);
-        }
-
-        [TestMethod]
-        public async Task TableStorage_TypedSerialization()
-        {
-            if (CheckStorageEmulator())
-                await base._typedSerialization(this.storage);
+                await base._handleCrazyKeys(stateStore);
         }
     }
 }

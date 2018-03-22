@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using AlarmBot.Models;
 using AlarmBot.Responses;
 using Microsoft.Bot.Builder;
+using Microsoft.Bot.Builder.Core.State;
 using Microsoft.Bot.Schema;
 
 namespace AlarmBot.Topics
@@ -61,12 +62,12 @@ namespace AlarmBot.Topics
         public Task<bool> StartTopic(AlarmBotContext context)
         {
             var times = context.RecognizedIntents.TopIntent?.Entities.Where(entity => entity.GroupName == "AlarmTime")
-                    .Select(entity => DateTimeOffset.Parse(entity.ValueAs<string>()));
+                    .Select(entity => DateTimeOffset.Parse((string)entity.Value));
             this.Alarm = new Alarm()
             {
                 // initialize from intent entities
                 Title = context.RecognizedIntents.TopIntent?.Entities.Where(entity => entity.GroupName == "AlarmTitle")
-                    .Select(entity => entity.ValueAs<string>()).FirstOrDefault(),
+                    .Select(entity => (string)entity.Value).FirstOrDefault(),
 
                 // initialize from intent entities
                 Time = times.Any() ? times.First() : (DateTimeOffset?)null
@@ -152,11 +153,17 @@ namespace AlarmBot.Topics
                     switch (context.RecognizedIntents.TopIntent?.Name)
                     {
                         case "confirmYes":
-                            if (context.UserState.Alarms == null)
+                            var userStateManager = context.UserState();
+                            var userData = await userStateManager.GetOrCreate<AlarmUserState>();
+
+                            if (userData.Alarms == null)
                             {
-                                context.UserState.Alarms = new List<Alarm>();
+                                userData.Alarms = new List<Alarm>();
                             }
-                            context.UserState.Alarms.Add(this.Alarm);
+                            userData.Alarms.Add(this.Alarm);
+
+                            userStateManager.Set(userData);
+
                             await AddAlarmResponses.ReplyWithAddedAlarm(context, this.Alarm);
                             // end topic
                             return false;

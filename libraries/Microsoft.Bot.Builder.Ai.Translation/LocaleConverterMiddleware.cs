@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation
     {
         private readonly ILocaleConverter _localeConverter; 
         private readonly string _toLocale;
-        private readonly Func<ITurnContext, string> _getUserLocale;
+        private readonly Func<ITurnContext, Task<string>> _getUserLocale;
         private readonly Func<ITurnContext, Task<bool>> _setUserLocale;
 
         /// <summary>
@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         /// <param name="checkUserLocaleChanged">Delegate that returns true if the locale was changed (implements logic to change locale by intercepting the message)</param>
         /// <param name="toLocale">Target Locale</param>
         /// <param name="localeConverter">An ILocaleConverter instance</param>
-        public LocaleConverterMiddleware(Func<ITurnContext, string> getUserLocale, Func<ITurnContext, Task<bool>> checkUserLocaleChanged, string toLocale, ILocaleConverter localeConverter)
+        public LocaleConverterMiddleware(Func<ITurnContext, Task<string>> getUserLocale, Func<ITurnContext, Task<bool>> checkUserLocaleChanged, string toLocale, ILocaleConverter localeConverter)
         {
             _localeConverter = localeConverter ?? throw new ArgumentNullException(nameof(localeConverter));
             if (string.IsNullOrEmpty(toLocale))
@@ -53,7 +53,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation
                     bool localeChanged = await _setUserLocale(context);
                     if (!localeChanged)
                     {
-                        string fromLocale = _getUserLocale(context);
+                        string fromLocale = await _getUserLocale(context);
                         ConvertLocaleMessage(context, fromLocale);
                     }
                     

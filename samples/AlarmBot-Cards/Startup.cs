@@ -2,12 +2,14 @@
 // Licensed under the MIT License.
 
 using System;
+using System.IO;
 using System.Text.RegularExpressions;
 using AlarmBot.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Bot.Builder.BotFramework;
 using Microsoft.Bot.Builder.Core.Extensions;
+using Microsoft.Bot.Builder.Core.State;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -33,7 +35,7 @@ namespace AlarmBot
         {
             services.AddSingleton(_ => Configuration);
             services.AddBot<AlarmBot>(options =>
-            { 
+            {
                 options.CredentialProvider = new ConfigurationCredentialProvider(Configuration);
 
                 var middleware = options.Middleware;
@@ -43,11 +45,18 @@ namespace AlarmBot
                 {
                     await context.SendActivity("Sorry, it looks like something went wrong!");
                 }));
+
+                // Add and configure state management middleware
+                middleware.Add(new StateManagementMiddleware()
+                                .UseDefaultStorageProvider(new MemoryStateStorageProvider())
+                                .UseConversationState()
+                                .UseUserState()
+                                .AutoLoadAll()
+                                .AutoSaveAll());
+
                 // Add middleware to send periodic typing activities until the bot responds. The initial
                 // delay before sending a typing activity and the frequency of additional activities can also be specified
                 middleware.Add(new ShowTypingMiddleware());
-                middleware.Add(new UserState<UserData>(new MemoryStorage()));
-                middleware.Add(new ConversationState<ConversationData>(new MemoryStorage()));                
                 middleware.Add(new RegExpRecognizerMiddleware()
                         .AddIntent("showAlarms", new Regex("show alarm(?:s)*(.*)", RegexOptions.IgnoreCase))
                         .AddIntent("addAlarm", new Regex("add(?: an)* alarm(.*)", RegexOptions.IgnoreCase))

@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Core.Extensions;
+using Microsoft.Bot.Builder.Core.State;
 using Microsoft.Recognizers.Text.DateTime;
 
 namespace AlarmBot.Models
@@ -12,29 +14,7 @@ namespace AlarmBot.Models
         public AlarmBotContext(ITurnContext context) : base(context)
         {
         }
-
-        /// <summary>
-        /// Persisted AlarmBot Conversation State 
-        /// </summary>
-        public ConversationData ConversationState
-        {
-            get
-            {
-                return ConversationState<ConversationData>.Get(this);
-            }
-        }
-
-        /// <summary>
-        /// Persisted AlarmBot User State
-        /// </summary>
-        public UserData UserState
-        {
-            get
-            {
-                return UserState<UserData>.Get(this);
-            }
-        }
-
+        
         /// <summary>
         /// AlarmBot recognized Intents for the incoming activity
         /// </summary>
