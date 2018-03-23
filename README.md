@@ -4,7 +4,7 @@
 
 This repository contains code for the .NET version of the [Microsoft Bot Builder SDK](https://github.com/Microsoft/botbuilder).
 The 4.x version of the SDK is being actively developed and should therefore be used for **EXPERIMENTATION PURPOSES ONLY**.
-Production bots should continue to be developed using the [v3 SDK](https://github.com/Microsoft/BotBuilder/tree/master/CSharp).  In addition to the .NET SDK, Bot Builder supports creating bots in other popular programming languages like [JavaScript](https://github.com/Microsoft/botbuilder-js), [Python](https://github.com/Microsoft/botbuilder-python), and [Java](https://github.com/Microsoft/botbuilder-java). 
+Production bots should continue to be developed using the [v3 SDK](https://github.com/Microsoft/BotBuilder/tree/master/CSharp).  In addition to the .NET SDK, Bot Builder supports creating bots in other popular programming languages like [JavaScript](https://github.com/Microsoft/botbuilder-js), [Python](https://github.com/Microsoft/botbuilder-python), and [Java](https://github.com/Microsoft/botbuilder-java).  
 
 To get started see the [wiki](https://github.com/Microsoft/botbuilder-dotnet/wiki) for the v4 SDK.
 
