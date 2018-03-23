@@ -221,7 +221,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
 
             public const string PropertyName = "Microsoft.Bot.Builder.Tests.CustomKeyState";
 
-            public static CustomState Get(ITurnContext context) { return context.Get<CustomState>(PropertyName); }
+            public static CustomState Get(ITurnContext context) { return context.Services.Get<CustomState>(PropertyName); }
         }
     }
 }
