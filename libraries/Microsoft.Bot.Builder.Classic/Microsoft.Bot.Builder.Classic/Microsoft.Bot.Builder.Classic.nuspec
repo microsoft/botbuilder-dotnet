@@ -45,7 +45,7 @@
           exclude="**\obj\**\*.cs;..\Microsoft.Bot.Builder.Classic.Azure\**;..\Microsoft.Bot.Builder.Classic.Calling\**;..\Microsoft.Bot.Builder.Classic.FormFlow.Json\**;..\Microsoft.Bot.Builder.Classic.History\**;..\Microsoft.Bot.Connector.AspNetCore\**;..\Microsoft.Bot.Connector.NetCore\**"
           target="src" />
     <!-- tools -->
-    <file src="..\rview\bin\release\RView.exe" target="tools"/>
+    <!--<file src="..\rview\bin\release\RView.exe" target="tools"/>-->
     <!-- resources -->
     <file src="bin\release\ar\*.dll" target="lib\net46\ar"/>
     <file src="bin\release\cs\*.dll" target="lib\net46\cs"/>
