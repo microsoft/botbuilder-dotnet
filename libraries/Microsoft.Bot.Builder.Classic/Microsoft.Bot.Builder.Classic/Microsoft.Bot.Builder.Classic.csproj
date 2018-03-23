@@ -238,4 +238,7 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>copy $(SolutionDir)\build\35MSSharedLib1024.snk $(ProjectDir)\obj</PreBuildEvent>
+  </PropertyGroup>
 </Project>

@@ -9,6 +9,6 @@ using System.Runtime.InteropServices;
 [assembly: NeutralResourcesLanguage("en")]
 
 #if (!DEBUG)
-[assembly: AssemblyKeyFileAttribute(@"..\..\build\35MSSharedLib1024.snk")]
-[assembly: AssemblyDelaySignAttribute(true)]
+[assembly: AssemblyKeyFile(@"..\\35MSSharedLib1024.snk")]
+[assembly: AssemblyDelaySign(true)]
 #endif
