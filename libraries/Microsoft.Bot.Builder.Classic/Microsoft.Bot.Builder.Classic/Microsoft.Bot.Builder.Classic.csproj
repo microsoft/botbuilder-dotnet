@@ -33,6 +33,11 @@
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Release\Microsoft.Bot.Builder.Classic.xml</DocumentationFile>
   </PropertyGroup>
+  <PropertyGroup  Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>35MSSharedLib1024.snk</AssemblyOriginatorKeyFile>
+    <DelaySign>true</DelaySign>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Autofac">
       <HintPath>..\..\..\packages\Autofac.3.5.2\lib\net40\Autofac.dll</HintPath>
@@ -198,6 +203,7 @@
     <EmbeddedResource Include="Resource\Resources.zh-Hans.resx" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="35MSSharedLib1024.snk" />
     <None Include="app.config" />
     <None Include="createpackage.cmd" />
     <None Include="Luis\generateLuisModels.bat" />
@@ -238,7 +244,4 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PreBuildEvent>copy $(SolutionDir)\build\35MSSharedLib1024.snk $(ProjectDir)\obj</PreBuildEvent>
-  </PropertyGroup>
 </Project>
