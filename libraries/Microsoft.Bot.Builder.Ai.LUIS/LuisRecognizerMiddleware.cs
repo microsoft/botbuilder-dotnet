@@ -21,7 +21,7 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
 
         public LuisRecognizerMiddleware(ILuisModel luisModel, ILuisRecognizerOptions luisRecognizerOptions = null, ILuisOptions luisOptions = null)
         {
-            if(luisModel == null)
+            if (luisModel == null)
                 throw new ArgumentNullException(nameof(luisModel));
 
             _luisRecognizer = new LuisRecognizer(luisModel, luisRecognizerOptions, luisOptions);
@@ -35,7 +35,7 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
             {
                 var utterance = context.Activity.AsMessageActivity().Text;
                 var result = await _luisRecognizer.Recognize(utterance, CancellationToken.None).ConfigureAwait(false);
-                context.Set(LuisRecognizerResultKey, result);
+                context.Services.Add(LuisRecognizerResultKey, result);
             }
             await next().ConfigureAwait(false);
         }
