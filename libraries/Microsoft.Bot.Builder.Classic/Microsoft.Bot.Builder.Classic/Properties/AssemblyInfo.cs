@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 //[assembly: InternalsVisibleTo("Microsoft.Bot.Sample.Tests")]
 [assembly: NeutralResourcesLanguage("en")]
 
-#if (!DEBUG)
-[assembly: AssemblyKeyFile(@"..\\35MSSharedLib1024.snk")]
-[assembly: AssemblyDelaySign(true)]
-#endif
+//#if (!DEBUG)
+//[assembly: AssemblyKeyFile(@"..\\35MSSharedLib1024.snk")]
+//[assembly: AssemblyDelaySign(true)]
+//#endif
