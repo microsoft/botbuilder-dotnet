@@ -7,7 +7,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using AlarmBot.Models;
 using AlarmBot.Responses;
-using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
 
 namespace AlarmBot.Topics
@@ -17,11 +16,6 @@ namespace AlarmBot.Topics
     /// </summary>
     public class DeleteAlarmTopic : ITopic
     {
-
-        public DeleteAlarmTopic()
-        {
-        }
-
         public string Name { get; set; } = "DeleteAlarm";
 
         /// <summary>
@@ -49,9 +43,9 @@ namespace AlarmBot.Topics
         /// <returns></returns>
         public async Task<bool> ContinueTopic(AlarmBotContext context)
         {
-            if (context.Request.Type == ActivityTypes.Message)
+            if (context.Activity.Type == ActivityTypes.Message)
             {
-                this.AlarmTitle = context.Request.Text.Trim();
+                this.AlarmTitle = context.Activity.Text.Trim();
                 return await this.FindAlarm(context);
             }
             return true;

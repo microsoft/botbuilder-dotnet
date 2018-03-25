@@ -41,11 +41,6 @@ namespace AlarmBot.Topics
             HelpConfirmation
         };
 
-
-        public AddAlarmTopic()
-        {
-        }
-
         /// <summary>
         /// Alarm object representing the information being gathered by the conversation before it is committed
         /// </summary>
@@ -89,7 +84,7 @@ namespace AlarmBot.Topics
         public async Task<bool> ContinueTopic(AlarmBotContext context)
         {
             // for messages
-            if (context.Request.Type == ActivityTypes.Message)
+            if (context.Activity.Type == ActivityTypes.Message)
             {
                 switch (context.RecognizedIntents.TopIntent?.Name)
                 {
@@ -118,7 +113,7 @@ namespace AlarmBot.Topics
 
         private async Task<bool> ProcessTopicState(AlarmBotContext context)
         {
-            string utterance = (context.Request.AsMessageActivity().Text ?? "").Trim();
+            string utterance = (context.Activity.AsMessageActivity().Text ?? "").Trim();
 
             // we ar eusing TopicState to remember what we last asked
             switch (this.TopicState)
@@ -131,7 +126,7 @@ namespace AlarmBot.Topics
                     // take first one in the future if a valid time has been parsed
                     var times = context.GetDateTimes();                    
                     if(times.Any(t => t > DateTimeOffset.Now))
-                        this.Alarm.Time = times.Where(t => t > DateTimeOffset.Now).FirstOrDefault();
+                        this.Alarm.Time = times.FirstOrDefault(t => t > DateTimeOffset.Now);
                     return await this.PromptForMissingData(context);
 
                 case TopicStates.CancelConfirmation:
@@ -195,7 +190,7 @@ namespace AlarmBot.Topics
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        private async Task<bool> PromptForMissingData(IBotContext context)
+        private async Task<bool> PromptForMissingData(ITurnContext context)
         {
             // If we don't have a title (or if its too long), prompt the user to get it.
             if (String.IsNullOrWhiteSpace(this.Alarm.Title))

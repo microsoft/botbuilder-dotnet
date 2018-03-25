@@ -62,11 +62,11 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Handlers
                 await ProcessMessageRequestAsync(
                     request,
                     _botFrameworkAdapter,
-                    botContext =>
+                    context =>
                     {
                         var bot = httpContext.RequestServices.GetRequiredService<IBot>();
 
-                        return bot.OnReceiveActivity(botContext);
+                        return bot.OnReceiveActivity(context);
                     });
 
                 response.StatusCode = (int)HttpStatusCode.OK;
@@ -77,6 +77,6 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Handlers
             }
         }
 
-        protected abstract Task ProcessMessageRequestAsync(HttpRequest request, BotFrameworkAdapter botFrameworkAdapter, Func<IBotContext, Task> botCallbackHandler);
+        protected abstract Task ProcessMessageRequestAsync(HttpRequest request, BotFrameworkAdapter botFrameworkAdapter, Func<ITurnContext, Task> botCallbackHandler);
     }
 }

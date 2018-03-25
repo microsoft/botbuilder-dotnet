@@ -13,9 +13,9 @@ namespace AlarmBot.Responses
 {
     public static class ShowAlarmsTopicResponses 
     {
-        public static IMessageActivity AlarmsCard(IBotContext context, IEnumerable<Alarm> alarms, string title, string message)
+        public static IMessageActivity AlarmsCard(ITurnContext context, IEnumerable<Alarm> alarms, string title, string message)
         {
-            IMessageActivity activity = context.Request.CreateReply(message);
+            IMessageActivity activity = context.Activity.CreateReply(message);
 
             var card = new AdaptiveCard();
             card.Body.Add(new TextBlock() { Text = title, Size = TextSize.Large, Wrap = true, Weight = TextWeight.Bolder });
@@ -25,7 +25,7 @@ namespace AlarmBot.Responses
 
             if (alarms.Any())
             {
-                FactSet factSet = new FactSet();
+                var factSet = new FactSet();
 
                 foreach (var alarm in alarms)
                     factSet.Facts.Add(new AdaptiveCards.Fact(alarm.Title, alarm.Time.Value.ToString("f")));
@@ -39,7 +39,7 @@ namespace AlarmBot.Responses
             return activity;
         }
 
-        public static async Task ReplyWithShowAlarms(IBotContext context, dynamic data)
+        public static async Task ReplyWithShowAlarms(ITurnContext context, dynamic data)
         {
             await context.SendActivity(AlarmsCard(context, data, "Alarms", null));
         }

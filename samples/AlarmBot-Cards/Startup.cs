@@ -1,16 +1,16 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
+using System.Text.RegularExpressions;
 using AlarmBot.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Bot.Builder.BotFramework;
 using Microsoft.Bot.Builder.Core.Extensions;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
-using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System.Text.RegularExpressions;
 
 namespace AlarmBot
 {
@@ -38,6 +38,14 @@ namespace AlarmBot
 
                 var middleware = options.Middleware;
 
+                // Add middleware to send an appropriate message to the user if an exception occurs
+                middleware.Add(new CatchExceptionMiddleware<Exception>(async (context, exception) =>
+                {
+                    await context.SendActivity("Sorry, it looks like something went wrong!");
+                }));
+                // Add middleware to send periodic typing activities until the bot responds. The initial
+                // delay before sending a typing activity and the frequency of additional activities can also be specified
+                middleware.Add(new ShowTypingMiddleware());
                 middleware.Add(new UserState<UserData>(new MemoryStorage()));
                 middleware.Add(new ConversationState<ConversationData>(new MemoryStorage()));                
                 middleware.Add(new RegExpRecognizerMiddleware()

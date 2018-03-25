@@ -1,17 +1,15 @@
-﻿using Microsoft.Bot.Builder;
-using Microsoft.Bot.Builder.Core.Extensions;
-using Microsoft.Bot.Schema;
-using Microsoft.Recognizers.Text.DateTime;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
+using Microsoft.Bot.Builder;
+using Microsoft.Bot.Builder.Core.Extensions;
+using Microsoft.Recognizers.Text.DateTime;
 
 namespace AlarmBot.Models
 {
-    public class AlarmBotContext : BotContextWrapper
+    public class AlarmBotContext : TurnContextWrapper
     {
-        public AlarmBotContext(IBotContext context) : base(context)
+        public AlarmBotContext(ITurnContext context) : base(context)
         {
         }
 
@@ -38,16 +36,16 @@ namespace AlarmBot.Models
         }
 
         /// <summary>
-        /// AlarmBot recognized Intents for the incoming request
+        /// AlarmBot recognized Intents for the incoming activity
         /// </summary>
-        public IRecognizedIntents RecognizedIntents { get { return this.Get<IRecognizedIntents>(); } }
+        public IRecognizedIntents RecognizedIntents { get { return this.Services.Get<IRecognizedIntents>(); } }
 
         public IList<DateTime> GetDateTimes()
         {
             IList<DateTime> times = new List<DateTime>();
             // Get DateTime model for English
-            var model = new DateTimeRecognizer(this.Request.Locale ?? "en-us").GetDateTimeModel();
-            var results = model.Parse(this.Request.Text);
+            var model = new DateTimeRecognizer(this.Activity.Locale ?? "en-us").GetDateTimeModel();
+            var results = model.Parse(this.Activity.Text);
 
             // Check there are valid results
             if (results.Any() && results.First().TypeName.StartsWith("datetimeV2"))

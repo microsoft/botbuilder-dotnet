@@ -9,19 +9,19 @@ namespace Microsoft.Bot.Builder
 {
     public interface IMiddleware
     {
-        Task OnProcessRequest(IBotContext context, MiddlewareSet.NextDelegate next);
+        Task OnProcessRequest(ITurnContext context, MiddlewareSet.NextDelegate next);
     }
 
     public class AnonymousReceiveMiddleware : IMiddleware
     {
-        private readonly Func<IBotContext, NextDelegate, Task> _toCall;
+        private readonly Func<ITurnContext, NextDelegate, Task> _toCall;
 
-        public AnonymousReceiveMiddleware(Func<IBotContext, NextDelegate, Task> anonymousMethod)
+        public AnonymousReceiveMiddleware(Func<ITurnContext, NextDelegate, Task> anonymousMethod)
         {
             _toCall = anonymousMethod ?? throw new ArgumentNullException(nameof(anonymousMethod));
         }
 
-        public Task OnProcessRequest(IBotContext context, NextDelegate next)
+        public Task OnProcessRequest(ITurnContext context, NextDelegate next)
         {
             return _toCall(context, next);
         }

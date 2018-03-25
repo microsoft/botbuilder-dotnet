@@ -5,7 +5,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using AlarmBot.Models;
 using AlarmBot.Responses;
-using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
 
 namespace AlarmBot.Topics
@@ -15,8 +14,6 @@ namespace AlarmBot.Topics
     /// </summary>
     public class DefaultTopic : ITopic
     {
-        public DefaultTopic() { }
-
         public string Name { get; set; } = "Default";
 
         // track in this topic if we have greeted the user already
@@ -29,13 +26,13 @@ namespace AlarmBot.Topics
         /// <returns></returns>
         public async Task<bool> StartTopic(AlarmBotContext context)
         {
-            switch (context.Request.Type)
+            switch (context.Activity.Type)
             {
                 case ActivityTypes.ConversationUpdate:
                     {
                         // greet when added to conversation
-                        var activity = context.Request.AsConversationUpdateActivity();
-                        if (activity.MembersAdded.Where(m => m.Id == activity.Recipient.Id).Any())
+                        var activity = context.Activity.AsConversationUpdateActivity();
+                        if (activity.MembersAdded.Any(m => m.Id == activity.Recipient.Id))
                         {
                             await DefaultResponses.ReplyWithGreeting(context);
                             await DefaultResponses.ReplyWithHelp(context);
@@ -64,7 +61,7 @@ namespace AlarmBot.Topics
         /// <returns></returns>
         public async Task<bool> ContinueTopic(AlarmBotContext context)
         {
-            switch (context.Request.Type)
+            switch (context.Activity.Type)
             {
                 case ActivityTypes.Message:
                     switch (context.RecognizedIntents.TopIntent?.Name)
@@ -109,6 +106,5 @@ namespace AlarmBot.Topics
             await DefaultResponses.ReplyWithResumeTopic(context);
             return true;
         }
-
     }
 }

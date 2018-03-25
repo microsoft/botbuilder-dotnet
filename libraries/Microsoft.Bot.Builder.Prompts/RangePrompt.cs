@@ -36,15 +36,15 @@ namespace Microsoft.Bot.Builder.Prompts
             _model = model ?? throw new ArgumentNullException(nameof(model));
         }
 
-        public override async Task<RangeResult> Recognize(IBotContext context)
+        public override async Task<RangeResult> Recognize(ITurnContext context)
         {
             BotAssert.ContextNotNull(context);
-            BotAssert.ActivityNotNull(context.Request);
-            if (context.Request.Type != ActivityTypes.Message)
+            BotAssert.ActivityNotNull(context.Activity);
+            if (context.Activity.Type != ActivityTypes.Message)
                 throw new InvalidOperationException("No Message to Recognize");
 
             RangeResult rangeResult = new RangeResult();
-            IMessageActivity message = context.Request.AsMessageActivity();
+            IMessageActivity message = context.Activity.AsMessageActivity();
             var results = _model.Parse(message.Text);
             if (results.Any())
             {

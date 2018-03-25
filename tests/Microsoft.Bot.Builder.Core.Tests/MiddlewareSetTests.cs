@@ -42,7 +42,7 @@ namespace Microsoft.Bot.Builder.Core.Tests
         {
             MiddlewareSet m = new MiddlewareSet();
             bool wasCalled = false;
-            async Task CallMe(IBotContext context)
+            async Task CallMe(ITurnContext context)
             {
                 wasCalled = true; 
             }
@@ -57,7 +57,7 @@ namespace Microsoft.Bot.Builder.Core.Tests
             WasCalledMiddlware simple = new WasCalledMiddlware();
 
             bool wasCalled = false;
-            async Task CallMe(IBotContext context)
+            async Task CallMe(ITurnContext context)
             {
                 wasCalled = true;
             }
@@ -120,7 +120,7 @@ namespace Microsoft.Bot.Builder.Core.Tests
             WasCalledMiddlware two = new WasCalledMiddlware();
 
             int called = 0;
-            async Task CallMe(IBotContext context)
+            async Task CallMe(ITurnContext context)
             {
                 called++;
             }
@@ -320,15 +320,18 @@ namespace Microsoft.Bot.Builder.Core.Tests
 
             m.Use(new AnonymousReceiveMiddleware(async (context, next) =>
             {
-                Assert.IsFalse(didRun2, "Looks like the 2nd one has already run");
+                Assert.IsFalse(didRun1, "First middleware already ran");
+                Assert.IsFalse(didRun2, "Looks like the second middleware was already run");
                 didRun1 = true;
                 await next();
+                Assert.IsTrue(didRun2, "Second middleware should have completed running");
             }));
 
             m.Use(
                 new CallMeMiddlware(() =>
                 {
-                    Assert.IsFalse(didRun2, "Second Middleware was called");
+                    Assert.IsTrue(didRun1, "First middleware should have already been called");
+                    Assert.IsFalse(didRun2, "Second middleware should not have been invoked yet");
                     didRun2 = true;
                 }));
 
@@ -348,15 +351,17 @@ namespace Microsoft.Bot.Builder.Core.Tests
             m.Use(
                 new CallMeMiddlware(() =>
                 {
-                    Assert.IsFalse(didRun2, "Second Middleware was called");
+                    Assert.IsFalse(didRun1, "First middleware should not have been called yet");
+                    Assert.IsFalse(didRun2, "Second Middleware should not have been called yet");
                     didRun1 = true;
                 }));
 
             m.Use(new AnonymousReceiveMiddleware(async (context, next) =>
             {
-                Assert.IsTrue(didRun1, "Looks like the 1st middleware has not been run");
+                Assert.IsTrue(didRun1, "First middleware has not been run yet");
                 didRun2 = true;
                 await next();
+
             }));
 
             await m.ReceiveActivity(null);
@@ -429,7 +434,7 @@ namespace Microsoft.Bot.Builder.Core.Tests
         {
             public bool Called { get; set; } = false;
 
-            public Task OnProcessRequest(IBotContext context, MiddlewareSet.NextDelegate next)
+            public Task OnProcessRequest(ITurnContext context, MiddlewareSet.NextDelegate next)
             {
                 Called = true;
                 return next();
@@ -443,7 +448,7 @@ namespace Microsoft.Bot.Builder.Core.Tests
             {
                 _callMe = callMe;
             }
-            public Task OnProcessRequest(IBotContext context, MiddlewareSet.NextDelegate next)
+            public Task OnProcessRequest(ITurnContext context, MiddlewareSet.NextDelegate next)
             {
                 _callMe();
                 // DO NOT call NEXT
@@ -458,7 +463,7 @@ namespace Microsoft.Bot.Builder.Core.Tests
             {
                 _callMe = callMe;
             }
-            public Task OnProcessRequest(IBotContext context, MiddlewareSet.NextDelegate next)
+            public Task OnProcessRequest(ITurnContext context, MiddlewareSet.NextDelegate next)
             {
                 _callMe();
                 return next();

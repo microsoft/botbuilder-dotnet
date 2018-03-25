@@ -39,7 +39,7 @@ namespace Microsoft.Bot.Builder.Adapters
             }
         }
 
-        public Task ContinueConversation(string botAppId, ConversationReference reference, Func<IBotContext, Task> callback)
+        public Task ContinueConversation(string botAppId, ConversationReference reference, Func<ITurnContext, Task> callback)
         {
             if (string.IsNullOrWhiteSpace(botAppId))
                 throw new ArgumentNullException(nameof(botAppId));
@@ -50,7 +50,7 @@ namespace Microsoft.Bot.Builder.Adapters
             if (callback == null)
                 throw new ArgumentNullException(nameof(callback)); 
 
-            var context = new BotFrameworkBotContext(botAppId, this, reference.GetPostToBotMessage());
+            var context = new BotFrameworkTurnContext(botAppId, this, reference.GetPostToBotMessage());
             return RunPipeline(context, callback);
         }
 
@@ -65,7 +65,7 @@ namespace Microsoft.Bot.Builder.Adapters
             return this;
         }
 
-        public async Task ProcessActivity(string authHeader, Activity activity, Func<IBotContext, Task> callback)
+        public async Task ProcessActivity(string authHeader, Activity activity, Func<ITurnContext, Task> callback)
         {
             BotAssert.ActivityNotNull(activity);
             ClaimsIdentity claimsIdentity =  await JwtTokenValidation.AuthenticateRequest(activity, authHeader, _credentialProvider, _httpClient);
@@ -73,51 +73,62 @@ namespace Microsoft.Bot.Builder.Adapters
             // For requests from channel App Id is in Audience claim of JWT token. For emulator it is in AppId claim. For 
             // unauthenticated requests we have anonymouse identity provided auth is disabled.
             string botAppId = GetBotId(claimsIdentity);
-            var context = new BotFrameworkBotContext(botAppId, this, activity);
+            var context = new BotFrameworkTurnContext(botAppId, this, activity);
             await base.RunPipeline(context, callback).ConfigureAwait(false);
         }
 
-        public override async Task SendActivity(IBotContext context, params Activity[] activities)
+        public override async Task<ResourceResponse[]> SendActivities(ITurnContext context, Activity[] activities)
         {
             AssertBotFrameworkContext (context);
+            List<ResourceResponse> responses = new List<ResourceResponse>(); 
 
-            BotFrameworkBotContext bfContext = context as BotFrameworkBotContext;
+            BotFrameworkTurnContext bfContext = context as BotFrameworkTurnContext;
             MicrosoftAppCredentials appCredentials = await GetAppCredentials(bfContext.BotAppId);
 
             foreach (var activity in activities)
             {
+                ResourceResponse response;
+
                 if (activity.Type == ActivityTypesEx.Delay)
                 {
                     // The Activity Schema doesn't have a delay type build in, so it's simulated
                     // here in the Bot. This matches the behavior in the Node connector. 
                     int delayMs = (int)activity.Value;
                     await Task.Delay(delayMs).ConfigureAwait(false);
+
+                    // In the case of a Delay, just create a fake one. Match the incoming activityId if it's there. 
+                    response = new ResourceResponse(activity.Id ?? string.Empty); 
                 }
                 else
                 {                                        
                     var connectorClient = new ConnectorClient(new Uri(activity.ServiceUrl), appCredentials);
-                    await connectorClient.Conversations.SendToConversationAsync(activity).ConfigureAwait(false);
+                    response = await connectorClient.Conversations.SendToConversationAsync(activity).ConfigureAwait(false);
                 }
+
+                // Collect all the responses that come from the service. 
+                responses.Add(response); 
             }
+
+            return responses.ToArray();
         }
 
-        public override async Task<ResourceResponse> UpdateActivity(IBotContext context, Activity activity)
+        public override async Task<ResourceResponse> UpdateActivity(ITurnContext context, Activity activity)
         {
             AssertBotFrameworkContext(context);
 
-            BotFrameworkBotContext bfContext = context as BotFrameworkBotContext;
+            BotFrameworkTurnContext bfContext = context as BotFrameworkTurnContext;
             MicrosoftAppCredentials appCredentials = await GetAppCredentials(bfContext.BotAppId);
             var connectorClient = new ConnectorClient(new Uri(activity.ServiceUrl), appCredentials);
             return await connectorClient.Conversations.UpdateActivityAsync(activity);
         }
 
-        public override async Task DeleteActivity(IBotContext context, ConversationReference reference)
+        public override async Task DeleteActivity(ITurnContext context, ConversationReference reference)
         {
             AssertBotFrameworkContext(context);
 
-            BotFrameworkBotContext bfContext = context as BotFrameworkBotContext;
+            BotFrameworkTurnContext bfContext = context as BotFrameworkTurnContext;
             MicrosoftAppCredentials appCredentials = await GetAppCredentials(bfContext.BotAppId);
-            var connectorClient = new ConnectorClient(new Uri(context.Request.ServiceUrl), appCredentials);
+            var connectorClient = new ConnectorClient(new Uri(context.Activity.ServiceUrl), appCredentials);
             await connectorClient.Conversations.DeleteActivityAsync(reference.Conversation.Id, reference.ActivityId);
         }
 
@@ -129,7 +140,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <param name="conversationParameters">arguments for the conversation you want to create</param>
         /// <param name="callback">callback which will have the context.Request.Conversation.Id in it</param>
         /// <returns></returns>
-        public virtual async Task CreateConversation(string channelId, string serviceUrl, MicrosoftAppCredentials credentials, ConversationParameters conversationParameters, Func<IBotContext, Task> callback)
+        public virtual async Task CreateConversation(string channelId, string serviceUrl, MicrosoftAppCredentials credentials, ConversationParameters conversationParameters, Func<ITurnContext, Task> callback)
         {
             var connectorClient = new ConnectorClient(new Uri(serviceUrl), credentials);
             var result = await connectorClient.Conversations.CreateConversationAsync(conversationParameters);
@@ -144,7 +155,7 @@ namespace Microsoft.Bot.Builder.Adapters
             conversationUpdate.Conversation = new ConversationAccount(id: result.Id);
             conversationUpdate.Recipient = conversationParameters.Bot;
 
-            BotContext context = new BotContext(this, (Activity)conversationUpdate);
+            TurnContext context = new TurnContext(this, (Activity)conversationUpdate);
             await this.RunPipeline(context, callback);
         }
 
@@ -178,10 +189,10 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <returns>Bot's AAD AppId, if it could be inferred from claims. Null otherwise.</returns>
         private static string GetBotId(ClaimsIdentity claimsIdentity)
         {
-            // For requests coming from channels Audience Claim contains the Bot's AAD AppId
+            // For Activities coming from channels Audience Claim contains the Bot's AAD AppId
             Claim botAppIdClaim = (claimsIdentity.Claims?.SingleOrDefault(claim => claim.Type == AuthenticationConstants.AudienceClaim) 
                 ??
-                // For requests coming from Emulator AppId claim contains the Bot's AAD AppId.
+                // For Activities coming from Emulator AppId claim contains the Bot's AAD AppId.
                 claimsIdentity.Claims?.SingleOrDefault(claim => claim.Type == AuthenticationConstants.AppIdClaim));
 
             // For anonymous requests (requests with no header) appId is not set in claims.
@@ -195,11 +206,11 @@ namespace Microsoft.Bot.Builder.Adapters
             }
         }
 
-        public static void AssertBotFrameworkContext(IBotContext context)
+        public static void AssertBotFrameworkContext(ITurnContext context)
         {
             BotAssert.ContextNotNull(context); 
 
-            BotFrameworkBotContext bfContext = context as BotFrameworkBotContext;
+            BotFrameworkTurnContext bfContext = context as BotFrameworkTurnContext;
             if (bfContext == null)
                 throw new InvalidOperationException($"BotFramework Context is required. Incorrect context type: {context.GetType().Name}");
         }

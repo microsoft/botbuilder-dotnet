@@ -79,6 +79,7 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Schema.Tests", "tests\Microsoft.Bot.Schema.Tests\Microsoft.Bot.Schema.Tests.csproj", "{A4184239-F13F-4A09-B2D3-0B9532609248}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Samples.HelloWorld", "samples\Microsoft.Bot.Samples.HelloWorld\Microsoft.Bot.Samples.HelloWorld.csproj", "{1EC22A19-F33D-4941-977D-B3685D18E25E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Samples.Ai.Luis", "samples\Microsoft.Bot.Samples.Ai.Luis\Microsoft.Bot.Samples.Ai.Luis.csproj", "{ED20DED8-C985-4C66-A58E-2A9CF4ECF6C3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -222,6 +223,10 @@ Global
 		{1EC22A19-F33D-4941-977D-B3685D18E25E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1EC22A19-F33D-4941-977D-B3685D18E25E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1EC22A19-F33D-4941-977D-B3685D18E25E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ED20DED8-C985-4C66-A58E-2A9CF4ECF6C3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ED20DED8-C985-4C66-A58E-2A9CF4ECF6C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ED20DED8-C985-4C66-A58E-2A9CF4ECF6C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ED20DED8-C985-4C66-A58E-2A9CF4ECF6C3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -263,6 +268,7 @@ Global
 		{7C7F5C89-C3A4-43B8-90D1-53F13C3A0510} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 		{A4184239-F13F-4A09-B2D3-0B9532609248} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 		{1EC22A19-F33D-4941-977D-B3685D18E25E} = {3ADFB27A-95FA-4330-B211-1D66A29A17AB}
+		{ED20DED8-C985-4C66-A58E-2A9CF4ECF6C3} = {3ADFB27A-95FA-4330-B211-1D66A29A17AB}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7173C9F3-A7F9-496E-9078-9156E35D6E16}

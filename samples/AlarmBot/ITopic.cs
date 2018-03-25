@@ -3,7 +3,6 @@
 
 using System.Threading.Tasks;
 using AlarmBot.Models;
-using Microsoft.Bot.Builder;
 
 namespace AlarmBot
 {

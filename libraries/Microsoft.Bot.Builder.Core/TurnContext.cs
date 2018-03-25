@@ -9,25 +9,25 @@ using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder
 {
-    public class BotContext : IBotContext
+    public class TurnContext : ITurnContext
     {
         private readonly BotAdapter _adapter;
-        private readonly Activity _request;
+        private readonly Activity _activity;
         private bool _responded = false;
 
         private readonly IList<SendActivitiesHandler> _onSendActivities = new List<SendActivitiesHandler>();
         private readonly IList<UpdateActivityHandler> _onUpdateActivity = new List<UpdateActivityHandler>();
         private readonly IList<DeleteActivityHandler> _onDeleteActivity = new List<DeleteActivityHandler>();
 
-        private Dictionary<string, object> _services = new Dictionary<string, object>();
+        private readonly TurnContextServiceCollection _services = new TurnContextServiceCollection();
 
-        public BotContext(BotAdapter adapter, Activity request)
+        public TurnContext(BotAdapter adapter, Activity activity)
         {
             _adapter = adapter ?? throw new ArgumentNullException(nameof(adapter));
-            _request = request ?? throw new ArgumentNullException(nameof(request));
+            _activity = activity ?? throw new ArgumentNullException(nameof(activity));
         }
 
-        public IBotContext OnSendActivity(SendActivitiesHandler handler)
+        public ITurnContext OnSendActivities(SendActivitiesHandler handler)
         {
             if (handler == null)
                 throw new ArgumentNullException(nameof(handler));
@@ -36,7 +36,7 @@ namespace Microsoft.Bot.Builder
             return this;
         }
 
-        public IBotContext OnUpdateActivity(UpdateActivityHandler handler)
+        public ITurnContext OnUpdateActivity(UpdateActivityHandler handler)
         {
             if (handler == null)
                 throw new ArgumentNullException(nameof(handler));
@@ -45,7 +45,7 @@ namespace Microsoft.Bot.Builder
             return this;
         }
 
-        public IBotContext OnDeleteActivity(DeleteActivityHandler handler)
+        public ITurnContext OnDeleteActivity(DeleteActivityHandler handler)
         {
             if (handler == null)
                 throw new ArgumentNullException(nameof(handler));
@@ -56,7 +56,10 @@ namespace Microsoft.Bot.Builder
 
         public BotAdapter Adapter => _adapter;
 
-        public Activity Request => _request;
+        public ITurnContextServiceCollection Services => _services;
+
+        public Activity Activity => _activity;
+
 
         /// <summary>
         /// If true at least one response has been sent for the current turn of conversation.
@@ -74,26 +77,39 @@ namespace Microsoft.Bot.Builder
             }
         }
 
-        public async Task SendActivity(params string[] textRepliesToSend)
+        public async Task<ResourceResponse> SendActivity(string textReplyToSend)
         {
-            if (textRepliesToSend == null)
-                throw new ArgumentNullException(nameof(textRepliesToSend)); 
+            if (string.IsNullOrWhiteSpace(textReplyToSend))
+                throw new ArgumentNullException(nameof(textReplyToSend)); 
             
-            List<Activity> newActivities = new List<Activity>();
-            foreach (string s in textRepliesToSend)
-            {
-                if (!string.IsNullOrWhiteSpace(s))
-                    newActivities.Add(new Activity(ActivityTypes.Message) { Text = s });
-            }
+            var activityToSend = new Activity(ActivityTypes.Message) { Text = textReplyToSend };
 
-            await SendActivity(newActivities.ToArray());
+            return await SendActivity(activityToSend);
         }
 
-        public async Task SendActivity(params IActivity[] activities)
+        public async Task<ResourceResponse> SendActivity(IActivity activity)
+        {
+            if (activity == null)
+                throw new ArgumentNullException(nameof(activity));
+
+            ResourceResponse[] responses = await SendActivities(new IActivity[] { activity });
+            if (responses == null || responses.Length == 0)
+            {
+                // It's possible an interceptor prevented the activity from having been sent. 
+                // Just return an empty response in that case. 
+                return new ResourceResponse();
+            }
+            else
+            {
+                return responses[0];
+            }            
+        }
+
+        public async Task<ResourceResponse[]> SendActivities(IActivity[] activities)
         {
             // Bind the relevant Conversation Reference properties, such as URLs and 
             // ChannelId's, to the activities we're about to send. 
-            ConversationReference cr = GetConversationReference(this._request);
+            ConversationReference cr = GetConversationReference(this._activity);
             foreach (Activity a in activities)
             {                
                 ApplyConversationReference(a, cr);
@@ -105,6 +121,9 @@ namespace Microsoft.Bot.Builder
             // Create the list used by the recursive methods. 
             List<Activity> activityList = new List<Activity>(activityArray);
 
+            // provide a variable to capture the set of responses returned from the adapter.
+            ResourceResponse[] responses = null; 
+
             async Task ActuallySendStuff()
             {
                 bool anythingToSend = false;
@@ -112,30 +131,37 @@ namespace Microsoft.Bot.Builder
                     anythingToSend = true;
 
                 // Send from the list, which may have been manipulated via the event handlers. 
-                await this.Adapter.SendActivity(this, activityList.ToArray());
+                // Note that 'responses' was captured from the root of the call, and will be
+                // returned to the original caller
+                responses = await this.Adapter.SendActivities(this, activityList.ToArray());
 
                 // If we actually sent something, set the flag. 
                 if (anythingToSend)
-                    this.Responded = true;
+                    this.Responded = true;                
             }
 
             await SendActivitiesInternal(activityList, _onSendActivities, ActuallySendStuff);
+
+            return responses;
         }
 
         /// <summary>
         /// Replaces an existing activity. 
         /// </summary>
         /// <param name="activity">New replacement activity. The activity should already have it's ID information populated</param>        
-        public async Task UpdateActivity(IActivity activity)
+        public async Task<ResourceResponse> UpdateActivity(IActivity activity)
         {
-            Activity a = (Activity)activity; 
+            Activity a = (Activity)activity;
+            ResourceResponse response = null;
 
             async Task ActuallyUpdateStuff()
             {
-                await this.Adapter.UpdateActivity(this, a);
+                response = await this.Adapter.UpdateActivity(this, a);
             }
 
             await UpdateActivityInternal(a, _onUpdateActivity, ActuallyUpdateStuff);
+
+            return response; 
         }
 
         public async Task DeleteActivity(string activityId)
@@ -143,7 +169,7 @@ namespace Microsoft.Bot.Builder
             if (string.IsNullOrWhiteSpace(activityId))
                 throw new ArgumentNullException(nameof(activityId));
 
-            ConversationReference cr = GetConversationReference(this.Request);
+            ConversationReference cr = GetConversationReference(this.Activity);
             cr.ActivityId = activityId;
 
             async Task ActuallyDeleteStuff()
@@ -248,56 +274,6 @@ namespace Microsoft.Bot.Builder
             // Grab the current middleware, which is the 1st element in the array, and execute it            
             DeleteActivityHandler toCall = updateHandlers.First();
             await toCall(this, cr, next);
-        }
-       
-        /// <summary>
-        /// Set the value associated with a key.
-        /// </summary>
-        /// <param name="key">The key.</param>
-        /// <param name="value">The value to set.</param>
-        public void Set(string key, object value)
-        {
-            if (String.IsNullOrWhiteSpace(key))
-                throw new ArgumentNullException(nameof(key));
-
-            lock (_services)
-            {
-                _services[key] = value;
-            }
-        }
-
-        /// <summary>
-        /// Get a value by a key.
-        /// </summary>
-        /// <param name="key">The key of the value to get.</param>
-        /// <returns>The value.</returns>
-        public object Get(string key)
-        {
-            if (String.IsNullOrWhiteSpace(key))
-                throw new ArgumentNullException(nameof(key));
-
-            object service = null;
-            lock (_services)
-            {
-                _services.TryGetValue(key, out service);
-            }
-            return service;
-        }
-
-        /// <summary>
-        /// Determins if a key been set in the Cache
-        /// </summary>
-        /// <param name="key">The key of the value to get.</param>
-        /// <returns>True, if the key is found. False, if not.</returns>
-        public bool Has(string key)
-        {
-            if (String.IsNullOrWhiteSpace(key))
-                throw new ArgumentNullException(nameof(key));
-
-            lock (_services)
-            {
-                return _services.ContainsKey(key);
-            }
         }
 
         /// <summary>

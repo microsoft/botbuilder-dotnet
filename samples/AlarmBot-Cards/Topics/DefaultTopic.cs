@@ -16,8 +16,6 @@ namespace AlarmBot.Topics
     /// </summary>
     public class DefaultTopic : ITopic
     {
-        public DefaultTopic() { }
-
         public string Name { get; set; } = "Default";
 
         // track in this topic if we have greeted the user already
@@ -28,15 +26,15 @@ namespace AlarmBot.Topics
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public async Task<bool> StartTopic(IBotContext context)
+        public async Task<bool> StartTopic(ITurnContext context)
         {
-            switch (context.Request.Type)
+            switch (context.Activity.Type)
             {
                 case ActivityTypes.ConversationUpdate:
                     {
                         // greet when added to conversation
-                        var activity = context.Request.AsConversationUpdateActivity();
-                        if (activity.MembersAdded.Where(m => m.Id == activity.Recipient.Id).Any())
+                        var activity = context.Activity.AsConversationUpdateActivity();
+                        if (activity.MembersAdded.Any(m => m.Id == activity.Recipient.Id))
                         {
                             await DefaultTopicResponses.ReplyWithGreeting(context);
                             await DefaultTopicResponses.ReplyWithHelp(context);
@@ -62,11 +60,11 @@ namespace AlarmBot.Topics
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public async Task<bool> ContinueTopic(IBotContext context)
+        public async Task<bool> ContinueTopic(ITurnContext context)
         {
             var conversation = ConversationState<ConversationData>.Get(context);         
-            var recognizedIntents = context.Get<IRecognizedIntents>();
-            switch (context.Request.Type)
+            var recognizedIntents = context.Services.Get<IRecognizedIntents>();
+            switch (context.Activity.Type)
             {
                 case ActivityTypes.Message:                    
                     switch (recognizedIntents.TopIntent?.Name)
@@ -108,7 +106,7 @@ namespace AlarmBot.Topics
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public async Task<bool> ResumeTopic(IBotContext context)
+        public async Task<bool> ResumeTopic(ITurnContext context)
         {
             // just prompt the user to ask what they want to do
             await DefaultTopicResponses.ReplyWithResumeTopic(context);
