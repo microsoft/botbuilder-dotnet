@@ -1,13 +1,16 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.BotFramework;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Rest.TransientFaultHandling;
 
 namespace Microsoft.Bot.Samples.Echo.AspNetCore
 {
@@ -31,9 +34,11 @@ namespace Microsoft.Bot.Samples.Echo.AspNetCore
         {
             services.AddBot<EchoBot>(options =>
             {
-                options.CredentialProvider = new ConfigurationCredentialProvider(Configuration);                
+                options.CredentialProvider = new ConfigurationCredentialProvider(Configuration);
                 options.EnableProactiveMessages = true;
-            });            
+                options.RetryPolicy = new RetryPolicy(
+                    new BotFrameworkHttpStatusCodeErrorDetectionStrategy(), 3, TimeSpan.FromSeconds(2), TimeSpan.FromSeconds(20), TimeSpan.FromSeconds(1));
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
