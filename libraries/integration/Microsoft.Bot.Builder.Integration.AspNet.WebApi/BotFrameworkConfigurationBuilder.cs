@@ -4,6 +4,7 @@
 using Microsoft.Bot.Builder;
 using System;
 using Microsoft.Bot.Connector.Authentication;
+using Microsoft.Rest.TransientFaultHandling;
 
 namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
 {
@@ -32,6 +33,17 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
         {
             _options.Middleware.Add(middleware);
 
+            return this;
+        }
+
+        /// <summary>
+        /// Adds retry policy on failure for BotFramework calls.
+        /// </summary>
+        /// <param name="retryPolicy">The retry policy.</param>
+        /// <returns><see cref="BotFrameworkConfigurationBuilder"/> instance with the retry policy set.</returns>
+        public BotFrameworkConfigurationBuilder UseRetryPolicy(RetryPolicy retryPolicy)
+        {
+            _options.RetryPolicy = retryPolicy;
             return this;
         }
 

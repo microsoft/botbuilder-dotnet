@@ -6,6 +6,7 @@ using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 #if NETSTANDARD2_0
 using Microsoft.Extensions.Configuration;
+using Microsoft.Rest.TransientFaultHandling;
 #endif
 using System;
 using System.Collections.Generic;
@@ -20,18 +21,21 @@ namespace Microsoft.Bot.Builder.Adapters
     {
         private readonly ICredentialProvider _credentialProvider;
         private readonly HttpClient _httpClient;
+        private readonly RetryPolicy _retryPolicy;
         private Dictionary<string, MicrosoftAppCredentials> _appCredentialMap = new Dictionary<string, MicrosoftAppCredentials>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BotFrameworkAdapter"/> class.
         /// </summary>
         /// <param name="credentialProvider">The credential provider.</param>
+        /// <param name="retryPolicy">Retry policy for retrying HTTP operations.</param>
         /// <param name="httpClient">The HTTP client.</param>
         /// <param name="middleware">The middleware to use. Use <see cref="MiddlewareSet" class to register multiple middlewares together./></param>
-        public BotFrameworkAdapter(ICredentialProvider credentialProvider, HttpClient httpClient = null, IMiddleware middleware = null)
+        public BotFrameworkAdapter(ICredentialProvider credentialProvider, RetryPolicy retryPolicy = null, HttpClient httpClient = null, IMiddleware middleware = null)
         {
             _credentialProvider = credentialProvider ?? throw new ArgumentNullException(nameof(credentialProvider));
             _httpClient = httpClient ?? new HttpClient();
+            _retryPolicy = retryPolicy;
 
             if (middleware != null)
             {
@@ -54,8 +58,8 @@ namespace Microsoft.Bot.Builder.Adapters
             return RunPipeline(context, callback);
         }
 
-        public BotFrameworkAdapter(string appId, string appPassword, HttpClient httpClient = null, IMiddleware middleware = null) 
-            : this(new SimpleCredentialProvider(appId, appPassword), httpClient, middleware)
+        public BotFrameworkAdapter(string appId, string appPassword, RetryPolicy retryPolicy = null, HttpClient httpClient = null, IMiddleware middleware = null) 
+            : this(new SimpleCredentialProvider(appId, appPassword), retryPolicy, httpClient, middleware)
         {
         }
 
@@ -101,7 +105,7 @@ namespace Microsoft.Bot.Builder.Adapters
                 }
                 else
                 {                                        
-                    var connectorClient = new ConnectorClient(new Uri(activity.ServiceUrl), appCredentials);
+                    var connectorClient = this.GetConnectorClient(activity.ServiceUrl, appCredentials);
                     response = await connectorClient.Conversations.SendToConversationAsync(activity).ConfigureAwait(false);
                 }
 
@@ -118,7 +122,7 @@ namespace Microsoft.Bot.Builder.Adapters
 
             BotFrameworkTurnContext bfContext = context as BotFrameworkTurnContext;
             MicrosoftAppCredentials appCredentials = await GetAppCredentials(bfContext.BotAppId);
-            var connectorClient = new ConnectorClient(new Uri(activity.ServiceUrl), appCredentials);
+            var connectorClient = this.GetConnectorClient(activity.ServiceUrl, appCredentials);
             return await connectorClient.Conversations.UpdateActivityAsync(activity);
         }
 
@@ -128,7 +132,7 @@ namespace Microsoft.Bot.Builder.Adapters
 
             BotFrameworkTurnContext bfContext = context as BotFrameworkTurnContext;
             MicrosoftAppCredentials appCredentials = await GetAppCredentials(bfContext.BotAppId);
-            var connectorClient = new ConnectorClient(new Uri(context.Activity.ServiceUrl), appCredentials);
+            var connectorClient = this.GetConnectorClient(context.Activity.ServiceUrl, appCredentials);
             await connectorClient.Conversations.DeleteActivityAsync(reference.Conversation.Id, reference.ActivityId);
         }
 
@@ -142,7 +146,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <returns></returns>
         public virtual async Task CreateConversation(string channelId, string serviceUrl, MicrosoftAppCredentials credentials, ConversationParameters conversationParameters, Func<ITurnContext, Task> callback)
         {
-            var connectorClient = new ConnectorClient(new Uri(serviceUrl), credentials);
+            var connectorClient = this.GetConnectorClient(serviceUrl, credentials);
             var result = await connectorClient.Conversations.CreateConversationAsync(conversationParameters);
 
             // create conversation Update to represent the result of creating the conversation
@@ -204,6 +208,18 @@ namespace Microsoft.Bot.Builder.Adapters
             {
                 return null;
             }
+        }
+
+        private IConnectorClient GetConnectorClient(string url, MicrosoftAppCredentials appCredentials)
+        {
+            ConnectorClient connectorClient = new ConnectorClient(new Uri(url), appCredentials);
+
+            if (_retryPolicy != null)
+            {
+                connectorClient.SetRetryPolicy(_retryPolicy);
+            }
+
+            return connectorClient;
         }
 
         public static void AssertBotFrameworkContext(ITurnContext context)
