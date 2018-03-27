@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
 
             BotFrameworkAdapter BuildAdapter()
             {
-                var adapter = new BotFrameworkAdapter(options.CredentialProvider, options.RetryPolicy);
+                var adapter = new BotFrameworkAdapter(options.CredentialProvider, options.ConnectorClientRetryPolicy);
 
                 foreach (var middleware in options.Middleware)
                 {

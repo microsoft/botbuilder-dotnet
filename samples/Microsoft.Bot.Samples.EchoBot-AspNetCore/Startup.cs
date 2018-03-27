@@ -36,7 +36,7 @@ namespace Microsoft.Bot.Samples.Echo.AspNetCore
             {
                 options.CredentialProvider = new ConfigurationCredentialProvider(Configuration);
                 options.EnableProactiveMessages = true;
-                options.RetryPolicy = new RetryPolicy(
+                options.ConnectorClientRetryPolicy = new RetryPolicy(
                     new BotFrameworkHttpStatusCodeErrorDetectionStrategy(), 3, TimeSpan.FromSeconds(2), TimeSpan.FromSeconds(20), TimeSpan.FromSeconds(1));
             });
         }
