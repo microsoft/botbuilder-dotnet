@@ -27,6 +27,6 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
         /// <summary>
         /// Gets or sets the retry policy to retry operations in case of errors from Bot Framework.
         /// </summary>
-        public RetryPolicy RetryPolicy { get; set; }
+        public RetryPolicy ConnectorClientRetryPolicy { get; set; }
     }
 }

@@ -21,21 +21,21 @@ namespace Microsoft.Bot.Builder.Adapters
     {
         private readonly ICredentialProvider _credentialProvider;
         private readonly HttpClient _httpClient;
-        private readonly RetryPolicy _retryPolicy;
+        private readonly RetryPolicy _connectorClientRetryPolicy;
         private Dictionary<string, MicrosoftAppCredentials> _appCredentialMap = new Dictionary<string, MicrosoftAppCredentials>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BotFrameworkAdapter"/> class.
         /// </summary>
         /// <param name="credentialProvider">The credential provider.</param>
-        /// <param name="retryPolicy">Retry policy for retrying HTTP operations.</param>
+        /// <param name="connectorClientRetryPolicy">Retry policy for retrying HTTP operations.</param>
         /// <param name="httpClient">The HTTP client.</param>
         /// <param name="middleware">The middleware to use. Use <see cref="MiddlewareSet" class to register multiple middlewares together./></param>
-        public BotFrameworkAdapter(ICredentialProvider credentialProvider, RetryPolicy retryPolicy = null, HttpClient httpClient = null, IMiddleware middleware = null)
+        public BotFrameworkAdapter(ICredentialProvider credentialProvider, RetryPolicy connectorClientRetryPolicy = null, HttpClient httpClient = null, IMiddleware middleware = null)
         {
             _credentialProvider = credentialProvider ?? throw new ArgumentNullException(nameof(credentialProvider));
             _httpClient = httpClient ?? new HttpClient();
-            _retryPolicy = retryPolicy;
+            _connectorClientRetryPolicy = connectorClientRetryPolicy;
 
             if (middleware != null)
             {
@@ -58,8 +58,8 @@ namespace Microsoft.Bot.Builder.Adapters
             return RunPipeline(context, callback);
         }
 
-        public BotFrameworkAdapter(string appId, string appPassword, RetryPolicy retryPolicy = null, HttpClient httpClient = null, IMiddleware middleware = null) 
-            : this(new SimpleCredentialProvider(appId, appPassword), retryPolicy, httpClient, middleware)
+        public BotFrameworkAdapter(string appId, string appPassword, RetryPolicy connectorClientRetryPolicy = null, HttpClient httpClient = null, IMiddleware middleware = null) 
+            : this(new SimpleCredentialProvider(appId, appPassword), connectorClientRetryPolicy, httpClient, middleware)
         {
         }
 
@@ -214,9 +214,9 @@ namespace Microsoft.Bot.Builder.Adapters
         {
             ConnectorClient connectorClient = new ConnectorClient(new Uri(url), appCredentials);
 
-            if (_retryPolicy != null)
+            if (_connectorClientRetryPolicy != null)
             {
-                connectorClient.SetRetryPolicy(_retryPolicy);
+                connectorClient.SetRetryPolicy(_connectorClientRetryPolicy);
             }
 
             return connectorClient;

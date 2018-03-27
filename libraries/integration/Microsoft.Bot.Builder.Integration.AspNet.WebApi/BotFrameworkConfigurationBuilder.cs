@@ -43,7 +43,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
         /// <returns><see cref="BotFrameworkConfigurationBuilder"/> instance with the retry policy set.</returns>
         public BotFrameworkConfigurationBuilder UseRetryPolicy(RetryPolicy retryPolicy)
         {
-            _options.RetryPolicy = retryPolicy;
+            _options.ConnectorClientRetryPolicy = retryPolicy;
             return this;
         }
 
