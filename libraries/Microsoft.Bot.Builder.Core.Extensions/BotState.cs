@@ -43,6 +43,16 @@ namespace Microsoft.Bot.Builder.Core.Extensions
         public async Task OnProcessRequest(ITurnContext context, MiddlewareSet.NextDelegate next)
         {
             await Read(context).ConfigureAwait(false);
+            if (_settings.WriteBeforeSend)
+            {
+                context.OnSendActivities(OnSend);
+            }
+            await next().ConfigureAwait(false);
+            await Write(context).ConfigureAwait(false);
+        }
+
+        protected async Task OnSend(ITurnContext context, List<Activity> activities, Func<Task> next)
+        {
             await next().ConfigureAwait(false);
             await Write(context).ConfigureAwait(false);
         }
