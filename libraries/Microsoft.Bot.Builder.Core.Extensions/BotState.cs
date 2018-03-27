@@ -53,7 +53,8 @@ namespace Microsoft.Bot.Builder.Core.Extensions
 
         protected async Task OnSend(ITurnContext context, List<Activity> activities, Func<Task> next)
         {
-            
+            await next().ConfigureAwait(false);
+            await Write(context).ConfigureAwait(false);
         }
 
         protected virtual async Task<StoreItems> Read(ITurnContext context)
