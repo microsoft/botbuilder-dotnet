@@ -43,15 +43,17 @@ namespace Microsoft.Bot.Builder.Core.Extensions
         public async Task OnProcessRequest(ITurnContext context, MiddlewareSet.NextDelegate next)
         {
             await Read(context).ConfigureAwait(false);
-            context.OnSendActivities(SendHandler);
+            if (_settings.WriteBeforeSend)
+            {
+                context.OnSendActivities(OnSend);
+            }
             await next().ConfigureAwait(false);
             await Write(context).ConfigureAwait(false);
         }
 
-        protected async Task SendHandler(ITurnContext context, List<Activity> activities, Func<Task> next)
+        protected async Task OnSend(ITurnContext context, List<Activity> activities, Func<Task> next)
         {
-            await next().ConfigureAwait(false);
-            await Write(context).ConfigureAwait(false);
+            
         }
 
         protected virtual async Task<StoreItems> Read(ITurnContext context)
