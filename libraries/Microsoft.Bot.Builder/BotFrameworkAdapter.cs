@@ -51,15 +51,15 @@ namespace Microsoft.Bot.Builder.Adapters
             var context = new TurnContext(this, reference.GetPostToBotMessage());
 
             // Hand craft Claims Identity.
-            ClaimsIdentity claimsIdentity = new ClaimsIdentity(new List<Claim>
+            var claimsIdentity = new ClaimsIdentity(new List<Claim>
             {
                 // Adding claims for both Emulator and Channel.
                 new Claim(AuthenticationConstants.AudienceClaim, botAppId),
                 new Claim(AuthenticationConstants.AppIdClaim, botAppId)
             });
 
-            context.Services.Add<IIdentity>(claimsIdentity);
-            IConnectorClient connectorClient = await this.CreateConnectorClientAsync(claimsIdentity, reference.ServiceUrl);
+            context.Services.Add<IIdentity>("BotIdentity", claimsIdentity);
+            var connectorClient = await this.CreateConnectorClientAsync(claimsIdentity, reference.ServiceUrl);
             context.Services.Add<IConnectorClient>(connectorClient);
             await RunPipeline(context, callback);
         }
@@ -78,11 +78,11 @@ namespace Microsoft.Bot.Builder.Adapters
         public async Task ProcessActivity(string authHeader, Activity activity, Func<ITurnContext, Task> callback)
         {
             BotAssert.ActivityNotNull(activity);
-            ClaimsIdentity claimsIdentity =  await JwtTokenValidation.AuthenticateRequest(activity, authHeader, _credentialProvider, _httpClient);
+            var claimsIdentity =  await JwtTokenValidation.AuthenticateRequest(activity, authHeader, _credentialProvider, _httpClient);
 
             var context = new TurnContext(this, activity);
-            context.Services.Add<IIdentity>(claimsIdentity);
-            IConnectorClient connectorClient = await this.CreateConnectorClientAsync(claimsIdentity, activity.ServiceUrl);
+            context.Services.Add<IIdentity>("BotIdentity", claimsIdentity);
+            var connectorClient = await this.CreateConnectorClientAsync(claimsIdentity, activity.ServiceUrl);
             context.Services.Add<IConnectorClient>(connectorClient);
             await base.RunPipeline(context, callback).ConfigureAwait(false);
         }
@@ -173,7 +173,7 @@ namespace Microsoft.Bot.Builder.Adapters
 
             // For requests from channel App Id is in Audience claim of JWT token. For emulator it is in AppId claim. For 
             // unauthenticated requests we have anonymouse identity provided auth is disabled.
-            Claim botAppIdClaim = (claimsIdentity.Claims?.SingleOrDefault(claim => claim.Type == AuthenticationConstants.AudienceClaim)
+            var botAppIdClaim = (claimsIdentity.Claims?.SingleOrDefault(claim => claim.Type == AuthenticationConstants.AudienceClaim)
                 ??
                 // For Activities coming from Emulator AppId claim contains the Bot's AAD AppId.
                 claimsIdentity.Claims?.SingleOrDefault(claim => claim.Type == AuthenticationConstants.AppIdClaim));
@@ -182,7 +182,7 @@ namespace Microsoft.Bot.Builder.Adapters
             if (botAppIdClaim != null)
             {
                 string botId = botAppIdClaim.Value;
-                MicrosoftAppCredentials appCredentials = await this.GetAppCredentialsAsync(botId);
+                var appCredentials = await this.GetAppCredentialsAsync(botId);
                 return new ConnectorClient(new Uri(serviceUrl), appCredentials);
             }
             else
