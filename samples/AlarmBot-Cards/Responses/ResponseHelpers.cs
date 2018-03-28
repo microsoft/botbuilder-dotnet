@@ -19,9 +19,9 @@ namespace AlarmBot
         /// <param name="yesLabel">yes label</param>
         /// <param name="noLabel">no label</param>
         /// <returns></returns>
-        public static IMessageActivity CreateMessageBoxCard(IBotContext context, string id, string title, string message, string yesLabel, string noLabel)
+        public static IMessageActivity CreateMessageBoxCard(ITurnContext context, string id, string title, string message, string yesLabel, string noLabel)
         {
-            IMessageActivity reply = context.Request.CreateReply(message);
+            IMessageActivity reply = context.Activity.CreateReply(message);
 
             var card = new AdaptiveCard();
             card.Body.Add(new TextBlock() { Text = title, Size = TextSize.Large });

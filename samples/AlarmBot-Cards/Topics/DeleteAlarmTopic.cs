@@ -30,9 +30,9 @@ namespace AlarmBot.Topics
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public Task<bool> StartTopic(IBotContext context)
+        public Task<bool> StartTopic(ITurnContext context)
         {
-            var recognizedIntents = context.Get<IRecognizedIntents>();
+            var recognizedIntents = context.Services.Get<IRecognizedIntents>();
             this.AlarmTitle = recognizedIntents.TopIntent?.Entities.Where(entity => entity.GroupName == "AlarmTitle")
                                 .Select(entity => entity.ValueAs<string>()).FirstOrDefault();
 
@@ -44,11 +44,11 @@ namespace AlarmBot.Topics
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public async Task<bool> ContinueTopic(IBotContext context)
+        public async Task<bool> ContinueTopic(ITurnContext context)
         {
-            if (context.Request.Type == ActivityTypes.Message)
+            if (context.Activity.Type == ActivityTypes.Message)
             {
-                this.AlarmTitle = context.Request.AsMessageActivity().Text.Trim();
+                this.AlarmTitle = context.Activity.AsMessageActivity().Text.Trim();
                 return await this.FindAlarm(context);
             }
             return true;
@@ -59,12 +59,12 @@ namespace AlarmBot.Topics
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public Task<bool> ResumeTopic(IBotContext context)
+        public Task<bool> ResumeTopic(ITurnContext context)
         {
             return this.FindAlarm(context);
         }
 
-        public async Task<bool> FindAlarm(IBotContext context)
+        public async Task<bool> FindAlarm(ITurnContext context)
         {
             var userState = context.GetUserState<UserData>();
 

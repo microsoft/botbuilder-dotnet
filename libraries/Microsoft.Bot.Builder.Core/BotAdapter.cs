@@ -36,7 +36,7 @@ namespace Microsoft.Bot.Builder
         /// <returns>Array of ResourcesResponse containing the Ids of the sent activities. For
         /// most bots, these Ids are server-generated and enable Update and Delete to be 
         /// called against the remote resources.</returns>
-        public abstract Task<ResourceResponse[]> SendActivities(IBotContext context, Activity[] activities);
+        public abstract Task<ResourceResponse[]> SendActivities(ITurnContext context, Activity[] activities);
 
         /// <summary>
         /// Implement updating an activity in the conversation
@@ -46,14 +46,14 @@ namespace Microsoft.Bot.Builder
         /// <returns>ResourcesResponses containing the Id of the sent activity. For
         /// most bots, this Id is server-generated and enables future Update and Delete calls
         /// against the remote resources.</returns>
-        public abstract Task<ResourceResponse> UpdateActivity(IBotContext context, Activity activity);
+        public abstract Task<ResourceResponse> UpdateActivity(ITurnContext context, Activity activity);
 
         /// <summary>
         /// Implement deleting an activity in the conversation
         /// </summary>
         /// <param name="reference">Conversation reference of the activity being deleted.  </param>
         /// <returns></returns>
-        public abstract Task DeleteActivity(IBotContext context, ConversationReference reference);
+        public abstract Task DeleteActivity(ITurnContext context, ConversationReference reference);
 
 
         /// <summary>
@@ -62,12 +62,12 @@ namespace Microsoft.Bot.Builder
         /// <param name="context"></param>
         /// <param name="callback"></param>
         /// <returns></returns>
-        protected async Task RunPipeline(IBotContext context, Func<IBotContext, Task> callback = null, CancellationTokenSource cancelToken = null)
+        protected async Task RunPipeline(ITurnContext context, Func<ITurnContext, Task> callback = null, CancellationTokenSource cancelToken = null)
         {
             BotAssert.ContextNotNull(context);
             
             // Call any registered Middleware Components looking for ReceiveActivity()
-            if (context.Request != null)
+            if (context.Activity != null)
             {
                 await _middlewareSet.ReceiveActivityWithStatus(context, callback).ConfigureAwait(false);
             }
@@ -89,7 +89,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="reference">reference to create context around</param>
         /// <param name="callback">callback where you can continue the conversation</param>
         /// <returns>task when completed</returns>
-        public virtual async Task CreateConversation(string channelId, Func<IBotContext, Task> callback)
+        public virtual async Task CreateConversation(string channelId, Func<ITurnContext, Task> callback)
         {
             throw new NotImplementedException("Adapter does not support CreateConversation with this arguments");
         }
@@ -101,9 +101,9 @@ namespace Microsoft.Bot.Builder
         /// <param name="reference">reference to create context around</param>
         /// <param name="callback">callback where you can continue the conversation</param>
         /// <returns>task when completed</returns>
-        public virtual Task ContinueConversation(ConversationReference reference, Func<IBotContext, Task> callback)
+        public virtual Task ContinueConversation(ConversationReference reference, Func<ITurnContext, Task> callback)
         {
-            var context = new BotContext(this, reference.GetPostToBotMessage());
+            var context = new TurnContext(this, reference.GetPostToBotMessage());
             return RunPipeline(context, callback);
         }
     }

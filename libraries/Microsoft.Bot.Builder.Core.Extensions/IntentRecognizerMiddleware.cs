@@ -33,9 +33,9 @@ namespace Microsoft.Bot.Builder.Core.Extensions
 
     public class IntentRecognizerMiddleware : IMiddleware
     {
-        public delegate Task<Boolean> IntentDisabler(IBotContext context);
-        public delegate Task<IList<Intent>> IntentRecognizer(IBotContext context);
-        public delegate Task IntentResultMutator(IBotContext context, IList<Intent> intents);
+        public delegate Task<Boolean> IntentDisabler(ITurnContext context);
+        public delegate Task<IList<Intent>> IntentRecognizer(ITurnContext context);
+        public delegate Task IntentResultMutator(ITurnContext context, IList<Intent> intents);
 
         private readonly LinkedList<IntentDisabler> _intentDisablers = new LinkedList<IntentDisabler>();
         private readonly LinkedList<IntentRecognizer> _intentRecognizers = new LinkedList<IntentRecognizer>();
@@ -46,9 +46,9 @@ namespace Microsoft.Bot.Builder.Core.Extensions
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public static IRecognizedIntents Get(IBotContext context) { return context.Get<IRecognizedIntents>(); }
+        public static IRecognizedIntents Get(ITurnContext context) { return context.Services.Get<IRecognizedIntents>(); }
 
-        public async Task OnProcessRequest(IBotContext context, MiddlewareSet.NextDelegate next)
+        public async Task OnProcessRequest(ITurnContext context, MiddlewareSet.NextDelegate next)
         {
             BotAssert.ContextNotNull(context);
 
@@ -63,11 +63,11 @@ namespace Microsoft.Bot.Builder.Core.Extensions
                     result.TopIntent = topIntent;
                 }
             }
-            context.Set((IRecognizedIntents)result);
+            context.Services.Add((IRecognizedIntents)result);
             await next().ConfigureAwait(false);
         }
 
-        public async Task<IList<Intent>> Recognize(IBotContext context)
+        public async Task<IList<Intent>> Recognize(ITurnContext context)
         {
             BotAssert.ContextNotNull(context);
 
@@ -84,7 +84,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions
             }
         }
 
-        private async Task<IList<Intent>> RunRecognizer(IBotContext context)
+        private async Task<IList<Intent>> RunRecognizer(ITurnContext context)
         {
             List<Intent> allRecognizedIntents = new List<Intent>();
 
@@ -100,7 +100,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions
             return allRecognizedIntents;
         }
 
-        private async Task<Boolean> IsRecognizerEnabled(IBotContext context)
+        private async Task<Boolean> IsRecognizerEnabled(ITurnContext context)
         {
             foreach (var userCode in _intentDisablers)
             {
@@ -114,7 +114,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions
             return true;
         }
 
-        private async Task RunFilters(IBotContext context, IList<Intent> intents)
+        private async Task RunFilters(ITurnContext context, IList<Intent> intents)
         {
             foreach (var filter in _intentResultMutators)
             {

@@ -69,7 +69,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions
             this.OnRecognize(async (context) =>
            {
                IList<Intent> intents = new List<Intent>();
-               string utterance = CleanString(context.Request.Text);
+               string utterance = CleanString(context.Activity.Text);
                double minScore = _settings.MinScore;
 
                foreach (var name in _intents.Keys)
@@ -131,10 +131,10 @@ namespace Microsoft.Bot.Builder.Core.Extensions
 
             return this;
         }
-        private List<Regex> GetExpressions(IBotContext context, RegExLocaleMap map)
+        private List<Regex> GetExpressions(ITurnContext context, RegExLocaleMap map)
         {
             
-            var locale = string.IsNullOrWhiteSpace(context.Request.Locale) ? "*" : context.Request.Locale;
+            var locale = string.IsNullOrWhiteSpace(context.Activity.Locale) ? "*" : context.Activity.Locale;
             var entry = map.GetLocale(locale);
             return entry;
         }

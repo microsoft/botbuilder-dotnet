@@ -14,20 +14,20 @@ namespace Microsoft.Bot.Builder.Core.Tests
     [TestCategory("Adapter")]
     public class TestAdapterTests
     {
-        public async Task MyBotLogic(IBotContext context)
+        public async Task MyBotLogic(ITurnContext context)
         {
-            switch (context.Request.AsMessageActivity().Text)
+            switch (context.Activity.AsMessageActivity().Text)
             {
                 case "count":
-                    await context.SendActivity(context.Request.CreateReply("one"));
-                    await context.SendActivity(context.Request.CreateReply("two"));
-                    await context.SendActivity(context.Request.CreateReply("three"));
+                    await context.SendActivity(context.Activity.CreateReply("one"));
+                    await context.SendActivity(context.Activity.CreateReply("two"));
+                    await context.SendActivity(context.Activity.CreateReply("three"));
                     break;
                 case "ignore":
                     break;
                 default:
                     await context.SendActivity( 
-                        context.Request.CreateReply($"echo:{context.Request.AsMessageActivity().Text}"));
+                        context.Activity.CreateReply($"echo:{context.Activity.AsMessageActivity().Text}"));
                     break;
             }
         }
@@ -49,7 +49,7 @@ namespace Microsoft.Bot.Builder.Core.Tests
             {
                 await new TestFlow(adapter, async (context) =>
                 {
-                    await context.SendActivity(context.Request.CreateReply("one"));
+                    await context.SendActivity(context.Activity.CreateReply("one"));
                 })
                     .Test("foo", (activity) => throw new Exception(uniqueExceptionId))
                     .StartTest();
@@ -92,7 +92,7 @@ namespace Microsoft.Bot.Builder.Core.Tests
             {
                 await new TestFlow(adapter, async (context) => 
                 {
-                    await context.SendActivity(context.Request.CreateReply("one"));
+                    await context.SendActivity(context.Activity.CreateReply("one"));
                 })
                     .Send("foo")
                     .AssertReply(

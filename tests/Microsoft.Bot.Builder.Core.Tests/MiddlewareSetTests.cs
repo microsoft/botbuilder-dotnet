@@ -42,7 +42,7 @@ namespace Microsoft.Bot.Builder.Core.Tests
         {
             MiddlewareSet m = new MiddlewareSet();
             bool wasCalled = false;
-            async Task CallMe(IBotContext context)
+            async Task CallMe(ITurnContext context)
             {
                 wasCalled = true; 
             }
@@ -57,7 +57,7 @@ namespace Microsoft.Bot.Builder.Core.Tests
             WasCalledMiddlware simple = new WasCalledMiddlware();
 
             bool wasCalled = false;
-            async Task CallMe(IBotContext context)
+            async Task CallMe(ITurnContext context)
             {
                 wasCalled = true;
             }
@@ -120,7 +120,7 @@ namespace Microsoft.Bot.Builder.Core.Tests
             WasCalledMiddlware two = new WasCalledMiddlware();
 
             int called = 0;
-            async Task CallMe(IBotContext context)
+            async Task CallMe(ITurnContext context)
             {
                 called++;
             }
@@ -434,7 +434,7 @@ namespace Microsoft.Bot.Builder.Core.Tests
         {
             public bool Called { get; set; } = false;
 
-            public Task OnProcessRequest(IBotContext context, MiddlewareSet.NextDelegate next)
+            public Task OnProcessRequest(ITurnContext context, MiddlewareSet.NextDelegate next)
             {
                 Called = true;
                 return next();
@@ -448,7 +448,7 @@ namespace Microsoft.Bot.Builder.Core.Tests
             {
                 _callMe = callMe;
             }
-            public Task OnProcessRequest(IBotContext context, MiddlewareSet.NextDelegate next)
+            public Task OnProcessRequest(ITurnContext context, MiddlewareSet.NextDelegate next)
             {
                 _callMe();
                 // DO NOT call NEXT
@@ -463,7 +463,7 @@ namespace Microsoft.Bot.Builder.Core.Tests
             {
                 _callMe = callMe;
             }
-            public Task OnProcessRequest(IBotContext context, MiddlewareSet.NextDelegate next)
+            public Task OnProcessRequest(ITurnContext context, MiddlewareSet.NextDelegate next)
             {
                 _callMe();
                 return next();

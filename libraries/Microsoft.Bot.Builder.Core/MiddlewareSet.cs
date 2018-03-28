@@ -20,12 +20,12 @@ namespace Microsoft.Bot.Builder
             return this;
         }
 
-        public async Task ReceiveActivity(IBotContext context)
+        public async Task ReceiveActivity(ITurnContext context)
         {
             await ReceiveActivityInternal(context, null).ConfigureAwait(false);
         }
 
-        public async Task OnProcessRequest(IBotContext context, NextDelegate next)
+        public async Task OnProcessRequest(ITurnContext context, NextDelegate next)
         {
             await ReceiveActivityInternal(context, null).ConfigureAwait(false);
             await next().ConfigureAwait(false);
@@ -36,12 +36,12 @@ namespace Microsoft.Bot.Builder
         /// standard ReceiveActivity, except that it runs a user-defined delegate returns 
         /// if all Middlware in the receive pipeline was run.
         /// </summary>
-        public async Task ReceiveActivityWithStatus(IBotContext context, Func<IBotContext, Task> callback)
+        public async Task ReceiveActivityWithStatus(ITurnContext context, Func<ITurnContext, Task> callback)
         {
             await ReceiveActivityInternal(context, callback).ConfigureAwait(false);
         }
 
-        private Task ReceiveActivityInternal(IBotContext context, Func<IBotContext, Task> callback, int nextMiddlewareIndex = 0)
+        private Task ReceiveActivityInternal(ITurnContext context, Func<ITurnContext, Task> callback, int nextMiddlewareIndex = 0)
         {
             // Check if we're at the end of the middleware list yet
             if(nextMiddlewareIndex == _middleware.Count)
