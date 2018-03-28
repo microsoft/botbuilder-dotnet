@@ -17,6 +17,11 @@ using System.Collections.Generic;
 
 namespace Microsoft.Bot.Samples.Ai.QnA.Controllers
 {
+    class CurrentUserState
+    {
+        public string Language { get; set; }
+        public string Locale { get; set; }
+    }
     [Route("api/[controller]")]
     public class MessagesController : Controller
     {
@@ -45,19 +50,19 @@ namespace Microsoft.Bot.Samples.Ai.QnA.Controllers
                 patterns["fr"].Add("mon nom est (.+)");//single pattern for fr language
                 //Check templates forlder for more pattern examples for fr language
                 adapter = new BotFrameworkAdapter(new ConfigurationCredentialProvider(configuration))
-                    .Use(new BatchOutputMiddleware())
+                    .Use(new UserState<CurrentUserState>(new MemoryStorage()))
                     .Use(new TranslationMiddleware(new string[] { "en" }, "xxxxxx", patterns, GetActiveLanguage, SetActiveLanguage))
                     .Use(new LocaleConverterMiddleware(GetActiveLocale, SetActiveLocale, "en-us", new LocaleConverter()))
                     .Use(new QnAMakerMiddleware(qnaOptions, _httpClient));
             }
         }
 
-        private Task BotReceiveHandler(IBotContext context)
+        private Task BotReceiveHandler(ITurnContext context)
         {
-            if (context.Request.Type == ActivityTypes.Message && context.Responded == false)
+            if (context.Activity.Type == ActivityTypes.Message && context.Responded == false)
             {
                 // add app logic when QnA Maker doesn't find an answer
-                context.Batch().Reply("No good match found in the KB.");
+                context.SendActivity("No good match found in the KB.");
             }
             return Task.CompletedTask;
         }
@@ -85,15 +90,15 @@ namespace Microsoft.Bot.Samples.Ai.QnA.Controllers
             return new ObjectResult("Success!");
         }
 
-        private void SetLanguage(IBotContext context, string language) => context.Set(@"Microsoft.API.translateTo", language);
-        private void SetLocale(IBotContext context, string locale) => context.Set(@"LocaleConverterMiddleware.fromLocale", locale);
+        private void SetLanguage(ITurnContext context, string language) => context.GetUserState<CurrentUserState>().Language = language;
+        private void SetLocale(ITurnContext context, string locale) => context.GetUserState<CurrentUserState>().Locale = locale;
 
         protected bool IsSupportedLanguage(string language) => _supportedLanguages.Contains(language);
-        protected async Task<bool> SetActiveLanguage(IBotContext context)
+        protected async Task<bool> SetActiveLanguage(ITurnContext context)
         {
             bool changeLang = false;//logic implemented by developper to make a signal for language changing 
             //use a specific message from user to change language
-            var messageActivity = context.Request.AsMessageActivity();
+            var messageActivity = context.Activity.AsMessageActivity();
             if (messageActivity.Text.ToLower().StartsWith("set my language to"))
             {
                 changeLang = true;
@@ -117,29 +122,29 @@ namespace Microsoft.Bot.Samples.Ai.QnA.Controllers
 
             return false;
         }
-        protected string GetActiveLanguage(IBotContext context)
+        protected string GetActiveLanguage(ITurnContext context)
         {
             if (currentLanguage != null)
             {
                 //user has specified a different language so update the bot state
-                if (currentLanguage != (string)context.Get(@"Microsoft.API.translateTo"))
+                if (context.GetUserState<CurrentUserState>() != null && currentLanguage != context.GetUserState<CurrentUserState>().Language)
                 {
                     SetLanguage(context, currentLanguage);
                 }
             }
-            if (context.Request.Type == ActivityTypes.Message
-                && context.Has(@"Microsoft.API.translateTo"))
+            if (context.Activity.Type == ActivityTypes.Message
+                && context.GetUserState<CurrentUserState>() != null)
             {
-                return (string)context.Get(@"Microsoft.API.translateTo");
+                return (string)context.GetUserState<CurrentUserState>().Language;
             }
 
             return "en";
         }
-        protected async Task<bool> SetActiveLocale(IBotContext context)
+        protected async Task<bool> SetActiveLocale(ITurnContext context)
         {
             bool changeLocale = false;//logic implemented by developper to make a signal for language changing 
             //use a specific message from user to change language
-            var messageActivity = context.Request.AsMessageActivity();
+            var messageActivity = context.Activity.AsMessageActivity();
             if (messageActivity.Text.ToLower().StartsWith("set my locale to"))
             {
                 changeLocale = true;
@@ -163,20 +168,20 @@ namespace Microsoft.Bot.Samples.Ai.QnA.Controllers
 
             return false;
         }
-        protected string GetActiveLocale(IBotContext context)
+        protected string GetActiveLocale(ITurnContext context)
         {
             if (currentLocale != null)
             {
                 //the user has specified a different locale so update the bot state
-                if (currentLocale != (string)context.Get(@"LocaleConverterMiddleware.fromLocale"))
+                if (context.GetUserState<CurrentUserState>() != null && currentLocale != context.GetUserState<CurrentUserState>().Locale)
                 {
                     SetLocale(context, currentLocale);
                 }
             }
-            if (context.Request.Type == ActivityTypes.Message
-                && context.Has(@"LocaleConverterMiddleware.fromLocale"))
+            if (context.Activity.Type == ActivityTypes.Message
+                && context.GetUserState<CurrentUserState>() != null)
             {
-                return (string)context.Get(@"LocaleConverterMiddleware.fromLocale");
+                return context.GetUserState<CurrentUserState>().Locale;
             }
 
             return "en-us";

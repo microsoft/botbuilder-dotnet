@@ -26,15 +26,14 @@ namespace Microsoft.Bot.Builder.Ai.Tests
         public async Task TranslatorMiddleware_DetectAndTranslateToEnglish()
         {
             
-            TestAdapter adapter = new TestAdapter()
-            .Use(new BatchOutputMiddleware()) 
+            TestAdapter adapter = new TestAdapter() 
             .Use(new TranslationMiddleware(new string[] { "en-us" }, translatorKey));
 
             await new TestFlow(adapter, (context) =>
             {
                 if (!context.Responded)
                 {
-                    context.Batch().Reply(context.Request.AsMessageActivity().Text);
+                    context.SendActivity(context.Activity.AsMessageActivity().Text);
                 }
                 return Task.CompletedTask;
             })
@@ -52,7 +51,6 @@ namespace Microsoft.Bot.Builder.Ai.Tests
         {
 
             TestAdapter adapter = new TestAdapter()
-                .Use(new BatchOutputMiddleware())
                 .Use(new UserState<LanguageState>(new MemoryStorage()))
                 .Use(new TranslationMiddleware(new string[] { "en-us" }, translatorKey, new Dictionary<string, List<string>>(), GetActiveLanguage, SetActiveLanguage));
 
@@ -60,7 +58,7 @@ namespace Microsoft.Bot.Builder.Ai.Tests
             {
                 if (!context.Responded)
                 {
-                    context.Batch().Reply(context.Request.AsMessageActivity().Text);  
+                    context.SendActivity(context.Activity.AsMessageActivity().Text);  
                 }
                 return Task.CompletedTask;
             })
@@ -71,13 +69,13 @@ namespace Microsoft.Bot.Builder.Ai.Tests
                 .StartTest();
         }
 
-        private void SetLanguage(IBotContext context, string language) =>context.GetUserState<LanguageState>().Language = language ; 
+        private void SetLanguage(ITurnContext context, string language) =>context.GetUserState<LanguageState>().Language = language ; 
        
-        protected async Task<bool> SetActiveLanguage(IBotContext context)
+        protected async Task<bool> SetActiveLanguage(ITurnContext context)
         {
             bool changeLang = false;//logic implemented by developper to make a signal for language changing 
             //use a specific message from user to change language 
-            var messageActivity = context.Request.AsMessageActivity();
+            var messageActivity = context.Activity.AsMessageActivity();
             if (messageActivity.Text.ToLower().StartsWith("set my language to"))
             {
                 changeLang = true;
@@ -100,9 +98,9 @@ namespace Microsoft.Bot.Builder.Ai.Tests
 
             return false;
         }
-        protected string GetActiveLanguage(IBotContext context)
+        protected string GetActiveLanguage(ITurnContext context)
         {
-            if (context.Request.Type == ActivityTypes.Message
+            if (context.Activity.Type == ActivityTypes.Message
                 && !string.IsNullOrEmpty(context.GetUserState<LanguageState>().Language))
             {
                 return context.GetUserState<LanguageState>().Language;
