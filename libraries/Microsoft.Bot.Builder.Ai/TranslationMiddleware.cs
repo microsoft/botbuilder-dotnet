@@ -16,8 +16,8 @@ namespace Microsoft.Bot.Builder.Ai
         private readonly string[] _nativeLanguages;
         private readonly Translator _translator;
         private readonly Dictionary<string,List<string>> _patterns;
-        private readonly Func<IBotContext, string> _getUserLanguage;
-        private readonly Func<IBotContext, Task<bool>> _setUserLanguage;
+        private readonly Func<ITurnContext, string> _getUserLanguage;
+        private readonly Func<ITurnContext, Task<bool>> _setUserLanguage;
 
         /// <summary>
         /// Constructor for automatic detection of user messages
@@ -52,7 +52,7 @@ namespace Microsoft.Bot.Builder.Ai
         /// <param name="patterns">Dictionary with language as a key and list of patterns as value</param>
         /// <param name="getUserLanguage">Delegate for getting the user language</param>
         /// <param name="setUserLanguage">Delegate for setting the user language, returns true if the language was changed (implements logic to change language by intercepting the message)</param>
-        public TranslationMiddleware(string[] nativeLanguages, string translatorKey, Dictionary<string, List<string>> patterns, Func<IBotContext, string> getUserLanguage, Func<IBotContext, Task<bool>> setUserLanguage)
+        public TranslationMiddleware(string[] nativeLanguages, string translatorKey, Dictionary<string, List<string>> patterns, Func<ITurnContext, string> getUserLanguage, Func<ITurnContext, Task<bool>> setUserLanguage)
         {
             this._nativeLanguages = nativeLanguages;
             this._translator = new Translator(translatorKey);
@@ -67,9 +67,9 @@ namespace Microsoft.Bot.Builder.Ai
         /// <param name="context"></param>
         /// <param name="next"></param>
         /// <returns></returns>       
-        public async Task OnProcessRequest(IBotContext context, MiddlewareSet.NextDelegate next)
+        public async Task OnProcessRequest(ITurnContext context, MiddlewareSet.NextDelegate next)
         {
-            IMessageActivity message = context.Request.AsMessageActivity();
+            IMessageActivity message = context.Activity.AsMessageActivity();
             if (message != null)
             {
                 if (!String.IsNullOrWhiteSpace(message.Text))
@@ -104,7 +104,6 @@ namespace Microsoft.Bot.Builder.Ai
                                 SourceLanguage = sourceLanguage,
                                 TargetLanguage = (this._nativeLanguages.Contains(sourceLanguage)) ? sourceLanguage : this._nativeLanguages.FirstOrDefault() ?? "en"
                             };
-                            ((BotContext)context).Set("Microsoft.API.Translation", translationContext);
 
                             // translate to bots language
                             if (translationContext.SourceLanguage != translationContext.TargetLanguage)
@@ -127,7 +126,7 @@ namespace Microsoft.Bot.Builder.Ai
         /// <param name="sourceLanguage"/>
         /// <param name="targetLanguage"></param>
         /// <returns></returns>
-        private async Task TranslateMessageAsync(IBotContext context, IMessageActivity message, string sourceLanguage, string targetLanguage)
+        private async Task TranslateMessageAsync(ITurnContext context, IMessageActivity message, string sourceLanguage, string targetLanguage)
         {
             // if we have text and a target language
             if (!String.IsNullOrWhiteSpace(message.Text) && !String.IsNullOrEmpty(targetLanguage))
@@ -160,6 +159,6 @@ namespace Microsoft.Bot.Builder.Ai
 
                 message.Text = text;
             }
-        }
+        } 
     }
 }

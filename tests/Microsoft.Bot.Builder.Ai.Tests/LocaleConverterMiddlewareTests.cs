@@ -22,7 +22,6 @@ namespace Microsoft.Bot.Builder.Ai.Tests
         public async Task LocaleConverterMiddleware_ConvertFromFrench()
         {
             TestAdapter adapter = new TestAdapter()
-             .Use(new BatchOutputMiddleware())
              .Use(new UserState<LocaleState>(new MemoryStorage()))
              .Use(new LocaleConverterMiddleware(GetActiveLocale, SetActiveLocale, "en-us", new LocaleConverter()));
 
@@ -31,7 +30,7 @@ namespace Microsoft.Bot.Builder.Ai.Tests
             {
                 if (!context.Responded)
                 {
-                    context.Batch().Reply(context.Request.AsMessageActivity().Text);
+                    context.SendActivity(context.Activity.AsMessageActivity().Text);
                 }
                 return Task.CompletedTask;
             })
@@ -48,7 +47,6 @@ namespace Microsoft.Bot.Builder.Ai.Tests
         public async Task LocaleConverterMiddleware_ConvertToChinese()
         {
             TestAdapter adapter = new TestAdapter()
-                .Use(new BatchOutputMiddleware())
                 .Use(new UserState<LocaleState>(new MemoryStorage()))
                 .Use(new LocaleConverterMiddleware(GetActiveLocale, SetActiveLocale, "zh-cn", new LocaleConverter()));
 
@@ -57,7 +55,7 @@ namespace Microsoft.Bot.Builder.Ai.Tests
             {
                 if (!context.Responded)
                 {
-                    context.Batch().Reply(context.Request.AsMessageActivity().Text);
+                    context.SendActivity(context.Activity.AsMessageActivity().Text);
                 }
                 return Task.CompletedTask;
             })
@@ -68,13 +66,13 @@ namespace Microsoft.Bot.Builder.Ai.Tests
                 .StartTest();
         }
 
-        private void SetLocale(IBotContext context, string locale) => context.GetUserState<LocaleState>().Locale  = locale;
+        private void SetLocale(ITurnContext context, string locale) => context.GetUserState<LocaleState>().Locale  = locale;
 
-        protected async Task<bool> SetActiveLocale(IBotContext context)
+        protected async Task<bool> SetActiveLocale(ITurnContext context)
         {
             bool changeLocale = false;//logic implemented by developper to make a signal for language changing 
             //use a specific message from user to change language
-            var messageActivity = context.Request.AsMessageActivity();
+            var messageActivity = context.Activity.AsMessageActivity();
             if (messageActivity.Text.ToLower().StartsWith("set my locale to"))
             {
                 changeLocale = true;
@@ -97,9 +95,9 @@ namespace Microsoft.Bot.Builder.Ai.Tests
 
             return false;
         }
-        protected string GetActiveLocale(IBotContext context)
+        protected string GetActiveLocale(ITurnContext context)
         {
-            if (context.Request.Type == ActivityTypes.Message
+            if (context.Activity.Type == ActivityTypes.Message
                 && !string.IsNullOrEmpty(context.GetUserState<LocaleState>().Locale))
             {
                 return context.GetUserState<LocaleState>().Locale;

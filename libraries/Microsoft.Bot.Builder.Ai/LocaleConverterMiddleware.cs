@@ -15,8 +15,8 @@ namespace Microsoft.Bot.Builder.Ai
     {
         private ILocaleConverter localeConverter; 
         private readonly string toLocale;
-        private readonly Func<IBotContext, string> _getUserLocale;
-        private readonly Func<IBotContext, Task<bool>> _setUserLocale;
+        private readonly Func<ITurnContext, string> _getUserLocale;
+        private readonly Func<ITurnContext, Task<bool>> _setUserLocale;
 
         /// <summary>
         /// Constructor for developer defined detection of user messages
@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Builder.Ai
         /// <param name="setUserLocale">Delegate for setting the user language, returns true if the locale was changed (implements logic to change locale by intercepting the message)</param>
         /// <param name="toLocale">Target Locale</param>
         /// <param name="localeConverter">An ILocaleConverter instance</param>
-        public LocaleConverterMiddleware(Func<IBotContext, string> getUserLocale, Func<IBotContext, Task<bool>> setUserLocale, string toLocale, ILocaleConverter localeConverter)
+        public LocaleConverterMiddleware(Func<ITurnContext, string> getUserLocale, Func<ITurnContext, Task<bool>> setUserLocale, string toLocale, ILocaleConverter localeConverter)
         {
             this.localeConverter = localeConverter; 
             this.toLocale = toLocale;
@@ -39,26 +39,19 @@ namespace Microsoft.Bot.Builder.Ai
         /// <param name="context"></param>
         /// <param name="next"></param>
         /// <returns></returns>
-        public async Task OnProcessRequest(IBotContext context, MiddlewareSet.NextDelegate next)
+        public async Task OnProcessRequest(ITurnContext context, MiddlewareSet.NextDelegate next)
         {
-            IMessageActivity message = context.Request.AsMessageActivity();
+            IMessageActivity message = context.Activity.AsMessageActivity();
             if (message != null)
             {
                 if (!String.IsNullOrWhiteSpace(message.Text))
                 {
                     string fromLocale = _getUserLocale(context);
-                    ((BotContext)context).Set("LocaleConversionOriginalMessage",message.Text);
                     await ConvertLocaleMessageAsync(message, fromLocale);
                     await _setUserLocale(context);
                 }
             }
             await next().ConfigureAwait(false);
-        }
-
-        public static string GetOriginalMessage(IBotContext context)
-        {
-            string message = ((BotContext)context).Get("LocaleConversionOriginalMessage") as string;
-            return message;
         }
 
         private async Task ConvertLocaleMessageAsync(IMessageActivity message,string fromLocale)
@@ -69,7 +62,6 @@ namespace Microsoft.Bot.Builder.Ai
                 message.Text = await localeConverter.Convert(message.Text, fromLocale, toLocale);
             }
         }
-
-
+        
     }
 }
