@@ -27,10 +27,12 @@ namespace Microsoft.Bot.Builder.Ai
         /// <param name="localeConverter">An ILocaleConverter instance</param>
         public LocaleConverterMiddleware(Func<ITurnContext, string> getUserLocale, Func<ITurnContext, Task<bool>> setUserLocale, string toLocale, ILocaleConverter localeConverter)
         {
-            this.localeConverter = localeConverter; 
+            this.localeConverter = localeConverter ?? throw new ArgumentNullException(nameof(localeConverter));
+            if (string.IsNullOrEmpty(toLocale))
+                throw new ArgumentNullException(nameof(toLocale));
             this.toLocale = toLocale;
-            _getUserLocale = getUserLocale;
-            _setUserLocale = setUserLocale;
+            this._getUserLocale = getUserLocale ?? throw new ArgumentNullException(nameof(getUserLocale)); 
+            this._setUserLocale = setUserLocale ?? throw new ArgumentNullException(nameof(setUserLocale)); 
         }
 
         /// <summary>

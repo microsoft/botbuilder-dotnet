@@ -26,7 +26,11 @@ namespace Microsoft.Bot.Builder.Ai
         /// <param name="translatorKey"></param>
         public TranslationMiddleware(string[] nativeLanguages, string translatorKey)
         {
+            if(nativeLanguages==null || nativeLanguages.Count()==0)
+                throw new ArgumentNullException(nameof(nativeLanguages));
             this._nativeLanguages = nativeLanguages;
+            if(string.IsNullOrEmpty(translatorKey))
+                throw new ArgumentNullException(nameof(translatorKey));
             this._translator = new Translator(translatorKey);
             _patterns = new Dictionary<string, List<string>>();
         }
@@ -39,9 +43,13 @@ namespace Microsoft.Bot.Builder.Ai
         /// <param name="patterns">Dictionary with language as a key and list of patterns as value</param>
         public TranslationMiddleware(string[] nativeLanguages, string translatorKey, Dictionary<string, List<string>> patterns)
         {
+            if (nativeLanguages == null || nativeLanguages.Count() == 0)
+                throw new ArgumentNullException(nameof(nativeLanguages));
             this._nativeLanguages = nativeLanguages;
+            if (string.IsNullOrEmpty(translatorKey))
+                throw new ArgumentNullException(nameof(translatorKey));
             this._translator = new Translator(translatorKey);
-            this._patterns = patterns;
+            this._patterns = patterns ?? throw new ArgumentNullException(nameof(patterns));
         }
 
         /// <summary>
@@ -54,11 +62,16 @@ namespace Microsoft.Bot.Builder.Ai
         /// <param name="setUserLanguage">Delegate for setting the user language, returns true if the language was changed (implements logic to change language by intercepting the message)</param>
         public TranslationMiddleware(string[] nativeLanguages, string translatorKey, Dictionary<string, List<string>> patterns, Func<ITurnContext, string> getUserLanguage, Func<ITurnContext, Task<bool>> setUserLanguage)
         {
+            if (nativeLanguages == null || nativeLanguages.Count() == 0)
+                throw new ArgumentNullException(nameof(nativeLanguages));
             this._nativeLanguages = nativeLanguages;
+            if (string.IsNullOrEmpty(translatorKey))
+                throw new ArgumentNullException(nameof(translatorKey));
             this._translator = new Translator(translatorKey);
+            this._patterns = patterns ?? throw new ArgumentNullException(nameof(patterns));
             this._patterns = patterns;
-            _getUserLanguage = getUserLanguage;
-            _setUserLanguage = setUserLanguage;
+            this._getUserLanguage = getUserLanguage ?? throw new ArgumentNullException(nameof(getUserLanguage));
+            this._setUserLanguage = setUserLanguage ?? throw new ArgumentNullException(nameof(setUserLanguage)); 
         }
 
         /// <summary>
