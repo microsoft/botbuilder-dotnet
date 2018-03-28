@@ -64,7 +64,7 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                 var state = ConversationState<TestState>.Get(context);
                 var confirmPrompt = new ConfirmPrompt(Culture.English, async (ctx, result) =>
                 {
-                    if (ctx.Request.Text.Contains("xxx"))
+                    if (ctx.Activity.Text.Contains("xxx"))
                         result.Status = PromptStatus.NotRecognized;
                 });
 

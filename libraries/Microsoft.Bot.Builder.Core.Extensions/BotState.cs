@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions
     {
         private readonly StateSettings _settings;
         private readonly IStorage _storage;
-        private readonly Func<IBotContext, string> _keyDelegate;
+        private readonly Func<ITurnContext, string> _keyDelegate;
         private readonly string _propertyName;
 
         /// <summary>
@@ -32,7 +32,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions
         /// <param name="name">name of the kind of state</param>
         /// <param name="storage">storage provider to use</param>
         /// <param name="settings">settings</param>
-        public BotState(IStorage storage, string propertyName, Func<IBotContext, string> keyDelegate, StateSettings settings = null)
+        public BotState(IStorage storage, string propertyName, Func<ITurnContext, string> keyDelegate, StateSettings settings = null)
         {
             _storage = storage ?? throw new ArgumentNullException(nameof(storage));
             _propertyName = propertyName ?? throw new ArgumentNullException(nameof(propertyName));
@@ -40,14 +40,14 @@ namespace Microsoft.Bot.Builder.Core.Extensions
             _settings = settings ?? new StateSettings();
         }
 
-        public async Task OnProcessRequest(IBotContext context, MiddlewareSet.NextDelegate next)
+        public async Task OnProcessRequest(ITurnContext context, MiddlewareSet.NextDelegate next)
         {
             await Read(context).ConfigureAwait(false);
             await next().ConfigureAwait(false);
             await Write(context).ConfigureAwait(false);
         }
 
-        protected virtual async Task<StoreItems> Read(IBotContext context)
+        protected virtual async Task<StoreItems> Read(ITurnContext context)
         {
             var key = this._keyDelegate(context);
             var keys = new List<String> { key };
@@ -55,15 +55,15 @@ namespace Microsoft.Bot.Builder.Core.Extensions
             var state = items.Get<StateT>(key);
             if (state == null)
                 state = new StateT();
-            context.Set(this._propertyName, state);
+            context.Services.Add(this._propertyName, state);
             return items;
         }
 
-        protected virtual async Task Write(IBotContext context)
+        protected virtual async Task Write(ITurnContext context)
         {
             StoreItems changes = new StoreItems();
 
-            var state = context.Get<StateT>(this._propertyName);
+            var state = context.Services.Get<StateT>(this._propertyName);
             if (state == null)
                 state = new StateT();
             var key = _keyDelegate(context);
@@ -85,7 +85,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions
     }
 
     /// <summary>
-    /// Handles persistence of StateT object using Context.Request.Conversation.Id as the key
+    /// Handles persistence of StateT object using Context.Activity.Conversation.Id as the key
     /// </summary>
     /// <typeparam name="StateT"></typeparam>
     public class ConversationState<StateT> : BotState<StateT>
@@ -95,7 +95,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions
 
         public ConversationState(IStorage storage, StateSettings settings = null) :
             base(storage, PropertyName,
-                (context) => $"conversation/{context.Request.ChannelId}/{context.Request.Conversation.Id}",
+                (context) => $"conversation/{context.Activity.ChannelId}/{context.Activity.Conversation.Id}",
                 settings)
         {
         }
@@ -105,11 +105,11 @@ namespace Microsoft.Bot.Builder.Core.Extensions
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public static StateT Get(IBotContext context) { return context.Get<StateT>(PropertyName); }
+        public static StateT Get(ITurnContext context) { return context.Services.Get<StateT>(PropertyName); }
     }
 
     /// <summary>
-    /// Handles persistence of StateT object using Context.Request.From.Id (aka user id) as the key
+    /// Handles persistence of StateT object using Context.Activity.From.Id (aka user id) as the key
     /// </summary>
     /// <typeparam name="StateT"></typeparam>
     public class UserState<StateT> : BotState<StateT>
@@ -120,7 +120,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions
         public UserState(IStorage storage, StateSettings settings = null) :
             base(storage,
                 PropertyName,
-                (context) => $"user/{context.Request.ChannelId}/{context.Request.From.Id}")
+                (context) => $"user/{context.Activity.ChannelId}/{context.Activity.From.Id}")
         {
         }
 
@@ -129,18 +129,18 @@ namespace Microsoft.Bot.Builder.Core.Extensions
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public static StateT Get(IBotContext context) { return context.Get<StateT>(PropertyName); }
+        public static StateT Get(ITurnContext context) { return context.Services.Get<StateT>(PropertyName); }
     }
 
     public static class StateContextExtensions
     {
-        public static T GetConversationState<T>(this IBotContext context)
+        public static T GetConversationState<T>(this ITurnContext context)
             where T : class, new()
         {
             return ConversationState<T>.Get(context);
         }
 
-        public static T GetUserState<T>(this IBotContext context)
+        public static T GetUserState<T>(this ITurnContext context)
             where T : class, new()
         {
             return UserState<T>.Get(context);

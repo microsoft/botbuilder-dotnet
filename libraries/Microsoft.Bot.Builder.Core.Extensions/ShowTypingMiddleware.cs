@@ -36,14 +36,14 @@ namespace Microsoft.Bot.Builder.Core.Extensions
             _freqency = frequency;
         }
 
-        public async Task OnProcessRequest(IBotContext context, MiddlewareSet.NextDelegate next)
+        public async Task OnProcessRequest(ITurnContext context, MiddlewareSet.NextDelegate next)
         {
             Timer typingActivityTimer = null;
 
             try
             {
                 // If the incoming activity is a MessageActivity, start a timer to periodically send the typing activity
-                if (context.Request.Type == ActivityTypes.Message)
+                if (context.Activity.Type == ActivityTypes.Message)
                 {
                     typingActivityTimer = new Timer(SendTypingTimerCallback, context, _delay, _freqency);
                 }
@@ -52,26 +52,26 @@ namespace Microsoft.Bot.Builder.Core.Extensions
             }
             finally
             {
-                // Once the bot has processed the request, the middleware should dispose of the timer
-                // on the trailing edge of the request
+                // Once the bot has processed the activity, the middleware should dispose of the timer
+                // on the trailing edge of the activity.
                 typingActivityTimer?.Dispose();
             }
         }
 
         private async void SendTypingTimerCallback(object state)
         {
-            var context = (IBotContext) state;
+            var context = (ITurnContext) state;
             await SendTypingActivity(context);
         }
 
-        private async Task SendTypingActivity(IBotContext context)
+        private async Task SendTypingActivity(ITurnContext context)
         {
             // create a TypingActivity, associate it with the conversation 
             // and send immediately
             var typingActivity = new Activity
             {
                 Type = ActivityTypes.Typing,
-                RelatesTo = context.Request.RelatesTo
+                RelatesTo = context.Activity.RelatesTo
             };
             await context.SendActivity(typingActivity);
         }

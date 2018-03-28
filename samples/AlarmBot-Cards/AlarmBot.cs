@@ -12,7 +12,7 @@ namespace AlarmBot
 {
     public class AlarmBot : IBot
     {
-        public async Task OnReceiveActivity(IBotContext context)
+        public async Task OnReceiveActivity(ITurnContext context)
         {
             // Get the current ActiveTopic from my persisted conversation state
             var conversation = ConversationState<ConversationData>.Get(context);

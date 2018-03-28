@@ -39,17 +39,17 @@ namespace Microsoft.Bot.Builder.Prompts
         }
 
         /// <summary>
-        /// Used to validate the incoming text, expected on context.Request, is
+        /// Used to validate the incoming text, expected on context.Activity, is
         /// valid according to the rules defined in the validation steps. 
         /// </summary>        
-        public override async Task<TextResult> Recognize(IBotContext context)
+        public override async Task<TextResult> Recognize(ITurnContext context)
         {
             BotAssert.ContextNotNull(context);
-            BotAssert.ActivityNotNull(context.Request);
-            if (context.Request.Type != ActivityTypes.Message)
+            BotAssert.ActivityNotNull(context.Activity);
+            if (context.Activity.Type != ActivityTypes.Message)
                 throw new InvalidOperationException("No Message to Recognize");
 
-            IMessageActivity message = context.Request.AsMessageActivity();
+            IMessageActivity message = context.Activity.AsMessageActivity();
             TextResult textResult = new TextResult();
             if (message.Text != null)
             {

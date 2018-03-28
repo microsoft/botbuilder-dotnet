@@ -89,7 +89,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
             {
                 var toBot = MakeTestMessage();
                 toBot.Locale = language;
-                var context = new BotContext(new TestAdapter(), (Activity)toBot);
+                var context = new TurnContext(new TestAdapter(), (Activity)toBot);
 
                 using (var scope = DialogModule.BeginLifetimeScope(container, context))
                 {

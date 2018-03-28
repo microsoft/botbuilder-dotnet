@@ -1,10 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Builder.Core.Extensions;
 using Microsoft.Bot.Builder.Core.Extensions.Tests;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -22,7 +20,6 @@ namespace Microsoft.Bot.Builder.Ai.Tests
         public async Task QnaMaker_TestMiddleware()
         {
             TestAdapter adapter = new TestAdapter()
-                .Use(new BatchOutputMiddleware())
                 .Use(new QnAMakerMiddleware(new QnAMakerMiddlewareOptions()
                 {
                     KnowledgeBaseId = knowlegeBaseId,
@@ -31,13 +28,12 @@ namespace Microsoft.Bot.Builder.Ai.Tests
                 }));
 
 
-            await new TestFlow(adapter, (context) =>
+            await new TestFlow(adapter, async (context) =>
                 {
-                    if (context.Request.AsMessageActivity().Text == "foo")
+                    if (context.Activity.Text == "foo")
                     {
-                        context.Batch().Reply(context.Request.AsMessageActivity().Text);
-                    }
-                    return Task.CompletedTask;
+                        await context.SendActivity(context.Activity.Text);
+                    }                    
                 })
                 .Send("foo")
                     .AssertReply("foo", "passthrough")

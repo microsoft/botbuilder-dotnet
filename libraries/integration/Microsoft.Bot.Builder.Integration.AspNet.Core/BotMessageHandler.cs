@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Handlers
         {
         }
        
-        protected override async Task ProcessMessageRequestAsync(HttpRequest request, BotFrameworkAdapter botFrameworkAdapter, Func<IBotContext, Task> botCallbackHandler)
+        protected override async Task ProcessMessageRequestAsync(HttpRequest request, BotFrameworkAdapter botFrameworkAdapter, Func<ITurnContext, Task> botCallbackHandler)
         {
             var activity = default(Activity);
 

@@ -8,17 +8,17 @@ namespace Microsoft.Bot.Samples.Echo.AspNetCore
     {
         public EchoBot() { }
 
-        public async Task OnReceiveActivity(IBotContext context)
+        public async Task OnReceiveActivity(ITurnContext context)
         {
-            switch (context.Request.Type)
+            switch (context.Activity.Type)
             {
                 case ActivityTypes.Message:
-                    await context.SendActivity($"You sent '{context.Request.Text}'");
+                    await context.SendActivity($"You sent '{context.Activity.Text}'");
                     break;
                 case ActivityTypes.ConversationUpdate:
-                    foreach (var newMember in context.Request.MembersAdded)
+                    foreach (var newMember in context.Activity.MembersAdded)
                     {
-                        if (newMember.Id != context.Request.Recipient.Id)
+                        if (newMember.Id != context.Activity.Recipient.Id)
                         {
                             await context.SendActivity("Hello and welcome to the echo bot.");
                         }

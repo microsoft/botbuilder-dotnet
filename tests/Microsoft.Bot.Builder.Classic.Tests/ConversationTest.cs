@@ -212,7 +212,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
 
             var r =
               builder
-              .Register<Queue<Activity>>(c => ((TestAdapter)c.Resolve<Microsoft.Bot.Builder.IBotContext>().Adapter).ActiveQueue)
+              .Register<Queue<Activity>>(c => ((TestAdapter)c.Resolve<Microsoft.Bot.Builder.ITurnContext>().Adapter).ActiveQueue)
               .AsSelf()
               .InstancePerLifetimeScope();
 

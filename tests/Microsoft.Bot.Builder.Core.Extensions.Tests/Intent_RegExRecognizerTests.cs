@@ -20,15 +20,14 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
             RegExpRecognizerMiddleware helpRecognizer = new RegExpRecognizerMiddleware()
                 .AddIntent("HelpIntent", new Regex("help", RegexOptions.IgnoreCase));
 
-            TestAdapter adapter = new TestAdapter()
-                .Use(new BatchOutputMiddleware())
+            TestAdapter adapter = new TestAdapter()                
                 .Use(helpRecognizer);
 
             await new TestFlow(adapter, async (context) =>
                 {
-                    var recognized = context.Get<IRecognizedIntents>();
+                    var recognized = context.Services.Get<IRecognizedIntents>();
                     if (recognized.TopIntent.Name == "HelpIntent")
-                        context.Batch().Reply("You selected HelpIntent");
+                        await context.SendActivity("You selected HelpIntent");
                 })
                 .Test("help", "You selected HelpIntent")
                 .StartTest();
@@ -77,7 +76,6 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
         public async Task Regex_RecognizeIntentViaRegex()
         {
             TestAdapter adapter = new TestAdapter()
-                .Use(new BatchOutputMiddleware())
                 .Use(new RegExpRecognizerMiddleware()
                         .AddIntent("aaaaa", new Regex("a", RegexOptions.IgnoreCase))
                         .AddIntent("bbbbb", new Regex("b", RegexOptions.IgnoreCase))
@@ -85,12 +83,12 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
 
             await new TestFlow(adapter, async (context) =>
                 {
-                    var recognized = context.Get<IRecognizedIntents>();
+                    var recognized = context.Services.Get<IRecognizedIntents>();
 
-                    if (new Regex("a").IsMatch(context.Request.Text))
-                        context.Batch().Reply("aaaa Intent");
-                    if (new Regex("b").IsMatch(context.Request.Text))
-                        context.Batch().Reply("bbbb Intent");
+                    if (new Regex("a").IsMatch(context.Activity.Text))
+                        await context.SendActivity("aaaa Intent");
+                    if (new Regex("b").IsMatch(context.Activity.Text))
+                        await context.SendActivity("bbbb Intent");
                 })
                 .Test("aaaaaaaaa", "aaaa Intent")
                 .Test("bbbbbbbbb", "bbbb Intent")
@@ -106,13 +104,12 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
                 .AddIntent("CancelIntent", new Regex("cancel", RegexOptions.IgnoreCase));
 
             TestAdapter adapter = new TestAdapter()
-                .Use(new BatchOutputMiddleware())
                 .Use(helpRecognizer);
             await new TestFlow(adapter, async (context) =>
                 {
-                    var recognized = context.Get<IRecognizedIntents>();
+                    var recognized = context.Services.Get<IRecognizedIntents>();
                     if (recognized.TopIntent.Name == "CancelIntent")
-                        context.Batch().Reply("You selected CancelIntent");
+                        await context.SendActivity("You selected CancelIntent");
                 })
                 .Test("cancel", "You selected CancelIntent")
                 .StartTest();
@@ -127,18 +124,17 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
                 .AddIntent("CancelIntent", new Regex("cancel", RegexOptions.IgnoreCase));
 
             TestAdapter adapter = new TestAdapter()
-                .Use(new BatchOutputMiddleware())
                 .Use(helpRecognizer);
 
             await new TestFlow(adapter, async (context) =>
                 {
-                    var recognized = context.Get<IRecognizedIntents>();
+                    var recognized = context.Services.Get<IRecognizedIntents>();
                     if (recognized.TopIntent?.Name == "CancelIntent")
-                        context.Batch().Reply("You selected CancelIntent");
+                        await context.SendActivity("You selected CancelIntent");
                     else
-                        context.Batch().Reply("Bot received request of type message");
+                        await context.SendActivity("Bot received activity of type message");
                 })
-                .Test("tacos", "Bot received request of type message")
+                .Test("tacos", "Bot received activity of type message")
                 .Test("cancel", "You selected CancelIntent")
                 .StartTest();
         }
@@ -153,18 +149,17 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
                 .AddIntent("CancelIntent", new Regex("cancel", RegexOptions.IgnoreCase))
                 .AddIntent("TacoIntent", new Regex("taco", RegexOptions.IgnoreCase));
 
-            TestAdapter adapter = new TestAdapter()
-                .Use(new BatchOutputMiddleware())
+            TestAdapter adapter = new TestAdapter()                
                 .Use(helpRecognizer);
             await new TestFlow(adapter, async (context) =>
                 {
-                    var recognized = context.Get<IRecognizedIntents>();
+                    var recognized = context.Services.Get<IRecognizedIntents>();
                     if (recognized.TopIntent.Name == "HelpIntent")
-                        context.Batch().Reply("You selected HelpIntent");
+                        await context.SendActivity("You selected HelpIntent");
                     else if (recognized.TopIntent.Name == "CancelIntent")
-                        context.Batch().Reply("You selected CancelIntent");
+                        await context.SendActivity("You selected CancelIntent");
                     else if (recognized.TopIntent.Name == "TacoIntent")
-                        context.Batch().Reply("You selected TacoIntent");
+                        await context.SendActivity("You selected TacoIntent");
                 })
                 .Send("help").AssertReply("You selected HelpIntent")
                 .Send("cancel").AssertReply("You selected CancelIntent")
