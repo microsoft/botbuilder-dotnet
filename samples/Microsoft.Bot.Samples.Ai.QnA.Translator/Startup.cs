@@ -47,8 +47,8 @@ namespace Microsoft.Bot.Samples.Ai.QnA.Translator
                 Dictionary<string, List<string>> patterns = new Dictionary<string, List<string>>();
                 patterns.Add("fr", new List<string> { "mon nom est (.+)" });//single pattern for fr language
                 middleware.Add(new ConversationState<CurrentUserState>(new MemoryStorage()));
-                middleware.Add(new TranslationMiddleware(new string[] { "en" }, "<your translator key here>", patterns, TranslatorLocaleHelper.GetActiveLanguage, TranslatorLocaleHelper.SetActiveLanguage));
-                middleware.Add(new LocaleConverterMiddleware(TranslatorLocaleHelper.GetActiveLocale, TranslatorLocaleHelper.SetActiveLocale, "en-us", LocaleConverter.Converter));
+                middleware.Add(new TranslationMiddleware(new string[] { "en" }, "<your translator key here>", patterns, TranslatorLocaleHelper.GetActiveLanguage, TranslatorLocaleHelper.CheckUserChangedLanguage));
+                middleware.Add(new LocaleConverterMiddleware(TranslatorLocaleHelper.GetActiveLocale, TranslatorLocaleHelper.CheckUserChangedLocale, "en-us", LocaleConverter.Converter));
                 middleware.Add(new QnAMakerMiddleware(qnaOptions));
             });
         }
