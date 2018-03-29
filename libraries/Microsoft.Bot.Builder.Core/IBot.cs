@@ -9,7 +9,7 @@ namespace Microsoft.Bot
     /// Represents a bot that can operate on incoming activities.
     /// </summary>
     /// <remarks>A <see cref="BotAdapter"/> passes incoming activities from the user's 
-    /// channel to the bot's <see cref="OnReceiveActivity(ITurnContext)"/>.</remarks>
+    /// channel to the bot's <see cref="OnReceiveActivity(ITurnContext)"/> method.</remarks>
     /// <example>
     /// This defines a bot that responds with "Hello world!" to any incoming message.
     /// <code>
@@ -25,8 +25,7 @@ namespace Microsoft.Bot
     /// }
     /// </code>
     /// </example>
-    /// <seealso cref="Bot.Schema.IActivity"/>
-    /// <seealso cref="ITurnContext"/>
+    /// <seealso cref="IMiddleware"/>
     public interface IBot
     {
         /// <summary>
@@ -34,6 +33,10 @@ namespace Microsoft.Bot
         /// </summary>
         /// <param name="turnContext">The context object for this turn.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>The <paramref name="turnContext"/> provides information about the 
+        /// incoming activity, and other data needed to process the activity.</remarks>
+        /// <seealso cref="ITurnContext"/>
+        /// <seealso cref="Bot.Schema.IActivity"/>
         Task OnReceiveActivity(ITurnContext turnContext);
     }
 }
