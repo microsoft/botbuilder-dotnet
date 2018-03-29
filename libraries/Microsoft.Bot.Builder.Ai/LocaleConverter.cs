@@ -16,9 +16,9 @@ namespace Microsoft.Bot.Builder.Ai
     /// for different locales.
     /// </summary> 
     internal class DateAndTimeLocaleFormat
-    { 
+    {
         public string TimeFormat { get; set; }
-        public string DateFormat { get;set; }
+        public string DateFormat { get; set; }
 
     }
 
@@ -27,7 +27,7 @@ namespace Microsoft.Bot.Builder.Ai
     /// from Microsoft Recognizer recognition result.
     /// </summary> 
     internal class TextAndDateTime
-    { 
+    {
         public string Text { get; set; }
         public DateTime dateTime { get; set; }
     }
@@ -37,14 +37,16 @@ namespace Microsoft.Bot.Builder.Ai
     /// between different locales.
     /// </summary>
     public class LocaleConverter : ILocaleConverter
-    { 
+    {
 
         private static readonly Dictionary<string, DateAndTimeLocaleFormat> _mapLocaleToFunction = new Dictionary<string, DateAndTimeLocaleFormat>();
         private static object _lockMap = new object();
         private static LocaleConverter _localeConverter;
+        private static readonly Dictionary<string, DateTimeModel> _cacheDateTimeModel = new Dictionary<string, DateTimeModel>();
         public static LocaleConverter Converter
         {
-            get {
+            get
+            {
 
                 if (_localeConverter == null)
                 {
@@ -53,17 +55,18 @@ namespace Microsoft.Bot.Builder.Ai
                 return _localeConverter;
             }
         }
-        private LocaleConverter() {
+        private LocaleConverter()
+        {
             InitLocales();
         }
-        
+
         /// <summary>
         /// Init different locales format,
         /// Supporting English, French, Deutsche and Chinese Locales.
         /// </summary>
         private void InitLocales()
         {
-            if (_mapLocaleToFunction.Count > 0)
+            if (_mapLocaleToFunction.Count > 0 && _cacheDateTimeModel.Count > 0)
                 return;
             DateAndTimeLocaleFormat yearMonthDay = new DateAndTimeLocaleFormat
             {
@@ -88,9 +91,39 @@ namespace Microsoft.Bot.Builder.Ai
             {
                 _mapLocaleToFunction[locale] = dayMonthYear;
             }
+            foreach (string fromLocale in _mapLocaleToFunction.Keys)
+            {
+                string key = fromLocale.Split('-')[0];
+                if (_cacheDateTimeModel.ContainsKey(key))
+                    continue;
+                if (fromLocale.StartsWith("fr"))
+                {
+                    _cacheDateTimeModel[key] = DateTimeRecognizer.GetInstance().GetDateTimeModel(Culture.French);
+                }
+                else if (fromLocale.StartsWith("de"))
+                {
+                    _cacheDateTimeModel[key] = DateTimeRecognizer.GetInstance().GetDateTimeModel(Culture.German);
+                }
+                else if (fromLocale.StartsWith("pt"))
+                {
+                    _cacheDateTimeModel[key] = DateTimeRecognizer.GetInstance().GetDateTimeModel(Culture.Portuguese);
+                }
+                else if (fromLocale.StartsWith("zh"))
+                {
+                    _cacheDateTimeModel[key] = DateTimeRecognizer.GetInstance().GetDateTimeModel(Culture.Chinese);
+                }
+                else if (fromLocale.StartsWith("es"))
+                {
+                    _cacheDateTimeModel[key] = DateTimeRecognizer.GetInstance().GetDateTimeModel(Culture.Spanish);
+                }
+                else if (fromLocale.StartsWith("en"))
+                {
+                    _cacheDateTimeModel[key] = DateTimeRecognizer.GetInstance().GetDateTimeModel(Culture.English);
+                }
+            }
             _mapLocaleToFunction["en-us"] = monthDayYEar;
         }
-        
+
         /// <summary>
         /// Check if a specific locale is available.
         /// </summary>
@@ -98,14 +131,14 @@ namespace Microsoft.Bot.Builder.Ai
         /// <returns>true if the locale is found, otherwise false.</returns>
         public bool IsLocaleAvailable(string locale)
         {
-            if(string.IsNullOrWhiteSpace(locale))
+            if (string.IsNullOrWhiteSpace(locale))
                 throw new ArgumentNullException(nameof(locale));
             lock (_lockMap)
             {
                 return _mapLocaleToFunction.ContainsKey(locale);
             }
         }
-        
+
         /// <summary>
         /// Extract date and time from a sentence using Microsoft Recognizer
         /// </summary>
@@ -115,8 +148,7 @@ namespace Microsoft.Bot.Builder.Ai
         private List<TextAndDateTime> ExtractDate(string message, string fromLocale)
         {
             List<TextAndDateTime> fndDates = new List<TextAndDateTime>();
-            string culture = FindCulture(fromLocale);
-            var model = DateTimeRecognizer.GetInstance().GetDateTimeModel(culture);
+            var model = FindCulture(fromLocale);
             var results = model.Parse(message);
             foreach (ModelResult result in results)
             {
@@ -146,35 +178,17 @@ namespace Microsoft.Bot.Builder.Ai
             return fndDates;
         }
 
-        private static string FindCulture(string fromLocale)
+        private static DateTimeModel FindCulture(string fromLocale)
         {
-            var culture = Culture.English;
-            if (fromLocale.StartsWith("fr"))
+            string culture = fromLocale.Split('-')[0];
+            if (_cacheDateTimeModel.ContainsKey(culture))
             {
-                culture = Culture.French;
+                return _cacheDateTimeModel[culture];
             }
-            else if (fromLocale.StartsWith("de"))
+            else
             {
-                culture = Culture.German;
+                throw (new ArgumentException("Unsupported From Locale " + fromLocale));
             }
-            else if (fromLocale.StartsWith("pt"))
-            {
-                culture = Culture.Portuguese;
-            }
-            else if (fromLocale.StartsWith("zh"))
-            {
-                culture = Culture.Chinese;
-            }
-            else if (fromLocale.StartsWith("es"))
-            {
-                culture = Culture.Spanish;
-            }
-            else if (!fromLocale.StartsWith("en"))
-            {
-                throw (new ArgumentException("Unsupported From Locale "+fromLocale));
-            }
-
-            return culture;
         }
 
         /// <summary>
@@ -184,7 +198,7 @@ namespace Microsoft.Bot.Builder.Ai
         /// <param name="fromLocale">Source Locale</param>
         /// <param name="toLocale">Target Locale</param>
         /// <returns></returns>
-        public  string Convert(string message, string fromLocale, string toLocale)
+        public string Convert(string message, string fromLocale, string toLocale)
         {
             if (string.IsNullOrEmpty(message))
             {
@@ -193,7 +207,7 @@ namespace Microsoft.Bot.Builder.Ai
             List<TextAndDateTime> dates = ExtractDate(message, fromLocale);
             if (!IsLocaleAvailable(toLocale))
             {
-                throw (new ArgumentException("Unsupported  Locale "+toLocale));
+                throw (new ArgumentException("Unsupported  Locale " + toLocale));
             }
             string processedMessage = message;
             foreach (TextAndDateTime date in dates)
@@ -207,7 +221,7 @@ namespace Microsoft.Bot.Builder.Ai
                     processedMessage = processedMessage.Replace(date.Text, String.Format(_mapLocaleToFunction[toLocale].DateFormat, date.dateTime));
                 }
             }
-            return  processedMessage;
+            return processedMessage;
         }
 
         /// <summary>
