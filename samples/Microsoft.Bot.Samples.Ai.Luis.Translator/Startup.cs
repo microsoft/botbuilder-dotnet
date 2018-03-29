@@ -69,7 +69,7 @@ namespace Microsoft.Bot.Samples.Ai.Luis.Translator
             var middleware = options.Middleware;
             middleware.Add(new ConversationState<CurrentUserState>(new MemoryStorage()));
             middleware.Add(new TranslationMiddleware(new string[] { "en" }, "<your translator key here>", patterns, GetActiveLanguage, SetActiveLanguage));
-           middleware.Add(new LocaleConverterMiddleware(GetActiveLocale, SetActiveLocale, "en-us", new LocaleConverter()));
+           middleware.Add(new LocaleConverterMiddleware(GetActiveLocale, SetActiveLocale, "en-us", LocaleConverter.Converter));
             middleware.Add(new LuisRecognizerMiddleware(luisModel, luisOptions: luisOptions));
             });
         }

@@ -14,11 +14,11 @@ namespace Microsoft.Bot.Builder.Ai.Tests
         [TestMethod]
         [TestCategory("AI")]
         [TestCategory("Locale Converter")]
-        public async Task LocaleConverter_ConvertFromFrench()
+        public void LocaleConverter_ConvertFromFrench()
         {
-            LocaleConverter localeConverter = new LocaleConverter();
+            LocaleConverter localeConverter = LocaleConverter.Converter;
 
-            var convertedMessage = await localeConverter.Convert("Set a meeting on 30/9/2017", "fr-fr", "en-us");
+            var convertedMessage = localeConverter.Convert("Set a meeting on 30/9/2017", "fr-fr", "en-us");
             Assert.IsNotNull(convertedMessage);
             Assert.AreEqual("Set a meeting on 09/30/2017", convertedMessage);
         }
@@ -26,11 +26,11 @@ namespace Microsoft.Bot.Builder.Ai.Tests
         [TestMethod]
         [TestCategory("AI")]
         [TestCategory("Locale Converter")]
-        public async Task LocaleConverter_ConvertToChinese()
+        public  void LocaleConverter_ConvertToChinese()
         {
-            LocaleConverter localeConverter = new LocaleConverter();
+            LocaleConverter localeConverter = LocaleConverter.Converter;
 
-            var convertedMessage = await localeConverter.Convert("Book me a plane ticket for France on 12/25/2018", "en-us", "zh-cn");
+            var convertedMessage = localeConverter.Convert("Book me a plane ticket for France on 12/25/2018", "en-us", "zh-cn");
             Assert.IsNotNull(convertedMessage);
             Assert.AreEqual("Book me a plane ticket for France on 2018-12-25", convertedMessage);
         }
@@ -38,23 +38,23 @@ namespace Microsoft.Bot.Builder.Ai.Tests
         [TestMethod]
         [TestCategory("AI")]
         [TestCategory("Locale Converter")]
-        public async Task LocaleConverter_InvalidFromLocale()
+        public void LocaleConverter_InvalidFromLocale()
         {
-            LocaleConverter localeConverter = new LocaleConverter();
+            LocaleConverter localeConverter = LocaleConverter.Converter;
 
-            await Assert.ThrowsExceptionAsync<ArgumentException>(async () =>
-                await localeConverter.Convert("Book me a plane ticket for France on 12/25/2018", "na-na", "en-us")); 
+             Assert.ThrowsException<ArgumentException>(() =>
+                 localeConverter.Convert("Book me a plane ticket for France on 12/25/2018", "na-na", "en-us")); 
         }   
 
     [TestMethod]
         [TestCategory("AI")]
         [TestCategory("Locale Converter")]
-        public async Task LocaleConverter_InvalidToLocale()
+        public void LocaleConverter_InvalidToLocale()
         {
-            LocaleConverter localeConverter = new LocaleConverter();
+            LocaleConverter localeConverter = LocaleConverter.Converter;
 
-            await Assert.ThrowsExceptionAsync<ArgumentException>(async () =>
-                await localeConverter.Convert("Book me a plane ticket for France on 12/25/2018", "en-us", "na-na")); 
+             Assert.ThrowsException<ArgumentException>( ()=>
+                 localeConverter.Convert("Book me a plane ticket for France on 12/25/2018", "en-us", "na-na")); 
         }
     }
 }

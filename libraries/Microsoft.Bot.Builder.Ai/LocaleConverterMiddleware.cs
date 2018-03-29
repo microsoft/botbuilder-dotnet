@@ -49,19 +49,19 @@ namespace Microsoft.Bot.Builder.Ai
                 if (!String.IsNullOrWhiteSpace(message.Text))
                 {
                     string fromLocale = _getUserLocale(context);
-                    await ConvertLocaleMessageAsync(message, fromLocale);
+                    ConvertLocaleMessage(message, fromLocale);
                     await _setUserLocale(context);
                 }
             }
             await next().ConfigureAwait(false);
         }
 
-        private async Task ConvertLocaleMessageAsync(IMessageActivity message,string fromLocale)
+        private void ConvertLocaleMessage(IMessageActivity message,string fromLocale)
         {
             
             if (localeConverter.IsLocaleAvailable(fromLocale) && localeConverter.IsLocaleAvailable(toLocale) && fromLocale != toLocale)
             {
-                message.Text = await localeConverter.Convert(message.Text, fromLocale, toLocale);
+                message.Text = localeConverter.Convert(message.Text, fromLocale, toLocale);
             }
         }
         

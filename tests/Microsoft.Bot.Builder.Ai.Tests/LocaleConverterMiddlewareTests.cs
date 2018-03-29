@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Builder.Ai.Tests
         {
             TestAdapter adapter = new TestAdapter()
              .Use(new UserState<LocaleState>(new MemoryStorage()))
-             .Use(new LocaleConverterMiddleware(GetActiveLocale, SetActiveLocale, "en-us", new LocaleConverter()));
+             .Use(new LocaleConverterMiddleware(GetActiveLocale, SetActiveLocale, "en-us", LocaleConverter.Converter));
 
 
             await new TestFlow(adapter, (context) =>
@@ -48,7 +48,7 @@ namespace Microsoft.Bot.Builder.Ai.Tests
         {
             TestAdapter adapter = new TestAdapter()
                 .Use(new UserState<LocaleState>(new MemoryStorage()))
-                .Use(new LocaleConverterMiddleware(GetActiveLocale, SetActiveLocale, "zh-cn", new LocaleConverter()));
+                .Use(new LocaleConverterMiddleware(GetActiveLocale, SetActiveLocale, "zh-cn", LocaleConverter.Converter));
 
 
             await new TestFlow(adapter, (context) =>

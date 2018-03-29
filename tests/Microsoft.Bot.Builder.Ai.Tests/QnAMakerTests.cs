@@ -68,10 +68,7 @@ namespace Microsoft.Bot.Builder.Ai.Tests
 
             await new TestFlow(adapter, async (context) =>
                 {
-                    if (context.Activity.Text == "foo")
-                    {
-                        await context.SendActivity(context.Activity.Text);
-                    }                    
+                        await context.SendActivity(context.Activity.Text);                  
                 })
                 .Send("foo")
                     .AssertReply("foo", "passthrough")
