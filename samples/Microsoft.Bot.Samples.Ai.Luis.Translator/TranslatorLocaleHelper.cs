@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 using Microsoft.Bot.Builder.Core.Extensions;
 
-namespace Microsoft.Bot.Samples.Ai.QnA.Translator
+namespace Microsoft.Bot.Samples.Ai.Luis.Translator
 {
     class CurrentUserState
     {
