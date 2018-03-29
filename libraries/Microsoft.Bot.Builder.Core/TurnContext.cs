@@ -128,7 +128,7 @@ namespace Microsoft.Bot.Builder
             get { return _responded; }
             set
             {
-                if (_responded && !value)
+                if (value == false)
                 {
                     throw new ArgumentException("TurnContext: cannot set 'responded' to a value of 'false'.");
                 }
