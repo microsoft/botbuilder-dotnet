@@ -11,7 +11,7 @@ namespace Microsoft.Bot.Builder.Ai
     public interface ILocaleConverter
     {
         bool IsLocaleAvailable(string locale);
-        Task<string> Convert(string message, string fromLocale, string toLocale);
+        string Convert(string message, string fromLocale, string toLocale);
         string[] GetAvailableLocales();
     }
 }
