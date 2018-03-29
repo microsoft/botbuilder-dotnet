@@ -61,7 +61,7 @@ namespace Microsoft.Bot.Builder.Ai
         /// <param name="source">Source Language</param>
         /// <param name="target">Target Language</param>
         /// <returns></returns>
-        private Dictionary<string, string> wordAlignmentParse(string alignment)
+        private Dictionary<string, string> WordAlignmentParse(string alignment)
         {
             Dictionary<string, string> alignMap = new Dictionary<string, string>();
             if (alignment.Trim() == "")
@@ -87,7 +87,7 @@ namespace Microsoft.Bot.Builder.Ai
         /// <param name="target">Target Language</param>
         /// <param name="srcWrd">Source Word</param>
         /// <returns></returns>
-        private string keepSrcWrdInTranslation(Dictionary<string, string> alignment, string source, string target, string srcWrd)
+        private string KeepSrcWrdInTranslation(Dictionary<string, string> alignment, string source, string target, string srcWrd)
         {
             string processedTranslation = target;
             int wrdStartIndex = source.IndexOf(srcWrd);
@@ -122,7 +122,7 @@ namespace Microsoft.Bot.Builder.Ai
             var toBeReplaced = from result in _patterns
                                where Regex.IsMatch(sourceMessage, result, RegexOptions.Singleline | RegexOptions.IgnoreCase)
                                select result;
-            Dictionary<string, string> alignMap = wordAlignmentParse(alignment);
+            Dictionary<string, string> alignMap = WordAlignmentParse(alignment);
             if (!toBeReplaced.Any())
             {
                 foreach (string pattern in toBeReplaced)
@@ -131,7 +131,7 @@ namespace Microsoft.Bot.Builder.Ai
                     string[] wrdNoTranslate = matchNoTranslate.Groups[1].Value.Split(' ');
                     foreach (string srcWrd in wrdNoTranslate)
                     {
-                        processedTranslation = keepSrcWrdInTranslation(alignMap, sourceMessage, processedTranslation, srcWrd);
+                        processedTranslation = KeepSrcWrdInTranslation(alignMap, sourceMessage, processedTranslation, srcWrd);
                     }
 
                 }
@@ -139,7 +139,7 @@ namespace Microsoft.Bot.Builder.Ai
             MatchCollection numericMatches = Regex.Matches(sourceMessage, @"\d+", RegexOptions.Singleline);
             foreach (Match numericMatch in numericMatches)
             {
-                processedTranslation = keepSrcWrdInTranslation(alignMap, sourceMessage, processedTranslation, numericMatch.Groups[0].Value);
+                processedTranslation = KeepSrcWrdInTranslation(alignMap, sourceMessage, processedTranslation, numericMatch.Groups[0].Value);
             }
 
             return processedTranslation;
