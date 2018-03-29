@@ -17,7 +17,7 @@ namespace Microsoft.Bot.Builder.Ai
         private readonly Translator _translator;
         private readonly Dictionary<string,List<string>> _patterns;
         private readonly Func<ITurnContext, string> _getUserLanguage;
-        private readonly Func<ITurnContext, Task<bool>> _setUserLanguage;
+        private readonly Func<ITurnContext, Task<bool>> _isUserLanguageChanged;
 
         /// <summary>
         /// Constructor for automatic detection of user messages
@@ -26,14 +26,14 @@ namespace Microsoft.Bot.Builder.Ai
         /// <param name="translatorKey"></param>
         public TranslationMiddleware(string[] nativeLanguages, string translatorKey)
         {
-            if(nativeLanguages==null || nativeLanguages.Count()==0)
-                throw new ArgumentNullException(nameof(nativeLanguages));
+            AssertValidNativeLanguages(nativeLanguages);
             this._nativeLanguages = nativeLanguages;
-            if(string.IsNullOrEmpty(translatorKey))
+            if (string.IsNullOrEmpty(translatorKey))
                 throw new ArgumentNullException(nameof(translatorKey));
             this._translator = new Translator(translatorKey);
             _patterns = new Dictionary<string, List<string>>();
         }
+
 
         /// <summary>
         /// Constructor for automatic of user messages and using templates
@@ -43,8 +43,7 @@ namespace Microsoft.Bot.Builder.Ai
         /// <param name="patterns">Dictionary with language as a key and list of patterns as value</param>
         public TranslationMiddleware(string[] nativeLanguages, string translatorKey, Dictionary<string, List<string>> patterns)
         {
-            if (nativeLanguages == null || nativeLanguages.Count() == 0)
-                throw new ArgumentNullException(nameof(nativeLanguages));
+            AssertValidNativeLanguages(nativeLanguages);
             this._nativeLanguages = nativeLanguages;
             if (string.IsNullOrEmpty(translatorKey))
                 throw new ArgumentNullException(nameof(translatorKey));
@@ -60,18 +59,24 @@ namespace Microsoft.Bot.Builder.Ai
         /// <param name="patterns">Dictionary with language as a key and list of patterns as value</param>
         /// <param name="getUserLanguage">Delegate for getting the user language</param>
         /// <param name="setUserLanguage">Delegate for setting the user language, returns true if the language was changed (implements logic to change language by intercepting the message)</param>
-        public TranslationMiddleware(string[] nativeLanguages, string translatorKey, Dictionary<string, List<string>> patterns, Func<ITurnContext, string> getUserLanguage, Func<ITurnContext, Task<bool>> setUserLanguage)
+        public TranslationMiddleware(string[] nativeLanguages, string translatorKey, Dictionary<string, List<string>> patterns, Func<ITurnContext, string> getUserLanguage, Func<ITurnContext, Task<bool>> isUserLanguageChanged)
         {
-            if (nativeLanguages == null || nativeLanguages.Count() == 0)
-                throw new ArgumentNullException(nameof(nativeLanguages));
+            AssertValidNativeLanguages(nativeLanguages);
             this._nativeLanguages = nativeLanguages;
             if (string.IsNullOrEmpty(translatorKey))
                 throw new ArgumentNullException(nameof(translatorKey));
             this._translator = new Translator(translatorKey);
             this._patterns = patterns ?? throw new ArgumentNullException(nameof(patterns));
-            this._patterns = patterns;
             this._getUserLanguage = getUserLanguage ?? throw new ArgumentNullException(nameof(getUserLanguage));
-            this._setUserLanguage = setUserLanguage ?? throw new ArgumentNullException(nameof(setUserLanguage)); 
+            this._isUserLanguageChanged = isUserLanguageChanged ?? throw new ArgumentNullException(nameof(isUserLanguageChanged)); 
+        }
+
+        private static void AssertValidNativeLanguages(string[] nativeLanguages)
+        {
+            if (nativeLanguages == null )
+                throw new ArgumentNullException(nameof(nativeLanguages));
+            if(nativeLanguages.Length==0)
+                throw new ArgumentException(nameof(nativeLanguages));
         }
 
         /// <summary>
@@ -90,9 +95,9 @@ namespace Microsoft.Bot.Builder.Ai
 
                     var languageChanged = false;
 
-                    if (_setUserLanguage != null)
+                    if (_isUserLanguageChanged != null)
                     {
-                        languageChanged = await _setUserLanguage(context);
+                        languageChanged = await _isUserLanguageChanged(context);
                     }
 
                     if (!languageChanged)
@@ -100,13 +105,15 @@ namespace Microsoft.Bot.Builder.Ai
                         // determine the language we are using for this conversation
                         var sourceLanguage = "";
                         if (_getUserLanguage == null)
-                            sourceLanguage = await Task.Run(() => _translator.Detect(message.Text)); // context.Conversation.Data["Language"]?.ToString() ?? this._nativeLanguages.FirstOrDefault() ?? "en";
+                            sourceLanguage = await  _translator.Detect(message.Text); //awaiting user language detection using Microsoft Translator API.
                         else
                         {
                             sourceLanguage = _getUserLanguage(context);
                         } 
+                        //check if the developer has added pattern list for the input source language
                         if (_patterns.ContainsKey(sourceLanguage) && _patterns[sourceLanguage].Count>0)
                         {
+                            //if we have a list of patterns for the current user's language send it to the translator post processor.
                             this._translator.SetPostProcessorTemplate(_patterns[sourceLanguage]);
                         }
                         if (!_nativeLanguages.Contains(sourceLanguage))
@@ -128,8 +135,7 @@ namespace Microsoft.Bot.Builder.Ai
             await next().ConfigureAwait(false);
         }
 
-
-        private static readonly Regex UrlRegex = new Regex(@"(https?://[^\s]*)", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Multiline);
+        
 
         /// <summary>
         /// Translate .Text field of a message
@@ -147,29 +153,10 @@ namespace Microsoft.Bot.Builder.Ai
                 if (targetLanguage == sourceLanguage)
                     return;
 
-                var text = message.Text.Length <= 65536 ? message.Text : message.Text.Substring(0, 65536);
-
-                // massage mentions and urls so they don't get translated
-                int i = 0;
-
-                var urls = new List<string>();
-                while (UrlRegex.IsMatch(text))
-                {
-                    var match = UrlRegex.Match(text);
-                    urls.Add(match.Groups[0].Value);
-                    text = text.Replace(match.Groups[0].Value, $"{{{i++}}}");
-                }
-
+                var text = message.Text; 
                 string[] lines = text.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None);
                 var translateResult = await this._translator.TranslateArray(lines, sourceLanguage, targetLanguage).ConfigureAwait(false);
                 text = String.Join("\n", translateResult);
-                // restore mentions and urls 
-                i = 0;
-                foreach (var url in urls)
-                {
-                    text = text.Replace($"{{{i++}}}", url);
-                }
-
                 message.Text = text;
             }
         } 
