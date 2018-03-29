@@ -77,12 +77,18 @@ namespace Microsoft.Bot.Builder
             }
         }
 
-        public async Task<ResourceResponse> SendActivity(string textReplyToSend)
+        public async Task<ResourceResponse> SendActivity(string textReplyToSend, string speak = null, string inputHint = null)
         {
             if (string.IsNullOrWhiteSpace(textReplyToSend))
                 throw new ArgumentNullException(nameof(textReplyToSend)); 
             
             var activityToSend = new Activity(ActivityTypes.Message) { Text = textReplyToSend };
+
+            if (!string.IsNullOrEmpty(speak))
+                activityToSend.Speak = speak;
+
+            if (!string.IsNullOrEmpty(inputHint))
+                activityToSend.InputHint = inputHint;
 
             return await SendActivity(activityToSend);
         }
