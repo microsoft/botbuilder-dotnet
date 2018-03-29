@@ -28,7 +28,7 @@ namespace Microsoft.Bot.Builder
         /// </summary>
         bool Responded { get; set; }
 
-        Task<ResourceResponse> SendActivity(string textRepliesToSend);
+        Task<ResourceResponse> SendActivity(string textRepliesToSend, string speak = null, string inputHint = null);
         Task<ResourceResponse> SendActivity(IActivity activity);
         Task<ResourceResponse[]> SendActivities(IActivity[] activities);        
 
