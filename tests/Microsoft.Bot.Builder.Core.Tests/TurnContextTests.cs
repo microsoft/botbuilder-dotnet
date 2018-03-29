@@ -369,6 +369,27 @@ namespace Microsoft.Bot.Builder.Core.Tests
         }
 
         [TestMethod]
+        public async Task DeleteConversationReferenceToAdapter()
+        {
+            bool deleteCalled = false;
+
+            void ValidateDelete(ConversationReference r)
+            {
+                Assert.IsNotNull(r);
+                Assert.IsTrue(r.ActivityId == "12345");
+                deleteCalled = true;
+            }
+
+            SimpleAdapter a = new SimpleAdapter(ValidateDelete);
+            TurnContext c = new TurnContext(a, TestMessage.Message());
+
+            var reference = new ConversationReference("12345");
+
+            await c.DeleteActivity(reference);
+            Assert.IsTrue(deleteCalled);
+        }
+
+        [TestMethod]
         public async Task InterceptOnDelete()
         {
             bool adapterCalled = false;
