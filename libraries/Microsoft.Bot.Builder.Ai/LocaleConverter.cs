@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -39,10 +40,9 @@ namespace Microsoft.Bot.Builder.Ai
     public class LocaleConverter : ILocaleConverter
     {
 
-        private static readonly Dictionary<string, DateAndTimeLocaleFormat> _mapLocaleToFunction = new Dictionary<string, DateAndTimeLocaleFormat>();
-        private static object _lockMap = new object();
+        private static readonly ConcurrentDictionary<string, DateAndTimeLocaleFormat> _mapLocaleToFunction = new ConcurrentDictionary<string, DateAndTimeLocaleFormat>();
         private static LocaleConverter _localeConverter;
-        private static readonly Dictionary<string, DateTimeModel> _cacheDateTimeModel = new Dictionary<string, DateTimeModel>();
+        private static readonly ConcurrentDictionary<string, DateTimeModel> _cacheDateTimeModel = new ConcurrentDictionary<string, DateTimeModel>();
         public static LocaleConverter Converter
         {
             get
@@ -132,10 +132,7 @@ namespace Microsoft.Bot.Builder.Ai
         public bool IsLocaleAvailable(string locale)
         {
             AssertValidLocale(locale);
-            lock (_lockMap)
-            {
-                return _mapLocaleToFunction.ContainsKey(locale);
-            }
+            return _mapLocaleToFunction.ContainsKey(locale);
         }
 
         private static void AssertValidLocale(string locale)
@@ -194,7 +191,7 @@ namespace Microsoft.Bot.Builder.Ai
             }
             else
             {
-                throw (new InvalidOperationException("Unsupported From Locale " + fromLocale));
+                throw (new InvalidOperationException($"Unsupported from locale: {fromLocale}"));
             }
         }
 
@@ -214,7 +211,7 @@ namespace Microsoft.Bot.Builder.Ai
             List<TextAndDateTime> dates = ExtractDate(message, fromLocale);
             if (!IsLocaleAvailable(toLocale))
             {
-                throw (new InvalidOperationException("Unsupported From  Locale " + toLocale));
+                throw (new InvalidOperationException($"Unsupported from locale: {toLocale}"));
             }
             string processedMessage = message;
             foreach (TextAndDateTime date in dates)
