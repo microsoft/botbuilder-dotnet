@@ -127,29 +127,36 @@ namespace Microsoft.Bot.Builder.Ai
         /// <summary>
         /// Check if a specific locale is available.
         /// </summary>
-        /// <param name="locale"></param>
+        /// <param name="locale">input locale that we need to check if available</param>
         /// <returns>true if the locale is found, otherwise false.</returns>
         public bool IsLocaleAvailable(string locale)
         {
-            if (string.IsNullOrWhiteSpace(locale))
-                throw new ArgumentNullException(nameof(locale));
+            AssertValidLocale(locale);
             lock (_lockMap)
             {
                 return _mapLocaleToFunction.ContainsKey(locale);
             }
         }
 
+        private static void AssertValidLocale(string locale)
+        {
+            if (string.IsNullOrWhiteSpace(locale))
+                throw new ArgumentNullException(nameof(locale));
+        }
+
         /// <summary>
         /// Extract date and time from a sentence using Microsoft Recognizer
         /// </summary>
-        /// <param name="message"></param>
+        /// <param name="message">input user message</param>
         /// <param name="fromLocale">Source Locale</param>
         /// <returns></returns>
         private List<TextAndDateTime> ExtractDate(string message, string fromLocale)
         {
             List<TextAndDateTime> fndDates = new List<TextAndDateTime>();
             var model = FindCulture(fromLocale);
+            //Recognizer Model will be used to parse input message and detect date or time.
             var results = model.Parse(message);
+            //looping on each result and extracting found date objects from input utterance
             foreach (ModelResult result in results)
             {
                 var resolutionValues = (IList<Dictionary<string, string>>)result.Resolution["values"];
@@ -187,14 +194,14 @@ namespace Microsoft.Bot.Builder.Ai
             }
             else
             {
-                throw (new ArgumentException("Unsupported From Locale " + fromLocale));
+                throw (new InvalidOperationException("Unsupported From Locale " + fromLocale));
             }
         }
 
         /// <summary>
         /// Convert a message from locale to another locale
         /// </summary>
-        /// <param name="message"></param>
+        /// <param name="message"> input user message</param>
         /// <param name="fromLocale">Source Locale</param>
         /// <param name="toLocale">Target Locale</param>
         /// <returns></returns>
@@ -207,7 +214,7 @@ namespace Microsoft.Bot.Builder.Ai
             List<TextAndDateTime> dates = ExtractDate(message, fromLocale);
             if (!IsLocaleAvailable(toLocale))
             {
-                throw (new ArgumentException("Unsupported  Locale " + toLocale));
+                throw (new InvalidOperationException("Unsupported From  Locale " + toLocale));
             }
             string processedMessage = message;
             foreach (TextAndDateTime date in dates)
