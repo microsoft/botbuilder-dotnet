@@ -28,7 +28,7 @@ namespace Microsoft.Bot.Builder.Ai
         public LocaleConverterMiddleware(Func<ITurnContext, string> getUserLocale, Func<ITurnContext, Task<bool>> setUserLocale, string toLocale, ILocaleConverter localeConverter)
         {
             this.localeConverter = localeConverter ?? throw new ArgumentNullException(nameof(localeConverter));
-            if (string.IsNullOrEmpty(toLocale))
+            if (string.IsNullOrEmpty(toLocale) || !localeConverter.IsLocaleAvailable(toLocale))
                 throw new ArgumentNullException(nameof(toLocale));
             this.toLocale = toLocale;
             this._getUserLocale = getUserLocale ?? throw new ArgumentNullException(nameof(getUserLocale)); 
@@ -59,7 +59,7 @@ namespace Microsoft.Bot.Builder.Ai
         private void ConvertLocaleMessage(IMessageActivity message,string fromLocale)
         {
             
-            if (localeConverter.IsLocaleAvailable(fromLocale) && localeConverter.IsLocaleAvailable(toLocale) && fromLocale != toLocale)
+            if (localeConverter.IsLocaleAvailable(fromLocale) && fromLocale != toLocale)
             {
                 message.Text = localeConverter.Convert(message.Text, fromLocale, toLocale);
             }
