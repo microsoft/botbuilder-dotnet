@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Samples.Ai.QnA.Translator
         public static void SetLanguage(ITurnContext context, string language) => context.GetConversationState<CurrentUserState>().Language = language;
         public static void SetLocale(ITurnContext context, string locale) => context.GetConversationState<CurrentUserState>().Locale = locale;
         public static bool IsSupportedLanguage(string language) => _supportedLanguages.Contains(language);
-        public static async Task<bool> SetActiveLanguage(ITurnContext context)
+        public static async Task<bool> CheckUserChangedLanguage(ITurnContext context)
         {
             bool changeLang = false;//logic implemented by developper to make a signal for language changing 
             //use a specific message from user to change language
@@ -69,7 +69,7 @@ namespace Microsoft.Bot.Samples.Ai.QnA.Translator
 
             return "en";
         }
-        public static async Task<bool> SetActiveLocale(ITurnContext context)
+        public static async Task<bool> CheckUserChangedLocale(ITurnContext context)
         {
             bool changeLocale = false;//logic implemented by developper to make a signal for language changing 
             //use a specific message from user to change language
