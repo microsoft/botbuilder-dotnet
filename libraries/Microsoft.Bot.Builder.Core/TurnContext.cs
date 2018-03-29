@@ -180,6 +180,19 @@ namespace Microsoft.Bot.Builder
             await DeleteActivityInternal(cr, _onDeleteActivity, ActuallyDeleteStuff);
         }
 
+        public async Task DeleteActivity(ConversationReference conversationReference)
+        {
+            if (conversationReference == null)
+                throw new ArgumentNullException(nameof(conversationReference));
+            
+            async Task ActuallyDeleteStuff()
+            {
+                await this.Adapter.DeleteActivity(this, conversationReference);
+            }
+
+            await DeleteActivityInternal(conversationReference, _onDeleteActivity, ActuallyDeleteStuff);
+        }
+
         private async Task SendActivitiesInternal(
             List<Activity> activities,
             IEnumerable<SendActivitiesHandler> sendHandlers,
