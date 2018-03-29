@@ -3,13 +3,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Bot.Builder;
-
-using Microsoft.Bot.Schema;
 using Microsoft.Bot.Builder.Ai;
 using Microsoft.Bot.Builder.BotFramework;
 using Microsoft.Bot.Builder.Core.Extensions;

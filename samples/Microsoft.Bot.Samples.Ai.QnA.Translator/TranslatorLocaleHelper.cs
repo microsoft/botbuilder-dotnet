@@ -1,17 +1,17 @@
-﻿using Microsoft.Bot.Builder; 
+﻿using Microsoft.Bot.Builder;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 using Microsoft.Bot.Builder.Core.Extensions;
 
-namespace Microsoft.Bot.Samples.Ai.Luis.Translator
+namespace Microsoft.Bot.Samples.Ai.QnA.Translator
 {
     class CurrentUserState
     {
         public string Language { get; set; }
         public string Locale { get; set; }
     }
-    public static  class TranslatorLocaleHelper
+    public static class TranslatorLocaleHelper
     {
         private static readonly string[] _supportedLanguages = new string[] { "fr", "en" }; //Define supported Languages
         private static readonly string[] _supportedLocales = new string[] { "fr-fr", "en-us" }; //Define supported locales
