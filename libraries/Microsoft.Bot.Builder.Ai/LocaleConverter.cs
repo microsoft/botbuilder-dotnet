@@ -11,8 +11,10 @@ using Microsoft.Recognizers.Text.DateTime;
 
 namespace Microsoft.Bot.Builder.Ai
 {
-
-    //Struct used to store date format and time format for different locales
+    /// <summary>
+    /// DateAndTimeLocaleFormat Class used to store date format and time format
+    /// for different locales.
+    /// </summary> 
     internal class DateAndTimeLocaleFormat
     { 
         public string TimeFormat { get; set; }
@@ -20,20 +22,23 @@ namespace Microsoft.Bot.Builder.Ai
 
     }
 
-    //Struct to store  text and date time object from Microsoft Recognizer recognition result
+    /// <summary>
+    /// TextAndDateTime Class used to store  text and date time object 
+    /// from Microsoft Recognizer recognition result.
+    /// </summary> 
     internal class TextAndDateTime
     { 
         public string Text { get; set; }
-        public DateTime DateTimeObject { get; set; }
+        public DateTime dateTime { get; set; }
     }
 
     /// <summary>
-    /// Locale Converter Class used to convert between locales
-    /// in terms of date and time only.
+    /// Locale Converter Class Converts dates and times 
+    /// between different locales.
     /// </summary>
     public class LocaleConverter : ILocaleConverter
     { 
-        private Dictionary<string, DateAndTimeLocaleFormat> mapLocaleToFunction = new Dictionary<string, DateAndTimeLocaleFormat>();
+        private readonly Dictionary<string, DateAndTimeLocaleFormat> mapLocaleToFunction = new Dictionary<string, DateAndTimeLocaleFormat>();
 
         public LocaleConverter()
         {
@@ -138,7 +143,7 @@ namespace Microsoft.Bot.Builder.Ai
                 }
                 var curDateTimeText = new TextAndDateTime
                 {
-                    DateTimeObject = moment,
+                    dateTime = moment,
                     Text = result.Text
                 };
                 fndDates.Add(curDateTimeText);
@@ -167,13 +172,13 @@ namespace Microsoft.Bot.Builder.Ai
             string processedMessage = message;
             foreach (TextAndDateTime date in dates)
             {
-                if (date.DateTimeObject.Date == DateTime.Now.Date)
+                if (date.dateTime.Date == DateTime.Now.Date)
                 {
-                    processedMessage = processedMessage.Replace(date.Text, String.Format(mapLocaleToFunction[toLocale].TimeFormat, date.DateTimeObject));
+                    processedMessage = processedMessage.Replace(date.Text, String.Format(mapLocaleToFunction[toLocale].TimeFormat, date.dateTime));
                 }
                 else
                 {
-                    processedMessage = processedMessage.Replace(date.Text, String.Format(mapLocaleToFunction[toLocale].DateFormat, date.DateTimeObject));
+                    processedMessage = processedMessage.Replace(date.Text, String.Format(mapLocaleToFunction[toLocale].DateFormat, date.dateTime));
                 }
             }
             return  processedMessage;
