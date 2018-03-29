@@ -24,26 +24,29 @@ namespace Microsoft.Bot.Samples.Ai.QnA.Translator
         {
             bool changeLang = false;//logic implemented by developper to make a signal for language changing 
             //use a specific message from user to change language
-            var messageActivity = context.Activity.AsMessageActivity();
-            if (messageActivity.Text.ToLower().StartsWith("set my language to"))
+            if (context.Activity.Type == ActivityTypes.Message)
             {
-                changeLang = true;
-            }
-            if (changeLang)
-            {
-                var newLang = messageActivity.Text.ToLower().Replace("set my language to", "").Trim();
-                if (!string.IsNullOrWhiteSpace(newLang)
-                        && IsSupportedLanguage(newLang))
+                var messageActivity = context.Activity.AsMessageActivity();
+                if (messageActivity.Text.ToLower().StartsWith("set my language to"))
                 {
-                    SetLanguage(context, newLang);
-                    await context.SendActivity($@"Changing your language to {newLang}");
+                    changeLang = true;
                 }
-                else
+                if (changeLang)
                 {
-                    await context.SendActivity($@"{newLang} is not a supported language.");
+                    var newLang = messageActivity.Text.ToLower().Replace("set my language to", "").Trim();
+                    if (!string.IsNullOrWhiteSpace(newLang)
+                            && IsSupportedLanguage(newLang))
+                    {
+                        SetLanguage(context, newLang);
+                        await context.SendActivity($@"Changing your language to {newLang}");
+                    }
+                    else
+                    {
+                        await context.SendActivity($@"{newLang} is not a supported language.");
+                    }
+                    //intercepts message
+                    return true;
                 }
-                //intercepts message
-                return true;
             }
 
             return false;
@@ -70,26 +73,29 @@ namespace Microsoft.Bot.Samples.Ai.QnA.Translator
         {
             bool changeLocale = false;//logic implemented by developper to make a signal for language changing 
             //use a specific message from user to change language
-            var messageActivity = context.Activity.AsMessageActivity();
-            if (messageActivity.Text.ToLower().StartsWith("set my locale to"))
+            if (context.Activity.Type == ActivityTypes.Message)
             {
-                changeLocale = true;
-            }
-            if (changeLocale)
-            {
-                var newLocale = messageActivity.Text.ToLower().Replace("set my locale to", "").Trim(); //extracted by the user using user state 
-                if (!string.IsNullOrWhiteSpace(newLocale)
-                        && IsSupportedLanguage(newLocale))
+                var messageActivity = context.Activity.AsMessageActivity();
+                if (messageActivity.Text.ToLower().StartsWith("set my locale to"))
                 {
-                    SetLocale(context, newLocale);
-                    await context.SendActivity($@"Changing your language to {newLocale}");
+                    changeLocale = true;
                 }
-                else
+                if (changeLocale)
                 {
-                    await context.SendActivity($@"{newLocale} is not a supported locale.");
+                    var newLocale = messageActivity.Text.ToLower().Replace("set my locale to", "").Trim(); //extracted by the user using user state 
+                    if (!string.IsNullOrWhiteSpace(newLocale)
+                            && IsSupportedLanguage(newLocale))
+                    {
+                        SetLocale(context, newLocale);
+                        await context.SendActivity($@"Changing your language to {newLocale}");
+                    }
+                    else
+                    {
+                        await context.SendActivity($@"{newLocale} is not a supported locale.");
+                    }
+                    //intercepts message
+                    return true;
                 }
-                //intercepts message
-                return true;
             }
 
             return false;
