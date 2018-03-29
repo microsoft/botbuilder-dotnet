@@ -42,7 +42,7 @@ namespace Microsoft.Bot.Builder.Ai.Tests
         {
             LocaleConverter localeConverter = LocaleConverter.Converter;
 
-             Assert.ThrowsException<ArgumentException>(() =>
+             Assert.ThrowsException<InvalidOperationException>(() =>
                  localeConverter.Convert("Book me a plane ticket for France on 12/25/2018", "na-na", "en-us")); 
         }   
 
@@ -53,7 +53,7 @@ namespace Microsoft.Bot.Builder.Ai.Tests
         {
             LocaleConverter localeConverter = LocaleConverter.Converter;
 
-             Assert.ThrowsException<ArgumentException>( ()=>
+             Assert.ThrowsException<InvalidOperationException>( ()=>
                  localeConverter.Convert("Book me a plane ticket for France on 12/25/2018", "en-us", "na-na")); 
         }
     }
