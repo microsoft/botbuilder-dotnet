@@ -4,14 +4,12 @@
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
-#if NETSTANDARD2_0
-using Microsoft.Extensions.Configuration;
-#endif
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Security.Claims;
+using System.Security.Principal;
 using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Adapters
@@ -39,7 +37,7 @@ namespace Microsoft.Bot.Builder.Adapters
             }
         }
 
-        public Task ContinueConversation(string botAppId, ConversationReference reference, Func<ITurnContext, Task> callback)
+        public async Task ContinueConversation(string botAppId, ConversationReference reference, Func<ITurnContext, Task> callback)
         {
             if (string.IsNullOrWhiteSpace(botAppId))
                 throw new ArgumentNullException(nameof(botAppId));
@@ -50,8 +48,20 @@ namespace Microsoft.Bot.Builder.Adapters
             if (callback == null)
                 throw new ArgumentNullException(nameof(callback)); 
 
-            var context = new BotFrameworkTurnContext(botAppId, this, reference.GetPostToBotMessage());
-            return RunPipeline(context, callback);
+            var context = new TurnContext(this, reference.GetPostToBotMessage());
+
+            // Hand craft Claims Identity.
+            var claimsIdentity = new ClaimsIdentity(new List<Claim>
+            {
+                // Adding claims for both Emulator and Channel.
+                new Claim(AuthenticationConstants.AudienceClaim, botAppId),
+                new Claim(AuthenticationConstants.AppIdClaim, botAppId)
+            });
+
+            context.Services.Add<IIdentity>("BotIdentity", claimsIdentity);
+            var connectorClient = await this.CreateConnectorClientAsync(claimsIdentity, reference.ServiceUrl);
+            context.Services.Add<IConnectorClient>(connectorClient);
+            await RunPipeline(context, callback);
         }
 
         public BotFrameworkAdapter(string appId, string appPassword, HttpClient httpClient = null, IMiddleware middleware = null) 
@@ -68,22 +78,18 @@ namespace Microsoft.Bot.Builder.Adapters
         public async Task ProcessActivity(string authHeader, Activity activity, Func<ITurnContext, Task> callback)
         {
             BotAssert.ActivityNotNull(activity);
-            ClaimsIdentity claimsIdentity =  await JwtTokenValidation.AuthenticateRequest(activity, authHeader, _credentialProvider, _httpClient);
+            var claimsIdentity =  await JwtTokenValidation.AuthenticateRequest(activity, authHeader, _credentialProvider, _httpClient);
 
-            // For requests from channel App Id is in Audience claim of JWT token. For emulator it is in AppId claim. For 
-            // unauthenticated requests we have anonymouse identity provided auth is disabled.
-            string botAppId = GetBotId(claimsIdentity);
-            var context = new BotFrameworkTurnContext(botAppId, this, activity);
+            var context = new TurnContext(this, activity);
+            context.Services.Add<IIdentity>("BotIdentity", claimsIdentity);
+            var connectorClient = await this.CreateConnectorClientAsync(claimsIdentity, activity.ServiceUrl);
+            context.Services.Add<IConnectorClient>(connectorClient);
             await base.RunPipeline(context, callback).ConfigureAwait(false);
         }
 
         public override async Task<ResourceResponse[]> SendActivities(ITurnContext context, Activity[] activities)
         {
-            AssertBotFrameworkContext (context);
             List<ResourceResponse> responses = new List<ResourceResponse>(); 
-
-            BotFrameworkTurnContext bfContext = context as BotFrameworkTurnContext;
-            MicrosoftAppCredentials appCredentials = await GetAppCredentials(bfContext.BotAppId);
 
             foreach (var activity in activities)
             {
@@ -100,8 +106,8 @@ namespace Microsoft.Bot.Builder.Adapters
                     response = new ResourceResponse(activity.Id ?? string.Empty); 
                 }
                 else
-                {                                        
-                    var connectorClient = new ConnectorClient(new Uri(activity.ServiceUrl), appCredentials);
+                {
+                    var connectorClient = context.Services.Get<IConnectorClient>();
                     response = await connectorClient.Conversations.SendToConversationAsync(activity).ConfigureAwait(false);
                 }
 
@@ -114,21 +120,13 @@ namespace Microsoft.Bot.Builder.Adapters
 
         public override async Task<ResourceResponse> UpdateActivity(ITurnContext context, Activity activity)
         {
-            AssertBotFrameworkContext(context);
-
-            BotFrameworkTurnContext bfContext = context as BotFrameworkTurnContext;
-            MicrosoftAppCredentials appCredentials = await GetAppCredentials(bfContext.BotAppId);
-            var connectorClient = new ConnectorClient(new Uri(activity.ServiceUrl), appCredentials);
+            var connectorClient = context.Services.Get<IConnectorClient>();
             return await connectorClient.Conversations.UpdateActivityAsync(activity);
         }
 
         public override async Task DeleteActivity(ITurnContext context, ConversationReference reference)
         {
-            AssertBotFrameworkContext(context);
-
-            BotFrameworkTurnContext bfContext = context as BotFrameworkTurnContext;
-            MicrosoftAppCredentials appCredentials = await GetAppCredentials(bfContext.BotAppId);
-            var connectorClient = new ConnectorClient(new Uri(context.Activity.ServiceUrl), appCredentials);
+            var connectorClient = context.Services.Get<IConnectorClient>();
             await connectorClient.Conversations.DeleteActivityAsync(reference.Conversation.Id, reference.ActivityId);
         }
 
@@ -160,12 +158,46 @@ namespace Microsoft.Bot.Builder.Adapters
         }
 
         /// <summary>
+        /// Creates the connector client asynchronous.
+        /// </summary>
+        /// <param name="claimsIdentity">The claims identity.</param>
+        /// <param name="serviceUrl">The service URL.</param>
+        /// <returns>ConnectorClient instance.</returns>
+        /// <exception cref="NotSupportedException">ClaimsIdemtity cannot be null. Pass Anonymous ClaimsIdentity if authentication is turned off.</exception>
+        private async Task<IConnectorClient> CreateConnectorClientAsync(ClaimsIdentity claimsIdentity, string serviceUrl)
+        {
+            if (claimsIdentity == null)
+            {
+                throw new NotSupportedException("ClaimsIdemtity cannot be null. Pass Anonymous ClaimsIdentity if authentication is turned off.");
+            }
+
+            // For requests from channel App Id is in Audience claim of JWT token. For emulator it is in AppId claim. For 
+            // unauthenticated requests we have anonymouse identity provided auth is disabled.
+            var botAppIdClaim = (claimsIdentity.Claims?.SingleOrDefault(claim => claim.Type == AuthenticationConstants.AudienceClaim)
+                ??
+                // For Activities coming from Emulator AppId claim contains the Bot's AAD AppId.
+                claimsIdentity.Claims?.SingleOrDefault(claim => claim.Type == AuthenticationConstants.AppIdClaim));
+
+            // For anonymous requests (requests with no header) appId is not set in claims.
+            if (botAppIdClaim != null)
+            {
+                string botId = botAppIdClaim.Value;
+                var appCredentials = await this.GetAppCredentialsAsync(botId);
+                return new ConnectorClient(new Uri(serviceUrl), appCredentials);
+            }
+            else
+            {
+                return new ConnectorClient(new Uri(serviceUrl));
+            }
+        }
+
+        /// <summary>
         /// Gets the application credentials. App Credentials are cached so as to ensure we are not refreshing
         /// token everytime.
         /// </summary>
         /// <param name="appId">The application identifier (AAD Id for the bot).</param>
         /// <returns>App credentials.</returns>
-        protected virtual async Task<MicrosoftAppCredentials> GetAppCredentials(string appId)
+        private async Task<MicrosoftAppCredentials> GetAppCredentialsAsync(string appId)
         {
             if (appId == null)
             {
@@ -180,39 +212,6 @@ namespace Microsoft.Bot.Builder.Adapters
             }
 
             return appCredentials;
-        }
-
-        /// <summary>
-        /// Gets the bot identifier from claims.
-        /// </summary>
-        /// <param name="claimsIdentity">The claims identity.</param>
-        /// <returns>Bot's AAD AppId, if it could be inferred from claims. Null otherwise.</returns>
-        private static string GetBotId(ClaimsIdentity claimsIdentity)
-        {
-            // For Activities coming from channels Audience Claim contains the Bot's AAD AppId
-            Claim botAppIdClaim = (claimsIdentity.Claims?.SingleOrDefault(claim => claim.Type == AuthenticationConstants.AudienceClaim) 
-                ??
-                // For Activities coming from Emulator AppId claim contains the Bot's AAD AppId.
-                claimsIdentity.Claims?.SingleOrDefault(claim => claim.Type == AuthenticationConstants.AppIdClaim));
-
-            // For anonymous requests (requests with no header) appId is not set in claims.
-            if (botAppIdClaim != null)
-            {
-                return botAppIdClaim.Value;
-            }
-            else
-            {
-                return null;
-            }
-        }
-
-        public static void AssertBotFrameworkContext(ITurnContext context)
-        {
-            BotAssert.ContextNotNull(context); 
-
-            BotFrameworkTurnContext bfContext = context as BotFrameworkTurnContext;
-            if (bfContext == null)
-                throw new InvalidOperationException($"BotFramework Context is required. Incorrect context type: {context.GetType().Name}");
         }
     }
 }
