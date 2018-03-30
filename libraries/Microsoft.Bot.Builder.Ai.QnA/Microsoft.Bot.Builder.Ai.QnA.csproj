@@ -14,7 +14,7 @@
 
   <PropertyGroup>
 	  <TargetFramework>netstandard2.0</TargetFramework>
-	  <PackageId>Microsoft.Bot.Builder.Ai</PackageId>
+	  <PackageId>Microsoft.Bot.Builder.Ai.QnA</PackageId>
     <Description>AI classes for using Cognitive Services on the Microsoft Bot Builder SDK</Description>
     <Summary>This library implements C# classes for building bots using Microsoft Cognitive services.</Summary>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>

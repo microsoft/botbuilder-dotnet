@@ -4,7 +4,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Microsoft.Bot.Builder.LUIS
+namespace Microsoft.Bot.Builder.Ai.LUIS
 {
     /// <summary>
     /// Interface for Recognizers.

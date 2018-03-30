@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 using Microsoft.Cognitive.LUIS;
 
-namespace Microsoft.Bot.Builder.LUIS
+namespace Microsoft.Bot.Builder.Ai.LUIS
 {
     /// <summary>
     /// A Middleware for running the Luis recognizer
@@ -21,7 +21,7 @@ namespace Microsoft.Bot.Builder.LUIS
 
         public LuisRecognizerMiddleware(ILuisModel luisModel, ILuisRecognizerOptions luisRecognizerOptions = null, ILuisOptions luisOptions = null)
         {
-            if(luisModel == null)
+            if (luisModel == null)
                 throw new ArgumentNullException(nameof(luisModel));
 
             _luisRecognizer = new LuisRecognizer(luisModel, luisRecognizerOptions, luisOptions);

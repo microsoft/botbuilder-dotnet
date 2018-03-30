@@ -1,4 +1,4 @@
-﻿namespace Microsoft.Bot.Builder.Ai
+﻿namespace Microsoft.Bot.Builder.Ai.QnA
 {
     /// <summary>
     /// Options to alter the default behaviour of the QnA Maker Middleware

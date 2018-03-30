@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
-using Microsoft.Bot.Builder.LUIS;
+using Microsoft.Bot.Builder.Ai.LUIS;
 using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Samples.Ai.Luis

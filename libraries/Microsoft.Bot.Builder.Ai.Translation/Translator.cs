@@ -12,7 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
-namespace Microsoft.Bot.Builder.Ai
+namespace Microsoft.Bot.Builder.Ai.Translation
 {
 
     internal class Translator
