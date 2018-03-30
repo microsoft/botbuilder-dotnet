@@ -3,6 +3,7 @@
 
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Connector.Authentication;
+using Microsoft.Rest.TransientFaultHandling;
 using System.Collections.Generic;
 
 namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
@@ -22,5 +23,10 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
         public List<IMiddleware> Middleware { get => _middleware; }
         public bool EnableProactiveMessages { get; set; }
         public BotFrameworkPaths Paths { get => _paths; }
+
+        /// <summary>
+        /// Gets or sets the retry policy to retry operations in case of errors from Bot Framework.
+        /// </summary>
+        public RetryPolicy ConnectorClientRetryPolicy { get; set; }
     }
 }

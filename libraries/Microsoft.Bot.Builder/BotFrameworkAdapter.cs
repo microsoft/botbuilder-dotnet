@@ -4,6 +4,7 @@
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
+using Microsoft.Rest.TransientFaultHandling;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,18 +19,21 @@ namespace Microsoft.Bot.Builder.Adapters
     {
         private readonly ICredentialProvider _credentialProvider;
         private readonly HttpClient _httpClient;
+        private readonly RetryPolicy _connectorClientRetryPolicy;
         private Dictionary<string, MicrosoftAppCredentials> _appCredentialMap = new Dictionary<string, MicrosoftAppCredentials>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BotFrameworkAdapter"/> class.
         /// </summary>
         /// <param name="credentialProvider">The credential provider.</param>
+        /// <param name="connectorClientRetryPolicy">Retry policy for retrying HTTP operations.</param>
         /// <param name="httpClient">The HTTP client.</param>
         /// <param name="middleware">The middleware to use. Use <see cref="MiddlewareSet" class to register multiple middlewares together./></param>
-        public BotFrameworkAdapter(ICredentialProvider credentialProvider, HttpClient httpClient = null, IMiddleware middleware = null)
+        public BotFrameworkAdapter(ICredentialProvider credentialProvider, RetryPolicy connectorClientRetryPolicy = null, HttpClient httpClient = null, IMiddleware middleware = null)
         {
             _credentialProvider = credentialProvider ?? throw new ArgumentNullException(nameof(credentialProvider));
             _httpClient = httpClient ?? new HttpClient();
+            _connectorClientRetryPolicy = connectorClientRetryPolicy;
 
             if (middleware != null)
             {
@@ -59,13 +63,13 @@ namespace Microsoft.Bot.Builder.Adapters
             });
 
             context.Services.Add<IIdentity>("BotIdentity", claimsIdentity);
-            var connectorClient = await this.CreateConnectorClientAsync(claimsIdentity, reference.ServiceUrl);
+            var connectorClient = await this.CreateConnectorClientAsync(reference.ServiceUrl, claimsIdentity);
             context.Services.Add<IConnectorClient>(connectorClient);
             await RunPipeline(context, callback);
         }
 
-        public BotFrameworkAdapter(string appId, string appPassword, HttpClient httpClient = null, IMiddleware middleware = null) 
-            : this(new SimpleCredentialProvider(appId, appPassword), httpClient, middleware)
+        public BotFrameworkAdapter(string appId, string appPassword, RetryPolicy connectorClientRetryPolicy = null, HttpClient httpClient = null, IMiddleware middleware = null) 
+            : this(new SimpleCredentialProvider(appId, appPassword), connectorClientRetryPolicy, httpClient, middleware)
         {
         }
 
@@ -82,7 +86,7 @@ namespace Microsoft.Bot.Builder.Adapters
 
             var context = new TurnContext(this, activity);
             context.Services.Add<IIdentity>("BotIdentity", claimsIdentity);
-            var connectorClient = await this.CreateConnectorClientAsync(claimsIdentity, activity.ServiceUrl);
+            var connectorClient = await this.CreateConnectorClientAsync(activity.ServiceUrl, claimsIdentity);
             context.Services.Add<IConnectorClient>(connectorClient);
             await base.RunPipeline(context, callback).ConfigureAwait(false);
         }
@@ -140,7 +144,8 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <returns></returns>
         public virtual async Task CreateConversation(string channelId, string serviceUrl, MicrosoftAppCredentials credentials, ConversationParameters conversationParameters, Func<ITurnContext, Task> callback)
         {
-            var connectorClient = new ConnectorClient(new Uri(serviceUrl), credentials);
+            var connectorClient = this.CreateConnectorClient(serviceUrl, credentials);
+
             var result = await connectorClient.Conversations.CreateConversationAsync(conversationParameters);
 
             // create conversation Update to represent the result of creating the conversation
@@ -160,11 +165,11 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <summary>
         /// Creates the connector client asynchronous.
         /// </summary>
-        /// <param name="claimsIdentity">The claims identity.</param>
         /// <param name="serviceUrl">The service URL.</param>
+        /// <param name="claimsIdentity">The claims identity.</param>
         /// <returns>ConnectorClient instance.</returns>
         /// <exception cref="NotSupportedException">ClaimsIdemtity cannot be null. Pass Anonymous ClaimsIdentity if authentication is turned off.</exception>
-        private async Task<IConnectorClient> CreateConnectorClientAsync(ClaimsIdentity claimsIdentity, string serviceUrl)
+        private async Task<IConnectorClient> CreateConnectorClientAsync(string serviceUrl, ClaimsIdentity claimsIdentity)
         {
             if (claimsIdentity == null)
             {
@@ -183,12 +188,38 @@ namespace Microsoft.Bot.Builder.Adapters
             {
                 string botId = botAppIdClaim.Value;
                 var appCredentials = await this.GetAppCredentialsAsync(botId);
-                return new ConnectorClient(new Uri(serviceUrl), appCredentials);
+                return this.CreateConnectorClient(serviceUrl, appCredentials);
             }
             else
             {
-                return new ConnectorClient(new Uri(serviceUrl));
+                return this.CreateConnectorClient(serviceUrl);
             }
+        }
+
+        /// <summary>
+        /// Creates the connector client.
+        /// </summary>
+        /// <param name="serviceUrl">The service URL.</param>
+        /// <param name="appCredentials">The application credentials.</param>
+        /// <returns>Connector client instance.</returns>
+        private IConnectorClient CreateConnectorClient(string serviceUrl, MicrosoftAppCredentials appCredentials = null)
+        {
+            ConnectorClient connectorClient;
+            if (appCredentials != null)
+            {
+                connectorClient = new ConnectorClient(new Uri(serviceUrl), appCredentials);
+            }
+            else
+            {
+                connectorClient = new ConnectorClient(new Uri(serviceUrl));
+            }
+
+            if (this._connectorClientRetryPolicy != null)
+            {
+                connectorClient.SetRetryPolicy(this._connectorClientRetryPolicy);
+            }
+
+            return connectorClient;
         }
 
         /// <summary>

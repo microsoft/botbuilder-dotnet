@@ -4,6 +4,7 @@
 using System.Collections.Generic;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Connector.Authentication;
+using Microsoft.Rest.TransientFaultHandling;
 
 namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 {
@@ -19,5 +20,10 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         public ICredentialProvider CredentialProvider { get; set; }
         public IList<IMiddleware> Middleware { get => _middleware; }
         public bool EnableProactiveMessages { get; set; }
+
+        /// <summary>
+        /// Gets or sets the retry policy to retry operations in case of errors from Bot Framework.
+        /// </summary>
+        public RetryPolicy ConnectorClientRetryPolicy { get; set; }
     }
 }
