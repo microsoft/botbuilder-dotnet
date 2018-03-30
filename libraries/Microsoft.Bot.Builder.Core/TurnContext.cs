@@ -9,6 +9,14 @@ using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder
 {
+    /// <summary>
+    /// Provides context for a turn of a bot.
+    /// </summary>
+    /// <remarks>Context provides information needed to process an incoming activity.
+    /// The context object is created by a <see cref="BotAdapter"/> and persists for the 
+    /// length of the turn.</remarks>
+    /// <seealso cref="IBot"/>
+    /// <seealso cref="IMiddleware"/>
     public class TurnContext : ITurnContext
     {
         private readonly BotAdapter _adapter;
@@ -21,12 +29,32 @@ namespace Microsoft.Bot.Builder
 
         private readonly TurnContextServiceCollection _services = new TurnContextServiceCollection();
 
+        /// <summary>
+        /// Creates a context object.
+        /// </summary>
+        /// <param name="adapter">The adapter creating the context.</param>
+        /// <param name="activity">The incoming activity for the turn;
+        /// or <c>null</c> for a turn for a proactive message.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="activity"/> or
+        /// <paramref name="adapter"/> is <c>null</c>.</exception>
+        /// <remarks>For use by bot adapter implementations only.</remarks>
         public TurnContext(BotAdapter adapter, Activity activity)
         {
             _adapter = adapter ?? throw new ArgumentNullException(nameof(adapter));
             _activity = activity ?? throw new ArgumentNullException(nameof(activity));
         }
 
+        /// <summary>
+        /// Adds a response handler for send activity operations.
+        /// </summary>
+        /// <param name="handler">The handler to add to the context object.</param>
+        /// <returns>The updated context object.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="handler"/> is <c>null</c>.</exception>
+        /// <remarks>When the context's <see cref="SendActivity(IActivity)"/> 
+        /// or <see cref="SendActivities(IActivity[])"/> methods are called, 
+        /// the adapter calls the registered handlers in the order in which they were 
+        /// added to the context object.
+        /// </remarks>
         public ITurnContext OnSendActivities(SendActivitiesHandler handler)
         {
             if (handler == null)
@@ -36,6 +64,16 @@ namespace Microsoft.Bot.Builder
             return this;
         }
 
+        /// <summary>
+        /// Adds a response handler for update activity operations.
+        /// </summary>
+        /// <param name="handler">The handler to add to the context object.</param>
+        /// <returns>The updated context object.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="handler"/> is <c>null</c>.</exception>
+        /// <remarks>When the context's <see cref="UpdateActivity(IActivity)"/> is called, 
+        /// the adapter calls the registered handlers in the order in which they were 
+        /// added to the context object.
+        /// </remarks>
         public ITurnContext OnUpdateActivity(UpdateActivityHandler handler)
         {
             if (handler == null)
@@ -45,6 +83,16 @@ namespace Microsoft.Bot.Builder
             return this;
         }
 
+        /// <summary>
+        /// Adds a response handler for delete activity operations.
+        /// </summary>
+        /// <param name="handler">The handler to add to the context object.</param>
+        /// <returns>The updated context object.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="handler"/> is <c>null</c>.</exception>
+        /// <remarks>When the context's <see cref="DeleteActivity(string)"/> is called, 
+        /// the adapter calls the registered handlers in the order in which they were 
+        /// added to the context object.
+        /// </remarks>
         public ITurnContext OnDeleteActivity(DeleteActivityHandler handler)
         {
             if (handler == null)
@@ -54,16 +102,27 @@ namespace Microsoft.Bot.Builder
             return this;
         }
 
+        /// <summary>
+        /// Gets the bot adapter that created this context object.
+        /// </summary>
         public BotAdapter Adapter => _adapter;
 
+        /// <summary>
+        /// Gets the services registered on this context object.
+        /// </summary>
         public ITurnContextServiceCollection Services => _services;
 
+        /// <summary>
+        /// Gets the activity associated with this turn; or <c>null</c> when processing
+        /// a proactive message.
+        /// </summary>
         public Activity Activity => _activity;
 
-
         /// <summary>
-        /// If true at least one response has been sent for the current turn of conversation.
+        /// Indicates whether at least one response was sent for the current turn.
         /// </summary>
+        /// <value><c>true</c> if at least one response was sent for the current turn.</value>
+        /// <exception cref="ArgumentException">You attempted to set the value to <c>false</c>.</exception>
         public bool Responded
         {
             get { return _responded; }
@@ -77,11 +136,21 @@ namespace Microsoft.Bot.Builder
             }
         }
 
+        /// <summary>
+        /// Sends a message activity to the sender of the incoming activity.
+        /// </summary>
+        /// <param name="textReplyToSend">The text of the message to send.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="textReplyToSend"/> is <c>null</c> or whitespace.</exception>
+        /// <remarks>If the activity is successfully sent, the task result contains
+        /// a <see cref="ResourceResponse"/> object containing the ID that the receiving 
+        /// channel assigned to the activity.</remarks>
         public async Task<ResourceResponse> SendActivity(string textReplyToSend, string speak = null, string inputHint = null)
         {
             if (string.IsNullOrWhiteSpace(textReplyToSend))
-                throw new ArgumentNullException(nameof(textReplyToSend)); 
-            
+                throw new ArgumentNullException(nameof(textReplyToSend));
+
             var activityToSend = new Activity(ActivityTypes.Message) { Text = textReplyToSend };
 
             if (!string.IsNullOrEmpty(speak))
@@ -93,6 +162,15 @@ namespace Microsoft.Bot.Builder
             return await SendActivity(activityToSend);
         }
 
+        /// <summary>
+        /// Sends an activity to the sender of the incoming activity.
+        /// </summary>
+        /// <param name="activity">The activity to send.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="activity"/> is <c>null</c>.</exception>
+        /// <remarks>If the activity is successfully sent, the task result contains
+        /// a <see cref="ResourceResponse"/> object containing the ID that the receiving 
+        /// channel assigned to the activity.</remarks>
         public async Task<ResourceResponse> SendActivity(IActivity activity)
         {
             if (activity == null)
@@ -108,27 +186,35 @@ namespace Microsoft.Bot.Builder
             else
             {
                 return responses[0];
-            }            
+            }
         }
 
+        /// <summary>
+        /// Sends an activity to the sender of the incoming activity.
+        /// </summary>
+        /// <param name="activities">The activities to send.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>If the activities are successfully sent, the task result contains
+        /// an array of <see cref="ResourceResponse"/> objects containing the IDs that 
+        /// the receiving channel assigned to the activities.</remarks>
         public async Task<ResourceResponse[]> SendActivities(IActivity[] activities)
         {
             // Bind the relevant Conversation Reference properties, such as URLs and 
             // ChannelId's, to the activities we're about to send. 
             ConversationReference cr = GetConversationReference(this._activity);
             foreach (Activity a in activities)
-            {                
+            {
                 ApplyConversationReference(a, cr);
             }
 
             // Convert the IActivities to Activies. 
-            Activity[] activityArray = Array.ConvertAll(activities, (input) => (Activity)input);            
+            Activity[] activityArray = Array.ConvertAll(activities, (input) => (Activity)input);
 
             // Create the list used by the recursive methods. 
             List<Activity> activityList = new List<Activity>(activityArray);
 
             // provide a variable to capture the set of responses returned from the adapter.
-            ResourceResponse[] responses = null; 
+            ResourceResponse[] responses = null;
 
             async Task ActuallySendStuff()
             {
@@ -138,12 +224,12 @@ namespace Microsoft.Bot.Builder
 
                 // Send from the list, which may have been manipulated via the event handlers. 
                 // Note that 'responses' was captured from the root of the call, and will be
-                // returned to the original caller
+                // returned to the original caller.
                 responses = await this.Adapter.SendActivities(this, activityList.ToArray());
 
                 // If we actually sent something, set the flag. 
                 if (anythingToSend)
-                    this.Responded = true;                
+                    this.Responded = true;
             }
 
             await SendActivitiesInternal(activityList, _onSendActivities, ActuallySendStuff);
@@ -154,7 +240,17 @@ namespace Microsoft.Bot.Builder
         /// <summary>
         /// Replaces an existing activity. 
         /// </summary>
-        /// <param name="activity">New replacement activity. The activity should already have it's ID information populated</param>        
+        /// <param name="activity">New replacement activity.</param>        
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <exception cref="Microsoft.Bot.Schema.ErrorResponseException">
+        /// The HTTP operation failed and the response contained additional information.</exception>
+        /// <exception cref="System.AggregateException">
+        /// One or more exceptions occurred during the operation.</exception>
+        /// <remarks>If the activity is successfully sent, the task result contains
+        /// a <see cref="ResourceResponse"/> object containing the ID that the receiving 
+        /// channel assigned to the activity.
+        /// <para>Before calling this, set the ID of the replacement activity to the ID
+        /// of the activity to replace.</para></remarks>
         public async Task<ResourceResponse> UpdateActivity(IActivity activity)
         {
             Activity a = (Activity)activity;
@@ -167,9 +263,16 @@ namespace Microsoft.Bot.Builder
 
             await UpdateActivityInternal(a, _onUpdateActivity, ActuallyUpdateStuff);
 
-            return response; 
+            return response;
         }
 
+        /// <summary>
+        /// Deletes an existing activity.
+        /// </summary>
+        /// <param name="activityId">The ID of the activity to delete.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <exception cref="Microsoft.Bot.Schema.ErrorResponseException">
+        /// The HTTP operation failed and the response contained additional information.</exception>
         public async Task DeleteActivity(string activityId)
         {
             if (string.IsNullOrWhiteSpace(activityId))
@@ -184,6 +287,19 @@ namespace Microsoft.Bot.Builder
             }
 
             await DeleteActivityInternal(cr, _onDeleteActivity, ActuallyDeleteStuff);
+        }
+
+        public async Task DeleteActivity(ConversationReference conversationReference)
+        {
+            if (conversationReference == null)
+                throw new ArgumentNullException(nameof(conversationReference));
+            
+            async Task ActuallyDeleteStuff()
+            {
+                await this.Adapter.DeleteActivity(this, conversationReference);
+            }
+
+            await DeleteActivityInternal(conversationReference, _onDeleteActivity, ActuallyDeleteStuff);
         }
 
         private async Task SendActivitiesInternal(
@@ -204,7 +320,7 @@ namespace Microsoft.Bot.Builder
                 return;
             }
 
-            // Default to "No more Middleware after this"
+            // Default to "No more Middleware after this".
             async Task next()
             {
                 // Remove the first item from the list of middleware to call,
@@ -236,7 +352,7 @@ namespace Microsoft.Bot.Builder
                 return;
             }
 
-            // Default to "No more Middleware after this"
+            // Default to "No more Middleware after this".
             async Task next()
             {
                 // Remove the first item from the list of middleware to call,
@@ -268,7 +384,7 @@ namespace Microsoft.Bot.Builder
                 return;
             }
 
-            // Default to "No more Middleware after this"
+            // Default to "No more Middleware after this".
             async Task next()
             {
                 // Remove the first item from the list of middleware to call,
@@ -277,15 +393,18 @@ namespace Microsoft.Bot.Builder
                 await DeleteActivityInternal(cr, remaining, callAtBottom).ConfigureAwait(false);
             }
 
-            // Grab the current middleware, which is the 1st element in the array, and execute it            
+            // Grab the current middleware, which is the 1st element in the array, and execute it.
             DeleteActivityHandler toCall = updateHandlers.First();
             await toCall(this, cr, next);
         }
 
         /// <summary>
-        /// Creates a Conversation Reference from an Activity
+        /// Creates a conversation reference from an activity.
         /// </summary>
-        /// <param name="activity">The activity to update. Existing values in the Activity will be overwritten.</param>        
+        /// <param name="activity">The activity.</param>
+        /// <returns>A conversation reference for the conversation that contains the activity.</returns>
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="activity"/> is <c>null</c>.</exception>
         public static ConversationReference GetConversationReference(Activity activity)
         {
             BotAssert.ActivityNotNull(activity);
@@ -304,34 +423,41 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
-        /// Updates an activity with the delivery information from a conversation reference. Calling
-        /// this after[getConversationReference()] (#getconversationreference) on an incoming activity 
-        /// will properly address the reply to a received activity.
+        /// Updates an activity with the delivery information from an existing 
+        /// conversation reference.
         /// </summary>
-        /// <param name="a">Activity to copy delivery information to</param>
-        /// <param name="r">Conversation reference containing delivery information</param>
-        /// <param name="isIncoming">(Optional) flag indicating whether the activity is an incoming or outgoing activity. Defaults to `false` indicating the activity is outgoing.</param>
-        public static Activity ApplyConversationReference(Activity a, ConversationReference r, bool isIncoming = false)
+        /// <param name="activity">The activity to update.</param>
+        /// <param name="reference">The conversation reference.</param>
+        /// <param name="isIncoming">(Optional) <c>true</c> to treat the activity as an 
+        /// incoming activity, where the bot is the recipient; otherwaire <c>false</c>.
+        /// Default is <c>false</c>, and the activity will show the bot as the sender.</param>
+        /// <remarks>Call <see cref="GetConversationReference(Activity)"/> on an incoming
+        /// activity to get a conversation reference that you can then use to update an
+        /// outgoing activity with the correct delivery information.
+        /// <para>The <see cref="SendActivity(IActivity)"/> and <see cref="SendActivities(IActivity[])"/>
+        /// methods do this for you.</para>
+        /// </remarks>
+        public static Activity ApplyConversationReference(Activity activity, ConversationReference reference, bool isIncoming = false)
         {
-            a.ChannelId = r.ChannelId;
-            a.ServiceUrl = r.ServiceUrl;
-            a.Conversation = r.Conversation;
+            activity.ChannelId = reference.ChannelId;
+            activity.ServiceUrl = reference.ServiceUrl;
+            activity.Conversation = reference.Conversation;
 
             if (isIncoming)
             {
-                a.From = r.User;
-                a.Recipient = r.Bot;
-                if (r.ActivityId != null)
-                    a.Id = r.ActivityId;
+                activity.From = reference.User;
+                activity.Recipient = reference.Bot;
+                if (reference.ActivityId != null)
+                    activity.Id = reference.ActivityId;
             }
-            else  // Outoing
+            else  // Outgoing
             {
-                a.From = r.Bot;
-                a.Recipient = r.User;
-                if (r.ActivityId != null)
-                    a.ReplyToId = r.ActivityId;
+                activity.From = reference.Bot;
+                activity.Recipient = reference.User;
+                if (reference.ActivityId != null)
+                    activity.ReplyToId = reference.ActivityId;
             }
-            return a;
+            return activity;
         }
     }
 }

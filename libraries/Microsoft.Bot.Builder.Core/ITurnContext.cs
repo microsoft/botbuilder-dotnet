@@ -33,7 +33,9 @@ namespace Microsoft.Bot.Builder
         Task<ResourceResponse[]> SendActivities(IActivity[] activities);        
 
         Task<ResourceResponse> UpdateActivity(IActivity activity);
+
         Task DeleteActivity(string activityId);
+        Task DeleteActivity(ConversationReference conversationReference);
 
         ITurnContext OnSendActivities(SendActivitiesHandler handler);
         ITurnContext OnUpdateActivity(UpdateActivityHandler handler);
