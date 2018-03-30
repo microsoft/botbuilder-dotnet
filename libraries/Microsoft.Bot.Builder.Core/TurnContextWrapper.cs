@@ -53,6 +53,11 @@ namespace Microsoft.Bot.Builder
             return _innerContext.DeleteActivity(activityId);
         }
 
+        public Task DeleteActivity(ConversationReference conversationReference)
+        {
+            return _innerContext.DeleteActivity(conversationReference);
+        }
+
         public ITurnContext OnSendActivities(SendActivitiesHandler handler)
         {
             this._innerContext.OnSendActivities(handler);
