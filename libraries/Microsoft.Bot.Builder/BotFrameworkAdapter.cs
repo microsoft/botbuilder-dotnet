@@ -205,7 +205,7 @@ namespace Microsoft.Bot.Builder.Adapters
         private IConnectorClient CreateConnectorClient(string serviceUrl, MicrosoftAppCredentials appCredentials = null)
         {
             ConnectorClient connectorClient;
-            if (appCredentials == null)
+            if (appCredentials != null)
             {
                 connectorClient = new ConnectorClient(new Uri(serviceUrl), appCredentials);
             }
