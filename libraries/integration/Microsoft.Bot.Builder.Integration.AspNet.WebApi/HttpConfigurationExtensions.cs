@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.AspNet.WebApi;
 using Microsoft.Bot.Builder.Integration.AspNet.WebApi.Handlers;
 using System;
 using System.Web.Http;

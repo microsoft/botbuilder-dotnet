@@ -113,14 +113,34 @@ namespace Microsoft.Bot.Builder.Classic.FormFlowTest
             using (var container = builder.Build())
             {
                 var adapter = new ConsoleAdapter();
-                adapter.ProcessActivity(async (context) =>
+
+                while (true)
                 {
-                    using (var scope = DialogModule.BeginLifetimeScope(container, context))
+                    var msg = Console.ReadLine();
+                    if (msg == null)
+                        break;
+
+                    var activity = new Activity()
                     {
-                        Func<IDialog<object>> MakeRoot = () => form;
-                        await Conversation.SendAsync(context, MakeRoot);
-                    }
-                }).Wait();
+                        Text = msg,
+                        ChannelId = "console",
+                        From = new ChannelAccount(id: "user", name: "User1"),
+                        Recipient = new ChannelAccount(id: "bot", name: "Bot"),
+                        Conversation = new ConversationAccount(id: "Convo1"),
+                        Timestamp = DateTime.UtcNow,
+                        Id = Guid.NewGuid().ToString(),
+                        Type = ActivityTypes.Message
+                    };
+
+                    adapter.ProcessActivity(activity, async(context) =>
+                    {
+                        using (var scope = DialogModule.BeginLifetimeScope(container, context))
+                        {
+                            Func<IDialog<object>> MakeRoot = () => form;
+                            await Conversation.SendAsync(context, MakeRoot);
+                        }
+                    }).Wait();
+                }
             }
         }
 

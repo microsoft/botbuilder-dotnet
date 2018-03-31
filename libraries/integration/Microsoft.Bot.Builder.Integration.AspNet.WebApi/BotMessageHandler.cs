@@ -12,6 +12,8 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Handlers
 {
     internal sealed class BotMessageHandler : BotMessageHandlerBase
     {
+        private static HttpClient httpClient = new HttpClient();
+
         public BotMessageHandler(BotFrameworkAdapter botFrameworkAdapter) : base(botFrameworkAdapter)
         {
         }
@@ -20,8 +22,10 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Handlers
         {
             var activity = await request.Content.ReadAsAsync<Activity>(BotMessageHandlerBase.BotMessageMediaTypeFormatters, cancellationToken);
 
+            var authContext = await AuthenticationHelper.GetRequestAuthenticationContextAsync(request.Headers.Authorization.ToString(), httpClient);
+            AuthenticationHelper.SetRequestAuthenticationContext(authContext);
+
             await botFrameworkAdapter.ProcessActivity(
-                request.Headers.Authorization?.Parameter,
                 activity,
                 botCallbackHandler);
         }

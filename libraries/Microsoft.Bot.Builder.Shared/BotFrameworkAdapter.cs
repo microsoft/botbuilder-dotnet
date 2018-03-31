@@ -11,6 +11,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Security.Principal;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Adapters
@@ -41,11 +42,8 @@ namespace Microsoft.Bot.Builder.Adapters
             }
         }
 
-        public async Task ContinueConversation(string botAppId, ConversationReference reference, Func<ITurnContext, Task> callback)
+        public override async Task ContinueConversation(ConversationReference reference, Func<ITurnContext, Task> callback)
         {
-            if (string.IsNullOrWhiteSpace(botAppId))
-                throw new ArgumentNullException(nameof(botAppId));
-
             if (reference == null)
                 throw new ArgumentNullException(nameof(reference));
 
@@ -54,16 +52,12 @@ namespace Microsoft.Bot.Builder.Adapters
 
             var context = new TurnContext(this, reference.GetPostToBotMessage());
 
-            // Hand craft Claims Identity.
-            var claimsIdentity = new ClaimsIdentity(new List<Claim>
-            {
-                // Adding claims for both Emulator and Channel.
-                new Claim(AuthenticationConstants.AudienceClaim, botAppId),
-                new Claim(AuthenticationConstants.AppIdClaim, botAppId)
-            });
+            // When the request came in, AuthContext was already set on the request regardless of if the AuthHeader was present or not.
+            // If request was indeed without any auth header. We use Anonymous claim.
+            var authenticationContext = AuthenticationHelper.GetBotFrameworkAuthenticationContext();
 
-            context.Services.Add<IIdentity>("BotIdentity", claimsIdentity);
-            var connectorClient = await this.CreateConnectorClientAsync(reference.ServiceUrl, claimsIdentity);
+            context.Services.Add<IIdentity>("BotIdentity", authenticationContext.ClaimsIdentity);
+            var connectorClient = await this.CreateConnectorClientAsync(reference.ServiceUrl, authenticationContext.ClaimsIdentity);
             context.Services.Add<IConnectorClient>(connectorClient);
             await RunPipeline(context, callback);
         }
@@ -79,15 +73,57 @@ namespace Microsoft.Bot.Builder.Adapters
             return this;
         }
 
-        public async Task ProcessActivity(string authHeader, Activity activity, Func<ITurnContext, Task> callback)
+        public async override Task ProcessActivity(Activity activity, Func<ITurnContext, Task> callback, CancellationTokenSource cancelToken = null)
         {
-            BotAssert.ActivityNotNull(activity);
-            var claimsIdentity =  await JwtTokenValidation.AuthenticateRequest(activity, authHeader, _credentialProvider, _httpClient);
+            bool allowUnauthenticatedRequests = await _credentialProvider.IsAuthenticationDisabledAsync();
+
+            var authContext = AuthenticationHelper.GetBotFrameworkAuthenticationContext();
+            ClaimsIdentity claimsIdentity;
+
+            if (authContext != null)
+            {
+                claimsIdentity = authContext.ClaimsIdentity;
+                if (authContext.IsEmulator)
+                {
+                    await EmulatorValidation.AuthenticateEmulatorTokenAsync(claimsIdentity, _credentialProvider);
+                }
+                else
+                {
+                    await ChannelValidation.AuthenticateChannelTokenAsync(claimsIdentity, _credentialProvider, activity.ServiceUrl);
+                }
+
+                authContext.IsAuthenticated = true;
+                AuthenticationHelper.SetRequestAuthenticationContext(authContext);
+            }
+            else
+            {
+                if (!allowUnauthenticatedRequests)
+                {
+                    throw new UnauthorizedAccessException("AuthenticationContext was not set on the request. Ensure that appropriate BotAuthenticationMiddleware is called");
+                }
+
+                claimsIdentity = new ClaimsIdentity(new List<Claim>(), "anonymous");
+
+                AuthenticationHelper.SetRequestAuthenticationContext(new BotFrameworkAuthenticationContext
+                {
+                    ServiceUrl = activity.ServiceUrl,
+                    ClaimsIdentity = claimsIdentity,
+                    IsAuthenticated = false,
+                });
+            }
+
+            MicrosoftAppCredentials.TrustServiceUrl(activity.ServiceUrl);
+            var connectorClient = await this.CreateConnectorClientAsync(activity.ServiceUrl, claimsIdentity);
 
             var context = new TurnContext(this, activity);
             context.Services.Add<IIdentity>("BotIdentity", claimsIdentity);
-            var connectorClient = await this.CreateConnectorClientAsync(activity.ServiceUrl, claimsIdentity);
             context.Services.Add<IConnectorClient>(connectorClient);
+
+            if (cancelToken != null)
+            {
+                cancelToken.Token.ThrowIfCancellationRequested();
+            }
+
             await base.RunPipeline(context, callback).ConfigureAwait(false);
         }
 
@@ -142,9 +178,12 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <param name="conversationParameters">arguments for the conversation you want to create</param>
         /// <param name="callback">callback which will have the context.Request.Conversation.Id in it</param>
         /// <returns></returns>
-        public virtual async Task CreateConversation(string channelId, string serviceUrl, MicrosoftAppCredentials credentials, ConversationParameters conversationParameters, Func<ITurnContext, Task> callback)
+        public override async Task CreateConversation(string channelId, ConversationParameters conversationParameters, Func<ITurnContext, Task> callback)
         {
-            var connectorClient = this.CreateConnectorClient(serviceUrl, credentials);
+            // When the request came in, AuthContext was already set on the request regardless of if the AuthHeader was present or not.
+            // If request was indeed without any auth header. We use Anonymous claim.
+            var authContext = AuthenticationHelper.GetBotFrameworkAuthenticationContext();
+            var connectorClient = await this.CreateConnectorClientAsync(authContext.ServiceUrl, authContext.ClaimsIdentity);
 
             var result = await connectorClient.Conversations.CreateConversationAsync(conversationParameters);
 
@@ -152,7 +191,7 @@ namespace Microsoft.Bot.Builder.Adapters
             var conversationUpdate = Activity.CreateConversationUpdateActivity();
             conversationUpdate.ChannelId = channelId;
             conversationUpdate.TopicName = conversationParameters.TopicName;
-            conversationUpdate.ServiceUrl = serviceUrl;
+            conversationUpdate.ServiceUrl = authContext.ServiceUrl;
             conversationUpdate.MembersAdded = conversationParameters.Members;
             conversationUpdate.Id = result.ActivityId ?? Guid.NewGuid().ToString("n");
             conversationUpdate.Conversation = new ConversationAccount(id: result.Id);

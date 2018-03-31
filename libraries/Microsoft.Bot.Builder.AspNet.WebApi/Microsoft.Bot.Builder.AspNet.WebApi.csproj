@@ -1,21 +1,23 @@
 <Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
     <Version Condition=" '$(BUILD_BUILDNUMBER)' == '' ">4.0.0-local</Version>
     <Version Condition=" '$(BUILD_BUILDNUMBER)' != '' ">$(BUILD_BUILDNUMBER)</Version>
     <PackageVersion Condition=" '$(PackageVersion)' == '' ">4.0.0-local</PackageVersion>
     <PackageVersion Condition=" '$(PackageVersion)' != '' ">$(PackageVersion)</PackageVersion>
   </PropertyGroup>
-  
+
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <SignAssembly>true</SignAssembly>
     <DelaySign>true</DelaySign>
-    <AssemblyOriginatorKeyFile>..\..\build\35MSSharedLib1024.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>..\..\..\build\35MSSharedLib1024.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
   <PropertyGroup>
-	<TargetFramework>netstandard2.0</TargetFramework>
-	<PackageId>Microsoft.Bot.Builder.Azure</PackageId>
-    <Description>Azure classes for using Azure Services on the Microsoft Bot Builder SDK</Description>
+    <TargetFramework>net461</TargetFramework>
+    <PackageId>Microsoft.Bot.Builder.AspNet.WebApi</PackageId>
+    <Description>This library integrates the Microsoft Bot Builder SDK with ASP.NET WebAPI.</Description>
+    <Summary>This library provides integration between the Microsoft Bot Builder SDK and ASP.NET WebAPI.</Summary>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -33,18 +35,19 @@
     <RepositoryType />
     <PackageTags>bots;ai;botframework;botbuilder</PackageTags>
     <NeutralLanguage />
+    <AssemblyName>Microsoft.Bot.Builder.AspNet.WebApi</AssemblyName>
+    <RootNamespace>Microsoft.Bot.Builder.AspNet.WebApi</RootNamespace>
   </PropertyGroup>
 
+  <Import Project="..\Microsoft.Bot.Builder.Shared\Microsoft.Bot.Builder.Shared.projitems" Label="Shared" />
+
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
-    <PackageReference Include="WindowsAzure.Storage" Version="8.7.0" />
-    <PackageReference Include="Microsoft.Bot.Builder.Core" Condition=" '$(PackageVersion)' == '' " Version="4.0.0-local" />
-    <PackageReference Include="Microsoft.Bot.Builder.Core" Condition=" '$(PackageVersion)' != '' " Version="$(PackageVersion)" />
+    <PackageReference Include="Microsoft.AspNet.WebApi.Core" Version="5.2.3" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Microsoft.Bot.Builder.Core.Extensions\Microsoft.Bot.Builder.Core.Extensions.csproj" />
     <ProjectReference Include="..\Microsoft.Bot.Builder.Core\Microsoft.Bot.Builder.Core.csproj" />
+    <ProjectReference Include="..\Microsoft.Bot.Connector\Microsoft.Bot.Connector.csproj" />
   </ItemGroup>
 
 </Project>
