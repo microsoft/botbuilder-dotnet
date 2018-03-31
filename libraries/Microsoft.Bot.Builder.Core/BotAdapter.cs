@@ -138,7 +138,7 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
-        /// Processes the activity.
+        /// Processes the activity. This methods runs the full pipeline and should be called on the incoming activity.
         /// </summary>
         /// <param name="activity">The activity.</param>
         /// <param name="callback">Callback to execute after middlewares are called. </param>
@@ -150,11 +150,12 @@ namespace Microsoft.Bot.Builder
         /// Requests a channel to begin a new conversation for the bot.
         /// </summary>
         /// <param name="channelId">The ID of the channel.</param>
+        /// <param name="conversationParameters">Conversation creation parameters.</param>
         /// <param name="callback">A method to call when the new conversation is available.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <exception cref="NotImplementedException"></exception>
         /// <remarks>No base implementation is provided.</remarks>
-        public virtual async Task CreateConversation(string channelId, Func<ITurnContext, Task> callback)
+        public virtual async Task CreateConversation(string channelId, ConversationParameters conversationParameters, Func<ITurnContext, Task> callback)
         {
             throw new NotImplementedException("Adapter does not support CreateConversation with this arguments");
         }
