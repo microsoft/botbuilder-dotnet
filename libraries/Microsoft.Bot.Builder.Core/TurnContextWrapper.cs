@@ -28,10 +28,9 @@ namespace Microsoft.Bot.Builder
 
         public bool Responded { get => _innerContext.Responded; set => _innerContext.Responded = value; }
         
-
-        public Task<ResourceResponse> SendActivity(string textRepliesToSend)
+        public Task<ResourceResponse> SendActivity(string textRepliesToSend, string speak = null, string inputHint = null)
         {
-            return _innerContext.SendActivity(textRepliesToSend);
+            return _innerContext.SendActivity(textRepliesToSend, speak, inputHint);
         }
         
         public Task<ResourceResponse> SendActivity(IActivity activity)
@@ -52,6 +51,11 @@ namespace Microsoft.Bot.Builder
         public Task DeleteActivity(string activityId)
         {
             return _innerContext.DeleteActivity(activityId);
+        }
+
+        public Task DeleteActivity(ConversationReference conversationReference)
+        {
+            return _innerContext.DeleteActivity(conversationReference);
         }
 
         public ITurnContext OnSendActivities(SendActivitiesHandler handler)
