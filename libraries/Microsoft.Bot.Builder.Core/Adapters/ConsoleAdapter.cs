@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Builder.Adapters
             return this;
         }
 
-        public override async Task ProcessActivity(Activity activity, Func<ITurnContext, Task> callback = null, CancellationTokenSource cancelToken = null)
+        public override async Task ProcessActivity(Activity activity, Func<ITurnContext, Task> callback = null, CancellationToken cancelToken = default(CancellationToken))
         {
             var context = new TurnContext(this, activity);
             await base.RunPipeline(context, callback);

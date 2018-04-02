@@ -47,7 +47,7 @@ namespace Microsoft.Bot.Builder.Core.Tests
             return new ResourceResponse(activity.Id); // echo back the Id
         }
 
-        public override async Task ProcessActivity(Activity activity, Func<ITurnContext, Task> callback, CancellationTokenSource cancelToken = null)
+        public override async Task ProcessActivity(Activity activity, Func<ITurnContext, Task> callback, CancellationToken cancelToken = default(CancellationToken))
         {
             Assert.IsNotNull(activity, "SimpleAdapter.updateActivity: missing activity");
             TurnContext ctx = new TurnContext(this, activity);

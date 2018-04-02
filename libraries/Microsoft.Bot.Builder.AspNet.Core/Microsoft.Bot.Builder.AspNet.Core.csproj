@@ -1,7 +1,42 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <Version Condition=" '$(BUILD_BUILDNUMBER)' == '' ">4.0.0-local</Version>
+    <Version Condition=" '$(BUILD_BUILDNUMBER)' != '' ">$(BUILD_BUILDNUMBER)</Version>
+    <PackageVersion Condition=" '$(PackageVersion)' == '' ">4.0.0-local</PackageVersion>
+    <PackageVersion Condition=" '$(PackageVersion)' != '' ">$(PackageVersion)</PackageVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <SignAssembly>true</SignAssembly>
+    <DelaySign>true</DelaySign>
+    <AssemblyOriginatorKeyFile>..\..\..\build\35MSSharedLib1024.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+
+  <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <PackageId>Microsoft.Bot.Builder.AspNet.Core</PackageId>
+    <Description>This library integrates the Microsoft Bot Builder SDK with ASP.NETCore.</Description>
+    <Summary>This library provides integration between the Microsoft Bot Builder SDK and ASP.NETCore.</Summary>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Company>Microsoft</Company>
+    <Authors>microsoft,BotFramework,nugetbotbuilder</Authors>
+    <Product>Microsoft Bot Builder SDK</Product>
+    <Copyright>© Microsoft Corporation. All rights reserved.</Copyright>
+    <PackageProjectUrl>https://github.com/Microsoft/botbuilder-dotnet</PackageProjectUrl>
+    <PackageIconUrl>http://docs.botframework.com/images/bot_icon.png</PackageIconUrl>
+    <PackageLicenseUrl>https://github.com/Microsoft/BotBuilder/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <RepositoryUrl>https://github.com/Microsoft/botbuilder-dotnet</RepositoryUrl>
+    <LicenseUrl>https://github.com/Microsoft/BotBuilder-dotnet/blob/master/LICENSE</LicenseUrl>
+    <RepositoryType />
+    <PackageTags>bots;ai;botframework;botbuilder</PackageTags>
+    <NeutralLanguage />
+    <AssemblyName>Microsoft.Bot.Builder</AssemblyName>
+    <RootNamespace>Microsoft.Bot.Builder</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

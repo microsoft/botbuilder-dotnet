@@ -12,12 +12,6 @@ namespace Microsoft.Bot.Builder
     {
         public ClaimsIdentity ClaimsIdentity { get; set; }
 
-        public string BotAppId { get; set; }
-
         public string ServiceUrl { get; set; }
-
-        public bool IsEmulator { get; set; }
-
-        public bool? IsAuthenticated { get; set; }
     }
 }

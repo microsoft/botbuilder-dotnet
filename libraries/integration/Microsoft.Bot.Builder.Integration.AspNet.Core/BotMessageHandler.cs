@@ -31,9 +31,6 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Handlers
                 activity = BotMessageHandlerBase.BotMessageSerializer.Deserialize<Activity>(bodyReader);
             }
 
-            var authContext = await AuthenticationHelper.GetRequestAuthenticationContextAsync(request.Headers["Authorization"], httpClient);
-            AuthenticationHelper.SetRequestAuthenticationContext(authContext);
-
             await botFrameworkAdapter.ProcessActivity(
                     activity,
                     botCallbackHandler);

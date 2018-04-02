@@ -35,8 +35,8 @@
     <RepositoryType />
     <PackageTags>bots;ai;botframework;botbuilder</PackageTags>
     <NeutralLanguage />
-    <AssemblyName>Microsoft.Bot.Builder.AspNet.WebApi</AssemblyName>
-    <RootNamespace>Microsoft.Bot.Builder.AspNet.WebApi</RootNamespace>
+    <AssemblyName>Microsoft.Bot.Builder</AssemblyName>
+    <RootNamespace>Microsoft.Bot.Builder</RootNamespace>
   </PropertyGroup>
 
   <Import Project="..\Microsoft.Bot.Builder.Shared\Microsoft.Bot.Builder.Shared.projitems" Label="Shared" />
@@ -48,6 +48,10 @@
   <ItemGroup>
     <ProjectReference Include="..\Microsoft.Bot.Builder.Core\Microsoft.Bot.Builder.Core.csproj" />
     <ProjectReference Include="..\Microsoft.Bot.Connector\Microsoft.Bot.Connector.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="System.Web" />
   </ItemGroup>
 
 </Project>

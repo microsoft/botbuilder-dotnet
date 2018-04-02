@@ -118,9 +118,11 @@ namespace Microsoft.Bot.Builder
         /// initiated by a call to <see cref="ContinueConversation(ConversationReference, Func{ITurnContext, Task})"/>
         /// (proactive messaging), the callback method is the callback method that was provided in the call.</para>
         /// </remarks>
-        protected async Task RunPipeline(ITurnContext context, Func<ITurnContext, Task> callback = null, CancellationTokenSource cancelToken = null)
+        protected async Task RunPipeline(ITurnContext context, Func<ITurnContext, Task> callback = null, CancellationToken cancelToken = default(CancellationToken))
         {
             BotAssert.ContextNotNull(context);
+
+            cancelToken.ThrowIfCancellationRequested();
 
             // Call any registered Middleware Components looking for ReceiveActivity()
             if (context.Activity != null)
@@ -144,7 +146,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="callback">Callback to execute after middlewares are called. </param>
         /// <param name="cancelToken">Cancellation token.</param>
         /// <returns>Task tracking processing.</returns>
-        public abstract Task ProcessActivity(Activity activity, Func<ITurnContext, Task> callback, CancellationTokenSource cancelToken = null);
+        public abstract Task ProcessActivity(Activity activity, Func<ITurnContext, Task> callback, CancellationToken cancelToken = default(CancellationToken));
 
         /// <summary>
         /// Requests a channel to begin a new conversation for the bot.

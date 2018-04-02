@@ -106,24 +106,6 @@ namespace Microsoft.Bot.Connector.Authentication
         /// </remarks>
         public static async Task<ClaimsIdentity> AuthenticateEmulatorToken(string authHeader, ICredentialProvider credentials, HttpClient httpClient)
         {
-            ClaimsIdentity claimsIdentity = await GetEmulatorTokenIdentityAsync(authHeader, httpClient);
-            await AuthenticateEmulatorTokenAsync(claimsIdentity, credentials);
-            return claimsIdentity;
-        }
-
-        /// <summary>
-        /// Gets the emulator token identity asynchronous.
-        /// </summary>
-        /// <param name="authHeader">The authentication header.</param>
-        /// <param name="httpClient">The HTTP client.</param>
-        /// <returns>Token identity.</returns>
-        /// <exception cref="UnauthorizedAccessException">
-        /// Invalid Identity
-        /// or
-        /// Token Not Authenticated
-        /// </exception>
-        public static async Task<ClaimsIdentity> GetEmulatorTokenIdentityAsync(string authHeader, HttpClient httpClient)
-        {
             var tokenExtractor = new JwtTokenExtractor(
                     httpClient,
                     ToBotFromEmulatorTokenValidationParameters,
@@ -143,40 +125,17 @@ namespace Microsoft.Bot.Connector.Authentication
                 throw new UnauthorizedAccessException("Token Not Authenticated");
             }
 
-            return identity;
-        }
-
-        /// <summary>
-        /// Authenticates the emulator token asynchronous.
-        /// Given a claims identity checks if it belongs to the App which is represented in <see cref="ICredentialProvider"/>.
-        /// </summary>
-        /// <param name="claimsIdentity">The claims identity.</param>
-        /// <param name="credentials">The credentials.</param>
-        /// <returns></returns>
-        /// <exception cref="UnauthorizedAccessException">
-        /// 'ver' claim is required on Emulator Tokens.
-        /// or
-        /// 'appid' claim is required on Emulator Token version '1.0'.
-        /// or
-        /// 'azp' claim is required on Emulator Token version '2.0'.
-        /// or
-        /// Unknown Emulator Token version 
-        /// or
-        /// Invalid AppId passed on token
-        /// </exception>
-        public static async Task AuthenticateEmulatorTokenAsync(ClaimsIdentity claimsIdentity, ICredentialProvider credentials)
-        {
             // Now check that the AppID in the claimset matches
             // what we're looking for. Note that in a multi-tenant bot, this value
             // comes from developer code that may be reaching out to a service, hence the 
             // Async validation. 
-            Claim versionClaim = claimsIdentity.Claims.FirstOrDefault(c => c.Type == AuthenticationConstants.VersionClaim);
+            Claim versionClaim = identity.Claims.FirstOrDefault(c => c.Type == AuthenticationConstants.VersionClaim);
             if (versionClaim == null)
             {
                 throw new UnauthorizedAccessException("'ver' claim is required on Emulator Tokens.");
             }
 
-            string tokenVersion = versionClaim.Value;
+            string tokenVersion = versionClaim.Value;                         
             string appID = string.Empty;
 
             // The Emulator, depending on Version, sends the AppId via either the 
@@ -185,7 +144,7 @@ namespace Microsoft.Bot.Connector.Authentication
             {
                 // either no Version or a version of "1.0" means we should look for 
                 // the claim in the "appid" claim. 
-                Claim appIdClaim = claimsIdentity.Claims.FirstOrDefault(c => c.Type == AuthenticationConstants.AppIdClaim);
+                Claim appIdClaim = identity.Claims.FirstOrDefault(c => c.Type == AuthenticationConstants.AppIdClaim);
                 if (appIdClaim == null)
                 {
                     // No claim around AppID. Not Authorized.
@@ -197,7 +156,7 @@ namespace Microsoft.Bot.Connector.Authentication
             else if (tokenVersion == "2.0")
             {
                 // Emulator, "2.0" puts the AppId in the "azp" claim. 
-                Claim appZClaim = claimsIdentity.Claims.FirstOrDefault(c => c.Type == AuthenticationConstants.AuthorizedParty);
+                Claim appZClaim = identity.Claims.FirstOrDefault(c => c.Type == AuthenticationConstants.AuthorizedParty);
                 if (appZClaim == null)
                 {
                     // No claim around AppID. Not Authorized.
@@ -216,6 +175,8 @@ namespace Microsoft.Bot.Connector.Authentication
             {
                 throw new UnauthorizedAccessException($"Invalid AppId passed on token: {appID}");
             }
+
+            return identity;
         }
     }
 }

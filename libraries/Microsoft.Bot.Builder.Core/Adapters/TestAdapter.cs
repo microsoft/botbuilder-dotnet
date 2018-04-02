@@ -44,7 +44,7 @@ namespace Microsoft.Bot.Builder.Adapters
             return this;
         }
 
-        public override Task ProcessActivity(Activity activity, Func<ITurnContext, Task> callback, CancellationTokenSource cancelToken = null)
+        public override Task ProcessActivity(Activity activity, Func<ITurnContext, Task> callback, CancellationToken cancelToken = default(CancellationToken))
         {
             lock (this.ConversationReference)
             {

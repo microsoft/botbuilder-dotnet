@@ -59,7 +59,15 @@ namespace Microsoft.Bot.Connector.Authentication
             }
             else
             {
-                return await ChannelValidation.AuthenticateChannelToken(authHeader, credentials, serviceUrl, httpClient ?? _httpClient);
+                // No empty or null check. Empty can point to issues. Null checks only.
+                if (serviceUrl != null)
+                {
+                    return await ChannelValidation.AuthenticateChannelToken(authHeader, credentials, serviceUrl, httpClient ?? _httpClient);
+                }
+                else
+                {
+                    return await ChannelValidation.AuthenticateChannelToken(authHeader, credentials, httpClient ?? _httpClient);
+                }
             }
         }
     }
