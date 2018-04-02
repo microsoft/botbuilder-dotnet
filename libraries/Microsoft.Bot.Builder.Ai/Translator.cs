@@ -109,9 +109,10 @@ namespace Microsoft.Bot.Builder.Ai
         {
             string processedTranslation = target; 
             if (alignment.ContainsKey(srcWrdIndx))
-            {
-                string targetWrd = target.Split(' ')[alignment[srcWrdIndx]];
-                processedTranslation = processedTranslation.Replace(targetWrd, source.Split(' ')[srcWrdIndx]);
+            { 
+                string[] trgWrds = processedTranslation.Split(' ');
+                trgWrds[alignment[srcWrdIndx]] = source.Split(' ')[srcWrdIndx];
+                processedTranslation = string.Join(" ", trgWrds);
             }
             return processedTranslation;
         }
@@ -143,11 +144,25 @@ namespace Microsoft.Bot.Builder.Ai
                 foreach (string pattern in toBeReplaced)
                 {
                     Match matchNoTranslate = Regex.Match(sourceMessage, pattern, RegexOptions.Singleline | RegexOptions.IgnoreCase);
+                    int noTranslateStartChrIndex = matchNoTranslate.Groups[1].Index;
+                    int wrdIndx = 0;
+                    int chrIndx = 0;
+                    int srcIndex = -1;
+                    foreach (string wrd in srcWrds)
+                    {
+                        if (chrIndx == noTranslateStartChrIndex)
+                        {
+                            srcIndex = wrdIndx;
+                            break;
+                        }
+                        chrIndx += wrd.Length + 1;
+                        wrdIndx++;
+                    } 
                     string[] wrdNoTranslate = matchNoTranslate.Groups[1].Value.Split(' ');
                     foreach (string srcWrd in wrdNoTranslate)
-                    {
-                        int srcIndex = Array.FindIndex(srcWrds, row => row == srcWrd);
+                    { 
                         processedTranslation = KeepSrcWrdInTranslation(alignMap, sourceMessage, processedTranslation, srcIndex);
+                        srcIndex++;
                     }
 
                 }
@@ -195,6 +210,7 @@ namespace Microsoft.Bot.Builder.Ai
         /// <param name="textToTranslate"></param> 
         private string PreprocessMessage(string textToTranslate,bool updateNoTranslatePattern=true)
         {
+            textToTranslate = Regex.Replace(textToTranslate, @"\s+", " ");//used to remove multiple spaces in input user message
             string literalPattern = "<literal>(.*)</literal>";
             MatchCollection literalMatches = Regex.Matches(textToTranslate, literalPattern);
             if (literalMatches.Count > 0)
