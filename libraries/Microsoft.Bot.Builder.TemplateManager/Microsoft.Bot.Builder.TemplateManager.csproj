@@ -35,11 +35,10 @@
 		<RepositoryType />
 		<PackageTags>bots;ai;botframework;botbuilder</PackageTags>
 		<NeutralLanguage />
-		<IncludeSymbols>true</IncludeSymbols>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-		<NoWarn>1701;1702;1705;CS1998</NoWarn>
+	  <NoWarn>1701;1702;1705;CS1998</NoWarn>
 	</PropertyGroup>
 
 	<ItemGroup>
