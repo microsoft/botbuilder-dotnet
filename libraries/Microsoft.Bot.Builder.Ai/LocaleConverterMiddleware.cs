@@ -22,17 +22,17 @@ namespace Microsoft.Bot.Builder.Ai
         /// Constructor for developer defined detection of user messages
         /// </summary>
         /// <param name="getUserLocale">Delegate for getting the user locale</param>
-        /// <param name="setUserLocale">Delegate for setting the user language, returns true if the locale was changed (implements logic to change locale by intercepting the message)</param>
+        /// <param name="checkUserLocaleChanged">Delegate that returns true if the locale was changed (implements logic to change locale by intercepting the message)</param>
         /// <param name="toLocale">Target Locale</param>
         /// <param name="localeConverter">An ILocaleConverter instance</param>
-        public LocaleConverterMiddleware(Func<ITurnContext, string> getUserLocale, Func<ITurnContext, Task<bool>> setUserLocale, string toLocale, ILocaleConverter localeConverter)
+        public LocaleConverterMiddleware(Func<ITurnContext, string> getUserLocale, Func<ITurnContext, Task<bool>> checkUserLocaleChanged, string toLocale, ILocaleConverter localeConverter)
         {
             this.localeConverter = localeConverter ?? throw new ArgumentNullException(nameof(localeConverter));
             if (string.IsNullOrEmpty(toLocale) || !localeConverter.IsLocaleAvailable(toLocale))
                 throw new ArgumentNullException(nameof(toLocale));
             this.toLocale = toLocale;
             this._getUserLocale = getUserLocale ?? throw new ArgumentNullException(nameof(getUserLocale)); 
-            this._setUserLocale = setUserLocale ?? throw new ArgumentNullException(nameof(setUserLocale)); 
+            this._setUserLocale = checkUserLocaleChanged ?? throw new ArgumentNullException(nameof(checkUserLocaleChanged)); 
         }
 
         /// <summary>
