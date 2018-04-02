@@ -58,7 +58,7 @@ namespace Microsoft.Bot.Builder.Ai
         /// <param name="translatorKey"></param>
         /// <param name="patterns">Dictionary with language as a key and list of patterns as value</param>
         /// <param name="getUserLanguage">Delegate for getting the user language</param>
-        /// <param name="setUserLanguage">Delegate for setting the user language, returns true if the language was changed (implements logic to change language by intercepting the message)</param>
+        /// <param name="isUserLanguageChanged">Delegate for checking if  the user language is changed, returns true if the language was changed (implements logic to change language by intercepting the message)</param>
         public TranslationMiddleware(string[] nativeLanguages, string translatorKey, Dictionary<string, List<string>> patterns, Func<ITurnContext, string> getUserLanguage, Func<ITurnContext, Task<bool>> isUserLanguageChanged)
         {
             AssertValidNativeLanguages(nativeLanguages);
