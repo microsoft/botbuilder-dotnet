@@ -30,9 +30,8 @@ namespace Microsoft.Bot.Builder.Ai
         /// Constructor that indexes input template for source language
         /// </summary>
         /// <param name="noTranslateTemplatePath">Path of no translate patterns</param> 
-        internal PostProcessTranslator(List<string> patterns)
-        {
-            _patterns = new HashSet<string>();
+        internal PostProcessTranslator(List<string> patterns):base()
+        { 
             foreach (string pattern in patterns)
             {
                 string processedLine = pattern.Trim();
@@ -53,26 +52,45 @@ namespace Microsoft.Bot.Builder.Ai
         }
 
         /// <summary>
+        /// Adds a no translate phrase to the pattern list .
+        /// </summary>
+        /// <param name="noTranslatePhrase">String containing no translate phrase</param>
+        public void AddNoTranslatePhrase(string noTranslatePhrase)
+        {
+            _patterns.Add("(" + noTranslatePhrase + ")");
+        }
+
+        /// <summary>
         ///parsing alignment information onto a dictionary
-        /// dictionary key is character index start of source word  : character index end of source word
-        /// value is character index start of target word : length of target word to use substring directly
+        /// dictionary key is word index in source
+        /// value is word index in translated text
         /// </summary>
         /// <param name="alignment">String containing phrase alignments</param>
-        /// <param name="source">Source Language</param>
-        /// <param name="target">Target Language</param>
+        /// <param name="sourceMessage">String containing source message</param>
+        /// /<param name="trgMessage">String containing translated message</param>
         /// <returns></returns>
-        private Dictionary<string, string> WordAlignmentParse(string alignment)
+        private Dictionary<int, int> WordAlignmentParse(string alignment,string sourceMessage,string trgMessage)
         {
-            Dictionary<string, string> alignMap = new Dictionary<string, string>();
+            Dictionary<int, int> alignMap = new Dictionary<int, int>();
             if (alignment.Trim() == "")
                 return alignMap;
             string[] alignments = alignment.Trim().Split(' ');
+            string[] srcWrds = sourceMessage.Split(' ');
+            string[] trgWrds = trgMessage.Split(' ');
             foreach (string alignData in alignments)
             {
                     string[] wordIndexes = alignData.Split('-');
+                    int srcStartIndex = Int32.Parse(wordIndexes[0].Split(':')[0]);
+                    int srcLength = Int32.Parse(wordIndexes[0].Split(':')[1]) - srcStartIndex + 1;
+                    string srcWrd = sourceMessage.Substring(srcStartIndex, srcLength);
+                    int srcWrdIndex = Array.FindIndex(srcWrds, row => row == srcWrd);
+
                     int trgstartIndex = Int32.Parse(wordIndexes[1].Split(':')[0]);
-                    int trgLength = Int32.Parse(wordIndexes[1].Split(':')[1]) - trgstartIndex + 1;
-                    alignMap[wordIndexes[0]] = trgstartIndex + ":" + trgLength;
+                    int trgLength = Int32.Parse(wordIndexes[1].Split(':')[1]) - trgstartIndex + 1; 
+                    string trgWrd = trgMessage.Substring(trgstartIndex,trgLength);
+                    int trgWrdINdex = Array.FindIndex(trgWrds, row => row == trgWrd);
+
+                    alignMap[srcWrdIndex] = trgWrdINdex;
             }
             return alignMap;
         }
@@ -82,23 +100,18 @@ namespace Microsoft.Bot.Builder.Ai
         /// use alignment information source sentence and target sentence
         /// to keep a specific word from the source onto target translation
         /// </summary>
-        /// <param name="alignment">String containing the alignments</param>
+        /// <param name="alignment">Dictionary containing the alignments</param>
         /// <param name="source">Source Language</param>
         /// <param name="target">Target Language</param>
         /// <param name="srcWrd">Source Word</param>
         /// <returns></returns>
-        private string KeepSrcWrdInTranslation(Dictionary<string, string> alignment, string source, string target, string srcWrd)
+        private string KeepSrcWrdInTranslation(Dictionary<int, int> alignment, string source, string target, int srcWrdIndx)
         {
-            string processedTranslation = target;
-            int wrdStartIndex = source.IndexOf(srcWrd);
-            int wrdEndIndex = wrdStartIndex + srcWrd.Count() - 1;
-            string wrdIndexesString = wrdStartIndex + ":" + wrdEndIndex;
-            if (alignment.ContainsKey(wrdIndexesString))
+            string processedTranslation = target; 
+            if (alignment.ContainsKey(srcWrdIndx))
             {
-                string[] trgWrdLocation = alignment[wrdIndexesString].Split(':');
-                string targetWrd = target.Substring(Int32.Parse(trgWrdLocation[0]), Int32.Parse(trgWrdLocation[1]));
-                if (targetWrd.Trim().Length == Int32.Parse(trgWrdLocation[1]) && targetWrd != srcWrd)
-                    processedTranslation = processedTranslation.Replace(targetWrd, srcWrd);
+                string targetWrd = target.Split(' ')[alignment[srcWrdIndx]];
+                processedTranslation = processedTranslation.Replace(targetWrd, source.Split(' ')[srcWrdIndx]);
             }
             return processedTranslation;
         }
@@ -119,11 +132,13 @@ namespace Microsoft.Bot.Builder.Ai
             if (_patterns.Count == 0 && !containsNum)
                 return processedTranslation;
 
+
             var toBeReplaced = from result in _patterns
                                where Regex.IsMatch(sourceMessage, result, RegexOptions.Singleline | RegexOptions.IgnoreCase)
                                select result;
-            Dictionary<string, string> alignMap = WordAlignmentParse(alignment);
-            if (!toBeReplaced.Any())
+            Dictionary<int, int> alignMap = WordAlignmentParse(alignment,sourceMessage,targetMessage);
+            string[] srcWrds = sourceMessage.Split(' ');
+            if (toBeReplaced.Any())
             {
                 foreach (string pattern in toBeReplaced)
                 {
@@ -131,17 +146,19 @@ namespace Microsoft.Bot.Builder.Ai
                     string[] wrdNoTranslate = matchNoTranslate.Groups[1].Value.Split(' ');
                     foreach (string srcWrd in wrdNoTranslate)
                     {
-                        processedTranslation = KeepSrcWrdInTranslation(alignMap, sourceMessage, processedTranslation, srcWrd);
+                        int srcIndex = Array.FindIndex(srcWrds, row => row == srcWrd);
+                        processedTranslation = KeepSrcWrdInTranslation(alignMap, sourceMessage, processedTranslation, srcIndex);
                     }
 
                 }
             }
+            
             MatchCollection numericMatches = Regex.Matches(sourceMessage, @"\d+", RegexOptions.Singleline);
             foreach (Match numericMatch in numericMatches)
             {
-                processedTranslation = KeepSrcWrdInTranslation(alignMap, sourceMessage, processedTranslation, numericMatch.Groups[0].Value);
+                int srcIndex = Array.FindIndex(srcWrds, row => row == numericMatch.Groups[0].Value);
+                processedTranslation = KeepSrcWrdInTranslation(alignMap, sourceMessage, processedTranslation, srcIndex);
             }
-
             return processedTranslation;
         } 
 
@@ -171,7 +188,34 @@ namespace Microsoft.Bot.Builder.Ai
         {
             _postProcessor = new PostProcessTranslator(patterns);
         }
-        
+
+        /// <summary>
+        /// Checks for literal tag and updates no Translate List.
+        /// </summary>
+        /// <param name="textToTranslate"></param> 
+        private string PreprocessMessage(string textToTranslate,bool updateNoTranslatePattern=true)
+        {
+            string literalPattern = "<literal>(.*)</literal>";
+            MatchCollection literalMatches = Regex.Matches(textToTranslate, literalPattern);
+            if (literalMatches.Count > 0)
+            {
+                if (updateNoTranslatePattern)
+                {
+                    foreach (Match literalMatch in literalMatches)
+                    {
+                        if (literalMatch.Groups.Count > 1)
+                        {
+                            string noTranslatePhrase = literalMatch.Groups[1].Value;
+                            _postProcessor.AddNoTranslatePhrase(noTranslatePhrase);
+                        }
+                    }
+                }
+                textToTranslate = Regex.Replace(textToTranslate, "</?literal>", " ");
+            }
+
+            return textToTranslate;
+        }
+
         /// <summary>
         /// detects language of input text
         /// </summary>
@@ -179,6 +223,7 @@ namespace Microsoft.Bot.Builder.Ai
         /// <returns></returns>
         public async Task<string> Detect(string textToDetect)
         {
+            textToDetect = PreprocessMessage(textToDetect, false);
             string url = "http://api.microsofttranslator.com/v2/Http.svc/Detect";
             string query = $"?text={System.Net.WebUtility.UrlEncode(textToDetect)}";
 
@@ -208,6 +253,7 @@ namespace Microsoft.Bot.Builder.Ai
         /// <returns></returns>
         public async Task<string> Translate(string textToTranslate, string from, string to)
         {
+            textToTranslate = PreprocessMessage(textToTranslate);
             string url = "http://api.microsofttranslator.com/v2/Http.svc/Translate";
             string query = $"?text={System.Net.WebUtility.UrlEncode(textToTranslate)}" +
                                  $"&from={from}" +
@@ -225,12 +271,12 @@ namespace Microsoft.Bot.Builder.Ai
                 if (!response.IsSuccessStatusCode)
                     throw new ArgumentException(result);
 
-                var translatedText = XElement.Parse(result).Value;
+                var translatedText = XElement.Parse(result).Value.Trim();
 
                 return translatedText;
             }
         }
-        
+
         /// <summary>
         /// Translate array of strings from source language to target language.
         /// </summary>
@@ -241,6 +287,11 @@ namespace Microsoft.Bot.Builder.Ai
         public async Task<string[]> TranslateArray(string[] translateArraySourceTexts, string from, string to)
         {
             var uri = "https://api.microsofttranslator.com/v2/Http.svc/TranslateArray2";
+            for (int srcTxtIndx = 0; srcTxtIndx < translateArraySourceTexts.Length; srcTxtIndx++)
+            {
+                //Check for literal tag in input user message
+                translateArraySourceTexts[srcTxtIndx] = PreprocessMessage(translateArraySourceTexts[srcTxtIndx]);
+            }
             //body of http request
             var body = $"<TranslateArrayRequest>" +
                            "<AppId />" +
@@ -284,7 +335,7 @@ namespace Microsoft.Bot.Builder.Ai
 
                             string translation = xe.Element(ns + "TranslatedText").Value;
                             translation = _postProcessor.FixTranslation(translateArraySourceTexts[sentIndex], xe.Element(ns + "Alignment").Value, translation);
-                            results.Add(translation);
+                            results.Add(translation.Trim());
                         }
                         return results.ToArray();
 

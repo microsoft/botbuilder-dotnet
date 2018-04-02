@@ -33,6 +33,20 @@ namespace Microsoft.Bot.Builder.Ai.Tests
         [TestMethod]
         [TestCategory("AI")]
         [TestCategory("Translator")]
+        public async Task Translator_LiteralTagTest()
+        {
+            Translator translator = new Translator(translatorKey);
+
+            var sentence = "salut <literal>Jean Bouchier mon ami</literal>";
+
+            var translatedSentence = await translator.TranslateArray(new string[] { sentence }, "fr", "en");
+            Assert.IsNotNull(translatedSentence);
+            Assert.AreEqual("Hi Jean Bouchier mon ami", translatedSentence[0]);
+        }
+
+        [TestMethod]
+        [TestCategory("AI")]
+        [TestCategory("Translator")]
         public async Task Translator_TranslateFrenchToEnglish()
         {
 
