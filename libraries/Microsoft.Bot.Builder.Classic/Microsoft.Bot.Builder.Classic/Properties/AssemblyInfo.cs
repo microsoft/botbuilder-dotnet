@@ -13,12 +13,12 @@ using System.Runtime.InteropServices;
 //[assembly: AssemblyDelaySign(true)]
 //#endif
 
-[assembly: AssemblyTitle("MicrosoftBotBuilderClassic")]
+[assembly: AssemblyTitle("Microsoft.Bot.Builder.Classic")]
 [assembly: AssemblyDescription("Microsoft.Bot.Builder.Classic")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Microsoft")]
 [assembly: AssemblyProduct("Microsoft Bot Builder SDK")]
-[assembly: AssemblyCopyright("Copyright © Microsoft Corporation. All rights reserved.")]
+[assembly: AssemblyCopyright("© Microsoft Corporation. All rights reserved.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -29,8 +29,5 @@ using System.Runtime.InteropServices;
 //      Build Number
 //      Revision
 //
-// You can specify all the values or you can default the Revision and Build Numbers 
-// by using the '*' as shown below:
-// [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("1.0.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
