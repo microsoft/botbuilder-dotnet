@@ -36,7 +36,6 @@
 		<PackageTags>bots;ai;botframework;botbuilder</PackageTags>
 		<NeutralLanguage />
 		<AssemblyName>Microsoft.Bot.Builder</AssemblyName>
-		<IncludeSymbols>true</IncludeSymbols>
 	</PropertyGroup>
 
 	<ItemGroup>
