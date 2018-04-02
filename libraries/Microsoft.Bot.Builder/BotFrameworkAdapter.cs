@@ -15,6 +15,24 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Adapters
 {
+    /// <summary>
+    /// A bot adapter that can connect a bot to a service endpoint. 
+    /// </summary>
+    /// <remarks>The bot adapter encapsulates authentication processes and sends 
+    /// activities to and receives activities from the Bot Connector Service. When your 
+    /// bot receives an activity, the adapter creates a context object, passes it to your 
+    /// bot's application logic, and sends responses back to the user's channel.
+    /// <para>Use <see cref="Use(IMiddleware)"/> to add <see cref="IMiddleware"/> objects 
+    /// to your adapter’s middleware collection. The adapter processes and directs 
+    /// incoming activities in through the bot middleware pipeline to your bot’s logic 
+    /// and then back out again. As each activity flows in and out of the bot, each piece 
+    /// of middleware can inspect or act upon the activity, both before and after the bot 
+    /// logic runs.</para>
+    /// </remarks>
+    /// <seealso cref="ITurnContext"/>
+    /// <seealso cref="IActivity"/>
+    /// <seealso cref="IBot"/>
+    /// <seealso cref="IMiddleware"/>
     public class BotFrameworkAdapter : BotAdapter
     {
         private readonly ICredentialProvider _credentialProvider;
@@ -23,12 +41,19 @@ namespace Microsoft.Bot.Builder.Adapters
         private Dictionary<string, MicrosoftAppCredentials> _appCredentialMap = new Dictionary<string, MicrosoftAppCredentials>();
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="BotFrameworkAdapter"/> class.
+        /// Initializes a new instance of the <see cref="BotFrameworkAdapter"/> class,
+        /// using a credential provider.
         /// </summary>
         /// <param name="credentialProvider">The credential provider.</param>
         /// <param name="connectorClientRetryPolicy">Retry policy for retrying HTTP operations.</param>
         /// <param name="httpClient">The HTTP client.</param>
-        /// <param name="middleware">The middleware to use. Use <see cref="MiddlewareSet" class to register multiple middlewares together./></param>
+        /// <param name="middleware">The middleware to initially add to the adapter.</param>
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="credentialProvider"/> is <c>null</c>.</exception>
+        /// <remarks>Use a <see cref="MiddlewareSet"/> object to add multiple middleware
+        /// components in the conustructor. Use the <see cref="Use(IMiddleware)"/> method to 
+        /// add additional middleware to the adapter after construction.
+        /// </remarks>
         public BotFrameworkAdapter(ICredentialProvider credentialProvider, RetryPolicy connectorClientRetryPolicy = null, HttpClient httpClient = null, IMiddleware middleware = null)
         {
             _credentialProvider = credentialProvider ?? throw new ArgumentNullException(nameof(credentialProvider));
@@ -41,6 +66,26 @@ namespace Microsoft.Bot.Builder.Adapters
             }
         }
 
+        /// <summary>
+        /// Sends a proactive message from the bot to a conversation.
+        /// </summary>
+        /// <param name="botAppId">The application ID of the bot.</param>
+        /// <param name="reference">A reference to the conversation to continue.</param>
+        /// <param name="callback">The method to call for the resulting bot turn.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="botAppId"/>, <paramref name="reference"/>, or
+        /// <paramref name="callback"/> is <c>null</c>.</exception>
+        /// <remarks>Call this method to proactively send a message to a conversation.
+        /// Most channels require a user to initaiate a conversation with a bot
+        /// before the bot can send activities to the user.
+        /// <para>This method registers the following services for the turn.<list type="bullet">
+        /// <item><see cref="IIdentity"/> (key = "BotIdentity"), a claims identity for the bot.</item>
+        /// <item><see cref="IConnectorClient"/>, the channel connector client to use this turn.</item>
+        /// </list></para>
+        /// </remarks>
+        /// <seealso cref="ProcessActivity(string, Activity, Func{ITurnContext, Task})"/>
+        /// <seealso cref="BotAdapter.RunPipeline(ITurnContext, Func{ITurnContext, Task}, System.Threading.CancellationTokenSource)"/>
         public async Task ContinueConversation(string botAppId, ConversationReference reference, Func<ITurnContext, Task> callback)
         {
             if (string.IsNullOrWhiteSpace(botAppId))
@@ -68,17 +113,58 @@ namespace Microsoft.Bot.Builder.Adapters
             await RunPipeline(context, callback);
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BotFrameworkAdapter"/> class,
+        /// using an application ID and secret.
+        /// </summary>
+        /// <param name="appId">The application ID of the bot.</param>
+        /// <param name="appPassword">The application secret for the bot.</param>
+        /// <param name="connectorClientRetryPolicy">Retry policy for retrying HTTP operations.</param>
+        /// <param name="httpClient">The HTTP client.</param>
+        /// <param name="middleware">The middleware to initially add to the adapter.</param>
+        /// <remarks>Use a <see cref="MiddlewareSet"/> object to add multiple middleware
+        /// components in the conustructor. Use the <see cref="Use(IMiddleware)"/> method to 
+        /// add additional middleware to the adapter after construction.
+        /// </remarks>
         public BotFrameworkAdapter(string appId, string appPassword, RetryPolicy connectorClientRetryPolicy = null, HttpClient httpClient = null, IMiddleware middleware = null) 
             : this(new SimpleCredentialProvider(appId, appPassword), connectorClientRetryPolicy, httpClient, middleware)
         {
         }
 
+        /// <summary>
+        /// Adds middleware to the adapter's pipeline.
+        /// </summary>
+        /// <param name="middleware">The middleware to add.</param>
+        /// <returns>The updated adapter object.</returns>
+        /// <remarks>Middleware is added to the adapter at initialization time.
+        /// For each turn, the adapter calls middleware in the order in which you added it.
+        /// </remarks>
         public new BotFrameworkAdapter Use(IMiddleware middleware)
         {
             base._middlewareSet.Use(middleware);
             return this;
         }
 
+        /// <summary>
+        /// Creates a turn context and runs the middleware pipeline for an incoming activity.
+        /// </summary>
+        /// <param name="authHeader">The HTTP authentication header of the request.</param>
+        /// <param name="activity">The incoming activity.</param>
+        /// <param name="callback">The code to run at the end of the adapter's middleware
+        /// pipeline.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="activity"/> is <c>null</c>.</exception>
+        /// <exception cref="UnauthorizedAccessException">
+        /// authentication failed.</exception>
+        /// <remarks>Call this method to reactively send a message to a conversation.
+        /// <para>This method registers the following services for the turn.<list type="bullet">
+        /// <item><see cref="IIdentity"/> (key = "BotIdentity"), a claims identity for the bot.</item>
+        /// <item><see cref="IConnectorClient"/>, the channel connector client to use this turn.</item>
+        /// </list></para>
+        /// </remarks>
+        /// <seealso cref="ContinueConversation(string, ConversationReference, Func{ITurnContext, Task})"/>
+        /// <seealso cref="BotAdapter.RunPipeline(ITurnContext, Func{ITurnContext, Task}, System.Threading.CancellationTokenSource)"/>
         public async Task ProcessActivity(string authHeader, Activity activity, Func<ITurnContext, Task> callback)
         {
             BotAssert.ActivityNotNull(activity);
@@ -91,6 +177,16 @@ namespace Microsoft.Bot.Builder.Adapters
             await base.RunPipeline(context, callback).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Sends activities to the conversation.
+        /// </summary>       
+        /// <param name="context">The context object for the turn.</param>
+        /// <param name="activities">The activities to send.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>If the activities are successfully sent, the task result contains
+        /// an array of <see cref="ResourceResponse"/> objects containing the IDs that 
+        /// the receiving channel assigned to the activities.</remarks>
+        /// <seealso cref="ITurnContext.OnSendActivities(SendActivitiesHandler)"/>
         public override async Task<ResourceResponse[]> SendActivities(ITurnContext context, Activity[] activities)
         {
             List<ResourceResponse> responses = new List<ResourceResponse>(); 
@@ -122,12 +218,33 @@ namespace Microsoft.Bot.Builder.Adapters
             return responses.ToArray();
         }
 
+        /// <summary>
+        /// Replaces an existing activity in the conversation.
+        /// </summary>
+        /// <param name="context">The context object for the turn.</param>
+        /// <param name="activity">New replacement activity.</param>        
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>If the activity is successfully sent, the task result contains
+        /// a <see cref="ResourceResponse"/> object containing the ID that the receiving 
+        /// channel assigned to the activity.
+        /// <para>Before calling this, set the ID of the replacement activity to the ID
+        /// of the activity to replace.</para></remarks>
+        /// <seealso cref="ITurnContext.OnUpdateActivity(UpdateActivityHandler)"/>
         public override async Task<ResourceResponse> UpdateActivity(ITurnContext context, Activity activity)
         {
             var connectorClient = context.Services.Get<IConnectorClient>();
             return await connectorClient.Conversations.UpdateActivityAsync(activity);
         }
 
+        /// <summary>
+        /// Deletes an existing activity in the conversation.
+        /// </summary>
+        /// <param name="context">The context object for the turn.</param>
+        /// <param name="reference">Conversation reference for the activity to delete.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>The <see cref="ConversationReference.ActivityId"/> of the conversation
+        /// reference identifies the activity to delete.</remarks>
+        /// <seealso cref="ITurnContext.OnDeleteActivity(DeleteActivityHandler)"/>
         public override async Task DeleteActivity(ITurnContext context, ConversationReference reference)
         {
             var connectorClient = context.Services.Get<IConnectorClient>();
@@ -135,20 +252,32 @@ namespace Microsoft.Bot.Builder.Adapters
         }
 
         /// <summary>
-        /// Create a conversation on the Bot Framework for the given serviceUrl
+        /// Creates a conversation on the specified channel.
         /// </summary>
-        /// <param name="serviceUrl">serviceUrl you want to use</param>
-        /// <param name="credentials">credentials</param>
-        /// <param name="conversationParameters">arguments for the conversation you want to create</param>
-        /// <param name="callback">callback which will have the context.Request.Conversation.Id in it</param>
-        /// <returns></returns>
+        /// <param name="channelId">The ID for the channel.</param>
+        /// <param name="serviceUrl">The channel's service URL endpoint.</param>
+        /// <param name="credentials">The application credentials for the bot.</param>
+        /// <param name="conversationParameters">The conversation information to use to 
+        /// create the conversation.</param>
+        /// <param name="callback">The method to call for the resulting bot turn.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>To start a conversation, your bot must know its account information 
+        /// and the user's account information on that channel.
+        /// Most channels only support initiating a direct message (non-group) conversation.
+        /// <para>The adapter attempts to create a new conversation on the channel, and
+        /// then sends a <c>conversationUpdate</c> activity through its middleware pipeline
+        /// to the <paramref name="callback"/> method.</para>
+        /// <para>If the conversation is established with the 
+        /// specified users, the ID of the activity's <see cref="IActivity.Conversation"/>
+        /// will contain the ID of the new conversation.</para>
+        /// </remarks>
         public virtual async Task CreateConversation(string channelId, string serviceUrl, MicrosoftAppCredentials credentials, ConversationParameters conversationParameters, Func<ITurnContext, Task> callback)
         {
             var connectorClient = this.CreateConnectorClient(serviceUrl, credentials);
 
             var result = await connectorClient.Conversations.CreateConversationAsync(conversationParameters);
 
-            // create conversation Update to represent the result of creating the conversation
+            // Create a conversation update activity to represent the result.
             var conversationUpdate = Activity.CreateConversationUpdateActivity();
             conversationUpdate.ChannelId = channelId;
             conversationUpdate.TopicName = conversationParameters.TopicName;
@@ -200,7 +329,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// Creates the connector client.
         /// </summary>
         /// <param name="serviceUrl">The service URL.</param>
-        /// <param name="appCredentials">The application credentials.</param>
+        /// <param name="appCredentials">The application credentials for the bot.</param>
         /// <returns>Connector client instance.</returns>
         private IConnectorClient CreateConnectorClient(string serviceUrl, MicrosoftAppCredentials appCredentials = null)
         {
