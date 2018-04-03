@@ -65,9 +65,9 @@ namespace Microsoft.Bot.Builder.Adapters
             var context = new TurnContext(this, reference.GetPostToBotMessage());
 
             context.Services.Add<IIdentity>("BotIdentity", authenticationContext.ClaimsIdentity);
-            var connectorClient = await this.CreateConnectorClientAsync(reference.ServiceUrl, authenticationContext.ClaimsIdentity);
+            var connectorClient = await this.CreateConnectorClientAsync(reference.ServiceUrl, authenticationContext.ClaimsIdentity).ConfigureAwait(false);
             context.Services.Add<IConnectorClient>(connectorClient);
-            await RunPipeline(context, callback);
+            await RunPipeline(context, callback).ConfigureAwait(false);
         }
 
         public new BotFrameworkAdapter Use(IMiddleware middleware)
@@ -79,7 +79,7 @@ namespace Microsoft.Bot.Builder.Adapters
         public override async Task ProcessActivity(Activity activity, Func<ITurnContext, Task> callback, CancellationToken cancelToken = default(CancellationToken))
         {
             BotAssert.ActivityNotNull(activity);
-            var claimsIdentity = await JwtTokenValidation.AuthenticateRequest(activity, this.GetAuthenticationHeader(), _credentialProvider, _httpClient);
+            var claimsIdentity = await JwtTokenValidation.AuthenticateRequest(activity, this.GetAuthenticationHeader(), _credentialProvider, _httpClient).ConfigureAwait(false);
 
             var authenticationContext = new BotFrameworkAuthenticationContext
             {
@@ -91,7 +91,7 @@ namespace Microsoft.Bot.Builder.Adapters
 
             var context = new TurnContext(this, activity);
             context.Services.Add<IIdentity>("BotIdentity", claimsIdentity);
-            var connectorClient = await this.CreateConnectorClientAsync(activity.ServiceUrl, claimsIdentity);
+            var connectorClient = await this.CreateConnectorClientAsync(activity.ServiceUrl, claimsIdentity).ConfigureAwait(false);
             context.Services.Add<IConnectorClient>(connectorClient);
 
             cancelToken.ThrowIfCancellationRequested();
@@ -132,13 +132,13 @@ namespace Microsoft.Bot.Builder.Adapters
         public override async Task<ResourceResponse> UpdateActivity(ITurnContext context, Activity activity)
         {
             var connectorClient = context.Services.Get<IConnectorClient>();
-            return await connectorClient.Conversations.UpdateActivityAsync(activity);
+            return await connectorClient.Conversations.UpdateActivityAsync(activity).ConfigureAwait(false);
         }
 
         public override async Task DeleteActivity(ITurnContext context, ConversationReference reference)
         {
             var connectorClient = context.Services.Get<IConnectorClient>();
-            await connectorClient.Conversations.DeleteActivityAsync(reference.Conversation.Id, reference.ActivityId);
+            await connectorClient.Conversations.DeleteActivityAsync(reference.Conversation.Id, reference.ActivityId).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -153,9 +153,9 @@ namespace Microsoft.Bot.Builder.Adapters
         {
             BotFrameworkAuthenticationContext authenticationContext = asyncLocal.Value;
 
-            var connectorClient = await this.CreateConnectorClientAsync(authenticationContext.ServiceUrl, authenticationContext.ClaimsIdentity);
+            var connectorClient = await this.CreateConnectorClientAsync(authenticationContext.ServiceUrl, authenticationContext.ClaimsIdentity).ConfigureAwait(false);
 
-            var result = await connectorClient.Conversations.CreateConversationAsync(conversationParameters);
+            var result = await connectorClient.Conversations.CreateConversationAsync(conversationParameters).ConfigureAwait(false);
 
             // create conversation Update to represent the result of creating the conversation
             var conversationUpdate = Activity.CreateConversationUpdateActivity();
@@ -168,7 +168,7 @@ namespace Microsoft.Bot.Builder.Adapters
             conversationUpdate.Recipient = conversationParameters.Bot;
 
             TurnContext context = new TurnContext(this, (Activity)conversationUpdate);
-            await this.RunPipeline(context, callback);
+            await this.RunPipeline(context, callback).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -220,7 +220,7 @@ namespace Microsoft.Bot.Builder.Adapters
             if (botAppIdClaim != null)
             {
                 string botId = botAppIdClaim.Value;
-                var appCredentials = await this.GetAppCredentialsAsync(botId);
+                var appCredentials = await this.GetAppCredentialsAsync(botId).ConfigureAwait(false);
                 return this.CreateConnectorClient(serviceUrl, appCredentials);
             }
             else
@@ -270,7 +270,7 @@ namespace Microsoft.Bot.Builder.Adapters
 
             if (!_appCredentialMap.TryGetValue(appId, out var appCredentials))
             {
-                string appPassword = await _credentialProvider.GetAppPasswordAsync(appId);
+                string appPassword = await _credentialProvider.GetAppPasswordAsync(appId).ConfigureAwait(false);
                 appCredentials = new MicrosoftAppCredentials(appId, appPassword);
                 _appCredentialMap[appId] = appCredentials;
             }
