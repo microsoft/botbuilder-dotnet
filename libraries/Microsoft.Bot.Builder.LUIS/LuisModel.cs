@@ -22,11 +22,11 @@ namespace Microsoft.Bot.Builder.LUIS
             ApiVersion = apiVersion;
         }
 
-        public string ModelID { get; }
+        public string ModelID { get; set; }
 
-        public string SubscriptionKey { get; }
+        public string SubscriptionKey { get; set; }
 
-        public Uri UriBase { get; }
+        public Uri UriBase { get; set; }
 
         public LuisApiVersion ApiVersion { get; }
 
