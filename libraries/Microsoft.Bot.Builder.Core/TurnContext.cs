@@ -140,12 +140,24 @@ namespace Microsoft.Bot.Builder
         /// Sends a message activity to the sender of the incoming activity.
         /// </summary>
         /// <param name="textReplyToSend">The text of the message to send.</param>
+        /// <param name="speak">Optional, text to be spoken by your bot on a speech-enabled 
+        /// channel.</param>
+        /// <param name="inputHint">Optional, indicates whether your bot is accepting, 
+        /// expecting, or ignoring user input after the message is delivered to the client.
+        /// One of: "acceptingInput", "ignoringInput", or "expectingInput".
+        /// Default is null.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <exception cref="ArgumentNullException">
         /// <paramref name="textReplyToSend"/> is <c>null</c> or whitespace.</exception>
         /// <remarks>If the activity is successfully sent, the task result contains
         /// a <see cref="ResourceResponse"/> object containing the ID that the receiving 
-        /// channel assigned to the activity.</remarks>
+        /// channel assigned to the activity.
+        /// <para>See the channel's documentation for limits imposed upon the contents of 
+        /// <paramref name="textReplyToSend"/>.</para>
+        /// <para>To control various characteristics of your bot's speech such as voice, 
+        /// rate, volume, pronunciation, and pitch, specify <paramref name="speak"/> in 
+        /// Speech Synthesis Markup Language (SSML) format.</para>
+        /// </remarks>
         public async Task<ResourceResponse> SendActivity(string textReplyToSend, string speak = null, string inputHint = null)
         {
             if (string.IsNullOrWhiteSpace(textReplyToSend))
@@ -190,7 +202,7 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
-        /// Sends an activity to the sender of the incoming activity.
+        /// Sends a set of activities to the sender of the incoming activity.
         /// </summary>
         /// <param name="activities">The activities to send.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
@@ -289,6 +301,15 @@ namespace Microsoft.Bot.Builder
             await DeleteActivityInternal(cr, _onDeleteActivity, ActuallyDeleteStuff);
         }
 
+        /// <summary>
+        /// Deletes an existing activity.
+        /// </summary>
+        /// <param name="conversationReference">The conversation containing the activity to delete.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <exception cref="Microsoft.Bot.Schema.ErrorResponseException">
+        /// The HTTP operation failed and the response contained additional information.</exception>
+        /// <remarks>The conversation reference's <see cref="ConversationReference.ActivityId"/> 
+        /// indicates the activity in the conversation to delete.</remarks>
         public async Task DeleteActivity(ConversationReference conversationReference)
         {
             if (conversationReference == null)

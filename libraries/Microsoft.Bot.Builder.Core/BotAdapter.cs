@@ -67,6 +67,7 @@ namespace Microsoft.Bot.Builder
         /// <remarks>If the activities are successfully sent, the task result contains
         /// an array of <see cref="ResourceResponse"/> objects containing the IDs that 
         /// the receiving channel assigned to the activities.</remarks>
+        /// <seealso cref="ITurnContext.OnSendActivities(SendActivitiesHandler)"/>
         public abstract Task<ResourceResponse[]> SendActivities(ITurnContext context, Activity[] activities);
 
         /// <summary>
@@ -81,6 +82,7 @@ namespace Microsoft.Bot.Builder
         /// channel assigned to the activity.
         /// <para>Before calling this, set the ID of the replacement activity to the ID
         /// of the activity to replace.</para></remarks>
+        /// <seealso cref="ITurnContext.OnUpdateActivity(UpdateActivityHandler)"/>
         public abstract Task<ResourceResponse> UpdateActivity(ITurnContext context, Activity activity);
 
         /// <summary>
@@ -92,6 +94,7 @@ namespace Microsoft.Bot.Builder
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <remarks>The <see cref="ConversationReference.ActivityId"/> of the conversation
         /// reference identifies the activity to delete.</remarks>
+        /// <seealso cref="ITurnContext.OnDeleteActivity(DeleteActivityHandler)"/>
         public abstract Task DeleteActivity(ITurnContext context, ConversationReference reference);
 
 
@@ -139,7 +142,7 @@ namespace Microsoft.Bot.Builder
 
 
         /// <summary>
-        /// Requests a channel to begin a new conversation for the bot.
+        /// Creates a conversation on the specified channel.
         /// </summary>
         /// <param name="channelId">The ID of the channel.</param>
         /// <param name="callback">A method to call when the new conversation is available.</param>
@@ -152,7 +155,7 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
-        /// Send a proactive message to a conversation.
+        /// Sends a proactive message to a conversation.
         /// </summary>
         /// <param name="reference">A reference to the conversation to continue.</param>
         /// <param name="callback">The method to call for the resulting bot turn.</param>
