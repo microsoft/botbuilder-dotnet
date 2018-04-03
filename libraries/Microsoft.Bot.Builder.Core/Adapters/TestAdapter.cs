@@ -44,7 +44,7 @@ namespace Microsoft.Bot.Builder.Adapters
             return this;
         }
 
-        public Task ProcessActivity(Activity activity, Func<ITurnContext, Task> callback, CancellationTokenSource cancelToken = null)
+        public override Task ProcessActivity(Activity activity, Func<ITurnContext, Task> callback, CancellationToken cancelToken = default(CancellationToken))
         {
             lock (this.ConversationReference)
             {
@@ -144,9 +144,10 @@ namespace Microsoft.Bot.Builder.Adapters
         /// NOTE: this resets the queue, it doesn't actually maintain multiple converstion queues
         /// </summary>
         /// <param name="channelId"></param>
+        /// <param name="conversationParameters"></param>
         /// <param name="callback"></param>
         /// <returns></returns>
-        public override Task CreateConversation(string channelId, Func<ITurnContext, Task> callback)
+        public override Task CreateConversation(string channelId, ConversationParameters conversationParameters, Func<ITurnContext, Task> callback)
         {
             this.ActiveQueue.Clear();
             var update = Activity.CreateConversationUpdateActivity();

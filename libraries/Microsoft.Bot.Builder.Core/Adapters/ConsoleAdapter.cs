@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 
@@ -21,29 +22,10 @@ namespace Microsoft.Bot.Builder.Adapters
             return this;
         }
 
-        public async Task ProcessActivity(Func<ITurnContext, Task> callback = null)
+        public override async Task ProcessActivity(Activity activity, Func<ITurnContext, Task> callback = null, CancellationToken cancelToken = default(CancellationToken))
         {
-            while (true)
-            {
-                var msg = Console.ReadLine();
-                if (msg == null)
-                    break;
-
-                var activity = new Activity()
-                {
-                    Text = msg,
-                    ChannelId = "console",
-                    From = new ChannelAccount(id: "user", name: "User1"),
-                    Recipient = new ChannelAccount(id: "bot", name: "Bot"),
-                    Conversation = new ConversationAccount(id: "Convo1"),
-                    Timestamp = DateTime.UtcNow,
-                    Id = Guid.NewGuid().ToString(),
-                    Type = ActivityTypes.Message
-                };
-
-                var context = new TurnContext(this, activity);
-                await base.RunPipeline(context, callback);
-            }
+            var context = new TurnContext(this, activity);
+            await base.RunPipeline(context, callback);
         }
 
         public override async Task<ResourceResponse[]> SendActivities(ITurnContext context, Activity[] activities)

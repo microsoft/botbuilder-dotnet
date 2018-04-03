@@ -7,6 +7,7 @@ using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 using System;
 using System.IO;
+using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,6 +16,8 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Handlers
 {
     public class BotMessageHandler : BotMessageHandlerBase
     {
+        private static HttpClient httpClient = new HttpClient();
+
         public BotMessageHandler(BotFrameworkAdapter botFrameworkAdapter) : base(botFrameworkAdapter)
         {
         }
@@ -29,7 +32,6 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Handlers
             }
 
             await botFrameworkAdapter.ProcessActivity(
-                    request.Headers["Authorization"],
                     activity,
                     botCallbackHandler);
         }

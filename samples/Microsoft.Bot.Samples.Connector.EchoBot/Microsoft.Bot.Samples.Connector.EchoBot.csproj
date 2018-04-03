@@ -13,6 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.AspNet.Core\Microsoft.Bot.Builder.AspNet.Core.csproj" />
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Connector\Microsoft.Bot.Connector.csproj" />
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Schema\Microsoft.Bot.Schema.csproj" />
   </ItemGroup>

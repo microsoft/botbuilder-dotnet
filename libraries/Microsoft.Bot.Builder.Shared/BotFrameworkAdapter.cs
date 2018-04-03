@@ -11,11 +11,12 @@ using System.Linq;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Security.Principal;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Adapters
 {
-    public class BotFrameworkAdapter : BotAdapter
+    public partial class BotFrameworkAdapter : BotAdapter
     {
         private readonly ICredentialProvider _credentialProvider;
         private readonly HttpClient _httpClient;
@@ -23,13 +24,23 @@ namespace Microsoft.Bot.Builder.Adapters
         private Dictionary<string, MicrosoftAppCredentials> _appCredentialMap = new Dictionary<string, MicrosoftAppCredentials>();
 
         /// <summary>
+        /// Call context storage to propagate values throught the request.
+        /// </summary>
+        private static AsyncLocal<BotFrameworkAuthenticationContext> asyncLocal = new AsyncLocal<BotFrameworkAuthenticationContext>();
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="BotFrameworkAdapter"/> class.
+        /// This constructor is not supported for .NetCore apps.
         /// </summary>
         /// <param name="credentialProvider">The credential provider.</param>
         /// <param name="connectorClientRetryPolicy">Retry policy for retrying HTTP operations.</param>
         /// <param name="httpClient">The HTTP client.</param>
         /// <param name="middleware">The middleware to use. Use <see cref="MiddlewareSet" class to register multiple middlewares together./></param>
-        public BotFrameworkAdapter(ICredentialProvider credentialProvider, RetryPolicy connectorClientRetryPolicy = null, HttpClient httpClient = null, IMiddleware middleware = null)
+        public BotFrameworkAdapter(
+            ICredentialProvider credentialProvider,
+            RetryPolicy connectorClientRetryPolicy = null, 
+            HttpClient httpClient = null, 
+            IMiddleware middleware = null)
         {
             _credentialProvider = credentialProvider ?? throw new ArgumentNullException(nameof(credentialProvider));
             _httpClient = httpClient ?? new HttpClient();
@@ -41,36 +52,22 @@ namespace Microsoft.Bot.Builder.Adapters
             }
         }
 
-        public async Task ContinueConversation(string botAppId, ConversationReference reference, Func<ITurnContext, Task> callback)
+        public override async Task ContinueConversation(ConversationReference reference, Func<ITurnContext, Task> callback)
         {
-            if (string.IsNullOrWhiteSpace(botAppId))
-                throw new ArgumentNullException(nameof(botAppId));
+            BotFrameworkAuthenticationContext authenticationContext = asyncLocal.Value;
 
             if (reference == null)
                 throw new ArgumentNullException(nameof(reference));
 
             if (callback == null)
-                throw new ArgumentNullException(nameof(callback)); 
+                throw new ArgumentNullException(nameof(callback));
 
             var context = new TurnContext(this, reference.GetPostToBotMessage());
 
-            // Hand craft Claims Identity.
-            var claimsIdentity = new ClaimsIdentity(new List<Claim>
-            {
-                // Adding claims for both Emulator and Channel.
-                new Claim(AuthenticationConstants.AudienceClaim, botAppId),
-                new Claim(AuthenticationConstants.AppIdClaim, botAppId)
-            });
-
-            context.Services.Add<IIdentity>("BotIdentity", claimsIdentity);
-            var connectorClient = await this.CreateConnectorClientAsync(reference.ServiceUrl, claimsIdentity);
+            context.Services.Add<IIdentity>("BotIdentity", authenticationContext.ClaimsIdentity);
+            var connectorClient = await this.CreateConnectorClientAsync(reference.ServiceUrl, authenticationContext.ClaimsIdentity).ConfigureAwait(false);
             context.Services.Add<IConnectorClient>(connectorClient);
-            await RunPipeline(context, callback);
-        }
-
-        public BotFrameworkAdapter(string appId, string appPassword, RetryPolicy connectorClientRetryPolicy = null, HttpClient httpClient = null, IMiddleware middleware = null) 
-            : this(new SimpleCredentialProvider(appId, appPassword), connectorClientRetryPolicy, httpClient, middleware)
-        {
+            await RunPipeline(context, callback).ConfigureAwait(false);
         }
 
         public new BotFrameworkAdapter Use(IMiddleware middleware)
@@ -79,21 +76,31 @@ namespace Microsoft.Bot.Builder.Adapters
             return this;
         }
 
-        public async Task ProcessActivity(string authHeader, Activity activity, Func<ITurnContext, Task> callback)
+        public override async Task ProcessActivity(Activity activity, Func<ITurnContext, Task> callback, CancellationToken cancelToken = default(CancellationToken))
         {
             BotAssert.ActivityNotNull(activity);
-            var claimsIdentity =  await JwtTokenValidation.AuthenticateRequest(activity, authHeader, _credentialProvider, _httpClient);
+            var claimsIdentity = await JwtTokenValidation.AuthenticateRequest(activity, this.GetAuthenticationHeader(), _credentialProvider, _httpClient).ConfigureAwait(false);
+
+            var authenticationContext = new BotFrameworkAuthenticationContext
+            {
+                ClaimsIdentity = claimsIdentity,
+                ServiceUrl = activity.ServiceUrl
+            };
+
+            asyncLocal.Value = authenticationContext;
 
             var context = new TurnContext(this, activity);
             context.Services.Add<IIdentity>("BotIdentity", claimsIdentity);
-            var connectorClient = await this.CreateConnectorClientAsync(activity.ServiceUrl, claimsIdentity);
+            var connectorClient = await this.CreateConnectorClientAsync(activity.ServiceUrl, claimsIdentity).ConfigureAwait(false);
             context.Services.Add<IConnectorClient>(connectorClient);
+
+            cancelToken.ThrowIfCancellationRequested();
             await base.RunPipeline(context, callback).ConfigureAwait(false);
         }
 
         public override async Task<ResourceResponse[]> SendActivities(ITurnContext context, Activity[] activities)
         {
-            List<ResourceResponse> responses = new List<ResourceResponse>(); 
+            List<ResourceResponse> responses = new List<ResourceResponse>();
 
             foreach (var activity in activities)
             {
@@ -107,7 +114,7 @@ namespace Microsoft.Bot.Builder.Adapters
                     await Task.Delay(delayMs).ConfigureAwait(false);
 
                     // In the case of a Delay, just create a fake one. Match the incoming activityId if it's there. 
-                    response = new ResourceResponse(activity.Id ?? string.Empty); 
+                    response = new ResourceResponse(activity.Id ?? string.Empty);
                 }
                 else
                 {
@@ -116,7 +123,7 @@ namespace Microsoft.Bot.Builder.Adapters
                 }
 
                 // Collect all the responses that come from the service. 
-                responses.Add(response); 
+                responses.Add(response);
             }
 
             return responses.ToArray();
@@ -125,13 +132,13 @@ namespace Microsoft.Bot.Builder.Adapters
         public override async Task<ResourceResponse> UpdateActivity(ITurnContext context, Activity activity)
         {
             var connectorClient = context.Services.Get<IConnectorClient>();
-            return await connectorClient.Conversations.UpdateActivityAsync(activity);
+            return await connectorClient.Conversations.UpdateActivityAsync(activity).ConfigureAwait(false);
         }
 
         public override async Task DeleteActivity(ITurnContext context, ConversationReference reference)
         {
             var connectorClient = context.Services.Get<IConnectorClient>();
-            await connectorClient.Conversations.DeleteActivityAsync(reference.Conversation.Id, reference.ActivityId);
+            await connectorClient.Conversations.DeleteActivityAsync(reference.Conversation.Id, reference.ActivityId).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -142,24 +149,50 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <param name="conversationParameters">arguments for the conversation you want to create</param>
         /// <param name="callback">callback which will have the context.Request.Conversation.Id in it</param>
         /// <returns></returns>
-        public virtual async Task CreateConversation(string channelId, string serviceUrl, MicrosoftAppCredentials credentials, ConversationParameters conversationParameters, Func<ITurnContext, Task> callback)
+        public override async Task CreateConversation(string channelId, ConversationParameters conversationParameters, Func<ITurnContext, Task> callback)
         {
-            var connectorClient = this.CreateConnectorClient(serviceUrl, credentials);
+            BotFrameworkAuthenticationContext authenticationContext = asyncLocal.Value;
 
-            var result = await connectorClient.Conversations.CreateConversationAsync(conversationParameters);
+            var connectorClient = await this.CreateConnectorClientAsync(authenticationContext.ServiceUrl, authenticationContext.ClaimsIdentity).ConfigureAwait(false);
+
+            var result = await connectorClient.Conversations.CreateConversationAsync(conversationParameters).ConfigureAwait(false);
 
             // create conversation Update to represent the result of creating the conversation
             var conversationUpdate = Activity.CreateConversationUpdateActivity();
             conversationUpdate.ChannelId = channelId;
             conversationUpdate.TopicName = conversationParameters.TopicName;
-            conversationUpdate.ServiceUrl = serviceUrl;
+            conversationUpdate.ServiceUrl = authenticationContext.ServiceUrl;
             conversationUpdate.MembersAdded = conversationParameters.Members;
             conversationUpdate.Id = result.ActivityId ?? Guid.NewGuid().ToString("n");
             conversationUpdate.Conversation = new ConversationAccount(id: result.Id);
             conversationUpdate.Recipient = conversationParameters.Bot;
 
             TurnContext context = new TurnContext(this, (Activity)conversationUpdate);
-            await this.RunPipeline(context, callback);
+            await this.RunPipeline(context, callback).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Sets the request authentication context.
+        /// </summary>
+        private static void SetRequestAuthenticationContext(BotFrameworkAuthenticationContext authenticationContext)
+        {
+            asyncLocal.Value = authenticationContext;
+        }
+
+        /// <summary>
+        /// Gets the request context.
+        /// </summary>
+        /// <returns>Request context.</returns>
+        private static BotFrameworkAuthenticationContext GetBotFrameworkAuthenticationContext()
+        {
+            try
+            {
+                return asyncLocal.Value;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
 
         /// <summary>
@@ -187,7 +220,7 @@ namespace Microsoft.Bot.Builder.Adapters
             if (botAppIdClaim != null)
             {
                 string botId = botAppIdClaim.Value;
-                var appCredentials = await this.GetAppCredentialsAsync(botId);
+                var appCredentials = await this.GetAppCredentialsAsync(botId).ConfigureAwait(false);
                 return this.CreateConnectorClient(serviceUrl, appCredentials);
             }
             else
@@ -237,7 +270,7 @@ namespace Microsoft.Bot.Builder.Adapters
 
             if (!_appCredentialMap.TryGetValue(appId, out var appCredentials))
             {
-                string appPassword = await _credentialProvider.GetAppPasswordAsync(appId);
+                string appPassword = await _credentialProvider.GetAppPasswordAsync(appId).ConfigureAwait(false);
                 appCredentials = new MicrosoftAppCredentials(appId, appPassword);
                 _appCredentialMap[appId] = appCredentials;
             }

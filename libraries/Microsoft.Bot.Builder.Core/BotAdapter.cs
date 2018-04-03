@@ -118,9 +118,11 @@ namespace Microsoft.Bot.Builder
         /// initiated by a call to <see cref="ContinueConversation(ConversationReference, Func{ITurnContext, Task})"/>
         /// (proactive messaging), the callback method is the callback method that was provided in the call.</para>
         /// </remarks>
-        protected async Task RunPipeline(ITurnContext context, Func<ITurnContext, Task> callback = null, CancellationTokenSource cancelToken = null)
+        protected async Task RunPipeline(ITurnContext context, Func<ITurnContext, Task> callback = null, CancellationToken cancelToken = default(CancellationToken))
         {
             BotAssert.ContextNotNull(context);
+
+            cancelToken.ThrowIfCancellationRequested();
 
             // Call any registered Middleware Components looking for ReceiveActivity()
             if (context.Activity != null)
@@ -137,16 +139,25 @@ namespace Microsoft.Bot.Builder
             }
         }
 
+        /// <summary>
+        /// Processes the activity. This methods runs the full pipeline and should be called on the incoming activity.
+        /// </summary>
+        /// <param name="activity">The activity.</param>
+        /// <param name="callback">Callback to execute after middlewares are called. </param>
+        /// <param name="cancelToken">Cancellation token.</param>
+        /// <returns>Task tracking processing.</returns>
+        public abstract Task ProcessActivity(Activity activity, Func<ITurnContext, Task> callback, CancellationToken cancelToken = default(CancellationToken));
 
         /// <summary>
         /// Requests a channel to begin a new conversation for the bot.
         /// </summary>
         /// <param name="channelId">The ID of the channel.</param>
+        /// <param name="conversationParameters">Conversation creation parameters.</param>
         /// <param name="callback">A method to call when the new conversation is available.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <exception cref="NotImplementedException"></exception>
         /// <remarks>No base implementation is provided.</remarks>
-        public virtual async Task CreateConversation(string channelId, Func<ITurnContext, Task> callback)
+        public virtual async Task CreateConversation(string channelId, ConversationParameters conversationParameters, Func<ITurnContext, Task> callback)
         {
             throw new NotImplementedException("Adapter does not support CreateConversation with this arguments");
         }

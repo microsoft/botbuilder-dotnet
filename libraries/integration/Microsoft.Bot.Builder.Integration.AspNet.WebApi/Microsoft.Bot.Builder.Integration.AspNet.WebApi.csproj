@@ -40,19 +40,18 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.AspNet.WebApi" Version="5.2.4" />
+		<PackageReference Include="Microsoft.AspNet.WebApi" Version="5.2.3" />
 		<PackageReference Include="Microsoft.Bot.Builder.Core" Condition=" '$(PackageVersion)' == '' " Version="4.0.0-local" />
 		<PackageReference Include="Microsoft.Bot.Builder.Core" Condition=" '$(PackageVersion)' != '' " Version="$(PackageVersion)" />
 		<PackageReference Include="Microsoft.Bot.Connector" Condition=" '$(PackageVersion)' == '' " Version="4.0.0-local" />
 		<PackageReference Include="Microsoft.Bot.Connector" Condition=" '$(PackageVersion)' != '' " Version="$(PackageVersion)" />
     <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(PackageVersion)' == '' " Version="4.0.0-local" />
-    <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(PackageVersion)' != '' " Version="$(PackageVersion)" />
   </ItemGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="..\..\Microsoft.Bot.Builder.AspNet.WebApi\Microsoft.Bot.Builder.AspNet.WebApi.csproj" />
 		<ProjectReference Include="..\..\Microsoft.Bot.Builder.Core\Microsoft.Bot.Builder.Core.csproj" />
 		<ProjectReference Include="..\..\Microsoft.Bot.Connector\Microsoft.Bot.Connector.csproj" />
-    <ProjectReference Include="..\..\Microsoft.Bot.Builder\Microsoft.Bot.Builder.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

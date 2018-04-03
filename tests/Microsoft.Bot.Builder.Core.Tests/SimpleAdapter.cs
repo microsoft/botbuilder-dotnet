@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -46,10 +47,11 @@ namespace Microsoft.Bot.Builder.Core.Tests
             return new ResourceResponse(activity.Id); // echo back the Id
         }
 
-        public async Task ProcessRequest(Activity activty, Func<ITurnContext, Task> callback)
+        public override async Task ProcessActivity(Activity activity, Func<ITurnContext, Task> callback, CancellationToken cancelToken = default(CancellationToken))
         {
-            TurnContext ctx = new TurnContext(this, activty);
-            await this.RunPipeline(ctx, callback); 
+            Assert.IsNotNull(activity, "SimpleAdapter.updateActivity: missing activity");
+            TurnContext ctx = new TurnContext(this, activity);
+            await this.RunPipeline(ctx, callback);
         }
     }
 

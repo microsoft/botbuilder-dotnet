@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\libraries\integration\Microsoft.Bot.Builder.Integration.AspNet.Core\Microsoft.Bot.Builder.Integration.AspNet.Core.csproj" />
+    <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.AspNet.Core\Microsoft.Bot.Builder.AspNet.Core.csproj" />
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Core\Microsoft.Bot.Builder.Core.csproj" />
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Schema\Microsoft.Bot.Schema.csproj" />
   </ItemGroup>

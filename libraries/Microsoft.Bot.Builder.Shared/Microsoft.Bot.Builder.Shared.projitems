@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>4482c461-6270-4303-816a-3b8a0eb8249b</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>Microsoft.Bot.Builder</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)AuthenticationHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)BotFrameworkAdapter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)BotFrameworkAuthenticationContext.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)BotFrameworkHttpStatusCodeErrorDetectionStrategy.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ConfigurationCredentialProvider.cs" />
+  </ItemGroup>
+</Project>

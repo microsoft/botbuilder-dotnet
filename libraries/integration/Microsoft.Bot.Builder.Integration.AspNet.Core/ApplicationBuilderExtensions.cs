@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Integration.AspNet.Core.Handlers;
 using Microsoft.Extensions.DependencyInjection;
@@ -27,9 +28,11 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                 throw new ArgumentNullException(nameof(configurePaths));
             }
 
+            var httpContextAccessor = applicationBuilder.ApplicationServices.GetRequiredService<IHttpContextAccessor>();
+
             var options = applicationBuilder.ApplicationServices.GetRequiredService<IOptions<BotFrameworkOptions>>().Value;
 
-            var botFrameworkAdapter = new BotFrameworkAdapter(options.CredentialProvider, options.ConnectorClientRetryPolicy);
+            var botFrameworkAdapter = new BotFrameworkAdapter(options.CredentialProvider, httpContextAccessor, options.ConnectorClientRetryPolicy);
 
             foreach (var middleware in options.Middleware)
             {

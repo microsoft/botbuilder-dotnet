@@ -51,8 +51,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="..\..\Microsoft.Bot.Builder.AspNet.Core\Microsoft.Bot.Builder.AspNet.Core.csproj" />
 		<ProjectReference Include="..\..\Microsoft.Bot.Builder.Core\Microsoft.Bot.Builder.Core.csproj" />
-		<ProjectReference Include="..\..\Microsoft.Bot.Builder\Microsoft.Bot.Builder.csproj" />
 		<ProjectReference Include="..\..\Microsoft.Bot.Connector\Microsoft.Bot.Connector.csproj" />
 	</ItemGroup>
 
