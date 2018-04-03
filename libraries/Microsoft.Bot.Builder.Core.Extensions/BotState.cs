@@ -10,7 +10,6 @@ namespace Microsoft.Bot.Builder.Core.Extensions
 {
     public class StateSettings
     {
-        public bool WriteBeforeSend { get; set; } = true;
         public bool LastWriterWins { get; set; } = true;
     }
 
