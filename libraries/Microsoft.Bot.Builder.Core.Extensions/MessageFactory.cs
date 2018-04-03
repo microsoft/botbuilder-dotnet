@@ -8,37 +8,51 @@ using Microsoft.Bot.Schema;
 namespace Microsoft.Bot.Builder.Core.Extensions
 {
     /// <summary>
-    /// A set of utility functions to assist with the formatting of the various 
-    /// message types a bot can return.
-    /// </summary/>
+    /// Contains utility methods for various message types a bot can return.
+    /// </summary>
     /// <example>
-    /// <code>    
+    /// <code>
+    /// // Create and send a message.
     /// var message = MessageFactory.Text("Hello World");    
-    /// context.reply(message); // send message    
+    /// await context.SendActivity(message);    
     /// </code>
-    /// </example>           
+    /// </example>
+    /// <remarks>The following apply to message actions in general.
+    /// <para>See the channel's documentation for limits imposed upon the contents of
+    /// the text of the message to send.</para>
+    /// <para>To control various characteristics of your bot's speech such as voice,
+    /// rate, volume, pronunciation, and pitch, specify test to speak in
+    /// Speech Synthesis Markup Language (SSML) format.</para>
+    /// <para>
+    /// Channels decide how each card action manifests in their user experience. 
+    /// In most cases, the cards are clickable. In others, they may be selected by speech 
+    /// input. In cases where the channel does not offer an interactive activation 
+    /// experience (e.g., when interacting over SMS), the channel may not support 
+    /// activation whatsoever. The decision about how to render actions is controlled by 
+    /// normative requirements elsewhere in this document (e.g. within the card format, 
+    /// or within the suggested actions definition).</para>
+    /// </remarks>
+
     public static class MessageFactory
     {
         /// <summary>
         /// Returns a simple text message.
-        /// </summary/>
+        /// </summary>
         /// <example>
         /// <code>    
+        /// // Create and send a message.
         /// var message = MessageFactory.Text("Hello World");    
-        /// context.reply(message);
+        /// await context.SendActivity(message);    
         /// </code>
         /// </example>
-        /// <param name="text">
-        /// Text to include in the message
-        /// </param>
-        /// <param name="ssml">
-        /// (Optional) SSML to include in the message.
-        /// </param>
-        /// <param name="inputHint">
-        /// (Optional)Input hint to the channel on what the bot is expecting. 
-        /// Possible values include: 'acceptingInput',
-        /// 'ignoringInput', 'expectingInput'
-        /// </param>
+        /// <param name="text">The text of the message to send.</param>
+        /// <param name="ssml">Optional, text to be spoken by your bot on a speech-enabled
+        /// channel.</param>
+        /// <param name="inputHint">Optional, indicates whether your bot is accepting,
+        /// expecting, or ignoring user input after the message is delivered to the client.
+        /// One of: "acceptingInput", "ignoringInput", or "expectingInput".
+        /// Default is null.</param>
+        /// <returns>A message activity containing the text.</returns>
         public static Activity Text(string text, string ssml = null, string inputHint = null)
         {
             IMessageActivity ma = Activity.CreateMessageActivity();
@@ -48,27 +62,37 @@ namespace Microsoft.Bot.Builder.Core.Extensions
 
         /// <summary>
         /// Returns a message that includes a set of suggested actions and optional text.
-        /// </summary/>
+        /// </summary>
         /// <example>
-        /// <code>    
-        /// var message = MessageFactory.Text("Hello World");    
-        /// context.reply(message);
+        /// <code>
+        /// // Create the activity and add suggested actions.
+        /// var activity = MessageFactory.SuggestedActions(
+        ///     new string[] { "red", "green", "blue" },
+        ///     text: "Choose a color");
+        /// 
+        /// // Send the activity as a reply to the user.
+        /// await context.SendActivity(activity);
         /// </code>
         /// </example>
         /// <param name="actions">
-        /// List of actions to include. String Actions are converted to <see cref="Microsoft.Bot.Connector.ActionTypes.ImBack"/>.
+        /// The text of the actions to create.
         /// </param>        
-        /// <param name="text">
-        /// (Optional) text of the message. 
-        /// </param>
-        /// <param name="ssml">
-        /// (Optional) SSML to include in the message.
-        /// </param>
-        /// <param name="inputHint">
-        /// (Optional)Input hint to the channel on what the bot is expecting. 
-        /// Possible values include: 'acceptingInput',
-        /// 'ignoringInput', 'expectingInput'
-        /// </param>
+        /// <param name="text">The text of the message to send.</param>
+        /// <param name="ssml">Optional, text to be spoken by your bot on a speech-enabled
+        /// channel.</param>
+        /// <param name="inputHint">Optional, indicates whether your bot is accepting,
+        /// expecting, or ignoring user input after the message is delivered to the client.
+        /// One of: "acceptingInput", "ignoringInput", or "expectingInput".
+        /// Default is null.</param>
+        /// <returns>A message activity containing the suggested actions.</returns>
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="actions"/> is <c>null</c>.</exception>
+        /// <remarks>This method creates a suggested action for each string in <paramref name="actions"/>.
+        /// The created action uses the text for the <see cref="CardAction.Value"/> and
+        /// <see cref="CardAction.Title"/> and sets the <see cref="CardAction.Type"/> to
+        /// <see cref="Microsoft.Bot.Schema.ActionTypes.ImBack"/>.
+        /// </remarks>
+        /// <seealso cref="SuggestedActions(IList{CardAction}, string, string, string)"/>
         public static IMessageActivity SuggestedActions(IList<string> actions, string text = null, string ssml = null, string inputHint = null)
         {
             if (actions == null)
@@ -92,27 +116,36 @@ namespace Microsoft.Bot.Builder.Core.Extensions
 
         /// <summary>
         /// Returns a message that includes a set of suggested actions and optional text.
-        /// </summary/>
+        /// </summary>
         /// <example>
         /// <code>    
-        /// var message = MessageFactory.Text("Hello World");    
-        /// context.reply(message);
+        /// // Create the activity and add suggested actions.
+        /// var activity = MessageFactory.SuggestedActions(
+        ///     new CardAction[]
+        ///     {
+        ///         new CardAction(title: "red", type: ActionTypes.ImBack, value: "red"),
+        ///         new CardAction( title: "green", type: ActionTypes.ImBack, value: "green"),
+        ///         new CardAction(title: "blue", type: ActionTypes.ImBack, value: "blue")
+        ///     }, text: "Choose a color");
+        /// 
+        /// // Send the activity as a reply to the user.
+        /// await context.SendActivity(activity);
         /// </code>
         /// </example>
-        /// <param name="actions">
-        /// List of <see cref="Microsoft.Bot.Connector.ActionTypes"/> to include.
+        /// <param name="cardActions">
+        /// The card actions to include.
         /// </param>        
-        /// <param name="text">
-        /// (Optional) text of the message. 
-        /// </param>
-        /// <param name="ssml">
-        /// (Optional) SSML to include in the message.
-        /// </param>
-        /// <param name="inputHint">
-        /// (Optional)Input hint to the channel on what the bot is expecting. 
-        /// Possible values include: 'acceptingInput',
-        /// 'ignoringInput', 'expectingInput'
-        /// </param>
+        /// <param name="text">Optional, the text of the message to send.</param>
+        /// <param name="ssml">Optional, text to be spoken by your bot on a speech-enabled
+        /// channel.</param>
+        /// <param name="inputHint">Optional, indicates whether your bot is accepting,
+        /// expecting, or ignoring user input after the message is delivered to the client.
+        /// One of: "acceptingInput", "ignoringInput", or "expectingInput".
+        /// Default is null.</param>
+        /// <returns>A message activity that contains the suggested actions.</returns>
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="cardActions"/> is <c>null</c>.</exception>
+        /// <seealso cref="SuggestedActions(IList{string}, string, string, string)"/>
         public static IMessageActivity SuggestedActions(IList<CardAction> cardActions, string text = null, string ssml = null, string inputHint = null)
         {
             if (cardActions == null)
@@ -121,19 +154,27 @@ namespace Microsoft.Bot.Builder.Core.Extensions
             IMessageActivity ma = Activity.CreateMessageActivity();
             SetTextAndSpeak(ma, text, ssml, inputHint);
 
-            ma.SuggestedActions = new SuggestedActions {Actions = cardActions};
+            ma.SuggestedActions = new SuggestedActions { Actions = cardActions };
 
             return ma;
         }
 
         /// <summary>
-        /// Returns a single message activity containing an attachment.
+        /// Returns a message activity that contains an attachment.
         /// </summary>
-        /// <param name="attachment">Adaptive card to include in the message</param>
-        /// <param name="text">(Optional) text of the message. </param>
-        /// <param name="ssml">(Optional) SSML to include with the message.</param>
-        /// <param name="inputHint">(Optional)Input hint to the channel on what the bot is expecting.</param>
-        /// <returns>Message activity containing an attachment</returns>
+        /// <param name="attachment">Attachment to include in the message.</param>
+        /// <param name="text">Optional, the text of the message to send.</param>
+        /// <param name="ssml">Optional, text to be spoken by your bot on a speech-enabled
+        /// channel.</param>
+        /// <param name="inputHint">Optional, indicates whether your bot is accepting,
+        /// expecting, or ignoring user input after the message is delivered to the client.
+        /// One of: "acceptingInput", "ignoringInput", or "expectingInput".
+        /// Default is null.</param>
+        /// <returns>A message activity containing the attachment.</returns>
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="attachment"/> is <c>null</c>.</exception>
+        /// <seealso cref="Attachment(IList{Attachment}, string, string, string)"/>
+        /// <seealso cref="Carousel(IList{Attachment}, string, string, string)"/>
         public static IMessageActivity Attachment(Attachment attachment, string text = null, string ssml = null, string inputHint = null)
         {
             if (attachment == null)
@@ -143,13 +184,21 @@ namespace Microsoft.Bot.Builder.Core.Extensions
         }
 
         /// <summary>
-        /// Returns a message that will display a set of attachments in list form.
+        /// Returns a message activity that contains a collection of attachments, in a list.
         /// </summary>
-        /// <param name="attachment">List of attachments to include in the message.</param>
-        /// <param name="text">(Optional) text of the message. </param>
-        /// <param name="ssml">(Optional) SSML to include with the message.</param>
-        /// <param name="inputHint">(Optional)Input hint to the channel on what the bot is expecting.</param>
-        /// <returns>Message activity containing the attachment list.</returns>
+        /// <param name="attachments">The attachments to include in the message.</param>
+        /// <param name="text">Optional, the text of the message to send.</param>
+        /// <param name="ssml">Optional, text to be spoken by your bot on a speech-enabled
+        /// channel.</param>
+        /// <param name="inputHint">Optional, indicates whether your bot is accepting,
+        /// expecting, or ignoring user input after the message is delivered to the client.
+        /// One of: "acceptingInput", "ignoringInput", or "expectingInput".
+        /// Default is null.</param>
+        /// <returns>A message activity containing the attachment.</returns>
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="attachments"/> is <c>null</c>.</exception>
+        /// <seealso cref="Carousel(IList{Attachment}, string, string, string)"/>
+        /// <seealso cref="Attachment(Schema.Attachment, string, string, string)"/>
         public static IMessageActivity Attachment(IList<Attachment> attachments, string text = null, string ssml = null, string inputHint = null)
         {
             if (attachments == null)
@@ -159,24 +208,56 @@ namespace Microsoft.Bot.Builder.Core.Extensions
         }
 
         /// <summary>
-        /// Returns a message that will display a set of attachments using a carousel layout.
+        /// Returns a message activity that contains a collection of attachments, as a carousel.
         /// </summary>
-        /// <param name="attachments">List of attachments to include in the message.</param>
-        /// <param name="text">(Optional) text of the message.</param>
-        /// <param name="ssml">(Optional) SSML to include with the message.</param>
-        /// <param name="inputHint">(Optional)Input hint to the channel on what the bot is expecting.</param>
-        /// <returns>
-        /// Returns a message that will display a set of attachments using a carousel layout.
-        /// </returns>
-        /// <example>
+        /// <param name="attachments">The attachments to include in the message.</param>
+        /// <param name="text">Optional, the text of the message to send.</param>
+        /// <param name="ssml">Optional, text to be spoken by your bot on a speech-enabled
+        /// channel.</param>
+        /// <param name="inputHint">Optional, indicates whether your bot is accepting,
+        /// expecting, or ignoring user input after the message is delivered to the client.
+        /// One of: "acceptingInput", "ignoringInput", or "expectingInput".
+        /// Default is null.</param>
+        /// <returns>A message activity containing the attachment.</returns>
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="attachments"/> is <c>null</c>.</exception>
+        /// <example>This code creates and sends a carousel of HeroCards.
         /// <code>
-        ///     IList<Attachment> multipleAttachments = 
-        ///             new List<Attachment> { attachment1, attachment2 };
-        ///             
-        ///     IMessageActivity message = 
-        ///             MessageFactory.Carousel(multipleAttachments, text, ssml);
+        /// // Create the activity and attach a set of Hero cards.
+        /// var activity = MessageFactory.Carousel(
+        /// new Attachment[]
+        /// {
+        ///     new HeroCard(
+        ///         title: "title1",
+        ///         images: new CardImage[] { new CardImage(url: "imageUrl1.png") },
+        ///         buttons: new CardAction[]
+        ///         {
+        ///             new CardAction(title: "button1", type: ActionTypes.ImBack, value: "item1")
+        ///         })
+        ///     .ToAttachment(),
+        ///     new HeroCard(
+        ///         title: "title2",
+        ///         images: new CardImage[] { new CardImage(url: "imageUrl2.png") },
+        ///         buttons: new CardAction[]
+        ///         {
+        ///             new CardAction(title: "button2", type: ActionTypes.ImBack, value: "item2")
+        ///         })
+        ///     .ToAttachment(),
+        ///     new HeroCard(
+        ///         title: "title3",
+        ///         images: new CardImage[] { new CardImage(url: "imageUrl3.png") },
+        ///         buttons: new CardAction[]
+        ///         {
+        ///             new CardAction(title: "button3", type: ActionTypes.ImBack, value: "item3")
+        ///         })
+        ///     .ToAttachment()
+        /// });
+        /// 
+        /// // Send the activity as a reply to the user.
+        /// await context.SendActivity(activity);
         /// </code>
         /// </example>
+        /// <seealso cref="Attachment(IList{Attachment}, string, string, string)"/>
         public static IMessageActivity Carousel(IList<Attachment> attachments, string text = null, string ssml = null, string inputHint = null)
         {
             if (attachments == null)
@@ -186,21 +267,26 @@ namespace Microsoft.Bot.Builder.Core.Extensions
         }
 
         /// <summary>
-        /// Returns a message that will display a single image or video to a user.
+        /// Returns a message activity that contains a single image or video.
         /// </summary>
-        /// <param name="url">Url of the image/video to send.</param>
-        /// <param name="contentType">The MIME type of the image/video.</param>
-        /// <param name="name">(Optional) Name of the image/video file.</param>
-        /// <param name="text">(Optional) text of the message.</param>
-        /// <param name="ssml">(Optional) SSML to include with the message.</param>
-        /// <param name="inputHint">(Optional)Input hint to the channel on what the bot is expecting.</param>
-        /// <returns>
-        /// Returns a message that will display a single image or video to a user.
-        /// </returns>
-        /// <example>
+        /// <param name="url">The URL of the image or video to send.</param>
+        /// <param name="contentType">The MIME type of the image or video.</param>
+        /// <param name="name">Optional, the name of the image or video file.</param>
+        /// <param name="text">Optional, the text of the message to send.</param>
+        /// <param name="ssml">Optional, text to be spoken by your bot on a speech-enabled
+        /// channel.</param>
+        /// <param name="inputHint">Optional, indicates whether your bot is accepting,
+        /// expecting, or ignoring user input after the message is delivered to the client.
+        /// One of: "acceptingInput", "ignoringInput", or "expectingInput".
+        /// Default is null.</param>
+        /// <returns>A message activity containing the attachment.</returns>
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="url"/> or <paramref name="contentType"/> is <c>null</c>, 
+        /// empty, or white space.</exception>
+        /// <example>This code creates a message activity that contains an image.
         /// <code>
-        ///     IMessageActivity message = 
-        ///         MessageFactory.ContentUrl("https://{domainName}/cat.jpg", MediaTypeNames.Image.Jpeg, "Cat Picture");
+        /// IMessageActivity message = 
+        ///     MessageFactory.ContentUrl("https://{domainName}/cat.jpg", MediaTypeNames.Image.Jpeg, "Cat Picture");
         /// </code>
         /// </example>
         public static IMessageActivity ContentUrl(string url, string contentType, string name = null, string text = null, string ssml = null, string inputHint = null)
