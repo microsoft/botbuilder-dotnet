@@ -10,7 +10,6 @@ namespace Microsoft.Bot.Builder.Core.Extensions
 {
     public class StateSettings
     {
-        public bool WriteBeforeSend { get; set; } = true;
         public bool LastWriterWins { get; set; } = true;
     }
 
@@ -43,16 +42,6 @@ namespace Microsoft.Bot.Builder.Core.Extensions
         public async Task OnProcessRequest(ITurnContext context, MiddlewareSet.NextDelegate next)
         {
             await Read(context).ConfigureAwait(false);
-            if (_settings.WriteBeforeSend)
-            {
-                context.OnSendActivities(WriteOnSend);
-            }
-            await next().ConfigureAwait(false);
-            await Write(context).ConfigureAwait(false);
-        }
-
-        private async Task WriteOnSend(ITurnContext context, List<Activity> activities, Func<Task> next)
-        {
             await next().ConfigureAwait(false);
             await Write(context).ConfigureAwait(false);
         }
