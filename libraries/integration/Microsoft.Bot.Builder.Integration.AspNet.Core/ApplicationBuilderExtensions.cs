@@ -15,6 +15,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
     /// </summary>
     /// <seealso cref="BotFrameworkPaths"/>
     /// <seealso cref="BotFrameworkAdapter"/>
+    /// <seealso cref="ServiceCollectionExtensions"/>
     public static class ApplicationBuilderExtensions
     {
         /// <summary>
