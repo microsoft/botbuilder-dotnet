@@ -2,12 +2,13 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 using Microsoft.Cognitive.LUIS;
-using Newtonsoft.Json;
 
+[assembly: InternalsVisibleTo("Microsoft.Bot.Builder.LUIS.Tests")]
 namespace Microsoft.Bot.Builder.LUIS
 {
     /// <summary>
@@ -55,7 +56,7 @@ namespace Microsoft.Bot.Builder.LUIS
             await next().ConfigureAwait(false);
         }
 
-        private static ILuisModel RemoveSensitiveData(ILuisModel luisModel)
+        internal static ILuisModel RemoveSensitiveData(ILuisModel luisModel)
         {
             return new LuisModel(luisModel.ModelID, Obfuscated, luisModel.UriBase, luisModel.ApiVersion);
         }

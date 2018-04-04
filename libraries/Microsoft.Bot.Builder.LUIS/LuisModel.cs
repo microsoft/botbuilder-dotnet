@@ -13,12 +13,9 @@ namespace Microsoft.Bot.Builder.LUIS
             if (string.IsNullOrEmpty(subscriptionKey))
                 throw new ArgumentNullException(nameof(subscriptionKey));
 
-            if (uriBase == null)
-                throw new ArgumentNullException(nameof(uriBase));
-
             ModelID = modelId;
             SubscriptionKey = subscriptionKey;
-            UriBase = uriBase;
+            UriBase = uriBase ?? throw new ArgumentNullException(nameof(uriBase));
             ApiVersion = apiVersion;
         }
 
@@ -28,7 +25,7 @@ namespace Microsoft.Bot.Builder.LUIS
 
         public Uri UriBase { get; set; }
 
-        public LuisApiVersion ApiVersion { get; }
+        public LuisApiVersion ApiVersion { get; set; }
 
         public double Threshold => 0.0d;
 

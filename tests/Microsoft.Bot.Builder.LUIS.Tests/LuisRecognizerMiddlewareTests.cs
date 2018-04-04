@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Core.Extensions.Tests;
@@ -18,8 +19,22 @@ namespace Microsoft.Bot.Builder.LUIS.Tests
         private readonly string _luisUriBase = TestUtilities.GetKey("LUISURIBASE");
 
         [TestMethod]
+        public void LuisRecognizer_MiddlewareConstruction()
+        {
+            var middleware = GetLuisRecognizerMiddleware();
+            Assert.IsNotNull(middleware);
+            Assert.ThrowsException<ArgumentNullException>(() => new LuisRecognizerMiddleware(null));
+        }
+
+        [TestMethod]
         public async Task LuisRecognizer_TestMiddleware()
         {
+            if (!EnvironmentVariablesDefined())
+            {
+                Debug.WriteLine("Missing Luis Environemnt variables - Skipping test");
+                return;
+            }
+
             var adapter = new TestAdapter()
                 .Use(GetLuisRecognizerMiddleware(true));
 
@@ -56,6 +71,20 @@ namespace Microsoft.Bot.Builder.LUIS.Tests
                 .StartTest();
         }
 
+        [TestMethod]
+        public void LuisRecognizer_ObfuscateSensitiveData()
+        {
+            var model = new LuisModel(Guid.NewGuid().ToString(), "abc", new Uri("http://luis.ai"));
+            var obfuscated = LuisRecognizerMiddleware.RemoveSensitiveData(model);
+
+            Assert.AreEqual(LuisRecognizerMiddleware.Obfuscated, obfuscated.SubscriptionKey);
+            Assert.AreEqual(model.ApiVersion, obfuscated.ApiVersion);
+            Assert.AreEqual(model.ModelID, obfuscated.ModelID);
+            Assert.AreEqual(model.Threshold, obfuscated.Threshold);
+            Assert.AreEqual(model.UriBase.Host, obfuscated.UriBase.Host);
+
+        }
+
         private LuisRecognizerMiddleware GetLuisRecognizerMiddleware(bool verbose = false, ILuisOptions luisOptions = null)
         {
             var luisRecognizerOptions = new LuisRecognizerOptions { Verbose = verbose };
@@ -63,5 +92,9 @@ namespace Microsoft.Bot.Builder.LUIS.Tests
             return new LuisRecognizerMiddleware(luisModel, luisRecognizerOptions, luisOptions ?? new LuisRequest{Verbose = verbose});
         }
 
+        private bool EnvironmentVariablesDefined()
+        {
+            return _luisAppId != null && _subscriptionKey != null && _luisUriBase == null;
+        }
     }
 }
