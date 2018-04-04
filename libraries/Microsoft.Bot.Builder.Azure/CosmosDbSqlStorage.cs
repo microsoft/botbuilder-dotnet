@@ -26,10 +26,10 @@ namespace Microsoft.Bot.Builder.Azure
             UserAgentSuffix = "Microsoft-BotFramework 4.0.0"
         };
 
-        private static JsonSerializerSettings serializationSettings = new JsonSerializerSettings()
+        private static JsonSerializer jsonSerializer = JsonSerializer.Create(new JsonSerializerSettings()
         {
             TypeNameHandling = TypeNameHandling.All
-        };
+        });
 
         public CosmosDbSqlStorage(Uri serviceEndpoint, string authKey, string databaseId, string collectionId)
         {
@@ -60,7 +60,6 @@ namespace Microsoft.Bot.Builder.Azure
             this.client.CreateDatabaseIfNotExistsAsync(new Database { Id = databaseId })
                 .Wait();
 
-            // TODO: Should specify OfferThroughput in RequestOptions?
             this.client.CreateDocumentCollectionIfNotExistsAsync(UriFactory.CreateDatabaseUri(databaseId), new DocumentCollection { Id = collectionId })
                 .Wait();
         }
@@ -84,7 +83,7 @@ namespace Microsoft.Bot.Builder.Azure
                     var uri = UriFactory.CreateDocumentUri(this.databaseId, this.collectionId, SanitizeKey(key));
                     var response = (await this.client.ReadDocumentAsync<DocumentStoreItem>(uri).ConfigureAwait(false));
                     var doc = response.Document;
-                    var item = doc.Item.ToObject(typeof(object), JsonSerializer.Create(serializationSettings));
+                    var item = doc.Item.ToObject(typeof(object), jsonSerializer);
                     if (item is IStoreItem storeItem)
                     {
                         storeItem.eTag = response.ResponseHeaders["etag"];
@@ -111,7 +110,7 @@ namespace Microsoft.Bot.Builder.Azure
                 var documentChange = new DocumentStoreItem
                 {
                     Id = SanitizeKey(change.Key),
-                    Item = JObject.FromObject(change.Value, JsonSerializer.Create(serializationSettings))
+                    Item = JObject.FromObject(change.Value, jsonSerializer)
                 };
 
 
