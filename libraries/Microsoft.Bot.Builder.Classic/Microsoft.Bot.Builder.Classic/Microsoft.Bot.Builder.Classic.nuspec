@@ -2,7 +2,7 @@
 <package xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <metadata xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <id>Microsoft.Bot.Builder.Classic</id>
-    <version>4.0.0-alpha2018031101</version>
+    <version>$version$</version>
     <authors>Microsoft</authors>
     <owners>microsoft, BotFramework, nugetbotbuilder </owners>
     <copyright>© Microsoft Corporation. All rights reserved.</copyright>
@@ -26,9 +26,9 @@
       <dependency id="Autofac" version="3.5.2"/>
       <dependency id="Chronic.Signed" version="0.3.2" />
       <dependency id="Microsoft.AspNet.WebAPI.Core" version="5.2.3" />
-      <dependency id="Microsoft.Bot.Builder" version="4.0.0-alpha2018031101" />
-      <dependency id="Microsoft.Bot.Connector" version="4.0.0-alpha2018031101" />
-	  <dependency id="Microsoft.Bot.Schema" version="4.0.0-alpha2018031101" />
+      <dependency id="Microsoft.Bot.Builder" version="$version$" />
+      <dependency id="Microsoft.Bot.Connector" version="$version$" />
+	  <dependency id="Microsoft.Bot.Schema" version="$version$" />
       <dependency id="Microsoft.Rest.ClientRuntime" version="2.3.2" />
       <dependency id="Newtonsoft.Json" version="9.0.1" />
       <dependency id="System.IdentityModel.Tokens.Jwt" version="5.1.4" />
@@ -45,7 +45,7 @@
           exclude="**\obj\**\*.cs;..\Microsoft.Bot.Builder.Classic.Azure\**;..\Microsoft.Bot.Builder.Classic.Calling\**;..\Microsoft.Bot.Builder.Classic.FormFlow.Json\**;..\Microsoft.Bot.Builder.Classic.History\**;..\Microsoft.Bot.Connector.AspNetCore\**;..\Microsoft.Bot.Connector.NetCore\**"
           target="src" />
     <!-- tools -->
-    <file src="..\rview\bin\release\RView.exe" target="tools"/>
+    <!--<file src="..\rview\bin\release\RView.exe" target="tools"/>-->
     <!-- resources -->
     <file src="bin\release\ar\*.dll" target="lib\net46\ar"/>
     <file src="bin\release\cs\*.dll" target="lib\net46\cs"/>
