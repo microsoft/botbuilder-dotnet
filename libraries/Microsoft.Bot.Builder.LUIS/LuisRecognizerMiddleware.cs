@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Builder.LUIS
     public class LuisRecognizerMiddleware : IMiddleware
     {
         public const string LuisRecognizerResultKey = "LuisRecognizerResult";
-        public const string LuisTraceEventName = "LuisTraceInfo";
+        public const string LuisTraceEventName = "https://www.luis.ai/schemas/trace";
         public const string Obfuscated = "****";
         private readonly ILuisRecognizer _luisRecognizer;
         private readonly ILuisModel _luisModel;
