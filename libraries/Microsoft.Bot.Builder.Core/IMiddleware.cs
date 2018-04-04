@@ -56,12 +56,6 @@ namespace Microsoft.Bot.Builder
         /// <seealso cref="ITurnContext"/>
         /// <seealso cref="Bot.Schema.IActivity"/>
         Task OnProcessRequest(ITurnContext context, MiddlewareSet.NextDelegate next);
-
-        /// <summary>
-        /// Change Middleware Status to be the last Middleware
-        /// </summary>
-        /// <param name="last">boolean true of this middleware is the last middleware.</param>
-        void SetIsMiddlewareLast(bool last);
     }
 
     /// <summary>
@@ -92,10 +86,6 @@ namespace Microsoft.Bot.Builder
         public Task OnProcessRequest(ITurnContext context, NextDelegate next)
         {
             return _toCall(context, next);
-        }
-
-        public void SetIsMiddlewareLast(bool last)
-        { 
         }
     }   
 }

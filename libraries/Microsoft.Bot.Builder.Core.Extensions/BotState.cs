@@ -47,10 +47,6 @@ namespace Microsoft.Bot.Builder.Core.Extensions
             await Write(context).ConfigureAwait(false);
         }
 
-        public void SetIsMiddlewareLast(bool last)
-        {
-        }
-
         protected virtual async Task<StoreItems> Read(ITurnContext context)
         {
             var key = this._keyDelegate(context);

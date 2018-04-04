@@ -15,10 +15,9 @@ namespace Microsoft.Bot.Builder.Ai
     {
         private readonly string[] _nativeLanguages;
         private readonly Translator _translator;
-        private readonly Dictionary<string,List<string>> _patterns;
+        private readonly Dictionary<string, List<string>> _patterns;
         private readonly Func<ITurnContext, string> _getUserLanguage;
         private readonly Func<ITurnContext, Task<bool>> _isUserLanguageChanged;
-        private bool _isLastMiddleware;
         private readonly bool _toUserLanguage;
 
         /// <summary>
@@ -26,7 +25,7 @@ namespace Microsoft.Bot.Builder.Ai
         /// </summary>
         /// <param name="nativeLanguages">List of languages supported by your app</param>
         /// <param name="translatorKey"></param>
-        public TranslationMiddleware(string[] nativeLanguages, string translatorKey,bool toUserLanguage=false)
+        public TranslationMiddleware(string[] nativeLanguages, string translatorKey, bool toUserLanguage = false)
         {
             AssertValidNativeLanguages(nativeLanguages);
             this._nativeLanguages = nativeLanguages;
@@ -44,7 +43,7 @@ namespace Microsoft.Bot.Builder.Ai
         /// <param name="nativeLanguages">List of languages supported by your app</param>
         /// <param name="translatorKey"></param>
         /// <param name="patterns">Dictionary with language as a key and list of patterns as value</param>
-        public TranslationMiddleware(string[] nativeLanguages, string translatorKey, Dictionary<string, List<string>> patterns, bool toUserLanguage = false) :this(nativeLanguages,translatorKey,toUserLanguage)
+        public TranslationMiddleware(string[] nativeLanguages, string translatorKey, Dictionary<string, List<string>> patterns, bool toUserLanguage = false) : this(nativeLanguages, translatorKey, toUserLanguage)
         {
             this._patterns = patterns ?? throw new ArgumentNullException(nameof(patterns));
         }
@@ -57,7 +56,7 @@ namespace Microsoft.Bot.Builder.Ai
         /// <param name="patterns">Dictionary with language as a key and list of patterns as value</param>
         /// <param name="getUserLanguage">Delegate for getting the user language</param>
         /// <param name="isUserLanguageChanged">Delegate for checking if  the user language is changed, returns true if the language was changed (implements logic to change language by intercepting the message)</param>
-        public TranslationMiddleware(string[] nativeLanguages, string translatorKey, Dictionary<string, List<string>> patterns, Func<ITurnContext, string> getUserLanguage, Func<ITurnContext, Task<bool>> isUserLanguageChanged, bool toUserLanguage = false) : this(nativeLanguages, translatorKey, patterns,toUserLanguage)
+        public TranslationMiddleware(string[] nativeLanguages, string translatorKey, Dictionary<string, List<string>> patterns, Func<ITurnContext, string> getUserLanguage, Func<ITurnContext, Task<bool>> isUserLanguageChanged, bool toUserLanguage = false) : this(nativeLanguages, translatorKey, patterns, toUserLanguage)
         {
             this._getUserLanguage = getUserLanguage ?? throw new ArgumentNullException(nameof(getUserLanguage));
             this._isUserLanguageChanged = isUserLanguageChanged ?? throw new ArgumentNullException(nameof(isUserLanguageChanged));
@@ -65,7 +64,7 @@ namespace Microsoft.Bot.Builder.Ai
 
         private static void AssertValidNativeLanguages(string[] nativeLanguages)
         {
-            if (nativeLanguages == null )
+            if (nativeLanguages == null)
                 throw new ArgumentNullException(nameof(nativeLanguages));
         }
 
@@ -95,59 +94,46 @@ namespace Microsoft.Bot.Builder.Ai
                         // determine the language we are using for this conversation
                         var sourceLanguage = "";
                         var targetLanguage = "";
-                        if (_toUserLanguage)
-                        {
-                            // in case of returning message that needs to be translated to user language 
-                            if (_getUserLanguage != null)
-                                targetLanguage = _getUserLanguage(context);
-                            else
-                                throw new InvalidOperationException("Needs to specify _getUserLanguage delegate used to translate to user language in the last Middleware!");
-                            sourceLanguage = (this._nativeLanguages.Contains(sourceLanguage)) ? sourceLanguage : this._nativeLanguages.FirstOrDefault() ?? "en";
-                        }
+                        if (_getUserLanguage == null)
+                            sourceLanguage = await _translator.Detect(message.Text); //awaiting user language detection using Microsoft Translator API.
                         else
                         {
-                            if (_getUserLanguage == null)
-                                sourceLanguage = await _translator.Detect(message.Text); //awaiting user language detection using Microsoft Translator API.
-                            else
-                            {
-                                sourceLanguage = _getUserLanguage(context);
-                            }
-                            //check if the developer has added pattern list for the input source language
-                            if (_patterns.ContainsKey(sourceLanguage) && _patterns[sourceLanguage].Count > 0)
-                            {
-                                //if we have a list of patterns for the current user's language send it to the translator post processor.
-                                this._translator.SetPostProcessorTemplate(_patterns[sourceLanguage]);
-                            }
-                            targetLanguage = (this._nativeLanguages.Contains(sourceLanguage)) ? sourceLanguage : this._nativeLanguages.FirstOrDefault() ?? "en";
+                            sourceLanguage = _getUserLanguage(context);
                         }
-                        if (!_nativeLanguages.Contains(sourceLanguage))
+                        //check if the developer has added pattern list for the input source language
+                        if (_patterns.ContainsKey(sourceLanguage) && _patterns[sourceLanguage].Count > 0)
                         {
-                            var translationContext = new TranslationContext
-                            {
-                                SourceText = message.Text,
-                                SourceLanguage = sourceLanguage,
-                                TargetLanguage = targetLanguage
-                            };
-
-                            // translate to bots language
-                            if (translationContext.SourceLanguage != translationContext.TargetLanguage)
-                                await TranslateMessageAsync(context, message, translationContext.SourceLanguage, translationContext.TargetLanguage).ConfigureAwait(false);
+                            //if we have a list of patterns for the current user's language send it to the translator post processor.
+                            _translator.SetPostProcessorTemplate(_patterns[sourceLanguage]);
                         }
+                        targetLanguage = (_nativeLanguages.Contains(sourceLanguage)) ? sourceLanguage : this._nativeLanguages.FirstOrDefault() ?? "en";
+                        await TranslateMessageAsync(context, message, sourceLanguage, targetLanguage, _nativeLanguages.Contains(sourceLanguage)).ConfigureAwait(false);
+                        if (_toUserLanguage)
+                        {
+                            context.OnSendActivities(async (newContext, activities, newNext) =>
+                            {
+                                //Translate messages sent to the user to user language
+                                if (activities.Count > 0)
+                                {
+                                    IMessageActivity currentMEssageActivity = activities[0].AsMessageActivity();
+                                    await TranslateMessageAsync(newContext, currentMEssageActivity, targetLanguage, sourceLanguage, false).ConfigureAwait(false);
+                                    activities[0].Text = currentMEssageActivity.Text;
+                                    await newNext();
+                                }
+                            });
+                        }
+                    }
+                    else
+                    {
+                        // skip routing in case of user changed the language
+                        return;
                     }
                 }
             }
-            if(!_isLastMiddleware)
-                await next().ConfigureAwait(false);
+            await next().ConfigureAwait(false);
         }
 
-        /// <summary>
-        /// Change Middleware Status to be the last Middleware
-        /// </summary>
-        /// <param name="last">boolean true of this middleware is the last middleware.</param>
-        public void SetIsMiddlewareLast(bool last)
-        {
-            _isLastMiddleware = last;
-        }
+
 
 
 
@@ -159,23 +145,23 @@ namespace Microsoft.Bot.Builder.Ai
         /// <param name="sourceLanguage"/>
         /// <param name="targetLanguage"></param>
         /// <returns></returns>
-        private async Task TranslateMessageAsync(ITurnContext context, IMessageActivity message, string sourceLanguage, string targetLanguage)
+        private async Task TranslateMessageAsync(ITurnContext context, IMessageActivity message, string sourceLanguage, string targetLanguage, bool InNativeLanguages)
         {
-            // if we have text and a target language
-            if (!String.IsNullOrWhiteSpace(message.Text) && !String.IsNullOrEmpty(targetLanguage))
+            if (!InNativeLanguages && sourceLanguage != targetLanguage)
             {
-                if (targetLanguage == sourceLanguage)
-                    return;
+                // if we have text and a target language
+                if (!String.IsNullOrWhiteSpace(message.Text) && !String.IsNullOrEmpty(targetLanguage))
+                {
+                    if (targetLanguage == sourceLanguage)
+                        return;
 
-                var text = message.Text; 
-                string[] lines = text.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None);
-                var translateResult = await this._translator.TranslateArray(lines, sourceLanguage, targetLanguage).ConfigureAwait(false);
-                text = String.Join("\n", translateResult);
-                if (_isLastMiddleware)
-                    await context.SendActivity(text);
-                else
+                    var text = message.Text;
+                    string[] lines = text.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None);
+                    var translateResult = await this._translator.TranslateArray(lines, sourceLanguage, targetLanguage).ConfigureAwait(false);
+                    text = String.Join("\n", translateResult);
                     message.Text = text;
+                }
             }
-        } 
+        }
     }
 }

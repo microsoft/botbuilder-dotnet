@@ -75,10 +75,5 @@ namespace Microsoft.Bot.Builder.Core.Extensions
             };
             await context.SendActivity(typingActivity);
         }
-
-        public void SetIsMiddlewareLast(bool last)
-        { 
-
-        }
     }
 }

@@ -195,9 +195,5 @@ namespace Microsoft.Bot.Builder.Core.Extensions
             return string.IsNullOrWhiteSpace(s) ? string.Empty : s.Trim();
         }
 
-        public void SetIsMiddlewareLast(bool last)
-        {
-
-        }
     }
 }

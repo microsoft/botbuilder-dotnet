@@ -13,11 +13,11 @@ namespace Microsoft.Bot.Builder.Ai
     {
         private readonly QnAMaker _qnaMaker;
         private readonly QnAMakerMiddlewareOptions _options;
-        private bool _isLastMiddleware;
 
         public QnAMakerMiddleware(QnAMakerMiddlewareOptions options, HttpClient httpClient = null)
         {
             _options = options ?? throw new ArgumentNullException(nameof(options));
+
             _qnaMaker = new QnAMaker(options, httpClient);
         }
 
@@ -32,34 +32,18 @@ namespace Microsoft.Bot.Builder.Ai
                     if (results.Any())
                     {
                         if (!string.IsNullOrEmpty(_options.DefaultAnswerPrefixMessage))
-                        {
-                            if (_isLastMiddleware)
-                                await context.SendActivity(_options.DefaultAnswerPrefixMessage);
-                            else
-                                messageActivity.Text = _options.DefaultAnswerPrefixMessage;
-                        }
-                        if (_isLastMiddleware)
-                            await context.SendActivity(results.First().Answer);
-                        else
-                            messageActivity.Text = results.First().Answer;
-                    }
-                    else {
-                        await next().ConfigureAwait(false);
-                        return;
+                            await context.SendActivity(_options.DefaultAnswerPrefixMessage);
+
+                        await context.SendActivity(results.First().Answer);
+
+                        if (_options.EndActivityRoutingOnAnswer)
+                            //Question is answered, don't keep routing
+                            return;
                     }
                 }
             }
-            if(!_isLastMiddleware)
-                await next().ConfigureAwait(false);
-        }
 
-        /// <summary>
-        /// Change Middleware Status to be the last Middleware
-        /// </summary>
-        /// <param name="last">boolean true of this middleware is the last middleware.</param>
-        public void SetIsMiddlewareLast(bool last)
-        {
-            _isLastMiddleware = last;
+            await next().ConfigureAwait(false);
         }
     }
 }

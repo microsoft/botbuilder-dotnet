@@ -91,10 +91,6 @@ namespace Microsoft.Bot.Builder.Core.Tests
                 await context.SendActivity(context.Activity.CreateReply("AFTER"));
             }
 
-            public void SetIsMiddlewareLast(bool last)
-            { 
-
-            }
         }
 
         public class BeforeAFterMiddlware : IMiddleware
@@ -106,10 +102,6 @@ namespace Microsoft.Bot.Builder.Core.Tests
                 await context.SendActivity(context.Activity.CreateReply("AFTER"));
             }
 
-            public void SetIsMiddlewareLast(bool last)
-            { 
-
-            }
         }
     }
 }
