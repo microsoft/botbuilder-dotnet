@@ -13,10 +13,11 @@ namespace Microsoft.Bot.Builder.Ai
     /// </summary>
     public class LocaleConverterMiddleware : IMiddleware
     {
-        private ILocaleConverter localeConverter; 
-        private readonly string toLocale;
+        private ILocaleConverter _localeConverter; 
+        private readonly string _toLocale;
         private readonly Func<ITurnContext, string> _getUserLocale;
         private readonly Func<ITurnContext, Task<bool>> _setUserLocale;
+        private bool _isLastMiddleware ;
 
         /// <summary>
         /// Constructor for developer defined detection of user messages
@@ -27,12 +28,12 @@ namespace Microsoft.Bot.Builder.Ai
         /// <param name="localeConverter">An ILocaleConverter instance</param>
         public LocaleConverterMiddleware(Func<ITurnContext, string> getUserLocale, Func<ITurnContext, Task<bool>> checkUserLocaleChanged, string toLocale, ILocaleConverter localeConverter)
         {
-            this.localeConverter = localeConverter ?? throw new ArgumentNullException(nameof(localeConverter));
+            this._localeConverter = localeConverter ?? throw new ArgumentNullException(nameof(localeConverter));
             if (string.IsNullOrEmpty(toLocale) || !localeConverter.IsLocaleAvailable(toLocale))
                 throw new ArgumentNullException(nameof(toLocale));
-            this.toLocale = toLocale;
+            this._toLocale = toLocale;
             this._getUserLocale = getUserLocale ?? throw new ArgumentNullException(nameof(getUserLocale)); 
-            this._setUserLocale = checkUserLocaleChanged ?? throw new ArgumentNullException(nameof(checkUserLocaleChanged)); 
+            this._setUserLocale = checkUserLocaleChanged ?? throw new ArgumentNullException(nameof(checkUserLocaleChanged));
         }
 
         /// <summary>
@@ -48,22 +49,44 @@ namespace Microsoft.Bot.Builder.Ai
             {
                 if (!String.IsNullOrWhiteSpace(message.Text))
                 {
-                    string fromLocale = _getUserLocale(context);
-                    ConvertLocaleMessage(message, fromLocale);
-                    await _setUserLocale(context);
+                    bool localeChanged = await _setUserLocale(context);
+                    if (!localeChanged)
+                    {
+                        string fromLocale = _getUserLocale(context);
+                        ConvertLocaleMessage(context, fromLocale);
+                    }
+                    
                 }
             }
-            await next().ConfigureAwait(false);
+            if(!_isLastMiddleware)
+                await next().ConfigureAwait(false);
         }
 
-        private void ConvertLocaleMessage(IMessageActivity message,string fromLocale)
+        private void ConvertLocaleMessage(ITurnContext context,string fromLocale)
         {
-            
-            if (localeConverter.IsLocaleAvailable(fromLocale) && fromLocale != toLocale)
+            IMessageActivity message = context.Activity.AsMessageActivity();
+            if (_localeConverter.IsLocaleAvailable(fromLocale) && fromLocale != _toLocale)
             {
-                message.Text = localeConverter.Convert(message.Text, fromLocale, toLocale);
+                string localeConvertedText = _localeConverter.Convert(message.Text, fromLocale, _toLocale); 
+                if (_isLastMiddleware)
+                {
+                    context.SendActivity(localeConvertedText);
+                }
+                else
+                {
+                    message.Text = localeConvertedText;
+                }
             }
+
         }
-        
+
+        /// <summary>
+        /// Change Middleware Status to be the last Middleware
+        /// </summary>
+        /// <param name="last">boolean true of this middleware is the last middleware.</param>
+        public void SetIsMiddlewareLast(bool last)
+        {
+            _isLastMiddleware = last;
+        }
     }
 }

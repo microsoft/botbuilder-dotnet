@@ -56,5 +56,10 @@ namespace Microsoft.Bot.Builder.Core.Tests
             Calls++;
             await next();
         }
+
+        public void SetIsMiddlewareLast(bool last)
+        { 
+
+        }
     }
 }
