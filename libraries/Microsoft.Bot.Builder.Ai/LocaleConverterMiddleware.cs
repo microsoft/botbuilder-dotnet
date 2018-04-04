@@ -17,7 +17,6 @@ namespace Microsoft.Bot.Builder.Ai
         private readonly string _toLocale;
         private readonly Func<ITurnContext, string> _getUserLocale;
         private readonly Func<ITurnContext, Task<bool>> _setUserLocale;
-        private bool _isLastMiddleware ;
 
         /// <summary>
         /// Constructor for developer defined detection of user messages
@@ -60,8 +59,7 @@ namespace Microsoft.Bot.Builder.Ai
                     
                 }
             }
-            if(!_isLastMiddleware)
-                await next().ConfigureAwait(false);
+            await next().ConfigureAwait(false);
         }
 
         private void ConvertLocaleMessage(ITurnContext context,string fromLocale)
@@ -72,25 +70,11 @@ namespace Microsoft.Bot.Builder.Ai
                 if (_localeConverter.IsLocaleAvailable(fromLocale) && fromLocale != _toLocale)
                 {
                     string localeConvertedText = _localeConverter.Convert(message.Text, fromLocale, _toLocale);
-                    if (_isLastMiddleware)
-                    {
-                        context.SendActivity(localeConvertedText);
-                    }
-                    else
-                    {
-                        message.Text = localeConvertedText;
-                    }
+                    message.Text = localeConvertedText;
                 }
             }
         }
 
-        /// <summary>
-        /// Change Middleware Status to be the last Middleware
-        /// </summary>
-        /// <param name="last">boolean true of this middleware is the last middleware.</param>
-        public void SetIsMiddlewareLast(bool last)
-        {
-            _isLastMiddleware = last;
-        }
+
     }
 }

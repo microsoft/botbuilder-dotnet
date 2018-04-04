@@ -16,9 +16,6 @@ namespace Microsoft.Bot.Builder
         public MiddlewareSet Use(IMiddleware middleware)
         {
             BotAssert.MiddlewareNotNull(middleware);
-            if(_middleware.Count>0)
-                _middleware[_middleware.Count - 1].SetIsMiddlewareLast(false);
-            middleware.SetIsMiddlewareLast(true);
             _middleware.Add(middleware);
             return this;
         }
@@ -72,9 +69,5 @@ namespace Microsoft.Bot.Builder
                 () => ReceiveActivityInternal(context, callback, nextMiddlewareIndex + 1));
         }
 
-        public void SetIsMiddlewareLast(bool last)
-        {
-
-        }
     }
 }

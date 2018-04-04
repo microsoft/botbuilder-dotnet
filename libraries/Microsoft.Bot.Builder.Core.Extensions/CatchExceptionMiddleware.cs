@@ -39,9 +39,6 @@ namespace Microsoft.Bot.Builder.Core.Extensions
             }
         }
 
-        public void SetIsMiddlewareLast(bool last)
-        { 
 
-        }
     }
 }

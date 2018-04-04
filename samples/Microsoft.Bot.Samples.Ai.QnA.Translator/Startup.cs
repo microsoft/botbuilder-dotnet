@@ -40,18 +40,17 @@ namespace Microsoft.Bot.Samples.Ai.QnA.Translator
                 {
                     // add subscription key and knowledge base id
                     SubscriptionKey = "xxxxxx",
-                    KnowledgeBaseId = "xxxxxx"
+                    KnowledgeBaseId = "xxxxxx",
+                    EndActivityRoutingOnAnswer = false
                 };
 
                 var middleware = options.Middleware;
                 Dictionary<string, List<string>> patterns = new Dictionary<string, List<string>>();
                 patterns.Add("fr", new List<string> { "mon nom est (.+)" });//single pattern for fr language
                 middleware.Add(new ConversationState<CurrentUserState>(new MemoryStorage()));
-                middleware.Add(new TranslationMiddleware(new string[] { "en" }, "<your translator key here>", patterns, TranslatorLocaleHelper.GetActiveLanguage, TranslatorLocaleHelper.CheckUserChangedLanguage));
+                middleware.Add(new TranslationMiddleware(new string[] { "en" }, "<your translator key here>", patterns, TranslatorLocaleHelper.GetActiveLanguage, TranslatorLocaleHelper.CheckUserChangedLanguage,true));
                 middleware.Add(new LocaleConverterMiddleware(TranslatorLocaleHelper.GetActiveLocale, TranslatorLocaleHelper.CheckUserChangedLocale, "en-us", LocaleConverter.Converter));
                 middleware.Add(new QnAMakerMiddleware(qnaOptions));
-                middleware.Add(new TranslationMiddleware(new string[] {  }, "<your translator key here>", patterns, TranslatorLocaleHelper.GetActiveLanguage, TranslatorLocaleHelper.CheckUserChangedLanguage,true));
-
 
             });
         }
