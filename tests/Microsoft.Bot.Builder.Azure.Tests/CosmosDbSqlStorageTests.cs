@@ -22,12 +22,33 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         private const string CosmosDatabaseName = "BotSqlStorage";
         private const string CosmosCollectionName = "botstorage";
 
+        private static string emulatorPath = Environment.ExpandEnvironmentVariables(@"%ProgramFiles%\Azure Cosmos DB Emulator\CosmosDB.Emulator.exe");
+        private const string noEmulatorMessage = "This test requires CosmosDB Emulator! go to https://aka.ms/documentdb-emulator-docs to download and install.";
+        private static Lazy<bool> hasEmulator = new Lazy<bool>(() =>
+        {
+            if (File.Exists(emulatorPath))
+            {
+                Process p = new Process();
+                p.StartInfo.UseShellExecute = true;
+                p.StartInfo.FileName = emulatorPath;
+                p.StartInfo.Arguments = "/GetStatus";
+                p.Start();
+                p.WaitForExit();
+                return p.ExitCode == 2;
+            }
+
+            return false;
+        });
+
         private IStorage storage;
 
         [TestInitialize]
         public void TestInit()
         {
-            storage = new CosmosDbSqlStorage(new Uri(CosmosServiceEndpoint), CosmosAuthKey, CosmosDatabaseName, CosmosCollectionName);
+            if (hasEmulator.Value)
+            {
+                storage = new CosmosDbSqlStorage(new Uri(CosmosServiceEndpoint), CosmosAuthKey, CosmosDatabaseName, CosmosCollectionName);
+            }
         }
 
         [TestCleanup]
@@ -44,41 +65,69 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestMethod]
         public async Task DocumentDb_CreateObjectTest()
         {
-            await base._createObjectTest(storage);
+            if (CheckEmulator())
+            {
+                await base._createObjectTest(storage);
+            }
         }
 
         // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
         [TestMethod]
         public async Task DocumentDb_ReadUnknownTest()
         {
-            await base._readUnknownTest(storage);
+            if (CheckEmulator())
+            {
+                await base._readUnknownTest(storage);
+            }
         }
 
         // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
         [TestMethod]
         public async Task DocumentDb_UpdateObjectTest()
         {
-            await base._updateObjectTest(storage);
+            if (CheckEmulator())
+            {
+                await base._updateObjectTest(storage);
+            }
         }
 
         // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
         [TestMethod]
         public async Task DocumentDb_DeleteObjectTest()
         {
-            await base._deleteObjectTest(storage);
+            if (CheckEmulator())
+            {
+                await base._deleteObjectTest(storage);
+            }
         }
 
         // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
         [TestMethod]
         public async Task DocumentDb_HandleCrazyKeys()
         {
-            await base._handleCrazyKeys(storage);
+            if (CheckEmulator())
+            {
+                await base._handleCrazyKeys(storage);
+            }
         }
 
         [TestMethod]
         public async Task DocumentDb_TypedSerialization()
         {
-            await base._typedSerialization(this.storage);
+            if (CheckEmulator())
+            {
+                await base._typedSerialization(this.storage);
+            }
+        }
+
+        public bool CheckEmulator()
+        {
+            if (!hasEmulator.Value)
+                Debug.WriteLine(noEmulatorMessage);
+            if (Debugger.IsAttached)
+                Assert.IsTrue(hasEmulator.Value, noEmulatorMessage);
+
+            return hasEmulator.Value;
         }
     }
 }
