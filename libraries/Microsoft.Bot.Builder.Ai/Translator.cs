@@ -89,8 +89,9 @@ namespace Microsoft.Bot.Builder.Ai
                     int trgLength = Int32.Parse(wordIndexes[1].Split(':')[1]) - trgstartIndex + 1; 
                     string trgWrd = trgMessage.Substring(trgstartIndex,trgLength);
                     int trgWrdINdex = Array.FindIndex(trgWrds, row => row == trgWrd);
-
-                    alignMap[srcWrdIndex] = trgWrdINdex;
+                    
+                    if(srcWrdIndex>0 && trgWrdINdex>0)
+                        alignMap[srcWrdIndex] = trgWrdINdex;
             }
             return alignMap;
         }

@@ -50,6 +50,9 @@ namespace Microsoft.Bot.Samples.Ai.QnA.Translator
                 middleware.Add(new TranslationMiddleware(new string[] { "en" }, "<your translator key here>", patterns, TranslatorLocaleHelper.GetActiveLanguage, TranslatorLocaleHelper.CheckUserChangedLanguage));
                 middleware.Add(new LocaleConverterMiddleware(TranslatorLocaleHelper.GetActiveLocale, TranslatorLocaleHelper.CheckUserChangedLocale, "en-us", LocaleConverter.Converter));
                 middleware.Add(new QnAMakerMiddleware(qnaOptions));
+                middleware.Add(new TranslationMiddleware(new string[] {  }, "<your translator key here>", patterns, TranslatorLocaleHelper.GetActiveLanguage, TranslatorLocaleHelper.CheckUserChangedLanguage,true));
+
+
             });
         }
 

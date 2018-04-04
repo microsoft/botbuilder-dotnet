@@ -439,6 +439,11 @@ namespace Microsoft.Bot.Builder.Core.Tests
                 Called = true;
                 return next();
             }
+
+            public void SetIsMiddlewareLast(bool last)
+            { 
+
+            }
         }
 
         public class DoNotCallNextMiddleware : IMiddleware
@@ -454,6 +459,11 @@ namespace Microsoft.Bot.Builder.Core.Tests
                 // DO NOT call NEXT
                 return Task.CompletedTask;
             }
+
+            public void SetIsMiddlewareLast(bool last)
+            { 
+
+            }
         }
 
         public class CallMeMiddlware : IMiddleware
@@ -467,6 +477,11 @@ namespace Microsoft.Bot.Builder.Core.Tests
             {
                 _callMe();
                 return next();
+            }
+
+            public void SetIsMiddlewareLast(bool last)
+            { 
+
             }
         }
     }

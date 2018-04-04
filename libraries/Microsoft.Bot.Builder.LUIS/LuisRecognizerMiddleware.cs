@@ -39,5 +39,9 @@ namespace Microsoft.Bot.Builder.LUIS
             }
             await next().ConfigureAwait(false);
         }
+
+        public void SetIsMiddlewareLast(bool last)
+        {
+        }
     }
 }
