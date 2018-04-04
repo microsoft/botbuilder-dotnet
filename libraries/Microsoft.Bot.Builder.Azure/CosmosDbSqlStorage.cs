@@ -83,7 +83,7 @@ namespace Microsoft.Bot.Builder.Azure
                     var uri = UriFactory.CreateDocumentUri(this.databaseId, this.collectionId, SanitizeKey(key));
                     var response = (await this.client.ReadDocumentAsync<DocumentStoreItem>(uri).ConfigureAwait(false));
                     var doc = response.Document;
-                    var item = doc.Item.ToObject(typeof(object), jsonSerializer);
+                    var item = doc.Document.ToObject(typeof(object), jsonSerializer);
                     if (item is IStoreItem storeItem)
                     {
                         storeItem.eTag = response.ResponseHeaders["etag"];
@@ -110,7 +110,7 @@ namespace Microsoft.Bot.Builder.Azure
                 var documentChange = new DocumentStoreItem
                 {
                     Id = SanitizeKey(change.Key),
-                    Item = JObject.FromObject(change.Value, jsonSerializer)
+                    Document = JObject.FromObject(change.Value, jsonSerializer)
                 };
 
 
@@ -162,8 +162,8 @@ namespace Microsoft.Bot.Builder.Azure
             [JsonProperty("id")]
             public string Id { get; set; }
 
-            [JsonProperty("item")]
-            public JObject Item { get; set; }
+            [JsonProperty("document")]
+            public JObject Document { get; set; }
         }
     }
 }
