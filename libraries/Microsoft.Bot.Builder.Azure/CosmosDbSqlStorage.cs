@@ -15,6 +15,9 @@ using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Azure
 {
+    /// <summary>
+    /// Models IStorage around a CosmosDB SQL (DocumentDB)
+    /// </summary>
     public class CosmosDbSqlStorage : IStorage
     {
         private readonly string databaseId;
@@ -31,6 +34,14 @@ namespace Microsoft.Bot.Builder.Azure
             TypeNameHandling = TypeNameHandling.All
         });
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="CosmosDbSqlStorage"/> class,
+        /// using the provided CosmosDB credentials, DatabaseId and CollectionId.
+        /// </summary>
+        /// <param name="serviceEndpoint">The endpoint Uri for the service endpoint from the Azure Cosmos DB service.</param>
+        /// <param name="authKey">The AuthKey used by the client from the Azure Cosmos DB service.</param>
+        /// <param name="databaseId">The Database ID.</param>
+        /// <param name="collectionId">The Collection ID.</param>
         public CosmosDbSqlStorage(Uri serviceEndpoint, string authKey, string databaseId, string collectionId)
         {
             if (serviceEndpoint == null)
@@ -64,6 +75,11 @@ namespace Microsoft.Bot.Builder.Azure
                 .Wait();
         }
 
+        /// <summary>
+        /// Deletes the specified keys from storage.
+        /// </summary>
+        /// <param name="keys">List of keys to remove.</param>
+        /// <returns></returns>
         public async Task Delete(params string[] keys)
         {
             var tasks = keys.Select(key =>
@@ -73,6 +89,11 @@ namespace Microsoft.Bot.Builder.Azure
             await Task.WhenAll(tasks).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Returns an instance of <see cref="StoreItems"/> bag with the values for the specified  keys.
+        /// </summary>
+        /// <param name="keys">List of keys to retrieve.</param>
+        /// <returns>A <see cref="StoreItems"/> instance.</returns>
         public async Task<StoreItems> Read(params string[] keys)
         {
             var storeItems = new StoreItems();
@@ -103,6 +124,11 @@ namespace Microsoft.Bot.Builder.Azure
             return storeItems;
         }
 
+        /// <summary>
+        /// Persist the specified StoreItems into the CosmosDB Collection.
+        /// </summary>
+        /// <param name="changes">Items to persist.</param>
+        /// <returns></returns>
         public async Task Write(StoreItems changes)
         {
             foreach (var change in changes)
