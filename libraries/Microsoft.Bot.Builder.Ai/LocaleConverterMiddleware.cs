@@ -29,8 +29,10 @@ namespace Microsoft.Bot.Builder.Ai
         public LocaleConverterMiddleware(Func<ITurnContext, string> getUserLocale, Func<ITurnContext, Task<bool>> checkUserLocaleChanged, string toLocale, ILocaleConverter localeConverter)
         {
             _localeConverter = localeConverter ?? throw new ArgumentNullException(nameof(localeConverter));
-            if (string.IsNullOrEmpty(toLocale) || !localeConverter.IsLocaleAvailable(toLocale))
+            if (string.IsNullOrEmpty(toLocale))
                 throw new ArgumentNullException(nameof(toLocale));
+            else if( !localeConverter.IsLocaleAvailable(toLocale))
+                throw new ArgumentNullException("The locale " +nameof(toLocale)+" is unavailable");
             _toLocale = toLocale;
             _getUserLocale = getUserLocale ?? throw new ArgumentNullException(nameof(getUserLocale)); 
             _setUserLocale = checkUserLocaleChanged ?? throw new ArgumentNullException(nameof(checkUserLocaleChanged));
@@ -65,19 +67,21 @@ namespace Microsoft.Bot.Builder.Ai
         private void ConvertLocaleMessage(ITurnContext context,string fromLocale)
         {
             IMessageActivity message = context.Activity.AsMessageActivity();
-            if (_localeConverter.IsLocaleAvailable(fromLocale) && fromLocale != _toLocale)
+            if (message != null)
             {
-                string localeConvertedText = _localeConverter.Convert(message.Text, fromLocale, _toLocale); 
-                if (_isLastMiddleware)
+                if (_localeConverter.IsLocaleAvailable(fromLocale) && fromLocale != _toLocale)
                 {
-                    context.SendActivity(localeConvertedText);
-                }
-                else
-                {
-                    message.Text = localeConvertedText;
+                    string localeConvertedText = _localeConverter.Convert(message.Text, fromLocale, _toLocale);
+                    if (_isLastMiddleware)
+                    {
+                        context.SendActivity(localeConvertedText);
+                    }
+                    else
+                    {
+                        message.Text = localeConvertedText;
+                    }
                 }
             }
-
         }
 
         /// <summary>
