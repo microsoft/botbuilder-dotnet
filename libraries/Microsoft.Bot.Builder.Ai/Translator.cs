@@ -30,7 +30,7 @@ namespace Microsoft.Bot.Builder.Ai
         /// Constructor that indexes input template for source language
         /// </summary>
         /// <param name="noTranslateTemplatePath">Path of no translate patterns</param> 
-        internal PostProcessTranslator(List<string> patterns):base()
+        internal PostProcessTranslator(List<string> patterns):this()
         { 
             foreach (string pattern in patterns)
             {
