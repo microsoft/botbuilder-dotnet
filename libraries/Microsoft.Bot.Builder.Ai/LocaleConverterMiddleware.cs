@@ -13,7 +13,7 @@ namespace Microsoft.Bot.Builder.Ai
     /// </summary>
     public class LocaleConverterMiddleware : IMiddleware
     {
-        private ILocaleConverter _localeConverter; 
+        private readonly ILocaleConverter _localeConverter; 
         private readonly string _toLocale;
         private readonly Func<ITurnContext, string> _getUserLocale;
         private readonly Func<ITurnContext, Task<bool>> _setUserLocale;
@@ -28,12 +28,12 @@ namespace Microsoft.Bot.Builder.Ai
         /// <param name="localeConverter">An ILocaleConverter instance</param>
         public LocaleConverterMiddleware(Func<ITurnContext, string> getUserLocale, Func<ITurnContext, Task<bool>> checkUserLocaleChanged, string toLocale, ILocaleConverter localeConverter)
         {
-            this._localeConverter = localeConverter ?? throw new ArgumentNullException(nameof(localeConverter));
+            _localeConverter = localeConverter ?? throw new ArgumentNullException(nameof(localeConverter));
             if (string.IsNullOrEmpty(toLocale) || !localeConverter.IsLocaleAvailable(toLocale))
                 throw new ArgumentNullException(nameof(toLocale));
-            this._toLocale = toLocale;
-            this._getUserLocale = getUserLocale ?? throw new ArgumentNullException(nameof(getUserLocale)); 
-            this._setUserLocale = checkUserLocaleChanged ?? throw new ArgumentNullException(nameof(checkUserLocaleChanged));
+            _toLocale = toLocale;
+            _getUserLocale = getUserLocale ?? throw new ArgumentNullException(nameof(getUserLocale)); 
+            _setUserLocale = checkUserLocaleChanged ?? throw new ArgumentNullException(nameof(checkUserLocaleChanged));
         }
 
         /// <summary>
