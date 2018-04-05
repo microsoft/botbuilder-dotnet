@@ -24,10 +24,7 @@ namespace Microsoft.Bot.Builder.Azure
         private readonly string collectionId;
         private readonly DocumentClient client;
 
-        private static readonly ConnectionPolicy connectionPolicy = new ConnectionPolicy
-        {
-            UserAgentSuffix = "Microsoft-BotFramework 4.0.0"
-        };
+        private const string UserAgentSuffix = "Microsoft-BotFramework 4.0.0";
 
         private static JsonSerializer jsonSerializer = JsonSerializer.Create(new JsonSerializerSettings()
         {
@@ -42,7 +39,7 @@ namespace Microsoft.Bot.Builder.Azure
         /// <param name="authKey">The AuthKey used by the client from the Azure Cosmos DB service.</param>
         /// <param name="databaseId">The Database ID.</param>
         /// <param name="collectionId">The Collection ID.</param>
-        public CosmosDbSqlStorage(Uri serviceEndpoint, string authKey, string databaseId, string collectionId)
+        public CosmosDbSqlStorage(Uri serviceEndpoint, string authKey, string databaseId, string collectionId, Action<ConnectionPolicy> connectionPolicyConfigurator = null)
         {
             if (serviceEndpoint == null)
             {
@@ -66,6 +63,13 @@ namespace Microsoft.Bot.Builder.Azure
 
             this.databaseId = databaseId;
             this.collectionId = collectionId;
+
+            var connectionPolicy = new ConnectionPolicy()
+            {
+                UserAgentSuffix = UserAgentSuffix
+            };
+
+            connectionPolicyConfigurator?.Invoke(connectionPolicy);
 
             this.client = new DocumentClient(serviceEndpoint, authKey, connectionPolicy);
             this.client.CreateDatabaseIfNotExistsAsync(new Database { Id = databaseId })
