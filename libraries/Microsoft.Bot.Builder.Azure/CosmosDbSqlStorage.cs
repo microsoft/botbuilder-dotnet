@@ -137,6 +137,8 @@ namespace Microsoft.Bot.Builder.Azure
         {
             foreach (var change in changes)
             {
+                var json = JObject.FromObject(change.Value, jsonSerializer);
+                json.Remove("eTag");
                 var documentChange = new DocumentStoreItem
                 {
                     Id = SanitizeKey(change.Key),
@@ -194,6 +196,9 @@ namespace Microsoft.Bot.Builder.Azure
 
             [JsonProperty("document")]
             public JObject Document { get; set; }
+
+            [JsonProperty("_etag")]
+            public string ETag { get; set; }
         }
     }
 }
