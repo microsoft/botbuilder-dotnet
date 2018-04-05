@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
+using Microsoft.Azure.Documents.Linq;
 using Microsoft.Bot.Builder.Core.Extensions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -101,27 +102,29 @@ namespace Microsoft.Bot.Builder.Azure
         public async Task<StoreItems> Read(params string[] keys)
         {
             var storeItems = new StoreItems();
-            foreach (string key in keys)
+
+            var parameterSequence = string.Join(",", Enumerable.Range(0, keys.Length).Select(i => $"@id{i}"));
+            var parameterValues = keys.Select((key, ix) => new SqlParameter($"@id{ix}", SanitizeKey(key)));
+            var querySpec = new SqlQuerySpec
             {
-                try
+                QueryText = $"SELECT * FROM c WHERE c.id in ({parameterSequence})",
+                Parameters = new SqlParameterCollection(parameterValues)
+            };
+
+            var uri = UriFactory.CreateDocumentCollectionUri(this.databaseId, this.collectionId);
+            var query = client.CreateDocumentQuery<DocumentStoreItem>(uri, querySpec).AsDocumentQuery();
+            while (query.HasMoreResults)
+            {
+                foreach (var doc in await query.ExecuteNextAsync<DocumentStoreItem>())
                 {
-                    var uri = UriFactory.CreateDocumentUri(this.databaseId, this.collectionId, SanitizeKey(key));
-                    var response = (await this.client.ReadDocumentAsync<DocumentStoreItem>(uri).ConfigureAwait(false));
-                    var doc = response.Document;
                     var item = doc.Document.ToObject(typeof(object), jsonSerializer);
                     if (item is IStoreItem storeItem)
                     {
-                        storeItem.eTag = response.ResponseHeaders["etag"];
+                        storeItem.eTag = doc.ETag;
                     }
 
-                    storeItems[key] = item;
-                }
-                catch (DocumentClientException e)
-                {
-                    if (e.StatusCode != HttpStatusCode.NotFound)
-                    {
-                        throw;
-                    }
+                    // doc.Id cannot be used since it is escaped, read it from RealId property instead
+                    storeItems[doc.ReadlId] = item;
                 }
             }
 
@@ -142,9 +145,9 @@ namespace Microsoft.Bot.Builder.Azure
                 var documentChange = new DocumentStoreItem
                 {
                     Id = SanitizeKey(change.Key),
-                    Document = JObject.FromObject(change.Value, jsonSerializer)
+                    ReadlId = change.Key,
+                    Document = json
                 };
-
 
                 string eTag = (change.Value as IStoreItem)?.eTag;
                 if (eTag == null || eTag == "*")
@@ -190,9 +193,17 @@ namespace Microsoft.Bot.Builder.Azure
 
         protected class DocumentStoreItem
         {
-
+            /// <summary>
+            /// Sanitized Id/Key an used as PrimaryKey
+            /// </summary>
             [JsonProperty("id")]
             public string Id { get; set; }
+
+            /// <summary>
+            /// Un-sanitized Id/Key
+            /// </summary>
+            [JsonProperty]
+            public string ReadlId { get; internal set; }
 
             [JsonProperty("document")]
             public JObject Document { get; set; }
