@@ -11,7 +11,7 @@ using System;
 namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 {
     /// <summary>
-    /// Extension class for bot integration with ASP.NET Core 2.0 projects.
+    /// Extension methods for <see cref="IApplicationBuilder"/> to add a Bot to the ASP.NET Core request execution pipeline.
     /// </summary>
     /// <seealso cref="BotFrameworkPaths"/>
     /// <seealso cref="BotFrameworkAdapter"/>
@@ -19,25 +19,26 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
     public static class ApplicationBuilderExtensions
     {
         /// <summary>
-        /// Initializes and adds a bot adapter to the HTTP request pipeline, using default endpoint paths for the bot.
+        /// Maps various endpoint handlers for the <see cref="ServiceCollectionExtensions.AddBot{TBot}(IServiceCollection, Action{BotFrameworkOptions})">registered bot</see> into the request execution pipeline.
         /// </summary>
-        /// <param name="applicationBuilder">The application builder for the ASP.NET application.</param>
-        /// <returns>The updated application builder.</returns>
-        /// <remarks>This method adds any middleware from the <see cref="BotFrameworkOptions"/> provided in the
-        /// <see cref="ServiceCollectionExtensions.AddBot{TBot}(IServiceCollection, Action{BotFrameworkOptions})"/>
-        /// method to the adapter.</remarks>
+        /// <param name="appicationBuilder">The <see cref="IApplicationBuilder"/>.</param>
+        /// <returns>A reference to this instance after the operation has completed.</returns>
+        /// <remarks>
+        ///     This maps the bot using a default set of endpoints. To control the exact paths you would
+        ///     prefer the bot's endpoints to be exposed at, use the <see cref="UseBotFramwork(IApplicationBuilder, Action{BotFrameworkPaths})"/> 
+        ///     overload instead.
+        /// </remarks>
         public static IApplicationBuilder UseBotFramework(this IApplicationBuilder applicationBuilder) =>
             applicationBuilder.UseBotFramework(paths => {});
 
         /// <summary>
-        /// Initializes and adds a bot adapter to the HTTP request pipeline, using custom endpoint paths for the bot.
+        /// Maps various endpoint handlers for the <see cref="ServiceCollectionExtensions.AddBot{TBot}(IServiceCollection, Action{BotFrameworkOptions})">registered bot</see> into the request execution pipeline.
         /// </summary>
-        /// <param name="applicationBuilder">The application builder for the ASP.NET application.</param>
-        /// <param name="configurePaths">Allows you to modify the endpoints for the bot.</param>
-        /// <returns>The updated application builder.</returns>
-        /// <remarks>This method adds any middleware from the <see cref="BotFrameworkOptions"/> provided in the
-        /// <see cref="ServiceCollectionExtensions.AddBot{TBot}(IServiceCollection, Action{BotFrameworkOptions})"/>
-        /// method to the adapter.</remarks>
+        /// <param name="appicationBuilder">The <see cref="IApplicationBuilder"/>.</param>
+        /// <param name="configurePaths">A callback to configure the paths that determine where the endpoints of the bot will be exposed.</param>
+        /// <returns>A reference to this instance after the operation has completed.</returns>
+        /// <seealso cref="ServiceCollectionExtensions.AddBot{TBot}(IServiceCollection, Action{BotFrameworkOptions})"/>
+        /// <seealso cref="BotFrameworkPaths"/>
         public static IApplicationBuilder UseBotFramework(this IApplicationBuilder applicationBuilder, Action<BotFrameworkPaths> configurePaths)
         {
             if (applicationBuilder == null)
