@@ -111,12 +111,26 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             }
         }
 
+        // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
         [TestMethod]
         public async Task DocumentDb_TypedSerialization()
         {
             if (CheckEmulator())
             {
                 await base._typedSerialization(this.storage);
+            }
+        }
+
+        // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
+        [TestMethod]
+        public void DocumentDb_ConnectionPolicyConfiguratorShouldBeCalled()
+        {
+            if (CheckEmulator())
+            {
+                ConnectionPolicy policyRef = null;
+                new CosmosDbSqlStorage(new Uri(CosmosServiceEndpoint), CosmosAuthKey, CosmosDatabaseName, CosmosCollectionName, (ConnectionPolicy policy) => policyRef = policy);
+
+                Assert.IsNotNull(policyRef, "ConnectionPolicy configurator was not called.");
             }
         }
 
