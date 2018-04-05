@@ -214,8 +214,6 @@ namespace Microsoft.Bot.Builder.Core.State
             public FileSystemStateStorageEntry(string stateNamespace, string key, string filePath, JObject data) : this(stateNamespace, key, filePath)
             {
                 _data = data ?? throw new ArgumentNullException(nameof(data));
-
-                ETag = data.Value<JObject>("@@botFramework").Value<string>("eTag");
             }
 
             public string FilePath { get; }
@@ -228,20 +226,12 @@ tryAgain:
                 {
                     using (var fileStream = new FileStream(FilePath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None, bufferSize: 8192, options: FileOptions.Asynchronous | FileOptions.RandomAccess))
                     {
-                        if (fileStream.Length > 0)
-                        {
-                            await EnusureETagsMatch(fileStream);
-                        }
-
-                        fileStream.Position = 0;
-
                         _data = RawValue != null ? JObject.FromObject(RawValue) : new JObject();
 
                         _data["@@botFramework"] = new JObject()
                         {
                             ["rawNamespace"] = Namespace,
                             ["rawKey"] = Key,
-                            ["eTag"] = Guid.NewGuid().ToString("N")
                         };
 
                         using (var textWriter = new StreamWriter(fileStream, Encoding.UTF8))
@@ -265,69 +255,6 @@ tryAgain:
                     Directory.CreateDirectory(Path.GetDirectoryName(FilePath));
 
                     goto tryAgain;
-                }
-            }
-
-            private async Task EnusureETagsMatch(FileStream fileStream)
-            {
-                /* {
-                 *  "@@botFramework"
-                 *  {
-                 *     "eTag": "value"
-                 *  }
-                 * }
-                 */
-
-                using (var textReader = new StreamReader(fileStream, Encoding.UTF8, detectEncodingFromByteOrderMarks: false, bufferSize: 8192, leaveOpen: true))
-                using (var jsonReader = new JsonTextReader(textReader))
-                {
-                    // Read state StartObject
-                    if (!(await jsonReader.ReadAsync())
-                            ||
-                        jsonReader.TokenType != JsonToken.StartObject)
-                    {
-                        return;
-                    }
-
-                    while (await jsonReader.ReadAsync())
-                    {
-                        // Look for the bot framework metadata property
-                        if (jsonReader.TokenType == JsonToken.PropertyName
-                                &&
-                            (string)jsonReader.Value == "@@botFramework")
-                        {
-                            // Read bot framework framework metadata StartObject
-                            if (!(await jsonReader.ReadAsync())
-                                    ||
-                                 jsonReader.TokenType != JsonToken.StartObject)
-                            {
-                                return;
-                            }
-
-                            while (await jsonReader.ReadAsync())
-                            {
-                                // Look for the eTag property
-                                if (jsonReader.TokenType == JsonToken.PropertyName
-                                        &&
-                                    (string)jsonReader.Value == "eTag")
-                                {
-                                    var fileETag = await jsonReader.ReadAsStringAsync();
-
-                                    // If the ETags don't match, then we've run into an optimistic concurrency violation
-                                    if (ETag != fileETag)
-                                    {
-                                        throw new StateOptimisticConcurrencyViolationException($"An optimistic concurrency violation occurred when trying to save new state for: PartitionKey={Namespace};Key={Key}. The original ETag value was {ETag}, but the current ETag value is {fileETag}.");;
-                                    }
-
-                                    return;
-                                }
-
-                                await jsonReader.SkipAsync();
-                            }
-                        }
-
-                        await jsonReader.SkipAsync();
-                    }
                 }
             }
 
