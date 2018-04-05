@@ -245,7 +245,7 @@ namespace Microsoft.Bot.Builder.LUIS.Tests
 
         private bool EnvironmentVariablesDefined()
         {
-            return _luisAppId != null && _subscriptionKey != null && _luisUriBase == null;
+            return _luisAppId != null && _subscriptionKey != null && _luisUriBase != null;
         }
 
         private IRecognizer GetLuisRecognizer(bool verbose = false, ILuisOptions luisOptions = null)
