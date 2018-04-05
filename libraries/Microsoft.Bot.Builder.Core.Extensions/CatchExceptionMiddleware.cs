@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions
             _handler = callOnException;
         }
 
-        public async Task OnProcessRequest(ITurnContext context, MiddlewareSet.NextDelegate next)
+        public async Task OnTurn(ITurnContext context, MiddlewareSet.NextDelegate next)
         {
             try
             {
