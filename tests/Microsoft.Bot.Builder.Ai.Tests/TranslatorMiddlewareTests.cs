@@ -69,6 +69,31 @@ namespace Microsoft.Bot.Builder.Ai.Tests
                 .StartTest();
         }
 
+        [TestMethod]
+        [TestCategory("AI")]
+        [TestCategory("Translator")]
+        public async Task TranslatorMiddleware_TranslateFrenchToEnglishToUserLanguage()
+        {
+
+            TestAdapter adapter = new TestAdapter()
+                .Use(new UserState<LanguageState>(new MemoryStorage()))
+                .Use(new TranslationMiddleware(new string[] { "en-us" }, translatorKey, new Dictionary<string, List<string>>(), GetActiveLanguage, SetActiveLanguage,true));
+
+            await new TestFlow(adapter, (context) =>
+            {
+                if (!context.Responded)
+                {
+                    context.SendActivity(context.Activity.AsMessageActivity().Text);
+                }
+                return Task.CompletedTask;
+            })
+            .Send("set my language to fr")
+                .AssertReply("Changing your language to fr")
+            .Send("salut")
+                .AssertReply("Salut")
+                .StartTest();
+        }
+
         private void SetLanguage(ITurnContext context, string language) =>context.GetUserState<LanguageState>().Language = language ; 
        
         protected async Task<bool> SetActiveLanguage(ITurnContext context)

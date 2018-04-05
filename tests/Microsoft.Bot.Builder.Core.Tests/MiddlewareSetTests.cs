@@ -439,6 +439,8 @@ namespace Microsoft.Bot.Builder.Core.Tests
                 Called = true;
                 return next();
             }
+
+
         }
 
         public class DoNotCallNextMiddleware : IMiddleware
@@ -454,6 +456,8 @@ namespace Microsoft.Bot.Builder.Core.Tests
                 // DO NOT call NEXT
                 return Task.CompletedTask;
             }
+
+ 
         }
 
         public class CallMeMiddlware : IMiddleware
@@ -468,6 +472,7 @@ namespace Microsoft.Bot.Builder.Core.Tests
                 _callMe();
                 return next();
             }
+
         }
     }
 }

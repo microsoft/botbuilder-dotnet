@@ -56,5 +56,6 @@ namespace Microsoft.Bot.Builder.Core.Tests
             Calls++;
             await next();
         }
+
     }
 }
