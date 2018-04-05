@@ -7,8 +7,6 @@
 
     public class UserStateManager : StateManager, IUserStateManager
     {
-        public static string PreferredStateStoreName = $"{nameof(UserStateManager)}.PreferredStateStore";
-
         public UserStateManager(string userId, IStateStorageProvider stateStore) : base(BuildStateNamespace(userId), stateStore)
         {
             UserId = userId ?? throw new System.ArgumentNullException(nameof(userId));
@@ -16,8 +14,24 @@
 
         public string UserId { get; }
 
-        public static string BuildStateNamespace(string userId) => $"/users/{userId}";
+        public static string BuildStateNamespace(string userId)
+        {
+            if (string.IsNullOrEmpty(userId))
+            {
+                throw new System.ArgumentException("Expected non-null/empty value.", nameof(userId));
+            }
 
-        public static string BuildStateNamespace(ITurnContext turnContext) => BuildStateNamespace(turnContext.Activity.From.Id);
+            return $"/users/{userId}";
+        }
+
+        public static string BuildStateNamespace(ITurnContext turnContext)
+        {
+            if (turnContext == null)
+            {
+                throw new System.ArgumentNullException(nameof(turnContext));
+            }
+
+            return BuildStateNamespace(turnContext.Activity.From.Id);
+        }
     }
 }

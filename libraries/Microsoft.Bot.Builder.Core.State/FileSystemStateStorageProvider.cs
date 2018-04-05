@@ -22,6 +22,11 @@ namespace Microsoft.Bot.Builder.Core.State
 
         public FileSystemStateStorageProvider(string basePath)
         {
+            if (string.IsNullOrEmpty(basePath))
+            {
+                throw new ArgumentException("Expected non-null/empty value.", nameof(basePath));
+            }
+
             _basePath = basePath;
         }
 
@@ -197,7 +202,7 @@ namespace Microsoft.Bot.Builder.Core.State
             }
         }
 
-        private sealed class FileSystemStateStorageEntry : DeferredValueStateStorageEntry
+        internal sealed class FileSystemStateStorageEntry : DeferredValueStateStorageEntry
         {
             private JObject _data;
 
@@ -217,7 +222,8 @@ namespace Microsoft.Bot.Builder.Core.State
 
             public async Task WriteToFile()
             {
-                tryAgain:
+                int retryCount = 0;
+tryAgain:
                 try
                 {
                     using (var fileStream = new FileStream(FilePath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None, bufferSize: 8192, options: FileOptions.Asynchronous | FileOptions.RandomAccess))
@@ -245,8 +251,17 @@ namespace Microsoft.Bot.Builder.Core.State
                         }
                     }
                 }
-                catch (DirectoryNotFoundException)
+                catch (DirectoryNotFoundException directoryNotFoundException)
                 {
+                    // TODO: this should be logged
+
+                    retryCount++;
+
+                    if (retryCount == 10)
+                    {
+                        throw new Exception("Failed to create a directory that corresponds to the state namespace after {retryCount} tries. Please check the inner exception for more details.", directoryNotFoundException);
+                    }
+
                     Directory.CreateDirectory(Path.GetDirectoryName(FilePath));
 
                     goto tryAgain;
