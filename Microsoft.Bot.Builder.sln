@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27130.2027
+VisualStudioVersion = 15.0.26730.12
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{4269F3C3-6B42-419B-B64A-3E6DC0F1574A}"
 EndProject
@@ -89,6 +89,12 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Ai.Translation.Tests", "tests\Microsoft.Bot.Builder.Ai.Translation.Tests\Microsoft.Bot.Builder.Ai.Translation.Tests.csproj", "{9C09FAB4-AB0B-49BB-8D51-3B0B86D95E8E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AI", "AI", "{763168FA-A590-482C-84D8-2922F7ADB1A2}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Dialogs", "libraries\Microsoft.Bot.Builder.Dialogs\Microsoft.Bot.Builder.Dialogs.csproj", "{0F639EB4-FB64-4909-8A10-FB93E7BE3AFB}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Samples.Dialog.Prompts", "samples\MIcrosoft.Bot.Samples.Dialog.Prompts\Microsoft.Bot.Samples.Dialog.Prompts.csproj", "{B71A123F-09FE-45D7-9644-4EE3E1E221AE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Builder.Dialogs.Tests", "Microsoft.Bot.Builder.Dialogs.Tests\Microsoft.Bot.Builder.Dialogs.Tests.csproj", "{69A0561E-9F65-4278-972A-1E0248CD38A0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -302,6 +308,18 @@ Global
 		{9C09FAB4-AB0B-49BB-8D51-3B0B86D95E8E}.Documentation|Any CPU.ActiveCfg = Documentation|Any CPU
 		{9C09FAB4-AB0B-49BB-8D51-3B0B86D95E8E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9C09FAB4-AB0B-49BB-8D51-3B0B86D95E8E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0F639EB4-FB64-4909-8A10-FB93E7BE3AFB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0F639EB4-FB64-4909-8A10-FB93E7BE3AFB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0F639EB4-FB64-4909-8A10-FB93E7BE3AFB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0F639EB4-FB64-4909-8A10-FB93E7BE3AFB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B71A123F-09FE-45D7-9644-4EE3E1E221AE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B71A123F-09FE-45D7-9644-4EE3E1E221AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B71A123F-09FE-45D7-9644-4EE3E1E221AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B71A123F-09FE-45D7-9644-4EE3E1E221AE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{69A0561E-9F65-4278-972A-1E0248CD38A0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{69A0561E-9F65-4278-972A-1E0248CD38A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{69A0561E-9F65-4278-972A-1E0248CD38A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{69A0561E-9F65-4278-972A-1E0248CD38A0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -348,6 +366,9 @@ Global
 		{D9B2EF5D-0515-460F-948A-2BB70C8DCF62} = {763168FA-A590-482C-84D8-2922F7ADB1A2}
 		{9C09FAB4-AB0B-49BB-8D51-3B0B86D95E8E} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 		{763168FA-A590-482C-84D8-2922F7ADB1A2} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
+		{0F639EB4-FB64-4909-8A10-FB93E7BE3AFB} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
+		{B71A123F-09FE-45D7-9644-4EE3E1E221AE} = {3ADFB27A-95FA-4330-B211-1D66A29A17AB}
+		{69A0561E-9F65-4278-972A-1E0248CD38A0} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7173C9F3-A7F9-496E-9078-9156E35D6E16}
