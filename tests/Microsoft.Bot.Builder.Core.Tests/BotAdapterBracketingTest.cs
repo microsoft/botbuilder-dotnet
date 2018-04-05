@@ -89,7 +89,8 @@ namespace Microsoft.Bot.Builder.Core.Tests
                 }
 
                 await context.SendActivity(context.Activity.CreateReply("AFTER"));
-            }            
+            }
+
         }
 
         public class BeforeAFterMiddlware : IMiddleware
@@ -100,6 +101,7 @@ namespace Microsoft.Bot.Builder.Core.Tests
                 await next();
                 await context.SendActivity(context.Activity.CreateReply("AFTER"));
             }
+
         }
     }
 }

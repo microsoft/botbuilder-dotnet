@@ -68,5 +68,6 @@ namespace Microsoft.Bot.Builder
                 context,
                 () => ReceiveActivityInternal(context, callback, nextMiddlewareIndex + 1));
         }
+
     }
 }
