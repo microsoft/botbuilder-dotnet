@@ -14,16 +14,16 @@ namespace Microsoft.Bot.Builder.Core.State
         {
         }
 
-        public IStateStorageEntry CreateNewEntry(string partitionKey, string key) => new StateStorageEntry(partitionKey, key);
+        public IStateStorageEntry CreateNewEntry(string stateNamespace, string key) => new StateStorageEntry(stateNamespace, key);
 
-        public Task<IEnumerable<IStateStorageEntry>> Load(string partitionKey)
+        public Task<IEnumerable<IStateStorageEntry>> Load(string stateNamespace)
         {
-            if (partitionKey == null)
+            if (string.IsNullOrEmpty(stateNamespace))
             {
-                throw new ArgumentNullException(nameof(partitionKey));
+                throw new ArgumentException("Expected a non-null/empty value.", nameof(stateNamespace));
             }
 
-            if (_store.TryGetValue(partitionKey, out var entriesForPartion))
+            if (_store.TryGetValue(stateNamespace, out var entriesForPartion))
             {
                 return Task.FromResult(entriesForPartion.Select(kvp => kvp.Value));
             }
@@ -31,11 +31,11 @@ namespace Microsoft.Bot.Builder.Core.State
             return Task.FromResult(Enumerable.Empty<IStateStorageEntry>());
         }
 
-        public Task<IStateStorageEntry> Load(string partitionKey, string key)
+        public Task<IStateStorageEntry> Load(string stateNamespace, string key)
         {
-            if (partitionKey == null)
+            if (stateNamespace == null)
             {
-                throw new ArgumentNullException(nameof(partitionKey));
+                throw new ArgumentNullException(nameof(stateNamespace));
             }
 
             if (key == null)
@@ -43,7 +43,7 @@ namespace Microsoft.Bot.Builder.Core.State
                 throw new ArgumentNullException(nameof(key));
             }
 
-            if (_store.TryGetValue(partitionKey, out var entriesForPartion))
+            if (_store.TryGetValue(stateNamespace, out var entriesForPartion))
             {
                 if (entriesForPartion.TryGetValue(key, out var entry))
                 {
@@ -54,14 +54,14 @@ namespace Microsoft.Bot.Builder.Core.State
             return Task.FromResult(default(IStateStorageEntry));
         }
 
-        public Task<IEnumerable<IStateStorageEntry>> Load(string partitionKey, IEnumerable<string> keys)
+        public Task<IEnumerable<IStateStorageEntry>> Load(string stateNamespace, IEnumerable<string> keys)
         {
-            if (partitionKey == null)
+            if (stateNamespace == null)
             {
-                throw new ArgumentNullException(nameof(partitionKey));
+                throw new ArgumentNullException(nameof(stateNamespace));
             }
 
-            if (_store.TryGetValue(partitionKey, out var entriesForPartion))
+            if (_store.TryGetValue(stateNamespace, out var entriesForPartion))
             {
                 var results = new List<IStateStorageEntry>(entriesForPartion.Count);
 
@@ -79,18 +79,18 @@ namespace Microsoft.Bot.Builder.Core.State
             return Task.FromResult(Enumerable.Empty<IStateStorageEntry>());
         }
 
-        public Task Save(string partitionKey, IEnumerable<KeyValuePair<string, object>> values)
+        public Task Save(string stateNamespace, IEnumerable<KeyValuePair<string, object>> values)
         {
-            if (partitionKey == null)
+            if (stateNamespace == null)
             {
-                throw new ArgumentNullException(nameof(partitionKey));
+                throw new ArgumentNullException(nameof(stateNamespace));
             }
 
-            var entriesForPartition = _store.GetOrAdd(partitionKey, pk => new ConcurrentDictionary<string, IStateStorageEntry>());
+            var entriesForPartition = _store.GetOrAdd(stateNamespace, pk => new ConcurrentDictionary<string, IStateStorageEntry>());
 
             foreach (var entry in values)
             {
-                var newStateStorageEntry = new StateStorageEntry(partitionKey, entry.Key, entry.Value);
+                var newStateStorageEntry = new StateStorageEntry(stateNamespace, entry.Key, entry.Value);
 
                 entriesForPartition.AddOrUpdate(
                     entry.Key,
@@ -131,16 +131,16 @@ namespace Microsoft.Bot.Builder.Core.State
             return Task.CompletedTask;
         }
 
-        public Task Delete(string partitionKey)
+        public Task Delete(string stateNamespace)
         {
-            _store.TryRemove(partitionKey, out _);
+            _store.TryRemove(stateNamespace, out _);
 
             return Task.CompletedTask;
         }
 
-        public Task Delete(string partitionKey, string key)
+        public Task Delete(string stateNamespace, string key)
         {
-            if (_store.TryGetValue(partitionKey, out var entriesForPartition))
+            if (_store.TryGetValue(stateNamespace, out var entriesForPartition))
             {
                 entriesForPartition.TryRemove(key, out _);
             }
@@ -148,9 +148,9 @@ namespace Microsoft.Bot.Builder.Core.State
             return Task.CompletedTask;
         }
 
-        public Task Delete(string partitionKey, IEnumerable<string> keys)
+        public Task Delete(string stateNamespace, IEnumerable<string> keys)
         {
-            if (_store.TryGetValue(partitionKey, out var entriesForPartition))
+            if (_store.TryGetValue(stateNamespace, out var entriesForPartition))
             {
                 foreach (string key in keys)
                 {
