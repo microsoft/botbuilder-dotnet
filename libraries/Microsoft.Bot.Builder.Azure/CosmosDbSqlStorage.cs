@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Azure.Documents;
@@ -13,21 +12,20 @@ using Microsoft.Azure.Documents.Linq;
 using Microsoft.Bot.Builder.Core.Extensions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Serialization;
 
 namespace Microsoft.Bot.Builder.Azure
 {
     /// <summary>
-    /// Models IStorage around a CosmosDB SQL (DocumentDB)
+    /// Models IStorage around CosmosDB SQL (DocumentDB)
     /// </summary>
     public class CosmosDbSqlStorage : IStorage
     {
-        private readonly string databaseId;
-        private readonly string collectionId;
-        private readonly DocumentClient client;
+        private readonly string _databaseId;
+        private readonly string _collectionId;
+        private readonly DocumentClient _client;
 
-        private const string UserAgentSuffix = "Microsoft-BotFramework 4.0.0";
-
-        private static JsonSerializer jsonSerializer = JsonSerializer.Create(new JsonSerializerSettings()
+        private static JsonSerializer _jsonSerializer = JsonSerializer.Create(new JsonSerializerSettings()
         {
             TypeNameHandling = TypeNameHandling.All
         });
@@ -62,21 +60,22 @@ namespace Microsoft.Bot.Builder.Azure
                 throw new ArgumentException("CollectionId is required.", nameof(collectionId));
             }
 
-            this.databaseId = databaseId;
-            this.collectionId = collectionId;
+            _databaseId = databaseId;
+            _collectionId = collectionId;
 
+            var version = GetType().Assembly.GetName().Version;
             var connectionPolicy = new ConnectionPolicy()
             {
-                UserAgentSuffix = UserAgentSuffix
+                UserAgentSuffix = $"Microsoft-BotFramework {version}"
             };
 
             connectionPolicyConfigurator?.Invoke(connectionPolicy);
 
-            this.client = new DocumentClient(serviceEndpoint, authKey, connectionPolicy);
-            this.client.CreateDatabaseIfNotExistsAsync(new Database { Id = databaseId })
+            _client = new DocumentClient(serviceEndpoint, authKey, connectionPolicy);
+            _client.CreateDatabaseIfNotExistsAsync(new Database { Id = databaseId })
                 .Wait();
 
-            this.client.CreateDocumentCollectionIfNotExistsAsync(UriFactory.CreateDatabaseUri(databaseId), new DocumentCollection { Id = collectionId })
+            _client.CreateDocumentCollectionIfNotExistsAsync(UriFactory.CreateDatabaseUri(databaseId), new DocumentCollection { Id = collectionId })
                 .Wait();
         }
 
@@ -88,8 +87,8 @@ namespace Microsoft.Bot.Builder.Azure
         public async Task Delete(params string[] keys)
         {
             var tasks = keys.Select(key =>
-                this.client.DeleteDocumentAsync(
-                    UriFactory.CreateDocumentUri(this.databaseId, this.collectionId, SanitizeKey(key))));
+                _client.DeleteDocumentAsync(
+                    UriFactory.CreateDocumentUri(_databaseId, _collectionId, SanitizeKey(key))));
 
             await Task.WhenAll(tasks).ConfigureAwait(false);
         }
@@ -101,23 +100,28 @@ namespace Microsoft.Bot.Builder.Azure
         /// <returns>A <see cref="StoreItems"/> instance.</returns>
         public async Task<StoreItems> Read(params string[] keys)
         {
+            if (keys.Length == 0)
+            {
+                throw new ArgumentException("Please provide at least one key to read from storage", nameof(keys));
+            }
+
             var storeItems = new StoreItems();
 
             var parameterSequence = string.Join(",", Enumerable.Range(0, keys.Length).Select(i => $"@id{i}"));
             var parameterValues = keys.Select((key, ix) => new SqlParameter($"@id{ix}", SanitizeKey(key)));
             var querySpec = new SqlQuerySpec
             {
-                QueryText = $"SELECT * FROM c WHERE c.id in ({parameterSequence})",
+                QueryText = $"SELECT c.id, c.realId, c.document, c._etag FROM c WHERE c.id in ({parameterSequence})",
                 Parameters = new SqlParameterCollection(parameterValues)
             };
 
-            var uri = UriFactory.CreateDocumentCollectionUri(this.databaseId, this.collectionId);
-            var query = client.CreateDocumentQuery<DocumentStoreItem>(uri, querySpec).AsDocumentQuery();
+            var uri = UriFactory.CreateDocumentCollectionUri(_databaseId, _collectionId);
+            var query = _client.CreateDocumentQuery<DocumentStoreItem>(uri, querySpec).AsDocumentQuery();
             while (query.HasMoreResults)
             {
                 foreach (var doc in await query.ExecuteNextAsync<DocumentStoreItem>())
                 {
-                    var item = doc.Document.ToObject(typeof(object), jsonSerializer);
+                    var item = doc.Document.ToObject(typeof(object), _jsonSerializer);
                     if (item is IStoreItem storeItem)
                     {
                         storeItem.eTag = doc.ETag;
@@ -138,9 +142,14 @@ namespace Microsoft.Bot.Builder.Azure
         /// <returns></returns>
         public async Task Write(StoreItems changes)
         {
+            if (changes == null)
+            {
+                throw new ArgumentNullException(nameof(changes), "Please provide a StoreItems with the changes to persist.");
+            }
+
             foreach (var change in changes)
             {
-                var json = JObject.FromObject(change.Value, jsonSerializer);
+                var json = JObject.FromObject(change.Value, _jsonSerializer);
                 json.Remove("eTag");
                 var documentChange = new DocumentStoreItem
                 {
@@ -152,15 +161,15 @@ namespace Microsoft.Bot.Builder.Azure
                 string eTag = (change.Value as IStoreItem)?.eTag;
                 if (eTag == null || eTag == "*")
                 {
-                    var uri = UriFactory.CreateDocumentCollectionUri(this.databaseId, this.collectionId);
-                    await this.client.UpsertDocumentAsync(uri, documentChange, disableAutomaticIdGeneration: true).ConfigureAwait(false);
+                    var uri = UriFactory.CreateDocumentCollectionUri(_databaseId, _collectionId);
+                    await _client.UpsertDocumentAsync(uri, documentChange, disableAutomaticIdGeneration: true).ConfigureAwait(false);
                 }
                 else if (eTag.Length > 0)
                 {
                     // Optimistic Update
-                    var uri = UriFactory.CreateDocumentUri(this.databaseId, this.collectionId, documentChange.Id);
+                    var uri = UriFactory.CreateDocumentUri(_databaseId, _collectionId, documentChange.Id);
                     var ac = new AccessCondition { Condition = eTag, Type = AccessConditionType.IfMatch };
-                    await this.client.ReplaceDocumentAsync(uri, documentChange, new RequestOptions { AccessCondition = ac }).ConfigureAwait(false);
+                    await _client.ReplaceDocumentAsync(uri, documentChange, new RequestOptions { AccessCondition = ac }).ConfigureAwait(false);
                 }
                 else
                 {
@@ -169,7 +178,7 @@ namespace Microsoft.Bot.Builder.Azure
             }
         }
 
-        private static Lazy<Dictionary<char, string>> badChars = new Lazy<Dictionary<char, string>>(() =>
+        private static Lazy<Dictionary<char, string>> _badChars = new Lazy<Dictionary<char, string>>(() =>
         {
             char[] badChars = new char[] { '\\', '?', '/', '#', ' ' };
             var dict = new Dictionary<char, string>();
@@ -183,7 +192,7 @@ namespace Microsoft.Bot.Builder.Azure
             StringBuilder sb = new StringBuilder();
             foreach (char ch in key)
             {
-                if (badChars.Value.TryGetValue(ch, out string val))
+                if (_badChars.Value.TryGetValue(ch, out string val))
                     sb.Append(val);
                 else
                     sb.Append(ch);
@@ -202,7 +211,7 @@ namespace Microsoft.Bot.Builder.Azure
             /// <summary>
             /// Un-sanitized Id/Key
             /// </summary>
-            [JsonProperty]
+            [JsonProperty("realId")]
             public string ReadlId { get; internal set; }
 
             [JsonProperty("document")]

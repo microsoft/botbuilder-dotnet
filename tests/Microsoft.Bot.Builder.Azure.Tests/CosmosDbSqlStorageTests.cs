@@ -17,20 +17,21 @@ namespace Microsoft.Bot.Builder.Azure.Tests
     [TestCategory("Storage - CosmosDB SQL")]
     public class CosmosDbSqlStorageTests : StorageBaseTests
     {
+        // Endpoint and Authkey for the CosmosDB Emulator running locally
         private const string CosmosServiceEndpoint = "https://localhost:8081";
         private const string CosmosAuthKey = "C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==";
         private const string CosmosDatabaseName = "BotSqlStorage";
         private const string CosmosCollectionName = "botstorage";
 
-        private static string emulatorPath = Environment.ExpandEnvironmentVariables(@"%ProgramFiles%\Azure Cosmos DB Emulator\CosmosDB.Emulator.exe");
-        private const string noEmulatorMessage = "This test requires CosmosDB Emulator! go to https://aka.ms/documentdb-emulator-docs to download and install.";
-        private static Lazy<bool> hasEmulator = new Lazy<bool>(() =>
+        private static string _emulatorPath = Environment.ExpandEnvironmentVariables(@"%ProgramFiles%\Azure Cosmos DB Emulator\CosmosDB.Emulator.exe");
+        private const string _noEmulatorMessage = "This test requires CosmosDB Emulator! go to https://aka.ms/documentdb-emulator-docs to download and install.";
+        private static Lazy<bool> _hasEmulator = new Lazy<bool>(() =>
         {
-            if (File.Exists(emulatorPath))
+            if (File.Exists(_emulatorPath))
             {
                 Process p = new Process();
                 p.StartInfo.UseShellExecute = true;
-                p.StartInfo.FileName = emulatorPath;
+                p.StartInfo.FileName = _emulatorPath;
                 p.StartInfo.Arguments = "/GetStatus";
                 p.Start();
                 p.WaitForExit();
@@ -40,21 +41,21 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             return false;
         });
 
-        private IStorage storage;
+        private IStorage _storage;
 
         [TestInitialize]
         public void TestInit()
         {
-            if (hasEmulator.Value)
+            if (_hasEmulator.Value)
             {
-                storage = new CosmosDbSqlStorage(new Uri(CosmosServiceEndpoint), CosmosAuthKey, CosmosDatabaseName, CosmosCollectionName);
+                _storage = new CosmosDbSqlStorage(new Uri(CosmosServiceEndpoint), CosmosAuthKey, CosmosDatabaseName, CosmosCollectionName);
             }
         }
 
         [TestCleanup]
         public async Task TestCleanUp()
         {
-            if (storage != null)
+            if (_storage != null)
             {
                 var client = new DocumentClient(new Uri(CosmosServiceEndpoint), CosmosAuthKey);
                 await client.DeleteDatabaseAsync(UriFactory.CreateDatabaseUri(CosmosDatabaseName)).ConfigureAwait(false);
@@ -67,7 +68,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             if (CheckEmulator())
             {
-                await base._createObjectTest(storage);
+                await base._createObjectTest(_storage);
             }
         }
 
@@ -77,7 +78,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             if (CheckEmulator())
             {
-                await base._readUnknownTest(storage);
+                await base._readUnknownTest(_storage);
             }
         }
 
@@ -87,7 +88,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             if (CheckEmulator())
             {
-                await base._updateObjectTest(storage);
+                await base._updateObjectTest(_storage);
             }
         }
 
@@ -97,7 +98,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             if (CheckEmulator())
             {
-                await base._deleteObjectTest(storage);
+                await base._deleteObjectTest(_storage);
             }
         }
 
@@ -107,7 +108,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             if (CheckEmulator())
             {
-                await base._handleCrazyKeys(storage);
+                await base._handleCrazyKeys(_storage);
             }
         }
 
@@ -117,7 +118,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             if (CheckEmulator())
             {
-                await base._typedSerialization(this.storage);
+                await base._typedSerialization(_storage);
             }
         }
 
@@ -134,14 +135,34 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             }
         }
 
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public async Task DocumentDb_ReadingEmptyKeys_Throws()
+        {
+            if (CheckEmulator())
+            {
+                await _storage.Read();
+            }
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public async Task DocumentDb_WrittingNullStoreItems_Throws()
+        {
+            if (CheckEmulator())
+            {
+                await _storage.Write(null);
+            }
+        }
+
         public bool CheckEmulator()
         {
-            if (!hasEmulator.Value)
-                Debug.WriteLine(noEmulatorMessage);
+            if (!_hasEmulator.Value)
+                Debug.WriteLine(_noEmulatorMessage);
             if (Debugger.IsAttached)
-                Assert.IsTrue(hasEmulator.Value, noEmulatorMessage);
+                Assert.IsTrue(_hasEmulator.Value, _noEmulatorMessage);
 
-            return hasEmulator.Value;
+            return _hasEmulator.Value;
         }
     }
 }
