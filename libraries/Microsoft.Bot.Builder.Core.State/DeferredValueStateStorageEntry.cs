@@ -9,10 +9,6 @@
 
         }
 
-        public DeferredValueStateStorageEntry(string stateNamespace, string key, string eTag) : base(stateNamespace, key, eTag)
-        {
-        }
-
         public override T GetValue<T>()
         {
             if (_isValueMaterialized)

@@ -97,8 +97,6 @@ namespace Microsoft.Bot.Builder.Core.State
                     newStateStorageEntry,
                     (key, existingStateStorageEntry) =>
                     {
-                        ThrowIfStateStorageEntryETagMismatch(newStateStorageEntry, existingStateStorageEntry);
-
                         return newStateStorageEntry;
                     });
             }
@@ -119,12 +117,7 @@ namespace Microsoft.Bot.Builder.Core.State
                         throw new InvalidOperationException($"Only instances of {nameof(StateStorageEntry)} are supported by {nameof(MemoryStateStorageProvider)}.");
                     }
 
-                    if (entriesForPartition.TryGetValue(stateStorageEntry.Key, out var existingEntry))
-                    {
-                        ThrowIfStateStorageEntryETagMismatch(stateStorageEntry, existingEntry);
-                    }
-
-                    entriesForPartition[stateStorageEntry.Key] = new StateStorageEntry(stateStorageEntry.Namespace, stateStorageEntry.Key, Guid.NewGuid().ToString("N"), stateStorageEntry.RawValue);
+                    entriesForPartition[stateStorageEntry.Key] = new StateStorageEntry(stateStorageEntry.Namespace, stateStorageEntry.Key, stateStorageEntry.RawValue);
                 }
             }
 
@@ -160,17 +153,5 @@ namespace Microsoft.Bot.Builder.Core.State
 
             return Task.CompletedTask;
         }
-
-        private static void ThrowIfStateStorageEntryETagMismatch(IStateStorageEntry newEntry, IStateStorageEntry existingEntry)
-        {
-            if (!Object.ReferenceEquals(newEntry, existingEntry))
-            {
-                if (newEntry.ETag != existingEntry.ETag)
-                {
-                    throw new StateOptimisticConcurrencyViolationException($"An optimistic concurrency violation occurred when trying to save new state for: PartitionKey={newEntry.Namespace};Key={newEntry.Key}. The original ETag value was {newEntry.ETag}, but the current ETag value is {existingEntry.ETag}.");
-                }
-            }
-        }
-
     }
 }

@@ -80,13 +80,11 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
             var loadedStateStoreEntry = await stateStorageProvider.Load(TestStateNamespace, stateStoreEntryKey);
 
             Assert.IsNotNull(loadedStateStoreEntry);
-            Assert.IsNotNull(loadedStateStoreEntry.ETag, "Loaded state store entry should have an ETag value assigned.");
 
             var loadedState = loadedStateStoreEntry.GetValue<StateTestsPocoState>();
 
             Assert.IsNotNull(loadedState);
 
-            // 2nd write should work, because we have new etag, or no etag
             loadedState.Count++;
 
             await stateStorageProvider.Save(loadedStateStoreEntry);
@@ -94,8 +92,6 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
             var reloadedStateStoreEntry = await stateStorageProvider.Load(TestStateNamespace, stateStoreEntryKey);
 
             Assert.IsNotNull(reloadedStateStoreEntry);
-            Assert.IsNotNull(reloadedStateStoreEntry.ETag, "Reloaded state store entry should have an ETag value assigned.");
-            Assert.AreNotEqual(loadedStateStoreEntry.ETag, reloadedStateStoreEntry.ETag);
 
             var reloadedState = reloadedStateStoreEntry.GetValue<StateTestsPocoState>();
 
@@ -103,23 +99,10 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
 
             Assert.AreEqual(2, reloadedState.Count);
 
-            // update latest state entry should succeed because we have latest ETag
             reloadedState.Count++;
 
             await stateStorageProvider.Save(reloadedStateStoreEntry);
-
-
-            // update originally loaded state entry should fail because we have a stale ETag
-            try
-            {
-                await stateStorageProvider.Save(loadedStateStoreEntry);
-
-                Assert.Fail("Should have thrown exception on write because of stale ETag");
-            }
-            catch(StateOptimisticConcurrencyViolationException)
-            {
-            }
-
+            
             var rereloadedStateStoreEntry = await stateStorageProvider.Load(TestStateNamespace, stateStoreEntryKey);
             var rereloadedState = rereloadedStateStoreEntry.GetValue<StateTestsPocoState>();
 
@@ -183,9 +166,6 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
             await stateStorageProvider.Save(stateStoreEntry);
 
             var loadedStateStoreEntry = await stateStorageProvider.Load(TestStateNamespace, stateStoreEntryKey);
-
-            Assert.IsTrue(!String.IsNullOrEmpty(loadedStateStoreEntry.ETag), "Expected ETag to be set on a loaded state store entry.");
-
 
             var loadedState = loadedStateStoreEntry.GetValue<StateTestsPocoState>();
             Assert.AreEqual(state.Count, loadedState.Count);

@@ -6,7 +6,6 @@ namespace Microsoft.Bot.Builder.Core.State
     {
         private string _namespace;
         private string _key;
-        private string _eTag;
         private object _value;
 
         public StateStorageEntry(string stateNamespace, string key)
@@ -21,28 +20,9 @@ namespace Microsoft.Bot.Builder.Core.State
             _value = value;
         }
 
-        public StateStorageEntry(string stateNamespace, string key, string eTag) : this(stateNamespace, key)
-        {
-            _eTag = eTag;
-        }
-
-        public StateStorageEntry(string stateNamespace, string key, string eTag, object value) : this(stateNamespace, key, eTag)
-        {
-            _value = value;
-        }
-
         public string Namespace => _namespace;
 
         public string Key => _key;
-
-        public string ETag
-        {
-            get => _eTag;
-            protected internal set
-            {
-                _eTag = value;
-            }
-        }
 
         public object RawValue
         {
