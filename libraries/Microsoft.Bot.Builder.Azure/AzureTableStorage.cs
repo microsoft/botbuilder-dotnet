@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Core.Extensions;
 using Microsoft.WindowsAzure.Storage;
@@ -31,22 +32,33 @@ namespace Microsoft.Bot.Builder.Azure
         public AzureTableStorage(CloudStorageAccount storageAccount, string tableName)
         {
             var tableClient = storageAccount.CreateCloudTableClient();
-            this.Table = tableClient.GetTableReference(tableName);
+            Table = tableClient.GetTableReference(tableName);
 
             if (_checkedTables.Add($"{storageAccount.TableStorageUri.PrimaryUri.Host}-{tableName}"))
-                this.Table.CreateIfNotExistsAsync().Wait();
-        }
-
-        protected EntityKey GetEntityKey(string key)
-        {
-            return new EntityKey() { PartitionKey = SanitizeKey(key), RowKey = "0" };
+                Table.CreateIfNotExistsAsync().Wait();
         }
 
         public async Task Delete(string[] keys)
         {
-            foreach (var key in keys.Select(k => GetEntityKey(k)))
+            foreach (var key in keys)
             {
-                await this.Table.ExecuteAsync(TableOperation.Delete(new TableEntity(key.PartitionKey, key.RowKey) { ETag = "*" })).ConfigureAwait(false);
+                // Retrieve all RowKeys for this PartitionKey
+                var filter = TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, SanitizeKey(key));
+                var query = new TableQuery<DynamicTableEntity>()
+                {
+                    SelectColumns = new List<string>() { "RowKey" },
+                    FilterString = filter
+                };
+
+                var rowKeys = await ExecuteQueryAsync(Table, query);
+
+                // Delete rows
+                var tasks = rowKeys.ToList().Select(async e =>
+                {
+                    await Table.ExecuteAsync(TableOperation.Delete(new TableEntity(e.PartitionKey, e.RowKey) { ETag = "*" })).ConfigureAwait(false);
+                });
+
+                await Task.WhenAll(tasks);
             }
         }
 
@@ -55,88 +67,89 @@ namespace Microsoft.Bot.Builder.Azure
             var storeItems = new StoreItems();
             foreach (string key in keys)
             {
-                var entityKey = GetEntityKey(key);
-                var result = await this.Table.ExecuteAsync(TableOperation.Retrieve<StoreItemEntity>(entityKey.PartitionKey, entityKey.RowKey)).ConfigureAwait(false);
-                if ((HttpStatusCode)result.HttpStatusCode == HttpStatusCode.OK)
+                var filter = TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, SanitizeKey(key));
+                var query = new TableQuery<StoreItemEntity>().Where(filter);
+                var results = await ExecuteQueryAsync(Table, query);
+                if (results.Any())
                 {
-                    var value = ((StoreItemEntity)result.Result).AsObject();
-                    IStoreItem valueStoreItem = value as IStoreItem;
-                    if (valueStoreItem != null)
-                        valueStoreItem.eTag = result.Etag;
+                    var value = StoreItemContainer.Join(results).Object;
                     storeItems[key] = value;
                 }
             }
+
             return storeItems;
         }
 
-
         public async Task Write(StoreItems changes)
+        {
+            // Split entity into smaller chunks that fit within column max size and update (1)
+            // Then proceed to delete any remaining chunks from a previous version (2)
+
+            var storeItems = AsStoreItemContainers(changes);
+            var writeTasks = storeItems.Select(async entity =>
+            {
+                // (1)
+                var chunks = entity.Split();
+                foreach (var chunk in chunks)
+                {
+                    // When replacing with optimistic update, only check for the first chunk and replace the others directly
+                    if (entity.ETag == null || entity.ETag == "*" || chunk.RowKey != "0")
+                    {
+                        await Table.ExecuteAsync(TableOperation.InsertOrReplace(chunk)).ConfigureAwait(false);
+                    }
+                    else if (entity.ETag.Length > 0)
+                    {
+                        // Optimistic Update (first chunk only)
+                        await Table.ExecuteAsync(TableOperation.Replace(chunk)).ConfigureAwait(false);
+                    }
+                }
+
+                // (2) Delete any remaining chunks from a previous obj version
+                var maxRowKey = chunks.Count();
+                var filter = TableQuery.CombineFilters(
+                    TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, SanitizeKey(entity.Key)),
+                    TableOperators.And,
+                    TableQuery.GenerateFilterCondition("RowKey", QueryComparisons.GreaterThanOrEqual, maxRowKey.ToString()));
+                var query = new TableQuery<StoreItemEntity>().Where(filter);
+
+                var rowKeys = await ExecuteQueryAsync(Table, query);
+
+                // Retrieve and delete each row
+                var deleleTasks = rowKeys.ToList().Select(e =>
+                    Table.ExecuteAsync(TableOperation.Delete(new TableEntity(e.PartitionKey, e.RowKey) { ETag = "*" })));
+
+                await Task.WhenAll(deleleTasks).ConfigureAwait(false);
+            });
+
+            await Task.WhenAll(writeTasks).ConfigureAwait(false);
+        }
+
+        private static IEnumerable<StoreItemContainer> AsStoreItemContainers(StoreItems changes)
         {
             foreach (var change in changes)
             {
-                var entityKey = GetEntityKey(change.Key);
-                var newValue = change.Value;
-                StoreItemEntity entity = new StoreItemEntity(entityKey, newValue);
-                if (entity.ETag == null || entity.ETag == "*")
+                var entity = new StoreItemContainer(change.Key, change.Value);
+                if (entity.ETag != null && entity.ETag != "*" && entity.ETag.Length == 0)
                 {
-                    var result = await this.Table.ExecuteAsync(TableOperation.InsertOrReplace(entity)).ConfigureAwait(false);
+                    throw new ArgumentException($"Etag for {change.Key} is empty.");
                 }
-                else if (entity.ETag.Length > 0)
-                {
-                    var result = await this.Table.ExecuteAsync(TableOperation.Replace(entity)).ConfigureAwait(false);
-                }
-                else
-                {
-                    throw new Exception("etag empty");
-                }
+
+                yield return entity;
             }
         }
 
-        protected class StoreItemEntity : TableEntity
+        private static async Task<IEnumerable<T>> ExecuteQueryAsync<T>(CloudTable table, TableQuery<T> query, CancellationToken ct = default(CancellationToken)) where T : ITableEntity, new()
         {
-            private static JsonSerializerSettings serializationSettings = new JsonSerializerSettings()
+            var items = new List<T>();
+            TableContinuationToken token = null;
+            do
             {
-                // we use all so that we get typed roundtrip out of storage, but we don't use validation because we don't know what types are valid
-                TypeNameHandling = TypeNameHandling.All
-            };
+                TableQuerySegment<T> seg = await table.ExecuteQuerySegmentedAsync<T>(query, token);
+                token = seg.ContinuationToken;
+                items.AddRange(seg);
+            } while (token != null && !ct.IsCancellationRequested);
 
-            public StoreItemEntity() { }
-
-            public StoreItemEntity(EntityKey key, object obj)
-                : this(key.PartitionKey, key.RowKey, obj)
-            { }
-
-            public StoreItemEntity(string partitionKey, string rowKey, object obj)
-                : base(partitionKey, rowKey)
-            {
-                this.ETag = (obj as IStoreItem)?.eTag;
-                this.Json = JsonConvert.SerializeObject(obj, Formatting.None, serializationSettings);
-            }
-
-            public string Json { get; set; }
-
-            public object AsObject()
-            {
-                var obj = JsonConvert.DeserializeObject(Json, serializationSettings);
-                IStoreItem storeItem = obj as IStoreItem;
-                if (storeItem != null)
-                    storeItem.eTag = this.ETag;
-                return obj;
-            }
-        }
-
-        protected class EntityKey
-        {
-            public string PartitionKey { get; set; }
-            public string RowKey { get; set; }
-
-            public override string ToString() { return $"{PartitionKey}~{RowKey}"; }
-
-            public static EntityKey FromString(string key)
-            {
-                var parts = key.Split('~');
-                return new EntityKey() { PartitionKey = parts[0], RowKey = parts[1] };
-            }
+            return items;
         }
 
         private static Lazy<Dictionary<char, string>> badChars = new Lazy<Dictionary<char, string>>(() =>
@@ -148,7 +161,7 @@ namespace Microsoft.Bot.Builder.Azure
             return dict;
         });
 
-        private string SanitizeKey(string key)
+        private static string SanitizeKey(string key)
         {
             StringBuilder sb = new StringBuilder();
             foreach (char ch in key)
@@ -159,6 +172,90 @@ namespace Microsoft.Bot.Builder.Azure
                     sb.Append(ch);
             }
             return sb.ToString();
+        }
+
+        /// <summary>
+        /// Wrapper for the item to store.
+        /// Handles returning as many StoreItemEntity instances (TableEntity) as needed to make the object fit within the table's row limit size (64kb)
+        /// </summary>
+        public class StoreItemContainer
+        {
+            private const int chunkMaxSize = 32 * 1024;     // 32768 unicode chars
+
+            public string Key { get; private set; }
+            public object Object { get; private set; }
+            public string ETag { get; private set; }
+
+            private static JsonSerializerSettings serializationSettings = new JsonSerializerSettings()
+            {
+                // we use all so that we get typed roundtrip out of storage, but we don't use validation because we don't know what types are valid
+                TypeNameHandling = TypeNameHandling.All
+            };
+
+            public StoreItemContainer(string key, object obj)
+            {
+                ETag = (obj as IStoreItem)?.eTag;
+                Key = key;
+                Object = obj;
+            }
+
+            public IEnumerable<StoreItemEntity> Split()
+            {
+                // Serializa to JSON
+                var json = JsonConvert.SerializeObject(Object, Formatting.None, serializationSettings);
+
+                // Split JSON into smaller strings
+                var chunks = SplitString(json, chunkMaxSize);
+
+                // Create TableEntities with incrementing RowKey
+                return chunks.Select((chunk, ix) => new StoreItemEntity(SanitizeKey(Key), ix.ToString(), Key, chunk)
+                {
+                    ETag = ETag
+                });
+            }
+
+            public static StoreItemContainer Join(IEnumerable<StoreItemEntity> chunks)
+            {
+                if (chunks == null || chunks.Count() == 0)
+                {
+                    throw new ArgumentException("Please provide items to join", nameof(chunks));
+                }
+
+                var orderedChunks = chunks.OrderBy(o => int.Parse(o.RowKey));
+                var key = orderedChunks.First().RealKey;
+                var json = string.Join(string.Empty, orderedChunks.Select(o => o.Json));
+
+                var obj = JsonConvert.DeserializeObject(json, serializationSettings);
+                if (obj is IStoreItem storeItem)
+                {
+                    storeItem.eTag = orderedChunks.First().ETag;
+                }
+
+                return new StoreItemContainer(key, obj);
+            }
+
+            private static IEnumerable<string> SplitString(string str, int maxChunkSize)
+            {
+                for (int i = 0; i < str.Length; i += maxChunkSize)
+                {
+                    yield return str.Substring(i, Math.Min(maxChunkSize, str.Length - i));
+                }
+            }
+        }
+
+        public class StoreItemEntity : TableEntity
+        {
+            public StoreItemEntity() { }
+
+            public StoreItemEntity(string partitionKey, string rowKey, string realKey, string jsonChunk) : base(partitionKey, rowKey)
+            {
+                RealKey = realKey;
+                Json = jsonChunk;
+            }
+
+            public string RealKey { get; set; }
+
+            public string Json { get; set; }
         }
     }
 }
