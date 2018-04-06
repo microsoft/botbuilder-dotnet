@@ -58,7 +58,14 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             if (_storage != null)
             {
                 var client = new DocumentClient(new Uri(CosmosServiceEndpoint), CosmosAuthKey);
-                await client.DeleteDatabaseAsync(UriFactory.CreateDatabaseUri(CosmosDatabaseName)).ConfigureAwait(false);
+                try
+                {
+                    await client.DeleteDatabaseAsync(UriFactory.CreateDatabaseUri(CosmosDatabaseName)).ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine("Error cleaning up resources: {0}", ex.ToString());
+                }
             }
         }
 
