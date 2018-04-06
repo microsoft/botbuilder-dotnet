@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AlarmBot.Models;
+using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Core.State;
 using Microsoft.Bot.Schema;
 
