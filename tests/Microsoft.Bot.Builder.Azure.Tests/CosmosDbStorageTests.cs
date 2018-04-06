@@ -14,8 +14,8 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 {
     [TestClass]
     [TestCategory("Storage")]
-    [TestCategory("Storage - CosmosDB SQL")]
-    public class CosmosDbSqlStorageTests : StorageBaseTests
+    [TestCategory("Storage - CosmosDB")]
+    public class CosmosDbStorageTests : StorageBaseTests
     {
         // Endpoint and Authkey for the CosmosDB Emulator running locally
         private const string CosmosServiceEndpoint = "https://localhost:8081";
@@ -48,7 +48,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             if (_hasEmulator.Value)
             {
-                _storage = new CosmosDbSqlStorage(new Uri(CosmosServiceEndpoint), CosmosAuthKey, CosmosDatabaseName, CosmosCollectionName);
+                _storage = new CosmosDbStorage(new Uri(CosmosServiceEndpoint), CosmosAuthKey, CosmosDatabaseName, CosmosCollectionName);
             }
         }
 
@@ -64,7 +64,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 
         // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
         [TestMethod]
-        public async Task DocumentDb_CreateObjectTest()
+        public async Task CreateObjectTest()
         {
             if (CheckEmulator())
             {
@@ -74,7 +74,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 
         // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
         [TestMethod]
-        public async Task DocumentDb_ReadUnknownTest()
+        public async Task ReadUnknownTest()
         {
             if (CheckEmulator())
             {
@@ -84,7 +84,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 
         // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
         [TestMethod]
-        public async Task DocumentDb_UpdateObjectTest()
+        public async Task UpdateObjectTest()
         {
             if (CheckEmulator())
             {
@@ -94,7 +94,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 
         // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
         [TestMethod]
-        public async Task DocumentDb_DeleteObjectTest()
+        public async Task DeleteObjectTest()
         {
             if (CheckEmulator())
             {
@@ -104,7 +104,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 
         // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
         [TestMethod]
-        public async Task DocumentDb_HandleCrazyKeys()
+        public async Task HandleCrazyKeys()
         {
             if (CheckEmulator())
             {
@@ -114,7 +114,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 
         // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
         [TestMethod]
-        public async Task DocumentDb_TypedSerialization()
+        public async Task TypedSerialization()
         {
             if (CheckEmulator())
             {
@@ -124,12 +124,12 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 
         // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
         [TestMethod]
-        public void DocumentDb_ConnectionPolicyConfiguratorShouldBeCalled()
+        public void ConnectionPolicyConfiguratorShouldBeCalled()
         {
             if (CheckEmulator())
             {
                 ConnectionPolicy policyRef = null;
-                new CosmosDbSqlStorage(new Uri(CosmosServiceEndpoint), CosmosAuthKey, CosmosDatabaseName, CosmosCollectionName, (ConnectionPolicy policy) => policyRef = policy);
+                new CosmosDbStorage(new Uri(CosmosServiceEndpoint), CosmosAuthKey, CosmosDatabaseName, CosmosCollectionName, (ConnectionPolicy policy) => policyRef = policy);
 
                 Assert.IsNotNull(policyRef, "ConnectionPolicy configurator was not called.");
             }
@@ -137,7 +137,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
-        public async Task DocumentDb_ReadingEmptyKeys_Throws()
+        public async Task ReadingEmptyKeys_Throws()
         {
             if (CheckEmulator())
             {
@@ -147,7 +147,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
-        public async Task DocumentDb_WrittingNullStoreItems_Throws()
+        public async Task WrittingNullStoreItems_Throws()
         {
             if (CheckEmulator())
             {

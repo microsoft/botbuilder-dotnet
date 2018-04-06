@@ -17,9 +17,9 @@ using Newtonsoft.Json.Serialization;
 namespace Microsoft.Bot.Builder.Azure
 {
     /// <summary>
-    /// Models IStorage around CosmosDB SQL (DocumentDB)
+    /// Models IStorage around CosmosDB
     /// </summary>
-    public class CosmosDbSqlStorage : IStorage
+    public class CosmosDbStorage : IStorage
     {
         private readonly string _databaseId;
         private readonly string _collectionId;
@@ -32,14 +32,14 @@ namespace Microsoft.Bot.Builder.Azure
         });
 
         /// <summary>
-        /// Initializes a new instance of <see cref="CosmosDbSqlStorage"/> class,
+        /// Initializes a new instance of <see cref="CosmosDbStorage"/> class,
         /// using the provided CosmosDB credentials, DatabaseId and CollectionId.
         /// </summary>
         /// <param name="serviceEndpoint">The endpoint Uri for the service endpoint from the Azure Cosmos DB service.</param>
         /// <param name="authKey">The AuthKey used by the client from the Azure Cosmos DB service.</param>
         /// <param name="databaseId">The Database ID.</param>
         /// <param name="collectionId">The Collection ID.</param>
-        public CosmosDbSqlStorage(Uri serviceEndpoint, string authKey, string databaseId, string collectionId, Action<ConnectionPolicy> connectionPolicyConfigurator = null)
+        public CosmosDbStorage(Uri serviceEndpoint, string authKey, string databaseId, string collectionId, Action<ConnectionPolicy> connectionPolicyConfigurator = null)
         {
             if (serviceEndpoint == null)
             {
