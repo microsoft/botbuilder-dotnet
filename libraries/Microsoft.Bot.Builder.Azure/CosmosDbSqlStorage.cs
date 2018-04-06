@@ -23,6 +23,7 @@ namespace Microsoft.Bot.Builder.Azure
     {
         private readonly string _databaseId;
         private readonly string _collectionId;
+        private readonly Lazy<string> _collectionLink;
         private readonly DocumentClient _client;
 
         private static JsonSerializer _jsonSerializer = JsonSerializer.Create(new JsonSerializerSettings()
@@ -70,13 +71,9 @@ namespace Microsoft.Bot.Builder.Azure
             };
 
             connectionPolicyConfigurator?.Invoke(connectionPolicy);
-
             _client = new DocumentClient(serviceEndpoint, authKey, connectionPolicy);
-            _client.CreateDatabaseIfNotExistsAsync(new Database { Id = databaseId })
-                .Wait();
 
-            _client.CreateDocumentCollectionIfNotExistsAsync(UriFactory.CreateDatabaseUri(databaseId), new DocumentCollection { Id = collectionId })
-                .Wait();
+            _collectionLink = new Lazy<string>(EnsureCollectionExist);
         }
 
         /// <summary>
@@ -86,6 +83,9 @@ namespace Microsoft.Bot.Builder.Azure
         /// <returns></returns>
         public async Task Delete(params string[] keys)
         {
+            // Ensure collection exists
+            var collectionLink = _collectionLink.Value;
+
             var tasks = keys.Select(key =>
                 _client.DeleteDocumentAsync(
                     UriFactory.CreateDocumentUri(_databaseId, _collectionId, SanitizeKey(key))));
@@ -105,6 +105,7 @@ namespace Microsoft.Bot.Builder.Azure
                 throw new ArgumentException("Please provide at least one key to read from storage", nameof(keys));
             }
 
+            var collectionLink = _collectionLink.Value;
             var storeItems = new StoreItems();
 
             var parameterSequence = string.Join(",", Enumerable.Range(0, keys.Length).Select(i => $"@id{i}"));
@@ -115,8 +116,7 @@ namespace Microsoft.Bot.Builder.Azure
                 Parameters = new SqlParameterCollection(parameterValues)
             };
 
-            var uri = UriFactory.CreateDocumentCollectionUri(_databaseId, _collectionId);
-            var query = _client.CreateDocumentQuery<DocumentStoreItem>(uri, querySpec).AsDocumentQuery();
+            var query = _client.CreateDocumentQuery<DocumentStoreItem>(collectionLink, querySpec).AsDocumentQuery();
             while (query.HasMoreResults)
             {
                 foreach (var doc in await query.ExecuteNextAsync<DocumentStoreItem>())
@@ -144,9 +144,10 @@ namespace Microsoft.Bot.Builder.Azure
         {
             if (changes == null)
             {
-                throw new ArgumentNullException(nameof(changes), "Please provide a StoreItems with the changes to persist.");
+                throw new ArgumentNullException(nameof(changes), "Please provide a StoreItems with changes to persist.");
             }
 
+            var collectionLink = _collectionLink.Value;
             foreach (var change in changes)
             {
                 var json = JObject.FromObject(change.Value, _jsonSerializer);
@@ -161,12 +162,12 @@ namespace Microsoft.Bot.Builder.Azure
                 string eTag = (change.Value as IStoreItem)?.eTag;
                 if (eTag == null || eTag == "*")
                 {
-                    var uri = UriFactory.CreateDocumentCollectionUri(_databaseId, _collectionId);
-                    await _client.UpsertDocumentAsync(uri, documentChange, disableAutomaticIdGeneration: true).ConfigureAwait(false);
+                    // if new item or * then insert or replace unconditionaly
+                    await _client.UpsertDocumentAsync(collectionLink, documentChange, disableAutomaticIdGeneration: true).ConfigureAwait(false);
                 }
                 else if (eTag.Length > 0)
                 {
-                    // Optimistic Update
+                    // if we have an etag, do opt. concurrency replace
                     var uri = UriFactory.CreateDocumentUri(_databaseId, _collectionId, documentChange.Id);
                     var ac = new AccessCondition { Condition = eTag, Type = AccessConditionType.IfMatch };
                     await _client.ReplaceDocumentAsync(uri, documentChange, new RequestOptions { AccessCondition = ac }).ConfigureAwait(false);
@@ -176,6 +177,17 @@ namespace Microsoft.Bot.Builder.Azure
                     throw new Exception("etag empty");
                 }
             }
+        }
+
+        private string EnsureCollectionExist()
+        {
+            _client.CreateDatabaseIfNotExistsAsync(new Database { Id = _databaseId })
+                .Wait();
+
+            var task = _client.CreateDocumentCollectionIfNotExistsAsync(UriFactory.CreateDatabaseUri(_databaseId), new DocumentCollection { Id = _collectionId });
+            task.Wait();
+
+            return task.Result.Resource.SelfLink;
         }
 
         private static Lazy<Dictionary<char, string>> _badChars = new Lazy<Dictionary<char, string>>(() =>
