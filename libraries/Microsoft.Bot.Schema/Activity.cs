@@ -36,7 +36,8 @@ namespace Microsoft.Bot.Schema
         /// include: 'message', 'contactRelationUpdate', 'conversationUpdate',
         /// 'typing', 'ping', 'endOfConversation', 'event', 'invoke',
         /// 'deleteUserData', 'messageUpdate', 'messageDelete',
-        /// 'installationUpdate', 'messageReaction', 'suggestion'</param>
+        /// 'installationUpdate', 'messageReaction', 'suggestion',
+        /// 'trace'</param>
         /// <param name="id">ID of this activity</param>
         /// <param name="timestamp">UTC Time when message was sent (set by
         /// service)</param>
@@ -156,7 +157,7 @@ namespace Microsoft.Bot.Schema
         /// 'message', 'contactRelationUpdate', 'conversationUpdate', 'typing',
         /// 'ping', 'endOfConversation', 'event', 'invoke', 'deleteUserData',
         /// 'messageUpdate', 'messageDelete', 'installationUpdate',
-        /// 'messageReaction', 'suggestion'
+        /// 'messageReaction', 'suggestion', 'trace'
         /// </summary>
         [JsonProperty(PropertyName = "type")]
         public string Type { get; set; }
