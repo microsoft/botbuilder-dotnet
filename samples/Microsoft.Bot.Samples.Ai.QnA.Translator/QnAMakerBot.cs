@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Samples.Ai.QnA
     {
         public QnAMakerBot() { }
 
-        public async Task OnReceiveActivity(ITurnContext context)
+        public async Task OnTurn(ITurnContext context)
         {
             // At this point, the QnA Maker Middleware has already been run. If the incoming
             // Activity was a message, the Middleware called out to QnA Maker looking for 
