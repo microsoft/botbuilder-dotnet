@@ -19,9 +19,28 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
             _paths = new BotFrameworkPaths();
         }
 
+        /// <summary>
+        /// An <see cref="ICredentialProvider"/> that should be used to store and retrieve credentials used during authentication with the Bot Framework.
+        /// </summary>
         public ICredentialProvider CredentialProvider { get; set; }
+
+        /// <summary>
+        /// A list of <see cref="IMiddleware"/> that will be executed for each turn of the conversation.
+        /// </summary>
         public List<IMiddleware> Middleware { get => _middleware; }
+
+        /// <summary>
+        /// Gets or sets whether a proactive messaging endpoint should be exposed for the bot.
+        /// </summary>
+        /// <value>
+        /// True if the proactive messaging endpoint should be enabled, otherwise false.
+        /// </value>
         public bool EnableProactiveMessages { get; set; }
+
+        /// <summary>
+        /// Gets or sets what paths should be used when exposing the various bot endpoints.
+        /// </summary>
+        /// <seealso cref="BotFrameworkPaths" />
         public BotFrameworkPaths Paths { get => _paths; }
 
         /// <summary>
