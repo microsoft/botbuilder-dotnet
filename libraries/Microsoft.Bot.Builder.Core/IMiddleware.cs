@@ -11,7 +11,7 @@ namespace Microsoft.Bot.Builder
     /// Represents middleware that can operate on incoming activities.
     /// </summary>
     /// <remarks>A <see cref="BotAdapter"/> passes incoming activities from the user's 
-    /// channel to the middleware's <see cref="OnProcessRequest(ITurnContext, NextDelegate)"/>
+    /// channel to the middleware's <see cref="OnTurn(ITurnContext, NextDelegate)"/>
     /// method.
     /// <para>You can add middleware objects to your adapter’s middleware collection. The
     /// adapter processes and directs incoming activities in through the bot middleware 
@@ -24,11 +24,11 @@ namespace Microsoft.Bot.Builder
     /// <example>
     /// This defines middleware that sends "before" and "after" messages
     /// before and after the adapter calls the bot's 
-    /// <see cref="IBot.OnReceiveActivity(ITurnContext)"/> method.
+    /// <see cref="IBot.OnTurn(ITurnContext)"/> method.
     /// <code>
     /// public class SampleMiddleware : IMiddleware
     /// {
-    ///     public async Task OnProcessRequest(ITurnContext context, MiddlewareSet.NextDelegate next)
+    ///     public async Task OnTurn(ITurnContext context, MiddlewareSet.NextDelegate next)
     ///     {
     ///         context.SendActivity("before");
     ///         await next().ConfigureAwait(false);
@@ -55,7 +55,7 @@ namespace Microsoft.Bot.Builder
         /// </remarks>
         /// <seealso cref="ITurnContext"/>
         /// <seealso cref="Bot.Schema.IActivity"/>
-        Task OnProcessRequest(ITurnContext context, MiddlewareSet.NextDelegate next);
+        Task OnTurn(ITurnContext context, MiddlewareSet.NextDelegate next);
     }
 
     /// <summary>
@@ -83,7 +83,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="context">The context object for this turn.</param>
         /// <param name="next">The delegate to call to continue the bot middleware pipeline.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
-        public Task OnProcessRequest(ITurnContext context, NextDelegate next)
+        public Task OnTurn(ITurnContext context, NextDelegate next)
         {
             return _toCall(context, next);
         }
