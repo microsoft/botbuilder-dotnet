@@ -66,7 +66,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Handlers
                     {
                         var bot = httpContext.RequestServices.GetRequiredService<IBot>();
 
-                        return bot.OnReceiveActivity(context);
+                        return bot.OnTurn(context);
                     });
 
                 response.StatusCode = (int)HttpStatusCode.OK;
