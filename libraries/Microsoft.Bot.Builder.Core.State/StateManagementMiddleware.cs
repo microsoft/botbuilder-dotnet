@@ -93,7 +93,7 @@ namespace Microsoft.Bot.Builder.Core.State
             return this;
         }
 
-        public async Task OnProcessRequest(ITurnContext context, MiddlewareSet.NextDelegate next)
+        public async Task OnTurn(ITurnContext context, MiddlewareSet.NextDelegate next)
         {
             var stateManagerResolver = new StateManagerServiceResolver(context, _configuredStateStorageProviders, _configuredStateManagers);
             context.Services.Add<IStateManagerServiceResolver>(stateManagerResolver);
