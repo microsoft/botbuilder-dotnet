@@ -13,7 +13,7 @@ namespace AlarmBot
 {
     public class AlarmBot : IBot
     {
-        public async Task OnTurn(ITurnContext context)
+        public async Task OnTurn(ITurnContext turnContext)
         {
             var conversationStateManager = turnContext.ConversationState();
             var topicState = default(AlarmTopicState);
