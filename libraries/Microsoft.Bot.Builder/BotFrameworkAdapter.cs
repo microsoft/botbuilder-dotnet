@@ -1,18 +1,17 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Microsoft.Bot.Connector;
-using Microsoft.Bot.Connector.Authentication;
-using Microsoft.Bot.Schema;
-using Microsoft.Rest.TransientFaultHandling;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Security.Principal;
 using System.Threading.Tasks;
+using Microsoft.Bot.Connector;
+using Microsoft.Bot.Connector.Authentication;
+using Microsoft.Bot.Schema;
+using Microsoft.Rest.TransientFaultHandling;
 
 namespace Microsoft.Bot.Builder.Adapters
 {
@@ -39,8 +38,9 @@ namespace Microsoft.Bot.Builder.Adapters
         private readonly ICredentialProvider _credentialProvider;
         private readonly HttpClient _httpClient;
         private readonly RetryPolicy _connectorClientRetryPolicy;
-        private Dictionary<string, MicrosoftAppCredentials> _appCredentialMap = new Dictionary<string, MicrosoftAppCredentials>();        
-        private readonly ConcurrentDictionary<string, Activity> _invokeResponses = new ConcurrentDictionary<string, Activity>(); 
+        private Dictionary<string, MicrosoftAppCredentials> _appCredentialMap = new Dictionary<string, MicrosoftAppCredentials>();                
+
+        private const string InvokeReponseKey = "BotFrameworkAdapter.InvokeResponse";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BotFrameworkAdapter"/> class,
@@ -184,22 +184,21 @@ namespace Microsoft.Bot.Builder.Adapters
             // the Bot will return a specific body and return code. 
             if (activity.Type == ActivityTypes.Invoke)
             {
-                string key = $"{activity.ChannelId}/{activity.Id}";
-                if (this._invokeResponses.TryRemove(key, out Activity invokeResponse))
-                {                    
-                    return (InvokeResponse)invokeResponse.Value;
+                Activity invokeResponse = context.Services.Get<Activity>(InvokeReponseKey);
+                if (invokeResponse == null)
+                {
+                    // ToDo: Trace Here           
+                    throw new InvalidOperationException("Bot failed to return a valid 'invokeResponse' activity.");
                 }
                 else
                 {
-                    throw new InvalidOperationException("Bot failed to return a valid 'invokeResponse' activity.");
-                }                
+                    return (InvokeResponse)invokeResponse.Value;
+                }
             }
-            else
-            {
-                // For all non-invoke scenarios, the HTTP layers above don't have to mess 
-                // withthe Body and return codes. 
-                return null;
-            }
+
+            // For all non-invoke scenarios, the HTTP layers above don't have to mess 
+            // withthe Body and return codes. 
+            return null;
         }
 
         /// <summary>
@@ -231,10 +230,9 @@ namespace Microsoft.Bot.Builder.Adapters
                     response = new ResourceResponse(activity.Id ?? string.Empty); 
                 }
                 else if (activity.Type == "invokeResponse") // Aligning name with Node            
-                {
-                    string key = $"{activity.ChannelId}/{activity.ReplyToId}";
-                    _invokeResponses[key] = activity; 
-
+                {                    
+                    context.Services.Add<Activity>(InvokeReponseKey, activity); 
+                    
                     // In the case of Invoke, just create a fake one. Match the incoming activityId if it's there. 
                     response = new ResourceResponse(activity.Id ?? string.Empty);
                 }
