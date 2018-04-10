@@ -185,12 +185,14 @@ namespace Microsoft.Bot.Builder.Adapters
             if (activity.Type == ActivityTypes.Invoke)
             {
                 string key = $"{activity.ChannelId}/{activity.Id}";
-                if (this._invokeResponses.TryGetValue(key, out Activity invokeResponse))
-                {
+                if (this._invokeResponses.TryRemove(key, out Activity invokeResponse))
+                {                    
                     return (InvokeResponse)invokeResponse.Value;
                 }
-
-                return null; 
+                else
+                {
+                    throw new InvalidOperationException("Bot failed to return a valid 'invokeResponse' activity.");
+                }                
             }
             else
             {
