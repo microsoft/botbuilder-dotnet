@@ -5,43 +5,66 @@ using static Microsoft.Bot.Builder.Prompts.PromptValidatorEx;
 
 namespace Microsoft.Bot.Builder.Prompts
 {
+    /// <summary>
+    /// Represents recognition result for the prompt.
+    /// </summary>
     public class TextResult : PromptResult
     {
+        /// <summary>
+        /// Creates a <see cref="TextResult"/> object.
+        /// </summary>
         public TextResult() { }
 
+        /// <summary>
+        /// The value recognized; or <c>null</c>, if recognition fails.
+        /// </summary>
         public string Value { get; set; }
 
+        /// <summary>
+        /// The input text recognized; or <c>null</c>, if recognition fails.
+        /// </summary>
         public string Text { get; set; }
     }
 
 
     /// <summary>
-    /// Text Prompt provides a simple mechanism to send text to a user
-    /// and validate a response. The default validator passes on any 
-    /// non-whitespace string. That behavior is easily changed by deriving
-    /// from this class and authoring custom validation behavior. 
-    /// 
-    /// For simple validation changes, a PromptValidator may be passed in to the 
-    /// constructor. If the standard validation passes, the custom PromptValidator
-    /// will be called. 
+    /// Represents a user prompt class for text input.
     /// </summary>
+    /// <remarks>The <see cref="Recognize(ITurnContext)"/> method passes any 
+    /// non-whitespace string to the custom validator, if one was provided.
+    /// To change this behavior, derive from this class and add your own custom 
+    /// validation behavior. 
+    /// <para>For simple validation changes, specify a <see cref="PromptValidator{InT}"/> 
+    /// in the constructor. If the standard validation passes, the custom 
+    /// validator is called on the recognized value.</para>
+    /// </remarks>
     public class TextPrompt : BasePrompt<TextResult>
     {
-
         /// <summary>
-        /// Creates a new instance of a TextPrompt allowing a custom validator
-        /// to be specified. The custom validator will ONLY be called if the
-        /// Validate method on the class first passes. 
+        /// Creates a <see cref="BasePrompt{T}"/> object.
         /// </summary>
-        public TextPrompt(PromptValidator<TextResult> validator = null) 
-            :base(validator)
+        /// <param name="validator">The input validator for the prompt object.</param>
+        /// <remarks><paramref name="validator"/> is called only if the
+        /// <see cref="Recognize(ITurnContext)"/> method recognizes a value. 
+        /// </remarks>
+        public TextPrompt(PromptValidator<TextResult> validator = null)
+            : base(validator)
         {
         }
 
         /// <summary>
-        /// Used to validate the incoming text, expected on context.Activity, is
-        /// valid according to the rules defined in the validation steps. 
-        /// </summary>        
+        /// Recognizes and validates the user input.
+        /// </summary>
+        /// <param name="context">The context for the current turn.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>Call this when you expect that the incoming activity for this
+        /// turn contains the user input to recognize.
+        /// If recognition succeeds, the <see cref="TextResult.Value"/> property of the 
+        /// result contains the value recognized.
+        /// <para>If recognition fails, returns a <see cref="TextResult"/> with
+        /// its <see cref="PromptStatus"/> set to <see cref="PromptStatus.NotRecognized"/> and
+        /// its <see cref="TextResult.Value"/> set to <c>null</c>.</para>
+        /// </remarks>
         public override async Task<TextResult> Recognize(ITurnContext context)
         {
             BotAssert.ContextNotNull(context);

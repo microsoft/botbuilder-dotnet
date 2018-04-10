@@ -30,7 +30,7 @@ namespace Microsoft.Bot.Builder.Ai
         /// Constructor that indexes input template for source language
         /// </summary>
         /// <param name="noTranslateTemplatePath">Path of no translate patterns</param> 
-        internal PostProcessTranslator(List<string> patterns):base()
+        internal PostProcessTranslator(List<string> patterns):this()
         { 
             foreach (string pattern in patterns)
             {
@@ -83,14 +83,15 @@ namespace Microsoft.Bot.Builder.Ai
                     int srcStartIndex = Int32.Parse(wordIndexes[0].Split(':')[0]);
                     int srcLength = Int32.Parse(wordIndexes[0].Split(':')[1]) - srcStartIndex + 1;
                     string srcWrd = sourceMessage.Substring(srcStartIndex, srcLength);
-                    int srcWrdIndex = Array.FindIndex(srcWrds, row => row == srcWrd);
+                    int sourceWordIndex = Array.FindIndex(srcWrds, row => row == srcWrd);
 
                     int trgstartIndex = Int32.Parse(wordIndexes[1].Split(':')[0]);
                     int trgLength = Int32.Parse(wordIndexes[1].Split(':')[1]) - trgstartIndex + 1; 
                     string trgWrd = trgMessage.Substring(trgstartIndex,trgLength);
-                    int trgWrdINdex = Array.FindIndex(trgWrds, row => row == trgWrd);
-
-                    alignMap[srcWrdIndex] = trgWrdINdex;
+                    int targetWordIndex = Array.FindIndex(trgWrds, row => row == trgWrd);
+                    
+                    if(sourceWordIndex>0 && targetWordIndex>0)
+                        alignMap[sourceWordIndex] = targetWordIndex;
             }
             return alignMap;
         }

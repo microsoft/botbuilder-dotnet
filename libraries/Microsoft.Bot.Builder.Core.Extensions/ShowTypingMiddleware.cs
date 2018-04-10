@@ -36,7 +36,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions
             _freqency = frequency;
         }
 
-        public async Task OnProcessRequest(ITurnContext context, MiddlewareSet.NextDelegate next)
+        public async Task OnTurn(ITurnContext context, MiddlewareSet.NextDelegate next)
         {
             Timer typingActivityTimer = null;
 

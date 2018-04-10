@@ -17,7 +17,7 @@ namespace Microsoft.Bot.Builder.LUIS
     /// <summary>
     /// A Luis based implementation of IRecognizer
     /// </summary>
-    public class LuisRecognizer : IRecognizer
+    public class LuisRecognizer : ILuisRecognizer
     {
         private readonly LuisService _luisService;
         private readonly ILuisOptions _luisOptions;
@@ -32,9 +32,15 @@ namespace Microsoft.Bot.Builder.LUIS
         }
 
         /// <inheritdoc />
-        public Task<RecognizerResult> Recognize(string utterance, CancellationToken ct)
+        public async Task<RecognizerResult> Recognize(string utterance, CancellationToken ct)
         {
-            if(string.IsNullOrEmpty(utterance))
+            var result = await CallAndRecognize(utterance, ct).ConfigureAwait(false);
+            return result.recognizerResult;
+        }
+
+        public Task<(RecognizerResult recognizerResult, LuisResult luisResult)> CallAndRecognize(string utterance, CancellationToken ct)
+        {
+            if (string.IsNullOrEmpty(utterance))
                 throw new ArgumentNullException(nameof(utterance));
 
             var luisRequest = new LuisRequest(utterance);
@@ -42,7 +48,7 @@ namespace Microsoft.Bot.Builder.LUIS
             return Recognize(luisRequest, ct, _luisRecognizerOptions.Verbose);
         }
 
-        private async Task<RecognizerResult> Recognize(LuisRequest request, CancellationToken ct, bool verbose)
+        private async Task<(RecognizerResult recognizerResult, LuisResult luisResult)> Recognize(LuisRequest request, CancellationToken ct, bool verbose)
         {
             var luisResult = await _luisService.QueryAsync(request, ct).ConfigureAwait(false);
 
@@ -54,7 +60,7 @@ namespace Microsoft.Bot.Builder.LUIS
                 Entities = GetEntitiesAndMetadata(luisResult.Entities, luisResult.CompositeEntities, verbose)
             };
 
-            return recognizerResult;
+            return (recognizerResult, luisResult);
         }
 
         private static JObject GetIntents(LuisResult luisResult)

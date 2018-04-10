@@ -434,11 +434,13 @@ namespace Microsoft.Bot.Builder.Core.Tests
         {
             public bool Called { get; set; } = false;
 
-            public Task OnProcessRequest(ITurnContext context, MiddlewareSet.NextDelegate next)
+            public Task OnTurn(ITurnContext context, MiddlewareSet.NextDelegate next)
             {
                 Called = true;
                 return next();
             }
+
+
         }
 
         public class DoNotCallNextMiddleware : IMiddleware
@@ -448,12 +450,14 @@ namespace Microsoft.Bot.Builder.Core.Tests
             {
                 _callMe = callMe;
             }
-            public Task OnProcessRequest(ITurnContext context, MiddlewareSet.NextDelegate next)
+            public Task OnTurn(ITurnContext context, MiddlewareSet.NextDelegate next)
             {
                 _callMe();
                 // DO NOT call NEXT
                 return Task.CompletedTask;
             }
+
+ 
         }
 
         public class CallMeMiddlware : IMiddleware
@@ -463,11 +467,12 @@ namespace Microsoft.Bot.Builder.Core.Tests
             {
                 _callMe = callMe;
             }
-            public Task OnProcessRequest(ITurnContext context, MiddlewareSet.NextDelegate next)
+            public Task OnTurn(ITurnContext context, MiddlewareSet.NextDelegate next)
             {
                 _callMe();
                 return next();
             }
+
         }
     }
 }

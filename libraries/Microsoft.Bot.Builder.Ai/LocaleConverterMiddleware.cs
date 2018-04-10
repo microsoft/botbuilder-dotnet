@@ -13,8 +13,8 @@ namespace Microsoft.Bot.Builder.Ai
     /// </summary>
     public class LocaleConverterMiddleware : IMiddleware
     {
-        private ILocaleConverter localeConverter; 
-        private readonly string toLocale;
+        private readonly ILocaleConverter _localeConverter; 
+        private readonly string _toLocale;
         private readonly Func<ITurnContext, string> _getUserLocale;
         private readonly Func<ITurnContext, Task<bool>> _setUserLocale;
 
@@ -27,12 +27,14 @@ namespace Microsoft.Bot.Builder.Ai
         /// <param name="localeConverter">An ILocaleConverter instance</param>
         public LocaleConverterMiddleware(Func<ITurnContext, string> getUserLocale, Func<ITurnContext, Task<bool>> checkUserLocaleChanged, string toLocale, ILocaleConverter localeConverter)
         {
-            this.localeConverter = localeConverter ?? throw new ArgumentNullException(nameof(localeConverter));
-            if (string.IsNullOrEmpty(toLocale) || !localeConverter.IsLocaleAvailable(toLocale))
+            _localeConverter = localeConverter ?? throw new ArgumentNullException(nameof(localeConverter));
+            if (string.IsNullOrEmpty(toLocale))
                 throw new ArgumentNullException(nameof(toLocale));
-            this.toLocale = toLocale;
-            this._getUserLocale = getUserLocale ?? throw new ArgumentNullException(nameof(getUserLocale)); 
-            this._setUserLocale = checkUserLocaleChanged ?? throw new ArgumentNullException(nameof(checkUserLocaleChanged)); 
+            else if( !localeConverter.IsLocaleAvailable(toLocale))
+                throw new ArgumentNullException("The locale " +nameof(toLocale)+" is unavailable");
+            _toLocale = toLocale;
+            _getUserLocale = getUserLocale ?? throw new ArgumentNullException(nameof(getUserLocale)); 
+            _setUserLocale = checkUserLocaleChanged ?? throw new ArgumentNullException(nameof(checkUserLocaleChanged));
         }
 
         /// <summary>
@@ -41,29 +43,38 @@ namespace Microsoft.Bot.Builder.Ai
         /// <param name="context"></param>
         /// <param name="next"></param>
         /// <returns></returns>
-        public async Task OnProcessRequest(ITurnContext context, MiddlewareSet.NextDelegate next)
+        public async Task OnTurn(ITurnContext context, MiddlewareSet.NextDelegate next)
         {
             IMessageActivity message = context.Activity.AsMessageActivity();
             if (message != null)
             {
                 if (!String.IsNullOrWhiteSpace(message.Text))
                 {
-                    string fromLocale = _getUserLocale(context);
-                    ConvertLocaleMessage(message, fromLocale);
-                    await _setUserLocale(context);
+                    bool localeChanged = await _setUserLocale(context);
+                    if (!localeChanged)
+                    {
+                        string fromLocale = _getUserLocale(context);
+                        ConvertLocaleMessage(context, fromLocale);
+                    }
+                    
                 }
             }
             await next().ConfigureAwait(false);
         }
 
-        private void ConvertLocaleMessage(IMessageActivity message,string fromLocale)
+        private void ConvertLocaleMessage(ITurnContext context,string fromLocale)
         {
-            
-            if (localeConverter.IsLocaleAvailable(fromLocale) && fromLocale != toLocale)
+            IMessageActivity message = context.Activity.AsMessageActivity();
+            if (message != null)
             {
-                message.Text = localeConverter.Convert(message.Text, fromLocale, toLocale);
+                if (_localeConverter.IsLocaleAvailable(fromLocale) && fromLocale != _toLocale)
+                {
+                    string localeConvertedText = _localeConverter.Convert(message.Text, fromLocale, _toLocale);
+                    message.Text = localeConvertedText;
+                }
             }
         }
-        
+
+
     }
 }
