@@ -84,6 +84,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Samples.Ai.Lu
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Samples.Ai.QnA.Translator", "samples\Microsoft.Bot.Samples.Ai.QnA.Translator\Microsoft.Bot.Samples.Ai.QnA.Translator.csproj", "{FC829D74-47BB-47F0-AEA0-9F0153008217}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Samples.Ai.SmartTalk", "samples\Microsoft.Bot.Samples.Ai.SmartTalk\Microsoft.Bot.Samples.Ai.SmartTalk.csproj", "{93D3320F-56C0-49B6-8353-302525147923}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -234,6 +236,10 @@ Global
 		{FC829D74-47BB-47F0-AEA0-9F0153008217}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FC829D74-47BB-47F0-AEA0-9F0153008217}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FC829D74-47BB-47F0-AEA0-9F0153008217}.Release|Any CPU.Build.0 = Release|Any CPU
+		{93D3320F-56C0-49B6-8353-302525147923}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{93D3320F-56C0-49B6-8353-302525147923}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{93D3320F-56C0-49B6-8353-302525147923}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{93D3320F-56C0-49B6-8353-302525147923}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -277,6 +283,7 @@ Global
 		{ED20DED8-C985-4C66-A58E-2A9CF4ECF6C3} = {3ADFB27A-95FA-4330-B211-1D66A29A17AB}
 		{57188218-5497-4CEE-B7FC-515FAA1F1151} = {3ADFB27A-95FA-4330-B211-1D66A29A17AB}
 		{FC829D74-47BB-47F0-AEA0-9F0153008217} = {3ADFB27A-95FA-4330-B211-1D66A29A17AB}
+		{93D3320F-56C0-49B6-8353-302525147923} = {3ADFB27A-95FA-4330-B211-1D66A29A17AB}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7173C9F3-A7F9-496E-9078-9156E35D6E16}
