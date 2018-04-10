@@ -16,19 +16,19 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
     {
         private static readonly JsonSerializer ActivitySerializer = JsonSerializer.Create();
 
+
         /// <summary>
-        /// Adds a bot service to the ASP.NET container.
+        /// Adds and configures services for a <typeparamref name="TBot">specified bot type</typeparamref> to the <see cref="IServiceCollection" />.
         /// </summary>
-        /// <typeparam name="TBot">The type of the bot to add.</typeparam>
-        /// <param name="services">The services collection for the ASP.NET application.</param>
-        /// <param name="setupAction">The delegate to run after an instance of the bot is added to the collection.</param>
-        /// <returns>The updated services collection.</returns>
-        /// <remarks>This method adds a default instance of <typeparamref name="TBot"/> as a transient service.</remarks>
-        public static IServiceCollection AddBot<TBot>(this IServiceCollection services, Action<BotFrameworkOptions> setupAction = null) where TBot : class, IBot
+        /// <typeparam name="TBot">A concrete type of <see cref="IBot"/ > that is to be registered and exposed to the Bot Framework.</typeparam>
+        /// <param name="services">The <see cref="IServiceCollection"/>.</param>
+        /// <param name="configureAction">A callback that can further be used to configure the bot.</param>
+        /// <returns>A reference to this instance after the operation has completed.</returns>
+        public static IServiceCollection AddBot<TBot>(this IServiceCollection services, Action<BotFrameworkOptions> configureAction = null) where TBot : class, IBot
         {
             services.AddTransient<IBot, TBot>();
 
-            services.Configure(setupAction);
+            services.Configure(configureAction);
 
             return services;
         }

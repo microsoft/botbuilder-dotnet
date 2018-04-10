@@ -40,7 +40,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions
             _settings = settings ?? new StateSettings();
         }
 
-        public async Task OnProcessRequest(ITurnContext context, MiddlewareSet.NextDelegate next)
+        public async Task OnTurn(ITurnContext context, MiddlewareSet.NextDelegate next)
         {
             await Read(context).ConfigureAwait(false);
             await next().ConfigureAwait(false);
