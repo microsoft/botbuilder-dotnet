@@ -9,13 +9,13 @@ namespace Microsoft.Bot
     /// Represents a bot that can operate on incoming activities.
     /// </summary>
     /// <remarks>A <see cref="BotAdapter"/> passes incoming activities from the user's 
-    /// channel to the bot's <see cref="OnReceiveActivity(ITurnContext)"/> method.</remarks>
+    /// channel to the bot's <see cref="OnTurn(ITurnContext)"/> method.</remarks>
     /// <example>
     /// This defines a bot that responds with "Hello world!" to any incoming message.
     /// <code>
     /// public class EchoBot : IBot
     /// {
-    ///     public async Task OnReceiveActivity(ITurnContext context)
+    ///     public async Task OnTurn(ITurnContext context)
     ///     {
     ///         if (context.Activity.Type is ActivityTypes.Message)
     ///         {
@@ -37,6 +37,6 @@ namespace Microsoft.Bot
         /// incoming activity, and other data needed to process the activity.</remarks>
         /// <seealso cref="ITurnContext"/>
         /// <seealso cref="Bot.Schema.IActivity"/>
-        Task OnReceiveActivity(ITurnContext turnContext);
+        Task OnTurn(ITurnContext turnContext);
     }
 }

@@ -11,7 +11,7 @@ namespace AlarmBot
 {
     public class AlarmBot : IBot
     {
-        public async Task OnReceiveActivity(ITurnContext turnContext)
+        public async Task OnTurn(ITurnContext turnContext)
         {
             // Get the current ActiveTopic from my persisted conversation state
             var context = new AlarmBotContext(turnContext);

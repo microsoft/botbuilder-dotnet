@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Samples.Echo
             adapter.ProcessActivity(async (context) =>
             {
                 var echoBot = new EchoBot();
-                await echoBot.OnReceiveActivity(context);
+                await echoBot.OnTurn(context);
             }).Wait();
         }
     }

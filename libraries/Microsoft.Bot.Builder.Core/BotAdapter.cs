@@ -113,11 +113,11 @@ namespace Microsoft.Bot.Builder
         /// in the pipeline. Once control reaches the end of the pipeline, the adapter calls 
         /// the <paramref name="callback"/> method. If a middleware component doesn’t call 
         /// the next delegate, the adapter does not call  any of the subsequent middleware’s 
-        /// <see cref="IMiddleware.OnProcessRequest(ITurnContext, MiddlewareSet.NextDelegate)"/> 
+        /// <see cref="IMiddleware.OnTurn(ITurnContext, MiddlewareSet.NextDelegate)"/> 
         /// methods or the callback method, and the pipeline short circuits.
         /// <para>When the turn is initiated by a user activity (reactive messaging), the
         /// callback method will be a reference to the bot's 
-        /// <see cref="IBot.OnReceiveActivity(ITurnContext)"/> method. When the turn is
+        /// <see cref="IBot.OnTurn(ITurnContext)"/> method. When the turn is
         /// initiated by a call to <see cref="ContinueConversation(ConversationReference, Func{ITurnContext, Task})"/>
         /// (proactive messaging), the callback method is the callback method that was provided in the call.</para>
         /// </remarks>

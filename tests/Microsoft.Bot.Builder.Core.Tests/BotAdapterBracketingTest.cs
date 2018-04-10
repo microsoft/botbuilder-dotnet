@@ -76,7 +76,7 @@ namespace Microsoft.Bot.Builder.Core.Tests
 
         public class CatchExceptionMiddleware : IMiddleware
         {
-            public async Task OnProcessRequest(ITurnContext context, MiddlewareSet.NextDelegate next)
+            public async Task OnTurn(ITurnContext context, MiddlewareSet.NextDelegate next)
             {
                 await context.SendActivity(context.Activity.CreateReply("BEFORE"));
                 try
@@ -89,17 +89,19 @@ namespace Microsoft.Bot.Builder.Core.Tests
                 }
 
                 await context.SendActivity(context.Activity.CreateReply("AFTER"));
-            }            
+            }
+
         }
 
         public class BeforeAFterMiddlware : IMiddleware
         {
-            public async Task OnProcessRequest(ITurnContext context, MiddlewareSet.NextDelegate next)
+            public async Task OnTurn(ITurnContext context, MiddlewareSet.NextDelegate next)
             {
                 await context.SendActivity(context.Activity.CreateReply("BEFORE"));
                 await next();
                 await context.SendActivity(context.Activity.CreateReply("AFTER"));
             }
+
         }
     }
 }

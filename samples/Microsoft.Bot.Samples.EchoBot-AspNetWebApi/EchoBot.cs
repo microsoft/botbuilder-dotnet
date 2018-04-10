@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Samples.Echo.AspNetWebApi
     {
         public EchoBot() { }
 
-        public async Task OnReceiveActivity(ITurnContext context)
+        public async Task OnTurn(ITurnContext context)
         {
             switch (context.Activity.Type)
             {

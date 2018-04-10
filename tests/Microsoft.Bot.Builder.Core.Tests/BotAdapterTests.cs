@@ -51,10 +51,11 @@ namespace Microsoft.Bot.Builder.Core.Tests
     public class CallCountingMiddleware : IMiddleware
     {
         public int Calls { get; set; }
-        public async Task OnProcessRequest(ITurnContext context, MiddlewareSet.NextDelegate next)
+        public async Task OnTurn(ITurnContext context, MiddlewareSet.NextDelegate next)
         {
             Calls++;
             await next();
         }
+
     }
 }

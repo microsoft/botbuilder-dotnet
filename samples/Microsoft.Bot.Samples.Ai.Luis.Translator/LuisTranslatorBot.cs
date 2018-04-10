@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Samples.Ai.Luis.Translator
 {
     public class LuisTranslatorBot : IBot
     {
-        public async Task OnReceiveActivity(ITurnContext context)
+        public async Task OnTurn(ITurnContext context)
         {
             switch (context.Activity.Type)
             {
