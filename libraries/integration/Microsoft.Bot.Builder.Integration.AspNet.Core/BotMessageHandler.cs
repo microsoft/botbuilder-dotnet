@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Handlers
         {
         }
        
-        protected override async Task ProcessMessageRequestAsync(HttpRequest request, BotFrameworkAdapter botFrameworkAdapter, Func<ITurnContext, Task> botCallbackHandler)
+        protected override async Task<InvokeResponse> ProcessMessageRequestAsync(HttpRequest request, BotFrameworkAdapter botFrameworkAdapter, Func<ITurnContext, Task> botCallbackHandler)
         {
             var activity = default(Activity);
 
@@ -28,10 +28,12 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Handlers
                 activity = BotMessageHandlerBase.BotMessageSerializer.Deserialize<Activity>(bodyReader);
             }
 
-            await botFrameworkAdapter.ProcessActivity(
+            var invokeResponse = await botFrameworkAdapter.ProcessActivity(
                     request.Headers["Authorization"],
                     activity,
                     botCallbackHandler);
+
+            return invokeResponse;
         }
     }
 }

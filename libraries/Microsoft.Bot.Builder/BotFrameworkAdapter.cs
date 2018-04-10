@@ -6,6 +6,7 @@ using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Rest.TransientFaultHandling;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -38,7 +39,8 @@ namespace Microsoft.Bot.Builder.Adapters
         private readonly ICredentialProvider _credentialProvider;
         private readonly HttpClient _httpClient;
         private readonly RetryPolicy _connectorClientRetryPolicy;
-        private Dictionary<string, MicrosoftAppCredentials> _appCredentialMap = new Dictionary<string, MicrosoftAppCredentials>();
+        private Dictionary<string, MicrosoftAppCredentials> _appCredentialMap = new Dictionary<string, MicrosoftAppCredentials>();        
+        private readonly ConcurrentDictionary<string, Activity> _invokeResponses = new ConcurrentDictionary<string, Activity>(); 
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BotFrameworkAdapter"/> class,
@@ -165,7 +167,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// </remarks>
         /// <seealso cref="ContinueConversation(string, ConversationReference, Func{ITurnContext, Task})"/>
         /// <seealso cref="BotAdapter.RunPipeline(ITurnContext, Func{ITurnContext, Task}, System.Threading.CancellationTokenSource)"/>
-        public async Task ProcessActivity(string authHeader, Activity activity, Func<ITurnContext, Task> callback)
+        public async Task<InvokeResponse> ProcessActivity(string authHeader, Activity activity, Func<ITurnContext, Task> callback)
         {
             BotAssert.ActivityNotNull(activity);
             var claimsIdentity =  await JwtTokenValidation.AuthenticateRequest(activity, authHeader, _credentialProvider, _httpClient);
@@ -175,6 +177,23 @@ namespace Microsoft.Bot.Builder.Adapters
             var connectorClient = await this.CreateConnectorClientAsync(activity.ServiceUrl, claimsIdentity);
             context.Services.Add<IConnectorClient>(connectorClient);
             await base.RunPipeline(context, callback).ConfigureAwait(false);
+
+            // Handle Invoke
+            if (activity.Type == ActivityTypes.Invoke)
+            {
+                string key = $"{activity.ChannelId}/{activity.Id}";
+                if (this._invokeResponses.TryGetValue(key, out Activity invokeResponse))
+                {
+                    return (InvokeResponse)invokeResponse.Value;
+                }
+
+                return null; 
+            }
+            else
+            {
+                // For all non-invoke scenarios, the HTTP layers don't have to mess withthe Body and return codes. 
+                return null;
+            }
         }
 
         /// <summary>
@@ -204,6 +223,14 @@ namespace Microsoft.Bot.Builder.Adapters
 
                     // In the case of a Delay, just create a fake one. Match the incoming activityId if it's there. 
                     response = new ResourceResponse(activity.Id ?? string.Empty); 
+                }
+                else if (activity.Type == "invokeResponse") // Aligning name with Node            
+                {
+                    string key = $"{activity.ChannelId}/{activity.ReplyToId}";
+                    _invokeResponses[key] = activity; 
+
+                    // In the case of Invoke, just create a fake one. Match the incoming activityId if it's there. 
+                    response = new ResourceResponse(activity.Id ?? string.Empty);
                 }
                 else
                 {
