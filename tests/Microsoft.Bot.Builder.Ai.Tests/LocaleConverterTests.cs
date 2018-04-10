@@ -32,7 +32,7 @@ namespace Microsoft.Bot.Builder.Ai.Tests
 
             var convertedMessage = localeConverter.Convert("Book me a plane ticket for France on 12/25/2018", "en-us", "zh-cn");
             Assert.IsNotNull(convertedMessage);
-            Assert.AreEqual("Book me a plane ticket for France on 2018-12-25", convertedMessage);
+            Assert.AreEqual("Book me a plane ticket for France on 2018-12-25", convertedMessage); 
         }
 
         [TestMethod]
