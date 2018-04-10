@@ -3,7 +3,8 @@
 
 using Microsoft.Bot.Builder.Core.Extensions.Tests; 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System; 
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Ai.Tests
@@ -42,6 +43,20 @@ namespace Microsoft.Bot.Builder.Ai.Tests
             var translatedSentence = await translator.TranslateArray(new string[] { sentence }, "fr", "en");
             Assert.IsNotNull(translatedSentence);
             Assert.AreEqual("Hi Jean Bouchier mon ami", translatedSentence[0]);
+        }
+
+        [TestMethod]
+        [TestCategory("AI")]
+        [TestCategory("Translator")]
+        public async Task Translator_PatternsTest()
+        {
+            Translator translator = new Translator(translatorKey);
+            translator.SetPostProcessorTemplate(new List<string> { "perr[oa]" });
+            var sentence = "mi perro se llama Enzo";
+
+            var translatedSentence = await translator.TranslateArray(new string[] { sentence }, "es", "en");
+            Assert.IsNotNull(translatedSentence);
+            Assert.AreEqual("My perro's name is Enzo.", translatedSentence[0]);
         }
 
         [TestMethod]

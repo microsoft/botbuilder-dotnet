@@ -85,16 +85,16 @@ namespace Microsoft.Bot.Builder.Ai
                     if ((srcLength + srcStartIndex) > sourceMessage.Length)
                         continue;
                     string srcWrd = sourceMessage.Substring(srcStartIndex, srcLength);
-                    int sourceWordIndex = Array.FindIndex(srcWrds, row => row == srcWrd);
+                    int sourceWordIndex = Array.FindIndex(srcWrds, row => row.Contains(srcWrd));
 
                     int trgstartIndex = Int32.Parse(wordIndexes[1].Split(':')[0]);
                     int trgLength = Int32.Parse(wordIndexes[1].Split(':')[1]) - trgstartIndex + 1;
                     if ((trgLength + trgstartIndex) > trgMessage.Length)
                         continue;
                     string trgWrd = trgMessage.Substring(trgstartIndex,trgLength);
-                    int targetWordIndex = Array.FindIndex(trgWrds, row => row == trgWrd);
+                    int targetWordIndex = Array.FindIndex(trgWrds, row => row.Contains(trgWrd));
                     
-                    if(sourceWordIndex>0 && targetWordIndex>0)
+                    if(sourceWordIndex>=0 && targetWordIndex>=0)
                         alignMap[sourceWordIndex] = targetWordIndex;
             }
             return alignMap;
@@ -116,7 +116,13 @@ namespace Microsoft.Bot.Builder.Ai
             if (alignment.ContainsKey(srcWrdIndx))
             { 
                 string[] trgWrds = processedTranslation.Split(' ');
-                trgWrds[alignment[srcWrdIndx]] = source.Split(' ')[srcWrdIndx];
+                string appendTrailAppostrophe = "";
+                if (trgWrds[alignment[srcWrdIndx]].Contains("'"))
+                {
+                    appendTrailAppostrophe = "'"+trgWrds[alignment[srcWrdIndx]].Split('\'')[1];
+                }
+                trgWrds[alignment[srcWrdIndx]] = source.Split(' ')[srcWrdIndx]+appendTrailAppostrophe;
+
                 processedTranslation = string.Join(" ", trgWrds);
             }
             return processedTranslation;
