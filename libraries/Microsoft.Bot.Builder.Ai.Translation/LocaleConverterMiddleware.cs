@@ -43,7 +43,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         /// <param name="context"></param>
         /// <param name="next"></param>
         /// <returns></returns>
-        public async Task OnProcessRequest(ITurnContext context, MiddlewareSet.NextDelegate next)
+        public async Task OnTurn(ITurnContext context, MiddlewareSet.NextDelegate next)
         {
             IMessageActivity message = context.Activity.AsMessageActivity();
             if (message != null)
