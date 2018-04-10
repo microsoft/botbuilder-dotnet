@@ -177,9 +177,6 @@ namespace Microsoft.Bot.Builder.Ai
                     dateTime = moment,
                     Text = result.Text
                 };
-                // In some cases locale Microsoft Recognizer consider any 4 digit number a date this condition is used to avoid this bug.
-                if (int.TryParse(curDateTimeText.Text,out int inputNumber))
-                    continue;
                 fndDates.Add(curDateTimeText);
             }
             return fndDates;
