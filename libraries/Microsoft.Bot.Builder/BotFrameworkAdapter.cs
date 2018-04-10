@@ -154,7 +154,9 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <param name="activity">The incoming activity.</param>
         /// <param name="callback">The code to run at the end of the adapter's middleware
         /// pipeline.</param>
-        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <returns>A task that represents the work queued to execute. If the activity type
+        /// was 'Invoke' and the corresponding key (channelId + activityId) was found
+        /// then an InvokeResponse is returned, otherwise null is returned.</returns>
         /// <exception cref="ArgumentNullException">
         /// <paramref name="activity"/> is <c>null</c>.</exception>
         /// <exception cref="UnauthorizedAccessException">
@@ -178,7 +180,8 @@ namespace Microsoft.Bot.Builder.Adapters
             context.Services.Add<IConnectorClient>(connectorClient);
             await base.RunPipeline(context, callback).ConfigureAwait(false);
 
-            // Handle Invoke
+            // Handle Invoke scenarios, which deviate from the request/response model in that 
+            // the Bot will return a specific body and return code. 
             if (activity.Type == ActivityTypes.Invoke)
             {
                 string key = $"{activity.ChannelId}/{activity.Id}";
@@ -191,7 +194,8 @@ namespace Microsoft.Bot.Builder.Adapters
             }
             else
             {
-                // For all non-invoke scenarios, the HTTP layers don't have to mess withthe Body and return codes. 
+                // For all non-invoke scenarios, the HTTP layers above don't have to mess 
+                // withthe Body and return codes. 
                 return null;
             }
         }
