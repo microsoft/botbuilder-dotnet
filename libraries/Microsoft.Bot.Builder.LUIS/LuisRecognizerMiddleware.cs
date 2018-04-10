@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 using Microsoft.Cognitive.LUIS;
 
-[assembly: InternalsVisibleTo("Microsoft.Bot.Builder.LUIS.Tests")]
 namespace Microsoft.Bot.Builder.LUIS
 {
     /// <summary>
@@ -56,7 +55,7 @@ namespace Microsoft.Bot.Builder.LUIS
             await next().ConfigureAwait(false);
         }
 
-        internal static ILuisModel RemoveSensitiveData(ILuisModel luisModel)
+        public static ILuisModel RemoveSensitiveData(ILuisModel luisModel)
         {
             return new LuisModel(luisModel.ModelID, Obfuscated, luisModel.UriBase, luisModel.ApiVersion);
         }
