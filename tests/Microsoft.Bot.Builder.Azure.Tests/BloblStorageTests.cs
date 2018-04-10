@@ -53,7 +53,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             if (hasStorageEmulator.Value)
             {
-                storage = new AzureBlobStorage("UseDevelopmentStorage=true", TestContext.TestName.Replace("_","") + TestContext.GetHashCode().ToString("x"));
+                storage = new AzureBlobStorage("UseDevelopmentStorage=true", TestContext.TestName.ToLowerInvariant().Replace("_","") + TestContext.GetHashCode().ToString("x"));
             }
         }
 

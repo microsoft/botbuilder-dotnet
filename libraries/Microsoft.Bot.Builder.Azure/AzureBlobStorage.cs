@@ -4,6 +4,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
@@ -89,44 +90,61 @@ namespace Microsoft.Bot.Builder.Azure
         {
             if (keys == null) throw new ArgumentNullException(nameof(keys));
 
-            foreach (var blobName in keys.Select(GetBlobName))
-            {
-                var blobReference = this.Container.Value.GetBlobReference(blobName);
-                await blobReference.DeleteAsync(
-                    DeleteSnapshotsOption.None, new AccessCondition { IfMatchETag = "*" }, new BlobRequestOptions(), new OperationContext()).ConfigureAwait(false);
-            }
+            await Task.WhenAll(
+                keys.Select(key =>
+                {
+                    var blobName = GetBlobName(key);
+                    var blobReference = this.Container.Value.GetBlobReference(blobName);
+                    return blobReference.DeleteIfExistsAsync();
+                }));
         }
 
         /// <summary>
         /// Retrieve entities from the configured blob container
         /// </summary>
-        /// <param name="keys">An array of entitiy keys</param>
+        /// <param name="keys">An array of entity keys</param>
         /// <returns></returns>
         public async Task<StoreItems> Read(string[] keys)
         {
             if (keys == null) throw new ArgumentNullException(nameof(keys));
 
             var storeItems = new StoreItems();
-            foreach (string blobName in keys.Select(GetBlobName))
-            {
-                using (var memoryStream = new MemoryStream())
+            await Task.WhenAll(
+                keys.Select(async (key) =>
                 {
+                    var blobName = GetBlobName(key);
                     var blobReference = this.Container.Value.GetBlobReference(blobName);
-                    await blobReference.DownloadToStreamAsync(memoryStream).ConfigureAwait(false);
-                    using (var streamReader = new StreamReader(memoryStream, Encoding.UTF8))
+                    using (var memoryStream = new MemoryStream())
                     {
-                        var json = streamReader.ReadToEnd();
-                        var obj = JsonConvert.DeserializeObject(json, serializationSettings);
-                        IStoreItem storeItem = obj as IStoreItem;
-                        if (storeItem != null)
+                        try
                         {
-                            storeItem.eTag = blobReference.Properties.ETag;
+                            await blobReference.DownloadToStreamAsync(memoryStream).ConfigureAwait(false);
+                        }
+                        catch (StorageException ex)
+                        {
+                            if ((HttpStatusCode)ex.RequestInformation.HttpStatusCode == HttpStatusCode.NotFound)
+                            {
+                                return;
+                            }
+
+                            throw;
                         }
 
-                        storeItems[blobName] = storeItem;
+                        memoryStream.Seek(0, SeekOrigin.Begin);
+                        using (var streamReader = new StreamReader(memoryStream, Encoding.UTF8))
+                        {
+                            var json = await streamReader.ReadToEndAsync();
+                            var obj = JsonConvert.DeserializeObject(json, serializationSettings);
+                            IStoreItem storeItem = obj as IStoreItem;
+                            if (storeItem != null)
+                            {
+                                storeItem.eTag = blobReference.Properties.ETag;
+                            }
+
+                            storeItems[key] = obj;
+                        }
                     }
-                }
-            }
+                }));
 
             return storeItems;
         }
@@ -140,15 +158,23 @@ namespace Microsoft.Bot.Builder.Azure
         {
             if (changes == null) throw new ArgumentNullException(nameof(changes));
 
-            foreach (var change in changes)
-            {
-                var blobName = GetBlobName(change.Key);
-                var newValue = change.Value as IStoreItem;
-                var json = JsonConvert.SerializeObject(newValue, Formatting.None, serializationSettings);
-                var blobReference = this.Container.Value.GetBlockBlobReference(blobName);
-
-                await blobReference.UploadTextAsync(json, new AccessCondition { IfMatchETag = newValue.eTag ?? "*" }, new BlobRequestOptions(), new OperationContext()).ConfigureAwait(false);
-            }
+            await Task.WhenAll(
+                changes.GetDynamicMemberNames().Select(key =>
+                {
+                    var blobName = GetBlobName(key);
+                    var newValue = changes.Get<object>(key);
+                    var storeItem = newValue as IStoreItem;
+                    var json = JsonConvert.SerializeObject(newValue, Formatting.None, serializationSettings);
+                    var blobReference = this.Container.Value.GetBlockBlobReference(blobName);
+                    
+                    // "*" eTag in IStoreItem converts to null condition for AccessCondition
+                    var calculatedETag = storeItem?.eTag == "*" ? null : storeItem?.eTag;
+                    return blobReference.UploadTextAsync(
+                        json,
+                        AccessCondition.GenerateIfMatchCondition(calculatedETag),
+                        new BlobRequestOptions(),
+                        new OperationContext());
+                }));
         }
     }
 }
