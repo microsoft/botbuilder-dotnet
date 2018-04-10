@@ -23,9 +23,16 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Handlers
     {
         public static readonly JsonSerializer BotMessageSerializer = JsonSerializer.Create(new JsonSerializerSettings
         {
-            ContractResolver = new CamelCasePropertyNamesContractResolver(),
-            Formatting = Newtonsoft.Json.Formatting.Indented,
             NullValueHandling = NullValueHandling.Ignore,
+            Formatting = Newtonsoft.Json.Formatting.Indented,
+            DateFormatHandling = Newtonsoft.Json.DateFormatHandling.IsoDateFormat,
+            DateTimeZoneHandling = Newtonsoft.Json.DateTimeZoneHandling.Utc,            
+            ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Serialize,
+            ContractResolver = new ReadOnlyJsonContractResolver(),
+            Converters = new List<JsonConverter>
+                        {
+                            new Iso8601TimeSpanConverter()
+                        }
         });
 
         private BotFrameworkAdapter _botFrameworkAdapter;
@@ -81,29 +88,15 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Handlers
                 }
                 else
                 {
-                    // In the event that an InvokeRepsonse is returned, it's up to us to take the status
-                    // code and Body from that object and return them. 
-
-                    // Taken from the ClientConnector.cs setting for JSON serialization. 
-                    var serializationSettings = new JsonSerializerSettings
-                    {
-                        Formatting = Newtonsoft.Json.Formatting.Indented,
-                        DateFormatHandling = Newtonsoft.Json.DateFormatHandling.IsoDateFormat,
-                        DateTimeZoneHandling = Newtonsoft.Json.DateTimeZoneHandling.Utc,
-                        NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore,
-                        ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Serialize,
-                        ContractResolver = new ReadOnlyJsonContractResolver(),
-                        Converters = new List<JsonConverter>
-                        {
-                            new Iso8601TimeSpanConverter()
-                        }
-                    };
-                    
-                    string bodyContent = Rest.Serialization.SafeJsonConvert.SerializeObject(invokeResponse.Body, serializationSettings);
-                    byte[] data = Encoding.UTF8.GetBytes(bodyContent);
-
                     response.ContentType = "application/json";
-                    await response.Body.WriteAsync(data, 0, data.Length);
+                    using (var writer = new StreamWriter(response.Body))
+                    {
+                        using (var jsonWriter = new JsonTextWriter(writer))
+                        {
+                            BotMessageSerializer.Serialize(jsonWriter, invokeResponse.Body);
+                        }
+                    }
+                       
                     response.StatusCode = invokeResponse.Status;
                 }
             }
