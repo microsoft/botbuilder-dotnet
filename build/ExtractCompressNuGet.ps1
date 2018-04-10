@@ -8,6 +8,7 @@ param
     [switch]$extract,
     [switch]$compress
 )
+mkdir $path
 pushd $path
 
 [int]$itemsProcessed = 0
