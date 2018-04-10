@@ -932,6 +932,14 @@
                     "description": "The original ID this message is a response to",
                     "type": "string"
                 },
+                "label": {
+                    "description": "Descriptive label",
+                    "type": "string"
+                },
+                "valueType": {
+                    "description": "Unique string which identifies the shape of the value object",
+                    "type": "string"
+                },
                 "value": {
                     "description": "Open-ended value",
                     "type": "object"

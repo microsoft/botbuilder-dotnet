@@ -42,7 +42,7 @@ namespace Microsoft.Bot.Schema
         /// <param name="vat">Total amount of VAT paid (or to be paid)</param>
         /// <param name="buttons">Set of actions applicable to the current
         /// card</param>
-        public ReceiptCard(string title = default(string), IList<ReceiptItem> items = default(IList<ReceiptItem>), IList<Fact> facts = default(IList<Fact>), CardAction tap = default(CardAction), string total = default(string), string tax = default(string), string vat = default(string), IList<CardAction> buttons = default(IList<CardAction>))
+        public ReceiptCard(string title = default(string), IList<Fact> facts = default(IList<Fact>), IList<ReceiptItem> items = default(IList<ReceiptItem>), CardAction tap = default(CardAction), string total = default(string), string tax = default(string), string vat = default(string), IList<CardAction> buttons = default(IList<CardAction>))
         {
             Title = title;
             Facts = facts;

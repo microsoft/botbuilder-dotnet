@@ -86,6 +86,9 @@ namespace Microsoft.Bot.Schema
         /// <param name="action">ContactAdded/Removed action</param>
         /// <param name="replyToId">The original ID this message is a response
         /// to</param>
+        /// <param name="label">Descriptive label</param>
+        /// <param name="valueType">Unique string which identifies the shape of
+        /// the value object</param>
         /// <param name="value">Open-ended value</param>
         /// <param name="name">Name of the operation to invoke or the name of
         /// the event</param>
@@ -106,7 +109,7 @@ namespace Microsoft.Bot.Schema
         /// "Notification" = notification semantics</param>
         /// <param name="textHighlights">TextHighlight in the activity
         /// represented in the ReplyToId property</param>
-        public Activity(string type = default(string), string id = default(string), System.DateTimeOffset? timestamp = default(System.DateTimeOffset?), System.DateTimeOffset? localTimestamp = default(System.DateTimeOffset?), string serviceUrl = default(string), string channelId = default(string), ChannelAccount from = default(ChannelAccount), ConversationAccount conversation = default(ConversationAccount), ChannelAccount recipient = default(ChannelAccount), string textFormat = default(string), string attachmentLayout = default(string), IList<ChannelAccount> membersAdded = default(IList<ChannelAccount>), IList<ChannelAccount> membersRemoved = default(IList<ChannelAccount>), IList<MessageReaction> reactionsAdded = default(IList<MessageReaction>), IList<MessageReaction> reactionsRemoved = default(IList<MessageReaction>), string topicName = default(string), bool? historyDisclosed = default(bool?), string locale = default(string), string text = default(string), string speak = default(string), string inputHint = default(string), string summary = default(string), SuggestedActions suggestedActions = default(SuggestedActions), IList<Attachment> attachments = default(IList<Attachment>), IList<Entity> entities = default(IList<Entity>), object channelData = default(object), string action = default(string), string replyToId = default(string), object value = default(object), string name = default(string), ConversationReference relatesTo = default(ConversationReference), string code = default(string), System.DateTimeOffset? expiration = default(System.DateTimeOffset?), string importance = default(string), string deliveryMode = default(string), IList<TextHighlight> textHighlights = default(IList<TextHighlight>))
+        public Activity(string type = default(string), string id = default(string), System.DateTimeOffset? timestamp = default(System.DateTimeOffset?), System.DateTimeOffset? localTimestamp = default(System.DateTimeOffset?), string serviceUrl = default(string), string channelId = default(string), ChannelAccount from = default(ChannelAccount), ConversationAccount conversation = default(ConversationAccount), ChannelAccount recipient = default(ChannelAccount), string textFormat = default(string), string attachmentLayout = default(string), IList<ChannelAccount> membersAdded = default(IList<ChannelAccount>), IList<ChannelAccount> membersRemoved = default(IList<ChannelAccount>), IList<MessageReaction> reactionsAdded = default(IList<MessageReaction>), IList<MessageReaction> reactionsRemoved = default(IList<MessageReaction>), string topicName = default(string), bool? historyDisclosed = default(bool?), string locale = default(string), string text = default(string), string speak = default(string), string inputHint = default(string), string summary = default(string), SuggestedActions suggestedActions = default(SuggestedActions), IList<Attachment> attachments = default(IList<Attachment>), IList<Entity> entities = default(IList<Entity>), object channelData = default(object), string action = default(string), string replyToId = default(string), string label = default(string), string valueType = default(string), object value = default(object), string name = default(string), ConversationReference relatesTo = default(ConversationReference), string code = default(string), System.DateTimeOffset? expiration = default(System.DateTimeOffset?), string importance = default(string), string deliveryMode = default(string), IList<TextHighlight> textHighlights = default(IList<TextHighlight>))
         {
             Type = type;
             Id = id;
@@ -136,6 +139,8 @@ namespace Microsoft.Bot.Schema
             ChannelData = channelData;
             Action = action;
             ReplyToId = replyToId;
+            Label = label;
+            ValueType = valueType;
             Value = value;
             Name = name;
             RelatesTo = relatesTo;
@@ -332,6 +337,19 @@ namespace Microsoft.Bot.Schema
         /// </summary>
         [JsonProperty(PropertyName = "replyToId")]
         public string ReplyToId { get; set; }
+
+        /// <summary>
+        /// Gets or sets descriptive label
+        /// </summary>
+        [JsonProperty(PropertyName = "label")]
+        public string Label { get; set; }
+
+        /// <summary>
+        /// Gets or sets unique string which identifies the shape of the value
+        /// object
+        /// </summary>
+        [JsonProperty(PropertyName = "valueType")]
+        public string ValueType { get; set; }
 
         /// <summary>
         /// Gets or sets open-ended value
