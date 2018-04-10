@@ -14,6 +14,16 @@ namespace Microsoft.Bot.Schema
         string Name { get; set; }
 
         /// <summary>
+        /// Descriptive label for the trace
+        /// </summary>
+        string Label { get; set; }
+
+        /// <summary>
+        /// Unique string which identifies the format of the value object
+        /// </summary>
+        string ValueType { get; set; }
+
+        /// <summary>
         /// Open-ended value
         /// </summary>
         object Value { get; set; }

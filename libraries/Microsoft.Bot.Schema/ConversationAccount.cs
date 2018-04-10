@@ -40,7 +40,7 @@ namespace Microsoft.Bot.Schema
         /// <param name="name">Display friendly name</param>
         /// <param name="role">Role of the entity behind the account (Example:
         /// User, Bot, etc.). Possible values include: 'user', 'bot'</param>
-        public ConversationAccount(bool? isGroup = default(bool?), string id = default(string), string name = default(string), string conversationType = default(string), string role = default(string))
+        public ConversationAccount(bool? isGroup = default(bool?), string conversationType = default(string), string id = default(string), string name = default(string), string role = default(string))
         {
             IsGroup = isGroup;
             ConversationType = conversationType;
