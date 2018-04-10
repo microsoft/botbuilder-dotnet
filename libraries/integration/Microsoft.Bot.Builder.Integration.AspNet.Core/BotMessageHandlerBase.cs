@@ -3,12 +3,18 @@
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Schema;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Net.Http.Headers;
+using Microsoft.Rest.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Net;
+using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Handlers
@@ -59,7 +65,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Handlers
 
             try
             {
-                await ProcessMessageRequestAsync(
+                var invokeResponse = await ProcessMessageRequestAsync(
                     request,
                     _botFrameworkAdapter,
                     context =>
@@ -69,7 +75,37 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Handlers
                         return bot.OnTurn(context);
                     });
 
-                response.StatusCode = (int)HttpStatusCode.OK;
+                if (invokeResponse == null)
+                {
+                    response.StatusCode = (int)HttpStatusCode.OK;
+                }
+                else
+                {
+                    // In the event that an InvokeRepsonse is returned, it's up to us to take the status
+                    // code and Body from that object and return them. 
+
+                    // Taken from the ClientConnector.cs setting for JSON serialization. 
+                    var serializationSettings = new JsonSerializerSettings
+                    {
+                        Formatting = Newtonsoft.Json.Formatting.Indented,
+                        DateFormatHandling = Newtonsoft.Json.DateFormatHandling.IsoDateFormat,
+                        DateTimeZoneHandling = Newtonsoft.Json.DateTimeZoneHandling.Utc,
+                        NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore,
+                        ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Serialize,
+                        ContractResolver = new ReadOnlyJsonContractResolver(),
+                        Converters = new List<JsonConverter>
+                        {
+                            new Iso8601TimeSpanConverter()
+                        }
+                    };
+                    
+                    string bodyContent = Rest.Serialization.SafeJsonConvert.SerializeObject(invokeResponse.Body, serializationSettings);
+                    byte[] data = Encoding.UTF8.GetBytes(bodyContent);
+
+                    response.ContentType = "application/json";
+                    await response.Body.WriteAsync(data, 0, data.Length);
+                    response.StatusCode = invokeResponse.Status;
+                }
             }
             catch (UnauthorizedAccessException)
             {
@@ -77,6 +113,6 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Handlers
             }
         }
 
-        protected abstract Task ProcessMessageRequestAsync(HttpRequest request, BotFrameworkAdapter botFrameworkAdapter, Func<ITurnContext, Task> botCallbackHandler);
+        protected abstract Task<InvokeResponse> ProcessMessageRequestAsync(HttpRequest request, BotFrameworkAdapter botFrameworkAdapter, Func<ITurnContext, Task> botCallbackHandler);
     }
 }
