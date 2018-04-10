@@ -82,11 +82,15 @@ namespace Microsoft.Bot.Builder.Ai
                     string[] wordIndexes = alignData.Split('-');
                     int srcStartIndex = Int32.Parse(wordIndexes[0].Split(':')[0]);
                     int srcLength = Int32.Parse(wordIndexes[0].Split(':')[1]) - srcStartIndex + 1;
+                    if ((srcLength + srcStartIndex) > sourceMessage.Length)
+                        continue;
                     string srcWrd = sourceMessage.Substring(srcStartIndex, srcLength);
                     int sourceWordIndex = Array.FindIndex(srcWrds, row => row == srcWrd);
 
                     int trgstartIndex = Int32.Parse(wordIndexes[1].Split(':')[0]);
-                    int trgLength = Int32.Parse(wordIndexes[1].Split(':')[1]) - trgstartIndex + 1; 
+                    int trgLength = Int32.Parse(wordIndexes[1].Split(':')[1]) - trgstartIndex + 1;
+                    if ((trgLength + trgstartIndex) > trgMessage.Length)
+                        continue;
                     string trgWrd = trgMessage.Substring(trgstartIndex,trgLength);
                     int targetWordIndex = Array.FindIndex(trgWrds, row => row == trgWrd);
                     
@@ -353,6 +357,7 @@ namespace Microsoft.Bot.Builder.Ai
                             string translation = xe.Element(ns + "TranslatedText").Value;
                             translation = _postProcessor.FixTranslation(translateArraySourceTexts[sentIndex], xe.Element(ns + "Alignment").Value, translation);
                             results.Add(translation.Trim());
+                            sentIndex += 1;
                         }
                         return results.ToArray();
 
