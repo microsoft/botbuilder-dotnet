@@ -116,12 +116,12 @@ namespace Microsoft.Bot.Builder.Ai
             if (alignment.ContainsKey(srcWrdIndx))
             { 
                 string[] trgWrds = processedTranslation.Split(' ');
-                string appendTrailAppostrophe = "";
+                string appendTrailApostrophe = "";
                 if (trgWrds[alignment[srcWrdIndx]].Contains("'"))
                 {
-                    appendTrailAppostrophe = "'"+trgWrds[alignment[srcWrdIndx]].Split('\'')[1];
+                    appendTrailApostrophe = "'"+trgWrds[alignment[srcWrdIndx]].Split('\'')[1];
                 }
-                trgWrds[alignment[srcWrdIndx]] = source.Split(' ')[srcWrdIndx]+appendTrailAppostrophe;
+                trgWrds[alignment[srcWrdIndx]] = source.Split(' ')[srcWrdIndx]+appendTrailApostrophe;
 
                 processedTranslation = string.Join(" ", trgWrds);
             }
