@@ -82,15 +82,19 @@ namespace Microsoft.Bot.Builder.Ai.Translation
                     string[] wordIndexes = alignData.Split('-');
                     int srcStartIndex = Int32.Parse(wordIndexes[0].Split(':')[0]);
                     int srcLength = Int32.Parse(wordIndexes[0].Split(':')[1]) - srcStartIndex + 1;
+                    if ((srcLength + srcStartIndex) > sourceMessage.Length)
+                        continue;
                     string srcWrd = sourceMessage.Substring(srcStartIndex, srcLength);
-                    int sourceWordIndex = Array.FindIndex(srcWrds, row => row == srcWrd);
+                    int sourceWordIndex = Array.FindIndex(srcWrds, row => row.Contains(srcWrd));
 
                     int trgstartIndex = Int32.Parse(wordIndexes[1].Split(':')[0]);
-                    int trgLength = Int32.Parse(wordIndexes[1].Split(':')[1]) - trgstartIndex + 1; 
+                    int trgLength = Int32.Parse(wordIndexes[1].Split(':')[1]) - trgstartIndex + 1;
+                    if ((trgLength + trgstartIndex) > trgMessage.Length)
+                        continue;
                     string trgWrd = trgMessage.Substring(trgstartIndex,trgLength);
-                    int targetWordIndex = Array.FindIndex(trgWrds, row => row == trgWrd);
+                    int targetWordIndex = Array.FindIndex(trgWrds, row => row.Contains(trgWrd));
                     
-                    if(sourceWordIndex>0 && targetWordIndex>0)
+                    if(sourceWordIndex>=0 && targetWordIndex>=0)
                         alignMap[sourceWordIndex] = targetWordIndex;
             }
             return alignMap;
@@ -112,7 +116,13 @@ namespace Microsoft.Bot.Builder.Ai.Translation
             if (alignment.ContainsKey(srcWrdIndx))
             { 
                 string[] trgWrds = processedTranslation.Split(' ');
-                trgWrds[alignment[srcWrdIndx]] = source.Split(' ')[srcWrdIndx];
+                string appendTrailApostrophe = "";
+                if (trgWrds[alignment[srcWrdIndx]].Contains("'"))
+                {
+                    appendTrailApostrophe = "'"+trgWrds[alignment[srcWrdIndx]].Split('\'')[1];
+                }
+                trgWrds[alignment[srcWrdIndx]] = source.Split(' ')[srcWrdIndx]+appendTrailApostrophe;
+
                 processedTranslation = string.Join(" ", trgWrds);
             }
             return processedTranslation;
@@ -353,6 +363,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation
                             string translation = xe.Element(ns + "TranslatedText").Value;
                             translation = _postProcessor.FixTranslation(translateArraySourceTexts[sentIndex], xe.Element(ns + "Alignment").Value, translation);
                             results.Add(translation.Trim());
+                            sentIndex += 1;
                         }
                         return results.ToArray();
 

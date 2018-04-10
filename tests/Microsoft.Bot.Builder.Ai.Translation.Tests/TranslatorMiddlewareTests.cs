@@ -37,7 +37,7 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
                     context.SendActivity(context.Activity.AsMessageActivity().Text);
                 }
                 return Task.CompletedTask;
-            })
+            })  
             .Send("salut")
                 .AssertReply("Hello")
             .Send("salut 10-20")
