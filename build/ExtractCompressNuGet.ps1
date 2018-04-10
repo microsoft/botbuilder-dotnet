@@ -8,6 +8,7 @@ param
     [switch]$extract,
     [switch]$compress
 )
+
 pushd $path
 
 [int]$itemsProcessed = 0
