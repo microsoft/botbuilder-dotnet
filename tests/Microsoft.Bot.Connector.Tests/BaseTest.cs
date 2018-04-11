@@ -18,7 +18,7 @@ namespace Connector.Tests
 
     public class BaseTest
     {
-        private const HttpRecorderMode mode = HttpRecorderMode.Playback;
+        private readonly HttpRecorderMode mode = HttpRecorderMode.Playback;
 
         protected const string clientId = "[MSAPP_ID]";
         protected const string clientSecret = "[MSAPP_PASSWORD]";
