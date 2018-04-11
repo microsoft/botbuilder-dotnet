@@ -1,67 +1,27 @@
-﻿using System; 
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using Microsoft.Bot.Schema; 
+﻿using System;
+using Microsoft.Recognizers.Text.Choice;
 using static Microsoft.Bot.Builder.Prompts.PromptValidatorEx;
 
 namespace Microsoft.Bot.Builder.Prompts
 {
-    public class ConfirmResult : PromptResult
-    {
-        public ConfirmResult() { }
-
-        public bool Confirmation { get; set; }
-
-        public string Text { get; set; }
-    }
 
     /// <summary>
     /// ConfirmPrompt recognizes confrimation expressions as bool 
     /// </summary>
-    public class ConfirmPrompt : BasePrompt<ConfirmResult>
+    public class ConfirmPrompt : ChoicePrompt<bool>
     {
-        // private IModel _model;
-        private Regex yes = new Regex(@"(\byes\b|\byep\b|\bok\b|\byessir\b|\bconfirm\b|^y$)", RegexOptions.IgnoreCase);
-        private Regex no = new Regex(@"(\bno\b|\bnope\b|\bnosir\b|\bcancel\b|^n$)", RegexOptions.IgnoreCase);
-
-        public ConfirmPrompt(string culture, PromptValidator<ConfirmResult> validator = null)
-            : base(validator)
+        public ConfirmPrompt(string culture, PromptValidator<ChoiceResult<bool>> validator = null)
+            : base(new ChoiceRecognizer(culture).GetBooleanModel(), validator)
         {
-
+            // ToDo: The creation of the new Recognizer is expensive given all of the
+            // Regex compilation in there. If we need to optimize this, we can add a static 
+            // concurrent dictionary here based on culture. The model.parse() method called 
+            // in the base class is thread safe.
         }
 
-        //protected ConfirmPrompt(IModel model, PromptValidator<ConfirmResult> validator = null)
-        //    : base(validator)
-        //{
-        //    this._model = model;
-        //}
-
-        public override async Task<ConfirmResult> Recognize(ITurnContext context)
+        public ConfirmPrompt(IModel model, PromptValidator<ChoiceResult<bool>> validator = null)
+            : base(model, validator)
         {
-            BotAssert.ContextNotNull(context);
-            BotAssert.ActivityNotNull(context.Activity);
-            if (context.Activity.Type != ActivityTypes.Message)
-                throw new InvalidOperationException("No Message to Recognize");
-
-            IMessageActivity message = context.Activity.AsMessageActivity();
-            var confirmResult = new ConfirmResult();
-            Match yesMatch = yes.Match(message.Text);
-            Match noMatch = no.Match(message.Text);
-            if (yesMatch.Success)
-            {
-                confirmResult.Status = PromptStatus.Recognized;
-                confirmResult.Confirmation = true;
-                confirmResult.Text = yesMatch.Value;
-                await Validate(context, confirmResult);
-            }
-            else if (noMatch.Success)
-            {
-                confirmResult.Status = PromptStatus.Recognized;
-                confirmResult.Confirmation = false;
-                confirmResult.Text = noMatch.Value;
-                await Validate(context, confirmResult);
-            }
-            return confirmResult;
         }
     }
 }
