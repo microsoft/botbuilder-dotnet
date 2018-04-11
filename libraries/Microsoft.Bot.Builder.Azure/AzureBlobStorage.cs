@@ -37,7 +37,7 @@ namespace Microsoft.Bot.Builder.Azure
         /// <summary>
         /// The Azure Storage Blob Container where entities will be stored
         /// </summary>
-        public Lazy<CloudBlobContainer> Container { get; private set; }
+        private Lazy<CloudBlobContainer> Container { get; set; }
 
         /// <summary>
         /// Creates the AzureBlobStorage instance
