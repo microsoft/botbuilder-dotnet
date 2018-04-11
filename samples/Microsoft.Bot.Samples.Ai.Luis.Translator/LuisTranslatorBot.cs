@@ -1,14 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
-using Microsoft.Bot.Builder.LUIS;
+using Microsoft.Bot.Builder.Ai.LUIS;
 using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Samples.Ai.Luis.Translator
 {
     public class LuisTranslatorBot : IBot
     {
-        public async Task OnReceiveActivity(ITurnContext context)
+        public async Task OnTurn(ITurnContext context)
         {
             switch (context.Activity.Type)
             {

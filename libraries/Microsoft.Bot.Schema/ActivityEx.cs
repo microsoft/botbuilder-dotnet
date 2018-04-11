@@ -29,7 +29,8 @@ namespace Microsoft.Bot.Schema
         ITypingActivity,
         IEndOfConversationActivity,
         IEventActivity,
-        IInvokeActivity
+        IInvokeActivity,
+        ITraceActivity
     {
         /// <summary>
         /// Content-type for an Activity
@@ -195,6 +196,12 @@ namespace Microsoft.Bot.Schema
         /// </summary>
         /// <returns></returns>
         public ISuggestionActivity AsSuggestionActivity() { return IsActivity(ActivityTypes.Suggestion) ? this : null; }
+
+        /// <summary>
+        /// Return an ITraceActivity if this is a Trace activity
+        /// </summary>
+        /// <returns></returns>
+        public ITraceActivity AsTraceActivity() { return IsActivity(ActivityTypes.Trace) ? this : null; }
 
         /// <summary>
         /// Checks if this (message) activity has content.

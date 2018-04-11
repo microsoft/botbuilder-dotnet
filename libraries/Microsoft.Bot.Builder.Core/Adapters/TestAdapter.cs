@@ -44,7 +44,7 @@ namespace Microsoft.Bot.Builder.Adapters
             return this;
         }
 
-        public Task ProcessActivity(Activity activity, Func<ITurnContext, Task> callback, CancellationTokenSource cancelToken = null)
+        public async Task ProcessActivity(Activity activity, Func<ITurnContext, Task> callback, CancellationTokenSource cancelToken = null)
         {
             lock (this.ConversationReference)
             {
@@ -60,8 +60,10 @@ namespace Microsoft.Bot.Builder.Adapters
                 var id = activity.Id = (this._nextId++).ToString();
             }
 
-            var context = new TurnContext(this, activity);
-            return base.RunPipeline(context, callback, cancelToken);
+            using (var context = new TurnContext(this, activity))
+            {
+                await base.RunPipeline(context, callback, cancelToken);
+            }
         }
 
         public ConversationReference ConversationReference { get; set; }

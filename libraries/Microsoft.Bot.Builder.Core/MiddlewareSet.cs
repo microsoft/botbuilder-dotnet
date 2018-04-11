@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Builder
             await ReceiveActivityInternal(context, null).ConfigureAwait(false);
         }
 
-        public async Task OnProcessRequest(ITurnContext context, NextDelegate next)
+        public async Task OnTurn(ITurnContext context, NextDelegate next)
         {
             await ReceiveActivityInternal(context, null).ConfigureAwait(false);
             await next().ConfigureAwait(false);
@@ -64,7 +64,7 @@ namespace Microsoft.Bot.Builder
 
 
             // Execute the next middleware passing a closure that will recurse back into this method at the next piece of middlware as the NextDelegate
-            return nextMiddleware.OnProcessRequest(
+            return nextMiddleware.OnTurn(
                 context,
                 () => ReceiveActivityInternal(context, callback, nextMiddlewareIndex + 1));
         }

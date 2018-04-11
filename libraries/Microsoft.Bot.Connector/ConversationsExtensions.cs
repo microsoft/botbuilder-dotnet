@@ -22,6 +22,39 @@ namespace Microsoft.Bot.Connector
     public static partial class ConversationsExtensions
     {
             /// <summary>
+            /// GetConversations
+            /// </summary>
+            /// <remarks>
+            /// List the Conversations in which this bot has participated.
+            ///
+            /// GET from this method with a skip token
+            ///
+            /// The return value is a ConversationsResult, which contains an array of
+            /// ConversationMembers and a skip token.  If the skip token is not empty, then
+            /// there are further values to be returned. Call this method again with the
+            /// returned token to get more values.
+            ///
+            /// Each ConversationMembers object contains the ID of the conversation and an
+            /// array of ChannelAccounts that describe the members of the conversation.
+            /// </remarks>
+            /// <param name='operations'>
+            /// The operations group for this extension method.
+            /// </param>
+            /// <param name='continuationToken'>
+            /// skip or continuation token
+            /// </param>
+            /// <param name='cancellationToken'>
+            /// The cancellation token.
+            /// </param>
+            public static async Task<ConversationsResult> GetConversationsAsync(this IConversations operations, string continuationToken = default(string), CancellationToken cancellationToken = default(CancellationToken))
+            {
+                using (var _result = await operations.GetConversationsWithHttpMessagesAsync(continuationToken, null, cancellationToken).ConfigureAwait(false))
+                {
+                    return _result.Body;
+                }
+            }
+
+            /// <summary>
             /// CreateConversation
             /// </summary>
             /// <remarks>
@@ -230,6 +263,34 @@ namespace Microsoft.Bot.Connector
                 {
                     return _result.Body;
                 }
+            }
+
+            /// <summary>
+            /// DeleteConversationMember
+            /// </summary>
+            /// <remarks>
+            /// Deletes a member from a converstion.
+            ///
+            /// This REST API takes a ConversationId and a memberId (of type string) and
+            /// removes that member from the conversation. If that member was the last
+            /// member
+            /// of the conversation, the conversation will also be deleted.
+            /// </remarks>
+            /// <param name='operations'>
+            /// The operations group for this extension method.
+            /// </param>
+            /// <param name='conversationId'>
+            /// Conversation ID
+            /// </param>
+            /// <param name='memberId'>
+            /// ID of the member to delete from this conversation
+            /// </param>
+            /// <param name='cancellationToken'>
+            /// The cancellation token.
+            /// </param>
+            public static async Task DeleteConversationMemberAsync(this IConversations operations, string conversationId, string memberId, CancellationToken cancellationToken = default(CancellationToken))
+            {
+                (await operations.DeleteConversationMemberWithHttpMessagesAsync(conversationId, memberId, null, cancellationToken).ConfigureAwait(false)).Dispose();
             }
 
             /// <summary>
