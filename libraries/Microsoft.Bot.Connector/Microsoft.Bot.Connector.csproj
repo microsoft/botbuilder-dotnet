@@ -48,6 +48,8 @@
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="5.2.0" />
+		<PackageReference Include="Microsoft.Recognizers.Text" Version="1.0.1.1" />
+		<PackageReference Include="Microsoft.Recognizers.Text.DateTime" Version="1.0.1.1" />
 		<PackageReference Include="Microsoft.Rest.ClientRuntime" Version="2.3.10" />
 		<PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
 		<PackageReference Include="Microsoft.Bot.Schema" Condition=" '$(PackageVersion)' == '' " Version="4.0.0-local" />

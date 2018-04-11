@@ -42,7 +42,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation
 
         private static readonly ConcurrentDictionary<string, DateAndTimeLocaleFormat> _mapLocaleToFunction = new ConcurrentDictionary<string, DateAndTimeLocaleFormat>();
         private static LocaleConverter _localeConverter;
-        private static readonly ConcurrentDictionary<string, DateTimeModel> _cacheDateTimeModel = new ConcurrentDictionary<string, DateTimeModel>();
+
         public static LocaleConverter Converter
         {
             get
@@ -66,7 +66,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         /// </summary>
         private void InitLocales()
         {
-            if (_mapLocaleToFunction.Count > 0 && _cacheDateTimeModel.Count > 0)
+            if (_mapLocaleToFunction.Count > 0 )
                 return;
             DateAndTimeLocaleFormat yearMonthDay = new DateAndTimeLocaleFormat
             {
@@ -90,36 +90,6 @@ namespace Microsoft.Bot.Builder.Ai.Translation
             foreach (string locale in new string[] { "en-au", "fr-be", "fr-ch", "fr-fr", "fr-lu", "fr-mc", "de-at", "de-ch", "de-de", "de-lu", "de-li" })
             {
                 _mapLocaleToFunction[locale] = dayMonthYear;
-            }
-            foreach (string fromLocale in _mapLocaleToFunction.Keys)
-            {
-                string key = fromLocale.Split('-')[0];
-                if (_cacheDateTimeModel.ContainsKey(key))
-                    continue;
-                if (fromLocale.StartsWith("fr"))
-                {
-                    _cacheDateTimeModel[key] = DateTimeRecognizer.GetInstance().GetDateTimeModel(Culture.French);
-                }
-                else if (fromLocale.StartsWith("de"))
-                {
-                    _cacheDateTimeModel[key] = DateTimeRecognizer.GetInstance().GetDateTimeModel(Culture.German);
-                }
-                else if (fromLocale.StartsWith("pt"))
-                {
-                    _cacheDateTimeModel[key] = DateTimeRecognizer.GetInstance().GetDateTimeModel(Culture.Portuguese);
-                }
-                else if (fromLocale.StartsWith("zh"))
-                {
-                    _cacheDateTimeModel[key] = DateTimeRecognizer.GetInstance().GetDateTimeModel(Culture.Chinese);
-                }
-                else if (fromLocale.StartsWith("es"))
-                {
-                    _cacheDateTimeModel[key] = DateTimeRecognizer.GetInstance().GetDateTimeModel(Culture.Spanish);
-                }
-                else if (fromLocale.StartsWith("en"))
-                {
-                    _cacheDateTimeModel[key] = DateTimeRecognizer.GetInstance().GetDateTimeModel(Culture.English);
-                }
             }
             _mapLocaleToFunction["en-us"] = monthDayYEar;
         }
@@ -150,9 +120,9 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         private List<TextAndDateTime> ExtractDate(string message, string fromLocale)
         {
             List<TextAndDateTime> fndDates = new List<TextAndDateTime>();
-            var model = FindCulture(fromLocale);
-            //Recognizer Model will be used to parse input message and detect date or time.
-            var results = model.Parse(message);
+            //extract culture name.
+            var cultureName = FindCulture(fromLocale);
+            var results = DateTimeRecognizer.RecognizeDateTime(message, cultureName);
             //looping on each result and extracting found date objects from input utterance
             foreach (ModelResult result in results)
             {
@@ -182,12 +152,32 @@ namespace Microsoft.Bot.Builder.Ai.Translation
             return fndDates;
         }
 
-        private static DateTimeModel FindCulture(string fromLocale)
+        private static string FindCulture(string fromLocale)
         {
             string culture = fromLocale.Split('-')[0];
-            if (_cacheDateTimeModel.ContainsKey(culture))
+            if (fromLocale.StartsWith("fr"))
             {
-                return _cacheDateTimeModel[culture];
+                return Culture.French;
+            }
+            else if (fromLocale.StartsWith("de"))
+            {
+                return Culture.German;
+            }
+            else if (fromLocale.StartsWith("pt"))
+            {
+                return Culture.Portuguese;
+            }
+            else if (fromLocale.StartsWith("zh"))
+            {
+                return Culture.Chinese;
+            }
+            else if (fromLocale.StartsWith("es"))
+            {
+                return Culture.Spanish;
+            }
+            else if (fromLocale.StartsWith("en"))
+            {
+                return Culture.English;
             }
             else
             {

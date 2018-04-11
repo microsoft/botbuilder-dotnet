@@ -39,6 +39,8 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Bot.Builder.Core" Condition=" '$(PackageVersion)' == '' " Version="4.0.0-local" />
     <PackageReference Include="Microsoft.Bot.Builder.Core" Condition=" '$(PackageVersion)' != '' " Version="$(PackageVersion)" />
+    <PackageReference Include="Microsoft.Recognizers.Text" Version="1.0.1.1" />
+    <PackageReference Include="Microsoft.Recognizers.Text.DateTime" Version="1.0.1.1" />
     <PackageReference Include="Microsoft.Rest.ClientRuntime" Version="2.3.10" />
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
   </ItemGroup>
