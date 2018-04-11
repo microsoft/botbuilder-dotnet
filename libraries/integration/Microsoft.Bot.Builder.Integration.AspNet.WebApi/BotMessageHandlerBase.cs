@@ -1,18 +1,16 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Rest.Serialization;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Formatting;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Rest.Serialization;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Handlers
 {
@@ -24,15 +22,12 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Handlers
                 SerializerSettings =
                 {
                     NullValueHandling = NullValueHandling.Ignore,
-                    Formatting = Newtonsoft.Json.Formatting.Indented,
-                    DateFormatHandling = Newtonsoft.Json.DateFormatHandling.IsoDateFormat,
-                    DateTimeZoneHandling = Newtonsoft.Json.DateTimeZoneHandling.Utc,
-                    ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Serialize,
+                    Formatting = Formatting.Indented,
+                    DateFormatHandling = DateFormatHandling.IsoDateFormat,
+                    DateTimeZoneHandling = DateTimeZoneHandling.Utc,
+                    ReferenceLoopHandling = ReferenceLoopHandling.Serialize,
                     ContractResolver = new ReadOnlyJsonContractResolver(),
-                    Converters = new List<JsonConverter>
-                        {
-                            new Iso8601TimeSpanConverter()
-                        }
+                    Converters = new List<JsonConverter> { new Iso8601TimeSpanConverter() }
                 }
             }
         };
@@ -99,8 +94,10 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Handlers
                 else
                 {
                     var response = request.CreateResponse((HttpStatusCode)invokeResponse.Status);
-                    response.Content = new ObjectContent(invokeResponse.Body.GetType(),
-                        invokeResponse.Body, BotMessageMediaTypeFormatters[0]);
+                    response.Content = new ObjectContent(
+                        invokeResponse.Body.GetType(),
+                        invokeResponse.Body,
+                        BotMessageMediaTypeFormatters[0]);
 
                     return response;
                 }
