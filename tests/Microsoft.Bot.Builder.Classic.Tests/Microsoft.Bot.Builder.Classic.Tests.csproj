@@ -28,6 +28,8 @@
 		<PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="5.2.1" />
 		<PackageReference Include="Microsoft.IdentityModel.Tokens" Version="5.2.1" />
 		<PackageReference Include="Microsoft.Net.Compilers" Version="1.2.1" targetFramework="net46" developmentDependency="true" />
+
+
 		<PackageReference Include="Microsoft.Rest.ClientRuntime" Version="2.3.10" />
 		<PackageReference Include="Microsoft.WindowsAzure.ConfigurationManager" Version="3.2.1" targetFramework="net46" />
 		<PackageReference Include="Moq" Version="4.8.2" targetFramework="net46" />
