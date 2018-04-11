@@ -3,12 +3,9 @@ using System.Resources;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-//[assembly: InternalsVisibleTo("Microsoft.Bot.Builder.Classic.Tests")]
-//[assembly: InternalsVisibleTo("Microsoft.Bot.Sample.Tests")]
+////[assembly: InternalsVisibleTo("Microsoft.Bot.Builder.Classic.Tests")]
+////[assembly: InternalsVisibleTo("Microsoft.Bot.Sample.Tests")]
 [assembly: NeutralResourcesLanguage("en")]
-
-//[assembly: AssemblyKeyFileAttribute(@"..\\..\\..\\buildtools\\35MSSharedLib1024.snk")]
-//[assembly: AssemblyDelaySignAttribute(true)]
 
 [assembly: AssemblyTitle("Microsoft.Bot.Builder.Classic")]
 [assembly: AssemblyDescription("Microsoft.Bot.Builder.Classic")]
@@ -28,3 +25,8 @@ using System.Runtime.InteropServices;
 //
 [assembly: AssemblyVersion("1.0.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
+
+#if !DEBUG
+[assembly: AssemblyDelaySign(true)]
+[assembly: AssemblyKeyFile(@"..\..\..\..\..\build\35MSSharedLib1024.snk")]
+#endif
