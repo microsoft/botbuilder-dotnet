@@ -162,21 +162,25 @@ namespace Microsoft.Bot.Builder.Azure
             if (changes == null) throw new ArgumentNullException(nameof(changes));
 
             await Task.WhenAll(
-                changes.GetDynamicMemberNames().Select(key =>
+                changes.GetDynamicMemberNames().Select(async (key) =>
                 {
-                    var blobName = GetBlobName(key);
                     var newValue = changes.Get<object>(key);
                     var storeItem = newValue as IStoreItem;
-                    var json = JsonConvert.SerializeObject(newValue, Formatting.None, SerializationSettings);
-                    var blobReference = this.Container.Value.GetBlockBlobReference(blobName);
-                    
                     // "*" eTag in IStoreItem converts to null condition for AccessCondition
                     var calculatedETag = storeItem?.eTag == "*" ? null : storeItem?.eTag;
-                    return blobReference.UploadTextAsync(
-                        json,
+
+                    var blobName = GetBlobName(key);
+                    var blobReference = this.Container.Value.GetBlockBlobReference(blobName);
+                    var jsonSerializer = JsonSerializer.Create(SerializationSettings);
+                    using (var blobStream = await blobReference.OpenWriteAsync(
                         AccessCondition.GenerateIfMatchCondition(calculatedETag),
                         new BlobRequestOptions(),
-                        new OperationContext());
+                        new OperationContext()))
+                    using (var streamWriter = new StreamWriter(blobStream))
+                    using (var jsonWriter = new JsonTextWriter(streamWriter))
+                    {
+                        jsonSerializer.Serialize(jsonWriter, newValue);
+                    }
                 }));
         }
     }
