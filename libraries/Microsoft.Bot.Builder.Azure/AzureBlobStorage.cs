@@ -117,35 +117,32 @@ namespace Microsoft.Bot.Builder.Azure
                 {
                     var blobName = GetBlobName(key);
                     var blobReference = this.Container.Value.GetBlobReference(blobName);
-                    using (var memoryStream = new MemoryStream())
+                    var jsonSerializer = JsonSerializer.Create(SerializationSettings);
+
+                    try
                     {
-                        try
+                        using (var blobStream = await blobReference.OpenReadAsync())
+                        using (var streamReader = new StreamReader(blobStream))
+                        using (var jsonReader = new JsonTextReader(streamReader))
                         {
-                            await blobReference.DownloadToStreamAsync(memoryStream).ConfigureAwait(false);
-                        }
-                        catch (StorageException ex)
-                        {
-                            if ((HttpStatusCode)ex.RequestInformation.HttpStatusCode == HttpStatusCode.NotFound)
-                            {
-                                return;
-                            }
+                            var obj = jsonSerializer.Deserialize(jsonReader);
 
-                            throw;
-                        }
-
-                        memoryStream.Seek(0, SeekOrigin.Begin);
-                        using (var streamReader = new StreamReader(memoryStream, Encoding.UTF8))
-                        {
-                            var json = await streamReader.ReadToEndAsync();
-                            var obj = JsonConvert.DeserializeObject(json, SerializationSettings);
-                            IStoreItem storeItem = obj as IStoreItem;
-                            if (storeItem != null)
+                            if (obj is IStoreItem storeItem)
                             {
                                 storeItem.eTag = blobReference.Properties.ETag;
                             }
 
                             storeItems[key] = obj;
                         }
+                    }
+                    catch (StorageException ex)
+                    {
+                        if ((HttpStatusCode)ex.RequestInformation.HttpStatusCode == HttpStatusCode.NotFound)
+                        {
+                            return;
+                        }
+
+                        throw;
                     }
                 }));
 
