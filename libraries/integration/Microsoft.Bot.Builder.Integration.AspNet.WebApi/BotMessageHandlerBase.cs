@@ -18,14 +18,21 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Handlers
 {
     public abstract class BotMessageHandlerBase : HttpMessageHandler
     {
-        public static readonly MediaTypeFormatter[] BotMessageMediaTypeFormatters = new [] {
+        public static readonly MediaTypeFormatter[] BotMessageMediaTypeFormatters = new[] {
             new JsonMediaTypeFormatter
             {
                 SerializerSettings =
                 {
-                    ContractResolver = new CamelCasePropertyNamesContractResolver(),
-                    Formatting = Formatting.Indented,
                     NullValueHandling = NullValueHandling.Ignore,
+                    Formatting = Newtonsoft.Json.Formatting.Indented,
+                    DateFormatHandling = Newtonsoft.Json.DateFormatHandling.IsoDateFormat,
+                    DateTimeZoneHandling = Newtonsoft.Json.DateTimeZoneHandling.Utc,
+                    ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Serialize,
+                    ContractResolver = new ReadOnlyJsonContractResolver(),
+                    Converters = new List<JsonConverter>
+                        {
+                            new Iso8601TimeSpanConverter()
+                        }
                 }
             }
         };
@@ -91,29 +98,9 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Handlers
                 }
                 else
                 {
-                    // In the event that an InvokeRepsonse is returned, it's up to us to take the status
-                    // code and Body from that object and return them. 
-
-                    // Taken from the ClientConnector.cs setting for JSON serialization. 
-                    var serializationSettings = new JsonSerializerSettings
-                    {
-                        Formatting = Newtonsoft.Json.Formatting.Indented,
-                        DateFormatHandling = Newtonsoft.Json.DateFormatHandling.IsoDateFormat,
-                        DateTimeZoneHandling = Newtonsoft.Json.DateTimeZoneHandling.Utc,
-                        NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore,
-                        ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Serialize,
-                        ContractResolver = new ReadOnlyJsonContractResolver(),
-                        Converters = new List<JsonConverter>
-                        {
-                            new Iso8601TimeSpanConverter()
-                        }
-                    };
-
-                    string bodyContent = Rest.Serialization.SafeJsonConvert.SerializeObject(invokeResponse.Body, serializationSettings);                    
-
-                    var response = request.CreateResponse();
-                    response.StatusCode = (HttpStatusCode)invokeResponse.Status;
-                    response.Content = new StringContent(bodyContent, Encoding.UTF8, "application/json");
+                    var response = request.CreateResponse((HttpStatusCode)invokeResponse.Status);
+                    response.Content = new ObjectContent(invokeResponse.Body.GetType(),
+                        invokeResponse.Body, BotMessageMediaTypeFormatters[0]);
 
                     return response;
                 }
