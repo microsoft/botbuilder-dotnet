@@ -32,10 +32,13 @@ namespace Microsoft.Bot.Schema
         /// <param name="id">Channel id for the user or bot on this channel
         /// (Example: joe@smith.com, or @joesmith or 123456)</param>
         /// <param name="name">Display friendly name</param>
-        public ChannelAccount(string id = default(string), string name = default(string))
+        /// <param name="role">Role of the entity behind the account (Example:
+        /// User, Bot, etc.). Possible values include: 'user', 'bot'</param>
+        public ChannelAccount(string id = default(string), string name = default(string), string role = default(string))
         {
             Id = id;
             Name = name;
+            Role = role;
             CustomInit();
         }
 
@@ -56,6 +59,13 @@ namespace Microsoft.Bot.Schema
         /// </summary>
         [JsonProperty(PropertyName = "name")]
         public string Name { get; set; }
+
+        /// <summary>
+        /// Gets or sets role of the entity behind the account (Example: User,
+        /// Bot, etc.). Possible values include: 'user', 'bot'
+        /// </summary>
+        [JsonProperty(PropertyName = "role")]
+        public string Role { get; set; }
 
     }
 }

@@ -10,7 +10,13 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
 {
     public static class HttpConfigurationExtensions
     {
-        public static HttpConfiguration MapBotFramework(this HttpConfiguration httpConfiguration, Action<BotFrameworkConfigurationBuilder> configurer)
+        /// <summary>
+        /// Map the Bot Framework into the request execution pipeline.
+        /// </summary>
+        /// <param name="httpConfiguration">The <see cref="HttpConfiguration" /> to map the bot into.</param>
+        /// <param name="configurer">A callback to configure the bot.</param>
+        /// <returns>A reference to this instance after the operation has completed.</returns>
+        public static HttpConfiguration MapBotFramework(this HttpConfiguration httpConfiguration, Action<BotFrameworkConfigurationBuilder> configurer = null)
         {
             var options = new BotFrameworkOptions();
             var optionsBuilder = new BotFrameworkConfigurationBuilder(options);

@@ -48,7 +48,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions
         /// <returns></returns>
         public static IRecognizedIntents Get(ITurnContext context) { return context.Services.Get<IRecognizedIntents>(); }
 
-        public async Task OnProcessRequest(ITurnContext context, MiddlewareSet.NextDelegate next)
+        public async Task OnTurn(ITurnContext context, MiddlewareSet.NextDelegate next)
         {
             BotAssert.ContextNotNull(context);
 

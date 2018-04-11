@@ -1,28 +1,33 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Microsoft.Bot.Builder.Adapters;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Formatting;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Rest.Serialization;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Handlers
 {
     public abstract class BotMessageHandlerBase : HttpMessageHandler
     {
-        public static readonly MediaTypeFormatter[] BotMessageMediaTypeFormatters = new [] {
+        public static readonly MediaTypeFormatter[] BotMessageMediaTypeFormatters = new[] {
             new JsonMediaTypeFormatter
             {
                 SerializerSettings =
                 {
-                    ContractResolver = new CamelCasePropertyNamesContractResolver(),
-                    Formatting = Formatting.Indented,
                     NullValueHandling = NullValueHandling.Ignore,
+                    Formatting = Formatting.Indented,
+                    DateFormatHandling = DateFormatHandling.IsoDateFormat,
+                    DateTimeZoneHandling = DateTimeZoneHandling.Utc,
+                    ReferenceLoopHandling = ReferenceLoopHandling.Serialize,
+                    ContractResolver = new ReadOnlyJsonContractResolver(),
+                    Converters = new List<JsonConverter> { new Iso8601TimeSpanConverter() }
                 }
             }
         };
@@ -55,7 +60,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Handlers
 
             try
             {
-                await ProcessMessageRequestAsync(
+                var invokeResponse = await ProcessMessageRequestAsync(
                     request,
                     _botFrameworkAdapter,
                     context =>
@@ -78,11 +83,24 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Handlers
                             throw new InvalidOperationException($"Did not find an {typeof(IBot).Name} service via the dependency resolver. Please make sure you have registered your bot with your dependency injection container.");
                         }
 
-                        return bot.OnReceiveActivity(context);
+                        return bot.OnTurn(context);
                     },
                     cancellationToken);
 
-                return request.CreateResponse(HttpStatusCode.OK);
+                if (invokeResponse == null)
+                {
+                    return request.CreateResponse(HttpStatusCode.OK);
+                }
+                else
+                {
+                    var response = request.CreateResponse((HttpStatusCode)invokeResponse.Status);
+                    response.Content = new ObjectContent(
+                        invokeResponse.Body.GetType(),
+                        invokeResponse.Body,
+                        BotMessageMediaTypeFormatters[0]);
+
+                    return response;
+                }
             }
             catch (UnauthorizedAccessException e)
             {
@@ -94,6 +112,6 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Handlers
             }
         }
 
-        protected abstract Task ProcessMessageRequestAsync(HttpRequestMessage request, BotFrameworkAdapter botFrameworkAdapter, Func<ITurnContext, Task> botCallbackHandler, CancellationToken cancellationToken);
+        protected abstract Task<InvokeResponse> ProcessMessageRequestAsync(HttpRequestMessage request, BotFrameworkAdapter botFrameworkAdapter, Func<ITurnContext, Task> botCallbackHandler, CancellationToken cancellationToken);
     }
 }

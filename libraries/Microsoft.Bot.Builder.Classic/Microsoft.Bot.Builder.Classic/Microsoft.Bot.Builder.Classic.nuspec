@@ -38,7 +38,6 @@
   <files>
     <!-- assembly Microsoft.Bot.Builder.Classic -->
     <file src="..\Microsoft.Bot.Builder.Classic\bin\release\Microsoft.Bot.Builder.Classic.dll" target="lib\net46"/>
-    <file src="..\Microsoft.Bot.Builder.Classic\bin\release\Microsoft.Bot.Builder.Classic.xml" target="lib\net46" />
     <file src="..\Microsoft.Bot.Builder.Classic\bin\release\Microsoft.Bot.Builder.Classic.pdb" target="lib\net46" />
     <!-- source -->
     <file src="..\**\*.cs"

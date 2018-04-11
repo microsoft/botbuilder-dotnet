@@ -26,18 +26,21 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         }
 
         /// <summary>
-        /// The credential provider with which to initialize the adapter.
+        /// An <see cref="ICredentialProvider"/> that should be used to store and retrieve credentials used during authentication with the Bot Framework.
         /// </summary>
         public ICredentialProvider CredentialProvider { get; set; }
-
+        
         /// <summary>
-        /// The middleware collection with which to initialize the adapter.
+        /// A list of <see cref="IMiddleware"/> that will be executed for each turn of the conversation.
         /// </summary>
         public IList<IMiddleware> Middleware { get => _middleware; }
 
         /// <summary>
-        /// Indicates whether to enable the proactive messages endpoint for the bot.
+        /// Gets or sets whether a proactive messaging endpoint should be exposed for the bot.
         /// </summary>
+        /// <value>
+        /// True if the proactive messaging endpoint should be enabled, otherwise false.
+        /// </value>
         public bool EnableProactiveMessages { get; set; }
 
         /// <summary>
