@@ -5,7 +5,6 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using Microsoft.Bot.Builder.Core.Extensions;
@@ -33,6 +32,8 @@ namespace Microsoft.Bot.Builder.Azure
             // we use all so that we get typed roundtrip out of storage, but we don't use validation because we don't know what types are valid
             TypeNameHandling = TypeNameHandling.All
         };
+
+        private readonly static JsonSerializer JsonSerializer = JsonSerializer.Create(SerializationSettings);
 
         /// <summary>
         /// The Azure Storage Blob Container where entities will be stored
@@ -117,7 +118,6 @@ namespace Microsoft.Bot.Builder.Azure
                 {
                     var blobName = GetBlobName(key);
                     var blobReference = this.Container.Value.GetBlobReference(blobName);
-                    var jsonSerializer = JsonSerializer.Create(SerializationSettings);
 
                     try
                     {
@@ -125,7 +125,7 @@ namespace Microsoft.Bot.Builder.Azure
                         using (var streamReader = new StreamReader(blobStream))
                         using (var jsonReader = new JsonTextReader(streamReader))
                         {
-                            var obj = jsonSerializer.Deserialize(jsonReader);
+                            var obj = JsonSerializer.Deserialize(jsonReader);
 
                             if (obj is IStoreItem storeItem)
                             {
@@ -168,7 +168,6 @@ namespace Microsoft.Bot.Builder.Azure
 
                     var blobName = GetBlobName(key);
                     var blobReference = this.Container.Value.GetBlockBlobReference(blobName);
-                    var jsonSerializer = JsonSerializer.Create(SerializationSettings);
                     using (var blobStream = await blobReference.OpenWriteAsync(
                         AccessCondition.GenerateIfMatchCondition(calculatedETag),
                         new BlobRequestOptions(),
@@ -176,7 +175,7 @@ namespace Microsoft.Bot.Builder.Azure
                     using (var streamWriter = new StreamWriter(blobStream))
                     using (var jsonWriter = new JsonTextWriter(streamWriter))
                     {
-                        jsonSerializer.Serialize(jsonWriter, newValue);
+                        JsonSerializer.Serialize(jsonWriter, newValue);
                     }
                 }));
         }
