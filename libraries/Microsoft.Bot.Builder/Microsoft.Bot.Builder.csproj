@@ -52,7 +52,7 @@
 		<PackageReference Include="Microsoft.Bot.Builder.Core" Condition=" '$(PackageVersion)' != '' " Version="$(PackageVersion)" />
 		<PackageReference Include="Microsoft.Bot.Connector" Condition=" '$(PackageVersion)' == '' " Version="4.0.0-local" />
 		<PackageReference Include="Microsoft.Bot.Connector" Condition=" '$(PackageVersion)' != '' " Version="$(PackageVersion)" />
-	</ItemGroup>
+        </ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\Microsoft.Bot.Builder.Core\Microsoft.Bot.Builder.Core.csproj" />
