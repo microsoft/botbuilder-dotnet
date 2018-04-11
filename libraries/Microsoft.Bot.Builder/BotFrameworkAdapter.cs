@@ -97,22 +97,23 @@ namespace Microsoft.Bot.Builder.Adapters
                 throw new ArgumentNullException(nameof(reference));
 
             if (callback == null)
-                throw new ArgumentNullException(nameof(callback)); 
+                throw new ArgumentNullException(nameof(callback));
 
-            var context = new TurnContext(this, reference.GetPostToBotMessage());
-
-            // Hand craft Claims Identity.
-            var claimsIdentity = new ClaimsIdentity(new List<Claim>
+            using (var context = new TurnContext(this, reference.GetPostToBotMessage()))
             {
-                // Adding claims for both Emulator and Channel.
-                new Claim(AuthenticationConstants.AudienceClaim, botAppId),
-                new Claim(AuthenticationConstants.AppIdClaim, botAppId)
-            });
+                // Hand craft Claims Identity.
+                var claimsIdentity = new ClaimsIdentity(new List<Claim>
+                {
+                    // Adding claims for both Emulator and Channel.
+                    new Claim(AuthenticationConstants.AudienceClaim, botAppId),
+                    new Claim(AuthenticationConstants.AppIdClaim, botAppId)
+                });
 
-            context.Services.Add<IIdentity>("BotIdentity", claimsIdentity);
-            var connectorClient = await this.CreateConnectorClientAsync(reference.ServiceUrl, claimsIdentity);
-            context.Services.Add<IConnectorClient>(connectorClient);
-            await RunPipeline(context, callback);
+                context.Services.Add<IIdentity>("BotIdentity", claimsIdentity);
+                var connectorClient = await this.CreateConnectorClientAsync(reference.ServiceUrl, claimsIdentity);
+                context.Services.Add<IConnectorClient>(connectorClient);
+                await RunPipeline(context, callback);
+            }
         }
 
         /// <summary>
@@ -174,31 +175,33 @@ namespace Microsoft.Bot.Builder.Adapters
             BotAssert.ActivityNotNull(activity);
             var claimsIdentity =  await JwtTokenValidation.AuthenticateRequest(activity, authHeader, _credentialProvider, _httpClient);
 
-            var context = new TurnContext(this, activity);
-            context.Services.Add<IIdentity>("BotIdentity", claimsIdentity);
-            var connectorClient = await this.CreateConnectorClientAsync(activity.ServiceUrl, claimsIdentity);
-            context.Services.Add<IConnectorClient>(connectorClient);
-            await base.RunPipeline(context, callback).ConfigureAwait(false);
-
-            // Handle Invoke scenarios, which deviate from the request/response model in that 
-            // the Bot will return a specific body and return code. 
-            if (activity.Type == ActivityTypes.Invoke)
+            using (var context = new TurnContext(this, activity))
             {
-                Activity invokeResponse = context.Services.Get<Activity>(InvokeReponseKey);
-                if (invokeResponse == null)
-                {
-                    // ToDo: Trace Here           
-                    throw new InvalidOperationException("Bot failed to return a valid 'invokeResponse' activity.");
-                }
-                else
-                {
-                    return (InvokeResponse)invokeResponse.Value;
-                }
-            }
+                context.Services.Add<IIdentity>("BotIdentity", claimsIdentity);
+                var connectorClient = await this.CreateConnectorClientAsync(activity.ServiceUrl, claimsIdentity);
+                context.Services.Add<IConnectorClient>(connectorClient);
+                await base.RunPipeline(context, callback).ConfigureAwait(false);
 
-            // For all non-invoke scenarios, the HTTP layers above don't have to mess 
-            // withthe Body and return codes. 
-            return null;
+                // Handle Invoke scenarios, which deviate from the request/response model in that 
+                // the Bot will return a specific body and return code. 
+                if (activity.Type == ActivityTypes.Invoke)
+                {
+                    Activity invokeResponse = context.Services.Get<Activity>(InvokeReponseKey);
+                    if (invokeResponse == null)
+                    {
+                        // ToDo: Trace Here           
+                        throw new InvalidOperationException("Bot failed to return a valid 'invokeResponse' activity.");
+                    }
+                    else
+                    {
+                        return (InvokeResponse)invokeResponse.Value;
+                    }
+                }
+
+                // For all non-invoke scenarios, the HTTP layers above don't have to mess 
+                // withthe Body and return codes. 
+                return null;
+            }
         }
 
         /// <summary>
@@ -318,8 +321,10 @@ namespace Microsoft.Bot.Builder.Adapters
             conversationUpdate.Conversation = new ConversationAccount(id: result.Id);
             conversationUpdate.Recipient = conversationParameters.Bot;
 
-            TurnContext context = new TurnContext(this, (Activity)conversationUpdate);
-            await this.RunPipeline(context, callback);
+            using (TurnContext context = new TurnContext(this, (Activity)conversationUpdate))
+            {
+                await this.RunPipeline(context, callback);
+            }
         }
 
         /// <summary>
