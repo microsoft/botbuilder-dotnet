@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Builder.Azure
     /// </remarks>
     public class AzureBlobStorage : IStorage
     {
-        private readonly static JsonSerializerSettings serializationSettings = new JsonSerializerSettings()
+        private readonly static JsonSerializerSettings SerializationSettings = new JsonSerializerSettings()
         {
             // we use all so that we get typed roundtrip out of storage, but we don't use validation because we don't know what types are valid
             TypeNameHandling = TypeNameHandling.All
@@ -84,7 +84,7 @@ namespace Microsoft.Bot.Builder.Azure
         /// <summary>
         /// Deletes entity blobs from the configured container
         /// </summary>
-        /// <param name="keys">An array of entitiy keys</param>
+        /// <param name="keys">An array of entity keys</param>
         /// <returns></returns>
         public async Task Delete(string[] keys)
         {
@@ -134,7 +134,7 @@ namespace Microsoft.Bot.Builder.Azure
                         using (var streamReader = new StreamReader(memoryStream, Encoding.UTF8))
                         {
                             var json = await streamReader.ReadToEndAsync();
-                            var obj = JsonConvert.DeserializeObject(json, serializationSettings);
+                            var obj = JsonConvert.DeserializeObject(json, SerializationSettings);
                             IStoreItem storeItem = obj as IStoreItem;
                             if (storeItem != null)
                             {
@@ -164,7 +164,7 @@ namespace Microsoft.Bot.Builder.Azure
                     var blobName = GetBlobName(key);
                     var newValue = changes.Get<object>(key);
                     var storeItem = newValue as IStoreItem;
-                    var json = JsonConvert.SerializeObject(newValue, Formatting.None, serializationSettings);
+                    var json = JsonConvert.SerializeObject(newValue, Formatting.None, SerializationSettings);
                     var blobReference = this.Container.Value.GetBlockBlobReference(blobName);
                     
                     // "*" eTag in IStoreItem converts to null condition for AccessCondition
