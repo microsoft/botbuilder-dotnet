@@ -89,6 +89,8 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Handlers
                 else
                 {
                     response.ContentType = "application/json";
+                    response.StatusCode = invokeResponse.Status;
+
                     using (var writer = new StreamWriter(response.Body))
                     {
                         using (var jsonWriter = new JsonTextWriter(writer))
@@ -96,8 +98,6 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Handlers
                             BotMessageSerializer.Serialize(jsonWriter, invokeResponse.Body);
                         }
                     }
-                       
-                    response.StatusCode = invokeResponse.Status;
                 }
             }
             catch (UnauthorizedAccessException)
