@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Builder.Azure
     {
         private readonly string _databaseId;
         private readonly string _collectionId;
-        private readonly Lazy<string> _collectionLink;
+        private readonly Lazy<string> _collectionReady;
         private readonly DocumentClient _client;
 
         private static JsonSerializer _jsonSerializer = JsonSerializer.Create(new JsonSerializerSettings()
@@ -35,10 +35,18 @@ namespace Microsoft.Bot.Builder.Azure
         /// Initializes a new instance of <see cref="CosmosDbStorage"/> class,
         /// using the provided CosmosDB credentials, DatabaseId and CollectionId.
         /// </summary>
+        /// <remarks>
+        /// The ConnectionPolicy delegate can be used to further customize the connection to CosmosDB (Connection mode, retry options, timeouts).
+        /// More information at https://docs.microsoft.com/en-us/dotnet/api/microsoft.azure.documents.client.connectionpolicy?view=azure-dotnet
+        /// </remarks>
         /// <param name="serviceEndpoint">The endpoint Uri for the service endpoint from the Azure Cosmos DB service.</param>
         /// <param name="authKey">The AuthKey used by the client from the Azure Cosmos DB service.</param>
         /// <param name="databaseId">The Database ID.</param>
         /// <param name="collectionId">The Collection ID.</param>
+        /// <param name="connectionPolicyConfigurator">
+        ///     A Delegate to further customize the ConnectionPolicy to CosmosDB.
+        ///     More information at https://docs.microsoft.com/en-us/dotnet/api/microsoft.azure.documents.client.connectionpolicy?view=azure-dotnet
+        /// </param>
         public CosmosDbStorage(Uri serviceEndpoint, string authKey, string databaseId, string collectionId, Action<ConnectionPolicy> connectionPolicyConfigurator = null)
         {
             if (serviceEndpoint == null)
@@ -64,16 +72,28 @@ namespace Microsoft.Bot.Builder.Azure
             _databaseId = databaseId;
             _collectionId = collectionId;
 
+            // Inject BotBuilder version to CosmosDB Requests
             var version = GetType().Assembly.GetName().Version;
             var connectionPolicy = new ConnectionPolicy()
             {
                 UserAgentSuffix = $"Microsoft-BotFramework {version}"
             };
 
+            // Invoke CollectionPolicy delegate to further customize settings
             connectionPolicyConfigurator?.Invoke(connectionPolicy);
             _client = new DocumentClient(serviceEndpoint, authKey, connectionPolicy);
 
-            _collectionLink = new Lazy<string>(EnsureCollectionExist);
+            // Delayed Database and Collection creation if they do not exist. This is a thread-safe operation.
+            _collectionReady = new Lazy<string>(() =>
+            {
+                _client.CreateDatabaseIfNotExistsAsync(new Database { Id = _databaseId })
+                    .Wait();
+
+                var task = _client.CreateDocumentCollectionIfNotExistsAsync(UriFactory.CreateDatabaseUri(_databaseId), new DocumentCollection { Id = _collectionId });
+                task.Wait();
+
+                return task.Result.Resource.SelfLink;
+            });
         }
 
         /// <summary>
@@ -83,13 +103,18 @@ namespace Microsoft.Bot.Builder.Azure
         /// <returns></returns>
         public async Task Delete(params string[] keys)
         {
+            if (keys.Length == 0) return;
+
             // Ensure collection exists
-            var collectionLink = _collectionLink.Value;
+            var collectionLink = _collectionReady.Value;
 
+            // Parallelize deletion
             var tasks = keys.Select(key =>
-                _client.DeleteDocumentAsync(
-                    UriFactory.CreateDocumentUri(_databaseId, _collectionId, SanitizeKey(key))));
+            {
+                return _client.DeleteDocumentAsync(UriFactory.CreateDocumentUri(_databaseId, _collectionId, SanitizeKey(key)));
+            });
 
+            // await to deletion tasks to complete
             await Task.WhenAll(tasks).ConfigureAwait(false);
         }
 
@@ -105,7 +130,8 @@ namespace Microsoft.Bot.Builder.Azure
                 throw new ArgumentException("Please provide at least one key to read from storage", nameof(keys));
             }
 
-            var collectionLink = _collectionLink.Value;
+            // Ensure collection exists
+            var collectionLink = _collectionReady.Value;
             var storeItems = new StoreItems();
 
             var parameterSequence = string.Join(",", Enumerable.Range(0, keys.Length).Select(i => $"@id{i}"));
@@ -147,11 +173,15 @@ namespace Microsoft.Bot.Builder.Azure
                 throw new ArgumentNullException(nameof(changes), "Please provide a StoreItems with changes to persist.");
             }
 
-            var collectionLink = _collectionLink.Value;
+            var collectionLink = _collectionReady.Value;
             foreach (var change in changes)
             {
                 var json = JObject.FromObject(change.Value, _jsonSerializer);
+
+                // Remove etag from JSON object that was copied from IStoreItem.
+                // The ETag information is updated as an _etag attribute in the document metadata.
                 json.Remove("eTag");
+
                 var documentChange = new DocumentStoreItem
                 {
                     Id = SanitizeKey(change.Key),
@@ -179,26 +209,11 @@ namespace Microsoft.Bot.Builder.Azure
             }
         }
 
-        private string EnsureCollectionExist()
-        {
-            _client.CreateDatabaseIfNotExistsAsync(new Database { Id = _databaseId })
-                .Wait();
-
-            var task = _client.CreateDocumentCollectionIfNotExistsAsync(UriFactory.CreateDatabaseUri(_databaseId), new DocumentCollection { Id = _collectionId });
-            task.Wait();
-
-            return task.Result.Resource.SelfLink;
-        }
-
-        private static Lazy<Dictionary<char, string>> _badChars = new Lazy<Dictionary<char, string>>(() =>
-        {
-            char[] badChars = new char[] { '\\', '?', '/', '#', ' ' };
-            var dict = new Dictionary<char, string>();
-            foreach (var badChar in badChars)
-                dict[badChar] = '*' + ((int)badChar).ToString("x2");
-            return dict;
-        });
-
+        /// <summary>
+        /// Converts the key into a DocumentID that can be used safely with CosmosDB.
+        /// The following characters are restricted and cannot be used in the Id property: '/', '\', '?', '#'
+        /// More information at https://docs.microsoft.com/en-us/dotnet/api/microsoft.azure.documents.resource.id?view=azure-dotnet#remarks
+        /// </summary>
         private static string SanitizeKey(string key)
         {
             StringBuilder sb = new StringBuilder();
@@ -212,23 +227,41 @@ namespace Microsoft.Bot.Builder.Azure
             return sb.ToString();
         }
 
-        protected class DocumentStoreItem
+        private static Lazy<Dictionary<char, string>> _badChars = new Lazy<Dictionary<char, string>>(() =>
+        {
+            char[] badChars = new char[] { '\\', '?', '/', '#', ' ' };
+            var dict = new Dictionary<char, string>();
+            foreach (var badChar in badChars)
+                dict[badChar] = '*' + ((int)badChar).ToString("x2");
+            return dict;
+        });
+
+        /// <summary>
+        /// Internal data structure for storing items in a CosmosDB Collection.
+        /// </summary>
+        private class DocumentStoreItem
         {
             /// <summary>
-            /// Sanitized Id/Key an used as PrimaryKey
+            /// Sanitized Id/Key an used as PrimaryKey.
             /// </summary>
             [JsonProperty("id")]
             public string Id { get; set; }
 
             /// <summary>
-            /// Un-sanitized Id/Key
+            /// Un-sanitized Id/Key.
             /// </summary>
             [JsonProperty("realId")]
             public string ReadlId { get; internal set; }
 
+            /// <summary>
+            /// The persisted object.
+            /// </summary>
             [JsonProperty("document")]
             public JObject Document { get; set; }
 
+            /// <summary>
+            /// ETag information for handling optimistic concurrency updates.
+            /// </summary>
             [JsonProperty("_etag")]
             public string ETag { get; set; }
         }
