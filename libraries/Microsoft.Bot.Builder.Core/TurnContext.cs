@@ -225,10 +225,7 @@ namespace Microsoft.Bot.Builder
             // Create the list used by the recursive methods. 
             List<Activity> activityList = new List<Activity>(activityArray);
 
-            // provide a variable to capture the set of responses returned from the adapter.
-            ResourceResponse[] responses = null;
-
-            async Task ActuallySendStuff()
+            async Task<ResourceResponse[]> ActuallySendStuff()
             {
                 bool anythingToSend = false;
                 if (activities.Count() > 0)
@@ -237,16 +234,26 @@ namespace Microsoft.Bot.Builder
                 // Send from the list, which may have been manipulated via the event handlers. 
                 // Note that 'responses' was captured from the root of the call, and will be
                 // returned to the original caller.
-                responses = await this.Adapter.SendActivities(this, activityList.ToArray());
+                var responses = await this.Adapter.SendActivities(this, activityList.ToArray());
+
+                if (responses != null && responses.Count() == activityList.Count)
+                {
+                    // stitch up activity ids
+                    for (int i = 0; i < responses.Length; i++)
+                    {
+                        var response = responses[i];
+                        var activity = activityList[i];
+                        activity.Id = response.Id;
+                    }
+                }
 
                 // If we actually sent something, set the flag. 
                 if (anythingToSend)
                     this.Responded = true;
+                return responses;
             }
 
-            await SendActivitiesInternal(activityList, _onSendActivities, ActuallySendStuff);
-
-            return responses;
+            return await SendActivitiesInternal(activityList, _onSendActivities, ActuallySendStuff);
         }
 
         /// <summary>
@@ -266,16 +273,13 @@ namespace Microsoft.Bot.Builder
         public async Task<ResourceResponse> UpdateActivity(IActivity activity)
         {
             Activity a = (Activity)activity;
-            ResourceResponse response = null;
 
-            async Task ActuallyUpdateStuff()
+            async Task<ResourceResponse> ActuallyUpdateStuff()
             {
-                response = await this.Adapter.UpdateActivity(this, a);
+                return await this.Adapter.UpdateActivity(this, a);
             }
 
-            await UpdateActivityInternal(a, _onUpdateActivity, ActuallyUpdateStuff);
-
-            return response;
+            return await UpdateActivityInternal(a, _onUpdateActivity, ActuallyUpdateStuff);
         }
 
         /// <summary>
@@ -314,7 +318,7 @@ namespace Microsoft.Bot.Builder
         {
             if (conversationReference == null)
                 throw new ArgumentNullException(nameof(conversationReference));
-            
+
             async Task ActuallyDeleteStuff()
             {
                 await this.Adapter.DeleteActivity(this, conversationReference);
@@ -323,10 +327,10 @@ namespace Microsoft.Bot.Builder
             await DeleteActivityInternal(conversationReference, _onDeleteActivity, ActuallyDeleteStuff);
         }
 
-        private async Task SendActivitiesInternal(
+        private async Task<ResourceResponse[]> SendActivitiesInternal(
             List<Activity> activities,
             IEnumerable<SendActivitiesHandler> sendHandlers,
-            Func<Task> callAtBottom)
+            Func<Task<ResourceResponse[]>> callAtBottom)
         {
             if (activities == null)
                 throw new ArgumentException(nameof(activities));
@@ -336,28 +340,28 @@ namespace Microsoft.Bot.Builder
             if (sendHandlers.Count() == 0) // No middleware to run.
             {
                 if (callAtBottom != null)
-                    await callAtBottom();
+                    return await callAtBottom();
 
-                return;
+                return new ResourceResponse[0];
             }
 
             // Default to "No more Middleware after this".
-            async Task next()
+            async Task<ResourceResponse[]> next()
             {
                 // Remove the first item from the list of middleware to call,
                 // so that the next call just has the remaining items to worry about. 
                 IEnumerable<SendActivitiesHandler> remaining = sendHandlers.Skip(1);
-                await SendActivitiesInternal(activities, remaining, callAtBottom).ConfigureAwait(false);
+                return await SendActivitiesInternal(activities, remaining, callAtBottom).ConfigureAwait(false);
             }
 
             // Grab the current middleware, which is the 1st element in the array, and execute it            
             SendActivitiesHandler caller = sendHandlers.First();
-            await caller(this, activities, next);
+            return await caller(this, activities, next);
         }
 
-        private async Task UpdateActivityInternal(Activity activity,
+        private async Task<ResourceResponse> UpdateActivityInternal(Activity activity,
             IEnumerable<UpdateActivityHandler> updateHandlers,
-            Func<Task> callAtBottom)
+            Func<Task<ResourceResponse>> callAtBottom)
         {
             BotAssert.ActivityNotNull(activity);
             if (updateHandlers == null)
@@ -367,24 +371,26 @@ namespace Microsoft.Bot.Builder
             {
                 if (callAtBottom != null)
                 {
-                    await callAtBottom();
+                    return await callAtBottom();
                 }
 
-                return;
+                return null;
             }
 
             // Default to "No more Middleware after this".
-            async Task next()
+            async Task<ResourceResponse> next()
             {
                 // Remove the first item from the list of middleware to call,
                 // so that the next call just has the remaining items to worry about. 
                 IEnumerable<UpdateActivityHandler> remaining = updateHandlers.Skip(1);
-                await UpdateActivityInternal(activity, remaining, callAtBottom).ConfigureAwait(false);
+                var result = await UpdateActivityInternal(activity, remaining, callAtBottom).ConfigureAwait(false);
+                activity.Id = result.Id;
+                return result;
             }
 
             // Grab the current middleware, which is the 1st element in the array, and execute it            
             UpdateActivityHandler toCall = updateHandlers.First();
-            await toCall(this, activity, next);
+            return await toCall(this, activity, next);
         }
 
         private async Task DeleteActivityInternal(ConversationReference cr,
