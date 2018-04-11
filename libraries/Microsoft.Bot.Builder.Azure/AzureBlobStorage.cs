@@ -22,6 +22,9 @@ namespace Microsoft.Bot.Builder.Azure
     /// The AzureBlobStorage implements State's IStorage using a single Azure Storage Blob Container.
     /// Each entity or StoreItem is serialized into a JSON string and stored in an individual text blob.
     /// Each blob is named after the StoreItem key which is encoded and ensure it conforms a valid blob name.
+    /// Concurrency is managed in a per entity (e.g. per blob) basis. If an entity implement IStoreItem
+    /// its eTag property value will be set with the blob's ETag upon Read. Afterward an AccessCondition
+    /// with the ETag value will be generated during Write. New entities will simple have an null ETag.
     /// </remarks>
     public class AzureBlobStorage : IStorage
     {
