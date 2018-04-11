@@ -67,7 +67,7 @@ namespace Microsoft.Bot.Builder.Azure
                   var container = blobClient.GetContainerReference(containerName);
                   container.CreateIfNotExistsAsync().Wait();
                   return container;
-              });
+              }, isThreadSafe: true);
         }
 
         /// <summary>
