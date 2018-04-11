@@ -48,8 +48,10 @@ namespace Microsoft.Bot.Builder.Core.Tests
 
         public async Task ProcessRequest(Activity activty, Func<ITurnContext, Task> callback)
         {
-            TurnContext ctx = new TurnContext(this, activty);
-            await this.RunPipeline(ctx, callback); 
+            using (TurnContext ctx = new TurnContext(this, activty))
+            {
+                await this.RunPipeline(ctx, callback);
+            }
         }
     }
 
