@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -69,6 +70,34 @@ namespace Microsoft.Bot.Schema
         }
 
         /// <summary>
+        /// Create a trace activity based of this activity
+        /// </summary>
+        /// <param name="name">Name of the operation</param>
+        /// <param name="value">value of the operation</param>
+        /// <param name="valueType">valueType if helpful to identify the value schema (default is value.GetType().Name)</param>
+        /// <param name="label">descritive label of context. (Default is calling function name)</param>
+        /// <returns></returns>
+        public ITraceActivity CreateTrace(string name, object value=null, string valueType = null, [CallerMemberName] string label=null)
+        {
+            var reply = new Activity
+            {
+                Type = ActivityTypes.Trace,
+                Timestamp = DateTime.UtcNow,
+                From = new ChannelAccount(id: this.Recipient.Id, name: this.Recipient.Name),
+                Recipient = new ChannelAccount(id: this.From.Id, name: this.From.Name),
+                ReplyToId = this.Id,
+                ServiceUrl = this.ServiceUrl,
+                ChannelId = this.ChannelId,
+                Conversation = new ConversationAccount(isGroup: this.Conversation.IsGroup, id: this.Conversation.Id, name: this.Conversation.Name),
+                Name = name,
+                Label = label, 
+                ValueType = valueType ?? value?.GetType().Name,
+                Value = value
+            }.AsTraceActivity();
+            return reply;
+        }
+
+        /// <summary>
         /// Extension data for overflow of properties
         /// </summary>
         [JsonExtensionData(ReadData = true, WriteData = true)]
@@ -127,6 +156,24 @@ namespace Microsoft.Bot.Schema
         /// Create an instance of the Activity class with IInvokeActivity masking
         /// </summary>
         public static IInvokeActivity CreateInvokeActivity() { return new Activity(ActivityTypes.Invoke); }
+
+        /// <summary>
+        /// Create an instance of the TraceActivity 
+        /// </summary>
+        /// <param name="name">Name of the operation</param>
+        /// <param name="value">value of the operation</param>
+        /// <param name="valueType">valueType if helpful to identify the value schema (default is value.GetType().Name)</param>
+        /// <param name="label">descritive label of context. (Default is calling function name)</param>
+        public static ITraceActivity CreateTraceActivity(string name, string valueType = null, object value = null, [CallerMemberName] string label=null)
+        {
+            return new Activity(ActivityTypes.Trace)
+            {
+                Name = name,
+                Label = label,
+                ValueType = valueType ?? value?.GetType().Name,
+                Value = value
+            };
+        }
 
         /// <summary>
         /// True if the Activity is of the specified activity type
