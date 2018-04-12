@@ -61,6 +61,59 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         }
 
         /// <summary>
+        /// Helper to Join words to sentence
+        /// </summary>
+        /// <param name="delimiter">String delimiter used  to join words.</param> 
+        /// <param name="words">String Array of words to be joined.</param> 
+        /// <returns>string joined sentence</returns>
+        private string Join(string delimiter, string[] words)
+        {
+            string sentence = string.Join(delimiter, words);
+            sentence = Regex.Replace(sentence, "[ ]?'[ ]?", "'");
+            return sentence;
+        }
+
+        /// <summary>
+        /// Helper to split sentence to words 
+        /// </summary>
+        /// <param name="sentence">String containing sentence to be splitted.</param> 
+        /// <returns>string array of words.</returns>
+        private string[] SplitSentence(string sentence,string[] alignments=null,bool isSrcSentence=true)
+        {
+            string[] wrds = sentence.Split(' ');
+            if (alignments != null && alignments.Length > 0)
+            {
+                List<string> outWrds = new List<string>();
+                int wrdIndxInAlignment = 1;
+
+                if (isSrcSentence)
+                    wrdIndxInAlignment = 0;
+                else
+                {
+                    // reorder alignments in case of target translated  message to get ordered output words.
+                    Array.Sort(alignments, (x, y) => Int32.Parse(x.Split('-')[wrdIndxInAlignment].Split(':')[0]).CompareTo(Int32.Parse(y.Split('-')[wrdIndxInAlignment].Split(':')[0])));
+                }
+                foreach (string alignData in alignments)
+                {
+                    wrds = outWrds.ToArray();
+                    string wordIndexes = alignData.Split('-')[wrdIndxInAlignment];
+                    int startIndex = Int32.Parse(wordIndexes.Split(':')[0]);
+                    int length = Int32.Parse(wordIndexes.Split(':')[1]) - startIndex + 1;
+                    string wrd = sentence.Substring(startIndex, length);
+                    string[] newWrds = new string[outWrds.Count + 1];
+                    if(newWrds.Length>1)
+                        wrds.CopyTo(newWrds, 0);
+                    newWrds[outWrds.Count] = wrd;
+                    string subSentence = Join(" ", newWrds.ToArray()); 
+                    if (sentence.Contains(subSentence)) 
+                        outWrds.Add(wrd);  
+                }
+                wrds = outWrds.ToArray();
+            }
+            return wrds;
+        }
+
+        /// <summary>
         ///parsing alignment information onto a dictionary
         /// dictionary key is word index in source
         /// value is word index in translated text
@@ -69,14 +122,11 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         /// <param name="sourceMessage">String containing source message</param>
         /// /<param name="trgMessage">String containing translated message</param>
         /// <returns></returns>
-        private Dictionary<int, int> WordAlignmentParse(string alignment,string sourceMessage,string trgMessage)
+        private Dictionary<int, int> WordAlignmentParse(string[] alignments,string[] srcWords,string[] trgWords)
         {
             Dictionary<int, int> alignMap = new Dictionary<int, int>();
-            if (alignment.Trim() == "")
-                return alignMap;
-            string[] alignments = alignment.Trim().Split(' ');
-            string[] srcWrds = sourceMessage.Split(' ');
-            string[] trgWrds = trgMessage.Split(' ');
+            string sourceMessage = Join(" ", srcWords);
+            string trgMessage = Join(" ", trgWords);
             foreach (string alignData in alignments)
             {
                     string[] wordIndexes = alignData.Split('-');
@@ -85,14 +135,14 @@ namespace Microsoft.Bot.Builder.Ai.Translation
                     if ((srcLength + srcStartIndex) > sourceMessage.Length)
                         continue;
                     string srcWrd = sourceMessage.Substring(srcStartIndex, srcLength);
-                    int sourceWordIndex = Array.FindIndex(srcWrds, row => row.Contains(srcWrd));
+                    int sourceWordIndex = Array.FindIndex(srcWords, row => row==srcWrd);
 
                     int trgstartIndex = Int32.Parse(wordIndexes[1].Split(':')[0]);
                     int trgLength = Int32.Parse(wordIndexes[1].Split(':')[1]) - trgstartIndex + 1;
                     if ((trgLength + trgstartIndex) > trgMessage.Length)
                         continue;
                     string trgWrd = trgMessage.Substring(trgstartIndex,trgLength);
-                    int targetWordIndex = Array.FindIndex(trgWrds, row => row.Contains(trgWrd));
+                    int targetWordIndex = Array.FindIndex(trgWords, row => row ==trgWrd);
                     
                     if(sourceWordIndex>=0 && targetWordIndex>=0)
                         alignMap[sourceWordIndex] = targetWordIndex;
@@ -110,22 +160,13 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         /// <param name="target">Target Language</param>
         /// <param name="srcWrd">Source Word</param>
         /// <returns></returns>
-        private string KeepSrcWrdInTranslation(Dictionary<int, int> alignment, string source, string target, int srcWrdIndx)
-        {
-            string processedTranslation = target; 
+        private string[] KeepSrcWrdInTranslation(Dictionary<int, int> alignment, string[] sourceWords, string[] targetWords, int srcWrdIndx)
+        { 
             if (alignment.ContainsKey(srcWrdIndx))
-            { 
-                string[] trgWrds = processedTranslation.Split(' ');
-                string appendTrailApostrophe = "";
-                if (trgWrds[alignment[srcWrdIndx]].Contains("'"))
-                {
-                    appendTrailApostrophe = "'"+trgWrds[alignment[srcWrdIndx]].Split('\'')[1];
-                }
-                trgWrds[alignment[srcWrdIndx]] = source.Split(' ')[srcWrdIndx]+appendTrailApostrophe;
-
-                processedTranslation = string.Join(" ", trgWrds);
+            {
+                targetWords[alignment[srcWrdIndx]] = sourceWords[srcWrdIndx];  
             }
-            return processedTranslation;
+            return targetWords;
         }
         
         /// <summary>
@@ -137,42 +178,57 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         /// <param name="targetMessage">Target Message</param>
         /// <returns></returns>
         internal string FixTranslation(string sourceMessage, string alignment, string targetMessage)
-        {
-            string processedTranslation = targetMessage;
+        { 
             bool containsNum = Regex.IsMatch(sourceMessage, @"\d");
 
             if (_patterns.Count == 0 && !containsNum)
-                return processedTranslation;
+                return targetMessage;
 
 
             var toBeReplaced = from result in _patterns
                                where Regex.IsMatch(sourceMessage, result, RegexOptions.Singleline | RegexOptions.IgnoreCase)
                                select result;
-            Dictionary<int, int> alignMap = WordAlignmentParse(alignment,sourceMessage,targetMessage);
-            string[] srcWrds = sourceMessage.Split(' ');
+            string[] alignments = alignment.Trim().Split(' ');
+            string[] srcWords = SplitSentence(sourceMessage, alignments);
+            string[] trgWords = SplitSentence(targetMessage, alignments, false); 
+            Dictionary<int, int> alignMap = WordAlignmentParse(alignments, srcWords, trgWords);
             if (toBeReplaced.Any())
             {
                 foreach (string pattern in toBeReplaced)
                 {
                     Match matchNoTranslate = Regex.Match(sourceMessage, pattern, RegexOptions.Singleline | RegexOptions.IgnoreCase);
                     int noTranslateStartChrIndex = matchNoTranslate.Groups[1].Index;
+                    int noTranslateMatchLength = matchNoTranslate.Groups[1].Length;
                     int wrdIndx = 0;
                     int chrIndx = 0;
+                    int newChrLengthFromMatch = 0;
                     int srcIndex = -1;
-                    foreach (string wrd in srcWrds)
+                    int newNoTranslateArrayLength = 1;
+                    foreach (string wrd in srcWords)
                     {
+                        
+                        chrIndx += wrd.Length + 1; 
+                        wrdIndx++;
                         if (chrIndx == noTranslateStartChrIndex)
                         {
                             srcIndex = wrdIndx;
-                            break;
                         }
-                        chrIndx += wrd.Length + 1;
-                        wrdIndx++;
-                    } 
-                    string[] wrdNoTranslate = matchNoTranslate.Groups[1].Value.Split(' ');
+                        if (srcIndex != -1)
+                        {
+                            if (newChrLengthFromMatch + srcWords[wrdIndx].Length >= noTranslateMatchLength)
+                                break;
+                            newNoTranslateArrayLength += 1;
+                            newChrLengthFromMatch += srcWords[wrdIndx].Length + 1;
+                        }
+
+                    }
+                    if (srcIndex == -1)
+                        continue; 
+                    string[] wrdNoTranslate = new string[newNoTranslateArrayLength];
+                    Array.Copy(srcWords, srcIndex, wrdNoTranslate, 0 , newNoTranslateArrayLength); 
                     foreach (string srcWrd in wrdNoTranslate)
-                    { 
-                        processedTranslation = KeepSrcWrdInTranslation(alignMap, sourceMessage, processedTranslation, srcIndex);
+                    {
+                        trgWords = KeepSrcWrdInTranslation(alignMap, srcWords, trgWords, srcIndex);
                         srcIndex++;
                     }
 
@@ -182,10 +238,10 @@ namespace Microsoft.Bot.Builder.Ai.Translation
             MatchCollection numericMatches = Regex.Matches(sourceMessage, @"\d+", RegexOptions.Singleline);
             foreach (Match numericMatch in numericMatches)
             {
-                int srcIndex = Array.FindIndex(srcWrds, row => row == numericMatch.Groups[0].Value);
-                processedTranslation = KeepSrcWrdInTranslation(alignMap, sourceMessage, processedTranslation, srcIndex);
+                int srcIndex = Array.FindIndex(srcWords, row => row == numericMatch.Groups[0].Value);
+                trgWords = KeepSrcWrdInTranslation(alignMap, srcWords, trgWords, srcIndex);
             }
-            return processedTranslation;
+            return Join(" ", trgWords);
         } 
 
     }
@@ -239,7 +295,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation
                 }
                 textToTranslate = Regex.Replace(textToTranslate, "</?literal>", " ");
             }
-
+            textToTranslate = Regex.Replace(textToTranslate, @"\s+", " ");
             return textToTranslate;
         }
 
