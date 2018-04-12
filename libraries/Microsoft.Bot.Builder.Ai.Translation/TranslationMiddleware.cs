@@ -114,18 +114,17 @@ namespace Microsoft.Bot.Builder.Ai.Translation
                             {
                                 context.OnSendActivities(async (newContext, activities, newNext) =>
                                 {
-
                                     //Translate messages sent to the user to user language
                                     foreach (Activity currentActivity in activities)
                                     {
                                         if (currentActivity.Type == ActivityTypes.Message)
                                         {
-                                            IMessageActivity currentMEssageActivity = currentActivity.AsMessageActivity();
-                                            await TranslateMessageAsync(newContext, currentMEssageActivity, targetLanguage, sourceLanguage, false).ConfigureAwait(false);
-                                            activities[0].Text = currentMEssageActivity.Text;
-                                            await newNext();
+                                            IMessageActivity currentMessageActivity = currentActivity.AsMessageActivity();
+                                            await TranslateMessageAsync(newContext, currentMessageActivity, targetLanguage, sourceLanguage, false).ConfigureAwait(false);
+                                            activities[0].Text = currentMessageActivity.Text;
                                         }
                                     }
+                                    return await newNext();
                                 });
                             }
                         }
