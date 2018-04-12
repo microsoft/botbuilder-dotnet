@@ -41,8 +41,10 @@ namespace Microsoft.Bot.Builder.Adapters
                     Type = ActivityTypes.Message
                 };
 
-                var context = new TurnContext(this, activity);
-                await base.RunPipeline(context, callback);
+                using (var context = new TurnContext(this, activity))
+                {
+                    await base.RunPipeline(context, callback);
+                }
             }
         }
 

@@ -17,7 +17,7 @@ namespace Microsoft.Bot.Builder
     /// length of the turn.</remarks>
     /// <seealso cref="IBot"/>
     /// <seealso cref="IMiddleware"/>
-    public class TurnContext : ITurnContext
+    public class TurnContext : ITurnContext, IDisposable
     {
         private readonly BotAdapter _adapter;
         private readonly Activity _activity;
@@ -27,7 +27,7 @@ namespace Microsoft.Bot.Builder
         private readonly IList<UpdateActivityHandler> _onUpdateActivity = new List<UpdateActivityHandler>();
         private readonly IList<DeleteActivityHandler> _onDeleteActivity = new List<DeleteActivityHandler>();
 
-        private readonly TurnContextServiceCollection _services = new TurnContextServiceCollection();
+        private readonly TurnContextServiceCollection _turnServices;
 
         /// <summary>
         /// Creates a context object.
@@ -42,6 +42,8 @@ namespace Microsoft.Bot.Builder
         {
             _adapter = adapter ?? throw new ArgumentNullException(nameof(adapter));
             _activity = activity ?? throw new ArgumentNullException(nameof(activity));
+
+            _turnServices = new TurnContextServiceCollection();
         }
 
         /// <summary>
@@ -110,7 +112,7 @@ namespace Microsoft.Bot.Builder
         /// <summary>
         /// Gets the services registered on this context object.
         /// </summary>
-        public ITurnContextServiceCollection Services => _services;
+        public ITurnContextServiceCollection Services => _turnServices;
 
         /// <summary>
         /// Gets the activity associated with this turn; or <c>null</c> when processing
@@ -485,6 +487,11 @@ namespace Microsoft.Bot.Builder
                     activity.ReplyToId = reference.ActivityId;
             }
             return activity;
+        }
+
+        public void Dispose()
+        {
+            _turnServices.Dispose();
         }
     }
 }

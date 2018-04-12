@@ -1,15 +1,17 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Net;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Net.Http.Headers;
+using Microsoft.Rest.Serialization;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
-using System;
-using System.Net;
-using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Handlers
 {
@@ -17,9 +19,13 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Handlers
     {
         public static readonly JsonSerializer BotMessageSerializer = JsonSerializer.Create(new JsonSerializerSettings
         {
-            ContractResolver = new CamelCasePropertyNamesContractResolver(),
-            Formatting = Newtonsoft.Json.Formatting.Indented,
             NullValueHandling = NullValueHandling.Ignore,
+            Formatting = Formatting.Indented,
+            DateFormatHandling = DateFormatHandling.IsoDateFormat,
+            DateTimeZoneHandling = DateTimeZoneHandling.Utc,
+            ReferenceLoopHandling = ReferenceLoopHandling.Serialize,
+            ContractResolver = new ReadOnlyJsonContractResolver(),
+            Converters = new List<JsonConverter> { new Iso8601TimeSpanConverter() }
         });
 
         private BotFrameworkAdapter _botFrameworkAdapter;
@@ -59,7 +65,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Handlers
 
             try
             {
-                await ProcessMessageRequestAsync(
+                var invokeResponse = await ProcessMessageRequestAsync(
                     request,
                     _botFrameworkAdapter,
                     context =>
@@ -69,7 +75,23 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Handlers
                         return bot.OnTurn(context);
                     });
 
-                response.StatusCode = (int)HttpStatusCode.OK;
+                if (invokeResponse == null)
+                {
+                    response.StatusCode = (int)HttpStatusCode.OK;
+                }
+                else
+                {
+                    response.ContentType = "application/json";
+                    response.StatusCode = invokeResponse.Status;
+
+                    using (var writer = new StreamWriter(response.Body))
+                    {
+                        using (var jsonWriter = new JsonTextWriter(writer))
+                        {
+                            BotMessageSerializer.Serialize(jsonWriter, invokeResponse.Body);
+                        }
+                    }
+                }
             }
             catch (UnauthorizedAccessException)
             {
@@ -77,6 +99,6 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Handlers
             }
         }
 
-        protected abstract Task ProcessMessageRequestAsync(HttpRequest request, BotFrameworkAdapter botFrameworkAdapter, Func<ITurnContext, Task> botCallbackHandler);
+        protected abstract Task<InvokeResponse> ProcessMessageRequestAsync(HttpRequest request, BotFrameworkAdapter botFrameworkAdapter, Func<ITurnContext, Task> botCallbackHandler);
     }
 }

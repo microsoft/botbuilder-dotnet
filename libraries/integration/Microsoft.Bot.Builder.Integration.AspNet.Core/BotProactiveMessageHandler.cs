@@ -18,7 +18,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Handlers
         {
         }
        
-        protected override async Task ProcessMessageRequestAsync(HttpRequest request, BotFrameworkAdapter botFrameworkAdapter, Func<ITurnContext, Task> botCallbackHandler)
+        protected override async Task<InvokeResponse> ProcessMessageRequestAsync(HttpRequest request, BotFrameworkAdapter botFrameworkAdapter, Func<ITurnContext, Task> botCallbackHandler)
         {
             var conversationReference = default(ConversationReference);
 
@@ -28,6 +28,8 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Handlers
             }
 
             await botFrameworkAdapter.ContinueConversation(conversationReference, botCallbackHandler);
+
+            return null;
         }
     }
 }
