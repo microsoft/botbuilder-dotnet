@@ -43,8 +43,6 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(PackageVersion)' == '' " Version="4.0.0-local" />
-
-
   </ItemGroup>
 
   <ItemGroup>
