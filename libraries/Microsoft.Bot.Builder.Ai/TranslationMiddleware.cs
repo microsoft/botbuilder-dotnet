@@ -118,8 +118,10 @@ namespace Microsoft.Bot.Builder.Ai
                                     IMessageActivity currentMEssageActivity = activities[0].AsMessageActivity();
                                     await TranslateMessageAsync(newContext, currentMEssageActivity, targetLanguage, sourceLanguage, false).ConfigureAwait(false);
                                     activities[0].Text = currentMEssageActivity.Text;
-                                    await newNext();
+                                    var responses = await newNext();
+                                    return responses;
                                 }
+                                return null;
                             });
                         }
                     }
