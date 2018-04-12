@@ -64,10 +64,13 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestCleanup]
         public async Task BlobStorage_TestCleanUp()
         {
-            var storageAccount = CloudStorageAccount.Parse(DataConnectionString);
-            var blobClient = storageAccount.CreateCloudBlobClient();
-            var container = blobClient.GetContainerReference(_containerName);
-            await container.DeleteIfExistsAsync();
+            if (storage != null)
+            {
+                var storageAccount = CloudStorageAccount.Parse(DataConnectionString);
+                var blobClient = storageAccount.CreateCloudBlobClient();
+                var container = blobClient.GetContainerReference(_containerName);
+                await container.DeleteIfExistsAsync();
+            }
         }
 
         public bool CheckStorageEmulator()

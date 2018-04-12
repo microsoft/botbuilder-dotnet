@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -38,7 +39,7 @@ namespace Microsoft.Bot.Builder.Azure
         /// <summary>
         /// The Azure Storage Blob Container where entities will be stored
         /// </summary>
-        private Lazy<CloudBlobContainer> Container { get; set; }
+        private Lazy<ValueTask<CloudBlobContainer>> Container { get; set; }
 
         /// <summary>
         /// Creates the AzureBlobStorage instance
@@ -62,13 +63,13 @@ namespace Microsoft.Bot.Builder.Azure
             // Checks if a container name is valid
             NameValidator.ValidateContainerName(containerName);
 
-            this.Container = new Lazy<CloudBlobContainer>(() =>
-              {
-                  var blobClient = storageAccount.CreateCloudBlobClient();
-                  var container = blobClient.GetContainerReference(containerName);
-                  container.CreateIfNotExistsAsync().Wait();
-                  return container;
-              }, isThreadSafe: true);
+            this.Container = new Lazy<ValueTask<CloudBlobContainer>>(async () =>
+            {
+                var blobClient = storageAccount.CreateCloudBlobClient();
+                var container = blobClient.GetContainerReference(containerName);
+                await container.CreateIfNotExistsAsync().ConfigureAwait(false);
+                return container;
+            }, isThreadSafe: true);
         }
 
         /// <summary>
@@ -95,10 +96,11 @@ namespace Microsoft.Bot.Builder.Azure
             if (keys == null) throw new ArgumentNullException(nameof(keys));
 
             await Task.WhenAll(
-                keys.Select(key =>
+                keys.Select(async(key) =>
                 {
                     var blobName = GetBlobName(key);
-                    var blobReference = this.Container.Value.GetBlobReference(blobName);
+                    var blobContainer = await this.Container.Value;
+                    var blobReference = blobContainer.GetBlobReference(blobName);
                     return blobReference.DeleteIfExistsAsync();
                 }));
         }
@@ -117,7 +119,8 @@ namespace Microsoft.Bot.Builder.Azure
                 keys.Select(async (key) =>
                 {
                     var blobName = GetBlobName(key);
-                    var blobReference = this.Container.Value.GetBlobReference(blobName);
+                    var blobContainer = await this.Container.Value;
+                    var blobReference = blobContainer.GetBlobReference(blobName);
 
                     try
                     {
@@ -136,14 +139,12 @@ namespace Microsoft.Bot.Builder.Azure
                         }
                     }
                     catch (StorageException ex)
-                    {
-                        if ((HttpStatusCode)ex.RequestInformation.HttpStatusCode == HttpStatusCode.NotFound)
-                        {
-                            return;
-                        }
-
-                        throw;
-                    }
+                        when ((HttpStatusCode)ex.RequestInformation.HttpStatusCode == HttpStatusCode.NotFound)
+                    { }
+                    catch (AggregateException ex)
+                        when (ex.InnerException is StorageException iex
+                        && (HttpStatusCode)iex.RequestInformation.HttpStatusCode == HttpStatusCode.NotFound)
+                    { }
                 }));
 
             return storeItems;
@@ -167,7 +168,8 @@ namespace Microsoft.Bot.Builder.Azure
                     var calculatedETag = storeItem?.eTag == "*" ? null : storeItem?.eTag;
 
                     var blobName = GetBlobName(key);
-                    var blobReference = this.Container.Value.GetBlockBlobReference(blobName);
+                    var blobContainer = await this.Container.Value;
+                    var blobReference = blobContainer.GetBlockBlobReference(blobName);
                     using (var blobStream = await blobReference.OpenWriteAsync(
                         AccessCondition.GenerateIfMatchCondition(calculatedETag),
                         new BlobRequestOptions(),
