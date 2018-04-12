@@ -6,6 +6,8 @@ using AlarmBot.Models;
 using AlarmBot.Topics;
 using Microsoft.Bot;
 using Microsoft.Bot.Builder;
+using Microsoft.Bot.Builder.TraceExtensions;
+using Microsoft.Bot.Builder.Core;
 
 namespace AlarmBot
 {
@@ -15,6 +17,10 @@ namespace AlarmBot
         {
             // Get the current ActiveTopic from my persisted conversation state
             var context = new AlarmBotContext(turnContext);
+
+            // Trace top intent
+            // await turnContext.SendActivity(context.Activity.CreateTrace("conversationState", value: context.ConversationState));
+            await turnContext.TraceActivity("context.ConversationState", value: context.ConversationState);
 
             var handled = false;
 

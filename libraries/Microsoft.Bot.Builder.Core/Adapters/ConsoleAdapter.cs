@@ -81,6 +81,9 @@ namespace Microsoft.Bot.Builder.Adapters
                             await Task.Delay(delayMs).ConfigureAwait(false);
                         }
                         break;
+                    case ActivityTypes.Trace:
+                        // don't send trace activities unless you know that the client needs them.  For example: BF protocol only sends Trace Activity when talking to emulator channel
+                        break;
                     default:
                         Console.WriteLine("Bot: activity type: {0}", activity.Type);
                         break;
