@@ -29,15 +29,24 @@ namespace Microsoft.Bot.Schema
         /// <summary>
         /// Initializes a new instance of the ConversationAccount class.
         /// </summary>
-        /// <param name="isGroup">Is this a reference to a group</param>
+        /// <param name="isGroup">Indicates whether the conversation contains
+        /// more than two participants at the time the activity was
+        /// generated</param>
+        /// <param name="conversationType">Indicates the type of the
+        /// conversation in channels that distinguish between conversation
+        /// types</param>
         /// <param name="id">Channel id for the user or bot on this channel
         /// (Example: joe@smith.com, or @joesmith or 123456)</param>
         /// <param name="name">Display friendly name</param>
-        public ConversationAccount(bool? isGroup = default(bool?), string id = default(string), string name = default(string))
+        /// <param name="role">Role of the entity behind the account (Example:
+        /// User, Bot, etc.). Possible values include: 'user', 'bot'</param>
+        public ConversationAccount(bool? isGroup = default(bool?), string conversationType = default(string), string id = default(string), string name = default(string), string role = default(string))
         {
             IsGroup = isGroup;
+            ConversationType = conversationType;
             Id = id;
             Name = name;
+            Role = role;
             CustomInit();
         }
 
@@ -47,10 +56,18 @@ namespace Microsoft.Bot.Schema
         partial void CustomInit();
 
         /// <summary>
-        /// Gets or sets is this a reference to a group
+        /// Gets or sets indicates whether the conversation contains more than
+        /// two participants at the time the activity was generated
         /// </summary>
         [JsonProperty(PropertyName = "isGroup")]
         public bool? IsGroup { get; set; }
+
+        /// <summary>
+        /// Gets or sets indicates the type of the conversation in channels
+        /// that distinguish between conversation types
+        /// </summary>
+        [JsonProperty(PropertyName = "conversationType")]
+        public string ConversationType { get; set; }
 
         /// <summary>
         /// Gets or sets channel id for the user or bot on this channel
@@ -64,6 +81,13 @@ namespace Microsoft.Bot.Schema
         /// </summary>
         [JsonProperty(PropertyName = "name")]
         public string Name { get; set; }
+
+        /// <summary>
+        /// Gets or sets role of the entity behind the account (Example: User,
+        /// Bot, etc.). Possible values include: 'user', 'bot'
+        /// </summary>
+        [JsonProperty(PropertyName = "role")]
+        public string Role { get; set; }
 
     }
 }
