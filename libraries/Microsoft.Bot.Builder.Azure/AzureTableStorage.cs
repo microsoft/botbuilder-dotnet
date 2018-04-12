@@ -46,6 +46,11 @@ namespace Microsoft.Bot.Builder.Azure
         /// <param name="tableName">Name of the table to use for storage. Check table name rules: https://docs.microsoft.com/en-us/rest/api/storageservices/Understanding-the-Table-Service-Data-Model?redirectedfrom=MSDN#table-names </param>
         public AzureTableStorage(CloudStorageAccount storageAccount, string tableName)
         {
+            if (storageAccount == null) throw new ArgumentNullException(nameof(storageAccount));
+
+            // Checks if table name is valid
+            NameValidator.ValidateTableName(tableName);
+
             var tableClient = storageAccount.CreateCloudTableClient();
             Table = tableClient.GetTableReference(tableName);
 
@@ -59,6 +64,8 @@ namespace Microsoft.Bot.Builder.Azure
         /// <param name="keys">Array of item keys to remove from the store.</param>
         public async Task Delete(string[] keys)
         {
+            if (keys == null) throw new ArgumentNullException(nameof(keys));
+
             foreach (var key in keys.Select(k => GetEntityKey(k)))
             {
                 await Table.ExecuteAsync(TableOperation.Delete(new TableEntity(key.PartitionKey, key.RowKey) { ETag = "*" })).ConfigureAwait(false);
@@ -71,7 +78,12 @@ namespace Microsoft.Bot.Builder.Azure
         /// <param name="keys">Array of item keys to read from the store.</param>
         public async Task<StoreItems> Read(string[] keys)
         {
-            var storeItems = new List<KeyValuePair<string, object>>(keys.Length);
+            if (keys == null || keys.Length == 0)
+            {
+                throw new ArgumentException("Please provide at least one key to read from storage.", nameof(keys));
+            }
+
+            var storeItems = new StoreItems();
             foreach (string key in keys)
             {
                 var entityKey = GetEntityKey(key);
@@ -97,6 +109,8 @@ namespace Microsoft.Bot.Builder.Azure
         /// <returns></returns>
         public async Task Write(StoreItems changes)
         {
+            if (changes == null) throw new ArgumentNullException(nameof(changes));
+
             foreach (var change in changes)
             {
                 var entityKey = GetEntityKey(change.Key);
