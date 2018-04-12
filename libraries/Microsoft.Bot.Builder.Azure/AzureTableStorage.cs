@@ -15,48 +15,67 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.Azure
 {
     /// <summary>
-    /// Models IStorage around a dictionary 
+    /// Middleware that implements an Azure Table based storage provider for a bot.
     /// </summary>
     public class AzureTableStorage : IStorage
     {
+        /// <summary>
+        /// Map of already initialized tables.
+        /// </summary>
         private static HashSet<string> _checkedTables = new HashSet<string>();
 
+        /// <summary>
+        /// Underlying Azure Table.
+        /// </summary>
         public CloudTable Table { get; private set; }
 
+        /// <summary>
+        /// Creates a new instance of the storage provider.
+        /// </summary>
+        /// <param name="dataConnectionString">The Azure Storage Connection string</param>
+        /// <param name="tableName">Name of the table to use for storage. Check table name rules: https://docs.microsoft.com/en-us/rest/api/storageservices/Understanding-the-Table-Service-Data-Model?redirectedfrom=MSDN#table-names </param>
         public AzureTableStorage(string dataConnectionString, string tableName)
             : this(CloudStorageAccount.Parse(dataConnectionString), tableName)
         {
         }
 
+        /// <summary>
+        /// Creates a new instance of the storage provider.
+        /// </summary>
+        /// <param name="storageAccount">CloudStorageAccount information.</param>
+        /// <param name="tableName">Name of the table to use for storage. Check table name rules: https://docs.microsoft.com/en-us/rest/api/storageservices/Understanding-the-Table-Service-Data-Model?redirectedfrom=MSDN#table-names </param>
         public AzureTableStorage(CloudStorageAccount storageAccount, string tableName)
         {
             var tableClient = storageAccount.CreateCloudTableClient();
-            this.Table = tableClient.GetTableReference(tableName);
+            Table = tableClient.GetTableReference(tableName);
 
             if (_checkedTables.Add($"{storageAccount.TableStorageUri.PrimaryUri.Host}-{tableName}"))
-                this.Table.CreateIfNotExistsAsync().Wait();
+                Table.CreateIfNotExistsAsync().Wait();
         }
 
-        protected EntityKey GetEntityKey(string key)
-        {
-            return new EntityKey() { PartitionKey = SanitizeKey(key), RowKey = "0" };
-        }
-
+        /// <summary>
+        /// Removes store items from storage.
+        /// </summary>
+        /// <param name="keys">Array of item keys to remove from the store.</param>
         public async Task Delete(string[] keys)
         {
             foreach (var key in keys.Select(k => GetEntityKey(k)))
             {
-                await this.Table.ExecuteAsync(TableOperation.Delete(new TableEntity(key.PartitionKey, key.RowKey) { ETag = "*" })).ConfigureAwait(false);
+                await Table.ExecuteAsync(TableOperation.Delete(new TableEntity(key.PartitionKey, key.RowKey) { ETag = "*" })).ConfigureAwait(false);
             }
         }
 
-        public async Task<IEnumerable<KeyValuePair<string, object>>> Read(string[] keys)
+        /// <summary>
+        /// Loads store items from storage.
+        /// </summary>
+        /// <param name="keys">Array of item keys to read from the store.</param>
+        public async Task<StoreItems> Read(string[] keys)
         {
             var storeItems = new List<KeyValuePair<string, object>>(keys.Length);
             foreach (string key in keys)
             {
                 var entityKey = GetEntityKey(key);
-                var result = await this.Table.ExecuteAsync(TableOperation.Retrieve<StoreItemEntity>(entityKey.PartitionKey, entityKey.RowKey)).ConfigureAwait(false);
+                var result = await Table.ExecuteAsync(TableOperation.Retrieve<StoreItemEntity>(entityKey.PartitionKey, entityKey.RowKey)).ConfigureAwait(false);
                 if ((HttpStatusCode)result.HttpStatusCode == HttpStatusCode.OK)
                 {
                     var value = ((StoreItemEntity)result.Result).AsObject();
@@ -71,8 +90,12 @@ namespace Microsoft.Bot.Builder.Azure
             return storeItems;
         }
 
-
-        public async Task Write(IEnumerable<KeyValuePair<string, object>> changes)
+        /// <summary>
+        /// Saves store items to storage.
+        /// </summary>
+        /// <param name="changes">Map of items to write to storage.</param>
+        /// <returns></returns>
+        public async Task Write(StoreItems changes)
         {
             foreach (var change in changes)
             {
@@ -81,11 +104,11 @@ namespace Microsoft.Bot.Builder.Azure
                 StoreItemEntity entity = new StoreItemEntity(entityKey, newValue);
                 if (entity.ETag == null || entity.ETag == "*")
                 {
-                    var result = await this.Table.ExecuteAsync(TableOperation.InsertOrReplace(entity)).ConfigureAwait(false);
+                    var result = await Table.ExecuteAsync(TableOperation.InsertOrReplace(entity)).ConfigureAwait(false);
                 }
                 else if (entity.ETag.Length > 0)
                 {
-                    var result = await this.Table.ExecuteAsync(TableOperation.Replace(entity)).ConfigureAwait(false);
+                    var result = await Table.ExecuteAsync(TableOperation.Replace(entity)).ConfigureAwait(false);
                 }
                 else
                 {
@@ -94,7 +117,20 @@ namespace Microsoft.Bot.Builder.Azure
             }
         }
 
-        protected class StoreItemEntity : TableEntity
+        /// <summary>
+        /// Maps the property key into a PartitionKey and RowKey
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        private EntityKey GetEntityKey(string key)
+        {
+            return new EntityKey() { PartitionKey = SanitizeKey(key), RowKey = "0" };
+        }
+
+        /// <summary>
+        /// Internal data structure for storing items in Azure Tables.
+        /// </summary>
+        private class StoreItemEntity : TableEntity
         {
             private static JsonSerializerSettings serializationSettings = new JsonSerializerSettings()
             {
@@ -111,8 +147,8 @@ namespace Microsoft.Bot.Builder.Azure
             public StoreItemEntity(string partitionKey, string rowKey, object obj)
                 : base(partitionKey, rowKey)
             {
-                this.ETag = (obj as IStoreItem)?.eTag;
-                this.Json = JsonConvert.SerializeObject(obj, Formatting.None, serializationSettings);
+                ETag = (obj as IStoreItem)?.eTag;
+                Json = JsonConvert.SerializeObject(obj, Formatting.None, serializationSettings);
             }
 
             public string Json { get; set; }
@@ -122,12 +158,15 @@ namespace Microsoft.Bot.Builder.Azure
                 var obj = JsonConvert.DeserializeObject(Json, serializationSettings);
                 IStoreItem storeItem = obj as IStoreItem;
                 if (storeItem != null)
-                    storeItem.eTag = this.ETag;
+                    storeItem.eTag = ETag;
                 return obj;
             }
         }
 
-        protected class EntityKey
+        /// <summary>
+        /// Entity that maps property to PartitionKey and RowKey
+        /// </summary>
+        private class EntityKey
         {
             public string PartitionKey { get; set; }
             public string RowKey { get; set; }
@@ -150,6 +189,12 @@ namespace Microsoft.Bot.Builder.Azure
             return dict;
         });
 
+        /// <summary>
+        /// Escapes a property key into a PartitionKey that can be used with Azure Tables.
+        /// More information at https://docs.microsoft.com/en-us/rest/api/storageservices/Understanding-the-Table-Service-Data-Model?redirectedfrom=MSDN#table-names
+        /// </summary>
+        /// <param name="key">The Property Key</param>
+        /// <returns>Sanitized key that can be used as PartitionKey</returns>
         private string SanitizeKey(string key)
         {
             StringBuilder sb = new StringBuilder();
