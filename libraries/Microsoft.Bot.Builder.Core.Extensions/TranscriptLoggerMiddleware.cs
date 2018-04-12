@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions
         /// <param name="transcriptLogger"></param>
         public TranscriptLoggerMiddleware(ITranscriptLogger transcriptLogger)
         {
-            logger = transcriptLogger ?? throw new ArgumentNullException("TranscriptMiddleware requires a ITranscriptStore to store the transcript activities");
+            logger = transcriptLogger ?? throw new ArgumentNullException("TranscriptLoggerMiddleware requires a ITranscriptLogger implementation.  ");
         }
 
         /// <summary>
