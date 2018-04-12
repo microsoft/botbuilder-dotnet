@@ -6,6 +6,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AlarmBot.Models;
+using Microsoft.Bot.Builder;
+using Microsoft.Bot.Builder.Core.State;
 using Microsoft.Bot.Schema;
 
 namespace AlarmBot.Responses
@@ -27,7 +29,7 @@ namespace AlarmBot.Responses
 
         public static async Task ReplyWithTitlePrompt(AlarmBotContext context)
         {
-            var deleteActivity = GetDeleteActivity(context, context.UserState.Alarms, "Delete Alarms", "What alarm do you want to delete?");
+            var deleteActivity = GetDeleteActivity(context, (await context.UserState().Get<AlarmUserState>()).Alarms, "Delete Alarms", "What alarm do you want to delete?");
             await context.SendActivity(deleteActivity); 
         }
 

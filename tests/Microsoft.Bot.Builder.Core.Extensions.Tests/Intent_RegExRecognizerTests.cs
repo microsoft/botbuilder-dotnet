@@ -44,10 +44,10 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
             Intent i = RegExpRecognizerMiddleware.Recognize(input, r, new List<string>() { "One", "Two" }, 1.0);
             Assert.IsNotNull(i, "Expected an Intent");
             Assert.IsTrue(i.Entities.Count == 2, "Should match 2 groups");
-            Assert.IsTrue(i.Entities[0].ValueAs<string>() == "11111");
+            Assert.AreEqual(i.Entities[0].Value, "11111");
             Assert.IsTrue(i.Entities[0].GroupName == "One");
 
-            Assert.IsTrue(i.Entities[1].ValueAs<string>() == "22222");
+            Assert.AreEqual(i.Entities[1].Value, "22222");
             Assert.IsTrue(i.Entities[1].GroupName == "Two");
         }
 
@@ -62,10 +62,10 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
             Intent i = RegExpRecognizerMiddleware.Recognize(input, r, 1.0);
             Assert.IsNotNull(i, "Expected an Intent");
             Assert.IsTrue(i.Entities.Count == 2, "Should match 2 groups");
-            Assert.IsTrue(i.Entities[0].ValueAs<string>() == "11111");
+            Assert.AreEqual(i.Entities[0].Value, "11111");
             Assert.IsTrue(i.Entities[0].GroupName == "One");
 
-            Assert.IsTrue(i.Entities[1].ValueAs<string>() == "22222");
+            Assert.AreEqual(i.Entities[1].Value, "22222");
             Assert.IsTrue(i.Entities[1].GroupName == "Two");
         }
 

@@ -4,17 +4,13 @@
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Core.Extensions;
+using Microsoft.Bot.Builder.Core.State;
 using Microsoft.Bot.Schema;
 using Microsoft.Recognizers.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Bot.Builder.Prompts.Tests
 {
-    public class TestState : StoreItem
-    {
-        public bool InPrompt { get; set; } = false;
-    }
-
     [TestClass]
     [TestCategory("Prompts")]
     [TestCategory("Number Prompts")]
@@ -23,16 +19,16 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
         [TestMethod]
         public async Task NumberPrompt_Float()
         {
-            TestAdapter adapter = new TestAdapter()
-                .Use(new ConversationState<TestState>(new MemoryStorage()));
+            TestAdapter adapter = new TestAdapter();
+
+            var inPrompt = false;
 
             await new TestFlow(adapter, async (context) =>
                 {
-                    var state = ConversationState<TestState>.Get(context);
                     var numberPrompt = new NumberPrompt<float>(Culture.English);
-                    if (!state.InPrompt)
+                    if (!inPrompt)
                     {
-                        state.InPrompt = true;
+                        inPrompt = true;
                         await numberPrompt.Prompt(context, "Gimme:");
                     }
                     else
@@ -63,16 +59,16 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
         [TestMethod]
         public async Task NumberPrompt_Int()
         {
-            TestAdapter adapter = new TestAdapter()
-                .Use(new ConversationState<TestState>(new MemoryStorage()));
+            TestAdapter adapter = new TestAdapter();
+
+            var inPrompt = false;
 
             await new TestFlow(adapter, async (context) =>
             {
-                var state = ConversationState<TestState>.Get(context);
                 var numberPrompt = new NumberPrompt<int>(Culture.English);
-                if (!state.InPrompt)
+                if (!inPrompt)
                 {
-                    state.InPrompt = true;
+                    inPrompt = true;
                     await numberPrompt.Prompt(context, "Gimme:");
                 }
                 else
@@ -102,12 +98,12 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
         [TestMethod]
         public async Task NumberPrompt_Validator()
         {
-            TestAdapter adapter = new TestAdapter()
-                .Use(new ConversationState<TestState>(new MemoryStorage()));
+            TestAdapter adapter = new TestAdapter();
+
+            var inPrompt = false;
 
             await new TestFlow(adapter, async (context) =>
             {
-                var state = ConversationState<TestState>.Get(context);
                 var numberPrompt = new NumberPrompt<int>(Culture.English, async (ctx, result) =>
                 {
                     if (result.Value < 0)
@@ -115,9 +111,9 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                     if (result.Value > 100)
                         result.Status = PromptStatus.TooBig;
                 });
-                if (!state.InPrompt)
+                if (!inPrompt)
                 {
-                    state.InPrompt = true;
+                    inPrompt = true;
                     await numberPrompt.Prompt(context, "Gimme:");
                 }
                 else

@@ -4,6 +4,7 @@
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Core.Extensions;
+using Microsoft.Bot.Builder.Core.State;
 using Microsoft.Bot.Schema;
 using Microsoft.Recognizers.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -18,16 +19,16 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
         [TestMethod]
         public async Task RangePrompt_Test()
         {
-            TestAdapter adapter = new TestAdapter()
-                .Use(new ConversationState<TestState>(new MemoryStorage()));
+            TestAdapter adapter = new TestAdapter();
+
+            var inPrompt = false;
 
             await new TestFlow(adapter, async (context) =>
                 {
-                    var state = ConversationState<TestState>.Get(context);
                     var testPrompt = new RangePrompt<int>(Culture.English);
-                    if (!state.InPrompt)
+                    if (!inPrompt)
                     {
-                        state.InPrompt = true;
+                        inPrompt = true;
                         await testPrompt.Prompt(context, "Gimme:");
                     }
                     else
@@ -58,20 +59,20 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
         [TestMethod]
         public async Task RangePrompt_Validator()
         {
-            TestAdapter adapter = new TestAdapter()
-                .Use(new ConversationState<TestState>(new MemoryStorage()));
+            TestAdapter adapter = new TestAdapter();
+
+            var inPrompt = false;
 
             await new TestFlow(adapter, async (context) =>
             {
-                var state = ConversationState<TestState>.Get(context);
                 var testPrompt = new RangePrompt<int>(Culture.English, async (c, result) =>
                 {
                     if (result.End - result.Start <= 5)
                         result.Status = PromptStatus.OutOfRange;
                 });
-                if (!state.InPrompt)
+                if (!inPrompt)
                 {
-                    state.InPrompt = true;
+                    inPrompt = true;
                     await testPrompt.Prompt(context, "Gimme:");
                 }
                 else

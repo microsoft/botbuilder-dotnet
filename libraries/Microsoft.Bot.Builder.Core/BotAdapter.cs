@@ -164,10 +164,12 @@ namespace Microsoft.Bot.Builder
         /// Most channels require a user to initaiate a conversation with a bot
         /// before the bot can send activities to the user.</remarks>
         /// <seealso cref="RunPipeline(ITurnContext, Func{ITurnContext, Task}, CancellationTokenSource)"/>
-        public virtual Task ContinueConversation(ConversationReference reference, Func<ITurnContext, Task> callback)
+        public virtual async Task ContinueConversation(ConversationReference reference, Func<ITurnContext, Task> callback)
         {
-            var context = new TurnContext(this, reference.GetPostToBotMessage());
-            return RunPipeline(context, callback);
+            using (var context = new TurnContext(this, reference.GetPostToBotMessage()))
+            {
+                await RunPipeline(context, callback);
+            }
         }
     }
 }
