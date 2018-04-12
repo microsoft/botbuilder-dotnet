@@ -94,7 +94,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Dialo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Samples.Dialog.Prompts", "samples\MIcrosoft.Bot.Samples.Dialog.Prompts\Microsoft.Bot.Samples.Dialog.Prompts.csproj", "{B71A123F-09FE-45D7-9644-4EE3E1E221AE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Builder.Dialogs.Tests", "Microsoft.Bot.Builder.Dialogs.Tests\Microsoft.Bot.Builder.Dialogs.Tests.csproj", "{69A0561E-9F65-4278-972A-1E0248CD38A0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Dialogs.Tests", "Microsoft.Bot.Builder.Dialogs.Tests\Microsoft.Bot.Builder.Dialogs.Tests.csproj", "{69A0561E-9F65-4278-972A-1E0248CD38A0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -310,14 +310,20 @@ Global
 		{9C09FAB4-AB0B-49BB-8D51-3B0B86D95E8E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{0F639EB4-FB64-4909-8A10-FB93E7BE3AFB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{0F639EB4-FB64-4909-8A10-FB93E7BE3AFB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0F639EB4-FB64-4909-8A10-FB93E7BE3AFB}.Documentation|Any CPU.ActiveCfg = Debug|Any CPU
+		{0F639EB4-FB64-4909-8A10-FB93E7BE3AFB}.Documentation|Any CPU.Build.0 = Debug|Any CPU
 		{0F639EB4-FB64-4909-8A10-FB93E7BE3AFB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0F639EB4-FB64-4909-8A10-FB93E7BE3AFB}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B71A123F-09FE-45D7-9644-4EE3E1E221AE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B71A123F-09FE-45D7-9644-4EE3E1E221AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B71A123F-09FE-45D7-9644-4EE3E1E221AE}.Documentation|Any CPU.ActiveCfg = Debug|Any CPU
+		{B71A123F-09FE-45D7-9644-4EE3E1E221AE}.Documentation|Any CPU.Build.0 = Debug|Any CPU
 		{B71A123F-09FE-45D7-9644-4EE3E1E221AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B71A123F-09FE-45D7-9644-4EE3E1E221AE}.Release|Any CPU.Build.0 = Release|Any CPU
 		{69A0561E-9F65-4278-972A-1E0248CD38A0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{69A0561E-9F65-4278-972A-1E0248CD38A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{69A0561E-9F65-4278-972A-1E0248CD38A0}.Documentation|Any CPU.ActiveCfg = Debug|Any CPU
+		{69A0561E-9F65-4278-972A-1E0248CD38A0}.Documentation|Any CPU.Build.0 = Debug|Any CPU
 		{69A0561E-9F65-4278-972A-1E0248CD38A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{69A0561E-9F65-4278-972A-1E0248CD38A0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection

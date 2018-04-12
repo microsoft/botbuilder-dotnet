@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Samples.Dialog.Prompts
             _dialogs.Add("number", new Builder.Dialogs.Prompts.NumberPrompt<int>(Culture.English));
         }
 
-        public async Task OnReceiveActivity(ITurnContext turnContext)
+        public async Task OnTurn(ITurnContext turnContext)
         {
             try
             {

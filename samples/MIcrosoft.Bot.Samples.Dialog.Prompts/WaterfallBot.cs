@@ -21,7 +21,7 @@ namespace Microsoft.Bot.Samples.Dialog.Prompts
             _dialogs.Add("waterfall", CreateWaterfall());
         }
 
-        public async Task OnReceiveActivity(ITurnContext turnContext)
+        public async Task OnTurn(ITurnContext turnContext)
         {
             try
             {
