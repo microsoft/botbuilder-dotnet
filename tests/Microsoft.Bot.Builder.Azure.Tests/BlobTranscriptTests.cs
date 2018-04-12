@@ -49,6 +49,15 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             return hasStorageEmulator.Value;
         }
 
+        [ClassInitialize]
+        public static void Initialize(TestContext context)
+        {
+            var containerName = "BlobTranscriptTests".ToLower();
+            var blobClient = CloudStorageAccount.DevelopmentStorageAccount.CreateCloudBlobClient();
+            var container = blobClient.GetContainerReference(containerName);
+            container.DeleteAsync();
+        }
+
         public BlobTranscriptTests() : base()
         {
             this.store = new AzureBlobTranscriptStore(CloudStorageAccount.DevelopmentStorageAccount, "BlobTranscriptTests");

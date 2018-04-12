@@ -23,6 +23,7 @@ namespace Microsoft.Bot.Builder.Azure
 
         private static HashSet<string> _checkedContainers = new HashSet<string>();
 
+
         /// <summary>
         /// The Azure Storage Blob Container where entities will be stored
         /// </summary>
@@ -45,8 +46,11 @@ namespace Microsoft.Bot.Builder.Azure
                 var blobClient = storageAccount.CreateCloudBlobClient();
                 NameValidator.ValidateContainerName(containerName);
                 var container = blobClient.GetContainerReference(containerName);
-                container.DeleteIfExistsAsync().Wait();
-                container.CreateIfNotExistsAsync().Wait();
+                if (!_checkedContainers.Contains(containerName))
+                {
+                    _checkedContainers.Add(containerName);
+                    container.CreateIfNotExistsAsync().Wait();
+                }
                 return container;
             }, isThreadSafe: true);
         }
@@ -84,35 +88,37 @@ namespace Microsoft.Bot.Builder.Azure
 
             var dirName = GetDirName(channelId, conversationId);
             var dir = this.Container.Value.GetDirectoryReference(dirName);
-
+            int pageSize = 20;
             BlobContinuationToken token = null;
             List<CloudBlockBlob> blobs = new List<CloudBlockBlob>();
             do
             {
                 var segment = await dir.ListBlobsSegmentedAsync(false, BlobListingDetails.Metadata, null, token, null, null);
-                blobs.AddRange(segment.Results.Cast<CloudBlockBlob>());
+
+                foreach (var blob in segment.Results.Cast<CloudBlockBlob>())
+                {
+                    if (DateTime.Parse(blob.Metadata["Timestamp"]).ToUniversalTime() >= startDate)
+                    {
+                        if (continuationToken != null)
+                        {
+                            if (blob.Name == continuationToken)
+                                // we found continuation token 
+                                continuationToken = null;
+                            // skip record
+                        }
+                        else
+                        {
+                            blobs.Add(blob);
+                            if (blobs.Count == pageSize)
+                                break;
+                        }
+                    }
+                }
+
                 if (segment.ContinuationToken != null)
                     token = segment.ContinuationToken;
-            } while (token != null);
+            } while (token != null && blobs.Count < pageSize);
 
-            if (continuationToken != null)
-            {
-                blobs = blobs
-                    .OrderBy(blob => blob.Properties.LastModified)
-                    .Where(blob => DateTime.Parse(blob.Metadata["Timestamp"]).ToUniversalTime() >= startDate)
-                    .SkipWhile(blob => blob.Name != continuationToken)
-                    .Skip(1)
-                    .Take(20)
-                    .ToList();
-            }
-            else
-            {
-                blobs = blobs
-                    .OrderBy(blob => blob.Properties.LastModified)
-                    .Where(blob => DateTime.Parse(blob.Metadata["Timestamp"]).ToUniversalTime() >= startDate)
-                    .Take(20)
-                    .ToList();
-            }
             pagedResult.Items = blobs
                 .Select(async bl =>
                 {
@@ -122,7 +128,7 @@ namespace Microsoft.Bot.Builder.Azure
                 .Select(t => t.Result)
                 .ToArray();
 
-            if (pagedResult.Items.Length == 20)
+            if (pagedResult.Items.Length == pageSize)
                 pagedResult.ContinuationToken = blobs.Last().Name;
 
             return pagedResult;
@@ -135,33 +141,38 @@ namespace Microsoft.Bot.Builder.Azure
 
             var dirName = GetDirName(channelId);
             var dir = this.Container.Value.GetDirectoryReference(dirName);
+            int pageSize = 20;
             BlobContinuationToken token = null;
-            List<CloudBlobDirectory> blobs = new List<CloudBlobDirectory>();
+            List<Conversation> conversations = new List<Conversation>();
             do
             {
                 var segment = await dir.ListBlobsSegmentedAsync(false, BlobListingDetails.Metadata, null, token, null, null);
-                blobs.AddRange(segment.Results.Where(c => c is CloudBlobDirectory).Cast<CloudBlobDirectory>());
+
+                foreach (var blob in segment.Results.Where(c => c is CloudBlobDirectory).Cast<CloudBlobDirectory>())
+                {
+                    var conversation = new Conversation() { Id = blob.Prefix.Split('/').Where(s => s.Length > 0).Last(), ChannelId = channelId };
+                    if (continuationToken != null)
+                    {
+                        if (conversation.Id == continuationToken)
+                            // we found continuation token 
+                            continuationToken = null;
+                        // skip record
+                    }
+                    else
+                    {
+                        conversations.Add(conversation);
+                        if (conversations.Count == pageSize)
+                            break;
+                    }
+                }
+
                 if (segment.ContinuationToken != null)
                     token = segment.ContinuationToken;
-            } while (token != null);
+            } while (token != null && conversations.Count < pageSize);
 
             var pagedResult = new PagedResult<Conversation>();
-            if (!String.IsNullOrEmpty(continuationToken))
-            {
-                pagedResult.Items = blobs
-                    .Select(d => new Conversation() { Id = d.Prefix.Split('/').Where(s => s.Length > 0).Last(), ChannelId = channelId })
-                    .SkipWhile(c => c.Id != continuationToken)
-                    .Skip(1)
-                    .Take(20)
-                    .ToArray();
-            }
-            else
-            {
-                pagedResult.Items = blobs
-                    .Select(d => new Conversation() { Id = d.Prefix.Split('/').Where(s => s.Length > 0).Last(), ChannelId = channelId })
-                    .Take(20)
-                    .ToArray();
-            }
+            pagedResult.Items = conversations.ToArray();
+
             if (pagedResult.Items.Length == 20)
                 pagedResult.ContinuationToken = pagedResult.Items.Last().Id;
 
