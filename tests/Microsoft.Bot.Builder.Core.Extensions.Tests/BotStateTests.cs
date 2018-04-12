@@ -208,6 +208,39 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
                 .StartTest();
         }
 
+        [TestMethod]
+        public async Task State_UseBotStateDirectly()
+        {
+            var adapter = new TestAdapter();
+
+            await new TestFlow(adapter,
+                    async (context) =>
+                    {
+                        var botStateManager = new BotState<CustomState>(new MemoryStorage(),
+                            $"BotState:{typeof(BotState<CustomState>).Namespace}.{typeof(BotState<CustomState>).Name}",
+                            (ctx) => $"botstate/{ctx.Activity.ChannelId}/{ctx.Activity.Conversation.Id}/{typeof(BotState<CustomState>).Namespace}.{typeof(BotState<CustomState>).Name}");
+
+                        // read initial state object
+                        var customState = await botStateManager.Read(context);
+
+                        // this should be a 'new CustomState' as nothing is currently stored in storage
+                        Assert.Equals(customState, new CustomState());
+
+                        // amend property and write to storage
+                        customState.CustomString = "test";
+                        await botStateManager.Write(context, customState);
+
+                        // set customState to null before reading from storage
+                        customState = null;
+                        customState = await botStateManager.Read(context);
+
+                        // check object read from value has the correct value for CustomString
+                        Assert.Equals(customState.CustomString, "test");
+                    }
+                )
+                .StartTest();
+        }
+
         public class CustomState : StoreItem
         {
             public string CustomString { get; set; }
