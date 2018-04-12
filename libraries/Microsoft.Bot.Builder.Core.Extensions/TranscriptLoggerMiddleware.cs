@@ -11,20 +11,20 @@ namespace Microsoft.Bot.Builder.Core.Extensions
     /// <summary>
     /// When added, this middleware will log incoming and outgoing activitites to a ITranscriptStore 
     /// </summary>
-    public class TranscriptMiddleware : IMiddleware
+    public class TranscriptLoggerMiddleware : IMiddleware
     {
         private static JsonSerializerSettings JsonSettings = new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore };
-        private ITranscriptStore store;
+        private ITranscriptLogger logger;
 
         private Queue<IActivity> transcript = new Queue<IActivity>();
 
         /// <summary>
         /// Middleware for logging incoming and outgoing activities to a transcript store 
         /// </summary>
-        /// <param name="transcriptStore"></param>
-        public TranscriptMiddleware(ITranscriptStore transcriptStore)
+        /// <param name="transcriptLogger"></param>
+        public TranscriptLoggerMiddleware(ITranscriptLogger transcriptLogger)
         {
-            store = transcriptStore ?? throw new ArgumentNullException("TranscriptMiddleware requires a ITranscriptStore to store the transcript activities");
+            logger = transcriptLogger ?? throw new ArgumentNullException("TranscriptMiddleware requires a ITranscriptStore to store the transcript activities");
         }
 
         /// <summary>
@@ -97,7 +97,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions
                 try
                 {
                     var activity = transcript.Dequeue();
-                    await store.LogActivity(activity);
+                    await logger.LogActivity(activity);
                 }
                 catch (Exception err)
                 {

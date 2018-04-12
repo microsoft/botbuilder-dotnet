@@ -43,11 +43,10 @@ namespace Microsoft.Bot.Builder.Core.Extensions
         public string ContinuationToken { get; set; }
     }
 
-
     /// <summary>
     /// Transcript logger stores activities for conversations for recall
     /// </summary>
-    public interface ITranscriptStore
+    public interface ITranscriptLogger
     {
         /// <summary>
         /// Log an activity to the transcript
@@ -55,7 +54,14 @@ namespace Microsoft.Bot.Builder.Core.Extensions
         /// <param name="activity"></param>
         /// <returns></returns>
         Task LogActivity(IActivity activity);
+    }
 
+
+    /// <summary>
+    /// Transcript logger stores activities for conversations for recall
+    /// </summary>
+    public interface ITranscriptStore : ITranscriptLogger
+    {
         /// <summary>
         /// Get activities for a conversation (Aka the transcript)
         /// </summary>

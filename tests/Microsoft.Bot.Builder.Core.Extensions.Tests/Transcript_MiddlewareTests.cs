@@ -18,7 +18,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
         {
             var transcriptStore = new MemoryTranscriptStore();
             TestAdapter adapter = new TestAdapter()
-                .Use(new TranscriptMiddleware(transcriptStore));
+                .Use(new TranscriptLoggerMiddleware(transcriptStore));
             string conversationId = null;
 
             await new TestFlow(adapter, async (context) =>
@@ -62,7 +62,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
         {
             var transcriptStore = new MemoryTranscriptStore();
             TestAdapter adapter = new TestAdapter()
-                .Use(new TranscriptMiddleware(transcriptStore));
+                .Use(new TranscriptLoggerMiddleware(transcriptStore));
             string conversationId = null;
             Activity activityToUpdate = null;
             await new TestFlow(adapter, async (context) =>
@@ -103,7 +103,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
         {
             var transcriptStore = new MemoryTranscriptStore();
             TestAdapter adapter = new TestAdapter()
-                .Use(new TranscriptMiddleware(transcriptStore));
+                .Use(new TranscriptLoggerMiddleware(transcriptStore));
             string conversationId = null;
             string activityId = null;
             await new TestFlow(adapter, async (context) =>
