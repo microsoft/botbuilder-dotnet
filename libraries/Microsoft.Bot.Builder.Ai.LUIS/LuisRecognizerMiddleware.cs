@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
@@ -18,7 +17,8 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
     public class LuisRecognizerMiddleware : IMiddleware
     {
         public const string LuisRecognizerResultKey = "LuisRecognizerResult";
-        public const string LuisTraceEventName = "https://www.luis.ai/schemas/trace";
+        public const string LuisTraceType = "https://www.luis.ai/schemas/trace";
+        public const string LuisTraceLabel = "Luis Trace";
         public const string Obfuscated = "****";
         private readonly ILuisRecognizer _luisRecognizer;
         private readonly ILuisModel _luisModel;
@@ -41,15 +41,14 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
                 var result = await _luisRecognizer.CallAndRecognize(utterance, CancellationToken.None).ConfigureAwait(false);
                 context.Services.Add(LuisRecognizerResultKey, result.recognizerResult);
 
-                var traceActivity = Activity.CreateEventActivity();
-                traceActivity.Name = LuisTraceEventName;
-                traceActivity.Value = new LuisTraceInfo
+                var traceInfo = new LuisTraceInfo
                 {
                     RecognizerResult = result.recognizerResult,
                     LuisModel = RemoveSensitiveData(_luisModel),
                     LuisOptions = _luisOptions,
                     LuisResult = result.luisResult
                 };
+                var traceActivity = Activity.CreateTraceActivity("LuisRecognizerMiddleware", LuisTraceType, traceInfo, LuisTraceLabel);
                 await context.SendActivity(traceActivity).ConfigureAwait(false);
             }
             await next().ConfigureAwait(false);
