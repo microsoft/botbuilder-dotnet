@@ -10,21 +10,17 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// <summary>
     /// Basic configuration options supported by all prompts.
     /// </summary>
-    public abstract class Prompt<T> : Control where T : PromptResult
+    public abstract class Prompt<T> : Control, IDialogContinue where T : PromptResult
     {
         public Prompt()
         {
         }
 
-        public override bool HasDialogContinue => true;
-
-        public override bool HasDialogResume => false;
-
         protected abstract Task OnPrompt(DialogContext dc, PromptOptions options, bool isRetry);
 
         protected abstract Task<T> OnRecognize(DialogContext dc, PromptOptions options);
 
-        public override async Task DialogBegin(DialogContext dc, object dialogArgs)
+        public async Task DialogBegin(DialogContext dc, object dialogArgs)
         {
             if (dc == null)
                 throw new ArgumentNullException(nameof(dc));
@@ -41,7 +37,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             await OnPrompt(dc, promptOptions, false);
         }
 
-        public override async Task DialogContinue(DialogContext dc)
+        public async Task DialogContinue(DialogContext dc)
         {
             if (dc == null)
                 throw new ArgumentNullException(nameof(dc));

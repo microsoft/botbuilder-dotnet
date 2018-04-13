@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
-    public class CompositeControl : Dialog
+    public class CompositeControl : IDialogContinue
     {
         protected DialogSet Dialogs { get; set; }
         protected string DialogId { get; set; }
@@ -21,10 +21,6 @@ namespace Microsoft.Bot.Builder.Dialogs
             DialogId = dialogId;
             DefaultOptions = defaultOptions ?? throw new ArgumentNullException(nameof(defaultOptions));
         }
-
-        public override bool HasDialogContinue => true;
-
-        public override bool HasDialogResume => false;
 
         public async Task<DialogResult> Begin(TurnContext context, object state, object options)
         {
@@ -50,7 +46,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             return cdc.DialogResult;
         }
 
-        public override async Task DialogBegin(DialogContext dc, object dialogArgs = null)
+        public async Task DialogBegin(DialogContext dc, object dialogArgs = null)
         {
             if (dc == null)
                 throw new ArgumentNullException(nameof(dc));
@@ -65,7 +61,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
         }
 
-        public override async Task DialogContinue(DialogContext dc)
+        public async Task DialogContinue(DialogContext dc)
         {
             if (dc == null)
                 throw new ArgumentNullException(nameof(dc));

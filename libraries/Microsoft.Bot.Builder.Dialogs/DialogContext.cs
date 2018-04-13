@@ -145,10 +145,10 @@ namespace Microsoft.Bot.Builder.Dialogs
                 }
 
                 // Check for existence of a continue() method
-                if (dialog.HasDialogContinue)
+                if (dialog is IDialogContinue)
                 {
                         // Continue execution of dialog
-                        await dialog.DialogContinue(this);
+                        await ((IDialogContinue)dialog).DialogContinue(this);
                 }
             }
         }
@@ -183,10 +183,10 @@ namespace Microsoft.Bot.Builder.Dialogs
                 }
 
                 // Check for existence of a resumeDialog() method
-                if (dialog.HasDialogResume)
+                if (dialog is IDialogResume)
                 {
                     // Return result to previous dialog
-                    await dialog.DialogResume(this, result);
+                    await ((IDialogResume)dialog).DialogResume(this, result);
                 }
                 else
                 {

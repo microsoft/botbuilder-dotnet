@@ -11,7 +11,7 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// functions which will be executed in sequence.Each waterfall step can ask a question of the user
     /// and the users response will be passed as an argument to the next waterfall step.
     /// </summary>
-    public class Waterfall : Dialog
+    public class Waterfall : IDialogContinue, IDialogResume
     {
         private WaterfallStep[] _steps;
 
@@ -20,11 +20,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             _steps = steps;
         }
 
-        public override bool HasDialogContinue => true;
-
-        public override bool HasDialogResume => true;
-
-        public override Task DialogBegin(DialogContext dc, object dialogArgs = null)
+        public Task DialogBegin(DialogContext dc, object dialogArgs = null)
         {
             if (dc == null)
                 throw new ArgumentNullException(nameof(dc));
@@ -34,7 +30,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             return RunStep(dc, dialogArgs);
         }
 
-        public override Task DialogContinue(DialogContext dc)
+        public Task DialogContinue(DialogContext dc)
         {
             if (dc == null)
                 throw new ArgumentNullException(nameof(dc));
@@ -44,7 +40,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             return RunStep(dc, dc.Context.Activity.Text);
         }
 
-        public override Task DialogResume(DialogContext dc, object result)
+        public Task DialogResume(DialogContext dc, object result)
         {
             if (dc == null)
                 throw new ArgumentNullException(nameof(dc));
