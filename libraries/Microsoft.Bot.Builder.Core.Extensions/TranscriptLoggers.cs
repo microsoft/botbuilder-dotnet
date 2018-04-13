@@ -1,16 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
+using System;
+using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Core.Extensions
 {
     /// <summary>
-    /// TraceTranscriptLogger, writes activites to Trace output
+    /// TraceTranscriptLogger, writes activites to System.Diagnostics.Trace
     /// </summary>
     public class TraceTranscriptLogger : ITranscriptLogger
     {
@@ -23,6 +21,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions
         /// <returns></returns>
         public async Task LogActivity(IActivity activity)
         {
+            BotAssert.ActivityNotNull(activity);
             System.Diagnostics.Trace.TraceInformation(JsonConvert.SerializeObject(activity, serializationSettings));
         }
     }
@@ -41,6 +40,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions
         /// <returns></returns>
         public async Task LogActivity(IActivity activity)
         {
+            BotAssert.ActivityNotNull(activity);
             Console.WriteLine(JsonConvert.SerializeObject(activity, serializationSettings));
         }
     }

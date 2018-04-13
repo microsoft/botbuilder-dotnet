@@ -55,27 +55,27 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
 
 
         [TestMethod]
-        public async Task FileTranscript_GetConversationActivities()
+        public async Task FileTranscript_GetTranscriptActivities()
         {
-            await base._GetConversationActivities();
+            await base._GetTranscriptActivities();
         }
 
         [TestMethod]
-        public async Task FileTranscript_GetConversationActivitiesStartDate()
+        public async Task FileTranscript_GetTranscriptActivitiesStartDate()
         {
-            await base._GetConversationActivitiesStartDate();
+            await base._GetTranscriptActivitiesStartDate();
         }
 
         [TestMethod]
-        public async Task FileTranscript_ListConversations()
+        public async Task FileTranscript_ListTranscripts()
         {
-            await base._ListConversations();
+            await base._ListTranscripts();
         }
 
         [TestMethod]
-        public async Task FileTranscript_DeleteConversation()
+        public async Task FileTranscript_DeleteTranscript()
         {
-            await base._DeleteConversation();
+            await base._DeleteTranscript();
         }
     }
 }

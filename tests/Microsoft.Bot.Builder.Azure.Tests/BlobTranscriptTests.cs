@@ -88,28 +88,28 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         public async Task BlobTranscript_GetConversationActivities()
         {
             if (CheckStorageEmulator())
-                await base._GetConversationActivities();
+                await base._GetTranscriptActivities();
         }
 
         [TestMethod]
         public async Task BlobTranscript_GetConversationActivitiesStartDate()
         {
             if (CheckStorageEmulator())
-                await base._GetConversationActivitiesStartDate();
+                await base._GetTranscriptActivitiesStartDate();
         }
 
         [TestMethod]
         public async Task BlobTranscript_ListConversations()
         {
             if (CheckStorageEmulator())
-                await base._ListConversations();
+                await base._ListTranscripts();
         }
 
         [TestMethod]
         public async Task BlobTranscript_DeleteConversation()
         {
             if (CheckStorageEmulator())
-                await base._DeleteConversation();
+                await base._DeleteTranscript();
         }
 
     }

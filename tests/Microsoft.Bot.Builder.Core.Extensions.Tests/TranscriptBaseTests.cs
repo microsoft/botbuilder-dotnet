@@ -71,7 +71,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
 
             try
             {
-                await store.GetConversationActivities(null, null);
+                await store.GetTranscriptActivities(null, null);
                 Assert.Fail("GetConversationActivities Should have thrown on null");
             }
             catch (ArgumentNullException) { }
@@ -79,7 +79,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
 
             try
             {
-                await store.GetConversationActivities("asdfds", null);
+                await store.GetTranscriptActivities("asdfds", null);
                 Assert.Fail("GetConversationActivities Should have thrown on null");
             }
             catch (ArgumentNullException) { }
@@ -87,7 +87,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
 
             try
             {
-                await store.ListConversations(null);
+                await store.ListTranscripts(null);
                 Assert.Fail("ListConversations Should have thrown on null");
             }
             catch (ArgumentNullException) { }
@@ -95,7 +95,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
 
             try
             {
-                await store.DeleteConversation(null, null);
+                await store.DeleteTranscript(null, null);
                 Assert.Fail("DeleteConversation Should have thrown on null channelId");
             }
             catch (ArgumentNullException) { }
@@ -103,7 +103,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
 
             try
             {
-                await store.DeleteConversation("test", null);
+                await store.DeleteTranscript("test", null);
                 Assert.Fail("DeleteConversation Should have thrown on null conversationId");
             }
             catch (ArgumentNullException) { }
@@ -117,7 +117,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
             var activity = activities.First();
             await store.LogActivity(activity);
 
-            var results = await store.GetConversationActivities("test", conversationId);
+            var results = await store.GetTranscriptActivities("test", conversationId);
             Assert.AreEqual(1, results.Items.Length);
 
             Assert.AreEqual(JsonConvert.SerializeObject(activity), JsonConvert.SerializeObject(results.Items[0]));
@@ -136,16 +136,16 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
             }
 
             // make sure other channels and conversations don't return results
-            var pagedResult = await store.GetConversationActivities("bogus", conversationId);
+            var pagedResult = await store.GetTranscriptActivities("bogus", conversationId);
             Assert.IsNull(pagedResult.ContinuationToken);
             Assert.AreEqual(0, pagedResult.Items.Length);
 
             // make sure other channels and conversations don't return results
-            pagedResult = await store.GetConversationActivities("test", "bogus");
+            pagedResult = await store.GetTranscriptActivities("test", "bogus");
             Assert.IsNull(pagedResult.ContinuationToken);
             Assert.AreEqual(0, pagedResult.Items.Length);
 
-            pagedResult = await store.GetConversationActivities("test", conversationId);
+            pagedResult = await store.GetTranscriptActivities("test", conversationId);
             Assert.IsNull(pagedResult.ContinuationToken);
             Assert.AreEqual(activities.Count, pagedResult.Items.Length);
 
@@ -155,7 +155,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
                 Assert.AreEqual(JsonConvert.SerializeObject(activities[iActivity++]), JsonConvert.SerializeObject(result));
             }
 
-            pagedResult = await store.GetConversationActivities("test", conversationId, startDate: start + TimeSpan.FromMinutes(5));
+            pagedResult = await store.GetTranscriptActivities("test", conversationId, startDate: start + TimeSpan.FromMinutes(5));
             Assert.AreEqual(activities.Count / 2, pagedResult.Items.Length);
 
             iActivity = 5;
@@ -165,7 +165,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
             }
         }
 
-        public async Task _DeleteConversation()
+        public async Task _DeleteTranscript()
         {
             string conversationId = "_DeleteConversation";
             DateTime start = DateTime.UtcNow;
@@ -180,22 +180,22 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
             foreach (var activity in activities2)
                 await store.LogActivity(activity);
 
-            var pagedResult = await store.GetConversationActivities("test", conversationId);
-            var pagedResult2 = await store.GetConversationActivities("test", conversationId2);
+            var pagedResult = await store.GetTranscriptActivities("test", conversationId);
+            var pagedResult2 = await store.GetTranscriptActivities("test", conversationId2);
 
             Assert.AreEqual(activities.Count, pagedResult.Items.Length);
             Assert.AreEqual(activities.Count, pagedResult2.Items.Length);
 
-            await store.DeleteConversation("test", conversationId);
+            await store.DeleteTranscript("test", conversationId);
 
-            pagedResult = await store.GetConversationActivities("test", conversationId);
-            pagedResult2 = await store.GetConversationActivities("test", conversationId2);
+            pagedResult = await store.GetTranscriptActivities("test", conversationId);
+            pagedResult2 = await store.GetTranscriptActivities("test", conversationId2);
 
             Assert.AreEqual(0, pagedResult.Items.Length);
             Assert.AreEqual(activities.Count, pagedResult2.Items.Length);
         }
 
-        public async Task _GetConversationActivities()
+        public async Task _GetTranscriptActivities()
         {
             string conversationId = "_GetConversationActivitiesPaging";
             DateTime start = DateTime.UtcNow;
@@ -211,7 +211,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
             var pageSize = 0;
             do
             {
-                pagedResult = await store.GetConversationActivities("test", conversationId, pagedResult?.ContinuationToken);
+                pagedResult = await store.GetTranscriptActivities("test", conversationId, pagedResult?.ContinuationToken);
                 Assert.IsNotNull(pagedResult);
                 Assert.IsNotNull(pagedResult.Items);
 
@@ -234,7 +234,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
                 Assert.IsTrue(seen.Contains(activity.Id));
         }
 
-        public async Task _GetConversationActivitiesStartDate()
+        public async Task _GetTranscriptActivitiesStartDate()
         {
             string conversationId = "_GetConversationActivitiesStartDate";
             DateTime start = DateTime.UtcNow;
@@ -251,7 +251,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
             var pageSize = 0;
             do
             {
-                pagedResult = await store.GetConversationActivities("test", conversationId, pagedResult?.ContinuationToken, startDate);
+                pagedResult = await store.GetTranscriptActivities("test", conversationId, pagedResult?.ContinuationToken, startDate);
                 Assert.IsNotNull(pagedResult);
                 Assert.IsNotNull(pagedResult.Items);
 
@@ -277,7 +277,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
                 Assert.IsFalse(seen.Contains(activity.Id));
         }
 
-        public async Task _ListConversations()
+        public async Task _ListTranscripts()
         {
             List<string> conversationIds = new List<string>();
             DateTime start = DateTime.UtcNow;
@@ -297,11 +297,11 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
             }
 
             HashSet<string> seen = new HashSet<string>();
-            PagedResult<Conversation> pagedResult = null;
+            PagedResult<Transcript> pagedResult = null;
             var pageSize = 0;
             do
             {
-                pagedResult = await store.ListConversations("test", pagedResult?.ContinuationToken);
+                pagedResult = await store.ListTranscripts("test", pagedResult?.ContinuationToken);
                 Assert.IsNotNull(pagedResult);
                 Assert.IsNotNull(pagedResult.Items);
 
