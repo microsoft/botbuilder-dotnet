@@ -110,9 +110,7 @@ namespace Microsoft.Bot.Builder.Azure
 
             // Parallelize deletion
             var tasks = keys.Select(key =>
-            {
-                return _client.DeleteDocumentAsync(UriFactory.CreateDocumentUri(_databaseId, _collectionId, SanitizeKey(key)));
-            });
+                _client.DeleteDocumentAsync(UriFactory.CreateDocumentUri(_databaseId, _collectionId, SanitizeKey(key))));
 
             // await to deletion tasks to complete
             await Task.WhenAll(tasks).ConfigureAwait(false);
