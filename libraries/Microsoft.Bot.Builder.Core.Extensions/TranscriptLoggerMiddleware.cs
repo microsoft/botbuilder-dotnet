@@ -77,13 +77,12 @@ namespace Microsoft.Bot.Builder.Core.Extensions
                 await nextDelete();
 
                 // add MessageDelete activity
-                var deleteActivity = new Activity() { Type = ActivityTypes.MessageDelete }.AsMessageDeleteActivity();
-                deleteActivity.Id = reference.ActivityId;
-                deleteActivity.From = reference.Bot;
-                deleteActivity.Conversation = reference.Conversation;
-                deleteActivity.Recipient = reference.User;
-                deleteActivity.ChannelId = reference.ChannelId;
-                deleteActivity.Timestamp = DateTimeOffset.UtcNow;
+                // log as MessageDelete activity
+                var deleteActivity = TurnContext.ApplyConversationReference(new Activity()
+                {
+                    Type = ActivityTypes.MessageDelete,
+                    Id = reference.ActivityId
+                }, reference, isIncoming: false).AsMessageDeleteActivity();
 
                 LogActivity(deleteActivity);
             });
