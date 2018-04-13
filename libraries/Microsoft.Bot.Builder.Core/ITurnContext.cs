@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Builder
     /// <seealso cref="BotAdapter"/>
     /// <seealso cref="UpdateActivityHandler"/>
     /// <seealso cref="DeleteActivityHandler"/>
-    public delegate Task SendActivitiesHandler(ITurnContext context, List<Activity> activities, Func<Task> next);
+    public delegate Task<ResourceResponse[]> SendActivitiesHandler(ITurnContext context, List<Activity> activities, Func<Task<ResourceResponse[]>> next);
 
     /// <summary>
     /// A method that can participate in update activity events for the current turn.
@@ -42,7 +42,7 @@ namespace Microsoft.Bot.Builder
     /// <seealso cref="BotAdapter"/>
     /// <seealso cref="SendActivitiesHandler"/>
     /// <seealso cref="DeleteActivityHandler"/>
-    public delegate Task UpdateActivityHandler(ITurnContext context, Activity activity, Func<Task> next);
+    public delegate Task<ResourceResponse> UpdateActivityHandler(ITurnContext context, Activity activity, Func<Task<ResourceResponse>> next);
 
     /// <summary>
     /// A method that can participate in delete activity events for the current turn.

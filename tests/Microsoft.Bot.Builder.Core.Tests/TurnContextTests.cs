@@ -185,7 +185,7 @@ namespace Microsoft.Bot.Builder.Core.Tests
             {               
                Assert.IsNotNull(activities, "Null Array passed in");
                count = activities.Count();
-               await next(); 
+               return await next(); 
             });
 
             await c.SendActivity(TestMessage.Message());
@@ -212,6 +212,7 @@ namespace Microsoft.Bot.Builder.Core.Tests
                 Assert.IsNotNull(activities, "Null Array passed in");
                 count = activities.Count();
                 // Do not call next. 
+                return null;
             });
 
             await c.SendActivity(TestMessage.Message());
@@ -241,7 +242,7 @@ namespace Microsoft.Bot.Builder.Core.Tests
                 Assert.IsTrue(activities.Count() == 1);
                 Assert.IsTrue(activities[0].Id == "1234", "Unknown Id Passed In");
                 activities[0].Id = "changed";
-                await next(); 
+                return await next(); 
             });
 
             await c.SendActivity(TestMessage.Message());
@@ -292,7 +293,7 @@ namespace Microsoft.Bot.Builder.Core.Tests
             {
                 Assert.IsNotNull(activity, "Null activity passed in");
                 wasCalled = true;
-                await next();
+                return await next();
             });
             await c.UpdateActivity(TestMessage.Message());
             Assert.IsTrue(wasCalled);            
@@ -318,6 +319,7 @@ namespace Microsoft.Bot.Builder.Core.Tests
                 Assert.IsNotNull(activity, "Null activity passed in");
                 wasCalled = true;
                 // Do Not Call Next
+                return null;
             });
 
             await c.UpdateActivity(TestMessage.Message());
@@ -343,7 +345,7 @@ namespace Microsoft.Bot.Builder.Core.Tests
                 Assert.IsNotNull(activity, "Null activity passed in");
                 Assert.IsTrue(activity.Id == "1234");
                 activity.Id = "mutated";
-                await next(); 
+                return await next(); 
             });
 
             await c.UpdateActivity(TestMessage.Message());

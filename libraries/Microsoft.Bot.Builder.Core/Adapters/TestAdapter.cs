@@ -59,6 +59,8 @@ namespace Microsoft.Bot.Builder.Adapters
 
                 var id = activity.Id = (this._nextId++).ToString();
             }
+            if (activity.Timestamp == null || activity.Timestamp == default(DateTime))
+                activity.Timestamp = DateTime.UtcNow;
 
             using (var context = new TurnContext(this, activity))
             {
@@ -74,7 +76,13 @@ namespace Microsoft.Bot.Builder.Adapters
             List<ResourceResponse> responses = new List<ResourceResponse>();
 
             foreach (var activity in activities)
-            {                
+            {
+                if (String.IsNullOrEmpty(activity.Id))
+                    activity.Id = Guid.NewGuid().ToString("n");
+
+                if (activity.Timestamp == null)
+                    activity.Timestamp = DateTime.UtcNow;
+
                 responses.Add(new ResourceResponse(activity.Id));
 
                 if (activity.Type == ActivityTypesEx.Delay)
