@@ -49,6 +49,515 @@
       </group>
     </body>
   </file>
+  <file datatype="xml" source-language="en" target-language="en" original="FORMTEST/RESOURCE/MICROSOFT.BOT.SAMPLE.JSONSANDWICHBOT.SANDWICHORDER.RESX" tool-id="MultilingualAppToolkit" product-name="n/a" product-version="n/a" build-num="n/a">
+    <header>
+      <tool tool-id="MultilingualAppToolkit" tool-name="Multilingual App Toolkit" tool-version="4.0.6900.0" tool-company="Microsoft" />
+    </header>
+    <body>
+      <group id="FORMTEST/RESOURCE/MICROSOFT.BOT.SAMPLE.JSONSANDWICHBOT.SANDWICHORDER.RESX" datatype="resx">
+        <trans-unit id="Sandwich_description;VALUE" translate="yes" xml:space="preserve">
+          <source>Sandwich</source>
+          <target state="new">Sandwich</target>
+        </trans-unit>
+        <trans-unit id="Sandwich_valueDescriptions;BLT;VALUE" translate="yes" xml:space="preserve">
+          <source>BLT</source>
+          <target state="new">BLT</target>
+        </trans-unit>
+        <trans-unit id="Sandwich_valueDescriptions;BlackForestHam;VALUE" translate="yes" xml:space="preserve">
+          <source>Black Forest Ham</source>
+          <target state="new">Black Forest Ham</target>
+        </trans-unit>
+        <trans-unit id="Sandwich_valueDescriptions;BuffaloChicken;VALUE" translate="yes" xml:space="preserve">
+          <source>Buffalo Chicken</source>
+          <target state="new">Buffalo Chicken</target>
+        </trans-unit>
+        <trans-unit id="Sandwich_valueDescriptions;ChickenAndBaconRanchMelt;VALUE" translate="yes" xml:space="preserve">
+          <source>Chicken And Bacon Ranch Melt</source>
+          <target state="new">Chicken And Bacon Ranch Melt</target>
+        </trans-unit>
+        <trans-unit id="Sandwich_valueDescriptions;ColdCutCombo;VALUE" translate="yes" xml:space="preserve">
+          <source>Cold Cut Combo</source>
+          <target state="new">Cold Cut Combo</target>
+        </trans-unit>
+        <trans-unit id="Sandwich_valueDescriptions;MeatballMarinara;VALUE" translate="yes" xml:space="preserve">
+          <source>Meatball Marinara</source>
+          <target state="new">Meatball Marinara</target>
+        </trans-unit>
+        <trans-unit id="Sandwich_valueDescriptions;OvenRoastedChicken;VALUE" translate="yes" xml:space="preserve">
+          <source>Oven Roasted Chicken</source>
+          <target state="new">Oven Roasted Chicken</target>
+        </trans-unit>
+        <trans-unit id="Sandwich_valueDescriptions;RoastBeef;VALUE" translate="yes" xml:space="preserve">
+          <source>Roast Beef</source>
+          <target state="new">Roast Beef</target>
+        </trans-unit>
+        <trans-unit id="Sandwich_valueDescriptions;RotisserieStyleChicken;VALUE" translate="yes" xml:space="preserve">
+          <source>Rotisserie Style Chicken</source>
+          <target state="new">Rotisserie Style Chicken</target>
+        </trans-unit>
+        <trans-unit id="Sandwich_valueDescriptions;SpicyItalian;VALUE" translate="yes" xml:space="preserve">
+          <source>Spicy Italian</source>
+          <target state="new">Spicy Italian</target>
+        </trans-unit>
+        <trans-unit id="Sandwich_valueDescriptions;SteakAndCheese;VALUE" translate="yes" xml:space="preserve">
+          <source>Steak And Cheese</source>
+          <target state="new">Steak And Cheese</target>
+        </trans-unit>
+        <trans-unit id="Sandwich_valueDescriptions;SweetOnionTeriyaki;VALUE" translate="yes" xml:space="preserve">
+          <source>Sweet Onion Teriyaki</source>
+          <target state="new">Sweet Onion Teriyaki</target>
+        </trans-unit>
+        <trans-unit id="Sandwich_valueDescriptions;Tuna;VALUE" translate="yes" xml:space="preserve">
+          <source>Tuna</source>
+          <target state="new">Tuna</target>
+        </trans-unit>
+        <trans-unit id="Sandwich_valueDescriptions;TurkeyBreast;VALUE" translate="yes" xml:space="preserve">
+          <source>Turkey Breast</source>
+          <target state="new">Turkey Breast</target>
+        </trans-unit>
+        <trans-unit id="Sandwich_valueDescriptions;Veggie;VALUE" translate="yes" xml:space="preserve">
+          <source>Veggie</source>
+          <target state="new">Veggie</target>
+        </trans-unit>
+        <trans-unit id="Length_description;VALUE" translate="yes" xml:space="preserve">
+          <source>Length</source>
+          <target state="new">Length</target>
+        </trans-unit>
+        <trans-unit id="Length_valueDescriptions;SixInch;VALUE" translate="yes" xml:space="preserve">
+          <source>Six Inch</source>
+          <target state="new">Six Inch</target>
+        </trans-unit>
+        <trans-unit id="Length_valueDescriptions;FootLong;VALUE" translate="yes" xml:space="preserve">
+          <source>Foot Long</source>
+          <target state="new">Foot Long</target>
+        </trans-unit>
+        <trans-unit id="Ingredients.Bread_description;VALUE" translate="yes" xml:space="preserve">
+          <source>Bread</source>
+          <target state="new">Bread</target>
+        </trans-unit>
+        <trans-unit id="Ingredients.Bread_valueDescriptions;NineGrainWheat;VALUE" translate="yes" xml:space="preserve">
+          <source>Nine Grain Wheat</source>
+          <target state="new">Nine Grain Wheat</target>
+        </trans-unit>
+        <trans-unit id="Ingredients.Bread_valueDescriptions;NineGrainHoneyOat;VALUE" translate="yes" xml:space="preserve">
+          <source>Nine Grain Honey Oat</source>
+          <target state="new">Nine Grain Honey Oat</target>
+        </trans-unit>
+        <trans-unit id="Ingredients.Bread_valueDescriptions;Italian;VALUE" translate="yes" xml:space="preserve">
+          <source>Italian</source>
+          <target state="new">Italian</target>
+        </trans-unit>
+        <trans-unit id="Ingredients.Bread_valueDescriptions;ItalianHerbsAndCheese;VALUE" translate="yes" xml:space="preserve">
+          <source>Italian Herbs And Cheese</source>
+          <target state="new">Italian Herbs And Cheese</target>
+        </trans-unit>
+        <trans-unit id="Ingredients.Bread_valueDescriptions;Flatbread;VALUE" translate="yes" xml:space="preserve">
+          <source>Flatbread</source>
+          <target state="new">Flatbread</target>
+        </trans-unit>
+        <trans-unit id="Ingredients.Cheese_description;VALUE" translate="yes" xml:space="preserve">
+          <source>Cheese</source>
+          <target state="new">Cheese</target>
+        </trans-unit>
+        <trans-unit id="Ingredients.Cheese_valueDescriptions;American;VALUE" translate="yes" xml:space="preserve">
+          <source>American</source>
+          <target state="new">American</target>
+        </trans-unit>
+        <trans-unit id="Ingredients.Cheese_valueDescriptions;MontereyCheddar;VALUE" translate="yes" xml:space="preserve">
+          <source>Monterey Cheddar</source>
+          <target state="new">Monterey Cheddar</target>
+        </trans-unit>
+        <trans-unit id="Ingredients.Cheese_valueDescriptions;Pepperjack;VALUE" translate="yes" xml:space="preserve">
+          <source>Pepperjack</source>
+          <target state="new">Pepperjack</target>
+        </trans-unit>
+        <trans-unit id="Ingredients.Toppings_description;VALUE" translate="yes" xml:space="preserve">
+          <source>Toppings</source>
+          <target state="new">Toppings</target>
+        </trans-unit>
+        <trans-unit id="Ingredients.Toppings_valueDescriptions;Everything;VALUE" translate="yes" xml:space="preserve">
+          <source>Everything</source>
+          <target state="new">Everything</target>
+        </trans-unit>
+        <trans-unit id="Ingredients.Toppings_valueDescriptions;Avocado;VALUE" translate="yes" xml:space="preserve">
+          <source>Avocado</source>
+          <target state="new">Avocado</target>
+        </trans-unit>
+        <trans-unit id="Ingredients.Toppings_valueDescriptions;BananaPeppers;VALUE" translate="yes" xml:space="preserve">
+          <source>Banana Peppers</source>
+          <target state="new">Banana Peppers</target>
+        </trans-unit>
+        <trans-unit id="Ingredients.Toppings_valueDescriptions;Cucumbers;VALUE" translate="yes" xml:space="preserve">
+          <source>Cucumbers</source>
+          <target state="new">Cucumbers</target>
+        </trans-unit>
+        <trans-unit id="Ingredients.Toppings_valueDescriptions;GreenBellPeppers;VALUE" translate="yes" xml:space="preserve">
+          <source>Green Bell Peppers</source>
+          <target state="new">Green Bell Peppers</target>
+        </trans-unit>
+        <trans-unit id="Ingredients.Toppings_valueDescriptions;Jalapenos;VALUE" translate="yes" xml:space="preserve">
+          <source>Jalapenos</source>
+          <target state="new">Jalapenos</target>
+        </trans-unit>
+        <trans-unit id="Ingredients.Toppings_valueDescriptions;Lettuce;VALUE" translate="yes" xml:space="preserve">
+          <source>Lettuce</source>
+          <target state="new">Lettuce</target>
+        </trans-unit>
+        <trans-unit id="Ingredients.Toppings_valueDescriptions;Olives;VALUE" translate="yes" xml:space="preserve">
+          <source>Olives</source>
+          <target state="new">Olives</target>
+        </trans-unit>
+        <trans-unit id="Ingredients.Toppings_valueDescriptions;Pickles;VALUE" translate="yes" xml:space="preserve">
+          <source>Pickles</source>
+          <target state="new">Pickles</target>
+        </trans-unit>
+        <trans-unit id="Ingredients.Toppings_valueDescriptions;RedOnion;VALUE" translate="yes" xml:space="preserve">
+          <source>Red Onion</source>
+          <target state="new">Red Onion</target>
+        </trans-unit>
+        <trans-unit id="Ingredients.Toppings_valueDescriptions;Spinach;VALUE" translate="yes" xml:space="preserve">
+          <source>Spinach</source>
+          <target state="new">Spinach</target>
+        </trans-unit>
+        <trans-unit id="Ingredients.Toppings_valueDescriptions;Tomatoes;VALUE" translate="yes" xml:space="preserve">
+          <source>Tomatoes</source>
+          <target state="new">Tomatoes</target>
+        </trans-unit>
+        <trans-unit id="Ingredients.Sauces_description;VALUE" translate="yes" xml:space="preserve">
+          <source>Sauces</source>
+          <target state="new">Sauces</target>
+        </trans-unit>
+        <trans-unit id="Ingredients.Sauces_valueDescriptions;ChipotleSouthwest;VALUE" translate="yes" xml:space="preserve">
+          <source>Chipotle Southwest</source>
+          <target state="new">Chipotle Southwest</target>
+        </trans-unit>
+        <trans-unit id="Ingredients.Sauces_valueDescriptions;HoneyMustard;VALUE" translate="yes" xml:space="preserve">
+          <source>Honey Mustard</source>
+          <target state="new">Honey Mustard</target>
+        </trans-unit>
+        <trans-unit id="Ingredients.Sauces_valueDescriptions;LightMayonnaise;VALUE" translate="yes" xml:space="preserve">
+          <source>Light Mayonnaise</source>
+          <target state="new">Light Mayonnaise</target>
+        </trans-unit>
+        <trans-unit id="Ingredients.Sauces_valueDescriptions;RegularMayonnaise;VALUE" translate="yes" xml:space="preserve">
+          <source>Regular Mayonnaise</source>
+          <target state="new">Regular Mayonnaise</target>
+        </trans-unit>
+        <trans-unit id="Ingredients.Sauces_valueDescriptions;Mustard;VALUE" translate="yes" xml:space="preserve">
+          <source>Mustard</source>
+          <target state="new">Mustard</target>
+        </trans-unit>
+        <trans-unit id="Ingredients.Sauces_valueDescriptions;Oil;VALUE" translate="yes" xml:space="preserve">
+          <source>Oil</source>
+          <target state="new">Oil</target>
+        </trans-unit>
+        <trans-unit id="Ingredients.Sauces_valueDescriptions;Pepper;VALUE" translate="yes" xml:space="preserve">
+          <source>Pepper</source>
+          <target state="new">Pepper</target>
+        </trans-unit>
+        <trans-unit id="Ingredients.Sauces_valueDescriptions;Ranch;VALUE" translate="yes" xml:space="preserve">
+          <source>Ranch</source>
+          <target state="new">Ranch</target>
+        </trans-unit>
+        <trans-unit id="Ingredients.Sauces_valueDescriptions;SweetOnion;VALUE" translate="yes" xml:space="preserve">
+          <source>Sweet Onion</source>
+          <target state="new">Sweet Onion</target>
+        </trans-unit>
+        <trans-unit id="Ingredients.Sauces_valueDescriptions;Vinegar;VALUE" translate="yes" xml:space="preserve">
+          <source>Vinegar</source>
+          <target state="new">Vinegar</target>
+        </trans-unit>
+        <trans-unit id="Specials_description;VALUE" translate="yes" xml:space="preserve">
+          <source>Specials</source>
+          <target state="new">Specials</target>
+        </trans-unit>
+        <trans-unit id="DeliveryAddress_description;VALUE" translate="yes" xml:space="preserve">
+          <source>Delivery Address</source>
+          <target state="new">Delivery Address</target>
+        </trans-unit>
+        <trans-unit id="DeliveryTime_description;VALUE" translate="yes" xml:space="preserve">
+          <source>Delivery Time</source>
+          <target state="new">Delivery Time</target>
+        </trans-unit>
+        <trans-unit id="Rating_description;VALUE" translate="yes" xml:space="preserve">
+          <source>your experience today</source>
+          <target state="new">your experience today</target>
+        </trans-unit>
+        <trans-unit id="message0;LIST" translate="yes" xml:space="preserve">
+          <source>Welcome to the sandwich order bot!</source>
+          <target state="new">Welcome to the sandwich order bot!</target>
+        </trans-unit>
+        <trans-unit id="Sandwich_terms;LIST" translate="yes" xml:space="preserve">
+          <source>sandwichs?</source>
+          <target state="new">sandwichs?</target>
+        </trans-unit>
+        <trans-unit id="Sandwich_valueTerms;BLT;LIST" translate="yes" xml:space="preserve">
+          <source>blts?</source>
+          <target state="new">blts?</target>
+        </trans-unit>
+        <trans-unit id="Sandwich_valueTerms;BlackForestHam;LIST" translate="yes" xml:space="preserve">
+          <source>blacks?;forests?;hams?;blacks? forests?;forests? hams?;blacks? forests? hams?</source>
+          <target state="new">blacks?;forests?;hams?;blacks? forests?;forests? hams?;blacks? forests? hams?</target>
+        </trans-unit>
+        <trans-unit id="Sandwich_valueTerms;BuffaloChicken;LIST" translate="yes" xml:space="preserve">
+          <source>buffalos?;chickens?;buffalos? chickens?</source>
+          <target state="new">buffalos?;chickens?;buffalos? chickens?</target>
+        </trans-unit>
+        <trans-unit id="Sandwich_valueTerms;ChickenAndBaconRanchMelt;LIST" translate="yes" xml:space="preserve">
+          <source>chickens?;and;bacons?;ranchs?;melts?;chickens? and;and bacons?;bacons? ranchs?;ranchs? melts?;chickens? and bacons?;and bacons? ranchs?;bacons? ranchs? melts?;chicken and bacon ranch melt</source>
+          <target state="new">chickens?;and;bacons?;ranchs?;melts?;chickens? and;and bacons?;bacons? ranchs?;ranchs? melts?;chickens? and bacons?;and bacons? ranchs?;bacons? ranchs? melts?;chicken and bacon ranch melt</target>
+        </trans-unit>
+        <trans-unit id="Sandwich_valueTerms;ColdCutCombo;LIST" translate="yes" xml:space="preserve">
+          <source>colds?;cuts?;combos?;colds? cuts?;cuts? combos?;colds? cuts? combos?</source>
+          <target state="new">colds?;cuts?;combos?;colds? cuts?;cuts? combos?;colds? cuts? combos?</target>
+        </trans-unit>
+        <trans-unit id="Sandwich_valueTerms;MeatballMarinara;LIST" translate="yes" xml:space="preserve">
+          <source>meatballs?;marinaras?;meatballs? marinaras?</source>
+          <target state="new">meatballs?;marinaras?;meatballs? marinaras?</target>
+        </trans-unit>
+        <trans-unit id="Sandwich_valueTerms;OvenRoastedChicken;LIST" translate="yes" xml:space="preserve">
+          <source>ovens?;roasteds?;chickens?;ovens? roasteds?;roasteds? chickens?;ovens? roasteds? chickens?</source>
+          <target state="new">ovens?;roasteds?;chickens?;ovens? roasteds?;roasteds? chickens?;ovens? roasteds? chickens?</target>
+        </trans-unit>
+        <trans-unit id="Sandwich_valueTerms;RoastBeef;LIST" translate="yes" xml:space="preserve">
+          <source>roasts?;beefs?;roasts? beefs?</source>
+          <target state="new">roasts?;beefs?;roasts? beefs?</target>
+        </trans-unit>
+        <trans-unit id="Sandwich_valueTerms;RotisserieStyleChicken;LIST" translate="yes" xml:space="preserve">
+          <source>rotis\w*s?;styles?;chickens?;rotis\w*s? styles?;styles? chickens?;rotis\w*s? styles? chickens?</source>
+          <target state="new">rotis\w*s?;styles?;chickens?;rotis\w*s? styles?;styles? chickens?;rotis\w*s? styles? chickens?</target>
+        </trans-unit>
+        <trans-unit id="Sandwich_valueTerms;SpicyItalian;LIST" translate="yes" xml:space="preserve">
+          <source>spicys?;italians?;spicys? italians?</source>
+          <target state="new">spicys?;italians?;spicys? italians?</target>
+        </trans-unit>
+        <trans-unit id="Sandwich_valueTerms;SteakAndCheese;LIST" translate="yes" xml:space="preserve">
+          <source>steaks?;and;cheeses?;steaks? and;and cheeses?;steaks? and cheeses?</source>
+          <target state="new">steaks?;and;cheeses?;steaks? and;and cheeses?;steaks? and cheeses?</target>
+        </trans-unit>
+        <trans-unit id="Sandwich_valueTerms;SweetOnionTeriyaki;LIST" translate="yes" xml:space="preserve">
+          <source>sweets?;onions?;teriyakis?;sweets? onions?;onions? teriyakis?;sweets? onions? teriyakis?</source>
+          <target state="new">sweets?;onions?;teriyakis?;sweets? onions?;onions? teriyakis?;sweets? onions? teriyakis?</target>
+        </trans-unit>
+        <trans-unit id="Sandwich_valueTerms;Tuna;LIST" translate="yes" xml:space="preserve">
+          <source>tunas?</source>
+          <target state="new">tunas?</target>
+        </trans-unit>
+        <trans-unit id="Sandwich_valueTerms;TurkeyBreast;LIST" translate="yes" xml:space="preserve">
+          <source>turkeys?;breasts?;turkeys? breasts?</source>
+          <target state="new">turkeys?;breasts?;turkeys? breasts?</target>
+        </trans-unit>
+        <trans-unit id="Sandwich_valueTerms;Veggie;LIST" translate="yes" xml:space="preserve">
+          <source>veggies?</source>
+          <target state="new">veggies?</target>
+        </trans-unit>
+        <trans-unit id="Sandwich_promptDefinition;LIST" translate="yes" xml:space="preserve">
+          <source>What kind of {&amp;} would you like? {||}</source>
+          <target state="new">What kind of {&amp;} would you like? {||}</target>
+        </trans-unit>
+        <trans-unit id="Length_terms;LIST" translate="yes" xml:space="preserve">
+          <source>lengths?</source>
+          <target state="new">lengths?</target>
+        </trans-unit>
+        <trans-unit id="Length_valueTerms;SixInch;LIST" translate="yes" xml:space="preserve">
+          <source>six;inchs?;six inchs?</source>
+          <target state="new">six;inchs?;six inchs?</target>
+        </trans-unit>
+        <trans-unit id="Length_valueTerms;FootLong;LIST" translate="yes" xml:space="preserve">
+          <source>foots?;longs?;foots? longs?</source>
+          <target state="new">foots?;longs?;foots? longs?</target>
+        </trans-unit>
+        <trans-unit id="Length_promptDefinition;LIST" translate="yes" xml:space="preserve">
+          <source>What size of sandwich do you want? {||}</source>
+          <target state="new">What size of sandwich do you want? {||}</target>
+        </trans-unit>
+        <trans-unit id="Ingredients.Bread_terms;LIST" translate="yes" xml:space="preserve">
+          <source>breads?</source>
+          <target state="new">breads?</target>
+        </trans-unit>
+        <trans-unit id="Ingredients.Bread_valueTerms;NineGrainWheat;LIST" translate="yes" xml:space="preserve">
+          <source>nine;grains?;wheats?;nine grains?;grains? wheats?;nine grains? wheats?</source>
+          <target state="new">nine;grains?;wheats?;nine grains?;grains? wheats?;nine grains? wheats?</target>
+        </trans-unit>
+        <trans-unit id="Ingredients.Bread_valueTerms;NineGrainHoneyOat;LIST" translate="yes" xml:space="preserve">
+          <source>nine;grains?;honeys?;oats?;nine grains?;grains? honeys?;honeys? oats?;nine grains? honeys?;grains? honeys? oats?;nine grain honey oat</source>
+          <target state="new">nine;grains?;honeys?;oats?;nine grains?;grains? honeys?;honeys? oats?;nine grains? honeys?;grains? honeys? oats?;nine grain honey oat</target>
+        </trans-unit>
+        <trans-unit id="Ingredients.Bread_valueTerms;Italian;LIST" translate="yes" xml:space="preserve">
+          <source>italians?</source>
+          <target state="new">italians?</target>
+        </trans-unit>
+        <trans-unit id="Ingredients.Bread_valueTerms;ItalianHerbsAndCheese;LIST" translate="yes" xml:space="preserve">
+          <source>italians?;herbs?;and;cheeses?;italians? herbs?;herbs? and;and cheeses?;italians? herbs? and;herbs? and cheeses?;italian herbs and cheese</source>
+          <target state="new">italians?;herbs?;and;cheeses?;italians? herbs?;herbs? and;and cheeses?;italians? herbs? and;herbs? and cheeses?;italian herbs and cheese</target>
+        </trans-unit>
+        <trans-unit id="Ingredients.Bread_valueTerms;Flatbread;LIST" translate="yes" xml:space="preserve">
+          <source>flatbreads?</source>
+          <target state="new">flatbreads?</target>
+        </trans-unit>
+        <trans-unit id="Ingredients.Cheese_terms;LIST" translate="yes" xml:space="preserve">
+          <source>cheeses?</source>
+          <target state="new">cheeses?</target>
+        </trans-unit>
+        <trans-unit id="Ingredients.Cheese_valueTerms;American;LIST" translate="yes" xml:space="preserve">
+          <source>americans?</source>
+          <target state="new">americans?</target>
+        </trans-unit>
+        <trans-unit id="Ingredients.Cheese_valueTerms;MontereyCheddar;LIST" translate="yes" xml:space="preserve">
+          <source>montereys?;cheddars?;montereys? cheddars?</source>
+          <target state="new">montereys?;cheddars?;montereys? cheddars?</target>
+        </trans-unit>
+        <trans-unit id="Ingredients.Cheese_valueTerms;Pepperjack;LIST" translate="yes" xml:space="preserve">
+          <source>pepperjacks?</source>
+          <target state="new">pepperjacks?</target>
+        </trans-unit>
+        <trans-unit id="Ingredients.Toppings_terms;LIST" translate="yes" xml:space="preserve">
+          <source>toppings?</source>
+          <target state="new">toppings?</target>
+        </trans-unit>
+        <trans-unit id="Ingredients.Toppings_valueTerms;Everything;LIST" translate="yes" xml:space="preserve">
+          <source>except;but;not;no;all;everything</source>
+          <target state="new">except;but;not;no;all;everything</target>
+        </trans-unit>
+        <trans-unit id="Ingredients.Toppings_valueTerms;Avocado;LIST" translate="yes" xml:space="preserve">
+          <source>avocados?</source>
+          <target state="new">avocados?</target>
+        </trans-unit>
+        <trans-unit id="Ingredients.Toppings_valueTerms;BananaPeppers;LIST" translate="yes" xml:space="preserve">
+          <source>bananas?;peppers?;bananas? peppers?</source>
+          <target state="new">bananas?;peppers?;bananas? peppers?</target>
+        </trans-unit>
+        <trans-unit id="Ingredients.Toppings_valueTerms;Cucumbers;LIST" translate="yes" xml:space="preserve">
+          <source>cucumbers?</source>
+          <target state="new">cucumbers?</target>
+        </trans-unit>
+        <trans-unit id="Ingredients.Toppings_valueTerms;GreenBellPeppers;LIST" translate="yes" xml:space="preserve">
+          <source>greens?;bells?;peppers?;greens? bells?;bells? peppers?;greens? bells? peppers?</source>
+          <target state="new">greens?;bells?;peppers?;greens? bells?;bells? peppers?;greens? bells? peppers?</target>
+        </trans-unit>
+        <trans-unit id="Ingredients.Toppings_valueTerms;Jalapenos;LIST" translate="yes" xml:space="preserve">
+          <source>jalapenos?</source>
+          <target state="new">jalapenos?</target>
+        </trans-unit>
+        <trans-unit id="Ingredients.Toppings_valueTerms;Lettuce;LIST" translate="yes" xml:space="preserve">
+          <source>lettuces?</source>
+          <target state="new">lettuces?</target>
+        </trans-unit>
+        <trans-unit id="Ingredients.Toppings_valueTerms;Olives;LIST" translate="yes" xml:space="preserve">
+          <source>olives?</source>
+          <target state="new">olives?</target>
+        </trans-unit>
+        <trans-unit id="Ingredients.Toppings_valueTerms;Pickles;LIST" translate="yes" xml:space="preserve">
+          <source>pickles?</source>
+          <target state="new">pickles?</target>
+        </trans-unit>
+        <trans-unit id="Ingredients.Toppings_valueTerms;RedOnion;LIST" translate="yes" xml:space="preserve">
+          <source>reds?;onions?;reds? onions?</source>
+          <target state="new">reds?;onions?;reds? onions?</target>
+        </trans-unit>
+        <trans-unit id="Ingredients.Toppings_valueTerms;Spinach;LIST" translate="yes" xml:space="preserve">
+          <source>spinachs?</source>
+          <target state="new">spinachs?</target>
+        </trans-unit>
+        <trans-unit id="Ingredients.Toppings_valueTerms;Tomatoes;LIST" translate="yes" xml:space="preserve">
+          <source>tomatoes?</source>
+          <target state="new">tomatoes?</target>
+        </trans-unit>
+        <trans-unit id="message6;LIST" translate="yes" xml:space="preserve">
+          <source>For sandwich toppings you have selected {Ingredients.Toppings}.</source>
+          <target state="new">For sandwich toppings you have selected {Ingredients.Toppings}.</target>
+        </trans-unit>
+        <trans-unit id="Ingredients.Sauces_terms;LIST" translate="yes" xml:space="preserve">
+          <source>sauces?</source>
+          <target state="new">sauces?</target>
+        </trans-unit>
+        <trans-unit id="Ingredients.Sauces_valueTerms;ChipotleSouthwest;LIST" translate="yes" xml:space="preserve">
+          <source>chipotles?;southwests?;chipotles? southwests?</source>
+          <target state="new">chipotles?;southwests?;chipotles? southwests?</target>
+        </trans-unit>
+        <trans-unit id="Ingredients.Sauces_valueTerms;HoneyMustard;LIST" translate="yes" xml:space="preserve">
+          <source>honeys?;mustards?;honeys? mustards?</source>
+          <target state="new">honeys?;mustards?;honeys? mustards?</target>
+        </trans-unit>
+        <trans-unit id="Ingredients.Sauces_valueTerms;LightMayonnaise;LIST" translate="yes" xml:space="preserve">
+          <source>lights?;mayonnaises?;lights? mayonnaises?</source>
+          <target state="new">lights?;mayonnaises?;lights? mayonnaises?</target>
+        </trans-unit>
+        <trans-unit id="Ingredients.Sauces_valueTerms;RegularMayonnaise;LIST" translate="yes" xml:space="preserve">
+          <source>regulars?;mayonnaises?;regulars? mayonnaises?</source>
+          <target state="new">regulars?;mayonnaises?;regulars? mayonnaises?</target>
+        </trans-unit>
+        <trans-unit id="Ingredients.Sauces_valueTerms;Mustard;LIST" translate="yes" xml:space="preserve">
+          <source>mustards?</source>
+          <target state="new">mustards?</target>
+        </trans-unit>
+        <trans-unit id="Ingredients.Sauces_valueTerms;Oil;LIST" translate="yes" xml:space="preserve">
+          <source>oils?</source>
+          <target state="new">oils?</target>
+        </trans-unit>
+        <trans-unit id="Ingredients.Sauces_valueTerms;Pepper;LIST" translate="yes" xml:space="preserve">
+          <source>peppers?</source>
+          <target state="new">peppers?</target>
+        </trans-unit>
+        <trans-unit id="Ingredients.Sauces_valueTerms;Ranch;LIST" translate="yes" xml:space="preserve">
+          <source>ranchs?</source>
+          <target state="new">ranchs?</target>
+        </trans-unit>
+        <trans-unit id="Ingredients.Sauces_valueTerms;SweetOnion;LIST" translate="yes" xml:space="preserve">
+          <source>sweets?;onions?;sweets? onions?</source>
+          <target state="new">sweets?;onions?;sweets? onions?</target>
+        </trans-unit>
+        <trans-unit id="Ingredients.Sauces_valueTerms;Vinegar;LIST" translate="yes" xml:space="preserve">
+          <source>vinegars?</source>
+          <target state="new">vinegars?</target>
+        </trans-unit>
+        <trans-unit id="Specials_terms;LIST" translate="yes" xml:space="preserve">
+          <source>specials?</source>
+          <target state="new">specials?</target>
+        </trans-unit>
+        <trans-unit id="DeliveryAddress_terms;LIST" translate="yes" xml:space="preserve">
+          <source>deliverys?;address?;deliverys? address?</source>
+          <target state="new">deliverys?;address?;deliverys? address?</target>
+        </trans-unit>
+        <trans-unit id="DeliveryTime_terms;LIST" translate="yes" xml:space="preserve">
+          <source>deliverys?;times?;deliverys? times?</source>
+          <target state="new">deliverys?;times?;deliverys? times?</target>
+        </trans-unit>
+        <trans-unit id="DeliveryTime_promptDefinition;LIST" translate="yes" xml:space="preserve">
+          <source>What time do you want your sandwich delivered? {||}</source>
+          <target state="new">What time do you want your sandwich delivered? {||}</target>
+        </trans-unit>
+        <trans-unit id="confirmation12_promptDefinition;LIST" translate="yes" xml:space="preserve">
+          <source>Do you want to order your {Length} {Sandwich} on {Ingredients.Bread} {&amp;Ingredients.Bread} with {[{Ingredients.Cheese} {Ingredients.Toppings} {Ingredients.Sauces}]} to be sent to {DeliveryAddress} {?at {DeliveryTime:t}}?</source>
+          <target state="new">Do you want to order your {Length} {Sandwich} on {Ingredients.Bread} {&amp;Ingredients.Bread} with {[{Ingredients.Cheese} {Ingredients.Toppings} {Ingredients.Sauces}]} to be sent to {DeliveryAddress} {?at {DeliveryTime:t}}?</target>
+        </trans-unit>
+        <trans-unit id="Rating_terms;LIST" translate="yes" xml:space="preserve">
+          <source>ratings?</source>
+          <target state="new">ratings?</target>
+        </trans-unit>
+        <trans-unit id="message14;LIST" translate="yes" xml:space="preserve">
+          <source>Thanks for ordering a sandwich!</source>
+          <target state="new">Thanks for ordering a sandwich!</target>
+        </trans-unit>
+        <trans-unit id="NotUnderstood;Sandwich;Length;Ingredients.Bread;Ingredients.Cheese;Ingredients.Toppings;Ingredients.Sauces;Specials;DeliveryAddress;DeliveryTime;Rating;TEMPLATE" translate="yes" xml:space="preserve">
+          <source>I do not understand "{0}".;Try again, I don't get "{0}".</source>
+          <target state="new">I do not understand "{0}".;Try again, I don't get "{0}".</target>
+        </trans-unit>
+        <trans-unit id="EnumSelectOne;Sandwich;Length;Ingredients.Bread;Ingredients.Cheese;Ingredients.Toppings;Ingredients.Sauces;Specials;DeliveryAddress;DeliveryTime;Rating;TEMPLATE" translate="yes" xml:space="preserve">
+          <source>What kind of {&amp;} would you like on your sandwich? {||}</source>
+          <target state="new">What kind of {&amp;} would you like on your sandwich? {||}</target>
+        </trans-unit>
+        <trans-unit id="NoPreference;Specials;TEMPLATE" translate="yes" xml:space="preserve">
+          <source>None</source>
+          <target state="new">None</target>
+        </trans-unit>
+        <trans-unit id="StatusFormat;DeliveryTime;TEMPLATE" translate="yes" xml:space="preserve">
+          <source>{&amp;}: {:t}</source>
+          <target state="new">{&amp;}: {:t}</target>
+        </trans-unit>
+      </group>
+    </body>
+  </file>
   <file datatype="xml" source-language="en" target-language="en" original="FORMTEST/RESOURCE/DYNAMICSANDWICH.RESX" tool-id="MultilingualAppToolkit" product-name="n/a" product-version="n/a" build-num="n/a">
     <header>
       <tool tool-id="MultilingualAppToolkit" tool-name="Multilingual App Toolkit" tool-version="4.0.6900.0" tool-company="Microsoft" />
@@ -74,527 +583,6 @@
         <trans-unit id="Processing" translate="yes" xml:space="preserve">
           <source>We are currently processing your sandwich. We will message you the status.</source>
           <target state="new">We are currently processing your sandwich. We will message you the status.</target>
-        </trans-unit>
-      </group>
-    </body>
-  </file>
-  <file datatype="xml" source-language="en" target-language="en" original="FORMTEST/RESOURCE/MICROSOFT.BOT.SAMPLE.ANNOTATEDSANDWICHBOT.SANDWICHORDER.RESX" tool-id="MultilingualAppToolkit" product-name="n/a" product-version="n/a" build-num="n/a">
-    <header>
-      <tool tool-id="MultilingualAppToolkit" tool-name="Multilingual App Toolkit" tool-version="4.0.6900.0" tool-company="Microsoft" />
-    </header>
-    <body>
-      <group id="FORMTEST/RESOURCE/MICROSOFT.BOT.SAMPLE.ANNOTATEDSANDWICHBOT.SANDWICHORDER.RESX" datatype="resx">
-        <trans-unit id="Sandwich_description;VALUE" translate="yes" xml:space="preserve">
-          <source>Sandwich</source>
-          <target state="new">Sandwich</target>
-        </trans-unit>
-        <trans-unit id="SandwichOptions.BLT;VALUE" translate="yes" xml:space="preserve">
-          <source>BLT</source>
-          <target state="new">BLT</target>
-        </trans-unit>
-        <trans-unit id="SandwichOptions.BlackForestHam;VALUE" translate="yes" xml:space="preserve">
-          <source>Black Forest Ham</source>
-          <target state="new">Black Forest Ham</target>
-        </trans-unit>
-        <trans-unit id="SandwichOptions.BuffaloChicken;VALUE" translate="yes" xml:space="preserve">
-          <source>Buffalo Chicken</source>
-          <target state="new">Buffalo Chicken</target>
-        </trans-unit>
-        <trans-unit id="SandwichOptions.ChickenAndBaconRanchMelt;VALUE" translate="yes" xml:space="preserve">
-          <source>Chicken And Bacon Ranch Melt</source>
-          <target state="new">Chicken And Bacon Ranch Melt</target>
-        </trans-unit>
-        <trans-unit id="SandwichOptions.ColdCutCombo;VALUE" translate="yes" xml:space="preserve">
-          <source>Cold Cut Combo</source>
-          <target state="new">Cold Cut Combo</target>
-        </trans-unit>
-        <trans-unit id="SandwichOptions.MeatballMarinara;VALUE" translate="yes" xml:space="preserve">
-          <source>Meatball Marinara</source>
-          <target state="new">Meatball Marinara</target>
-        </trans-unit>
-        <trans-unit id="SandwichOptions.OvenRoastedChicken;VALUE" translate="yes" xml:space="preserve">
-          <source>Oven Roasted Chicken</source>
-          <target state="new">Oven Roasted Chicken</target>
-        </trans-unit>
-        <trans-unit id="SandwichOptions.RoastBeef;VALUE" translate="yes" xml:space="preserve">
-          <source>Roast Beef</source>
-          <target state="new">Roast Beef</target>
-        </trans-unit>
-        <trans-unit id="SandwichOptions.RotisserieStyleChicken;VALUE" translate="yes" xml:space="preserve">
-          <source>Rotisserie Style Chicken</source>
-          <target state="new">Rotisserie Style Chicken</target>
-        </trans-unit>
-        <trans-unit id="SandwichOptions.SpicyItalian;VALUE" translate="yes" xml:space="preserve">
-          <source>Spicy Italian</source>
-          <target state="new">Spicy Italian</target>
-        </trans-unit>
-        <trans-unit id="SandwichOptions.SteakAndCheese;VALUE" translate="yes" xml:space="preserve">
-          <source>Steak And Cheese</source>
-          <target state="new">Steak And Cheese</target>
-        </trans-unit>
-        <trans-unit id="SandwichOptions.SweetOnionTeriyaki;VALUE" translate="yes" xml:space="preserve">
-          <source>Sweet Onion Teriyaki</source>
-          <target state="new">Sweet Onion Teriyaki</target>
-        </trans-unit>
-        <trans-unit id="SandwichOptions.Tuna;VALUE" translate="yes" xml:space="preserve">
-          <source>Tuna</source>
-          <target state="new">Tuna</target>
-        </trans-unit>
-        <trans-unit id="SandwichOptions.TurkeyBreast;VALUE" translate="yes" xml:space="preserve">
-          <source>Turkey Breast</source>
-          <target state="new">Turkey Breast</target>
-        </trans-unit>
-        <trans-unit id="SandwichOptions.Veggie;VALUE" translate="yes" xml:space="preserve">
-          <source>Veggie</source>
-          <target state="new">Veggie</target>
-        </trans-unit>
-        <trans-unit id="Length_description;VALUE" translate="yes" xml:space="preserve">
-          <source>Length</source>
-          <target state="new">Length</target>
-        </trans-unit>
-        <trans-unit id="LengthOptions.SixInch;VALUE" translate="yes" xml:space="preserve">
-          <source>Six Inch</source>
-          <target state="new">Six Inch</target>
-        </trans-unit>
-        <trans-unit id="LengthOptions.FootLong;VALUE" translate="yes" xml:space="preserve">
-          <source>Foot Long</source>
-          <target state="new">Foot Long</target>
-        </trans-unit>
-        <trans-unit id="Bread_description;VALUE" translate="yes" xml:space="preserve">
-          <source>Bread</source>
-          <target state="new">Bread</target>
-        </trans-unit>
-        <trans-unit id="BreadOptions.NineGrainWheat;VALUE" translate="yes" xml:space="preserve">
-          <source>Nine Grain Wheat</source>
-          <target state="new">Nine Grain Wheat</target>
-        </trans-unit>
-        <trans-unit id="BreadOptions.NineGrainHoneyOat;VALUE" translate="yes" xml:space="preserve">
-          <source>Nine Grain Honey Oat</source>
-          <target state="new">Nine Grain Honey Oat</target>
-        </trans-unit>
-        <trans-unit id="BreadOptions.Italian;VALUE" translate="yes" xml:space="preserve">
-          <source>Italian</source>
-          <target state="new">Italian</target>
-        </trans-unit>
-        <trans-unit id="BreadOptions.ItalianHerbsAndCheese;VALUE" translate="yes" xml:space="preserve">
-          <source>Italian Herbs And Cheese</source>
-          <target state="new">Italian Herbs And Cheese</target>
-        </trans-unit>
-        <trans-unit id="BreadOptions.Flatbread;VALUE" translate="yes" xml:space="preserve">
-          <source>Flatbread</source>
-          <target state="new">Flatbread</target>
-        </trans-unit>
-        <trans-unit id="Cheese_description;VALUE" translate="yes" xml:space="preserve">
-          <source>Cheese</source>
-          <target state="new">Cheese</target>
-        </trans-unit>
-        <trans-unit id="CheeseOptions.American;VALUE" translate="yes" xml:space="preserve">
-          <source>American</source>
-          <target state="new">American</target>
-        </trans-unit>
-        <trans-unit id="CheeseOptions.MontereyCheddar;VALUE" translate="yes" xml:space="preserve">
-          <source>Monterey Cheddar</source>
-          <target state="new">Monterey Cheddar</target>
-        </trans-unit>
-        <trans-unit id="CheeseOptions.Pepperjack;VALUE" translate="yes" xml:space="preserve">
-          <source>Pepperjack</source>
-          <target state="new">Pepperjack</target>
-        </trans-unit>
-        <trans-unit id="Toppings_description;VALUE" translate="yes" xml:space="preserve">
-          <source>Toppings</source>
-          <target state="new">Toppings</target>
-        </trans-unit>
-        <trans-unit id="ToppingOptions.Everything;VALUE" translate="yes" xml:space="preserve">
-          <source>Everything</source>
-          <target state="new">Everything</target>
-        </trans-unit>
-        <trans-unit id="ToppingOptions.Avocado;VALUE" translate="yes" xml:space="preserve">
-          <source>Avocado</source>
-          <target state="new">Avocado</target>
-        </trans-unit>
-        <trans-unit id="ToppingOptions.BananaPeppers;VALUE" translate="yes" xml:space="preserve">
-          <source>Banana Peppers</source>
-          <target state="new">Banana Peppers</target>
-        </trans-unit>
-        <trans-unit id="ToppingOptions.Cucumbers;VALUE" translate="yes" xml:space="preserve">
-          <source>Cucumbers</source>
-          <target state="new">Cucumbers</target>
-        </trans-unit>
-        <trans-unit id="ToppingOptions.GreenBellPeppers;VALUE" translate="yes" xml:space="preserve">
-          <source>Green Bell Peppers</source>
-          <target state="new">Green Bell Peppers</target>
-        </trans-unit>
-        <trans-unit id="ToppingOptions.Jalapenos;VALUE" translate="yes" xml:space="preserve">
-          <source>Jalapenos</source>
-          <target state="new">Jalapenos</target>
-        </trans-unit>
-        <trans-unit id="ToppingOptions.Lettuce;VALUE" translate="yes" xml:space="preserve">
-          <source>Lettuce</source>
-          <target state="new">Lettuce</target>
-        </trans-unit>
-        <trans-unit id="ToppingOptions.Olives;VALUE" translate="yes" xml:space="preserve">
-          <source>Olives</source>
-          <target state="new">Olives</target>
-        </trans-unit>
-        <trans-unit id="ToppingOptions.Pickles;VALUE" translate="yes" xml:space="preserve">
-          <source>Pickles</source>
-          <target state="new">Pickles</target>
-        </trans-unit>
-        <trans-unit id="ToppingOptions.RedOnion;VALUE" translate="yes" xml:space="preserve">
-          <source>Red Onion</source>
-          <target state="new">Red Onion</target>
-        </trans-unit>
-        <trans-unit id="ToppingOptions.Spinach;VALUE" translate="yes" xml:space="preserve">
-          <source>Spinach</source>
-          <target state="new">Spinach</target>
-        </trans-unit>
-        <trans-unit id="ToppingOptions.Tomatoes;VALUE" translate="yes" xml:space="preserve">
-          <source>Tomatoes</source>
-          <target state="new">Tomatoes</target>
-        </trans-unit>
-        <trans-unit id="Sauces_description;VALUE" translate="yes" xml:space="preserve">
-          <source>Sauces</source>
-          <target state="new">Sauces</target>
-        </trans-unit>
-        <trans-unit id="SauceOptions.HoneyMustard;VALUE" translate="yes" xml:space="preserve">
-          <source>Honey Mustard</source>
-          <target state="new">Honey Mustard</target>
-        </trans-unit>
-        <trans-unit id="SauceOptions.LightMayonnaise;VALUE" translate="yes" xml:space="preserve">
-          <source>Light Mayonnaise</source>
-          <target state="new">Light Mayonnaise</target>
-        </trans-unit>
-        <trans-unit id="SauceOptions.RegularMayonnaise;VALUE" translate="yes" xml:space="preserve">
-          <source>Regular Mayonnaise</source>
-          <target state="new">Regular Mayonnaise</target>
-        </trans-unit>
-        <trans-unit id="SauceOptions.Mustard;VALUE" translate="yes" xml:space="preserve">
-          <source>Mustard</source>
-          <target state="new">Mustard</target>
-        </trans-unit>
-        <trans-unit id="SauceOptions.Oil;VALUE" translate="yes" xml:space="preserve">
-          <source>Oil</source>
-          <target state="new">Oil</target>
-        </trans-unit>
-        <trans-unit id="SauceOptions.Pepper;VALUE" translate="yes" xml:space="preserve">
-          <source>Pepper</source>
-          <target state="new">Pepper</target>
-        </trans-unit>
-        <trans-unit id="SauceOptions.Ranch;VALUE" translate="yes" xml:space="preserve">
-          <source>Ranch</source>
-          <target state="new">Ranch</target>
-        </trans-unit>
-        <trans-unit id="SauceOptions.SweetOnion;VALUE" translate="yes" xml:space="preserve">
-          <source>Sweet Onion</source>
-          <target state="new">Sweet Onion</target>
-        </trans-unit>
-        <trans-unit id="SauceOptions.Vinegar;VALUE" translate="yes" xml:space="preserve">
-          <source>Vinegar</source>
-          <target state="new">Vinegar</target>
-        </trans-unit>
-        <trans-unit id="Specials_description;VALUE" translate="yes" xml:space="preserve">
-          <source>Specials</source>
-          <target state="new">Specials</target>
-        </trans-unit>
-        <trans-unit id="DeliveryAddress_description;VALUE" translate="yes" xml:space="preserve">
-          <source>Delivery Address</source>
-          <target state="new">Delivery Address</target>
-        </trans-unit>
-        <trans-unit id="DeliveryTime_description;VALUE" translate="yes" xml:space="preserve">
-          <source>Delivery Time</source>
-          <target state="new">Delivery Time</target>
-        </trans-unit>
-        <trans-unit id="PhoneNumber_description;VALUE" translate="yes" xml:space="preserve">
-          <source>Phone Number</source>
-          <target state="new">Phone Number</target>
-        </trans-unit>
-        <trans-unit id="Rating_description;VALUE" translate="yes" xml:space="preserve">
-          <source>your experience today</source>
-          <target state="new">your experience today</target>
-        </trans-unit>
-        <trans-unit id="message0;LIST" translate="yes" xml:space="preserve">
-          <source>Welcome to the sandwich order bot!</source>
-          <target state="new">Welcome to the sandwich order bot!</target>
-        </trans-unit>
-        <trans-unit id="Sandwich_terms;LIST" translate="yes" xml:space="preserve">
-          <source>sandwichs?</source>
-          <target state="new">sandwichs?</target>
-        </trans-unit>
-        <trans-unit id="SandwichOptions.BLT;LIST" translate="yes" xml:space="preserve">
-          <source>blts?</source>
-          <target state="new">blts?</target>
-        </trans-unit>
-        <trans-unit id="SandwichOptions.BlackForestHam;LIST" translate="yes" xml:space="preserve">
-          <source>blacks?;forests?;hams?;blacks? forests?;forests? hams?;blacks? forests? hams?</source>
-          <target state="new">blacks?;forests?;hams?;blacks? forests?;forests? hams?;blacks? forests? hams?</target>
-        </trans-unit>
-        <trans-unit id="SandwichOptions.BuffaloChicken;LIST" translate="yes" xml:space="preserve">
-          <source>buffalos?;chickens?;buffalos? chickens?</source>
-          <target state="new">buffalos?;chickens?;buffalos? chickens?</target>
-        </trans-unit>
-        <trans-unit id="SandwichOptions.ChickenAndBaconRanchMelt;LIST" translate="yes" xml:space="preserve">
-          <source>chickens?;and;bacons?;ranchs?;melts?;chickens? and;and bacons?;bacons? ranchs?;ranchs? melts?;chickens? and bacons?;and bacons? ranchs?;bacons? ranchs? melts?;chickens? and bacons? ranchs?;and bacons? ranchs? melts?;chicken and bacon ranch melt</source>
-          <target state="new">chickens?;and;bacons?;ranchs?;melts?;chickens? and;and bacons?;bacons? ranchs?;ranchs? melts?;chickens? and bacons?;and bacons? ranchs?;bacons? ranchs? melts?;chickens? and bacons? ranchs?;and bacons? ranchs? melts?;chicken and bacon ranch melt</target>
-        </trans-unit>
-        <trans-unit id="SandwichOptions.ColdCutCombo;LIST" translate="yes" xml:space="preserve">
-          <source>colds?;cuts?;combos?;colds? cuts?;cuts? combos?;colds? cuts? combos?</source>
-          <target state="new">colds?;cuts?;combos?;colds? cuts?;cuts? combos?;colds? cuts? combos?</target>
-        </trans-unit>
-        <trans-unit id="SandwichOptions.MeatballMarinara;LIST" translate="yes" xml:space="preserve">
-          <source>meatballs?;marinaras?;meatballs? marinaras?</source>
-          <target state="new">meatballs?;marinaras?;meatballs? marinaras?</target>
-        </trans-unit>
-        <trans-unit id="SandwichOptions.OvenRoastedChicken;LIST" translate="yes" xml:space="preserve">
-          <source>ovens?;roasteds?;chickens?;ovens? roasteds?;roasteds? chickens?;ovens? roasteds? chickens?</source>
-          <target state="new">ovens?;roasteds?;chickens?;ovens? roasteds?;roasteds? chickens?;ovens? roasteds? chickens?</target>
-        </trans-unit>
-        <trans-unit id="SandwichOptions.RoastBeef;LIST" translate="yes" xml:space="preserve">
-          <source>roasts?;beefs?;roasts? beefs?</source>
-          <target state="new">roasts?;beefs?;roasts? beefs?</target>
-        </trans-unit>
-        <trans-unit id="SandwichOptions.RotisserieStyleChicken;LIST" translate="yes" xml:space="preserve">
-          <source>rotis\w*s?;styles?;chickens?;rotis\w*s? styles?;styles? chickens?;rotis\w*s? styles? chickens?</source>
-          <target state="new">rotis\w*s?;styles?;chickens?;rotis\w*s? styles?;styles? chickens?;rotis\w*s? styles? chickens?</target>
-        </trans-unit>
-        <trans-unit id="SandwichOptions.SpicyItalian;LIST" translate="yes" xml:space="preserve">
-          <source>spicys?;italians?;spicys? italians?</source>
-          <target state="new">spicys?;italians?;spicys? italians?</target>
-        </trans-unit>
-        <trans-unit id="SandwichOptions.SteakAndCheese;LIST" translate="yes" xml:space="preserve">
-          <source>steaks?;and;cheeses?;steaks? and;and cheeses?;steaks? and cheeses?</source>
-          <target state="new">steaks?;and;cheeses?;steaks? and;and cheeses?;steaks? and cheeses?</target>
-        </trans-unit>
-        <trans-unit id="SandwichOptions.SweetOnionTeriyaki;LIST" translate="yes" xml:space="preserve">
-          <source>sweets?;onions?;teriyakis?;sweets? onions?;onions? teriyakis?;sweets? onions? teriyakis?</source>
-          <target state="new">sweets?;onions?;teriyakis?;sweets? onions?;onions? teriyakis?;sweets? onions? teriyakis?</target>
-        </trans-unit>
-        <trans-unit id="SandwichOptions.Tuna;LIST" translate="yes" xml:space="preserve">
-          <source>tunas?</source>
-          <target state="new">tunas?</target>
-        </trans-unit>
-        <trans-unit id="SandwichOptions.TurkeyBreast;LIST" translate="yes" xml:space="preserve">
-          <source>turkeys?;breasts?;turkeys? breasts?</source>
-          <target state="new">turkeys?;breasts?;turkeys? breasts?</target>
-        </trans-unit>
-        <trans-unit id="SandwichOptions.Veggie;LIST" translate="yes" xml:space="preserve">
-          <source>veggies?</source>
-          <target state="new">veggies?</target>
-        </trans-unit>
-        <trans-unit id="Sandwich_promptDefinition;LIST" translate="yes" xml:space="preserve">
-          <source>What kind of {&amp;} would you like? {||}</source>
-          <target state="new">What kind of {&amp;} would you like? {||}</target>
-        </trans-unit>
-        <trans-unit id="Length_terms;LIST" translate="yes" xml:space="preserve">
-          <source>lengths?</source>
-          <target state="new">lengths?</target>
-        </trans-unit>
-        <trans-unit id="LengthOptions.SixInch;LIST" translate="yes" xml:space="preserve">
-          <source>six;inchs?;six inchs?</source>
-          <target state="new">six;inchs?;six inchs?</target>
-        </trans-unit>
-        <trans-unit id="LengthOptions.FootLong;LIST" translate="yes" xml:space="preserve">
-          <source>foots?;longs?;foots? longs?</source>
-          <target state="new">foots?;longs?;foots? longs?</target>
-        </trans-unit>
-        <trans-unit id="Length_promptDefinition;LIST" translate="yes" xml:space="preserve">
-          <source>What size of sandwich do you want? {||}</source>
-          <target state="new">What size of sandwich do you want? {||}</target>
-        </trans-unit>
-        <trans-unit id="Bread_terms;LIST" translate="yes" xml:space="preserve">
-          <source>breads?</source>
-          <target state="new">breads?</target>
-        </trans-unit>
-        <trans-unit id="BreadOptions.NineGrainWheat;LIST" translate="yes" xml:space="preserve">
-          <source>nine;grains?;wheats?;nine grains?;grains? wheats?;nine grains? wheats?</source>
-          <target state="new">nine;grains?;wheats?;nine grains?;grains? wheats?;nine grains? wheats?</target>
-        </trans-unit>
-        <trans-unit id="BreadOptions.NineGrainHoneyOat;LIST" translate="yes" xml:space="preserve">
-          <source>nine;grains?;honeys?;oats?;nine grains?;grains? honeys?;honeys? oats?;nine grains? honeys?;grains? honeys? oats?;nine grains? honeys? oats?</source>
-          <target state="new">nine;grains?;honeys?;oats?;nine grains?;grains? honeys?;honeys? oats?;nine grains? honeys?;grains? honeys? oats?;nine grains? honeys? oats?</target>
-        </trans-unit>
-        <trans-unit id="BreadOptions.Italian;LIST" translate="yes" xml:space="preserve">
-          <source>italians?</source>
-          <target state="new">italians?</target>
-        </trans-unit>
-        <trans-unit id="BreadOptions.ItalianHerbsAndCheese;LIST" translate="yes" xml:space="preserve">
-          <source>italians?;herbs?;and;cheeses?;italians? herbs?;herbs? and;and cheeses?;italians? herbs? and;herbs? and cheeses?;italians? herbs? and cheeses?</source>
-          <target state="new">italians?;herbs?;and;cheeses?;italians? herbs?;herbs? and;and cheeses?;italians? herbs? and;herbs? and cheeses?;italians? herbs? and cheeses?</target>
-        </trans-unit>
-        <trans-unit id="BreadOptions.Flatbread;LIST" translate="yes" xml:space="preserve">
-          <source>flatbreads?</source>
-          <target state="new">flatbreads?</target>
-        </trans-unit>
-        <trans-unit id="Cheese_terms;LIST" translate="yes" xml:space="preserve">
-          <source>cheeses?</source>
-          <target state="new">cheeses?</target>
-        </trans-unit>
-        <trans-unit id="CheeseOptions.American;LIST" translate="yes" xml:space="preserve">
-          <source>americans?</source>
-          <target state="new">americans?</target>
-        </trans-unit>
-        <trans-unit id="CheeseOptions.MontereyCheddar;LIST" translate="yes" xml:space="preserve">
-          <source>montereys?;cheddars?;montereys? cheddars?</source>
-          <target state="new">montereys?;cheddars?;montereys? cheddars?</target>
-        </trans-unit>
-        <trans-unit id="CheeseOptions.Pepperjack;LIST" translate="yes" xml:space="preserve">
-          <source>pepperjacks?</source>
-          <target state="new">pepperjacks?</target>
-        </trans-unit>
-        <trans-unit id="Toppings_terms;LIST" translate="yes" xml:space="preserve">
-          <source>toppings?</source>
-          <target state="new">toppings?</target>
-        </trans-unit>
-        <trans-unit id="ToppingOptions.Everything;LIST" translate="yes" xml:space="preserve">
-          <source>except;but;not;no;all;everything</source>
-          <target state="new">except;but;not;no;all;everything</target>
-        </trans-unit>
-        <trans-unit id="ToppingOptions.Avocado;LIST" translate="yes" xml:space="preserve">
-          <source>avocados?</source>
-          <target state="new">avocados?</target>
-        </trans-unit>
-        <trans-unit id="ToppingOptions.BananaPeppers;LIST" translate="yes" xml:space="preserve">
-          <source>bananas?;peppers?;bananas? peppers?</source>
-          <target state="new">bananas?;peppers?;bananas? peppers?</target>
-        </trans-unit>
-        <trans-unit id="ToppingOptions.Cucumbers;LIST" translate="yes" xml:space="preserve">
-          <source>cucumbers?</source>
-          <target state="new">cucumbers?</target>
-        </trans-unit>
-        <trans-unit id="ToppingOptions.GreenBellPeppers;LIST" translate="yes" xml:space="preserve">
-          <source>greens?;bells?;peppers?;greens? bells?;bells? peppers?;greens? bells? peppers?</source>
-          <target state="new">greens?;bells?;peppers?;greens? bells?;bells? peppers?;greens? bells? peppers?</target>
-        </trans-unit>
-        <trans-unit id="ToppingOptions.Jalapenos;LIST" translate="yes" xml:space="preserve">
-          <source>jalapenos?</source>
-          <target state="new">jalapenos?</target>
-        </trans-unit>
-        <trans-unit id="ToppingOptions.Lettuce;LIST" translate="yes" xml:space="preserve">
-          <source>lettuces?</source>
-          <target state="new">lettuces?</target>
-        </trans-unit>
-        <trans-unit id="ToppingOptions.Olives;LIST" translate="yes" xml:space="preserve">
-          <source>olives?</source>
-          <target state="new">olives?</target>
-        </trans-unit>
-        <trans-unit id="ToppingOptions.Pickles;LIST" translate="yes" xml:space="preserve">
-          <source>pickles?</source>
-          <target state="new">pickles?</target>
-        </trans-unit>
-        <trans-unit id="ToppingOptions.RedOnion;LIST" translate="yes" xml:space="preserve">
-          <source>reds?;onions?;reds? onions?</source>
-          <target state="new">reds?;onions?;reds? onions?</target>
-        </trans-unit>
-        <trans-unit id="ToppingOptions.Spinach;LIST" translate="yes" xml:space="preserve">
-          <source>spinachs?</source>
-          <target state="new">spinachs?</target>
-        </trans-unit>
-        <trans-unit id="ToppingOptions.Tomatoes;LIST" translate="yes" xml:space="preserve">
-          <source>tomatoes?</source>
-          <target state="new">tomatoes?</target>
-        </trans-unit>
-        <trans-unit id="message6;LIST" translate="yes" xml:space="preserve">
-          <source>For sandwich toppings you have selected {Toppings}.</source>
-          <target state="new">For sandwich toppings you have selected {Toppings}.</target>
-        </trans-unit>
-        <trans-unit id="Sauces_terms;LIST" translate="yes" xml:space="preserve">
-          <source>sauces?</source>
-          <target state="new">sauces?</target>
-        </trans-unit>
-        <trans-unit id="SauceOptions.HoneyMustard;LIST" translate="yes" xml:space="preserve">
-          <source>honeys?;mustards?;honeys? mustards?</source>
-          <target state="new">honeys?;mustards?;honeys? mustards?</target>
-        </trans-unit>
-        <trans-unit id="SauceOptions.LightMayonnaise;LIST" translate="yes" xml:space="preserve">
-          <source>lights?;mayonnaises?;lights? mayonnaises?</source>
-          <target state="new">lights?;mayonnaises?;lights? mayonnaises?</target>
-        </trans-unit>
-        <trans-unit id="SauceOptions.RegularMayonnaise;LIST" translate="yes" xml:space="preserve">
-          <source>regulars?;mayonnaises?;regulars? mayonnaises?</source>
-          <target state="new">regulars?;mayonnaises?;regulars? mayonnaises?</target>
-        </trans-unit>
-        <trans-unit id="SauceOptions.Mustard;LIST" translate="yes" xml:space="preserve">
-          <source>mustards?</source>
-          <target state="new">mustards?</target>
-        </trans-unit>
-        <trans-unit id="SauceOptions.Oil;LIST" translate="yes" xml:space="preserve">
-          <source>oils?</source>
-          <target state="new">oils?</target>
-        </trans-unit>
-        <trans-unit id="SauceOptions.Pepper;LIST" translate="yes" xml:space="preserve">
-          <source>peppers?</source>
-          <target state="new">peppers?</target>
-        </trans-unit>
-        <trans-unit id="SauceOptions.Ranch;LIST" translate="yes" xml:space="preserve">
-          <source>ranchs?</source>
-          <target state="new">ranchs?</target>
-        </trans-unit>
-        <trans-unit id="SauceOptions.SweetOnion;LIST" translate="yes" xml:space="preserve">
-          <source>sweets?;onions?;sweets? onions?</source>
-          <target state="new">sweets?;onions?;sweets? onions?</target>
-        </trans-unit>
-        <trans-unit id="SauceOptions.Vinegar;LIST" translate="yes" xml:space="preserve">
-          <source>vinegars?</source>
-          <target state="new">vinegars?</target>
-        </trans-unit>
-        <trans-unit id="Specials_terms;LIST" translate="yes" xml:space="preserve">
-          <source>specials?</source>
-          <target state="new">specials?</target>
-        </trans-unit>
-        <trans-unit id="DeliveryAddress_terms;LIST" translate="yes" xml:space="preserve">
-          <source>deliverys?;address?;deliverys? address?</source>
-          <target state="new">deliverys?;address?;deliverys? address?</target>
-        </trans-unit>
-        <trans-unit id="DeliveryTime_terms;LIST" translate="yes" xml:space="preserve">
-          <source>deliverys?;times?;deliverys? times?</source>
-          <target state="new">deliverys?;times?;deliverys? times?</target>
-        </trans-unit>
-        <trans-unit id="DeliveryTime_promptDefinition;LIST" translate="yes" xml:space="preserve">
-          <source>What time do you want your sandwich delivered? {||}</source>
-          <target state="new">What time do you want your sandwich delivered? {||}</target>
-        </trans-unit>
-        <trans-unit id="confirmation12_promptDefinition;LIST" translate="yes" xml:space="preserve">
-          <source>Do you want to order your {Length} {Sandwich} on {Bread} {&amp;Bread} with {[{Cheese} {Toppings} {Sauces}]} to be sent to {DeliveryAddress} {?at {DeliveryTime:t}}?</source>
-          <target state="new">Do you want to order your {Length} {Sandwich} on {Bread} {&amp;Bread} with {[{Cheese} {Toppings} {Sauces}]} to be sent to {DeliveryAddress} {?at {DeliveryTime:t}}?</target>
-        </trans-unit>
-        <trans-unit id="PhoneNumber_terms;LIST" translate="yes" xml:space="preserve">
-          <source>phones?;numbers?;phones? numbers?</source>
-          <target state="new">phones?;numbers?;phones? numbers?</target>
-        </trans-unit>
-        <trans-unit id="Rating_terms;LIST" translate="yes" xml:space="preserve">
-          <source>ratings?</source>
-          <target state="new">ratings?</target>
-        </trans-unit>
-        <trans-unit id="message15;LIST" translate="yes" xml:space="preserve">
-          <source>Thanks for ordering a sandwich!</source>
-          <target state="new">Thanks for ordering a sandwich!</target>
-        </trans-unit>
-        <trans-unit id="NotUnderstood;Sandwich;Length;Bread;Cheese;Toppings;Sauces;Specials;DeliveryAddress;DeliveryTime;PhoneNumber;Rating;TEMPLATE" translate="yes" xml:space="preserve">
-          <source>I do not understand "{0}".;Try again, I don't get "{0}".</source>
-          <target state="new">I do not understand "{0}".;Try again, I don't get "{0}".</target>
-        </trans-unit>
-        <trans-unit id="EnumSelectOne;Sandwich;Length;Bread;Cheese;Toppings;Sauces;Specials;DeliveryAddress;DeliveryTime;PhoneNumber;Rating;TEMPLATE" translate="yes" xml:space="preserve">
-          <source>What kind of {&amp;} would you like on your sandwich? {||}</source>
-          <target state="new">What kind of {&amp;} would you like on your sandwich? {||}</target>
-        </trans-unit>
-        <trans-unit id="NoPreference;Specials;TEMPLATE" translate="yes" xml:space="preserve">
-          <source>None</source>
-          <target state="new">None</target>
-        </trans-unit>
-        <trans-unit id="BreadSubTitle;VALUE" translate="yes" xml:space="preserve">
-          <source>Bread Picker</source>
-          <target state="new">Bread Picker</target>
-        </trans-unit>
-        <trans-unit id="BreadTitle;VALUE" translate="yes" xml:space="preserve">
-          <source>Sandwich Bot</source>
-          <target state="new">Sandwich Bot</target>
-        </trans-unit>
-        <trans-unit id="SandwichImage;VALUE" translate="yes" xml:space="preserve">
-          <source>https://placeholdit.imgix.net/~text?txtsize=16&amp;txt=Sandwich&amp;w=125&amp;h=40&amp;txttrack=0&amp;txtclr=000&amp;txtfont=bold</source>
-          <target state="new">https://placeholdit.imgix.net/~text?txtsize=16&amp;txt=Sandwich&amp;w=125&amp;h=40&amp;txttrack=0&amp;txtclr=000&amp;txtfont=bold</target>
-        </trans-unit>
-        <trans-unit id="StatusFormat;DeliveryTime;TEMPLATE" translate="yes" xml:space="preserve">
-          <source>{&amp;}: {:t}</source>
-          <target state="new">{&amp;}: {:t}</target>
         </trans-unit>
       </group>
     </body>
@@ -1236,73 +1224,73 @@
       </group>
     </body>
   </file>
-  <file datatype="xml" source-language="en" target-language="en" original="FORMTEST/RESOURCE/MICROSOFT.BOT.SAMPLE.JSONSANDWICHBOT.SANDWICHORDER.RESX" tool-id="MultilingualAppToolkit" product-name="n/a" product-version="n/a" build-num="n/a">
+  <file datatype="xml" source-language="en" target-language="en" original="FORMTEST/RESOURCE/MICROSOFT.BOT.SAMPLE.ANNOTATEDSANDWICHBOT.SANDWICHORDER.RESX" tool-id="MultilingualAppToolkit" product-name="n/a" product-version="n/a" build-num="n/a">
     <header>
       <tool tool-id="MultilingualAppToolkit" tool-name="Multilingual App Toolkit" tool-version="4.0.6900.0" tool-company="Microsoft" />
     </header>
     <body>
-      <group id="FORMTEST/RESOURCE/MICROSOFT.BOT.SAMPLE.JSONSANDWICHBOT.SANDWICHORDER.RESX" datatype="resx">
+      <group id="FORMTEST/RESOURCE/MICROSOFT.BOT.SAMPLE.ANNOTATEDSANDWICHBOT.SANDWICHORDER.RESX" datatype="resx">
         <trans-unit id="Sandwich_description;VALUE" translate="yes" xml:space="preserve">
           <source>Sandwich</source>
           <target state="new">Sandwich</target>
         </trans-unit>
-        <trans-unit id="Sandwich_valueDescriptions;BLT;VALUE" translate="yes" xml:space="preserve">
+        <trans-unit id="SandwichOptions.BLT;VALUE" translate="yes" xml:space="preserve">
           <source>BLT</source>
           <target state="new">BLT</target>
         </trans-unit>
-        <trans-unit id="Sandwich_valueDescriptions;BlackForestHam;VALUE" translate="yes" xml:space="preserve">
+        <trans-unit id="SandwichOptions.BlackForestHam;VALUE" translate="yes" xml:space="preserve">
           <source>Black Forest Ham</source>
           <target state="new">Black Forest Ham</target>
         </trans-unit>
-        <trans-unit id="Sandwich_valueDescriptions;BuffaloChicken;VALUE" translate="yes" xml:space="preserve">
+        <trans-unit id="SandwichOptions.BuffaloChicken;VALUE" translate="yes" xml:space="preserve">
           <source>Buffalo Chicken</source>
           <target state="new">Buffalo Chicken</target>
         </trans-unit>
-        <trans-unit id="Sandwich_valueDescriptions;ChickenAndBaconRanchMelt;VALUE" translate="yes" xml:space="preserve">
+        <trans-unit id="SandwichOptions.ChickenAndBaconRanchMelt;VALUE" translate="yes" xml:space="preserve">
           <source>Chicken And Bacon Ranch Melt</source>
           <target state="new">Chicken And Bacon Ranch Melt</target>
         </trans-unit>
-        <trans-unit id="Sandwich_valueDescriptions;ColdCutCombo;VALUE" translate="yes" xml:space="preserve">
+        <trans-unit id="SandwichOptions.ColdCutCombo;VALUE" translate="yes" xml:space="preserve">
           <source>Cold Cut Combo</source>
           <target state="new">Cold Cut Combo</target>
         </trans-unit>
-        <trans-unit id="Sandwich_valueDescriptions;MeatballMarinara;VALUE" translate="yes" xml:space="preserve">
+        <trans-unit id="SandwichOptions.MeatballMarinara;VALUE" translate="yes" xml:space="preserve">
           <source>Meatball Marinara</source>
           <target state="new">Meatball Marinara</target>
         </trans-unit>
-        <trans-unit id="Sandwich_valueDescriptions;OvenRoastedChicken;VALUE" translate="yes" xml:space="preserve">
+        <trans-unit id="SandwichOptions.OvenRoastedChicken;VALUE" translate="yes" xml:space="preserve">
           <source>Oven Roasted Chicken</source>
           <target state="new">Oven Roasted Chicken</target>
         </trans-unit>
-        <trans-unit id="Sandwich_valueDescriptions;RoastBeef;VALUE" translate="yes" xml:space="preserve">
+        <trans-unit id="SandwichOptions.RoastBeef;VALUE" translate="yes" xml:space="preserve">
           <source>Roast Beef</source>
           <target state="new">Roast Beef</target>
         </trans-unit>
-        <trans-unit id="Sandwich_valueDescriptions;RotisserieStyleChicken;VALUE" translate="yes" xml:space="preserve">
+        <trans-unit id="SandwichOptions.RotisserieStyleChicken;VALUE" translate="yes" xml:space="preserve">
           <source>Rotisserie Style Chicken</source>
           <target state="new">Rotisserie Style Chicken</target>
         </trans-unit>
-        <trans-unit id="Sandwich_valueDescriptions;SpicyItalian;VALUE" translate="yes" xml:space="preserve">
+        <trans-unit id="SandwichOptions.SpicyItalian;VALUE" translate="yes" xml:space="preserve">
           <source>Spicy Italian</source>
           <target state="new">Spicy Italian</target>
         </trans-unit>
-        <trans-unit id="Sandwich_valueDescriptions;SteakAndCheese;VALUE" translate="yes" xml:space="preserve">
+        <trans-unit id="SandwichOptions.SteakAndCheese;VALUE" translate="yes" xml:space="preserve">
           <source>Steak And Cheese</source>
           <target state="new">Steak And Cheese</target>
         </trans-unit>
-        <trans-unit id="Sandwich_valueDescriptions;SweetOnionTeriyaki;VALUE" translate="yes" xml:space="preserve">
+        <trans-unit id="SandwichOptions.SweetOnionTeriyaki;VALUE" translate="yes" xml:space="preserve">
           <source>Sweet Onion Teriyaki</source>
           <target state="new">Sweet Onion Teriyaki</target>
         </trans-unit>
-        <trans-unit id="Sandwich_valueDescriptions;Tuna;VALUE" translate="yes" xml:space="preserve">
+        <trans-unit id="SandwichOptions.Tuna;VALUE" translate="yes" xml:space="preserve">
           <source>Tuna</source>
           <target state="new">Tuna</target>
         </trans-unit>
-        <trans-unit id="Sandwich_valueDescriptions;TurkeyBreast;VALUE" translate="yes" xml:space="preserve">
+        <trans-unit id="SandwichOptions.TurkeyBreast;VALUE" translate="yes" xml:space="preserve">
           <source>Turkey Breast</source>
           <target state="new">Turkey Breast</target>
         </trans-unit>
-        <trans-unit id="Sandwich_valueDescriptions;Veggie;VALUE" translate="yes" xml:space="preserve">
+        <trans-unit id="SandwichOptions.Veggie;VALUE" translate="yes" xml:space="preserve">
           <source>Veggie</source>
           <target state="new">Veggie</target>
         </trans-unit>
@@ -1310,147 +1298,143 @@
           <source>Length</source>
           <target state="new">Length</target>
         </trans-unit>
-        <trans-unit id="Length_valueDescriptions;SixInch;VALUE" translate="yes" xml:space="preserve">
+        <trans-unit id="LengthOptions.SixInch;VALUE" translate="yes" xml:space="preserve">
           <source>Six Inch</source>
           <target state="new">Six Inch</target>
         </trans-unit>
-        <trans-unit id="Length_valueDescriptions;FootLong;VALUE" translate="yes" xml:space="preserve">
+        <trans-unit id="LengthOptions.FootLong;VALUE" translate="yes" xml:space="preserve">
           <source>Foot Long</source>
           <target state="new">Foot Long</target>
         </trans-unit>
-        <trans-unit id="Ingredients.Bread_description;VALUE" translate="yes" xml:space="preserve">
+        <trans-unit id="Bread_description;VALUE" translate="yes" xml:space="preserve">
           <source>Bread</source>
           <target state="new">Bread</target>
         </trans-unit>
-        <trans-unit id="Ingredients.Bread_valueDescriptions;NineGrainWheat;VALUE" translate="yes" xml:space="preserve">
+        <trans-unit id="BreadOptions.NineGrainWheat;VALUE" translate="yes" xml:space="preserve">
           <source>Nine Grain Wheat</source>
           <target state="new">Nine Grain Wheat</target>
         </trans-unit>
-        <trans-unit id="Ingredients.Bread_valueDescriptions;NineGrainHoneyOat;VALUE" translate="yes" xml:space="preserve">
+        <trans-unit id="BreadOptions.NineGrainHoneyOat;VALUE" translate="yes" xml:space="preserve">
           <source>Nine Grain Honey Oat</source>
           <target state="new">Nine Grain Honey Oat</target>
         </trans-unit>
-        <trans-unit id="Ingredients.Bread_valueDescriptions;Italian;VALUE" translate="yes" xml:space="preserve">
+        <trans-unit id="BreadOptions.Italian;VALUE" translate="yes" xml:space="preserve">
           <source>Italian</source>
           <target state="new">Italian</target>
         </trans-unit>
-        <trans-unit id="Ingredients.Bread_valueDescriptions;ItalianHerbsAndCheese;VALUE" translate="yes" xml:space="preserve">
+        <trans-unit id="BreadOptions.ItalianHerbsAndCheese;VALUE" translate="yes" xml:space="preserve">
           <source>Italian Herbs And Cheese</source>
           <target state="new">Italian Herbs And Cheese</target>
         </trans-unit>
-        <trans-unit id="Ingredients.Bread_valueDescriptions;Flatbread;VALUE" translate="yes" xml:space="preserve">
+        <trans-unit id="BreadOptions.Flatbread;VALUE" translate="yes" xml:space="preserve">
           <source>Flatbread</source>
           <target state="new">Flatbread</target>
         </trans-unit>
-        <trans-unit id="Ingredients.Cheese_description;VALUE" translate="yes" xml:space="preserve">
+        <trans-unit id="Cheese_description;VALUE" translate="yes" xml:space="preserve">
           <source>Cheese</source>
           <target state="new">Cheese</target>
         </trans-unit>
-        <trans-unit id="Ingredients.Cheese_valueDescriptions;American;VALUE" translate="yes" xml:space="preserve">
+        <trans-unit id="CheeseOptions.American;VALUE" translate="yes" xml:space="preserve">
           <source>American</source>
           <target state="new">American</target>
         </trans-unit>
-        <trans-unit id="Ingredients.Cheese_valueDescriptions;MontereyCheddar;VALUE" translate="yes" xml:space="preserve">
+        <trans-unit id="CheeseOptions.MontereyCheddar;VALUE" translate="yes" xml:space="preserve">
           <source>Monterey Cheddar</source>
           <target state="new">Monterey Cheddar</target>
         </trans-unit>
-        <trans-unit id="Ingredients.Cheese_valueDescriptions;Pepperjack;VALUE" translate="yes" xml:space="preserve">
+        <trans-unit id="CheeseOptions.Pepperjack;VALUE" translate="yes" xml:space="preserve">
           <source>Pepperjack</source>
           <target state="new">Pepperjack</target>
         </trans-unit>
-        <trans-unit id="Ingredients.Toppings_description;VALUE" translate="yes" xml:space="preserve">
+        <trans-unit id="Toppings_description;VALUE" translate="yes" xml:space="preserve">
           <source>Toppings</source>
           <target state="new">Toppings</target>
         </trans-unit>
-        <trans-unit id="Ingredients.Toppings_valueDescriptions;Everything;VALUE" translate="yes" xml:space="preserve">
+        <trans-unit id="ToppingOptions.Everything;VALUE" translate="yes" xml:space="preserve">
           <source>Everything</source>
           <target state="new">Everything</target>
         </trans-unit>
-        <trans-unit id="Ingredients.Toppings_valueDescriptions;Avocado;VALUE" translate="yes" xml:space="preserve">
+        <trans-unit id="ToppingOptions.Avocado;VALUE" translate="yes" xml:space="preserve">
           <source>Avocado</source>
           <target state="new">Avocado</target>
         </trans-unit>
-        <trans-unit id="Ingredients.Toppings_valueDescriptions;BananaPeppers;VALUE" translate="yes" xml:space="preserve">
+        <trans-unit id="ToppingOptions.BananaPeppers;VALUE" translate="yes" xml:space="preserve">
           <source>Banana Peppers</source>
           <target state="new">Banana Peppers</target>
         </trans-unit>
-        <trans-unit id="Ingredients.Toppings_valueDescriptions;Cucumbers;VALUE" translate="yes" xml:space="preserve">
+        <trans-unit id="ToppingOptions.Cucumbers;VALUE" translate="yes" xml:space="preserve">
           <source>Cucumbers</source>
           <target state="new">Cucumbers</target>
         </trans-unit>
-        <trans-unit id="Ingredients.Toppings_valueDescriptions;GreenBellPeppers;VALUE" translate="yes" xml:space="preserve">
+        <trans-unit id="ToppingOptions.GreenBellPeppers;VALUE" translate="yes" xml:space="preserve">
           <source>Green Bell Peppers</source>
           <target state="new">Green Bell Peppers</target>
         </trans-unit>
-        <trans-unit id="Ingredients.Toppings_valueDescriptions;Jalapenos;VALUE" translate="yes" xml:space="preserve">
+        <trans-unit id="ToppingOptions.Jalapenos;VALUE" translate="yes" xml:space="preserve">
           <source>Jalapenos</source>
           <target state="new">Jalapenos</target>
         </trans-unit>
-        <trans-unit id="Ingredients.Toppings_valueDescriptions;Lettuce;VALUE" translate="yes" xml:space="preserve">
+        <trans-unit id="ToppingOptions.Lettuce;VALUE" translate="yes" xml:space="preserve">
           <source>Lettuce</source>
           <target state="new">Lettuce</target>
         </trans-unit>
-        <trans-unit id="Ingredients.Toppings_valueDescriptions;Olives;VALUE" translate="yes" xml:space="preserve">
+        <trans-unit id="ToppingOptions.Olives;VALUE" translate="yes" xml:space="preserve">
           <source>Olives</source>
           <target state="new">Olives</target>
         </trans-unit>
-        <trans-unit id="Ingredients.Toppings_valueDescriptions;Pickles;VALUE" translate="yes" xml:space="preserve">
+        <trans-unit id="ToppingOptions.Pickles;VALUE" translate="yes" xml:space="preserve">
           <source>Pickles</source>
           <target state="new">Pickles</target>
         </trans-unit>
-        <trans-unit id="Ingredients.Toppings_valueDescriptions;RedOnion;VALUE" translate="yes" xml:space="preserve">
+        <trans-unit id="ToppingOptions.RedOnion;VALUE" translate="yes" xml:space="preserve">
           <source>Red Onion</source>
           <target state="new">Red Onion</target>
         </trans-unit>
-        <trans-unit id="Ingredients.Toppings_valueDescriptions;Spinach;VALUE" translate="yes" xml:space="preserve">
+        <trans-unit id="ToppingOptions.Spinach;VALUE" translate="yes" xml:space="preserve">
           <source>Spinach</source>
           <target state="new">Spinach</target>
         </trans-unit>
-        <trans-unit id="Ingredients.Toppings_valueDescriptions;Tomatoes;VALUE" translate="yes" xml:space="preserve">
+        <trans-unit id="ToppingOptions.Tomatoes;VALUE" translate="yes" xml:space="preserve">
           <source>Tomatoes</source>
           <target state="new">Tomatoes</target>
         </trans-unit>
-        <trans-unit id="Ingredients.Sauces_description;VALUE" translate="yes" xml:space="preserve">
+        <trans-unit id="Sauces_description;VALUE" translate="yes" xml:space="preserve">
           <source>Sauces</source>
           <target state="new">Sauces</target>
         </trans-unit>
-        <trans-unit id="Ingredients.Sauces_valueDescriptions;ChipotleSouthwest;VALUE" translate="yes" xml:space="preserve">
-          <source>Chipotle Southwest</source>
-          <target state="new">Chipotle Southwest</target>
-        </trans-unit>
-        <trans-unit id="Ingredients.Sauces_valueDescriptions;HoneyMustard;VALUE" translate="yes" xml:space="preserve">
+        <trans-unit id="SauceOptions.HoneyMustard;VALUE" translate="yes" xml:space="preserve">
           <source>Honey Mustard</source>
           <target state="new">Honey Mustard</target>
         </trans-unit>
-        <trans-unit id="Ingredients.Sauces_valueDescriptions;LightMayonnaise;VALUE" translate="yes" xml:space="preserve">
+        <trans-unit id="SauceOptions.LightMayonnaise;VALUE" translate="yes" xml:space="preserve">
           <source>Light Mayonnaise</source>
           <target state="new">Light Mayonnaise</target>
         </trans-unit>
-        <trans-unit id="Ingredients.Sauces_valueDescriptions;RegularMayonnaise;VALUE" translate="yes" xml:space="preserve">
+        <trans-unit id="SauceOptions.RegularMayonnaise;VALUE" translate="yes" xml:space="preserve">
           <source>Regular Mayonnaise</source>
           <target state="new">Regular Mayonnaise</target>
         </trans-unit>
-        <trans-unit id="Ingredients.Sauces_valueDescriptions;Mustard;VALUE" translate="yes" xml:space="preserve">
+        <trans-unit id="SauceOptions.Mustard;VALUE" translate="yes" xml:space="preserve">
           <source>Mustard</source>
           <target state="new">Mustard</target>
         </trans-unit>
-        <trans-unit id="Ingredients.Sauces_valueDescriptions;Oil;VALUE" translate="yes" xml:space="preserve">
+        <trans-unit id="SauceOptions.Oil;VALUE" translate="yes" xml:space="preserve">
           <source>Oil</source>
           <target state="new">Oil</target>
         </trans-unit>
-        <trans-unit id="Ingredients.Sauces_valueDescriptions;Pepper;VALUE" translate="yes" xml:space="preserve">
+        <trans-unit id="SauceOptions.Pepper;VALUE" translate="yes" xml:space="preserve">
           <source>Pepper</source>
           <target state="new">Pepper</target>
         </trans-unit>
-        <trans-unit id="Ingredients.Sauces_valueDescriptions;Ranch;VALUE" translate="yes" xml:space="preserve">
+        <trans-unit id="SauceOptions.Ranch;VALUE" translate="yes" xml:space="preserve">
           <source>Ranch</source>
           <target state="new">Ranch</target>
         </trans-unit>
-        <trans-unit id="Ingredients.Sauces_valueDescriptions;SweetOnion;VALUE" translate="yes" xml:space="preserve">
+        <trans-unit id="SauceOptions.SweetOnion;VALUE" translate="yes" xml:space="preserve">
           <source>Sweet Onion</source>
           <target state="new">Sweet Onion</target>
         </trans-unit>
-        <trans-unit id="Ingredients.Sauces_valueDescriptions;Vinegar;VALUE" translate="yes" xml:space="preserve">
+        <trans-unit id="SauceOptions.Vinegar;VALUE" translate="yes" xml:space="preserve">
           <source>Vinegar</source>
           <target state="new">Vinegar</target>
         </trans-unit>
@@ -1466,6 +1450,10 @@
           <source>Delivery Time</source>
           <target state="new">Delivery Time</target>
         </trans-unit>
+        <trans-unit id="PhoneNumber_description;VALUE" translate="yes" xml:space="preserve">
+          <source>Phone Number</source>
+          <target state="new">Phone Number</target>
+        </trans-unit>
         <trans-unit id="Rating_description;VALUE" translate="yes" xml:space="preserve">
           <source>your experience today</source>
           <target state="new">your experience today</target>
@@ -1478,63 +1466,63 @@
           <source>sandwichs?</source>
           <target state="new">sandwichs?</target>
         </trans-unit>
-        <trans-unit id="Sandwich_valueTerms;BLT;LIST" translate="yes" xml:space="preserve">
+        <trans-unit id="SandwichOptions.BLT;LIST" translate="yes" xml:space="preserve">
           <source>blts?</source>
           <target state="new">blts?</target>
         </trans-unit>
-        <trans-unit id="Sandwich_valueTerms;BlackForestHam;LIST" translate="yes" xml:space="preserve">
+        <trans-unit id="SandwichOptions.BlackForestHam;LIST" translate="yes" xml:space="preserve">
           <source>blacks?;forests?;hams?;blacks? forests?;forests? hams?;blacks? forests? hams?</source>
           <target state="new">blacks?;forests?;hams?;blacks? forests?;forests? hams?;blacks? forests? hams?</target>
         </trans-unit>
-        <trans-unit id="Sandwich_valueTerms;BuffaloChicken;LIST" translate="yes" xml:space="preserve">
+        <trans-unit id="SandwichOptions.BuffaloChicken;LIST" translate="yes" xml:space="preserve">
           <source>buffalos?;chickens?;buffalos? chickens?</source>
           <target state="new">buffalos?;chickens?;buffalos? chickens?</target>
         </trans-unit>
-        <trans-unit id="Sandwich_valueTerms;ChickenAndBaconRanchMelt;LIST" translate="yes" xml:space="preserve">
-          <source>chickens?;and;bacons?;ranchs?;melts?;chickens? and;and bacons?;bacons? ranchs?;ranchs? melts?;chickens? and bacons?;and bacons? ranchs?;bacons? ranchs? melts?;chicken and bacon ranch melt</source>
-          <target state="new">chickens?;and;bacons?;ranchs?;melts?;chickens? and;and bacons?;bacons? ranchs?;ranchs? melts?;chickens? and bacons?;and bacons? ranchs?;bacons? ranchs? melts?;chicken and bacon ranch melt</target>
+        <trans-unit id="SandwichOptions.ChickenAndBaconRanchMelt;LIST" translate="yes" xml:space="preserve">
+          <source>chickens?;and;bacons?;ranchs?;melts?;chickens? and;and bacons?;bacons? ranchs?;ranchs? melts?;chickens? and bacons?;and bacons? ranchs?;bacons? ranchs? melts?;chickens? and bacons? ranchs?;and bacons? ranchs? melts?;chicken and bacon ranch melt</source>
+          <target state="new">chickens?;and;bacons?;ranchs?;melts?;chickens? and;and bacons?;bacons? ranchs?;ranchs? melts?;chickens? and bacons?;and bacons? ranchs?;bacons? ranchs? melts?;chickens? and bacons? ranchs?;and bacons? ranchs? melts?;chicken and bacon ranch melt</target>
         </trans-unit>
-        <trans-unit id="Sandwich_valueTerms;ColdCutCombo;LIST" translate="yes" xml:space="preserve">
+        <trans-unit id="SandwichOptions.ColdCutCombo;LIST" translate="yes" xml:space="preserve">
           <source>colds?;cuts?;combos?;colds? cuts?;cuts? combos?;colds? cuts? combos?</source>
           <target state="new">colds?;cuts?;combos?;colds? cuts?;cuts? combos?;colds? cuts? combos?</target>
         </trans-unit>
-        <trans-unit id="Sandwich_valueTerms;MeatballMarinara;LIST" translate="yes" xml:space="preserve">
+        <trans-unit id="SandwichOptions.MeatballMarinara;LIST" translate="yes" xml:space="preserve">
           <source>meatballs?;marinaras?;meatballs? marinaras?</source>
           <target state="new">meatballs?;marinaras?;meatballs? marinaras?</target>
         </trans-unit>
-        <trans-unit id="Sandwich_valueTerms;OvenRoastedChicken;LIST" translate="yes" xml:space="preserve">
+        <trans-unit id="SandwichOptions.OvenRoastedChicken;LIST" translate="yes" xml:space="preserve">
           <source>ovens?;roasteds?;chickens?;ovens? roasteds?;roasteds? chickens?;ovens? roasteds? chickens?</source>
           <target state="new">ovens?;roasteds?;chickens?;ovens? roasteds?;roasteds? chickens?;ovens? roasteds? chickens?</target>
         </trans-unit>
-        <trans-unit id="Sandwich_valueTerms;RoastBeef;LIST" translate="yes" xml:space="preserve">
+        <trans-unit id="SandwichOptions.RoastBeef;LIST" translate="yes" xml:space="preserve">
           <source>roasts?;beefs?;roasts? beefs?</source>
           <target state="new">roasts?;beefs?;roasts? beefs?</target>
         </trans-unit>
-        <trans-unit id="Sandwich_valueTerms;RotisserieStyleChicken;LIST" translate="yes" xml:space="preserve">
+        <trans-unit id="SandwichOptions.RotisserieStyleChicken;LIST" translate="yes" xml:space="preserve">
           <source>rotis\w*s?;styles?;chickens?;rotis\w*s? styles?;styles? chickens?;rotis\w*s? styles? chickens?</source>
           <target state="new">rotis\w*s?;styles?;chickens?;rotis\w*s? styles?;styles? chickens?;rotis\w*s? styles? chickens?</target>
         </trans-unit>
-        <trans-unit id="Sandwich_valueTerms;SpicyItalian;LIST" translate="yes" xml:space="preserve">
+        <trans-unit id="SandwichOptions.SpicyItalian;LIST" translate="yes" xml:space="preserve">
           <source>spicys?;italians?;spicys? italians?</source>
           <target state="new">spicys?;italians?;spicys? italians?</target>
         </trans-unit>
-        <trans-unit id="Sandwich_valueTerms;SteakAndCheese;LIST" translate="yes" xml:space="preserve">
+        <trans-unit id="SandwichOptions.SteakAndCheese;LIST" translate="yes" xml:space="preserve">
           <source>steaks?;and;cheeses?;steaks? and;and cheeses?;steaks? and cheeses?</source>
           <target state="new">steaks?;and;cheeses?;steaks? and;and cheeses?;steaks? and cheeses?</target>
         </trans-unit>
-        <trans-unit id="Sandwich_valueTerms;SweetOnionTeriyaki;LIST" translate="yes" xml:space="preserve">
+        <trans-unit id="SandwichOptions.SweetOnionTeriyaki;LIST" translate="yes" xml:space="preserve">
           <source>sweets?;onions?;teriyakis?;sweets? onions?;onions? teriyakis?;sweets? onions? teriyakis?</source>
           <target state="new">sweets?;onions?;teriyakis?;sweets? onions?;onions? teriyakis?;sweets? onions? teriyakis?</target>
         </trans-unit>
-        <trans-unit id="Sandwich_valueTerms;Tuna;LIST" translate="yes" xml:space="preserve">
+        <trans-unit id="SandwichOptions.Tuna;LIST" translate="yes" xml:space="preserve">
           <source>tunas?</source>
           <target state="new">tunas?</target>
         </trans-unit>
-        <trans-unit id="Sandwich_valueTerms;TurkeyBreast;LIST" translate="yes" xml:space="preserve">
+        <trans-unit id="SandwichOptions.TurkeyBreast;LIST" translate="yes" xml:space="preserve">
           <source>turkeys?;breasts?;turkeys? breasts?</source>
           <target state="new">turkeys?;breasts?;turkeys? breasts?</target>
         </trans-unit>
-        <trans-unit id="Sandwich_valueTerms;Veggie;LIST" translate="yes" xml:space="preserve">
+        <trans-unit id="SandwichOptions.Veggie;LIST" translate="yes" xml:space="preserve">
           <source>veggies?</source>
           <target state="new">veggies?</target>
         </trans-unit>
@@ -1546,11 +1534,11 @@
           <source>lengths?</source>
           <target state="new">lengths?</target>
         </trans-unit>
-        <trans-unit id="Length_valueTerms;SixInch;LIST" translate="yes" xml:space="preserve">
+        <trans-unit id="LengthOptions.SixInch;LIST" translate="yes" xml:space="preserve">
           <source>six;inchs?;six inchs?</source>
           <target state="new">six;inchs?;six inchs?</target>
         </trans-unit>
-        <trans-unit id="Length_valueTerms;FootLong;LIST" translate="yes" xml:space="preserve">
+        <trans-unit id="LengthOptions.FootLong;LIST" translate="yes" xml:space="preserve">
           <source>foots?;longs?;foots? longs?</source>
           <target state="new">foots?;longs?;foots? longs?</target>
         </trans-unit>
@@ -1558,143 +1546,139 @@
           <source>What size of sandwich do you want? {||}</source>
           <target state="new">What size of sandwich do you want? {||}</target>
         </trans-unit>
-        <trans-unit id="Ingredients.Bread_terms;LIST" translate="yes" xml:space="preserve">
+        <trans-unit id="Bread_terms;LIST" translate="yes" xml:space="preserve">
           <source>breads?</source>
           <target state="new">breads?</target>
         </trans-unit>
-        <trans-unit id="Ingredients.Bread_valueTerms;NineGrainWheat;LIST" translate="yes" xml:space="preserve">
+        <trans-unit id="BreadOptions.NineGrainWheat;LIST" translate="yes" xml:space="preserve">
           <source>nine;grains?;wheats?;nine grains?;grains? wheats?;nine grains? wheats?</source>
           <target state="new">nine;grains?;wheats?;nine grains?;grains? wheats?;nine grains? wheats?</target>
         </trans-unit>
-        <trans-unit id="Ingredients.Bread_valueTerms;NineGrainHoneyOat;LIST" translate="yes" xml:space="preserve">
-          <source>nine;grains?;honeys?;oats?;nine grains?;grains? honeys?;honeys? oats?;nine grains? honeys?;grains? honeys? oats?;nine grain honey oat</source>
-          <target state="new">nine;grains?;honeys?;oats?;nine grains?;grains? honeys?;honeys? oats?;nine grains? honeys?;grains? honeys? oats?;nine grain honey oat</target>
+        <trans-unit id="BreadOptions.NineGrainHoneyOat;LIST" translate="yes" xml:space="preserve">
+          <source>nine;grains?;honeys?;oats?;nine grains?;grains? honeys?;honeys? oats?;nine grains? honeys?;grains? honeys? oats?;nine grains? honeys? oats?</source>
+          <target state="new">nine;grains?;honeys?;oats?;nine grains?;grains? honeys?;honeys? oats?;nine grains? honeys?;grains? honeys? oats?;nine grains? honeys? oats?</target>
         </trans-unit>
-        <trans-unit id="Ingredients.Bread_valueTerms;Italian;LIST" translate="yes" xml:space="preserve">
+        <trans-unit id="BreadOptions.Italian;LIST" translate="yes" xml:space="preserve">
           <source>italians?</source>
           <target state="new">italians?</target>
         </trans-unit>
-        <trans-unit id="Ingredients.Bread_valueTerms;ItalianHerbsAndCheese;LIST" translate="yes" xml:space="preserve">
-          <source>italians?;herbs?;and;cheeses?;italians? herbs?;herbs? and;and cheeses?;italians? herbs? and;herbs? and cheeses?;italian herbs and cheese</source>
-          <target state="new">italians?;herbs?;and;cheeses?;italians? herbs?;herbs? and;and cheeses?;italians? herbs? and;herbs? and cheeses?;italian herbs and cheese</target>
+        <trans-unit id="BreadOptions.ItalianHerbsAndCheese;LIST" translate="yes" xml:space="preserve">
+          <source>italians?;herbs?;and;cheeses?;italians? herbs?;herbs? and;and cheeses?;italians? herbs? and;herbs? and cheeses?;italians? herbs? and cheeses?</source>
+          <target state="new">italians?;herbs?;and;cheeses?;italians? herbs?;herbs? and;and cheeses?;italians? herbs? and;herbs? and cheeses?;italians? herbs? and cheeses?</target>
         </trans-unit>
-        <trans-unit id="Ingredients.Bread_valueTerms;Flatbread;LIST" translate="yes" xml:space="preserve">
+        <trans-unit id="BreadOptions.Flatbread;LIST" translate="yes" xml:space="preserve">
           <source>flatbreads?</source>
           <target state="new">flatbreads?</target>
         </trans-unit>
-        <trans-unit id="Ingredients.Cheese_terms;LIST" translate="yes" xml:space="preserve">
+        <trans-unit id="Cheese_terms;LIST" translate="yes" xml:space="preserve">
           <source>cheeses?</source>
           <target state="new">cheeses?</target>
         </trans-unit>
-        <trans-unit id="Ingredients.Cheese_valueTerms;American;LIST" translate="yes" xml:space="preserve">
+        <trans-unit id="CheeseOptions.American;LIST" translate="yes" xml:space="preserve">
           <source>americans?</source>
           <target state="new">americans?</target>
         </trans-unit>
-        <trans-unit id="Ingredients.Cheese_valueTerms;MontereyCheddar;LIST" translate="yes" xml:space="preserve">
+        <trans-unit id="CheeseOptions.MontereyCheddar;LIST" translate="yes" xml:space="preserve">
           <source>montereys?;cheddars?;montereys? cheddars?</source>
           <target state="new">montereys?;cheddars?;montereys? cheddars?</target>
         </trans-unit>
-        <trans-unit id="Ingredients.Cheese_valueTerms;Pepperjack;LIST" translate="yes" xml:space="preserve">
+        <trans-unit id="CheeseOptions.Pepperjack;LIST" translate="yes" xml:space="preserve">
           <source>pepperjacks?</source>
           <target state="new">pepperjacks?</target>
         </trans-unit>
-        <trans-unit id="Ingredients.Toppings_terms;LIST" translate="yes" xml:space="preserve">
+        <trans-unit id="Toppings_terms;LIST" translate="yes" xml:space="preserve">
           <source>toppings?</source>
           <target state="new">toppings?</target>
         </trans-unit>
-        <trans-unit id="Ingredients.Toppings_valueTerms;Everything;LIST" translate="yes" xml:space="preserve">
+        <trans-unit id="ToppingOptions.Everything;LIST" translate="yes" xml:space="preserve">
           <source>except;but;not;no;all;everything</source>
           <target state="new">except;but;not;no;all;everything</target>
         </trans-unit>
-        <trans-unit id="Ingredients.Toppings_valueTerms;Avocado;LIST" translate="yes" xml:space="preserve">
+        <trans-unit id="ToppingOptions.Avocado;LIST" translate="yes" xml:space="preserve">
           <source>avocados?</source>
           <target state="new">avocados?</target>
         </trans-unit>
-        <trans-unit id="Ingredients.Toppings_valueTerms;BananaPeppers;LIST" translate="yes" xml:space="preserve">
+        <trans-unit id="ToppingOptions.BananaPeppers;LIST" translate="yes" xml:space="preserve">
           <source>bananas?;peppers?;bananas? peppers?</source>
           <target state="new">bananas?;peppers?;bananas? peppers?</target>
         </trans-unit>
-        <trans-unit id="Ingredients.Toppings_valueTerms;Cucumbers;LIST" translate="yes" xml:space="preserve">
+        <trans-unit id="ToppingOptions.Cucumbers;LIST" translate="yes" xml:space="preserve">
           <source>cucumbers?</source>
           <target state="new">cucumbers?</target>
         </trans-unit>
-        <trans-unit id="Ingredients.Toppings_valueTerms;GreenBellPeppers;LIST" translate="yes" xml:space="preserve">
+        <trans-unit id="ToppingOptions.GreenBellPeppers;LIST" translate="yes" xml:space="preserve">
           <source>greens?;bells?;peppers?;greens? bells?;bells? peppers?;greens? bells? peppers?</source>
           <target state="new">greens?;bells?;peppers?;greens? bells?;bells? peppers?;greens? bells? peppers?</target>
         </trans-unit>
-        <trans-unit id="Ingredients.Toppings_valueTerms;Jalapenos;LIST" translate="yes" xml:space="preserve">
+        <trans-unit id="ToppingOptions.Jalapenos;LIST" translate="yes" xml:space="preserve">
           <source>jalapenos?</source>
           <target state="new">jalapenos?</target>
         </trans-unit>
-        <trans-unit id="Ingredients.Toppings_valueTerms;Lettuce;LIST" translate="yes" xml:space="preserve">
+        <trans-unit id="ToppingOptions.Lettuce;LIST" translate="yes" xml:space="preserve">
           <source>lettuces?</source>
           <target state="new">lettuces?</target>
         </trans-unit>
-        <trans-unit id="Ingredients.Toppings_valueTerms;Olives;LIST" translate="yes" xml:space="preserve">
+        <trans-unit id="ToppingOptions.Olives;LIST" translate="yes" xml:space="preserve">
           <source>olives?</source>
           <target state="new">olives?</target>
         </trans-unit>
-        <trans-unit id="Ingredients.Toppings_valueTerms;Pickles;LIST" translate="yes" xml:space="preserve">
+        <trans-unit id="ToppingOptions.Pickles;LIST" translate="yes" xml:space="preserve">
           <source>pickles?</source>
           <target state="new">pickles?</target>
         </trans-unit>
-        <trans-unit id="Ingredients.Toppings_valueTerms;RedOnion;LIST" translate="yes" xml:space="preserve">
+        <trans-unit id="ToppingOptions.RedOnion;LIST" translate="yes" xml:space="preserve">
           <source>reds?;onions?;reds? onions?</source>
           <target state="new">reds?;onions?;reds? onions?</target>
         </trans-unit>
-        <trans-unit id="Ingredients.Toppings_valueTerms;Spinach;LIST" translate="yes" xml:space="preserve">
+        <trans-unit id="ToppingOptions.Spinach;LIST" translate="yes" xml:space="preserve">
           <source>spinachs?</source>
           <target state="new">spinachs?</target>
         </trans-unit>
-        <trans-unit id="Ingredients.Toppings_valueTerms;Tomatoes;LIST" translate="yes" xml:space="preserve">
+        <trans-unit id="ToppingOptions.Tomatoes;LIST" translate="yes" xml:space="preserve">
           <source>tomatoes?</source>
           <target state="new">tomatoes?</target>
         </trans-unit>
         <trans-unit id="message6;LIST" translate="yes" xml:space="preserve">
-          <source>For sandwich toppings you have selected {Ingredients.Toppings}.</source>
-          <target state="new">For sandwich toppings you have selected {Ingredients.Toppings}.</target>
+          <source>For sandwich toppings you have selected {Toppings}.</source>
+          <target state="new">For sandwich toppings you have selected {Toppings}.</target>
         </trans-unit>
-        <trans-unit id="Ingredients.Sauces_terms;LIST" translate="yes" xml:space="preserve">
+        <trans-unit id="Sauces_terms;LIST" translate="yes" xml:space="preserve">
           <source>sauces?</source>
           <target state="new">sauces?</target>
         </trans-unit>
-        <trans-unit id="Ingredients.Sauces_valueTerms;ChipotleSouthwest;LIST" translate="yes" xml:space="preserve">
-          <source>chipotles?;southwests?;chipotles? southwests?</source>
-          <target state="new">chipotles?;southwests?;chipotles? southwests?</target>
-        </trans-unit>
-        <trans-unit id="Ingredients.Sauces_valueTerms;HoneyMustard;LIST" translate="yes" xml:space="preserve">
+        <trans-unit id="SauceOptions.HoneyMustard;LIST" translate="yes" xml:space="preserve">
           <source>honeys?;mustards?;honeys? mustards?</source>
           <target state="new">honeys?;mustards?;honeys? mustards?</target>
         </trans-unit>
-        <trans-unit id="Ingredients.Sauces_valueTerms;LightMayonnaise;LIST" translate="yes" xml:space="preserve">
+        <trans-unit id="SauceOptions.LightMayonnaise;LIST" translate="yes" xml:space="preserve">
           <source>lights?;mayonnaises?;lights? mayonnaises?</source>
           <target state="new">lights?;mayonnaises?;lights? mayonnaises?</target>
         </trans-unit>
-        <trans-unit id="Ingredients.Sauces_valueTerms;RegularMayonnaise;LIST" translate="yes" xml:space="preserve">
+        <trans-unit id="SauceOptions.RegularMayonnaise;LIST" translate="yes" xml:space="preserve">
           <source>regulars?;mayonnaises?;regulars? mayonnaises?</source>
           <target state="new">regulars?;mayonnaises?;regulars? mayonnaises?</target>
         </trans-unit>
-        <trans-unit id="Ingredients.Sauces_valueTerms;Mustard;LIST" translate="yes" xml:space="preserve">
+        <trans-unit id="SauceOptions.Mustard;LIST" translate="yes" xml:space="preserve">
           <source>mustards?</source>
           <target state="new">mustards?</target>
         </trans-unit>
-        <trans-unit id="Ingredients.Sauces_valueTerms;Oil;LIST" translate="yes" xml:space="preserve">
+        <trans-unit id="SauceOptions.Oil;LIST" translate="yes" xml:space="preserve">
           <source>oils?</source>
           <target state="new">oils?</target>
         </trans-unit>
-        <trans-unit id="Ingredients.Sauces_valueTerms;Pepper;LIST" translate="yes" xml:space="preserve">
+        <trans-unit id="SauceOptions.Pepper;LIST" translate="yes" xml:space="preserve">
           <source>peppers?</source>
           <target state="new">peppers?</target>
         </trans-unit>
-        <trans-unit id="Ingredients.Sauces_valueTerms;Ranch;LIST" translate="yes" xml:space="preserve">
+        <trans-unit id="SauceOptions.Ranch;LIST" translate="yes" xml:space="preserve">
           <source>ranchs?</source>
           <target state="new">ranchs?</target>
         </trans-unit>
-        <trans-unit id="Ingredients.Sauces_valueTerms;SweetOnion;LIST" translate="yes" xml:space="preserve">
+        <trans-unit id="SauceOptions.SweetOnion;LIST" translate="yes" xml:space="preserve">
           <source>sweets?;onions?;sweets? onions?</source>
           <target state="new">sweets?;onions?;sweets? onions?</target>
         </trans-unit>
-        <trans-unit id="Ingredients.Sauces_valueTerms;Vinegar;LIST" translate="yes" xml:space="preserve">
+        <trans-unit id="SauceOptions.Vinegar;LIST" translate="yes" xml:space="preserve">
           <source>vinegars?</source>
           <target state="new">vinegars?</target>
         </trans-unit>
@@ -1715,28 +1699,44 @@
           <target state="new">What time do you want your sandwich delivered? {||}</target>
         </trans-unit>
         <trans-unit id="confirmation12_promptDefinition;LIST" translate="yes" xml:space="preserve">
-          <source>Do you want to order your {Length} {Sandwich} on {Ingredients.Bread} {&amp;Ingredients.Bread} with {[{Ingredients.Cheese} {Ingredients.Toppings} {Ingredients.Sauces}]} to be sent to {DeliveryAddress} {?at {DeliveryTime:t}}?</source>
-          <target state="new">Do you want to order your {Length} {Sandwich} on {Ingredients.Bread} {&amp;Ingredients.Bread} with {[{Ingredients.Cheese} {Ingredients.Toppings} {Ingredients.Sauces}]} to be sent to {DeliveryAddress} {?at {DeliveryTime:t}}?</target>
+          <source>Do you want to order your {Length} {Sandwich} on {Bread} {&amp;Bread} with {[{Cheese} {Toppings} {Sauces}]} to be sent to {DeliveryAddress} {?at {DeliveryTime:t}}?</source>
+          <target state="new">Do you want to order your {Length} {Sandwich} on {Bread} {&amp;Bread} with {[{Cheese} {Toppings} {Sauces}]} to be sent to {DeliveryAddress} {?at {DeliveryTime:t}}?</target>
+        </trans-unit>
+        <trans-unit id="PhoneNumber_terms;LIST" translate="yes" xml:space="preserve">
+          <source>phones?;numbers?;phones? numbers?</source>
+          <target state="new">phones?;numbers?;phones? numbers?</target>
         </trans-unit>
         <trans-unit id="Rating_terms;LIST" translate="yes" xml:space="preserve">
           <source>ratings?</source>
           <target state="new">ratings?</target>
         </trans-unit>
-        <trans-unit id="message14;LIST" translate="yes" xml:space="preserve">
+        <trans-unit id="message15;LIST" translate="yes" xml:space="preserve">
           <source>Thanks for ordering a sandwich!</source>
           <target state="new">Thanks for ordering a sandwich!</target>
         </trans-unit>
-        <trans-unit id="NotUnderstood;Sandwich;Length;Ingredients.Bread;Ingredients.Cheese;Ingredients.Toppings;Ingredients.Sauces;Specials;DeliveryAddress;DeliveryTime;Rating;TEMPLATE" translate="yes" xml:space="preserve">
+        <trans-unit id="NotUnderstood;Sandwich;Length;Bread;Cheese;Toppings;Sauces;Specials;DeliveryAddress;DeliveryTime;PhoneNumber;Rating;TEMPLATE" translate="yes" xml:space="preserve">
           <source>I do not understand "{0}".;Try again, I don't get "{0}".</source>
           <target state="new">I do not understand "{0}".;Try again, I don't get "{0}".</target>
         </trans-unit>
-        <trans-unit id="EnumSelectOne;Sandwich;Length;Ingredients.Bread;Ingredients.Cheese;Ingredients.Toppings;Ingredients.Sauces;Specials;DeliveryAddress;DeliveryTime;Rating;TEMPLATE" translate="yes" xml:space="preserve">
+        <trans-unit id="EnumSelectOne;Sandwich;Length;Bread;Cheese;Toppings;Sauces;Specials;DeliveryAddress;DeliveryTime;PhoneNumber;Rating;TEMPLATE" translate="yes" xml:space="preserve">
           <source>What kind of {&amp;} would you like on your sandwich? {||}</source>
           <target state="new">What kind of {&amp;} would you like on your sandwich? {||}</target>
         </trans-unit>
         <trans-unit id="NoPreference;Specials;TEMPLATE" translate="yes" xml:space="preserve">
           <source>None</source>
           <target state="new">None</target>
+        </trans-unit>
+        <trans-unit id="BreadSubTitle;VALUE" translate="yes" xml:space="preserve">
+          <source>Bread Picker</source>
+          <target state="new">Bread Picker</target>
+        </trans-unit>
+        <trans-unit id="BreadTitle;VALUE" translate="yes" xml:space="preserve">
+          <source>Sandwich Bot</source>
+          <target state="new">Sandwich Bot</target>
+        </trans-unit>
+        <trans-unit id="SandwichImage;VALUE" translate="yes" xml:space="preserve">
+          <source>https://placeholdit.imgix.net/~text?txtsize=16&amp;txt=Sandwich&amp;w=125&amp;h=40&amp;txttrack=0&amp;txtclr=000&amp;txtfont=bold</source>
+          <target state="new">https://placeholdit.imgix.net/~text?txtsize=16&amp;txt=Sandwich&amp;w=125&amp;h=40&amp;txttrack=0&amp;txtclr=000&amp;txtfont=bold</target>
         </trans-unit>
         <trans-unit id="StatusFormat;DeliveryTime;TEMPLATE" translate="yes" xml:space="preserve">
           <source>{&amp;}: {:t}</source>

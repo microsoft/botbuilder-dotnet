@@ -45,18 +45,21 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         /// <returns></returns>
         public async Task OnTurn(ITurnContext context, MiddlewareSet.NextDelegate next)
         {
-            IMessageActivity message = context.Activity.AsMessageActivity();
-            if (message != null)
+            if (context.Activity.Type == ActivityTypes.Message)
             {
-                if (!String.IsNullOrWhiteSpace(message.Text))
+                IMessageActivity message = context.Activity.AsMessageActivity();
+                if (message != null)
                 {
-                    bool localeChanged = await _setUserLocale(context);
-                    if (!localeChanged)
+                    if (!String.IsNullOrWhiteSpace(message.Text))
                     {
-                        string fromLocale = _getUserLocale(context);
-                        ConvertLocaleMessage(context, fromLocale);
+                        bool localeChanged = await _setUserLocale(context);
+                        if (!localeChanged)
+                        {
+                            string fromLocale = _getUserLocale(context);
+                            ConvertLocaleMessage(context, fromLocale);
+                        }
+
                     }
-                    
                 }
             }
             await next().ConfigureAwait(false);
