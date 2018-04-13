@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Samples.Dialog.Prompts
         public PromptBot()
         {
             _dialogs = new DialogSet();
-            _dialogs.Add("number", new Builder.Dialogs.Prompts.NumberPrompt<int>(Culture.English));
+            _dialogs.Add("number", new Builder.Dialogs.NumberPrompt<int>(Culture.English));
         }
 
         public async Task OnTurn(ITurnContext turnContext)

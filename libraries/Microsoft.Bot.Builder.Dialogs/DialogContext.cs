@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="dialogs">Parent dialog set.</param>
         /// <param name="context">Context for the current turn of conversation with the user.</param>
         /// <param name="stack">Current dialog stack.</param>
-        public DialogContext(DialogSet dialogs, ITurnContext context, Stack<DialogInstance> stack)
+        internal DialogContext(DialogSet dialogs, ITurnContext context, Stack<DialogInstance> stack)
         {
             Dialogs = dialogs;
             Context = context;
@@ -65,6 +65,9 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="dialogArgs">(Optional) additional argument(s) to pass to the dialog being started.</param>
         public async Task Begin(string dialogId, object dialogArgs = null)
         {
+            if (string.IsNullOrEmpty(dialogId))
+                throw new ArgumentNullException(nameof(dialogId));
+
             // Lookup dialog
             var dialog = Dialogs.Find(dialogId);
             if (dialog == null)
@@ -95,6 +98,9 @@ namespace Microsoft.Bot.Builder.Dialogs
             
         public Task Prompt(string dialogId, string prompt, PromptOptions options = null)
         {
+            if (string.IsNullOrEmpty(dialogId))
+                throw new ArgumentNullException(nameof(dialogId));
+
             if (options == null)
             {
                 options = new PromptOptions();
@@ -107,6 +113,9 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
         public Task Prompt(string dialogId, Activity prompt, PromptOptions options = null)
         {
+            if (string.IsNullOrEmpty(dialogId))
+                throw new ArgumentNullException(nameof(dialogId));
+
             if (options == null)
             {
                 options = new PromptOptions();

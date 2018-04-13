@@ -24,6 +24,11 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </summary>
         public Dialog Add(string dialogId, Dialog dialog)
         {
+            if (string.IsNullOrEmpty(dialogId))
+                throw new ArgumentNullException(nameof(dialogId));
+            if (dialog == null)
+                throw new ArgumentNullException(nameof(dialog));
+
             if (_dialogs.ContainsKey(dialogId))
             {
                 throw new Exception($"DialogSet.add(): A dialog with an id of '{dialogId}' already added.");
@@ -36,6 +41,11 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </summary>
         public Waterfall Add(string dialogId, WaterfallStep[] steps)
         {
+            if (string.IsNullOrEmpty(dialogId))
+                throw new ArgumentNullException(nameof(dialogId));
+            if (steps == null)
+                throw new ArgumentNullException(nameof(steps));
+
             var waterfall = new Waterfall(steps);
             Add(dialogId, waterfall);
             return waterfall;
@@ -43,6 +53,10 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         public DialogContext CreateContext(ITurnContext context, object state)
         {
+            BotAssert.ContextNotNull(context);
+            if (state == null)
+                throw new ArgumentNullException(nameof(state));
+
             var d = (IDictionary<string, object>)state;
             object value;
             if (!d.TryGetValue("dialogStack", out value))
@@ -60,6 +74,9 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <returns>dialog if found otherwise null</returns>
         public Dialog Find(string dialogId)
         {
+            if (string.IsNullOrEmpty(dialogId))
+                throw new ArgumentNullException(nameof(dialogId));
+
             Dialog result;
             if (_dialogs.TryGetValue(dialogId, out result))
             {

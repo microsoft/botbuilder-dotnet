@@ -1,10 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System.Collections.Generic;
+using System;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Prompts;
-using static Microsoft.Bot.Builder.Prompts.PromptValidatorEx;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
@@ -27,6 +26,11 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         public override async Task DialogBegin(DialogContext dc, object dialogArgs)
         {
+            if (dc == null)
+                throw new ArgumentNullException(nameof(dc));
+            if (dialogArgs == null)
+                throw new ArgumentNullException(nameof(dialogArgs));
+
             var promptOptions = (PromptOptions)dialogArgs;
 
             // Persist options
@@ -39,6 +43,9 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         public override async Task DialogContinue(DialogContext dc)
         {
+            if (dc == null)
+                throw new ArgumentNullException(nameof(dc));
+
             // Recognize value
             var instance = dc.Instance;
             var recognized = await OnRecognize(dc, (PromptOptions)instance.State);

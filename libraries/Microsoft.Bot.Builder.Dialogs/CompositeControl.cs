@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Dialogs
@@ -13,9 +14,12 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         public CompositeControl(DialogSet dialogs, string dialogId, object defaultOptions)
         {
-            Dialogs = dialogs;
+            if (string.IsNullOrEmpty(dialogId))
+                throw new ArgumentNullException(nameof(dialogId));
+
+            Dialogs = dialogs ?? throw new ArgumentNullException(nameof(dialogs));
             DialogId = dialogId;
-            DefaultOptions = defaultOptions;
+            DefaultOptions = defaultOptions ?? throw new ArgumentNullException(nameof(defaultOptions));
         }
 
         public override bool HasDialogContinue => true;
@@ -24,6 +28,12 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         public async Task<DialogResult> Begin(TurnContext context, object state, object options)
         {
+            BotAssert.ContextNotNull(context);
+            if (state == null)
+                throw new ArgumentNullException(nameof(state));
+            if (options == null)
+                throw new ArgumentNullException(nameof(options));
+
             var cdc = Dialogs.CreateContext(context, state);
             await cdc.Begin(DialogId, options);
             return cdc.DialogResult;
@@ -31,6 +41,10 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         public async Task<DialogResult> Continue(TurnContext context, object state)
         {
+            BotAssert.ContextNotNull(context);
+            if (state == null)
+                throw new ArgumentNullException(nameof(state));
+
             var cdc = Dialogs.CreateContext(context, state);
             await cdc.Continue();
             return cdc.DialogResult;
@@ -38,6 +52,9 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         public override async Task DialogBegin(DialogContext dc, object dialogArgs = null)
         {
+            if (dc == null)
+                throw new ArgumentNullException(nameof(dc));
+
             // Start the controls entry point dialog. 
             var cdc = Dialogs.CreateContext(dc.Context, dc.Instance.State);
             await cdc.Begin(DialogId, dialogArgs);
@@ -50,6 +67,9 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         public override async Task DialogContinue(DialogContext dc)
         {
+            if (dc == null)
+                throw new ArgumentNullException(nameof(dc));
+
             // Continue controls dialog stack.
             var cdc = Dialogs.CreateContext(dc.Context, dc.Instance.State);
             await cdc.Continue();

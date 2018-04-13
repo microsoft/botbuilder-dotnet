@@ -2,12 +2,14 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace Microsoft.Bot.Builder.Dialogs.Prompts
+namespace Microsoft.Bot.Builder.Dialogs
 {
     public class DatetimePrompt
     {
+        public DatetimePrompt()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
