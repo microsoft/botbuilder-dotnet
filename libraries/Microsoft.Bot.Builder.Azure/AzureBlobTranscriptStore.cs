@@ -1,4 +1,6 @@
-﻿using Microsoft.Bot.Builder.Core.Extensions;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+using Microsoft.Bot.Builder.Core.Extensions;
 using Microsoft.Bot.Schema;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
@@ -8,11 +10,17 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Azure
 {
+    /// <summary>
+    /// Implements ITranscriptStore/ITranscriptLogger on top of Azure Blob Storage
+    /// </summary>
+    /// <remarks>
+    /// Each activity is stored as json blob in structure of
+    /// container/{channelId]/{conversationId}/{Timestamp.ticks}-{activity.id}.json 
+    /// </remarks>
     public class AzureBlobTranscriptStore : ITranscriptStore
     {
         private readonly static JsonSerializer jsonSerializer = JsonSerializer.Create(new JsonSerializerSettings()
@@ -38,7 +46,11 @@ namespace Microsoft.Bot.Builder.Azure
 
         public AzureBlobTranscriptStore(CloudStorageAccount storageAccount, string containerName)
         {
-            if (storageAccount == null) throw new ArgumentNullException(nameof(storageAccount));
+            if (storageAccount == null)
+                throw new ArgumentNullException(nameof(storageAccount));
+
+            if (String.IsNullOrEmpty(containerName))
+                throw new ArgumentNullException(nameof(containerName));
 
             this.Container = new Lazy<CloudBlobContainer>(() =>
             {
@@ -57,8 +69,7 @@ namespace Microsoft.Bot.Builder.Azure
 
         public async Task LogActivity(IActivity activity)
         {
-            if (activity == null)
-                throw new ArgumentNullException("activity cannot be null for LogActivity()");
+            BotAssert.ActivityNotNull(activity);
 
             var blobName = GetBlobName(activity);
             var blobReference = this.Container.Value.GetBlockBlobReference(blobName);
@@ -76,12 +87,12 @@ namespace Microsoft.Bot.Builder.Azure
             await blobReference.SetMetadataAsync();
         }
 
-        public async Task<PagedResult<IActivity>> GetConversationActivities(string channelId, string conversationId, string continuationToken = null, DateTime startDate = default(DateTime))
+        public async Task<PagedResult<IActivity>> GetTranscriptActivities(string channelId, string conversationId, string continuationToken = null, DateTime startDate = default(DateTime))
         {
-            if (channelId == null)
+            if (String.IsNullOrEmpty(channelId))
                 throw new ArgumentNullException($"missing {nameof(channelId)}");
 
-            if (conversationId == null)
+            if (String.IsNullOrEmpty(conversationId))
                 throw new ArgumentNullException($"missing {nameof(conversationId)}");
 
             var pagedResult = new PagedResult<IActivity>();
@@ -134,23 +145,23 @@ namespace Microsoft.Bot.Builder.Azure
             return pagedResult;
         }
 
-        public async Task<PagedResult<Conversation>> ListConversations(string channelId, string continuationToken = null)
+        public async Task<PagedResult<Transcript>> ListTranscripts(string channelId, string continuationToken = null)
         {
-            if (channelId == null)
+            if (String.IsNullOrEmpty(channelId))
                 throw new ArgumentNullException($"missing {nameof(channelId)}");
 
             var dirName = GetDirName(channelId);
             var dir = this.Container.Value.GetDirectoryReference(dirName);
             int pageSize = 20;
             BlobContinuationToken token = null;
-            List<Conversation> conversations = new List<Conversation>();
+            List<Transcript> conversations = new List<Transcript>();
             do
             {
                 var segment = await dir.ListBlobsSegmentedAsync(false, BlobListingDetails.Metadata, null, token, null, null);
 
                 foreach (var blob in segment.Results.Where(c => c is CloudBlobDirectory).Cast<CloudBlobDirectory>())
                 {
-                    var conversation = new Conversation() { Id = blob.Prefix.Split('/').Where(s => s.Length > 0).Last(), ChannelId = channelId };
+                    var conversation = new Transcript() { Id = blob.Prefix.Split('/').Where(s => s.Length > 0).Last(), ChannelId = channelId };
                     if (continuationToken != null)
                     {
                         if (conversation.Id == continuationToken)
@@ -170,7 +181,7 @@ namespace Microsoft.Bot.Builder.Azure
                     token = segment.ContinuationToken;
             } while (token != null && conversations.Count < pageSize);
 
-            var pagedResult = new PagedResult<Conversation>();
+            var pagedResult = new PagedResult<Transcript>();
             pagedResult.Items = conversations.ToArray();
 
             if (pagedResult.Items.Length == 20)
@@ -179,12 +190,12 @@ namespace Microsoft.Bot.Builder.Azure
             return pagedResult;
         }
 
-        public async Task DeleteConversation(string channelId, string conversationId)
+        public async Task DeleteTranscript(string channelId, string conversationId)
         {
-            if (channelId == null)
+            if (String.IsNullOrEmpty(channelId))
                 throw new ArgumentNullException($"{nameof(channelId)} should not be null");
 
-            if (conversationId == null)
+            if (String.IsNullOrEmpty(conversationId))
                 throw new ArgumentNullException($"{nameof(conversationId)} should not be null");
 
             var dirName = GetDirName(channelId, conversationId);
@@ -219,33 +230,24 @@ namespace Microsoft.Bot.Builder.Azure
         {
             string dirName = "";
             if (conversationId != null)
-                dirName = $"{SanitizeKey(channelId)}/{SanitizeKey(conversationId)}";
+            {
+                var convId = SanitizeKey(conversationId);
+                NameValidator.ValidateDirectoryName(channelId);
+                NameValidator.ValidateDirectoryName(convId);
+                dirName = $"{channelId}/{convId}";
+            }
             else
-                dirName = $"{SanitizeKey(channelId)}";
-            // NameValidator.ValidateDirectoryName(dirName);
+            {
+                NameValidator.ValidateDirectoryName(channelId);
+                dirName = $"{channelId}";
+            }
             return dirName;
         }
 
-        private static Lazy<Dictionary<char, string>> badChars = new Lazy<Dictionary<char, string>>(() =>
-        {
-            char[] badChars = new char[] { '\\', '?', '/', '#', '\t', '\n', '\r' };
-            var dict = new Dictionary<char, string>();
-            foreach (var badChar in badChars)
-                dict[badChar] = '%' + ((int)badChar).ToString("x2");
-            return dict;
-        });
-
         private string SanitizeKey(string key)
         {
-            StringBuilder sb = new StringBuilder();
-            foreach (char ch in key)
-            {
-                if (badChars.Value.TryGetValue(ch, out string val))
-                    sb.Append(val);
-                else
-                    sb.Append(ch);
-            }
-            return sb.ToString();
+            // Blob Name rules: case-sensitive any url char
+            return Uri.EscapeDataString(key);
         }
 
     }

@@ -54,7 +54,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions
         /// <param name="continuationToken"></param>
         /// <param name="startDate"></param>
         /// <returns></returns>
-        public async Task<PagedResult<IActivity>> GetConversationActivities(string channelId, string conversationId, string continuationToken = null, DateTime startDate = default(DateTime))
+        public async Task<PagedResult<IActivity>> GetTranscriptActivities(string channelId, string conversationId, string continuationToken = null, DateTime startDate = default(DateTime))
         {
             if (channelId == null)
                 throw new ArgumentNullException($"missing {nameof(channelId)}");
@@ -106,7 +106,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions
         /// <param name="conversationId">conversation id</param>
         /// <param name="cancel"></param>
         /// <returns></returns>
-        public async Task DeleteConversation(string channelId, string conversationId)
+        public async Task DeleteTranscript(string channelId, string conversationId)
         {
             if (channelId == null)
                 throw new ArgumentNullException($"{nameof(channelId)} should not be null");
@@ -132,12 +132,12 @@ namespace Microsoft.Bot.Builder.Core.Extensions
         /// <param name="channelId"></param>
         /// <param name="continuationToken"></param>
         /// <returns></returns>
-        public async Task<PagedResult<Conversation>> ListConversations(string channelId, string continuationToken = null)
+        public async Task<PagedResult<Transcript>> ListTranscripts(string channelId, string continuationToken = null)
         {
             if (channelId == null)
                 throw new ArgumentNullException($"missing {nameof(channelId)}");
 
-            var pagedResult = new PagedResult<Conversation>();
+            var pagedResult = new PagedResult<Transcript>();
             lock (this.channels)
             {
                 Dictionary<string, List<IActivity>> channel;
@@ -145,7 +145,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions
                 {
                     if (continuationToken != null)
                     {
-                        pagedResult.Items = channel.Select(c => new Conversation()
+                        pagedResult.Items = channel.Select(c => new Transcript()
                         {
                             ChannelId = channelId,
                             Id = c.Key,
@@ -162,7 +162,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions
                     }
                     else
                     {
-                        pagedResult.Items = channel.Select(c => new Conversation()
+                        pagedResult.Items = channel.Select(c => new Transcript()
                         {
                             ChannelId = channelId,
                             Id = c.Key,

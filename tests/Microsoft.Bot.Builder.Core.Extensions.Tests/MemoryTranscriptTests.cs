@@ -42,25 +42,25 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
         [TestMethod]
         public async Task MemoryTranscript_GetConversationActivities()
         {
-            await base._GetConversationActivities();
+            await base._GetTranscriptActivities();
         }
 
         [TestMethod]
         public async Task MemoryTranscript_GetConversationActivitiesStartDate()
         {
-            await base._GetConversationActivitiesStartDate();
+            await base._GetTranscriptActivitiesStartDate();
         }
 
         [TestMethod]
         public async Task MemoryTranscript_ListConversations()
         {
-            await base._ListConversations();
+            await base._ListTranscripts();
         }
 
         [TestMethod]
         public async Task MemoryTranscript_DeleteConversation()
         {
-            await base._DeleteConversation();
+            await base._DeleteTranscript();
         }
 
     }

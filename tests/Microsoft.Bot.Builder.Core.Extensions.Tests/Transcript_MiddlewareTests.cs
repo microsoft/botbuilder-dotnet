@@ -41,7 +41,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
                     .AssertReply("echo:bar")
                 .StartTest();
 
-            var pagedResult = await transcriptStore.GetConversationActivities("test", conversationId);
+            var pagedResult = await transcriptStore.GetTranscriptActivities("test", conversationId);
             Assert.AreEqual(6, pagedResult.Items.Length);
             Assert.AreEqual("foo", pagedResult.Items[0].AsMessageActivity().Text);
             Assert.IsNotNull(pagedResult.Items[1].AsTypingActivity());
@@ -88,7 +88,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
                     .AssertReply("new response")
                 .StartTest();
             await Task.Delay(500);
-            var pagedResult = await transcriptStore.GetConversationActivities("test", conversationId);
+            var pagedResult = await transcriptStore.GetTranscriptActivities("test", conversationId);
             Assert.AreEqual(4, pagedResult.Items.Length);
             Assert.AreEqual("foo", pagedResult.Items[0].AsMessageActivity().Text);
             Assert.AreEqual("response", pagedResult.Items[1].AsMessageActivity().Text);
@@ -125,7 +125,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
                 .Send("deleteIt")
                 .StartTest();
             await Task.Delay(500);
-            var pagedResult = await transcriptStore.GetConversationActivities("test", conversationId);
+            var pagedResult = await transcriptStore.GetTranscriptActivities("test", conversationId);
             Assert.AreEqual(4, pagedResult.Items.Length);
             Assert.AreEqual("foo", pagedResult.Items[0].AsMessageActivity().Text);
             Assert.AreEqual("response", pagedResult.Items[1].AsMessageActivity().Text);
