@@ -23,8 +23,8 @@ namespace Microsoft.Bot.Builder.Azure
     {
         private readonly string _databaseId;
         private readonly string _collectionId;
-        private readonly Lazy<string> _collectionReady;
         private readonly DocumentClient _client;
+        private string _collectionLink = null;
 
         private static JsonSerializer _jsonSerializer = JsonSerializer.Create(new JsonSerializerSettings()
         {
@@ -82,18 +82,6 @@ namespace Microsoft.Bot.Builder.Azure
             // Invoke CollectionPolicy delegate to further customize settings
             connectionPolicyConfigurator?.Invoke(connectionPolicy);
             _client = new DocumentClient(serviceEndpoint, authKey, connectionPolicy);
-
-            // Delayed Database and Collection creation if they do not exist. This is a thread-safe operation.
-            _collectionReady = new Lazy<string>(() =>
-            {
-                _client.CreateDatabaseIfNotExistsAsync(new Database { Id = _databaseId })
-                    .Wait();
-
-                var task = _client.CreateDocumentCollectionIfNotExistsAsync(UriFactory.CreateDatabaseUri(_databaseId), new DocumentCollection { Id = _collectionId });
-                task.Wait();
-
-                return task.Result.Resource.SelfLink;
-            });
         }
 
         /// <summary>
@@ -106,7 +94,7 @@ namespace Microsoft.Bot.Builder.Azure
             if (keys.Length == 0) return;
 
             // Ensure collection exists
-            var collectionLink = _collectionReady.Value;
+            var collectionLink = await GetCollectionLink();
 
             // Parallelize deletion
             var tasks = keys.Select(key =>
@@ -129,7 +117,7 @@ namespace Microsoft.Bot.Builder.Azure
             }
 
             // Ensure collection exists
-            var collectionLink = _collectionReady.Value;
+            var collectionLink = await GetCollectionLink();
             var storeItems = new StoreItems();
 
             var parameterSequence = string.Join(",", Enumerable.Range(0, keys.Length).Select(i => $"@id{i}"));
@@ -171,7 +159,7 @@ namespace Microsoft.Bot.Builder.Azure
                 throw new ArgumentNullException(nameof(changes), "Please provide a StoreItems with changes to persist.");
             }
 
-            var collectionLink = _collectionReady.Value;
+            var collectionLink = await GetCollectionLink();
             foreach (var change in changes)
             {
                 var json = JObject.FromObject(change.Value, _jsonSerializer);
@@ -205,6 +193,22 @@ namespace Microsoft.Bot.Builder.Azure
                     throw new Exception("etag empty");
                 }
             }
+        }
+
+        /// <summary>
+        /// Delayed Database and Collection creation if they do not exist.
+        /// </summary>
+        private async Task<string> GetCollectionLink()
+        {
+            if(_collectionLink == null)
+            {
+                await _client.CreateDatabaseIfNotExistsAsync(new Database { Id = _databaseId }).ConfigureAwait(false);
+
+                var response = await _client.CreateDocumentCollectionIfNotExistsAsync(UriFactory.CreateDatabaseUri(_databaseId), new DocumentCollection { Id = _collectionId }).ConfigureAwait(false);
+                _collectionLink = response.Resource.SelfLink;
+            }
+
+            return _collectionLink;
         }
 
         /// <summary>
