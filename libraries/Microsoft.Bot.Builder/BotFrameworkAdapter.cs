@@ -239,6 +239,11 @@ namespace Microsoft.Bot.Builder.Adapters
                     // In the case of Invoke, just create a fake one. Match the incoming activityId if it's there. 
                     response = new ResourceResponse(activity.Id ?? string.Empty);
                 }
+                else if (activity.Type == ActivityTypes.Trace && activity.ChannelId != "emulator")
+                {
+                    // if it is a Trace activity we don't send to the channel unless it is the emulator 
+                    response = new ResourceResponse(activity.Id ?? string.Empty); 
+                }
                 else
                 {
                     var connectorClient = context.Services.Get<IConnectorClient>();

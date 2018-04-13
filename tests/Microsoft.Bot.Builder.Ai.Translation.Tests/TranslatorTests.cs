@@ -56,7 +56,13 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
 
             var translatedSentence = await translator.TranslateArray(new string[] { sentence }, "es", "en");
             Assert.IsNotNull(translatedSentence);
-            Assert.AreEqual("My perro's name is Enzo.", translatedSentence[0]);
+            Assert.AreEqual("My perro's name is Enzo", translatedSentence[0]);
+
+            translator.SetPostProcessorTemplate(new List<string> { "mon nom est (.+)" });
+            sentence = "mon nom est l'etat";
+            translatedSentence = await translator.TranslateArray(new string[] { sentence }, "fr", "en");
+            Assert.IsNotNull(translatedSentence);
+            Assert.AreEqual("My name is l'etat", translatedSentence[0]);
         }
 
         [TestMethod]
