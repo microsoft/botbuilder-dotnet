@@ -55,7 +55,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             var containerName = "BlobTranscriptTests".ToLower();
             var blobClient = CloudStorageAccount.DevelopmentStorageAccount.CreateCloudBlobClient();
             var container = blobClient.GetContainerReference(containerName);
-            container.DeleteAsync();
+            container.DeleteAsync().Wait();
         }
 
         public BlobTranscriptTests() : base()

@@ -31,7 +31,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
 
             await new TestFlow(adapter, async (context) =>
                    {
-                       var obj = context.GetConversationState<StoreItem>();
+                       var obj = context.GetConversationState<TestPocoState>();
                        Assert.IsNull(obj, "context.state should not exist");
                    }
                 )
@@ -175,7 +175,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
                 .StartTest();
         }
 
-        public class TypedObject : StoreItem
+        public class TypedObject
         {
             public string Name { get; set; }
         }
@@ -241,9 +241,10 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
                 .StartTest();
         }
 
-        public class CustomState : StoreItem
+        public class CustomState : IStoreItem
         {
             public string CustomString { get; set; }
+            public string eTag { get; set; }
         }
 
         public class CustomKeyState : BotState<CustomState>

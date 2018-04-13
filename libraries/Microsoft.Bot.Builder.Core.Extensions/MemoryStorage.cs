@@ -2,7 +2,9 @@
 // Licensed under the MIT License.
 
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Core.Extensions
@@ -12,13 +14,15 @@ namespace Microsoft.Bot.Builder.Core.Extensions
     /// </summary>
     public class DictionaryStorage : IStorage
     {
-        private readonly StoreItems _memory;
-        private int _eTag = 0;
-        private object _syncroot = new object();
+        private static readonly JsonSerializer StateJsonSerializer = new JsonSerializer() { TypeNameHandling = TypeNameHandling.Objects };
 
-        public DictionaryStorage(StoreItems dictionary = null)
+        private readonly Dictionary<string, JObject> _memory;
+        private readonly object _syncroot = new object();
+        private int _eTag = 0;
+
+        public DictionaryStorage(Dictionary<string, JObject> dictionary = null)
         {
-            _memory = dictionary ?? new StoreItems();
+            _memory = dictionary ?? new Dictionary<string, JObject>();
         }
                 
         public Task Delete(string[] keys)
@@ -33,57 +37,66 @@ namespace Microsoft.Bot.Builder.Core.Extensions
             return Task.CompletedTask;
         }
 
-        public Task<StoreItems> Read(string[] keys)
+        public Task<IEnumerable<KeyValuePair<string, object>>> Read(string[] keys)
         {
-            var storeItems = new StoreItems();
+            var storeItems = new List<KeyValuePair<string, object>>(keys.Length);
             lock (_syncroot)
             {
                 foreach (var key in keys)
                 {
-                    if (_memory.TryGetValue(key, out object value))
+                    if (_memory.TryGetValue(key, out var state))
                     {
-                        if (value != null)
-                            storeItems[key] = FlexObject.Clone(value);
-                        else 
-                            storeItems[key] = null;
+                        if (state != null)
+                        {
+                            storeItems.Add(new KeyValuePair<string, object>(key, state.ToObject<object>(StateJsonSerializer)));
+                        }
                     }
                 }
             }
-            return Task.FromResult(storeItems);
+
+            return Task.FromResult<IEnumerable<KeyValuePair<string, object>>>(storeItems);
         }
 
 
-        public Task Write(StoreItems changes)
+        public Task Write(IEnumerable<KeyValuePair<string, object>> changes)
         {
             lock (_syncroot)
             {
                 foreach (var change in changes)
                 {
-                    object newValue = change.Value;
-                    object oldValue = null;
+                    var newValue = change.Value;
 
-                    if (_memory.TryGetValue(change.Key, out object x))
-                        oldValue = x;
+                    var oldStateETag = default(string);
 
-                    IStoreItem newStoreItem = newValue as IStoreItem;
-                    IStoreItem oldStoreItem = oldValue as IStoreItem;
-                    if (oldValue == null ||
-                        newStoreItem?.eTag == "*" ||
-                        oldStoreItem?.eTag == newStoreItem?.eTag)
+                    if(_memory.TryGetValue(change.Key, out var oldState))
                     {
-                        // clone and set etag
-                        newValue = FlexObject.Clone(newValue);
-                        newStoreItem = newValue as IStoreItem;
-                        if (newStoreItem != null)
-                            newStoreItem.eTag = (_eTag++).ToString();
-                        _memory[change.Key] = newValue;
+                        if (oldState.TryGetValue("eTag", out var eTagToken))
+                        {
+                            oldStateETag = eTagToken.Value<string>();
+                        }
                     }
-                    else
+                    
+                    var newState = JObject.FromObject(newValue, StateJsonSerializer);
+
+                    // Set ETag if applicable
+                    if (newValue is IStoreItem newStoreItem)
                     {
-                        throw new Exception("etag conflict");
+                        if(oldStateETag != null
+                                &&
+                           newStoreItem.eTag != "*"
+                                &&
+                           newStoreItem.eTag != oldStateETag)
+                        {
+                            throw new Exception($"Etag conflict.\r\n\r\nOriginal: {newStoreItem.eTag}\r\nCurrent: {oldStateETag}");
+                        }
+
+                        newState["eTag"] = (_eTag++).ToString();
                     }
+
+                    _memory[change.Key] = newState;
                 }
             }
+
             return Task.CompletedTask;
         }
 

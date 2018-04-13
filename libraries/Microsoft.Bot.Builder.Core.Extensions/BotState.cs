@@ -4,6 +4,7 @@
 using Microsoft.Bot.Schema;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Core.Extensions
@@ -17,9 +18,9 @@ namespace Microsoft.Bot.Builder.Core.Extensions
     /// <summary>
     /// Abstract Base class which manages details of auto loading/saving of BotState
     /// </summary>
-    /// <typeparam name="StateT"></typeparam>
-    public class BotState<StateT> : IMiddleware
-        where StateT : class, new()
+    /// <typeparam name="TState"></typeparam>
+    public class BotState<TState> : IMiddleware
+        where TState : class, new()
     {
         private readonly StateSettings _settings;
         private readonly IStorage _storage;
@@ -50,39 +51,37 @@ namespace Microsoft.Bot.Builder.Core.Extensions
         protected virtual async Task ReadToContextService(ITurnContext context)
         {
             var key = this._keyDelegate(context);
-            var keys = new List<String> { key };
-            var items = await _storage.Read(keys.ToArray());
-            var state = items.Get<StateT>(key);
+            var items = await _storage.Read(new[] { key });
+            var state = items.Where(entry => entry.Key == key).Select(entry => entry.Value).OfType<TState>().FirstOrDefault();
             if (state == null)
-                state = new StateT();
+                state = new TState();
             context.Services.Add(this._propertyName, state);
         }
 
         protected virtual async Task WriteFromContextService(ITurnContext context)
         {
-            var state = context.Services.Get<StateT>(this._propertyName);
+            var state = context.Services.Get<TState>(this._propertyName);
             await Write(context, state);
         }
 
-        public virtual async Task<StateT> Read(ITurnContext context)
+        public virtual async Task<TState> Read(ITurnContext context)
         {
             var key = this._keyDelegate(context);
-            var keys = new List<String> { key };
-            var items = await _storage.Read(keys.ToArray());
-            var state = items.Get<StateT>(key);
+            var items = await _storage.Read(new[] { key });
+            var state = items.Where(entry => entry.Key == key).Select(entry => entry.Value).OfType<TState>().FirstOrDefault();
             if (state == null)
-                state = new StateT();
+                state = new TState();
             return state;
         }
 
-        public virtual async Task Write(ITurnContext context, StateT state)
+        public virtual async Task Write(ITurnContext context, TState state)
         {
-            StoreItems changes = new StoreItems();
+            var changes = new List<KeyValuePair<string, object>>();
 
             if (state == null)
-                state = new StateT();
+                state = new TState();
             var key = _keyDelegate(context);
-            changes[key] = state;
+            changes.Add(new KeyValuePair<string, object>(key, state));
 
             if (this._settings.LastWriterWins)
             {
@@ -102,11 +101,11 @@ namespace Microsoft.Bot.Builder.Core.Extensions
     /// <summary>
     /// Handles persistence of StateT object using Context.Activity.Conversation.Id as the key
     /// </summary>
-    /// <typeparam name="StateT"></typeparam>
-    public class ConversationState<StateT> : BotState<StateT>
-        where StateT : class, new()
+    /// <typeparam name="TState"></typeparam>
+    public class ConversationState<TState> : BotState<TState>
+        where TState : class, new()
     {
-        public static string PropertyName = $"ConversationState:{typeof(ConversationState<StateT>).Namespace}.{typeof(ConversationState<StateT>).Name}";
+        public static string PropertyName = $"ConversationState:{typeof(ConversationState<TState>).Namespace}.{typeof(ConversationState<TState>).Name}";
 
         public ConversationState(IStorage storage, StateSettings settings = null) :
             base(storage, PropertyName,
@@ -120,17 +119,17 @@ namespace Microsoft.Bot.Builder.Core.Extensions
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public static StateT Get(ITurnContext context) { return context.Services.Get<StateT>(PropertyName); }
+        public static TState Get(ITurnContext context) { return context.Services.Get<TState>(PropertyName); }
     }
 
     /// <summary>
     /// Handles persistence of StateT object using Context.Activity.From.Id (aka user id) as the key
     /// </summary>
-    /// <typeparam name="StateT"></typeparam>
-    public class UserState<StateT> : BotState<StateT>
-        where StateT : class, new()
+    /// <typeparam name="TState"></typeparam>
+    public class UserState<TState> : BotState<TState>
+        where TState : class, new()
     {
-        public static readonly string PropertyName = $"UserState:{typeof(UserState<StateT>).Namespace}.{typeof(UserState<StateT>).Name}";
+        public static readonly string PropertyName = $"UserState:{typeof(UserState<TState>).Namespace}.{typeof(UserState<TState>).Name}";
 
         public UserState(IStorage storage, StateSettings settings = null) :
             base(storage,
@@ -144,21 +143,21 @@ namespace Microsoft.Bot.Builder.Core.Extensions
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public static StateT Get(ITurnContext context) { return context.Services.Get<StateT>(PropertyName); }
+        public static TState Get(ITurnContext context) { return context.Services.Get<TState>(PropertyName); }
     }
 
-    public static class StateContextExtensions
+    public static class StateTurnContextExtensions
     {
-        public static T GetConversationState<T>(this ITurnContext context)
-            where T : class, new()
+        public static TState GetConversationState<TState>(this ITurnContext context)
+            where TState : class, new()
         {
-            return ConversationState<T>.Get(context);
+            return ConversationState<TState>.Get(context);
         }
 
-        public static T GetUserState<T>(this ITurnContext context)
-            where T : class, new()
+        public static TState GetUserState<TState>(this ITurnContext context)
+            where TState : class, new()
         {
-            return UserState<T>.Get(context);
+            return UserState<TState>.Get(context);
         }
     }
 }

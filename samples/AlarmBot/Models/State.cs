@@ -9,7 +9,7 @@ namespace AlarmBot.Models
     /// <summary>
     /// Object persisted as conversation state
     /// </summary>
-    public class ConversationData : StoreItem
+    public class ConversationData
     {
         public ITopic ActiveTopic { get; set; }
     }
@@ -17,7 +17,7 @@ namespace AlarmBot.Models
     /// <summary>
     /// Object persisted as user state
     /// </summary>
-    public class UserData : StoreItem
+    public class UserData
     {
         public IList<Alarm> Alarms { get; set; }
     }
