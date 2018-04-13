@@ -35,7 +35,8 @@ namespace Microsoft.Bot.Samples.Dialog.Prompts
         {
             //services.AddBot<WaterfallBot>(options =>
             //services.AddBot<PromptBot>(options =>
-            services.AddBot<WaterfallAndPromptBot>(options =>
+            //services.AddBot<WaterfallAndPromptBot>(options =>
+            services.AddBot<WaterfallNestedBot>(options =>
             {
                 options.CredentialProvider = new ConfigurationCredentialProvider(Configuration);
                 options.EnableProactiveMessages = true;

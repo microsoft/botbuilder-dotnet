@@ -3,7 +3,7 @@
 
 using System;
 
-namespace Microsoft.Bot.Builder.Dialogs.Prompts
+namespace Microsoft.Bot.Builder.Dialogs
 {
     public class ChoicePrompt
     {

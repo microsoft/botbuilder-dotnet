@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Dialogs
@@ -23,6 +24,12 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         public async Task<DialogResult> Begin(TurnContext context, object state, DialogOptions options)
         {
+            BotAssert.ContextNotNull(context);
+            if (state == null)
+                throw new ArgumentNullException(nameof(state));
+            if (options == null)
+                throw new ArgumentNullException(nameof(options));
+
             // Create empty dialog set and ourselves to it
             var dialogs = new DialogSet();
             dialogs.Add("control", this);
@@ -34,6 +41,10 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
         public async Task<DialogResult> Continue(TurnContext context, object state)
         {
+            BotAssert.ContextNotNull(context);
+            if (state == null)
+                throw new ArgumentNullException(nameof(state));
+
             // Create empty dialog set and ourselves to it
             var dialogs = new DialogSet();
             dialogs.Add("control", this);

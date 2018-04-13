@@ -1,8 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
 
-namespace Microsoft.Bot.Builder.Dialogs.Prompts
+using System;
+
+namespace Microsoft.Bot.Builder.Dialogs
 {
     public class AttachmentPrompt
     {

@@ -1,26 +1,32 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Prompts;
 using static Microsoft.Bot.Builder.Prompts.PromptValidatorEx;
 
-namespace Microsoft.Bot.Builder.Dialogs.Prompts
+namespace Microsoft.Bot.Builder.Dialogs
 {
     public class NumberPrompt<T> : Prompt<NumberResult<T>>
     {
-        private Builder.Prompts.NumberPrompt<T> _prompt;
+        private Prompts.NumberPrompt<T> _prompt;
 
         public NumberPrompt(string culture, PromptValidator<NumberResult<T>> validator = null)
         {
-            _prompt = new Builder.Prompts.NumberPrompt<T>(culture, validator);
+            _prompt = new Prompts.NumberPrompt<T>(culture, validator);
         }
-        protected NumberPrompt(Builder.Prompts.NumberPrompt<T> prompt, PromptValidator<NumberResult<T>> validator = null)
+        protected NumberPrompt(Prompts.NumberPrompt<T> prompt, PromptValidator<NumberResult<T>> validator = null)
         {
             _prompt = prompt;
         }
         protected override Task OnPrompt(DialogContext dc, PromptOptions options, bool isRetry)
         {
+            if (dc == null)
+                throw new ArgumentNullException(nameof(dc));
+            if (options == null)
+                throw new ArgumentNullException(nameof(options));
+
             if (isRetry)
             {
                 if (options.RetryPromptActivity != null)
@@ -48,6 +54,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Prompts
 
         protected override async Task<NumberResult<T>> OnRecognize(DialogContext dc, PromptOptions options)
         {
+            if (dc == null)
+                throw new ArgumentNullException(nameof(dc));
+            if (options == null)
+                throw new ArgumentNullException(nameof(options));
+
             return await _prompt.Recognize(dc.Context);
         }
     }

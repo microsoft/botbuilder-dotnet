@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Dialogs
@@ -25,6 +26,9 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         public override Task DialogBegin(DialogContext dc, object dialogArgs = null)
         {
+            if (dc == null)
+                throw new ArgumentNullException(nameof(dc));
+
             var instance = dc.Instance;
             instance.State = new WaterfallInstance { Step = 0 };
             return RunStep(dc, dialogArgs);
@@ -32,6 +36,9 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         public override Task DialogContinue(DialogContext dc)
         {
+            if (dc == null)
+                throw new ArgumentNullException(nameof(dc));
+
             var instance = (WaterfallInstance)dc.Instance.State;
             instance.Step++;
             return RunStep(dc, dc.Context.Activity.Text);
@@ -39,6 +46,9 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         public override Task DialogResume(DialogContext dc, object result)
         {
+            if (dc == null)
+                throw new ArgumentNullException(nameof(dc));
+
             var instance = (WaterfallInstance)dc.Instance.State;
             instance.Step++;
             return RunStep(dc, result);
@@ -46,6 +56,9 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         private async Task RunStep(DialogContext dc, object result = null)
         {
+            if (dc == null)
+                throw new ArgumentNullException(nameof(dc));
+
             var instance = (WaterfallInstance)dc.Instance.State;
             var step = instance.Step;
             if (step >= 0 && step < _steps.Length)
