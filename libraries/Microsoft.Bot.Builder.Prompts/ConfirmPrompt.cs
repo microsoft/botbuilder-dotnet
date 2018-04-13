@@ -1,4 +1,4 @@
-﻿using System;
+﻿using Microsoft.Recognizers.Text;
 using Microsoft.Recognizers.Text.Choice;
 using static Microsoft.Bot.Builder.Prompts.PromptValidatorEx;
 
