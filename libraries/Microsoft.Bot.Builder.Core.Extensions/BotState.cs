@@ -18,7 +18,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions
     /// Abstract Base class which manages details of auto loading/saving of BotState
     /// </summary>
     /// <typeparam name="StateT"></typeparam>
-    public abstract class BotState<StateT> : IMiddleware
+    public class BotState<StateT> : IMiddleware
         where StateT : class, new()
     {
         private readonly StateSettings _settings;
@@ -42,12 +42,12 @@ namespace Microsoft.Bot.Builder.Core.Extensions
 
         public async Task OnTurn(ITurnContext context, MiddlewareSet.NextDelegate next)
         {
-            await Read(context).ConfigureAwait(false);
+            await ReadToContextService(context).ConfigureAwait(false);
             await next().ConfigureAwait(false);
-            await Write(context).ConfigureAwait(false);
+            await WriteFromContextService(context).ConfigureAwait(false);
         }
 
-        protected virtual async Task<StoreItems> Read(ITurnContext context)
+        protected virtual async Task ReadToContextService(ITurnContext context)
         {
             var key = this._keyDelegate(context);
             var keys = new List<String> { key };
@@ -56,14 +56,29 @@ namespace Microsoft.Bot.Builder.Core.Extensions
             if (state == null)
                 state = new StateT();
             context.Services.Add(this._propertyName, state);
-            return items;
         }
 
-        protected virtual async Task Write(ITurnContext context)
+        protected virtual async Task WriteFromContextService(ITurnContext context)
+        {
+            var state = context.Services.Get<StateT>(this._propertyName);
+            await Write(context, state);
+        }
+
+        public virtual async Task<StateT> Read(ITurnContext context)
+        {
+            var key = this._keyDelegate(context);
+            var keys = new List<String> { key };
+            var items = await _storage.Read(keys.ToArray());
+            var state = items.Get<StateT>(key);
+            if (state == null)
+                state = new StateT();
+            return state;
+        }
+
+        public virtual async Task Write(ITurnContext context, StateT state)
         {
             StoreItems changes = new StoreItems();
 
-            var state = context.Services.Get<StateT>(this._propertyName);
             if (state == null)
                 state = new StateT();
             var key = _keyDelegate(context);
@@ -73,7 +88,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions
             {
                 foreach (var item in changes)
                 {
-                    if(item.Value is IStoreItem valueStoreItem)
+                    if (item.Value is IStoreItem valueStoreItem)
                     {
                         valueStoreItem.eTag = "*";
                     }

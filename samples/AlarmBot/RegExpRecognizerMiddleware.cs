@@ -4,9 +4,10 @@
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using Microsoft.Bot.Schema;
+using Microsoft.Bot.Builder;
+using Microsoft.Bot.Builder.Core.Extensions;
 
-namespace Microsoft.Bot.Builder.Core.Extensions
+namespace AlarmBot
 {
     public class RegExpRecognizerSettings
     {

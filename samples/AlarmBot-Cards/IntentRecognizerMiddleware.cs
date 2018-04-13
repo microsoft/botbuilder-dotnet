@@ -4,8 +4,9 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder;
 
-namespace Microsoft.Bot.Builder.Core.Extensions
+namespace AlarmBot
 {
     public interface IRecognizedIntents
     {
