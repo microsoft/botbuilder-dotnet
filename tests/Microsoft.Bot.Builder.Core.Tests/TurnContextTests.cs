@@ -157,6 +157,25 @@ namespace Microsoft.Bot.Builder.Core.Tests
         }
 
         [TestMethod]
+        public async Task TraceActivitiesDoNoSetResponded()
+        {
+            SimpleAdapter a = new SimpleAdapter();
+            TurnContext c = new TurnContext(a, new Activity());
+            Assert.IsFalse(c.Responded);
+
+            // Send a Trace Activity, and make sure responded is NOT set. 
+            ITraceActivity trace  = Activity.CreateTraceActivity("trace");            
+            await c.SendActivity(trace);
+            Assert.IsFalse(c.Responded);
+
+            // Just to sanity check everything, send a Message and verify the 
+            // responded flag IS set. 
+            IMessageActivity msg = TestMessage.Message().AsMessageActivity();
+            await c.SendActivity(msg);
+            Assert.IsTrue(c.Responded);
+        }
+
+        [TestMethod]
         public async Task SendOneActivityToAdapter()
         {
             bool foundActivity = false;
