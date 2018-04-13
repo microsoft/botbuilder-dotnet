@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Core.Extensions.Tests;
+using Microsoft.Bot.Schema;
 using Microsoft.Cognitive.LUIS;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -49,10 +50,12 @@ namespace Microsoft.Bot.Builder.Ai.LUIS.Tests
                 })
                 .Test(utterance, activity =>
                 {
-                    var eventActivity = activity.AsEventActivity();
-                    Assert.AreEqual(LuisRecognizerMiddleware.LuisTraceEventName, eventActivity.Name);
+                    var traceActivity = activity as ITraceActivity;
+                    Assert.IsNotNull(traceActivity);
+                    Assert.AreEqual(LuisRecognizerMiddleware.LuisTraceType, traceActivity.ValueType);
+                    Assert.AreEqual(LuisRecognizerMiddleware.LuisTraceLabel, traceActivity.Label);
 
-                    var luisTraceInfo = eventActivity.Value as LuisTraceInfo;
+                    var luisTraceInfo = traceActivity.Value as LuisTraceInfo;
                     Assert.IsNotNull(luisTraceInfo);
                     Assert.IsNotNull(luisTraceInfo.RecognizerResult);
                     Assert.IsNotNull(luisTraceInfo.LuisModel);
