@@ -31,7 +31,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// Returns the cached instance of the active dialog on the top of the stack or `undefined` if the stack is empty.
+        /// Returns the cached instance of the active dialog on the top of the stack or `null` if the stack is empty.
         /// </summary>
         public DialogInstance Instance
         {
