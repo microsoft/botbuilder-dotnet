@@ -12,17 +12,17 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// <typeparam name="C">TurnContext</typeparam>
     public class DialogSet
     {
-        private IDictionary<string, Dialog> _dialogs;
+        private IDictionary<string, IDialog> _dialogs;
 
         public DialogSet()
         {
-            _dialogs = new Dictionary<string, Dialog>();
+            _dialogs = new Dictionary<string, IDialog>();
         }
 
         /// <summary>
         /// Adds a new dialog to the set and returns the added dialog.
         /// </summary>
-        public Dialog Add(string dialogId, Dialog dialog)
+        public IDialog Add(string dialogId, IDialog dialog)
         {
             if (string.IsNullOrEmpty(dialogId))
                 throw new ArgumentNullException(nameof(dialogId));
@@ -72,12 +72,12 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </summary>
         /// <param name="dialogId">ID of the dialog/prompt to lookup.</param>
         /// <returns>dialog if found otherwise null</returns>
-        public Dialog Find(string dialogId)
+        public IDialog Find(string dialogId)
         {
             if (string.IsNullOrEmpty(dialogId))
                 throw new ArgumentNullException(nameof(dialogId));
 
-            Dialog result;
+            IDialog result;
             if (_dialogs.TryGetValue(dialogId, out result))
             {
                 return result;

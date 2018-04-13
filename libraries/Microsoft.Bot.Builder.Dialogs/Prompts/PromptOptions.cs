@@ -5,10 +5,24 @@ using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
-    public class PromptOptions
+    public class PromptOptions : IDialogOptions
     {
         public PromptOptions()
         {
+        }
+
+        public object ApplyDefaults(object defaults)
+        {
+            var defaultPromptOptions = (PromptOptions)defaults;
+            return new PromptOptions
+            {
+                PromptString = PromptString ?? defaultPromptOptions.PromptString,
+                PromptActivity = PromptActivity ?? defaultPromptOptions.PromptActivity,
+                Speak = Speak ?? defaultPromptOptions.Speak,
+                RetryPromptString = RetryPromptString ?? defaultPromptOptions.RetryPromptString,
+                RetryPromptActivity = RetryPromptActivity ?? defaultPromptOptions.RetryPromptActivity,
+                RetrySpeak = RetrySpeak ?? defaultPromptOptions.RetrySpeak
+            };
         }
 
         /// <summary>

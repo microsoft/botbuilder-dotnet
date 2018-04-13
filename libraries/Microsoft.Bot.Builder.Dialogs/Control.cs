@@ -9,20 +9,19 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// <summary>
     /// Base class for controls
     /// </summary>
-    public abstract class Control : Dialog
+    public abstract class Control
     {
-        private DialogOptions _defaultOptions;
+        private IDialogOptions _defaultOptions;
 
         /// <summary>
         /// Creates a new Control instance.
         /// </summary>
-        /// <param name="defaultOptions">(Optional) set of default options that should be passed to controls root dialog. These will be merged with arguments passed in by the caller.</param>
-        public Control(DialogOptions defaultOptions = null)
+        public Control(IDialogOptions defaultOptions = null)
         {
             _defaultOptions = defaultOptions;
         }
 
-        public async Task<DialogResult> Begin(TurnContext context, object state, DialogOptions options)
+        public async Task<DialogResult> Begin(TurnContext context, object state, IDialogOptions options)
         {
             BotAssert.ContextNotNull(context);
             if (state == null)
@@ -32,11 +31,11 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             // Create empty dialog set and ourselves to it
             var dialogs = new DialogSet();
-            dialogs.Add("control", this);
+            dialogs.Add("control", (IDialog)this);
 
             // Start the control
             var cdc = dialogs.CreateContext(context, state);
-            await cdc.Begin("control", options);
+            await cdc.Begin("control", options.ApplyDefaults(_defaultOptions));
             return cdc.DialogResult;
         }
         public async Task<DialogResult> Continue(TurnContext context, object state)
@@ -47,7 +46,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             // Create empty dialog set and ourselves to it
             var dialogs = new DialogSet();
-            dialogs.Add("control", this);
+            dialogs.Add("control", (IDialog)this);
 
             // Start the control
             var cdc = dialogs.CreateContext(context, state);
