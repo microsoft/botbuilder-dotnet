@@ -25,8 +25,6 @@ namespace AlarmBot
             // Trace top intent
             // await turnContext.SendActivity(context.Activity.CreateTrace("conversationState", value: context.ConversationState));
 
-            var handled = false;
-
             var conversationUpdateActivity = context.Activity.AsConversationUpdateActivity();
 
             if (conversationUpdateActivity != null)

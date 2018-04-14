@@ -62,12 +62,12 @@ namespace AlarmBot.Topics
         public Task<bool> StartTopic(AlarmBotContext context)
         {
             var times = context.RecognizedIntents.TopIntent?.Entities.Where(entity => entity.GroupName == "AlarmTime")
-                    .Select(entity => DateTimeOffset.Parse((string)entity.Value));
+                    .Select(entity => DateTimeOffset.Parse(entity.ValueAs<string>()));
             this.Alarm = new Alarm()
             {
                 // initialize from intent entities
                 Title = context.RecognizedIntents.TopIntent?.Entities.Where(entity => entity.GroupName == "AlarmTitle")
-                    .Select(entity => (string)entity.Value).FirstOrDefault(),
+                    .Select(entity => entity.ValueAs<string>()).FirstOrDefault(),
 
                 // initialize from intent entities
                 Time = times.Any() ? times.First() : (DateTimeOffset?)null

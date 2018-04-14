@@ -100,7 +100,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation
                                 sourceLanguage = await _translator.Detect(message.Text); //awaiting user language detection using Microsoft Translator API.
                             else
                             {
-                                sourceLanguage = _getUserLanguage(context);
+                                sourceLanguage = await _getUserLanguage(context);
                             }
                             //check if the developer has added pattern list for the input source language
                             if (_patterns.ContainsKey(sourceLanguage) && _patterns[sourceLanguage].Count > 0)

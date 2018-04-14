@@ -55,7 +55,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation
                         bool localeChanged = await _setUserLocale(context);
                         if (!localeChanged)
                         {
-                            string fromLocale = _getUserLocale(context);
+                            string fromLocale = await _getUserLocale(context);
                             ConvertLocaleMessage(context, fromLocale);
                         }
 
