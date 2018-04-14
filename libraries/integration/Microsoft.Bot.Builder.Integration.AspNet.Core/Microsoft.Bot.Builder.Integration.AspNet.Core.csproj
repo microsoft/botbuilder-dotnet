@@ -5,7 +5,7 @@
 		<Version Condition=" '$(BUILD_BUILDNUMBER)' != '' ">$(BUILD_BUILDNUMBER)</Version>
 		<PackageVersion Condition=" '$(PackageVersion)' == '' ">4.0.0-local</PackageVersion>
 		<PackageVersion Condition=" '$(PackageVersion)' != '' ">$(PackageVersion)</PackageVersion>
-		<Configurations>Debug;Release;Documentation</Configurations>
+		<Configurations>Debug;Release;Documentation;Debug - NuGet Packages;</Configurations>
 	</PropertyGroup>
 
   <PropertyGroup>
@@ -19,10 +19,10 @@
 		<SignAssembly>true</SignAssembly>
 		<DelaySign>true</DelaySign>
 		<AssemblyOriginatorKeyFile>..\..\..\build\35MSSharedLib1024.snk</AssemblyOriginatorKeyFile>
-	</PropertyGroup>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
 
 	<PropertyGroup>
-		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<Company>Microsoft</Company>
 		<Authors>microsoft,BotFramework,nugetbotbuilder</Authors>
 		<Product>Microsoft Bot Builder SDK</Product>
@@ -38,6 +38,10 @@
 		<NeutralLanguage />
 		<AssemblyName>Microsoft.Bot.Builder.Integration.AspNet.Core</AssemblyName>
 	</PropertyGroup>
+
+  <PropertyGroup Condition="$(Configuration) == 'Debug - NuGet Packages'">
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Documentation|AnyCPU'">
 	  <DocumentationFile>bin\Documentation\netstandard2.0\Microsoft.Bot.Builder.Integration.AspNet.Core.xml</DocumentationFile>
