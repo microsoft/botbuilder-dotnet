@@ -6,15 +6,11 @@ using Newtonsoft.Json;
 
 namespace AlarmBot
 {
-    public class Entity : FlexObject
+    public class Entity
     {
         public string GroupName { get; set; }
         public double Score { get; set; }
 
-        public T ValueAs<T>()
-        {
-            string json = JsonConvert.SerializeObject(this["Value"]);
-            return JsonConvert.DeserializeObject<T>(json);
-        }
+        public object Value { get; set; }
     }    
 }

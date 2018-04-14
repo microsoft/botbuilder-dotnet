@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         public DialogSet Dialogs { get; set; }
         public ITurnContext Context { get; set; }
-        public Stack<DialogInstance> Stack { get; set; }
+        public List<DialogInstance> Stack { get; set; }
 
         /// <summary>
         /// Creates a new DialogContext instance.
@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="dialogs">Parent dialog set.</param>
         /// <param name="context">Context for the current turn of conversation with the user.</param>
         /// <param name="stack">Current dialog stack.</param>
-        internal DialogContext(DialogSet dialogs, ITurnContext context, Stack<DialogInstance> stack)
+        internal DialogContext(DialogSet dialogs, ITurnContext context, List<DialogInstance> stack)
         {
             Dialogs = dialogs;
             Context = context;
@@ -39,7 +39,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             {
                 if (Stack.Any())
                 {
-                    return Stack.Peek();
+                    return Stack.First();
                 }
                 return null;
             }
@@ -82,7 +82,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 State = new object()
             };
 
-            Stack.Push(instance);
+            Stack.Insert(0, instance);
 
             // Call dialogs begin() method.
             await dialog.DialogBegin(this, dialogArgs);
@@ -169,7 +169,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             // Pop active dialog off the stack
             if (Stack.Any())
             {
-                Stack.Pop();
+                Stack.RemoveAt(0);
             }
 
             // Resume previous dialog
@@ -221,7 +221,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             // Pop stack
             if (Stack.Any())
             {
-                Stack.Pop();
+                Stack.RemoveAt(0);
             }
 
             // Start replacement dialog

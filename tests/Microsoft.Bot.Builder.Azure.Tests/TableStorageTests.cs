@@ -117,12 +117,5 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             if (HasStorage())
                 await base._handleCrazyKeys(storage);
         }
-
-        [TestMethod]
-        public async Task TableStorage_TypedSerialization()
-        {
-            if (HasStorage())
-                await base._typedSerialization(this.storage);
-        }
     }
 }
