@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
     [TestClass]
     [TestCategory("Storage")]
     [TestCategory("Storage - Azure Blob")]
-    public class BlobtorageTests : StorageBaseTests
+    public class BlobStorageTests : StorageBaseTests
     {
         private IStorage storage;
 
@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 
         private static string emulatorPath = Environment.ExpandEnvironmentVariables(@"%ProgramFiles(x86)%\Microsoft SDKs\Azure\Storage Emulator\azurestorageemulator.exe");
         private const string noEmulatorMessage = "This test requires Azure Storage Emulator! go to https://go.microsoft.com/fwlink/?LinkId=717179 to download and install.";
-        private const string DataConnectionString = "UseDevelopmentStorage=true";
+        private string connectionString = null;
         private static Lazy<bool> hasStorageEmulator = new Lazy<bool>(() =>
         {
             if (File.Exists(emulatorPath))
@@ -51,13 +51,17 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 
         private string _containerName;
 
+        private const string emulatorConnectionString = "UseDevelopmentStorage=true";
+
         [TestInitialize]
         public void TestInit()
         {
-            if (hasStorageEmulator.Value)
+            connectionString = Environment.GetEnvironmentVariable("STORAGECONNECTIONSTRING") ?? emulatorConnectionString;
+
+            if (connectionString != emulatorConnectionString || hasStorageEmulator.Value)
             {
                 _containerName = TestContext.TestName.ToLowerInvariant().Replace("_", "") + TestContext.GetHashCode().ToString("x");
-                storage = new AzureBlobStorage(DataConnectionString, _containerName);
+                storage = new AzureBlobStorage(connectionString, _containerName);
             }
         }
 
@@ -66,27 +70,23 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             if (storage != null)
             {
-                var storageAccount = CloudStorageAccount.Parse(DataConnectionString);
+                var storageAccount = CloudStorageAccount.Parse(connectionString);
                 var blobClient = storageAccount.CreateCloudBlobClient();
                 var container = blobClient.GetContainerReference(_containerName);
                 await container.DeleteIfExistsAsync();
             }
         }
 
-        public bool CheckStorageEmulator()
+        public bool HasStorage()
         {
-            if (!hasStorageEmulator.Value)
-                Debug.WriteLine(noEmulatorMessage);
-            if (Debugger.IsAttached)
-                Assert.IsTrue(hasStorageEmulator.Value, noEmulatorMessage);
-            return hasStorageEmulator.Value;
+            return storage != null;
         }
 
         // NOTE: THESE TESTS REQUIRE THAT THE AZURE STORAGE EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
         [TestMethod]
         public async Task BlobStorage_CreateObjectTest()
         {
-            if (CheckStorageEmulator())
+            if (HasStorage())
                 await base._createObjectTest(storage);
         }
 
@@ -94,7 +94,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestMethod]
         public async Task BlobStorage_ReadUnknownTest()
         {
-            if (CheckStorageEmulator())
+            if (HasStorage())
                 await base._readUnknownTest(storage);
         }
 
@@ -102,7 +102,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestMethod]
         public async Task BlobStorage_UpdateObjectTest()
         {
-            if (CheckStorageEmulator())
+            if (HasStorage())
                 await base._updateObjectTest(storage);
         }
 
@@ -110,7 +110,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestMethod]
         public async Task BlobStorage_DeleteObjectTest()
         {
-            if (CheckStorageEmulator())
+            if (HasStorage())
                 await base._deleteObjectTest(storage);
         }
 
@@ -118,14 +118,14 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestMethod]
         public async Task BlobStorage_HandleCrazyKeys()
         {
-            if (CheckStorageEmulator())
+            if (HasStorage())
                 await base._handleCrazyKeys(storage);
         }
 
         [TestMethod]
         public async Task BlobStorage_TypedSerialization()
         {
-            if (CheckStorageEmulator())
+            if (HasStorage())
                 await base._typedSerialization(this.storage);
         }
     }
