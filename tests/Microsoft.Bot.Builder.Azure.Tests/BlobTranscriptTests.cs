@@ -40,75 +40,79 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             return false;
         });
 
-        public bool CheckStorageEmulator()
+        public bool HasStorage()
         {
-            if (!hasStorageEmulator.Value)
-                System.Diagnostics.Debug.WriteLine(noEmulatorMessage);
-            if (System.Diagnostics.Debugger.IsAttached)
-                Assert.IsTrue(hasStorageEmulator.Value, noEmulatorMessage);
-            return hasStorageEmulator.Value;
+            return this.store != null;
         }
+
+        public static CloudStorageAccount cloudStorageAccount;
 
         [ClassInitialize]
         public static void Initialize(TestContext context)
         {
-            var containerName = "BlobTranscriptTests".ToLower();
-            var blobClient = CloudStorageAccount.DevelopmentStorageAccount.CreateCloudBlobClient();
-            var container = blobClient.GetContainerReference(containerName);
-            container.DeleteAsync();
+            cloudStorageAccount = (hasStorageEmulator.Value) ? CloudStorageAccount.DevelopmentStorageAccount : null;
+            var connectionString = Environment.GetEnvironmentVariable("STORAGECONNECTIONSTRING");
+            if (!String.IsNullOrEmpty(connectionString))
+                cloudStorageAccount = CloudStorageAccount.Parse(connectionString);
+
+            if (cloudStorageAccount != null)
+            {
+                cloudStorageAccount.CreateCloudBlobClient().GetContainerReference(nameof(BlobTranscriptTests).ToLower()).DeleteIfExistsAsync().Wait();
+            }
         }
 
         public BlobTranscriptTests() : base()
         {
-            this.store = new AzureBlobTranscriptStore(CloudStorageAccount.DevelopmentStorageAccount, "BlobTranscriptTests");
+            if (cloudStorageAccount != null)
+                this.store = new AzureBlobTranscriptStore(cloudStorageAccount, nameof(BlobTranscriptTests));
         }
 
         [TestMethod]
         public async Task BlobTranscript_BadArgs()
         {
-            if (CheckStorageEmulator())
+            if (HasStorage())
                 await base._BadArgs();
         }
 
         [TestMethod]
         public async Task BlobTranscript_LogActivity()
         {
-            if (CheckStorageEmulator())
+            if (HasStorage())
                 await base._LogActivity();
         }
 
         [TestMethod]
         public async Task BlobTranscript_LogMultipleActivities()
         {
-            if (CheckStorageEmulator())
+            if (HasStorage())
                 await base._LogMultipleActivities();
         }
 
         [TestMethod]
         public async Task BlobTranscript_GetConversationActivities()
         {
-            if (CheckStorageEmulator())
+            if (HasStorage())
                 await base._GetTranscriptActivities();
         }
 
         [TestMethod]
         public async Task BlobTranscript_GetConversationActivitiesStartDate()
         {
-            if (CheckStorageEmulator())
+            if (HasStorage())
                 await base._GetTranscriptActivitiesStartDate();
         }
 
         [TestMethod]
         public async Task BlobTranscript_ListConversations()
         {
-            if (CheckStorageEmulator())
+            if (HasStorage())
                 await base._ListTranscripts();
         }
 
         [TestMethod]
         public async Task BlobTranscript_DeleteConversation()
         {
-            if (CheckStorageEmulator())
+            if (HasStorage())
                 await base._DeleteTranscript();
         }
 
