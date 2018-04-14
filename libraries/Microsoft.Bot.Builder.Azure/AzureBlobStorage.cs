@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -109,11 +110,11 @@ namespace Microsoft.Bot.Builder.Azure
         /// </summary>
         /// <param name="keys">An array of entity keys</param>
         /// <returns></returns>
-        public async Task<StoreItems> Read(string[] keys)
+        public async Task<IEnumerable<KeyValuePair<string, object>>> Read(params string[] keys)
         {
             if (keys == null) throw new ArgumentNullException(nameof(keys));
 
-            var storeItems = new StoreItems();
+            var storeItems = new Dictionary<string, object>();
             var blobContainer = await this.Container.Value;
             await Task.WhenAll(
                 keys.Select(async (key) =>
@@ -154,20 +155,20 @@ namespace Microsoft.Bot.Builder.Azure
         /// </summary>
         /// <param name="changes"></param>
         /// <returns></returns>
-        public async Task Write(StoreItems changes)
+        public async Task Write(IEnumerable<KeyValuePair<string, object>> changes)
         {
             if (changes == null) throw new ArgumentNullException(nameof(changes));
 
             var blobContainer = await this.Container.Value;
             await Task.WhenAll(
-                changes.GetDynamicMemberNames().Select(async (key) =>
+                changes.Select(async (keyValuePair) =>
                 {
-                    var newValue = changes.Get<object>(key);
+                    var newValue = keyValuePair.Value;
                     var storeItem = newValue as IStoreItem;
                     // "*" eTag in IStoreItem converts to null condition for AccessCondition
                     var calculatedETag = storeItem?.eTag == "*" ? null : storeItem?.eTag;
 
-                    var blobName = GetBlobName(key);
+                    var blobName = GetBlobName(keyValuePair.Key);
                     var blobReference = blobContainer.GetBlockBlobReference(blobName);
                     using (var blobStream = await blobReference.OpenWriteAsync(
                         AccessCondition.GenerateIfMatchCondition(calculatedETag),

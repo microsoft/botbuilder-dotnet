@@ -3,6 +3,7 @@
 
 using Newtonsoft.Json;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace Microsoft.Bot.Builder.Core.Extensions
 {
@@ -13,13 +14,13 @@ namespace Microsoft.Bot.Builder.Core.Extensions
         /// </summary>
         /// <param name="keys">keys of the storeItems to read</param>
         /// <returns>StoreItem dictionary</returns>
-        Task<StoreItems> Read(params string[] keys);
+        Task<IEnumerable<KeyValuePair<string, object>>> Read(params string[] keys);
 
         /// <summary>
         /// Write StoreItems to storage
         /// </summary>
         /// <param name="changes"></param>
-        Task Write(StoreItems changes);
+        Task Write(IEnumerable<KeyValuePair<string, object>> changes);
 
         /// <summary>
         /// Delete StoreItems from storage
@@ -36,44 +37,6 @@ namespace Microsoft.Bot.Builder.Core.Extensions
         string eTag { get; set; }
     }
 
-    public class StoreItem : FlexObject, IStoreItem
-    {
-        private static JsonSerializerSettings serializationSettings = new JsonSerializerSettings()
-        {
-            // we use all so that we get typed roundtrip out of storage, but we don't use validation because we don't know what types are valid
-            TypeNameHandling = TypeNameHandling.All
-        };
-
-        /// <summary>
-        /// eTag for concurrency
-        /// </summary>
-        public string eTag { get; set; }
-
-        public T ToObject<T>() where T : class
-        {
-            return JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(this, serializationSettings), serializationSettings);
-        }
-    }
-
-    public class StoreItems : FlexObject
-    {
-        public T Get<T>(string name) where T : class
-        {
-            this.TryGetValue(name, out object value);
-
-            return value as T;
-        }
-    }
-
-    public class StoreItems<StoreItemT> : StoreItems where StoreItemT : class
-    {
-    }
-
-    public interface IStorageSettings
-    {
-        bool OptimizeWrites { get; set; }
-    }
-
 
     public static class StorageExtensions
     {
@@ -85,13 +48,22 @@ namespace Microsoft.Bot.Builder.Core.Extensions
         /// <param name="storage"></param>
         /// <param name="keys"></param>
         /// <returns></returns>
-        public static async Task<StoreItems<StoreItemT>> Read<StoreItemT>(this IStorage storage, params string[] keys) where StoreItemT : class
+        public static async Task<IEnumerable<KeyValuePair<string, StoreItemT>>> Read<StoreItemT>(this IStorage storage, params string[] keys) where StoreItemT : class
         {
             var storeItems = await storage.Read(keys).ConfigureAwait(false);
-            var newResults = new StoreItems<StoreItemT>();
-            foreach (var kv in storeItems)
-                newResults[kv.Key] = kv.Value as StoreItemT;
-            return newResults;
+
+            return ReturnStoreItemsOfDesiredType();
+
+            IEnumerable<KeyValuePair<string, StoreItemT>> ReturnStoreItemsOfDesiredType()
+            {
+                foreach (var entry in storeItems)
+                {
+                    if (entry.Value is StoreItemT valueAsType)
+                    {
+                        yield return new KeyValuePair<string, StoreItemT>(entry.Key, valueAsType);
+                    }
+                }
+            }
         }
     }
 }

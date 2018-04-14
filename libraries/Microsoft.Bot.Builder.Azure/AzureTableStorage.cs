@@ -50,9 +50,9 @@ namespace Microsoft.Bot.Builder.Azure
             }
         }
 
-        public async Task<StoreItems> Read(string[] keys)
+        public async Task<IEnumerable<KeyValuePair<string, object>>> Read(string[] keys)
         {
-            var storeItems = new StoreItems();
+            var storeItems = new List<KeyValuePair<string, object>>(keys.Length);
             foreach (string key in keys)
             {
                 var entityKey = GetEntityKey(key);
@@ -60,17 +60,19 @@ namespace Microsoft.Bot.Builder.Azure
                 if ((HttpStatusCode)result.HttpStatusCode == HttpStatusCode.OK)
                 {
                     var value = ((StoreItemEntity)result.Result).AsObject();
-                    IStoreItem valueStoreItem = value as IStoreItem;
+                    var valueStoreItem = value as IStoreItem;
                     if (valueStoreItem != null)
+                    {
                         valueStoreItem.eTag = result.Etag;
-                    storeItems[key] = value;
+                    }
+                    storeItems.Add(new KeyValuePair<string, object>(key, value));
                 }
             }
             return storeItems;
         }
 
 
-        public async Task Write(StoreItems changes)
+        public async Task Write(IEnumerable<KeyValuePair<string, object>> changes)
         {
             foreach (var change in changes)
             {

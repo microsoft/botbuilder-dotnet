@@ -51,11 +51,5 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
         {
             await base._handleCrazyKeys(storage);
         }
-
-        [TestMethod]
-        public async Task MemoryStorage_TypedSerialization()
-        {
-            await base._typedSerialization(this.storage);
-        }
     }
 }

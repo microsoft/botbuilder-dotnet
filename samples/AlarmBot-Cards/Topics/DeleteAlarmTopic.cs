@@ -34,7 +34,7 @@ namespace AlarmBot.Topics
         {
             var recognizedIntents = context.Services.Get<IRecognizedIntents>();
             this.AlarmTitle = recognizedIntents.TopIntent?.Entities.Where(entity => entity.GroupName == "AlarmTitle")
-                                .Select(entity => entity.ValueAs<string>()).FirstOrDefault();
+                                .Select(entity => entity.Value as string).FirstOrDefault();
 
             return FindAlarm(context);
         }

@@ -420,7 +420,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .Send("hello")
             .AssertReply("step1")
             .AssertReply("Enter a number.")
-            .Send("hello")
+            .Send("hello again")
             .AssertReply("It must be a number")
             .Send("42")
             .AssertReply("Thanks for '42'")

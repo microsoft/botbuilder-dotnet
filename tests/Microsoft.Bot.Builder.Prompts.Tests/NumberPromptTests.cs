@@ -10,9 +10,10 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Bot.Builder.Prompts.Tests
 {
-    public class TestState : StoreItem
+    public class TestState : IStoreItem
     {
         public bool InPrompt { get; set; } = false;
+        public string eTag { get; set; }
     }
 
     [TestClass]
