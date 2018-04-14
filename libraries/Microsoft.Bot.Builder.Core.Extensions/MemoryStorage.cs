@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions
     /// </summary>
     public class DictionaryStorage : IStorage
     {
-        private static readonly JsonSerializer StateJsonSerializer = new JsonSerializer() { TypeNameHandling = TypeNameHandling.Objects };
+        private static readonly JsonSerializer StateJsonSerializer = new JsonSerializer() { TypeNameHandling = TypeNameHandling.All };
 
         private readonly Dictionary<string, JObject> _memory;
         private readonly object _syncroot = new object();

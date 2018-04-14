@@ -61,10 +61,10 @@ namespace Microsoft.Bot.Builder.Dialogs
             object value;
             if (!d.TryGetValue("dialogStack", out value))
             {
-                value = new Stack<DialogInstance>();
+                value = new List<DialogInstance>();
                 d["dialogStack"] = value;
             }
-            return new DialogContext(this, context, (Stack<DialogInstance>)value);
+            return new DialogContext(this, context, (List<DialogInstance>)value);
         }
 
         /// <summary>
