@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Core.Extensions;
 using Microsoft.Bot.Builder.Core.Extensions.Tests;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.WindowsAzure.Storage;
 
 namespace Microsoft.Bot.Builder.Azure.Tests
 {
@@ -51,9 +52,14 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestInitialize]
         public void TestInit()
         {
-            if (hasStorageEmulator.Value)
+            var cloudStorageAccount = (hasStorageEmulator.Value) ? CloudStorageAccount.DevelopmentStorageAccount : null;
+            var connectionString = Environment.GetEnvironmentVariable("STORAGECONNECTIONSTRING") ;
+            if (!String.IsNullOrEmpty(connectionString))
+                cloudStorageAccount = CloudStorageAccount.Parse(connectionString);
+
+            if (cloudStorageAccount != null)
             {
-                storage = new AzureTableStorage("UseDevelopmentStorage=true", TestContext.TestName.Replace("_","") + TestContext.GetHashCode().ToString("x"));
+                storage = new AzureTableStorage(cloudStorageAccount, TestContext.TestName.Replace("_","") + TestContext.GetHashCode().ToString("x"));
             }
         }
 
@@ -67,20 +73,16 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             }
         }
 
-        public bool CheckStorageEmulator()
+        public bool HasStorage()
         {
-            if (!hasStorageEmulator.Value)
-                Debug.WriteLine(noEmulatorMessage);
-            if (Debugger.IsAttached)
-                Assert.IsTrue(hasStorageEmulator.Value, noEmulatorMessage);
-            return hasStorageEmulator.Value;
+            return storage != null;
         }
 
         // NOTE: THESE TESTS REQUIRE THAT THE AZURE STORAGE EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
         [TestMethod]
         public async Task TableStorage_CreateObjectTest()
         {
-            if (CheckStorageEmulator())
+            if (HasStorage())
                 await base._createObjectTest(storage);
         }
 
@@ -88,7 +90,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestMethod]
         public async Task TableStorage_ReadUnknownTest()
         {
-            if (CheckStorageEmulator())
+            if (HasStorage())
                 await base._readUnknownTest(storage);
         }
 
@@ -96,7 +98,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestMethod]
         public async Task TableStorage_UpdateObjectTest()
         {
-            if (CheckStorageEmulator())
+            if (HasStorage())
                 await base._updateObjectTest(storage);
         }
 
@@ -104,7 +106,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestMethod]
         public async Task TableStorage_DeleteObjectTest()
         {
-            if (CheckStorageEmulator())
+            if (HasStorage())
                 await base._deleteObjectTest(storage);
         }
 
@@ -112,14 +114,14 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestMethod]
         public async Task TableStorage_HandleCrazyKeys()
         {
-            if (CheckStorageEmulator())
+            if (HasStorage())
                 await base._handleCrazyKeys(storage);
         }
 
         [TestMethod]
         public async Task TableStorage_TypedSerialization()
         {
-            if (CheckStorageEmulator())
+            if (HasStorage())
                 await base._typedSerialization(this.storage);
         }
     }
