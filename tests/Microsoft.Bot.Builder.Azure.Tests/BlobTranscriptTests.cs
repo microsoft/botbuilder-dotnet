@@ -40,7 +40,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             return false;
         });
 
-        public bool CheckStorageEmulator()
+        public static bool CheckStorageEmulator()
         {
             if (!hasStorageEmulator.Value)
                 System.Diagnostics.Debug.WriteLine(noEmulatorMessage);
@@ -52,10 +52,13 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [ClassInitialize]
         public static void Initialize(TestContext context)
         {
-            var containerName = "BlobTranscriptTests".ToLower();
-            var blobClient = CloudStorageAccount.DevelopmentStorageAccount.CreateCloudBlobClient();
-            var container = blobClient.GetContainerReference(containerName);
-            container.DeleteAsync();
+            if (CheckStorageEmulator())
+            {
+                var containerName = "BlobTranscriptTests".ToLower();
+                var blobClient = CloudStorageAccount.DevelopmentStorageAccount.CreateCloudBlobClient();
+                var container = blobClient.GetContainerReference(containerName);
+                container.DeleteIfExistsAsync().Wait();
+            }
         }
 
         public BlobTranscriptTests() : base()
