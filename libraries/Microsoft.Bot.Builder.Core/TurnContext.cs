@@ -229,9 +229,16 @@ namespace Microsoft.Bot.Builder
 
             async Task<ResourceResponse[]> ActuallySendStuff()
             {
-                bool anythingToSend = false;
-                if (activities.Count() > 0)
-                    anythingToSend = true;
+                // Are the any non-trace activities to send? 
+                // The thinking here is that a Trace event isn't user relevant data
+                // so the "Responded" flag should not be set by Trace messages being 
+                // sent out. 
+                bool sentNonTraceActivities = false;
+                if (activities.Any( (a) => a.Type != ActivityTypes.Trace) )
+                {
+                    sentNonTraceActivities = true;
+                }
+
 
                 // Send from the list, which may have been manipulated via the event handlers. 
                 // Note that 'responses' was captured from the root of the call, and will be
@@ -249,9 +256,12 @@ namespace Microsoft.Bot.Builder
                     }
                 }
 
-                // If we actually sent something, set the flag. 
-                if (anythingToSend)
+                // If we actually sent something (that's not Trace), set the flag. 
+                if (sentNonTraceActivities)
+                {
                     this.Responded = true;
+                }
+
                 return responses;
             }
 
