@@ -30,7 +30,7 @@ namespace Microsoft.Bot.Builder.Azure
     {
         private readonly static JsonSerializer JsonSerializer = JsonSerializer.Create(new JsonSerializerSettings
         {
-            // we use all so that we get typed roundtrip out of storage, but we don't use validation because we don't know what types are valid
+            // we use All so that we get typed roundtrip out of storage, but we don't use validation because we don't know what types are valid
             TypeNameHandling = TypeNameHandling.All
         });
 
@@ -67,20 +67,6 @@ namespace Microsoft.Bot.Builder.Azure
         }
 
         /// <summary>
-        /// Get a blob name validated representation of an entity
-        /// </summary>
-        /// <param name="key">The key used to identify the entity</param>
-        /// <returns></returns>
-        private static string GetBlobName(string key)
-        {
-            if (string.IsNullOrEmpty(key)) throw new ArgumentNullException(nameof(key));
-
-            var blobName = HttpUtility.UrlEncode(key);
-            NameValidator.ValidateBlobName(blobName);
-            return blobName;
-        }
-
-        /// <summary>
         /// Deletes entity blobs from the configured container
         /// </summary>
         /// <param name="keys">An array of entity keys</param>
@@ -89,7 +75,7 @@ namespace Microsoft.Bot.Builder.Azure
         {
             if (keys == null) throw new ArgumentNullException(nameof(keys));
 
-            var blobContainer = await GetBlobContainer();
+            var blobContainer = await GetBlobContainer().ConfigureAwait(false);
             await Task.WhenAll(
                 keys.Select(key =>
                 {
@@ -108,39 +94,52 @@ namespace Microsoft.Bot.Builder.Azure
         {
             if (keys == null) throw new ArgumentNullException(nameof(keys));
 
-            var storeItems = new Dictionary<string, object>();
-            var blobContainer = await GetBlobContainer();
-            await Task.WhenAll(
-                keys.Select(async (key) =>
+            var blobContainer = await GetBlobContainer().ConfigureAwait(false);
+
+            var readTasks = new List<Task<KeyValuePair<string, object>>>();
+
+            foreach(var key in keys)
+            {
+                readTasks.Add(ReadIndividualKey(key));
+            }
+
+            await Task.WhenAll(readTasks);
+
+            // Project back the entries that were read, filtering out any entries that were not found
+            return readTasks.Select(readTask => readTask.Result).Where(kvp => kvp.Key != null);
+
+            async Task<KeyValuePair<string, object>> ReadIndividualKey(string key)
+            {
+                var blobName = GetBlobName(key);
+                var blobReference = blobContainer.GetBlobReference(blobName);
+
+                try
                 {
-                    var blobName = GetBlobName(key);
-                    var blobReference = blobContainer.GetBlobReference(blobName);
-
-                    try
+                    using (var blobStream = await blobReference.OpenReadAsync())
+                    using (var jsonReader = new JsonTextReader(new StreamReader(blobStream)))
                     {
-                        using (var blobStream = await blobReference.OpenReadAsync())
-                        using (var jsonReader = new JsonTextReader(new StreamReader(blobStream)))
+                        var obj = JsonSerializer.Deserialize(jsonReader);
+
+                        if (obj is IStoreItem storeItem)
                         {
-                            var obj = JsonSerializer.Deserialize(jsonReader);
-
-                            if (obj is IStoreItem storeItem)
-                            {
-                                storeItem.eTag = blobReference.Properties.ETag;
-                            }
-
-                            storeItems[key] = obj;
+                            storeItem.eTag = blobReference.Properties.ETag;
                         }
-                    }
-                    catch (StorageException ex)
-                        when ((HttpStatusCode)ex.RequestInformation.HttpStatusCode == HttpStatusCode.NotFound)
-                    { }
-                    catch (AggregateException ex)
-                        when (ex.InnerException is StorageException iex
-                        && (HttpStatusCode)iex.RequestInformation.HttpStatusCode == HttpStatusCode.NotFound)
-                    { }
-                }));
 
-            return storeItems;
+                        return new KeyValuePair<string, object>(key, obj);
+                    }
+                }
+                catch (StorageException ex)
+                    when ((HttpStatusCode)ex.RequestInformation.HttpStatusCode == HttpStatusCode.NotFound)
+                {
+                    return new KeyValuePair<string, object>();
+                }
+                catch (AggregateException ex)
+                    when (ex.InnerException is StorageException iex
+                    && (HttpStatusCode)iex.RequestInformation.HttpStatusCode == HttpStatusCode.NotFound)
+                {
+                    return new KeyValuePair<string, object>();
+                }
+            }
         }
 
         /// <summary>
@@ -152,7 +151,8 @@ namespace Microsoft.Bot.Builder.Azure
         {
             if (changes == null) throw new ArgumentNullException(nameof(changes));
 
-            var blobContainer = await GetBlobContainer();
+            var blobContainer = await GetBlobContainer().ConfigureAwait(false);
+
             await Task.WhenAll(
                 changes.Select(async (keyValuePair) =>
                 {
@@ -172,6 +172,15 @@ namespace Microsoft.Bot.Builder.Azure
                         JsonSerializer.Serialize(jsonWriter, newValue);
                     }
                 }));
+        }
+
+        private static string GetBlobName(string key)
+        {
+            if (string.IsNullOrEmpty(key)) throw new ArgumentNullException(nameof(key));
+
+            var blobName = HttpUtility.UrlEncode(key);
+            NameValidator.ValidateBlobName(blobName);
+            return blobName;
         }
 
         private ValueTask<CloudBlobContainer> GetBlobContainer()
