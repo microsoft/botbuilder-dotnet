@@ -93,6 +93,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation
                     // reorder alignments in case of target translated  message to get ordered output words.
                     Array.Sort(alignments, (x, y) => Int32.Parse(x.Split('-')[wrdIndxInAlignment].Split(':')[0]).CompareTo(Int32.Parse(y.Split('-')[wrdIndxInAlignment].Split(':')[0])));
                 }
+                string withoutSpaceSentence = sentence.Replace(" ", "");
                 foreach (string alignData in alignments)
                 {
                     wrds = outWrds.ToArray();
@@ -104,8 +105,8 @@ namespace Microsoft.Bot.Builder.Ai.Translation
                     if(newWrds.Length>1)
                         wrds.CopyTo(newWrds, 0);
                     newWrds[outWrds.Count] = wrd;
-                    string subSentence = Join(" ", newWrds.ToArray()); 
-                    if (sentence.Contains(subSentence)) 
+                    string subSentence = Join("", newWrds.ToArray()); 
+                    if (withoutSpaceSentence.Contains(subSentence)) 
                         outWrds.Add(wrd);  
                 }
                 wrds = outWrds.ToArray();
@@ -183,7 +184,8 @@ namespace Microsoft.Bot.Builder.Ai.Translation
 
             if (_patterns.Count == 0 && !containsNum)
                 return targetMessage;
-
+            if (string.IsNullOrWhiteSpace(alignment))
+                return targetMessage;
 
             var toBeReplaced = from result in _patterns
                                where Regex.IsMatch(sourceMessage, result, RegexOptions.Singleline | RegexOptions.IgnoreCase)
