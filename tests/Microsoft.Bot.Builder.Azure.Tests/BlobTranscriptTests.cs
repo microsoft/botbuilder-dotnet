@@ -48,16 +48,17 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         public static CloudStorageAccount cloudStorageAccount;
 
         [ClassInitialize]
-        public static void Initialize(TestContext context)
+        public static async Task Initialize(TestContext context)
         {
             cloudStorageAccount = (hasStorageEmulator.Value) ? CloudStorageAccount.DevelopmentStorageAccount : null;
             var connectionString = Environment.GetEnvironmentVariable("STORAGECONNECTIONSTRING");
             if (!String.IsNullOrEmpty(connectionString))
                 cloudStorageAccount = CloudStorageAccount.Parse(connectionString);
-
             if (cloudStorageAccount != null)
             {
-                cloudStorageAccount.CreateCloudBlobClient().GetContainerReference(nameof(BlobTranscriptTests).ToLower()).DeleteIfExistsAsync().Wait();
+                var container = cloudStorageAccount.CreateCloudBlobClient().GetContainerReference(nameof(BlobTranscriptTests).ToLower());
+                await container.DeleteIfExistsAsync();
+                await container.CreateIfNotExistsAsync();
             }
         }
 
