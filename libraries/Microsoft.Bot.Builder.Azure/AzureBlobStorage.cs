@@ -28,18 +28,19 @@ namespace Microsoft.Bot.Builder.Azure
     /// </remarks>
     public class AzureBlobStorage : IStorage
     {
-        private readonly static JsonSerializerSettings SerializationSettings = new JsonSerializerSettings()
+        private readonly static JsonSerializer JsonSerializer = JsonSerializer.Create(new JsonSerializerSettings
         {
             // we use all so that we get typed roundtrip out of storage, but we don't use validation because we don't know what types are valid
             TypeNameHandling = TypeNameHandling.All
-        };
+        });
 
-        private readonly static JsonSerializer JsonSerializer = JsonSerializer.Create(SerializationSettings);
+        private readonly CloudStorageAccount _storageAccount;
+        private readonly string _containerName;
+        private CloudBlobContainer _container;
 
         /// <summary>
         /// The Azure Storage Blob Container where entities will be stored
         /// </summary>
-        private Lazy<ValueTask<CloudBlobContainer>> Container { get; set; }
 
         /// <summary>
         /// Creates the AzureBlobStorage instance
@@ -58,18 +59,11 @@ namespace Microsoft.Bot.Builder.Azure
         /// <param name="containerName">Name of the Blob container where entities will be stored</param>
         public AzureBlobStorage(CloudStorageAccount storageAccount, string containerName)
         {
-            if (storageAccount == null) throw new ArgumentNullException(nameof(storageAccount));
-
+            _storageAccount = storageAccount ?? throw new ArgumentNullException(nameof(storageAccount));
+            _containerName = containerName ?? throw new ArgumentNullException(nameof(containerName));
+            
             // Checks if a container name is valid
             NameValidator.ValidateContainerName(containerName);
-
-            this.Container = new Lazy<ValueTask<CloudBlobContainer>>(async () =>
-            {
-                var blobClient = storageAccount.CreateCloudBlobClient();
-                var container = blobClient.GetContainerReference(containerName);
-                await container.CreateIfNotExistsAsync().ConfigureAwait(false);
-                return container;
-            }, isThreadSafe: true);
         }
 
         /// <summary>
@@ -95,7 +89,7 @@ namespace Microsoft.Bot.Builder.Azure
         {
             if (keys == null) throw new ArgumentNullException(nameof(keys));
 
-            var blobContainer = await this.Container.Value;
+            var blobContainer = await GetBlobContainer();
             await Task.WhenAll(
                 keys.Select(key =>
                 {
@@ -115,7 +109,7 @@ namespace Microsoft.Bot.Builder.Azure
             if (keys == null) throw new ArgumentNullException(nameof(keys));
 
             var storeItems = new Dictionary<string, object>();
-            var blobContainer = await this.Container.Value;
+            var blobContainer = await GetBlobContainer();
             await Task.WhenAll(
                 keys.Select(async (key) =>
                 {
@@ -125,8 +119,7 @@ namespace Microsoft.Bot.Builder.Azure
                     try
                     {
                         using (var blobStream = await blobReference.OpenReadAsync())
-                        using (var streamReader = new StreamReader(blobStream))
-                        using (var jsonReader = new JsonTextReader(streamReader))
+                        using (var jsonReader = new JsonTextReader(new StreamReader(blobStream)))
                         {
                             var obj = JsonSerializer.Deserialize(jsonReader);
 
@@ -159,7 +152,7 @@ namespace Microsoft.Bot.Builder.Azure
         {
             if (changes == null) throw new ArgumentNullException(nameof(changes));
 
-            var blobContainer = await this.Container.Value;
+            var blobContainer = await GetBlobContainer();
             await Task.WhenAll(
                 changes.Select(async (keyValuePair) =>
                 {
@@ -174,12 +167,31 @@ namespace Microsoft.Bot.Builder.Azure
                         AccessCondition.GenerateIfMatchCondition(calculatedETag),
                         new BlobRequestOptions(),
                         new OperationContext()))
-                    using (var streamWriter = new StreamWriter(blobStream))
-                    using (var jsonWriter = new JsonTextWriter(streamWriter))
+                    using (var jsonWriter = new JsonTextWriter(new StreamWriter(blobStream)))
                     {
                         JsonSerializer.Serialize(jsonWriter, newValue);
                     }
                 }));
+        }
+
+        private ValueTask<CloudBlobContainer> GetBlobContainer()
+        {
+            if(_container != null)
+            {
+                return new ValueTask<CloudBlobContainer>(_container);
+            }
+
+            return new ValueTask<CloudBlobContainer>(EnsureBlobContainerExists());
+
+            async Task<CloudBlobContainer> EnsureBlobContainerExists()
+            {
+                var blobClient = _storageAccount.CreateCloudBlobClient();
+                _container = blobClient.GetContainerReference(_containerName);
+
+                await _container.CreateIfNotExistsAsync().ConfigureAwait(false);
+
+                return _container;
+            }
         }
     }
 }
