@@ -36,6 +36,7 @@
     <RepositoryType />
     <PackageTags>bots;ai;botframework;botbuilder</PackageTags>
     <NeutralLanguage />
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
   
   <PropertyGroup Condition="$(Configuration) == 'Debug - NuGet Packages'">
