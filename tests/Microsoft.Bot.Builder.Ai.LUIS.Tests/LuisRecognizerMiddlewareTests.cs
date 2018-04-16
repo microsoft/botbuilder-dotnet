@@ -22,6 +22,12 @@ namespace Microsoft.Bot.Builder.Ai.LUIS.Tests
         [TestMethod]
         public void LuisRecognizer_MiddlewareConstruction()
         {
+            if (!EnvironmentVariablesDefined())
+            {
+                Debug.WriteLine("Missing Luis Environemnt variables - Skipping test");
+                return;
+            }
+
             var middleware = GetLuisRecognizerMiddleware();
             Assert.IsNotNull(middleware);
             Assert.ThrowsException<ArgumentNullException>(() => new LuisRecognizerMiddleware(null));
