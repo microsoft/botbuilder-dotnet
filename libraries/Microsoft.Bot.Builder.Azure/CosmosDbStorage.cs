@@ -105,20 +105,21 @@ namespace Microsoft.Bot.Builder.Azure
         }
 
         /// <summary>
-        /// Returns an instance of <see cref="StoreItems"/> bag with the values for the specified  keys.
+        /// Returns Key/Value pairs with the values for the specified keys.
         /// </summary>
         /// <param name="keys">List of keys to retrieve.</param>
-        /// <returns>A <see cref="StoreItems"/> instance.</returns>
-        public async Task<StoreItems> Read(params string[] keys)
+        /// <returns></returns>
+        public async Task<IEnumerable<KeyValuePair<string, object>>> Read(params string[] keys)
         {
             if (keys.Length == 0)
             {
                 throw new ArgumentException("Please provide at least one key to read from storage", nameof(keys));
             }
 
+            var storeItems = new List<KeyValuePair<string, object>>();
+
             // Ensure collection exists
             var collectionLink = await GetCollectionLink();
-            var storeItems = new StoreItems();
 
             var parameterSequence = string.Join(",", Enumerable.Range(0, keys.Length).Select(i => $"@id{i}"));
             var parameterValues = keys.Select((key, ix) => new SqlParameter($"@id{ix}", SanitizeKey(key)));
@@ -140,7 +141,7 @@ namespace Microsoft.Bot.Builder.Azure
                     }
 
                     // doc.Id cannot be used since it is escaped, read it from RealId property instead
-                    storeItems[doc.ReadlId] = item;
+                    storeItems.Add(new KeyValuePair<string, object>(doc.ReadlId, item));
                 }
             }
 
@@ -148,11 +149,11 @@ namespace Microsoft.Bot.Builder.Azure
         }
 
         /// <summary>
-        /// Persist the specified StoreItems into the CosmosDB Collection.
+        /// Store the specified Key/Value pairs.
         /// </summary>
-        /// <param name="changes">Items to persist.</param>
+        /// <param name="changes">Key/Value pairs to persist.</param>
         /// <returns></returns>
-        public async Task Write(StoreItems changes)
+        public async Task Write(IEnumerable<KeyValuePair<string, object>> changes)
         {
             if (changes == null)
             {
@@ -198,7 +199,7 @@ namespace Microsoft.Bot.Builder.Azure
         /// <summary>
         /// Delayed Database and Collection creation if they do not exist.
         /// </summary>
-        private async Task<string> GetCollectionLink()
+        private async ValueTask<string> GetCollectionLink()
         {
             if(_collectionLink == null)
             {
