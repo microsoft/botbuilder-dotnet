@@ -314,12 +314,8 @@ namespace Microsoft.Bot.Builder.Azure
                   || type.Equals(typeof(decimal));
             }
 
-            private static bool IsAnonymousType(Type type)
-            {
-                Boolean hasCompilerGeneratedAttribute = type.GetCustomAttributes(typeof(System.Runtime.CompilerServices.CompilerGeneratedAttribute), false).Count() > 0;
-                Boolean nameContainsAnonymousType = type.FullName.Contains("AnonymousType");
-                return hasCompilerGeneratedAttribute && nameContainsAnonymousType;
-            }
+            private static bool IsAnonymousType(Type type) =>
+                type.FullName.Contains("AnonymousType") && type.GetCustomAttributes(typeof(System.Runtime.CompilerServices.CompilerGeneratedAttribute), false).Any();
         }
 
         /// <summary>
