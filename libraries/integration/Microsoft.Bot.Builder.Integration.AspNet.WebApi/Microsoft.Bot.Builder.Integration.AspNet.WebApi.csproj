@@ -38,6 +38,7 @@
 		<NeutralLanguage />
 		<AssemblyName>Microsoft.Bot.Builder.Integration.AspNet.WebApi</AssemblyName>
 		<RootNamespace>Microsoft.Bot.Builder.Integration.AspNet.NetFx</RootNamespace>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 	</PropertyGroup>
 
   <PropertyGroup Condition="$(Configuration) == 'Debug - NuGet Packages'">

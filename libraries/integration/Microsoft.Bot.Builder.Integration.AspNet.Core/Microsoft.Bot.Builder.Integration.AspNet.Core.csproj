@@ -37,6 +37,7 @@
 		<PackageTags>bots;ai;botframework;botbuilder</PackageTags>
 		<NeutralLanguage />
 		<AssemblyName>Microsoft.Bot.Builder.Integration.AspNet.Core</AssemblyName>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 	</PropertyGroup>
 
   <PropertyGroup Condition="$(Configuration) == 'Debug - NuGet Packages'">
