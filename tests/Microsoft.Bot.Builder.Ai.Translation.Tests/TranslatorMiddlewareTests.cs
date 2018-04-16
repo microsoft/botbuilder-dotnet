@@ -9,7 +9,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Ai.Translation;
-using System.Diagnostics;
 
 namespace Microsoft.Bot.Builder.Ai.QnA.Tests
 {
@@ -29,7 +28,7 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
         {
             if (!EnvironmentVariablesDefined())
             {
-                Debug.WriteLine("Missing Translator Environment variables - Skipping test");
+                Assert.Inconclusive("Missing Translator Environment variables - Skipping test");
                 return;
             }
 
@@ -58,7 +57,7 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
         {
             if (!EnvironmentVariablesDefined())
             {
-                Debug.WriteLine("Missing Translator Environment variables - Skipping test");
+                Assert.Inconclusive("Missing Translator Environment variables - Skipping test");
                 return;
             }
 
@@ -88,7 +87,7 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
         {
             if (!EnvironmentVariablesDefined())
             {
-                Debug.WriteLine("Missing Translator Environment variables - Skipping test");
+                Assert.Inconclusive("Missing Translator Environment variables - Skipping test");
                 return;
             }
 
