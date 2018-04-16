@@ -20,15 +20,9 @@ namespace Microsoft.Bot.Builder.Azure
     /// </summary>
     public class AzureTableStorage : IStorage
     {
-        /// <summary>
-        /// Underlying Azure Table.
-        /// </summary>
-        public CloudTable Table { get; private set; }
-
-        /// <summary>
-        /// Flag to indicate if table was created or exists.
-        /// </summary>
-        private bool _tableCreated;
+        private readonly CloudStorageAccount _storageAccount;
+        private readonly string _tableName;
+        private CloudTable _table;
 
         /// <summary>
         /// Creates a new instance of the storage provider.
@@ -47,13 +41,12 @@ namespace Microsoft.Bot.Builder.Azure
         /// <param name="tableName">Name of the table to use for storage. Check table name rules: https://docs.microsoft.com/en-us/rest/api/storageservices/Understanding-the-Table-Service-Data-Model?redirectedfrom=MSDN#table-names </param>
         public AzureTableStorage(CloudStorageAccount storageAccount, string tableName)
         {
-            if (storageAccount == null) throw new ArgumentNullException(nameof(storageAccount));
+            _storageAccount = storageAccount ?? throw new ArgumentNullException(nameof(storageAccount));
 
             // Checks if table name is valid
             NameValidator.ValidateTableName(tableName);
 
-            var tableClient = storageAccount.CreateCloudTableClient();
-            Table = tableClient.GetTableReference(tableName);
+            _tableName = tableName;
         }
 
         /// <summary>
@@ -64,13 +57,13 @@ namespace Microsoft.Bot.Builder.Azure
         {
             if (keys == null) throw new ArgumentNullException(nameof(keys));
 
-            await EnsureTableExists();
+            var table = await GetTable().ConfigureAwait(false);
 
             try
             {
                 await Task.WhenAll(
                     keys.Select(k => new EntityKey(k))
-                        .Select(ek => Table.ExecuteAsync(TableOperation.Delete(new TableEntity(ek.PartitionKey, ek.RowKey) { ETag = "*" }))))
+                        .Select(ek => table.ExecuteAsync(TableOperation.Delete(new TableEntity(ek.PartitionKey, ek.RowKey) { ETag = "*" }))))
                             .ConfigureAwait(false);
             }
             catch (StorageException ex)
@@ -95,12 +88,12 @@ namespace Microsoft.Bot.Builder.Azure
                 throw new ArgumentException("Please provide at least one key to read from storage.", nameof(keys));
             }
 
-            await EnsureTableExists();
+            var table = await GetTable().ConfigureAwait(false);
 
             var readTasks = keys.Select(async key =>
             {
                 var ek = new EntityKey(key);
-                var tableEntity = await Table.ExecuteAsync(TableOperation.Retrieve<DynamicTableEntity>(ek.PartitionKey, ek.RowKey)).ConfigureAwait(false);
+                var tableEntity = await table.ExecuteAsync(TableOperation.Retrieve<DynamicTableEntity>(ek.PartitionKey, ek.RowKey)).ConfigureAwait(false);
 
                 if (tableEntity.HttpStatusCode == (int)HttpStatusCode.OK)
                 {
@@ -132,7 +125,7 @@ namespace Microsoft.Bot.Builder.Azure
                 throw new ArgumentException("Bogus etag in items with key: " + string.Join(", ", bogusEtagKeys.Select(o => o.Key)));
             }
 
-            await EnsureTableExists();
+            var table = await GetTable().ConfigureAwait(false);
 
             var writeTasks = changes.Select(kv =>
             {
@@ -144,12 +137,12 @@ namespace Microsoft.Bot.Builder.Azure
                 if (envelope.ETag == null || envelope.ETag == "*")
                 {
                     // New item or etag=* then insert or replace unconditionaly
-                    return Table.ExecuteAsync(TableOperation.InsertOrReplace(tableEntity));
+                    return table.ExecuteAsync(TableOperation.InsertOrReplace(tableEntity));
                 }
 
 
                 // Optimistic Update
-                return Table.ExecuteAsync(TableOperation.Replace(tableEntity));
+                return table.ExecuteAsync(TableOperation.Replace(tableEntity));
             });
 
             await Task.WhenAll(writeTasks).ConfigureAwait(false);
@@ -158,14 +151,22 @@ namespace Microsoft.Bot.Builder.Azure
         /// <summary>
         /// Ensure table is created.
         /// </summary>
-        private async Task EnsureTableExists()
+        private ValueTask<CloudTable> GetTable()
         {
-            if (!_tableCreated)
+            if (_table != null)
             {
-                _tableCreated = true;
+                return new ValueTask<CloudTable>(_table);
+            }
 
+            return new ValueTask<CloudTable>(EnsureTableExists());
+
+            async Task<CloudTable> EnsureTableExists()
+            {
+                _table = _storageAccount.CreateCloudTableClient().GetTableReference(_tableName);
+                
                 // This call may not be thread-safe and multiple calls may be made, but Azure will handle it correctly and there is no destructive side effect.
-                await Table.CreateIfNotExistsAsync();
+                await _table.CreateIfNotExistsAsync();
+                return _table;
             }
         }
 
