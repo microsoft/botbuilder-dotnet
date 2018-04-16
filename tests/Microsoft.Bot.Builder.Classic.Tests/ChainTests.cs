@@ -373,15 +373,11 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                 .Catch<string, OperationCanceledException>((antecedent, error) => Chain.Return("world"))
                 .PostToUser();
 
-            using (var container = Build(Options.ResolveDialogFromContainer))
+            using (var container = Build(Options.ResolveDialogFromContainer, test))
+            using (var scope = container.BeginLifetimeScope(
+                builder => builder.RegisterInstance(test).As<IDialog<object>>()))
             {
-                var builder = new ContainerBuilder();
-                builder
-                    .RegisterInstance(test)
-                    .As<IDialog<object>>();
-                builder.Update(container);
-
-                await AssertScriptAsync(container,
+                await AssertScriptAsync(scope,
                     "hello",
                     "world"
                     );
@@ -403,14 +399,10 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                 .PostToUser();
 
             using (var container = Build(Options.ResolveDialogFromContainer))
+            using (var scope = container.BeginLifetimeScope(
+                builder => builder.RegisterInstance(quiz).As<IDialog<object>>()))
             {
-                var builder = new ContainerBuilder();
-                builder
-                    .RegisterInstance(quiz)
-                    .As<IDialog<object>>();
-                builder.Update(container);
-
-                await AssertScriptAsync(container,
+                await AssertScriptAsync(scope,
                     "hello",
                     "how many questions?",
                     "3",
@@ -448,14 +440,10 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                 .PostToUser();
 
             using (var container = Build(Options.ResolveDialogFromContainer | Options.Reflection))
+            using (var scope = container.BeginLifetimeScope(
+                builder => builder.RegisterInstance(root).As<IDialog<object>>()))
             {
-                var builder = new ContainerBuilder();
-                builder
-                    .RegisterInstance(root)
-                    .As<IDialog<object>>();
-                builder.Update(container);
-
-                await AssertScriptAsync(container,
+                await AssertScriptAsync(scope,
                     "hello",
                     "question 0",
                     "A",
@@ -494,14 +482,10 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                 .PostToUser();
 
             using (var container = Build(Options.ResolveDialogFromContainer | Options.Reflection))
+            using (var scope = container.BeginLifetimeScope(
+                builder => builder.RegisterInstance(rootDialog).As<IDialog<object>>()))
             {
-                var builder = new ContainerBuilder();
-                builder
-                    .RegisterInstance(rootDialog)
-                    .As<IDialog<object>>();
-                builder.Update(container);
-
-                await AssertScriptAsync(container,
+                await AssertScriptAsync(scope,
                     "hello",
                     "hello back!",
                     "what is the subject?",
@@ -552,14 +536,10 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                 Loop();
 
             using (var container = Build(Options.ResolveDialogFromContainer))
+            using (var scope = container.BeginLifetimeScope(
+                builder => builder.RegisterInstance(joke).As<IDialog<object>>()))
             {
-                var builder = new ContainerBuilder();
-                builder
-                    .RegisterInstance(joke)
-                    .As<IDialog<object>>();
-                builder.Update(container);
-
-                await AssertScriptAsync(container,
+                await AssertScriptAsync(scope,
                     "chicken",
                     "why did the chicken cross the road?",
                     "i don't know",
@@ -602,14 +582,10 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                 }).PostToUser();
 
             using (var container = Build(Options.ResolveDialogFromContainer))
+            using (var scope = container.BeginLifetimeScope(
+                builder => builder.RegisterInstance(waterfall).As<IDialog<object>>()))
             {
-                var builder = new ContainerBuilder();
-                builder
-                    .RegisterInstance(waterfall)
-                    .As<IDialog<object>>();
-                builder.Update(container);
-
-                await AssertScriptAsync(container,
+                await AssertScriptAsync(scope,
                     "test",
                     "you said test",
                     "Which one you want to select?",

@@ -206,14 +206,10 @@ namespace Microsoft.Bot.Builder.Classic.Tests
         {
             using (var stream = new StreamWriter(filePath))
             using (var container = Build(Options.ResolveDialogFromContainer | Options.Reflection))
+            using (var scope = container.BeginLifetimeScope(
+                builder => builder.RegisterInstance(dialog).AsSelf().As<IDialog<object>>()))
             {
-                var builder = new ContainerBuilder();
-                builder
-                    .RegisterInstance(dialog)
-                    .AsSelf()
-                    .As<IDialog<object>>();
-                builder.Update(container);
-                await RecordScript(container, proactive, stream, null, inputs);
+                await RecordScript(scope, proactive, stream, null, inputs);
             }
         }
 

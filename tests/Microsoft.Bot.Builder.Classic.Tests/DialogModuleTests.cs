@@ -18,13 +18,9 @@ namespace Microsoft.Bot.Builder.Classic.Tests
             var echo = Chain.PostToChain().Select(m => m.Text).PostToUser();
 
             using (var container = Build(Options.ResolveDialogFromContainer))
+            using (var containerScope = container.BeginLifetimeScope(
+                builder => builder.RegisterInstance(echo).As<IDialog<object>>()))
             {
-                var builder = new ContainerBuilder();
-                builder
-                    .RegisterInstance(echo)
-                    .As<IDialog<object>>();
-                builder.Update(container);
-
                 Func<ILifetimeScope, Task> Test = async (s) =>
                 {
                     await AssertScriptAsync(s,
@@ -34,26 +30,26 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                         "world");
                 };
 
-                using (var scope = container.BeginLifetimeScope())
+                using (var scope = containerScope.BeginLifetimeScope())
                 {
                     await Test(scope);
                     await Test(scope);
                 }
 
-                using (var scope = container.BeginLifetimeScope(b => { }))
+                using (var scope = containerScope.BeginLifetimeScope(b => { }))
                 {
                     await Test(scope);
                     await Test(scope);
                 }
 
-                using (var scope = container.BeginLifetimeScope())
+                using (var scope = containerScope.BeginLifetimeScope())
                 using (var inner = scope.BeginLifetimeScope(b => { }))
                 {
                     await Test(inner);
                     await Test(inner);
                 }
 
-                using (var scope = container.BeginLifetimeScope(b => { }))
+                using (var scope = containerScope.BeginLifetimeScope(b => { }))
                 using (var inner = scope.BeginLifetimeScope())
                 {
                     await Test(inner);

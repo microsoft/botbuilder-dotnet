@@ -31,17 +31,13 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+using System;
+using System.Runtime.Serialization;
+using System.Threading.Tasks;
 using Autofac;
-using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Classic.Dialogs;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Classic.Tests
 {
@@ -62,12 +58,10 @@ namespace Microsoft.Bot.Builder.Classic.Tests
         public async Task Exception_DialogStack_NoResumeHandler()
         {
             using (var container = Build(Options.ResolveDialogFromContainer))
+            using (var scope = container.BeginLifetimeScope(
+                builder => builder.RegisterType<NoResumeHandlerDialog>().AsImplementedInterfaces()))
             {
-                var builder = new ContainerBuilder();
-                builder.RegisterType<NoResumeHandlerDialog>().AsImplementedInterfaces();
-                builder.Update(container);
-
-                await AssertScriptAsync(container, "hello");
+                await AssertScriptAsync(scope, "hello");
             }
         }
 
@@ -91,12 +85,10 @@ namespace Microsoft.Bot.Builder.Classic.Tests
         public async Task Exception_DialogStack_ResumeHandlerTwice()
         {
             using (var container = Build(Options.ResolveDialogFromContainer))
+            using (var scope = container.BeginLifetimeScope(
+                builder => builder.RegisterType<ResumeHandlerTwiceDialog>().AsImplementedInterfaces()))
             {
-                var builder = new ContainerBuilder();
-                builder.RegisterType<ResumeHandlerTwiceDialog>().AsImplementedInterfaces();
-                builder.Update(container);
-
-                await AssertScriptAsync(container, "hello");
+                await AssertScriptAsync(scope, "hello");
             }
         }
 
@@ -117,14 +109,12 @@ namespace Microsoft.Bot.Builder.Classic.Tests
         public async Task Exception_NonSerializableDialog()
         {
             using (var container = Build(Options.ResolveDialogFromContainer))
+            using (var scope = container.BeginLifetimeScope(
+                builder => builder.RegisterType<NonSerializableDialog>().AsImplementedInterfaces()))
             {
-                var builder = new ContainerBuilder();
-                builder.RegisterType<NonSerializableDialog>().AsImplementedInterfaces();
-                builder.Update(container);
-
                 try
                 {
-                    await AssertScriptAsync(container, "hello");
+                    await AssertScriptAsync(scope, "hello");
                     Assert.Fail();
                 }
                 catch (SerializationException)
