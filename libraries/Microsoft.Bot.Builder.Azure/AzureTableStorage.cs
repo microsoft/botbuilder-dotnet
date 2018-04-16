@@ -21,14 +21,14 @@ namespace Microsoft.Bot.Builder.Azure
     public class AzureTableStorage : IStorage
     {
         /// <summary>
-        /// Map of already initialized tables.
-        /// </summary>
-        private static HashSet<string> _checkedTables = new HashSet<string>();
-
-        /// <summary>
         /// Underlying Azure Table.
         /// </summary>
         public CloudTable Table { get; private set; }
+
+        /// <summary>
+        /// Flag to indicate if table was created or exists.
+        /// </summary>
+        private bool _tableCreated;
 
         /// <summary>
         /// Creates a new instance of the storage provider.
@@ -54,9 +54,6 @@ namespace Microsoft.Bot.Builder.Azure
 
             var tableClient = storageAccount.CreateCloudTableClient();
             Table = tableClient.GetTableReference(tableName);
-
-            if (_checkedTables.Add($"{storageAccount.TableStorageUri.PrimaryUri.Host}-{tableName}"))
-                Table.CreateIfNotExistsAsync().Wait();
         }
 
         /// <summary>
@@ -66,6 +63,8 @@ namespace Microsoft.Bot.Builder.Azure
         public async Task Delete(string[] keys)
         {
             if (keys == null) throw new ArgumentNullException(nameof(keys));
+
+            await EnsureTableExists();
 
             try
             {
@@ -95,6 +94,8 @@ namespace Microsoft.Bot.Builder.Azure
             {
                 throw new ArgumentException("Please provide at least one key to read from storage.", nameof(keys));
             }
+
+            await EnsureTableExists();
 
             var readTasks = keys.Select(async key =>
             {
@@ -131,6 +132,8 @@ namespace Microsoft.Bot.Builder.Azure
                 throw new ArgumentException("Bogus etag in items with key: " + string.Join(", ", bogusEtagKeys.Select(o => o.Key)));
             }
 
+            await EnsureTableExists();
+
             var writeTasks = changes.Select(kv =>
             {
                 var storeEntity = new StoreItemEntity(new EntityKey(kv.Key), kv.Value);
@@ -150,6 +153,18 @@ namespace Microsoft.Bot.Builder.Azure
             });
 
             await Task.WhenAll(writeTasks).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Ensure table is created.
+        /// </summary>
+        /// <returns></returns>
+        private async Task EnsureTableExists()
+        {
+            if (!_tableCreated)
+            {
+                await Table.CreateIfNotExistsAsync();
+            }
         }
 
         /// <summary>
