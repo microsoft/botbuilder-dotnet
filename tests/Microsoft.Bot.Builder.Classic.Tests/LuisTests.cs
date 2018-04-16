@@ -279,25 +279,21 @@ namespace Microsoft.Bot.Builder.Classic.Tests
 
             using (new FiberTestBase.ResolveMoqAssembly(service1.Object, service2.Object))
             using (var container = Build(Options.ResolveDialogFromContainer, service1.Object, service2.Object))
+            using (var scope = container.BeginLifetimeScope(
+                builder => builder.RegisterInstance(dialog).As<IDialog<object>>()))
             {
-                var builder = new ContainerBuilder();
-                builder
-                    .RegisterInstance(dialog)
-                    .As<IDialog<object>>();
-                builder.Update(container);
-
                 const string EntityOne = "one";
                 const string EntityTwo = "two";
 
                 SetupLuis<MultiServiceLuisDialog>(service1, d => d.ServiceOne(null, null), 1.0, new EntityRecommendation(type: EntityOne));
                 SetupLuis<MultiServiceLuisDialog>(service2, d => d.ServiceTwo(null, null), 0.0, new EntityRecommendation(type: EntityTwo));
 
-                await AssertScriptAsync(container, "hello", EntityOne);
+                await AssertScriptAsync(scope, "hello", EntityOne);
 
                 SetupLuis<MultiServiceLuisDialog>(service1, d => d.ServiceOne(null, null), 0.0, new EntityRecommendation(type: EntityOne));
                 SetupLuis<MultiServiceLuisDialog>(service2, d => d.ServiceTwo(null, null), 1.0, new EntityRecommendation(type: EntityTwo));
 
-                await AssertScriptAsync(container, "hello", EntityTwo);
+                await AssertScriptAsync(scope, "hello", EntityTwo);
             }
         }
 
@@ -326,14 +322,10 @@ namespace Microsoft.Bot.Builder.Classic.Tests
 
             using (new FiberTestBase.ResolveMoqAssembly(service.Object))
             using (var container = Build(Options.ResolveDialogFromContainer, service.Object))
+            using (var scope = container.BeginLifetimeScope(
+                builder => builder.RegisterInstance(dialog).As<IDialog<object>>()))
             {
-                var builder = new ContainerBuilder();
-                builder
-                    .RegisterInstance(dialog)
-                    .As<IDialog<object>>();
-                builder.Update(container);
-
-                await AssertScriptAsync(container, null, "I see null");
+                await AssertScriptAsync(scope, null, "I see null");
             }
         }
 
@@ -444,14 +436,10 @@ namespace Microsoft.Bot.Builder.Classic.Tests
             var dialog = new MultiServiceLuisDialog(service.Object);
             using (new FiberTestBase.ResolveMoqAssembly(service.Object))
             using (var container = Build(Options.ResolveDialogFromContainer, service.Object))
+            using (var scope = container.BeginLifetimeScope(
+                builder => builder.RegisterInstance(dialog).As<IDialog<object>>()))
             {
-                var builder = new ContainerBuilder();
-                builder
-                    .RegisterInstance(dialog)
-                    .As<IDialog<object>>();
-                builder.Update(container);
-
-                await AssertScriptAsync(container, "start", prompt, "EntityOne", action);
+                await AssertScriptAsync(scope, "start", prompt, "EntityOne", action);
             }
         }
 

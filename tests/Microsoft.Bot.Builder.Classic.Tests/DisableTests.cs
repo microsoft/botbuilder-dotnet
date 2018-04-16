@@ -31,10 +31,6 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
 using Microsoft.Bot.Builder.Classic.Dialogs;
@@ -114,42 +110,38 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                 .Returns(Task.CompletedTask);
 
             using (var container = Build(Options.ResolveDialogFromContainer))
-            {
+            using (var containerScope = container.BeginLifetimeScope(
+                builder =>
                 {
-                    var builder = new ContainerBuilder();
-                    builder
-                        .RegisterInstance(dialog)
-                        .As<IDialog<object>>();
-                    builder
-                        .RegisterInstance(mock.Object)
-                        .As<IActivityLogger>();
-                    builder.Update(container);
-                }
-
+                    builder.RegisterInstance(dialog).As<IDialog<object>>();
+                    builder.RegisterInstance(mock.Object).As<IActivityLogger>();
+                }))
+            {
                 var text = "hello";
 
                 await AssertScriptAsync(
-                    container,
+                    containerScope,
                     text,
                     text);
 
                 mock.VerifyAll();
 
+                using (var disablingScope = containerScope.BeginLifetimeScope(
+                    builder =>
+                    {
+                        Conversation.Disable(typeof(LogBotToUser), builder);
+                        Conversation.Disable(typeof(LogPostToBot), builder);
+                    }))
                 {
-                    var builder = new ContainerBuilder();
-                    Conversation.Disable(typeof(LogBotToUser), builder);
-                    Conversation.Disable(typeof(LogPostToBot), builder);
-                    builder.Update(container);
+                    mock.Reset();
+
+                    await AssertScriptAsync(
+                        disablingScope,
+                        text,
+                        text);
+
+                    mock.VerifyAll();
                 }
-
-                mock.Reset();
-
-                await AssertScriptAsync(
-                    container,
-                    text,
-                    text);
-
-                mock.VerifyAll();
             }
         }
     }
