@@ -26,7 +26,11 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
         [TestCategory("Translator")]
         public async Task TranslatorMiddleware_DetectAndTranslateToEnglish()
         {
-            
+            if (!TestUtilities.CheckKeys(new string[] { "TRANSLATORKEY" }))
+            {
+                return;
+            }
+
             TestAdapter adapter = new TestAdapter() 
             .Use(new TranslationMiddleware(new string[] { "en-us" }, translatorKey));
 
@@ -50,6 +54,10 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
         [TestCategory("Translator")]
         public async Task TranslatorMiddleware_TranslateFrenchToEnglish()
         {
+            if (!TestUtilities.CheckKeys(new string[] { "TRANSLATORKEY" }))
+            {
+                return;
+            }
 
             TestAdapter adapter = new TestAdapter()
                 .Use(new UserState<LanguageState>(new MemoryStorage()))
@@ -75,6 +83,10 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
         [TestCategory("Translator")]
         public async Task TranslatorMiddleware_TranslateFrenchToEnglishToUserLanguage()
         {
+            if (!TestUtilities.CheckKeys(new string[] { "TRANSLATORKEY" }))
+            {
+                return;
+            }
 
             TestAdapter adapter = new TestAdapter()
                 .Use(new UserState<LanguageState>(new MemoryStorage()))
