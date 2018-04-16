@@ -19,6 +19,11 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
         [TestCategory("Translator")]
         public async Task Translator_DetectAndTranslateToEnglish()
         {
+            if (!TestUtilities.CheckKeys(new string[] { "TRANSLATORKEY" }))
+            {
+                return;
+            }
+
             Translator translator = new Translator(translatorKey);
 
             var sentence = "salut";
@@ -36,6 +41,11 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
         [TestCategory("Translator")]
         public async Task Translator_LiteralTagTest()
         {
+            if (!TestUtilities.CheckKeys(new string[] { "TRANSLATORKEY" }))
+            {
+                return;
+            }
+
             Translator translator = new Translator(translatorKey);
 
             var sentence = "salut <literal>Jean Bouchier mon ami</literal>";
@@ -50,6 +60,11 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
         [TestCategory("Translator")]
         public async Task Translator_PatternsTest()
         {
+            if (!TestUtilities.CheckKeys(new string[] { "TRANSLATORKEY" }))
+            {
+                return;
+            }
+
             Translator translator = new Translator(translatorKey);
             translator.SetPostProcessorTemplate(new List<string> { "perr[oa]" });
             var sentence = "mi perro se llama Enzo";
@@ -70,6 +85,10 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
         [TestCategory("Translator")]
         public async Task Translator_TranslateFrenchToEnglish()
         {
+            if (!TestUtilities.CheckKeys(new string[] { "TRANSLATORKEY" }))
+            {
+                return;
+            }
 
             Translator translator = new Translator(translatorKey);
 
@@ -84,6 +103,10 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
         [TestCategory("Translator")]
         public async Task Translator_TranslateFrenchToEnglishArray()
         {
+            if (!TestUtilities.CheckKeys(new string[] { "TRANSLATORKEY" }))
+            {
+                return;
+            }
 
             Translator translator = new Translator(translatorKey);
 
@@ -100,6 +123,10 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
         [TestCategory("Translator")]
         public async Task Translator_TranslateEnglishToFrench()
         {
+            if (!TestUtilities.CheckKeys(new string[] { "TRANSLATORKEY" }))
+            {
+                return;
+            }
 
             Translator translator = new Translator(translatorKey);
 
@@ -114,6 +141,10 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
         [TestCategory("Translator")]
         public async Task Translator_TranslateEnglishToFrenchArray()
         {
+            if (!TestUtilities.CheckKeys(new string[] { "TRANSLATORKEY" }))
+            {
+                return;
+            }
 
             Translator translator = new Translator(translatorKey);
 
@@ -130,6 +161,10 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
         [TestCategory("Translator")]
         public async Task Translator_InvalidSourceLanguage()
         {
+            if (!TestUtilities.CheckKeys(new string[] { "TRANSLATORKEY" }))
+            {
+                return;
+            }
 
             Translator translator = new Translator(translatorKey);
 
@@ -143,6 +178,10 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
         [TestCategory("Translator")]
         public async Task Translator_InvalidTargetLanguage()
         {
+            if (!TestUtilities.CheckKeys(new string[] { "TRANSLATORKEY" }))
+            {
+                return;
+            }
 
             Translator translator = new Translator(translatorKey);
 
