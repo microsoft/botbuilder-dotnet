@@ -194,6 +194,11 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
 
             Assert.IsFalse(reloadedStoreItems.Any(), "no store item should have been found because it was deleted");
         }
+
+        protected async Task _deleteUnknownObjectTest(IStorage storage)
+        {
+            await storage.Delete("unknown_key");
+        }
     }
 
     public class PocoItem
