@@ -11,6 +11,9 @@ namespace Microsoft.Bot.Builder.Ai.QnA
 {
     public class QnAMakerMiddleware : IMiddleware
     {
+        public const string QnAMakerResultKey = "QnAMakerResult";
+        public const string QnAMakerTraceType = "https://www.qnamaker.ai/schemas/trace";
+        public const string QnAMakerTraceLabel = "QnAMaker Trace";
         private readonly QnAMaker _qnaMaker;
         private readonly QnAMakerMiddlewareOptions _options;
 
@@ -29,6 +32,14 @@ namespace Microsoft.Bot.Builder.Ai.QnA
                 if (!string.IsNullOrEmpty(messageActivity.Text))
                 {
                     var results = await _qnaMaker.GetAnswers(messageActivity.Text.Trim()).ConfigureAwait(false);
+                    var traceInfo = new QnAMakerTraceInfo()
+                    {
+                        QueryResults = results,
+                        QnAMakerOptions = _options
+                    };
+                    var traceActivity = Activity.CreateTraceActivity("QnAMakerMiddleware", QnAMakerTraceType, traceInfo, QnAMakerTraceLabel);
+                    await context.SendActivity(traceActivity).ConfigureAwait(false);
+
                     if (results.Any())
                     {
                         if (!string.IsNullOrEmpty(_options.DefaultAnswerPrefixMessage))
