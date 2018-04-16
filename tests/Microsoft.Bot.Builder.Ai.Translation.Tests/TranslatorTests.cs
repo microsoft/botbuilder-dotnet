@@ -1,11 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Microsoft.Bot.Builder.Core.Extensions.Tests; 
+using Microsoft.Bot.Builder.Core.Extensions.Tests;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Ai.Translation.Tests
@@ -22,7 +21,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
         {
             if (!EnvironmentVariablesDefined())
             {
-                Debug.WriteLine("Missing Translator Environment variables - Skipping test");
+                Assert.Inconclusive("Missing Translator Environment variables - Skipping test");
                 return;
             }
 
@@ -45,7 +44,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
         {
             if (!EnvironmentVariablesDefined())
             {
-                Debug.WriteLine("Missing Translator Environment variables - Skipping test");
+                Assert.Inconclusive("Missing Translator Environment variables - Skipping test");
                 return;
             }
 
@@ -65,7 +64,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
         {
             if (!EnvironmentVariablesDefined())
             {
-                Debug.WriteLine("Missing Translator Environment variables - Skipping test");
+                Assert.Inconclusive("Missing Translator Environment variables - Skipping test");
                 return;
             }
 
@@ -91,7 +90,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
         {
             if (!EnvironmentVariablesDefined())
             {
-                Debug.WriteLine("Missing Translator Environment variables - Skipping test");
+                Assert.Inconclusive("Missing Translator Environment variables - Skipping test");
                 return;
             }
 
@@ -110,7 +109,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
         {
             if (!EnvironmentVariablesDefined())
             {
-                Debug.WriteLine("Missing Translator Environment variables - Skipping test");
+                Assert.Inconclusive("Missing Translator Environment variables - Skipping test");
                 return;
             }
 
@@ -131,7 +130,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
         {
             if (!EnvironmentVariablesDefined())
             {
-                Debug.WriteLine("Missing Translator Environment variables - Skipping test");
+                Assert.Inconclusive("Missing Translator Environment variables - Skipping test");
                 return;
             }
 
@@ -150,7 +149,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
         {
             if (!EnvironmentVariablesDefined())
             {
-                Debug.WriteLine("Missing Translator Environment variables - Skipping test");
+                Assert.Inconclusive("Missing Translator Environment variables - Skipping test");
                 return;
             }
 
@@ -171,7 +170,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
         {
             if (!EnvironmentVariablesDefined())
             {
-                Debug.WriteLine("Missing Translator Environment variables - Skipping test");
+                Assert.Inconclusive("Missing Translator Environment variables - Skipping test");
                 return;
             }
 
@@ -189,7 +188,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
         {
             if (!EnvironmentVariablesDefined())
             {
-                Debug.WriteLine("Missing Translator Environment variables - Skipping test");
+                Assert.Inconclusive("Missing Translator Environment variables - Skipping test");
                 return;
             }
 

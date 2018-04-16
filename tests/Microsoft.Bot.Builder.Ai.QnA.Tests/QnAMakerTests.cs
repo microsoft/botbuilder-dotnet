@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System.Diagnostics;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
@@ -23,7 +22,7 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
         {
             if (!EnvironmentVariablesDefined())
             {
-                Debug.WriteLine("Missing QnaMaker Environment variables - Skipping test");
+                Assert.Inconclusive("Missing QnaMaker Environment variables - Skipping test");
                 return;
             }
 
@@ -47,7 +46,7 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
         {
             if (!EnvironmentVariablesDefined())
             {
-                Debug.WriteLine("Missing QnaMaker Environment variables - Skipping test");
+                Assert.Inconclusive("Missing QnaMaker Environment variables - Skipping test");
                 return;
             }
 
@@ -71,7 +70,7 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
         {
             if (!EnvironmentVariablesDefined())
             {
-                Debug.WriteLine("Missing QnaMaker Environment variables - Skipping test");
+                Assert.Inconclusive("Missing QnaMaker Environment variables - Skipping test");
                 return;
             }
 

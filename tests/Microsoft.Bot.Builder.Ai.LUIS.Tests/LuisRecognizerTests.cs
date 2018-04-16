@@ -3,7 +3,6 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -31,7 +30,7 @@ namespace Microsoft.Bot.Builder.Ai.LUIS.Tests
         {
             if (!EnvironmentVariablesDefined())
             {
-                Debug.WriteLine("Missing Luis Environment variables - Skipping test");
+                Assert.Inconclusive("Missing Luis Environment variables - Skipping test");
                 return;
             }
 
@@ -59,7 +58,7 @@ namespace Microsoft.Bot.Builder.Ai.LUIS.Tests
         {
             if (!EnvironmentVariablesDefined())
             {
-                Debug.WriteLine("Missing Luis Environment variables - Skipping test");
+                Assert.Inconclusive("Missing Luis Environment variables - Skipping test");
                 return;
             }
 
@@ -95,7 +94,7 @@ namespace Microsoft.Bot.Builder.Ai.LUIS.Tests
         {
             if (!EnvironmentVariablesDefined())
             {
-                Debug.WriteLine("Missing Luis Environment variables - Skipping test");
+                Assert.Inconclusive("Missing Luis Environment variables - Skipping test");
                 return;
             }
 
@@ -120,7 +119,7 @@ namespace Microsoft.Bot.Builder.Ai.LUIS.Tests
         {
             if (!EnvironmentVariablesDefined())
             {
-                Debug.WriteLine("Missing Luis Environment variables - Skipping test");
+                Assert.Inconclusive("Missing Luis Environment variables - Skipping test");
                 return;
             }
 
@@ -146,7 +145,7 @@ namespace Microsoft.Bot.Builder.Ai.LUIS.Tests
         {
             if (!EnvironmentVariablesDefined())
             {
-                Debug.WriteLine("Missing Luis Environment variables - Skipping test");
+                Assert.Inconclusive("Missing Luis Environment variables - Skipping test");
                 return;
             }
 
@@ -174,7 +173,7 @@ namespace Microsoft.Bot.Builder.Ai.LUIS.Tests
         {
             if (!EnvironmentVariablesDefined())
             {
-                Debug.WriteLine("Missing Luis Environment variables - Skipping test");
+                Assert.Inconclusive("Missing Luis Environment variables - Skipping test");
                 return;
             }
 
@@ -215,7 +214,7 @@ namespace Microsoft.Bot.Builder.Ai.LUIS.Tests
         {
             if (!EnvironmentVariablesDefined())
             {
-                Debug.WriteLine("Missing Luis Environment variables - Skipping test");
+                Assert.Inconclusive("Missing Luis Environment variables - Skipping test");
                 return;
             }
 

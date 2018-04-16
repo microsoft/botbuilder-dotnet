@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Core.Extensions.Tests;
@@ -24,7 +23,7 @@ namespace Microsoft.Bot.Builder.Ai.LUIS.Tests
         {
             if (!EnvironmentVariablesDefined())
             {
-                Debug.WriteLine("Missing Luis Environment variables - Skipping test");
+                Assert.Inconclusive("Missing Luis Environment variables - Skipping test");
                 return;
             }
 
@@ -38,7 +37,7 @@ namespace Microsoft.Bot.Builder.Ai.LUIS.Tests
         {
             if (!EnvironmentVariablesDefined())
             {
-                Debug.WriteLine("Missing Luis Environment variables - Skipping test");
+                Assert.Inconclusive("Missing Luis Environment variables - Skipping test");
                 return;
             }
 
