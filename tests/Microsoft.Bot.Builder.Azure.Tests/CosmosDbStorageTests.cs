@@ -121,16 +121,6 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 
         // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
         [TestMethod]
-        public async Task TypedSerialization()
-        {
-            if (CheckEmulator())
-            {
-                await base._typedSerialization(_storage);
-            }
-        }
-
-        // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
-        [TestMethod]
         public void ConnectionPolicyConfiguratorShouldBeCalled()
         {
             if (CheckEmulator())
