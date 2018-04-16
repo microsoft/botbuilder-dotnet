@@ -105,8 +105,8 @@ namespace Microsoft.Bot.Builder.Azure
                 if (tableEntity.HttpStatusCode == (int)HttpStatusCode.OK)
                 {
                     // re-create expected object
-                    StoreItemEntity storeItem = StoreItemEntity.AsStoreItemEntity(tableEntity);
-                    return new KeyValuePair<string, object>(key, storeItem.Entity);
+                    StorageEnvelope envelope = StorageEnvelope.AsStoreItemEntity(tableEntity);
+                    return new KeyValuePair<string, object>(key, envelope.StoreItem);
                 }
 
                 return new KeyValuePair<string, object>();
@@ -125,7 +125,7 @@ namespace Microsoft.Bot.Builder.Azure
         {
             if (changes == null) throw new ArgumentNullException(nameof(changes));
 
-            var storeItems = changes.Select(kv => new StoreItemEntity(new EntityKey(kv.Key), kv.Value));
+            var storeItems = changes.Select(kv => new StorageEnvelope(new EntityKey(kv.Key), kv.Value));
             var bogusEtagKeys = storeItems.Where(item => item.ETag != null && item.ETag.Length == 0);
             if (bogusEtagKeys.Any())
             {
@@ -136,12 +136,12 @@ namespace Microsoft.Bot.Builder.Azure
 
             var writeTasks = changes.Select(kv =>
             {
-                var storeEntity = new StoreItemEntity(new EntityKey(kv.Key), kv.Value);
+                var envelope = new StorageEnvelope(new EntityKey(kv.Key), kv.Value);
 
                 // Re-create object as table entity
-                var tableEntity = storeEntity.AsTableEntity();
+                var tableEntity = envelope.AsTableEntity();
 
-                if (storeEntity.ETag == null || storeEntity.ETag == "*")
+                if (envelope.ETag == null || envelope.ETag == "*")
                 {
                     // New item or etag=* then insert or replace unconditionaly
                     return Table.ExecuteAsync(TableOperation.InsertOrReplace(tableEntity));
@@ -158,11 +158,13 @@ namespace Microsoft.Bot.Builder.Azure
         /// <summary>
         /// Ensure table is created.
         /// </summary>
-        /// <returns></returns>
         private async Task EnsureTableExists()
         {
             if (!_tableCreated)
             {
+                _tableCreated = true;
+
+                // This call may not be thread-safe and multiple calls may be made, but Azure will handle it correctly and there is no destructive side effect.
                 await Table.CreateIfNotExistsAsync();
             }
         }
@@ -170,32 +172,32 @@ namespace Microsoft.Bot.Builder.Azure
         /// <summary>
         /// Internal data structure for storing items in Azure Tables.
         /// </summary>
-        private class StoreItemEntity
+        private class StorageEnvelope
         {
-            public object Entity { get; private set; }
+            public object StoreItem { get; private set; }
             public EntityKey Key { get; private set; }
             public string ETag
             {
                 get
                 {
-                    return (Entity as IStoreItem)?.eTag;
+                    return (StoreItem as IStoreItem)?.eTag;
                 }
             }
 
-            public StoreItemEntity(EntityKey key, object entity)
+            public StorageEnvelope(EntityKey key, object entity)
             {
                 Key = key;
-                Entity = entity;
+                StoreItem = entity;
             }
 
             public DynamicTableEntity AsTableEntity()
             {
                 // Flatten properties
                 var properties = new Dictionary<string, EntityProperty>();
-                Flatten(properties, Entity);
+                Flatten(properties, StoreItem);
 
                 // Add Type information
-                var type = Entity.GetType();
+                var type = StoreItem.GetType();
                 var typeQualifiedName = type.AssemblyQualifiedName;
                 properties.Add("__type", EntityProperty.GeneratePropertyForString(typeQualifiedName));
 
@@ -206,7 +208,7 @@ namespace Microsoft.Bot.Builder.Azure
                 };
             }
 
-            public static StoreItemEntity AsStoreItemEntity(TableResult tableEntity)
+            public static StorageEnvelope AsStoreItemEntity(TableResult tableEntity)
             {
                 // Create instance of proper type
                 var dynamicTableEntity = (DynamicTableEntity)tableEntity.Result;
@@ -244,7 +246,7 @@ namespace Microsoft.Bot.Builder.Azure
                     iStoreItem.eTag = tableEntity.Etag;
                 }
 
-                return new StoreItemEntity(new EntityKey(dynamicTableEntity.PartitionKey, dynamicTableEntity.RowKey), value);
+                return new StorageEnvelope(new EntityKey(dynamicTableEntity.PartitionKey, dynamicTableEntity.RowKey), value);
             }
 
             private static void Flatten(IDictionary<string, EntityProperty> properties, object entity, string prefix = "")
