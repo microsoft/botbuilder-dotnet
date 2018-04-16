@@ -215,7 +215,7 @@ namespace Microsoft.Bot.Builder.Azure
                 var dynamicTableEntity = (DynamicTableEntity)tableEntity.Result;
                 var type = Type.GetType(dynamicTableEntity.Properties["__type"].StringValue);
                 var properties = dynamicTableEntity.Properties;
-                var value = CreateInstaceOf(type);
+                var value = CreateInstanceOf(type);
 
                 // Set object properties
                 if (IsAnonymousType(type))
@@ -286,7 +286,7 @@ namespace Microsoft.Bot.Builder.Azure
                 }
             }
 
-            private static object CreateInstaceOf(Type type)
+            private static object CreateInstanceOf(Type type)
             {
                 var ctor = type
                     .GetConstructors()
