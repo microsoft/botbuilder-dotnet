@@ -9,6 +9,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Ai.Translation;
+using System.Diagnostics;
 
 namespace Microsoft.Bot.Builder.Ai.QnA.Tests
 {
@@ -26,8 +27,9 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
         [TestCategory("Translator")]
         public async Task TranslatorMiddleware_DetectAndTranslateToEnglish()
         {
-            if (!TestUtilities.CheckKeys(new string[] { "TRANSLATORKEY" }))
+            if (!EnvironmentVariablesDefined())
             {
+                Debug.WriteLine("Missing Translator Environment variables - Skipping test");
                 return;
             }
 
@@ -54,8 +56,9 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
         [TestCategory("Translator")]
         public async Task TranslatorMiddleware_TranslateFrenchToEnglish()
         {
-            if (!TestUtilities.CheckKeys(new string[] { "TRANSLATORKEY" }))
+            if (!EnvironmentVariablesDefined())
             {
+                Debug.WriteLine("Missing Translator Environment variables - Skipping test");
                 return;
             }
 
@@ -83,8 +86,9 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
         [TestCategory("Translator")]
         public async Task TranslatorMiddleware_TranslateFrenchToEnglishToUserLanguage()
         {
-            if (!TestUtilities.CheckKeys(new string[] { "TRANSLATORKEY" }))
+            if (!EnvironmentVariablesDefined())
             {
+                Debug.WriteLine("Missing Translator Environment variables - Skipping test");
                 return;
             }
 
@@ -145,6 +149,11 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
             }
 
             return "en";
-        }   
+        }
+
+        private bool EnvironmentVariablesDefined()
+        {
+            return translatorKey != null;
+        }
     }
 }
