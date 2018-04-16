@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Core.Extensions.Tests;
@@ -19,6 +20,12 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
         [TestCategory("QnAMaker")]
         public async Task QnaMaker_TestMiddleware()
         {
+            if (!EnvironmentVariablesDefined())
+            {
+                Debug.WriteLine("Missing QnaMaker Environemnt variables - Skipping test");
+                return;
+            }
+
             TestAdapter adapter = new TestAdapter()
                 .Use(new QnAMakerMiddleware(new QnAMakerMiddlewareOptions()
                 {
@@ -42,5 +49,9 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
                 .StartTest();
         }
 
+        private bool EnvironmentVariablesDefined()
+        {
+            return knowlegeBaseId != null && subscriptionKey != null;
+        }
     }
 }

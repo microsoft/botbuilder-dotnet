@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System.Diagnostics;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
@@ -12,14 +13,20 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
     [TestClass]
     public class QnAMakerTests
     {
-        public string knowlegeBaseId = TestUtilities.GetKey("QNAKNOWLEDGEBASEID");
-        public string subscriptionKey = TestUtilities.GetKey("QNASUBSCRIPTIONKEY");
+        public readonly string knowlegeBaseId = TestUtilities.GetKey("QNAKNOWLEDGEBASEID");
+        public readonly string subscriptionKey = TestUtilities.GetKey("QNASUBSCRIPTIONKEY");
 
         [TestMethod]
         [TestCategory("AI")]
         [TestCategory("QnAMaker")]
         public async Task QnaMaker_ReturnsAnswer()
         {
+            if (!EnvironmentVariablesDefined())
+            {
+                Debug.WriteLine("Missing QnaMaker Environemnt variables - Skipping test");
+                return;
+            }
+
             var qna = new QnAMaker(new QnAMakerOptions()
             {
                 KnowledgeBaseId = knowlegeBaseId,
@@ -38,6 +45,11 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
         [TestCategory("QnAMaker")]
         public async Task QnaMaker_TestThreshold()
         {
+            if (!EnvironmentVariablesDefined())
+            {
+                Debug.WriteLine("Missing QnaMaker Environemnt variables - Skipping test");
+                return;
+            }
 
             var qna = new QnAMaker(new QnAMakerOptions()
             {
@@ -57,7 +69,12 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
         [TestCategory("QnAMaker")]
         public async Task QnaMaker_TestMiddleware()
         {
-            
+            if (!EnvironmentVariablesDefined())
+            {
+                Debug.WriteLine("Missing QnaMaker Environemnt variables - Skipping test");
+                return;
+            }
+
             TestAdapter adapter = new TestAdapter()
                 .Use(new QnAMakerMiddleware(new QnAMakerMiddlewareOptions()
                 {
@@ -77,5 +94,9 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
                 .StartTest();
         }
 
+        private bool EnvironmentVariablesDefined()
+        {
+            return knowlegeBaseId != null && subscriptionKey != null;
+        }
     }
 }
