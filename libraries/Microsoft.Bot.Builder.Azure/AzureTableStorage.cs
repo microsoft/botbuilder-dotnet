@@ -67,10 +67,22 @@ namespace Microsoft.Bot.Builder.Azure
         {
             if (keys == null) throw new ArgumentNullException(nameof(keys));
 
-            await Task.WhenAll(
-                keys.Select(k => new EntityKey(k))
-                    .Select(ek => Table.ExecuteAsync(TableOperation.Delete(new TableEntity(ek.PartitionKey, ek.RowKey) { ETag = "*" }))))
-                        .ConfigureAwait(false);
+            try
+            {
+                await Task.WhenAll(
+                    keys.Select(k => new EntityKey(k))
+                        .Select(ek => Table.ExecuteAsync(TableOperation.Delete(new TableEntity(ek.PartitionKey, ek.RowKey) { ETag = "*" }))))
+                            .ConfigureAwait(false);
+            }
+            catch (StorageException ex)
+                when ((HttpStatusCode)ex.RequestInformation.HttpStatusCode == HttpStatusCode.NotFound)
+            {
+            }
+            catch (AggregateException ex)
+                when (ex.InnerException is StorageException iex
+                && (HttpStatusCode)iex.RequestInformation.HttpStatusCode == HttpStatusCode.NotFound)
+            {
+            }
         }
 
         /// <summary>
@@ -185,20 +197,25 @@ namespace Microsoft.Bot.Builder.Azure
                 var dynamicTableEntity = (DynamicTableEntity)tableEntity.Result;
                 var type = Type.GetType(dynamicTableEntity.Properties["__type"].StringValue);
                 var properties = dynamicTableEntity.Properties;
-                //.Where(kv => !kv.Key.EndsWith("__type")).ToDictionary(kv => kv.Key, kv => kv.Value);
                 var value = CreateInstaceOf(type);
 
                 // Set object properties
-                /*if (value is IStoreItem storeItem)
+                if (IsAnonymousType(type))
                 {
-                    // Apply properties to StoreItem (FlexObject)
-                    value = ApplyProperties(properties, storeItem);
-                }
-                else */if (IsAnonymousType(type))
-                {
-                    // Anonymous Type not supported - Anonymous Types may not have setters and values are passed in the constructor
+                    // Anonymous Type not supported - Anonymous Types may not have setters as values are passed in the constructor
                     // Convert to dynamic/ExpandoObject instead
-                    value = ApplyProperties(properties, new ExpandoObject()) as dynamic;
+                    var expando = new ExpandoObject() as IDictionary<string, Object>;
+
+
+                    // TODO: Handle nested objects (e.g.: Parent_Child_Prop1)
+                    foreach (var prop in properties)
+                    {
+                        var propKey = prop.Key;
+                        var propValue = prop.Value.PropertyAsObject;
+                        expando[propKey] = propValue;
+                    }
+
+                    value = expando;
                 }
                 else
                 {
@@ -215,25 +232,40 @@ namespace Microsoft.Bot.Builder.Azure
                 return new StoreItemEntity(new EntityKey(dynamicTableEntity.PartitionKey, dynamicTableEntity.RowKey), value);
             }
 
-            private static dynamic ApplyProperties(IDictionary<string, EntityProperty> properties, dynamic item)
+            private static void Flatten(IDictionary<string, EntityProperty> properties, object entity, string prefix = "")
             {
-                foreach (var prop in properties)
+                if (IsAnonymousType(entity.GetType()))
                 {
-                    var key = prop.Key;
-                    var value = prop.Value.PropertyAsObject;
+                    // Anonymous Object
+                    var entityProps = entity.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public).Where(p => p.CanRead);
+                    foreach (var prop in entityProps)
+                    {
+                        var propValue = prop.GetValue(entity);
+                        if (propValue == null) return;
 
-                    // Set the value to its property
-                    /*if (item is StoreItem)
-                    {
-                        item.Add(key, value);
+                        if (IsSimple(propValue.GetType()))
+                        {
+                            properties.Add(prefix + prop.Name, EntityProperty.CreateEntityPropertyFromObject(propValue));
+                        }
+                        else
+                        {
+                            var typeQualifiedName = propValue.GetType().AssemblyQualifiedName;
+                            properties.Add(prop.Name + "__type", EntityProperty.GeneratePropertyForString(typeQualifiedName));
+                            Flatten(properties, propValue, prop.Name + "_");
+                        }
                     }
-                    else */if (item is IDictionary<string, Object> expando)
+
+                    return;
+                }
+                else
+                {
+                    // POCO objects
+                    var childProperties = EntityPropertyConverter.Flatten(entity, new OperationContext());
+                    foreach (var childProp in childProperties)
                     {
-                        expando[key] = value;
+                        properties.Add(prefix + childProp.Key, childProp.Value);
                     }
                 }
-
-                return item;
             }
 
             private static object CreateInstaceOf(Type type)
@@ -254,64 +286,6 @@ namespace Microsoft.Bot.Builder.Azure
                             ).ToArray()
                         )
                     : Activator.CreateInstance(type);
-            }
-
-            private static void Flatten(IDictionary<string, EntityProperty> properties, object entity, string prefix = "")
-            {
-                /*if (entity is StoreItem storeItem)
-                {
-                    // StoreItem
-                    foreach (var prop in storeItem)
-                    {
-                        var propValue = prop.Value;
-                        if (propValue == null) return;
-
-                        if (IsSimple(propValue.GetType()))
-                        {
-                            properties.Add(prefix + prop.Key, EntityProperty.CreateEntityPropertyFromObject(propValue));
-                        }
-                        else
-                        {
-                            var typeQualifiedName = propValue.GetType().AssemblyQualifiedName;
-                            properties.Add(prop.Key + "___type", EntityProperty.GeneratePropertyForString(typeQualifiedName));
-                            Flatten(properties, propValue, prop.Key + "_");
-                        }
-                    }
-
-                    return;
-                }
-                else */if (IsAnonymousType(entity.GetType()))
-                {
-                    // Anonymous Object
-                    var entityProps = entity.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public).Where(p => p.CanRead);
-                    foreach (var prop in entityProps)
-                    {
-                        var propValue = prop.GetValue(entity);
-                        if (propValue == null) return;
-
-                        if (IsSimple(propValue.GetType()))
-                        {
-                            properties.Add(prefix + prop.Name, EntityProperty.CreateEntityPropertyFromObject(propValue));
-                        }
-                        else
-                        {
-                            var typeQualifiedName = propValue.GetType().AssemblyQualifiedName;
-                            properties.Add(prop.Name + "___type", EntityProperty.GeneratePropertyForString(typeQualifiedName));
-                            Flatten(properties, propValue, prop.Name + "_");
-                        }
-                    }
-
-                    return;
-                }
-                else
-                {
-                    // POCO objects
-                    var childProperties = EntityPropertyConverter.Flatten(entity, new OperationContext());
-                    foreach (var childProp in childProperties)
-                    {
-                        properties.Add(prefix + childProp.Key, childProp.Value);
-                    }
-                }
             }
 
             private static bool IsSimple(Type type)
