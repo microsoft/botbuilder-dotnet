@@ -3,10 +3,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Dynamic;
 using System.Linq;
 using System.Net;
-using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Core.Extensions;
@@ -194,8 +192,7 @@ namespace Microsoft.Bot.Builder.Azure
             public DynamicTableEntity AsTableEntity()
             {
                 // Flatten properties
-                var properties = new Dictionary<string, EntityProperty>();
-                Flatten(properties, StoreItem);
+                var properties = EntityPropertyConverter.Flatten(StoreItem, new OperationContext());
 
                 // Add Type information
                 var type = StoreItem.GetType();
@@ -215,31 +212,9 @@ namespace Microsoft.Bot.Builder.Azure
                 var dynamicTableEntity = (DynamicTableEntity)tableEntity.Result;
                 var type = Type.GetType(dynamicTableEntity.Properties["__type"].StringValue);
                 var properties = dynamicTableEntity.Properties;
-                var value = CreateInstanceOf(type);
 
-                // Set object properties
-                if (IsAnonymousType(type))
-                {
-                    // Anonymous Type not supported - Anonymous Types may not have setters as values are passed in the constructor
-                    // Convert to dynamic/ExpandoObject instead
-                    var expando = new ExpandoObject() as IDictionary<string, Object>;
-
-
-                    // TODO: Handle nested objects (e.g.: Parent_Child_Prop1)
-                    foreach (var prop in properties)
-                    {
-                        var propKey = prop.Key;
-                        var propValue = prop.Value.PropertyAsObject;
-                        expando[propKey] = propValue;
-                    }
-
-                    value = expando;
-                }
-                else
-                {
-                    // POCO entity
-                    TableEntity.ReadUserObject(value, properties, new OperationContext());
-                }
+                var value = Activator.CreateInstance(type);
+                TableEntity.ReadUserObject(value, properties, new OperationContext());
 
                 // IStoreItem? apply Etag
                 if (value is IStoreItem iStoreItem)
@@ -249,73 +224,6 @@ namespace Microsoft.Bot.Builder.Azure
 
                 return new StorageEnvelope(new EntityKey(dynamicTableEntity.PartitionKey, dynamicTableEntity.RowKey), value);
             }
-
-            private static void Flatten(IDictionary<string, EntityProperty> properties, object entity, string prefix = "")
-            {
-                if (IsAnonymousType(entity.GetType()))
-                {
-                    // Anonymous Object
-                    var entityProps = entity.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public).Where(p => p.CanRead);
-                    foreach (var prop in entityProps)
-                    {
-                        var propValue = prop.GetValue(entity);
-                        if (propValue == null) return;
-
-                        if (IsSimple(propValue.GetType()))
-                        {
-                            properties.Add(prefix + prop.Name, EntityProperty.CreateEntityPropertyFromObject(propValue));
-                        }
-                        else
-                        {
-                            var typeQualifiedName = propValue.GetType().AssemblyQualifiedName;
-                            properties.Add(prop.Name + "__type", EntityProperty.GeneratePropertyForString(typeQualifiedName));
-                            Flatten(properties, propValue, prop.Name + "_");
-                        }
-                    }
-
-                    return;
-                }
-                else
-                {
-                    // POCO objects
-                    var childProperties = EntityPropertyConverter.Flatten(entity, new OperationContext());
-                    foreach (var childProp in childProperties)
-                    {
-                        properties.Add(prefix + childProp.Key, childProp.Value);
-                    }
-                }
-            }
-
-            private static object CreateInstanceOf(Type type)
-            {
-                var ctor = type
-                    .GetConstructors()
-                    .FirstOrDefault(c => c.GetParameters().Length > 0);
-
-                return ctor != null
-                    // Possible anonymous type
-                    ? ctor.Invoke
-                        (ctor.GetParameters()
-                            .Select(p =>
-                                p.HasDefaultValue ? p.DefaultValue :
-                                p.ParameterType.IsValueType && Nullable.GetUnderlyingType(p.ParameterType) == null
-                                    ? Activator.CreateInstance(p.ParameterType)
-                                    : null
-                            ).ToArray()
-                        )
-                    : Activator.CreateInstance(type);
-            }
-
-            private static bool IsSimple(Type type)
-            {
-                return type.IsPrimitive
-                  || type.IsEnum
-                  || type.Equals(typeof(string))
-                  || type.Equals(typeof(decimal));
-            }
-
-            private static bool IsAnonymousType(Type type) =>
-                type.FullName.Contains("AnonymousType") && type.GetCustomAttributes(typeof(System.Runtime.CompilerServices.CompilerGeneratedAttribute), false).Any();
         }
 
         /// <summary>
