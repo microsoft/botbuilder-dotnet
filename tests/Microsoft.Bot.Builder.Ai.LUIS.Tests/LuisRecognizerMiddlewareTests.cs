@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Builder.Ai.LUIS.Tests
         {
             if (!EnvironmentVariablesDefined())
             {
-                Debug.WriteLine("Missing Luis Environemnt variables - Skipping test");
+                Debug.WriteLine("Missing Luis Environment variables - Skipping test");
                 return;
             }
 
@@ -38,7 +38,7 @@ namespace Microsoft.Bot.Builder.Ai.LUIS.Tests
         {
             if (!EnvironmentVariablesDefined())
             {
-                Debug.WriteLine("Missing Luis Environemnt variables - Skipping test");
+                Debug.WriteLine("Missing Luis Environment variables - Skipping test");
                 return;
             }
 

@@ -70,7 +70,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
             var invalidKeys = keys.Where(key => GetKey(key) == null);
             if (invalidKeys.Any())
             {
-                System.Diagnostics.Debug.WriteLine($"Missing Environemnt variables - Skipping test ({string.Join(", ", invalidKeys)})");
+                System.Diagnostics.Debug.WriteLine($"Missing Environment variables - Skipping test ({string.Join(", ", invalidKeys)})");
                 return false;
             }
 
