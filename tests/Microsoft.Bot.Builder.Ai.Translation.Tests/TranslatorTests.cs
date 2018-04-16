@@ -5,6 +5,7 @@ using Microsoft.Bot.Builder.Core.Extensions.Tests;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Ai.Translation.Tests
@@ -19,8 +20,9 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
         [TestCategory("Translator")]
         public async Task Translator_DetectAndTranslateToEnglish()
         {
-            if (!TestUtilities.CheckKeys(new string[] { "TRANSLATORKEY" }))
+            if (!EnvironmentVariablesDefined())
             {
+                Debug.WriteLine("Missing Translator Environment variables - Skipping test");
                 return;
             }
 
@@ -41,8 +43,9 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
         [TestCategory("Translator")]
         public async Task Translator_LiteralTagTest()
         {
-            if (!TestUtilities.CheckKeys(new string[] { "TRANSLATORKEY" }))
+            if (!EnvironmentVariablesDefined())
             {
+                Debug.WriteLine("Missing Translator Environment variables - Skipping test");
                 return;
             }
 
@@ -60,8 +63,9 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
         [TestCategory("Translator")]
         public async Task Translator_PatternsTest()
         {
-            if (!TestUtilities.CheckKeys(new string[] { "TRANSLATORKEY" }))
+            if (!EnvironmentVariablesDefined())
             {
+                Debug.WriteLine("Missing Translator Environment variables - Skipping test");
                 return;
             }
 
@@ -85,8 +89,9 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
         [TestCategory("Translator")]
         public async Task Translator_TranslateFrenchToEnglish()
         {
-            if (!TestUtilities.CheckKeys(new string[] { "TRANSLATORKEY" }))
+            if (!EnvironmentVariablesDefined())
             {
+                Debug.WriteLine("Missing Translator Environment variables - Skipping test");
                 return;
             }
 
@@ -103,8 +108,9 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
         [TestCategory("Translator")]
         public async Task Translator_TranslateFrenchToEnglishArray()
         {
-            if (!TestUtilities.CheckKeys(new string[] { "TRANSLATORKEY" }))
+            if (!EnvironmentVariablesDefined())
             {
+                Debug.WriteLine("Missing Translator Environment variables - Skipping test");
                 return;
             }
 
@@ -123,8 +129,9 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
         [TestCategory("Translator")]
         public async Task Translator_TranslateEnglishToFrench()
         {
-            if (!TestUtilities.CheckKeys(new string[] { "TRANSLATORKEY" }))
+            if (!EnvironmentVariablesDefined())
             {
+                Debug.WriteLine("Missing Translator Environment variables - Skipping test");
                 return;
             }
 
@@ -141,8 +148,9 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
         [TestCategory("Translator")]
         public async Task Translator_TranslateEnglishToFrenchArray()
         {
-            if (!TestUtilities.CheckKeys(new string[] { "TRANSLATORKEY" }))
+            if (!EnvironmentVariablesDefined())
             {
+                Debug.WriteLine("Missing Translator Environment variables - Skipping test");
                 return;
             }
 
@@ -161,8 +169,9 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
         [TestCategory("Translator")]
         public async Task Translator_InvalidSourceLanguage()
         {
-            if (!TestUtilities.CheckKeys(new string[] { "TRANSLATORKEY" }))
+            if (!EnvironmentVariablesDefined())
             {
+                Debug.WriteLine("Missing Translator Environment variables - Skipping test");
                 return;
             }
 
@@ -178,8 +187,9 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
         [TestCategory("Translator")]
         public async Task Translator_InvalidTargetLanguage()
         {
-            if (!TestUtilities.CheckKeys(new string[] { "TRANSLATORKEY" }))
+            if (!EnvironmentVariablesDefined())
             {
+                Debug.WriteLine("Missing Translator Environment variables - Skipping test");
                 return;
             }
 
@@ -188,6 +198,11 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
             var sentence = "Arrange an appointment for tomorrow";
             await Assert.ThrowsExceptionAsync<ArgumentException>(async () =>
                 await translator.Translate(sentence, "en", "na"));
+        }
+
+        private bool EnvironmentVariablesDefined()
+        {
+            return translatorKey != null;
         }
     }
 }

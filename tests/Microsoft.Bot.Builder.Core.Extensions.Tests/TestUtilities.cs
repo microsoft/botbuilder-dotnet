@@ -64,17 +64,5 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
             }
             return value;
         }
-
-        public static bool CheckKeys(string[] keys)
-        {
-            var invalidKeys = keys.Where(key => GetKey(key) == null);
-            if (invalidKeys.Any())
-            {
-                System.Diagnostics.Debug.WriteLine($"Missing Environment variables - Skipping test ({string.Join(", ", invalidKeys)})");
-                return false;
-            }
-
-            return true;
-        }
     }
 }
