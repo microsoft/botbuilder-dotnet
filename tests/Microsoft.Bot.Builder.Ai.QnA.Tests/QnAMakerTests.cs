@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
         {
             if (!EnvironmentVariablesDefined())
             {
-                Debug.WriteLine("Missing QnaMaker Environemnt variables - Skipping test");
+                Debug.WriteLine("Missing QnaMaker Environment variables - Skipping test");
                 return;
             }
 
@@ -47,7 +47,7 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
         {
             if (!EnvironmentVariablesDefined())
             {
-                Debug.WriteLine("Missing QnaMaker Environemnt variables - Skipping test");
+                Debug.WriteLine("Missing QnaMaker Environment variables - Skipping test");
                 return;
             }
 
@@ -71,7 +71,7 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
         {
             if (!EnvironmentVariablesDefined())
             {
-                Debug.WriteLine("Missing QnaMaker Environemnt variables - Skipping test");
+                Debug.WriteLine("Missing QnaMaker Environment variables - Skipping test");
                 return;
             }
 
