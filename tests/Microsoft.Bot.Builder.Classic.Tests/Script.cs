@@ -27,9 +27,9 @@ namespace Microsoft.Bot.Builder.Classic.Tests
             var adapter = new TestAdapter();
             await adapter.ProcessActivity((Activity)toBot, async (ctx) =>
             {
-                using (var scope = DialogModule.BeginLifetimeScope(container, ctx))
+                using (var containerScope = DialogModule.BeginLifetimeScope(container, ctx))
                 {
-                    var task = scope.Resolve<IPostToBot>();
+                    var task = containerScope.Resolve<IPostToBot>();
                     var queue = adapter.ActiveQueue;
 
                     Action drain = () =>
@@ -49,14 +49,14 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                         }
                     };
                     string result = null;
-                    var root = scope.Resolve<IDialog<object>>().Do(async (context, value) =>
+                    var root = containerScope.Resolve<IDialog<object>>().Do(async (context, value) =>
                         result = JsonConvert.SerializeObject(await value));
                     if (proactive)
                     {
                         var loop = root.Loop();
-                        var data = scope.Resolve<IBotData>();
+                        var data = containerScope.Resolve<IBotData>();
                         await data.LoadAsync(CancellationToken.None);
-                        var stack = scope.Resolve<IDialogTask>();
+                        var stack = containerScope.Resolve<IDialogTask>();
                         stack.Call(loop, null);
                         await stack.PollAsync(CancellationToken.None);
                         drain();
