@@ -15,7 +15,6 @@ namespace Microsoft.Bot.Builder.Ai.QnA
         public const string QnAMakerResultKey = "QnAMakerResult";
         public const string QnAMakerTraceType = "https://www.qnamaker.ai/schemas/trace";
         public const string QnAMakerTraceLabel = "QnAMaker Trace";
-        public const string Obfuscated = "****";
         private readonly QnAMaker _qnaMaker;
         private readonly QnAMakerMiddlewareOptions _options;
 
@@ -39,7 +38,12 @@ namespace Microsoft.Bot.Builder.Ai.QnA
                         var traceInfo = new QnAMakerTraceInfo
                         {
                             QueryResults = results,
-                            QnAMakerOptions = RemoveSensitiveData(_options)
+                            KnowledgeBaseId = _options.KnowledgeBaseId,
+                            // leave out _options.SubscriptionKey, it is not public
+                            ScoreThreshold = _options.ScoreThreshold,
+                            Top = _options.Top,
+                            StrictFilters = _options.StrictFilters,
+                            MetadataBoost = _options.MetadataBoost,
                         };
                         var traceActivity = Activity.CreateTraceActivity(QnAMakerMiddlewareName, QnAMakerTraceType, traceInfo, QnAMakerTraceLabel);
                         await context.SendActivity(traceActivity).ConfigureAwait(false);
@@ -60,19 +64,6 @@ namespace Microsoft.Bot.Builder.Ai.QnA
             }
 
             await next().ConfigureAwait(false);
-        }
-
-        public static QnAMakerOptions RemoveSensitiveData(QnAMakerOptions options)
-        {
-            return new QnAMakerOptions
-            {
-                ScoreThreshold = options.ScoreThreshold,
-                Top = options.Top,
-                StrictFilters = options.StrictFilters,
-                MetadataBoost = options.MetadataBoost,
-                SubscriptionKey = Obfuscated,
-                KnowledgeBaseId = options.KnowledgeBaseId
-            };
         }
     }
 }

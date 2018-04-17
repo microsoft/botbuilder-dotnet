@@ -14,7 +14,19 @@ namespace Microsoft.Bot.Builder.Ai.QnA
         [JsonProperty("queryResults")]
         public QueryResult[] QueryResults { set; get; }
 
-        [JsonProperty("qnaMakerOptions")]
-        public QnAMakerOptions QnAMakerOptions { set; get; }
+        [JsonProperty("knowledgeBaseId")]
+        public string KnowledgeBaseId { get; set; }
+
+        [JsonProperty("scoreThreshold")]
+        public float ScoreThreshold { get; set; }
+
+        [JsonProperty("top")]
+        public int Top { get; set; }
+
+        [JsonProperty("strictFilters")]
+        public Metadata[] StrictFilters { get; set; }
+
+        [JsonProperty("metadataBoost")]
+        public Metadata[] MetadataBoost { get; set; }
     }
 }
