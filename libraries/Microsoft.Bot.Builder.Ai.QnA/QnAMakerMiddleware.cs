@@ -71,7 +71,7 @@ namespace Microsoft.Bot.Builder.Ai.QnA
                 StrictFilters = options.StrictFilters,
                 MetadataBoost = options.MetadataBoost,
                 SubscriptionKey = Obfuscated,
-                KnowledgeBaseId = Obfuscated
+                KnowledgeBaseId = options.KnowledgeBaseId
             };
         }
     }

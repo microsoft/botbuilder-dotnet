@@ -114,7 +114,7 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
             var obfuscated = QnAMakerMiddleware.RemoveSensitiveData(model);
 
             Assert.AreEqual(QnAMakerMiddleware.Obfuscated, obfuscated.SubscriptionKey);
-            Assert.AreEqual(QnAMakerMiddleware.Obfuscated, obfuscated.KnowledgeBaseId);
+            Assert.AreEqual(model.KnowledgeBaseId, obfuscated.KnowledgeBaseId);
             Assert.AreEqual(model.ScoreThreshold, obfuscated.ScoreThreshold);
             Assert.AreEqual(model.Top, obfuscated.Top);
         }
