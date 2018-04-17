@@ -96,8 +96,8 @@ namespace Microsoft.Bot.Builder.Azure
                 if (tableEntity.HttpStatusCode == (int)HttpStatusCode.OK)
                 {
                     // re-create expected object
-                    StorageEnvelope envelope = StorageEnvelope.AsStoreItemEntity(tableEntity);
-                    return new KeyValuePair<string, object>(key, envelope.StoreItem);
+                    var value = ReadObject(tableEntity);
+                    return new KeyValuePair<string, object>(key, value);
                 }
 
                 return new KeyValuePair<string, object>();
@@ -116,8 +116,9 @@ namespace Microsoft.Bot.Builder.Azure
         {
             if (changes == null) throw new ArgumentNullException(nameof(changes));
 
-            var storeItems = changes.Select(kv => new StorageEnvelope(new EntityKey(kv.Key), kv.Value));
-            var bogusEtagKeys = storeItems.Where(item => item.ETag != null && item.ETag.Length == 0);
+            // Re-create objects as table entities
+            var tableEntities = changes.Select(kv => new KeyValuePair<string, DynamicTableEntity>(kv.Key, ToTableEntity(kv.Key, kv.Value)));
+            var bogusEtagKeys = tableEntities.Where(item => item.Value.ETag != null && item.Value.ETag.Length == 0);
             if (bogusEtagKeys.Any())
             {
                 throw new ArgumentException("Invalid ETag values detected for items with the following keys: " + string.Join(", ", bogusEtagKeys.Select(o => o.Key)));
@@ -125,23 +126,19 @@ namespace Microsoft.Bot.Builder.Azure
 
             var table = await GetTable().ConfigureAwait(false);
 
-            var writeTasks = changes.Select(kv =>
-            {
-                var envelope = new StorageEnvelope(new EntityKey(kv.Key), kv.Value);
-
-                // Re-create object as table entity
-                var tableEntity = envelope.AsTableEntity();
-
-                if (envelope.ETag == null || envelope.ETag == "*")
+            var writeTasks = tableEntities.Select(o => o.Value)
+                .Select(tableEntity =>
                 {
-                    // New item or etag=* then insert or replace unconditionaly
-                    return table.ExecuteAsync(TableOperation.InsertOrReplace(tableEntity));
-                }
+                    if (tableEntity.ETag == null || tableEntity.ETag == "*")
+                    {
+                        // New item or etag=* then insert or replace unconditionaly
+                        return table.ExecuteAsync(TableOperation.InsertOrReplace(tableEntity));
+                    }
 
 
-                // Optimistic Update
-                return table.ExecuteAsync(TableOperation.Replace(tableEntity));
-            });
+                    // Optimistic Update
+                    return table.ExecuteAsync(TableOperation.Replace(tableEntity));
+                });
 
             await Task.WhenAll(writeTasks).ConfigureAwait(false);
         }
@@ -161,75 +158,56 @@ namespace Microsoft.Bot.Builder.Azure
             async Task<CloudTable> EnsureTableExists()
             {
                 _table = _storageAccount.CreateCloudTableClient().GetTableReference(_tableName);
-                
+
                 // This call may not be thread-safe and multiple calls may be made, but Azure will handle it correctly and there is no destructive side effect.
                 await _table.CreateIfNotExistsAsync();
                 return _table;
             }
         }
 
-        /// <summary>
-        /// Internal data structure for storing items in Azure Tables.
-        /// </summary>
-        private class StorageEnvelope
+        private static object ReadObject(TableResult tableEntity)
         {
-            public object StoreItem { get; private set; }
-            public EntityKey Key { get; private set; }
-            public string ETag
+            // Create instance of proper type
+            var dynamicTableEntity = (DynamicTableEntity)tableEntity.Result;
+            var properties = dynamicTableEntity.Properties;
+            var type = Type.GetType(properties["__type"].StringValue);
+
+            var value = Activator.CreateInstance(type);
+            TableEntity.ReadUserObject(value, properties, new OperationContext());
+
+            // IStoreItem? apply Etag
+            if (value is IStoreItem iStoreItem)
             {
-                get
-                {
-                    return (StoreItem as IStoreItem)?.eTag;
-                }
+                iStoreItem.eTag = tableEntity.Etag;
             }
 
-            public StorageEnvelope(EntityKey key, object entity)
+            return value;
+        }
+
+        private static DynamicTableEntity ToTableEntity(string key, object value)
+        {
+            // Flatten properties
+            var properties = EntityPropertyConverter.Flatten(value, new OperationContext());
+
+            // Add Type information
+            var type = value.GetType();
+            var typeQualifiedName = type.AssemblyQualifiedName;
+            properties.Add("__type", EntityProperty.GeneratePropertyForString(typeQualifiedName));
+
+            // Etag and PK/RK
+            var etag = (value as IStoreItem)?.eTag;
+            var ek = new EntityKey(key);
+            return new DynamicTableEntity(ek.PartitionKey, ek.RowKey)
             {
-                Key = key;
-                StoreItem = entity;
-            }
-
-            public DynamicTableEntity AsTableEntity()
-            {
-                // Flatten properties
-                var properties = EntityPropertyConverter.Flatten(StoreItem, new OperationContext());
-
-                // Add Type information
-                var type = StoreItem.GetType();
-                var typeQualifiedName = type.AssemblyQualifiedName;
-                properties.Add("__type", EntityProperty.GeneratePropertyForString(typeQualifiedName));
-
-                return new DynamicTableEntity(Key.PartitionKey, Key.RowKey)
-                {
-                    ETag = ETag,
-                    Properties = properties
-                };
-            }
-
-            public static StorageEnvelope AsStoreItemEntity(TableResult tableEntity)
-            {
-                // Create instance of proper type
-                var dynamicTableEntity = (DynamicTableEntity)tableEntity.Result;
-                var type = Type.GetType(dynamicTableEntity.Properties["__type"].StringValue);
-                var properties = dynamicTableEntity.Properties;
-
-                var value = Activator.CreateInstance(type);
-                TableEntity.ReadUserObject(value, properties, new OperationContext());
-
-                // IStoreItem? apply Etag
-                if (value is IStoreItem iStoreItem)
-                {
-                    iStoreItem.eTag = tableEntity.Etag;
-                }
-
-                return new StorageEnvelope(new EntityKey(dynamicTableEntity.PartitionKey, dynamicTableEntity.RowKey), value);
-            }
+                ETag = etag,
+                Properties = properties
+            };
         }
 
         /// <summary>
         /// Entity that maps property to PartitionKey and RowKey
         /// </summary>
-        private class EntityKey
+        private struct EntityKey
         {
             public string PartitionKey { get; private set; }
             public string RowKey { get; private set; }
