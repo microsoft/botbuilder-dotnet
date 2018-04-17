@@ -26,11 +26,9 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
                         Score = 0.9F,
                     }
                 },
-                QnAMakerOptions = new QnAMakerOptions
-                {
-                    ScoreThreshold = 0.5F,
-                    Top = 1
-                }
+                KnowledgeBaseId = Guid.NewGuid().ToString(),
+                ScoreThreshold = 0.5F,
+                Top = 1
             };
 
             var serializerSettings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto };
@@ -39,10 +37,14 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
 
             Assert.IsNotNull(deserialized);
             Assert.IsNotNull(deserialized.QueryResults);
-            Assert.IsNotNull(deserialized.QnAMakerOptions);
+            Assert.IsNotNull(deserialized.KnowledgeBaseId);
+            Assert.IsNotNull(deserialized.ScoreThreshold);
+            Assert.IsNotNull(deserialized.Top);
             Assert.AreEqual(qnaMakerTraceInfo.QueryResults[0].Questions[0], deserialized.QueryResults[0].Questions[0]);
             Assert.AreEqual(qnaMakerTraceInfo.QueryResults[0].Answer, deserialized.QueryResults[0].Answer);
-            Assert.AreEqual(qnaMakerTraceInfo.QnAMakerOptions.ScoreThreshold, deserialized.QnAMakerOptions.ScoreThreshold);
+            Assert.AreEqual(qnaMakerTraceInfo.KnowledgeBaseId, deserialized.KnowledgeBaseId);
+            Assert.AreEqual(qnaMakerTraceInfo.ScoreThreshold, deserialized.ScoreThreshold);
+            Assert.AreEqual(qnaMakerTraceInfo.Top, deserialized.Top);
         }
     }
 }

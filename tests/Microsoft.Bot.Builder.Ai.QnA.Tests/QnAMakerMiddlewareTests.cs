@@ -49,7 +49,11 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
                     var qnaMakerTraceInfo = traceActivity.Value as QnAMakerTraceInfo;
                     Assert.IsNotNull(qnaMakerTraceInfo);
                     Assert.IsNotNull(qnaMakerTraceInfo.QueryResults);
-                    Assert.IsNotNull(qnaMakerTraceInfo.QnAMakerOptions);
+                    Assert.IsNotNull(qnaMakerTraceInfo.KnowledgeBaseId);
+                    Assert.IsNotNull(qnaMakerTraceInfo.ScoreThreshold);
+                    Assert.IsNotNull(qnaMakerTraceInfo.Top);
+                    Assert.IsNotNull(qnaMakerTraceInfo.StrictFilters);
+                    Assert.IsNotNull(qnaMakerTraceInfo.MetadataBoost);
 
                     Assert.AreEqual(qnaMakerTraceInfo.QueryResults.Length, 0);
                 }, "qnaMakerTraceInfo")
@@ -90,33 +94,19 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
                     var qnaMakerTraceInfo = traceActivity.Value as QnAMakerTraceInfo;
                     Assert.IsNotNull(qnaMakerTraceInfo);
                     Assert.IsNotNull(qnaMakerTraceInfo.QueryResults);
-                    Assert.IsNotNull(qnaMakerTraceInfo.QnAMakerOptions);
+                    Assert.IsNotNull(qnaMakerTraceInfo.KnowledgeBaseId);
+                    Assert.IsNotNull(qnaMakerTraceInfo.ScoreThreshold);
+                    Assert.IsNotNull(qnaMakerTraceInfo.Top);
+                    Assert.IsNotNull(qnaMakerTraceInfo.StrictFilters);
+                    Assert.IsNotNull(qnaMakerTraceInfo.MetadataBoost);
 
                     Assert.AreEqual(qnaMakerTraceInfo.QueryResults.Length, 1);
                     Assert.AreEqual(qnaMakerTraceInfo.QueryResults[0].Answer, botResponse);
+                    Assert.AreEqual(qnaMakerTraceInfo.KnowledgeBaseId, knowlegeBaseId);
                 }, "qnaMakerTraceInfo")
                 .Send(goodUtterance)
                     .AssertReply(botResponse)
                 .StartTest();
-        }
-        [TestMethod]
-        [TestCategory("AI")]
-        [TestCategory("QnAMaker")]
-        public void QnaMaker_TestMiddleware_ObsfucscatesSensativeData()
-        {
-            var model = new QnAMakerOptions
-            {
-                ScoreThreshold = 0.5F,
-                Top = 1,
-                SubscriptionKey = Guid.NewGuid().ToString(),
-                KnowledgeBaseId = Guid.NewGuid().ToString()
-            };
-            var obfuscated = QnAMakerMiddleware.RemoveSensitiveData(model);
-
-            Assert.AreEqual(QnAMakerMiddleware.Obfuscated, obfuscated.SubscriptionKey);
-            Assert.AreEqual(model.KnowledgeBaseId, obfuscated.KnowledgeBaseId);
-            Assert.AreEqual(model.ScoreThreshold, obfuscated.ScoreThreshold);
-            Assert.AreEqual(model.Top, obfuscated.Top);
         }
 
         private bool EnvironmentVariablesDefined()
