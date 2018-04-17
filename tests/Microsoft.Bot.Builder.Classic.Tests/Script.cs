@@ -51,47 +51,52 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                     string result = null;
                     var root = containerScope.Resolve<IDialog<object>>().Do(async (context, value) =>
                         result = JsonConvert.SerializeObject(await value));
-                    if (proactive)
-                    {
-                        var loop = root.Loop();
-                        var data = containerScope.Resolve<IBotData>();
-                        await data.LoadAsync(CancellationToken.None);
-                        var stack = containerScope.Resolve<IDialogTask>();
-                        stack.Call(loop, null);
-                        await stack.PollAsync(CancellationToken.None);
-                        drain();
-                    }
-                    else
-                    {
-                        var builder = new ContainerBuilder();
-                        builder
-                            .RegisterInstance(root)
-                            .AsSelf()
-                            .As<IDialog<object>>();
-                        builder.Update((IContainer)container);
-                    }
-                    foreach (var input in inputs)
-                    {
-                        stream.WriteLine($"FromUser:{JsonConvert.SerializeObject(input)}");
-                        toBot.Text = input;
-                        try
+
+                    using (var innerScope = containerScope.BeginLifetimeScope(
+                        async (builder) =>
                         {
-                            await task.PostAsync(toBot, CancellationToken.None);
-                            drain();
-                            if (extraInfo != null)
+                            if (proactive)
                             {
-                                var extra = extraInfo();
-                                stream.WriteLine(extra);
+                                var loop = root.Loop();
+                                var data = containerScope.Resolve<IBotData>();
+                                await data.LoadAsync(CancellationToken.None);
+                                var stack = containerScope.Resolve<IDialogTask>();
+                                stack.Call(loop, null);
+                                await stack.PollAsync(CancellationToken.None);
+                                drain();
+                            }
+                            else
+                            {
+                                builder
+                                    .RegisterInstance(root)
+                                    .AsSelf()
+                                    .As<IDialog<object>>();
+                            }
+                        }))
+                    {
+                        foreach (var input in inputs)
+                        {
+                            stream.WriteLine($"FromUser:{JsonConvert.SerializeObject(input)}");
+                            toBot.Text = input;
+                            try
+                            {
+                                await task.PostAsync(toBot, CancellationToken.None);
+                                drain();
+                                if (extraInfo != null)
+                                {
+                                    var extra = extraInfo();
+                                    stream.WriteLine(extra);
+                                }
+                            }
+                            catch (Exception e)
+                            {
+                                stream.WriteLine($"Exception:{e.Message}");
                             }
                         }
-                        catch (Exception e)
+                        if (result != null)
                         {
-                            stream.WriteLine($"Exception:{e.Message}");
+                            stream.WriteLine($"Result: {result}");
                         }
-                    }
-                    if (result != null)
-                    {
-                        stream.WriteLine($"Result: {result}");
                     }
                 }
             });
