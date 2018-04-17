@@ -116,11 +116,18 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 
         // NOTE: THESE TESTS REQUIRE THAT THE AZURE STORAGE EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
         [TestMethod]
+        public async Task TableStorage_DeleteUnknownObjectTest()
+        {
+            if (HasStorage())
+                await base._deleteUnknownObjectTest(storage);
+        }
+
+        // NOTE: THESE TESTS REQUIRE THAT THE AZURE STORAGE EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
+        [TestMethod]
         public async Task BlobStorage_HandleCrazyKeys()
         {
             if (HasStorage())
                 await base._handleCrazyKeys(storage);
         }
-
     }
 }
