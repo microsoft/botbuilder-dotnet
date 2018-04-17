@@ -11,9 +11,11 @@ namespace Microsoft.Bot.Builder.Ai.QnA
 {
     public class QnAMakerMiddleware : IMiddleware
     {
+        public const string QnAMakerMiddlewareName = "QnAMakerMiddleware";
         public const string QnAMakerResultKey = "QnAMakerResult";
         public const string QnAMakerTraceType = "https://www.qnamaker.ai/schemas/trace";
         public const string QnAMakerTraceLabel = "QnAMaker Trace";
+        public const string Obfuscated = "****";
         private readonly QnAMaker _qnaMaker;
         private readonly QnAMakerMiddlewareOptions _options;
 
@@ -32,12 +34,12 @@ namespace Microsoft.Bot.Builder.Ai.QnA
                 if (!string.IsNullOrEmpty(messageActivity.Text))
                 {
                     var results = await _qnaMaker.GetAnswers(messageActivity.Text.Trim()).ConfigureAwait(false);
-                    var traceInfo = new QnAMakerTraceInfo()
+                    var traceInfo = new QnAMakerTraceInfo
                     {
                         QueryResults = results,
-                        QnAMakerOptions = _options
+                        QnAMakerOptions = RemoveSensitiveData(_options)
                     };
-                    var traceActivity = Activity.CreateTraceActivity("QnAMakerMiddleware", QnAMakerTraceType, traceInfo, QnAMakerTraceLabel);
+                    var traceActivity = Activity.CreateTraceActivity(QnAMakerMiddlewareName, QnAMakerTraceType, traceInfo, QnAMakerTraceLabel);
                     await context.SendActivity(traceActivity).ConfigureAwait(false);
 
                     if (results.Any())
@@ -55,6 +57,19 @@ namespace Microsoft.Bot.Builder.Ai.QnA
             }
 
             await next().ConfigureAwait(false);
+        }
+
+        public static QnAMakerOptions RemoveSensitiveData(QnAMakerOptions options)
+        {
+            return new QnAMakerOptions
+            {
+                ScoreThreshold = options.ScoreThreshold,
+                Top = options.Top,
+                StrictFilters = options.StrictFilters,
+                MetadataBoost = options.MetadataBoost,
+                SubscriptionKey = Obfuscated,
+                KnowledgeBaseId = Obfuscated
+            };
         }
     }
 }
