@@ -19,6 +19,12 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
         [TestCategory("QnAMaker")]
         public async Task QnaMaker_TestMiddleware()
         {
+            if (!EnvironmentVariablesDefined())
+            {
+                Assert.Inconclusive("Missing QnaMaker Environment variables - Skipping test");
+                return;
+            }
+
             TestAdapter adapter = new TestAdapter()
                 .Use(new QnAMakerMiddleware(new QnAMakerMiddlewareOptions()
                 {
@@ -42,5 +48,9 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
                 .StartTest();
         }
 
+        private bool EnvironmentVariablesDefined()
+        {
+            return knowlegeBaseId != null && subscriptionKey != null;
+        }
     }
 }
