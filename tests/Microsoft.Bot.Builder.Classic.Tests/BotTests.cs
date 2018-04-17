@@ -65,7 +65,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
     public sealed class Bot : IBot
     {
         // TODO: Microsoft.Extensions.DependencyInjection
-        public readonly IContainer Container;
+        public ILifetimeScope Container;
         private TestAdapter adapter;
 
         public Bot()
@@ -684,30 +684,28 @@ namespace Microsoft.Bot.Builder.Classic.Tests
             var bot = new Bot();
 
             // TODO: Microsoft.Extensions.DependencyInjection
-            {
-                var builder = new ContainerBuilder();
+            bot.Container = bot.Container.BeginLifetimeScope(
+                builder =>
+                {
+                    // configure the brain dispatcher of the bot with the top-level scorable actions
+                    builder
+                        .RegisterInstance(actions)
+                        .AsImplementedInterfaces()
+                        .SingleInstance();
 
-                // configure the brain dispatcher of the bot with the top-level scorable actions
-                builder
-                    .RegisterInstance(actions)
-                    .AsImplementedInterfaces()
-                    .SingleInstance();
+                    // add a singleton data service, as an example
+                    builder
+                        .RegisterInstance(new DataService())
+                        .Keyed<IDataService<string>>(FiberModule.Key_DoNotSerialize)
+                        .AsImplementedInterfaces()
+                        .SingleInstance();
 
-                // add a singleton data service, as an example
-                builder
-                    .RegisterInstance(new DataService())
-                    .Keyed<IDataService<string>>(FiberModule.Key_DoNotSerialize)
-                    .AsImplementedInterfaces()
-                    .SingleInstance();
-
-                // add an activity logger, as an example
-                builder
-                    .RegisterType<BotActivityLogger>()
-                    .AsImplementedInterfaces()
-                    .SingleInstance();
-
-                builder.Update(bot.Container);
-            }
+                    // add an activity logger, as an example
+                    builder
+                        .RegisterType<BotActivityLogger>()
+                        .AsImplementedInterfaces()
+                        .SingleInstance();
+                });
 
             return bot;
         }
@@ -828,29 +826,26 @@ namespace Microsoft.Bot.Builder.Classic.Tests
 
                 var bot = ExampleBot.MakeBot(MakeMockedLuisService);
                 // TODO: Microsoft.Extensions.DependencyInjection
-                {
-                    // test mocks
-                    var builder = new ContainerBuilder();
+                ((Bot)bot).Container = ((Bot)bot).Container.BeginLifetimeScope(
+                    builder =>
+                    {
+                        // register singleton StreamWriter
+                        builder
+                            .RegisterInstance(writer)
+                            .AsSelf();
 
-                    // register singleton StreamWriter
-                    builder
-                        .RegisterInstance(writer)
-                        .AsSelf();
+                        // log all activities to and from bot
+                        builder
+                            .RegisterType<TestActivityLogger>()
+                            .AsImplementedInterfaces()
+                            .SingleInstance();
 
-                    // log all activities to and from bot
-                    builder
-                        .RegisterType<TestActivityLogger>()
-                        .AsImplementedInterfaces()
-                        .SingleInstance();
-
-                    // truncate AlwaysSendDirect_BotToUser/IConnectorClient with null implementation
-                    builder
-                        .RegisterType<NullBotToUser>()
-                        .Keyed<IBotToUser>(typeof(AlwaysSendDirect_BotToUser))
-                        .InstancePerLifetimeScope();
-
-                    builder.Update(((Bot)bot).Container);
-                }
+                        // truncate AlwaysSendDirect_BotToUser/IConnectorClient with null implementation
+                        builder
+                            .RegisterType<NullBotToUser>()
+                            .Keyed<IBotToUser>(typeof(AlwaysSendDirect_BotToUser))
+                            .InstancePerLifetimeScope();
+                    });
 
                 var texts = new[]
                 {
