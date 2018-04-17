@@ -8,9 +8,11 @@
     {
         /// <summary>
         /// If true then routing of the activity will be stopped when an answer is 
-        /// successfully returned by the QnA Maker Middleware
+        /// successfully returned by the QnA Maker Middleware.
+        /// 
+        /// Defaults to false.
         /// </summary>
-        public bool EndActivityRoutingOnAnswer { get; set; }
+        public bool EndActivityRoutingOnAnswer { get; set; } = false;
 
         /// <summary>
         /// If set this message will be output before the top answer returned from 
@@ -20,8 +22,6 @@
 
         public QnAMakerMiddlewareOptions()
         {
-            // By default the middleware will continue routing of the activity
-            EndActivityRoutingOnAnswer = false;
         }
     }
 }
