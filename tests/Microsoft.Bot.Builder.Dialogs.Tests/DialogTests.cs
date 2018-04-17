@@ -254,7 +254,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 {
                     if (dialogResult.Result != null)
                     {
-                        if (((ConfirmResult)dialogResult.Result).Confirmation)
+                        if (((ChoiceResult<bool>)dialogResult.Result).Value)
                         {
                             await turnContext.SendActivity("Confirmed.");
                         }
@@ -297,7 +297,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 {
                     if (dialogResult.Result != null)
                     {
-                        if (((ConfirmResult)dialogResult.Result).Confirmation)
+                        if (((ChoiceResult<bool>)dialogResult.Result).Value)
                         {
                             await turnContext.SendActivity("Confirmed.");
                         }
