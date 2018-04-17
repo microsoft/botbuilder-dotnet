@@ -34,13 +34,16 @@ namespace Microsoft.Bot.Builder.Ai.QnA
                 if (!string.IsNullOrEmpty(messageActivity.Text))
                 {
                     var results = await _qnaMaker.GetAnswers(messageActivity.Text.Trim()).ConfigureAwait(false);
-                    var traceInfo = new QnAMakerTraceInfo
+                    if (results != null)
                     {
-                        QueryResults = results,
-                        QnAMakerOptions = RemoveSensitiveData(_options)
-                    };
-                    var traceActivity = Activity.CreateTraceActivity(QnAMakerMiddlewareName, QnAMakerTraceType, traceInfo, QnAMakerTraceLabel);
-                    await context.SendActivity(traceActivity).ConfigureAwait(false);
+                        var traceInfo = new QnAMakerTraceInfo
+                        {
+                            QueryResults = results,
+                            QnAMakerOptions = RemoveSensitiveData(_options)
+                        };
+                        var traceActivity = Activity.CreateTraceActivity(QnAMakerMiddlewareName, QnAMakerTraceType, traceInfo, QnAMakerTraceLabel);
+                        await context.SendActivity(traceActivity).ConfigureAwait(false);
+                    }
 
                     if (results.Any())
                     {
