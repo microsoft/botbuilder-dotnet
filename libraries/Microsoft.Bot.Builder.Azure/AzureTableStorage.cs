@@ -120,7 +120,7 @@ namespace Microsoft.Bot.Builder.Azure
             var bogusEtagKeys = storeItems.Where(item => item.ETag != null && item.ETag.Length == 0);
             if (bogusEtagKeys.Any())
             {
-                throw new ArgumentException("Bogus etag in items with key: " + string.Join(", ", bogusEtagKeys.Select(o => o.Key)));
+                throw new ArgumentException("Invalid ETag values detected for items with the following keys: " + string.Join(", ", bogusEtagKeys.Select(o => o.Key)));
             }
 
             var table = await GetTable().ConfigureAwait(false);
