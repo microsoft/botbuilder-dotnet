@@ -21,7 +21,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Handlers
             var activity = await request.Content.ReadAsAsync<Activity>(BotMessageHandlerBase.BotMessageMediaTypeFormatters, cancellationToken);
 
             var invokeResponse = await botFrameworkAdapter.ProcessActivity(
-                request.Headers.Authorization?.Parameter,
+                request.Headers.Authorization?.ToString(),
                 activity,
                 botCallbackHandler);
 

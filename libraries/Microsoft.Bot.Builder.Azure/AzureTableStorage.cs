@@ -10,157 +10,247 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Core.Extensions;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Table;
-using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Azure
 {
     /// <summary>
-    /// Models IStorage around a dictionary 
+    /// Middleware that implements an Azure Table based storage provider for a bot.
     /// </summary>
     public class AzureTableStorage : IStorage
     {
-        private static HashSet<string> _checkedTables = new HashSet<string>();
+        private readonly CloudStorageAccount _storageAccount;
+        private readonly string _tableName;
+        private CloudTable _table;
 
-        public CloudTable Table { get; private set; }
-
+        /// <summary>
+        /// Creates a new instance of the storage provider.
+        /// </summary>
+        /// <param name="dataConnectionString">The Azure Storage Connection string</param>
+        /// <param name="tableName">Name of the table to use for storage. Check table name rules: https://docs.microsoft.com/en-us/rest/api/storageservices/Understanding-the-Table-Service-Data-Model?redirectedfrom=MSDN#table-names </param>
         public AzureTableStorage(string dataConnectionString, string tableName)
             : this(CloudStorageAccount.Parse(dataConnectionString), tableName)
         {
         }
 
+        /// <summary>
+        /// Creates a new instance of the storage provider.
+        /// </summary>
+        /// <param name="storageAccount">CloudStorageAccount information.</param>
+        /// <param name="tableName">Name of the table to use for storage. Check table name rules: https://docs.microsoft.com/en-us/rest/api/storageservices/Understanding-the-Table-Service-Data-Model?redirectedfrom=MSDN#table-names </param>
         public AzureTableStorage(CloudStorageAccount storageAccount, string tableName)
         {
-            var tableClient = storageAccount.CreateCloudTableClient();
-            this.Table = tableClient.GetTableReference(tableName);
+            _storageAccount = storageAccount ?? throw new ArgumentNullException(nameof(storageAccount));
 
-            if (_checkedTables.Add($"{storageAccount.TableStorageUri.PrimaryUri.Host}-{tableName}"))
-                this.Table.CreateIfNotExistsAsync().Wait();
+            // Checks if table name is valid
+            NameValidator.ValidateTableName(tableName);
+
+            _tableName = tableName;
         }
 
-        protected EntityKey GetEntityKey(string key)
-        {
-            return new EntityKey() { PartitionKey = SanitizeKey(key), RowKey = "0" };
-        }
-
+        /// <summary>
+        /// Removes store items from storage.
+        /// </summary>
+        /// <param name="keys">Array of item keys to remove from the store.</param>
         public async Task Delete(string[] keys)
         {
-            foreach (var key in keys.Select(k => GetEntityKey(k)))
+            if (keys == null) throw new ArgumentNullException(nameof(keys));
+
+            var table = await GetTable().ConfigureAwait(false);
+
+            try
             {
-                await this.Table.ExecuteAsync(TableOperation.Delete(new TableEntity(key.PartitionKey, key.RowKey) { ETag = "*" })).ConfigureAwait(false);
+                await Task.WhenAll(
+                    keys.Select(k => new EntityKey(k))
+                        .Select(ek => table.ExecuteAsync(TableOperation.Delete(new TableEntity(ek.PartitionKey, ek.RowKey) { ETag = "*" }))))
+                            .ConfigureAwait(false);
+            }
+            catch (StorageException ex)
+                when ((HttpStatusCode)ex.RequestInformation.HttpStatusCode == HttpStatusCode.NotFound)
+            {
+            }
+            catch (AggregateException ex)
+                when (ex.InnerException is StorageException iex
+                && (HttpStatusCode)iex.RequestInformation.HttpStatusCode == HttpStatusCode.NotFound)
+            {
             }
         }
 
-        public async Task<IEnumerable<KeyValuePair<string, object>>> Read(string[] keys)
+        /// <summary>
+        /// Loads store items from storage.
+        /// </summary>
+        /// <param name="keys">Array of item keys to read from the store.</param>
+        public async Task<IEnumerable<KeyValuePair<string, object>>> Read(params string[] keys)
         {
-            var storeItems = new List<KeyValuePair<string, object>>(keys.Length);
-            foreach (string key in keys)
+            if (keys == null || keys.Length == 0)
             {
-                var entityKey = GetEntityKey(key);
-                var result = await this.Table.ExecuteAsync(TableOperation.Retrieve<StoreItemEntity>(entityKey.PartitionKey, entityKey.RowKey)).ConfigureAwait(false);
-                if ((HttpStatusCode)result.HttpStatusCode == HttpStatusCode.OK)
-                {
-                    var value = ((StoreItemEntity)result.Result).AsObject();
-                    var valueStoreItem = value as IStoreItem;
-                    if (valueStoreItem != null)
-                    {
-                        valueStoreItem.eTag = result.Etag;
-                    }
-                    storeItems.Add(new KeyValuePair<string, object>(key, value));
-                }
+                throw new ArgumentException("Please provide at least one key to read from storage.", nameof(keys));
             }
-            return storeItems;
+
+            var table = await GetTable().ConfigureAwait(false);
+
+            var readTasks = keys.Select(async key =>
+            {
+                var ek = new EntityKey(key);
+                var tableEntity = await table.ExecuteAsync(TableOperation.Retrieve<DynamicTableEntity>(ek.PartitionKey, ek.RowKey)).ConfigureAwait(false);
+
+                if (tableEntity.HttpStatusCode == (int)HttpStatusCode.OK)
+                {
+                    // re-create expected object
+                    var value = ReadObject(tableEntity);
+                    return new KeyValuePair<string, object>(key, value);
+                }
+
+                return new KeyValuePair<string, object>();
+            });
+
+            return (await Task.WhenAll(readTasks).ConfigureAwait(false))
+                .Where(kv => kv.Key != null);
         }
 
-
+        /// <summary>
+        /// Saves store items to storage.
+        /// </summary>
+        /// <param name="changes">Map of items to write to storage.</param>
+        /// <returns></returns>
         public async Task Write(IEnumerable<KeyValuePair<string, object>> changes)
         {
-            foreach (var change in changes)
+            if (changes == null) throw new ArgumentNullException(nameof(changes));
+
+            // Re-create objects as table entities
+            var tableEntities = changes.Select(kv => new KeyValuePair<string, DynamicTableEntity>(kv.Key, ToTableEntity(kv.Key, kv.Value)));
+            var bogusEtagKeys = tableEntities.Where(item => item.Value.ETag != null && item.Value.ETag.Length == 0);
+            if (bogusEtagKeys.Any())
             {
-                var entityKey = GetEntityKey(change.Key);
-                var newValue = change.Value;
-                StoreItemEntity entity = new StoreItemEntity(entityKey, newValue);
-                if (entity.ETag == null || entity.ETag == "*")
+                throw new ArgumentException("Invalid ETag values detected for items with the following keys: " + string.Join(", ", bogusEtagKeys.Select(o => o.Key)));
+            }
+
+            var table = await GetTable().ConfigureAwait(false);
+
+            var writeTasks = tableEntities.Select(o => o.Value)
+                .Select(tableEntity =>
                 {
-                    var result = await this.Table.ExecuteAsync(TableOperation.InsertOrReplace(entity)).ConfigureAwait(false);
-                }
-                else if (entity.ETag.Length > 0)
-                {
-                    var result = await this.Table.ExecuteAsync(TableOperation.Replace(entity)).ConfigureAwait(false);
-                }
-                else
-                {
-                    throw new Exception("etag empty");
-                }
+                    if (tableEntity.ETag == null || tableEntity.ETag == "*")
+                    {
+                        // New item or etag=* then insert or replace unconditionaly
+                        return table.ExecuteAsync(TableOperation.InsertOrReplace(tableEntity));
+                    }
+
+
+                    // Optimistic Update
+                    return table.ExecuteAsync(TableOperation.Replace(tableEntity));
+                });
+
+            await Task.WhenAll(writeTasks).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Ensure table is created.
+        /// </summary>
+        private ValueTask<CloudTable> GetTable()
+        {
+            if (_table != null)
+            {
+                return new ValueTask<CloudTable>(_table);
+            }
+
+            return new ValueTask<CloudTable>(EnsureTableExists());
+
+            async Task<CloudTable> EnsureTableExists()
+            {
+                _table = _storageAccount.CreateCloudTableClient().GetTableReference(_tableName);
+
+                // This call may not be thread-safe and multiple calls may be made, but Azure will handle it correctly and there is no destructive side effect.
+                await _table.CreateIfNotExistsAsync();
+                return _table;
             }
         }
 
-        protected class StoreItemEntity : TableEntity
+        private static object ReadObject(TableResult tableEntity)
         {
-            private static JsonSerializerSettings serializationSettings = new JsonSerializerSettings()
+            // Create instance of proper type
+            var dynamicTableEntity = (DynamicTableEntity)tableEntity.Result;
+            var properties = dynamicTableEntity.Properties;
+            var type = Type.GetType(properties["__type"].StringValue);
+
+            var value = Activator.CreateInstance(type);
+            TableEntity.ReadUserObject(value, properties, new OperationContext());
+
+            // IStoreItem? apply Etag
+            if (value is IStoreItem iStoreItem)
             {
-                // we use all so that we get typed roundtrip out of storage, but we don't use validation because we don't know what types are valid
-                TypeNameHandling = TypeNameHandling.All
+                iStoreItem.eTag = tableEntity.Etag;
+            }
+
+            return value;
+        }
+
+        private static DynamicTableEntity ToTableEntity(string key, object value)
+        {
+            // Flatten properties
+            var properties = EntityPropertyConverter.Flatten(value, new OperationContext());
+
+            // Add Type information
+            var type = value.GetType();
+            var typeQualifiedName = type.AssemblyQualifiedName;
+            properties.Add("__type", EntityProperty.GeneratePropertyForString(typeQualifiedName));
+
+            // Etag and PK/RK
+            var etag = (value as IStoreItem)?.eTag;
+            var ek = new EntityKey(key);
+            return new DynamicTableEntity(ek.PartitionKey, ek.RowKey)
+            {
+                ETag = etag,
+                Properties = properties
             };
-
-            public StoreItemEntity() { }
-
-            public StoreItemEntity(EntityKey key, object obj)
-                : this(key.PartitionKey, key.RowKey, obj)
-            { }
-
-            public StoreItemEntity(string partitionKey, string rowKey, object obj)
-                : base(partitionKey, rowKey)
-            {
-                this.ETag = (obj as IStoreItem)?.eTag;
-                this.Json = JsonConvert.SerializeObject(obj, Formatting.None, serializationSettings);
-            }
-
-            public string Json { get; set; }
-
-            public object AsObject()
-            {
-                var obj = JsonConvert.DeserializeObject(Json, serializationSettings);
-                IStoreItem storeItem = obj as IStoreItem;
-                if (storeItem != null)
-                    storeItem.eTag = this.ETag;
-                return obj;
-            }
         }
 
-        protected class EntityKey
+        /// <summary>
+        /// Entity that maps property to PartitionKey and RowKey
+        /// </summary>
+        private struct EntityKey
         {
-            public string PartitionKey { get; set; }
-            public string RowKey { get; set; }
+            public string PartitionKey { get; private set; }
+            public string RowKey { get; private set; }
 
-            public override string ToString() { return $"{PartitionKey}~{RowKey}"; }
-
-            public static EntityKey FromString(string key)
+            public EntityKey(string propertyKey)
             {
-                var parts = key.Split('~');
-                return new EntityKey() { PartitionKey = parts[0], RowKey = parts[1] };
+                PartitionKey = SanitizeKey(propertyKey);
+                RowKey = string.Empty;
             }
-        }
 
-        private static Lazy<Dictionary<char, string>> badChars = new Lazy<Dictionary<char, string>>(() =>
-        {
-            char[] badChars = new char[] { '\\', '?', '/', '#', '\t', '\n', '\r' };
-            var dict = new Dictionary<char, string>();
-            foreach (var badChar in badChars)
-                dict[badChar] = '%' + ((int)badChar).ToString("x2");
-            return dict;
-        });
-
-        private string SanitizeKey(string key)
-        {
-            StringBuilder sb = new StringBuilder();
-            foreach (char ch in key)
+            public EntityKey(string partitionKey, string rowKey)
             {
-                if (badChars.Value.TryGetValue(ch, out string val))
-                    sb.Append(val);
-                else
-                    sb.Append(ch);
+                PartitionKey = partitionKey;
+                RowKey = rowKey;
             }
-            return sb.ToString();
+
+            /// <summary>
+            /// Escapes a property key into a PartitionKey that can be used with Azure Tables.
+            /// More information at https://docs.microsoft.com/en-us/rest/api/storageservices/Understanding-the-Table-Service-Data-Model?redirectedfrom=MSDN#table-names
+            /// </summary>
+            /// <param name="key">The Property Key</param>
+            /// <returns>Sanitized key that can be used as PartitionKey</returns>
+            public static string SanitizeKey(string key)
+            {
+                StringBuilder sb = new StringBuilder();
+                foreach (char ch in key)
+                {
+                    if (badChars.Value.TryGetValue(ch, out string val))
+                        sb.Append(val);
+                    else
+                        sb.Append(ch);
+                }
+                return sb.ToString();
+            }
+
+            private static Lazy<Dictionary<char, string>> badChars = new Lazy<Dictionary<char, string>>(() =>
+            {
+                char[] badChars = new char[] { '\\', '?', '/', '#', '\t', '\n', '\r' };
+                var dict = new Dictionary<char, string>();
+                foreach (var badChar in badChars)
+                    dict[badChar] = '%' + ((int)badChar).ToString("x2");
+                return dict;
+            });
         }
     }
 }

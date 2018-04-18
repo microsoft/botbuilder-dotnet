@@ -63,6 +63,6 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
                     value = null;
             }
             return value;
-        }   
+        }
     }
 }

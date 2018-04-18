@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Microsoft.Bot.Builder.Core.Extensions.Tests; 
+using Microsoft.Bot.Builder.Core.Extensions.Tests;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
@@ -19,6 +19,12 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
         [TestCategory("Translator")]
         public async Task Translator_DetectAndTranslateToEnglish()
         {
+            if (!EnvironmentVariablesDefined())
+            {
+                Assert.Inconclusive("Missing Translator Environment variables - Skipping test");
+                return;
+            }
+
             Translator translator = new Translator(translatorKey);
 
             var sentence = "salut";
@@ -36,6 +42,12 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
         [TestCategory("Translator")]
         public async Task Translator_LiteralTagTest()
         {
+            if (!EnvironmentVariablesDefined())
+            {
+                Assert.Inconclusive("Missing Translator Environment variables - Skipping test");
+                return;
+            }
+
             Translator translator = new Translator(translatorKey);
 
             var sentence = "salut <literal>Jean Bouchier mon ami</literal>";
@@ -50,6 +62,12 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
         [TestCategory("Translator")]
         public async Task Translator_PatternsTest()
         {
+            if (!EnvironmentVariablesDefined())
+            {
+                Assert.Inconclusive("Missing Translator Environment variables - Skipping test");
+                return;
+            }
+
             Translator translator = new Translator(translatorKey);
             translator.SetPostProcessorTemplate(new List<string> { "perr[oa]" });
             var sentence = "mi perro se llama Enzo";
@@ -70,6 +88,11 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
         [TestCategory("Translator")]
         public async Task Translator_TranslateFrenchToEnglish()
         {
+            if (!EnvironmentVariablesDefined())
+            {
+                Assert.Inconclusive("Missing Translator Environment variables - Skipping test");
+                return;
+            }
 
             Translator translator = new Translator(translatorKey);
 
@@ -84,6 +107,11 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
         [TestCategory("Translator")]
         public async Task Translator_TranslateFrenchToEnglishArray()
         {
+            if (!EnvironmentVariablesDefined())
+            {
+                Assert.Inconclusive("Missing Translator Environment variables - Skipping test");
+                return;
+            }
 
             Translator translator = new Translator(translatorKey);
 
@@ -100,6 +128,11 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
         [TestCategory("Translator")]
         public async Task Translator_TranslateEnglishToFrench()
         {
+            if (!EnvironmentVariablesDefined())
+            {
+                Assert.Inconclusive("Missing Translator Environment variables - Skipping test");
+                return;
+            }
 
             Translator translator = new Translator(translatorKey);
 
@@ -114,6 +147,11 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
         [TestCategory("Translator")]
         public async Task Translator_TranslateEnglishToFrenchArray()
         {
+            if (!EnvironmentVariablesDefined())
+            {
+                Assert.Inconclusive("Missing Translator Environment variables - Skipping test");
+                return;
+            }
 
             Translator translator = new Translator(translatorKey);
 
@@ -130,6 +168,11 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
         [TestCategory("Translator")]
         public async Task Translator_InvalidSourceLanguage()
         {
+            if (!EnvironmentVariablesDefined())
+            {
+                Assert.Inconclusive("Missing Translator Environment variables - Skipping test");
+                return;
+            }
 
             Translator translator = new Translator(translatorKey);
 
@@ -143,12 +186,22 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
         [TestCategory("Translator")]
         public async Task Translator_InvalidTargetLanguage()
         {
+            if (!EnvironmentVariablesDefined())
+            {
+                Assert.Inconclusive("Missing Translator Environment variables - Skipping test");
+                return;
+            }
 
             Translator translator = new Translator(translatorKey);
 
             var sentence = "Arrange an appointment for tomorrow";
             await Assert.ThrowsExceptionAsync<ArgumentException>(async () =>
                 await translator.Translate(sentence, "en", "na"));
+        }
+
+        private bool EnvironmentVariablesDefined()
+        {
+            return translatorKey != null;
         }
     }
 }
