@@ -32,7 +32,13 @@ namespace AspNetCore_EchoBot_With_State
         {
             services.AddBot<EchoBot>(options =>
             {
-                options.CredentialProvider = new ConfigurationCredentialProvider(Configuration);                
+                options.CredentialProvider = new ConfigurationCredentialProvider(Configuration);
+
+                // The CatchExceptionMiddleware provides a top-level exception handler for your bot. 
+                // Any exceptions thrown by other Middleware, or by your OnTurn method, will be 
+                // caught here. To facillitate debugging, the exception is sent out, via Trace, 
+                // to the emulator. Trace activities are NOT displayed to users, so in addition
+                // an "Ooops" message is sent. 
                 options.Middleware.Add(new CatchExceptionMiddleware<Exception>(async (context, exception) =>
                 {
                     await context.TraceActivity("EchoBot Exception", exception);
@@ -41,7 +47,6 @@ namespace AspNetCore_EchoBot_With_State
 
                 // The Memory Storage used here is for local bot debugging only. When the bot
                 // is restarted, anything stored in memory will be gone. 
-
                 IStorage dataStore = new MemoryStorage();
 
                 // The File data store, shown here, is suitable for bots that run on 
