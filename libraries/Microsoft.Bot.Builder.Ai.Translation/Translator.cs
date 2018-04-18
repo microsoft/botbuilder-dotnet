@@ -81,6 +81,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         private string[] SplitSentence(string sentence,string[] alignments=null,bool isSrcSentence=true)
         {
             string[] wrds = sentence.Split(' ');
+            string[] alignSplitWrds = new string[0];
             if (alignments != null && alignments.Length > 0)
             {
                 List<string> outWrds = new List<string>();
@@ -94,23 +95,26 @@ namespace Microsoft.Bot.Builder.Ai.Translation
                     Array.Sort(alignments, (x, y) => Int32.Parse(x.Split('-')[wrdIndxInAlignment].Split(':')[0]).CompareTo(Int32.Parse(y.Split('-')[wrdIndxInAlignment].Split(':')[0])));
                 }
                 string withoutSpaceSentence = sentence.Replace(" ", "");
+                
                 foreach (string alignData in alignments)
                 {
-                    wrds = outWrds.ToArray();
+                    alignSplitWrds = outWrds.ToArray();
                     string wordIndexes = alignData.Split('-')[wrdIndxInAlignment];
                     int startIndex = Int32.Parse(wordIndexes.Split(':')[0]);
                     int length = Int32.Parse(wordIndexes.Split(':')[1]) - startIndex + 1;
                     string wrd = sentence.Substring(startIndex, length);
                     string[] newWrds = new string[outWrds.Count + 1];
                     if(newWrds.Length>1)
-                        wrds.CopyTo(newWrds, 0);
+                        alignSplitWrds.CopyTo(newWrds, 0);
                     newWrds[outWrds.Count] = wrd;
                     string subSentence = Join("", newWrds.ToArray()); 
                     if (withoutSpaceSentence.Contains(subSentence)) 
                         outWrds.Add(wrd);  
                 }
-                wrds = outWrds.ToArray();
+                alignSplitWrds = outWrds.ToArray();
             }
+            if (alignSplitWrds.Length >= wrds.Length)
+                return alignSplitWrds;
             return wrds;
         }
 
