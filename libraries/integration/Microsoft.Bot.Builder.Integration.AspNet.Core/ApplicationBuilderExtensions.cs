@@ -34,11 +34,11 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 
             var paths = options.Paths;
 
-            if (options.EnableProactiveMessages)
+            if (options.EnableExternalEventsEndpoint)
             {
                 applicationBuilder.Map(
-                    paths.BasePath + paths.ProactiveMessagesPath,
-                    botProactiveAppBuilder => botProactiveAppBuilder.Run(new BotProactiveMessageHandler().HandleAsync));
+                    paths.BasePath + paths.ExternalEventsPath,
+                    botExternalEventsAppBuilder => botExternalEventsAppBuilder.Run(new BotExternalEventsHandler().HandleAsync));
             }
 
             applicationBuilder.Map(
