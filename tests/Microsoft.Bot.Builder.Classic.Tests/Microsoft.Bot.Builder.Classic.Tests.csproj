@@ -21,8 +21,8 @@
 	<ItemGroup>
 		<PackageReference Include="Autofac" Version="4.7.1" />
 		<PackageReference Include="Chronic.Signed" Version="0.3.2" />
-		<PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.3" targetFramework="net46" />
-		<PackageReference Include="Microsoft.AspNet.WebApi.Core" Version="5.2.3" targetFramework="net46" />
+		<PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.4" targetFramework="net46" />
+		<PackageReference Include="Microsoft.AspNet.WebApi.Core" Version="5.2.4" targetFramework="net46" />
 		<PackageReference Include="Microsoft.IdentityModel.Logging" Version="5.2.1" />
 		<PackageReference Include="Microsoft.IdentityModel.Protocols" Version="5.2.1" />
 		<PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="5.2.1" />
