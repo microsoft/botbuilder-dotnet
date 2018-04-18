@@ -27,9 +27,9 @@ namespace Microsoft.Bot.Builder.Classic.Tests
             var adapter = new TestAdapter();
             await adapter.ProcessActivity((Activity)toBot, async (ctx) =>
             {
-                using (var scope = DialogModule.BeginLifetimeScope(container, ctx))
+                using (var containerScope = DialogModule.BeginLifetimeScope(container, ctx))
                 {
-                    var task = scope.Resolve<IPostToBot>();
+                    var task = containerScope.Resolve<IPostToBot>();
                     var queue = adapter.ActiveQueue;
 
                     Action drain = () =>
@@ -49,49 +49,54 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                         }
                     };
                     string result = null;
-                    var root = scope.Resolve<IDialog<object>>().Do(async (context, value) =>
+                    var root = containerScope.Resolve<IDialog<object>>().Do(async (context, value) =>
                         result = JsonConvert.SerializeObject(await value));
-                    if (proactive)
-                    {
-                        var loop = root.Loop();
-                        var data = scope.Resolve<IBotData>();
-                        await data.LoadAsync(CancellationToken.None);
-                        var stack = scope.Resolve<IDialogTask>();
-                        stack.Call(loop, null);
-                        await stack.PollAsync(CancellationToken.None);
-                        drain();
-                    }
-                    else
-                    {
-                        var builder = new ContainerBuilder();
-                        builder
-                            .RegisterInstance(root)
-                            .AsSelf()
-                            .As<IDialog<object>>();
-                        builder.Update((IContainer)container);
-                    }
-                    foreach (var input in inputs)
-                    {
-                        stream.WriteLine($"FromUser:{JsonConvert.SerializeObject(input)}");
-                        toBot.Text = input;
-                        try
+
+                    using (var innerScope = containerScope.BeginLifetimeScope(
+                        async (builder) =>
                         {
-                            await task.PostAsync(toBot, CancellationToken.None);
-                            drain();
-                            if (extraInfo != null)
+                            if (proactive)
                             {
-                                var extra = extraInfo();
-                                stream.WriteLine(extra);
+                                var loop = root.Loop();
+                                var data = containerScope.Resolve<IBotData>();
+                                await data.LoadAsync(CancellationToken.None);
+                                var stack = containerScope.Resolve<IDialogTask>();
+                                stack.Call(loop, null);
+                                await stack.PollAsync(CancellationToken.None);
+                                drain();
+                            }
+                            else
+                            {
+                                builder
+                                    .RegisterInstance(root)
+                                    .AsSelf()
+                                    .As<IDialog<object>>();
+                            }
+                        }))
+                    {
+                        foreach (var input in inputs)
+                        {
+                            stream.WriteLine($"FromUser:{JsonConvert.SerializeObject(input)}");
+                            toBot.Text = input;
+                            try
+                            {
+                                await task.PostAsync(toBot, CancellationToken.None);
+                                drain();
+                                if (extraInfo != null)
+                                {
+                                    var extra = extraInfo();
+                                    stream.WriteLine(extra);
+                                }
+                            }
+                            catch (Exception e)
+                            {
+                                stream.WriteLine($"Exception:{e.Message}");
                             }
                         }
-                        catch (Exception e)
+                        if (result != null)
                         {
-                            stream.WriteLine($"Exception:{e.Message}");
+                            stream.WriteLine($"Result: {result}");
                         }
-                    }
-                    if (result != null)
-                    {
-                        stream.WriteLine($"Result: {result}");
                     }
                 }
             });
@@ -206,14 +211,10 @@ namespace Microsoft.Bot.Builder.Classic.Tests
         {
             using (var stream = new StreamWriter(filePath))
             using (var container = Build(Options.ResolveDialogFromContainer | Options.Reflection))
+            using (var scope = container.BeginLifetimeScope(
+                builder => builder.RegisterInstance(dialog).AsSelf().As<IDialog<object>>()))
             {
-                var builder = new ContainerBuilder();
-                builder
-                    .RegisterInstance(dialog)
-                    .AsSelf()
-                    .As<IDialog<object>>();
-                builder.Update(container);
-                await RecordScript(container, proactive, stream, null, inputs);
+                await RecordScript(scope, proactive, stream, null, inputs);
             }
         }
 
