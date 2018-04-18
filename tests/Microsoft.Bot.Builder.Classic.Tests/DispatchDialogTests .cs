@@ -78,14 +78,10 @@ namespace Microsoft.Bot.Builder.Classic.Tests
         public async Task Dispatch_NextDispatchGroup()
         {
             using (var container = Build(Options.ResolveDialogFromContainer | Options.Reflection))
+            using (var scope = container.BeginLifetimeScope(
+                builder => builder.RegisterType<TestNextGroupDialog>().As<IDialog<object>>()))
             {
-                var builder = new ContainerBuilder();
-                builder
-                    .RegisterType<TestNextGroupDialog>()
-                    .As<IDialog<object>>();
-                builder.Update(container);
-
-                await AssertScriptAsync(container,
+                await AssertScriptAsync(scope,
                     "start",
                     "echo: start",
                     "hello",
@@ -205,25 +201,27 @@ namespace Microsoft.Bot.Builder.Classic.Tests
             }
         }
 
-        private readonly IContainer container;
+        private readonly ILifetimeScope container;
 
         public DispatchDialogMethodsTests()
         {
             this.container = DialogTestBase.Build(
                 DialogTestBase.Options.None | DialogTestBase.Options.ResolveDialogFromContainer,
-                this.methods.Object, this.luisOne.Object, this.luisTwo.Object);
-            var builder = new ContainerBuilder();
-            builder
-                .RegisterInstance(this.methods.Object)
-                .As<IMethods>();
-            builder
-                .RegisterInstance<Func<ILuisModel, ILuisService>>(MakeLuisService)
-                .AsSelf();
-            builder
-                .RegisterType<TestDispatchDialog>()
-                .As<IDialog<object>>()
-                .InstancePerLifetimeScope();
-            builder.Update(this.container);
+                this.methods.Object, this.luisOne.Object, this.luisTwo.Object)
+                .BeginLifetimeScope(
+                builder =>
+                {
+                    builder
+                        .RegisterInstance(this.methods.Object)
+                        .As<IMethods>();
+                    builder
+                        .RegisterInstance<Func<ILuisModel, ILuisService>>(MakeLuisService)
+                        .AsSelf();
+                    builder
+                        .RegisterType<TestDispatchDialog>()
+                        .As<IDialog<object>>()
+                        .InstancePerLifetimeScope();
+                });
         }
 
         public override async Task ActAsync()
