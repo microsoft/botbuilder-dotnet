@@ -102,12 +102,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation
                             {
                                 sourceLanguage = _getUserLanguage(context);
                             }
-                            //check if the developer has added pattern list for the input source language
-                            if (_patterns.ContainsKey(sourceLanguage) && _patterns[sourceLanguage].Count > 0)
-                            {
-                                //if we have a list of patterns for the current user's language send it to the translator post processor.
-                                _translator.SetPostProcessorTemplate(_patterns[sourceLanguage]);
-                            }
+
                             targetLanguage = (_nativeLanguages.Contains(sourceLanguage)) ? sourceLanguage : this._nativeLanguages.FirstOrDefault() ?? "en";
                             await TranslateMessageAsync(context, message, sourceLanguage, targetLanguage, _nativeLanguages.Contains(sourceLanguage)).ConfigureAwait(false);
 
@@ -172,7 +167,12 @@ namespace Microsoft.Bot.Builder.Ai.Translation
                 {
                     if (targetLanguage == sourceLanguage)
                         return;
-
+                    //check if the developer has added pattern list for the input source language
+                    if (_patterns.ContainsKey(sourceLanguage) && _patterns[sourceLanguage].Count > 0)
+                    {
+                        //if we have a list of patterns for the current user's language send it to the translator post processor.
+                        _translator.SetPostProcessorTemplate(_patterns[sourceLanguage]);
+                    }
                     var text = message.Text;
                     string[] lines = text.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None);
                     var translateResult = await this._translator.TranslateArray(lines, sourceLanguage, targetLanguage).ConfigureAwait(false);
