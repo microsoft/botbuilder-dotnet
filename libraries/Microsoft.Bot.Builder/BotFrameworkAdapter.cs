@@ -116,6 +116,10 @@ namespace Microsoft.Bot.Builder.Adapters
             }
         }
 
+        /// <inheritdoc />
+        public override Task ContinueConversation(ConversationReference reference, Func<ITurnContext, Task> callback) =>
+            ContinueConversation(reference.Bot.Id, reference, callback);
+
         /// <summary>
         /// Initializes a new instance of the <see cref="BotFrameworkAdapter"/> class,
         /// using an application ID and secret.
@@ -173,13 +177,23 @@ namespace Microsoft.Bot.Builder.Adapters
         public async Task<InvokeResponse> ProcessActivity(string authHeader, Activity activity, Func<ITurnContext, Task> callback)
         {
             BotAssert.ActivityNotNull(activity);
+
             var claimsIdentity =  await JwtTokenValidation.AuthenticateRequest(activity, authHeader, _credentialProvider, _httpClient);
+
+            return await ProcessActivity(claimsIdentity, activity, callback);
+        }
+
+        public async Task<InvokeResponse> ProcessActivity(ClaimsIdentity identity, Activity activity, Func<ITurnContext, Task> callback)
+        {
+            BotAssert.ActivityNotNull(activity);
 
             using (var context = new TurnContext(this, activity))
             {
-                context.Services.Add<IIdentity>("BotIdentity", claimsIdentity);
-                var connectorClient = await this.CreateConnectorClientAsync(activity.ServiceUrl, claimsIdentity);
+                context.Services.Add<IIdentity>("BotIdentity", identity);
+
+                var connectorClient = await this.CreateConnectorClientAsync(activity.ServiceUrl, identity);
                 context.Services.Add<IConnectorClient>(connectorClient);
+
                 await base.RunPipeline(context, callback).ConfigureAwait(false);
 
                 // Handle Invoke scenarios, which deviate from the request/response model in that 
