@@ -200,14 +200,13 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
             string conversationId = "_GetConversationActivitiesPaging";
             DateTime start = DateTime.UtcNow;
             var activities = CreateActivities(conversationId, start, 50);
-
-            foreach (var activity in activities)
-            {
-                await store.LogActivity(activity);
-            }
+            // log in parallel batches of 10
+            int pos = 0;
+            foreach(var group in activities.GroupBy(a => pos++ / 10))
+                await Task.WhenAll(group.Select(a => store.LogActivity(a)));
 
             HashSet<string> seen = new HashSet<string>();
-            PagedResult<IActivity> pagedResult=null;
+            PagedResult<IActivity> pagedResult = null;
             var pageSize = 0;
             do
             {
@@ -240,10 +239,10 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
             DateTime start = DateTime.UtcNow;
             var activities = CreateActivities(conversationId, start, 50);
 
-            foreach (var activity in activities)
-            {
-                await store.LogActivity(activity);
-            }
+            // log in parallel batches of 10
+            int pos = 0;
+            foreach (var group in activities.GroupBy(a => pos++ / 10))
+                await Task.WhenAll(group.Select(a => store.LogActivity(a)));
 
             HashSet<string> seen = new HashSet<string>();
             DateTime startDate = start + TimeSpan.FromMinutes(50);
@@ -268,7 +267,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
                 }
             } while (pagedResult.ContinuationToken != null);
 
-            Assert.AreEqual(activities.Count()/2, seen.Count);
+            Assert.AreEqual(activities.Count() / 2, seen.Count);
 
             foreach (var activity in activities.Where(a => a.Timestamp >= startDate))
                 Assert.IsTrue(seen.Contains(activity.Id));
@@ -285,16 +284,15 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
             {
                 conversationIds.Add($"_ListConversations{i}");
             }
-
-            foreach(var conversationId in conversationIds)
-            { 
-                var activities = CreateActivities(conversationId, start, 1);
-
-                foreach (var activity in activities)
-                {
-                    await store.LogActivity(activity);
-                }
+            List<Activity> activities = new List<Activity>();
+            foreach (var conversationId in conversationIds)
+            {
+                activities.AddRange(CreateActivities(conversationId, start, 1));
             }
+            // log in parallel batches of 10
+            int pos = 0;
+            foreach (var group in activities.GroupBy(a => pos++ / 10))
+                await Task.WhenAll(group.Select(a => store.LogActivity(a)));
 
             HashSet<string> seen = new HashSet<string>();
             PagedResult<Transcript> pagedResult = null;

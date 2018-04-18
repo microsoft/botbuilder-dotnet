@@ -46,25 +46,32 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         }
 
         public static CloudStorageAccount cloudStorageAccount;
+        public static string containerName;
 
         [ClassInitialize]
         public static void Initialize(TestContext context)
         {
+            containerName = nameof(BlobTranscriptTests).ToLower() + Guid.NewGuid().ToString("n");
             cloudStorageAccount = (hasStorageEmulator.Value) ? CloudStorageAccount.DevelopmentStorageAccount : null;
             var connectionString = Environment.GetEnvironmentVariable("STORAGECONNECTIONSTRING");
             if (!String.IsNullOrEmpty(connectionString))
                 cloudStorageAccount = CloudStorageAccount.Parse(connectionString);
+        }
 
+        [ClassCleanup]
+        public static async Task Cleanup()
+        {
             if (cloudStorageAccount != null)
             {
-                cloudStorageAccount.CreateCloudBlobClient().GetContainerReference(nameof(BlobTranscriptTests).ToLower()).DeleteIfExistsAsync().Wait();
+                var container = cloudStorageAccount.CreateCloudBlobClient().GetContainerReference(containerName);
+                await container.DeleteIfExistsAsync();
             }
         }
 
         public BlobTranscriptTests() : base()
         {
             if (cloudStorageAccount != null)
-                this.store = new AzureBlobTranscriptStore(cloudStorageAccount, nameof(BlobTranscriptTests));
+                this.store = new AzureBlobTranscriptStore(cloudStorageAccount, containerName);
         }
 
         [TestMethod]

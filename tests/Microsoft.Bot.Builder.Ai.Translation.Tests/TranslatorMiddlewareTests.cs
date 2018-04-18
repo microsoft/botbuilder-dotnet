@@ -26,7 +26,12 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
         [TestCategory("Translator")]
         public async Task TranslatorMiddleware_DetectAndTranslateToEnglish()
         {
-            
+            if (!EnvironmentVariablesDefined())
+            {
+                Assert.Inconclusive("Missing Translator Environment variables - Skipping test");
+                return;
+            }
+
             TestAdapter adapter = new TestAdapter() 
             .Use(new TranslationMiddleware(new string[] { "en-us" }, translatorKey));
 
@@ -50,6 +55,11 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
         [TestCategory("Translator")]
         public async Task TranslatorMiddleware_TranslateFrenchToEnglish()
         {
+            if (!EnvironmentVariablesDefined())
+            {
+                Assert.Inconclusive("Missing Translator Environment variables - Skipping test");
+                return;
+            }
 
             TestAdapter adapter = new TestAdapter()
                 .Use(new UserState<LanguageState>(new MemoryStorage()))
@@ -75,6 +85,11 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
         [TestCategory("Translator")]
         public async Task TranslatorMiddleware_TranslateFrenchToEnglishToUserLanguage()
         {
+            if (!EnvironmentVariablesDefined())
+            {
+                Assert.Inconclusive("Missing Translator Environment variables - Skipping test");
+                return;
+            }
 
             TestAdapter adapter = new TestAdapter()
                 .Use(new UserState<LanguageState>(new MemoryStorage()))
@@ -133,6 +148,11 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
             }
 
             return "en";
-        }   
+        }
+
+        private bool EnvironmentVariablesDefined()
+        {
+            return translatorKey != null;
+        }
     }
 }

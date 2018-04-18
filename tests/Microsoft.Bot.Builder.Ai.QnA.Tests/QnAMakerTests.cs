@@ -12,14 +12,20 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
     [TestClass]
     public class QnAMakerTests
     {
-        public string knowlegeBaseId = TestUtilities.GetKey("QNAKNOWLEDGEBASEID");
-        public string subscriptionKey = TestUtilities.GetKey("QNASUBSCRIPTIONKEY");
+        public readonly string knowlegeBaseId = TestUtilities.GetKey("QNAKNOWLEDGEBASEID");
+        public readonly string subscriptionKey = TestUtilities.GetKey("QNASUBSCRIPTIONKEY");
 
         [TestMethod]
         [TestCategory("AI")]
         [TestCategory("QnAMaker")]
         public async Task QnaMaker_ReturnsAnswer()
         {
+            if (!EnvironmentVariablesDefined())
+            {
+                Assert.Inconclusive("Missing QnaMaker Environment variables - Skipping test");
+                return;
+            }
+
             var qna = new QnAMaker(new QnAMakerOptions()
             {
                 KnowledgeBaseId = knowlegeBaseId,
@@ -38,6 +44,11 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
         [TestCategory("QnAMaker")]
         public async Task QnaMaker_TestThreshold()
         {
+            if (!EnvironmentVariablesDefined())
+            {
+                Assert.Inconclusive("Missing QnaMaker Environment variables - Skipping test");
+                return;
+            }
 
             var qna = new QnAMaker(new QnAMakerOptions()
             {
@@ -52,30 +63,9 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
             Assert.AreEqual(results.Length, 0, "should get zero result because threshold");
         }
 
-        [TestMethod]
-        [TestCategory("AI")]
-        [TestCategory("QnAMaker")]
-        public async Task QnaMaker_TestMiddleware()
+        private bool EnvironmentVariablesDefined()
         {
-            
-            TestAdapter adapter = new TestAdapter()
-                .Use(new QnAMakerMiddleware(new QnAMakerMiddlewareOptions()
-                {
-                    KnowledgeBaseId = knowlegeBaseId,
-                    SubscriptionKey = subscriptionKey,
-                    Top = 1
-                }));
-
-            await new TestFlow(adapter, async (context) =>
-                {
-                        await context.SendActivity(context.Activity.Text);                  
-                })
-                .Send("foo")
-                    .AssertReply("foo", "passthrough")
-                .Send("how do I clean the stove?")
-                    .AssertReply("BaseCamp: You can use a damp rag to clean around the Power Pack. Do not attempt to detach it from the stove body. As with any electronic device, never pour water on it directly. CampStove 2 &amp; CookStove: Power module: Remove the plastic power module from the fuel chamber and wipe it down with a damp cloth with soap and water. DO NOT submerge the power module in water or get it excessively wet. Fuel chamber: Wipe out with a nylon brush as needed. The pot stand at the top of the fuel chamber can be wiped off with a damp cloth and dried well. The fuel chamber can also be washed in a dishwasher. Dry very thoroughly.")
-                .StartTest();
+            return knowlegeBaseId != null && subscriptionKey != null;
         }
-
     }
 }
