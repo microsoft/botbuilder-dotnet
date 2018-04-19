@@ -166,8 +166,10 @@ namespace Microsoft.Bot.Builder
         /// <seealso cref="RunPipeline(ITurnContext, Func{ITurnContext, Task}, CancellationTokenSource)"/>
         public virtual Task ContinueConversation(ConversationReference reference, Func<ITurnContext, Task> callback)
         {
-            var context = new TurnContext(this, reference.GetPostToBotMessage());
-            return RunPipeline(context, callback);
+            using (var context = new TurnContext(this, reference.GetPostToBotMessage()))
+            {
+                return RunPipeline(context, callback);
+            }
         }
     }
 }
