@@ -406,6 +406,7 @@ Global
 		{2F77CA1D-E6F0-4DEA-96BB-8A039F4D0FF8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2F77CA1D-E6F0-4DEA-96BB-8A039F4D0FF8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2F77CA1D-E6F0-4DEA-96BB-8A039F4D0FF8}.Documentation|Any CPU.ActiveCfg = Debug|Any CPU
+		{2F77CA1D-E6F0-4DEA-96BB-8A039F4D0FF8}.Documentation|Any CPU.Build.0 = Debug|Any CPU 
 		{2F77CA1D-E6F0-4DEA-96BB-8A039F4D0FF8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2F77CA1D-E6F0-4DEA-96BB-8A039F4D0FF8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
