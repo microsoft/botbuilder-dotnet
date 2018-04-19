@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
 {
     /// <inheritdoc />
     /// <summary>
-    /// A Luis based implementation of IRecognizer
+    /// Provides a LUIS-based implementation for the <see cref="IRecognizer"/> interface.
     /// </summary>
     public class LuisRecognizer : ILuisRecognizer
     {
@@ -24,6 +24,12 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
         private readonly ILuisRecognizerOptions _luisRecognizerOptions;
         private const string MetadataKey = "$instance";
 
+        /// <summary>
+        /// Creates a new <see cref="LuisRecognizer"/> object.
+        /// </summary>
+        /// <param name="luisModel">The LUIS model to use to recognize text.</param>
+        /// <param name="luisRecognizerOptions">The LUIS recognizer options to use.</param>
+        /// <param name="options">The LUIS request options to use.</param>
         public LuisRecognizer(ILuisModel luisModel, ILuisRecognizerOptions luisRecognizerOptions = null, ILuisOptions options = null)
         {
             _luisService = new LuisService(luisModel);
@@ -31,13 +37,25 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
             _luisRecognizerOptions = luisRecognizerOptions ?? new LuisRecognizerOptions { Verbose = true };
         }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Runs an utterance through a LUIS recognizer and returns the recognizer results.
+        /// </summary>
+        /// <param name="utterance">The utterance.</param>
+        /// <param name="ct">A cancellation token.</param>
+        /// <returns>The recognizer results.</returns>
         public async Task<RecognizerResult> Recognize(string utterance, CancellationToken ct)
         {
             var result = await CallAndRecognize(utterance, ct).ConfigureAwait(false);
             return result.recognizerResult;
         }
 
+        /// <summary>
+        /// Runs an utterance through a LUIS recognizer and returns the recognizer results.
+        /// </summary>
+        /// <param name="utterance">The utterance.</param>
+        /// <param name="ct">A cancellation token.</param>
+        /// <returns>The recognizer results and LUIS result.</returns>
+        /// <remarks>This method adds metadata to the recognizer's results.</remarks>
         public Task<(RecognizerResult recognizerResult, LuisResult luisResult)> CallAndRecognize(string utterance, CancellationToken ct)
         {
             if (string.IsNullOrEmpty(utterance))
@@ -48,6 +66,13 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
             return Recognize(luisRequest, ct, _luisRecognizerOptions.Verbose);
         }
 
+        /// <summary>
+        /// Runs an utterance through a LUIS recognizer and returns the recognizer results.
+        /// </summary>
+        /// <param name="request">A LUIS request for an utterance.</param>
+        /// <param name="ct">A cancellation token.</param>
+        /// <param name="verbose">Whether to add metadata to the recognizer's results.</param>
+        /// <returns>The recognizer results and LUIS result.</returns>
         private async Task<(RecognizerResult recognizerResult, LuisResult luisResult)> Recognize(LuisRequest request, CancellationToken ct, bool verbose)
         {
             var luisResult = await _luisService.QueryAsync(request, ct).ConfigureAwait(false);
