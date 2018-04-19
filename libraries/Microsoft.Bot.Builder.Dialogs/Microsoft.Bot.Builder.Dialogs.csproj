@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<Version Condition=" '$(BUILD_BUILDNUMBER)' == '' ">4.0.0-local</Version>
@@ -44,10 +44,6 @@
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Documentation|AnyCPU'">
 		<DocumentationFile>bin\Documentation\netstandard2.0\Microsoft.Bot.Builder.Dialogs.xml</DocumentationFile>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-	  <DocumentationFile>bin\Debug\netstandard2.0\Microsoft.Bot.Builder.Dialogs.xml</DocumentationFile>
 	</PropertyGroup>
 
 	<ItemGroup>
