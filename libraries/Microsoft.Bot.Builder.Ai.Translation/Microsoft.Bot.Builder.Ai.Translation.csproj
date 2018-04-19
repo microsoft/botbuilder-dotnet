@@ -18,7 +18,7 @@
 	  <PackageId>Microsoft.Bot.Builder.Ai.Translation</PackageId>
     <Description>Classes for using Translation Cognitive Services on the Microsoft Bot Builder SDK</Description>
     <Summary>This library implements C# classes for building bots using Microsoft Cognitive services.</Summary>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <PropertyGroup>
