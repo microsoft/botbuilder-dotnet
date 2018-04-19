@@ -70,7 +70,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         {
             string sentence = string.Join(delimiter, words);
             sentence = Regex.Replace(sentence, "[ ]?'[ ]?", "'");
-            return sentence;
+            return sentence.Trim();
         }
 
         /// <summary>
@@ -113,7 +113,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation
                 }
                 alignSplitWrds = outWrds.ToArray();
             }
-            if (alignSplitWrds.Length >= wrds.Length)
+            if (Join("",alignSplitWrds)==Join("",wrds))
                 return alignSplitWrds;
             return wrds;
         }
