@@ -10,26 +10,21 @@ using Microsoft.Cognitive.LUIS;
 using Microsoft.Cognitive.LUIS.Models;
 using Newtonsoft.Json.Linq;
 using System.Text.RegularExpressions;
+using Microsoft.Bot.Builder.Core.Extensions;
 
 namespace Microsoft.Bot.Builder.Ai.LUIS
 {
     /// <inheritdoc />
     /// <summary>
-    /// Provides a LUIS-based implementation for the <see cref="IRecognizer"/> interface.
+    /// A LUIS based implementation of IRecognizer.
     /// </summary>
-    public class LuisRecognizer : ILuisRecognizer
+    public class LuisRecognizer : IRecognizer
     {
         private readonly LuisService _luisService;
         private readonly ILuisOptions _luisOptions;
         private readonly ILuisRecognizerOptions _luisRecognizerOptions;
         private const string MetadataKey = "$instance";
 
-        /// <summary>
-        /// Creates a new <see cref="LuisRecognizer"/> object.
-        /// </summary>
-        /// <param name="luisModel">The LUIS model to use to recognize text.</param>
-        /// <param name="luisRecognizerOptions">The LUIS recognizer options to use.</param>
-        /// <param name="options">The LUIS request options to use.</param>
         public LuisRecognizer(ILuisModel luisModel, ILuisRecognizerOptions luisRecognizerOptions = null, ILuisOptions options = null)
         {
             _luisService = new LuisService(luisModel);
@@ -37,26 +32,18 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
             _luisRecognizerOptions = luisRecognizerOptions ?? new LuisRecognizerOptions { Verbose = true };
         }
 
-        /// <summary>
-        /// Runs an utterance through a LUIS recognizer and returns the recognizer results.
-        /// </summary>
-        /// <param name="utterance">The utterance.</param>
-        /// <param name="ct">A cancellation token.</param>
-        /// <returns>The recognizer results.</returns>
+        /// <inheritdoc />
         public async Task<RecognizerResult> Recognize(string utterance, CancellationToken ct)
         {
-            var result = await CallAndRecognize(utterance, ct).ConfigureAwait(false);
-            return result.recognizerResult;
+            return (await CallAndRecognize(utterance, ct).ConfigureAwait(false));
         }
 
-        /// <summary>
-        /// Runs an utterance through a LUIS recognizer and returns the recognizer results.
-        /// </summary>
-        /// <param name="utterance">The utterance.</param>
-        /// <param name="ct">A cancellation token.</param>
-        /// <returns>The recognizer results and LUIS result.</returns>
-        /// <remarks>This method adds metadata to the recognizer's results.</remarks>
-        public Task<(RecognizerResult recognizerResult, LuisResult luisResult)> CallAndRecognize(string utterance, CancellationToken ct)
+        public async Task<T> Recognize<T>(string utterance, CancellationToken ct)
+        {
+            return (T) Activator.CreateInstance(typeof(T), (await CallAndRecognize(utterance, ct).ConfigureAwait(false)));
+        }
+
+        public Task<RecognizerResult> CallAndRecognize(string utterance, CancellationToken ct)
         {
             if (string.IsNullOrEmpty(utterance))
                 throw new ArgumentNullException(nameof(utterance));
@@ -66,26 +53,18 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
             return Recognize(luisRequest, ct, _luisRecognizerOptions.Verbose);
         }
 
-        /// <summary>
-        /// Runs an utterance through a LUIS recognizer and returns the recognizer results.
-        /// </summary>
-        /// <param name="request">A LUIS request for an utterance.</param>
-        /// <param name="ct">A cancellation token.</param>
-        /// <param name="verbose">Whether to add metadata to the recognizer's results.</param>
-        /// <returns>The recognizer results and LUIS result.</returns>
-        private async Task<(RecognizerResult recognizerResult, LuisResult luisResult)> Recognize(LuisRequest request, CancellationToken ct, bool verbose)
+        private async Task<RecognizerResult> Recognize(LuisRequest request, CancellationToken ct, bool verbose)
         {
             var luisResult = await _luisService.QueryAsync(request, ct).ConfigureAwait(false);
-
             var recognizerResult = new RecognizerResult
             {
                 Text = request.Query,
-                AlteredText = luisResult.AlteredQuery,
+                AlteredText = luisResult.AlteredQuery ?? request.Query,
                 Intents = GetIntents(luisResult),
-                Entities = GetEntitiesAndMetadata(luisResult.Entities, luisResult.CompositeEntities, verbose)
+                Entities = GetEntitiesAndMetadata(luisResult.Entities, luisResult.CompositeEntities, verbose),
             };
-
-            return (recognizerResult, luisResult);
+            recognizerResult.Properties.Add("luisResult", luisResult);
+            return recognizerResult;
         }
 
         private static JObject GetIntents(LuisResult luisResult)
@@ -121,11 +100,22 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
 
                 if (verbose)
                 {
-                    AddProperty((JObject) entitiesAndMetadata[MetadataKey], GetNormalizedEntityType(entity), GetEntityMetadata(entity));
+                    AddProperty((JObject)entitiesAndMetadata[MetadataKey], GetNormalizedEntityType(entity), GetEntityMetadata(entity));
                 }
             }
 
             return entitiesAndMetadata;
+        }
+
+        private static JToken Number(dynamic value)
+        {
+            if (value == null)
+            {
+                return null;
+            }
+            return long.TryParse((string)value, out var longVal) ?
+                            new JValue(longVal) :
+                            new JValue(double.Parse((string)value));
         }
 
         private static JToken GetEntityValue(EntityRecommendation entity)
@@ -139,24 +129,50 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
                     return JArray.FromObject(entity.Resolution);
 
                 var resolutionValues = (IEnumerable<object>)entity.Resolution.Values.First();
-                var timexes = resolutionValues.Select(value => ((IDictionary<string, object>) value)["timex"]);
+                var type = resolutionValues.Select(t => ((IDictionary<string, object>)t)["type"]).First();
+                var timexes = resolutionValues.Select(val => ((IDictionary<string, object>)val)["timex"]);
                 var distinctTimexes = timexes.Distinct();
-                return JArray.FromObject(distinctTimexes);
+                return new JObject(new JProperty("type", type), new JProperty("timex", JArray.FromObject(distinctTimexes)));
             }
-            
-            if (entity.Type.StartsWith("builtin.number") || entity.Type.StartsWith("builtin.ordinal"))
+            else
             {
-                var value = (string) entity.Resolution.Values.First();
-                return long.TryParse(value, out var longVal) ?
-                            new JValue(longVal) :
-                            new JValue(double.Parse(value));
+                var resolution = entity.Resolution;
+                switch (entity.Type)
+                {
+                    case "builtin.number":
+                    case "builtin.ordinal": return Number(resolution["value"]);
+                    case "builtin.percentage":
+                        {
+                            var svalue = (string)resolution["value"];
+                            if (svalue.EndsWith("%"))
+                            {
+                                svalue = svalue.Substring(0, svalue.Length - 1);
+                            }
+                            return Number(svalue);
+                        }
+                    case "builtin.age":
+                    case "builtin.dimension":
+                    case "builtin.currency":
+                    case "builtin.temperature":
+                        {
+                            var units = (string)resolution["unit"];
+                            var val = Number(resolution["value"]);
+                            var obj = new JObject();
+                            if (val != null)
+                            {
+                                obj.Add("number", val);
+                            }
+                            obj.Add("units", units);
+                            return obj;
+                        }
+                    default:
+                        return entity.Resolution.Count > 1 ?
+                            JObject.FromObject(entity.Resolution) :
+                            entity.Resolution.ContainsKey("value") ?
+                                (JToken)new JValue(entity.Resolution["value"]) :
+                                JArray.FromObject(entity.Resolution["values"]);
+                }
             }
-
-            return entity.Resolution.Count > 1 ? 
-                JObject.FromObject(entity.Resolution) : 
-                entity.Resolution.ContainsKey("value") ?
-                    (JToken) JObject.FromObject(entity.Resolution["value"]) :
-                    JArray.FromObject(entity.Resolution["values"]);
         }
 
         private static JObject GetEntityMetadata(EntityRecommendation entity)
@@ -172,7 +188,21 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
 
         private static string GetNormalizedEntityType(EntityRecommendation entity)
         {
-            return Regex.Replace(entity.Type, "\\.", "_");
+            // Type::Role -> Role
+            var type = entity.Type.Split(':').Last();
+            if (type.StartsWith("builtin.datetimeV2."))
+            {
+                type = "builtin_datetime";
+            }
+            if (type.StartsWith("builtin.currency"))
+            {
+                type = "builtin_money";
+            }
+            if (entity.Role != null)
+            {
+                type = entity.Role;
+            }
+            return Regex.Replace(type, "\\.", "_");
         }
 
         private static IList<EntityRecommendation> PopulateCompositeEntity(CompositeEntity compositeEntity, IList<EntityRecommendation> entities, JObject entitiesAndMetadata, bool verbose)
@@ -196,11 +226,11 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
                 childrenEntitiesMetadata = GetEntityMetadata(compositeEntityMetadata);
                 childrenEntites[MetadataKey] = new JObject();
             }
-            
+
             var coveredSet = new HashSet<EntityRecommendation>();
             foreach (var child in compositeEntity.Children)
             {
-                foreach(var entity in entities)
+                foreach (var entity in entities)
                 {
                     // We already covered this entity
                     if (coveredSet.Contains(entity))
@@ -220,7 +250,7 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
                     }
                 }
             }
-            
+
             AddProperty(entitiesAndMetadata, compositeEntity.ParentType, childrenEntites);
             if (verbose)
             {
@@ -236,7 +266,7 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
             return entity.StartIndex >= compositeEntityMetadata.StartIndex &&
                    entity.EndIndex <= compositeEntityMetadata.EndIndex;
         }
-        
+
         /// <summary>
         /// If a property doesn't exist add it to a new array, otherwise append it to the existing array
         /// </summary>
@@ -244,7 +274,7 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
         {
             if (((IDictionary<string, JToken>)obj).ContainsKey(key))
             {
-                ((JArray) obj[key]).Add(value);
+                ((JArray)obj[key]).Add(value);
             }
             else
             {
