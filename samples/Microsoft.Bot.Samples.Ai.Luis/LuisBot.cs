@@ -23,8 +23,8 @@ namespace Microsoft.Bot.Samples.Ai.Luis
 
                     if (luisResult != null)
                     {
-                        (string key, double score) topItem = luisResult.GetTopScoringIntent();
-                        await context.SendActivity($"The **top intent** was: **'{topItem.key}'**, with score **{topItem.score}**");
+                        (string topIntent, double score) = luisResult.GetTopScoringIntent();
+                        await context.SendActivity($"The **top intent** was: **'{topIntent}'**, with score **{score}**");
 
                         await context.SendActivity($"Detail of intents scorings:");
                         var intentsResult = new List<string>();

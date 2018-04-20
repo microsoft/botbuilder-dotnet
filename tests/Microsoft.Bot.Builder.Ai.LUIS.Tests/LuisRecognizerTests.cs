@@ -42,7 +42,7 @@ namespace Microsoft.Bot.Builder.Ai.LUIS.Tests
             var luisRecognizer = GetLuisRecognizer(verbose: true);
             var result = await luisRecognizer.Recognize("My name is Emad", CancellationToken.None);
             Assert.IsNotNull(result);
-            Assert.IsNotNull(result.AlteredText);
+            Assert.IsNull(result.AlteredText);
             Assert.AreEqual("My name is Emad", result.Text);
             Assert.IsNotNull(result.Intents);
             Assert.AreEqual(1, result.Intents.Count);
@@ -54,7 +54,7 @@ namespace Microsoft.Bot.Builder.Ai.LUIS.Tests
             Assert.IsNotNull(result.Entities["$instance"]);
             Assert.IsNotNull(result.Entities["$instance"]["Name"]);
             Assert.AreEqual(11, (int)result.Entities["$instance"]["Name"].First["startIndex"]);
-            Assert.AreEqual(14, (int)result.Entities["$instance"]["Name"].First["endIndex"]);
+            Assert.AreEqual(15, (int)result.Entities["$instance"]["Name"].First["endIndex"]);
             AssertScore(result.Entities["$instance"]["Name"].First["score"]);
         }
 
@@ -86,11 +86,11 @@ namespace Microsoft.Bot.Builder.Ai.LUIS.Tests
             Assert.AreEqual("2001-02-02", (string)result.Entities["builtin_datetime"].First["timex"].First);
             Assert.IsNotNull(result.Entities["$instance"]["builtin_number"]);
             Assert.AreEqual(28, (int)result.Entities["$instance"]["builtin_number"].First["startIndex"]);
-            Assert.AreEqual(31, (int)result.Entities["$instance"]["builtin_number"].First["endIndex"]);
-            Assert.AreEqual("2001", (string)result.Entities["$instance"]["builtin_number"].First["text"]);
+            Assert.AreEqual(32, (int)result.Entities["$instance"]["builtin_number"].First["endIndex"]);
+            Assert.AreEqual("2001", result.Text.Substring(28, 32 - 28));
             Assert.IsNotNull(result.Entities["$instance"]["builtin_datetime"]);
             Assert.AreEqual(15, (int)result.Entities["$instance"]["builtin_datetime"].First["startIndex"]);
-            Assert.AreEqual(31, (int)result.Entities["$instance"]["builtin_datetime"].First["endIndex"]);
+            Assert.AreEqual(32, (int)result.Entities["$instance"]["builtin_datetime"].First["endIndex"]);
             Assert.AreEqual("february 2nd 2001", (string)result.Entities["$instance"]["builtin_datetime"].First["text"]);
         }
 
@@ -141,7 +141,7 @@ namespace Microsoft.Bot.Builder.Ai.LUIS.Tests
             Assert.IsNotNull(result.Entities["$instance"]);
             Assert.IsNotNull(result.Entities["$instance"]["Airline"]);
             Assert.AreEqual(20, result.Entities["$instance"]["Airline"][0]["startIndex"]);
-            Assert.AreEqual(25, result.Entities["$instance"]["Airline"][0]["endIndex"]);
+            Assert.AreEqual(26, result.Entities["$instance"]["Airline"][0]["endIndex"]);
             Assert.AreEqual("united", result.Entities["$instance"]["Airline"][0]["text"]);
         }
 
@@ -169,7 +169,7 @@ namespace Microsoft.Bot.Builder.Ai.LUIS.Tests
             Assert.IsNotNull(result.Entities["$instance"]);
             Assert.IsNotNull(result.Entities["$instance"]["Airline"]);
             Assert.AreEqual(20, result.Entities["$instance"]["Airline"][0]["startIndex"]);
-            Assert.AreEqual(21, result.Entities["$instance"]["Airline"][0]["endIndex"]);
+            Assert.AreEqual(22, result.Entities["$instance"]["Airline"][0]["endIndex"]);
             Assert.AreEqual("dl", result.Entities["$instance"]["Airline"][0]["text"]);
         }
 
@@ -200,17 +200,18 @@ namespace Microsoft.Bot.Builder.Ai.LUIS.Tests
             Assert.IsNull(result.Entities["$instance"]["State"]);
             Assert.IsNotNull(result.Entities["$instance"]["Address"]);
             Assert.AreEqual(21, result.Entities["$instance"]["Address"][0]["startIndex"]);
-            Assert.AreEqual(28, result.Entities["$instance"]["Address"][0]["endIndex"]);
+            Assert.AreEqual(29, result.Entities["$instance"]["Address"][0]["endIndex"]);
             AssertScore(result.Entities["$instance"]["Address"][0]["score"]);
             Assert.IsNotNull(result.Entities["Address"][0]["$instance"]);
             Assert.IsNotNull(result.Entities["Address"][0]["$instance"]["builtin_number"]);
             Assert.AreEqual(21, result.Entities["Address"][0]["$instance"]["builtin_number"][0]["startIndex"]);
-            Assert.AreEqual(25, result.Entities["Address"][0]["$instance"]["builtin_number"][0]["endIndex"]);
+            Assert.AreEqual(26, result.Entities["Address"][0]["$instance"]["builtin_number"][0]["endIndex"]);
             Assert.AreEqual("98033", result.Entities["Address"][0]["$instance"]["builtin_number"][0]["text"]);
             Assert.IsNotNull(result.Entities["Address"][0]["$instance"]["State"]);
             Assert.AreEqual(27, result.Entities["Address"][0]["$instance"]["State"][0]["startIndex"]);
-            Assert.AreEqual(28, result.Entities["Address"][0]["$instance"]["State"][0]["endIndex"]);
+            Assert.AreEqual(29, result.Entities["Address"][0]["$instance"]["State"][0]["endIndex"]);
             Assert.AreEqual("wa", result.Entities["Address"][0]["$instance"]["State"][0]["text"]);
+            Assert.AreEqual("WA", result.Text.Substring(27, 29 - 27));
             AssertScore(result.Entities["Address"][0]["$instance"]["State"][0]["score"]);
         }
 
@@ -332,9 +333,14 @@ namespace Microsoft.Bot.Builder.Ai.LUIS.Tests
         }
 
         [TestMethod]
-        public async Task AllEntities()
+        public async Task Composite1()
         {
             await TestJson("Composite1.json");
+        }
+
+        [TestMethod]
+        public async Task Composite2()
+        { 
             await TestJson("Composite2.json");
         }
 
