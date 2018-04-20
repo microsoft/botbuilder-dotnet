@@ -25,6 +25,12 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
         private readonly ILuisRecognizerOptions _luisRecognizerOptions;
         private const string MetadataKey = "$instance";
 
+        /// <summary> 
+        /// Creates a new <see cref="LuisRecognizer"/> object. 
+        /// </summary> 
+        /// <param name="luisModel">The LUIS model to use to recognize text.</param> 
+        /// <param name="luisRecognizerOptions">The LUIS recognizer options to use.</param> 
+        /// <param name="options">The LUIS request options to use.</param> 
         public LuisRecognizer(ILuisModel luisModel, ILuisRecognizerOptions luisRecognizerOptions = null, ILuisOptions options = null)
         {
             _luisService = new LuisService(luisModel);
@@ -35,15 +41,19 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
         /// <inheritdoc />
         public async Task<RecognizerResult> Recognize(string utterance, CancellationToken ct)
         {
-            return (await CallAndRecognize(utterance, ct).ConfigureAwait(false));
+            return (await RecognizeInternal(utterance, ct).ConfigureAwait(false));
         }
 
+        /// <inheritdoc />
         public async Task<T> Recognize<T>(string utterance, CancellationToken ct)
+            where T : IRecognizerConvert, new()
         {
-            return (T) Activator.CreateInstance(typeof(T), (await CallAndRecognize(utterance, ct).ConfigureAwait(false)));
+            var result = new T();
+            result.Convert(await RecognizeInternal(utterance, ct).ConfigureAwait(false));
+            return result;
         }
 
-        public Task<RecognizerResult> CallAndRecognize(string utterance, CancellationToken ct)
+        private Task<RecognizerResult> RecognizeInternal(string utterance, CancellationToken ct)
         {
             if (string.IsNullOrEmpty(utterance))
                 throw new ArgumentNullException(nameof(utterance));
@@ -128,8 +138,8 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
                 if (entity.Resolution?.Values == null || entity.Resolution.Values.Count == 0)
                     return JArray.FromObject(entity.Resolution);
 
-                var resolutionValues = (IEnumerable<object>)entity.Resolution.Values.First();
-                var type = resolutionValues.Select(t => ((IDictionary<string, object>)t)["type"]).First();
+                var resolutionValues = (IEnumerable<object>)entity.Resolution["values"];
+                var type = ((IDictionary<string, object>)(resolutionValues.First()))["type"];
                 var timexes = resolutionValues.Select(val => ((IDictionary<string, object>)val)["timex"]);
                 var distinctTimexes = timexes.Distinct();
                 return new JObject(new JProperty("type", type), new JProperty("timex", JArray.FromObject(distinctTimexes)));
