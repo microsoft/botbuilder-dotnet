@@ -16,13 +16,13 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
         /// <summary>
         /// Recognized number, or null if unit only.
         /// </summary>
-        [JsonProperty("value")]
+        [JsonProperty("number")]
         public readonly double? Number;
 
         /// <summary>
         /// Normalized recognized unit.
         /// </summary>
-        [JsonProperty("unit")]
+        [JsonProperty("units")]
         public readonly string Units;
 
         public NumberWithUnit(double? number, string units)

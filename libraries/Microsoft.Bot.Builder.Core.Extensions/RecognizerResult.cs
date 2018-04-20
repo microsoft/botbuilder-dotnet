@@ -9,26 +9,30 @@ namespace Microsoft.Bot.Builder.Core.Extensions
     /// <summary>
     /// Recognizer return value.
     /// </summary>
-    public class RecognizerResult
+    public class RecognizerResult: IRecognizerConvert
     {
         /// <summary>
         /// Original text to recognizer.
         /// </summary>
+        [JsonProperty("test")]
         public string Text { set; get; }
 
         /// <summary>
         /// Text modified by recognizer for example by spell correction.
         /// </summary>
+        [JsonProperty("alteredText")]
         public string AlteredText { set; get; }
 
         /// <summary>
         /// Object with the intent as key and the confidence as value.
         /// </summary>
+        [JsonProperty("intents")]
         public JObject Intents { get; set; }
 
         /// <summary>
         /// Object with each top-level recognized entity as a key.
         /// </summary>
+        [JsonProperty("entities")]
         public JObject Entities { get; set; }
 
         /// <summary>
@@ -37,23 +41,14 @@ namespace Microsoft.Bot.Builder.Core.Extensions
         [JsonExtensionData(ReadData = true, WriteData = true)]
         public IDictionary<string, object> Properties { get; set; } = new Dictionary<string, object>();
 
-        /// <summary>
-        /// Default constructor.
-        /// </summary>
-        public RecognizerResult()
-        { }
-
-        /// <summary>
-        /// Shallow copy constructor.
-        /// </summary>
-        /// <param name="other">Result to copy results from.</param>
-        public RecognizerResult(RecognizerResult other)
+        /// <inheritdoc />
+        public void Convert(dynamic result)
         {
-            Text = other.Text;
-            AlteredText = other.AlteredText;
-            Intents = other.Intents;
-            Entities = other.Entities;
-            Properties = other.Properties;
+            Text = result.Text;
+            AlteredText = result.AlteredText;
+            Intents = result.Intents;
+            Entities = result.Entities;
+            Properties = result.Properties;
         }
     }
 }
