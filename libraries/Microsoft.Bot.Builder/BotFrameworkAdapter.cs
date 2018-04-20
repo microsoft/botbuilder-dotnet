@@ -71,7 +71,8 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <summary>
         /// Sends a proactive message from the bot to a conversation.
         /// </summary>
-        /// <param name="botAppId">The application ID of the bot.</param>
+        /// <param name="botAppId">The application ID of the bot. This is the appId returned by Portal registration, and is
+        /// generally found in the "MicrosoftAppId" parameter in appSettings.json.</param>
         /// <param name="reference">A reference to the conversation to continue.</param>
         /// <param name="callback">The method to call for the resulting bot turn.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
@@ -85,10 +86,15 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <item><see cref="IIdentity"/> (key = "BotIdentity"), a claims identity for the bot.</item>
         /// <item><see cref="IConnectorClient"/>, the channel connector client to use this turn.</item>
         /// </list></para>
+        /// <para>
+        /// This overload differers from the Node implementation by requiring the BotId to be 
+        /// passed in. The .Net code allows multiple bots to be hosted in a single adapter which
+        /// isn't something supported by Node.
+        /// </para>
         /// </remarks>
         /// <seealso cref="ProcessActivity(string, Activity, Func{ITurnContext, Task})"/>
         /// <seealso cref="BotAdapter.RunPipeline(ITurnContext, Func{ITurnContext, Task}, System.Threading.CancellationTokenSource)"/>
-        public async Task ContinueConversation(string botAppId, ConversationReference reference, Func<ITurnContext, Task> callback)
+        public override async Task ContinueConversation(string botAppId, ConversationReference reference, Func<ITurnContext, Task> callback)
         {
             if (string.IsNullOrWhiteSpace(botAppId))
                 throw new ArgumentNullException(nameof(botAppId));
@@ -115,10 +121,6 @@ namespace Microsoft.Bot.Builder.Adapters
                 await RunPipeline(context, callback);
             }
         }
-
-        /// <inheritdoc />
-        public override Task ContinueConversation(ConversationReference reference, Func<ITurnContext, Task> callback) =>
-            ContinueConversation(reference.Bot.Id, reference, callback);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BotFrameworkAdapter"/> class,
