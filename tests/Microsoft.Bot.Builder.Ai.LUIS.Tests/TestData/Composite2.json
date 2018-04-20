@@ -1,11 +1,11 @@
 {
-  "alteredText": "http://foo.com is where you can fly from seattle to dallas via denver",
+  "alteredText": null,
   "entities": {
     "$instance": {
       "Composite2": [
         {
           "startIndex": 0,
-          "endIndex": 68,
+          "endIndex": 69,
           "text": "http : / / foo . com is where you can fly from seattle to dallas via denver",
           "score": 0.8277292
         }
@@ -17,7 +17,7 @@
           "City": [
             {
               "startIndex": 63,
-              "endIndex": 68,
+              "endIndex": 69,
               "text": "denver",
               "score": 0.8370886
             }
@@ -25,7 +25,7 @@
           "builtin_url": [
             {
               "startIndex": 0,
-              "endIndex": 13,
+              "endIndex": 14,
               "text": "http://foo.com",
               "score": null
             }
@@ -33,7 +33,7 @@
           "From": [
             {
               "startIndex": 41,
-              "endIndex": 47,
+              "endIndex": 48,
               "text": "seattle",
               "score": 0.987120867
             }
@@ -41,7 +41,7 @@
           "To": [
             {
               "startIndex": 52,
-              "endIndex": 57,
+              "endIndex": 58,
               "text": "dallas",
               "score": 0.9829801
             }

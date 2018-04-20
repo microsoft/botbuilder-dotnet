@@ -7,9 +7,6 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
     /// <summary>
     /// Strongly typed information corresponding to LUIS $instance value.
     /// </summary>
-    /// <remarks>
-    /// This is a partial class in order to support adding custom meta-data.
-    /// </remarks>
     public class InstanceData
     {
         /// <summary>
@@ -19,13 +16,13 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
         public int StartIndex;
 
         /// <summary>
-        /// 0-based index of the last character for recognized entity.
+        /// 0-based index of the first character beyond the recognized entity.
         /// </summary>
         [JsonProperty("endIndex")]
         public int EndIndex;
 
         /// <summary>
-        /// Original source text for the entity.
+        /// Word broken and normalized text for the entity.
         /// </summary>
         [JsonProperty("text")]
         public string Text;

@@ -1,11 +1,11 @@
 {
-  "alteredText": "12 years old and 3 days old and monday july 3rd and every monday and between 3am and 5:30am and 4 acres and 4 pico meters and chrimc@hotmail.com and $4 and $4.25 and 32 and 210.4 and first and 10% and 10.5% and 425-555-1234 and 3 degrees and -27.5 degrees c",
+  "alteredText": null,
   "entities": {
     "$instance": {
       "Composite1": [
         {
           "startIndex": 0,
-          "endIndex": 256,
+          "endIndex": 257,
           "text": "12 years old and 3 days old and monday july 3rd and every monday and between 3am and 5 : 30am and 4 acres and 4 pico meters and chrimc @ hotmail . com and $ 4 and $ 4 . 25 and 32 and 210 . 4 and first and 10 % and 10 . 5 % and 425 - 555 - 1234 and 3 degrees and - 27 . 5 degrees c",
           "score": 0.7393847
         }
@@ -17,13 +17,13 @@
           "builtin_age": [
             {
               "startIndex": 0,
-              "endIndex": 11,
+              "endIndex": 12,
               "text": "12 years old",
               "score": null
             },
             {
               "startIndex": 17,
-              "endIndex": 26,
+              "endIndex": 27,
               "text": "3 days old",
               "score": null
             }
@@ -31,31 +31,31 @@
           "builtin_datetime": [
             {
               "startIndex": 0,
-              "endIndex": 7,
+              "endIndex": 8,
               "text": "12 years",
               "score": null
             },
             {
               "startIndex": 17,
-              "endIndex": 22,
+              "endIndex": 23,
               "text": "3 days",
               "score": null
             },
             {
               "startIndex": 32,
-              "endIndex": 46,
+              "endIndex": 47,
               "text": "monday july 3rd",
               "score": null
             },
             {
               "startIndex": 52,
-              "endIndex": 63,
+              "endIndex": 64,
               "text": "every monday",
               "score": null
             },
             {
               "startIndex": 69,
-              "endIndex": 90,
+              "endIndex": 91,
               "text": "between 3am and 5:30am",
               "score": null
             }
@@ -63,13 +63,13 @@
           "builtin_dimension": [
             {
               "startIndex": 96,
-              "endIndex": 102,
+              "endIndex": 103,
               "text": "4 acres",
               "score": null
             },
             {
               "startIndex": 108,
-              "endIndex": 120,
+              "endIndex": 121,
               "text": "4 pico meters",
               "score": null
             }
@@ -77,7 +77,7 @@
           "builtin_email": [
             {
               "startIndex": 126,
-              "endIndex": 143,
+              "endIndex": 144,
               "text": "chrimc@hotmail.com",
               "score": null
             }
@@ -85,13 +85,13 @@
           "builtin_money": [
             {
               "startIndex": 149,
-              "endIndex": 150,
+              "endIndex": 151,
               "text": "$4",
               "score": null
             },
             {
               "startIndex": 156,
-              "endIndex": 160,
+              "endIndex": 161,
               "text": "$4.25",
               "score": null
             }
@@ -99,97 +99,97 @@
           "builtin_number": [
             {
               "startIndex": 0,
-              "endIndex": 1,
+              "endIndex": 2,
               "text": "12",
               "score": null
             },
             {
               "startIndex": 17,
-              "endIndex": 17,
+              "endIndex": 18,
               "text": "3",
               "score": null
             },
             {
               "startIndex": 85,
-              "endIndex": 85,
+              "endIndex": 86,
               "text": "5",
               "score": null
             },
             {
               "startIndex": 96,
-              "endIndex": 96,
+              "endIndex": 97,
               "text": "4",
               "score": null
             },
             {
               "startIndex": 108,
-              "endIndex": 108,
+              "endIndex": 109,
               "text": "4",
               "score": null
             },
             {
               "startIndex": 150,
-              "endIndex": 150,
+              "endIndex": 151,
               "text": "4",
               "score": null
             },
             {
               "startIndex": 157,
-              "endIndex": 160,
+              "endIndex": 161,
               "text": "4.25",
               "score": null
             },
             {
               "startIndex": 166,
-              "endIndex": 167,
+              "endIndex": 168,
               "text": "32",
               "score": null
             },
             {
               "startIndex": 173,
-              "endIndex": 177,
+              "endIndex": 178,
               "text": "210.4",
               "score": null
             },
             {
               "startIndex": 193,
-              "endIndex": 194,
+              "endIndex": 195,
               "text": "10",
               "score": null
             },
             {
               "startIndex": 201,
-              "endIndex": 204,
+              "endIndex": 205,
               "text": "10.5",
               "score": null
             },
             {
               "startIndex": 211,
-              "endIndex": 213,
+              "endIndex": 214,
               "text": "425",
               "score": null
             },
             {
               "startIndex": 215,
-              "endIndex": 217,
+              "endIndex": 218,
               "text": "555",
               "score": null
             },
             {
               "startIndex": 219,
-              "endIndex": 222,
+              "endIndex": 223,
               "text": "1234",
               "score": null
             },
             {
               "startIndex": 228,
-              "endIndex": 228,
+              "endIndex": 229,
               "text": "3",
               "score": null
             },
             {
               "startIndex": 242,
-              "endIndex": 246,
+              "endIndex": 247,
               "text": "-27.5",
               "score": null
             }
@@ -197,13 +197,13 @@
           "builtin_ordinal": [
             {
               "startIndex": 44,
-              "endIndex": 46,
+              "endIndex": 47,
               "text": "3rd",
               "score": null
             },
             {
               "startIndex": 183,
-              "endIndex": 187,
+              "endIndex": 188,
               "text": "first",
               "score": null
             }
@@ -211,13 +211,13 @@
           "builtin_percentage": [
             {
               "startIndex": 193,
-              "endIndex": 195,
+              "endIndex": 196,
               "text": "10%",
               "score": null
             },
             {
               "startIndex": 201,
-              "endIndex": 205,
+              "endIndex": 206,
               "text": "10.5%",
               "score": null
             }
@@ -225,7 +225,7 @@
           "builtin_phonenumber": [
             {
               "startIndex": 211,
-              "endIndex": 222,
+              "endIndex": 223,
               "text": "425-555-1234",
               "score": null
             }
@@ -233,13 +233,13 @@
           "builtin_temperature": [
             {
               "startIndex": 228,
-              "endIndex": 236,
+              "endIndex": 237,
               "text": "3 degrees",
               "score": null
             },
             {
               "startIndex": 242,
-              "endIndex": 256,
+              "endIndex": 257,
               "text": "-27.5 degrees c",
               "score": null
             }

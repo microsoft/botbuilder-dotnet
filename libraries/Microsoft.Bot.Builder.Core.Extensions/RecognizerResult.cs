@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions
         /// <summary>
         /// Original text to recognizer.
         /// </summary>
-        [JsonProperty("test")]
+        [JsonProperty("text")]
         public string Text { set; get; }
 
         /// <summary>

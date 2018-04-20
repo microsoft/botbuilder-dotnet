@@ -69,9 +69,9 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
             var recognizerResult = new RecognizerResult
             {
                 Text = request.Query,
-                AlteredText = luisResult.AlteredQuery ?? request.Query,
+                AlteredText = luisResult.AlteredQuery,
                 Intents = GetIntents(luisResult),
-                Entities = GetEntitiesAndMetadata(luisResult.Entities, luisResult.CompositeEntities, verbose),
+                Entities = ExtractEntitiesAndMetadata(luisResult.Entities, luisResult.CompositeEntities, verbose),
             };
             recognizerResult.Properties.Add("luisResult", luisResult);
             return recognizerResult;
@@ -84,7 +84,7 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
                 new JObject { [luisResult.TopScoringIntent.Intent] = luisResult.TopScoringIntent.Score ?? 0 };
         }
 
-        private static JObject GetEntitiesAndMetadata(IList<EntityRecommendation> entities, IList<CompositeEntity> compositeEntities, bool verbose)
+        private static JObject ExtractEntitiesAndMetadata(IList<EntityRecommendation> entities, IList<CompositeEntity> compositeEntities, bool verbose)
         {
             var entitiesAndMetadata = new JObject();
             if (verbose)
@@ -106,11 +106,11 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
                 if (compositeEntityTypes.Contains(entity.Type))
                     continue;
 
-                AddProperty(entitiesAndMetadata, GetNormalizedEntityType(entity), GetEntityValue(entity));
+                AddProperty(entitiesAndMetadata, ExtractNormalizedEntityType(entity), ExtractEntityValue(entity));
 
                 if (verbose)
                 {
-                    AddProperty((JObject)entitiesAndMetadata[MetadataKey], GetNormalizedEntityType(entity), GetEntityMetadata(entity));
+                    AddProperty((JObject)entitiesAndMetadata[MetadataKey], ExtractNormalizedEntityType(entity), ExtractEntityMetadata(entity));
                 }
             }
 
@@ -128,7 +128,7 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
                             new JValue(double.Parse((string)value));
         }
 
-        private static JToken GetEntityValue(EntityRecommendation entity)
+        private static JToken ExtractEntityValue(EntityRecommendation entity)
         {
             if (entity.Resolution == null)
                 return entity.Entity;
@@ -185,18 +185,18 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
             }
         }
 
-        private static JObject GetEntityMetadata(EntityRecommendation entity)
+        private static JObject ExtractEntityMetadata(EntityRecommendation entity)
         {
             return JObject.FromObject(new
             {
                 startIndex = entity.StartIndex,
-                endIndex = entity.EndIndex,
+                endIndex = entity.EndIndex + 1,
                 text = entity.Entity,
                 score = entity.Score
             });
         }
 
-        private static string GetNormalizedEntityType(EntityRecommendation entity)
+        private static string ExtractNormalizedEntityType(EntityRecommendation entity)
         {
             // Type::Role -> Role
             var type = entity.Type.Split(':').Last();
@@ -233,7 +233,7 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
 
             if (verbose)
             {
-                childrenEntitiesMetadata = GetEntityMetadata(compositeEntityMetadata);
+                childrenEntitiesMetadata = ExtractEntityMetadata(compositeEntityMetadata);
                 childrenEntites[MetadataKey] = new JObject();
             }
 
@@ -252,11 +252,11 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
 
                     // Add to the set to ensure that we don't consider the same child entity more than once per composite
                     coveredSet.Add(entity);
-                    AddProperty(childrenEntites, GetNormalizedEntityType(entity), GetEntityValue(entity));
+                    AddProperty(childrenEntites, ExtractNormalizedEntityType(entity), ExtractEntityValue(entity));
 
                     if (verbose)
                     {
-                        AddProperty((JObject)childrenEntites[MetadataKey], GetNormalizedEntityType(entity), GetEntityMetadata(entity));
+                        AddProperty((JObject)childrenEntites[MetadataKey], ExtractNormalizedEntityType(entity), ExtractEntityMetadata(entity));
                     }
                 }
             }
