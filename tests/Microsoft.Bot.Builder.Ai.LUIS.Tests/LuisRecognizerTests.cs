@@ -3,12 +3,17 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Core.Extensions;
 using Microsoft.Bot.Builder.Core.Extensions.Tests;
 using Microsoft.Cognitive.LUIS;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Ai.LUIS.Tests
@@ -37,7 +42,7 @@ namespace Microsoft.Bot.Builder.Ai.LUIS.Tests
             var luisRecognizer = GetLuisRecognizer(verbose: true);
             var result = await luisRecognizer.Recognize("My name is Emad", CancellationToken.None);
             Assert.IsNotNull(result);
-            Assert.IsNull(result.AlteredText);
+            Assert.IsNotNull(result.AlteredText);
             Assert.AreEqual("My name is Emad", result.Text);
             Assert.IsNotNull(result.Intents);
             Assert.AreEqual(1, result.Intents.Count);
@@ -70,23 +75,23 @@ namespace Microsoft.Bot.Builder.Ai.LUIS.Tests
             Assert.IsTrue(result.Intents.Count > 1);
             Assert.IsNotNull(result.Intents["Delivery"]);
             Assert.IsTrue((double)result.Intents["Delivery"] > 0 && (double)result.Intents["Delivery"] <= 1);
-            Assert.AreEqual("Delivery", result.GetTopScoringIntent().Item1);
-            Assert.IsTrue(result.GetTopScoringIntent().Item2 > 0);
+            Assert.AreEqual("Delivery", result.GetTopScoringIntent().intent);
+            Assert.IsTrue(result.GetTopScoringIntent().score > 0);
             Assert.IsNotNull(result.Entities);
             Assert.IsNotNull(result.Entities["builtin_number"]);
             Assert.AreEqual(2001, (int)result.Entities["builtin_number"].First);
             Assert.IsNotNull(result.Entities["builtin_ordinal"]);
             Assert.AreEqual(2, (int)result.Entities["builtin_ordinal"].First);
-            Assert.IsNotNull(result.Entities["builtin_datetimeV2_date"].First);
-            Assert.AreEqual("2001-02-02", (string)result.Entities["builtin_datetimeV2_date"].First.First);
+            Assert.IsNotNull(result.Entities["builtin_datetime"].First);
+            Assert.AreEqual("2001-02-02", (string)result.Entities["builtin_datetime"].First["timex"].First);
             Assert.IsNotNull(result.Entities["$instance"]["builtin_number"]);
             Assert.AreEqual(28, (int)result.Entities["$instance"]["builtin_number"].First["startIndex"]);
             Assert.AreEqual(31, (int)result.Entities["$instance"]["builtin_number"].First["endIndex"]);
             Assert.AreEqual("2001", (string)result.Entities["$instance"]["builtin_number"].First["text"]);
-            Assert.IsNotNull(result.Entities["$instance"]["builtin_datetimeV2_date"]);
-            Assert.AreEqual(15, (int)result.Entities["$instance"]["builtin_datetimeV2_date"].First["startIndex"]);
-            Assert.AreEqual(31, (int)result.Entities["$instance"]["builtin_datetimeV2_date"].First["endIndex"]);
-            Assert.AreEqual("february 2nd 2001", (string)result.Entities["$instance"]["builtin_datetimeV2_date"].First["text"]);
+            Assert.IsNotNull(result.Entities["$instance"]["builtin_datetime"]);
+            Assert.AreEqual(15, (int)result.Entities["$instance"]["builtin_datetime"].First["startIndex"]);
+            Assert.AreEqual(31, (int)result.Entities["$instance"]["builtin_datetime"].First["endIndex"]);
+            Assert.AreEqual("february 2nd 2001", (string)result.Entities["$instance"]["builtin_datetime"].First["text"]);
         }
 
         [TestMethod]
@@ -110,8 +115,8 @@ namespace Microsoft.Bot.Builder.Ai.LUIS.Tests
             Assert.AreEqual(2, result.Entities["builtin_number"].Count());
             Assert.IsTrue(result.Entities["builtin_number"].Any(v => (int)v == 201));
             Assert.IsTrue(result.Entities["builtin_number"].Any(v => (int)v == 2001));
-            Assert.IsNotNull(result.Entities["builtin_datetimeV2_date"].First);
-            Assert.AreEqual("2001-02-02", (string)result.Entities["builtin_datetimeV2_date"].First.First);
+            Assert.IsNotNull(result.Entities["builtin_datetime"].First);
+            Assert.AreEqual("2001-02-02", (string)result.Entities["builtin_datetime"].First["timex"].First);
         }
 
         [TestMethod]
@@ -220,24 +225,137 @@ namespace Microsoft.Bot.Builder.Ai.LUIS.Tests
 
             var luisRecognizer = GetLuisRecognizer(verbose: true, luisOptions: new LuisRequest { Verbose = true });
             var result = await luisRecognizer.Recognize("Book a table on Friday or tomorrow at 5 or tomorrow at 4", CancellationToken.None);
-            Assert.IsNotNull(result.Entities["builtin_datetimeV2_date"]);
-            Assert.AreEqual(1, result.Entities["builtin_datetimeV2_date"].Count());
-            Assert.AreEqual(1, result.Entities["builtin_datetimeV2_date"][0].Count());
-            Assert.AreEqual("XXXX-WXX-5", (string)result.Entities["builtin_datetimeV2_date"][0][0]);
-            Assert.AreEqual(2, result.Entities["builtin_datetimeV2_datetime"].Count());
-            Assert.AreEqual(2, result.Entities["builtin_datetimeV2_datetime"][0].Count());
-            Assert.AreEqual(2, result.Entities["builtin_datetimeV2_datetime"][1].Count());
-            Assert.IsTrue(((string)result.Entities["builtin_datetimeV2_datetime"][0][0]).EndsWith("T05"));
-            Assert.IsTrue(((string)result.Entities["builtin_datetimeV2_datetime"][0][1]).EndsWith("T17"));
-            Assert.IsTrue(((string)result.Entities["builtin_datetimeV2_datetime"][1][0]).EndsWith("T04"));
-            Assert.IsTrue(((string)result.Entities["builtin_datetimeV2_datetime"][1][1]).EndsWith("T16"));
-            Assert.AreEqual(1, result.Entities["$instance"]["builtin_datetimeV2_date"].Count());
-            Assert.AreEqual(2, result.Entities["$instance"]["builtin_datetimeV2_datetime"].Count());
+            Assert.IsNotNull(result.Entities["builtin_datetime"]);
+            Assert.AreEqual(3, result.Entities["builtin_datetime"].Count());
+            Assert.AreEqual(1, result.Entities["builtin_datetime"][0]["timex"].Count());
+            Assert.AreEqual("XXXX-WXX-5", (string)result.Entities["builtin_datetime"][0]["timex"][0]);
+            Assert.AreEqual(1, result.Entities["builtin_datetime"][0]["timex"].Count());
+            Assert.AreEqual(2, result.Entities["builtin_datetime"][1]["timex"].Count());
+            Assert.AreEqual(2, result.Entities["builtin_datetime"][2]["timex"].Count());
+            Assert.IsTrue(((string)result.Entities["builtin_datetime"][1]["timex"][0]).EndsWith("T05"));
+            Assert.IsTrue(((string)result.Entities["builtin_datetime"][1]["timex"][1]).EndsWith("T17"));
+            Assert.IsTrue(((string)result.Entities["builtin_datetime"][2]["timex"][0]).EndsWith("T04"));
+            Assert.IsTrue(((string)result.Entities["builtin_datetime"][2]["timex"][1]).EndsWith("T16"));
+            Assert.AreEqual(3, result.Entities["$instance"]["builtin_datetime"].Count());
+        }
+
+        // Compare two JSON structures and ensure entity and intent scores are within delta
+        private bool WithinDelta(JToken token1, JToken token2, double delta, bool compare = false)
+        {
+            bool withinDelta = true;
+            if (token1.Type == JTokenType.Object && token2.Type == JTokenType.Object)
+            {
+                var obj1 = (JObject)token1;
+                var obj2 = (JObject)token2;
+                withinDelta = obj1.Count == obj2.Count;
+                foreach (var property in obj1)
+                {
+                    if (!withinDelta)
+                    {
+                        break;
+                    }
+                    if (obj2.TryGetValue(property.Key, out JToken val2))
+                    {
+                        withinDelta = WithinDelta(property.Value, val2, delta, compare || property.Key == "score" || property.Key == "intents");
+                    }
+                }
+            }
+            else if (token1.Type == JTokenType.Array && token2.Type == JTokenType.Array)
+            {
+                var arr1 = (JArray)token1;
+                var arr2 = (JArray)token2;
+                withinDelta = arr1.Count() == arr2.Count();
+                for (var i = 0; withinDelta && i < arr1.Count(); ++i)
+                {
+                    withinDelta = WithinDelta(arr1[i], arr2[i], delta);
+                    if (!withinDelta)
+                    {
+                        break;
+                    }
+                }
+            }
+            else if (!token1.Equals(token2))
+            {
+                var val1 = (JValue)token1;
+                var val2 = (JValue)token2;
+                withinDelta = false;
+                if (compare &&
+                    double.TryParse((string)val1, out double num1)
+                            && double.TryParse((string)val2, out double num2))
+                {
+                    withinDelta = Math.Abs(num1 - num2) < delta;
+                }
+            }
+            return withinDelta;
+        }
+
+        private JObject JsonLuisResult(RecognizerResult result)
+        {
+            return new JObject(
+                new JProperty("alteredText", result.AlteredText),
+                new JProperty("entities", result.Entities),
+                new JProperty("intents", result.Intents),
+                new JProperty("text", result.Text));
+        }
+
+        // To create a file to test:
+        // 1) Create a <name>.json file with an object { text:<query> } in it.
+        // 2) Run this test which will fail and generate a <name>.json.new file.
+        // 3) Check the .new file and if correct, replace the original .json file with it.
+        public async Task TestJson(string file)
+        {
+            if (!EnvironmentVariablesDefined())
+            {
+                Assert.Inconclusive("Missing Luis Environment variables - Skipping test");
+                return;
+            }
+
+            var expectedPath = Path.Combine(@"..\..\..\TestData\", file);
+            var newPath = expectedPath + ".new";
+            var luisRecognizer = GetLuisRecognizer(verbose: true, luisOptions: new LuisRequest { Verbose = true });
+            var expected = new StreamReader(expectedPath).ReadToEnd();
+            dynamic expectedJson = JsonConvert.DeserializeObject(expected);
+            var result = await luisRecognizer.Recognize((string)expectedJson.text, CancellationToken.None);
+            var jsonResult = JsonLuisResult(result);
+            if (!WithinDelta(expectedJson, jsonResult, 0.01))
+            {
+                using (var writer = new StreamWriter(newPath))
+                {
+                    writer.Write(jsonResult);
+                }
+                Assert.Fail($"Returned JSON in {newPath} != expected JSON in {expectedPath}");
+            }
+            else
+            {
+                File.Delete(expectedPath + ".new");
+            }
+        }
+
+        [TestMethod]
+        public async Task AllEntities()
+        {
+            await TestJson("Composite1.json");
+            await TestJson("Composite2.json");
+        }
+
+        [TestMethod]
+        public async Task TypedEntities()
+        {
+            if (!EnvironmentVariablesDefined())
+            {
+                Assert.Inconclusive("Missing Luis Environment variables - Skipping test");
+                return;
+            }
+            var luisRecognizer = GetLuisRecognizer(verbose: true, luisOptions: new LuisRequest { Verbose = true });
+            var query = "fly from seattle to dallas";
+            var untyped = await luisRecognizer.Recognize(query, CancellationToken.None);
+            var typed = await luisRecognizer.Recognize<RecognizerResult>(query, CancellationToken.None);
+            Assert.IsTrue(WithinDelta(JsonLuisResult(untyped), JsonLuisResult(typed), 0.0), "Weakly typed and strongly typed recognize does not match.");
         }
 
         private void AssertScore(JToken scoreToken)
         {
-            var score = (double) scoreToken;
+            var score = (double)scoreToken;
             Assert.IsTrue(score >= 0);
             Assert.IsTrue(score <= 1);
         }
