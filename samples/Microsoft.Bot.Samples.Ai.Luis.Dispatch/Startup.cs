@@ -9,7 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace Microsoft.Bot.Samples.Ai.Luis.Dispatch.Hierarchical
+namespace Microsoft.Bot.Samples.Ai.Luis.Dispatch
 {
     public class Startup
     {
@@ -32,7 +32,7 @@ namespace Microsoft.Bot.Samples.Ai.Luis.Dispatch.Hierarchical
             {
                 options.CredentialProvider = new ConfigurationCredentialProvider(Configuration);
 
-                string luisModelId = "<Your LUIS app ID from Dispatch here>";
+                string luisModelId = "<Your LUIS app ID from cDispatch here>";
                 string luisSubscriptionKey = "<Your LUIS Subscription Key here>";
                 Uri luisUri = new Uri("https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/");
 
