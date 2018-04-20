@@ -262,6 +262,15 @@ namespace Microsoft.Bot.Builder.Adapters
                 {
                     var connectorClient = context.Services.Get<IConnectorClient>();
                     response = await connectorClient.Conversations.SendToConversationAsync(activity).ConfigureAwait(false);
+                    
+                    //This code is to fix a known issue with Skype and Teams. 
+                    //When sending a typing event in these channels they do not return a RequestResponse
+                    //which causes the bot to blow up https://github.com/Microsoft/botbuilder-dotnet/issues/460
+                    // bug report : https://github.com/Microsoft/botbuilder-dotnet/issues/465
+                    if (response == null && activity.Type == ActivityTypes.Typing)
+                    {
+                        response = new ResourceResponse(activity.Id ?? string.Empty);
+                    }
                 }
 
                 // Collect all the responses that come from the service. 
