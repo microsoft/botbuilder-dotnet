@@ -4,7 +4,6 @@
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Core.Extensions;
-using Microsoft.Bot.Schema;
 using Microsoft.Recognizers.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -36,7 +35,7 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                         if (confirmResult.Succeeded())
                         {
                             Assert.IsNotNull(confirmResult.Text);
-                            await context.SendActivity($"{confirmResult.Confirmation}");
+                            await context.SendActivity($"{confirmResult.Value}");
                         }
                         else
                             await context.SendActivity(confirmResult.Status.ToString());
@@ -77,7 +76,7 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                 {
                     var confirmResult = await confirmPrompt.Recognize(context);
                     if (confirmResult.Succeeded())
-                        await context.SendActivity($"{confirmResult.Confirmation}");
+                        await context.SendActivity($"{confirmResult.Value}");
                     else
                         await context.SendActivity(confirmResult.Status.ToString());
                 }

@@ -254,7 +254,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 {
                     if (dialogResult.Result != null)
                     {
-                        if (((ConfirmResult)dialogResult.Result).Confirmation)
+                        if (((ChoiceResult<bool>)dialogResult.Result).Value)
                         {
                             await turnContext.SendActivity("Confirmed.");
                         }
@@ -297,7 +297,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 {
                     if (dialogResult.Result != null)
                     {
-                        if (((ConfirmResult)dialogResult.Result).Confirmation)
+                        if (((ChoiceResult<bool>)dialogResult.Result).Value)
                         {
                             await turnContext.SendActivity("Confirmed.");
                         }
@@ -322,6 +322,90 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .AssertReply("Please confirm, say 'yes' or 'no' or something like that.")
             .Send("no")
             .AssertReply("Not confirmed.")
+            .StartTest();
+        }
+        
+        [TestMethod]
+        public async Task ChoicePrompt()
+        {
+            var options = new string[] { "blue", "yellow", "red" };
+            TestAdapter adapter = new TestAdapter()
+                .Use(new ConversationState<Dictionary<string, object>>(new MemoryStorage()));
+
+            await new TestFlow(adapter, async (turnContext) =>
+            {
+                var dialogs = new DialogSet();
+                dialogs.Add("test-prompt", new ChoicePrompt(Culture.English, options));
+
+                var state = ConversationState<Dictionary<string, object>>.Get(turnContext);
+                var dc = dialogs.CreateContext(turnContext, state);
+
+                await dc.Continue();
+                var dialogResult = dc.DialogResult;
+
+                if (!dialogResult.Active)
+                {
+                    if (dialogResult.Result != null)
+                    {
+                        var selected = ((ChoiceResult<string>)dialogResult.Result).Value;
+                        await turnContext.SendActivity($"Selected: {selected}");
+                    }
+                    else
+                    {
+                        await dc.Prompt("test-prompt", "Please select a color.");
+                    }
+                }
+            })
+            .Send("hello")
+            .AssertReply("Please select a color. 1. blue, 2. yellow, or 3. red")
+            .Send("blue")
+            .AssertReply("Selected: blue")
+            .StartTest();
+        }
+
+        [TestMethod]
+        public async Task ChoicePromptRetry()
+        {
+            var options = new string[] { "blue", "yellow", "red" };
+            TestAdapter adapter = new TestAdapter()
+                .Use(new ConversationState<Dictionary<string, object>>(new MemoryStorage()));
+
+            await new TestFlow(adapter, async (turnContext) =>
+            {
+                var dialogs = new DialogSet();
+                dialogs.Add("test-prompt", new ChoicePrompt(Culture.English, options));
+
+                var state = ConversationState<Dictionary<string, object>>.Get(turnContext);
+                var dc = dialogs.CreateContext(turnContext, state);
+
+                await dc.Continue();
+                var dialogResult = dc.DialogResult;
+
+                if (!dialogResult.Active)
+                {
+                    if (dialogResult.Result != null)
+                    {
+                        var selected = ((ChoiceResult<string>)dialogResult.Result).Value;
+                        await turnContext.SendActivity($"Selected: {selected}");
+                    }
+                    else
+                    {
+                        await dc.Prompt("test-prompt", "Select a color.",
+                            new PromptOptions
+                            {
+                                RetryPromptString = "Please select a color."
+                            });
+                    }
+                }
+            })
+            .Send("hello")
+            .AssertReply("Select a color. 1. blue, 2. yellow, or 3. red")
+            .Send("lala")
+            .AssertReply("Please select a color. 1. blue, 2. yellow, or 3. red")
+            .Send("seventh")
+            .AssertReply("Please select a color. 1. blue, 2. yellow, or 3. red")
+            .Send("2")
+            .AssertReply("Selected: yellow")
             .StartTest();
         }
 

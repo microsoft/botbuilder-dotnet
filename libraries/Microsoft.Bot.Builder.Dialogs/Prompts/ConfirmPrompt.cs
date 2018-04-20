@@ -8,11 +8,11 @@ using static Microsoft.Bot.Builder.Prompts.PromptValidatorEx;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
-    public class ConfirmPrompt : Prompt<ConfirmResult>
+    public class ConfirmPrompt : Prompt<ChoiceResult<bool>>
     {
         private Prompts.ConfirmPrompt _prompt;
 
-        public ConfirmPrompt(string culture, PromptValidator<ConfirmResult> validator = null)
+        public ConfirmPrompt(string culture, PromptValidator<ChoiceResult<bool>> validator = null)
         {
             _prompt = new Prompts.ConfirmPrompt(culture, validator);
         }
@@ -49,7 +49,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             return Task.CompletedTask;
         }
 
-        protected override async Task<ConfirmResult> OnRecognize(DialogContext dc, PromptOptions options)
+        protected override async Task<ChoiceResult<bool>> OnRecognize(DialogContext dc, PromptOptions options)
         {
             if (dc == null)
                 throw new ArgumentNullException(nameof(dc));
