@@ -10,7 +10,7 @@ using Microsoft.Bot.Schema;
 namespace Microsoft.Bot.Builder.Ai.QnA
 {
     /// <summary>
-    /// Middleware for handling QnAMaker activity
+    /// Middleware for checking input text against a QnA Maker knowledge base.
     /// </summary>
     public class QnAMakerMiddleware : IMiddleware
     {
@@ -22,10 +22,11 @@ namespace Microsoft.Bot.Builder.Ai.QnA
         private readonly QnAMakerMiddlewareOptions _options;
 
         /// <summary>
-        /// Constructor for middleware that handles QnAMaker activity
+        /// Creates a new <see cref="QnAMakerMiddleware"/> instance.
         /// </summary>
-        /// <param name="options"></param>
-        /// <param name="httpClient">HttpClient used to talk to QnAMaker. If null, QnAMaker will initialize one.</param>
+        /// <param name="options">Required. Options to control the behavior of the middleware.</param>
+        /// <param name="httpClient">A client with which to talk to QnAMaker.
+        /// If null, a default client is used for this instance.</param>
         public QnAMakerMiddleware(QnAMakerMiddlewareOptions options, HttpClient httpClient = null)
         {
             _options = options ?? throw new ArgumentNullException(nameof(options));
@@ -34,11 +35,10 @@ namespace Microsoft.Bot.Builder.Ai.QnA
         }
 
         /// <summary>
-        /// Handle incoming activity
+        /// Processess an incoming activity.
         /// </summary>
-        /// <param name="context"></param>
-        /// <param name="next"></param>
-        /// <returns></returns>
+        /// <param name="context">The context object for this turn.</param>
+        /// <param name="next">The delegate to call to continue the bot middleware pipeline.</param>
         public async Task OnTurn(ITurnContext context, MiddlewareSet.NextDelegate next)
         {
             if (context.Activity.Type == ActivityTypes.Message)
