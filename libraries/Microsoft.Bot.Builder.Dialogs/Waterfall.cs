@@ -3,6 +3,7 @@
 
 using System;
 using System.Threading.Tasks;
+using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
@@ -30,14 +31,17 @@ namespace Microsoft.Bot.Builder.Dialogs
             return RunStep(dc, dialogArgs);
         }
 
-        public Task DialogContinue(DialogContext dc)
+        public async Task DialogContinue(DialogContext dc)
         {
             if (dc == null)
                 throw new ArgumentNullException(nameof(dc));
 
-            var instance = (WaterfallInstance)dc.Instance.State;
-            instance.Step++;
-            return RunStep(dc, dc.Context.Activity.Text);
+            if (dc.Context.Activity.Type == ActivityTypes.Message)
+            {
+                var instance = (WaterfallInstance)dc.Instance.State;
+                instance.Step++;
+                await RunStep(dc, dc.Context.Activity.Text);
+            }
         }
 
         public Task DialogResume(DialogContext dc, object result)

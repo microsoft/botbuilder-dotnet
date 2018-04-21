@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 namespace Microsoft.Bot.Builder.Azure
 {
     /// <summary>
-    /// Implements ITranscriptStore/ITranscriptLogger on top of Azure Blob Storage
+    /// The blob transcript store stores transcripts in an Azure Blob container.
     /// </summary>
     /// <remarks>
     /// Each activity is stored as json blob in structure of
@@ -31,19 +31,24 @@ namespace Microsoft.Bot.Builder.Azure
 
         private static HashSet<string> _checkedContainers = new HashSet<string>();
 
+        private Lazy<CloudBlobContainer> Container { get; set; }
 
         /// <summary>
-        /// The Azure Storage Blob Container where entities will be stored
+        /// Creates an instance of AzureBlobTranscriptStore
         /// </summary>
-        public Lazy<CloudBlobContainer> Container { get; private set; }
-
-
+        /// <param name="dataConnectionString">Connection string to connect to Azure Blob Storage</param>
+        /// <param name="containerName">Name of the continer where transcript blobs will be stored</param>
         public AzureBlobTranscriptStore(string dataConnectionString, string containerName)
             : this(CloudStorageAccount.Parse(dataConnectionString), containerName)
         {
 
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="storageAccount">Azure Storage Account to store transcripts</param>
+        /// <param name="containerName">Name of the continer where transcript blobs will be stored</param>
         public AzureBlobTranscriptStore(CloudStorageAccount storageAccount, string containerName)
         {
             if (storageAccount == null)
@@ -67,6 +72,11 @@ namespace Microsoft.Bot.Builder.Azure
             }, isThreadSafe: true);
         }
 
+        /// <summary>
+        /// Log an activity to the transcript.
+        /// </summary>
+        /// <param name="activity">Activity being logged.</param>
+        /// <returns></returns>
         public async Task LogActivity(IActivity activity)
         {
             BotAssert.ActivityNotNull(activity);
@@ -87,6 +97,14 @@ namespace Microsoft.Bot.Builder.Azure
             await blobReference.SetMetadataAsync();
         }
 
+        /// <summary>
+        /// Get activities for a conversation (Aka the transcript)
+        /// </summary>
+        /// <param name="channelId">Channel Id.</param>
+        /// <param name="conversationId">Conversation Id.</param>
+        /// <param name="continuationToken">Continuatuation token to page through results.</param>
+        /// <param name="startDate">Earliest time to include.</param>
+        /// <returns></returns>
         public async Task<PagedResult<IActivity>> GetTranscriptActivities(string channelId, string conversationId, string continuationToken = null, DateTime startDate = default(DateTime))
         {
             if (String.IsNullOrEmpty(channelId))
@@ -145,6 +163,12 @@ namespace Microsoft.Bot.Builder.Azure
             return pagedResult;
         }
 
+        /// <summary>
+        /// List conversations in the channelId.
+        /// </summary>
+        /// <param name="channelId">Channel Id.</param>
+        /// <param name="continuationToken">Continuatuation token to page through results.</param>
+        /// <returns></returns>
         public async Task<PagedResult<Transcript>> ListTranscripts(string channelId, string continuationToken = null)
         {
             if (String.IsNullOrEmpty(channelId))
@@ -190,6 +214,12 @@ namespace Microsoft.Bot.Builder.Azure
             return pagedResult;
         }
 
+        /// <summary>
+        /// Delete a specific conversation and all of it's activities.
+        /// </summary>
+        /// <param name="channelId">Channel Id where conversation took place.</param>
+        /// <param name="conversationId">Id of the conversation to delete.</param>
+        /// <returns></returns>
         public async Task DeleteTranscript(string channelId, string conversationId)
         {
             if (String.IsNullOrEmpty(channelId))
@@ -214,19 +244,14 @@ namespace Microsoft.Bot.Builder.Azure
             } while (token != null);
         }
 
-        /// <summary>
-        /// Get a blob name validated representation of an entity
-        /// </summary>
-        /// <param name="key">The key used to identify the entity</param>
-        /// <returns></returns>
-        private string GetBlobName(IActivity activity)
+        private static string GetBlobName(IActivity activity)
         {
             var blobName = $"{SanitizeKey(activity.ChannelId)}/{SanitizeKey(activity.Conversation.Id)}/{activity.Timestamp.Value.Ticks.ToString("x")}-{SanitizeKey(activity.Id)}.json";
             NameValidator.ValidateBlobName(blobName);
             return blobName;
         }
 
-        private string GetDirName(string channelId, string conversationId = null)
+        private static string GetDirName(string channelId, string conversationId = null)
         {
             string dirName = "";
             if (conversationId != null)
@@ -244,7 +269,7 @@ namespace Microsoft.Bot.Builder.Azure
             return dirName;
         }
 
-        private string SanitizeKey(string key)
+        private static string SanitizeKey(string key)
         {
             // Blob Name rules: case-sensitive any url char
             return Uri.EscapeDataString(key);
