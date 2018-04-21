@@ -236,7 +236,7 @@ namespace Microsoft.Bot.Builder.Adapters
 
             foreach (var activity in activities)
             {
-                ResourceResponse response;
+                ResourceResponse response = null;
 
                 if (activity.Type == ActivityTypesEx.Delay)
                 {
@@ -244,35 +244,40 @@ namespace Microsoft.Bot.Builder.Adapters
                     // here in the Bot. This matches the behavior in the Node connector. 
                     int delayMs = (int)activity.Value;
                     await Task.Delay(delayMs).ConfigureAwait(false);
-
-                    // In the case of a Delay, just create a fake one. Match the incoming activityId if it's there. 
-                    response = new ResourceResponse(activity.Id ?? string.Empty); 
+                    // No need to create a response. One will be created below. 
                 }
                 else if (activity.Type == "invokeResponse") // Aligning name with Node            
                 {                    
-                    context.Services.Add<Activity>(InvokeReponseKey, activity); 
-                    
-                    // In the case of Invoke, just create a fake one. Match the incoming activityId if it's there. 
-                    response = new ResourceResponse(activity.Id ?? string.Empty);
+                    context.Services.Add<Activity>(InvokeReponseKey, activity);
+                    // No need to create a response. One will be created below.                     
                 }
                 else if (activity.Type == ActivityTypes.Trace && activity.ChannelId != "emulator")
                 {
-                    // if it is a Trace activity we don't send to the channel unless it is the emulator 
-                    response = new ResourceResponse(activity.Id ?? string.Empty); 
+                    // if it is a Trace activity we only send to the channel if it's the emulator.
+                }
+                else if( !string.IsNullOrWhiteSpace(activity.ReplyToId))
+                {
+                    var connectorClient = context.Services.Get<IConnectorClient>();
+                    response = await connectorClient.Conversations.ReplyToActivityAsync(activity).ConfigureAwait(false);
                 }
                 else
                 {
                     var connectorClient = context.Services.Get<IConnectorClient>();
-                    response = await connectorClient.Conversations.SendToConversationAsync(activity).ConfigureAwait(false);
-                    
-                    //This code is to fix a known issue with Skype and Teams. 
-                    //When sending a typing event in these channels they do not return a RequestResponse
-                    //which causes the bot to blow up https://github.com/Microsoft/botbuilder-dotnet/issues/460
-                    // bug report : https://github.com/Microsoft/botbuilder-dotnet/issues/465
-                    if (response == null && activity.Type == ActivityTypes.Typing)
-                    {
-                        response = new ResourceResponse(activity.Id ?? string.Empty);
-                    }
+                    response = await connectorClient.Conversations.SendToConversationAsync(activity).ConfigureAwait(false);                    
+                }
+
+                // If No response is set, then defult to a "simple" response. This can't really be done
+                // above, as there are cases where the ReplyTo/SendTo methods will also return null 
+                // (See below) so the check has to happen here. 
+
+                // Note: In addition to the Invoke / Delay / Activity cases, this code also applies
+                // with Skype and Teams with regards to typing events.  When sending a typing event in 
+                // these channels they do not return a RequestResponse which causes the bot to blow up.
+                // https://github.com/Microsoft/botbuilder-dotnet/issues/460
+                // bug report : https://github.com/Microsoft/botbuilder-dotnet/issues/465
+                if (response == null)
+                {
+                    response = new ResourceResponse(activity.Id ?? string.Empty);
                 }
 
                 // Collect all the responses that come from the service. 
