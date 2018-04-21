@@ -27,18 +27,8 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         private const string _noEmulatorMessage = "This test requires CosmosDB Emulator! go to https://aka.ms/documentdb-emulator-docs to download and install.";
         private static Lazy<bool> _hasEmulator = new Lazy<bool>(() =>
         {
-            if (File.Exists(_emulatorPath))
-            {
-                Process p = new Process();
-                p.StartInfo.UseShellExecute = true;
-                p.StartInfo.FileName = _emulatorPath;
-                p.StartInfo.Arguments = "/GetStatus";
-                p.Start();
-                p.WaitForExit();
-                return p.ExitCode == 2;
-            }
-
-            return false;
+            // return true if it's installed.  If it's installed not running you will get test errors
+            return File.Exists(_emulatorPath);
         });
 
         private IStorage _storage;
@@ -155,7 +145,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         public bool CheckEmulator()
         {
             if (!_hasEmulator.Value)
-                Debug.WriteLine(_noEmulatorMessage);
+                Assert.Inconclusive(_noEmulatorMessage);
             if (Debugger.IsAttached)
                 Assert.IsTrue(_hasEmulator.Value, _noEmulatorMessage);
 
