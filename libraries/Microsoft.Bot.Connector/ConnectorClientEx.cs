@@ -31,7 +31,11 @@ namespace Microsoft.Bot.Connector
         protected static Lazy<HttpClient> g_httpClient = new Lazy<HttpClient>(() =>
         {
             var httpClient = new HttpClient();
-            httpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("Microsoft-BotFramework", "4.0"));
+            // The Schema version is 3.1, put into the Microsoft-BotFramework header
+            // https://github.com/Microsoft/botbuilder-dotnet/issues/471
+            httpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("Microsoft-BotFramework", "3.1"));
+
+            // The client SDK version is coupled to the version number of the package. 
             httpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue($"(BotBuilder .Net/{typeof(ConnectorClient).GetTypeInfo().Assembly.GetName().Version})"));
             httpClient.DefaultRequestHeaders.ExpectContinue = false;
             return httpClient;
