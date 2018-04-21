@@ -290,20 +290,17 @@ namespace Microsoft.Bot.Builder.Ai.LUIS.Tests
             return withinDelta;
         }
 
-        private JObject JsonLuisResult(RecognizerResult result)
+        private JObject Json<T>(T result)
         {
-            return new JObject(
-                new JProperty("alteredText", result.AlteredText),
-                new JProperty("entities", result.Entities),
-                new JProperty("intents", result.Intents),
-                new JProperty("text", result.Text));
+            return (JObject)JsonConvert.DeserializeObject(JsonConvert.SerializeObject(result));
         }
 
         // To create a file to test:
-        // 1) Create a <name>.json file with an object { text:<query> } in it.
+        // 1) Create a <name>.json file with an object { Text:<query> } in it.
         // 2) Run this test which will fail and generate a <name>.json.new file.
         // 3) Check the .new file and if correct, replace the original .json file with it.
-        public async Task TestJson(string file)
+        public async Task TestJson<T>(string file)
+            where T : IRecognizerConvert, new()
         {
             if (!EnvironmentVariablesDefined())
             {
@@ -316,13 +313,14 @@ namespace Microsoft.Bot.Builder.Ai.LUIS.Tests
             var luisRecognizer = GetLuisRecognizer(verbose: true, luisOptions: new LuisRequest { Verbose = true });
             var expected = new StreamReader(expectedPath).ReadToEnd();
             dynamic expectedJson = JsonConvert.DeserializeObject(expected);
-            var result = await luisRecognizer.Recognize((string)expectedJson.text, CancellationToken.None);
-            var jsonResult = JsonLuisResult(result);
-            if (!WithinDelta(expectedJson, jsonResult, 0.01))
+            var query = (string)expectedJson.text ?? (string)expectedJson.Text;
+            var typedResult = await luisRecognizer.Recognize<T>(query, CancellationToken.None);
+            var typedJson = Json<T>(typedResult);
+            if (!WithinDelta(expectedJson, typedJson, 0.01))
             {
                 using (var writer = new StreamWriter(newPath))
                 {
-                    writer.Write(jsonResult);
+                    writer.Write(typedJson);
                 }
                 Assert.Fail($"Returned JSON in {newPath} != expected JSON in {expectedPath}");
             }
@@ -335,28 +333,19 @@ namespace Microsoft.Bot.Builder.Ai.LUIS.Tests
         [TestMethod]
         public async Task Composite1()
         {
-            await TestJson("Composite1.json");
+            await TestJson<RecognizerResult>("Composite1.json");
         }
 
         [TestMethod]
         public async Task Composite2()
-        { 
-            await TestJson("Composite2.json");
+        {
+            await TestJson<RecognizerResult>("Composite2.json");
         }
 
         [TestMethod]
         public async Task TypedEntities()
         {
-            if (!EnvironmentVariablesDefined())
-            {
-                Assert.Inconclusive("Missing Luis Environment variables - Skipping test");
-                return;
-            }
-            var luisRecognizer = GetLuisRecognizer(verbose: true, luisOptions: new LuisRequest { Verbose = true });
-            var query = "fly from seattle to dallas";
-            var untyped = await luisRecognizer.Recognize(query, CancellationToken.None);
-            var typed = await luisRecognizer.Recognize<RecognizerResult>(query, CancellationToken.None);
-            Assert.IsTrue(WithinDelta(JsonLuisResult(untyped), JsonLuisResult(typed), 0.0), "Weakly typed and strongly typed recognize does not match.");
+            await TestJson<Luis.Contoso_App>("Typed.json");
         }
 
         private void AssertScore(JToken scoreToken)
