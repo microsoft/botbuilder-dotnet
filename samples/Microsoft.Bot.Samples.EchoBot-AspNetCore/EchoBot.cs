@@ -13,6 +13,10 @@ namespace Microsoft.Bot.Samples.Echo.AspNetCore
         {
             switch (context.Activity.Type)
             {
+                // Note: This Sample is soon to be deleted. I've added in some easy testing here
+                // for now, although we do need a better solution for testing the BotFrameworkConnector in the
+                // near future
+
                 case ActivityTypes.Message:
                     await context.SendActivity($"You sent '{context.Activity.Text}'");
                     if (context.Activity.Text.ToLower() == "getmembers")
