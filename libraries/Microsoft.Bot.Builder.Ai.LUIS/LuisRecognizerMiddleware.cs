@@ -4,8 +4,10 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Core.Extensions;
 using Microsoft.Bot.Schema;
 using Microsoft.Cognitive.LUIS;
+using Microsoft.Cognitive.LUIS.Models;
 
 namespace Microsoft.Bot.Builder.Ai.LUIS
 {
@@ -36,7 +38,7 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
         /// </summary>
         public const string Obfuscated = "****";
 
-        private readonly ILuisRecognizer _luisRecognizer;
+        private readonly IRecognizer _luisRecognizer;
         private readonly ILuisModel _luisModel;
         private readonly ILuisOptions _luisOptions;
 
@@ -65,15 +67,15 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
             if (context.Activity.Type == ActivityTypes.Message)
             {
                 var utterance = context.Activity.AsMessageActivity().Text;
-                var result = await _luisRecognizer.CallAndRecognize(utterance, CancellationToken.None).ConfigureAwait(false);
-                context.Services.Add(LuisRecognizerResultKey, result.recognizerResult);
+                var result = await _luisRecognizer.Recognize(utterance, CancellationToken.None).ConfigureAwait(false);
+                context.Services.Add(LuisRecognizerResultKey, result);
 
                 var traceInfo = new LuisTraceInfo
                 {
-                    RecognizerResult = result.recognizerResult,
+                    RecognizerResult = result,
                     LuisModel = RemoveSensitiveData(_luisModel),
                     LuisOptions = _luisOptions,
-                    LuisResult = result.luisResult
+                    LuisResult = (LuisResult) result.Properties["luisResult"]
                 };
                 var traceActivity = Activity.CreateTraceActivity("LuisRecognizerMiddleware", LuisTraceType, traceInfo, LuisTraceLabel);
                 await context.SendActivity(traceActivity).ConfigureAwait(false);

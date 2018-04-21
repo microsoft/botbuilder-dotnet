@@ -1,0 +1,366 @@
+{
+  "alteredText": null,
+  "entities": {
+    "$instance": {
+      "Composite1": [
+        {
+          "startIndex": 0,
+          "endIndex": 257,
+          "text": "12 years old and 3 days old and monday july 3rd and every monday and between 3am and 5 : 30am and 4 acres and 4 pico meters and chrimc @ hotmail . com and $ 4 and $ 4 . 25 and 32 and 210 . 4 and first and 10 % and 10 . 5 % and 425 - 555 - 1234 and 3 degrees and - 27 . 5 degrees c",
+          "score": 0.7393847
+        }
+      ]
+    },
+    "Composite1": [
+      {
+        "$instance": {
+          "builtin_age": [
+            {
+              "startIndex": 0,
+              "endIndex": 12,
+              "text": "12 years old",
+              "score": null
+            },
+            {
+              "startIndex": 17,
+              "endIndex": 27,
+              "text": "3 days old",
+              "score": null
+            }
+          ],
+          "builtin_datetime": [
+            {
+              "startIndex": 0,
+              "endIndex": 8,
+              "text": "12 years",
+              "score": null
+            },
+            {
+              "startIndex": 17,
+              "endIndex": 23,
+              "text": "3 days",
+              "score": null
+            },
+            {
+              "startIndex": 32,
+              "endIndex": 47,
+              "text": "monday july 3rd",
+              "score": null
+            },
+            {
+              "startIndex": 52,
+              "endIndex": 64,
+              "text": "every monday",
+              "score": null
+            },
+            {
+              "startIndex": 69,
+              "endIndex": 91,
+              "text": "between 3am and 5:30am",
+              "score": null
+            }
+          ],
+          "builtin_dimension": [
+            {
+              "startIndex": 96,
+              "endIndex": 103,
+              "text": "4 acres",
+              "score": null
+            },
+            {
+              "startIndex": 108,
+              "endIndex": 121,
+              "text": "4 pico meters",
+              "score": null
+            }
+          ],
+          "builtin_email": [
+            {
+              "startIndex": 126,
+              "endIndex": 144,
+              "text": "chrimc@hotmail.com",
+              "score": null
+            }
+          ],
+          "builtin_money": [
+            {
+              "startIndex": 149,
+              "endIndex": 151,
+              "text": "$4",
+              "score": null
+            },
+            {
+              "startIndex": 156,
+              "endIndex": 161,
+              "text": "$4.25",
+              "score": null
+            }
+          ],
+          "builtin_number": [
+            {
+              "startIndex": 0,
+              "endIndex": 2,
+              "text": "12",
+              "score": null
+            },
+            {
+              "startIndex": 17,
+              "endIndex": 18,
+              "text": "3",
+              "score": null
+            },
+            {
+              "startIndex": 85,
+              "endIndex": 86,
+              "text": "5",
+              "score": null
+            },
+            {
+              "startIndex": 96,
+              "endIndex": 97,
+              "text": "4",
+              "score": null
+            },
+            {
+              "startIndex": 108,
+              "endIndex": 109,
+              "text": "4",
+              "score": null
+            },
+            {
+              "startIndex": 150,
+              "endIndex": 151,
+              "text": "4",
+              "score": null
+            },
+            {
+              "startIndex": 157,
+              "endIndex": 161,
+              "text": "4.25",
+              "score": null
+            },
+            {
+              "startIndex": 166,
+              "endIndex": 168,
+              "text": "32",
+              "score": null
+            },
+            {
+              "startIndex": 173,
+              "endIndex": 178,
+              "text": "210.4",
+              "score": null
+            },
+            {
+              "startIndex": 193,
+              "endIndex": 195,
+              "text": "10",
+              "score": null
+            },
+            {
+              "startIndex": 201,
+              "endIndex": 205,
+              "text": "10.5",
+              "score": null
+            },
+            {
+              "startIndex": 211,
+              "endIndex": 214,
+              "text": "425",
+              "score": null
+            },
+            {
+              "startIndex": 215,
+              "endIndex": 218,
+              "text": "555",
+              "score": null
+            },
+            {
+              "startIndex": 219,
+              "endIndex": 223,
+              "text": "1234",
+              "score": null
+            },
+            {
+              "startIndex": 228,
+              "endIndex": 229,
+              "text": "3",
+              "score": null
+            },
+            {
+              "startIndex": 242,
+              "endIndex": 247,
+              "text": "-27.5",
+              "score": null
+            }
+          ],
+          "builtin_ordinal": [
+            {
+              "startIndex": 44,
+              "endIndex": 47,
+              "text": "3rd",
+              "score": null
+            },
+            {
+              "startIndex": 183,
+              "endIndex": 188,
+              "text": "first",
+              "score": null
+            }
+          ],
+          "builtin_percentage": [
+            {
+              "startIndex": 193,
+              "endIndex": 196,
+              "text": "10%",
+              "score": null
+            },
+            {
+              "startIndex": 201,
+              "endIndex": 206,
+              "text": "10.5%",
+              "score": null
+            }
+          ],
+          "builtin_phonenumber": [
+            {
+              "startIndex": 211,
+              "endIndex": 223,
+              "text": "425-555-1234",
+              "score": null
+            }
+          ],
+          "builtin_temperature": [
+            {
+              "startIndex": 228,
+              "endIndex": 237,
+              "text": "3 degrees",
+              "score": null
+            },
+            {
+              "startIndex": 242,
+              "endIndex": 257,
+              "text": "-27.5 degrees c",
+              "score": null
+            }
+          ]
+        },
+        "builtin_age": [
+          {
+            "number": 12,
+            "units": "Year"
+          },
+          {
+            "number": 3,
+            "units": "Day"
+          }
+        ],
+        "builtin_datetime": [
+          {
+            "type": "duration",
+            "timex": [
+              "P12Y"
+            ]
+          },
+          {
+            "type": "duration",
+            "timex": [
+              "P3D"
+            ]
+          },
+          {
+            "type": "date",
+            "timex": [
+              "XXXX-07-03"
+            ]
+          },
+          {
+            "type": "set",
+            "timex": [
+              "XXXX-WXX-1"
+            ]
+          },
+          {
+            "type": "timerange",
+            "timex": [
+              "(T03,T05:30,PT2H30M)"
+            ]
+          }
+        ],
+        "builtin_dimension": [
+          {
+            "number": 4,
+            "units": "Acre"
+          },
+          {
+            "number": 4,
+            "units": "Picometer"
+          }
+        ],
+        "builtin_email": [
+          "chrimc@hotmail.com"
+        ],
+        "builtin_money": [
+          {
+            "number": 4,
+            "units": "Dollar"
+          },
+          {
+            "number": 4.25,
+            "units": "Dollar"
+          }
+        ],
+        "builtin_number": [
+          12,
+          3,
+          5,
+          4,
+          4,
+          4,
+          4.25,
+          32,
+          210.4,
+          10,
+          10.5,
+          425,
+          555,
+          1234,
+          3,
+          -27.5
+        ],
+        "builtin_ordinal": [
+          3,
+          1
+        ],
+        "builtin_percentage": [
+          10,
+          10.5
+        ],
+        "builtin_phonenumber": [
+          "425-555-1234"
+        ],
+        "builtin_temperature": [
+          {
+            "number": 3,
+            "units": "Degree"
+          },
+          {
+            "number": -27.5,
+            "units": "C"
+          }
+        ]
+      }
+    ]
+  },
+  "intents": {
+    "EntityTests": 0.9979519,
+    "None": 0.03613068,
+    "Travel": 0.027573321,
+    "Delivery": 0.0181413647,
+    "SpecifyName": 0.009525809,
+    "Help": 0.00179953384,
+    "Cancel": 0.0005154546,
+    "Greeting": 4.502414E-06
+  },
+  "text": "12 years old and 3 days old and monday july 3rd and every monday and between 3am and 5:30am and 4 acres and 4 pico meters and chrimc@hotmail.com and $4 and $4.25 and 32 and 210.4 and first and 10% and 10.5% and 425-555-1234 and 3 degrees and -27.5 degrees c"
+}
