@@ -51,7 +51,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
             IMessageActivity message = MessageFactory.Text(messageText, ssml);
             Assert.AreEqual(message.Text, messageText, "Message Text is not an empty string");
             Assert.AreEqual(message.Speak, ssml, "ssml text is incorrect");
-            Assert.IsNull(message.InputHint, "InputHint is not null");
+            Assert.AreEqual(message.InputHint, InputHints.AcceptingInput, "InputHint is not AcceptingInput");
             Assert.AreEqual(message.Type, ActivityTypes.Message, "Incorrect Activity Type");
         }
 
