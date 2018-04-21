@@ -51,7 +51,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions
         /// <param name="inputHint">Optional, indicates whether your bot is accepting,
         /// expecting, or ignoring user input after the message is delivered to the client.
         /// One of: "acceptingInput", "ignoringInput", or "expectingInput".
-        /// Default is null.</param>
+        /// Default is "acceptingInput".</param>
         /// <returns>A message activity containing the text.</returns>
         public static Activity Text(string text, string ssml = null, string inputHint = null)
         {
@@ -83,7 +83,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions
         /// <param name="inputHint">Optional, indicates whether your bot is accepting,
         /// expecting, or ignoring user input after the message is delivered to the client.
         /// One of: "acceptingInput", "ignoringInput", or "expectingInput".
-        /// Default is null.</param>
+        /// Default is "acceptingInput".</param>
         /// <returns>A message activity containing the suggested actions.</returns>
         /// <exception cref="ArgumentNullException">
         /// <paramref name="actions"/> is <c>null</c>.</exception>
@@ -141,7 +141,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions
         /// <param name="inputHint">Optional, indicates whether your bot is accepting,
         /// expecting, or ignoring user input after the message is delivered to the client.
         /// One of: "acceptingInput", "ignoringInput", or "expectingInput".
-        /// Default is null.</param>
+        /// Default is "acceptingInput".</param>
         /// <returns>A message activity that contains the suggested actions.</returns>
         /// <exception cref="ArgumentNullException">
         /// <paramref name="cardActions"/> is <c>null</c>.</exception>
@@ -169,7 +169,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions
         /// <param name="inputHint">Optional, indicates whether your bot is accepting,
         /// expecting, or ignoring user input after the message is delivered to the client.
         /// One of: "acceptingInput", "ignoringInput", or "expectingInput".
-        /// Default is null.</param>
+        /// Default is "acceptingInput".</param>
         /// <returns>A message activity containing the attachment.</returns>
         /// <exception cref="ArgumentNullException">
         /// <paramref name="attachment"/> is <c>null</c>.</exception>
@@ -193,7 +193,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions
         /// <param name="inputHint">Optional, indicates whether your bot is accepting,
         /// expecting, or ignoring user input after the message is delivered to the client.
         /// One of: "acceptingInput", "ignoringInput", or "expectingInput".
-        /// Default is null.</param>
+        /// Default is "acceptingInput".</param>
         /// <returns>A message activity containing the attachment.</returns>
         /// <exception cref="ArgumentNullException">
         /// <paramref name="attachments"/> is <c>null</c>.</exception>
@@ -217,7 +217,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions
         /// <param name="inputHint">Optional, indicates whether your bot is accepting,
         /// expecting, or ignoring user input after the message is delivered to the client.
         /// One of: "acceptingInput", "ignoringInput", or "expectingInput".
-        /// Default is null.</param>
+        /// Default is "acceptingInput".</param>
         /// <returns>A message activity containing the attachment.</returns>
         /// <exception cref="ArgumentNullException">
         /// <paramref name="attachments"/> is <c>null</c>.</exception>
@@ -322,8 +322,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions
             // an empty string, which is not the behavior people expect to see. 
             ma.Text = !string.IsNullOrWhiteSpace(text) ? text : null;
             ma.Speak = !string.IsNullOrWhiteSpace(ssml) ? ssml : null;
-
-            ma.InputHint = inputHint;
+            ma.InputHint = inputHint ?? InputHints.AcceptingInput;
         }
     }
 }
