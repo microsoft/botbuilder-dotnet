@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Handlers
 {
-    internal sealed class BotMessageHandler : BotMessageHandlerBase
+    public sealed class BotMessageHandler : BotMessageHandlerBase
     {
         public BotMessageHandler(BotFrameworkAdapter botFrameworkAdapter) : base(botFrameworkAdapter)
         {

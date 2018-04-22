@@ -48,7 +48,12 @@
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Documentation|AnyCPU'">
 	  <NoWarn>1701;1702;1705;CS1998</NoWarn>
-	  <DocumentationFile>bin\Documentation\netstandard2.0\Microsoft.Bot.Builder.TemplateManager.xml</DocumentationFile>
+	  <DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Builder.TemplateManager.xml</DocumentationFile>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+		<NoWarn>1701;1702;1705;CS1998</NoWarn>
+		<DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Builder.TemplateManager.xml</DocumentationFile>
 	</PropertyGroup>
 
 	<ItemGroup>

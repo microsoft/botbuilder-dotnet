@@ -81,6 +81,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         private string[] SplitSentence(string sentence,string[] alignments=null,bool isSrcSentence=true)
         {
             string[] wrds = sentence.Split(' ');
+            string[] alignSplitWrds = new string[0];
             if (alignments != null && alignments.Length > 0)
             {
                 List<string> outWrds = new List<string>();
@@ -93,23 +94,27 @@ namespace Microsoft.Bot.Builder.Ai.Translation
                     // reorder alignments in case of target translated  message to get ordered output words.
                     Array.Sort(alignments, (x, y) => Int32.Parse(x.Split('-')[wrdIndxInAlignment].Split(':')[0]).CompareTo(Int32.Parse(y.Split('-')[wrdIndxInAlignment].Split(':')[0])));
                 }
+                string withoutSpaceSentence = sentence.Replace(" ", "");
+                
                 foreach (string alignData in alignments)
                 {
-                    wrds = outWrds.ToArray();
+                    alignSplitWrds = outWrds.ToArray();
                     string wordIndexes = alignData.Split('-')[wrdIndxInAlignment];
                     int startIndex = Int32.Parse(wordIndexes.Split(':')[0]);
                     int length = Int32.Parse(wordIndexes.Split(':')[1]) - startIndex + 1;
                     string wrd = sentence.Substring(startIndex, length);
                     string[] newWrds = new string[outWrds.Count + 1];
                     if(newWrds.Length>1)
-                        wrds.CopyTo(newWrds, 0);
+                        alignSplitWrds.CopyTo(newWrds, 0);
                     newWrds[outWrds.Count] = wrd;
-                    string subSentence = Join(" ", newWrds.ToArray()); 
-                    if (sentence.Contains(subSentence)) 
+                    string subSentence = Join("", newWrds.ToArray()); 
+                    if (withoutSpaceSentence.Contains(subSentence)) 
                         outWrds.Add(wrd);  
                 }
-                wrds = outWrds.ToArray();
+                alignSplitWrds = outWrds.ToArray();
             }
+            if (alignSplitWrds.Length >= wrds.Length)
+                return alignSplitWrds;
             return wrds;
         }
 
@@ -183,7 +188,8 @@ namespace Microsoft.Bot.Builder.Ai.Translation
 
             if (_patterns.Count == 0 && !containsNum)
                 return targetMessage;
-
+            if (string.IsNullOrWhiteSpace(alignment))
+                return targetMessage;
 
             var toBeReplaced = from result in _patterns
                                where Regex.IsMatch(sourceMessage, result, RegexOptions.Singleline | RegexOptions.IgnoreCase)
@@ -247,8 +253,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation
     }
 
     /// <summary>
-    /// Translator class 
-    /// contains machine translation APIs .
+    /// Provides access to the Microsoft Translator Text API.
     /// Uses api key and detect input language translate single sentence or array of sentences then apply translation post processing fix.
     /// </summary>
     public class Translator
@@ -256,25 +261,29 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         private readonly AzureAuthToken _authToken;
         PostProcessTranslator _postProcessor;
 
+        /// <summary>
+        /// Creates a new <see cref="Translator"/> object.
+        /// </summary>
+        /// <param name="apiKey">Your subscription key for the Microsoft Translator Text API.</param>
         public Translator(string apiKey)
         {
             _authToken = new AzureAuthToken(apiKey);
             _postProcessor = new PostProcessTranslator();
         }
-        
+
         /// <summary>
-        /// used to set no translate template for post processor
+        /// Sets the no translate template for post processor.
         /// </summary>
-        /// <param name="patterns">List of patterns for current language</param>
+        /// <param name="patterns">List of patterns for the current language that can be used to fix some translation errors.</param>
         public void SetPostProcessorTemplate(List<string> patterns)
         {
             _postProcessor = new PostProcessTranslator(patterns);
         }
 
         /// <summary>
-        /// Checks for literal tag and updates no Translate List.
+        /// Performs pre-processing to remove "literal" tags and flag sections of the text that will not be translated.
         /// </summary>
-        /// <param name="textToTranslate"></param> 
+        /// <param name="textToTranslate">The text to translate.</param> 
         private string PreprocessMessage(string textToTranslate,bool updateNoTranslatePattern=true)
         {
             textToTranslate = Regex.Replace(textToTranslate, @"\s+", " ");//used to remove multiple spaces in input user message
@@ -300,10 +309,10 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         }
 
         /// <summary>
-        /// detects language of input text
+        /// Detects the language of the input text.
         /// </summary>
-        /// <param name="textToDetect">Input text</param>
-        /// <returns></returns>
+        /// <param name="textToDetect">The text to translate.</param>
+        /// <returns>The language identifier.</returns>
         public async Task<string> Detect(string textToDetect)
         {
             textToDetect = PreprocessMessage(textToDetect, false);
@@ -326,14 +335,14 @@ namespace Microsoft.Bot.Builder.Ai.Translation
                 return detectedLang;
             }
         }
-        
+
         /// <summary>
-        /// Translate a single message from source language to target language.
+        /// Translates a single message from a source language to a target language.
         /// </summary>
-        /// <param name="textToTranslate"></param>
-        /// <param name="from"></param>
-        /// <param name="to"></param>
-        /// <returns></returns>
+        /// <param name="textToTranslate">The text to translate.</param>
+        /// <param name="from">The language code of the translation text. For example, "en" for English.</param>
+        /// <param name="to">The language code to translate the text into.</param>
+        /// <returns>The translated text.</returns>
         public async Task<string> Translate(string textToTranslate, string from, string to)
         {
             textToTranslate = PreprocessMessage(textToTranslate);
@@ -361,12 +370,12 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         }
 
         /// <summary>
-        /// Translate array of strings from source language to target language.
+        /// Translates an array of strings from a source language to a target language.
         /// </summary>
-        /// <param name="translateArraySourceTexts">Array of strings</param>
-        /// <param name="from">Source Language</param>
-        /// <param name="to">Target Language</param>
-        /// <returns></returns>
+        /// <param name="translateArraySourceTexts">The strings to translate.</param>
+        /// <param name="from">The language code of the translation text. For example, "en" for English.</param>
+        /// <param name="to">The language code to translate the text into.</param>
+        /// <returns>An array of the translated strings.</returns>
         public async Task<string[]> TranslateArray(string[] translateArraySourceTexts, string from, string to)
         {
             var uri = "https://api.microsofttranslator.com/v2/Http.svc/TranslateArray2";

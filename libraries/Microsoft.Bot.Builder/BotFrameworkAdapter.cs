@@ -71,7 +71,8 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <summary>
         /// Sends a proactive message from the bot to a conversation.
         /// </summary>
-        /// <param name="botAppId">The application ID of the bot.</param>
+        /// <param name="botAppId">The application ID of the bot. This is the appId returned by Portal registration, and is
+        /// generally found in the "MicrosoftAppId" parameter in appSettings.json.</param>
         /// <param name="reference">A reference to the conversation to continue.</param>
         /// <param name="callback">The method to call for the resulting bot turn.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
@@ -85,10 +86,15 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <item><see cref="IIdentity"/> (key = "BotIdentity"), a claims identity for the bot.</item>
         /// <item><see cref="IConnectorClient"/>, the channel connector client to use this turn.</item>
         /// </list></para>
+        /// <para>
+        /// This overload differers from the Node implementation by requiring the BotId to be 
+        /// passed in. The .Net code allows multiple bots to be hosted in a single adapter which
+        /// isn't something supported by Node.
+        /// </para>
         /// </remarks>
         /// <seealso cref="ProcessActivity(string, Activity, Func{ITurnContext, Task})"/>
         /// <seealso cref="BotAdapter.RunPipeline(ITurnContext, Func{ITurnContext, Task}, System.Threading.CancellationTokenSource)"/>
-        public async Task ContinueConversation(string botAppId, ConversationReference reference, Func<ITurnContext, Task> callback)
+        public override async Task ContinueConversation(string botAppId, ConversationReference reference, Func<ITurnContext, Task> callback)
         {
             if (string.IsNullOrWhiteSpace(botAppId))
                 throw new ArgumentNullException(nameof(botAppId));
@@ -173,13 +179,23 @@ namespace Microsoft.Bot.Builder.Adapters
         public async Task<InvokeResponse> ProcessActivity(string authHeader, Activity activity, Func<ITurnContext, Task> callback)
         {
             BotAssert.ActivityNotNull(activity);
+
             var claimsIdentity =  await JwtTokenValidation.AuthenticateRequest(activity, authHeader, _credentialProvider, _httpClient);
+
+            return await ProcessActivity(claimsIdentity, activity, callback);
+        }
+
+        public async Task<InvokeResponse> ProcessActivity(ClaimsIdentity identity, Activity activity, Func<ITurnContext, Task> callback)
+        {
+            BotAssert.ActivityNotNull(activity);
 
             using (var context = new TurnContext(this, activity))
             {
-                context.Services.Add<IIdentity>("BotIdentity", claimsIdentity);
-                var connectorClient = await this.CreateConnectorClientAsync(activity.ServiceUrl, claimsIdentity);
+                context.Services.Add<IIdentity>("BotIdentity", identity);
+
+                var connectorClient = await this.CreateConnectorClientAsync(activity.ServiceUrl, identity);
                 context.Services.Add<IConnectorClient>(connectorClient);
+
                 await base.RunPipeline(context, callback).ConfigureAwait(false);
 
                 // Handle Invoke scenarios, which deviate from the request/response model in that 
@@ -220,7 +236,7 @@ namespace Microsoft.Bot.Builder.Adapters
 
             foreach (var activity in activities)
             {
-                ResourceResponse response;
+                ResourceResponse response = null;
 
                 if (activity.Type == ActivityTypesEx.Delay)
                 {
@@ -228,26 +244,40 @@ namespace Microsoft.Bot.Builder.Adapters
                     // here in the Bot. This matches the behavior in the Node connector. 
                     int delayMs = (int)activity.Value;
                     await Task.Delay(delayMs).ConfigureAwait(false);
-
-                    // In the case of a Delay, just create a fake one. Match the incoming activityId if it's there. 
-                    response = new ResourceResponse(activity.Id ?? string.Empty); 
+                    // No need to create a response. One will be created below. 
                 }
                 else if (activity.Type == "invokeResponse") // Aligning name with Node            
                 {                    
-                    context.Services.Add<Activity>(InvokeReponseKey, activity); 
-                    
-                    // In the case of Invoke, just create a fake one. Match the incoming activityId if it's there. 
-                    response = new ResourceResponse(activity.Id ?? string.Empty);
+                    context.Services.Add<Activity>(InvokeReponseKey, activity);
+                    // No need to create a response. One will be created below.                     
                 }
                 else if (activity.Type == ActivityTypes.Trace && activity.ChannelId != "emulator")
                 {
-                    // if it is a Trace activity we don't send to the channel unless it is the emulator 
-                    response = new ResourceResponse(activity.Id ?? string.Empty); 
+                    // if it is a Trace activity we only send to the channel if it's the emulator.
+                }
+                else if( !string.IsNullOrWhiteSpace(activity.ReplyToId))
+                {
+                    var connectorClient = context.Services.Get<IConnectorClient>();
+                    response = await connectorClient.Conversations.ReplyToActivityAsync(activity).ConfigureAwait(false);
                 }
                 else
                 {
                     var connectorClient = context.Services.Get<IConnectorClient>();
-                    response = await connectorClient.Conversations.SendToConversationAsync(activity).ConfigureAwait(false);
+                    response = await connectorClient.Conversations.SendToConversationAsync(activity).ConfigureAwait(false);                    
+                }
+
+                // If No response is set, then defult to a "simple" response. This can't really be done
+                // above, as there are cases where the ReplyTo/SendTo methods will also return null 
+                // (See below) so the check has to happen here. 
+
+                // Note: In addition to the Invoke / Delay / Activity cases, this code also applies
+                // with Skype and Teams with regards to typing events.  When sending a typing event in 
+                // these channels they do not return a RequestResponse which causes the bot to blow up.
+                // https://github.com/Microsoft/botbuilder-dotnet/issues/460
+                // bug report : https://github.com/Microsoft/botbuilder-dotnet/issues/465
+                if (response == null)
+                {
+                    response = new ResourceResponse(activity.Id ?? string.Empty);
                 }
 
                 // Collect all the responses that come from the service. 

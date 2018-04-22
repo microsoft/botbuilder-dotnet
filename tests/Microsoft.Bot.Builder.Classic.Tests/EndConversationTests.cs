@@ -91,18 +91,12 @@ namespace Microsoft.Bot.Builder.Classic.Tests
         [TestMethod]
         public async Task EndConversation_Resets_Data()
         {
+            var dialog = new TestResetDialog();
             using (var container = Build(Options.ResolveDialogFromContainer))
+            using (var scope = container.BeginLifetimeScope(
+                builder => builder.RegisterInstance(dialog).As<IDialog<object>>()))
             {
-                var dialog =
-                    new TestResetDialog();
-
-                var builder = new ContainerBuilder();
-                builder
-                    .RegisterInstance(dialog)
-                    .As<IDialog<object>>();
-                builder.Update(container);
-
-                await AssertScriptAsync(container,
+                await AssertScriptAsync(scope,
                     "hello",
                     "echo hello 1 2 3",
                     "world",

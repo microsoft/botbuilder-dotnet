@@ -38,12 +38,16 @@
 		<NeutralLanguage />
 	</PropertyGroup>
 
-  <PropertyGroup Condition="$(Configuration) == 'Debug - NuGet Packages'">
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-  </PropertyGroup>
+	<PropertyGroup Condition="$(Configuration) == 'Debug - NuGet Packages'">
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Documentation|AnyCPU'">
-	  <DocumentationFile>bin\Documentation\netstandard2.0\Microsoft.Bot.Builder.Prompts.xml</DocumentationFile>
+		<DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Builder.Prompts.xml</DocumentationFile>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+		<DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Builder.Prompts.xml</DocumentationFile>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -58,6 +62,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="..\Microsoft.Bot.Builder.Core.Extensions\Microsoft.Bot.Builder.Core.Extensions.csproj" />
 		<ProjectReference Include="..\Microsoft.Bot.Builder.Core\Microsoft.Bot.Builder.Core.csproj" />
 		<ProjectReference Include="..\Microsoft.Bot.Schema\Microsoft.Bot.Schema.csproj" />
 	</ItemGroup>
