@@ -113,7 +113,8 @@ namespace Microsoft.Bot.Builder.Ai.Translation
                 }
                 alignSplitWrds = outWrds.ToArray();
             }
-            if (Join("",alignSplitWrds)==Join("",wrds))
+            char[] punctuationChars = new char[] { '.', ',', '?', '!' };
+            if (Join("",alignSplitWrds).TrimEnd(punctuationChars) ==Join("",wrds).TrimEnd(punctuationChars))
                 return alignSplitWrds;
             return wrds;
         }
