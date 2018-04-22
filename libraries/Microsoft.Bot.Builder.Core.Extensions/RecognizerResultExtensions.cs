@@ -1,10 +1,17 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+using System;
 
-namespace Microsoft.Bot.Builder.Ai.LUIS
+namespace Microsoft.Bot.Builder.Core.Extensions
 {
     public static class RecognizerResultExtensions
     {
-        public static (string key, double score) GetTopScoringIntent(this RecognizerResult result)
+        /// <summary>
+        /// Return the top scoring intent and its score.
+        /// </summary>
+        /// <param name="result">Recognizer result.</param>
+        /// <returns>Intent and score.</returns>
+        public static (string intent, double score) GetTopScoringIntent(this RecognizerResult result)
         {
             if (result == null)
                 throw new ArgumentNullException(nameof(result));

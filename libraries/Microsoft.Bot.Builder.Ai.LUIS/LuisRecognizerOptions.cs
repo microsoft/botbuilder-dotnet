@@ -3,9 +3,14 @@
 
 namespace Microsoft.Bot.Builder.Ai.LUIS
 {
-    /// <inheritdoc />
+    /// <summary>
+    /// Defines options for the LUIS recognizer.
+    /// </summary>
     public class LuisRecognizerOptions : ILuisRecognizerOptions
     {
+        /// <summary>
+        /// Indicates whether to add metadata to the recognizer's results.
+        /// </summary>
         public bool Verbose { get; set; }
     }
 }

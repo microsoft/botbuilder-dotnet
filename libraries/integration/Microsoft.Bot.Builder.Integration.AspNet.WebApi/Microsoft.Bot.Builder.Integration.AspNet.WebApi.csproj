@@ -45,7 +45,11 @@
   </PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Documentation|AnyCPU'">
-	  <DocumentationFile>bin\Documentation\net461\Microsoft.Bot.Builder.Integration.AspNet.WebApi.xml</DocumentationFile>
+	  <DocumentationFile>bin\$(Configuration)\net461\Microsoft.Bot.Builder.Integration.AspNet.WebApi.xml</DocumentationFile>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+		<DocumentationFile>bin\$(Configuration)\net461\Microsoft.Bot.Builder.Integration.AspNet.WebApi.xml</DocumentationFile>
 	</PropertyGroup>
 
 	<ItemGroup>
