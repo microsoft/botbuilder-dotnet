@@ -15,12 +15,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="TestData\" />
+    <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Ai.LUIS\Microsoft.Bot.Builder.Ai.LUIS.csproj" />
+    <ProjectReference Include="..\Microsoft.Bot.Builder.Core.Extensions.Tests\Microsoft.Bot.Builder.Core.Extensions.Tests.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Ai.LUIS\Microsoft.Bot.Builder.Ai.LUIS.csproj" />
-    <ProjectReference Include="..\Microsoft.Bot.Builder.Core.Extensions.Tests\Microsoft.Bot.Builder.Core.Extensions.Tests.csproj" />
+    <Reference Include="System">
+      <HintPath>System</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

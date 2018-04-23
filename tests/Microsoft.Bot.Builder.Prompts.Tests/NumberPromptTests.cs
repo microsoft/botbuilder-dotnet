@@ -4,18 +4,11 @@
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Core.Extensions;
-using Microsoft.Bot.Schema;
 using Microsoft.Recognizers.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Bot.Builder.Prompts.Tests
 {
-    public class TestState : IStoreItem
-    {
-        public bool InPrompt { get; set; } = false;
-        public string eTag { get; set; }
-    }
-
     [TestClass]
     [TestCategory("Prompts")]
     [TestCategory("Number Prompts")]

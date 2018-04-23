@@ -4,6 +4,7 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Prompts;
+using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
@@ -41,6 +42,11 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             if (dc == null)
                 throw new ArgumentNullException(nameof(dc));
+
+            if (dc.Context.Activity.Type != ActivityTypes.Message)
+            {
+                return;
+            }
 
             // Recognize value
             var instance = dc.Instance;
