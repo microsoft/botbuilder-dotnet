@@ -95,8 +95,8 @@ namespace Microsoft.Bot.Builder.Alexa
                 Recipient = new ChannelAccount(system.Application.ApplicationId, "skill"),
                 From = new ChannelAccount(system.User.UserId, "user"),
 
-                Conversation = new ConversationAccount(false, 
-                    $"{system.Application.ApplicationId}:{system.User.UserId}", "conversation"),
+                Conversation = new ConversationAccount(false, "conversation",
+                    $"{system.Application.ApplicationId}:{system.User.UserId}"),
 
                 Type = skillRequest.Request.Type,
                 Id = skillRequest.Request.RequestId,

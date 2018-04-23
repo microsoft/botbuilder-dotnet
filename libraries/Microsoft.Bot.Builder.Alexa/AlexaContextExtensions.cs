@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
@@ -43,6 +44,18 @@ namespace Microsoft.Bot.Builder.Alexa
                 new AuthenticationHeaderValue("Bearer", originalAlexaRequest.Context.System.ApiAccessToken);
 
             return await client.PostAsync(directiveEndpoint, directiveContent);
+        }
+
+        public static AlexaRequestBody GetAlexaRequestBody(this ITurnContext context)
+        {
+            try
+            {
+                return (AlexaRequestBody) context.Activity.ChannelData;
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
         }
     }
 }
