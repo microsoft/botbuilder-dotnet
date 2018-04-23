@@ -116,7 +116,7 @@ namespace Microsoft.Bot.Builder.Adapters
                 });
 
                 context.Services.Add<IIdentity>("BotIdentity", claimsIdentity);
-                var connectorClient = await this.CreateConnectorClientAsync(reference.ServiceUrl, claimsIdentity);
+                var connectorClient = await this.CreateConnectorClientAsync(reference.ServiceUrl, claimsIdentity).ConfigureAwait(false);
                 context.Services.Add<IConnectorClient>(connectorClient);
                 await RunPipeline(context, callback);
             }
@@ -180,9 +180,9 @@ namespace Microsoft.Bot.Builder.Adapters
         {
             BotAssert.ActivityNotNull(activity);
 
-            var claimsIdentity =  await JwtTokenValidation.AuthenticateRequest(activity, authHeader, _credentialProvider, _httpClient);
+            var claimsIdentity =  await JwtTokenValidation.AuthenticateRequest(activity, authHeader, _credentialProvider, _httpClient).ConfigureAwait(false);
 
-            return await ProcessActivity(claimsIdentity, activity, callback);
+            return await ProcessActivity(claimsIdentity, activity, callback).ConfigureAwait(false);
         }
 
         public async Task<InvokeResponse> ProcessActivity(ClaimsIdentity identity, Activity activity, Func<ITurnContext, Task> callback)
@@ -193,7 +193,7 @@ namespace Microsoft.Bot.Builder.Adapters
             {
                 context.Services.Add<IIdentity>("BotIdentity", identity);
 
-                var connectorClient = await this.CreateConnectorClientAsync(activity.ServiceUrl, identity);
+                var connectorClient = await this.CreateConnectorClientAsync(activity.ServiceUrl, identity).ConfigureAwait(false);
                 context.Services.Add<IConnectorClient>(connectorClient);
 
                 await base.RunPipeline(context, callback).ConfigureAwait(false);
@@ -302,7 +302,7 @@ namespace Microsoft.Bot.Builder.Adapters
         public override async Task<ResourceResponse> UpdateActivity(ITurnContext context, Activity activity)
         {
             var connectorClient = context.Services.Get<IConnectorClient>();
-            return await connectorClient.Conversations.UpdateActivityAsync(activity);
+            return await connectorClient.Conversations.UpdateActivityAsync(activity).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -317,8 +317,128 @@ namespace Microsoft.Bot.Builder.Adapters
         public override async Task DeleteActivity(ITurnContext context, ConversationReference reference)
         {
             var connectorClient = context.Services.Get<IConnectorClient>();
-            await connectorClient.Conversations.DeleteActivityAsync(reference.Conversation.Id, reference.ActivityId);
+            await connectorClient.Conversations.DeleteActivityAsync(reference.Conversation.Id, reference.ActivityId).ConfigureAwait(false);
         }
+
+        /// <summary>
+        /// Deletes a member from the current conversation
+        /// </summary>
+        /// <param name="context">The context object for the turn.</param>
+        /// <param name="memberId">ID of the member to delete from the conversation</param>
+        /// <returns></returns>
+        public async Task DeleteConversationMember(ITurnContext context, string memberId)
+        {
+            if (context.Activity.Conversation == null)
+                throw new ArgumentNullException("BotFrameworkAdapter.deleteConversationMember(): missing conversation");
+
+            if (string.IsNullOrWhiteSpace(context.Activity.Conversation.Id))
+                throw new ArgumentNullException("BotFrameworkAdapter.deleteConversationMember(): missing conversation.id");
+
+            var connectorClient = context.Services.Get<IConnectorClient>();
+
+            string conversationId = context.Activity.Conversation.Id;
+
+            await connectorClient.Conversations.DeleteConversationMemberAsync(conversationId, memberId).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Lists the members of a given activity.
+        /// </summary>
+        /// <param name="context">The context object for the turn.</param>
+        /// <param name="activityId">(Optional) Activity ID to enumerate. If not specified the current activities ID will be used.</param>
+        /// <returns>List of Members of the activity</returns>
+        public async Task<IList<ChannelAccount>> GetActivityMembers(ITurnContext context, string activityId = null)
+        {
+            // If no activity was passed in, use the current activity. 
+            if (activityId == null)
+                activityId = context.Activity.Id;
+
+            if (context.Activity.Conversation == null)
+                throw new ArgumentNullException("BotFrameworkAdapter.GetActivityMembers(): missing conversation");
+
+            if (string.IsNullOrWhiteSpace(context.Activity.Conversation.Id))
+                throw new ArgumentNullException("BotFrameworkAdapter.GetActivityMembers(): missing conversation.id");
+
+            var connectorClient = context.Services.Get<IConnectorClient>();
+            string conversationId = context.Activity.Conversation.Id;
+
+            IList<ChannelAccount> accounts = await connectorClient.Conversations.GetActivityMembersAsync(conversationId, activityId).ConfigureAwait(false);
+
+            return accounts;
+        }
+     
+        /// <summary>
+        /// Lists the members of the current conversation.
+        /// </summary>
+        /// <param name="context">The context object for the turn.</param>        
+        /// <returns>List of Members of the current conversation</returns>
+        public async Task<IList<ChannelAccount>> GetConversationMembers(ITurnContext context)
+        {
+            if (context.Activity.Conversation == null)
+                throw new ArgumentNullException("BotFrameworkAdapter.GetActivityMembers(): missing conversation");
+
+            if (string.IsNullOrWhiteSpace(context.Activity.Conversation.Id))
+                throw new ArgumentNullException("BotFrameworkAdapter.GetActivityMembers(): missing conversation.id");
+
+            var connectorClient = context.Services.Get<IConnectorClient>();
+            string conversationId = context.Activity.Conversation.Id;
+
+            IList<ChannelAccount> accounts = await connectorClient.Conversations.GetConversationMembersAsync(conversationId).ConfigureAwait(false);
+            return accounts;
+        }
+
+        /// <summary>
+        /// Lists the Conversations in which this bot has participated for a given channel server. The 
+        /// channel server returns results in pages and each page will include a `continuationToken` 
+        /// that can be used to fetch the next page of results from the server.
+        /// </summary>
+        /// <param name="serviceUrl">The URL of the channel server to query.  This can be retrieved 
+        /// from `context.activity.serviceUrl`. </param>
+        /// <param name="credentials">The credentials needed for the Bot to connect to the services.</param>
+        /// <param name="continuationToken">(Optional) token used to fetch the next page of results 
+        /// from the channel server. This should be left as `null` to retrieve the first page 
+        /// of results.</param>
+        /// <returns>List of Members of the current conversation</returns>
+        /// <remarks>
+        /// This overload may be called from outside the context of a conversation, as only the 
+        /// Bot's ServiceUrl and credentials are required.         
+        /// </remarks>
+        public async Task<ConversationsResult> GetConversations(string serviceUrl, MicrosoftAppCredentials credentials, string continuationToken = null)
+        {
+            if (string.IsNullOrWhiteSpace(serviceUrl))
+                throw new ArgumentNullException(nameof(serviceUrl));
+
+            if (credentials == null)
+                throw new ArgumentNullException(nameof(credentials)); 
+
+            var connectorClient = this.CreateConnectorClient(serviceUrl, credentials);            
+            ConversationsResult results = await connectorClient.Conversations.GetConversationsAsync(continuationToken).ConfigureAwait(false);
+            return results;
+        }
+
+        /// <summary>
+        /// Lists the Conversations in which this bot has participated for a given channel server. The 
+        /// channel server returns results in pages and each page will include a `continuationToken` 
+        /// that can be used to fetch the next page of results from the server.
+        /// </summary>
+        /// <param name="context">The context object for the turn.</param>        
+        /// <param name="continuationToken">(Optional) token used to fetch the next page of results 
+        /// from the channel server. This should be left as `null` to retrieve the first page 
+        /// of results.</param>
+        /// <returns>List of Members of the current conversation</returns>
+        /// <remarks>
+        /// This overload may be called during standard Activity processing, at which point the Bot's 
+        /// service URL and credentials that are part of the current activity processing pipeline
+        /// will be used.         
+        /// </remarks>
+        public async Task<ConversationsResult> GetConversations(ITurnContext context, string continuationToken = null)
+        {
+            var connectorClient = context.Services.Get<IConnectorClient>();
+            ConversationsResult results = await connectorClient.Conversations.GetConversationsAsync(continuationToken).ConfigureAwait(false);
+            return results;
+        }
+
+
 
         /// <summary>
         /// Creates a conversation on the specified channel.
@@ -344,7 +464,7 @@ namespace Microsoft.Bot.Builder.Adapters
         {
             var connectorClient = this.CreateConnectorClient(serviceUrl, credentials);
 
-            var result = await connectorClient.Conversations.CreateConversationAsync(conversationParameters);
+            var result = await connectorClient.Conversations.CreateConversationAsync(conversationParameters).ConfigureAwait(false);
 
             // Create a conversation update activity to represent the result.
             var conversationUpdate = Activity.CreateConversationUpdateActivity();
@@ -358,7 +478,7 @@ namespace Microsoft.Bot.Builder.Adapters
 
             using (TurnContext context = new TurnContext(this, (Activity)conversationUpdate))
             {
-                await this.RunPipeline(context, callback);
+                await this.RunPipeline(context, callback).ConfigureAwait(false);
             }
         }
 
@@ -387,7 +507,7 @@ namespace Microsoft.Bot.Builder.Adapters
             if (botAppIdClaim != null)
             {
                 string botId = botAppIdClaim.Value;
-                var appCredentials = await this.GetAppCredentialsAsync(botId);
+                var appCredentials = await this.GetAppCredentialsAsync(botId).ConfigureAwait(false);
                 return this.CreateConnectorClient(serviceUrl, appCredentials);
             }
             else
@@ -437,7 +557,7 @@ namespace Microsoft.Bot.Builder.Adapters
 
             if (!_appCredentialMap.TryGetValue(appId, out var appCredentials))
             {
-                string appPassword = await _credentialProvider.GetAppPasswordAsync(appId);
+                string appPassword = await _credentialProvider.GetAppPasswordAsync(appId).ConfigureAwait(false);
                 appCredentials = new MicrosoftAppCredentials(appId, appPassword);
                 _appCredentialMap[appId] = appCredentials;
             }
