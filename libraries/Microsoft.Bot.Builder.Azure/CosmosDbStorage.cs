@@ -17,7 +17,7 @@ using Newtonsoft.Json.Serialization;
 namespace Microsoft.Bot.Builder.Azure
 {
     /// <summary>
-    /// Models IStorage around CosmosDB
+    /// Implements an CosmosDB based storage provider for a bot.
     /// </summary>
     public class CosmosDbStorage : IStorage
     {
@@ -32,21 +32,20 @@ namespace Microsoft.Bot.Builder.Azure
         });
 
         /// <summary>
-        /// Initializes a new instance of <see cref="CosmosDbStorage"/> class,
-        /// using the provided CosmosDB credentials, DatabaseId and CollectionId.
+        /// Creates a new <see cref="CosmosDbStorage"/> object,
+        /// using the provided CosmosDB credentials, database ID, and collection ID.
         /// </summary>
-        /// <remarks>
-        /// The ConnectionPolicy delegate can be used to further customize the connection to CosmosDB (Connection mode, retry options, timeouts).
-        /// More information at https://docs.microsoft.com/en-us/dotnet/api/microsoft.azure.documents.client.connectionpolicy?view=azure-dotnet
-        /// </remarks>
-        /// <param name="serviceEndpoint">The endpoint Uri for the service endpoint from the Azure Cosmos DB service.</param>
+        /// <param name="serviceEndpoint">The URI of the service endpoint for the Azure Cosmos DB service.</param>
         /// <param name="authKey">The AuthKey used by the client from the Azure Cosmos DB service.</param>
-        /// <param name="databaseId">The Database ID.</param>
-        /// <param name="collectionId">The Collection ID.</param>
-        /// <param name="connectionPolicyConfigurator">
-        ///     A Delegate to further customize the ConnectionPolicy to CosmosDB.
-        ///     More information at https://docs.microsoft.com/en-us/dotnet/api/microsoft.azure.documents.client.connectionpolicy?view=azure-dotnet
-        /// </param>
+        /// <param name="databaseId">The database ID.</param>
+        /// <param name="collectionId">The collection ID.</param>
+        /// <param name="connectionPolicyConfigurator">A connection policy delegate.</param>
+        /// <remarks>
+        /// You can use the <paramref name="connectionPolicyConfigurator"/> delegate to 
+        /// further customize the connection to CosmosDB, 
+        /// such as setting connection mode, retry options, timeouts, and so on.
+        /// See https://docs.microsoft.com/en-us/dotnet/api/microsoft.azure.documents.client.connectionpolicy?view=azure-dotnet
+        /// for more information.</remarks>
         public CosmosDbStorage(Uri serviceEndpoint, string authKey, string databaseId, string collectionId, Action<ConnectionPolicy> connectionPolicyConfigurator = null)
         {
             if (serviceEndpoint == null)
@@ -85,10 +84,9 @@ namespace Microsoft.Bot.Builder.Azure
         }
 
         /// <summary>
-        /// Deletes the specified keys from storage.
+        /// Removes store items from storage.
         /// </summary>
-        /// <param name="keys">List of keys to remove.</param>
-        /// <returns></returns>
+        /// <param name="keys">Array of item keys to remove from the store.</param>
         public async Task Delete(params string[] keys)
         {
             if (keys.Length == 0) return;
@@ -105,10 +103,9 @@ namespace Microsoft.Bot.Builder.Azure
         }
 
         /// <summary>
-        /// Returns Key/Value pairs with the values for the specified keys.
+        /// Loads store items from storage.
         /// </summary>
-        /// <param name="keys">List of keys to retrieve.</param>
-        /// <returns></returns>
+        /// <param name="keys">Array of item keys to read from the store.</param>
         public async Task<IEnumerable<KeyValuePair<string, object>>> Read(params string[] keys)
         {
             if (keys.Length == 0)
@@ -149,10 +146,9 @@ namespace Microsoft.Bot.Builder.Azure
         }
 
         /// <summary>
-        /// Store the specified Key/Value pairs.
+        /// Saves store items to storage.
         /// </summary>
-        /// <param name="changes">Key/Value pairs to persist.</param>
-        /// <returns></returns>
+        /// <param name="changes">Map of items to write to storage.</param>
         public async Task Write(IEnumerable<KeyValuePair<string, object>> changes)
         {
             if (changes == null)
