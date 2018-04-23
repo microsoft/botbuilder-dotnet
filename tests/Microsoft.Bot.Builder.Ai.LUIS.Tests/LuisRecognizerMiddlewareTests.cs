@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Core.Extensions.Tests;
@@ -22,6 +21,12 @@ namespace Microsoft.Bot.Builder.Ai.LUIS.Tests
         [TestMethod]
         public void LuisRecognizer_MiddlewareConstruction()
         {
+            if (!EnvironmentVariablesDefined())
+            {
+                Assert.Inconclusive("Missing Luis Environment variables - Skipping test");
+                return;
+            }
+
             var middleware = GetLuisRecognizerMiddleware();
             Assert.IsNotNull(middleware);
             Assert.ThrowsException<ArgumentNullException>(() => new LuisRecognizerMiddleware(null));
