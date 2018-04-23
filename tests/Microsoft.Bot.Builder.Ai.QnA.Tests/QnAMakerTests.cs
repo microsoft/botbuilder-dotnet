@@ -83,8 +83,6 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
                 Top = 1,
                 ScoreThreshold = 1.1F
             }, new HttpClient());
-
-            var results = await qna.GetAnswers("how do I clean the stove?");
         }
 
         [TestMethod]
@@ -106,8 +104,6 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
                 Top = -1,
                 ScoreThreshold = 0.5F
             }, new HttpClient());
-
-            var results = await qna.GetAnswers("how do I clean the stove?");
         }
 
         private bool EnvironmentVariablesDefined()
