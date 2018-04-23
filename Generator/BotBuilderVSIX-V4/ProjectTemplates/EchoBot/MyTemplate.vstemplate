@@ -1,0 +1,36 @@
+<VSTemplate Version="3.0.0" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" Type="Project">
+  <TemplateData>
+    <Name>AspNetCore-EchoBot</Name>
+    <Description>&lt;No description available&gt;</Description>
+    <ProjectType>CSharp</ProjectType>
+    <ProjectSubType>
+    </ProjectSubType>
+    <SortOrder>1000</SortOrder>
+    <CreateNewFolder>true</CreateNewFolder>
+    <DefaultName>AspNetCore-EchoBot</DefaultName>
+    <ProvideDefaultName>true</ProvideDefaultName>
+    <LocationField>Enabled</LocationField>
+    <CreateInPlace>true</CreateInPlace>
+    <EnableLocationBrowseButton>true</EnableLocationBrowseButton>
+    <Icon>vstg0001.png</Icon>
+    <PreviewImage>vstg0002.png</PreviewImage>
+  </TemplateData>
+  <TemplateContent>
+    <Project TargetFileName="AspNetCore-EchoBot-With-State.csproj" File="AspNetCore-EchoBot-With-State.csproj" ReplaceParameters="true">
+      <Folder Name="Properties" TargetFolderName="Properties">
+        <ProjectItem ReplaceParameters="true" TargetFileName="launchSettings.json">launchSettings.json</ProjectItem>
+      </Folder>
+      <Folder Name="wwwroot" TargetFolderName="wwwroot">
+        <ProjectItem ReplaceParameters="true" TargetFileName="default.htm">default.htm</ProjectItem>
+      </Folder>
+      <ProjectItem ReplaceParameters="false" TargetFileName="__PreviewImage.png">__PreviewImage.png</ProjectItem>
+      <ProjectItem ReplaceParameters="false" TargetFileName="__TemplateIcon.png">__TemplateIcon.png</ProjectItem>
+      <ProjectItem ReplaceParameters="true" TargetFileName="appsettings.json">appsettings.json</ProjectItem>
+      <ProjectItem ReplaceParameters="true" TargetFileName="EchoBot.cs">EchoBot.cs</ProjectItem>
+      <ProjectItem ReplaceParameters="true" TargetFileName="EchoState.cs">EchoState.cs</ProjectItem>
+      <ProjectItem ReplaceParameters="true" TargetFileName="Program.cs">Program.cs</ProjectItem>
+      <ProjectItem ReplaceParameters="false" TargetFileName="readme.md">readme.md</ProjectItem>
+      <ProjectItem ReplaceParameters="true" TargetFileName="Startup.cs">Startup.cs</ProjectItem>
+    </Project>
+  </TemplateContent>
+</VSTemplate>
