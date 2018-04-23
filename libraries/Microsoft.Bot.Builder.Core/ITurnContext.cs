@@ -103,7 +103,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="inputHint">Optional, indicates whether your bot is accepting, 
         /// expecting, or ignoring user input after the message is delivered to the client.
         /// One of: "acceptingInput", "ignoringInput", or "expectingInput".
-        /// Default is null.</param>
+        /// Default is "acceptingInput".</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <remarks>If the activity is successfully sent, the task result contains
         /// a <see cref="ResourceResponse"/> object containing the ID that the receiving 
@@ -114,7 +114,7 @@ namespace Microsoft.Bot.Builder
         /// rate, volume, pronunciation, and pitch, specify <paramref name="speak"/> in 
         /// Speech Synthesis Markup Language (SSML) format.</para>
         /// </remarks>
-        Task<ResourceResponse> SendActivity(string textReplyToSend, string speak = null, string inputHint = null);
+        Task<ResourceResponse> SendActivity(string textReplyToSend, string speak = null, string inputHint = InputHints.AcceptingInput);
         
         /// <summary>
         /// Sends an activity to the sender of the incoming activity.
