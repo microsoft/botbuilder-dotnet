@@ -86,7 +86,7 @@ namespace Microsoft.Bot.Builder.Ai.QnA
 
             if (_options.Top < 1)
             {
-                throw new ArgumentOutOfRangeException(nameof(_options.Top), "Top should be an integer than 0");
+                throw new ArgumentOutOfRangeException(nameof(_options.Top), "Top should be an integer greater than 0");
             }
 
             var request = new HttpRequestMessage(HttpMethod.Post, _answerUrl);
