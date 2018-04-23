@@ -100,6 +100,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Adapters", "Adapters", "{A4
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Alexa", "libraries\Microsoft.Bot.Builder.Alexa\Microsoft.Bot.Builder.Alexa.csproj", "{08B7336E-7EA7-422D-BD1D-1055FFBACCF7}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Alexa.Tests", "tests\Microsoft.Bot.Builder.Alexa.Tests\Microsoft.Bot.Builder.Alexa.Tests.csproj", "{9F5E83E4-9F9B-4B72-9F7B-3D89C2B7BF39}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug - NuGet Packages|Any CPU = Debug - NuGet Packages|Any CPU
@@ -420,6 +422,14 @@ Global
 		{08B7336E-7EA7-422D-BD1D-1055FFBACCF7}.Documentation|Any CPU.Build.0 = Debug|Any CPU
 		{08B7336E-7EA7-422D-BD1D-1055FFBACCF7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{08B7336E-7EA7-422D-BD1D-1055FFBACCF7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9F5E83E4-9F9B-4B72-9F7B-3D89C2B7BF39}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
+		{9F5E83E4-9F9B-4B72-9F7B-3D89C2B7BF39}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
+		{9F5E83E4-9F9B-4B72-9F7B-3D89C2B7BF39}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9F5E83E4-9F9B-4B72-9F7B-3D89C2B7BF39}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9F5E83E4-9F9B-4B72-9F7B-3D89C2B7BF39}.Documentation|Any CPU.ActiveCfg = Documentation|Any CPU
+		{9F5E83E4-9F9B-4B72-9F7B-3D89C2B7BF39}.Documentation|Any CPU.Build.0 = Documentation|Any CPU
+		{9F5E83E4-9F9B-4B72-9F7B-3D89C2B7BF39}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9F5E83E4-9F9B-4B72-9F7B-3D89C2B7BF39}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -471,6 +481,7 @@ Global
 		{2F77CA1D-E6F0-4DEA-96BB-8A039F4D0FF8} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 		{A4A6CF99-4C46-42EB-9B3D-9E61B5D704E5} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
 		{08B7336E-7EA7-422D-BD1D-1055FFBACCF7} = {A4A6CF99-4C46-42EB-9B3D-9E61B5D704E5}
+		{9F5E83E4-9F9B-4B72-9F7B-3D89C2B7BF39} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7173C9F3-A7F9-496E-9078-9156E35D6E16}

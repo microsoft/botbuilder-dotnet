@@ -1,0 +1,84 @@
+﻿{
+  "version": "1.0",
+  "session": {
+    "new": true,
+    "sessionId": "amzn1.echo-api.session.f81dfde7-8b22-4ac6-a7fe-d8b57fcf9f11",
+    "application": {
+      "applicationId": "amzn1.ask.skill.901ab67f-efdc-4b2c-b0f6-c130cf1bcdb0"
+    },
+    "user": {
+      "userId": "amzn1.ask.account.AF2CFV2SRZKKEFQSV5JFURFLK3WJK6JNAWH44MZ35LETU2KESYGEXCRVJZCMTKTDZLJAUEXWWV5SOTTVZQIQYMAJ3E67P7PKFXXVVDQTSU4BR2SGXSMRK2YXPN3ERALUHNYQHTGSJS7P4QLGK7VKPG5UGUUSZULLLX7LEFKWPUYRWKQIHXZGS3KJ76CH4BEECOZQ637YKXWLJ4I"
+    },
+    "attributes": {
+      "test": "test session attribute"
+    }
+  },
+  "context": {
+    "AudioPlayer": {
+      "playerActivity": "IDLE"
+    },
+    "Display": {},
+    "System": {
+      "application": {
+        "applicationId": "amzn1.ask.skill.901ab67f-efdc-4b2c-b0f6-c130cf1bcdb0"
+      },
+      "user": {
+        "userId": "amzn1.ask.account.AF2CFV2SRZKKEFQSV5JFURFLK3WJK6JNAWH44MZ35LETU2KESYGEXCRVJZCMTKTDZLJAUEXWWV5SOTTVZQIQYMAJ3E67P7PKFXXVVDQTSU4BR2SGXSMRK2YXPN3ERALUHNYQHTGSJS7P4QLGK7VKPG5UGUUSZULLLX7LEFKWPUYRWKQIHXZGS3KJ76CH4BEECOZQ637YKXWLJ4I"
+      },
+      "device": {
+        "deviceId": "amzn1.ask.device.AFVFNZFLG6NN7CEGYEISAM5EY2PNAF4I5VIVNZM6SMR4NUHDOLDZM2YCFNTOXKCIRUHDDSHWFWVVOIPM6ZEYE2SHDG3VH5W6AX4I7TWQWLZJHUR3VT365X5B2P576RZCLKRVIEECTIC7SGDU2QWM2JDGCO4Q",
+        "supportedInterfaces": {
+          "AudioPlayer": {},
+          "Display": {
+            "templateVersion": "1.0",
+            "markupVersion": "1.0"
+          }
+        }
+      },
+      "apiEndpoint": "https://api.eu.amazonalexa.com",
+      "apiAccessToken": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IjEifQ.eyJhdWQiOiJodHRwczovL2FwaS5hbWF6b25hbGV4YS5jb20iLCJpc3MiOiJBbGV4YVNraWxsS2l0Iiwic3ViIjoiYW16bjEuYXNrLnNraWxsLjkwMWFiNjdmLWVmZGMtNGIyYy1iMGY2LWMxMzBjZjFiY2RiMCIsImV4cCI6MTUyMzIyODkzOSwiaWF0IjoxNTIzMjI1MzM5LCJuYmYiOjE1MjMyMjUzMzksInByaXZhdGVDbGFpbXMiOnsiY29uc2VudFRva2VuIjpudWxsLCJkZXZpY2VJZCI6ImFtem4xLmFzay5kZXZpY2UuQUZWRk5aRkxHNk5ON0NFR1lFSVNBTTVFWTJQTkFGNEk1VklWTlpNNlNNUjROVUhET0xEWk0yWUNGTlRPWEtDSVJVSEREU0hXRldWVk9JUE02WkVZRTJTSERHM1ZINVc2QVg0STdUV1FXTFpKSFVSM1ZUMzY1WDVCMlA1NzZSWkNMS1JWSUVFQ1RJQzdTR0RVMlFXTTJKREdDTzRRIiwidXNlcklkIjoiYW16bjEuYXNrLmFjY291bnQuQUYyQ0ZWMlNSWktLRUZRU1Y1SkZVUkZMSzNXSks2Sk5BV0g0NE1aMzVMRVRVMktFU1lHRVhDUlZKWkNNVEtURFpMSkFVRVhXV1Y1U09UVFZaUUlRWU1BSjNFNjdQN1BLRlhYVlZEUVRTVTRCUjJTR1hTTVJLMllYUE4zRVJBTFVITllRSFRHU0pTN1A0UUxHSzdWS1BHNVVHVVVTWlVMTExYN0xFRktXUFVZUldLUUlIWFpHUzNLSjc2Q0g0QkVFQ09aUTYzN1lLWFdMSjRJIn19.Wl7Ll_VbLCTzTHGC1qwmr4YP900zzHZR0BjSHc0EjHFApR_QLKdKbI4h_Eek8vC8vXO-aGN_rB2Q0EPe9hUg2VAdIqfDfaLwVsJFftov8xIxJ_sIAPMdjbYCsVAczrXDBZ70EVMnr-LSRDeNK-f1aYcIlGTVpVkhjPPsorbj_bZXIzKkMELXe8FSc0cF8_cMyXqeMF4CDalFgXu0EQmUgom-bTiuPtACSCXRKrETutYpDwFHd6DKZ5nf-nLWKJHQualQVl6bFt37UGHLI9SvBOEbvS4PAhu5-eA9ESb7dxG3PtttN4-yFkybT9q8RZ-sePbqm8wdx5soGV6E3_4rpw"
+    }
+  },
+  "request": {
+    "type": "IntentRequest",
+    "requestId": "amzn1.echo-api.request.19b85614-9f9b-4bd8-bf37-604b7ff65a77",
+    "timestamp": "2018-04-08T22:08:59Z",
+    "locale": "en-GB",
+    "intent": {
+      "name": "GetUserIntent",
+      "confirmationStatus": "NONE",
+      "slots": {
+        "phrase": {
+          "name": "phrase",
+          "value": "What time is my train tomorrow?",
+          "resolutions": {
+            "resolutionsPerAuthority": [
+              {
+                "authority": "amzn1.er-authority.echo-sdk.amzn1.ask.skill.901ab67f-efdc-4b2c-b0f6-c130cf1bcdb0.phrase",
+                "status": {
+                  "code": "ER_SUCCESS_NO_MATCH"
+                }
+              }
+            ]
+          },
+          "confirmationStatus": "NONE"
+        },
+        "slot2": {
+          "name": "secondSlot",
+          "value": "Test second slot value",
+          "resolutions": {
+            "resolutionsPerAuthority": [
+              {
+                "authority": "amzn1.er-authority.echo-sdk.amzn1.ask.skill.901ab67f-efdc-4b2c-b0f6-c130cf1bcdb0.phrase",
+                "status": {
+                  "code": "ER_SUCCESS_NO_MATCH"
+                }
+              }
+            ]
+          },
+          "confirmationStatus": "NONE"
+        }
+      }
+    }
+  }
+}

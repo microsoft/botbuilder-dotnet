@@ -86,7 +86,7 @@ namespace Microsoft.Bot.Builder.Alexa.Integration.AspNet.Core
                     {
                         var bot = httpContext.RequestServices.GetRequiredService<IBot>();
 
-                        return bot.OnReceiveActivity(context);
+                        return bot.OnTurn(context);
                     });
 
                 response.StatusCode = (int)HttpStatusCode.OK;

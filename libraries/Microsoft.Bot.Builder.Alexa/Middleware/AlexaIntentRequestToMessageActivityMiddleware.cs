@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Builder.Alexa.Middleware
             _createMessageActivityText = createMessageActivityText;
         }
 
-        public async Task OnProcessRequest(ITurnContext context, MiddlewareSet.NextDelegate next)
+        public async Task OnTurn(ITurnContext context, MiddlewareSet.NextDelegate next)
         {
             if (context.Activity.ChannelId == "alexa" && context.Activity.Type == "IntentRequest")
             {
@@ -46,7 +46,7 @@ namespace Microsoft.Bot.Builder.Alexa.Middleware
 
                         foreach (var intentSlot in alexaIntentRequest.Intent.Slots)
                         {
-                            messageActivityText += $" {intentSlot.Key}='{intentSlot.Value}'";
+                            messageActivityText += $" {intentSlot.Key}='{intentSlot.Value.Value}'";
                         }
 
                         context.Activity.Text = messageActivityText;

@@ -76,7 +76,7 @@ namespace Microsoft.Bot.Builder.Alexa.Integration.AspNet.WebApi
                             throw new InvalidOperationException($"Did not find an {typeof(IBot).Name} service via the dependency resolver. Please make sure you have registered your bot with your dependency injection container.");
                         }
 
-                        return bot.OnReceiveActivity(context);
+                        return bot.OnTurn(context);
                     },
                     cancellationToken);
             }

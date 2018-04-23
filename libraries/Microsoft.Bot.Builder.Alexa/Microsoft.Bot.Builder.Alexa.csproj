@@ -5,26 +5,20 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\libraries\Microsoft.Bot.Builder.Core\Microsoft.Bot.Builder.Core.csproj" />
+    <ProjectReference Include="..\Microsoft.Bot.Builder.Core\Microsoft.Bot.Builder.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNet.WebApi.Core" Version="5.2.4" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="Microsoft.AspNetCore.Http.Abstractions">
-      <HintPath>..\..\..\..\..\..\Users\gary.pretty\.nuget\packages\microsoft.aspnetcore.http.abstractions\2.0.1\lib\netstandard2.0\Microsoft.AspNetCore.Http.Abstractions.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions">
-      <HintPath>..\..\..\..\..\..\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.extensions.dependencyinjection.abstractions\2.0.0\lib\netstandard2.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Extensions.Options">
-      <HintPath>..\..\..\..\..\..\Users\gary.pretty\.nuget\packages\microsoft.extensions.options\2.0.1\lib\netstandard2.0\Microsoft.Extensions.Options.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Web.Http">
-      <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.2.4\lib\net45\System.Web.Http.dll</HintPath>
-    </Reference>
+		<PackageReference Include="Microsoft.AspNet.WebApi.Core" Version="5.2.4" />
+		<PackageReference Include="Microsoft.Extensions.Configuration" Version="2.1.0-preview2-final" />
+		<PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="2.0.1" />
+		<PackageReference Include="Microsoft.Extensions.Configuration" Version="2.0.1" />
+		<PackageReference Include="Microsoft.Bot.Builder.Core" Condition=" '$(PackageVersion)' == '' " Version="4.0.0-local" />
+		<PackageReference Include="Microsoft.Bot.Builder.Core" Condition=" '$(PackageVersion)' != '' " Version="$(PackageVersion)" />
+		<PackageReference Include="Microsoft.Bot.Connector" Condition=" '$(PackageVersion)' == '' " Version="4.0.0-local" />
+		<PackageReference Include="Microsoft.Extensions.Options" Version="2.0.1" />
+		<PackageReference Include="Microsoft.Net.Http.Headers" Version="2.0.1" />
+		<PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
   </ItemGroup>
 
 </Project>
