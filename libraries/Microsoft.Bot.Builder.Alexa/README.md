@@ -69,8 +69,11 @@ The Alexa Adapter supports sending Bot Framework cards of type HeroCard, Thumbna
 * **HeroCard and ThumbnailCard** : 
 
 Alexa Card Small Image URL = The first image in the Images collection on the Hero / Thumbnail card
+
 Alexa Card Large Image URL = If a second image exists in the Images collection on the Hero / Thumbnail card this will be used. If no second image exists then this is null.
+
 Alexa Card Title = Title property of the Hero / Thumbnail card
+
 Alexa Card Content = Text property on the Hero / Thumbnail card
 
 ***Note: You should ensure that the images you use on your HeroCard / Thumbnail cards are the correct expected size for Alexa Skills responses.***
