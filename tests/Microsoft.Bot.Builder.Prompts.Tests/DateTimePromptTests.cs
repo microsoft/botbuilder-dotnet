@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Core.Extensions;
@@ -50,8 +51,9 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                     var dateTimeResult = await dateTimePrompt.Recognize(context);
                     if (dateTimeResult.Succeeded())
                     {
-                        var resolution = $"Timex:'{dateTimeResult.Timex}' Value:'{dateTimeResult.Value}'";
-                        await context.SendActivity(resolution);
+                        var resolution = dateTimeResult.Resolution.First();
+                        var reply = $"Timex:'{resolution.Timex}' Value:'{resolution.Value}'";
+                        await context.SendActivity(reply);
                     }
                     else
                     {
@@ -87,8 +89,9 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                     var dateTimeResult = await dateTimePrompt.Recognize(context);
                     if (dateTimeResult.Succeeded())
                     {
-                        var resolution = $"Timex:'{dateTimeResult.Timex}'";
-                        await context.SendActivity(resolution);
+                        var resolution = dateTimeResult.Resolution.First();
+                        var reply = $"Timex:'{resolution.Timex}'";
+                        await context.SendActivity(reply);
                     }
                     else
                     {
@@ -124,8 +127,9 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                     var dateTimeResult = await dateTimePrompt.Recognize(context);
                     if (dateTimeResult.Succeeded())
                     {
-                        var resolution = $"Timex:'{dateTimeResult.Timex}' Start:'{dateTimeResult.Start}' End:'{dateTimeResult.End}'";
-                        await context.SendActivity(resolution);
+                        var resolution = dateTimeResult.Resolution.First();
+                        var reply = $"Timex:'{resolution.Timex}' Start:'{resolution.Start}' End:'{resolution.End}'";
+                        await context.SendActivity(reply);
                     }
                     else
                     {
@@ -167,8 +171,9 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                     var dateTimeResult = await dateTimePrompt.Recognize(context);
                     if (dateTimeResult.Succeeded())
                     {
-                        var resolution = $"Timex:'{dateTimeResult.Timex}' Value:'{dateTimeResult.Value}'";
-                        await context.SendActivity(resolution);
+                        var resolution = dateTimeResult.Resolution.First();
+                        var reply = $"Timex:'{resolution.Timex}' Value:'{resolution.Value}'";
+                        await context.SendActivity(reply);
                     }
                     else
                     {

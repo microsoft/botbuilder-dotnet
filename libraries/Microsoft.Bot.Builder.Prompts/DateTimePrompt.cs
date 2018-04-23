@@ -12,13 +12,32 @@ using static Microsoft.Bot.Builder.Prompts.PromptValidatorEx;
 
 namespace Microsoft.Bot.Builder.Prompts
 {
+    /// <summary>
+    /// The result of a DateTime prompt
+    /// Note there might be 1, 2 or 4 resolutions depending on the particular scenario.
+    /// For example:
+    /// - a specific date and time like "5th December 2018 at 9am" results in a single resolution
+    /// - a date with some ambiguity like "4th October" results in a single TIMEX but still 2 example values and so 2 resolutions
+    /// - a date and time with ambiguity like Octerber 4 4 Oclock" results in two TIMXE and 4 example values so 4 resolutions
+    /// </summary>
     public class DateTimeResult : PromptResult
     {
+        public DateTimeResult()
+        {
+            Resolution = new List<DateTimeResolution>();
+        }
+
         public string Text { get; set; }
-        public string Value { get; set; }
-        public string Start { get; set; }
-        public string End { get; set; }
-        public string Timex { get; set; }
+
+        public List<DateTimeResolution> Resolution { get; private set; }
+
+        public class DateTimeResolution
+        {
+            public string Value { get; set; }
+            public string Start { get; set; }
+            public string End { get; set; }
+            public string Timex { get; set; }
+        }
     }
 
     /// <summary>
@@ -48,35 +67,41 @@ namespace Microsoft.Bot.Builder.Prompts
         {
             BotAssert.ContextNotNull(context);
             BotAssert.ActivityNotNull(context.Activity);
-            if (context.Activity.Type != ActivityTypes.Message)
-                throw new InvalidOperationException("No Message to Recognize");
-
-            var message = context.Activity.AsMessageActivity();
-            var results = _model.Parse(message.Text);
-            if (results.Any())
+            if (context.Activity.Type == ActivityTypes.Message)
             {
-                var result = results.First();
-                if (result.Resolution.Any())
+                var message = context.Activity.AsMessageActivity();
+                var results = _model.Parse(message.Text);
+                if (results.Any())
                 {
-                    var values = (List<Dictionary<string, string>>)result.Resolution.First().Value;
-                    if (values.Any())
+                    var result = results.First();
+                    if (result.Resolution.Any())
                     {
                         var dateTimeResult = new DateTimeResult
                         {
                             Status = PromptStatus.Recognized,
                             Text = result.Text
                         };
-                        ReadResolution(dateTimeResult, values.First());
-                        await Validate(context, dateTimeResult);
-                        return dateTimeResult;
+
+                        foreach (var resolution in result.Resolution)
+                        {
+                            var values = (List<Dictionary<string, string>>)resolution.Value;
+                            if (values.Any())
+                            {
+                                dateTimeResult.Resolution.Add(ReadResolution(values.First()));
+                                await Validate(context, dateTimeResult);
+                                return dateTimeResult;
+                            }
+                        }
                     }
                 }
             }
             return new DateTimeResult();
         }
 
-        private void ReadResolution(DateTimeResult result, Dictionary<string, string> resolution)
+        private DateTimeResult.DateTimeResolution ReadResolution(Dictionary<string, string> resolution)
         {
+            var result = new DateTimeResult.DateTimeResolution();
+
             string timex;
             if (resolution.TryGetValue("timex", out timex))
             {
@@ -97,6 +122,8 @@ namespace Microsoft.Bot.Builder.Prompts
             {
                 result.End = end;
             }
+
+            return result;
         }
     }
 }
