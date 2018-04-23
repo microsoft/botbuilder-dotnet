@@ -16,9 +16,9 @@ namespace Microsoft.Bot.Builder.Core.Extensions
     }
 
     /// <summary>
-    /// Abstract Base class which manages details of auto loading/saving of BotState
+    /// Abstract Base class which manages details of automatic loading and saving of bot state.
     /// </summary>
-    /// <typeparam name="TState"></typeparam>
+    /// <typeparam name="TState">The type of the bot state object.</typeparam>
     public class BotState<TState> : IMiddleware
         where TState : class, new()
     {
@@ -28,11 +28,11 @@ namespace Microsoft.Bot.Builder.Core.Extensions
         private readonly string _propertyName;
 
         /// <summary>
-        /// Create statemiddleware
+        /// Creates a new <see cref="BotState{TState}"/> middleware object.
         /// </summary>
-        /// <param name="name">name of the kind of state</param>
-        /// <param name="storage">storage provider to use</param>
-        /// <param name="settings">settings</param>
+        /// <param name="name">The name to use to load or save the state object.</param>
+        /// <param name="storage">The storage provider to use.</param>
+        /// <param name="settings">The state persistance options to use.</param>
         public BotState(IStorage storage, string propertyName, Func<ITurnContext, string> keyDelegate, StateSettings settings = null)
         {
             _storage = storage ?? throw new ArgumentNullException(nameof(storage));
