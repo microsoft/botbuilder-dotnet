@@ -79,6 +79,16 @@ namespace Microsoft.Bot.Builder.Ai.QnA
         /// <returns>A list of answers for the user query, sorted in decreasing order of ranking score.</returns>
         public async Task<QueryResult[]> GetAnswers(string question)
         {
+            if (_options.ScoreThreshold < 0 || _options.ScoreThreshold > 1)
+            {
+                throw new ArgumentOutOfRangeException(nameof(_options.ScoreThreshold), "Score threshold should be a value between 0 and 1");
+            }
+
+            if (_options.Top < 1)
+            {
+                throw new ArgumentOutOfRangeException(nameof(_options.Top), "Top should be an integer than 0");
+            }
+
             var request = new HttpRequestMessage(HttpMethod.Post, _answerUrl);
 
             string jsonRequest = JsonConvert.SerializeObject(new
