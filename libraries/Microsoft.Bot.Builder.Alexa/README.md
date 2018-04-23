@@ -1,80 +1,118 @@
-# Microsoft Bot Framework Connector for .NET
+# Alexa Adapter for Bot Builder .NET
 
-Within the Bot Framework, the Bot Connector service enables your bot to exchange messages with users on channels that are configured in the Bot Framework Portal.
+This adapter can be used to allow your bot to act as an endpoint for an Amazon Alexa Skill.  Incoming Alexa Skill requests are transformed, by the adapter, into Bot Builder Activties and then when your bot responds, the adapter transforms the outgoing Activity into an Alexa response.
 
-## Target Frameworks:
+## Adding the adapter and skills endpoint to your bot
 
-* .NET Framework 4.5.2
-* .NET Standard 2.0, based on the NetCore framework
+Currently there are integration libraries available for WebApi and .NET Core available for the adapter.
 
-## How to Install
+### WebApi
 
-````
-PM> Install-Package Microsoft.Bot.Connector
-````
+When implementing your bot using WebApi, the integration layer for Alexa works the same as the default for Bot Framework.  The only difference being in your BotConfig file under the App_Start folder you call MapAlexaBotFramework instead;
 
-## How to Use
+```cs
+    public class BotConfig
+    {
+        public static void Register(HttpConfiguration config)
+        {
+            config.MapAlexaBotFramework(botConfig => { });
+        }
+    }
+``` 
 
-### Authentication
-Your bot communicates with the Bot Connector service using HTTP over a secured channel (SSL/TLS). When your bot sends a request to the Connector service, it must include information that the Connector service can use to verify its identity.
+### .NET Core
 
-To authenticate the requests, you'll need configure the Connector with the App ID and password that you obtained for your bot during registration and the Connector will handle the rest.
+TO BE COMPLETED
 
-More information: https://docs.microsoft.com/en-us/bot-framework/rest-api/bot-framework-rest-connector-authentication
+## Default Alexa Request to Activity mapping
 
-### Example
-Client creation (with authentication), conversation initialization and activity send to user.
-````C#
-var credentials = new MicrosoftAppCredentials("<your-app-id>", "<your-app-password>");
-var serviceUri = new Uri("https://slack.botframework.com", UriKind.Absolute);
-var bot = new ChannelAccount() { Id = "<bot-id>" };
-var user = new ChannelAccount() { Id = "<user-id>" };
+When an incoming request is receieved, the activity sent to your bot is comprised of the following values;
 
-var activity = new Activity()
-{
-    Type = ActivityTypes.Message,
-    Recipient = user,
-    FromProperty = bot,
-    Text = "This a message from Bot Connector Client (.Net)"
-};
+* **Channel ID** : "alexa"
+* **Recipient Channel Account** : Id = Application Id from the Alexa request, Name = "skill"
+* **From Channel Account** : Id = User Id from the Alexa request, Name = "user"
+* **Conversation Account** : Id = "{Alexa request Application Id}:{Alexa Request User Id}"
+* **Type** : Request Type from the Alexa request. e.g. IntentRequest, LaunchRequest or SessionEndedRequest
+* **Id** : Request Id from the Alexa request
+* **Timestamp** : Timestamp from the Alexa request
+* **Locale** : Locale from the Alexa request
 
-var param = new ConversationParameters()
-{
-    Members = new ChannelAccount[] { user },
-    Bot = bot
-};
+For incoming requests of type IntentRequest we also set the following properties on the Activity
 
-using (var client = new ConnectorClient(serviceUri, credentials))
-{
-    var conversation = await client.Conversations.CreateConversationAsync(param);
-    var response = await client.Conversations.SendToConversationAsync(conversation.Id, activity);
-}
-````
+* **Value** : DialogState value from the Alexa request
 
-### Simple EchoBot Example ([source code](../../samples/Connector.EchoBot))
-EchoBot is a minimal bot that recieves message activities and replies with the same content.
-The sample shows how to use a WebAPI Controller for listening to activities and the ConnectorClient for sending activities.
+For incoming requests of type SessionEndedRequest we also set the following properties on the Activity
 
-## Rest API Documentation
+* **Code** : Reason value from the Alexa request
+* **Value** : Error value from the Alexa request
 
-For the Connector Service API Documentation, please see our [API reference](https://docs.microsoft.com/en-us/Bot-Framework/rest-api/bot-framework-rest-connector-api-reference).
+The entire body of the Alexa request is placed into the Activity as Channel Data, of type AlexaRequestBody.
 
-## Contributing
+## Default Activity to Alexa Response mapping
 
-This project welcomes contributions and suggestions.  Most contributions require you to agree to a
-Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
-the rights to use your contribution. For details, visit https://cla.microsoft.com.
+The Alexa adapter will send a response to the Alexa skill request if the outgoing activity is of type MessageActivity or EndOfConversation activity.
 
-When you submit a pull request, a CLA-bot will automatically determine whether you need to provide
-a CLA and decorate the PR appropriately (e.g., label, comment). Simply follow the instructions
-provided by the bot. You will only need to do this once across all repos using our CLA.
+If the actvity you send from your bot is of type EndOfConversation then a response is sent indicating that the session should be ended, by setting the the ShouldEndSession flag on the ALexa response to true.
 
-This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
-For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or
-contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
+If the activity type you send from your bot is of type MessageActivity the following values are mapped to an Alexa response object;
 
-## License
+* **OutputSpeech Type** : Set to 'SSML' if activity.Speak is not null. Set to 'PlainText' if the activity.Text property is populated but the activity.Speak property is not.
+* **OutputSpeech SSML** : Populated using the value of activity.Speak if it is not null.
+* **OutputSpeech Text** : Populated using the value of activity.Text if it is not null.
 
-Copyright (c) Microsoft Corporation. All rights reserved.
+* **ShouldEndSession** : Defaults to false. However, setting the InputHint property on the activity to InputHint.IgnoringInput will set this value to true and end the session.
 
-Licensed under the [MIT](https://github.com/Microsoft/vscode/blob/master/LICENSE.txt) License.
+### Cards
+
+The Alexa Adapter supports sending Bot Framework cards of type HeroCard, ThumbnailCard and SigninCard as part of your replies to the Alexa skill request.
+
+* **HeroCard and ThumbnailCard** : 
+
+Alexa Card Small Image URL = The first image in the Images collection on the Hero / Thumbnail card
+Alexa Card Large Image URL = If a second image exists in the Images collection on the Hero / Thumbnail card this will be used. If no second image exists then this is null.
+Alexa Card Title = Title property of the Hero / Thumbnail card
+Alexa Card Content = Text property on the Hero / Thumbnail card
+
+***Note: You should ensure that the images you use on your HeroCard / Thumbnail cards are the correct expected size for Alexa Skills responses.***
+
+* **SigninCard** : If a SignInCard is attached to your outgoing activity, this will be mapped as a LinkAccount card in the Alexa response.
+
+## Extension Methods
+
+### Session Attributes
+
+Alexa Skills use Session Attributes on the request / response objects to allow for values to be persisted accross turns of a conversation.  When an incoming Alexa request is receieved we place the Session Attributes on the request into the Services collection on the TurnContext.  We then provide an extension method on the context to allow you to add / update / remove items on the Session Attributes list. Calling the extension method AlexaSessionAttributes returns an object of type Dictionary<string, string>. If you wanted to add an item to the Session Attributes collection you could do the following;
+
+```cs 
+    context.AlexaSessionAttributes.Add("NewItemKey","New Item Value");
+```
+
+### Progressive Responses
+
+Alexa Skills allow only a single primary response for each request.  However, if your bot will be running some form of long running activity (such as a lookup to a 3rd party API) you are able to send the user a holding response using the Alexa Progressive Responses API, before sending your final response.
+
+To send a Progressive Response we have provided an extension method on the TurnContext called AlexaSendProgressiveResponse, which takes a string parameter which is the text you wish to be spoken back to the user. e.g.
+
+```cs
+    context.AlexaSendProgressiveResponse("Hold on, I will just check that for you.");
+```
+
+The extension method will get the right values from the incoming request to determine the correct API endpoint / access token and send your Progressive response for you.  The extension method will also return a HttpResponseMessage which will provide information as to if the Progressive Response was send successfully or if there was any kind of error.
+
+***Note: Alexa Skills allow you to send up to 5 progressive responses on each turn.  You should manage and check the number of Progressive Responses you are sending as the Bot Builder SDK does not check this.*** 
+
+
+### Get entire Alexa Request Body
+
+We have provided an extension method to allow you to get the original Alexa request body, which we store on the ChannelData property of the Activity sent to your bot, as a strongly typed object of type AlexaRequestBody.  To get the request just call the extension method as below;
+
+```cs
+    AlexaRequestBody request = context.GetAlexaRequestBody();
+```
+
+***Note: If you call this extension method when the incoming Activity is not from an Alexa skill then the extension method will simply return null.*** 
+
+
+## Alexa Middleware
+
+TO BE COMPLETED
