@@ -1,86 +1,102 @@
-﻿//using System;
-//using System.Linq;
-//using System.Threading.Tasks;
-//using Microsoft.Bot.Schema;
-//using Microsoft.Recognizers.Text;
-//using Microsoft.Recognizers.Text.DateTime;
-//using Microsoft.Recognizers.Text.Number;
-//using Microsoft.Recognizers.Text.NumberWithUnit;
-//using static Microsoft.Bot.Builder.Prompts.PromptValidatorEx;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
 
-//namespace Microsoft.Bot.Builder.Prompts
-//{
-//    public class DateTimeOffsetResult
-//    {
-//        public DateTimeOffsetResult() { }
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.Bot.Schema;
+using Microsoft.Recognizers.Text;
+using Microsoft.Recognizers.Text.DateTime;
+using static Microsoft.Bot.Builder.Prompts.PromptValidatorEx;
 
-//        public DateTimeOffset Value { get; set; }
+namespace Microsoft.Bot.Builder.Prompts
+{
+    public class DateTimeResult : PromptResult
+    {
+        public string Text { get; set; }
+        public string Value { get; set; }
+        public string Start { get; set; }
+        public string End { get; set; }
+        public string Timex { get; set; }
+    }
 
-//        public string Text { get; set; }
-//    }
+    /// <summary>
+    /// CurrencyPrompt recognizes currency expressions as float type
+    /// </summary>
+    public class DateTimePrompt : BasePrompt<DateTimeResult>
+    {
+        private IModel _model;
 
-//    /// <summary>
-//    /// CurrencyPrompt recognizes currency expressions as float type
-//    /// </summary>
-//    public class DateTimePrompt : BasePrompt<DateTimeOffsetResult>
-//    {
-//        private IModel _model;
+        public DateTimePrompt(string culture, PromptValidator<DateTimeResult> validator = null)
+            : base(validator)
+        {
+            _model = new DateTimeRecognizer(culture).GetDateTimeModel();
+        }
 
-//        public DateTimePrompt(string culture, PromptValidator<DateTimeOffsetResult> validator = null)
-//            :base(validator)
-//        {
-//            _model = new DateTimeRecognizer(culture).GetDateTimeModel();
-//        }
+        protected DateTimePrompt(IModel model, PromptValidator<DateTimeResult> validator = null)
+            : base(validator)
+        {
+            _model = model;
+        }
 
-//        protected DateTimePrompt(IModel model, PromptValidator<DateTimeOffsetResult> validator = null)
-//            : base(validator)
-//        {
-//            this._model = model;
-//        }
+        /// <summary>
+        /// Used to validate the incoming text, expected on context.Request, is
+        /// valid according to the rules defined in the validation steps. 
+        /// </summary>        
+        public override async Task<DateTimeResult> Recognize(ITurnContext context)
+        {
+            BotAssert.ContextNotNull(context);
+            BotAssert.ActivityNotNull(context.Activity);
+            if (context.Activity.Type != ActivityTypes.Message)
+                throw new InvalidOperationException("No Message to Recognize");
 
-//        /// <summary>
-//        /// Used to validate the incoming text, expected on context.Request, is
-//        /// valid according to the rules defined in the validation steps. 
-//        /// </summary>        
-//        public override async Task<NumberWithUnit> Recognize(ITurnContext context)
-//        {
+            var message = context.Activity.AsMessageActivity();
+            var results = _model.Parse(message.Text);
+            if (results.Any())
+            {
+                var result = results.First();
+                if (result.Resolution.Any())
+                {
+                    var values = (List<Dictionary<string, string>>)result.Resolution.First().Value;
+                    if (values.Any())
+                    {
+                        var dateTimeResult = new DateTimeResult
+                        {
+                            Status = PromptStatus.Recognized,
+                            Text = result.Text
+                        };
+                        ReadResolution(dateTimeResult, values.First());
+                        await Validate(context, dateTimeResult);
+                        return dateTimeResult;
+                    }
+                }
+            }
+            return new DateTimeResult();
+        }
 
-//            BotAssert.ContextNotNull(context);
-//            BotAssert.ActivityNotNull(context.Activity);
-//            if (context.Request.Type != ActivityTypes.Message)
-//                throw new InvalidOperationException("No Message to Recognize");
-
-//            IMessageActivity message = context.Activity.AsMessageActivity();
-//            var results = _model.Parse(message.Text);
-//            if (results.Any())
-//            {
-//                var result = results.First();
-//                NumberWithUnit value = new NumberWithUnit()
-//                {
-//                    Text = result.Text,
-//                    Unit = (string)result.Resolution["unit"],
-//                    Amount = float.NaN
-//                };
-//                if (float.TryParse(result.Resolution["amount"]?.ToString() ?? String.Empty, out float val))
-//                    value.Amount = val;
-
-//                if (await Validate(context, value))
-//                    return value;
-//            }
-//            return null;
-//        }
-
-
-//        protected Task<bool> Validate(ITurnContext context, NumberWithUnit value)
-//        {
-//            // Validation passed. Return the validated text.
-//            if (_customValidator != null)
-//            {
-//                return _customValidator(context, value);
-//            }
-//            return Task.FromResult(true);
-//        }
-
-//    }
-//}
-//}
+        private void ReadResolution(DateTimeResult result, Dictionary<string, string> resolution)
+        {
+            string timex;
+            if (resolution.TryGetValue("timex", out timex))
+            {
+                result.Timex = timex;
+            }
+            string value;
+            if (resolution.TryGetValue("value", out value))
+            {
+                result.Value = value;
+            }
+            string start;
+            if (resolution.TryGetValue("start", out start))
+            {
+                result.Start = start;
+            }
+            string end;
+            if (resolution.TryGetValue("end", out end))
+            {
+                result.End = end;
+            }
+        }
+    }
+}
