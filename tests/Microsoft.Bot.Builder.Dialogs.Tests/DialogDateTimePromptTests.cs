@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Core.Extensions;
@@ -36,8 +37,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                     var result = dialogResult.Result as DateTimeResult;
                     if (result != null)
                     {
-                        var resolution = $"Timex:'{result.Timex}' Value:'{result.Value}'";
-                        await turnContext.SendActivity(resolution);
+                        var resolution = result.Resolution.First();
+                        var reply = $"Timex:'{resolution.Timex}' Value:'{resolution.Value}'";
+                        await turnContext.SendActivity(reply);
                     }
                     else
                     {
