@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 
+using Microsoft.Bot.Builder.Core.Extensions;
 using Microsoft.Cognitive.LUIS;
 using Microsoft.Cognitive.LUIS.Models;
 using Newtonsoft.Json;
