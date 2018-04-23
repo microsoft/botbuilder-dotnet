@@ -361,7 +361,7 @@ namespace Microsoft.Bot.Builder.Adapters
 
             return accounts;
         }
-
+     
         /// <summary>
         /// Lists the members of the current conversation.
         /// </summary>
@@ -379,7 +379,6 @@ namespace Microsoft.Bot.Builder.Adapters
             string conversationId = context.Activity.Conversation.Id;
 
             IList<ChannelAccount> accounts = await connectorClient.Conversations.GetConversationMembersAsync(conversationId).ConfigureAwait(false);
-
             return accounts;
         }
 
