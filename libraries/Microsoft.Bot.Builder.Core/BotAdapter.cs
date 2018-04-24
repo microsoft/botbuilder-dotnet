@@ -97,6 +97,39 @@ namespace Microsoft.Bot.Builder
         /// <seealso cref="ITurnContext.OnDeleteActivity(DeleteActivityHandler)"/>
         public abstract Task DeleteActivity(ITurnContext context, ConversationReference reference);
 
+        /// <summary>
+        /// Deletes a member from the current conversation. 
+        /// </summary>
+        /// <param name="context">Context for the current turn of conversation with the user.</param>
+        /// <param name="memberId">ID of the member to delete from the conversation. </param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        public abstract Task DeleteConversationMember(ITurnContext context, string memberId);
+
+        /// <summary>
+        /// Lists the members of a given activity. 
+        /// </summary>
+        /// <param name="context">Context for the current turn of conversation with the user.</param>
+        /// <param name="activityId">(Optional) activity ID to enumerate. If not specified the current activities ID will be used.</param>
+        /// <returns>List of <see cref="ChannelAccount"/> objects representing the members on the activity.</returns>
+        public abstract Task<IList<ChannelAccount>> GetActivityMembers(ITurnContext context, string activityId = null);
+
+        /// <summary>
+        /// Lists the members of the current conversation. 
+        /// </summary>
+        /// <param name="context">Context for the current turn of conversation with the user.</param>
+        /// <returns>List of <see cref="ChannelAccount"/> objects representing the members of the conversation.</returns>
+        public abstract Task<IList<ChannelAccount>> GetConversationMembers(ITurnContext context);
+
+        /// <summary>
+        /// Lists the Conversations in which this bot has participated for a given channel server. The 
+        /// channel server returns results in pages and each page will include a 'continuationToken' 
+        /// that can be used to fetch the next page of results from the server.
+        /// </summary>
+        /// <param name="serviceUrl">The URL of the channel server to query.  This can be retrieved from 'context.activity.serviceUrl'.</param>
+        /// <param name="continuationToken">(Optional) token used to fetch the next page of results from the 
+        /// channel server. This should be left as null to retrieve the first page of results. </param>
+        /// <returns></returns>
+        public abstract Task<ConversationsResult> GetConversations(string serviceUrl, string continuationToken = null);
 
         /// <summary>
         /// Starts activity processing for the current bot turn.

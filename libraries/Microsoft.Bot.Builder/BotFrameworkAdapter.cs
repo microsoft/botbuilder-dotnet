@@ -7,6 +7,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Security.Principal;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
@@ -318,6 +319,77 @@ namespace Microsoft.Bot.Builder.Adapters
         {
             var connectorClient = context.Services.Get<IConnectorClient>();
             await connectorClient.Conversations.DeleteActivityAsync(reference.Conversation.Id, reference.ActivityId);
+        }
+
+        /// <summary>
+        /// Deletes a member from the current conversation. 
+        /// </summary>
+        /// <param name="context">Context for the current turn of conversation with the user.</param>
+        /// <param name="memberId">ID of the member to delete from the conversation. </param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        public override async Task DeleteConversationMember(ITurnContext context, string memberId)
+        {
+            if (context.Activity.Conversation == null || context.Activity.Conversation.Id == null)
+            {
+                throw new Exception("Missing conversation or conversation id");
+            }
+
+            var conversationId = context.Activity.Conversation.Id;
+            var connectorClient = context.Services.Get<IConnectorClient>();
+            await connectorClient.Conversations.DeleteConversationMemberAsync(conversationId, memberId);
+        }
+
+        /// <summary>
+        /// Lists the members of a given activity. 
+        /// </summary>
+        /// <param name="context">Context for the current turn of conversation with the user.</param>
+        /// <param name="activityId">(Optional) activity ID to enumerate. If not specified the current activities ID will be used.</param>
+        /// <returns>List of <see cref="ChannelAccount"/> objects representing the members on the activity.</returns>
+        public override async Task<IList<ChannelAccount>> GetActivityMembers(ITurnContext context, string activityId = null)
+        {
+            if (string.IsNullOrEmpty(activityId))
+                activityId = context.Activity.Id;
+
+            if (context.Activity.Conversation == null || context.Activity.Conversation.Id == null)
+            {
+                throw new Exception("Missing conversation or conversation id");
+            }
+
+            var conversationId = context.Activity.Conversation.Id;
+            var connectorClient = context.Services.Get<IConnectorClient>();
+            return await connectorClient.Conversations.GetActivityMembersAsync(conversationId, activityId);
+        }
+
+        /// <summary>
+        /// Lists the members of the current conversation. 
+        /// </summary>
+        /// <param name="context">Context for the current turn of conversation with the user.</param>
+        /// <returns>List of <see cref="ChannelAccount"/> objects representing the members of the conversation.</returns>
+        public override async Task<IList<ChannelAccount>> GetConversationMembers(ITurnContext context)
+        {
+            if (context.Activity.Conversation == null || context.Activity.Conversation.Id == null)
+            {
+                throw new Exception("Missing conversation or conversation id");
+            }
+
+            var conversationId = context.Activity.Conversation.Id;
+            var connectorClient = context.Services.Get<IConnectorClient>();
+            return await connectorClient.Conversations.GetConversationMembersAsync(conversationId);
+        }
+
+        /// <summary>
+        /// Lists the Conversations in which this bot has participated for a given channel server. The 
+        /// channel server returns results in pages and each page will include a 'continuationToken' 
+        /// that can be used to fetch the next page of results from the server.
+        /// </summary>
+        /// <param name="serviceUrl">The URL of the channel server to query.  This can be retrieved from 'context.activity.serviceUrl'.</param>
+        /// <param name="continuationToken">(Optional) token used to fetch the next page of results from the 
+        /// channel server. This should be left as null to retrieve the first page of results. </param>
+        /// <returns>Returns a <see cref="ConversationsResult"/> object</returns>
+        public override async Task<ConversationsResult> GetConversations(string serviceUrl, string continuationToken = null)
+        {
+            var connectorClient = CreateConnectorClient(serviceUrl);
+            return await connectorClient.Conversations.GetConversationsAsync(continuationToken);
         }
 
         /// <summary>
