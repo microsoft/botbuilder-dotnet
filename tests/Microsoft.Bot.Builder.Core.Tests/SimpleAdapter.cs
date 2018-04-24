@@ -24,6 +24,26 @@ namespace Microsoft.Bot.Builder.Core.Tests
             _callOnDelete?.Invoke(reference);
         }
 
+        public override Task DeleteConversationMember(ITurnContext context, string memberId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Task<IList<ChannelAccount>> GetActivityMembers(ITurnContext context, string activityId = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Task<IList<ChannelAccount>> GetConversationMembers(ITurnContext context)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Task<ConversationsResult> GetConversations(string serviceUrl, string continuationToken = null)
+        {
+            throw new NotImplementedException();
+        }
+
         public async override Task<ResourceResponse[]> SendActivities(ITurnContext context, Activity[] activities)
         {
             Assert.IsNotNull(activities, "SimpleAdapter.deleteActivity: missing reference");
