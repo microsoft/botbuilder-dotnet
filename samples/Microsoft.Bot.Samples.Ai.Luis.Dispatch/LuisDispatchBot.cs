@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Ai.LUIS;
 using Microsoft.Bot.Builder.Ai.QnA;
+using Microsoft.Bot.Builder.Core.Extensions;
 using Microsoft.Bot.Schema;
 
 
@@ -32,8 +33,8 @@ namespace Microsoft.Bot.Samples.Ai.Luis.Dispatch
         private static QnAMakerOptions qnaOptions = new QnAMakerOptions
         {
             // add subscription key for QnA and knowledge base ID
-            SubscriptionKey = "<QNAMAKER-KB-ID>",
-            KnowledgeBaseId = "<YOUR-QNAMAKER-SUBSCRIPTION-KEY>"
+            SubscriptionKey = "<YOUR-QNAMAKER-SUBSCRIPTION-KEY>",
+            KnowledgeBaseId = "<QNAMAKER-KB-ID>"
         };
 
         // App ID for a LUIS model named "homeautomation"
@@ -68,16 +69,15 @@ namespace Microsoft.Bot.Samples.Ai.Luis.Dispatch
                     {
                         await context.SendActivity("I'm not very sure what you want but will try to send your request.");
                     }
-                    switch (topIntent.Value.key.ToLowerInvariant())
+                    switch (topIntent.Value.intent.ToLowerInvariant())
                     {
                         case "l_homeautomation":
                             await context.SendActivity("Sending your request to the home automation system ...");
 
                             luisRecognizer1 = new LuisRecognizer(luisModel1);
-                            var luisResults = await luisRecognizer1.CallAndRecognize(message.Text, System.Threading.CancellationToken.None);
-                            recognizerResult = luisResults.recognizerResult;
+                            recognizerResult = await luisRecognizer1.Recognize(message.Text, System.Threading.CancellationToken.None);                            
+                            
                             // list the intents
-
                             foreach (var intent in recognizerResult.Intents)
                             {
                                 intentsList.Add($"'{intent.Key}', score {intent.Value}");
@@ -96,7 +96,7 @@ namespace Microsoft.Bot.Samples.Ai.Luis.Dispatch
 
                             if (entitiesList.Count > 0)
                             {
-                                await context.SendActivity($"The following entities were found the message:\n\n{string.Join("\n\n", entitiesList)}");
+                                await context.SendActivity($"The following entities were found in the message:\n\n{string.Join("\n\n", entitiesList)}");
                             }
 
                             // Here, you can add code for calling the hypothetical home automation service, passing in any entity information that you need
@@ -105,8 +105,7 @@ namespace Microsoft.Bot.Samples.Ai.Luis.Dispatch
                         case "l_weather":
                             await context.SendActivity("Sending your request to the weather system ...");
                             luisRecognizer2 = new LuisRecognizer(luisModel2);
-                            luisResults = await luisRecognizer2.CallAndRecognize(message.Text, System.Threading.CancellationToken.None);
-                            recognizerResult = luisResults.recognizerResult;
+                            recognizerResult = await luisRecognizer2.Recognize(message.Text, System.Threading.CancellationToken.None);
 
                             // list the intents
                             var intentsResult2 = new List<string>();
@@ -155,7 +154,7 @@ namespace Microsoft.Bot.Samples.Ai.Luis.Dispatch
                             break;
                         default:
                             // The intent didn't match any case, so just display the recognition results.
-                            await context.SendActivity($"Dispatch intent: {topIntent.Value.key} ({topIntent.Value.score}).");
+                            await context.SendActivity($"Dispatch intent: {topIntent.Value.intent} ({topIntent.Value.score}).");
 
                             break;
                     }
