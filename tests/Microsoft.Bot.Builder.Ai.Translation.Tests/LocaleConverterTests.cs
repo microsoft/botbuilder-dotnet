@@ -46,7 +46,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
                  localeConverter.Convert("Book me a plane ticket for France on 12/25/2018", "na-na", "en-us")); 
         }   
 
-    [TestMethod]
+        [TestMethod]
         [TestCategory("AI")]
         [TestCategory("Locale Converter")]
         public void LocaleConverter_InvalidToLocale()
@@ -55,6 +55,18 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
 
              Assert.ThrowsException<InvalidOperationException>( ()=>
                  localeConverter.Convert("Book me a plane ticket for France on 12/25/2018", "en-us", "na-na")); 
+        }
+
+        [TestMethod]
+        [TestCategory("AI")]
+        [TestCategory("Locale Converter")]
+        public void LocaleConverter_DateAndTime()
+        {
+            LocaleConverter localeConverter = LocaleConverter.Converter;
+
+            var convertedMessage = localeConverter.Convert("half past 9 am 02/03/2010", "en-us", "fr-fr");
+            Assert.IsNotNull(convertedMessage);
+            Assert.AreEqual("03/02/2010 09:30 AM", convertedMessage);
         }
     }
 }

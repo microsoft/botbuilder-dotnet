@@ -31,6 +31,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation
     {
         public string Text { get; set; }
         public DateTime dateTime { get; set; }
+        public string type { get; set; }
     }
 
     /// <summary>
@@ -127,16 +128,23 @@ namespace Microsoft.Bot.Builder.Ai.Translation
             foreach (ModelResult result in results)
             {
                 var resolutionValues = (IList<Dictionary<string, string>>)result.Resolution["values"];
-                string type = result.TypeName.Split('.').Last();
+                string type = result.TypeName.Replace("datetimeV2.", "");
                 DateTime moment = new DateTime();
-                if (type.Contains("date") && !type.Contains("range"))
+                string momentType;
+                if (type.Contains("date") && type.Contains("time"))
                 {
                     moment = resolutionValues.Select(v => DateTime.Parse(v["value"])).FirstOrDefault();
-
+                    momentType = "datetime";
+                }
+                else if (type.Contains("date") && !type.Contains("range"))
+                {
+                    moment = resolutionValues.Select(v => DateTime.Parse(v["value"])).FirstOrDefault();
+                    momentType = "date";
                 }
                 else if (type.Contains("date") && type.Contains("range"))
                 {
                     moment = DateTime.Parse(resolutionValues.First()["start"]);
+                    momentType = "date";
                 }
                 else
                 {
@@ -145,7 +153,8 @@ namespace Microsoft.Bot.Builder.Ai.Translation
                 var curDateTimeText = new TextAndDateTime
                 {
                     dateTime = moment,
-                    Text = result.Text
+                    Text = result.Text,
+                    type = momentType,
                 };
                 fndDates.Add(curDateTimeText);
             }
@@ -206,13 +215,15 @@ namespace Microsoft.Bot.Builder.Ai.Translation
             string processedMessage = message;
             foreach (TextAndDateTime date in dates)
             {
-                if (date.dateTime.Date == DateTime.Now.Date)
+                if (date.type == "date")
                 {
-                    processedMessage = processedMessage.Replace(date.Text, String.Format(_mapLocaleToFunction[toLocale].TimeFormat, date.dateTime));
+                    processedMessage = processedMessage.Replace(date.Text, String.Format(_mapLocaleToFunction[toLocale].DateFormat, date.dateTime));
                 }
                 else
                 {
-                    processedMessage = processedMessage.Replace(date.Text, String.Format(_mapLocaleToFunction[toLocale].DateFormat, date.dateTime));
+                    var convertedDate = String.Format(_mapLocaleToFunction[toLocale].DateFormat, date.dateTime);
+                    var convertedTime = String.Format(_mapLocaleToFunction[toLocale].TimeFormat, date.dateTime);
+                    processedMessage = processedMessage.Replace(date.Text, $"{convertedDate} {convertedTime}");
                 }
             }
             return processedMessage;
