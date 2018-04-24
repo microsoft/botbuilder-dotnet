@@ -2,18 +2,20 @@
   "Text": "fly from seattle to dallas at 3pm on delta",
   "AlteredText": null,
   "Intents": {
-    "Travel": 0.226025566,
-    "EntityTests": 0.0743665248,
-    "Delivery": 0.013022162,
-    "Cancel": 0.0117688635,
-    "None": 0.0103192637,
-    "SpecifyName": 0.009498441,
-    "Help": 0.009233849,
-    "Greeting": 0.0020278648
+    "Travel": 0.157086775,
+    "EntityTests": 0.0609059036,
+    "Weather_GetForecast": 0.03481206,
+    "None": 0.0343931019,
+    "Delivery": 0.00626269029,
+    "Cancel": 0.00511110062,
+    "SpecifyName": 0.00481634,
+    "Help": 0.00365795242,
+    "Greeting": 0.00115857017
   },
   "Entities": {
     "Name": null,
     "State": null,
+    "Weather_Location": null,
     "City": null,
     "To": [
       "dallas"
@@ -32,13 +34,14 @@
     "$instance": {
       "Name": null,
       "State": null,
+      "Weather_Location": null,
       "City": null,
       "To": [
         {
           "startIndex": 20,
           "endIndex": 26,
           "text": "dallas",
-          "score": 0.9050248
+          "score": 0.9075733
         }
       ],
       "From": [
@@ -46,7 +49,7 @@
           "startIndex": 9,
           "endIndex": 16,
           "text": "seattle",
-          "score": 0.9784953
+          "score": 0.9814744
         }
       ],
       "Airline": [
@@ -66,48 +69,53 @@
     "query": "fly from seattle to dallas at 3pm on delta",
     "topScoringIntent": {
       "intent": "Travel",
-      "score": 0.226025566,
+      "score": 0.157086775,
       "actions": null
     },
     "intents": [
       {
         "intent": "Travel",
-        "score": 0.226025566,
+        "score": 0.157086775,
         "actions": null
       },
       {
         "intent": "EntityTests",
-        "score": 0.0743665248,
+        "score": 0.0609059036,
         "actions": null
       },
       {
-        "intent": "Delivery",
-        "score": 0.013022162,
-        "actions": null
-      },
-      {
-        "intent": "Cancel",
-        "score": 0.0117688635,
+        "intent": "Weather.GetForecast",
+        "score": 0.03481206,
         "actions": null
       },
       {
         "intent": "None",
-        "score": 0.0103192637,
+        "score": 0.0343931019,
+        "actions": null
+      },
+      {
+        "intent": "Delivery",
+        "score": 0.00626269029,
+        "actions": null
+      },
+      {
+        "intent": "Cancel",
+        "score": 0.00511110062,
         "actions": null
       },
       {
         "intent": "SpecifyName",
-        "score": 0.009498441,
+        "score": 0.00481634,
         "actions": null
       },
       {
         "intent": "Help",
-        "score": 0.009233849,
+        "score": 0.00365795242,
         "actions": null
       },
       {
         "intent": "Greeting",
-        "score": 0.0020278648,
+        "score": 0.00115857017,
         "actions": null
       }
     ],
@@ -131,7 +139,7 @@
         "type": "City::To",
         "startIndex": 20,
         "endIndex": 25,
-        "score": 0.9050248,
+        "score": 0.9075733,
         "resolution": null
       },
       {
@@ -140,7 +148,7 @@
         "type": "City::From",
         "startIndex": 9,
         "endIndex": 15,
-        "score": 0.9784953,
+        "score": 0.9814744,
         "resolution": null
       },
       {

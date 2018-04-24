@@ -3,10 +3,8 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Core.Extensions;
@@ -43,8 +41,7 @@ namespace Microsoft.Bot.Builder.Ai.LUIS.Tests
             var result = await luisRecognizer.Recognize("My name is Emad", CancellationToken.None);
             Assert.IsNotNull(result);
             Assert.IsNull(result.AlteredText);
-            Assert.AreEqual("My name is Emad", result.Text);
-            Assert.IsNotNull(result.Intents);
+            Assert.AreEqual("My name is Emad", result.Text);Assert.IsNotNull(result.Intents);
             Assert.AreEqual(1, result.Intents.Count);
             Assert.IsNotNull(result.Intents["SpecifyName"]);
             Assert.IsTrue((double)result.Intents["SpecifyName"] > 0 && (double)result.Intents["SpecifyName"] <= 1);
@@ -255,10 +252,7 @@ namespace Microsoft.Bot.Builder.Ai.LUIS.Tests
                     {
                         break;
                     }
-                    if (obj2.TryGetValue(property.Key, out JToken val2))
-                    {
-                        withinDelta = WithinDelta(property.Value, val2, delta, compare || property.Key == "score" || property.Key == "intents");
-                    }
+                    withinDelta = obj2.TryGetValue(property.Key, out JToken val2) && WithinDelta(property.Value, val2, delta, compare || property.Key == "score" || property.Key == "intents");
                 }
             }
             else if (token1.Type == JTokenType.Array && token2.Type == JTokenType.Array)
@@ -343,9 +337,21 @@ namespace Microsoft.Bot.Builder.Ai.LUIS.Tests
         }
 
         [TestMethod]
+        public async Task PrebuiltDomains()
+        {
+            await TestJson<RecognizerResult>("Prebuilt.json");
+        }
+
+        [TestMethod]
         public async Task TypedEntities()
         {
-            await TestJson<Luis.Contoso_App>("Typed.json");
+            await TestJson<Contoso_App>("Typed.json");
+        }
+
+        [TestMethod]
+        public async Task TypedPrebuiltDomains()
+        {
+            await TestJson<Contoso_App>("TypedPrebuilt.json");
         }
 
         private void AssertScore(JToken scoreToken)
