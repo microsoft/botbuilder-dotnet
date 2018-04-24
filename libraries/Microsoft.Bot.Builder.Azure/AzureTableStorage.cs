@@ -14,7 +14,7 @@ using Microsoft.WindowsAzure.Storage.Table;
 namespace Microsoft.Bot.Builder.Azure
 {
     /// <summary>
-    /// Middleware that implements an Azure Table based storage provider for a bot.
+    /// Implements an Azure Table based storage provider for a bot.
     /// </summary>
     public class AzureTableStorage : IStorage
     {
@@ -25,8 +25,10 @@ namespace Microsoft.Bot.Builder.Azure
         /// <summary>
         /// Creates a new instance of the storage provider.
         /// </summary>
-        /// <param name="dataConnectionString">The Azure Storage Connection string</param>
-        /// <param name="tableName">Name of the table to use for storage. Check table name rules: https://docs.microsoft.com/en-us/rest/api/storageservices/Understanding-the-Table-Service-Data-Model?redirectedfrom=MSDN#table-names </param>
+        /// <param name="dataConnectionString">The Azure Storage Connection string.</param>
+        /// <param name="tableName">Name of the table to use for storage.
+        /// See https://docs.microsoft.com/en-us/rest/api/storageservices/Understanding-the-Table-Service-Data-Model#table-names
+        /// for rules about naming tables.</param>
         public AzureTableStorage(string dataConnectionString, string tableName)
             : this(CloudStorageAccount.Parse(dataConnectionString), tableName)
         {
@@ -36,7 +38,9 @@ namespace Microsoft.Bot.Builder.Azure
         /// Creates a new instance of the storage provider.
         /// </summary>
         /// <param name="storageAccount">CloudStorageAccount information.</param>
-        /// <param name="tableName">Name of the table to use for storage. Check table name rules: https://docs.microsoft.com/en-us/rest/api/storageservices/Understanding-the-Table-Service-Data-Model?redirectedfrom=MSDN#table-names </param>
+        /// <param name="tableName">Name of the table to use for storage.
+        /// See https://docs.microsoft.com/en-us/rest/api/storageservices/Understanding-the-Table-Service-Data-Model#table-names
+        /// for rules about naming tables.</param>
         public AzureTableStorage(CloudStorageAccount storageAccount, string tableName)
         {
             _storageAccount = storageAccount ?? throw new ArgumentNullException(nameof(storageAccount));
@@ -111,7 +115,6 @@ namespace Microsoft.Bot.Builder.Azure
         /// Saves store items to storage.
         /// </summary>
         /// <param name="changes">Map of items to write to storage.</param>
-        /// <returns></returns>
         public async Task Write(IEnumerable<KeyValuePair<string, object>> changes)
         {
             if (changes == null) throw new ArgumentNullException(nameof(changes));
