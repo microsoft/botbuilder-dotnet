@@ -1,0 +1,156 @@
+{
+  "text": "http://foo.com is where you can get a weather forecast for seattle",
+  "alteredText": null,
+  "intents": {
+    "Weather_GetForecast": 0.8995508,
+    "EntityTests": 0.6866408,
+    "None": 0.05172678,
+    "Travel": 0.00585644227,
+    "Delivery": 0.00387669052,
+    "SpecifyName": 0.00387319084,
+    "Help": 0.00177787163,
+    "Cancel": 0.000588835566,
+    "Greeting": 0.000149518673
+  },
+  "entities": {
+    "$instance": {
+      "Composite2": [
+        {
+          "startIndex": 0,
+          "endIndex": 66,
+          "text": "http : / / foo . com is where you can get a weather forecast for seattle",
+          "score": 0.6154704
+        }
+      ]
+    },
+    "Composite2": [
+      {
+        "$instance": {
+          "builtin_url": [
+            {
+              "startIndex": 0,
+              "endIndex": 14,
+              "text": "http://foo.com",
+              "score": null
+            }
+          ],
+          "Weather_Location": [
+            {
+              "startIndex": 59,
+              "endIndex": 66,
+              "text": "seattle",
+              "score": 0.896951556
+            }
+          ]
+        },
+        "builtin_url": [
+          "http://foo.com"
+        ],
+        "Weather_Location": [
+          "seattle"
+        ]
+      }
+    ]
+  },
+  "luisResult": {
+    "query": "http://foo.com is where you can get a weather forecast for seattle",
+    "topScoringIntent": {
+      "intent": "Weather.GetForecast",
+      "score": 0.8995508,
+      "actions": null
+    },
+    "intents": [
+      {
+        "intent": "Weather.GetForecast",
+        "score": 0.8995508,
+        "actions": null
+      },
+      {
+        "intent": "EntityTests",
+        "score": 0.6866408,
+        "actions": null
+      },
+      {
+        "intent": "None",
+        "score": 0.05172678,
+        "actions": null
+      },
+      {
+        "intent": "Travel",
+        "score": 0.00585644227,
+        "actions": null
+      },
+      {
+        "intent": "Delivery",
+        "score": 0.00387669052,
+        "actions": null
+      },
+      {
+        "intent": "SpecifyName",
+        "score": 0.00387319084,
+        "actions": null
+      },
+      {
+        "intent": "Help",
+        "score": 0.00177787163,
+        "actions": null
+      },
+      {
+        "intent": "Cancel",
+        "score": 0.000588835566,
+        "actions": null
+      },
+      {
+        "intent": "Greeting",
+        "score": 0.000149518673,
+        "actions": null
+      }
+    ],
+    "entities": [
+      {
+        "role": null,
+        "entity": "http : / / foo . com is where you can get a weather forecast for seattle",
+        "type": "Composite2",
+        "startIndex": 0,
+        "endIndex": 65,
+        "score": 0.6154704,
+        "resolution": null
+      },
+      {
+        "role": null,
+        "entity": "http://foo.com",
+        "type": "builtin.url",
+        "startIndex": 0,
+        "endIndex": 13,
+        "score": null,
+        "resolution": null
+      },
+      {
+        "role": null,
+        "entity": "seattle",
+        "type": "Weather.Location",
+        "startIndex": 59,
+        "endIndex": 65,
+        "score": 0.896951556,
+        "resolution": null
+      }
+    ],
+    "compositeEntities": [
+      {
+        "parentType": "Composite2",
+        "value": "http : / / foo . com is where you can get a weather forecast for seattle",
+        "children": [
+          {
+            "type": "builtin.url",
+            "value": "http://foo.com"
+          },
+          {
+            "type": "Weather.Location",
+            "value": "seattle"
+          }
+        ]
+      }
+    ],
+    "alteredQuery": null
+  }
+}
