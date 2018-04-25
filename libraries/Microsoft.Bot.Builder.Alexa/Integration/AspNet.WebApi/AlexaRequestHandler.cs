@@ -30,14 +30,12 @@ namespace Microsoft.Bot.Builder.Alexa.Integration.AspNet.WebApi
         };
 
         private readonly AlexaAdapter _alexaAdapter;
-        private readonly bool _validateIncomingAlexaRequests;
-        private readonly bool _shouldEndSessionByDefault;
+        private readonly AlexaOptions _alexaOptions;
 
-        public AlexaRequestHandler(AlexaAdapter alexaAdapter, bool validateIncomingAlexaRequests = true, bool shouldEndSessionByDefault = true)
+        public AlexaRequestHandler(AlexaAdapter alexaAdapter, AlexaOptions alexaOptions)
         {
             _alexaAdapter = alexaAdapter;
-            _validateIncomingAlexaRequests = validateIncomingAlexaRequests;
-            _shouldEndSessionByDefault = shouldEndSessionByDefault;
+            _alexaOptions = alexaOptions;
         }
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
@@ -111,7 +109,7 @@ namespace Microsoft.Bot.Builder.Alexa.Integration.AspNet.WebApi
             if (skillRequest.Version != "1.0")
                 throw new Exception($"Unexpected version of '{skillRequest.Version}' received.");
 
-            if (_validateIncomingAlexaRequests)
+            if (_alexaOptions.ValidateIncomingAlexaRequests)
             {
                 request.Headers.TryGetValues("SignatureCertChainUrl", out var certUrls);
                 request.Headers.TryGetValues("Signature", out var signatures);
@@ -122,7 +120,7 @@ namespace Microsoft.Bot.Builder.Alexa.Integration.AspNet.WebApi
 
             var alexaResponseBody = await alexaAdapter.ProcessActivity(
                 skillRequest,
-                _shouldEndSessionByDefault,
+                _alexaOptions,
                 botCallbackHandler);
 
             var alexaResponseBodyJson = JsonConvert.SerializeObject(alexaResponseBody, Formatting.None,

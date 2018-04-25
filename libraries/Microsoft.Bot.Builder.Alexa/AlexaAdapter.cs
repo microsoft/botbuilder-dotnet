@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Alexa.Integration;
 using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.Alexa
@@ -10,9 +11,12 @@ namespace Microsoft.Bot.Builder.Alexa
     public class AlexaAdapter : BotAdapter
     {
         private Dictionary<string, List<Activity>> Responses { get; set; }
+        private AlexaOptions Options { get; set; }
 
-        public async Task<AlexaResponseBody> ProcessActivity(AlexaRequestBody alexaRequest, bool shouldEndSessionByDefault, Func<ITurnContext, Task> callback)
+        public async Task<AlexaResponseBody> ProcessActivity(AlexaRequestBody alexaRequest, AlexaOptions alexaOptions, Func<ITurnContext, Task> callback)
         {
+            Options = alexaOptions;
+
             var activity = RequestToActivity(alexaRequest);
             BotAssert.ActivityNotNull(activity);
 
@@ -36,7 +40,7 @@ namespace Microsoft.Bot.Builder.Alexa
             try
             {
                 var activities = Responses.ContainsKey(key) ? Responses[key] : new List<Activity>();
-                var response = CreateResponseFromLastActivity(activities, shouldEndSessionByDefault);
+                var response = CreateResponseFromLastActivity(activities);
                 response.SessionAttributes = context.AlexaSessionAttributes();
                 return response;
             }
@@ -121,14 +125,14 @@ namespace Microsoft.Bot.Builder.Alexa
             return activity;
         }
 
-        private AlexaResponseBody CreateResponseFromLastActivity(IEnumerable<Activity> activities, bool shouldEndSessionByDefault)
+        private AlexaResponseBody CreateResponseFromLastActivity(IEnumerable<Activity> activities)
         {
             var response = new AlexaResponseBody()
             {
                 Version = "1.0",
                 Response = new AlexaResponse()
                 {
-                    ShouldEndSession = shouldEndSessionByDefault
+                    ShouldEndSession = Options.ShouldEndSessionByDefault
                 }
             };
 

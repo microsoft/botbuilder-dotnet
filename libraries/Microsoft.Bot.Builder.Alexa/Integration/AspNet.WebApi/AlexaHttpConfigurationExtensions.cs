@@ -46,7 +46,7 @@ namespace Microsoft.Bot.Builder.Alexa.Integration.AspNet.WebApi
                         baseUrl + options.Paths.SkillRequestsPath,
                         defaults: null,
                         constraints: null,
-                        handler: new AlexaRequestHandler(adapter, options.ValidateIncomingAlexaRequests, options.ShouldEndSessionByDefault));
+                        handler: new AlexaRequestHandler(adapter, options.AlexaOptions));
             }
         }
     }

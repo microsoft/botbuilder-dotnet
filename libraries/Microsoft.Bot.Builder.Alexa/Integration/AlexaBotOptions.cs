@@ -24,8 +24,7 @@ namespace Microsoft.Bot.Builder.Alexa.Integration
             _middleware = new List<IMiddleware>();
             _paths = new AlexaBotPaths();
 
-            ValidateIncomingAlexaRequests = true;
-            ShouldEndSessionByDefault = false;
+            AlexaOptions = new AlexaOptions();
         }
 
         /// <summary>
@@ -35,8 +34,6 @@ namespace Microsoft.Bot.Builder.Alexa.Integration
 
         public AlexaBotPaths Paths { get => _paths; }
 
-        public bool ValidateIncomingAlexaRequests { get; set; }
-
-        public bool ShouldEndSessionByDefault { get; set; }
+        public AlexaOptions AlexaOptions { get; set; }
     }
 }
