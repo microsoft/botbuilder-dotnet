@@ -1,0 +1,187 @@
+{
+  "Text": "fly from seattle to dallas at 3pm on delta",
+  "AlteredText": null,
+  "Intents": {
+    "Travel": 0.157086775,
+    "EntityTests": 0.0609059036,
+    "Weather_GetForecast": 0.03481206,
+    "None": 0.0343931019,
+    "Delivery": 0.00626269029,
+    "Cancel": 0.00511110062,
+    "SpecifyName": 0.00481634,
+    "Help": 0.00365795242,
+    "Greeting": 0.00115857017
+  },
+  "Entities": {
+    "Name": null,
+    "State": null,
+    "Weather_Location": null,
+    "City": null,
+    "To": [
+      "dallas"
+    ],
+    "From": [
+      "seattle"
+    ],
+    "Airline": [
+      [
+        "Delta"
+      ]
+    ],
+    "Address": null,
+    "Composite1": null,
+    "Composite2": null,
+    "$instance": {
+      "Name": null,
+      "State": null,
+      "Weather_Location": null,
+      "City": null,
+      "To": [
+        {
+          "startIndex": 20,
+          "endIndex": 26,
+          "text": "dallas",
+          "score": 0.9075733
+        }
+      ],
+      "From": [
+        {
+          "startIndex": 9,
+          "endIndex": 16,
+          "text": "seattle",
+          "score": 0.9814744
+        }
+      ],
+      "Airline": [
+        {
+          "startIndex": 37,
+          "endIndex": 42,
+          "text": "delta",
+          "score": null
+        }
+      ],
+      "Address": null,
+      "Composite1": null,
+      "Composite2": null
+    }
+  },
+  "luisResult": {
+    "query": "fly from seattle to dallas at 3pm on delta",
+    "topScoringIntent": {
+      "intent": "Travel",
+      "score": 0.157086775,
+      "actions": null
+    },
+    "intents": [
+      {
+        "intent": "Travel",
+        "score": 0.157086775,
+        "actions": null
+      },
+      {
+        "intent": "EntityTests",
+        "score": 0.0609059036,
+        "actions": null
+      },
+      {
+        "intent": "Weather.GetForecast",
+        "score": 0.03481206,
+        "actions": null
+      },
+      {
+        "intent": "None",
+        "score": 0.0343931019,
+        "actions": null
+      },
+      {
+        "intent": "Delivery",
+        "score": 0.00626269029,
+        "actions": null
+      },
+      {
+        "intent": "Cancel",
+        "score": 0.00511110062,
+        "actions": null
+      },
+      {
+        "intent": "SpecifyName",
+        "score": 0.00481634,
+        "actions": null
+      },
+      {
+        "intent": "Help",
+        "score": 0.00365795242,
+        "actions": null
+      },
+      {
+        "intent": "Greeting",
+        "score": 0.00115857017,
+        "actions": null
+      }
+    ],
+    "entities": [
+      {
+        "role": null,
+        "entity": "delta",
+        "type": "Airline",
+        "startIndex": 37,
+        "endIndex": 41,
+        "score": null,
+        "resolution": {
+          "values": [
+            "Delta"
+          ]
+        }
+      },
+      {
+        "role": null,
+        "entity": "dallas",
+        "type": "City::To",
+        "startIndex": 20,
+        "endIndex": 25,
+        "score": 0.9075733,
+        "resolution": null
+      },
+      {
+        "role": null,
+        "entity": "seattle",
+        "type": "City::From",
+        "startIndex": 9,
+        "endIndex": 15,
+        "score": 0.9814744,
+        "resolution": null
+      },
+      {
+        "role": null,
+        "entity": "3pm",
+        "type": "builtin.datetimeV2.time",
+        "startIndex": 30,
+        "endIndex": 32,
+        "score": null,
+        "resolution": {
+          "values": [
+            {
+              "timex": "T15",
+              "type": "time",
+              "value": "15:00:00"
+            }
+          ]
+        }
+      },
+      {
+        "role": null,
+        "entity": "3pm",
+        "type": "builtin.dimension",
+        "startIndex": 30,
+        "endIndex": 32,
+        "score": null,
+        "resolution": {
+          "unit": "Picometer",
+          "value": "3"
+        }
+      }
+    ],
+    "compositeEntities": [],
+    "alteredQuery": null
+  }
+}
