@@ -8,7 +8,6 @@ using System.Net.Http.Formatting;
 using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Alexa.Helpers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 

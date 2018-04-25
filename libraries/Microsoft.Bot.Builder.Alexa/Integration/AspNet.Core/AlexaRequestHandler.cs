@@ -24,22 +24,18 @@ namespace Microsoft.Bot.Builder.Alexa.Integration.AspNet.Core
         });
 
         private readonly AlexaAdapter _alexaAdapter;
+        private bool _validateIncomingAlexaRequests;
 
-        public AlexaRequestHandler(AlexaAdapter alexaAdapter)
+        public AlexaRequestHandler(AlexaAdapter alexaAdapter, bool validateIncomingAlexaRequests)
         {
+            _alexaAdapter = alexaAdapter;
+            _validateIncomingAlexaRequests = validateIncomingAlexaRequests;
         }
        
         protected async Task ProcessMessageRequestAsync(HttpRequest request, AlexaAdapter alexaAdapter, Func<ITurnContext, Task> botCallbackHandler)
         {
             AlexaRequestBody skillRequest;
-            byte[] requestByteArray;
-
-            //if (_validateIncomingAlexaRequests)
-            //{
-            //var requestValidationHelper = new AlexaRequestValidationHelper();
-            //await requestValidationHelper.ValidateRequestSecurity(request, requestByteArray, skillRequest);
-            //}
-
+            
             using (var bodyReader = new JsonTextReader(new StreamReader(request.Body, Encoding.UTF8)))
             {
                 skillRequest = AlexaBotMessageSerializer.Deserialize<AlexaRequestBody>(bodyReader);
@@ -47,6 +43,12 @@ namespace Microsoft.Bot.Builder.Alexa.Integration.AspNet.Core
 
             if (skillRequest.Version != "1.0")
                 throw new Exception($"Unexpected version of '{skillRequest.Version}' received.");
+
+            if (_validateIncomingAlexaRequests)
+            {
+                var requestValidationHelper = new AlexaRequestValidationHelper();
+                await requestValidationHelper.ValidateRequestSecurity(request, skillRequest);
+            }
 
             await alexaAdapter.ProcessActivity(
                     skillRequest,
