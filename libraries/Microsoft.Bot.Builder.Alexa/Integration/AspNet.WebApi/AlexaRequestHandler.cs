@@ -10,6 +10,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using System.Linq;
+using Microsoft.Bot.Builder.Alexa.Helpers;
 
 namespace Microsoft.Bot.Builder.Alexa.Integration.AspNet.WebApi
 {
@@ -109,8 +111,11 @@ namespace Microsoft.Bot.Builder.Alexa.Integration.AspNet.WebApi
 
             if (_validateIncomingAlexaRequests)
             {
-                var requestValidationHelper = new AlexaRequestValidationHelper();
-                await requestValidationHelper.ValidateRequestSecurity(request, requestByteArray, skillRequest);
+                request.Headers.TryGetValues("SignatureCertChainUrl", out var certUrls);
+                request.Headers.TryGetValues("Signature", out var signatures);
+                var certChainUrl = certUrls.FirstOrDefault();
+                var signature = signatures.FirstOrDefault();
+                await AlexaValidateRequestSecurityHelper.Validate(skillRequest, requestByteArray, certChainUrl, signature);
             }
 
             var alexaResponseBody = await alexaAdapter.ProcessActivity(

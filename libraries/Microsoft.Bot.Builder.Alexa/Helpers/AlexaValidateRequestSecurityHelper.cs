@@ -1,22 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Alexa.Helpers;
 
-namespace Microsoft.Bot.Builder.Alexa.Integration.AspNet.WebApi
+namespace Microsoft.Bot.Builder.Alexa.Helpers
 {
-    public class AlexaRequestValidationHelper
+    public class AlexaValidateRequestSecurityHelper
     {
-        public static Dictionary<string, X509Certificate2> ValidatedCertificateChains { get; } =
-            new Dictionary<string, X509Certificate2>();
-
-        public async Task ValidateRequestSecurity(HttpRequestMessage httpRequest, byte[] requestBytes,
-            AlexaRequestBody requestBody)
+        public static async Task<Dictionary<string, X509Certificate2>> Validate(AlexaRequestBody requestBody, byte[] requestBytes, string certificateChainUrl, string signature)
         {
+            var validatedCertificateChains = new Dictionary<string, X509Certificate2>();
+
             if (requestBody?.Request?.Timestamp == null)
             {
                 throw new InvalidOperationException("Alexa Request Invalid: Request Timestamp Missing");
@@ -29,13 +25,7 @@ namespace Microsoft.Bot.Builder.Alexa.Integration.AspNet.WebApi
                 throw new InvalidOperationException("Alexa Request Invalid: Request Timestamp outside valid range");
             }
 
-            httpRequest.Headers.TryGetValues("SignatureCertChainUrl", out var certUrls);
-            httpRequest.Headers.TryGetValues("Signature", out var signatures);
-
-            var certChainUrl = certUrls.FirstOrDefault();
-            var signature = signatures.FirstOrDefault();
-
-            if (string.IsNullOrEmpty(certChainUrl))
+            if (string.IsNullOrEmpty(certificateChainUrl))
             {
                 throw new InvalidOperationException("Alexa Request Invalid: missing SignatureCertChainUrl header");
             }
@@ -45,7 +35,7 @@ namespace Microsoft.Bot.Builder.Alexa.Integration.AspNet.WebApi
                 throw new InvalidOperationException("Alexa Request Invalid: missing Signature header");
             }
 
-            var uri = new Uri(certChainUrl);
+            var uri = new Uri(certificateChainUrl);
 
             if (uri.Scheme.ToLower() != "https")
             {
@@ -69,7 +59,7 @@ namespace Microsoft.Bot.Builder.Alexa.Integration.AspNet.WebApi
 
             X509Certificate2 signingCertificate;
 
-            if (!ValidatedCertificateChains.ContainsKey(uri.ToString()))
+            if (!validatedCertificateChains.ContainsKey(uri.ToString()))
             {
                 var certList = await PemHelper.DownloadPemCertificatesAsync(uri.ToString());
 
@@ -103,11 +93,11 @@ namespace Microsoft.Bot.Builder.Alexa.Integration.AspNet.WebApi
 
                 signingCertificate = primaryCert;
 
-                lock (ValidatedCertificateChains)
+                lock (validatedCertificateChains)
                 {
-                    if (!ValidatedCertificateChains.ContainsKey(uri.ToString()))
+                    if (!validatedCertificateChains.ContainsKey(uri.ToString()))
                     {
-                        ValidatedCertificateChains[uri.ToString()] = primaryCert;
+                        validatedCertificateChains[uri.ToString()] = primaryCert;
                     }
                     else
                     {
@@ -118,7 +108,7 @@ namespace Microsoft.Bot.Builder.Alexa.Integration.AspNet.WebApi
             }
             else
             {
-                signingCertificate = ValidatedCertificateChains[uri.ToString()];
+                signingCertificate = validatedCertificateChains[uri.ToString()];
             }
 
             if (signingCertificate == null)
@@ -134,6 +124,8 @@ namespace Microsoft.Bot.Builder.Alexa.Integration.AspNet.WebApi
             {
                 throw new InvalidOperationException("Alexa Request Invalid: Signature verification failed");
             }
+
+            return validatedCertificateChains;
         }
     }
 }

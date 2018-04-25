@@ -5,6 +5,8 @@ using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Bot.Builder;
+using Microsoft.Bot.Builder.Alexa.Integration.AspNet.Core;
+using Microsoft.Bot.Builder.Alexa.Middleware;
 using Microsoft.Bot.Builder.BotFramework;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Extensions.Configuration;
@@ -39,6 +41,12 @@ namespace Microsoft.Bot.Samples.Echo.AspNetCore
                 options.ConnectorClientRetryPolicy = new RetryPolicy(
                     new BotFrameworkHttpStatusCodeErrorDetectionStrategy(), 3, TimeSpan.FromSeconds(2), TimeSpan.FromSeconds(20), TimeSpan.FromSeconds(1));
             });
+
+            services.AddAlexaBot<EchoBot>(alexaOptions =>
+            {
+                alexaOptions.ValidateIncomingAlexaRequests = true;
+                alexaOptions.Middleware.Add(new AlexaIntentRequestToMessageActivityMiddleware());
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -51,7 +59,8 @@ namespace Microsoft.Bot.Samples.Echo.AspNetCore
 
             app.UseDefaultFiles()
                 .UseStaticFiles()
-                .UseBotFramework();
+                .UseBotFramework()
+                .UseAlexa();
         }
     }
 }

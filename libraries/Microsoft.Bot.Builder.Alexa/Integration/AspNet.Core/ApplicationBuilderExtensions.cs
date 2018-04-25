@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Builder.Alexa.Integration.AspNet.Core
         /// <param name="applicationBuilder">The application builder for the ASP.NET application.</param>
         /// <returns>The updated application builder.</returns>
         /// <remarks>This method adds any middleware from the <see cref="AlexaBotOptions"/> provided in the
-        /// <see cref="ServiceCollectionExtensions.AddBot{TBot}(IServiceCollection, Action{AlexaBotOptions})"/>
+        /// <see cref="ServiceCollectionExtensions.AddAlexaBot{TBot}(IServiceCollection, Action{AlexaBotOptions})"/>
         /// method to the adapter.</remarks>
         public static IApplicationBuilder UseAlexa(this IApplicationBuilder applicationBuilder) =>
             applicationBuilder.UseAlexa(paths => {});
@@ -62,7 +62,7 @@ namespace Microsoft.Bot.Builder.Alexa.Integration.AspNet.Core
             configurePaths(paths);
 
             applicationBuilder.Map(
-                paths.BasePath + paths.SkillRequestsPath, 
+                $"{paths.BasePath}/{paths.SkillRequestsPath}", 
                 botActivitiesAppBuilder => botActivitiesAppBuilder.Run(new AlexaRequestHandler(alexaAdapter, options.ValidateIncomingAlexaRequests).HandleAsync));
 
             return applicationBuilder;

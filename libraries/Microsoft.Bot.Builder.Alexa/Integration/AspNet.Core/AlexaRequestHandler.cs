@@ -3,11 +3,13 @@
 
 using System;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Bot.Builder.Alexa.Helpers;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
@@ -24,7 +26,7 @@ namespace Microsoft.Bot.Builder.Alexa.Integration.AspNet.Core
         });
 
         private readonly AlexaAdapter _alexaAdapter;
-        private bool _validateIncomingAlexaRequests;
+        private readonly bool _validateIncomingAlexaRequests;
 
         public AlexaRequestHandler(AlexaAdapter alexaAdapter, bool validateIncomingAlexaRequests)
         {
@@ -32,11 +34,16 @@ namespace Microsoft.Bot.Builder.Alexa.Integration.AspNet.Core
             _validateIncomingAlexaRequests = validateIncomingAlexaRequests;
         }
        
-        protected async Task ProcessMessageRequestAsync(HttpRequest request, AlexaAdapter alexaAdapter, Func<ITurnContext, Task> botCallbackHandler)
+        protected async Task<AlexaResponseBody> ProcessMessageRequestAsync(HttpRequest request, AlexaAdapter alexaAdapter, Func<ITurnContext, Task> botCallbackHandler)
         {
             AlexaRequestBody skillRequest;
-            
-            using (var bodyReader = new JsonTextReader(new StreamReader(request.Body, Encoding.UTF8)))
+
+            var memoryStream = new MemoryStream();
+            request.Body.CopyTo(memoryStream);
+            var requestBytes = memoryStream.ToArray();
+
+            memoryStream.Position = 0;
+            using (var bodyReader = new JsonTextReader(new StreamReader(memoryStream, Encoding.UTF8)))
             {
                 skillRequest = AlexaBotMessageSerializer.Deserialize<AlexaRequestBody>(bodyReader);
             }
@@ -46,13 +53,18 @@ namespace Microsoft.Bot.Builder.Alexa.Integration.AspNet.Core
 
             if (_validateIncomingAlexaRequests)
             {
-                var requestValidationHelper = new AlexaRequestValidationHelper();
-                await requestValidationHelper.ValidateRequestSecurity(request, skillRequest);
+                request.Headers.TryGetValue("SignatureCertChainUrl", out var certUrls);
+                request.Headers.TryGetValue("Signature", out var signatures);
+                var certChainUrl = certUrls.FirstOrDefault();
+                var signature = signatures.FirstOrDefault();
+                await AlexaValidateRequestSecurityHelper.Validate(skillRequest, requestBytes, certChainUrl, signature);
             }
 
-            await alexaAdapter.ProcessActivity(
+            var alexaResponseBody = await alexaAdapter.ProcessActivity(
                     skillRequest,
                     botCallbackHandler);
+
+            return alexaResponseBody;
         }
 
         public async Task HandleAsync(HttpContext httpContext)
@@ -81,17 +93,23 @@ namespace Microsoft.Bot.Builder.Alexa.Integration.AspNet.Core
 
             try
             {
-                await ProcessMessageRequestAsync(
+                var alexaResponseBody = await ProcessMessageRequestAsync(
                     request,
                     _alexaAdapter,
                     context =>
                     {
                         var bot = httpContext.RequestServices.GetRequiredService<IBot>();
-
                         return bot.OnTurn(context);
                     });
+                
+                var alexaResponseBodyJson = JsonConvert.SerializeObject(alexaResponseBody, Formatting.None,
+                    new JsonSerializerSettings
+                    {
+                        NullValueHandling = NullValueHandling.Ignore,
+                        ContractResolver = new DefaultContractResolver { NamingStrategy = new CamelCaseNamingStrategy() }
+                    });
 
-                response.StatusCode = (int)HttpStatusCode.OK;
+                await response.WriteAsync(alexaResponseBodyJson);
             }
             catch (UnauthorizedAccessException)
             {
