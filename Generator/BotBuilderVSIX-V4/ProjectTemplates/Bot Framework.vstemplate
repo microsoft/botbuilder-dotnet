@@ -8,7 +8,7 @@
     <ProjectSubType>Bot Framework</ProjectSubType>
     <NumberOfParentCategoriesToRollUp>1</NumberOfParentCategoriesToRollUp>
     <DefaultName>Echo Bot</DefaultName>
-    <SortOrder>17</SortOrder>
+    <SortOrder>1000</SortOrder>
     <Icon>__TemplateIcon.png</Icon>
     <PreviewImage>__PreviewImage.png</PreviewImage>
     <CreateInPlace>true</CreateInPlace>
