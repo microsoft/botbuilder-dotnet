@@ -1,0 +1,9 @@
+{
+  "botId": "",
+  "botName": "TestBot",
+  "botUrl": "https://testbot.botframework.com/api/messagesv3",
+  "id": "fu6oczemyj",
+  "locale": "",
+  "msaAppId": "YOUR_APPID",
+  "msaPassword": "YOUR_PASSWORD"
+}
