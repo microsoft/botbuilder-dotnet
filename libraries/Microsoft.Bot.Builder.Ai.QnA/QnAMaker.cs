@@ -61,6 +61,16 @@ namespace Microsoft.Bot.Builder.Ai.QnA
                 _options.Top = 1;
             }
 
+            if (_options.ScoreThreshold < 0 || _options.ScoreThreshold > 1)
+            {
+                throw new ArgumentOutOfRangeException(nameof(_options.ScoreThreshold), "Score threshold should be a value between 0 and 1");
+            }
+
+            if (_options.Top < 1)
+            {
+                throw new ArgumentOutOfRangeException(nameof(_options.Top), "Top should be an integer greater than 0");
+            }
+
             if (_options.StrictFilters == null)
             {
                 _options.StrictFilters = new Metadata[] {};
