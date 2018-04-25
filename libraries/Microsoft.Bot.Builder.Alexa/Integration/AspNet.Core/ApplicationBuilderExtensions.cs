@@ -68,7 +68,7 @@ namespace Microsoft.Bot.Builder.Alexa.Integration.AspNet.Core
 
             applicationBuilder.Map(
                 $"{paths.BasePath}{paths.SkillRequestsPath}", 
-                botActivitiesAppBuilder => botActivitiesAppBuilder.Run(new AlexaRequestHandler(alexaAdapter, options.ValidateIncomingAlexaRequests).HandleAsync));
+                botActivitiesAppBuilder => botActivitiesAppBuilder.Run(new AlexaRequestHandler(alexaAdapter, options.ValidateIncomingAlexaRequests, options.ShouldEndSessionByDefault).HandleAsync));
 
             return applicationBuilder;
         }
