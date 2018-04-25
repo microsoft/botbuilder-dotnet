@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspNetCore-EchoBot-With-Sta
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspNetCore-SinglePrompt-Bot", "samples-final\AspNetCore-SinglePrompt-Bot\AspNetCore-SinglePrompt-Bot.csproj", "{B262213B-33AA-4A01-97C6-12BF79EDEAA6}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspNetCore-MultiplePrompts-Bot", "samples-final\AspNetCore-MultiplePrompts-Bot\AspNetCore-MultiplePrompts-Bot.csproj", "{D4DBD202-CF46-4FB2-8A51-94DD1B9EBF39}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{B262213B-33AA-4A01-97C6-12BF79EDEAA6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B262213B-33AA-4A01-97C6-12BF79EDEAA6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B262213B-33AA-4A01-97C6-12BF79EDEAA6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D4DBD202-CF46-4FB2-8A51-94DD1B9EBF39}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D4DBD202-CF46-4FB2-8A51-94DD1B9EBF39}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D4DBD202-CF46-4FB2-8A51-94DD1B9EBF39}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D4DBD202-CF46-4FB2-8A51-94DD1B9EBF39}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
