@@ -2,15 +2,33 @@
   "Text": "http://foo.com is where you can get a weather forecast for seattle",
   "AlteredText": null,
   "Intents": {
-    "Weather_GetForecast": 0.8995508,
-    "EntityTests": 0.6866408,
-    "None": 0.05172678,
-    "Travel": 0.00585644227,
-    "Delivery": 0.00387669052,
-    "SpecifyName": 0.00387319084,
-    "Help": 0.00177787163,
-    "Cancel": 0.000588835566,
-    "Greeting": 0.000149518673
+    "Weather_GetForecast": {
+      "score": 0.8995508
+    },
+    "EntityTests": {
+      "score": 0.6866408
+    },
+    "None": {
+      "score": 0.05172678
+    },
+    "Travel": {
+      "score": 0.00585644227
+    },
+    "Delivery": {
+      "score": 0.00387669052
+    },
+    "SpecifyName": {
+      "score": 0.00387319084
+    },
+    "Help": {
+      "score": 0.00177787163
+    },
+    "Cancel": {
+      "score": 0.000588835566
+    },
+    "Greeting": {
+      "score": 0.000149518673
+    }
   },
   "Entities": {
     "Name": null,
