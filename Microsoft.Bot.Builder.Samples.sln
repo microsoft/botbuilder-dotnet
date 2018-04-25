@@ -10,7 +10,10 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspNetCore-SinglePrompt-Bot", "samples-final\AspNetCore-SinglePrompt-Bot\AspNetCore-SinglePrompt-Bot.csproj", "{B262213B-33AA-4A01-97C6-12BF79EDEAA6}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspNetCore-MultiplePrompts-Bot", "samples-final\AspNetCore-MultiplePrompts-Bot\AspNetCore-MultiplePrompts-Bot.csproj", "{D4DBD202-CF46-4FB2-8A51-94DD1B9EBF39}"
+EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspNetCore-ConversationUpdate-Bot", "samples-final\AspNetCore-ConversationUpdate-Bot\AspNetCore-ConversationUpdate-Bot.csproj", "{7A157D63-57D0-40F3-9F5F-3F868B3F9690}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspNetCore-RichCards-Bot", "samples-final\AspNetCore-RichCards-Bot\AspNetCore-RichCards-Bot.csproj", "{68DFB72F-8348-4521-918E-8A86B00E1BA5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -34,6 +37,10 @@ Global
 		{D4DBD202-CF46-4FB2-8A51-94DD1B9EBF39}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D4DBD202-CF46-4FB2-8A51-94DD1B9EBF39}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D4DBD202-CF46-4FB2-8A51-94DD1B9EBF39}.Release|Any CPU.Build.0 = Release|Any CPU
+		{68DFB72F-8348-4521-918E-8A86B00E1BA5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{68DFB72F-8348-4521-918E-8A86B00E1BA5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{68DFB72F-8348-4521-918E-8A86B00E1BA5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{68DFB72F-8348-4521-918E-8A86B00E1BA5}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7A157D63-57D0-40F3-9F5F-3F868B3F9690}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{7A157D63-57D0-40F3-9F5F-3F868B3F9690}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7A157D63-57D0-40F3-9F5F-3F868B3F9690}.Release|Any CPU.ActiveCfg = Release|Any CPU
