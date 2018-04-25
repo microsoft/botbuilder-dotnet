@@ -18,7 +18,10 @@ When implementing your bot using WebApi, the integration layer for Alexa works t
     {
         public static void Register(HttpConfiguration config)
         {
-            config.MapAlexaBotFramework(botConfig => { });
+            config.MapAlexaBotFramework(botConfig => { 
+				botConfig.AlexaBotOptions.AlexaOptions.ShouldEndSessionByDefault = true;
+                botConfig.AlexaBotOptions.AlexaOptions.ValidateIncomingAlexaRequests = false;
+			});
         }
     }
 ``` 
@@ -32,9 +35,10 @@ In Startup.cs you can configure your bot to use the Alexa adapter using the foll
 ```cs
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddAlexaBot<EchoBot>(alexaOptions =>
+            services.AddAlexaBot<EchoBot>(options =>
             {
-                alexaOptions.ValidateIncomingAlexaRequests = true;
+                options.AlexaOptions.ValidateIncomingAlexaRequests = true;
+                options.AlexaOptions.ShouldEndSessionByDefault = false;
             });
         }
 
