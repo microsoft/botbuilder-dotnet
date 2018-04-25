@@ -23,10 +23,9 @@
       <Folder Name="wwwroot" TargetFolderName="wwwroot">
         <ProjectItem ReplaceParameters="true" TargetFileName="default.htm">default.htm</ProjectItem>
       </Folder>
-      <ProjectItem ReplaceParameters="false" TargetFileName="__PreviewImage.png">__PreviewImage.png</ProjectItem>
-      <ProjectItem ReplaceParameters="false" TargetFileName="__TemplateIcon.png">__TemplateIcon.png</ProjectItem>
       <ProjectItem ReplaceParameters="true" TargetFileName="appsettings.json">appsettings.json</ProjectItem>
       <ProjectItem ReplaceParameters="true" TargetFileName="EchoBot.cs">EchoBot.cs</ProjectItem>
+      <ProjectItem ReplaceParameters="true" TargetFileName="TestBot.bot">TestBot.bot</ProjectItem>
       <ProjectItem ReplaceParameters="true" TargetFileName="EchoState.cs">EchoState.cs</ProjectItem>
       <ProjectItem ReplaceParameters="true" TargetFileName="Program.cs">Program.cs</ProjectItem>
       <ProjectItem ReplaceParameters="false" TargetFileName="readme.md">readme.md</ProjectItem>

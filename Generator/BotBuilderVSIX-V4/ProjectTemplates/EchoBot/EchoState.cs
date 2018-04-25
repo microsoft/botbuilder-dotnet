@@ -1,4 +1,4 @@
-﻿namespace AspNetCore_EchoBot_With_State
+﻿namespace $safeprojectname$
 {
     /// <summary>
     /// Class for storing conversation state. 

@@ -4,7 +4,7 @@ using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Core.Extensions;
 using Microsoft.Bot.Schema;
 
-namespace AspNetCore_EchoBot_With_State
+namespace $safeprojectname$
 {
     public class EchoBot : IBot
     {
