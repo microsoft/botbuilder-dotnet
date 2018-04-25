@@ -1,12 +1,12 @@
 <VSTemplate Version="3.0.0" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" Type="Project">
   <TemplateData>
-    <Name>EchoBot</Name>
+    <Name>Bot Framework</Name>
     <Description>Project template and extension to create bots using Microsoft Bot Framework</Description>
     <ProjectType>CSharp</ProjectType>
     <ProjectSubType>Bot Framework</ProjectSubType>
     <SortOrder>1000</SortOrder>
     <CreateNewFolder>true</CreateNewFolder>
-    <DefaultName>EchoBot</DefaultName>
+    <DefaultName>Simple Echo Bot Application</DefaultName>
     <ProvideDefaultName>true</ProvideDefaultName>
     <LocationField>Enabled</LocationField>
     <CreateInPlace>true</CreateInPlace>
