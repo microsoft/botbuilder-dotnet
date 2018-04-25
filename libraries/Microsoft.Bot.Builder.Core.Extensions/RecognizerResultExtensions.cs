@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions
             var topIntent = (string.Empty, 0.0d);
             foreach(var intent in result.Intents)
             {
-                var score = (double) intent.Value;
+                var score = (double) intent.Value["score"];
                 if (score > topIntent.Item2)
                 {
                     topIntent = (intent.Key, score);

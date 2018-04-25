@@ -2,15 +2,33 @@
   "Text": "fly from seattle to dallas at 3pm on delta",
   "AlteredText": null,
   "Intents": {
-    "Travel": 0.157086775,
-    "EntityTests": 0.0609059036,
-    "Weather_GetForecast": 0.03481206,
-    "None": 0.0343931019,
-    "Delivery": 0.00626269029,
-    "Cancel": 0.00511110062,
-    "SpecifyName": 0.00481634,
-    "Help": 0.00365795242,
-    "Greeting": 0.00115857017
+    "Travel": {
+      "score": 0.157086775
+    },
+    "EntityTests": {
+      "score": 0.0609059036
+    },
+    "Weather_GetForecast": {
+      "score": 0.03481206
+    },
+    "None": {
+      "score": 0.0343931019
+    },
+    "Delivery": {
+      "score": 0.00626269029
+    },
+    "Cancel": {
+      "score": 0.00511110062
+    },
+    "SpecifyName": {
+      "score": 0.00481634
+    },
+    "Help": {
+      "score": 0.00365795242
+    },
+    "Greeting": {
+      "score": 0.00115857017
+    }
   },
   "Entities": {
     "Name": null,

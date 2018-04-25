@@ -44,7 +44,7 @@ namespace Microsoft.Bot.Builder.Ai.LUIS.Tests
             Assert.AreEqual("My name is Emad", result.Text);Assert.IsNotNull(result.Intents);
             Assert.AreEqual(1, result.Intents.Count);
             Assert.IsNotNull(result.Intents["SpecifyName"]);
-            Assert.IsTrue((double)result.Intents["SpecifyName"] > 0 && (double)result.Intents["SpecifyName"] <= 1);
+            Assert.IsTrue((double)result.Intents["SpecifyName"]["score"] > 0 && (double)result.Intents["SpecifyName"]["score"] <= 1);
             Assert.IsNotNull(result.Entities);
             Assert.IsNotNull(result.Entities["Name"]);
             Assert.AreEqual("emad", (string)result.Entities["Name"].First);
@@ -71,7 +71,7 @@ namespace Microsoft.Bot.Builder.Ai.LUIS.Tests
             Assert.IsNotNull(result.Intents);
             Assert.IsTrue(result.Intents.Count > 1);
             Assert.IsNotNull(result.Intents["Delivery"]);
-            Assert.IsTrue((double)result.Intents["Delivery"] > 0 && (double)result.Intents["Delivery"] <= 1);
+            Assert.IsTrue((double)result.Intents["Delivery"]["score"] > 0 && (double)result.Intents["Delivery"]["score"] <= 1);
             Assert.AreEqual("Delivery", result.GetTopScoringIntent().intent);
             Assert.IsTrue(result.GetTopScoringIntent().score > 0);
             Assert.IsNotNull(result.Entities);
@@ -271,14 +271,21 @@ namespace Microsoft.Bot.Builder.Ai.LUIS.Tests
             }
             else if (!token1.Equals(token2))
             {
-                var val1 = (JValue)token1;
-                var val2 = (JValue)token2;
-                withinDelta = false;
-                if (compare &&
-                    double.TryParse((string)val1, out double num1)
-                            && double.TryParse((string)val2, out double num2))
+                if (token1.Type == token2.Type)
                 {
-                    withinDelta = Math.Abs(num1 - num2) < delta;
+                    var val1 = (JValue)token1;
+                    var val2 = (JValue)token2;
+                    withinDelta = false;
+                    if (compare &&
+                        double.TryParse((string)val1, out double num1)
+                                && double.TryParse((string)val2, out double num2))
+                    {
+                        withinDelta = Math.Abs(num1 - num2) < delta;
+                    }
+                }
+                else
+                {
+                    withinDelta = false;
                 }
             }
             return withinDelta;

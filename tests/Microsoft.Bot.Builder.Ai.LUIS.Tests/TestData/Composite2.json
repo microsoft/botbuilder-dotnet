@@ -2,15 +2,33 @@
   "text": "http://foo.com is where you can fly from seattle to dallas via denver",
   "alteredText": null,
   "intents": {
-    "EntityTests": 0.925834656,
-    "Weather_GetForecast": 0.120854057,
-    "Travel": 0.0274882857,
-    "None": 0.0162557829,
-    "Delivery": 0.00454941159,
-    "SpecifyName": 0.00400305446,
-    "Help": 0.00191241584,
-    "Cancel": 0.0008715141,
-    "Greeting": 0.000153755536
+    "EntityTests": {
+      "score": 0.925834656
+    },
+    "Weather_GetForecast": {
+      "score": 0.120854057
+    },
+    "Travel": {
+      "score": 0.0274882857
+    },
+    "None": {
+      "score": 0.0162557829
+    },
+    "Delivery": {
+      "score": 0.00454941159
+    },
+    "SpecifyName": {
+      "score": 0.00400305446
+    },
+    "Help": {
+      "score": 0.00191241584
+    },
+    "Cancel": {
+      "score": 0.0008715141
+    },
+    "Greeting": {
+      "score": 0.000153755536
+    }
   },
   "entities": {
     "$instance": {
