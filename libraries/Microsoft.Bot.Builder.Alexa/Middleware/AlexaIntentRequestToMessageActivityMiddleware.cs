@@ -56,11 +56,11 @@ namespace Microsoft.Bot.Builder.Alexa.Middleware
 
             await next();
         }
+    }
 
-        public enum RequestTransformPatterns
-        {
-            MessageActivityTextFromSinglePhraseSlotValue,
-            MessageActivityTextFromIntentAndAllSlotValues
-        }
+    public enum RequestTransformPatterns
+    {
+        MessageActivityTextFromSinglePhraseSlotValue,
+        MessageActivityTextFromIntentAndAllSlotValues
     }
 }

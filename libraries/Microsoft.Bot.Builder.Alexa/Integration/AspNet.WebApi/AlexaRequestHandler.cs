@@ -122,13 +122,11 @@ namespace Microsoft.Bot.Builder.Alexa.Integration.AspNet.WebApi
                 skillRequest,
                 botCallbackHandler);
 
-            var contractResolver = new DefaultContractResolver { NamingStrategy = new CamelCaseNamingStrategy() };
-
             var alexaResponseBodyJson = JsonConvert.SerializeObject(alexaResponseBody, Formatting.None,
                 new JsonSerializerSettings
                 {
                     NullValueHandling = NullValueHandling.Ignore,
-                    ContractResolver = contractResolver
+                    ContractResolver = new DefaultContractResolver { NamingStrategy = new CamelCaseNamingStrategy() }
                 });
 
             var response = request.CreateResponse(HttpStatusCode.OK);

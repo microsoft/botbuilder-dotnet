@@ -5,6 +5,9 @@ This adapter can be used to allow your bot to act as an endpoint for an Amazon A
 ## Adding the adapter and skills endpoint to your bot
 
 Currently there are integration libraries available for WebApi and .NET Core available for the adapter.
+When using the integration libraries a new endpoint for your Alexa skill is created at '/api/skillrequests'. 
+e.g. http://www.youbot.com/api/skillrequests.  This is the endpoint that you should configure within the Amazon Alexa
+Skills Developer portal as the endpoint for your skill.
 
 ### WebApi
 
@@ -22,7 +25,27 @@ When implementing your bot using WebApi, the integration layer for Alexa works t
 
 ### .NET Core
 
-TO BE COMPLETED
+An example of using the Alexa adapter with a bot built on Asp.Net Core. Again, The implementation of the 
+integration layer is based upon the same patterns used for the Bot Framework integration layer. 
+In Startup.cs you can configure your bot to use the Alexa adapter using the following;
+
+```cs
+        public void ConfigureServices(IServiceCollection services)
+        {
+            services.AddAlexaBot<EchoBot>(alexaOptions =>
+            {
+                alexaOptions.ValidateIncomingAlexaRequests = true;
+            });
+        }
+
+        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        {
+            app.UseDefaultFiles()
+                .UseStaticFiles()
+                .UseAlexa();
+        }
+```
 
 ## Default Alexa Request to Activity mapping
 

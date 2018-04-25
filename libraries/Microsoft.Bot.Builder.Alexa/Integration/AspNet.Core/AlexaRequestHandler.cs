@@ -41,8 +41,8 @@ namespace Microsoft.Bot.Builder.Alexa.Integration.AspNet.Core
             var memoryStream = new MemoryStream();
             request.Body.CopyTo(memoryStream);
             var requestBytes = memoryStream.ToArray();
-
             memoryStream.Position = 0;
+
             using (var bodyReader = new JsonTextReader(new StreamReader(memoryStream, Encoding.UTF8)))
             {
                 skillRequest = AlexaBotMessageSerializer.Deserialize<AlexaRequestBody>(bodyReader);
