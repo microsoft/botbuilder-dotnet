@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using Microsoft.Cognitive.LUIS;
 using Microsoft.Cognitive.LUIS.Models;
 using Newtonsoft.Json.Linq;
-using System.Text.RegularExpressions;
 using Microsoft.Bot.Builder.Core.Extensions;
 
 namespace Microsoft.Bot.Builder.Ai.LUIS
@@ -77,11 +76,16 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
             return recognizerResult;
         }
 
+        private static string NormalizedIntent(string intent)
+        {
+            return intent.Replace('.', '_');
+        }
+
         private static JObject GetIntents(LuisResult luisResult)
         {
             return luisResult.Intents != null ?
-                JObject.FromObject(luisResult.Intents.ToDictionary(i => i.Intent, i => i.Score ?? 0)) :
-                new JObject { [luisResult.TopScoringIntent.Intent] = luisResult.TopScoringIntent.Score ?? 0 };
+                JObject.FromObject(luisResult.Intents.ToDictionary(i => NormalizedIntent(i.Intent), i => i.Score ?? 0)) :
+                new JObject { [NormalizedIntent(luisResult.TopScoringIntent.Intent)] = luisResult.TopScoringIntent.Score ?? 0 };
         }
 
         private static JObject ExtractEntitiesAndMetadata(IList<EntityRecommendation> entities, IList<CompositeEntity> compositeEntities, bool verbose)
@@ -212,7 +216,7 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
             {
                 type = entity.Role;
             }
-            return Regex.Replace(type, "\\.", "_");
+            return type.Replace('.', '_');
         }
 
         private static IList<EntityRecommendation> PopulateCompositeEntity(CompositeEntity compositeEntity, IList<EntityRecommendation> entities, JObject entitiesAndMetadata, bool verbose)
