@@ -56,7 +56,7 @@ namespace Microsoft.Bot.Builder.Alexa.Tests
                 channelData: request);
 
             TestAdapter adapter = new TestAdapter(AlexaConversationReference)
-                .Use(new AlexaIntentRequestToMessageActivityMiddleware(AlexaIntentRequestToMessageActivityMiddleware.RequestTransformPatterns.MessageActivityTextFromIntentAndAllSlotValues));
+                .Use(new AlexaIntentRequestToMessageActivityMiddleware(RequestTransformPatterns.MessageActivityTextFromIntentAndAllSlotValues));
 
             await new TestFlow(adapter, (context) =>
                 {
