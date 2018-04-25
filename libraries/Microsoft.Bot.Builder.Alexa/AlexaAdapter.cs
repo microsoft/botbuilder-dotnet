@@ -11,7 +11,7 @@ namespace Microsoft.Bot.Builder.Alexa
     {
         private Dictionary<string, List<Activity>> Responses { get; set; }
 
-        public async Task<AlexaResponseBody> ProcessActivity(AlexaRequestBody alexaRequest, Func<ITurnContext, Task> callback)
+        public async Task<AlexaResponseBody> ProcessActivity(AlexaRequestBody alexaRequest, bool shouldEndSessionByDefault, Func<ITurnContext, Task> callback)
         {
             var activity = RequestToActivity(alexaRequest);
             BotAssert.ActivityNotNull(activity);
@@ -36,7 +36,7 @@ namespace Microsoft.Bot.Builder.Alexa
             try
             {
                 var activities = Responses.ContainsKey(key) ? Responses[key] : new List<Activity>();
-                var response = CreateResponseFromLastActivity(activities);
+                var response = CreateResponseFromLastActivity(activities, shouldEndSessionByDefault);
                 response.SessionAttributes = context.AlexaSessionAttributes();
                 return response;
             }
@@ -121,14 +121,14 @@ namespace Microsoft.Bot.Builder.Alexa
             return activity;
         }
 
-        private AlexaResponseBody CreateResponseFromLastActivity(IEnumerable<Activity> activities)
+        private AlexaResponseBody CreateResponseFromLastActivity(IEnumerable<Activity> activities, bool shouldEndSessionByDefault)
         {
             var response = new AlexaResponseBody()
             {
                 Version = "1.0",
                 Response = new AlexaResponse()
                 {
-                    ShouldEndSession = false
+                    ShouldEndSession = shouldEndSessionByDefault
                 }
             };
 
@@ -190,9 +190,15 @@ namespace Microsoft.Bot.Builder.Alexa
                 }
             }
 
-            if (activity.InputHint != null && activity.InputHint == InputHints.IgnoringInput)
+            switch (activity.InputHint)
             {
-                response.Response.ShouldEndSession = true;
+                case InputHints.IgnoringInput:
+                    response.Response.ShouldEndSession = true;
+                    break;
+                case InputHints.AcceptingInput:
+                case InputHints.ExpectingInput:
+                    response.Response.ShouldEndSession = false;
+                    break;
             }
 
             return response;

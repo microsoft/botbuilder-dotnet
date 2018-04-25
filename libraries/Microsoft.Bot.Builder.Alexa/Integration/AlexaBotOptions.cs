@@ -25,6 +25,7 @@ namespace Microsoft.Bot.Builder.Alexa.Integration
             _paths = new AlexaBotPaths();
 
             ValidateIncomingAlexaRequests = true;
+            ShouldEndSessionByDefault = false;
         }
 
         /// <summary>
@@ -35,5 +36,7 @@ namespace Microsoft.Bot.Builder.Alexa.Integration
         public AlexaBotPaths Paths { get => _paths; }
 
         public bool ValidateIncomingAlexaRequests { get; set; }
+
+        public bool ShouldEndSessionByDefault { get; set; }
     }
 }

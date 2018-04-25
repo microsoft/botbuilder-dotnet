@@ -31,11 +31,13 @@ namespace Microsoft.Bot.Builder.Alexa.Integration.AspNet.WebApi
 
         private readonly AlexaAdapter _alexaAdapter;
         private readonly bool _validateIncomingAlexaRequests;
+        private readonly bool _shouldEndSessionByDefault;
 
-        public AlexaRequestHandler(AlexaAdapter alexaAdapter, bool validateIncomingAlexaRequests = true)
+        public AlexaRequestHandler(AlexaAdapter alexaAdapter, bool validateIncomingAlexaRequests = true, bool shouldEndSessionByDefault = true)
         {
             _alexaAdapter = alexaAdapter;
             _validateIncomingAlexaRequests = validateIncomingAlexaRequests;
+            _shouldEndSessionByDefault = shouldEndSessionByDefault;
         }
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
@@ -120,6 +122,7 @@ namespace Microsoft.Bot.Builder.Alexa.Integration.AspNet.WebApi
 
             var alexaResponseBody = await alexaAdapter.ProcessActivity(
                 skillRequest,
+                _shouldEndSessionByDefault,
                 botCallbackHandler);
 
             var alexaResponseBodyJson = JsonConvert.SerializeObject(alexaResponseBody, Formatting.None,

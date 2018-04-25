@@ -27,11 +27,13 @@ namespace Microsoft.Bot.Builder.Alexa.Integration.AspNet.Core
 
         private readonly AlexaAdapter _alexaAdapter;
         private readonly bool _validateIncomingAlexaRequests;
+        private readonly bool _shouldEndSessionByDefault;
 
-        public AlexaRequestHandler(AlexaAdapter alexaAdapter, bool validateIncomingAlexaRequests)
+        public AlexaRequestHandler(AlexaAdapter alexaAdapter, bool validateIncomingAlexaRequests, bool shouldEndSessionByDefault)
         {
             _alexaAdapter = alexaAdapter;
             _validateIncomingAlexaRequests = validateIncomingAlexaRequests;
+            _shouldEndSessionByDefault = shouldEndSessionByDefault;
         }
        
         protected async Task<AlexaResponseBody> ProcessMessageRequestAsync(HttpRequest request, AlexaAdapter alexaAdapter, Func<ITurnContext, Task> botCallbackHandler)
@@ -62,6 +64,7 @@ namespace Microsoft.Bot.Builder.Alexa.Integration.AspNet.Core
 
             var alexaResponseBody = await alexaAdapter.ProcessActivity(
                     skillRequest,
+                    _shouldEndSessionByDefault,
                     botCallbackHandler);
 
             return alexaResponseBody;
