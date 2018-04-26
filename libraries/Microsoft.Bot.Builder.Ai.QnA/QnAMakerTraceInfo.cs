@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Ai.QnA
@@ -11,6 +12,12 @@ namespace Microsoft.Bot.Builder.Ai.QnA
     /// </summary>
     public class QnAMakerTraceInfo
     {
+        /// <summary>
+        /// Message which instigated the query to QnAMaker
+        /// </summary>
+        [JsonProperty("message")]
+        public IMessageActivity Message { set; get; }
+
         /// <summary>
         /// Results that QnAMaker returned
         /// </summary>
