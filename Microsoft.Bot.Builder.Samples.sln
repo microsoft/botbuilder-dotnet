@@ -15,6 +15,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspNetCore-ConversationUpda
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspNetCore-RichCards-Bot", "samples-final\AspNetCore-RichCards-Bot\AspNetCore-RichCards-Bot.csproj", "{68DFB72F-8348-4521-918E-8A86B00E1BA5}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspNetCore-Luis-Dispatch-Bot", "samples-final\AspNetCore-Luis-Dispatch-Bot\AspNetCore-Luis-Dispatch-Bot.csproj", "{190D9D9B-34C2-4597-B3F3-27EF4BB2A032}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -37,14 +39,18 @@ Global
 		{D4DBD202-CF46-4FB2-8A51-94DD1B9EBF39}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D4DBD202-CF46-4FB2-8A51-94DD1B9EBF39}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D4DBD202-CF46-4FB2-8A51-94DD1B9EBF39}.Release|Any CPU.Build.0 = Release|Any CPU
-		{68DFB72F-8348-4521-918E-8A86B00E1BA5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{68DFB72F-8348-4521-918E-8A86B00E1BA5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{68DFB72F-8348-4521-918E-8A86B00E1BA5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{68DFB72F-8348-4521-918E-8A86B00E1BA5}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7A157D63-57D0-40F3-9F5F-3F868B3F9690}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{7A157D63-57D0-40F3-9F5F-3F868B3F9690}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7A157D63-57D0-40F3-9F5F-3F868B3F9690}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7A157D63-57D0-40F3-9F5F-3F868B3F9690}.Release|Any CPU.Build.0 = Release|Any CPU
+		{68DFB72F-8348-4521-918E-8A86B00E1BA5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{68DFB72F-8348-4521-918E-8A86B00E1BA5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{68DFB72F-8348-4521-918E-8A86B00E1BA5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{68DFB72F-8348-4521-918E-8A86B00E1BA5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{190D9D9B-34C2-4597-B3F3-27EF4BB2A032}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{190D9D9B-34C2-4597-B3F3-27EF4BB2A032}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{190D9D9B-34C2-4597-B3F3-27EF4BB2A032}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{190D9D9B-34C2-4597-B3F3-27EF4BB2A032}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
