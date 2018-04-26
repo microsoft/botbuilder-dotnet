@@ -80,18 +80,6 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
         [TestMethod]
         [TestCategory("AI")]
         [TestCategory("Locale Converter")]
-        public void LocaleConverter_Range()
-        {
-            LocaleConverter localeConverter = LocaleConverter.Converter;
-
-            var convertedMessage = localeConverter.Convert("from 10/21/2018 to 10/23/2018", "en-us", "fr-fr");
-            Assert.IsNotNull(convertedMessage);
-            Assert.AreEqual("21/10/2018", convertedMessage);
-        }
-
-        [TestMethod]
-        [TestCategory("AI")]
-        [TestCategory("Locale Converter")]
         public void LocaleConverter_DateOnly()
         {
             LocaleConverter localeConverter = LocaleConverter.Converter;
@@ -111,6 +99,42 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
             var convertedMessage = localeConverter.Convert("half past 9 am", "en-us", "fr-fr");
             Assert.IsNotNull(convertedMessage);
             Assert.AreEqual("09:30 AM", convertedMessage);
+        }
+
+        [TestMethod]
+        [TestCategory("AI")]
+        [TestCategory("Locale Converter")]
+        public void LocaleConverter_DateAndTimeRange()
+        {
+            LocaleConverter localeConverter = LocaleConverter.Converter;
+
+            var convertedMessage = localeConverter.Convert("from 10/21/2018 9 am to 10/23/2018 1 pm", "en-us", "fr-fr");
+            Assert.IsNotNull(convertedMessage);
+            Assert.AreEqual("21/10/2018 09:00 AM - 23/10/2018 01:00 PM", convertedMessage);
+        }
+
+        [TestMethod]
+        [TestCategory("AI")]
+        [TestCategory("Locale Converter")]
+        public void LocaleConverter_DateRange()
+        {
+            LocaleConverter localeConverter = LocaleConverter.Converter;
+
+            var convertedMessage = localeConverter.Convert("from 10/21/2018 to 10/23/2018", "en-us", "fr-fr");
+            Assert.IsNotNull(convertedMessage);
+            Assert.AreEqual("21/10/2018 - 23/10/2018", convertedMessage);
+        }
+
+        [TestMethod]
+        [TestCategory("AI")]
+        [TestCategory("Locale Converter")]
+        public void LocaleConverter_TimeRange()
+        {
+            LocaleConverter localeConverter = LocaleConverter.Converter;
+
+            var convertedMessage = localeConverter.Convert("from 9 am to 1 pm", "en-us", "fr-fr");
+            Assert.IsNotNull(convertedMessage);
+            Assert.AreEqual("09:00 AM - 01:00 PM", convertedMessage);
         }
     }
 }
