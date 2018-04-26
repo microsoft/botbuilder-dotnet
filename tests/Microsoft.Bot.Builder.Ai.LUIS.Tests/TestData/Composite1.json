@@ -2,15 +2,33 @@
   "text": "12 years old and 3 days old and monday july 3rd and every monday and between 3am and 5:30am and 4 acres and 4 pico meters and chrimc@hotmail.com and $4 and $4.25 and 32 and 210.4 and first and 10% and 10.5% and 425-555-1234 and 3 degrees and -27.5 degrees c",
   "alteredText": null,
   "intents": {
-    "EntityTests": 0.9960467,
-    "None": 0.06112797,
-    "Weather_GetForecast": 0.05591919,
-    "Travel": 0.0135286953,
-    "Delivery": 0.00432307832,
-    "SpecifyName": 0.00216925936,
-    "Help": 0.000120375247,
-    "Cancel": 4.85684177E-05,
-    "Greeting": 2.00913087E-06
+    "EntityTests": {
+      "score": 0.9960467
+    },
+    "None": {
+      "score": 0.06112797
+    },
+    "Weather_GetForecast": {
+      "score": 0.05591919
+    },
+    "Travel": {
+      "score": 0.0135286953
+    },
+    "Delivery": {
+      "score": 0.00432307832
+    },
+    "SpecifyName": {
+      "score": 0.00216925936
+    },
+    "Help": {
+      "score": 0.000120375247
+    },
+    "Cancel": {
+      "score": 4.85684177E-05
+    },
+    "Greeting": {
+      "score": 2.00913087E-06
+    }
   },
   "entities": {
     "$instance": {

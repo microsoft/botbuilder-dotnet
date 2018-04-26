@@ -2,15 +2,33 @@
   "text": "http://foo.com is where you can fly from seattle to dallas via denver",
   "alteredText": null,
   "intents": {
-    "EntityTests": 0.925834656,
-    "Weather_GetForecast": 0.120854057,
-    "Travel": 0.0274882857,
-    "None": 0.0162557829,
-    "Delivery": 0.00454941159,
-    "SpecifyName": 0.00400305446,
-    "Help": 0.00191241584,
-    "Cancel": 0.0008715141,
-    "Greeting": 0.000153755536
+    "EntityTests": {
+      "score": 0.9109604
+    },
+    "Weather_GetForecast": {
+      "score": 0.121306971
+    },
+    "Travel": {
+      "score": 0.0273477212
+    },
+    "None": {
+      "score": 0.01634177
+    },
+    "SpecifyName": {
+      "score": 0.00471411133
+    },
+    "Delivery": {
+      "score": 0.0045661875
+    },
+    "Help": {
+      "score": 0.0020663538
+    },
+    "Cancel": {
+      "score": 0.0009918148
+    },
+    "Greeting": {
+      "score": 0.000153730318
+    }
   },
   "entities": {
     "$instance": {
@@ -19,7 +37,7 @@
           "startIndex": 0,
           "endIndex": 69,
           "text": "http : / / foo . com is where you can fly from seattle to dallas via denver",
-          "score": 0.8777316
+          "score": 0.928562
         }
       ]
     },
@@ -31,7 +49,7 @@
               "startIndex": 63,
               "endIndex": 69,
               "text": "denver",
-              "score": 0.8265362
+              "score": 0.81954056
             }
           ],
           "builtin_url": [
@@ -47,7 +65,7 @@
               "startIndex": 41,
               "endIndex": 48,
               "text": "seattle",
-              "score": 0.9893058
+              "score": 0.975187838
             }
           ],
           "To": [
@@ -55,7 +73,7 @@
               "startIndex": 52,
               "endIndex": 58,
               "text": "dallas",
-              "score": 0.987623036
+              "score": 0.984576344
             }
           ]
         },
@@ -78,53 +96,53 @@
     "query": "http://foo.com is where you can fly from seattle to dallas via denver",
     "topScoringIntent": {
       "intent": "EntityTests",
-      "score": 0.925834656,
+      "score": 0.9109604,
       "actions": null
     },
     "intents": [
       {
         "intent": "EntityTests",
-        "score": 0.925834656,
+        "score": 0.9109604,
         "actions": null
       },
       {
         "intent": "Weather.GetForecast",
-        "score": 0.120854057,
+        "score": 0.121306971,
         "actions": null
       },
       {
         "intent": "Travel",
-        "score": 0.0274882857,
+        "score": 0.0273477212,
         "actions": null
       },
       {
         "intent": "None",
-        "score": 0.0162557829,
-        "actions": null
-      },
-      {
-        "intent": "Delivery",
-        "score": 0.00454941159,
+        "score": 0.01634177,
         "actions": null
       },
       {
         "intent": "SpecifyName",
-        "score": 0.00400305446,
+        "score": 0.00471411133,
+        "actions": null
+      },
+      {
+        "intent": "Delivery",
+        "score": 0.0045661875,
         "actions": null
       },
       {
         "intent": "Help",
-        "score": 0.00191241584,
+        "score": 0.0020663538,
         "actions": null
       },
       {
         "intent": "Cancel",
-        "score": 0.0008715141,
+        "score": 0.0009918148,
         "actions": null
       },
       {
         "intent": "Greeting",
-        "score": 0.000153755536,
+        "score": 0.000153730318,
         "actions": null
       }
     ],
@@ -135,7 +153,7 @@
         "type": "City::To",
         "startIndex": 52,
         "endIndex": 57,
-        "score": 0.987623036,
+        "score": 0.984576344,
         "resolution": null
       },
       {
@@ -144,7 +162,7 @@
         "type": "City::From",
         "startIndex": 41,
         "endIndex": 47,
-        "score": 0.9893058,
+        "score": 0.975187838,
         "resolution": null
       },
       {
@@ -153,7 +171,7 @@
         "type": "City",
         "startIndex": 63,
         "endIndex": 68,
-        "score": 0.8265362,
+        "score": 0.81954056,
         "resolution": null
       },
       {
@@ -162,7 +180,7 @@
         "type": "Composite2",
         "startIndex": 0,
         "endIndex": 68,
-        "score": 0.8777316,
+        "score": 0.928562,
         "resolution": null
       },
       {
