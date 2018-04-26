@@ -8,12 +8,11 @@
 // Changes may cause incorrect behavior and will be lost if the code is
 // regenerated.
 // </auto-generated>
-using Microsoft.Bot.Builder.Core.Extensions;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 namespace Microsoft.Bot.Builder.Ai.LUIS.Tests
 {
-    public class Contoso_App: IRecognizerConvert
+    public class Contoso_App: Microsoft.Bot.Builder.Core.Extensions.IRecognizerConvert
     {
         public string Text;
         public string AlteredText;
@@ -28,7 +27,7 @@ namespace Microsoft.Bot.Builder.Ai.LUIS.Tests
             Travel, 
             Weather_GetForecast
         };
-        public Dictionary<Intent, double> Intents;
+        public Dictionary<Intent, Microsoft.Bot.Builder.Ai.LUIS.IntentData> Intents;
 
         public class _Entities
         {
