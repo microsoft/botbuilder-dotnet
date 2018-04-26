@@ -3,31 +3,31 @@
   "alteredText": null,
   "intents": {
     "EntityTests": {
-      "score": 0.9960467
+      "score": 0.9924269
     },
     "None": {
-      "score": 0.06112797
+      "score": 0.06038856
     },
     "Weather_GetForecast": {
-      "score": 0.05591919
+      "score": 0.0566830374
     },
     "Travel": {
-      "score": 0.0135286953
+      "score": 0.0127096456
     },
     "Delivery": {
-      "score": 0.00432307832
+      "score": 0.004526181
     },
     "SpecifyName": {
-      "score": 0.00216925936
+      "score": 0.00224204571
     },
     "Help": {
-      "score": 0.000120375247
+      "score": 0.000150823209
     },
     "Cancel": {
-      "score": 4.85684177E-05
+      "score": 6.610989E-05
     },
     "Greeting": {
-      "score": 2.00913087E-06
+      "score": 1.69148677E-06
     }
   },
   "entities": {
@@ -37,7 +37,7 @@
           "startIndex": 0,
           "endIndex": 257,
           "text": "12 years old and 3 days old and monday july 3rd and every monday and between 3am and 5 : 30am and 4 acres and 4 pico meters and chrimc @ hotmail . com and $ 4 and $ 4 . 25 and 32 and 210 . 4 and first and 10 % and 10 . 5 % and 425 - 555 - 1234 and 3 degrees and - 27 . 5 degrees c",
-          "score": 0.7444669
+          "score": 0.7437676
         }
       ]
     },
@@ -48,230 +48,195 @@
             {
               "startIndex": 0,
               "endIndex": 12,
-              "text": "12 years old",
-              "score": null
+              "text": "12 years old"
             },
             {
               "startIndex": 17,
               "endIndex": 27,
-              "text": "3 days old",
-              "score": null
+              "text": "3 days old"
             }
           ],
           "builtin_datetime": [
             {
               "startIndex": 0,
               "endIndex": 8,
-              "text": "12 years",
-              "score": null
+              "text": "12 years"
             },
             {
               "startIndex": 17,
               "endIndex": 23,
-              "text": "3 days",
-              "score": null
+              "text": "3 days"
             },
             {
               "startIndex": 32,
               "endIndex": 47,
-              "text": "monday july 3rd",
-              "score": null
+              "text": "monday july 3rd"
             },
             {
               "startIndex": 52,
               "endIndex": 64,
-              "text": "every monday",
-              "score": null
+              "text": "every monday"
             },
             {
               "startIndex": 69,
               "endIndex": 91,
-              "text": "between 3am and 5:30am",
-              "score": null
+              "text": "between 3am and 5:30am"
             }
           ],
           "builtin_dimension": [
             {
               "startIndex": 96,
               "endIndex": 103,
-              "text": "4 acres",
-              "score": null
+              "text": "4 acres"
             },
             {
               "startIndex": 108,
               "endIndex": 121,
-              "text": "4 pico meters",
-              "score": null
+              "text": "4 pico meters"
             }
           ],
           "builtin_email": [
             {
               "startIndex": 126,
               "endIndex": 144,
-              "text": "chrimc@hotmail.com",
-              "score": null
+              "text": "chrimc@hotmail.com"
             }
           ],
           "builtin_money": [
             {
               "startIndex": 149,
               "endIndex": 151,
-              "text": "$4",
-              "score": null
+              "text": "$4"
             },
             {
               "startIndex": 156,
               "endIndex": 161,
-              "text": "$4.25",
-              "score": null
+              "text": "$4.25"
             }
           ],
           "builtin_number": [
             {
               "startIndex": 0,
               "endIndex": 2,
-              "text": "12",
-              "score": null
+              "text": "12"
             },
             {
               "startIndex": 17,
               "endIndex": 18,
-              "text": "3",
-              "score": null
+              "text": "3"
             },
             {
               "startIndex": 85,
               "endIndex": 86,
-              "text": "5",
-              "score": null
+              "text": "5"
             },
             {
               "startIndex": 96,
               "endIndex": 97,
-              "text": "4",
-              "score": null
+              "text": "4"
             },
             {
               "startIndex": 108,
               "endIndex": 109,
-              "text": "4",
-              "score": null
+              "text": "4"
             },
             {
               "startIndex": 150,
               "endIndex": 151,
-              "text": "4",
-              "score": null
+              "text": "4"
             },
             {
               "startIndex": 157,
               "endIndex": 161,
-              "text": "4.25",
-              "score": null
+              "text": "4.25"
             },
             {
               "startIndex": 166,
               "endIndex": 168,
-              "text": "32",
-              "score": null
+              "text": "32"
             },
             {
               "startIndex": 173,
               "endIndex": 178,
-              "text": "210.4",
-              "score": null
+              "text": "210.4"
             },
             {
               "startIndex": 193,
               "endIndex": 195,
-              "text": "10",
-              "score": null
+              "text": "10"
             },
             {
               "startIndex": 201,
               "endIndex": 205,
-              "text": "10.5",
-              "score": null
+              "text": "10.5"
             },
             {
               "startIndex": 211,
               "endIndex": 214,
-              "text": "425",
-              "score": null
+              "text": "425"
             },
             {
               "startIndex": 215,
               "endIndex": 218,
-              "text": "555",
-              "score": null
+              "text": "555"
             },
             {
               "startIndex": 219,
               "endIndex": 223,
-              "text": "1234",
-              "score": null
+              "text": "1234"
             },
             {
               "startIndex": 228,
               "endIndex": 229,
-              "text": "3",
-              "score": null
+              "text": "3"
             },
             {
               "startIndex": 242,
               "endIndex": 247,
-              "text": "-27.5",
-              "score": null
+              "text": "-27.5"
             }
           ],
           "builtin_ordinal": [
             {
               "startIndex": 44,
               "endIndex": 47,
-              "text": "3rd",
-              "score": null
+              "text": "3rd"
             },
             {
               "startIndex": 183,
               "endIndex": 188,
-              "text": "first",
-              "score": null
+              "text": "first"
             }
           ],
           "builtin_percentage": [
             {
               "startIndex": 193,
               "endIndex": 196,
-              "text": "10%",
-              "score": null
+              "text": "10%"
             },
             {
               "startIndex": 201,
               "endIndex": 206,
-              "text": "10.5%",
-              "score": null
+              "text": "10.5%"
             }
           ],
           "builtin_phonenumber": [
             {
               "startIndex": 211,
               "endIndex": 223,
-              "text": "425-555-1234",
-              "score": null
+              "text": "425-555-1234"
             }
           ],
           "builtin_temperature": [
             {
               "startIndex": 228,
               "endIndex": 237,
-              "text": "3 degrees",
-              "score": null
+              "text": "3 degrees"
             },
             {
               "startIndex": 242,
               "endIndex": 257,
-              "text": "-27.5 degrees c",
-              "score": null
+              "text": "-27.5 degrees c"
             }
           ]
         },
@@ -386,53 +351,53 @@
     "query": "12 years old and 3 days old and monday july 3rd and every monday and between 3am and 5:30am and 4 acres and 4 pico meters and chrimc@hotmail.com and $4 and $4.25 and 32 and 210.4 and first and 10% and 10.5% and 425-555-1234 and 3 degrees and -27.5 degrees c",
     "topScoringIntent": {
       "intent": "EntityTests",
-      "score": 0.9960467,
+      "score": 0.9924269,
       "actions": null
     },
     "intents": [
       {
         "intent": "EntityTests",
-        "score": 0.9960467,
+        "score": 0.9924269,
         "actions": null
       },
       {
         "intent": "None",
-        "score": 0.06112797,
+        "score": 0.06038856,
         "actions": null
       },
       {
         "intent": "Weather.GetForecast",
-        "score": 0.05591919,
+        "score": 0.0566830374,
         "actions": null
       },
       {
         "intent": "Travel",
-        "score": 0.0135286953,
+        "score": 0.0127096456,
         "actions": null
       },
       {
         "intent": "Delivery",
-        "score": 0.00432307832,
+        "score": 0.004526181,
         "actions": null
       },
       {
         "intent": "SpecifyName",
-        "score": 0.00216925936,
+        "score": 0.00224204571,
         "actions": null
       },
       {
         "intent": "Help",
-        "score": 0.000120375247,
+        "score": 0.000150823209,
         "actions": null
       },
       {
         "intent": "Cancel",
-        "score": 4.85684177E-05,
+        "score": 6.610989E-05,
         "actions": null
       },
       {
         "intent": "Greeting",
-        "score": 2.00913087E-06,
+        "score": 1.69148677E-06,
         "actions": null
       }
     ],
@@ -467,7 +432,7 @@
         "type": "Composite1",
         "startIndex": 0,
         "endIndex": 256,
-        "score": 0.7444669,
+        "score": 0.7437676,
         "resolution": null
       },
       {
