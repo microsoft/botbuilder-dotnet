@@ -7,7 +7,7 @@ using Microsoft.Bot.Builder.Ai.LUIS;
 using Microsoft.Bot.Builder.Ai.QnA;
 using Microsoft.Bot.Builder.Core.Extensions;
 using Microsoft.Bot.Schema;
-
+using Microsoft.Extensions.Configuration;
 
 namespace AspNetCore_Luis_Dispatch_Bot
 {
@@ -30,21 +30,30 @@ namespace AspNetCore_Luis_Dispatch_Bot
     /// </summary>
     public class LuisDispatchBot : IBot
     {
-        public LuisDispatchBot() { }
-        private static QnAMakerOptions qnaOptions = new QnAMakerOptions
+        public LuisDispatchBot(IConfiguration configuration)
         {
-            // add subscription key for QnA and knowledge base ID
-            SubscriptionKey = "<YOUR-QNAMAKER-SUBSCRIPTION-KEY>",
-            KnowledgeBaseId = "<QNAMAKER-KB-ID>"
-        };
+            var (luisModelId, luisSubscriptionId, luisUri) = Startup.GetLuisConfiguration(configuration, "HomeAutomation");
+            this.luisModelHomeAutomation = new LuisModel(luisModelId, luisSubscriptionId, luisUri);
+
+            (luisModelId, luisSubscriptionId, luisUri) = Startup.GetLuisConfiguration(configuration, "Weather");
+            this.luisModelWeather = new LuisModel(luisModelId, luisSubscriptionId, luisUri);
+
+            var (knowledgeBaseId, subscriptionKey) = Startup.GetQnAMakerConfiguration(configuration);
+            this.qnaOptions = new QnAMakerOptions
+            {
+                // add subscription key for QnA and knowledge base ID
+                SubscriptionKey = subscriptionKey,
+                KnowledgeBaseId = knowledgeBaseId
+            };
+        }
+
+        private QnAMakerOptions qnaOptions;
 
         // App ID for a LUIS model named "homeautomation"
-        private static LuisModel luisModel1 =
-            new LuisModel("<YOUR-LUIS-APP-ID>", "<YOUR-LUIS-SUBSCRIPTION-KEY>", new System.Uri("https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/"));
+        private LuisModel luisModelHomeAutomation;
 
         // App ID for a LUIS model named "weather"
-        private static LuisModel luisModel2 =
-            new LuisModel("YOUR-LUIS-APP-ID", "<YOUR-LUIS-SUBSCRIPTION-KEY>", new System.Uri("https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/"));
+        private LuisModel luisModelWeather;
 
         public async Task OnTurn(ITurnContext context)
         {
@@ -75,7 +84,7 @@ namespace AspNetCore_Luis_Dispatch_Bot
                         case "l_homeautomation":
                             await context.SendActivity("Sending your request to the home automation system ...");
 
-                            luisRecognizer1 = new LuisRecognizer(luisModel1);
+                            luisRecognizer1 = new LuisRecognizer(this.luisModelHomeAutomation);
                             recognizerResult = await luisRecognizer1.Recognize(message.Text, System.Threading.CancellationToken.None);                            
                             
                             // list the intents
@@ -105,7 +114,7 @@ namespace AspNetCore_Luis_Dispatch_Bot
                             break;
                         case "l_weather":
                             await context.SendActivity("Sending your request to the weather system ...");
-                            luisRecognizer2 = new LuisRecognizer(luisModel2);
+                            luisRecognizer2 = new LuisRecognizer(this.luisModelWeather);
                             recognizerResult = await luisRecognizer2.Recognize(message.Text, System.Threading.CancellationToken.None);
 
                             // list the intents
@@ -138,7 +147,7 @@ namespace AspNetCore_Luis_Dispatch_Bot
                         // You can provide logic here to handle the known None intent (none of the above).
                         // In this example we fall through to the QnA intent.
                         case "q_faq":
-                            QnAMaker qnaMaker = new QnAMaker(qnaOptions);
+                            QnAMaker qnaMaker = new QnAMaker(this.qnaOptions);
                             var messageActivity = context.Activity.AsMessageActivity();
                             if (!string.IsNullOrEmpty(messageActivity.Text))
                             {
