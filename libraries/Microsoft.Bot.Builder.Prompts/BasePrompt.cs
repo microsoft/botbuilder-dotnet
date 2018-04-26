@@ -1,72 +1,12 @@
-﻿using Microsoft.Bot.Schema;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
 using System.Threading.Tasks;
+using Microsoft.Bot.Schema;
 using static Microsoft.Bot.Builder.Prompts.PromptValidatorEx;
 
 namespace Microsoft.Bot.Builder.Prompts
 {
-    /// <summary>
-    /// Predefined recognition result status strings.
-    /// </summary>
-    /// <seealso cref="PromptResult"/>
-    /// <seealso cref="BasePrompt{T}"/>
-    public class PromptStatus
-    {
-        /// <summary>
-        /// The input was not recognized.
-        /// </summary>
-        public const string NotRecognized = "NotRecognized";
-
-        /// <summary>
-        /// The input was recognized and validated.
-        /// </summary>
-        public const string Recognized = "Recognized";
-
-        /// <summary>
-        /// Validation failed because the recognized value is too small.
-        /// </summary>
-        public const string TooSmall = "TooSmall";
-
-        /// <summary>
-        /// Validation failed because the recognized value is too large.
-        /// </summary>
-        public const string TooBig = "TooBig";
-
-        /// <summary>
-        /// Validation failed because the recognized value is out of range.
-        /// </summary>
-        public const string OutOfRange = "OutOfRange";
-    }
-
-    /// <summary>
-    /// Represents the prompt recognition result.
-    /// </summary>
-    /// <seealso cref="PromptStatus"/>
-    /// <seealso cref="BasePrompt{T}"/>
-    public class PromptResult
-    {
-        /// <summary>
-        /// Creates a <see cref="PromptResult"/> object with a default
-        /// <see cref="Status"/> of <see cref="PromptStatus.NotRecognized"/>.
-        /// </summary>
-        public PromptResult()
-        {
-            Status = PromptStatus.NotRecognized;
-        }
-
-        /// <summary>
-        /// The recognition result status.
-        /// </summary>
-        public string Status { get; set; }
-
-        /// <summary>
-        /// Indicates whether the input was recognized and validated.
-        /// </summary>
-        /// <returns>True if the input was recognized and validated.</returns>
-        public bool Succeeded() { return Status == PromptStatus.Recognized; }
-    }
 
     /// <summary>
     /// Represents a user prompt utility class, that includes an optional input validator.

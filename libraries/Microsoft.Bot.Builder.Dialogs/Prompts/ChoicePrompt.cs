@@ -12,7 +12,11 @@ namespace Microsoft.Bot.Builder.Dialogs
 {
     public class ChoicePromptOptions : PromptOptions
     {
-        public List<Choice> Choices { get; set; }
+        public List<Choice> Choices
+        {
+            get { return GetProperty<List<Choice>>(nameof(Choices)); }
+            set { this[nameof(Choices)] = value; }
+        }
     }
 
     public class ChoicePrompt : Prompt<ChoiceResult>
