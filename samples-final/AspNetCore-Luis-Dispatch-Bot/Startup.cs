@@ -30,15 +30,14 @@ namespace AspNetCore_Luis_Dispatch_Bot
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSingleton(this.Configuration);
             services.AddBot<LuisDispatchBot>(options =>
             {
                 options.CredentialProvider = new ConfigurationCredentialProvider(Configuration);
 
-                string luisModelId = "<Your LUIS app ID from cDispatch here>";
-                string luisSubscriptionKey = "<Your LUIS Subscription Key here>";
-                Uri luisUri = new Uri("https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/");
+                var (luisModelId, luisSubscriptionId, luisUri) = GetLuisConfiguration(this.Configuration, "Dispatcher");
 
-                var luisModel = new LuisModel(luisModelId, luisSubscriptionKey, luisUri);
+                var luisModel = new LuisModel(luisModelId, luisSubscriptionId, luisUri);
 
                 // If you want to get all intents scorings, add verbose in luisOptions
                 var luisOptions = new LuisRequest { Verbose = true };
@@ -59,6 +58,21 @@ namespace AspNetCore_Luis_Dispatch_Bot
             app.UseDefaultFiles()
                 .UseStaticFiles()
                 .UseBotFramework();
+        }
+
+        public static (string modelId, string subscriptionId, Uri uri) GetLuisConfiguration(IConfiguration configuration, string serviceName)
+        {
+            var modelId = configuration.GetSection($"Luis-ModelId-{serviceName}")?.Value;
+            var subscriptionId = configuration.GetSection("Luis-SubscriptionId")?.Value;
+            var uri = new Uri(configuration.GetSection("Luis-Url")?.Value);
+            return (modelId, subscriptionId, uri);
+        }
+
+        public static (string knowledgeBaseId, string subscriptionKey) GetQnAMakerConfiguration(IConfiguration configuration)
+        {
+            var knowledgeBaseId = configuration.GetSection("QnQMaker-KnowledgeBaseId")?.Value;
+            var subscriptionKey = configuration.GetSection("QnAMaker-SubscriptionKey")?.Value;
+            return (knowledgeBaseId, subscriptionKey);
         }
     }
 }
