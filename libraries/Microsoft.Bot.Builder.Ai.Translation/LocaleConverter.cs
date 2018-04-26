@@ -6,6 +6,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.Recognizers.Text;
 using Microsoft.Recognizers.Text.DateTime;
@@ -217,13 +218,13 @@ namespace Microsoft.Bot.Builder.Ai.Translation
             {
                 if (date.type == "date")
                 {
-                    processedMessage = processedMessage.Replace(date.Text, String.Format(_mapLocaleToFunction[toLocale].DateFormat, date.dateTime));
+                    processedMessage = Regex.Replace(processedMessage, $"\\b{date.Text}\\b", String.Format(_mapLocaleToFunction[toLocale].DateFormat, date.dateTime), RegexOptions.Singleline | RegexOptions.IgnoreCase);
                 }
                 else
                 {
                     var convertedDate = String.Format(_mapLocaleToFunction[toLocale].DateFormat, date.dateTime);
                     var convertedTime = String.Format(_mapLocaleToFunction[toLocale].TimeFormat, date.dateTime);
-                    processedMessage = processedMessage.Replace(date.Text, $"{convertedDate} {convertedTime}");
+                    processedMessage = Regex.Replace(processedMessage, $"\\b{date.Text}\\b", $"{convertedDate} {convertedTime}", RegexOptions.Singleline | RegexOptions.IgnoreCase);
                 }
             }
             return processedMessage;
