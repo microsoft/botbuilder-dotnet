@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System.Collections.Generic;
+
 namespace Microsoft.Bot.Builder.Dialogs
 {
     /// <summary>
@@ -16,6 +18,11 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <summary>
         /// The instances persisted state.
         /// </summary>
-        public object State { get; set; }
+        public IDictionary<string, object> State { get; set; }
+
+        /// <summary>
+        /// Used when the instance is a Waterfall.
+        /// </summary>
+        public int Step { get; set; }
     }
 }
