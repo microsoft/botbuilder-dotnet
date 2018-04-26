@@ -56,8 +56,7 @@
             {
               "startIndex": 0,
               "endIndex": 14,
-              "text": "http://foo.com",
-              "score": null
+              "text": "http://foo.com"
             }
           ],
           "From": [
