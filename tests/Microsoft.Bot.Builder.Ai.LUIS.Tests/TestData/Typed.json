@@ -3,31 +3,31 @@
   "AlteredText": null,
   "Intents": {
     "Travel": {
-      "score": 0.157086775
+      "score": 0.162418559
     },
     "EntityTests": {
-      "score": 0.0609059036
+      "score": 0.0377123132
     },
     "Weather_GetForecast": {
-      "score": 0.03481206
+      "score": 0.0347674862
     },
     "None": {
-      "score": 0.0343931019
+      "score": 0.0343242735
     },
     "Delivery": {
-      "score": 0.00626269029
+      "score": 0.00620134128
     },
     "Cancel": {
-      "score": 0.00511110062
+      "score": 0.00543635339
     },
     "SpecifyName": {
-      "score": 0.00481634
+      "score": 0.00537072029
     },
     "Help": {
-      "score": 0.00365795242
+      "score": 0.00372485374
     },
     "Greeting": {
-      "score": 0.00115857017
+      "score": 0.00119818107
     }
   },
   "Entities": {
@@ -59,7 +59,7 @@
           "startIndex": 20,
           "endIndex": 26,
           "text": "dallas",
-          "score": 0.9075733
+          "score": 0.9011441
         }
       ],
       "From": [
@@ -67,7 +67,7 @@
           "startIndex": 9,
           "endIndex": 16,
           "text": "seattle",
-          "score": 0.9814744
+          "score": 0.9574383
         }
       ],
       "Airline": [
@@ -87,53 +87,53 @@
     "query": "fly from seattle to dallas at 3pm on delta",
     "topScoringIntent": {
       "intent": "Travel",
-      "score": 0.157086775,
+      "score": 0.162418559,
       "actions": null
     },
     "intents": [
       {
         "intent": "Travel",
-        "score": 0.157086775,
+        "score": 0.162418559,
         "actions": null
       },
       {
         "intent": "EntityTests",
-        "score": 0.0609059036,
+        "score": 0.0377123132,
         "actions": null
       },
       {
         "intent": "Weather.GetForecast",
-        "score": 0.03481206,
+        "score": 0.0347674862,
         "actions": null
       },
       {
         "intent": "None",
-        "score": 0.0343931019,
+        "score": 0.0343242735,
         "actions": null
       },
       {
         "intent": "Delivery",
-        "score": 0.00626269029,
+        "score": 0.00620134128,
         "actions": null
       },
       {
         "intent": "Cancel",
-        "score": 0.00511110062,
+        "score": 0.00543635339,
         "actions": null
       },
       {
         "intent": "SpecifyName",
-        "score": 0.00481634,
+        "score": 0.00537072029,
         "actions": null
       },
       {
         "intent": "Help",
-        "score": 0.00365795242,
+        "score": 0.00372485374,
         "actions": null
       },
       {
         "intent": "Greeting",
-        "score": 0.00115857017,
+        "score": 0.00119818107,
         "actions": null
       }
     ],
@@ -157,7 +157,7 @@
         "type": "City::To",
         "startIndex": 20,
         "endIndex": 25,
-        "score": 0.9075733,
+        "score": 0.9011441,
         "resolution": null
       },
       {
@@ -166,7 +166,7 @@
         "type": "City::From",
         "startIndex": 9,
         "endIndex": 15,
-        "score": 0.9814744,
+        "score": 0.9574383,
         "resolution": null
       },
       {

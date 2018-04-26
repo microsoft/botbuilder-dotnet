@@ -10,9 +10,9 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
     public class IntentData
     {
         /// <summary>
-        /// Optional confidence in intent classification.
+        /// Confidence in intent classification.
         /// </summary>
         [JsonProperty("score")]
-        public double? Score { get; set; }
+        public double Score { get; set; }
     }
 }

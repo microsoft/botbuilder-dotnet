@@ -84,7 +84,9 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
         private static JObject GetIntents(LuisResult luisResult)
         {
             return luisResult.Intents != null ?
-                JObject.FromObject(luisResult.Intents.ToDictionary(i => NormalizedIntent(i.Intent), i => new JObject(new JProperty("score", i.Score ?? 0)))) :
+                JObject.FromObject(luisResult.Intents.ToDictionary(
+                    i => NormalizedIntent(i.Intent), 
+                    i => new JObject(new JProperty("score", i.Score ?? 0)))) :
                 new JObject { [NormalizedIntent(luisResult.TopScoringIntent.Intent)] = new JProperty("score", luisResult.TopScoringIntent.Score ?? 0 )};
         }
 
