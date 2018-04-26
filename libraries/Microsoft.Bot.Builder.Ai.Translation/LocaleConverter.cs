@@ -149,7 +149,8 @@ namespace Microsoft.Bot.Builder.Ai.Translation
                 }
                 else
                 {
-                    continue;
+                    moment = resolutionValues.Select(v => DateTime.Parse(v["value"])).FirstOrDefault();
+                    momentType = "time";
                 }
                 var curDateTimeText = new TextAndDateTime
                 {
@@ -216,7 +217,11 @@ namespace Microsoft.Bot.Builder.Ai.Translation
             string processedMessage = message;
             foreach (TextAndDateTime date in dates)
             {
-                if (date.type == "date")
+                if (date.type == "time")
+                {
+                    processedMessage = Regex.Replace(processedMessage, $"\\b{date.Text}\\b", String.Format(_mapLocaleToFunction[toLocale].TimeFormat, date.dateTime), RegexOptions.Singleline | RegexOptions.IgnoreCase);
+                }
+                else if (date.type == "date")
                 {
                     processedMessage = Regex.Replace(processedMessage, $"\\b{date.Text}\\b", String.Format(_mapLocaleToFunction[toLocale].DateFormat, date.dateTime), RegexOptions.Singleline | RegexOptions.IgnoreCase);
                 }
