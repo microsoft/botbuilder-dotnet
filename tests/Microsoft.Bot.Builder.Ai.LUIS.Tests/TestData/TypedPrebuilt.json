@@ -1,6 +1,5 @@
 {
   "Text": "http://foo.com is where you can get a weather forecast for seattle",
-  "AlteredText": null,
   "Intents": {
     "Weather_GetForecast": {
       "score": 0.90011555
@@ -31,40 +30,22 @@
     }
   },
   "Entities": {
-    "Name": null,
-    "State": null,
-    "Weather_Location": null,
-    "City": null,
-    "To": null,
-    "From": null,
-    "Airline": null,
-    "Address": null,
-    "Composite1": null,
     "Composite2": [
       {
-        "Airline": null,
-        "City": null,
         "builtin_url": [
           "http://foo.com"
         ],
-        "From": null,
-        "To": null,
         "Weather_Location": [
           "seattle"
         ],
         "$instance": {
-          "Airline": null,
-          "City": null,
           "builtin_url": [
             {
               "startIndex": 0,
               "endIndex": 14,
-              "text": "http://foo.com",
-              "score": null
+              "text": "http://foo.com"
             }
           ],
-          "From": null,
-          "To": null,
           "Weather_Location": [
             {
               "startIndex": 59,
@@ -77,15 +58,6 @@
       }
     ],
     "$instance": {
-      "Name": null,
-      "State": null,
-      "Weather_Location": null,
-      "City": null,
-      "To": null,
-      "From": null,
-      "Airline": null,
-      "Address": null,
-      "Composite1": null,
       "Composite2": [
         {
           "startIndex": 0,
