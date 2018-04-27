@@ -293,7 +293,7 @@ namespace Microsoft.Bot.Builder.Ai.LUIS.Tests
 
         private JObject Json<T>(T result)
         {
-            return (JObject)JsonConvert.DeserializeObject(JsonConvert.SerializeObject(result));
+            return (JObject)JsonConvert.DeserializeObject(JsonConvert.SerializeObject(result, new JsonSerializerSettings { Formatting = Formatting.Indented, NullValueHandling = NullValueHandling.Ignore }));
         }
 
         // To create a file to test:
