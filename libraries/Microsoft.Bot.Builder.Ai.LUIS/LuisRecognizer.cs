@@ -85,9 +85,9 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
         {
             return luisResult.Intents != null ?
                 JObject.FromObject(luisResult.Intents.ToDictionary(
-                    i => NormalizedIntent(i.Intent), 
+                    i => NormalizedIntent(i.Intent),
                     i => new JObject(new JProperty("score", i.Score ?? 0)))) :
-                new JObject { [NormalizedIntent(luisResult.TopScoringIntent.Intent)] = new JProperty("score", luisResult.TopScoringIntent.Score ?? 0 )};
+                new JObject { [NormalizedIntent(luisResult.TopScoringIntent.Intent)] = new JProperty("score", luisResult.TopScoringIntent.Score ?? 0) };
         }
 
         private static JObject ExtractEntitiesAndMetadata(IList<EntityRecommendation> entities, IList<CompositeEntity> compositeEntities, bool verbose)
@@ -193,13 +193,17 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
 
         private static JObject ExtractEntityMetadata(EntityRecommendation entity)
         {
-            return JObject.FromObject(new
+            var obj = JObject.FromObject(new
             {
                 startIndex = entity.StartIndex,
                 endIndex = entity.EndIndex + 1,
-                text = entity.Entity,
-                score = entity.Score
+                text = entity.Entity
             });
+            if (entity.Score.HasValue)
+            {
+                obj["score"] = entity.Score;
+            }
+            return obj;
         }
 
         private static string ExtractNormalizedEntityType(EntityRecommendation entity)

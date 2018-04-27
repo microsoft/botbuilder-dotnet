@@ -1,6 +1,5 @@
 {
   "Text": "fly from seattle to dallas at 3pm on delta",
-  "AlteredText": null,
   "Intents": {
     "Travel": {
       "score": 0.162418559
@@ -31,10 +30,6 @@
     }
   },
   "Entities": {
-    "Name": null,
-    "State": null,
-    "Weather_Location": null,
-    "City": null,
     "To": [
       "dallas"
     ],
@@ -46,14 +41,7 @@
         "Delta"
       ]
     ],
-    "Address": null,
-    "Composite1": null,
-    "Composite2": null,
     "$instance": {
-      "Name": null,
-      "State": null,
-      "Weather_Location": null,
-      "City": null,
       "To": [
         {
           "startIndex": 20,
@@ -74,13 +62,9 @@
         {
           "startIndex": 37,
           "endIndex": 42,
-          "text": "delta",
-          "score": null
+          "text": "delta"
         }
-      ],
-      "Address": null,
-      "Composite1": null,
-      "Composite2": null
+      ]
     }
   },
   "luisResult": {

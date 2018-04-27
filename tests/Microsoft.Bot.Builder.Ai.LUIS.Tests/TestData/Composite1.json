@@ -1,33 +1,32 @@
 {
   "text": "12 years old and 3 days old and monday july 3rd and every monday and between 3am and 5:30am and 4 acres and 4 pico meters and chrimc@hotmail.com and $4 and $4.25 and 32 and 210.4 and first and 10% and 10.5% and 425-555-1234 and 3 degrees and -27.5 degrees c",
-  "alteredText": null,
   "intents": {
     "EntityTests": {
-      "score": 0.9960467
+      "score": 0.9924269
     },
     "None": {
-      "score": 0.06112797
+      "score": 0.06038856
     },
     "Weather_GetForecast": {
-      "score": 0.05591919
+      "score": 0.0566830374
     },
     "Travel": {
-      "score": 0.0135286953
+      "score": 0.0127096456
     },
     "Delivery": {
-      "score": 0.00432307832
+      "score": 0.004526181
     },
     "SpecifyName": {
-      "score": 0.00216925936
+      "score": 0.00224204571
     },
     "Help": {
-      "score": 0.000120375247
+      "score": 0.000150823209
     },
     "Cancel": {
-      "score": 4.85684177E-05
+      "score": 6.610989E-05
     },
     "Greeting": {
-      "score": 2.00913087E-06
+      "score": 1.69148677E-06
     }
   },
   "entities": {
@@ -37,7 +36,7 @@
           "startIndex": 0,
           "endIndex": 257,
           "text": "12 years old and 3 days old and monday july 3rd and every monday and between 3am and 5 : 30am and 4 acres and 4 pico meters and chrimc @ hotmail . com and $ 4 and $ 4 . 25 and 32 and 210 . 4 and first and 10 % and 10 . 5 % and 425 - 555 - 1234 and 3 degrees and - 27 . 5 degrees c",
-          "score": 0.7444669
+          "score": 0.7437676
         }
       ]
     },
@@ -48,230 +47,195 @@
             {
               "startIndex": 0,
               "endIndex": 12,
-              "text": "12 years old",
-              "score": null
+              "text": "12 years old"
             },
             {
               "startIndex": 17,
               "endIndex": 27,
-              "text": "3 days old",
-              "score": null
+              "text": "3 days old"
             }
           ],
           "builtin_datetime": [
             {
               "startIndex": 0,
               "endIndex": 8,
-              "text": "12 years",
-              "score": null
+              "text": "12 years"
             },
             {
               "startIndex": 17,
               "endIndex": 23,
-              "text": "3 days",
-              "score": null
+              "text": "3 days"
             },
             {
               "startIndex": 32,
               "endIndex": 47,
-              "text": "monday july 3rd",
-              "score": null
+              "text": "monday july 3rd"
             },
             {
               "startIndex": 52,
               "endIndex": 64,
-              "text": "every monday",
-              "score": null
+              "text": "every monday"
             },
             {
               "startIndex": 69,
               "endIndex": 91,
-              "text": "between 3am and 5:30am",
-              "score": null
+              "text": "between 3am and 5:30am"
             }
           ],
           "builtin_dimension": [
             {
               "startIndex": 96,
               "endIndex": 103,
-              "text": "4 acres",
-              "score": null
+              "text": "4 acres"
             },
             {
               "startIndex": 108,
               "endIndex": 121,
-              "text": "4 pico meters",
-              "score": null
+              "text": "4 pico meters"
             }
           ],
           "builtin_email": [
             {
               "startIndex": 126,
               "endIndex": 144,
-              "text": "chrimc@hotmail.com",
-              "score": null
+              "text": "chrimc@hotmail.com"
             }
           ],
           "builtin_money": [
             {
               "startIndex": 149,
               "endIndex": 151,
-              "text": "$4",
-              "score": null
+              "text": "$4"
             },
             {
               "startIndex": 156,
               "endIndex": 161,
-              "text": "$4.25",
-              "score": null
+              "text": "$4.25"
             }
           ],
           "builtin_number": [
             {
               "startIndex": 0,
               "endIndex": 2,
-              "text": "12",
-              "score": null
+              "text": "12"
             },
             {
               "startIndex": 17,
               "endIndex": 18,
-              "text": "3",
-              "score": null
+              "text": "3"
             },
             {
               "startIndex": 85,
               "endIndex": 86,
-              "text": "5",
-              "score": null
+              "text": "5"
             },
             {
               "startIndex": 96,
               "endIndex": 97,
-              "text": "4",
-              "score": null
+              "text": "4"
             },
             {
               "startIndex": 108,
               "endIndex": 109,
-              "text": "4",
-              "score": null
+              "text": "4"
             },
             {
               "startIndex": 150,
               "endIndex": 151,
-              "text": "4",
-              "score": null
+              "text": "4"
             },
             {
               "startIndex": 157,
               "endIndex": 161,
-              "text": "4.25",
-              "score": null
+              "text": "4.25"
             },
             {
               "startIndex": 166,
               "endIndex": 168,
-              "text": "32",
-              "score": null
+              "text": "32"
             },
             {
               "startIndex": 173,
               "endIndex": 178,
-              "text": "210.4",
-              "score": null
+              "text": "210.4"
             },
             {
               "startIndex": 193,
               "endIndex": 195,
-              "text": "10",
-              "score": null
+              "text": "10"
             },
             {
               "startIndex": 201,
               "endIndex": 205,
-              "text": "10.5",
-              "score": null
+              "text": "10.5"
             },
             {
               "startIndex": 211,
               "endIndex": 214,
-              "text": "425",
-              "score": null
+              "text": "425"
             },
             {
               "startIndex": 215,
               "endIndex": 218,
-              "text": "555",
-              "score": null
+              "text": "555"
             },
             {
               "startIndex": 219,
               "endIndex": 223,
-              "text": "1234",
-              "score": null
+              "text": "1234"
             },
             {
               "startIndex": 228,
               "endIndex": 229,
-              "text": "3",
-              "score": null
+              "text": "3"
             },
             {
               "startIndex": 242,
               "endIndex": 247,
-              "text": "-27.5",
-              "score": null
+              "text": "-27.5"
             }
           ],
           "builtin_ordinal": [
             {
               "startIndex": 44,
               "endIndex": 47,
-              "text": "3rd",
-              "score": null
+              "text": "3rd"
             },
             {
               "startIndex": 183,
               "endIndex": 188,
-              "text": "first",
-              "score": null
+              "text": "first"
             }
           ],
           "builtin_percentage": [
             {
               "startIndex": 193,
               "endIndex": 196,
-              "text": "10%",
-              "score": null
+              "text": "10%"
             },
             {
               "startIndex": 201,
               "endIndex": 206,
-              "text": "10.5%",
-              "score": null
+              "text": "10.5%"
             }
           ],
           "builtin_phonenumber": [
             {
               "startIndex": 211,
               "endIndex": 223,
-              "text": "425-555-1234",
-              "score": null
+              "text": "425-555-1234"
             }
           ],
           "builtin_temperature": [
             {
               "startIndex": 228,
               "endIndex": 237,
-              "text": "3 degrees",
-              "score": null
+              "text": "3 degrees"
             },
             {
               "startIndex": 242,
               "endIndex": 257,
-              "text": "-27.5 degrees c",
-              "score": null
+              "text": "-27.5 degrees c"
             }
           ]
         },
@@ -386,97 +350,79 @@
     "query": "12 years old and 3 days old and monday july 3rd and every monday and between 3am and 5:30am and 4 acres and 4 pico meters and chrimc@hotmail.com and $4 and $4.25 and 32 and 210.4 and first and 10% and 10.5% and 425-555-1234 and 3 degrees and -27.5 degrees c",
     "topScoringIntent": {
       "intent": "EntityTests",
-      "score": 0.9960467,
-      "actions": null
+      "score": 0.9924269
     },
     "intents": [
       {
         "intent": "EntityTests",
-        "score": 0.9960467,
-        "actions": null
+        "score": 0.9924269
       },
       {
         "intent": "None",
-        "score": 0.06112797,
-        "actions": null
+        "score": 0.06038856
       },
       {
         "intent": "Weather.GetForecast",
-        "score": 0.05591919,
-        "actions": null
+        "score": 0.0566830374
       },
       {
         "intent": "Travel",
-        "score": 0.0135286953,
-        "actions": null
+        "score": 0.0127096456
       },
       {
         "intent": "Delivery",
-        "score": 0.00432307832,
-        "actions": null
+        "score": 0.004526181
       },
       {
         "intent": "SpecifyName",
-        "score": 0.00216925936,
-        "actions": null
+        "score": 0.00224204571
       },
       {
         "intent": "Help",
-        "score": 0.000120375247,
-        "actions": null
+        "score": 0.000150823209
       },
       {
         "intent": "Cancel",
-        "score": 4.85684177E-05,
-        "actions": null
+        "score": 6.610989E-05
       },
       {
         "intent": "Greeting",
-        "score": 2.00913087E-06,
-        "actions": null
+        "score": 1.69148677E-06
       }
     ],
     "entities": [
       {
-        "role": null,
         "entity": "12 years old",
         "type": "builtin.age",
         "startIndex": 0,
         "endIndex": 11,
-        "score": null,
         "resolution": {
           "unit": "Year",
           "value": "12"
         }
       },
       {
-        "role": null,
         "entity": "3 days old",
         "type": "builtin.age",
         "startIndex": 17,
         "endIndex": 26,
-        "score": null,
         "resolution": {
           "unit": "Day",
           "value": "3"
         }
       },
       {
-        "role": null,
         "entity": "12 years old and 3 days old and monday july 3rd and every monday and between 3am and 5 : 30am and 4 acres and 4 pico meters and chrimc @ hotmail . com and $ 4 and $ 4 . 25 and 32 and 210 . 4 and first and 10 % and 10 . 5 % and 425 - 555 - 1234 and 3 degrees and - 27 . 5 degrees c",
         "type": "Composite1",
         "startIndex": 0,
         "endIndex": 256,
-        "score": 0.7444669,
-        "resolution": null
+        "score": 0.7437676
       },
       {
-        "role": null,
         "entity": "12 years",
         "type": "builtin.datetimeV2.duration",
         "startIndex": 0,
         "endIndex": 7,
-        "score": null,
         "resolution": {
           "values": [
             {
@@ -488,12 +434,10 @@
         }
       },
       {
-        "role": null,
         "entity": "3 days",
         "type": "builtin.datetimeV2.duration",
         "startIndex": 17,
         "endIndex": 22,
-        "score": null,
         "resolution": {
           "values": [
             {
@@ -505,12 +449,10 @@
         }
       },
       {
-        "role": null,
         "entity": "monday july 3rd",
         "type": "builtin.datetimeV2.date",
         "startIndex": 32,
         "endIndex": 46,
-        "score": null,
         "resolution": {
           "values": [
             {
@@ -527,12 +469,10 @@
         }
       },
       {
-        "role": null,
         "entity": "every monday",
         "type": "builtin.datetimeV2.set",
         "startIndex": 52,
         "endIndex": 63,
-        "score": null,
         "resolution": {
           "values": [
             {
@@ -544,12 +484,10 @@
         }
       },
       {
-        "role": null,
         "entity": "between 3am and 5:30am",
         "type": "builtin.datetimeV2.timerange",
         "startIndex": 69,
         "endIndex": 90,
-        "score": null,
         "resolution": {
           "values": [
             {
@@ -562,312 +500,255 @@
         }
       },
       {
-        "role": null,
         "entity": "4 acres",
         "type": "builtin.dimension",
         "startIndex": 96,
         "endIndex": 102,
-        "score": null,
         "resolution": {
           "unit": "Acre",
           "value": "4"
         }
       },
       {
-        "role": null,
         "entity": "4 pico meters",
         "type": "builtin.dimension",
         "startIndex": 108,
         "endIndex": 120,
-        "score": null,
         "resolution": {
           "unit": "Picometer",
           "value": "4"
         }
       },
       {
-        "role": null,
         "entity": "chrimc@hotmail.com",
         "type": "builtin.email",
         "startIndex": 126,
-        "endIndex": 143,
-        "score": null,
-        "resolution": null
+        "endIndex": 143
       },
       {
-        "role": null,
         "entity": "$4",
         "type": "builtin.currency",
         "startIndex": 149,
         "endIndex": 150,
-        "score": null,
         "resolution": {
           "unit": "Dollar",
           "value": "4"
         }
       },
       {
-        "role": null,
         "entity": "$4.25",
         "type": "builtin.currency",
         "startIndex": 156,
         "endIndex": 160,
-        "score": null,
         "resolution": {
           "unit": "Dollar",
           "value": "4.25"
         }
       },
       {
-        "role": null,
         "entity": "12",
         "type": "builtin.number",
         "startIndex": 0,
         "endIndex": 1,
-        "score": null,
         "resolution": {
           "value": "12"
         }
       },
       {
-        "role": null,
         "entity": "3",
         "type": "builtin.number",
         "startIndex": 17,
         "endIndex": 17,
-        "score": null,
         "resolution": {
           "value": "3"
         }
       },
       {
-        "role": null,
         "entity": "5",
         "type": "builtin.number",
         "startIndex": 85,
         "endIndex": 85,
-        "score": null,
         "resolution": {
           "value": "5"
         }
       },
       {
-        "role": null,
         "entity": "4",
         "type": "builtin.number",
         "startIndex": 96,
         "endIndex": 96,
-        "score": null,
         "resolution": {
           "value": "4"
         }
       },
       {
-        "role": null,
         "entity": "4",
         "type": "builtin.number",
         "startIndex": 108,
         "endIndex": 108,
-        "score": null,
         "resolution": {
           "value": "4"
         }
       },
       {
-        "role": null,
         "entity": "4",
         "type": "builtin.number",
         "startIndex": 150,
         "endIndex": 150,
-        "score": null,
         "resolution": {
           "value": "4"
         }
       },
       {
-        "role": null,
         "entity": "4.25",
         "type": "builtin.number",
         "startIndex": 157,
         "endIndex": 160,
-        "score": null,
         "resolution": {
           "value": "4.25"
         }
       },
       {
-        "role": null,
         "entity": "32",
         "type": "builtin.number",
         "startIndex": 166,
         "endIndex": 167,
-        "score": null,
         "resolution": {
           "value": "32"
         }
       },
       {
-        "role": null,
         "entity": "210.4",
         "type": "builtin.number",
         "startIndex": 173,
         "endIndex": 177,
-        "score": null,
         "resolution": {
           "value": "210.4"
         }
       },
       {
-        "role": null,
         "entity": "10",
         "type": "builtin.number",
         "startIndex": 193,
         "endIndex": 194,
-        "score": null,
         "resolution": {
           "value": "10"
         }
       },
       {
-        "role": null,
         "entity": "10.5",
         "type": "builtin.number",
         "startIndex": 201,
         "endIndex": 204,
-        "score": null,
         "resolution": {
           "value": "10.5"
         }
       },
       {
-        "role": null,
         "entity": "425",
         "type": "builtin.number",
         "startIndex": 211,
         "endIndex": 213,
-        "score": null,
         "resolution": {
           "value": "425"
         }
       },
       {
-        "role": null,
         "entity": "555",
         "type": "builtin.number",
         "startIndex": 215,
         "endIndex": 217,
-        "score": null,
         "resolution": {
           "value": "555"
         }
       },
       {
-        "role": null,
         "entity": "1234",
         "type": "builtin.number",
         "startIndex": 219,
         "endIndex": 222,
-        "score": null,
         "resolution": {
           "value": "1234"
         }
       },
       {
-        "role": null,
         "entity": "3",
         "type": "builtin.number",
         "startIndex": 228,
         "endIndex": 228,
-        "score": null,
         "resolution": {
           "value": "3"
         }
       },
       {
-        "role": null,
         "entity": "-27.5",
         "type": "builtin.number",
         "startIndex": 242,
         "endIndex": 246,
-        "score": null,
         "resolution": {
           "value": "-27.5"
         }
       },
       {
-        "role": null,
         "entity": "3rd",
         "type": "builtin.ordinal",
         "startIndex": 44,
         "endIndex": 46,
-        "score": null,
         "resolution": {
           "value": "3"
         }
       },
       {
-        "role": null,
         "entity": "first",
         "type": "builtin.ordinal",
         "startIndex": 183,
         "endIndex": 187,
-        "score": null,
         "resolution": {
           "value": "1"
         }
       },
       {
-        "role": null,
         "entity": "10%",
         "type": "builtin.percentage",
         "startIndex": 193,
         "endIndex": 195,
-        "score": null,
         "resolution": {
           "value": "10%"
         }
       },
       {
-        "role": null,
         "entity": "10.5%",
         "type": "builtin.percentage",
         "startIndex": 201,
         "endIndex": 205,
-        "score": null,
         "resolution": {
           "value": "10.5%"
         }
       },
       {
-        "role": null,
         "entity": "425-555-1234",
         "type": "builtin.phonenumber",
         "startIndex": 211,
         "endIndex": 222,
-        "score": null,
         "resolution": {
           "value": "425-555-1234"
         }
       },
       {
-        "role": null,
         "entity": "3 degrees",
         "type": "builtin.temperature",
         "startIndex": 228,
         "endIndex": 236,
-        "score": null,
         "resolution": {
           "unit": "Degree",
           "value": "3"
         }
       },
       {
-        "role": null,
         "entity": "-27.5 degrees c",
         "type": "builtin.temperature",
         "startIndex": 242,
         "endIndex": 256,
-        "score": null,
         "resolution": {
           "unit": "C",
           "value": "-27.5"
@@ -1021,7 +902,6 @@
           }
         ]
       }
-    ],
-    "alteredQuery": null
+    ]
   }
 }
