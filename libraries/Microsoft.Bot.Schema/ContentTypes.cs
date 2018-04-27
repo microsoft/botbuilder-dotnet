@@ -58,4 +58,11 @@ namespace Microsoft.Bot.Schema
     {
         public const string ContentType = "application/vnd.microsoft.card.video";
     }
+
+    /// <summary>
+    /// OAuthCard ContentType value
+    public partial class OAuthCard
+    {
+        public const string ContentType = "application/vnd.microsoft.card.oauth";
+    }
 }

@@ -440,6 +440,57 @@ namespace Microsoft.Bot.Builder.Adapters
 
 
 
+        /// Attempts to retrieve the token for a user that's in a login flow.
+        /// </summary>
+        /// <param name="context">Context for the current turn of conversation with the user.</param>
+        /// <param name="connectionName">Name of the auth connection to use.</param>
+        /// <param name="magicCode">(Optional) Optional user entered code to validate.</param>
+        /// <returns></returns>
+        public async Task<TokenResponse> GetUserToken(ITurnContext context, string connectionName, string magicCode)
+        {
+            if (context == null)
+                throw new ArgumentNullException(nameof(context));
+            if (string.IsNullOrEmpty(connectionName))
+                throw new ArgumentNullException(nameof(connectionName));
+
+            var client = this.CreateOAuthApiClient(context.Services.Get<IConnectorClient>() as ConnectorClient);
+            return await client.GetUserTokenAsync(context.Activity.From.Id, connectionName, magicCode);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="context">Context for the current turn of conversation with the user.</param>
+        /// <param name="connectionName">Name of the auth connection to use.</param>
+        /// <returns></returns>
+        public async Task<string> GetOauthSignInLink(ITurnContext context, string connectionName)
+        {
+            if (context == null)
+                throw new ArgumentNullException(nameof(context));
+            if (string.IsNullOrEmpty(connectionName))
+                throw new ArgumentNullException(nameof(connectionName));
+
+            var client = this.CreateOAuthApiClient(context.Services.Get<IConnectorClient>() as ConnectorClient);
+            return await client.GetSignInLinkAsync(context.Activity, connectionName);
+        }
+
+        /// <summary>
+        /// Signs the user out with the token server.
+        /// </summary>
+        /// <param name="context">Context for the current turn of conversation with the user.</param>
+        /// <param name="connectionName">Name of the auth connection to use.</param>
+        /// <returns></returns>
+        public async Task SignOutUser(ITurnContext context, string connectionName)
+        {
+            if (context == null)
+                throw new ArgumentNullException(nameof(context));
+            if (string.IsNullOrEmpty(connectionName))
+                throw new ArgumentNullException(nameof(connectionName));
+
+            var client = this.CreateOAuthApiClient(context.Services.Get<IConnectorClient>() as ConnectorClient);
+            await client.SignOutUserAsync(context.Activity.From.Id, connectionName);
+        }
+
         /// <summary>
         /// Creates a conversation on the specified channel.
         /// </summary>
@@ -482,6 +533,11 @@ namespace Microsoft.Bot.Builder.Adapters
             }
         }
 
+        private OAuthClient CreateOAuthApiClient(ConnectorClient client)
+        {
+            return new OAuthClient(client, AuthenticationConstants.OAuthUrl);
+        }
+
         /// <summary>
         /// Creates the connector client asynchronous.
         /// </summary>
@@ -489,7 +545,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <param name="claimsIdentity">The claims identity.</param>
         /// <returns>ConnectorClient instance.</returns>
         /// <exception cref="NotSupportedException">ClaimsIdemtity cannot be null. Pass Anonymous ClaimsIdentity if authentication is turned off.</exception>
-        private async Task<IConnectorClient> CreateConnectorClientAsync(string serviceUrl, ClaimsIdentity claimsIdentity)
+            private async Task<IConnectorClient> CreateConnectorClientAsync(string serviceUrl, ClaimsIdentity claimsIdentity)
         {
             if (claimsIdentity == null)
             {
