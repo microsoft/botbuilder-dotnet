@@ -54,6 +54,7 @@ namespace Microsoft.Bot.Builder.Ai.QnA
 
                     var traceInfo = new QnAMakerTraceInfo
                     {
+                        Message = messageActivity,
                         QueryResults = results,
                         KnowledgeBaseId = _options.KnowledgeBaseId,
                         // leave out _options.SubscriptionKey, it is not public

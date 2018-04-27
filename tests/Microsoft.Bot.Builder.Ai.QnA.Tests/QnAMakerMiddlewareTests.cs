@@ -48,6 +48,7 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
 
                     var qnaMakerTraceInfo = traceActivity.Value as QnAMakerTraceInfo;
                     Assert.IsNotNull(qnaMakerTraceInfo);
+                    Assert.IsNotNull(qnaMakerTraceInfo.Message);
                     Assert.IsNotNull(qnaMakerTraceInfo.QueryResults);
                     Assert.IsNotNull(qnaMakerTraceInfo.KnowledgeBaseId);
                     Assert.IsNotNull(qnaMakerTraceInfo.ScoreThreshold);
@@ -55,6 +56,7 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
                     Assert.IsNotNull(qnaMakerTraceInfo.StrictFilters);
                     Assert.IsNotNull(qnaMakerTraceInfo.MetadataBoost);
 
+                    Assert.AreEqual(qnaMakerTraceInfo.Message.Text, passUtterance);
                     Assert.AreEqual(qnaMakerTraceInfo.QueryResults.Length, 0);
                 }, "qnaMakerTraceInfo")
                 .Send(passUtterance)
@@ -98,6 +100,7 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
 
                     var qnaMakerTraceInfo = traceActivity.Value as QnAMakerTraceInfo;
                     Assert.IsNotNull(qnaMakerTraceInfo);
+                    Assert.IsNotNull(qnaMakerTraceInfo.Message);
                     Assert.IsNotNull(qnaMakerTraceInfo.QueryResults);
                     Assert.IsNotNull(qnaMakerTraceInfo.KnowledgeBaseId);
                     Assert.IsNotNull(qnaMakerTraceInfo.ScoreThreshold);
@@ -105,6 +108,7 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
                     Assert.IsNotNull(qnaMakerTraceInfo.StrictFilters);
                     Assert.IsNotNull(qnaMakerTraceInfo.MetadataBoost);
 
+                    Assert.AreEqual(qnaMakerTraceInfo.Message.Text, goodUtterance);
                     Assert.AreEqual(qnaMakerTraceInfo.QueryResults.Length, 1);
                     Assert.AreEqual(qnaMakerTraceInfo.QueryResults[0].Answer, botResponse);
                     Assert.AreEqual(qnaMakerTraceInfo.KnowledgeBaseId, knowlegeBaseId);
