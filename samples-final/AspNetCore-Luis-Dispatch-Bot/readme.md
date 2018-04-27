@@ -9,7 +9,12 @@ This example assumes the LUIS app from Dispatch is generated from two LUIS apps 
  * A LUIS app named "weather", for handling requests for weather forecasts and conditions
  * A QnA Maker service named "faq", for answering questions about using the hypothetical home automation system.
  
-First create the LUIS apps and QnAMaker, then generate a LUIS app from them using the Dispatch tool. 
+First create the LUIS apps and QnAMaker, then generate a LUIS app from them using the Dispatch tool.
+
+1. Use the https://luis.ai portal to import the included homeautomation.json and weather.json model files or using [LUIS cli tool](https://github.com/Microsoft/botbuilder-tools/tree/master/LUIS).
+2. Use the https://qnamaker.ai portal to import the included sampleKnowledgeBase.tsv faq file or using [QnAMaker cli tool](https://github.com/Microsoft/botbuilder-tools/tree/master/QnAMaker).
+3. Train and Publish your apps bfore using the Dispatch tool. (For your convenience the resulting dispatchSample.json LUIS model is also included).
+
 The tool creates a LUIS app with one intent for each of the constituent LUIS apps and QnAMaker services: 
 "l_homeautomation", "l_weather", "q_faq".
 The bot uses the intents to route the user messages to the appropriate LUIS app or QnA Maker.
