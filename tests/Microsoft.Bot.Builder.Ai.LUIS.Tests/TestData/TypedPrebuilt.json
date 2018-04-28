@@ -32,14 +32,14 @@
   "Entities": {
     "Composite2": [
       {
-        "builtin_url": [
+        "Builtin_url": [
           "http://foo.com"
         ],
         "Weather_Location": [
           "seattle"
         ],
         "$instance": {
-          "builtin_url": [
+          "Builtin_url": [
             {
               "startIndex": 0,
               "endIndex": 14,

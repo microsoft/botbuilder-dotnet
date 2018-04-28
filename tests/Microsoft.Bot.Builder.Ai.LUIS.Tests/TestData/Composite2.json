@@ -36,7 +36,7 @@
           "startIndex": 0,
           "endIndex": 69,
           "text": "http : / / foo . com is where you can fly from seattle to dallas via denver",
-          "score": 0.928562
+          "score": 0.886096239
         }
       ]
     },
@@ -161,7 +161,7 @@
         "type": "Composite2",
         "startIndex": 0,
         "endIndex": 68,
-        "score": 0.928562
+        "score": 0.886096239
       },
       {
         "entity": "http://foo.com",
