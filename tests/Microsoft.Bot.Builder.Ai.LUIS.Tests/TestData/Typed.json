@@ -36,6 +36,20 @@
     "From": [
       "seattle"
     ],
+    "Builtin_datetime": [
+      {
+        "type": "time",
+        "timex": [
+          "T15"
+        ]
+      }
+    ],
+    "Builtin_dimension": [
+      {
+        "number": 3.0,
+        "units": "Picometer"
+      }
+    ],
     "Airline": [
       [
         "Delta"
@@ -56,6 +70,20 @@
           "endIndex": 16,
           "text": "seattle",
           "score": 0.9574383
+        }
+      ],
+      "Builtin_datetime": [
+        {
+          "startIndex": 30,
+          "endIndex": 33,
+          "text": "3pm"
+        }
+      ],
+      "Builtin_dimension": [
+        {
+          "startIndex": 30,
+          "endIndex": 33,
+          "text": "3pm"
         }
       ],
       "Airline": [
