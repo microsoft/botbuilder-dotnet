@@ -317,7 +317,7 @@ namespace Microsoft.Bot.Builder.Ai.LUIS.Tests
             var query = (string)expectedJson.text ?? (string)expectedJson.Text;
             var typedResult = await luisRecognizer.Recognize<T>(query, CancellationToken.None);
             var typedJson = Json<T>(typedResult);
-            if (!WithinDelta(expectedJson, typedJson, 0.01))
+            if (!WithinDelta(expectedJson, typedJson, 0.1))
             {
                 using (var writer = new StreamWriter(newPath))
                 {
