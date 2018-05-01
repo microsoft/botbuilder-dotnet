@@ -21,7 +21,11 @@ namespace Microsoft.Bot.Builder.Prompts
         /// <summary>
         /// The collection of attachments recognized
         /// </summary>
-        public List<Attachment> Attachments { get; private set; }
+        public List<Attachment> Attachments
+        {
+            get { return GetProperty<List<Attachment>>(nameof(Attachments)); }
+            set { this[nameof(Attachments)] = value; }
+        }
     }
 
     /// <summary>

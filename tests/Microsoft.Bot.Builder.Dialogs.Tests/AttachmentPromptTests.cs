@@ -26,27 +26,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             await new TestFlow(adapter, async (turnContext) =>
             {
-                var dialogs = new DialogSet();
-                dialogs.Add("test-prompt", new AttachmentPrompt());
-
                 var state = ConversationState<Dictionary<string, object>>.Get(turnContext);
-                var dc = dialogs.CreateContext(turnContext, state);
+                var prompt = new AttachmentPrompt();
 
-                await dc.Continue();
-                var dialogResult = dc.DialogResult;
-
-                if (!dialogResult.Active)
+                var dialogCompletion = await prompt.Continue(turnContext, state);
+                if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
                 {
-                    if (dialogResult.Result != null)
-                    {
-                        var attachmentResult = (AttachmentResult)dialogResult.Result;
-                        var reply = (string)attachmentResult.Attachments.First().Content;
-                        await turnContext.SendActivity(reply);
-                    }
-                    else
-                    {
-                        await dc.Prompt("test-prompt", "please add an attachment.");
-                    }
+                    await prompt.Begin(turnContext, state, new PromptOptions { PromptString = "please add an attachment." });
+                }
+                else if (dialogCompletion.IsCompleted)
+                {
+                    var attachmentResult = (AttachmentResult)dialogCompletion.Result;
+                    var reply = (string)attachmentResult.Attachments.First().Content;
+                    await turnContext.SendActivity(reply);
                 }
             })
             .Send("hello")

@@ -1,4 +1,7 @@
-﻿using System; 
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System; 
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema; 
@@ -8,11 +11,23 @@ namespace Microsoft.Bot.Builder.Prompts
 {
     public class ConfirmResult : PromptResult
     {
-        public ConfirmResult() { }
+        /// <summary>
+        /// The input bool recognized; or <c>null</c>, if recognition fails.
+        /// </summary>
+        public bool Confirmation
+        {
+            get { return GetProperty<bool>(nameof(Confirmation)); }
+            set { this[nameof(Confirmation)] = value; }
+        }
 
-        public bool Confirmation { get; set; }
-
-        public string Text { get; set; }
+        /// <summary>
+        /// The input text recognized; or <c>null</c>, if recognition fails.
+        /// </summary>
+        public string Text
+        {
+            get { return GetProperty<string>(nameof(Text)); }
+            set { this[nameof(Text)] = value; }
+        }
     }
 
     /// <summary>

@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -27,9 +26,23 @@ namespace Microsoft.Bot.Builder.Prompts
             Resolution = new List<DateTimeResolution>();
         }
 
-        public string Text { get; set; }
+        /// <summary>
+        /// The input text recognized; or <c>null</c>, if recognition fails.
+        /// </summary>
+        public string Text
+        {
+            get { return GetProperty<string>(nameof(Text)); }
+            set { this[nameof(Text)] = value; }
+        }
 
-        public List<DateTimeResolution> Resolution { get; private set; }
+        /// <summary>
+        /// The various resolutions for the recognized value; or and empty list.
+        /// </summary>
+        public List<DateTimeResolution> Resolution
+        {
+            get { return GetProperty<List<DateTimeResolution>>(nameof(Resolution)); }
+            private set { this[nameof(Resolution)] = value; }
+        }
 
         public class DateTimeResolution
         {
