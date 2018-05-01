@@ -222,7 +222,7 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
             {
                 type = entity.Role;
             }
-            return type.Replace('.', '_');
+            return type.Replace('.', '_').Replace(' ', '_');
         }
 
         private static IList<EntityRecommendation> PopulateCompositeEntity(CompositeEntity compositeEntity, IList<EntityRecommendation> entities, JObject entitiesAndMetadata, bool verbose)
