@@ -12,7 +12,7 @@
     <CreateInPlace>true</CreateInPlace>
     <EnableLocationBrowseButton>true</EnableLocationBrowseButton>
     <Icon>vstg0001.png</Icon>
-    <PreviewImage>vstg0002.png</PreviewImage>
+    <PreviewImage></PreviewImage>
   </TemplateData>
   <TemplateContent>
     <Project TargetFileName="AspNetCore-EchoBot-With-State.csproj" File="AspNetCore-EchoBot-With-State.csproj" ReplaceParameters="true">
