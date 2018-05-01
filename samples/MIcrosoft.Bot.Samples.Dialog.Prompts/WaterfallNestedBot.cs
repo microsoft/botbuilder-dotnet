@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Core.Extensions;
@@ -29,22 +30,14 @@ namespace Microsoft.Bot.Samples.Dialog.Prompts
                 switch (turnContext.Activity.Type)
                 {
                     case ActivityTypes.Message:
-                        var state = ConversationState<ConversationData>.Get(turnContext);
+                        var state = ConversationState<Dictionary<string, object>>.Get(turnContext);
                         var dc = _dialogs.CreateContext(turnContext, state);
 
                         await dc.Continue();
-                        var dialogResult = dc.DialogResult;
 
-                        if (!dialogResult.Active)
+                        if (!turnContext.Responded)
                         {
-                            if (dialogResult.Result != null)
-                            {
-                                await turnContext.SendActivity($"Waterfall concluded with '{dialogResult.Result}'.");
-                            }
-                            else
-                            {
-                                await dc.Begin("test-waterfall-a");
-                            }
+                            await dc.Begin("test-waterfall-a");
                         }
 
                         break;
@@ -69,54 +62,45 @@ namespace Microsoft.Bot.Samples.Dialog.Prompts
         private static WaterfallStep[] Create_Waterfall1()
         {
             return new WaterfallStep[] {
-                Waterfall1_Step1,
-                Waterfall1_Step2
+                async (dc, args, next) =>
+                {
+                    await dc.Context.SendActivity("step1");
+                    await dc.Begin("test-waterfall-b");
+                },
+                async (dc, args, next) =>
+                {
+                    await dc.Context.SendActivity("step2");
+                    await dc.Begin("test-waterfall-c");
+                }
             };
         }
         private static WaterfallStep[] Create_Waterfall2()
         {
             return new WaterfallStep[] {
-                Waterfall2_Step1,
-                Waterfall2_Step2
+                async (dc, args, next) =>
+                {
+                    await dc.Context.SendActivity("step1.1");
+                },
+                async (dc, args, next) =>
+                {
+                    await dc.Context.SendActivity("step1.2");
+                }
             };
         }
 
         private static WaterfallStep[] Create_Waterfall3()
         {
             return new WaterfallStep[] {
-                Waterfall3_Step1,
-                Waterfall3_Step2
+                async (dc, args, next) =>
+                {
+                    await dc.Context.SendActivity("step2.1");
+                },
+                async (dc, args, next) =>
+                {
+                    await dc.Context.SendActivity("step2.2");
+                    await dc.End();
+                }
             };
-        }
-
-        private static async Task Waterfall1_Step1(DialogContext dc, object args, SkipStepFunction next)
-        {
-            await dc.Context.SendActivity("step1");
-            await dc.Begin("test-waterfall-b");
-        }
-        private static async Task Waterfall1_Step2(DialogContext dc, object args, SkipStepFunction next)
-        {
-            await dc.Context.SendActivity("step2");
-            await dc.Begin("test-waterfall-c");
-        }
-
-        private static async Task Waterfall2_Step1(DialogContext dc, object args, SkipStepFunction next)
-        {
-            await dc.Context.SendActivity("step1.1");
-        }
-        private static async Task Waterfall2_Step2(DialogContext dc, object args, SkipStepFunction next)
-        {
-            await dc.Context.SendActivity("step1.2");
-        }
-
-        private static async Task Waterfall3_Step1(DialogContext dc, object args, SkipStepFunction next)
-        {
-            await dc.Context.SendActivity("step2.1");
-        }
-        private static async Task Waterfall3_Step2(DialogContext dc, object args, SkipStepFunction next)
-        {
-            await dc.Context.SendActivity("step2.2");
-            await dc.End("All Done!");
         }
     }
 }

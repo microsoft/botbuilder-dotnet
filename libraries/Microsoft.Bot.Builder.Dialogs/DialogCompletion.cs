@@ -1,18 +1,25 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System.Collections.Generic;
+
 namespace Microsoft.Bot.Builder.Dialogs
 {
     /// <summary>
     /// Result returned to the caller of one of the various stack manipulation methods and used to
     /// return the result from a final call to `DialogContext.end()` to the bots logic.
     /// </summary>
-    public class DialogResult
+    public class DialogCompletion
     {
         /// <summary>
-        /// This will be `true` if there is still an active dialog on the stack.
+        /// If 'true' the dialog is still active.
         /// </summary>
-        public bool Active { get; set; }
+        public bool IsActive { get; set; }
+
+        /// <summary>
+        /// If 'true' the dialog just completed and the final [result](#result) can be retrieved.
+        /// </summary>
+        public bool IsCompleted { get; set; }
 
         /// <summary>
         /// Result returned by a dialog that was just ended.This will only be populated in certain
@@ -23,6 +30,6 @@ namespace Microsoft.Bot.Builder.Dialogs
         ///
         /// In all cases where it's populated, [active](#active) will be `false`.        
         /// </summary>
-        public object Result { get; set; }
+        public IDictionary<string, object> Result { get; set; }
     }
 }

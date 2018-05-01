@@ -1,31 +1,36 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
 using static Microsoft.Bot.Builder.Prompts.PromptValidatorEx;
 
 namespace Microsoft.Bot.Builder.Prompts
 {
     /// <summary>
-    /// Represents recognition result for the prompt.
+    /// Represents recognition result for the TextPrompt.
     /// </summary>
     public class TextResult : PromptResult
     {
         /// <summary>
-        /// Creates a <see cref="TextResult"/> object.
-        /// </summary>
-        public TextResult() { }
-
-        /// <summary>
         /// The value recognized; or <c>null</c>, if recognition fails.
         /// </summary>
-        public string Value { get; set; }
+        public string Value
+        {
+            get { return GetProperty<string>(nameof(Value)); }
+            set { this[nameof(Value)] = value; }
+        }
 
         /// <summary>
         /// The input text recognized; or <c>null</c>, if recognition fails.
         /// </summary>
-        public string Text { get; set; }
+        public string Text
+        {
+            get { return GetProperty<string>(nameof(Text)); }
+            set { this[nameof(Text)] = value; }
+        }
     }
-
 
     /// <summary>
     /// Represents a user prompt class for text input.

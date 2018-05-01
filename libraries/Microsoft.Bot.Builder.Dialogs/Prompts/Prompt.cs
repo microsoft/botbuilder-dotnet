@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Prompts;
 using Microsoft.Bot.Schema;
@@ -11,17 +12,13 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// <summary>
     /// Basic configuration options supported by all prompts.
     /// </summary>
-    public abstract class Prompt<T> : Control, IDialogContinue where T : PromptResult
+    public abstract class Prompt<T> : Dialog, IDialogContinue where T : PromptResult
     {
-        public Prompt()
-        {
-        }
-
         protected abstract Task OnPrompt(DialogContext dc, PromptOptions options, bool isRetry);
 
         protected abstract Task<T> OnRecognize(DialogContext dc, PromptOptions options);
 
-        public async Task DialogBegin(DialogContext dc, object dialogArgs)
+        public async Task DialogBegin(DialogContext dc, IDictionary<string, object> dialogArgs)
         {
             if (dc == null)
                 throw new ArgumentNullException(nameof(dc));
@@ -31,7 +28,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             var promptOptions = (PromptOptions)dialogArgs;
 
             // Persist options
-            var instance = dc.Instance;
+            var instance = dc.ActiveDialog;
             instance.State = promptOptions;
 
             // Send initial prompt
@@ -43,13 +40,14 @@ namespace Microsoft.Bot.Builder.Dialogs
             if (dc == null)
                 throw new ArgumentNullException(nameof(dc));
 
+            // Don't do anything for non-message activities
             if (dc.Context.Activity.Type != ActivityTypes.Message)
             {
                 return;
             }
 
             // Recognize value
-            var instance = dc.Instance;
+            var instance = dc.ActiveDialog;
             var recognized = await OnRecognize(dc, (PromptOptions)instance.State);
 
             // TODO: resolve the inconsistency of approach between the Node SDK and what we have here
@@ -61,10 +59,12 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             if (recognized != null)
             {
+                // Return recognized value
                 await dc.End(recognized);
             }
             else if (!dc.Context.Responded)
             {
+                // Send retry prompt
                 await OnPrompt(dc, (PromptOptions)instance.State, true);
             }
         }

@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
@@ -8,11 +11,28 @@ using static Microsoft.Bot.Builder.Prompts.PromptValidatorEx;
 
 namespace Microsoft.Bot.Builder.Prompts
 {
+    /// <summary>
+    /// Represents recognition result for the NumberPrompt.
+    /// </summary>
     public class NumberResult<T> : PromptResult
     {
-        public T Value { get; set; }
+        /// <summary>
+        /// The value recognized; or <c>null</c>, if recognition fails.
+        /// </summary>
+        public T Value
+        {
+            get { return GetProperty<T>(nameof(Value)); }
+            set { this[nameof(Value)] = value; }
+        }
 
-        public string Text { get; set; }
+        /// <summary>
+        /// The input text recognized; or <c>null</c>, if recognition fails.
+        /// </summary>
+        public string Text
+        {
+            get { return GetProperty<string>(nameof(Text)); }
+            set { this[nameof(Text)] = value; }
+        }
     }
 
     /// <summary>
