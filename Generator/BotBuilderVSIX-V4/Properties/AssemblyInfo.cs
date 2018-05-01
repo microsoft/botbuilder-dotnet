@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("BotBuilderVSIX")]
-[assembly: AssemblyDescription("Template to create conversational bots using Microsoft Bot Framework. It uses Bot Framework V4 SDK")]
+[assembly: AssemblyDescription("Template to create conversational bots using Microsoft Bot Framework. It uses Bot Builder V4 SDK")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Microsoft")]
 [assembly: AssemblyProduct("BotBuilderVSIX")]
