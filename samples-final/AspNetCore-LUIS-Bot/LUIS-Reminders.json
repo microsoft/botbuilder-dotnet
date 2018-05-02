@@ -1,5 +1,5 @@
 {
-  "luis_schema_version": "2.2.0",
+  "luis_schema_version": "3.0.0",
   "versionId": "0.1",
   "name": "Reminders",
   "desc": "",
@@ -13,13 +13,6 @@
       }
     },
     {
-      "name": "Calendar.Delete",
-      "inherits": {
-        "domain_name": "Calendar",
-        "model_name": "Delete"
-      }
-    },
-    {
       "name": "Calendar.Find",
       "inherits": {
         "domain_name": "Calendar",
@@ -30,23 +23,15 @@
       "name": "None"
     }
   ],
-  "entities": [
-    {
-      "name": "Calendar.Subject",
-      "inherits": {
-        "domain_name": "Calendar",
-        "model_name": "Subject"
-      }
-    }
-  ],
+  "entities": [],
   "composites": [],
   "closedLists": [],
+  "patternAnyEntities": [],
   "regex_entities": [],
-  "bing_entities": [
-    "datetimeV2"
-  ],
+  "prebuiltEntities": [],
   "model_features": [],
   "regex_features": [],
+  "patterns": [],
   "utterances": [
     {
       "text": "add a new event on 27 - apr",
@@ -56,24 +41,12 @@
     {
       "text": "add a new task finish assignment",
       "intent": "Calendar.Add",
-      "entities": [
-        {
-          "entity": "Calendar.Subject",
-          "startPos": 15,
-          "endPos": 31
-        }
-      ]
+      "entities": []
     },
     {
       "text": "add an event to read about adam lambert news",
       "intent": "Calendar.Add",
-      "entities": [
-        {
-          "entity": "Calendar.Subject",
-          "startPos": 16,
-          "endPos": 43
-        }
-      ]
+      "entities": []
     },
     {
       "text": "add an event to visit 209 nashville gym",
@@ -83,44 +56,16 @@
     {
       "text": "add imax theater to my upcoming events",
       "intent": "Calendar.Add",
-      "entities": [
-        {
-          "entity": "Calendar.Subject",
-          "startPos": 4,
-          "endPos": 15
-        }
-      ]
+      "entities": []
     },
     {
       "text": "am i free to be with friends saturday ?",
       "intent": "None",
-      "entities": [
-        {
-          "entity": "Calendar.Subject",
-          "startPos": 13,
-          "endPos": 27
-        }
-      ]
+      "entities": []
     },
     {
       "text": "appointment with johnson needs to be next week",
       "intent": "None",
-      "entities": [
-        {
-          "entity": "Calendar.Subject",
-          "startPos": 0,
-          "endPos": 23
-        }
-      ]
-    },
-    {
-      "text": "calendar cancel friday with eddy",
-      "intent": "Calendar.Delete",
-      "entities": []
-    },
-    {
-      "text": "calendar for november 1948",
-      "intent": "Calendar.Find",
       "entities": []
     },
     {
@@ -136,55 +81,12 @@
     {
       "text": "call dad mike",
       "intent": "None",
-      "entities": [
-        {
-          "entity": "Calendar.Subject",
-          "startPos": 0,
-          "endPos": 12
-        }
-      ]
-    },
-    {
-      "text": "can you delete my events this saturday ?",
-      "intent": "Calendar.Delete",
-      "entities": []
-    },
-    {
-      "text": "cancel an event on the calendar",
-      "intent": "Calendar.Delete",
-      "entities": []
-    },
-    {
-      "text": "cancel appointment",
-      "intent": "Calendar.Delete",
-      "entities": []
-    },
-    {
-      "text": "cancel tomorrow ' s appointment",
-      "intent": "Calendar.Delete",
       "entities": []
     },
     {
       "text": "change the meeting with chris to 9 : 00 am",
       "intent": "None",
-      "entities": [
-        {
-          "entity": "Calendar.Subject",
-          "startPos": 7,
-          "endPos": 28
-        }
-      ]
-    },
-    {
-      "text": "delete helen fred ' s birthday",
-      "intent": "Calendar.Delete",
-      "entities": [
-        {
-          "entity": "Calendar.Subject",
-          "startPos": 7,
-          "endPos": 29
-        }
-      ]
+      "entities": []
     },
     {
       "text": "display weekend plans",
@@ -204,35 +106,12 @@
     {
       "text": "email cloney john",
       "intent": "None",
-      "entities": [
-        {
-          "entity": "Calendar.Subject",
-          "startPos": 0,
-          "endPos": 16
-        }
-      ]
-    },
-    {
-      "text": "email cloney john",
-      "intent": "None",
-      "entities": [
-        {
-          "entity": "Calendar.Subject",
-          "startPos": 0,
-          "endPos": 16
-        }
-      ]
+      "entities": []
     },
     {
       "text": "extend lunch meeting 30 minutes extra",
       "intent": "None",
-      "entities": [
-        {
-          "entity": "Calendar.Subject",
-          "startPos": 7,
-          "endPos": 19
-        }
-      ]
+      "entities": []
     },
     {
       "text": "how many days are there between march 13th 2015 and today ?",
@@ -242,57 +121,22 @@
     {
       "text": "i want to reschedule the meeting at the air force club",
       "intent": "None",
-      "entities": [
-        {
-          "entity": "Calendar.Subject",
-          "startPos": 25,
-          "endPos": 53
-        }
-      ]
+      "entities": []
     },
     {
       "text": "marketing meetings on tuesdays will now be every wednesday please change on my calendar",
       "intent": "None",
-      "entities": [
-        {
-          "entity": "Calendar.Subject",
-          "startPos": 0,
-          "endPos": 17
-        }
-      ]
+      "entities": []
     },
     {
       "text": "meeting my manager",
       "intent": "Calendar.Add",
-      "entities": [
-        {
-          "entity": "Calendar.Subject",
-          "startPos": 0,
-          "endPos": 17
-        }
-      ]
+      "entities": []
     },
     {
       "text": "move the bbq party to friday",
       "intent": "None",
-      "entities": [
-        {
-          "entity": "Calendar.Subject",
-          "startPos": 9,
-          "endPos": 17
-        }
-      ]
-    },
-    {
-      "text": "please just delete my meeting",
-      "intent": "Calendar.Delete",
-      "entities": [
-        {
-          "entity": "Calendar.Subject",
-          "startPos": 19,
-          "endPos": 28
-        }
-      ]
+      "entities": []
     },
     {
       "text": "pull up my appointment find out how much time i have before my next appointment",
@@ -300,51 +144,23 @@
       "entities": []
     },
     {
-      "text": "remove a calendar entry",
-      "intent": "Calendar.Delete",
-      "entities": []
-    },
-    {
       "text": "save the date may 17 pictures party",
       "intent": "Calendar.Add",
-      "entities": [
-        {
-          "entity": "Calendar.Subject",
-          "startPos": 21,
-          "endPos": 34
-        }
-      ]
+      "entities": []
     },
     {
       "text": "schedule appointment for tomorrow please",
       "intent": "Calendar.Add",
-      "entities": [
-        {
-          "entity": "Calendar.Subject",
-          "startPos": 9,
-          "endPos": 19
-        }
-      ]
+      "entities": []
     },
     {
       "text": "search for meetings with chris",
       "intent": "Calendar.Find",
-      "entities": [
-        {
-          "entity": "Calendar.Subject",
-          "startPos": 11,
-          "endPos": 29
-        }
-      ]
+      "entities": []
     },
     {
       "text": "show me tomorrow ' s wedding party time",
       "intent": "Calendar.Find",
-      "entities": []
-    },
-    {
-      "text": "stop any new appointments",
-      "intent": "Calendar.Delete",
       "entities": []
     },
     {
@@ -360,13 +176,7 @@
     {
       "text": "the workshop will last for 10 hours",
       "intent": "None",
-      "entities": [
-        {
-          "entity": "Calendar.Subject",
-          "startPos": 0,
-          "endPos": 11
-        }
-      ]
+      "entities": []
     },
     {
       "text": "voice activated reading of appointments this week",
