@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Samples.Ai.QnA.Translator
     public static class TranslatorLocaleHelper
     {
         private static readonly string[] _supportedLanguages = new string[] { "fr", "en" }; //Define supported Languages
-        private static  string[] _supportedLocales = new string[] { "fr-fr", "en-us" }; //Define supported locales
+        private static readonly  string[] _supportedLocales = new string[] { "fr-fr", "en-us" }; //Define supported locales
         private static string currentLanguage = null;
         private static string currentLocale = null;
         public static void SetLanguage(ITurnContext context, string language) => context.GetConversationState<CurrentUserState>().Language = language;
