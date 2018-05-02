@@ -1,59 +1,42 @@
-﻿using System.Threading.Tasks;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.Bot;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Core.Extensions;
-using Microsoft.Bot.Builder.Prompts;
+using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
 
 namespace AspNetCore_EchoBot_With_State
 {
     public class SinglePromptBot : IBot
     {
-        private readonly TextPrompt namePrompt;
-
-        public SinglePromptBot()
-        {
-            namePrompt = new TextPrompt(NameValidator);
-        }
-
-        private Task NameValidator(ITurnContext context, TextResult toValidate)
-        {
-            if (context.Activity.Text.Length <= 2)
-            {
-                toValidate.Status = PromptStatus.NotRecognized;
-            }
-            return Task.CompletedTask;
-        }
-       
         public async Task OnTurn(ITurnContext context)
         {
-            var state = context.GetConversationState<SinglePromptState>();
+            var state = ConversationState<Dictionary<string, object>>.Get(context);
+            var prompt = new TextPrompt();
+            var options = new PromptOptions { PromptString = "Hello, I'm the demo bot. What is your name?" };
+
             switch (context.Activity.Type)
             {
                 case ActivityTypes.ConversationUpdate:
-                    state.Prompt = PrompState.Name;
-                    await namePrompt.Prompt(context, "Hello, I'm the demo bot. What is your name?");
+                    if (context.Activity.MembersAdded[0].Id != context.Activity.Recipient.Id)
+                    {
+                        await prompt.Begin(context, state, options);
+                    }
                     break;
                 case ActivityTypes.Message:
-                    switch (state.Prompt)
+                    var dialogCompletion = await prompt.Continue(context, state);
+                    if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
                     {
-                        case PrompState.Default: // If the user isn't in a prompt, ask for their name
-
-                            state.Prompt = PrompState.Name;
-                            await namePrompt.Prompt(context, "What is your name?");
-                            break;
-                        case PrompState.Name: // Attempt to recognize the users response
-                            var name = await namePrompt.Recognize(context);
-                            if (name.Succeeded())
-                            {
-                                state.Prompt = PrompState.Default;
-                                await context.SendActivity($"{name.Text} is a great name!");
-                            }
-                            else // The user provided an invalid response, so re-prompt the user
-                            {
-                                await namePrompt.Prompt(context, "Please provide a name longer than 2 characters.");
-                            }
-                            break;
+                        await prompt.Begin(context, state, options);
+                    }
+                    else if (dialogCompletion.IsCompleted)
+                    {
+                        var textResult = (Microsoft.Bot.Builder.Prompts.TextResult)dialogCompletion.Result;
+                        await context.SendActivity($"Bot received the text '{textResult.Value}'.");
                     }
                     break;
             }
