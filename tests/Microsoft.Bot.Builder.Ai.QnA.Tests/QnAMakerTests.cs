@@ -2,9 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Net.Http;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Core.Extensions.Tests;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -14,7 +12,8 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
     public class QnAMakerTests
     {
         public readonly string knowlegeBaseId = TestUtilities.GetKey("QNAKNOWLEDGEBASEID");
-        public readonly string subscriptionKey = TestUtilities.GetKey("QNASUBSCRIPTIONKEY");
+        public readonly string endpointKey = TestUtilities.GetKey("QNAENDPOINTKEY");
+        public readonly string hostname = TestUtilities.GetKey("QNAHOSTNAME");
 
         [TestMethod]
         [TestCategory("AI")]
@@ -27,12 +26,17 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
                 return;
             }
 
-            var qna = new QnAMaker(new QnAMakerOptions()
-            {
-                KnowledgeBaseId = knowlegeBaseId,
-                SubscriptionKey = subscriptionKey,
-                Top = 1
-            }, new HttpClient());
+            var qna = new QnAMaker(
+                new QnAMakerEndpoint
+                {
+                    KnowledgeBaseId = knowlegeBaseId,
+                    EndpointKey = endpointKey,
+                    Host = hostname
+                },
+                new QnAMakerOptions
+                {
+                    Top = 1
+                });
 
             var results = await qna.GetAnswers("how do I clean the stove?");
             Assert.IsNotNull(results);
@@ -51,13 +55,18 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
                 return;
             }
 
-            var qna = new QnAMaker(new QnAMakerOptions()
-            {
-                KnowledgeBaseId = knowlegeBaseId,
-                SubscriptionKey = subscriptionKey,
-                Top = 1,
-                ScoreThreshold = 0.99F
-            }, new HttpClient());
+            var qna = new QnAMaker(
+                new QnAMakerEndpoint
+                {
+                    KnowledgeBaseId = knowlegeBaseId,
+                    EndpointKey = endpointKey,
+                    Host = hostname
+                },
+                new QnAMakerOptions
+                {
+                    Top = 1,
+                    ScoreThreshold = 0.99F
+                });
 
             var results = await qna.GetAnswers("how do I clean the stove?");
             Assert.IsNotNull(results);
@@ -68,7 +77,7 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
         [TestCategory("AI")]
         [TestCategory("QnAMaker")]
         [ExpectedException(typeof(ArgumentOutOfRangeException))]
-        public async Task QnaMaker_Test_ScoreThreshold_OutOfRange()
+        public void QnaMaker_Test_ScoreThreshold_OutOfRange()
         {
             if (!EnvironmentVariablesDefined())
             {
@@ -76,20 +85,25 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
                 return;
             }
 
-            var qna = new QnAMaker(new QnAMakerOptions()
-            {
-                KnowledgeBaseId = knowlegeBaseId,
-                SubscriptionKey = subscriptionKey,
-                Top = 1,
-                ScoreThreshold = 1.1F
-            }, new HttpClient());
+            var qna = new QnAMaker(
+                new QnAMakerEndpoint
+                {
+                    KnowledgeBaseId = knowlegeBaseId,
+                    EndpointKey = endpointKey,
+                    Host = hostname
+                },
+                new QnAMakerOptions
+                {
+                    Top = 1,
+                    ScoreThreshold = 1.1F
+                });
         }
 
         [TestMethod]
         [TestCategory("AI")]
         [TestCategory("QnAMaker")]
         [ExpectedException(typeof(ArgumentOutOfRangeException))]
-        public async Task QnaMaker_Test_Top_OutOfRange()
+        public void QnaMaker_Test_Top_OutOfRange()
         {
             if (!EnvironmentVariablesDefined())
             {
@@ -97,18 +111,23 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
                 return;
             }
 
-            var qna = new QnAMaker(new QnAMakerOptions()
-            {
-                KnowledgeBaseId = knowlegeBaseId,
-                SubscriptionKey = subscriptionKey,
-                Top = -1,
-                ScoreThreshold = 0.5F
-            }, new HttpClient());
+            var qna = new QnAMaker(
+                new QnAMakerEndpoint
+                {
+                    KnowledgeBaseId = knowlegeBaseId,
+                    EndpointKey = endpointKey,
+                    Host = hostname
+                },
+                new QnAMakerOptions
+                {
+                    Top = -1,
+                    ScoreThreshold = 0.5F
+                });
         }
 
         private bool EnvironmentVariablesDefined()
         {
-            return knowlegeBaseId != null && subscriptionKey != null;
+            return knowlegeBaseId != null && endpointKey != null && hostname != null;
         }
     }
 }

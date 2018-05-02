@@ -33,15 +33,15 @@ namespace Microsoft.Bot.Samples.Ai.QnA
             {
                 options.CredentialProvider = new ConfigurationCredentialProvider(Configuration);
 
-                var qnaOptions = new QnAMakerMiddlewareOptions
+                var qnaEndpoint = new QnAMakerEndpoint
                 {
                     // add subscription key and knowledge base id
-                    SubscriptionKey = "xxxxxx",
+                    EndpointKey = "xxxxxx",
                     KnowledgeBaseId = "xxxxxx"
                 };
                 
                 var middleware = options.Middleware;
-                middleware.Add(new QnAMakerMiddleware(qnaOptions));
+                middleware.Add(new QnAMakerMiddleware(qnaEndpoint));
             });
         }
 
