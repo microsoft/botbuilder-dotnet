@@ -30,10 +30,10 @@ namespace Microsoft.Bot.Samples.Ai.Luis.Dispatch
     public class LuisDispatchBot : IBot
     {
         public LuisDispatchBot() { }
-        private static QnAMakerOptions qnaOptions = new QnAMakerOptions
+        private static QnAMakerEndpoint qnaEndpoint = new QnAMakerEndpoint
         {
             // add subscription key for QnA and knowledge base ID
-            SubscriptionKey = "<YOUR-QNAMAKER-SUBSCRIPTION-KEY>",
+            EndpointKey = "<YOUR-QNAMAKER-SUBSCRIPTION-KEY>",
             KnowledgeBaseId = "<QNAMAKER-KB-ID>"
         };
 
@@ -137,7 +137,7 @@ namespace Microsoft.Bot.Samples.Ai.Luis.Dispatch
                         // You can provide logic here to handle the known None intent (none of the above).
                         // In this example we fall through to the QnA intent.
                         case "q_faq":
-                            QnAMaker qnaMaker = new QnAMaker(qnaOptions);
+                            QnAMaker qnaMaker = new QnAMaker(qnaEndpoint);
                             var messageActivity = context.Activity.AsMessageActivity();
                             if (!string.IsNullOrEmpty(messageActivity.Text))
                             {

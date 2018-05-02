@@ -42,8 +42,8 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
             try
             {
                 return File.ReadAllLines(@"\\fusebox\private\sdk\UnitTestKeys.cmd")
-                    .Where(l => l.StartsWith("@set"))
-                    .Select(l => l.Replace("@set ", "").Split('='))
+                    .Where(l => l.StartsWith("@set", StringComparison.OrdinalIgnoreCase))
+                    .Select(l => l.Replace("@set ", "", StringComparison.OrdinalIgnoreCase).Split('='))
                     .ToDictionary(pairs => pairs[0], pairs => pairs[1]);
             }
             catch (Exception err)
