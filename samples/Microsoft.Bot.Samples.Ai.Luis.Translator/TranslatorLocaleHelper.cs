@@ -20,6 +20,7 @@ namespace Microsoft.Bot.Samples.Ai.Luis.Translator
         public static void SetLanguage(ITurnContext context, string language) => context.GetConversationState<CurrentUserState>().Language = language;
         public static void SetLocale(ITurnContext context, string locale) => context.GetConversationState<CurrentUserState>().Locale = locale;
         public static bool IsSupportedLanguage(string language) => _supportedLanguages.Contains(language);
+        public static bool IsSupportedLocale(string locale) => _supportedLocales.Contains(locale);
         public static async Task<bool> CheckUserChangedLanguage(ITurnContext context)
         {
             bool changeLang = false;//logic implemented by developper to make a signal for language changing 
@@ -84,7 +85,7 @@ namespace Microsoft.Bot.Samples.Ai.Luis.Translator
                 {
                     var newLocale = messageActivity.Text.ToLower().Replace("set my locale to", "").Trim(); //extracted by the user using user state 
                     if (!string.IsNullOrWhiteSpace(newLocale)
-                            && IsSupportedLanguage(newLocale))
+                            && IsSupportedLocale(newLocale))
                     {
                         SetLocale(context, newLocale);
                         await context.SendActivity($@"Changing your language to {newLocale}");
