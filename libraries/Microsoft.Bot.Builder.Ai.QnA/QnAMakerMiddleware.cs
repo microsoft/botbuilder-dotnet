@@ -18,20 +18,23 @@ namespace Microsoft.Bot.Builder.Ai.QnA
         public const string QnAMakerResultKey = "QnAMakerResult";
         public const string QnAMakerTraceType = "https://www.qnamaker.ai/schemas/trace";
         public const string QnAMakerTraceLabel = "QnAMaker Trace";
-        private readonly QnAMaker _qnaMaker;
+
+        private readonly QnAMakerEndpoint _endpoint;
         private readonly QnAMakerMiddlewareOptions _options;
+        private readonly QnAMaker _qnaMaker;
 
         /// <summary>
         /// Creates a new <see cref="QnAMakerMiddleware"/> instance.
         /// </summary>
-        /// <param name="options">Required. Options to control the behavior of the middleware.</param>
+        /// <param name="endpoint">Endpoint details to connect to the QnA service.</param>
+        /// <param name="options">Options to control the behavior of the middleware.</param>
         /// <param name="httpClient">A client with which to talk to QnAMaker.
         /// If null, a default client is used for this instance.</param>
-        public QnAMakerMiddleware(QnAMakerMiddlewareOptions options, HttpClient httpClient = null)
+        public QnAMakerMiddleware(QnAMakerEndpoint endpoint, QnAMakerMiddlewareOptions options = null, HttpClient httpClient = null)
         {
-            _options = options ?? throw new ArgumentNullException(nameof(options));
-
-            _qnaMaker = new QnAMaker(options, httpClient);
+            _endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
+            _options = options ?? new QnAMakerMiddlewareOptions();
+            _qnaMaker = new QnAMaker(endpoint, options, httpClient);
         }
 
         /// <summary>
@@ -56,8 +59,8 @@ namespace Microsoft.Bot.Builder.Ai.QnA
                     {
                         Message = messageActivity,
                         QueryResults = results,
-                        KnowledgeBaseId = _options.KnowledgeBaseId,
-                        // leave out _options.SubscriptionKey, it is not public
+                        KnowledgeBaseId = _endpoint.KnowledgeBaseId,
+                        // leave out _endpoint.SubscriptionKey, it is not public
                         ScoreThreshold = _options.ScoreThreshold,
                         Top = _options.Top,
                         StrictFilters = _options.StrictFilters,
