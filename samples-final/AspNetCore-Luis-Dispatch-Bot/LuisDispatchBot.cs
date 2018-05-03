@@ -38,16 +38,17 @@ namespace AspNetCore_Luis_Dispatch_Bot
             (luisModelId, luisSubscriptionId, luisUri) = Startup.GetLuisConfiguration(configuration, "Weather");
             this.luisModelWeather = new LuisModel(luisModelId, luisSubscriptionId, luisUri);
 
-            var (knowledgeBaseId, subscriptionKey) = Startup.GetQnAMakerConfiguration(configuration);
-            this.qnaOptions = new QnAMakerOptions
+            var (knowledgeBaseId, subscriptionKey, qnaUrl) = Startup.GetQnAMakerConfiguration(configuration);
+            this.qnaEndpoint = new QnAMakerEndpoint
             {
                 // add subscription key for QnA and knowledge base ID
-                SubscriptionKey = subscriptionKey,
-                KnowledgeBaseId = knowledgeBaseId
+                EndpointKey = subscriptionKey,
+                KnowledgeBaseId = knowledgeBaseId,
+                Host = qnaUrl
             };
         }
 
-        private QnAMakerOptions qnaOptions;
+        private QnAMakerEndpoint qnaEndpoint;
 
         // App ID for a LUIS model named "homeautomation"
         private LuisModel luisModelHomeAutomation;
@@ -67,37 +68,14 @@ namespace AspNetCore_Luis_Dispatch_Bot
                 {
                     await context.SendActivity("Unable to get the top intent.");
                 }
-                else 
+                else
                 {
                     if (topIntent.Value.score < 0.3)
                     {
                         await context.SendActivity("I'm not very sure what you want but will try to send your request.");
                     }
-                    switch (topIntent.Value.intent.ToLowerInvariant())
-                    {
-                        case "l_homeautomation":
-                            await DispatchToLuisModel(context, this.luisModelHomeAutomation, "home automation");
-
-                            // Here, you can add code for calling the hypothetical home automation service, passing in any entity information that you need
-                            break;
-                        case "l_weather":
-                            await DispatchToLuisModel(context, this.luisModelWeather, "weather");
-
-                            // Here, you can add code for calling the hypothetical weather service, passing in any entity information that you need
-                            break;
-                        case "none":
-                        // You can provide logic here to handle the known None intent (none of the above).
-                        // In this example we fall through to the QnA intent.
-                        case "q_faq":
-                            await DispatchToQnAMaker(context, this.qnaOptions, "FAQ");
-                            break;
-                        default:
-                            // The intent didn't match any case, so just display the recognition results.
-                            await context.SendActivity($"Dispatch intent: {topIntent.Value.intent} ({topIntent.Value.score}).");
-
-                            break;
-                    }
-                }                
+                    await DispatchToTopIntent(context, topIntent);
+                }
             }
             else if (context.Activity.Type is ActivityTypes.ConversationUpdate)
             {
@@ -105,7 +83,35 @@ namespace AspNetCore_Luis_Dispatch_Bot
             }
         }
 
-        private static async Task DispatchToQnAMaker(ITurnContext context, QnAMakerOptions qnaOptions, string appName)
+        private async Task DispatchToTopIntent(ITurnContext context, (string intent, double score)? topIntent)
+        {
+            switch (topIntent.Value.intent.ToLowerInvariant())
+            {
+                case "l_homeautomation":
+                    await DispatchToLuisModel(context, this.luisModelHomeAutomation, "home automation");
+
+                    // Here, you can add code for calling the hypothetical home automation service, passing in any entity information that you need
+                    break;
+                case "l_weather":
+                    await DispatchToLuisModel(context, this.luisModelWeather, "weather");
+
+                    // Here, you can add code for calling the hypothetical weather service, passing in any entity information that you need
+                    break;
+                case "none":
+                // You can provide logic here to handle the known None intent (none of the above).
+                // In this example we fall through to the QnA intent.
+                case "q_faq":
+                    await DispatchToQnAMaker(context, this.qnaEndpoint, "FAQ");
+                    break;
+                default:
+                    // The intent didn't match any case, so just display the recognition results.
+                    await context.SendActivity($"Dispatch intent: {topIntent.Value.intent} ({topIntent.Value.score}).");
+
+                    break;
+            }
+        }
+
+        private static async Task DispatchToQnAMaker(ITurnContext context, QnAMakerEndpoint qnaOptions, string appName)
         {
             QnAMaker qnaMaker = new QnAMaker(qnaOptions);
             if (!string.IsNullOrEmpty(context.Activity.Text))
