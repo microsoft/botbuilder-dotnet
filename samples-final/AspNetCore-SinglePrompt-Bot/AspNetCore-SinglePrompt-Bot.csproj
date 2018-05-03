@@ -10,7 +10,6 @@
     <PackageReference Include="Microsoft.Bot.Builder.Core.Extensions" Version="4.0.0-alpham4.2" />
     <PackageReference Include="Microsoft.Bot.Builder.Dialogs" Version="4.0.0-alpham4.2" />
     <PackageReference Include="Microsoft.Bot.Builder.Integration.AspNet.Core" Version="4.0.0-alpham4.2" />
-    <PackageReference Include="Microsoft.Bot.Builder.Prompts" Version="4.0.0-alpham4.2" />
   </ItemGroup>
 
 </Project>
