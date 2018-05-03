@@ -5,6 +5,7 @@ using Microsoft.Bot.Builder;
 using System;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Rest.TransientFaultHandling;
+using System.Net.Http;
 
 namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
 {
@@ -57,6 +58,17 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
         }
 
         /// <summary>
+        /// Adds the delegating handler to use for Bot Framework SDK requests.
+        /// </summary>
+        /// <param name="delegatingHandler">The delegating handler.</param>
+        /// <returns></returns>
+        public BotFrameworkConfigurationBuilder UseDelegatingHandler(DelegatingHandler delegatingHandler)
+        {
+            _options.DelegatingHandler = delegatingHandler;
+            return this;
+        }
+
+        /// <summary>
         /// Enables the proactive messaging endpoint and optionally allows specifying the path at which the endpoint should be exposed.
         /// </summary>
         /// <param name="proactiveMessagesPath">The path at which the proactive messaging endpoint should be exposed.</param>
@@ -103,6 +115,5 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
         /// <seealso cref="SimpleCredentialProvider"/>
         public static BotFrameworkConfigurationBuilder UseMicrosoftApplicationIdentity(this BotFrameworkConfigurationBuilder builder, string applicationId, string applicationPassword) =>
             builder.UseCredentialProvider(new SimpleCredentialProvider(applicationId, applicationPassword));
-
     }
 }
