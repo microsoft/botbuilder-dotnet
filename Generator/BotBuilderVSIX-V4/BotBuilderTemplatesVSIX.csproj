@@ -9,7 +9,8 @@
     <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>35MSSharedLib1024.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject />
@@ -61,7 +62,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="35MSSharedLib1024.snk" />
     <None Include="app.config">
       <SubType>Designer</SubType>
     </None>
