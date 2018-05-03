@@ -31,5 +31,5 @@ namespace AspNetCore_EchoBot_With_State
                 await context.SendActivity($"Turn {state.TurnCount}: You sent '{context.Activity.Text}'");
             }
         }
-    }    
+    }
 }
