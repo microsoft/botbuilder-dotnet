@@ -27,5 +27,5 @@ namespace AspNetCore_ConversationUpdate_Bot
             }
             return Task.CompletedTask;
         }
-    }    
+    }
 }
