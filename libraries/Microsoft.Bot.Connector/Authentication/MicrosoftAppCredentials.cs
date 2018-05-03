@@ -51,12 +51,17 @@ namespace Microsoft.Bot.Connector.Authentication
         private static object _cacheSync = new object();
         protected static readonly IDictionary<string, OAuthResponse> _cache = new Dictionary<string, OAuthResponse>();
 
-        public MicrosoftAppCredentials(string appId, string password, HttpMessageHandler httpMessageHandler = null)
+        public MicrosoftAppCredentials(string appId, string password)
+            : this (appId, password, DefaultMessageHandler)
+        {
+        }
+
+        public MicrosoftAppCredentials(string appId, string password, HttpMessageHandler httpMessageHandler)
         {
             this.MicrosoftAppId = appId;
             this.MicrosoftAppPassword = password;
             this.TokenCacheKey = $"{MicrosoftAppId}-cache";
-            this._httpClient = httpMessageHandler == null ? new HttpClient(DefaultMessageHandler) : new HttpClient(httpMessageHandler);
+            this._httpClient = new HttpClient(httpMessageHandler);
         }
 
         public string MicrosoftAppId { get; set; }
