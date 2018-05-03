@@ -70,10 +70,10 @@ namespace AspNetCore_Multiple_Prompts
             dialogs.Add(PromptStep.AgePrompt,
                 new PromptsDialog.NumberPrompt<int>(Culture.English, AgeValidator));
             // Add a dialog that uses both prompts to gather information from the user
-            dialogs.Add(PromptStep.GatherInfo, 
+            dialogs.Add(PromptStep.GatherInfo,
                 new WaterfallStep[] { AskNameStep, AskAgeStep, GatherInfoStep });
         }
-       
+
         public async Task OnTurn(ITurnContext context)
         {
             var state = context.GetConversationState<MultiplePromptsState>();
@@ -89,5 +89,5 @@ namespace AspNetCore_Multiple_Prompts
                     break;
             }
         }
-    }    
+    }
 }

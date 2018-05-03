@@ -15,8 +15,9 @@ namespace AspNetCore_Multiple_Prompts
             this[NameKey] = null;
             this[AgeKey] = 0;
         }
-        
-        public string Name {
+
+        public string Name
+        {
             get { return (string)this[NameKey]; }
             set { this[NameKey] = value; }
         }
@@ -26,5 +27,5 @@ namespace AspNetCore_Multiple_Prompts
             get { return (int)this[AgeKey]; }
             set { this[AgeKey] = value; }
         }
-    }    
+    }
 }
