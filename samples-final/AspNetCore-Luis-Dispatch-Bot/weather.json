@@ -1,5 +1,5 @@
 {
-  "luis_schema_version": "2.2.0",
+  "luis_schema_version": "3.0.0",
   "versionId": "0.1",
   "name": "weather",
   "desc": "weather",
@@ -29,15 +29,18 @@
       "inherits": {
         "domain_name": "Weather",
         "model_name": "Location"
-      }
+      },
+      "roles": []
     }
   ],
   "composites": [],
   "closedLists": [],
+  "patternAnyEntities": [],
   "regex_entities": [],
-  "bing_entities": [],
+  "prebuiltEntities": [],
   "model_features": [],
   "regex_features": [],
+  "patterns": [],
   "utterances": [
     {
       "text": "\" i need to know the temperature at bangor , sme \"",

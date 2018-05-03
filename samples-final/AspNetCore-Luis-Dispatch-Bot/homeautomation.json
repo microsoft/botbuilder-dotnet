@@ -1,5 +1,5 @@
 {
-  "luis_schema_version": "2.2.0",
+  "luis_schema_version": "3.0.0",
   "versionId": "0.1",
   "name": "homeautomation",
   "desc": "homeautomation",
@@ -29,29 +29,34 @@
       "inherits": {
         "domain_name": "HomeAutomation",
         "model_name": "Device"
-      }
+      },
+      "roles": []
     },
     {
       "name": "HomeAutomation.Operation",
       "inherits": {
         "domain_name": "HomeAutomation",
         "model_name": "Operation"
-      }
+      },
+      "roles": []
     },
     {
       "name": "HomeAutomation.Room",
       "inherits": {
         "domain_name": "HomeAutomation",
         "model_name": "Room"
-      }
+      },
+      "roles": []
     }
   ],
   "composites": [],
   "closedLists": [],
+  "patternAnyEntities": [],
   "regex_entities": [],
-  "bing_entities": [],
+  "prebuiltEntities": [],
   "model_features": [],
   "regex_features": [],
+  "patterns": [],
   "utterances": [
     {
       "text": "breezeway on please",
@@ -381,14 +386,14 @@
       "intent": "HomeAutomation.TurnOff",
       "entities": [
         {
-          "entity": "HomeAutomation.Device",
-          "startPos": 9,
-          "endPos": 10
-        },
-        {
           "entity": "HomeAutomation.Operation",
           "startPos": 5,
           "endPos": 7
+        },
+        {
+          "entity": "HomeAutomation.Device",
+          "startPos": 9,
+          "endPos": 10
         }
       ]
     },

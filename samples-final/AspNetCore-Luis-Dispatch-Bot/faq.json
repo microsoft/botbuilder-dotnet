@@ -1,0 +1,37 @@
+{
+  "qnaList": [
+    {
+      "qnaId": 1,
+      "answer": "Answer",
+      "source": "sampleKnowledgeBase.tsv",
+      "questions": [
+        "Question"
+      ],
+      "metadata": []
+    },
+    {
+      "qnaId": 2,
+      "answer": "Hello!",
+      "source": "sampleKnowledgeBase.tsv",
+      "questions": [
+        "hi",
+        "greetings",
+        "good morning",
+        "good evening"
+      ],
+      "metadata": []
+    },
+    {
+      "qnaId": 3,
+      "answer": "I am the LUIS-QnAMaker Dispatch bot! I show how easy it is to use multiple LUIS models and a QnAMaker model inside of a chatbot.",
+      "source": "sampleKnowledgeBase.tsv",
+      "questions": [
+        "What are you?",
+        "What?",
+        "What do you do?"
+      ],
+      "metadata": []
+    }
+  ],
+  "name": "faq"
+}
