@@ -1,0 +1,21 @@
+﻿{
+  "text": "Test Message",
+  "textFormat": "plain",
+  "type": "message",
+  "timestamp": "2017-03-31T00:12:59.893Z",
+  "id": "1400900100700",
+  "channelId": "webchat",
+  "serviceUrl": "https://api.test.com",
+  "from": {
+    "id": "SAMPLEID",
+    "name": "SAMPLE USER"
+  },
+  "conversation": {
+    "isGroup": true,
+    "id": "SampleConversationId"
+  },
+  "recipient": {
+    "id": "SampleBot",
+    "name": "TestBot"
+  }
+}

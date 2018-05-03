@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -33,14 +34,12 @@ namespace Microsoft.Bot.Builder.Tests
                     responseBody["token_type"] = "bearer";
                     responseBody["access_token"] = "fakeToken";
                 }
-                else if (request.RequestUri.AbsoluteUri.Equals("https://api.test.com/v3/conversations", StringComparison.OrdinalIgnoreCase))
+                else if (request.RequestUri.AbsoluteUri.Equals("https://api.test.com/v3/conversations/SampleConversationId/activities", StringComparison.OrdinalIgnoreCase))
                 {
                     Assert.IsTrue(request.Headers.Authorization.Parameter.Equals("fakeToken"));
-                    responseBody = JObject.FromObject(new ConversationResourceResponse
+                    responseBody = JObject.FromObject(new ResourceResponse
                     {
-                        ActivityId = "ActivityId",
-                        Id = "TestConversationId",
-                        ServiceUrl = "https://api.test.com"
+                        Id = "TestId",
                     });
                 }
                 else
@@ -60,35 +59,43 @@ namespace Microsoft.Bot.Builder.Tests
                 return Task.FromResult(response);
             });
 
-            ConversationParameters conversationParameters = new ConversationParameters
-            {
-                Bot = new ChannelAccount
-                {
-                    Id = "Bot",
-                    Name = "Bot"
-                },
-                Members = new List<ChannelAccount>
-                {
-                    new ChannelAccount
-                    {
-                        Id = "User",
-                        Name = "User"
-                    }
-                },
-            };
+            Activity sampleActivity = JsonConvert.DeserializeObject<Activity>(File.ReadAllText("SampleActivity.json"));
+
+            string header = $"Bearer {await new MicrosoftAppCredentials("2cd87869-38a0-4182-9251-d056e8f0ac24", "2.30Vs3VQLKt974F").GetTokenAsync()}";
 
             MicrosoftAppCredentials.TrustServiceUrl("https://api.test.com");
 
             BotFrameworkAdapter botFrameworkAdapter = new BotFrameworkAdapter(
-                credentialProvider: new SimpleCredentialProvider(),
+                credentialProvider: new SimpleCredentialProvider("2cd87869-38a0-4182-9251-d056e8f0ac24", "2.30Vs3VQLKt974F"),
                 connectorClientRetryPolicy: null,
                 delegatingHandler: testHandler,
                 middleware: null);
 
-            await botFrameworkAdapter.CreateConversation("testChannel", "https://api.test.com", null, conversationParameters, (turnContext) => { return Task.CompletedTask; });
+            await botFrameworkAdapter.ProcessActivity(header, sampleActivity, (turnContext) =>
+            {
+                return botFrameworkAdapter.SendActivities(turnContext, new Activity[] { sampleActivity });
+            });
 
             Assert.IsTrue(delegatingHandlerCalled, "DelegatingHandler was not called");
             Assert.AreEqual(2, numberOfRequestsProcessed);
+        }
+
+        private class TestCredentialProvider : ICredentialProvider
+        {
+            public Task<string> GetAppPasswordAsync(string appId)
+            {
+                return Task.FromResult("");
+            }
+
+            public Task<bool> IsAuthenticationDisabledAsync()
+            {
+                return Task.FromResult(true);
+            }
+
+            public Task<bool> IsValidAppIdAsync(string appId)
+            {
+                return Task.FromResult(true);
+            }
         }
 
         private class TestDelegatingHandler : DelegatingHandler
