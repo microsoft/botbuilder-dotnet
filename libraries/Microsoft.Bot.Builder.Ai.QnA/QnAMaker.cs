@@ -28,18 +28,6 @@ namespace Microsoft.Bot.Builder.Ai.QnA
         /// <param name="options">The options for the QnA Maker knowledge base.</param>
         /// <param name="httpClient">A client with which to talk to QnAMaker.
         /// If null, a default client is used for this instance.</param>
-        public QnAMaker(string endpoint, QnAMakerOptions options = null, HttpClient httpClient = null)
-            : this(new QnAMakerEndpoint(endpoint), options, httpClient)
-        {
-        }
-
-        /// <summary>
-        /// Creates a new <see cref="QnAMaker"/> instance.
-        /// </summary>
-        /// <param name="endpoint">The endpoint of the knowledge base to query.</param>
-        /// <param name="options">The options for the QnA Maker knowledge base.</param>
-        /// <param name="httpClient">A client with which to talk to QnAMaker.
-        /// If null, a default client is used for this instance.</param>
         public QnAMaker(QnAMakerEndpoint endpoint, QnAMakerOptions options = null, HttpClient httpClient = null)
         {
             _httpClient = httpClient ?? g_httpClient;
@@ -183,36 +171,6 @@ namespace Microsoft.Bot.Builder.Ai.QnA
     /// </summary>
     public class QnAMakerEndpoint
     {
-        private const string ENDPOINT_REGEXP = "/knowledgebases/(.*)/generateAnswer\\r\\nHost:\\s(.*)\\r\\n.* (?:EndpointKey|Ocp-Apim-Subscription-Key:)\\s(.*)\\r\\n";
-        private const string UNIX_ENDPOINT_REGEXP = "/knowledgebases/(.*)/generateAnswer\\nHost:\\s(.*)\\n.* (?:EndpointKey|Ocp-Apim-Subscription-Key:)\\s(.*)\\n";
-
-        public QnAMakerEndpoint()
-        {
-        }
-
-        public QnAMakerEndpoint(string endpoint)
-        {
-            if (string.IsNullOrEmpty(endpoint))
-            {
-                throw new ArgumentNullException(nameof(endpoint));
-            }
-            var regex = new Regex(ENDPOINT_REGEXP);
-            var matches = regex.Matches(endpoint);
-            if (matches.Count == 0)
-            {
-                var regexUnix = new Regex(UNIX_ENDPOINT_REGEXP);
-                matches = regexUnix.Matches(endpoint);
-            }
-            if (matches.Count == 0)
-            {
-                throw new Exception($"QnAMaker: invalid endpoint of '{endpoint}' passed to constructor.");
-            }
-            var matched = matches[0];
-            KnowledgeBaseId = matched.Groups[1].Value;
-            Host = matched.Groups[2].Value;
-            EndpointKey = matched.Groups[3].Value;
-        }
-
         /// <summary>
         /// The knowledge base ID.
         /// </summary>
