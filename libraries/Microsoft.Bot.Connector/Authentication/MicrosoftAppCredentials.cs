@@ -18,9 +18,14 @@ namespace Microsoft.Bot.Connector.Authentication
     public class MicrosoftAppCredentials : ServiceClientCredentials
     {
         /// <summary>
+        /// The default <see cref="HttpMessageHandler"/> in case user did not pass any.
+        /// </summary>
+        private static readonly HttpMessageHandler DefaultMessageHandler = new HttpClientHandler();
+
+        /// <summary>
         /// An empty set of credentials.
         /// </summary>
-        public static readonly MicrosoftAppCredentials Empty = new MicrosoftAppCredentials(null, null);
+        public static readonly MicrosoftAppCredentials Empty = new MicrosoftAppCredentials(null, null, new HttpClientHandler());
 
         /// <summary>
         /// The key for Microsoft app Id.
@@ -33,12 +38,9 @@ namespace Microsoft.Bot.Connector.Authentication
         public const string MicrosoftAppPasswordKey = "MicrosoftAppPassword";
 
         /// <summary>
-        /// The token refresh code uses this client. Ideally, this would be passed in or set via a DI system to 
-        /// allow developer control over behavior / headers / timeouts and such. Unfortunately this is buried
-        /// pretty deep, the static solution used here is much cleaner. If this becomes an issue we could
-        /// consider circling back and exposing developer control over this HttpClient. 
+        /// The token refresh code uses this client. By sharing a MessageHandler here we can achieve the Static instance level
         /// </summary>
-        private static readonly HttpClient _httpClient = new HttpClient(); 
+        private readonly HttpClient _httpClient = new HttpClient();
 
         private static object _trustedHostNamesSync = new object();
         private static readonly IDictionary<string, DateTime> _trustedHostNames = new Dictionary<string, DateTime>()
@@ -49,11 +51,12 @@ namespace Microsoft.Bot.Connector.Authentication
         private static object _cacheSync = new object();
         protected static readonly IDictionary<string, OAuthResponse> _cache = new Dictionary<string, OAuthResponse>();
 
-        public MicrosoftAppCredentials(string appId, string password)
+        public MicrosoftAppCredentials(string appId, string password, HttpMessageHandler httpMessageHandler = null)
         {
             this.MicrosoftAppId = appId;
             this.MicrosoftAppPassword = password;
-            this.TokenCacheKey = $"{MicrosoftAppId}-cache";            
+            this.TokenCacheKey = $"{MicrosoftAppId}-cache";
+            this._httpClient = httpMessageHandler == null ? new HttpClient(DefaultMessageHandler) : new HttpClient(httpMessageHandler);
         }
 
         public string MicrosoftAppId { get; set; }

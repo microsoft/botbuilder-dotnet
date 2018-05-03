@@ -7,6 +7,7 @@ using Microsoft.Bot.Builder.Integration.AspNet.Core.Handlers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using System;
+using System.Net.Http;
 
 namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 {
@@ -53,7 +54,10 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 
             var options = applicationBuilder.ApplicationServices.GetRequiredService<IOptions<BotFrameworkOptions>>().Value;
 
-            var botFrameworkAdapter = new BotFrameworkAdapter(options.CredentialProvider, options.ConnectorClientRetryPolicy);
+            var delegatingHandler = applicationBuilder.ApplicationServices.GetService<DelegatingHandler>();
+
+            // Even if Delegating Handler is null we have handling down the pipeline to take care of it.
+            BotFrameworkAdapter botFrameworkAdapter = new BotFrameworkAdapter(options.CredentialProvider, options.ConnectorClientRetryPolicy, delegatingHandler);
 
             foreach (var middleware in options.Middleware)
             {

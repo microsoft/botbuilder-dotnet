@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -36,9 +37,9 @@ namespace Microsoft.Bot.Builder.Adapters
     public class BotFrameworkAdapter : BotAdapter
     {
         private readonly ICredentialProvider _credentialProvider;
-        private readonly HttpClient _httpClient;
+        private readonly DelegatingHandler _delegatingHandler;
         private readonly RetryPolicy _connectorClientRetryPolicy;
-        private Dictionary<string, MicrosoftAppCredentials> _appCredentialMap = new Dictionary<string, MicrosoftAppCredentials>();                
+        private ConcurrentDictionary<string, MicrosoftAppCredentials> _appCredentialMap = new ConcurrentDictionary<string, MicrosoftAppCredentials>();
 
         private const string InvokeReponseKey = "BotFrameworkAdapter.InvokeResponse";
 
@@ -48,7 +49,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// </summary>
         /// <param name="credentialProvider">The credential provider.</param>
         /// <param name="connectorClientRetryPolicy">Retry policy for retrying HTTP operations.</param>
-        /// <param name="httpClient">The HTTP client.</param>
+        /// <param name="delegatingHandler">The HTTP client delegating handler.</param>
         /// <param name="middleware">The middleware to initially add to the adapter.</param>
         /// <exception cref="ArgumentNullException">
         /// <paramref name="credentialProvider"/> is <c>null</c>.</exception>
@@ -56,10 +57,14 @@ namespace Microsoft.Bot.Builder.Adapters
         /// components in the conustructor. Use the <see cref="Use(IMiddleware)"/> method to 
         /// add additional middleware to the adapter after construction.
         /// </remarks>
-        public BotFrameworkAdapter(ICredentialProvider credentialProvider, RetryPolicy connectorClientRetryPolicy = null, HttpClient httpClient = null, IMiddleware middleware = null)
+        public BotFrameworkAdapter(
+            ICredentialProvider credentialProvider,
+            RetryPolicy connectorClientRetryPolicy = null,
+            DelegatingHandler delegatingHandler = null,
+            IMiddleware middleware = null)
         {
             _credentialProvider = credentialProvider ?? throw new ArgumentNullException(nameof(credentialProvider));
-            _httpClient = httpClient ?? new HttpClient();
+            _delegatingHandler = delegatingHandler;
             _connectorClientRetryPolicy = connectorClientRetryPolicy;
 
             if (middleware != null)
@@ -129,14 +134,14 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <param name="appId">The application ID of the bot.</param>
         /// <param name="appPassword">The application secret for the bot.</param>
         /// <param name="connectorClientRetryPolicy">Retry policy for retrying HTTP operations.</param>
-        /// <param name="httpClient">The HTTP client.</param>
+        /// <param name="delegatingHandler">The HTTP client delegating handler.</param>
         /// <param name="middleware">The middleware to initially add to the adapter.</param>
         /// <remarks>Use a <see cref="MiddlewareSet"/> object to add multiple middleware
         /// components in the conustructor. Use the <see cref="Use(IMiddleware)"/> method to 
         /// add additional middleware to the adapter after construction.
         /// </remarks>
-        public BotFrameworkAdapter(string appId, string appPassword, RetryPolicy connectorClientRetryPolicy = null, HttpClient httpClient = null, IMiddleware middleware = null) 
-            : this(new SimpleCredentialProvider(appId, appPassword), connectorClientRetryPolicy, httpClient, middleware)
+        public BotFrameworkAdapter(string appId, string appPassword, RetryPolicy connectorClientRetryPolicy = null, DelegatingHandler delegatingHandler = null, IMiddleware middleware = null)
+            : this(new SimpleCredentialProvider(appId, appPassword), connectorClientRetryPolicy, delegatingHandler, middleware)
         {
         }
 
@@ -179,8 +184,22 @@ namespace Microsoft.Bot.Builder.Adapters
         public async Task<InvokeResponse> ProcessActivity(string authHeader, Activity activity, Func<ITurnContext, Task> callback)
         {
             BotAssert.ActivityNotNull(activity);
-
-            var claimsIdentity =  await JwtTokenValidation.AuthenticateRequest(activity, authHeader, _credentialProvider, _httpClient).ConfigureAwait(false);
+            ClaimsIdentity claimsIdentity;
+            if (this._delegatingHandler == null)
+            {
+                claimsIdentity = await JwtTokenValidation.AuthenticateRequest(
+                    activity,
+                    authHeader,
+                    _credentialProvider).ConfigureAwait(false);
+            }
+            else
+            {
+                claimsIdentity = await JwtTokenValidation.AuthenticateRequest(
+                    activity,
+                    authHeader,
+                    _credentialProvider,
+                    new HttpClient(this._delegatingHandler)).ConfigureAwait(false);
+            }
 
             return await ProcessActivity(claimsIdentity, activity, callback).ConfigureAwait(false);
         }
@@ -232,7 +251,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <seealso cref="ITurnContext.OnSendActivities(SendActivitiesHandler)"/>
         public override async Task<ResourceResponse[]> SendActivities(ITurnContext context, Activity[] activities)
         {
-            List<ResourceResponse> responses = new List<ResourceResponse>(); 
+            List<ResourceResponse> responses = new List<ResourceResponse>();
 
             foreach (var activity in activities)
             {
@@ -247,7 +266,7 @@ namespace Microsoft.Bot.Builder.Adapters
                     // No need to create a response. One will be created below. 
                 }
                 else if (activity.Type == "invokeResponse") // Aligning name with Node            
-                {                    
+                {
                     context.Services.Add<Activity>(InvokeReponseKey, activity);
                     // No need to create a response. One will be created below.                     
                 }
@@ -255,7 +274,7 @@ namespace Microsoft.Bot.Builder.Adapters
                 {
                     // if it is a Trace activity we only send to the channel if it's the emulator.
                 }
-                else if( !string.IsNullOrWhiteSpace(activity.ReplyToId))
+                else if (!string.IsNullOrWhiteSpace(activity.ReplyToId))
                 {
                     var connectorClient = context.Services.Get<IConnectorClient>();
                     response = await connectorClient.Conversations.ReplyToActivityAsync(activity).ConfigureAwait(false);
@@ -263,7 +282,7 @@ namespace Microsoft.Bot.Builder.Adapters
                 else
                 {
                     var connectorClient = context.Services.Get<IConnectorClient>();
-                    response = await connectorClient.Conversations.SendToConversationAsync(activity).ConfigureAwait(false);                    
+                    response = await connectorClient.Conversations.SendToConversationAsync(activity).ConfigureAwait(false);
                 }
 
                 // If No response is set, then defult to a "simple" response. This can't really be done
@@ -281,7 +300,7 @@ namespace Microsoft.Bot.Builder.Adapters
                 }
 
                 // Collect all the responses that come from the service. 
-                responses.Add(response); 
+                responses.Add(response);
             }
 
             return responses.ToArray();
@@ -366,7 +385,7 @@ namespace Microsoft.Bot.Builder.Adapters
 
             return accounts;
         }
-     
+
         /// <summary>
         /// Lists the members of the current conversation.
         /// </summary>
@@ -409,9 +428,9 @@ namespace Microsoft.Bot.Builder.Adapters
                 throw new ArgumentNullException(nameof(serviceUrl));
 
             if (credentials == null)
-                throw new ArgumentNullException(nameof(credentials)); 
+                throw new ArgumentNullException(nameof(credentials));
 
-            var connectorClient = this.CreateConnectorClient(serviceUrl, credentials);            
+            var connectorClient = this.CreateConnectorClient(serviceUrl, credentials);
             ConversationsResult results = await connectorClient.Conversations.GetConversationsAsync(continuationToken).ConfigureAwait(false);
             return results;
         }
@@ -525,13 +544,20 @@ namespace Microsoft.Bot.Builder.Adapters
         private IConnectorClient CreateConnectorClient(string serviceUrl, MicrosoftAppCredentials appCredentials = null)
         {
             ConnectorClient connectorClient;
-            if (appCredentials != null)
+
+            if (appCredentials == null)
+            {
+                appCredentials = MicrosoftAppCredentials.Empty;
+            }
+
+            if (this._delegatingHandler == null)
             {
                 connectorClient = new ConnectorClient(new Uri(serviceUrl), appCredentials);
             }
             else
             {
-                connectorClient = new ConnectorClient(new Uri(serviceUrl));
+                connectorClient = new ConnectorClient(new Uri(serviceUrl), appCredentials, this._delegatingHandler);
+                connectorClient.UseSharedHttpClient = false;
             }
 
             if (this._connectorClientRetryPolicy != null)
@@ -558,7 +584,16 @@ namespace Microsoft.Bot.Builder.Adapters
             if (!_appCredentialMap.TryGetValue(appId, out var appCredentials))
             {
                 string appPassword = await _credentialProvider.GetAppPasswordAsync(appId).ConfigureAwait(false);
-                appCredentials = new MicrosoftAppCredentials(appId, appPassword);
+
+                if (this._delegatingHandler == null)
+                {
+                    appCredentials = new MicrosoftAppCredentials(appId, appPassword);
+                }
+                else
+                {
+                    appCredentials = new MicrosoftAppCredentials(appId, appPassword, this._delegatingHandler);
+                }
+
                 _appCredentialMap[appId] = appCredentials;
             }
 
