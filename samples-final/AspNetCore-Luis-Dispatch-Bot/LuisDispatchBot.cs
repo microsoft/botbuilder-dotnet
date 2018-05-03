@@ -59,15 +59,9 @@ namespace AspNetCore_Luis_Dispatch_Bot
         {
             if (context.Activity.Type is ActivityTypes.Message)
             {
-                var message = context.Activity.AsMessageActivity();
                 // Get the intent recognition result from the context object.
                 var dispatchResult = context.Services.Get<RecognizerResult>(LuisRecognizerMiddleware.LuisRecognizerResultKey) as RecognizerResult;
                 var topIntent = dispatchResult?.GetTopScoringIntent();
-                LuisRecognizer luisRecognizer1, luisRecognizer2;
-                RecognizerResult recognizerResult;
-
-                var intentsList = new List<string>();
-                var entitiesList = new List<string>();
 
                 if (topIntent == null)
                 {
@@ -82,85 +76,20 @@ namespace AspNetCore_Luis_Dispatch_Bot
                     switch (topIntent.Value.intent.ToLowerInvariant())
                     {
                         case "l_homeautomation":
-                            await context.SendActivity("Sending your request to the home automation system ...");
-
-                            luisRecognizer1 = new LuisRecognizer(this.luisModelHomeAutomation);
-                            recognizerResult = await luisRecognizer1.Recognize(message.Text, System.Threading.CancellationToken.None);                            
-                            
-                            // list the intents
-                            foreach (var intent in recognizerResult.Intents)
-                            {
-                                intentsList.Add($"'{intent.Key}', score {intent.Value}");
-                            }
-                            await context.SendActivity($"Intents detected by the home automation app:\n\n{string.Join("\n\n", intentsList)}");
-
-                            // list the entities
-                            entitiesList = new List<string>();
-                            foreach (var entity in recognizerResult.Entities)
-                            {
-                                if (!entity.Key.ToString().Equals("$instance"))
-                                {
-                                    entitiesList.Add($"{entity.Key}: {entity.Value.First}");
-                                }
-                            }
-
-                            if (entitiesList.Count > 0)
-                            {
-                                await context.SendActivity($"The following entities were found in the message:\n\n{string.Join("\n\n", entitiesList)}");
-                            }
+                            await DispatchToLuisModel(context, this.luisModelHomeAutomation, "home automation");
 
                             // Here, you can add code for calling the hypothetical home automation service, passing in any entity information that you need
-
                             break;
                         case "l_weather":
-                            await context.SendActivity("Sending your request to the weather system ...");
-                            luisRecognizer2 = new LuisRecognizer(this.luisModelWeather);
-                            recognizerResult = await luisRecognizer2.Recognize(message.Text, System.Threading.CancellationToken.None);
-
-                            // list the intents
-                            var intentsResult2 = new List<string>();
-                            foreach (var intent in recognizerResult.Intents)
-                            {
-                                intentsResult2.Add($"'{intent.Key}', score {intent.Value}");
-                            }
-                            await context.SendActivity($"Intents detected by the weather app: \n\n{string.Join("\n\n", intentsResult2)}");
-
-                            // list the entities
-                            entitiesList = new List<string>();
-                            foreach (var entity in recognizerResult.Entities)
-                            {
-                                if (!entity.Key.ToString().Equals("$instance"))
-                                {
-                                    entitiesList.Add($"{entity.Key}: {entity.Value.First}");
-                                }
-                            }
-
-                            if (entitiesList.Count > 0)
-                            {
-                                await context.SendActivity($"The following entities were found in the message:\n\n{string.Join("\n\n", entitiesList)}");
-                            }
+                            await DispatchToLuisModel(context, this.luisModelWeather, "weather");
 
                             // Here, you can add code for calling the hypothetical weather service, passing in any entity information that you need
-
                             break;
                         case "none":
                         // You can provide logic here to handle the known None intent (none of the above).
                         // In this example we fall through to the QnA intent.
                         case "q_faq":
-                            QnAMaker qnaMaker = new QnAMaker(this.qnaOptions);
-                            var messageActivity = context.Activity.AsMessageActivity();
-                            if (!string.IsNullOrEmpty(messageActivity.Text))
-                            {
-                                var results = await qnaMaker.GetAnswers(messageActivity.Text.Trim()).ConfigureAwait(false);
-                                if (results.Any())
-                                {
-                                    await context.SendActivity(results.First().Answer);
-                                }
-                                else
-                                {
-                                    await context.SendActivity("Couldn't find an answer in the FAQ.");
-                                }
-                            }
+                            await DispatchToQnAMaker(context, this.qnaOptions, "FAQ");
                             break;
                         default:
                             // The intent didn't match any case, so just display the recognition results.
@@ -169,16 +98,75 @@ namespace AspNetCore_Luis_Dispatch_Bot
                             break;
                     }
                 }                
-
             }
             else if (context.Activity.Type is ActivityTypes.ConversationUpdate)
             {
-                foreach (var newMember in context.Activity.MembersAdded)
+                await WelcomeMembersAdded(context, "Hello and welcome to the LUIS Dispatch sample bot. This bot dispatches messages to LUIS apps and QnA, using a LUIS model generated by the Dispatch tool in hierarchical mode.");
+            }
+        }
+
+        private static async Task DispatchToQnAMaker(ITurnContext context, QnAMakerOptions qnaOptions, string appName)
+        {
+            QnAMaker qnaMaker = new QnAMaker(qnaOptions);
+            if (!string.IsNullOrEmpty(context.Activity.Text))
+            {
+                var results = await qnaMaker.GetAnswers(context.Activity.Text.Trim()).ConfigureAwait(false);
+                if (results.Any())
                 {
-                    if (newMember.Id != context.Activity.Recipient.Id)
-                    {
-                        await context.SendActivity("Hello and welcome to the LUIS Dispatch sample bot. This bot dispatches messages to LUIS apps and QnA, using a LUIS model generated by the Dispatch tool in hierarchical mode.");
-                    }
+                    await context.SendActivity(results.First().Answer);
+                }
+                else
+                {
+                    await context.SendActivity($"Couldn't find an answer in the {appName}.");
+                }
+            }
+        }
+
+        private static async Task DispatchToLuisModel(ITurnContext context, LuisModel luisModel, string appName)
+        {
+            await context.SendActivity($"Sending your request to the {appName} system ...");
+            var (intents, entities) = await RecognizeAsync(luisModel, context.Activity.Text);
+
+            await context.SendActivity($"Intents detected by the {appName} app:\n\n{string.Join("\n\n", intents)}");
+
+            if (entities.Count() > 0)
+            {
+                await context.SendActivity($"The following entities were found in the message:\n\n{string.Join("\n\n", entities)}");
+            }
+        }
+
+        private static async Task<(IEnumerable<string> intents, IEnumerable<string> entities)> RecognizeAsync(LuisModel luisModel, string text)
+        {
+            var luisRecognizer = new LuisRecognizer(luisModel);
+            var recognizerResult = await luisRecognizer.Recognize(text, System.Threading.CancellationToken.None);
+
+            // list the intents
+            var intents = new List<string>();
+            foreach (var intent in recognizerResult.Intents)
+            {
+                intents.Add($"'{intent.Key}', score {intent.Value}");
+            }
+
+            // list the entities
+            var entities = new List<string>();
+            foreach (var entity in recognizerResult.Entities)
+            {
+                if (!entity.Key.ToString().Equals("$instance"))
+                {
+                    entities.Add($"{entity.Key}: {entity.Value.First}");
+                }
+            }
+
+            return (intents, entities);
+        }
+
+        private static async Task WelcomeMembersAdded(ITurnContext context, string welcomeMessage)
+        {
+            foreach (var newMember in context.Activity.MembersAdded)
+            {
+                if (newMember.Id != context.Activity.Recipient.Id)
+                {
+                    await context.SendActivity(welcomeMessage);
                 }
             }
         }
