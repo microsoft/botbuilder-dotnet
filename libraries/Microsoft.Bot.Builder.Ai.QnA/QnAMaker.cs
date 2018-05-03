@@ -139,8 +139,8 @@ namespace Microsoft.Bot.Builder.Ai.QnA
     /// </summary>
     public class QnAMakerEndpoint
     {
-        private const string ENDPOINT_REGEXP = "/knowledgebases/(.*)/generateAnswer\\r\\nHost:\\s(.*)\\r\\n.* (?:EndpointKey|Ocp-Apim-Subscription-Key:)\\s(.*)\\r\\n";
-        private const string UNIX_ENDPOINT_REGEXP = "/knowledgebases/(.*)/generateAnswer\\nHost:\\s(.*)\\n.* (?:EndpointKey|Ocp-Apim-Subscription-Key:)\\s(.*)\\n";
+        private const string ENDPOINT_REGEXP = "/knowledgebases/(.*)/generateAnswer\\r\\nHost:\\s(.*)\\r\\n.*(?:EndpointKey|Ocp-Apim-Subscription-Key:)\\s(.*)\\r\\n";
+        private const string UNIX_ENDPOINT_REGEXP = "/knowledgebases/(.*)/generateAnswer\\nHost:\\s(.*)\\n.*(?:EndpointKey|Ocp-Apim-Subscription-Key:)\\s(.*)\\n";
 
         public QnAMakerEndpoint()
         {
