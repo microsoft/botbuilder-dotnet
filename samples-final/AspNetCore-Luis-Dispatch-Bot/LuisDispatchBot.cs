@@ -74,6 +74,7 @@ namespace AspNetCore_Luis_Dispatch_Bot
                     {
                         await context.SendActivity("I'm not very sure what you want but will try to send your request.");
                     }
+
                     await DispatchToTopIntent(context, topIntent);
                 }
             }
