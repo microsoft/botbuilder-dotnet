@@ -6,10 +6,12 @@
 
 </head>
 <body style="font-family:'Segoe UI'">
-    <h1>EchoBot sample using ASP.Net Core 2</h1>
-    <p>Describe your bot here and your terms of use etc.</p>
+    <h1>EchoBot sample with proactive message using ASP.Net Core 2</h1>
     <p>To debug you bot using the Bot Framework Emulator, paste this URL into the Emulator window:</p>
     <div style="padding-left: 50px;" id="botBaseUrl"></div>
+    <p>To send a proactive message, make a POST request to this URL:</p>
+    <div style="padding-left: 50px;" id="proactiveUrl"></div>
+    <p>Also, you will need to add a <strong>MS-BotFramework-BotAppId</strong> header with the MicrosoftAppId of your bot.</p>
     <p>Visit <a href="https://www.botframework.com/">Bot Framework</a> to register your bot. When you register, remember to set the endpoint to:</p>
     <div style="padding-left: 50px;">
         https://<strong>{your domain name}</strong>/api/messages
@@ -19,6 +21,10 @@
         var aTag = document.createElement('a');
         aTag.setAttribute('href', location.protocol + "//" + location.host + "/api/messages");
         aTag.innerHTML = location.protocol + "//" + location.host + "/api/messages";
+        urlDiv.appendChild(aTag);
+        urlDiv = document.getElementById("proactiveUrl");
+        aTag = document.createElement('a');
+        aTag.innerHTML = location.protocol + "//" + location.host + "/api/messages/proactive";
         urlDiv.appendChild(aTag);
     </script>
 </body>

@@ -1,49 +1,50 @@
-﻿using System;
-using System.Threading;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Bot;
 using Microsoft.Bot.Builder;
+using Microsoft.Bot.Builder.Core.Extensions;
 using Microsoft.Bot.Schema;
+using Newtonsoft.Json;
 
 namespace AspNetCore_ProactiveMessage_Bot
 {
     public class ProactiveBot : IBot
     {
-        /// <summary>
-        /// Every Conversation turn for our EchoBot will call this method. In here
-        /// the bot checks the Activty type to verify it's a message, bumps the 
-        /// turn conversation 'Turn' count, and then echoes the users typing
-        /// back to them. 
-        /// </summary>
-        /// <param name="context">Turn scoped context containing all the data needed
-        /// for processing this conversation turn. </param>        
         public async Task OnTurn(ITurnContext context)
         {
-            // This bot is only handling Messages
-            if (context.Activity.Type == ActivityTypes.ConversationUpdate &&
-                context.Activity.MembersAdded[0].Name == "Bot")
+            var state = context.GetConversationState<ProactiveState>();
+            switch (context.Activity.Type)
             {
-                await context.SendActivity("Hello and welcome to the proactive message bot.");
-
-                // Extract data from the user's message that the bot will need later to send an ad hoc message to the user. 
-                ProactiveMessage.FromActivity(context.Activity, "Hello again, this is a proactive message!");
-
-
-                // Schedule a new proactive message every 10 seconds
-                timer = new Timer(
-                       o =>
-                       {
-                           if (!string.IsNullOrEmpty(ProactiveMessage.fromId))
-                           {
-                               ProactiveMessage.Resume().Wait();
-                           }
-                       },
-                       new object(),
-                       TimeSpan.FromSeconds(10),
-                       TimeSpan.FromSeconds(10));
+                case ActivityTypes.ConversationUpdate:
+                    if (context.Activity.MembersAdded.FirstOrDefault()?.Id == context.Activity.From.Id)
+                    {
+                        // initial message with instructions to reset the count
+                        var conversation = TurnContext.GetConversationReference(context.Activity);
+                        conversation.Conversation.Role = "Proactive";
+                        await context.SendActivity("Hello! This is a proactive message sample");
+                        await context.SendActivity($"To reset the counter used in this conversation make a POST with the follwing content");
+                        await context.SendActivity(JsonConvert.SerializeObject(conversation));
+                    }
+                    break;
+                case ActivityTypes.Message:
+                    if (IsProactiveMessage(context))
+                    {
+                        // handle proative message
+                        state.Count = 0;
+                        await context.SendActivity("Reset counter!");
+                    }
+                    else
+                    {
+                        // message from user
+                        await context.SendActivity($"Echo {++state.Count}: \"{context.Activity.Text}\"");
+                    }
+                    break;
             }
         }
 
-        private static Timer timer;
+        private bool IsProactiveMessage(ITurnContext context)
+        {
+            return context.Activity.Conversation.Role == "Proactive" || context.Activity.Text == null;
+        }
     }
 }
