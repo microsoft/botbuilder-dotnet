@@ -251,8 +251,15 @@ namespace Microsoft.Bot.Builder.Ai.QnA
         [JsonProperty(PropertyName = "source")]
         public string Source { get; set; }
 
+        /// <summary>
+        /// The index of the answer in the knowledge base. V3 uses
+        /// 'qnaId', V4 uses 'id'.
+        /// </summary>
         [JsonProperty(PropertyName = "qnaId")]
         public int QnaId { get; set; }
+
+        [JsonProperty(PropertyName = "id")]
+        private int Id { get; set; }
     }
 
     /// <summary>
