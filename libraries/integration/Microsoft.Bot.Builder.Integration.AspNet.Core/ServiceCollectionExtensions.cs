@@ -1,7 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using System;
 
@@ -14,9 +16,6 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
     /// <seealso cref="BotAdapter"/>
     public static class ServiceCollectionExtensions
     {
-        private static readonly JsonSerializer ActivitySerializer = JsonSerializer.Create();
-
-
         /// <summary>
         /// Adds and configures services for a <typeparamref name="TBot">specified bot type</typeparamref> to the <see cref="IServiceCollection" />.
         /// </summary>
@@ -26,9 +25,30 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// <returns>A reference to this instance after the operation has completed.</returns>
         public static IServiceCollection AddBot<TBot>(this IServiceCollection services, Action<BotFrameworkOptions> configureAction = null) where TBot : class, IBot
         {
+            if (services == null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
+
+            if (configureAction != null)
+            {
+                services.Configure(configureAction);
+            }
+
             services.AddTransient<IBot, TBot>();
 
-            services.Configure(configureAction);
+            services.AddSingleton(sp =>
+            {
+                var options = sp.GetRequiredService<IOptions<BotFrameworkOptions>>().Value;
+                var botFrameworkAdapter = new BotFrameworkAdapter(options.CredentialProvider, options.ConnectorClientRetryPolicy, options.HttpClient);
+
+                foreach (var middleware in options.Middleware)
+                {
+                    botFrameworkAdapter.Use(middleware);
+                }
+
+                return botFrameworkAdapter;
+            });
 
             return services;
         }
