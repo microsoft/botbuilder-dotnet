@@ -23,20 +23,29 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
 
             configurer(optionsBuilder);
 
-            ConfigureBotRoutes(BuildAdapter());
+            var botFrameworkAdapter = GetOrCreateBotFrameworkAdapter();
+
+            ConfigureMiddleware(botFrameworkAdapter);
+            ConfigureBotRoutes(botFrameworkAdapter);
 
             return httpConfiguration;
 
-            BotFrameworkAdapter BuildAdapter()
+            BotFrameworkAdapter GetOrCreateBotFrameworkAdapter()
             {
-                var adapter = new BotFrameworkAdapter(options.CredentialProvider, options.ConnectorClientRetryPolicy);
+                if (!(httpConfiguration.DependencyResolver.GetService(typeof(BotFrameworkAdapter)) is BotFrameworkAdapter adapter))
+                {
+                    adapter = new BotFrameworkAdapter(options.CredentialProvider, options.ConnectorClientRetryPolicy, options.HttpClient);
+                }
 
+                return adapter;
+            }
+
+            void ConfigureMiddleware(BotFrameworkAdapter adapter)
+            {
                 foreach (var middleware in options.Middleware)
                 {
                     adapter.Use(middleware);
                 }
-
-                return adapter;
             }
 
             void ConfigureBotRoutes(BotFrameworkAdapter adapter)
