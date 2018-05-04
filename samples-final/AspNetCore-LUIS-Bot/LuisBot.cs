@@ -42,7 +42,7 @@ namespace AspNetCore_LUIS_Bot
 
         private Task DefaultDialog(DialogContext dialogContext, object args, SkipStepFunction next)
         {
-            return dialogContext.Context.SendActivity("Hi! I'm a simple reminder bot. I can help add reminders, delete and show them.");
+            return dialogContext.Context.SendActivity("Hi! I'm a simple reminder bot. I can add reminders and show them.");
         }
 
         private async Task AskReminderTitle(DialogContext dialogContext, object args, SkipStepFunction next)
