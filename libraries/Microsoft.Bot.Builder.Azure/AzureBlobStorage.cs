@@ -28,11 +28,12 @@ namespace Microsoft.Bot.Builder.Azure
     /// </remarks>
     public class AzureBlobStorage : IStorage
     {
-        private readonly static JsonSerializer JsonSerializer = JsonSerializer.Create(new JsonSerializerSettings
+        private readonly static JsonSerializerSettings JsonSerializerSettings = new JsonSerializerSettings
         {
             // we use All so that we get typed roundtrip out of storage, but we don't use validation because we don't know what types are valid
             TypeNameHandling = TypeNameHandling.All
-        });
+        };
+        private readonly static JsonSerializer JsonSerializer = JsonSerializer.Create(JsonSerializerSettings);
 
         private readonly CloudStorageAccount _storageAccount;
         private readonly string _containerName;
@@ -152,6 +153,8 @@ namespace Microsoft.Bot.Builder.Azure
             if (changes == null) throw new ArgumentNullException(nameof(changes));
 
             var blobContainer = await GetBlobContainer().ConfigureAwait(false);
+            var blobRequestOptions = new BlobRequestOptions();
+            var operationContext = new OperationContext();
 
             await Task.WhenAll(
                 changes.Select(async (keyValuePair) =>
@@ -159,18 +162,15 @@ namespace Microsoft.Bot.Builder.Azure
                     var newValue = keyValuePair.Value;
                     var storeItem = newValue as IStoreItem;
                     // "*" eTag in IStoreItem converts to null condition for AccessCondition
-                    var calculatedETag = storeItem?.eTag == "*" ? null : storeItem?.eTag;
+                    var accessCondition = storeItem?.eTag == "*"
+                        ? AccessCondition.GenerateEmptyCondition()
+                        : AccessCondition.GenerateIfMatchCondition(storeItem?.eTag);
 
                     var blobName = GetBlobName(keyValuePair.Key);
                     var blobReference = blobContainer.GetBlockBlobReference(blobName);
-                    using (var blobStream = await blobReference.OpenWriteAsync(
-                        AccessCondition.GenerateIfMatchCondition(calculatedETag),
-                        new BlobRequestOptions(),
-                        new OperationContext()))
-                    using (var jsonWriter = new JsonTextWriter(new StreamWriter(blobStream)))
-                    {
-                        JsonSerializer.Serialize(jsonWriter, newValue);
-                    }
+
+                    var payload = JsonConvert.SerializeObject(newValue, JsonSerializerSettings);
+                    await blobReference.UploadTextAsync(payload, accessCondition,blobRequestOptions, operationContext);
                 }));
         }
 
