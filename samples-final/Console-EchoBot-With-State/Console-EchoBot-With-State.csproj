@@ -6,8 +6,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Bot.Builder.Core" Version="4.0.0-alpha-m3.1" />
-    <PackageReference Include="Microsoft.Bot.Builder.Core.Extensions" Version="4.0.0-alpha-m3.1" />
+    <PackageReference Include="Microsoft.Bot.Builder.Core" Version="4.0.0-preview" />
+    <PackageReference Include="Microsoft.Bot.Builder.Core.Extensions" Version="4.0.0-preview" />
   </ItemGroup>
 
 </Project>

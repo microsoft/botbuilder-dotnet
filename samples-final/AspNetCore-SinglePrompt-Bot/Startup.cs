@@ -12,7 +12,7 @@ using Microsoft.Bot.Builder.TraceExtensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace AspNetCore_EchoBot_With_State
+namespace AspNetCore_Single_Prompts
 {
     public class Startup
     {
