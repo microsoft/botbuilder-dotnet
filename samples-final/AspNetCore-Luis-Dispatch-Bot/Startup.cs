@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Bot.Builder.Ai.LUIS;
@@ -68,11 +71,12 @@ namespace AspNetCore_Luis_Dispatch_Bot
             return (modelId, subscriptionId, uri);
         }
 
-        public static (string knowledgeBaseId, string subscriptionKey) GetQnAMakerConfiguration(IConfiguration configuration)
+        public static (string knowledgeBaseId, string subscriptionKey, string uri) GetQnAMakerConfiguration(IConfiguration configuration)
         {
             var knowledgeBaseId = configuration.GetSection("QnQMaker-KnowledgeBaseId")?.Value;
             var subscriptionKey = configuration.GetSection("QnAMaker-SubscriptionKey")?.Value;
-            return (knowledgeBaseId, subscriptionKey);
+            var uri = configuration.GetSection("QnAMaker-Endpoint-Url")?.Value;
+            return (knowledgeBaseId, subscriptionKey, uri);
         }
     }
 }
