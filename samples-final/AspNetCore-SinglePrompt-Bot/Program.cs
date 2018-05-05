@@ -4,7 +4,7 @@
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 
-namespace AspNetCore_EchoBot_With_State
+namespace AspNetCore_Single_Prompts
 {
     public class Program
     {

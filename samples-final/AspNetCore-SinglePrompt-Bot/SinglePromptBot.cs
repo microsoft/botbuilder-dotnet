@@ -9,7 +9,7 @@ using Microsoft.Bot.Builder.Core.Extensions;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
 
-namespace AspNetCore_EchoBot_With_State
+namespace AspNetCore_Single_Prompts
 {
     public class SinglePromptBot : IBot
     {
