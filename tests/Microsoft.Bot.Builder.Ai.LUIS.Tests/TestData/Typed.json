@@ -2,31 +2,34 @@
   "Text": "fly from seattle to dallas at 3pm on delta",
   "Intents": {
     "Travel": {
-      "score": 0.162418559
+      "score": 0.141035929
     },
     "EntityTests": {
-      "score": 0.0377123132
+      "score": 0.07253119
+    },
+    "search": {
+      "score": 0.0253965259
     },
     "Weather_GetForecast": {
-      "score": 0.0347674862
+      "score": 0.02482934
     },
     "None": {
-      "score": 0.0343242735
-    },
-    "Delivery": {
-      "score": 0.00620134128
-    },
-    "Cancel": {
-      "score": 0.00543635339
+      "score": 0.01891793
     },
     "SpecifyName": {
-      "score": 0.00537072029
+      "score": 0.005820451
+    },
+    "Delivery": {
+      "score": 0.005534173
+    },
+    "Cancel": {
+      "score": 0.00509996526
     },
     "Help": {
-      "score": 0.00372485374
+      "score": 0.003480897
     },
     "Greeting": {
-      "score": 0.00119818107
+      "score": 0.001150199
     }
   },
   "Entities": {
@@ -36,7 +39,7 @@
     "From": [
       "seattle"
     ],
-    "Builtin_datetime": [
+    "datetime": [
       {
         "type": "time",
         "timex": [
@@ -44,7 +47,7 @@
         ]
       }
     ],
-    "Builtin_dimension": [
+    "dimension": [
       {
         "number": 3.0,
         "units": "Picometer"
@@ -61,7 +64,7 @@
           "startIndex": 20,
           "endIndex": 26,
           "text": "dallas",
-          "score": 0.9011441
+          "score": 0.926704347
         }
       ],
       "From": [
@@ -69,17 +72,17 @@
           "startIndex": 9,
           "endIndex": 16,
           "text": "seattle",
-          "score": 0.9574383
+          "score": 0.990908
         }
       ],
-      "Builtin_datetime": [
+      "datetime": [
         {
           "startIndex": 30,
           "endIndex": 33,
           "text": "3pm"
         }
       ],
-      "Builtin_dimension": [
+      "dimension": [
         {
           "startIndex": 30,
           "endIndex": 33,
@@ -99,53 +102,58 @@
     "query": "fly from seattle to dallas at 3pm on delta",
     "topScoringIntent": {
       "intent": "Travel",
-      "score": 0.162418559,
+      "score": 0.141035929,
       "actions": null
     },
     "intents": [
       {
         "intent": "Travel",
-        "score": 0.162418559,
+        "score": 0.141035929,
         "actions": null
       },
       {
         "intent": "EntityTests",
-        "score": 0.0377123132,
+        "score": 0.07253119,
+        "actions": null
+      },
+      {
+        "intent": "search",
+        "score": 0.0253965259,
         "actions": null
       },
       {
         "intent": "Weather.GetForecast",
-        "score": 0.0347674862,
+        "score": 0.02482934,
         "actions": null
       },
       {
         "intent": "None",
-        "score": 0.0343242735,
-        "actions": null
-      },
-      {
-        "intent": "Delivery",
-        "score": 0.00620134128,
-        "actions": null
-      },
-      {
-        "intent": "Cancel",
-        "score": 0.00543635339,
+        "score": 0.01891793,
         "actions": null
       },
       {
         "intent": "SpecifyName",
-        "score": 0.00537072029,
+        "score": 0.005820451,
+        "actions": null
+      },
+      {
+        "intent": "Delivery",
+        "score": 0.005534173,
+        "actions": null
+      },
+      {
+        "intent": "Cancel",
+        "score": 0.00509996526,
         "actions": null
       },
       {
         "intent": "Help",
-        "score": 0.00372485374,
+        "score": 0.003480897,
         "actions": null
       },
       {
         "intent": "Greeting",
-        "score": 0.00119818107,
+        "score": 0.001150199,
         "actions": null
       }
     ],
@@ -169,7 +177,7 @@
         "type": "City::To",
         "startIndex": 20,
         "endIndex": 25,
-        "score": 0.9011441,
+        "score": 0.926704347,
         "resolution": null
       },
       {
@@ -178,7 +186,7 @@
         "type": "City::From",
         "startIndex": 9,
         "endIndex": 15,
-        "score": 0.9574383,
+        "score": 0.990908,
         "resolution": null
       },
       {
