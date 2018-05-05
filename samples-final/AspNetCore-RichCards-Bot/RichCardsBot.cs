@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Bot;
@@ -33,7 +36,7 @@ namespace AspNetCore_RichCards_Bot
             // Create a dialog waterfall for prompting the user
             dialogs.Add("cardSelector", new WaterfallStep[] { ChoiceCardStep, ShowCardStep });
         }
-       
+
         public async Task OnTurn(ITurnContext context)
         {
             var state = context.GetConversationState<Dictionary<string, object>>();
@@ -162,7 +165,7 @@ namespace AspNetCore_RichCards_Bot
             response.Attachments = new List<Attachment>() { attachment };
             return response;
         }
-        
+
         // Methods to generate cards
         private Attachment CreateAdaptiveCardAttachment()
         {
@@ -338,5 +341,5 @@ namespace AspNetCore_RichCards_Bot
                 Text = "Big Buck Bunny (code-named Peach) is a short computer-animated comedy film by the Blender Institute, part of the Blender Foundation. Like the foundation\'s previous film Elephants Dream, the film was made using Blender, a free software application for animation made by the same foundation. It was released as an open-source film under Creative Commons License Attribution 3.0."
             }.ToAttachment();
         }
-    }    
+    }
 }

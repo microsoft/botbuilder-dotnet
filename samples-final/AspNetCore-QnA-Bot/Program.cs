@@ -4,7 +4,7 @@
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 
-namespace AspNetCore_RichCards_Bot
+namespace AspNetCore_QnA_Bot
 {
     public class Program
     {

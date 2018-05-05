@@ -1,4 +1,8 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Bot.Builder.BotFramework;
@@ -8,7 +12,7 @@ using Microsoft.Bot.Builder.TraceExtensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace AspNetCore_EchoBot_With_State
+namespace AspNetCore_Single_Prompts
 {
     public class Startup
     {
@@ -62,7 +66,7 @@ namespace AspNetCore_EchoBot_With_State
                 // IStorage dataStore = new Microsoft.Bot.Builder.Azure.AzureTableStorage("AzureTablesConnectionString", "TableName");
                 // IStorage dataStore = new Microsoft.Bot.Builder.Azure.AzureBlobStorage("AzureBlobConnectionString", "containerName");
 
-                options.Middleware.Add(new ConversationState<SinglePromptState>(dataStore));
+                options.Middleware.Add(new ConversationState<Dictionary<string, object>>(dataStore));
             });
         }
 

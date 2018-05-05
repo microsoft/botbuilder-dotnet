@@ -7,7 +7,6 @@
         <MoreInfo>https://aka.ms/BotBuilderOverview</MoreInfo>
         <License>LICENSE.txt</License>
         <Icon>Template.ico</Icon>
-        <PreviewImage>__PreviewImage.png</PreviewImage>
         <Tags>Bot, Bots, Bot Framework</Tags>
     </Metadata>
     <Installation InstalledByMsi="false">

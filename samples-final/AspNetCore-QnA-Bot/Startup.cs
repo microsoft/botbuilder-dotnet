@@ -6,12 +6,13 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Bot.Builder.BotFramework;
 using Microsoft.Bot.Builder.Core.Extensions;
+using Microsoft.Bot.Builder.Ai.QnA;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Builder.TraceExtensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace AspNetCore_Multiple_Prompts
+namespace AspNetCore_QnA_Bot
 {
     public class Startup
     {
@@ -33,7 +34,7 @@ namespace AspNetCore_Multiple_Prompts
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddBot<MultiplePromptsBot>(options =>
+            services.AddBot<QnABot>(options =>
             {
                 options.CredentialProvider = new ConfigurationCredentialProvider(Configuration);
 
@@ -48,24 +49,10 @@ namespace AspNetCore_Multiple_Prompts
                     await context.SendActivity("Sorry, it looks like something went wrong!");
                 }));
 
-                // The Memory Storage used here is for local bot debugging only. When the bot
-                // is restarted, anything stored in memory will be gone. 
-                IStorage dataStore = new MemoryStorage();
+                var qnaEndpoint = GetQnAMakerEndpoint(Configuration);
+                var qnaMiddleware = new QnAMakerMiddleware(qnaEndpoint);
 
-                // The File data store, shown here, is suitable for bots that run on 
-                // a single machine and need durable state across application restarts.                 
-                // IStorage dataStore = new FileStorage(System.IO.Path.GetTempPath());
-
-                // For production bots use the Azure Table Store, Azure Blob, or 
-                // Azure CosmosDB storage provides, as seen below. To include any of 
-                // the Azure based storage providers, add the Microsoft.Bot.Builder.Azure 
-                // Nuget package to your solution. That package is found at:
-                //      https://www.nuget.org/packages/Microsoft.Bot.Builder.Azure/
-
-                // IStorage dataStore = new Microsoft.Bot.Builder.Azure.AzureTableStorage("AzureTablesConnectionString", "TableName");
-                // IStorage dataStore = new Microsoft.Bot.Builder.Azure.AzureBlobStorage("AzureBlobConnectionString", "containerName");
-
-                options.Middleware.Add(new ConversationState<MultiplePromptsState>(dataStore));
+                options.Middleware.Add(qnaMiddleware);
             });
         }
 
@@ -80,6 +67,19 @@ namespace AspNetCore_Multiple_Prompts
             app.UseDefaultFiles()
                 .UseStaticFiles()
                 .UseBotFramework();
+        }
+
+        private QnAMakerEndpoint GetQnAMakerEndpoint(IConfiguration configuration)
+        {
+            var host = configuration.GetSection("QnAMaker-Host")?.Value;
+            var knowledgeBaseId = configuration.GetSection("QnAMaker-KnowledgeBaseId")?.Value;
+            var endpointKey = configuration.GetSection("QnAMaker-EndpointKey")?.Value;
+            return new QnAMakerEndpoint
+            {
+                Host = host,
+                KnowledgeBaseId = knowledgeBaseId,
+                EndpointKey = endpointKey
+            };
         }
     }
 }
