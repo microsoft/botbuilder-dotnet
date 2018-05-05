@@ -38,9 +38,9 @@ namespace AspNetCore_Luis_Dispatch_Bot
             {
                 options.CredentialProvider = new ConfigurationCredentialProvider(Configuration);
 
-                var (luisModelId, luisSubscriptionId, luisUri) = GetLuisConfiguration(this.Configuration, "Dispatcher");
+                var (luisModelId, luisSubscriptionKey, luisUri) = GetLuisConfiguration(this.Configuration, "Dispatcher");
 
-                var luisModel = new LuisModel(luisModelId, luisSubscriptionId, luisUri);
+                var luisModel = new LuisModel(luisModelId, luisSubscriptionKey, luisUri);
 
                 // If you want to get all intents scorings, add verbose in luisOptions
                 var luisOptions = new LuisRequest { Verbose = true };
@@ -66,14 +66,14 @@ namespace AspNetCore_Luis_Dispatch_Bot
         public static (string modelId, string subscriptionId, Uri uri) GetLuisConfiguration(IConfiguration configuration, string serviceName)
         {
             var modelId = configuration.GetSection($"Luis-ModelId-{serviceName}")?.Value;
-            var subscriptionId = configuration.GetSection("Luis-SubscriptionId")?.Value;
+            var subscriptionId = configuration.GetSection("Luis-SubscriptionKey")?.Value;
             var uri = new Uri(configuration.GetSection("Luis-Url")?.Value);
             return (modelId, subscriptionId, uri);
         }
 
         public static (string knowledgeBaseId, string subscriptionKey, string uri) GetQnAMakerConfiguration(IConfiguration configuration)
         {
-            var knowledgeBaseId = configuration.GetSection("QnQMaker-KnowledgeBaseId")?.Value;
+            var knowledgeBaseId = configuration.GetSection("QnAMaker-KnowledgeBaseId")?.Value;
             var subscriptionKey = configuration.GetSection("QnAMaker-SubscriptionKey")?.Value;
             var uri = configuration.GetSection("QnAMaker-Endpoint-Url")?.Value;
             return (knowledgeBaseId, subscriptionKey, uri);
