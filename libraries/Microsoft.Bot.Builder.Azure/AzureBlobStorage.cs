@@ -169,8 +169,14 @@ namespace Microsoft.Bot.Builder.Azure
                     var blobName = GetBlobName(keyValuePair.Key);
                     var blobReference = blobContainer.GetBlockBlobReference(blobName);
 
-                    var payload = JsonConvert.SerializeObject(newValue, JsonSerializerSettings);
-                    await blobReference.UploadTextAsync(payload, accessCondition,blobRequestOptions, operationContext);
+                    using (var memoryStream = new MemoryStream())
+                    using (var streamWriter = new StreamWriter(memoryStream))
+                    {
+                        JsonSerializer.Serialize(streamWriter, newValue);
+                        streamWriter.Flush();
+                        memoryStream.Seek(0, SeekOrigin.Begin);
+                        await blobReference.UploadFromStreamAsync(memoryStream, accessCondition, blobRequestOptions, operationContext);
+                    }
                 }));
         }
 

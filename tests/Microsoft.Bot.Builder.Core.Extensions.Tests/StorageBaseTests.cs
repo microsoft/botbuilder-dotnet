@@ -209,7 +209,10 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
                 new Dictionary<string, object> {["createPoco"] = new PocoItem() { Id = "1", Count = 2 }}
             });
 
-            await Task.WhenAll(storeItemsList.Select(storeItems => storage.Write(storeItems)));
+
+            await Task.WhenAll(
+                storeItemsList.Select(storeItems =>
+                    Task.Run(async () => await storage.Write(storeItems))));
 
             var readStoreItems = new Dictionary<string, object>(await storage.Read("createPoco"));
             Assert.IsInstanceOfType(readStoreItems["createPoco"], typeof(PocoItem));
