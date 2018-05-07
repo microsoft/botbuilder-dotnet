@@ -102,7 +102,7 @@ namespace AspNetCore_LUIS_Bot
         {
             if (context.Activity.Type == ActivityTypes.ConversationUpdate && context.Activity.MembersAdded.FirstOrDefault()?.Id == context.Activity.Recipient.Id)
             {
-                await context.SendActivity("Hi! I'm a simple reminder bot. I can help add reminders, delete and show them.");
+                await context.SendActivity("Hi! I'm a simple reminder bot. I can add reminders and show them.");
             }
             else if (context.Activity.Type == ActivityTypes.Message)
             {
