@@ -58,6 +58,10 @@ namespace Microsoft.Bot.Builder.Ai.Translation
                             string fromLocale = _getUserLocale(context);
                             ConvertLocaleMessage(context, fromLocale);
                         }
+                        else {
+                            // skip routing in case of user changed the locale
+                            return ;
+                        }
 
                     }
                 }

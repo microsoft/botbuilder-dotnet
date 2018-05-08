@@ -88,7 +88,7 @@ namespace Microsoft.Bot.Samples.Ai.Luis.Translator
                             && IsSupportedLocale(newLocale))
                     {
                         SetLocale(context, newLocale);
-                        await context.SendActivity($@"Changing your language to {newLocale}");
+                        await context.SendActivity($@"Changing your locale to {newLocale}");
                     }
                     else
                     {
