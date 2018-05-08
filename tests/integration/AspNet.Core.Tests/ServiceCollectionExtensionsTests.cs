@@ -1,20 +1,17 @@
 using System;
-using System.Threading.Tasks;
-using Microsoft.Bot;
-using Microsoft.Bot.Builder;
+using FluentAssertions;
 using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Builder.Integration.AspNet.Core;
+using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using FluentAssertions;
 using Moq;
 using Xunit;
 
-namespace AspNet.Core
+namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
 {
     public class ServiceCollectionExtensionsTests
     {
-        public class AddBot
+        public class AddBotTests
         {
             [Fact]
             public void NullServiceCollectionThrows()
@@ -64,14 +61,6 @@ namespace AspNet.Core
                 serviceCollectionMock.Verify(sc => sc.Add(It.Is<ServiceDescriptor>(sd => sd.ServiceType == typeof(BotFrameworkAdapter) && sd.Lifetime == ServiceLifetime.Singleton)));
                 serviceCollectionMock.Verify(sc => sc.Add(It.Is<ServiceDescriptor>(sd => sd.ServiceType == typeof(IConfigureOptions<BotFrameworkOptions>))), Times.Once());
             }
-        }
-
-        internal sealed class TestBot : IBot
-        {
-            public Task OnTurn(ITurnContext turnContext)
-            {
-                throw new NotImplementedException();
-            }
-        }
+        }        
     }
 }

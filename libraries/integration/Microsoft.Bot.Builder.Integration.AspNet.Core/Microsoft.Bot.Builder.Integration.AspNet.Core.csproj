@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<Version Condition=" '$(BUILD_BUILDNUMBER)' == '' ">4.0.0-local</Version>
@@ -69,4 +69,10 @@
 		<ProjectReference Include="..\..\Microsoft.Bot.Connector\Microsoft.Bot.Connector.csproj" />
 	</ItemGroup>
 
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>Microsoft.Bot.Builder.Integration.AspNet.Core.Tests</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
+  
 </Project>

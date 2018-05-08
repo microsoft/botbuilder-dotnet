@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<Version Condition=" '$(BUILD_BUILDNUMBER)' == '' ">4.0.0-local</Version>
@@ -8,7 +8,7 @@
 		<Configurations>Debug;Release;Documentation;Debug - NuGet Packages;</Configurations>
 	</PropertyGroup>
 
-	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
 		<SignAssembly>true</SignAssembly>
 		<DelaySign>true</DelaySign>
 		<AssemblyOriginatorKeyFile>..\..\..\build\35MSSharedLib1024.snk</AssemblyOriginatorKeyFile>
@@ -69,7 +69,14 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Reference Include="System.Configuration" />
 	  <Reference Include="System.Web" />
 	</ItemGroup>
+
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>Microsoft.Bot.Builder.Integration.AspNet.WebApi.Tests</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
 
 </Project>

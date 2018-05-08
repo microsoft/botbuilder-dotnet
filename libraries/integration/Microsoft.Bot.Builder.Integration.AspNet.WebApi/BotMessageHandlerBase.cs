@@ -39,6 +39,8 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Handlers
             _botFrameworkAdapter = botFrameworkAdapter ?? throw new ArgumentNullException(nameof(botFrameworkAdapter));
         }
 
+        internal BotFrameworkAdapter BotFrameworkAdapter => _botFrameworkAdapter;
+
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             if (request.Method != HttpMethod.Post)

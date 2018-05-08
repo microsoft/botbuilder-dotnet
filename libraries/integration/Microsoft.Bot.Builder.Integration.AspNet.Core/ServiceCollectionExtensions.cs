@@ -2,6 +2,9 @@
 // Licensed under the MIT License.
 
 using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.BotFramework;
+using Microsoft.Bot.Connector.Authentication;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
@@ -34,6 +37,14 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             {
                 services.Configure(configureAction);
             }
+
+            services.PostConfigure<BotFrameworkOptions>(options => 
+            {
+                if (options.CredentialProvider== null)
+                {
+                    options.CredentialProvider = new SimpleCredentialProvider();
+                }
+            });
 
             services.AddTransient<IBot, TBot>();
 

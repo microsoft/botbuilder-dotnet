@@ -7,7 +7,7 @@ using Microsoft.Extensions.Options;
 using Moq;
 using Xunit;
 
-namespace AspNet.Core
+namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
 {
     public class ApplicationBuilderExtensionsTests
     {
