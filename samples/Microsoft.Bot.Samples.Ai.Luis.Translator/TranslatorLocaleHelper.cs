@@ -21,7 +21,13 @@ namespace Microsoft.Bot.Samples.Ai.Luis.Translator
         public static void SetLocale(ITurnContext context, string locale) => context.GetConversationState<CurrentUserState>().Locale = locale;
         public static bool IsSupportedLanguage(string language) => _supportedLanguages.Contains(language);
         public static bool IsSupportedLocale(string locale) => _supportedLocales.Contains(locale);
-        public static async Task<bool> CheckUserChangedLanguage(ITurnContext context)
+        public static async Task<bool> CheckUserChangedLanguageOrLocale(ITurnContext context)
+        {
+            bool userChangedLocale = await CheckUserChangedLocale(context);
+            bool userChangedLanguage = await CheckUserChangedLanguage(context);
+            return userChangedLocale || userChangedLanguage;
+        }
+        private static async Task<bool> CheckUserChangedLanguage(ITurnContext context)
         {
             bool changeLang = false;//logic implemented by developper to make a signal for language changing 
             //use a specific message from user to change language
@@ -70,7 +76,7 @@ namespace Microsoft.Bot.Samples.Ai.Luis.Translator
 
             return "en";
         }
-        public static async Task<bool> CheckUserChangedLocale(ITurnContext context)
+        private static async Task<bool> CheckUserChangedLocale(ITurnContext context)
         {
             bool changeLocale = false;//logic implemented by developper to make a signal for language changing 
             //use a specific message from user to change language
