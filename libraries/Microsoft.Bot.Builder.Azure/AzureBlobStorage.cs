@@ -33,6 +33,7 @@ namespace Microsoft.Bot.Builder.Azure
             // we use All so that we get typed roundtrip out of storage, but we don't use validation because we don't know what types are valid
             TypeNameHandling = TypeNameHandling.All
         });
+        private readonly static IO.RecyclableMemoryStreamManager MemoryManager = new IO.RecyclableMemoryStreamManager();
 
         private readonly CloudStorageAccount _storageAccount;
         private readonly string _containerName;
@@ -152,6 +153,8 @@ namespace Microsoft.Bot.Builder.Azure
             if (changes == null) throw new ArgumentNullException(nameof(changes));
 
             var blobContainer = await GetBlobContainer().ConfigureAwait(false);
+            var blobRequestOptions = new BlobRequestOptions();
+            var operationContext = new OperationContext();
 
             await Task.WhenAll(
                 changes.Select(async (keyValuePair) =>
@@ -159,17 +162,20 @@ namespace Microsoft.Bot.Builder.Azure
                     var newValue = keyValuePair.Value;
                     var storeItem = newValue as IStoreItem;
                     // "*" eTag in IStoreItem converts to null condition for AccessCondition
-                    var calculatedETag = storeItem?.eTag == "*" ? null : storeItem?.eTag;
+                    var accessCondition = storeItem?.eTag == "*"
+                        ? AccessCondition.GenerateEmptyCondition()
+                        : AccessCondition.GenerateIfMatchCondition(storeItem?.eTag);
 
                     var blobName = GetBlobName(keyValuePair.Key);
                     var blobReference = blobContainer.GetBlockBlobReference(blobName);
-                    using (var blobStream = await blobReference.OpenWriteAsync(
-                        AccessCondition.GenerateIfMatchCondition(calculatedETag),
-                        new BlobRequestOptions(),
-                        new OperationContext()))
-                    using (var jsonWriter = new JsonTextWriter(new StreamWriter(blobStream)))
+
+                    using (var memoryStream = MemoryManager.GetStream(tag: $"{nameof(AzureBlobStorage.Write)}_{blobName}"))
+                    using (var streamWriter = new StreamWriter(memoryStream))
                     {
-                        JsonSerializer.Serialize(jsonWriter, newValue);
+                        JsonSerializer.Serialize(streamWriter, newValue);
+                        streamWriter.Flush();
+                        memoryStream.Seek(0, SeekOrigin.Begin);
+                        await blobReference.UploadFromStreamAsync(memoryStream, accessCondition, blobRequestOptions, operationContext);
                     }
                 }));
         }
