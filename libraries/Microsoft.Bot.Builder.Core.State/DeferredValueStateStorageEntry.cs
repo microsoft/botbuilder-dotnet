@@ -19,7 +19,7 @@
             var value = this.MaterializeValue<T>();
 
             SetValue(value);
-            
+
             return value;
         }
 
@@ -28,6 +28,17 @@
             _isValueMaterialized = true;
 
             base.SetValue(value);
+        }
+
+        public override object RawValue
+        {
+            get => base.RawValue;
+            protected internal set
+            {
+                base.RawValue = value;
+
+                _isValueMaterialized = false;
+            }
         }
 
         protected abstract T MaterializeValue<T>() where T : class, new();

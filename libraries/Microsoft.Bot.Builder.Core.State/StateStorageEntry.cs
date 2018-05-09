@@ -4,8 +4,8 @@ namespace Microsoft.Bot.Builder.Core.State
 {
     public class StateStorageEntry : IStateStorageEntry
     {
-        private string _namespace;
-        private string _key;
+        private readonly string _namespace;
+        private readonly string _key;
         private object _value;
 
         public StateStorageEntry(string stateNamespace, string key)

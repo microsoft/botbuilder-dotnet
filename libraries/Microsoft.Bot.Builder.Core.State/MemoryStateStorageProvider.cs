@@ -3,18 +3,19 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Core.State
 {
     public class MemoryStateStorageProvider : IStateStorageProvider
     {
-        private ConcurrentDictionary<string, ConcurrentDictionary<string, IStateStorageEntry>> _store = new ConcurrentDictionary<string, ConcurrentDictionary<string, IStateStorageEntry>>();
+        private ConcurrentDictionary<string, ConcurrentDictionary<string, JObject>> _store = new ConcurrentDictionary<string, ConcurrentDictionary<string, JObject>>();
 
         public MemoryStateStorageProvider()
         {
         }
 
-        public IStateStorageEntry CreateNewEntry(string stateNamespace, string key) => new StateStorageEntry(stateNamespace, key);
+        public IStateStorageEntry CreateNewEntry(string stateNamespace, string key) => new MemoryStateStorageEntry(stateNamespace, key);
 
         public Task<IEnumerable<IStateStorageEntry>> Load(string stateNamespace)
         {
@@ -23,9 +24,9 @@ namespace Microsoft.Bot.Builder.Core.State
                 throw new ArgumentException("Expected a non-null/empty value.", nameof(stateNamespace));
             }
 
-            if (_store.TryGetValue(stateNamespace, out var entriesForPartion))
+            if (_store.TryGetValue(stateNamespace, out var statesForPartition))
             {
-                return Task.FromResult(entriesForPartion.Select(kvp => kvp.Value));
+                return Task.FromResult<IEnumerable<IStateStorageEntry>>(statesForPartition.Select(kvp => new MemoryStateStorageEntry(stateNamespace, kvp.Key, kvp.Value)));
             }
 
             return Task.FromResult(Enumerable.Empty<IStateStorageEntry>());
@@ -45,9 +46,9 @@ namespace Microsoft.Bot.Builder.Core.State
 
             if (_store.TryGetValue(stateNamespace, out var entriesForPartion))
             {
-                if (entriesForPartion.TryGetValue(key, out var entry))
+                if (entriesForPartion.TryGetValue(key, out var state))
                 {
-                    return Task.FromResult(entry);
+                    return Task.FromResult<IStateStorageEntry>(new MemoryStateStorageEntry(stateNamespace, key, state));
                 }
             }
 
@@ -69,7 +70,7 @@ namespace Microsoft.Bot.Builder.Core.State
                 {
                     if (entriesForPartion.TryGetValue(key, out var entry))
                     {
-                        results.Add(entry);
+                        results.Add(new MemoryStateStorageEntry(stateNamespace, key, entry));
                     }
                 }
 
@@ -86,19 +87,16 @@ namespace Microsoft.Bot.Builder.Core.State
                 throw new ArgumentNullException(nameof(stateNamespace));
             }
 
-            var entriesForPartition = _store.GetOrAdd(stateNamespace, pk => new ConcurrentDictionary<string, IStateStorageEntry>());
+            var entriesForPartition = _store.GetOrAdd(stateNamespace, pk => new ConcurrentDictionary<string, JObject>());
 
             foreach (var entry in values)
             {
-                var newStateStorageEntry = new StateStorageEntry(stateNamespace, entry.Key, entry.Value);
+                var newStateValue = JObject.FromObject(entry.Value);
 
                 entriesForPartition.AddOrUpdate(
                     entry.Key,
-                    newStateStorageEntry,
-                    (key, existingStateStorageEntry) =>
-                    {
-                        return newStateStorageEntry;
-                    });
+                    newStateValue,
+                    (key, existingStateStorageEntry) => newStateValue);
             }
 
             return Task.CompletedTask;
@@ -106,18 +104,20 @@ namespace Microsoft.Bot.Builder.Core.State
 
         public Task Save(IEnumerable<IStateStorageEntry> entries)
         {
-            foreach (var entityGroup in entries.GroupBy(e => e.Namespace))
+            foreach (var entriesByNamespace in entries.GroupBy(e => e.Namespace))
             {
-                var entriesForPartition = _store.GetOrAdd(entityGroup.Key, pk => new ConcurrentDictionary<string, IStateStorageEntry>());
+                var statesForNamespace = _store.GetOrAdd(entriesByNamespace.Key, pk => new ConcurrentDictionary<string, JObject>());
 
-                foreach (var entry in entries)
+                foreach (var entry in entriesByNamespace)
                 {
-                    if (!(entry is StateStorageEntry stateStorageEntry))
+                    if (!(entry is MemoryStateStorageEntry stateStorageEntry))
                     {
-                        throw new InvalidOperationException($"Only instances of {nameof(StateStorageEntry)} are supported by {nameof(MemoryStateStorageProvider)}.");
+                        throw new InvalidOperationException($"Only instances of {nameof(MemoryStateStorageEntry)} are supported by {nameof(MemoryStateStorageProvider)}.");
                     }
 
-                    entriesForPartition[stateStorageEntry.Key] = new StateStorageEntry(stateStorageEntry.Namespace, stateStorageEntry.Key, stateStorageEntry.RawValue);
+                    var newStateValue = JObject.FromObject(stateStorageEntry.RawValue);
+
+                    statesForNamespace[stateStorageEntry.Key] = newStateValue;
                 }
             }
 
@@ -152,6 +152,22 @@ namespace Microsoft.Bot.Builder.Core.State
             }
 
             return Task.CompletedTask;
+        }
+
+        internal sealed class MemoryStateStorageEntry : DeferredValueStateStorageEntry
+        {
+            private readonly JObject _serializedState;
+
+            public MemoryStateStorageEntry(string stateNamespace, string key) : base(stateNamespace, key)
+            {
+            }
+
+            public MemoryStateStorageEntry(string stateNamespace, string key, JObject serializedState) : base(stateNamespace, key)
+            {
+                _serializedState = serializedState;
+            }
+
+            protected override T MaterializeValue<T>() => _serializedState?.ToObject<T>();
         }
     }
 }
