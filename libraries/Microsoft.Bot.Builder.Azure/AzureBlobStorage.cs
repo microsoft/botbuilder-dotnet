@@ -11,6 +11,7 @@ using System.Web;
 using Microsoft.Bot.Builder.Core.Extensions;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
+using Microsoft.WindowsAzure.Storage.Core;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Azure
@@ -169,7 +170,7 @@ namespace Microsoft.Bot.Builder.Azure
                     var blobName = GetBlobName(keyValuePair.Key);
                     var blobReference = blobContainer.GetBlockBlobReference(blobName);
 
-                    using (var memoryStream = new MemoryStream())
+                    using (var memoryStream = new MultiBufferMemoryStream(blobReference.ServiceClient.BufferManager))
                     using (var streamWriter = new StreamWriter(memoryStream))
                     {
                         JsonSerializer.Serialize(streamWriter, newValue);
