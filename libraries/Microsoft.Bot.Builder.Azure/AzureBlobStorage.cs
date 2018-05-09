@@ -28,12 +28,12 @@ namespace Microsoft.Bot.Builder.Azure
     /// </remarks>
     public class AzureBlobStorage : IStorage
     {
-        private readonly static JsonSerializerSettings JsonSerializerSettings = new JsonSerializerSettings
+        private readonly static JsonSerializer JsonSerializer = JsonSerializer.Create(new JsonSerializerSettings
         {
             // we use All so that we get typed roundtrip out of storage, but we don't use validation because we don't know what types are valid
             TypeNameHandling = TypeNameHandling.All
-        };
-        private readonly static JsonSerializer JsonSerializer = JsonSerializer.Create(JsonSerializerSettings);
+        });
+        
 
         private readonly CloudStorageAccount _storageAccount;
         private readonly string _containerName;
