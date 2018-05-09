@@ -33,7 +33,7 @@ namespace Microsoft.Bot.Builder.Azure
             // we use All so that we get typed roundtrip out of storage, but we don't use validation because we don't know what types are valid
             TypeNameHandling = TypeNameHandling.All
         });
-        
+        private readonly static IO.RecyclableMemoryStreamManager MemoryManager = new IO.RecyclableMemoryStreamManager();
 
         private readonly CloudStorageAccount _storageAccount;
         private readonly string _containerName;
@@ -169,7 +169,7 @@ namespace Microsoft.Bot.Builder.Azure
                     var blobName = GetBlobName(keyValuePair.Key);
                     var blobReference = blobContainer.GetBlockBlobReference(blobName);
 
-                    using (var memoryStream = new MemoryStream())
+                    using (var memoryStream = MemoryManager.GetStream(tag: $"{nameof(AzureBlobStorage.Write)}_{blobName}"))
                     using (var streamWriter = new StreamWriter(memoryStream))
                     {
                         JsonSerializer.Serialize(streamWriter, newValue);
