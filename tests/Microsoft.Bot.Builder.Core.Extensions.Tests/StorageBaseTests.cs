@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -71,7 +72,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
             var originalPocoStoreItem = new PocoStoreItem() { Id = "1", Count = 1 };
 
             // first write should work
-            await storage.Write(new [] 
+            await storage.Write(new[]
             {
                 new KeyValuePair<string, object>("pocoItem", originalPocoItem),
                 new KeyValuePair<string, object>("pocoStoreItem", originalPocoStoreItem )
@@ -200,13 +201,25 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
             await storage.Delete("unknown_key");
         }
 
-        protected async Task _batchCreateObjectTest(IStorage storage)
+        protected async Task _batchCreateObjectTest(IStorage storage, long minimumExtraBytes = 0)
         {
+            string[] stringArray = null;
+
+            if (minimumExtraBytes > 0)
+            {
+                // chunks of maximum string size to fill the extra bytes request
+                var extraStringCount = (int)(minimumExtraBytes / int.MaxValue);
+                stringArray = Enumerable.Range(0, extraStringCount).Select(i => new string('X', int.MaxValue / 2)).ToArray();
+
+                // Append the remaining string size
+                stringArray = stringArray.Append(new string('X', (int)(minimumExtraBytes % int.MaxValue) / 2)).ToArray();
+            }
+
             var storeItemsList = new List<Dictionary<string, object>>(new[]
                 {
-                new Dictionary<string, object> {["createPoco"] = new PocoItem() { Id = "1", Count = 0 }},
-                new Dictionary<string, object> {["createPoco"] = new PocoItem() { Id = "1", Count = 1 }},
-                new Dictionary<string, object> {["createPoco"] = new PocoItem() { Id = "1", Count = 2 }}
+                new Dictionary<string, object> {["createPoco"] = new PocoItem() { Id = "1", Count = 0, ExtraBytes = stringArray }},
+                new Dictionary<string, object> {["createPoco"] = new PocoItem() { Id = "1", Count = 1, ExtraBytes = stringArray }},
+                new Dictionary<string, object> {["createPoco"] = new PocoItem() { Id = "1", Count = 2, ExtraBytes = stringArray }}
             });
 
 
@@ -226,6 +239,8 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
         public string Id { get; set; }
 
         public int Count { get; set; }
+
+        public string[] ExtraBytes { get; set; }
     }
 
     public class PocoStoreItem : IStoreItem
