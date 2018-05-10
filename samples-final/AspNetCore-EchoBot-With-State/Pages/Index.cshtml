@@ -1,9 +1,6 @@
 ﻿@page
-
-@using Microsoft.Extensions.Options;
-@using  AspNetCore_EchoBot_With_State;
-
-@inject IOptions<ApplicationConfiguration> OptionsApplicationConfiguration;
+@using  AspNetCore_EchoBot_With_State
+@model IndexModel
 
 <!DOCTYPE html>
 <html>
@@ -17,38 +14,16 @@
     <p>Describe your bot here and your terms of use etc.</p>
     <p>To debug you bot using the Bot Framework Emulator, paste this URL into the Emulator window:</p>
     <div style="padding-left: 50px;">
-        <a id="bot-url"></a>
+        <a href="@Model.DebugLink" target="_blank">@Model.DebugLink</a>
     </div>
     <p>Or click the following link to debug your bot using the <a href="https://github.com/Microsoft/BotFramework-Emulator/releases" target="_blank">Bot Framework Emulator v4</a>:</p>
     <div style="padding-left: 50px;">
-        <a id="emulator-link"></a>
+        <a href="@Model.EmulatorDeepLink" target="_blank">@Model.EmulatorDeepLink</a>
     </div>
     <p>Or open a live chat with your bot in the Bot Framework Emulator!</p>
     <p>Visit <a href="https://www.botframework.com/">Bot Framework</a> to register your bot. When you register, remember to set the endpoint to:</p>
     <div style="padding-left: 50px;">
         https://<strong>{your domain name}</strong>/api/messages
     </div>
-    <input id="msa-app-id" type="hidden" value="@OptionsApplicationConfiguration.Value.MicrosoftAppId" />
-    <input id="msa-app-pw" type="hidden" value="@OptionsApplicationConfiguration.Value.MicrosoftAppPassword" />
-    <script>
-        // construct protocol URI
-        const botUrl = `${location.protocol}//${location.host}/api/messages`;
-        const msaAppId = document.getElementById("msa-app-id").getAttribute("value");
-        const msaAppPw = document.getElementById("msa-app-pw").getAttribute("value");
-
-        let protocolURI = `bfemulator://livechat.open?botUrl=${encodeURIComponent(botUrl)}`;
-        if (msaAppId)
-            protocolURI += `&msaAppId=${encodeURIComponent(msaAppId)}`;
-        if (msaAppPw)
-            protocolURI += `&msaPassword=${encodeURIComponent(msaAppPw)}`;
-
-        const protocolLink = document.getElementById("emulator-link");
-        protocolLink.setAttribute("href", protocolURI);
-        protocolLink.innerHTML = protocolURI;
-
-        const debugLink = document.getElementById("bot-url");
-        debugLink.setAttribute("href", botUrl);
-        debugLink.innerHTML = botUrl;
-    </script>
 </body>
 </html>
