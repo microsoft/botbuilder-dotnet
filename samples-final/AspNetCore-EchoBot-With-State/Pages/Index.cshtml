@@ -28,8 +28,8 @@
     <div style="padding-left: 50px;">
         https://<strong>{your domain name}</strong>/api/messages
     </div>
-    <input id="msa-app-id" type="hidden" value=@OptionsApplicationConfiguration.Value.MicrosoftAppId />
-    <input id="msa-app-pw" type="hidden" value=@OptionsApplicationConfiguration.Value.MicrosoftAppPassword />
+    <input id="msa-app-id" type="hidden" value="@OptionsApplicationConfiguration.Value.MicrosoftAppId" />
+    <input id="msa-app-pw" type="hidden" value="@OptionsApplicationConfiguration.Value.MicrosoftAppPassword" />
     <script>
         // construct protocol URI
         const botUrl = `${location.protocol}//${location.host}/api/messages`;
