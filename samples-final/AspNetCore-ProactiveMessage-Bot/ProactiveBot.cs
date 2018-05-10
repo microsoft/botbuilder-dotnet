@@ -25,7 +25,7 @@ namespace AspNetCore_ProactiveMessage_Bot
                         var conversation = TurnContext.GetConversationReference(context.Activity);
                         conversation.Conversation.Role = "Proactive";
                         await context.SendActivity("Hello! This is a proactive message sample");
-                        await context.SendActivity($"To reset the counter used in this conversation make a POST with the follwing content");
+                        await context.SendActivity($"To reset the counter used in this conversation make a POST with the following content");
                         await context.SendActivity(JsonConvert.SerializeObject(conversation));
                     }
                     break;
