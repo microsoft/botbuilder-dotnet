@@ -12,6 +12,7 @@ using Microsoft.Bot.Builder.Core.Extensions;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
 using Microsoft.WindowsAzure.Storage.Core;
+using Microsoft.WindowsAzure.Storage.Shared.Protocol;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Azure
@@ -176,9 +177,50 @@ namespace Microsoft.Bot.Builder.Azure
                         JsonSerializer.Serialize(streamWriter, newValue);
                         streamWriter.Flush();
                         memoryStream.Seek(0, SeekOrigin.Begin);
+
+                        accessCondition.LeaseId = await CreateEmptyBlobIfNotExistsAndLeaseAsync(blobReference, accessCondition, blobRequestOptions, operationContext);
+
                         await blobReference.UploadFromStreamAsync(memoryStream, accessCondition, blobRequestOptions, operationContext);
+
+                        // Once written, AccessCondition.IfMatchETag is invalidated
+                        accessCondition.IfMatchETag = null;
+                        if (accessCondition.LeaseId != null)
+                            await blobReference.ReleaseLeaseAsync(accessCondition, blobRequestOptions, operationContext);
                     }
                 }));
+        }
+
+        private static async Task<string> CreateEmptyBlobIfNotExistsAndLeaseAsync(CloudBlockBlob blobReference, AccessCondition accessCondition, BlobRequestOptions blobRequestOptions, OperationContext operationContext)
+        {
+            using (var memoryStream = new MemoryStream())
+                try
+                {
+                    await blobReference.UploadFromStreamAsync(memoryStream, AccessCondition.GenerateIfNotExistsCondition(), blobRequestOptions, operationContext);
+                }
+                catch (StorageException ex)
+                when (ex.RequestInformation.HttpStatusCode == (int)HttpStatusCode.Conflict)
+                { }
+
+            var tryCount = 3;
+            do
+            {
+                try
+                {
+                    // Acquire lease for max duration 60s
+                    return await blobReference.AcquireLeaseAsync(
+                            TimeSpan.FromSeconds(Constants.MaximumLeaseDuration), null, accessCondition, blobRequestOptions, operationContext);
+                }
+                catch (StorageException ex)
+                when (ex.RequestInformation.HttpStatusCode == (int)HttpStatusCode.Conflict
+                && (--tryCount > 0))
+                {
+                    // Default ExponentialBackoff delay 4s
+                    // https://github.com/Azure/azure-storage-net/blob/master/Lib/Common/RetryPolicies/ExponentialRetry.cs
+                    await Task.Delay(TimeSpan.FromSeconds(4)).ConfigureAwait(false);
+                }
+            } while (tryCount > 0);
+
+            throw new InvalidOperationException("Blob lease could not be acquired.");
         }
 
         private static string GetBlobName(string key)
