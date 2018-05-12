@@ -129,5 +129,25 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             if (HasStorage())
                 await base._handleCrazyKeys(storage);
         }
+
+        // NOTE: THESE TESTS REQUIRE THAT THE AZURE STORAGE EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
+        [TestMethod]
+        public async Task BlobStorage_BatchCreateObjectsTest()
+        {
+            if (HasStorage())
+                await base._batchCreateObjectTest(storage);
+        }
+
+        // NOTE: THESE TESTS REQUIRE THAT THE AZURE STORAGE EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
+        [TestMethod]
+        public async Task BlobStorage_BatchCreateLargeObjectsTest()
+        {
+            // The maximum size of a blob before it must be separated into blocks.
+            // https://docs.microsoft.com/en-us/dotnet/api/microsoft.windowsazure.storage.shared.protocol.constants.maxsingleuploadblobsize
+            var extraBytesToUploadBlobinBlocks = Microsoft.WindowsAzure.Storage.Shared.Protocol.Constants.MaxSingleUploadBlobSize;
+
+            if (HasStorage())
+                await base._batchCreateObjectTest(storage, extraBytesToUploadBlobinBlocks);
+        }
     }
 }
