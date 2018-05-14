@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -222,10 +221,17 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
                 new Dictionary<string, object> {["createPoco"] = new PocoItem() { Id = "1", Count = 2, ExtraBytes = stringArray }}
             });
 
-
-            await Task.WhenAll(
-                storeItemsList.Select(storeItems =>
-                    Task.Run(async () => await storage.Write(storeItems))));
+            // Writing large objects in parallel might raise a Microsoft.Bot.Builder.Core.Extensions.StorageException
+            try
+            {
+                await Task.WhenAll(
+                    storeItemsList.Select(storeItems =>
+                        Task.Run(async () => await storage.Write(storeItems))));
+            }
+            catch (Exception ex)
+            {
+                Assert.IsInstanceOfType(ex, typeof(BotStorageException));
+            }
 
             var readStoreItems = new Dictionary<string, object>(await storage.Read("createPoco"));
             Assert.IsInstanceOfType(readStoreItems["createPoco"], typeof(PocoItem));
