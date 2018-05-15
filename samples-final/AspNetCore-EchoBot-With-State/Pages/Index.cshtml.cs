@@ -20,7 +20,7 @@ namespace AspNetCore_EchoBot_With_State
 
         public void OnGet()
         {
-            string botUrl = $"{ Request.Scheme }//{ Request.Host }/api/messages";
+            string botUrl = $"{ Request.Scheme }://{ Request.Host }/api/messages";
             DebugLink = botUrl;
 
             // construct emulator protocol URI
