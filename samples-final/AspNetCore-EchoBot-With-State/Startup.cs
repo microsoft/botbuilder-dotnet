@@ -33,6 +33,11 @@ namespace AspNetCore_EchoBot_With_State
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // Bind appsettings.json values to a class that can be injected into Index.cshtml
+            services.Configure<ApplicationConfiguration>(Configuration);
+
+            services.AddMvc();
+
             services.AddBot<EchoBot>(options =>
             {
                 options.CredentialProvider = new ConfigurationCredentialProvider(Configuration);
@@ -77,9 +82,18 @@ namespace AspNetCore_EchoBot_With_State
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseMvc();
+
             app.UseDefaultFiles()
                 .UseStaticFiles()
                 .UseBotFramework();
         }
+    }
+
+    // This class is used to retrieve strings from appsettings.json on demand
+    public class ApplicationConfiguration
+    {
+        public string MicrosoftAppId { get; set; }
+        public string MicrosoftAppPassword { get; set; }
     }
 }
