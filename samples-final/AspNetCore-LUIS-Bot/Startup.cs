@@ -2,8 +2,10 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Bot.Builder.Ai.LUIS;
 using Microsoft.Bot.Builder.BotFramework;
 using Microsoft.Bot.Builder.Core.Extensions;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
@@ -11,7 +13,7 @@ using Microsoft.Bot.Builder.TraceExtensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace AspNetCore_EchoBot_With_State
+namespace AspNetCore_LUIS_Bot
 {
     public class Startup
     {
@@ -33,12 +35,7 @@ namespace AspNetCore_EchoBot_With_State
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            // Bind appsettings.json values to a class that can be injected into Index.cshtml
-            services.Configure<ApplicationConfiguration>(Configuration);
-
-            services.AddMvc();
-
-            services.AddBot<EchoBot>(options =>
+            services.AddBot<LuisBot>(options =>
             {
                 options.CredentialProvider = new ConfigurationCredentialProvider(Configuration);
 
@@ -70,7 +67,12 @@ namespace AspNetCore_EchoBot_With_State
                 // IStorage dataStore = new Microsoft.Bot.Builder.Azure.AzureTableStorage("AzureTablesConnectionString", "TableName");
                 // IStorage dataStore = new Microsoft.Bot.Builder.Azure.AzureBlobStorage("AzureBlobConnectionString", "containerName");
 
-                options.Middleware.Add(new ConversationState<EchoState>(dataStore));
+                options.Middleware.Add(new ConversationState<Dictionary<string, object>>(dataStore));
+                options.Middleware.Add(new UserState<UserState>(dataStore));
+
+                var (modelId, subscriptionKey, url) = GetLuisConfiguration(Configuration);
+                var model = new LuisModel(modelId, subscriptionKey, url);
+                options.Middleware.Add(new LuisRecognizerMiddleware(model));
             });
         }
 
@@ -82,18 +84,17 @@ namespace AspNetCore_EchoBot_With_State
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseMvc();
-
             app.UseDefaultFiles()
                 .UseStaticFiles()
                 .UseBotFramework();
         }
-    }
 
-    // This class is used to retrieve strings from appsettings.json on demand
-    public class ApplicationConfiguration
-    {
-        public string MicrosoftAppId { get; set; }
-        public string MicrosoftAppPassword { get; set; }
+        private (string modelId, string subscriptionKey, Uri url) GetLuisConfiguration(IConfiguration configuration)
+        {
+            var modelId = configuration.GetSection("Luis-ModelId")?.Value;
+            var subscriptionKey = configuration.GetSection("Luis-SubscriptionId")?.Value;
+            var url = configuration.GetSection("Luis-Url")?.Value;
+            return (modelId, subscriptionKey, new Uri(url));
+        }
     }
 }
