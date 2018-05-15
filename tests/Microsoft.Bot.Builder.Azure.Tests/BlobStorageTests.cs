@@ -129,5 +129,12 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             if (HasStorage())
                 await base._handleCrazyKeys(storage);
         }
+
+        [TestMethod]
+        public async Task BlobStorage_BatchCreateObjectTest()
+        {
+            if (HasStorage())
+                await base._batchCreateObjectTest(storage);
+        }
     }
 }
