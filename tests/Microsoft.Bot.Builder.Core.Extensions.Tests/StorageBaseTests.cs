@@ -199,6 +199,26 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
         {
             await storage.Delete("unknown_key");
         }
+
+        protected async Task _batchCreateObjectTest(IStorage storage)
+        {
+            var storeItemsList = new List<Dictionary<string, object>>(new[]
+                {
+                new Dictionary<string, object> {["createPoco"] = new PocoItem() { Id = "1", Count = 0 }},
+                new Dictionary<string, object> {["createPoco"] = new PocoItem() { Id = "1", Count = 1 }},
+                new Dictionary<string, object> {["createPoco"] = new PocoItem() { Id = "1", Count = 2 }}
+            });
+
+
+            await Task.WhenAll(
+                storeItemsList.Select(storeItems =>
+                    Task.Run(async () => await storage.Write(storeItems))));
+
+            var readStoreItems = new Dictionary<string, object>(await storage.Read("createPoco"));
+            Assert.IsInstanceOfType(readStoreItems["createPoco"], typeof(PocoItem));
+            var createPoco = readStoreItems["createPoco"] as PocoItem;
+            Assert.AreEqual(createPoco.Id, "1", "createPoco.id should be 1");
+        }
     }
 
     public class PocoItem
