@@ -160,10 +160,13 @@ namespace Microsoft.Bot.Builder.Azure
 
             async Task<CloudTable> EnsureTableExists()
             {
-                _table = _storageAccount.CreateCloudTableClient().GetTableReference(_tableName);
+                var table = _storageAccount.CreateCloudTableClient().GetTableReference(_tableName);
 
                 // This call may not be thread-safe and multiple calls may be made, but Azure will handle it correctly and there is no destructive side effect.
-                await _table.CreateIfNotExistsAsync();
+                await table.CreateIfNotExistsAsync();
+
+                _table = table;
+
                 return _table;
             }
         }
