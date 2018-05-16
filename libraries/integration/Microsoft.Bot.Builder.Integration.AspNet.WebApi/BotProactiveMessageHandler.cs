@@ -13,6 +13,8 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Handlers
 {
     public sealed class BotProactiveMessageHandler : BotMessageHandlerBase
     {
+        internal static readonly string RouteName = "BotFramework - Proactive Message Handler";
+
         public BotProactiveMessageHandler(BotFrameworkAdapter botFrameworkAdapter) : base(botFrameworkAdapter)
         {
         }
