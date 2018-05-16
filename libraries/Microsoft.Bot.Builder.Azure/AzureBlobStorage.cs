@@ -202,9 +202,11 @@ namespace Microsoft.Bot.Builder.Azure
             async Task<CloudBlobContainer> EnsureBlobContainerExists()
             {
                 var blobClient = _storageAccount.CreateCloudBlobClient();
-                _container = blobClient.GetContainerReference(_containerName);
+                var container = blobClient.GetContainerReference(_containerName);
 
-                await _container.CreateIfNotExistsAsync().ConfigureAwait(false);
+                await container.CreateIfNotExistsAsync().ConfigureAwait(false);
+
+                _container = container;
 
                 return _container;
             }
