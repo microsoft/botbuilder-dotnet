@@ -4,14 +4,15 @@
 using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Bot.Builder.Ai.LUIS;
 using Microsoft.Bot.Builder.BotFramework;
+using Microsoft.Bot.Builder.Core.Extensions;
+using Microsoft.Bot.Builder.Ai.QnA;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
-using Microsoft.Cognitive.LUIS;
+using Microsoft.Bot.Builder.TraceExtensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace AspNetCore_Luis_Dispatch_Bot
+namespace AspNetCore_QnA_Bot
 {
     public class Startup
     {
@@ -33,20 +34,25 @@ namespace AspNetCore_Luis_Dispatch_Bot
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton(this.Configuration);
-            services.AddBot<LuisDispatchBot>(options =>
+            services.AddBot<QnABot>(options =>
             {
                 options.CredentialProvider = new ConfigurationCredentialProvider(Configuration);
 
-                var (luisModelId, luisSubscriptionKey, luisUri) = GetLuisConfiguration(this.Configuration, "Dispatcher");
+                // The CatchExceptionMiddleware provides a top-level exception handler for your bot. 
+                // Any exceptions thrown by other Middleware, or by your OnTurn method, will be 
+                // caught here. To facillitate debugging, the exception is sent out, via Trace, 
+                // to the emulator. Trace activities are NOT displayed to users, so in addition
+                // an "Ooops" message is sent. 
+                options.Middleware.Add(new CatchExceptionMiddleware<Exception>(async (context, exception) =>
+                {
+                    await context.TraceActivity("EchoBot Exception", exception);
+                    await context.SendActivity("Sorry, it looks like something went wrong!");
+                }));
 
-                var luisModel = new LuisModel(luisModelId, luisSubscriptionKey, luisUri);
+                var qnaEndpoint = GetQnAMakerEndpoint(Configuration);
+                var qnaMiddleware = new QnAMakerMiddleware(qnaEndpoint);
 
-                // If you want to get all intents scorings, add verbose in luisOptions
-                var luisOptions = new LuisRequest { Verbose = true };
-
-                var middleware = options.Middleware;
-                middleware.Add(new LuisRecognizerMiddleware(luisModel, luisOptions: luisOptions));
+                options.Middleware.Add(qnaMiddleware);
             });
         }
 
@@ -63,20 +69,17 @@ namespace AspNetCore_Luis_Dispatch_Bot
                 .UseBotFramework();
         }
 
-        public static (string modelId, string subscriptionId, Uri uri) GetLuisConfiguration(IConfiguration configuration, string serviceName)
+        private QnAMakerEndpoint GetQnAMakerEndpoint(IConfiguration configuration)
         {
-            var modelId = configuration.GetSection($"Luis-ModelId-{serviceName}")?.Value;
-            var subscriptionId = configuration.GetSection("Luis-SubscriptionKey")?.Value;
-            var uri = new Uri(configuration.GetSection("Luis-Url")?.Value);
-            return (modelId, subscriptionId, uri);
-        }
-
-        public static (string knowledgeBaseId, string subscriptionKey, string uri) GetQnAMakerConfiguration(IConfiguration configuration)
-        {
+            var host = configuration.GetSection("QnAMaker-Host")?.Value;
             var knowledgeBaseId = configuration.GetSection("QnAMaker-KnowledgeBaseId")?.Value;
-            var subscriptionKey = configuration.GetSection("QnAMaker-SubscriptionKey")?.Value;
-            var uri = configuration.GetSection("QnAMaker-Endpoint-Url")?.Value;
-            return (knowledgeBaseId, subscriptionKey, uri);
+            var endpointKey = configuration.GetSection("QnAMaker-EndpointKey")?.Value;
+            return new QnAMakerEndpoint
+            {
+                Host = host,
+                KnowledgeBaseId = knowledgeBaseId,
+                EndpointKey = endpointKey
+            };
         }
     }
 }
