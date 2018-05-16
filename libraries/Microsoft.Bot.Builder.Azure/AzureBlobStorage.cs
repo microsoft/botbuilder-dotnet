@@ -11,6 +11,7 @@ using System.Web;
 using Microsoft.Bot.Builder.Core.Extensions;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
+using Microsoft.WindowsAzure.Storage.Blob.Protocol;
 using Microsoft.WindowsAzure.Storage.Core;
 using Newtonsoft.Json;
 
@@ -170,13 +171,24 @@ namespace Microsoft.Bot.Builder.Azure
                     var blobName = GetBlobName(keyValuePair.Key);
                     var blobReference = blobContainer.GetBlockBlobReference(blobName);
 
-                    using (var memoryStream = new MultiBufferMemoryStream(blobReference.ServiceClient.BufferManager))
-                    using (var streamWriter = new StreamWriter(memoryStream))
+                    try
                     {
-                        JsonSerializer.Serialize(streamWriter, newValue);
-                        streamWriter.Flush();
-                        memoryStream.Seek(0, SeekOrigin.Begin);
-                        await blobReference.UploadFromStreamAsync(memoryStream, accessCondition, blobRequestOptions, operationContext);
+                        using (var memoryStream = new MultiBufferMemoryStream(blobReference.ServiceClient.BufferManager))
+                        using (var streamWriter = new StreamWriter(memoryStream))
+                        {
+                            JsonSerializer.Serialize(streamWriter, newValue);
+                            streamWriter.Flush();
+                            memoryStream.Seek(0, SeekOrigin.Begin);
+                            await blobReference.UploadFromStreamAsync(memoryStream, accessCondition, blobRequestOptions, operationContext);
+                        }
+                    }
+                    catch (StorageException ex)
+                    when (ex.RequestInformation.HttpStatusCode == (int)HttpStatusCode.BadRequest
+                    && ex.RequestInformation.ErrorCode == BlobErrorCodeStrings.InvalidBlockList)
+                    {
+                        throw new BotStorageException(
+                            $"An error ocurred while trying to write an object. The underlying '{BlobErrorCodeStrings.InvalidBlockList}' error is commonly caused due to concurrently uploading an object larger than 128MB in size.",
+                            ex);
                     }
                 }));
         }
