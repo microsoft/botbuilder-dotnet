@@ -1,4 +1,6 @@
-﻿using FluentAssertions;
+﻿using System;
+using System.Threading.Tasks;
+using FluentAssertions;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,7 +19,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             {
                 var serviceCollection = new ServiceCollection()
                     .AddOptions()
-                    .AddBot<TestBot>();
+                    .AddBot<ServiceResolutionTestBot>();
 
                 var serviceProvider = serviceCollection.BuildServiceProvider();
 
@@ -31,7 +33,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             {
                 var serviceCollection = new ServiceCollection()
                     .AddOptions()
-                    .AddBot<TestBot>();
+                    .AddBot<ServiceResolutionTestBot>();
 
                 var serviceProvider = serviceCollection.BuildServiceProvider();
 
@@ -49,7 +51,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             {
                 var serviceCollection = new ServiceCollection()
                     .AddOptions()
-                    .AddBot<TestBot>(options =>
+                    .AddBot<ServiceResolutionTestBot>(options =>
                     {
                         options.CredentialProvider = Mock.Of<ICredentialProvider>();
                     });
@@ -69,14 +71,22 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             {
                 var serviceCollection = new ServiceCollection()
                     .AddOptions()
-                    .AddBot<TestBot>();
+                    .AddBot<ServiceResolutionTestBot>();
 
                 var serviceProvider = serviceCollection.BuildServiceProvider();
 
                 var bot = serviceProvider.GetService<IBot>();
 
                 bot.Should().NotBeNull()
-                    .And.BeOfType<TestBot>();
+                    .And.BeOfType<ServiceResolutionTestBot>();
+            }
+        }
+
+        public sealed class ServiceResolutionTestBot : IBot
+        {
+            public Task OnTurn(ITurnContext turnContext)
+            {
+                throw new NotImplementedException("This test bot has no implementation and is intended only for testing service resolution.");
             }
         }
     }
