@@ -1,20 +1,17 @@
 using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 
-[assembly: AssemblyTitle("AspNet.WebApi.Tests")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("AspNet.WebApi.Tests")]
-[assembly: AssemblyCopyright("Copyright ©  2018")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
+[assembly: AssemblyTitle("Microsoft.Bot.Builder.Integration.AspNet.WebApi.Tests")]
+[assembly: AssemblyDescription("Test suite for Microsoft.Bot.Builder.Integration.AspNet.WebApi.")]
 
-[assembly: ComVisible(false)]
+#if DEBUG
+[assembly: AssemblyConfiguration("Debug")]
+#else
+[assembly: AssemblyConfiguration("Release")]
+#endif
 
-[assembly: Guid("2614d290-1345-4a41-be90-f85f817ceade")]
+[assembly: AssemblyCompany("Microsoft")]
+[assembly: AssemblyProduct("Microsoft Bot Builder SDK")]
+[assembly: AssemblyCopyright("© Microsoft Corporation. All rights reserved.")]
 
-// [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("1.0.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
