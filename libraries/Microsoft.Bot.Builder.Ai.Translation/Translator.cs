@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using Microsoft.Bot.Builder.Ai.Translation.PostProcessor;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -17,250 +18,13 @@ using System.Xml.Linq;
 namespace Microsoft.Bot.Builder.Ai.Translation
 {
     /// <summary>
-    /// PostProcessTranslator  is used to handle translation errors while translating numbers
-    /// and to handle words that needs to be kept same as source language from provided template each line having a regex
-    /// having first group matching the words that needs to be kept
-    /// </summary>
-    internal class PostProcessTranslator
-    {
-        private readonly HashSet<string> _patterns;
-
-
-        /// <summary>
-        /// Constructor that indexes input template for source language
-        /// </summary>
-        /// <param name="noTranslateTemplatePath">Path of no translate patterns</param> 
-        internal PostProcessTranslator(List<string> patterns):this()
-        { 
-            foreach (string pattern in patterns)
-            {
-                string processedLine = pattern.Trim();
-                if (!pattern.Contains('('))
-                {
-                    processedLine = '(' + pattern + ')';
-                }
-                _patterns.Add(processedLine);
-            }
-        }
-
-        /// <summary>
-        /// Constructor for postprocessor that fixes numbers only
-        /// </summary>
-        internal PostProcessTranslator()
-        {
-            _patterns = new HashSet<string>();
-        }
-
-        /// <summary>
-        /// Adds a no translate phrase to the pattern list .
-        /// </summary>
-        /// <param name="noTranslatePhrase">String containing no translate phrase</param>
-        public void AddNoTranslatePhrase(string noTranslatePhrase)
-        {
-            _patterns.Add("(" + noTranslatePhrase + ")");
-        }
-
-        /// <summary>
-        /// Helper to Join words to sentence
-        /// </summary>
-        /// <param name="delimiter">String delimiter used  to join words.</param> 
-        /// <param name="words">String Array of words to be joined.</param> 
-        /// <returns>string joined sentence</returns>
-        private string Join(string delimiter, string[] words)
-        {
-            string sentence = string.Join(delimiter, words);
-            sentence = Regex.Replace(sentence, "[ ]?'[ ]?", "'");
-            return sentence.Trim();
-        }
-
-        /// <summary>
-        /// Helper to split sentence to words 
-        /// </summary>
-        /// <param name="sentence">String containing sentence to be splitted.</param> 
-        /// <returns>string array of words.</returns>
-        private string[] SplitSentence(string sentence,string[] alignments=null,bool isSrcSentence=true)
-        {
-            string[] wrds = sentence.Split(' ');
-            string[] alignSplitWrds = new string[0];
-            if (alignments != null && alignments.Length > 0)
-            {
-                List<string> outWrds = new List<string>();
-                int wrdIndxInAlignment = 1;
-
-                if (isSrcSentence)
-                    wrdIndxInAlignment = 0;
-                else
-                {
-                    // reorder alignments in case of target translated  message to get ordered output words.
-                    Array.Sort(alignments, (x, y) => Int32.Parse(x.Split('-')[wrdIndxInAlignment].Split(':')[0]).CompareTo(Int32.Parse(y.Split('-')[wrdIndxInAlignment].Split(':')[0])));
-                }
-                string withoutSpaceSentence = sentence.Replace(" ", "");
-                
-                foreach (string alignData in alignments)
-                {
-                    alignSplitWrds = outWrds.ToArray();
-                    string wordIndexes = alignData.Split('-')[wrdIndxInAlignment];
-                    int startIndex = Int32.Parse(wordIndexes.Split(':')[0]);
-                    int length = Int32.Parse(wordIndexes.Split(':')[1]) - startIndex + 1;
-                    string wrd = sentence.Substring(startIndex, length);
-                    string[] newWrds = new string[outWrds.Count + 1];
-                    if(newWrds.Length>1)
-                        alignSplitWrds.CopyTo(newWrds, 0);
-                    newWrds[outWrds.Count] = wrd;
-                    string subSentence = Join("", newWrds.ToArray()); 
-                    if (withoutSpaceSentence.Contains(subSentence)) 
-                        outWrds.Add(wrd);  
-                }
-                alignSplitWrds = outWrds.ToArray();
-            }
-            char[] punctuationChars = new char[] { '.', ',', '?', '!' };
-            if (Join("",alignSplitWrds).TrimEnd(punctuationChars) ==Join("",wrds).TrimEnd(punctuationChars))
-                return alignSplitWrds;
-            return wrds;
-        }
-
-        /// <summary>
-        ///parsing alignment information onto a dictionary
-        /// dictionary key is word index in source
-        /// value is word index in translated text
-        /// </summary>
-        /// <param name="alignment">String containing phrase alignments</param>
-        /// <param name="sourceMessage">String containing source message</param>
-        /// /<param name="trgMessage">String containing translated message</param>
-        /// <returns></returns>
-        private Dictionary<int, int> WordAlignmentParse(string[] alignments,string[] srcWords,string[] trgWords)
-        {
-            Dictionary<int, int> alignMap = new Dictionary<int, int>();
-            string sourceMessage = Join(" ", srcWords);
-            string trgMessage = Join(" ", trgWords);
-            foreach (string alignData in alignments)
-            {
-                    string[] wordIndexes = alignData.Split('-');
-                    int srcStartIndex = Int32.Parse(wordIndexes[0].Split(':')[0]);
-                    int srcLength = Int32.Parse(wordIndexes[0].Split(':')[1]) - srcStartIndex + 1;
-                    if ((srcLength + srcStartIndex) > sourceMessage.Length)
-                        continue;
-                    string srcWrd = sourceMessage.Substring(srcStartIndex, srcLength);
-                    int sourceWordIndex = Array.FindIndex(srcWords, row => row==srcWrd);
-
-                    int trgstartIndex = Int32.Parse(wordIndexes[1].Split(':')[0]);
-                    int trgLength = Int32.Parse(wordIndexes[1].Split(':')[1]) - trgstartIndex + 1;
-                    if ((trgLength + trgstartIndex) > trgMessage.Length)
-                        continue;
-                    string trgWrd = trgMessage.Substring(trgstartIndex,trgLength);
-                    int targetWordIndex = Array.FindIndex(trgWords, row => row ==trgWrd);
-                    
-                    if(sourceWordIndex>=0 && targetWordIndex>=0)
-                        alignMap[sourceWordIndex] = targetWordIndex;
-            }
-            return alignMap;
-        }
-
-
-        /// <summary>
-        /// use alignment information source sentence and target sentence
-        /// to keep a specific word from the source onto target translation
-        /// </summary>
-        /// <param name="alignment">Dictionary containing the alignments</param>
-        /// <param name="source">Source Language</param>
-        /// <param name="target">Target Language</param>
-        /// <param name="srcWrd">Source Word</param>
-        /// <returns></returns>
-        private string[] KeepSrcWrdInTranslation(Dictionary<int, int> alignment, string[] sourceWords, string[] targetWords, int srcWrdIndx)
-        { 
-            if (alignment.ContainsKey(srcWrdIndx))
-            {
-                targetWords[alignment[srcWrdIndx]] = sourceWords[srcWrdIndx];  
-            }
-            return targetWords;
-        }
-        
-        /// <summary>
-        /// Fixing translation
-        /// used to handle numbers and no translate list
-        /// </summary>
-        /// <param name="sourceMessage">Source Message</param>
-        /// <param name="alignment">String containing the Alignments</param>
-        /// <param name="targetMessage">Target Message</param>
-        /// <returns></returns>
-        internal string FixTranslation(string sourceMessage, string alignment, string targetMessage)
-        { 
-            bool containsNum = Regex.IsMatch(sourceMessage, @"\d");
-
-            if (_patterns.Count == 0 && !containsNum)
-                return targetMessage;
-            if (string.IsNullOrWhiteSpace(alignment))
-                return targetMessage;
-
-            var toBeReplaced = from result in _patterns
-                               where Regex.IsMatch(sourceMessage, result, RegexOptions.Singleline | RegexOptions.IgnoreCase)
-                               select result;
-            string[] alignments = alignment.Trim().Split(' ');
-            string[] srcWords = SplitSentence(sourceMessage, alignments);
-            string[] trgWords = SplitSentence(targetMessage, alignments, false); 
-            Dictionary<int, int> alignMap = WordAlignmentParse(alignments, srcWords, trgWords);
-            if (toBeReplaced.Any())
-            {
-                foreach (string pattern in toBeReplaced)
-                {
-                    Match matchNoTranslate = Regex.Match(sourceMessage, pattern, RegexOptions.Singleline | RegexOptions.IgnoreCase);
-                    int noTranslateStartChrIndex = matchNoTranslate.Groups[1].Index;
-                    int noTranslateMatchLength = matchNoTranslate.Groups[1].Length;
-                    int wrdIndx = 0;
-                    int chrIndx = 0;
-                    int newChrLengthFromMatch = 0;
-                    int srcIndex = -1;
-                    int newNoTranslateArrayLength = 1;
-                    foreach (string wrd in srcWords)
-                    {
-                        
-                        chrIndx += wrd.Length + 1; 
-                        wrdIndx++;
-                        if (chrIndx == noTranslateStartChrIndex)
-                        {
-                            srcIndex = wrdIndx;
-                        }
-                        if (srcIndex != -1)
-                        {
-                            if (newChrLengthFromMatch + srcWords[wrdIndx].Length >= noTranslateMatchLength)
-                                break;
-                            newNoTranslateArrayLength += 1;
-                            newChrLengthFromMatch += srcWords[wrdIndx].Length + 1;
-                        }
-
-                    }
-                    if (srcIndex == -1)
-                        continue; 
-                    string[] wrdNoTranslate = new string[newNoTranslateArrayLength];
-                    Array.Copy(srcWords, srcIndex, wrdNoTranslate, 0 , newNoTranslateArrayLength); 
-                    foreach (string srcWrd in wrdNoTranslate)
-                    {
-                        trgWords = KeepSrcWrdInTranslation(alignMap, srcWords, trgWords, srcIndex);
-                        srcIndex++;
-                    }
-
-                }
-            }
-            
-            MatchCollection numericMatches = Regex.Matches(sourceMessage, @"\d+", RegexOptions.Singleline);
-            foreach (Match numericMatch in numericMatches)
-            {
-                int srcIndex = Array.FindIndex(srcWords, row => row == numericMatch.Groups[0].Value);
-                trgWords = KeepSrcWrdInTranslation(alignMap, srcWords, trgWords, srcIndex);
-            }
-            return Join(" ", trgWords);
-        } 
-
-    }
-
-    /// <summary>
     /// Provides access to the Microsoft Translator Text API.
     /// Uses api key and detect input language translate single sentence or array of sentences then apply translation post processing fix.
     /// </summary>
     public class Translator
     {
         private readonly AzureAuthToken _authToken;
-        PostProcessTranslator _postProcessor;
+        private List<IPostProcessor> _postProcessors;
 
         /// <summary>
         /// Creates a new <see cref="Translator"/> object.
@@ -269,16 +33,19 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         public Translator(string apiKey)
         {
             _authToken = new AzureAuthToken(apiKey);
-            _postProcessor = new PostProcessTranslator();
+            //_postProcessors = new List<IPostProcessor>();
+            //_postProcessor = new PostProcessTranslator();
         }
 
         /// <summary>
         /// Sets the no translate template for post processor.
         /// </summary>
         /// <param name="patterns">List of patterns for the current language that can be used to fix some translation errors.</param>
-        public void SetPostProcessorTemplate(List<string> patterns)
+        //public void SetPostProcessorTemplate(List<string> patterns)
+        public void SetPostProcessorTemplates(List<IPostProcessor> postProcessors)
         {
-            _postProcessor = new PostProcessTranslator(patterns);
+            _postProcessors = postProcessors;
+            //_postProcessor = new PostProcessTranslator(patterns);
         }
 
         /// <summary>
