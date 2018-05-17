@@ -36,7 +36,7 @@ namespace AspNetCore_Single_Prompts
                     else if (dialogCompletion.IsCompleted)
                     {
                         var textResult = (Microsoft.Bot.Builder.Prompts.TextResult)dialogCompletion.Result;
-                        await context.SendActivity($"Bot received the text '{textResult.Value}'.");
+                        await context.SendActivity($"'{textResult.Value}' is a great name!");
                     }
                     break;
             }
