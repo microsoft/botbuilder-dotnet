@@ -1,16 +1,16 @@
 This sample shows a simple echo bot with conversation state tracking and demonstrates the bot working as a console app using the console adapter.
 
-# To try this sample
+## To try this sample
 - Clone the repository
 ```bash
 git clone https://github.com/Microsoft/botbuilder-dotnet.git
 ```
 
-## Visual studio
+### Visual studio
 - Navigate to the samples folder and open Console-EchoBot-With-State.csproj in Visual studio 
 - Hit F5
 
-## Visual studio code
+### Visual studio code
 - open samples\1.Console-EchoBot-With-State folder
 - Bring up a terminal, navigate to samples\1.Console-EchoBot-With-State folder
 - type 'dotnet run'
