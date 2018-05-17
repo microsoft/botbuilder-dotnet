@@ -1,73 +1,70 @@
-﻿using System;
-using prompts = Microsoft.Bot.Builder.Prompts;
-using static Microsoft.Bot.Builder.Prompts.PromptValidatorEx;
-using Microsoft.Bot.Schema;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Prompts;
+using Microsoft.Bot.Schema;
+using static Microsoft.Bot.Builder.Prompts.PromptValidatorEx;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
-    public class OAuthPromptSettingsWithTimeout : prompts.OAuthPromptSettings
-    {
-        public int? Timeout { get; set; }
-    }
-
-    public class OAuthPromptState : PromptOptions
-    {
-        public OAuthPromptState(PromptOptions defaultPromptOptions) : base()
-        {
-            if (defaultPromptOptions != null)
-            {
-                PromptString = PromptString ?? defaultPromptOptions.PromptString;
-                PromptActivity = PromptActivity ?? defaultPromptOptions.PromptActivity;
-                Speak = Speak ?? defaultPromptOptions.Speak;
-                RetryPromptString = RetryPromptString ?? defaultPromptOptions.RetryPromptString;
-                RetryPromptActivity = RetryPromptActivity ?? defaultPromptOptions.RetryPromptActivity;
-                RetrySpeak = RetrySpeak ?? defaultPromptOptions.RetrySpeak;
-            }
-        }
-
-        public DateTime Expires { get; set; }
-    }
-
+    /// <summary>
+    /// Prompt that supports management of auth tokens for various service providers.
+    /// </summary>
     public class OAuthPrompt : Control, IDialog, IDialogContinue
     {
-        private prompts.OAuthPrompt _prompt;
+        private Prompts.OAuthPrompt _prompt;
         private OAuthPromptSettingsWithTimeout _settings;
+
+        // Default prompt timeout of 15 minutes (in ms)
+        private const int DefaultPromptTimeout = 54000000;
 
         public OAuthPrompt(OAuthPromptSettingsWithTimeout settings, PromptValidator<TokenResult> validator = null)
         {
-            _settings = settings ?? throw new ArgumentException(nameof(settings));
-            _prompt = new prompts.OAuthPrompt(settings, validator);
+            _settings = settings ?? throw new ArgumentNullException(nameof(settings));
+            _prompt = new Prompts.OAuthPrompt(settings, validator);
         }
 
         public async Task DialogBegin(DialogContext dc, object dialogArgs = null)
         {
             if (dc == null)
                 throw new ArgumentNullException(nameof(dc));
-            if (dialogArgs == null)
-                throw new ArgumentNullException(nameof(dialogArgs));
 
-            var promptOptions = (PromptOptions)dialogArgs;
+            PromptOptions promptOptions = null;
+            if (dialogArgs != null)
+            {
+                if (dialogArgs is PromptOptions)
+                    promptOptions = dialogArgs as PromptOptions;
+                else
+                    throw new ArgumentException(nameof(dialogArgs));
+            }
 
             //persist options and state
-            var timeout = _settings.Timeout.HasValue ? _settings.Timeout.Value : 54000000;
+            var timeout = _settings.Timeout.HasValue ? _settings.Timeout.Value : DefaultPromptTimeout;
             var instance = dc.Instance;
-            instance.State = new OAuthPromptState(promptOptions);
+            instance.State = new OAuthPromptOptions(promptOptions);
 
-            var tokenResult = await _prompt.GetUserToken(dc.Context);
+            var tokenResult = await _prompt.GetUserToken(dc.Context).ConfigureAwait(false);
 
             if (tokenResult != null && tokenResult.Value != null)
             {
-                await dc.End(tokenResult);
+                // end the prompt, since a token is available.
+                await dc.End(tokenResult).ConfigureAwait(false);
             }
             else if (!string.IsNullOrEmpty(promptOptions.PromptString))
             {
-                await _prompt.Prompt(dc.Context, promptOptions.PromptString, promptOptions.Speak);
+                // if no token is avaialable, display an oauth/signin card for the user to enter credentials.
+                await _prompt.Prompt(dc.Context, promptOptions.PromptString, promptOptions.Speak).ConfigureAwait(false);
             }
             else if (promptOptions.PromptActivity != null)
             {
-                await _prompt.Prompt(dc.Context, promptOptions.PromptActivity);
+                // if the bot developer has supplied an activity to show the user for signin, use that.
+                await _prompt.Prompt(dc.Context, promptOptions.PromptActivity).ConfigureAwait(false);
+            }
+            else
+            {
+                // no suitable promptactivity or message provided. Hence ignoring this prompt.
             }
         }
 
@@ -76,19 +73,21 @@ namespace Microsoft.Bot.Builder.Dialogs
             if (dc == null)
                 throw new ArgumentNullException(nameof(dc));
             //Recognize token
-            var tokenResult = await _prompt.Recognize(dc.Context);
+            var tokenResult = await _prompt.Recognize(dc.Context).ConfigureAwait(false);
             //Check for timeout
-            var state = dc.Instance.State as OAuthPromptState;
+            var state = dc.Instance.State as OAuthPromptOptions;
             var isMessage = dc.Context.Activity.Type == ActivityTypes.Message;
             var hasTimedOut = isMessage && (DateTime.Compare(DateTime.Now, state.Expires) > 0);
 
             if (tokenResult == null || hasTimedOut)
             {
-                await dc.End(tokenResult);
+                // if the token fetch request timeouts or doesn't return a token, complete the prompt with no result.
+                await dc.End(tokenResult).ConfigureAwait(false);
             }
             else if (isMessage && !string.IsNullOrEmpty(state.RetryPromptString))
             {
-                await dc.Context.SendActivity(state.RetryPromptString, state.RetrySpeak);
+                // if this is a retry, then retry getting user credentials by resending the activity.
+                await dc.Context.SendActivity(state.RetryPromptString, state.RetrySpeak).ConfigureAwait(false);
             }
         }
     }

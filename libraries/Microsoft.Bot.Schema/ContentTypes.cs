@@ -61,6 +61,7 @@ namespace Microsoft.Bot.Schema
 
     /// <summary>
     /// OAuthCard ContentType value
+    /// </summary>
     public partial class OAuthCard
     {
         public const string ContentType = "application/vnd.microsoft.card.oauth";

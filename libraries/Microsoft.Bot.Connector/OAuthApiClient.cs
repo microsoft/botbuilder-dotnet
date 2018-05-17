@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
@@ -12,102 +15,117 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Connector
 {
+    /// <summary>
+    /// Service client to handle requests to the botframework api service.
+    /// </summary>
     public class OAuthClient : ServiceClient<OAuthClient>
     {
-        private ConnectorClient client;
-        private string uri;
+        private readonly ConnectorClient client;
+        private readonly string uri;
 
 
         public OAuthClient(ConnectorClient client, string uri)
         {
-            this.client = client;
+            Uri uriResult;
+            if (!(Uri.TryCreate(uri, UriKind.Absolute, out uriResult) && uriResult.Scheme == Uri.UriSchemeHttps))
+                throw new InvalidOperationException("Please supply a valid https uri");
+            this.client = client ?? throw new ArgumentNullException(nameof(client));
             this.uri = uri;
         }
 
+        /// <summary>
+        /// Get User Token for given user and connection.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="connectionName"></param>
+        /// <param name="magicCode"></param>
+        /// <param name="customHeaders"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         public async Task<TokenResponse> GetUserTokenAsync(string userId, string connectionName, string magicCode, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (connectionName == null)
+            if (string.IsNullOrEmpty(userId))
             {
-                throw new ValidationException(ValidationRules.CannotBeNull, "connectionName");
+                throw new ArgumentNullException(nameof(userId));
             }
-            if (userId == null)
+            if (string.IsNullOrEmpty(connectionName))
             {
-                throw new ValidationException(ValidationRules.CannotBeNull, "userId");
+                throw new ArgumentNullException(nameof(connectionName));
             }
 
             // Tracing
-            bool _shouldTrace = ServiceClientTracing.IsEnabled;
-            string _invocationId = null;
-            if (_shouldTrace)
+            bool shouldTrace = ServiceClientTracing.IsEnabled;
+            string invocationId = null;
+            if (shouldTrace)
             {
-                _invocationId = ServiceClientTracing.NextInvocationId.ToString();
+                invocationId = ServiceClientTracing.NextInvocationId.ToString();
                 Dictionary<string, object> tracingParameters = new Dictionary<string, object>();
                 tracingParameters.Add("userId", userId);
                 tracingParameters.Add("connectionName", connectionName);
                 tracingParameters.Add("magicCode", magicCode);
                 tracingParameters.Add("cancellationToken", cancellationToken);
-                ServiceClientTracing.Enter(_invocationId, this, "GetUserTokenAsync", tracingParameters);
+                ServiceClientTracing.Enter(invocationId, this, "GetUserTokenAsync", tracingParameters);
             }
             // Construct URL
-            var _url = new Uri(new System.Uri(uri + (uri.EndsWith("/") ? "" : "/")), "api/usertoken/GetToken?userId={userId}&connectionName={connectionName}{magicCodeParam}").ToString();
-            _url = _url.Replace("{connectionName}", System.Uri.EscapeDataString(connectionName));
-            _url = _url.Replace("{userId}", System.Uri.EscapeDataString(userId));
+            var tokenUrl = new Uri(new Uri(uri + (uri.EndsWith("/") ? "" : "/")), "api/usertoken/GetToken?userId={userId}&connectionName={connectionName}{magicCodeParam}").ToString();
+            tokenUrl = tokenUrl.Replace("{connectionName}", Uri.EscapeDataString(connectionName));
+            tokenUrl = tokenUrl.Replace("{userId}", Uri.EscapeDataString(userId));
             if (!string.IsNullOrEmpty(magicCode))
             {
-                _url = _url.Replace("{magicCodeParam}", $"&code={System.Uri.EscapeDataString(magicCode)}");
+                tokenUrl = tokenUrl.Replace("{magicCodeParam}", $"&code={Uri.EscapeDataString(magicCode)}");
             }
             else
             {
-                _url = _url.Replace("{magicCodeParam}", String.Empty);
+                tokenUrl = tokenUrl.Replace("{magicCodeParam}", String.Empty);
             }
 
             // Create HTTP transport objects
-            var _httpRequest = new HttpRequestMessage();
-            HttpResponseMessage _httpResponse = null;
-            _httpRequest.Method = new HttpMethod("GET");
-            _httpRequest.RequestUri = new System.Uri(_url);
+            var httpRequest = new HttpRequestMessage();
+            HttpResponseMessage httpResponse = null;
+            httpRequest.Method = new HttpMethod("GET");
+            httpRequest.RequestUri = new Uri(tokenUrl);
 
-            MicrosoftAppCredentials.TrustServiceUrl(_url);
+            // add botframework api service url to the list of trusted service url's for these app credentials.
+            MicrosoftAppCredentials.TrustServiceUrl(tokenUrl);
 
             // Set Credentials
             if (client.Credentials != null)
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                await client.Credentials.ProcessHttpRequestAsync(_httpRequest, cancellationToken).ConfigureAwait(false);
+                await client.Credentials.ProcessHttpRequestAsync(httpRequest, cancellationToken).ConfigureAwait(false);
             }
             cancellationToken.ThrowIfCancellationRequested();
 
-            if (_shouldTrace)
+            if (shouldTrace)
             {
-                ServiceClientTracing.SendRequest(_invocationId, _httpRequest);
+                ServiceClientTracing.SendRequest(invocationId, httpRequest);
             }
-            _httpResponse = await client.HttpClient.SendAsync(_httpRequest, cancellationToken).ConfigureAwait(false);
-            if (_shouldTrace)
+            httpResponse = await client.HttpClient.SendAsync(httpRequest, cancellationToken).ConfigureAwait(false);
+            if (shouldTrace)
             {
-                ServiceClientTracing.ReceiveResponse(_invocationId, _httpResponse);
+                ServiceClientTracing.ReceiveResponse(invocationId, httpResponse);
             }
-            HttpStatusCode _statusCode = _httpResponse.StatusCode;
+            HttpStatusCode statusCode = httpResponse.StatusCode;
             cancellationToken.ThrowIfCancellationRequested();
-            string _responseContent = null;
-            if (_statusCode == HttpStatusCode.OK)
+            if (statusCode == HttpStatusCode.OK)
             {
-                _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                string responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                 try
                 {
-                    var tokenResponse = Rest.Serialization.SafeJsonConvert.DeserializeObject<TokenResponse>(_responseContent);
+                    var tokenResponse = Rest.Serialization.SafeJsonConvert.DeserializeObject<TokenResponse>(responseContent);
                     return tokenResponse;
                 }
                 catch (JsonException)
                 {
-                    _httpRequest.Dispose();
-                    if (_httpResponse != null)
+                    httpRequest.Dispose();
+                    if (httpResponse != null)
                     {
-                        _httpResponse.Dispose();
+                        httpResponse.Dispose();
                     }
                     return null;
                 }
             }
-            else if (_statusCode == HttpStatusCode.NotFound)
+            else if (statusCode == HttpStatusCode.NotFound)
             {
                 return null;
             }
@@ -116,62 +134,70 @@ namespace Microsoft.Bot.Connector
                 return null;
             }
         }
-
+        
+        /// <summary>
+        /// Signs Out the User for the given ConnectionName.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="connectionName"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         public async Task<bool> SignOutUserAsync(string userId, string connectionName, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (connectionName == null)
+            if (string.IsNullOrEmpty(userId))
             {
-                throw new ValidationException(ValidationRules.CannotBeNull, "connectionName");
+                throw new ArgumentNullException(nameof(userId));
             }
-            if (userId == null)
+            if (string.IsNullOrEmpty(connectionName))
             {
-                throw new ValidationException(ValidationRules.CannotBeNull, "userId");
+                throw new ArgumentNullException(nameof(connectionName));
             }
 
-            bool _shouldTrace = ServiceClientTracing.IsEnabled;
-            string _invocationId = null;
-            if (_shouldTrace)
+            bool shouldTrace = ServiceClientTracing.IsEnabled;
+            string invocationId = null;
+            if (shouldTrace)
             {
-                _invocationId = ServiceClientTracing.NextInvocationId.ToString();
+                invocationId = ServiceClientTracing.NextInvocationId.ToString();
                 Dictionary<string, object> tracingParameters = new Dictionary<string, object>();
                 tracingParameters.Add("userId", userId);
                 tracingParameters.Add("connectionName", connectionName);
                 tracingParameters.Add("cancellationToken", cancellationToken);
-                ServiceClientTracing.Enter(_invocationId, this, "SignOutUserAsync", tracingParameters);
+                ServiceClientTracing.Enter(invocationId, this, "SignOutUserAsync", tracingParameters);
             }
 
             // Construct URL
-            var _url = new System.Uri(new System.Uri(uri + (uri.EndsWith("/") ? "" : "/")), "api/usertoken/SignOut?&userId={userId}&connectionName={connectionName}").ToString();
-            _url = _url.Replace("{connectionName}", System.Uri.EscapeDataString(connectionName));
-            _url = _url.Replace("{userId}", System.Uri.EscapeDataString(userId));
+            var tokenUrl = new Uri(new Uri(uri + (uri.EndsWith("/") ? "" : "/")), "api/usertoken/SignOut?&userId={userId}&connectionName={connectionName}").ToString();
+            tokenUrl = tokenUrl.Replace("{connectionName}", Uri.EscapeDataString(connectionName));
+            tokenUrl = tokenUrl.Replace("{userId}", Uri.EscapeDataString(userId));
 
-            MicrosoftAppCredentials.TrustServiceUrl(_url);
+            // add botframework api service url to the list of trusted service url's for these app credentials.
+            MicrosoftAppCredentials.TrustServiceUrl(tokenUrl);
 
             // Create HTTP transport objects
-            var _httpRequest = new HttpRequestMessage();
-            HttpResponseMessage _httpResponse = null;
-            _httpRequest.Method = new HttpMethod("DELETE");
-            _httpRequest.RequestUri = new System.Uri(_url);
+            var httpRequest = new HttpRequestMessage();
+            HttpResponseMessage httpResponse = null;
+            httpRequest.Method = new HttpMethod("DELETE");
+            httpRequest.RequestUri = new Uri(tokenUrl);
 
             // Set Credentials
             if (client.Credentials != null)
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                await client.Credentials.ProcessHttpRequestAsync(_httpRequest, cancellationToken).ConfigureAwait(false);
+                await client.Credentials.ProcessHttpRequestAsync(httpRequest, cancellationToken).ConfigureAwait(false);
             }
             cancellationToken.ThrowIfCancellationRequested();
 
-            if (_shouldTrace)
+            if (shouldTrace)
             {
-                ServiceClientTracing.SendRequest(_invocationId, _httpRequest);
+                ServiceClientTracing.SendRequest(invocationId, httpRequest);
             }
-            _httpResponse = await client.HttpClient.SendAsync(_httpRequest, cancellationToken).ConfigureAwait(false);
-            if (_shouldTrace)
+            httpResponse = await client.HttpClient.SendAsync(httpRequest, cancellationToken).ConfigureAwait(false);
+            if (shouldTrace)
             {
-                ServiceClientTracing.ReceiveResponse(_invocationId, _httpResponse);
+                ServiceClientTracing.ReceiveResponse(invocationId, httpResponse);
             }
 
-            HttpStatusCode _statusCode = _httpResponse.StatusCode;
+            HttpStatusCode _statusCode = httpResponse.StatusCode;
             cancellationToken.ThrowIfCancellationRequested();
             if (_statusCode == HttpStatusCode.OK)
             {
@@ -182,28 +208,35 @@ namespace Microsoft.Bot.Connector
                 return false;
             }
         }
-
+        
+        /// <summary>
+        /// Gets the Link to be sent to the user for signin into the given ConnectionName
+        /// </summary>
+        /// <param name="activity"></param>
+        /// <param name="connectionName"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         public async Task<string> GetSignInLinkAsync(IActivity activity, string connectionName, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (connectionName == null)
+            if (string.IsNullOrEmpty(connectionName))
             {
-                throw new ValidationException(ValidationRules.CannotBeNull, "connectionName");
+                throw new ArgumentNullException(nameof(connectionName));
             }
             if (activity == null)
             {
-                throw new ValidationException(ValidationRules.CannotBeNull, "activity");
+                throw new ArgumentNullException(nameof(activity));
             }
 
-            bool _shouldTrace = ServiceClientTracing.IsEnabled;
-            string _invocationId = null;
-            if (_shouldTrace)
+            bool shouldTrace = ServiceClientTracing.IsEnabled;
+            string invocationId = null;
+            if (shouldTrace)
             {
-                _invocationId = ServiceClientTracing.NextInvocationId.ToString();
+                invocationId = ServiceClientTracing.NextInvocationId.ToString();
                 Dictionary<string, object> tracingParameters = new Dictionary<string, object>();
                 tracingParameters.Add("activity", activity);
                 tracingParameters.Add("connectionName", connectionName);
                 tracingParameters.Add("cancellationToken", cancellationToken);
-                ServiceClientTracing.Enter(_invocationId, this, "GetSignInLinkAsync", tracingParameters);
+                ServiceClientTracing.Enter(invocationId, this, "GetSignInLinkAsync", tracingParameters);
             }
 
             var tokenExchangeState = new TokenExchangeState()
@@ -226,84 +259,91 @@ namespace Microsoft.Bot.Connector
             var finalState = Convert.ToBase64String(encodedState);
 
             // Construct URL
-            var _url = new System.Uri(new System.Uri(uri + (uri.EndsWith("/") ? "" : "/")), "api/botsignin/getsigninurl?&state={state}").ToString();
-            _url = _url.Replace("{state}", finalState);
+            var tokenUrl = new Uri(new Uri(uri + (uri.EndsWith("/") ? "" : "/")), "api/botsignin/getsigninurl?&state={state}").ToString();
+            tokenUrl = tokenUrl.Replace("{state}", finalState);
 
-            MicrosoftAppCredentials.TrustServiceUrl(_url);
+            // add botframework api service url to the list of trusted service url's for these app credentials.
+            MicrosoftAppCredentials.TrustServiceUrl(tokenUrl);
 
             // Create HTTP transport objects
-            var _httpRequest = new HttpRequestMessage();
-            HttpResponseMessage _httpResponse = null;
-            _httpRequest.Method = new HttpMethod("GET");
-            _httpRequest.RequestUri = new System.Uri(_url);
+            var httpRequest = new HttpRequestMessage();
+            HttpResponseMessage httpResponse = null;
+            httpRequest.Method = new HttpMethod("GET");
+            httpRequest.RequestUri = new Uri(tokenUrl);
 
             // Set Credentials
             if (client.Credentials != null)
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                await client.Credentials.ProcessHttpRequestAsync(_httpRequest, cancellationToken).ConfigureAwait(false);
+                await client.Credentials.ProcessHttpRequestAsync(httpRequest, cancellationToken).ConfigureAwait(false);
             }
             cancellationToken.ThrowIfCancellationRequested();
 
-            if (_shouldTrace)
+            if (shouldTrace)
             {
-                ServiceClientTracing.SendRequest(_invocationId, _httpRequest);
+                ServiceClientTracing.SendRequest(invocationId, httpRequest);
             }
-            _httpResponse = await client.HttpClient.SendAsync(_httpRequest, cancellationToken).ConfigureAwait(false);
-            if (_shouldTrace)
+            httpResponse = await client.HttpClient.SendAsync(httpRequest, cancellationToken).ConfigureAwait(false);
+            if (shouldTrace)
             {
-                ServiceClientTracing.ReceiveResponse(_invocationId, _httpResponse);
+                ServiceClientTracing.ReceiveResponse(invocationId, httpResponse);
             }
 
-            HttpStatusCode _statusCode = _httpResponse.StatusCode;
+            HttpStatusCode statusCode = httpResponse.StatusCode;
             cancellationToken.ThrowIfCancellationRequested();
-            if (_statusCode == HttpStatusCode.OK)
+            if (statusCode == HttpStatusCode.OK)
             {
-                var link = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                var link = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                 return link;
             }
             return String.Empty;
         }
 
+        /// <summary>
+        /// Send a dummy OAuth card when the bot is being used on the emulator for testing without fetching a real token.
+        /// </summary>
+        /// <param name="emulateOAuthCards"></param>
+        /// <returns></returns>
         public async Task SendEmulateOAuthCardsAsync(bool emulateOAuthCards)
         {
-            bool _shouldTrace = ServiceClientTracing.IsEnabled;
-            string _invocationId = null;
-            if (_shouldTrace)
+            bool shouldTrace = ServiceClientTracing.IsEnabled;
+            string invocationId = null;
+            if (shouldTrace)
             {
-                _invocationId = ServiceClientTracing.NextInvocationId.ToString();
+                invocationId = ServiceClientTracing.NextInvocationId.ToString();
                 Dictionary<string, object> tracingParameters = new Dictionary<string, object>();
                 tracingParameters.Add("emulateOAuthCards", emulateOAuthCards);
-                ServiceClientTracing.Enter(_invocationId, this, "SendEmulateOAuthCards", tracingParameters);
+                ServiceClientTracing.Enter(invocationId, this, "SendEmulateOAuthCards", tracingParameters);
             }
 
             var cancellationToken = default(CancellationToken);
             // Construct URL
-            var _url = new System.Uri(new System.Uri(uri + (uri.EndsWith("/") ? "" : "/")), "api/usertoken/emulateOAuthCards?emulate={emulate}").ToString();
-            _url = _url.Replace("{emulate}", emulateOAuthCards.ToString());
+            var tokenUrl = new Uri(new Uri(uri + (uri.EndsWith("/") ? "" : "/")), "api/usertoken/emulateOAuthCards?emulate={emulate}").ToString();
+            tokenUrl = tokenUrl.Replace("{emulate}", emulateOAuthCards.ToString());
 
             // Create HTTP transport objects
-            var _httpRequest = new HttpRequestMessage();
-            HttpResponseMessage _httpResponse = null;
-            _httpRequest.Method = new HttpMethod("POST");
-            _httpRequest.RequestUri = new System.Uri(_url);
-
-            MicrosoftAppCredentials.TrustServiceUrl(_url);
+            var httpRequest = new HttpRequestMessage();
+            HttpResponseMessage httpResponse = null;
+            httpRequest.Method = new HttpMethod("POST");
+            httpRequest.RequestUri = new Uri(tokenUrl);
+            
+            // add botframework api service url to the list of trusted service url's for these app credentials.
+            MicrosoftAppCredentials.TrustServiceUrl(tokenUrl);
 
             // Set Credentials
             if (client.Credentials != null)
             {
-                await client.Credentials.ProcessHttpRequestAsync(_httpRequest, cancellationToken).ConfigureAwait(false);
+                await client.Credentials.ProcessHttpRequestAsync(httpRequest, cancellationToken).ConfigureAwait(false);
             }
 
-            if (_shouldTrace)
+            if (shouldTrace)
             {
-                ServiceClientTracing.SendRequest(_invocationId, _httpRequest);
+                ServiceClientTracing.SendRequest(invocationId, httpRequest);
             }
-            _httpResponse = await client.HttpClient.SendAsync(_httpRequest, cancellationToken).ConfigureAwait(false);
-            if (_shouldTrace)
+            httpResponse = await client.HttpClient.SendAsync(httpRequest, cancellationToken).ConfigureAwait(false);
+            if (shouldTrace)
             {
-                ServiceClientTracing.ReceiveResponse(_invocationId, _httpResponse);
+                ServiceClientTracing.ReceiveResponse(invocationId, httpResponse);
             }
         }
     }
