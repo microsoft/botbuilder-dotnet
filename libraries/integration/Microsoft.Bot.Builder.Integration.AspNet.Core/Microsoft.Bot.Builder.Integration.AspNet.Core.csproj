@@ -68,11 +68,5 @@
 		<ProjectReference Include="..\..\Microsoft.Bot.Builder\Microsoft.Bot.Builder.csproj" />
 		<ProjectReference Include="..\..\Microsoft.Bot.Connector\Microsoft.Bot.Connector.csproj" />
 	</ItemGroup>
-
-  <ItemGroup>
-    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
-      <_Parameter1>Microsoft.Bot.Builder.Integration.AspNet.Core.Tests</_Parameter1>
-    </AssemblyAttribute>
-  </ItemGroup>
   
 </Project>
