@@ -445,7 +445,7 @@ namespace Microsoft.Bot.Builder.Adapters
 
         /// <summary>
         /// Shorcut to test a conversation for .Send(user).AssertReply(bot)
-        /// Each activity with From.Role equals to "bot" will be processed with AssertReply mthod
+        /// Each activity with From.Role equals to "bot" will be processed with AssertReply method
         /// Every other activity will be processed as User's message with Send method
         /// </summary>
         /// <param name="activities">List of activities to test</param>
@@ -476,7 +476,7 @@ namespace Microsoft.Bot.Builder.Adapters
 
         /// <summary>
         /// Shorcut to test a conversation for .Send(user).AssertReply(bot)
-        /// Each activity with From.Role equals to "bot" will be processed with AssertReply mthod
+        /// Each activity with From.Role equals to "bot" will be processed with AssertReply method
         /// Every other activity will be processed as User's message with Send method
         /// </summary>
         /// <param name="activities">List of activities to test</param>
