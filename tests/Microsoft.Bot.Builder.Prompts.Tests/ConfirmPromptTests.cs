@@ -4,7 +4,7 @@
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Core.Extensions;
-using Microsoft.Bot.Schema;
+using Microsoft.Bot.Builder.Core.Extensions.Tests;
 using Microsoft.Recognizers.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -15,51 +15,50 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
     [TestCategory("Confirm Prompts")]
     public class ConfirmPromptTests
     {
+        public TestContext TestContext { get; set; }
+
         [TestMethod]
         public async Task ConfirmPrompt_Test()
         {
+            var activities = TranscriptUtilities.GetFromTestContext(TestContext);
+
             TestAdapter adapter = new TestAdapter()
                 .Use(new ConversationState<TestState>(new MemoryStorage()));
 
-            await new TestFlow(adapter, async (context) =>
+            var flow = new TestFlow(adapter, async (context) =>
+            {
+                var state = ConversationState<TestState>.Get(context);
+                var testPrompt = new ConfirmPrompt(Culture.English);
+                if (!state.InPrompt)
                 {
-                    var state = ConversationState<TestState>.Get(context);
-                    var testPrompt = new ConfirmPrompt(Culture.English);
-                    if (!state.InPrompt)
+                    state.InPrompt = true;
+                    await testPrompt.Prompt(context, "Gimme:");
+                }
+                else
+                {
+                    var confirmResult = await testPrompt.Recognize(context);
+                    if (confirmResult.Succeeded())
                     {
-                        state.InPrompt = true;
-                        await testPrompt.Prompt(context, "Gimme:");
+                        Assert.IsNotNull(confirmResult.Text);
+                        await context.SendActivity($"{confirmResult.Confirmation}");
                     }
                     else
-                    {
-                        var confirmResult = await testPrompt.Recognize(context);
-                        if (confirmResult.Succeeded())
-                        {
-                            Assert.IsNotNull(confirmResult.Text);
-                            await context.SendActivity($"{confirmResult.Confirmation}");
-                        }
-                        else
-                            await context.SendActivity(confirmResult.Status.ToString());
-                    }
-                })
-                .Send("hello")
-                .AssertReply("Gimme:")
-                .Send("tyest tnot")
-                    .AssertReply(PromptStatus.NotRecognized.ToString())
-                .Send(".. yes please ")
-                    .AssertReply("True")
-                .Send(".. no thank you")
-                    .AssertReply("False")
-                .StartTest();
+                        await context.SendActivity(confirmResult.Status.ToString());
+                }
+            });
+
+            await flow.Test(activities).StartTest();
         }
 
         [TestMethod]
         public async Task ConfirmPrompt_Validator()
         {
+            var activities = TranscriptUtilities.GetFromTestContext(TestContext);
+
             TestAdapter adapter = new TestAdapter()
                 .Use(new ConversationState<TestState>(new MemoryStorage()));
 
-            await new TestFlow(adapter, async (context) =>
+            var flow = new TestFlow(adapter, async (context) =>
             {
                 var state = ConversationState<TestState>.Get(context);
                 var confirmPrompt = new ConfirmPrompt(Culture.English, async (ctx, result) =>
@@ -81,18 +80,9 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                     else
                         await context.SendActivity(confirmResult.Status.ToString());
                 }
-            })
-                .Send("hello")
-                .AssertReply("Gimme:")
-                .Send(" yes you xxx")
-                    .AssertReply(PromptStatus.NotRecognized.ToString())
-                .Send(" no way you xxx")
-                    .AssertReply(PromptStatus.NotRecognized.ToString())
-                .Send(" yep")
-                    .AssertReply("True")
-                .Send(" nope")
-                    .AssertReply("False")
-                .StartTest();
+            });
+
+            await flow.Test(activities).StartTest();
         }
 
     }

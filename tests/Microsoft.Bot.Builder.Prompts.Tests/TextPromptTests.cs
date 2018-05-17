@@ -4,7 +4,7 @@
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Core.Extensions;
-using Microsoft.Bot.Schema;
+using Microsoft.Bot.Builder.Core.Extensions.Tests;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Bot.Builder.Prompts.Tests
@@ -14,45 +14,45 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
     [TestCategory("Text Prompts")]
     public class TextPromptTests
     {
+        public TestContext TestContext { get; set; }
+
         [TestMethod]
         public async Task SimpleRecognize()
         {
+            var activities = TranscriptUtilities.GetFromTestContext(TestContext);
+
             TestAdapter adapter = new TestAdapter()
                 .Use(new ConversationState<PromptState>(new MemoryStorage()));
 
-            await new TestFlow(adapter, MyTestPrompt)
-                .Send("hello")
-                .AssertReply("Your Name:")
-                .Send("test test test")
-                .AssertReply("test test test")                
-                .StartTest();
+            var flow = new TestFlow(adapter, MyTestPrompt);
+
+            await flow.Test(activities).StartTest();
         }
 
         [TestMethod]
         public async Task MinLenghtViaCustomValidator_Fail()
         {
+            var activities = TranscriptUtilities.GetFromTestContext(TestContext);
+
             TestAdapter adapter = new TestAdapter()
                 .Use(new ConversationState<PromptState>(new MemoryStorage()));
 
-            await new TestFlow(adapter, LengthCheckPromptTest)
-                .Send("hello")
-                .AssertReply("Your Name:")
-                .Send("1")
-                .AssertReply(PromptStatus.TooSmall.ToString())                
-                .StartTest();
+            var flow = new TestFlow(adapter, LengthCheckPromptTest);
+
+            await flow.Test(activities).StartTest();
         }
+
         [TestMethod]
         public async Task MinLenghtViaCustomValidator_Pass()
         {
+            var activities = TranscriptUtilities.GetFromTestContext(TestContext);
+
             TestAdapter adapter = new TestAdapter()
                 .Use(new ConversationState<PromptState>(new MemoryStorage()));
 
-            await new TestFlow(adapter, LengthCheckPromptTest)
-                .Send("hello")
-                .AssertReply("Your Name:")
-                .Send("123456")
-                .AssertReply("123456")
-                .StartTest();
+            var flow = new TestFlow(adapter, LengthCheckPromptTest);
+
+            await flow.Test(activities).StartTest();
         }
 
 

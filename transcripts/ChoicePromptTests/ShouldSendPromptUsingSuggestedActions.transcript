@@ -1,0 +1,61 @@
+[
+  {
+    "conversation": {
+      "id": "1"
+    },
+    "id": "87f627d3-e977-4545-aab0-c13c5a804840",
+    "recipient": {
+      "id": "4b3fc425-bcda-3136-9116-f4c6a7adcfa7",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "from": {
+      "id": "6551cb5d-0c62-3885-b3f6-aa4cc3780576",
+      "name": "User",
+      "role": "user"
+    },
+    "text": "hello",
+    "timestamp": "2018-05-17T18:32:13.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "1"
+    },
+    "id": "8f7ad887-8e31-485a-8f14-cf41a8e5fc81",
+    "recipient": {
+      "id": "6551cb5d-0c62-3885-b3f6-aa4cc3780576",
+      "name": "User",
+      "role": "user"
+    },
+    "from": {
+      "id": "4b3fc425-bcda-3136-9116-f4c6a7adcfa7",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "text": "favorite color?",
+    "suggestedActions": {
+      "actions": [
+        {
+          "type": "imBack",
+          "value": "red",
+          "title": "red"
+        },
+        {
+          "type": "imBack",
+          "value": "green",
+          "title": "green"
+        },
+        {
+          "type": "imBack",
+          "value": "blue",
+          "title": "blue"
+        }
+      ]
+    },
+    "timestamp": "2018-05-17T18:32:15.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  }
+]

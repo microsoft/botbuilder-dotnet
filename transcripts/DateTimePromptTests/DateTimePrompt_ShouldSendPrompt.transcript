@@ -1,0 +1,42 @@
+[
+  {
+    "conversation": {
+      "id": "1"
+    },
+    "id": "1e4032d9-b44a-408e-ad1d-bd4f26478678",
+    "recipient": {
+      "id": "c05a53dd-3422-3f2b-a948-89f12a845c62",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "from": {
+      "id": "d61ef8ec-d580-3ca4-a74e-0c81cf2958b3",
+      "name": "User",
+      "role": "user"
+    },
+    "text": "hello",
+    "timestamp": "2018-05-17T19:15:41.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "1"
+    },
+    "id": "d18b6732-ed21-47d1-b3ec-0b87e885d72e",
+    "recipient": {
+      "id": "d61ef8ec-d580-3ca4-a74e-0c81cf2958b3",
+      "name": "User",
+      "role": "user"
+    },
+    "from": {
+      "id": "c05a53dd-3422-3f2b-a948-89f12a845c62",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "text": "What date would you like?",
+    "timestamp": "2018-05-17T19:15:43.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  }
+]
