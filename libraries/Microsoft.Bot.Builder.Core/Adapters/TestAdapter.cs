@@ -457,9 +457,21 @@ namespace Microsoft.Bot.Builder.Adapters
             if (activities == null)
                 throw new ArgumentNullException(nameof(activities));
 
-            bool IsReply(IActivity activity) => string.Equals("bot", activity.From?.Role, StringComparison.InvariantCultureIgnoreCase);
+            var flow = new TestFlow(Task.CompletedTask, this);
 
-            return activities.Aggregate(this, (flow, activity) => IsReply(activity) ? flow.AssertReply(activity, description, timeout) : flow.Send(activity));
+            foreach (var expected in activities)
+            {
+                if (IsReply(expected))
+                {
+                    flow = flow.AssertReply(expected, description, timeout);
+                }
+                else
+                {
+                    flow = flow.Send(expected);
+                }
+            }
+
+            return flow;
         }
 
         /// <summary>
@@ -477,12 +489,28 @@ namespace Microsoft.Bot.Builder.Adapters
             if (activities == null)
                 throw new ArgumentNullException(nameof(activities));
 
-            bool IsReply(IActivity activity) => string.Equals("bot", activity.From?.Role, StringComparison.InvariantCultureIgnoreCase);
+            var flow = new TestFlow(Task.CompletedTask, this);
 
-            TestFlow AssertReply(TestFlow flow, IActivity expected) => flow.AssertReply((actual) => validateReply(expected, actual));
+            foreach (var expected in activities)
+            {
+                if (IsReply(expected))
+                {
+                    flow = flow.AssertReply((actual) => validateReply(expected, actual), description, timeout);
+                }
+                else
+                {
+                    flow = flow.Send(expected);
+                }
+            }
 
-            return activities.Aggregate(this, (flow, activity) => IsReply(activity) ? AssertReply(flow, activity) : flow.Send(activity));
+            return flow;
         }
+
+        private bool IsReply(IActivity activity)
+        {
+            return string.Equals("bot", activity.From?.Role, StringComparison.InvariantCultureIgnoreCase);
+        }
+
 
         /// <summary>
         /// Assert that reply is one of the candidate responses
