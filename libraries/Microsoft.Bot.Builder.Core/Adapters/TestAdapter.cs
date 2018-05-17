@@ -457,21 +457,13 @@ namespace Microsoft.Bot.Builder.Adapters
             if (activities == null)
                 throw new ArgumentNullException(nameof(activities));
 
-            var flow = new TestFlow(Task.CompletedTask, this);
-
-            foreach (var expected in activities)
-            {
-                if (IsReply(expected))
-                {
-                    flow = flow.AssertReply(expected, description, timeout);
-                }
-                else
-                {
-                    flow = flow.Send(expected);
-                }
-            }
-
-            return flow;
+            // Chain all activities in a TestFlow, check if its a user message (send) or a bot reply (assert)
+            return activities.Aggregate(this, (flow, activity) => {
+                return IsReply(activity)
+                    ? flow.AssertReply(activity, description, timeout)
+                    : flow.Send(activity);
+            });
+                
         }
 
         /// <summary>
@@ -488,22 +480,18 @@ namespace Microsoft.Bot.Builder.Adapters
         {
             if (activities == null)
                 throw new ArgumentNullException(nameof(activities));
-
-            var flow = new TestFlow(Task.CompletedTask, this);
-
-            foreach (var expected in activities)
-            {
-                if (IsReply(expected))
+            
+            // Chain all activities in a TestFlow, check if its a user message (send) or a bot reply (assert)
+            return activities.Aggregate(this, (flow, activity) => {
+                if (IsReply(activity))
                 {
-                    flow = flow.AssertReply((actual) => validateReply(expected, actual), description, timeout);
+                    return flow.AssertReply((actual) => validateReply(activity, actual), description, timeout);
                 }
                 else
                 {
-                    flow = flow.Send(expected);
-                }
-            }
-
-            return flow;
+                    return flow.Send(activity);
+                };
+            });
         }
 
         private bool IsReply(IActivity activity)
