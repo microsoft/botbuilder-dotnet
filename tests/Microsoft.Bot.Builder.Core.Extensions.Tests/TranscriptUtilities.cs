@@ -19,6 +19,11 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
             var directory = Path.Combine(transcriptsRootFolder, context.FullyQualifiedTestClassName.Split('.').Last());
             var fileName = $"{context.TestName}.transcript";
             var path = Path.Combine(directory, fileName);
+            if (!File.Exists(path))
+            {
+                Assert.Fail($"Required transcript file '{path}' does not exists in '{transcriptsRootFolder}' folder. Review the 'TranscriptsRootFolder' environment variable value.");
+            }
+
             var content = File.ReadAllText(path);
             return JsonConvert.DeserializeObject<Activity[]>(content);
         }
