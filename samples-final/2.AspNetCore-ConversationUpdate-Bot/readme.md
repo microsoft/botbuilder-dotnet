@@ -13,9 +13,23 @@ git clone https://github.com/Microsoft/botbuilder-dotnet.git
 - Hit F5
 
 ### Visual studio code
-- open samples\1.Console-EchoBot-With-State folder
+- open samples\2.AspNetCore-ConversationUpdate-Bot folder
 - Bring up a terminal, navigate to samples\2.AspNetCore-ConversationUpdate-Bot folder
 - type 'dotnet run'
+
+## Testing the bot using Bot Framework Emulator
+[Microsoft Bot Framework Emulator](https://github.com/microsoft/botframework-emulator) is a desktop application that allows bot developers to test and debug their bots on localhost or running remotely through a tunnel.
+
+- Install the Bot Framework emulator from [here](https://github.com/Microsoft/BotFramework-Emulator/releases)
+
+### Connect to bot using Bot Framework Emulator **V4**
+- Launch Bot Framework Emulator
+- File -> Open bot and navigate to samples\2.AspNetCore-ConversationUpdate-Bot folder
+- Select AspNetCore-ConversationUpdate-Bot.bot file
+
+### Connect to bot using Bot Framework Emulator **V3**
+- Launch Bot Framework Emulator
+- Paste this URL in the emulator window - http://localhost:5000/api/messages
 
 # Further reading
 
