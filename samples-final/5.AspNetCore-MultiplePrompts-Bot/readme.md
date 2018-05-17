@@ -15,6 +15,20 @@ git clone https://github.com/Microsoft/botbuilder-dotnet.git
 - Bring up a terminal, navigate to samples\5.AspNetCore-MultiplePrompts-Bot folder
 - type 'dotnet run'
 
+## Testing the bot using Bot Framework Emulator
+[Microsoft Bot Framework Emulator](https://github.com/microsoft/botframework-emulator) is a desktop application that allows bot developers to test and debug their bots on localhost or running remotely through a tunnel.
+
+- Install the Bot Framework emulator from [here](https://github.com/Microsoft/BotFramework-Emulator/releases)
+
+### Connect to bot using Bot Framework Emulator **V4**
+- Launch Bot Framework Emulator
+- File -> Open bot and navigate to samples\5.AspNetCore-MultiplePrompts-Bot folder
+- Select AspNetCore-MultiplePrompts-Bot.bot file
+
+### Connect to bot using Bot Framework Emulator **V3**
+- Launch Bot Framework Emulator
+- Paste this URL in the emulator window - http://localhost:5000/api/messages
+
 # Manage conversation flow with Dialogs
 Managing conversation flow is an essential task in building bots. With the Bot Builder SDK, you can manage conversation flow using dialogs.
 

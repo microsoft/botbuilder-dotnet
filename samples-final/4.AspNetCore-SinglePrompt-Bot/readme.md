@@ -17,6 +17,20 @@ git clone https://github.com/Microsoft/botbuilder-dotnet.git
 - Bring up a terminal, navigate to samples\4.AspNetCore-SinglePrompt-Bot folder
 - type 'dotnet run'
 
+## Testing the bot using Bot Framework Emulator
+[Microsoft Bot Framework Emulator](https://github.com/microsoft/botframework-emulator) is a desktop application that allows bot developers to test and debug their bots on localhost or running remotely through a tunnel.
+
+- Install the Bot Framework emulator from [here](https://github.com/Microsoft/BotFramework-Emulator/releases)
+
+### Connect to bot using Bot Framework Emulator **V4**
+- Launch Bot Framework Emulator
+- File -> Open bot and navigate to samples\4.AspNetCore-SinglePrompt-Bot folder
+- Select AspNetCore-SinglePrompt-Bot.bot file
+
+### Connect to bot using Bot Framework Emulator **V3**
+- Launch Bot Framework Emulator
+- Paste this URL in the emulator window - http://localhost:5000/api/messages
+
 # Prompting for information
 Often times bots gather their information through questions posed to the user. You can simply send the user a standard message by using send activity to ask for a string input, however the Bot Builder SDK provides a prompts library that you can use to ask for different types for information. This topic details how to use prompts library to ask user for input.
 
