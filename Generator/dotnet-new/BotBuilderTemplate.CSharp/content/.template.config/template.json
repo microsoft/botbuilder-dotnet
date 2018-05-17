@@ -1,0 +1,13 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "Microsoft",
+  "classifications": [ "Common", "Web" ],
+  "identity": "BotBuilderTemplate.CSharp",
+  "name": "Bot Builder Template.",
+  "shortName": "botbuilder",
+  "tags": {
+    "language": "C#"                       
+  },
+  "sourceName": "$safeprojectname$",      
+  "preferNameDirectory" : "true"
+}
