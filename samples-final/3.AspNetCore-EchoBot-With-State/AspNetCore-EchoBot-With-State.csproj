@@ -9,7 +9,6 @@
     <PackageReference Include="Microsoft.Bot.Builder.Core" Version="4.0.1-preview" />
     <PackageReference Include="Microsoft.Bot.Builder.Core.Extensions" Version="4.0.1-preview" />
     <PackageReference Include="Microsoft.Bot.Builder.Integration.AspNet.Core" Version="4.0.1-preview" />
-    <PackageReference Include="NuGet.CommandLine" Version="4.6.2" />
   </ItemGroup>
 
 </Project>
