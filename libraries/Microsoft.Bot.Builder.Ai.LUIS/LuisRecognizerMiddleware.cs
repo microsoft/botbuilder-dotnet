@@ -67,18 +67,22 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
             if (context.Activity.Type == ActivityTypes.Message)
             {
                 var utterance = context.Activity.AsMessageActivity().Text;
-                var result = await _luisRecognizer.Recognize(utterance, CancellationToken.None).ConfigureAwait(false);
-                context.Services.Add(LuisRecognizerResultKey, result);
 
-                var traceInfo = new LuisTraceInfo
-                {
-                    RecognizerResult = result,
-                    LuisModel = RemoveSensitiveData(_luisModel),
-                    LuisOptions = _luisOptions,
-                    LuisResult = (LuisResult) result.Properties["luisResult"]
-                };
-                var traceActivity = Activity.CreateTraceActivity("LuisRecognizerMiddleware", LuisTraceType, traceInfo, LuisTraceLabel);
-                await context.SendActivity(traceActivity).ConfigureAwait(false);
+                if (!string.IsNullOrWhiteSpace(utterance))
+                { 
+                    var result = await _luisRecognizer.Recognize(utterance, CancellationToken.None).ConfigureAwait(false);
+                    context.Services.Add(LuisRecognizerResultKey, result);
+
+                    var traceInfo = new LuisTraceInfo
+                    {
+                        RecognizerResult = result,
+                        LuisModel = RemoveSensitiveData(_luisModel),
+                        LuisOptions = _luisOptions,
+                        LuisResult = (LuisResult) result.Properties["luisResult"]
+                    };
+                    var traceActivity = Activity.CreateTraceActivity("LuisRecognizerMiddleware", LuisTraceType, traceInfo, LuisTraceLabel);
+                    await context.SendActivity(traceActivity).ConfigureAwait(false);
+                }
             }
             await next().ConfigureAwait(false);
         }
