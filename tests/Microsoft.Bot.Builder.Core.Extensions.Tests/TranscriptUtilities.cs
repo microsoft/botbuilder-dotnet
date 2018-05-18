@@ -11,8 +11,17 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Core.Extensions.Tests
 {
+    /// <summary>
+    /// Helpers to get activities from trancript files
+    /// </summary>
     public static class TranscriptUtilities
     {
+        /// <summary>
+        /// Loads a list of activities from a transcript file.
+        /// Use the context of the test to find the transcript file
+        /// </summary>
+        /// <param name="context">Test context</param>
+        /// <returns>A list of activities to test</returns>
         public static IEnumerable<IActivity> GetFromTestContext(TestContext context)
         {
             var transcriptsRootFolder = TestUtilities.GetKey("TranscriptsRootFolder") ?? @"..\..\..\..\..\transcripts";
@@ -28,6 +37,12 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
             return JsonConvert.DeserializeObject<Activity[]>(content);
         }
 
+        /// <summary>
+        /// Get a conversation reference.
+        /// This method can be used to set the conversation reference needed to create a <see cref="Adapters.TestAdapter"/>
+        /// </summary>
+        /// <param name="activity"></param>
+        /// <returns>A valid conversation reference to the activity provides</returns>
         public static ConversationReference GetConversationReference(this IActivity activity)
         {
             bool IsReply(IActivity act) => string.Equals("bot", act.From?.Role, StringComparison.InvariantCultureIgnoreCase);
