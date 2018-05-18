@@ -34,6 +34,8 @@ namespace AspNetCore_Single_Prompts
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddMvc();
+
             services.AddBot<SinglePromptBot>(options =>
             {
                 options.CredentialProvider = new ConfigurationCredentialProvider(Configuration);
@@ -77,6 +79,8 @@ namespace AspNetCore_Single_Prompts
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseMvc();
 
             app.UseDefaultFiles()
                 .UseStaticFiles()
