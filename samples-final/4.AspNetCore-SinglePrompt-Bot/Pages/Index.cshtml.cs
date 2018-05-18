@@ -3,7 +3,7 @@ using System.Web;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace AspNetCore_Single_Prompts
+namespace AspNetCore_Single_Prompt
 {
     public class IndexModel : PageModel
     {

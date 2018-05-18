@@ -12,7 +12,7 @@ using Microsoft.Bot.Builder.TraceExtensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace AspNetCore_Single_Prompts
+namespace AspNetCore_Single_Prompt
 {
     public class Startup
     {
