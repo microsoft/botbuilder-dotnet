@@ -1,21 +1,21 @@
-﻿using System;
+﻿using System.IO;
 using System.Web;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Extensions.Options;
 
 namespace AspNetCore_EchoBot_With_State
 {
     public class IndexModel : PageModel
     {
-        private IOptions<ApplicationConfiguration> _OptionsApplicationConfiguration;
+        private IHostingEnvironment _hostingEnv;
 
         public string DebugLink { get; private set; }
 
         public string EmulatorDeepLink { get; private set; }
 
-        public IndexModel(IOptions<ApplicationConfiguration> OptionsApplicationConfiguration)
+        public IndexModel(IHostingEnvironment hostingEnv)
         {
-            this._OptionsApplicationConfiguration = OptionsApplicationConfiguration;
+            this._hostingEnv = hostingEnv;
         }
 
         public void OnGet()
@@ -24,18 +24,8 @@ namespace AspNetCore_EchoBot_With_State
             DebugLink = botUrl;
 
             // construct emulator protocol URI
-            string protocolUri = $"bfemulator://livechat.open?botUrl={ HttpUtility.UrlEncode(botUrl) }";
-            string msaAppId = this._OptionsApplicationConfiguration.Value.MicrosoftAppId;
-            string msaAppPw = this._OptionsApplicationConfiguration.Value.MicrosoftAppPassword;
-
-            if (!String.IsNullOrEmpty(msaAppId))
-            {
-                protocolUri += $"&msaAppId={ HttpUtility.UrlEncode(msaAppId) }";
-            }
-            if (!String.IsNullOrEmpty(msaAppPw))
-            {
-                protocolUri += $"&msaPassword={ HttpUtility.UrlEncode(msaAppPw) }";
-            }
+            string botFilePath = Path.Combine(this._hostingEnv.ContentRootPath, "AspNetCore-EchoBot-With-State.bot");
+            string protocolUri = $"bfemulator://bot.open?path={ HttpUtility.UrlEncode(botFilePath) }";
             EmulatorDeepLink = protocolUri;
         }
     }
