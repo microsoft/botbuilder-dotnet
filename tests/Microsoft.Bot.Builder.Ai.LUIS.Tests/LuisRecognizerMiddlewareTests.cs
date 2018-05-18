@@ -96,6 +96,12 @@ namespace Microsoft.Bot.Builder.Ai.LUIS.Tests
         [TestMethod]
         public async Task LuisRecognizer_MiddlewareNullUtterance()
         {
+            if (!EnvironmentVariablesDefined())
+            {
+                Assert.Inconclusive("Missing Luis Environment variables - Skipping test");
+                return;
+            }
+
             await RunTest(null);
             await RunTest(string.Empty);
             await RunTest(" ");
