@@ -93,6 +93,35 @@ namespace Microsoft.Bot.Builder.Ai.LUIS.Tests
 
         }
 
+        [TestMethod]
+        public async Task LuisRecognizer_MiddlewareNullUtterance()
+        {
+            await RunTest(null);
+            await RunTest(string.Empty);
+            await RunTest(" ");
+        }
+
+        private async Task RunTest(string utterance)
+        {
+            var adapter = new TestAdapter()
+                .Use(GetLuisRecognizerMiddleware(true));
+
+            var messageActivity = Activity.CreateMessageActivity();
+            messageActivity.Text = utterance;
+
+            const string botResponse = @"Hi";
+            await new TestFlow(adapter, async context =>
+                {
+                    if (context.Activity.Text == utterance)
+                    {
+                        await context.SendActivity(botResponse);
+                    }
+                })
+                .Send(messageActivity)
+                .AssertReply(botResponse, "passthrough")
+                .StartTest();
+        }
+
         private LuisRecognizerMiddleware GetLuisRecognizerMiddleware(bool verbose = false, ILuisOptions luisOptions = null)
         {
             var luisRecognizerOptions = new LuisRecognizerOptions { Verbose = verbose };
