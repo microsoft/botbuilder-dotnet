@@ -34,6 +34,8 @@ namespace AspNetCore_QnA_Bot
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddMvc();
+            
             services.AddBot<QnABot>(options =>
             {
                 options.CredentialProvider = new ConfigurationCredentialProvider(Configuration);
@@ -63,6 +65,8 @@ namespace AspNetCore_QnA_Bot
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseMvc();
 
             app.UseDefaultFiles()
                 .UseStaticFiles()
