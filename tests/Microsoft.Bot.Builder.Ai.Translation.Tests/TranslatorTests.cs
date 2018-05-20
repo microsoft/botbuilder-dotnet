@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using Microsoft.Bot.Builder.Ai.Translation.PostProcessor;
 using Microsoft.Bot.Builder.Core.Extensions.Tests;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
@@ -69,18 +70,29 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
             }
 
             Translator translator = new Translator(translatorKey);
-            translator.SetPostProcessorTemplate(new List<string> { "perr[oa]" });
+            Dictionary<string, List<string>> patterns = new Dictionary<string, List<string>>();
+            List<string> spanishPatterns = new List<string> { "perr[oa]" };
+            patterns.Add("es", spanishPatterns);
+            List<string> frenchPatterns = new List<string> { "mon nom est (.+)" };
+            patterns.Add("fr", frenchPatterns);
+
+
+            IPostProcessor patternsPostProcessor = new PatternsPostProcessor(patterns);
             var sentence = "mi perro se llama Enzo";
 
-            var translatedSentence = await translator.TranslateArray(new string[] { sentence }, "es", "en");
-            Assert.IsNotNull(translatedSentence);
-            Assert.AreEqual("My perro's name is Enzo", translatedSentence[0]);
+            var translatedDocuments = await translator.TranslateArray(new string[] { sentence }, "es", "en");
+            Assert.IsNotNull(translatedDocuments);
+            string postProcessedMessage = patternsPostProcessor.Process(translatedDocuments[0], "es").PostProcessedMessage;
+            Assert.IsNotNull(postProcessedMessage);
+            Assert.AreEqual("My perro's name is Enzo", postProcessedMessage);
 
-            translator.SetPostProcessorTemplate(new List<string> { "mon nom est (.+)" });
+            
             sentence = "mon nom est l'etat";
-            translatedSentence = await translator.TranslateArray(new string[] { sentence }, "fr", "en");
-            Assert.IsNotNull(translatedSentence);
-            Assert.AreEqual("My name is l'etat", translatedSentence[0]);
+            translatedDocuments = await translator.TranslateArray(new string[] { sentence }, "fr", "en");
+            Assert.IsNotNull(translatedDocuments);
+            postProcessedMessage = patternsPostProcessor.Process(translatedDocuments[0], "fr").PostProcessedMessage;
+            Assert.IsNotNull(postProcessedMessage);
+            Assert.AreEqual("My name is l'etat", postProcessedMessage);
         }
 
         [TestMethod]
@@ -118,7 +130,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
             var sentences = new string[] { "salut", "au revoir" };
             var translatedSentences = await translator.TranslateArray(sentences, "fr", "en");
             Assert.IsNotNull(translatedSentences);
-            Assert.AreEqual(translatedSentences.Length, 2, "should be 2 sentences");
+            Assert.AreEqual(translatedSentences.Count, 2, "should be 2 sentences");
             Assert.AreEqual("Hello", translatedSentences[0]);
             Assert.AreEqual("Good bye", translatedSentences[1]);
         }
@@ -158,7 +170,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
             var sentences = new string[] { "Hello", "Good bye" };
             var translatedSentences = await translator.TranslateArray(sentences, "en", "fr");
             Assert.IsNotNull(translatedSentences);
-            Assert.AreEqual(translatedSentences.Length, 2, "should be 2 sentences");
+            Assert.AreEqual(translatedSentences.Count, 2, "should be 2 sentences");
             Assert.AreEqual("Salut", translatedSentences[0]);
             Assert.AreEqual("Au revoir", translatedSentences[1]);
         }

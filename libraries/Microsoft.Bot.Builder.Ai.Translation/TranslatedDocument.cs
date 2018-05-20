@@ -8,10 +8,16 @@ namespace Microsoft.Bot.Builder.Ai.Translation
     {
         private string sourceMessage;
         private string targetMessage;
-        private string alignment;
+        private string rawAlignment;
+        private Dictionary<int, int> indexedAlignment;
+        private string[] sourceTokens;
+        private string[] translatedTokens;
 
         public string SourceMessage { get => sourceMessage; set => sourceMessage = value; }
         public string TargetMessage { get => targetMessage; set => targetMessage = value; }
-        public string Alignment { get => alignment; set => alignment = value; }
+        public string RawAlignment { get => rawAlignment; set => rawAlignment = value; }
+        public Dictionary<int, int> IndexedAlignment { get => indexedAlignment; set => indexedAlignment = value; }
+        public string[] SourceTokens { get => sourceTokens; set => sourceTokens = value; }
+        public string[] TranslatedTokens { get => translatedTokens; set => translatedTokens = value; }
     }
 }

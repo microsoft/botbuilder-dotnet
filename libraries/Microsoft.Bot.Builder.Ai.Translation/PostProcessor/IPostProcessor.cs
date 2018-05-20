@@ -6,6 +6,6 @@ namespace Microsoft.Bot.Builder.Ai.Translation.PostProcessor
 {
     public interface IPostProcessor
     {
-        void Process(TranslatedDocument translatedDocument, out string processedResult);
+        PostProcessedDocument Process(TranslatedDocument translatedDocument, string currentLanguage);
     }
 }

@@ -11,25 +11,32 @@ namespace Microsoft.Bot.Builder.Ai.Translation.PostProcessor
     /// and to handle words that needs to be kept same as source language from provided template each line having a regex
     /// having first group matching the words that needs to be kept
     /// </summary>
-    internal class PatternsPostProcessor : IPostProcessor
+    public class PatternsPostProcessor : IPostProcessor
     {
-        private readonly HashSet<string> _patterns;
+        private readonly Dictionary<string, List<string>> _patterns;
+        private readonly Dictionary<string, HashSet<string>> _processedPatterns;
+        //private readonly HashSet<string> _patterns;
 
 
         /// <summary>
         /// Constructor that indexes input template for source language
         /// </summary>
         /// <param name="noTranslateTemplatePath">Path of no translate patterns</param> 
-        public PatternsPostProcessor(List<string> patterns) : this()
+        public PatternsPostProcessor(Dictionary<string, List<string>> patterns) : this()
         {
-            foreach (string pattern in patterns)
+            _processedPatterns = new Dictionary<string, HashSet<string>>();
+            foreach (KeyValuePair<string, List<string>> item in patterns)
             {
-                string processedLine = pattern.Trim();
-                if (!pattern.Contains('('))
+                foreach (string pattern in item.Value)
                 {
-                    processedLine = '(' + pattern + ')';
+                    _processedPatterns.Add(item.Key, new HashSet<string>());
+                    string processedLine = pattern.Trim();
+                    if (!pattern.Contains('('))
+                    {
+                        processedLine = '(' + pattern + ')';
+                    }
+                    _processedPatterns[item.Key].Add(processedLine);
                 }
-                _patterns.Add(processedLine);
             }
         }
 
@@ -38,17 +45,18 @@ namespace Microsoft.Bot.Builder.Ai.Translation.PostProcessor
         /// </summary>
         private PatternsPostProcessor()
         {
-            _patterns = new HashSet<string>();
+            //_patterns = new HashSet<string>();
+            this._patterns = new Dictionary<string, List<string>>();
         }
 
         /// <summary>
         /// Adds a no translate phrase to the pattern list .
         /// </summary>
         /// <param name="noTranslatePhrase">String containing no translate phrase</param>
-        public void AddNoTranslatePhrase(string noTranslatePhrase)
-        {
-            _patterns.Add("(" + noTranslatePhrase + ")");
-        }
+        //public void AddNoTranslatePhrase(string noTranslatePhrase)
+        //{
+        //    _patterns.Add("(" + noTranslatePhrase + ")");
+        //}
 
         /// <summary>
         /// Fixing translation
@@ -58,22 +66,19 @@ namespace Microsoft.Bot.Builder.Ai.Translation.PostProcessor
         /// <param name="alignment">String containing the Alignments</param>
         /// <param name="targetMessage">Target Message</param>
         /// <returns></returns>
-        public void Process(TranslatedDocument translatedDocument, out string processedResult)
+        public PostProcessedDocument Process(TranslatedDocument translatedDocument, string currentLanguage)
         {
             bool containsNum = Regex.IsMatch(translatedDocument.SourceMessage, @"\d");
+            string processedResult;
 
-            if (_patterns.Count == 0 && !containsNum)
+            if (_processedPatterns.Count == 0 && !containsNum)
                 processedResult = translatedDocument.TargetMessage;
-            if (string.IsNullOrWhiteSpace(translatedDocument.Alignment))
+            if (string.IsNullOrWhiteSpace(translatedDocument.RawAlignment))
                 processedResult = translatedDocument.TargetMessage;
 
-            var toBeReplaced = from result in _patterns
+            var toBeReplaced = from result in _processedPatterns[currentLanguage]
                                where Regex.IsMatch(translatedDocument.SourceMessage, result, RegexOptions.Singleline | RegexOptions.IgnoreCase)
                                select result;
-            string[] alignments = translatedDocument.Alignment.Trim().Split(' ');
-            string[] srcWords = PostProcessingUtilities.SplitSentence(translatedDocument.SourceMessage, alignments);
-            string[] trgWords = PostProcessingUtilities.SplitSentence(translatedDocument.TargetMessage, alignments, false);
-            Dictionary<int, int> alignMap = PostProcessingUtilities.WordAlignmentParse(alignments, srcWords, trgWords);
             if (toBeReplaced.Any())
             {
                 foreach (string pattern in toBeReplaced)
@@ -86,7 +91,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.PostProcessor
                     int newChrLengthFromMatch = 0;
                     int srcIndex = -1;
                     int newNoTranslateArrayLength = 1;
-                    foreach (string wrd in srcWords)
+                    foreach (string wrd in translatedDocument.SourceTokens)
                     {
 
                         chrIndx += wrd.Length + 1;
@@ -97,20 +102,20 @@ namespace Microsoft.Bot.Builder.Ai.Translation.PostProcessor
                         }
                         if (srcIndex != -1)
                         {
-                            if (newChrLengthFromMatch + srcWords[wrdIndx].Length >= noTranslateMatchLength)
+                            if (newChrLengthFromMatch + translatedDocument.SourceTokens[wrdIndx].Length >= noTranslateMatchLength)
                                 break;
                             newNoTranslateArrayLength += 1;
-                            newChrLengthFromMatch += srcWords[wrdIndx].Length + 1;
+                            newChrLengthFromMatch += translatedDocument.SourceTokens[wrdIndx].Length + 1;
                         }
 
                     }
                     if (srcIndex == -1)
                         continue;
                     string[] wrdNoTranslate = new string[newNoTranslateArrayLength];
-                    Array.Copy(srcWords, srcIndex, wrdNoTranslate, 0, newNoTranslateArrayLength);
+                    Array.Copy(translatedDocument.SourceTokens, srcIndex, wrdNoTranslate, 0, newNoTranslateArrayLength);
                     foreach (string srcWrd in wrdNoTranslate)
                     {
-                        trgWords = PostProcessingUtilities.KeepSrcWrdInTranslation(alignMap, srcWords, trgWords, srcIndex);
+                        translatedDocument.TranslatedTokens = PostProcessingUtilities.KeepSrcWrdInTranslation(translatedDocument.IndexedAlignment, translatedDocument.SourceTokens, translatedDocument.TranslatedTokens, srcIndex);
                         srcIndex++;
                     }
 
@@ -120,10 +125,11 @@ namespace Microsoft.Bot.Builder.Ai.Translation.PostProcessor
             MatchCollection numericMatches = Regex.Matches(translatedDocument.SourceMessage, @"\d+", RegexOptions.Singleline);
             foreach (Match numericMatch in numericMatches)
             {
-                int srcIndex = Array.FindIndex(srcWords, row => row == numericMatch.Groups[0].Value);
-                trgWords = PostProcessingUtilities.KeepSrcWrdInTranslation(alignMap, srcWords, trgWords, srcIndex);
+                int srcIndex = Array.FindIndex(translatedDocument.SourceTokens, row => row == numericMatch.Groups[0].Value);
+                translatedDocument.TranslatedTokens = PostProcessingUtilities.KeepSrcWrdInTranslation(translatedDocument.IndexedAlignment, translatedDocument.SourceTokens, translatedDocument.TranslatedTokens, srcIndex);
             }
-            processedResult = PostProcessingUtilities.Join(" ", trgWords);
+            processedResult = PostProcessingUtilities.Join(" ", translatedDocument.TranslatedTokens);
+            return new PostProcessedDocument(translatedDocument, processedResult);
         }
     }
 }
