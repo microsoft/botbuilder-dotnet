@@ -260,8 +260,13 @@ namespace Microsoft.Bot.Builder.Ai.Translation
                             //translation = _postProcessor.FixTranslation(translateArraySourceTexts[sentIndex], xe.Element(ns + "Alignment").Value, translation);
                             TranslatedDocument currentTranslatedDocument = new TranslatedDocument();
                             currentTranslatedDocument.SourceMessage = translateArraySourceTexts[sentIndex];
-                            currentTranslatedDocument.Alignment = xe.Element(ns + "Alignment").Value;
                             currentTranslatedDocument.TargetMessage = xe.Element(ns + "TranslatedText").Value;
+                            currentTranslatedDocument.RawAlignment = xe.Element(ns + "Alignment").Value;
+                            string[] alignments = xe.Element(ns + "Alignment").Value.Trim().Split(' ');
+                            currentTranslatedDocument.SourceTokens = PostProcessingUtilities.SplitSentence(translateArraySourceTexts[sentIndex], alignments);
+                            currentTranslatedDocument.TranslatedTokens = PostProcessingUtilities.SplitSentence(xe.Element(ns + "TranslatedText").Value, alignments, false);
+                            currentTranslatedDocument.IndexedAlignment = PostProcessingUtilities.WordAlignmentParse(alignments, currentTranslatedDocument.SourceTokens, currentTranslatedDocument.TranslatedTokens);
+
                             translatedDocuments.Add(currentTranslatedDocument);
                             //results.Add(translation.Trim());
                             sentIndex += 1;
