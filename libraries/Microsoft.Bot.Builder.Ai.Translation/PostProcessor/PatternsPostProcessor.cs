@@ -14,9 +14,6 @@ namespace Microsoft.Bot.Builder.Ai.Translation.PostProcessor
     internal class PatternsPostProcessor : IPostProcessor
     {
         private readonly HashSet<string> _patterns;
-        private string sourceMessage;
-        private string targetMessage;
-        private string alignment;
 
 
         /// <summary>
@@ -44,10 +41,6 @@ namespace Microsoft.Bot.Builder.Ai.Translation.PostProcessor
             _patterns = new HashSet<string>();
         }
 
-        public string Alignment { get => alignment; set => alignment = value; }
-        public string TargetMessage { get => targetMessage; set => targetMessage = value; }
-        public string SourceMessage { get => sourceMessage; set => sourceMessage = value; }
-
         /// <summary>
         /// Adds a no translate phrase to the pattern list .
         /// </summary>
@@ -65,27 +58,27 @@ namespace Microsoft.Bot.Builder.Ai.Translation.PostProcessor
         /// <param name="alignment">String containing the Alignments</param>
         /// <param name="targetMessage">Target Message</param>
         /// <returns></returns>
-        public void Process(out string processedResult)
+        public void Process(TranslatedDocument translatedDocument, out string processedResult)
         {
-            bool containsNum = Regex.IsMatch(_sourceMessage, @"\d");
+            bool containsNum = Regex.IsMatch(translatedDocument.SourceMessage, @"\d");
 
             if (_patterns.Count == 0 && !containsNum)
-                processedResult = _targetMessage;
-            if (string.IsNullOrWhiteSpace(_alignment))
-                processedResult = _targetMessage;
+                processedResult = translatedDocument.TargetMessage;
+            if (string.IsNullOrWhiteSpace(translatedDocument.Alignment))
+                processedResult = translatedDocument.TargetMessage;
 
             var toBeReplaced = from result in _patterns
-                               where Regex.IsMatch(_sourceMessage, result, RegexOptions.Singleline | RegexOptions.IgnoreCase)
+                               where Regex.IsMatch(translatedDocument.SourceMessage, result, RegexOptions.Singleline | RegexOptions.IgnoreCase)
                                select result;
-            string[] alignments = this._alignment.Trim().Split(' ');
-            string[] srcWords = PostProcessingUtilities.SplitSentence(_sourceMessage, alignments);
-            string[] trgWords = PostProcessingUtilities.SplitSentence(_targetMessage, alignments, false);
+            string[] alignments = translatedDocument.Alignment.Trim().Split(' ');
+            string[] srcWords = PostProcessingUtilities.SplitSentence(translatedDocument.SourceMessage, alignments);
+            string[] trgWords = PostProcessingUtilities.SplitSentence(translatedDocument.TargetMessage, alignments, false);
             Dictionary<int, int> alignMap = PostProcessingUtilities.WordAlignmentParse(alignments, srcWords, trgWords);
             if (toBeReplaced.Any())
             {
                 foreach (string pattern in toBeReplaced)
                 {
-                    Match matchNoTranslate = Regex.Match(_sourceMessage, pattern, RegexOptions.Singleline | RegexOptions.IgnoreCase);
+                    Match matchNoTranslate = Regex.Match(translatedDocument.SourceMessage, pattern, RegexOptions.Singleline | RegexOptions.IgnoreCase);
                     int noTranslateStartChrIndex = matchNoTranslate.Groups[1].Index;
                     int noTranslateMatchLength = matchNoTranslate.Groups[1].Length;
                     int wrdIndx = 0;
@@ -124,7 +117,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.PostProcessor
                 }
             }
 
-            MatchCollection numericMatches = Regex.Matches(_sourceMessage, @"\d+", RegexOptions.Singleline);
+            MatchCollection numericMatches = Regex.Matches(translatedDocument.SourceMessage, @"\d+", RegexOptions.Singleline);
             foreach (Match numericMatch in numericMatches)
             {
                 int srcIndex = Array.FindIndex(srcWords, row => row == numericMatch.Groups[0].Value);
