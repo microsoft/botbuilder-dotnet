@@ -40,7 +40,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 
             services.PostConfigure<BotFrameworkOptions>(options => 
             {
-                if (options.CredentialProvider== null)
+                if (options.CredentialProvider == null)
                 {
                     options.CredentialProvider = new SimpleCredentialProvider();
                 }
