@@ -35,7 +35,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
 
             var translatedSentence = await translator.Translate(sentence, detectedLanguage, "en");
             Assert.IsNotNull(translatedSentence);
-            Assert.AreEqual("Hello", translatedSentence);
+            Assert.AreEqual("Hello", translatedSentence.TargetMessage);
         }
 
         [TestMethod]
@@ -90,7 +90,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
             Assert.IsNotNull(postProcessedMessage);
             Assert.AreEqual("My perro's name is Enzo", postProcessedMessage);
 
-            
+
             sentence = "mon nom est l'etat";
             translatedDocuments = await translator.TranslateArray(new string[] { sentence }, "fr", "en");
             Assert.IsNotNull(translatedDocuments);
@@ -155,7 +155,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
             var sentence = "salut 20-10";
             var translatedSentence = await translator.Translate(sentence, "fr", "en");
             Assert.IsNotNull(translatedSentence);
-            Assert.AreEqual("Hi 20-10", translatedSentence);
+            Assert.AreEqual("Hi 20-10", translatedSentence.TargetMessage);
         }
 
         [TestMethod]
@@ -196,7 +196,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
             var sentence = "hello";
             var translatedSentence = await translator.Translate(sentence, "en", "fr");
             Assert.IsNotNull(translatedSentence);
-            Assert.AreEqual("Salut", translatedSentence);
+            Assert.AreEqual("Salut", translatedSentence.TargetMessage);
         }
 
         [TestMethod]

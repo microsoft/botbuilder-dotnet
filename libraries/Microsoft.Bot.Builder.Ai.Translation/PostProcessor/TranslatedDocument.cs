@@ -4,6 +4,9 @@ using System.Text;
 
 namespace Microsoft.Bot.Builder.Ai.Translation
 {
+    /// <summary>
+    /// Translated document is the data object holding all information of the translator module output on an input string
+    /// </summary>
     public class TranslatedDocument
     {
         private string sourceMessage;
@@ -15,18 +18,19 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         private HashSet<string> literanlNoTranslatePhrases;
 
         /// <summary>
-        /// Construct Translated document object using only source message
+        /// Construct Translated document object using only source message.
         /// </summary>
-        /// <param name="sourceMessage"></param>
+        /// <param name="sourceMessage">Source message</param>
         public TranslatedDocument(string sourceMessage)
         {
             this.sourceMessage = sourceMessage;
         }
 
         /// <summary>
-        /// Construct Translated document object using source message and target/translated message
+        /// Construct Translated document object using source message and target/translated message.
         /// </summary>
-        /// <param name="sourceMessage"></param>
+        /// <param name="sourceMessage">Source message</param>
+        /// <param name="targetMessage">Target/translated message</param>
         public TranslatedDocument(string sourceMessage, string targetMessage)
         {
             this.sourceMessage = sourceMessage;

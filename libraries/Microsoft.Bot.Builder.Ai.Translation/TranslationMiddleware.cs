@@ -53,13 +53,17 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         /// <param name="translatorKey">Your subscription key for the Microsoft Translator Text API.</param>
         /// <param name="patterns">List of regex patterns, indexed by language identifier, 
         /// that can be used to flag text that should not be translated.</param>
+        /// <param name="userCustomDictonaries">Map of custom dictionaries, indexed by language identifier, 
+        /// that can be used to translate certain vocab into user pre-defined translations.</param>
         /// <param name="toUserLanguage">Indicates whether to transalte messages sent from the bot into the user's language.</param>
         /// <remarks>Each pattern the <paramref name="patterns"/> describes an entity that should not be translated.
         /// For example, in French <c>je m’appelle ([a-z]+)</c>, which will avoid translation of anything coming after je m’appelle.</remarks>
         public TranslationMiddleware(string[] nativeLanguages, string translatorKey, Dictionary<string, List<string>> patterns, Dictionary<string, Dictionary<string, string>> userCustomDictonaries, bool toUserLanguage = false) : this(nativeLanguages, translatorKey, toUserLanguage)
         {
-            this._patterns = patterns ?? throw new ArgumentNullException(nameof(patterns));
-            this._userCustomDictonaries = userCustomDictonaries ?? throw new ArgumentNullException(nameof(patterns));
+            if (patterns != null)
+                this._patterns = patterns;
+            if (userCustomDictonaries != null)
+                this._userCustomDictonaries = userCustomDictonaries;
         }
 
         /// <summary>
@@ -164,37 +168,41 @@ namespace Microsoft.Bot.Builder.Ai.Translation
             await next().ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Initialize attached post processors according to what the user sent in the middle ware constructor.
+        /// </summary>
         private void InitializePostProcessors()
         {
             attachedPostProcessors = new List<IPostProcessor>();
-            if(_patterns != null && _patterns.Count > 0)
+            if (_patterns != null && _patterns.Count > 0)
             {
                 attachedPostProcessors.Add(new PatternsPostProcessor(_patterns));
             }
-            if(_userCustomDictonaries != null && _userCustomDictonaries.Count > 0)
+            if (_userCustomDictonaries != null && _userCustomDictonaries.Count > 0)
             {
                 attachedPostProcessors.Add(new CustomDictionaryPostProcessor(_userCustomDictonaries));
             }
         }
         /// <summary>
-        /// Applies all the attached post processors to the translated messages
+        /// Applies all the attached post processors to the translated messages.
         /// </summary>
         /// <param name="translatedDocuments">List of <see cref="TranslatedDocument"/> represent the output of the translator module</param>
         /// <returns>A task that represents the asynchronous operation</returns>
         private void PostProcesseDocuments(List<TranslatedDocument> translatedDocuments, string currentLanguage)
         {
-            if(attachedPostProcessors == null)
+            if (attachedPostProcessors == null)
             {
                 InitializePostProcessors();
             }
-            foreach(TranslatedDocument translatedDocument in translatedDocuments)
+            foreach (TranslatedDocument translatedDocument in translatedDocuments)
             {
-                foreach(IPostProcessor postProcessor in attachedPostProcessors)
+                foreach (IPostProcessor postProcessor in attachedPostProcessors)
                 {
-                    translatedDocument.TargetMessage =  postProcessor.Process(translatedDocument, currentLanguage).PostProcessedMessage;
+                    translatedDocument.TargetMessage = postProcessor.Process(translatedDocument, currentLanguage).PostProcessedMessage;
                 }
             }
         }
+
         /// <summary>
         /// Translate .Text field of a message
         /// </summary>
@@ -216,8 +224,9 @@ namespace Microsoft.Bot.Builder.Ai.Translation
                     var text = message.Text;
                     string[] lines = text.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None);
                     var translateResult = await this._translator.TranslateArray(lines, sourceLanguage, targetLanguage).ConfigureAwait(false);
+
+                    // post process all translated documents
                     PostProcesseDocuments(translateResult, sourceLanguage);
-                    //text = String.Join("\n", translateResult);
                     text = string.Empty;
                     foreach (TranslatedDocument translatedDocument in translateResult)
                     {
