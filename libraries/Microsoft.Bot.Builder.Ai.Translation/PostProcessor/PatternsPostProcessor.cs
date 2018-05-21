@@ -27,9 +27,9 @@ namespace Microsoft.Bot.Builder.Ai.Translation.PostProcessor
             _processedPatterns = new Dictionary<string, HashSet<string>>();
             foreach (KeyValuePair<string, List<string>> item in patterns)
             {
+                _processedPatterns.Add(item.Key, new HashSet<string>());
                 foreach (string pattern in item.Value)
                 {
-                    _processedPatterns.Add(item.Key, new HashSet<string>());
                     string processedLine = pattern.Trim();
                     if (!pattern.Contains('('))
                     {
@@ -70,13 +70,17 @@ namespace Microsoft.Bot.Builder.Ai.Translation.PostProcessor
         {
             bool containsNum = Regex.IsMatch(translatedDocument.SourceMessage, @"\d");
             string processedResult;
-
-            if (_processedPatterns.Count == 0 && !containsNum)
+            HashSet<string> temporaryPatterns = _processedPatterns[currentLanguage];
+            if (translatedDocument.LiteranlNoTranslatePhrases.Count > 0)
+            {
+                temporaryPatterns.UnionWith((translatedDocument.LiteranlNoTranslatePhrases));
+            }
+            if (temporaryPatterns.Count == 0 && !containsNum)
                 processedResult = translatedDocument.TargetMessage;
             if (string.IsNullOrWhiteSpace(translatedDocument.RawAlignment))
                 processedResult = translatedDocument.TargetMessage;
 
-            var toBeReplaced = from result in _processedPatterns[currentLanguage]
+            var toBeReplaced = from result in temporaryPatterns
                                where Regex.IsMatch(translatedDocument.SourceMessage, result, RegexOptions.Singleline | RegexOptions.IgnoreCase)
                                select result;
             if (toBeReplaced.Any())

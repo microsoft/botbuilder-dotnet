@@ -52,10 +52,11 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         /// Performs pre-processing to remove "literal" tags and flag sections of the text that will not be translated.
         /// </summary>
         /// <param name="textToTranslate">The text to translate.</param> 
-        private string PreprocessMessage(string textToTranslate,bool updateNoTranslatePattern=true)
+        private void PreprocessMessage(string textToTranslate, out string processedTextToTranslate, out HashSet<string> noTranslatePhrases, bool updateNoTranslatePattern=true)
         {
             textToTranslate = Regex.Replace(textToTranslate, @"\s+", " ");//used to remove multiple spaces in input user message
             string literalPattern = "<literal>(.*)</literal>";
+            noTranslatePhrases = new HashSet<string>();
             MatchCollection literalMatches = Regex.Matches(textToTranslate, literalPattern);
             if (literalMatches.Count > 0)
             {
@@ -65,15 +66,30 @@ namespace Microsoft.Bot.Builder.Ai.Translation
                     {
                         if (literalMatch.Groups.Count > 1)
                         {
-                            string noTranslatePhrase = literalMatch.Groups[1].Value;
-                            //_postProcessor.AddNoTranslatePhrase(noTranslatePhrase);
+                           noTranslatePhrases.Add("(" + literalMatch.Groups[1].Value + ")");
                         }
                     }
                 }
                 textToTranslate = Regex.Replace(textToTranslate, "</?literal>", " ");
             }
             textToTranslate = Regex.Replace(textToTranslate, @"\s+", " ");
-            return textToTranslate;
+            processedTextToTranslate = textToTranslate;
+        }
+
+        /// <summary>
+        /// Performs pre-processing to remove "literal" tags and flag sections of the text that will not be translated.
+        /// </summary>
+        /// <param name="textToTranslate">The text to translate.</param> 
+        private string PreprocessMessage(string textToTranslate)
+        {
+            textToTranslate = Regex.Replace(textToTranslate, @"\s+", " ");//used to remove multiple spaces in input user message
+            string literalPattern = "<literal>(.*)</literal>";
+            MatchCollection literalMatches = Regex.Matches(textToTranslate, literalPattern);
+            if (literalMatches.Count > 0)
+            {
+                textToTranslate = Regex.Replace(textToTranslate, "</?literal>", " ");
+            }
+            return Regex.Replace(textToTranslate, @"\s+", " ");
         }
 
         /// <summary>
@@ -83,7 +99,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         /// <returns>The language identifier.</returns>
         public async Task<string> Detect(string textToDetect)
         {
-            textToDetect = PreprocessMessage(textToDetect, false);
+            textToDetect = PreprocessMessage(textToDetect);
             string url = "http://api.microsofttranslator.com/v2/Http.svc/Detect";
             string query = $"?text={System.Net.WebUtility.UrlEncode(textToDetect)}";
 
@@ -113,7 +129,15 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         /// <returns>The translated text.</returns>
         public async Task<string> Translate(string textToTranslate, string from, string to)
         {
-            textToTranslate = PreprocessMessage(textToTranslate);
+            //textToTranslate = PreprocessMessage(textToTranslate);
+
+            TranslatedDocument currentTranslatedDocument = new TranslatedDocument(textToTranslate);
+            string processedText;
+            HashSet<string> literanlNoTranslateList;
+            PreprocessMessage(currentTranslatedDocument.SourceMessage, out processedText, out literanlNoTranslateList);
+            currentTranslatedDocument.SourceMessage = processedText;
+            currentTranslatedDocument.LiteranlNoTranslatePhrases = literanlNoTranslateList;
+
             string url = "http://api.microsofttranslator.com/v2/Http.svc/Translate";
             string query = $"?text={System.Net.WebUtility.UrlEncode(textToTranslate)}" +
                                  $"&from={from}" +
@@ -133,6 +157,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation
 
                 var translatedText = XElement.Parse(result).Value.Trim();
 
+                currentTranslatedDocument.TargetMessage = translatedText;
                 return translatedText;
             }
         }
@@ -151,7 +176,15 @@ namespace Microsoft.Bot.Builder.Ai.Translation
             for (int srcTxtIndx = 0; srcTxtIndx < translateArraySourceTexts.Length; srcTxtIndx++)
             {
                 //Check for literal tag in input user message
-                translateArraySourceTexts[srcTxtIndx] = PreprocessMessage(translateArraySourceTexts[srcTxtIndx]);
+
+                TranslatedDocument currentTranslatedDocument = new TranslatedDocument(translateArraySourceTexts[srcTxtIndx]);
+                translatedDocuments.Add(currentTranslatedDocument);
+                string processedText;
+                HashSet<string> literanlNoTranslateList;
+                PreprocessMessage(currentTranslatedDocument.SourceMessage, out processedText, out literanlNoTranslateList);
+                currentTranslatedDocument.SourceMessage = processedText;
+                translateArraySourceTexts[srcTxtIndx] = processedText;
+                currentTranslatedDocument.LiteranlNoTranslatePhrases = literanlNoTranslateList;
             }
             //body of http request
             var body = $"<TranslateArrayRequest>" +
@@ -196,16 +229,19 @@ namespace Microsoft.Bot.Builder.Ai.Translation
 
                             //string translation = xe.Element(ns + "TranslatedText").Value;
                             //translation = _postProcessor.FixTranslation(translateArraySourceTexts[sentIndex], xe.Element(ns + "Alignment").Value, translation);
-                            TranslatedDocument currentTranslatedDocument = new TranslatedDocument();
-                            currentTranslatedDocument.SourceMessage = translateArraySourceTexts[sentIndex];
+                            //TranslatedDocument currentTranslatedDocument = new TranslatedDocument();
+                            //currentTranslatedDocument.SourceMessage = translateArraySourceTexts[sentIndex];
+                            TranslatedDocument currentTranslatedDocument = translatedDocuments[sentIndex];
                             currentTranslatedDocument.TargetMessage = xe.Element(ns + "TranslatedText").Value;
                             currentTranslatedDocument.RawAlignment = xe.Element(ns + "Alignment").Value;
-                            string[] alignments = xe.Element(ns + "Alignment").Value.Trim().Split(' ');
-                            currentTranslatedDocument.SourceTokens = PostProcessingUtilities.SplitSentence(translateArraySourceTexts[sentIndex], alignments);
-                            currentTranslatedDocument.TranslatedTokens = PostProcessingUtilities.SplitSentence(xe.Element(ns + "TranslatedText").Value, alignments, false);
-                            currentTranslatedDocument.IndexedAlignment = PostProcessingUtilities.WordAlignmentParse(alignments, currentTranslatedDocument.SourceTokens, currentTranslatedDocument.TranslatedTokens);
-
-                            translatedDocuments.Add(currentTranslatedDocument);
+                            if(!string.IsNullOrEmpty(currentTranslatedDocument.RawAlignment))
+                            {
+                                string[] alignments = xe.Element(ns + "Alignment").Value.Trim().Split(' ');
+                                currentTranslatedDocument.SourceTokens = PostProcessingUtilities.SplitSentence(currentTranslatedDocument.SourceMessage, alignments);
+                                currentTranslatedDocument.TranslatedTokens = PostProcessingUtilities.SplitSentence(xe.Element(ns + "TranslatedText").Value, alignments, false);
+                                currentTranslatedDocument.IndexedAlignment = PostProcessingUtilities.WordAlignmentParse(alignments, currentTranslatedDocument.SourceTokens, currentTranslatedDocument.TranslatedTokens);
+                            }
+                            //translatedDocuments.Add(currentTranslatedDocument);
                             //results.Add(translation.Trim());
                             sentIndex += 1;
                         }
