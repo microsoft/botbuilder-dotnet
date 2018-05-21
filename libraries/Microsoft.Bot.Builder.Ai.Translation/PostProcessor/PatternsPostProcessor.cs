@@ -9,21 +9,29 @@ namespace Microsoft.Bot.Builder.Ai.Translation.PostProcessor
     /// <summary>
     /// PatternsPostProcessor  is used to handle translation errors while translating numbers
     /// and to handle words that needs to be kept same as source language from provided template each line having a regex
-    /// having first group matching the words that needs to be kept
+    /// having first group matching the words that needs to be kept.
     /// </summary>
     public class PatternsPostProcessor : IPostProcessor
     {
         private readonly Dictionary<string, List<string>> _patterns;
         private readonly Dictionary<string, HashSet<string>> _processedPatterns;
-        //private readonly HashSet<string> _patterns;
-
 
         /// <summary>
-        /// Constructor that indexes input template for source language
+        /// Constructor that indexes input template for source language.
         /// </summary>
-        /// <param name="noTranslateTemplatePath">Path of no translate patterns</param> 
-        public PatternsPostProcessor(Dictionary<string, List<string>> patterns) : this()
+        /// <param name="patterns">No translate patterns for different languages</param> 
+        public PatternsPostProcessor(Dictionary<string, List<string>> patterns)
         {
+            if(patterns == null)
+            {
+                throw new ArgumentNullException(nameof(patterns));
+            }
+
+            if(patterns.Count == 0)
+            {
+                throw new ArgumentException("Patterns can't be empty");
+            }
+
             _processedPatterns = new Dictionary<string, HashSet<string>>();
             foreach (KeyValuePair<string, List<string>> item in patterns)
             {
@@ -41,31 +49,11 @@ namespace Microsoft.Bot.Builder.Ai.Translation.PostProcessor
         }
 
         /// <summary>
-        /// Constructor for postprocessor that fixes numbers only
+        /// Process the logic for patterns post processor used to handle numbers and no translate list.
         /// </summary>
-        private PatternsPostProcessor()
-        {
-            //_patterns = new HashSet<string>();
-            this._patterns = new Dictionary<string, List<string>>();
-        }
-
-        /// <summary>
-        /// Adds a no translate phrase to the pattern list .
-        /// </summary>
-        /// <param name="noTranslatePhrase">String containing no translate phrase</param>
-        //public void AddNoTranslatePhrase(string noTranslatePhrase)
-        //{
-        //    _patterns.Add("(" + noTranslatePhrase + ")");
-        //}
-
-        /// <summary>
-        /// Fixing translation
-        /// used to handle numbers and no translate list
-        /// </summary>
-        /// <param name="sourceMessage">Source Message</param>
-        /// <param name="alignment">String containing the Alignments</param>
-        /// <param name="targetMessage">Target Message</param>
-        /// <returns></returns>
+        /// <param name="translatedDocument">Translated document</param>
+        /// <param name="currentLanguage">Current source language</param>
+        /// <returns>A Task represents the asynchronus operation</returns>
         public PostProcessedDocument Process(TranslatedDocument translatedDocument, string currentLanguage)
         {
             bool containsNum = Regex.IsMatch(translatedDocument.SourceMessage, @"\d");

@@ -24,7 +24,6 @@ namespace Microsoft.Bot.Builder.Ai.Translation
     public class Translator
     {
         private readonly AzureAuthToken _authToken;
-        private List<IPostProcessor> _postProcessors;
 
         /// <summary>
         /// Creates a new <see cref="Translator"/> object.
@@ -33,26 +32,15 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         public Translator(string apiKey)
         {
             _authToken = new AzureAuthToken(apiKey);
-            //_postProcessors = new List<IPostProcessor>();
-            //_postProcessor = new PostProcessTranslator();
-        }
-
-        /// <summary>
-        /// Sets the no translate template for post processor.
-        /// </summary>
-        /// <param name="patterns">List of patterns for the current language that can be used to fix some translation errors.</param>
-        //public void SetPostProcessorTemplate(List<string> patterns)
-        public void SetPostProcessorTemplates(List<IPostProcessor> postProcessors)
-        {
-            _postProcessors = postProcessors;
-            //_postProcessor = new PostProcessTranslator(patterns);
         }
 
         /// <summary>
         /// Performs pre-processing to remove "literal" tags and flag sections of the text that will not be translated.
         /// </summary>
-        /// <param name="textToTranslate">The text to translate.</param> 
-        private void PreprocessMessage(string textToTranslate, out string processedTextToTranslate, out HashSet<string> noTranslatePhrases, bool updateNoTranslatePattern=true)
+        /// <param name="textToTranslate">The text to translate</param>
+        /// <param name="processedTextToTranslate">The processed text after removing the literal tags and other unwanted characters</param>
+        /// <param name="noTranslatePhrases">The extracted no translate phrases</param>
+        private void PreprocessMessage(string textToTranslate, out string processedTextToTranslate, out HashSet<string> noTranslatePhrases)
         {
             textToTranslate = Regex.Replace(textToTranslate, @"\s+", " ");//used to remove multiple spaces in input user message
             string literalPattern = "<literal>(.*)</literal>";
@@ -60,14 +48,11 @@ namespace Microsoft.Bot.Builder.Ai.Translation
             MatchCollection literalMatches = Regex.Matches(textToTranslate, literalPattern);
             if (literalMatches.Count > 0)
             {
-                if (updateNoTranslatePattern)
+                foreach (Match literalMatch in literalMatches)
                 {
-                    foreach (Match literalMatch in literalMatches)
+                    if (literalMatch.Groups.Count > 1)
                     {
-                        if (literalMatch.Groups.Count > 1)
-                        {
-                           noTranslatePhrases.Add("(" + literalMatch.Groups[1].Value + ")");
-                        }
+                        noTranslatePhrases.Add("(" + literalMatch.Groups[1].Value + ")");
                     }
                 }
                 textToTranslate = Regex.Replace(textToTranslate, "</?literal>", " ");
@@ -77,7 +62,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         }
 
         /// <summary>
-        /// Performs pre-processing to remove "literal" tags and flag sections of the text that will not be translated.
+        /// Performs pre-processing to remove "literal" tags .
         /// </summary>
         /// <param name="textToTranslate">The text to translate.</param> 
         private string PreprocessMessage(string textToTranslate)
@@ -126,11 +111,9 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         /// <param name="textToTranslate">The text to translate.</param>
         /// <param name="from">The language code of the translation text. For example, "en" for English.</param>
         /// <param name="to">The language code to translate the text into.</param>
-        /// <returns>The translated text.</returns>
-        public async Task<string> Translate(string textToTranslate, string from, string to)
+        /// <returns>The translated document.</returns>
+        public async Task<TranslatedDocument> Translate(string textToTranslate, string from, string to)
         {
-            //textToTranslate = PreprocessMessage(textToTranslate);
-
             TranslatedDocument currentTranslatedDocument = new TranslatedDocument(textToTranslate);
             string processedText;
             HashSet<string> literanlNoTranslateList;
@@ -158,7 +141,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation
                 var translatedText = XElement.Parse(result).Value.Trim();
 
                 currentTranslatedDocument.TargetMessage = translatedText;
-                return translatedText;
+                return currentTranslatedDocument;
             }
         }
 
@@ -168,7 +151,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         /// <param name="translateArraySourceTexts">The strings to translate.</param>
         /// <param name="from">The language code of the translation text. For example, "en" for English.</param>
         /// <param name="to">The language code to translate the text into.</param>
-        /// <returns>An array of the translated strings.</returns>
+        /// <returns>An array of the translated documents.</returns>
         public async Task<List<TranslatedDocument>> TranslateArray(string[] translateArraySourceTexts, string from, string to)
         {
             List<TranslatedDocument> translatedDocuments = new List<TranslatedDocument>();
@@ -186,6 +169,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation
                 translateArraySourceTexts[srcTxtIndx] = processedText;
                 currentTranslatedDocument.LiteranlNoTranslatePhrases = literanlNoTranslateList;
             }
+
             //body of http request
             var body = $"<TranslateArrayRequest>" +
                            "<AppId />" +
@@ -226,26 +210,18 @@ namespace Microsoft.Bot.Builder.Ai.Translation
                         int sentIndex = 0;
                         foreach (XElement xe in doc.Descendants(ns + "TranslateArray2Response"))
                         {
-
-                            //string translation = xe.Element(ns + "TranslatedText").Value;
-                            //translation = _postProcessor.FixTranslation(translateArraySourceTexts[sentIndex], xe.Element(ns + "Alignment").Value, translation);
-                            //TranslatedDocument currentTranslatedDocument = new TranslatedDocument();
-                            //currentTranslatedDocument.SourceMessage = translateArraySourceTexts[sentIndex];
                             TranslatedDocument currentTranslatedDocument = translatedDocuments[sentIndex];
                             currentTranslatedDocument.TargetMessage = xe.Element(ns + "TranslatedText").Value;
                             currentTranslatedDocument.RawAlignment = xe.Element(ns + "Alignment").Value;
-                            if(!string.IsNullOrEmpty(currentTranslatedDocument.RawAlignment))
+                            if (!string.IsNullOrEmpty(currentTranslatedDocument.RawAlignment))
                             {
                                 string[] alignments = xe.Element(ns + "Alignment").Value.Trim().Split(' ');
                                 currentTranslatedDocument.SourceTokens = PostProcessingUtilities.SplitSentence(currentTranslatedDocument.SourceMessage, alignments);
                                 currentTranslatedDocument.TranslatedTokens = PostProcessingUtilities.SplitSentence(xe.Element(ns + "TranslatedText").Value, alignments, false);
                                 currentTranslatedDocument.IndexedAlignment = PostProcessingUtilities.WordAlignmentParse(alignments, currentTranslatedDocument.SourceTokens, currentTranslatedDocument.TranslatedTokens);
                             }
-                            //translatedDocuments.Add(currentTranslatedDocument);
-                            //results.Add(translation.Trim());
                             sentIndex += 1;
                         }
-                        //return results.ToArray();
                         return translatedDocuments;
                     default:
                         throw new Exception(response.ReasonPhrase);
