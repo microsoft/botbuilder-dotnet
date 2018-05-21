@@ -127,12 +127,13 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
 
             Translator translator = new Translator(translatorKey);
 
-            var sentences = new string[] { "salut", "au revoir" };
+            var sentences = new string[] { "mon nom est", "salut", "au revoir" };
             var translatedSentences = await translator.TranslateArray(sentences, "fr", "en");
             Assert.IsNotNull(translatedSentences);
-            Assert.AreEqual(translatedSentences.Count, 2, "should be 2 sentences");
-            Assert.AreEqual("Hello", translatedSentences[0]);
-            Assert.AreEqual("Good bye", translatedSentences[1]);
+            Assert.AreEqual(translatedSentences.Count, 3, "should be 3 sentences");
+            Assert.AreEqual("Hello", translatedSentences[0].TargetMessage);
+            Assert.AreEqual("Hello", translatedSentences[1].TargetMessage);
+            Assert.AreEqual("Good bye", translatedSentences[2].TargetMessage);
         }
 
         [TestMethod]
