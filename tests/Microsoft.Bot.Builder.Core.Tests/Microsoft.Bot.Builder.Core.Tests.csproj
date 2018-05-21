@@ -28,6 +28,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Core\Microsoft.Bot.Builder.Core.csproj" />
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Schema\Microsoft.Bot.Schema.csproj" />
+    <ProjectReference Include="..\Microsoft.Bot.Builder.Core.Extensions.Tests\Microsoft.Bot.Builder.Core.Extensions.Tests.csproj" />
   </ItemGroup>
 
   <ItemGroup>

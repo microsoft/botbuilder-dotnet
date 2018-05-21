@@ -2,9 +2,11 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Linq;
 using System.Security;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.Core.Extensions.Tests;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -14,6 +16,8 @@ namespace Microsoft.Bot.Builder.Core.Tests
     [TestCategory("Adapter")]
     public class TestAdapterTests
     {
+        public TestContext TestContext { get; set; }
+
         public async Task MyBotLogic(ITurnContext context)
         {
             switch (context.Activity.AsMessageActivity().Text)
@@ -31,6 +35,7 @@ namespace Microsoft.Bot.Builder.Core.Tests
                     break;
             }
         }
+        
         [TestMethod]
         public async Task SingleParameterConstructor()
         {
@@ -162,6 +167,31 @@ namespace Microsoft.Bot.Builder.Core.Tests
                     .AssertReply("two")
                     .AssertReply("three")
                 .StartTest();
+        }
+
+        [TestMethod]
+        public async Task TestAdapter_MultipleActivities()
+        {
+            var activities = TranscriptUtilities.GetFromTestContext(TestContext);
+
+            var flow = new TestFlow(new TestAdapter(), MyBotLogic);
+
+            await flow.Test(activities).StartTest();
+        }
+
+        [TestMethod]
+        public async Task TestAdapter_CustomValidator()
+        {
+            var activities = TranscriptUtilities.GetFromTestContext(TestContext);
+
+            var conversation = activities.First().GetConversationReference();
+
+            var flow = new TestFlow(new TestAdapter(conversation), MyBotLogic);
+
+            await flow.Test(activities, (expected, actual) => {
+                Assert.AreEqual(conversation.Bot.Id, actual.From.Id);
+                Assert.AreEqual(conversation.User.Id, actual.Recipient.Id);
+            }).StartTest();
         }
 
         [DataTestMethod]
