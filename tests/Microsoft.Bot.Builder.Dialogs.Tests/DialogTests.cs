@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Core.Extensions;
+using Microsoft.Bot.Builder.Core.Extensions.Tests;
 using Microsoft.Bot.Builder.Prompts;
 using Microsoft.Recognizers.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -19,9 +20,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
     [TestClass]
     public class DialogTests
     {
+        public TestContext TestContext { get; set; }
+
         [TestMethod]
         public async Task NumberPrompt()
         {
+            var activities = TranscriptUtilities.GetFromTestContext(TestContext);
+
             TestAdapter adapter = new TestAdapter()
                 .Use(new ConversationState<Dictionary<string, object>>(new MemoryStorage()));
 
@@ -41,16 +46,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                     await turnContext.SendActivity($"Bot received the number '{numberResult.Value}'.");
                 }
             })
-            .Send("hello")
-            .AssertReply("Enter a number.")
-            .Send("42")
-            .AssertReply("Bot received the number '42'.")
-            .StartTest();
+            .Test(activities)
+            .StartTest();;
         }
 
         [TestMethod]
         public async Task NumberPromptRetry()
         {
+            var activities = TranscriptUtilities.GetFromTestContext(TestContext);
+
             TestAdapter adapter = new TestAdapter()
                 .Use(new ConversationState<Dictionary<string, object>>(new MemoryStorage()));
 
@@ -75,18 +79,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                     await turnContext.SendActivity($"Bot received the number '{numberResult.Value}'.");
                 }
             })
-            .Send("hello")
-            .AssertReply("Enter a number.")
-            .Send("hello")
-            .AssertReply("You must enter a number.")
-            .Send("64")
-            .AssertReply("Bot received the number '64'.")
+            .Test(activities)
             .StartTest();
         }
 
         [TestMethod]
         public async Task NumberPromptValidator()
         {
+            var activities = TranscriptUtilities.GetFromTestContext(TestContext);
+
             TestAdapter adapter = new TestAdapter()
                 .Use(new ConversationState<Dictionary<string, object>>(new MemoryStorage()));
 
@@ -120,18 +121,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                     await turnContext.SendActivity($"Bot received the number '{numberResult.Value}'.");
                 }
             })
-            .Send("hello")
-            .AssertReply("Enter a number.")
-            .Send("150")
-            .AssertReply("You must enter a positive number less than 100.")
-            .Send("64")
-            .AssertReply("Bot received the number '64'.")
+            .Test(activities)
             .StartTest();
         }
 
         [TestMethod]
         public async Task TextPrompt()
         {
+            var activities = TranscriptUtilities.GetFromTestContext(TestContext);
+
             TestAdapter adapter = new TestAdapter()
                 .Use(new ConversationState<Dictionary<string, object>>(new MemoryStorage()));
 
@@ -151,16 +149,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                     await turnContext.SendActivity($"Bot received the text '{textResult.Value}'.");
                 }
             })
-            .Send("hello")
-            .AssertReply("Enter some text.")
-            .Send("some text")
-            .AssertReply("Bot received the text 'some text'.")
+            .Test(activities)
             .StartTest();
         }
 
         [TestMethod]
         public async Task TextPromptValidator()
         {
+            var activities = TranscriptUtilities.GetFromTestContext(TestContext);
+
             TestAdapter adapter = new TestAdapter()
                 .Use(new ConversationState<Dictionary<string, object>>(new MemoryStorage()));
 
@@ -192,18 +189,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                     await turnContext.SendActivity($"Bot received the text '{textResult.Value}'.");
                 }
             })
-            .Send("hello")
-            .AssertReply("Enter some text.")
-            .Send("hi")
-            .AssertReply("Make sure the text is greater than three characters.")
-            .Send("hello")
-            .AssertReply("Bot received the text 'hello'.")
+            .Test(activities)
             .StartTest();
         }
 
         [TestMethod]
         public async Task ConfirmPrompt()
         {
+            var activities = TranscriptUtilities.GetFromTestContext(TestContext);
+
             TestAdapter adapter = new TestAdapter()
                 .Use(new ConversationState<Dictionary<string, object>>(new MemoryStorage()));
 
@@ -229,16 +223,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                     }
                 }
             })
-            .Send("hello")
-            .AssertReply("Please confirm.")
-            .Send("yes")
-            .AssertReply("Confirmed.")
+            .Test(activities)
             .StartTest();
         }
 
         [TestMethod]
         public async Task ConfirmPromptRetry()
         {
+            var activities = TranscriptUtilities.GetFromTestContext(TestContext);
+
             TestAdapter adapter = new TestAdapter()
                 .Use(new ConversationState<Dictionary<string, object>>(new MemoryStorage()));
 
@@ -269,18 +262,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                     }
                 }
             })
-            .Send("hello")
-            .AssertReply("Please confirm.")
-            .Send("lala")
-            .AssertReply("Please confirm, say 'yes' or 'no' or something like that.")
-            .Send("no")
-            .AssertReply("Not confirmed.")
+            .Test(activities)
             .StartTest();
         }
 
         [TestMethod]
         public async Task Waterfall()
         {
+            var activities = TranscriptUtilities.GetFromTestContext(TestContext);
+
             TestAdapter adapter = new TestAdapter()
                 .Use(new ConversationState<Dictionary<string, object>>(new MemoryStorage()));
 
@@ -301,18 +291,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                     await waterfall.Begin(turnContext, state);
                 }
             })
-            .Send("hello")
-            .AssertReply("step1")
-            .Send("hello")
-            .AssertReply("step2")
-            .Send("hello")
-            .AssertReply("step3")
+            .Test(activities)
             .StartTest();
         }
 
         [TestMethod]
         public async Task WaterfallPrompt()
         {
+            var activities = TranscriptUtilities.GetFromTestContext(TestContext);
+
             TestAdapter adapter = new TestAdapter()
                 .Use(new ConversationState<Dictionary<string, object>>(new MemoryStorage()));
 
@@ -332,22 +319,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                     await dc.Begin("test-waterfall");
                 }
             })
-            .Send("hello")
-            .AssertReply("step1")
-            .AssertReply("Enter a number.")
-            .Send("hello again")
-            .AssertReply("It must be a number")
-            .Send("42")
-            .AssertReply("Thanks for '42'")
-            .AssertReply("step2")
-            .AssertReply("Enter a number.")
-            .Send("apple")
-            .AssertReply("It must be a number")
-            .Send("orange")
-            .AssertReply("It must be a number")
-            .Send("64")
-            .AssertReply("Thanks for '64'")
-            .AssertReply("step3")
+            .Test(activities)
             .StartTest();
         }
 
@@ -389,6 +361,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [TestMethod]
         public async Task WaterfallNested()
         {
+            var activities = TranscriptUtilities.GetFromTestContext(TestContext);
+
             TestAdapter adapter = new TestAdapter()
                 .Use(new ConversationState<Dictionary<string, object>>(new MemoryStorage()));
 
@@ -409,16 +383,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                     await dc.Begin("test-waterfall-a");
                 }
             })
-            .Send("hello")
-            .AssertReply("step1")
-            .AssertReply("step1.1")
-            .Send("hello")
-            .AssertReply("step1.2")
-            .Send("hello")
-            .AssertReply("step2")
-            .AssertReply("step2.1")
-            .Send("hello")
-            .AssertReply("step2.2")
+            .Test(activities)
             .StartTest();
         }
 

@@ -6,8 +6,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Core.Extensions;
+using Microsoft.Bot.Builder.Core.Extensions.Tests;
 using Microsoft.Bot.Builder.Prompts;
-using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Bot.Builder.Dialogs.Tests
@@ -15,14 +15,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
     [TestClass]
     public class AttachmentPromptTests
     {
+        public TestContext TestContext { get; set; }
+
         [TestMethod]
         public async Task BasicAttachmentPrompt()
         {
+            var activities = TranscriptUtilities.GetFromTestContext(TestContext);
+
             TestAdapter adapter = new TestAdapter()
                 .Use(new ConversationState<Dictionary<string, object>>(new MemoryStorage()));
-
-            var attachment = new Attachment { Content = "some content", ContentType = "text/plain" };
-            var activityWithAttachment = MessageFactory.Attachment(attachment);
 
             await new TestFlow(adapter, async (turnContext) =>
             {
@@ -41,10 +42,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                     await turnContext.SendActivity(reply);
                 }
             })
-            .Send("hello")
-            .AssertReply("please add an attachment.")
-            .Send(activityWithAttachment)
-            .AssertReply("some content")
+            .Test(activities)
             .StartTest();
         }
     }

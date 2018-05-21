@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Core.Extensions;
+using Microsoft.Bot.Builder.Core.Extensions.Tests;
 using Microsoft.Bot.Builder.Prompts;
 using Microsoft.Bot.Builder.Prompts.Choices;
 using Microsoft.Recognizers.Text;
@@ -15,6 +16,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
     [TestClass]
     public class DialogChoicePromptTests
     {
+        public TestContext TestContext { get; set; }
+
         private List<string> colorChoices = new List<string> { "red", "green", "blue" };
 
         [TestMethod]
@@ -50,6 +53,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 }
             );
 
+            var activities = TranscriptUtilities.GetFromTestContext(TestContext);
+
             TestAdapter adapter = new TestAdapter()
                 .Use(new ConversationState<Dictionary<string, object>>(new MemoryStorage()));
 
@@ -65,10 +70,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                     await dc.Begin("test");
                 }
             })
-            .Send("hello")
-            .AssertReply("favorite color? (1) red, (2) green, or (3) blue")
-            .Send("green")
-            .AssertReply("Bot received the choice 'green'.")
+            .Test(activities)
             .StartTest();
         }
     }

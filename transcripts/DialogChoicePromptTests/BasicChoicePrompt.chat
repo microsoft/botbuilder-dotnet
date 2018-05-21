@@ -1,0 +1,7 @@
+user=User
+bot=Bot
+
+User: hello
+Bot: favorite color? (1) red, (2) green, or (3) blue
+User: green
+Bot: Bot received the choice 'green'.

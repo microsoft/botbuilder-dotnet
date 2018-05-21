@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Core.Extensions;
+using Microsoft.Bot.Builder.Core.Extensions.Tests;
 using Microsoft.Bot.Builder.Prompts;
 using Microsoft.Recognizers.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -15,9 +16,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
     [TestClass]
     public class DialogDateTimePromptTests
     {
+        public TestContext TestContext { get; set; }
+
         [TestMethod]
         public async Task BasicDateTimePrompt()
         {
+            var activities = TranscriptUtilities.GetFromTestContext(TestContext);
+
             TestAdapter adapter = new TestAdapter()
                 .Use(new ConversationState<Dictionary<string, object>>(new MemoryStorage()));
 
@@ -39,10 +44,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                     await turnContext.SendActivity(reply);
                 }
             })
-            .Send("hello")
-            .AssertReply("What date would you like?")
-            .Send("5th December 2018 at 9am")
-            .AssertReply("Timex:'2018-12-05T09' Value:'2018-12-05 09:00:00'")
+            .Test(activities)
             .StartTest();
         }
     }
