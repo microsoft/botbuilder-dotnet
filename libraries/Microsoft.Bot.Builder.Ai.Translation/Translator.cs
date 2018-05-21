@@ -137,75 +137,13 @@ namespace Microsoft.Bot.Builder.Ai.Translation
             }
         }
 
-        ///// <summary>
-        ///// Translates an array of strings from a source language to a target language.
-        ///// </summary>
-        ///// <param name="translateArraySourceTexts">The strings to translate.</param>
-        ///// <param name="from">The language code of the translation text. For example, "en" for English.</param>
-        ///// <param name="to">The language code to translate the text into.</param>
-        ///// <returns>An array of the translated strings.</returns>
-        //public async Task<string[]> TranslateArray(string[] translateArraySourceTexts, string from, string to)
-        //{
-        //    var uri = "https://api.microsofttranslator.com/v2/Http.svc/TranslateArray2";
-        //    for (int srcTxtIndx = 0; srcTxtIndx < translateArraySourceTexts.Length; srcTxtIndx++)
-        //    {
-        //        //Check for literal tag in input user message
-        //        translateArraySourceTexts[srcTxtIndx] = PreprocessMessage(translateArraySourceTexts[srcTxtIndx]);
-        //    }
-        //    //body of http request
-        //    var body = $"<TranslateArrayRequest>" +
-        //                   "<AppId />" +
-        //                   $"<From>{from}</From>" +
-        //                   "<Options>" +
-        //                   " <Category xmlns=\"http://schemas.datacontract.org/2004/07/Microsoft.MT.Web.Service.V2\" >generalnn</Category>" +
-        //                       "<ContentType xmlns=\"http://schemas.datacontract.org/2004/07/Microsoft.MT.Web.Service.V2\">text/plain</ContentType>" +
-        //                       "<ReservedFlags xmlns=\"http://schemas.datacontract.org/2004/07/Microsoft.MT.Web.Service.V2\" />" +
-        //                       "<State xmlns=\"http://schemas.datacontract.org/2004/07/Microsoft.MT.Web.Service.V2\" />" +
-        //                       "<Uri xmlns=\"http://schemas.datacontract.org/2004/07/Microsoft.MT.Web.Service.V2\" />" +
-        //                       "<User xmlns=\"http://schemas.datacontract.org/2004/07/Microsoft.MT.Web.Service.V2\" />" +
-        //                   "</Options>" +
-        //                   "<Texts>" +
-        //                           String.Join("", translateArraySourceTexts.Select(s => $"<string xmlns=\"http://schemas.microsoft.com/2003/10/Serialization/Arrays\">{SecurityElement.Escape(s)}</string>\n"))
-        //                   + "</Texts>" +
-        //                   $"<To>{to}</To>" +
-        //               "</TranslateArrayRequest>";
-
-        //    var accessToken = await _authToken.GetAccessTokenAsync().ConfigureAwait(false);
-
-        //    using (var client = new HttpClient())
-        //    using (var request = new HttpRequestMessage())
-        //    {
-        //        request.Method = HttpMethod.Post;
-        //        request.RequestUri = new Uri(uri);
-        //        request.Content = new StringContent(body, Encoding.UTF8, "text/xml");
-        //        request.Headers.Add("Authorization", accessToken);
-
-        //        var response = await client.SendAsync(request);
-        //        var responseBody = await response.Content.ReadAsStringAsync();
-        //        switch (response.StatusCode)
-        //        {
-        //            case HttpStatusCode.OK:
-        //                Console.WriteLine("Request status is OK. Result of translate array method is:");
-        //                var doc = XDocument.Parse(responseBody);
-        //                var ns = XNamespace.Get("http://schemas.datacontract.org/2004/07/Microsoft.MT.Web.Service.V2");
-        //                List<string> results = new List<string>();
-        //                int sentIndex = 0;
-        //                foreach (XElement xe in doc.Descendants(ns + "TranslateArray2Response"))
-        //                {
-
-        //                    string translation = xe.Element(ns + "TranslatedText").Value;
-        //                    translation = _postProcessor.FixTranslation(translateArraySourceTexts[sentIndex], xe.Element(ns + "Alignment").Value, translation);
-        //                    results.Add(translation.Trim());
-        //                    sentIndex += 1;
-        //                }
-        //                return results.ToArray();
-
-        //            default:
-        //                throw new Exception(response.ReasonPhrase);
-        //        }
-        //    }
-        //}
-
+        /// <summary>
+        /// Translates an array of strings from a source language to a target language.
+        /// </summary>
+        /// <param name="translateArraySourceTexts">The strings to translate.</param>
+        /// <param name="from">The language code of the translation text. For example, "en" for English.</param>
+        /// <param name="to">The language code to translate the text into.</param>
+        /// <returns>An array of the translated strings.</returns>
         public async Task<List<TranslatedDocument>> TranslateArray(string[] translateArraySourceTexts, string from, string to)
         {
             List<TranslatedDocument> translatedDocuments = new List<TranslatedDocument>();
