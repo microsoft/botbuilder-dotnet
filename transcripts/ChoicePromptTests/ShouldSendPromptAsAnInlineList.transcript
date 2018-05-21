@@ -1,0 +1,42 @@
+[
+  {
+    "conversation": {
+      "id": "1"
+    },
+    "id": "76a03e5f-9d0b-4603-8034-8e6a14e4f29d",
+    "recipient": {
+      "id": "92b34b92-fbca-3d2e-b2c0-1511dbb38d48",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "from": {
+      "id": "6cdce86c-89cb-3cbf-b959-f6f793de34eb",
+      "name": "User",
+      "role": "user"
+    },
+    "text": "hello",
+    "timestamp": "2018-05-17T18:15:38.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "1"
+    },
+    "id": "e61862de-f0d4-4026-b78c-cff514ada039",
+    "recipient": {
+      "id": "6cdce86c-89cb-3cbf-b959-f6f793de34eb",
+      "name": "User",
+      "role": "user"
+    },
+    "from": {
+      "id": "92b34b92-fbca-3d2e-b2c0-1511dbb38d48",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "text": "favorite color? (1) red, (2) green, or (3) blue",
+    "timestamp": "2018-05-17T18:15:40.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  }
+]

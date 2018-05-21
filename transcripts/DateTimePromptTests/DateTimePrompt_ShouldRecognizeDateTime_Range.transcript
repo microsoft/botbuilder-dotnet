@@ -1,0 +1,82 @@
+[
+  {
+    "conversation": {
+      "id": "1"
+    },
+    "id": "897452b2-9f23-4e5d-8186-63db34e4f375",
+    "recipient": {
+      "id": "cbb565b3-a7ec-3793-b6ea-7e3312d41c58",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "from": {
+      "id": "0d6a312b-6a3e-36d8-9a7b-ebf0d6fa11c5",
+      "name": "User",
+      "role": "user"
+    },
+    "text": "hello",
+    "timestamp": "2018-05-17T19:19:16.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "1"
+    },
+    "id": "647cb4a7-4f33-4c58-b8d9-84b46b031e78",
+    "recipient": {
+      "id": "0d6a312b-6a3e-36d8-9a7b-ebf0d6fa11c5",
+      "name": "User",
+      "role": "user"
+    },
+    "from": {
+      "id": "cbb565b3-a7ec-3793-b6ea-7e3312d41c58",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "text": "What window would you like to book?",
+    "timestamp": "2018-05-17T19:19:18.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "1"
+    },
+    "id": "c2581349-e5db-4ed2-946f-d649777c47f8",
+    "recipient": {
+      "id": "cbb565b3-a7ec-3793-b6ea-7e3312d41c58",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "from": {
+      "id": "0d6a312b-6a3e-36d8-9a7b-ebf0d6fa11c5",
+      "name": "User",
+      "role": "user"
+    },
+    "text": "4pm wednesday to 3pm Saturday",
+    "timestamp": "2018-05-17T19:19:20.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "1"
+    },
+    "id": "28493ed8-e3d8-450e-821b-a2ac489749a4",
+    "recipient": {
+      "id": "0d6a312b-6a3e-36d8-9a7b-ebf0d6fa11c5",
+      "name": "User",
+      "role": "user"
+    },
+    "from": {
+      "id": "cbb565b3-a7ec-3793-b6ea-7e3312d41c58",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "text": "Timex:'(XXXX-WXX-3T16,XXXX-WXX-6T15,PT71H)'",
+    "timestamp": "2018-05-17T19:19:22.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  }
+]

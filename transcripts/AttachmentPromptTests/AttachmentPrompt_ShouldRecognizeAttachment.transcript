@@ -1,0 +1,88 @@
+[
+  {
+    "conversation": {
+      "id": "1"
+    },
+    "id": "623d7448-547d-40fd-98a3-a4ca1376d1d3",
+    "recipient": {
+      "id": "a2a649bb-1953-3c00-a3a2-556d06a18702",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "from": {
+      "id": "b8ad3799-78a4-340e-964c-952308f1b7ef",
+      "name": "User",
+      "role": "user"
+    },
+    "text": "hello",
+    "timestamp": "2018-05-17T18:02:13.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "1"
+    },
+    "id": "579ab43e-0c00-4f2c-84ce-3dd627cbfec6",
+    "recipient": {
+      "id": "b8ad3799-78a4-340e-964c-952308f1b7ef",
+      "name": "User",
+      "role": "user"
+    },
+    "from": {
+      "id": "a2a649bb-1953-3c00-a3a2-556d06a18702",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "text": "please add an attachment.",
+    "timestamp": "2018-05-17T18:02:15.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "attachments": [
+      {
+        "contentType": "plain/text",
+        "content": "some content"
+      }
+    ],
+    "conversation": {
+      "id": "1"
+    },
+    "id": "86ddcf25-feba-4797-8ac5-54f00b64230a",
+    "recipient": {
+      "id": "a2a649bb-1953-3c00-a3a2-556d06a18702",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "from": {
+      "id": "b8ad3799-78a4-340e-964c-952308f1b7ef",
+      "name": "User",
+      "role": "user"
+    },
+    "text": null,
+    "timestamp": "2018-05-17T18:02:19.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "1"
+    },
+    "id": "1f589988-1c03-4f31-9b07-cbb2b0c5802e",
+    "recipient": {
+      "id": "b8ad3799-78a4-340e-964c-952308f1b7ef",
+      "name": "User",
+      "role": "user"
+    },
+    "from": {
+      "id": "a2a649bb-1953-3c00-a3a2-556d06a18702",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "text": "some content",
+    "timestamp": "2018-05-17T18:02:21.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  }
+]

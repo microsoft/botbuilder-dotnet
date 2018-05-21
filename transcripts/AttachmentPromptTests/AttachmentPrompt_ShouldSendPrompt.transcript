@@ -1,0 +1,42 @@
+[
+  {
+    "conversation": {
+      "id": "1"
+    },
+    "id": "992c2d4d-7bcc-437f-bbb3-aa20f8d74d3c",
+    "recipient": {
+      "id": "b8c71cc8-4e6c-3857-b42f-10994659e361",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "from": {
+      "id": "3e1cc329-c50e-3d3f-aa47-1dde5307b159",
+      "name": "User",
+      "role": "user"
+    },
+    "text": "hello",
+    "timestamp": "2018-05-17T17:36:56.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "1"
+    },
+    "id": "94d38044-7b3e-45b5-be9a-5a1e1a3e0b32",
+    "recipient": {
+      "id": "3e1cc329-c50e-3d3f-aa47-1dde5307b159",
+      "name": "User",
+      "role": "user"
+    },
+    "from": {
+      "id": "b8c71cc8-4e6c-3857-b42f-10994659e361",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "text": "please add an attachment.",
+    "timestamp": "2018-05-17T17:36:58.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  }
+]

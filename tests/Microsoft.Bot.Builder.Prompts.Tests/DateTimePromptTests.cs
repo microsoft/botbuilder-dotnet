@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Core.Extensions;
+using Microsoft.Bot.Builder.Core.Extensions.Tests;
 using Microsoft.Recognizers.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using static Microsoft.Bot.Builder.Prompts.PromptValidatorEx;
@@ -17,26 +18,31 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
 
     public class DateTimePromptTests
     {
+        public TestContext TestContext { get; set; }
+
         [TestMethod]
         public async Task DateTimePrompt_ShouldSendPrompt()
         {
-            await new TestFlow(new TestAdapter(), async (context) =>
+            var activities = TranscriptUtilities.GetFromTestContext(TestContext);
+
+            var flow = new TestFlow(new TestAdapter(), async (context) =>
             {
                 var dateTimePrompt = new DateTimePrompt(Culture.English);
                 await dateTimePrompt.Prompt(context, "What date would you like?");
-            })
-            .Send("hello")
-            .AssertReply("What date would you like?")
-            .StartTest();
+            });
+
+            await flow.Test(activities).StartTest();
         }
 
         [TestMethod]
         public async Task DateTimePrompt_ShouldRecognizeDateTime_Value()
         {
+            var activities = TranscriptUtilities.GetFromTestContext(TestContext);
+
             var adapter = new TestAdapter()
                 .Use(new ConversationState<TestState>(new MemoryStorage()));
 
-            await new TestFlow(adapter, async (context) =>
+            var flow = new TestFlow(adapter, async (context) =>
             {
                 var state = ConversationState<TestState>.Get(context);
 
@@ -60,21 +66,20 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                         await context.SendActivity(dateTimeResult.Status.ToString());
                     }
                 }
-            })
-            .Send("hello")
-            .AssertReply("What date would you like?")
-            .Send("5th December 2018 at 9am")
-            .AssertReply("Timex:'2018-12-05T09' Value:'2018-12-05 09:00:00'")
-            .StartTest();
+            });
+
+            await flow.Test(activities).StartTest();
         }
 
         [TestMethod]
         public async Task DateTimePrompt_ShouldRecognizeDateTime_Range()
         {
+            var activities = TranscriptUtilities.GetFromTestContext(TestContext);
+
             var adapter = new TestAdapter()
                 .Use(new ConversationState<TestState>(new MemoryStorage()));
 
-            await new TestFlow(adapter, async (context) =>
+            var flow = new TestFlow(adapter, async (context) =>
             {
                 var state = ConversationState<TestState>.Get(context);
 
@@ -98,21 +103,20 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                         await context.SendActivity(dateTimeResult.Status.ToString());
                     }
                 }
-            })
-            .Send("hello")
-            .AssertReply("What window would you like to book?")
-            .Send("4pm wednesday to 3pm Saturday")
-            .AssertReply("Timex:'(XXXX-WXX-3T16,XXXX-WXX-6T15,PT71H)'")
-            .StartTest();
+            });
+
+            await flow.Test(activities).StartTest();
         }
 
         [TestMethod]
         public async Task DateTimePrompt_ShouldRecognizeDateTime_StartEnd()
         {
+            var activities = TranscriptUtilities.GetFromTestContext(TestContext);
+
             var adapter = new TestAdapter()
                 .Use(new ConversationState<TestState>(new MemoryStorage()));
 
-            await new TestFlow(adapter, async (context) =>
+            var flow = new TestFlow(adapter, async (context) =>
             {
                 var state = ConversationState<TestState>.Get(context);
 
@@ -136,17 +140,16 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                         await context.SendActivity(dateTimeResult.Status.ToString());
                     }
                 }
-            })
-            .Send("hello")
-            .AssertReply("What month are you interested in?")
-            .Send("May 1967")
-            .AssertReply("Timex:'1967-05' Start:'1967-05-01' End:'1967-06-01'")
-            .StartTest();
+            });
+
+            await flow.Test(activities).StartTest();
         }
 
         [TestMethod]
         public async Task DateTimePrompt_ShouldRecognizeDateTime_CustomValidator()
         {
+            var activities = TranscriptUtilities.GetFromTestContext(TestContext);
+
             var adapter = new TestAdapter()
                 .Use(new ConversationState<TestState>(new MemoryStorage()));
 
@@ -156,7 +159,7 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                 return Task.CompletedTask;
             };
 
-            await new TestFlow(adapter, async (context) =>
+            var flow = new TestFlow(adapter, async (context) =>
             {
                 var state = ConversationState<TestState>.Get(context);
 
@@ -180,12 +183,9 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                         await context.SendActivity(dateTimeResult.Status.ToString());
                     }
                 }
-            })
-            .Send("hello")
-            .AssertReply("What date would you like?")
-            .Send("5th December 2018 at 9am")
-            .AssertReply("NotRecognized")
-            .StartTest();
+            });
+
+            await flow.Test(activities).StartTest();
         }
     }
 }

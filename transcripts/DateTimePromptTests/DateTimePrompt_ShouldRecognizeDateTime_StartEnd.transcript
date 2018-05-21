@@ -1,0 +1,82 @@
+[
+  {
+    "conversation": {
+      "id": "1"
+    },
+    "id": "a737b782-441e-43ee-a911-087ba2c096f0",
+    "recipient": {
+      "id": "ea7f092b-9607-3263-a491-07fb20c993b3",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "from": {
+      "id": "36f410e9-b3bc-3482-be9a-71aa96711033",
+      "name": "User",
+      "role": "user"
+    },
+    "text": "hello",
+    "timestamp": "2018-05-17T19:20:48.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "1"
+    },
+    "id": "87f27584-0451-47c9-97bf-c153e4336180",
+    "recipient": {
+      "id": "36f410e9-b3bc-3482-be9a-71aa96711033",
+      "name": "User",
+      "role": "user"
+    },
+    "from": {
+      "id": "ea7f092b-9607-3263-a491-07fb20c993b3",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "text": "What month are you interested in?",
+    "timestamp": "2018-05-17T19:20:50.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "1"
+    },
+    "id": "ea69e3b2-6288-4e1e-a24c-424bb2bdfa1b",
+    "recipient": {
+      "id": "ea7f092b-9607-3263-a491-07fb20c993b3",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "from": {
+      "id": "36f410e9-b3bc-3482-be9a-71aa96711033",
+      "name": "User",
+      "role": "user"
+    },
+    "text": "May 1967",
+    "timestamp": "2018-05-17T19:20:52.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "1"
+    },
+    "id": "0d439ad4-57b0-47dc-8d3e-11f0fae24a1c",
+    "recipient": {
+      "id": "36f410e9-b3bc-3482-be9a-71aa96711033",
+      "name": "User",
+      "role": "user"
+    },
+    "from": {
+      "id": "ea7f092b-9607-3263-a491-07fb20c993b3",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "text": "Timex:'1967-05' Start:'1967-05-01' End:'1967-06-01'",
+    "timestamp": "2018-05-17T19:20:54.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  }
+]

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Core.Extensions;
-using Microsoft.Bot.Schema;
+using Microsoft.Bot.Builder.Core.Extensions.Tests;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Bot.Builder.Prompts.Tests
@@ -15,29 +15,31 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
     [TestCategory("Attachment Prompts")]
     public class AttachmentPromptTests
     {
+        public TestContext TestContext { get; set; }
+
         [TestMethod]
         public async Task AttachmentPrompt_ShouldSendPrompt()
         {
-            await new TestFlow(new TestAdapter(), async (context) =>
+            var activities = TranscriptUtilities.GetFromTestContext(TestContext);
+
+            var flow = new TestFlow(new TestAdapter(), async (context) =>
             {
                 var attachmentPrompt = new AttachmentPrompt();
                 await attachmentPrompt.Prompt(context, "please add an attachment.");
-            })
-            .Send("hello")
-            .AssertReply("please add an attachment.")
-            .StartTest();
+            });
+
+            await flow.Test(activities).StartTest();
         }
 
         [TestMethod]
         public async Task AttachmentPrompt_ShouldRecognizeAttachment()
         {
+            var activities = TranscriptUtilities.GetFromTestContext(TestContext);
+            
             var adapter = new TestAdapter()
                 .Use(new ConversationState<TestState>(new MemoryStorage()));
 
-            var attachment = new Attachment { Content = "some content", ContentType = "text/plain" };
-            var activityWithAttachment = MessageFactory.Attachment(attachment);
-
-            await new TestFlow(adapter, async (context) =>
+            var flow = new TestFlow(adapter, async (context) =>
             {
                 var state = ConversationState<TestState>.Get(context);
 
@@ -52,18 +54,15 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                     var attachmentResult = await attachmentPrompt.Recognize(context);
                     if (attachmentResult.Succeeded())
                     {
-                        var reply = (string)attachmentResult.Attachments.First().Content;
+                        var reply = attachmentResult.Attachments.First().Content as string;
                         await context.SendActivity(reply);
                     }
                     else
                         await context.SendActivity(attachmentResult.Status.ToString());
                 }
-            })
-            .Send("hello")
-            .AssertReply("please add an attachment.")
-            .Send(activityWithAttachment)
-            .AssertReply("some content")
-            .StartTest();
+            });
+
+            await flow.Test(activities).StartTest();
         }
     }
 }
