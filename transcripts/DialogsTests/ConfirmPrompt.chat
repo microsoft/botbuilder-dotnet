@@ -1,0 +1,7 @@
+user=User
+bot=Bot
+
+User: hello
+Bot: Please confirm.
+User: yes
+Bot: Confirmed.

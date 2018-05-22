@@ -1,0 +1,82 @@
+[
+  {
+    "conversation": {
+      "id": "1"
+    },
+    "id": "e225934e-6332-4832-b8c3-848537ba87ef",
+    "recipient": {
+      "id": "f21b6d3e-cf8a-3465-84c5-18cf2be41981",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "from": {
+      "id": "ba5e7bc5-e343-37b4-bc03-05ecf7fe7c5a",
+      "name": "User",
+      "role": "user"
+    },
+    "text": "hello",
+    "timestamp": "2018-05-17T19:29:44.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "1"
+    },
+    "id": "02d556f5-dd92-4e1a-8013-5b4ade70200e",
+    "recipient": {
+      "id": "ba5e7bc5-e343-37b4-bc03-05ecf7fe7c5a",
+      "name": "User",
+      "role": "user"
+    },
+    "from": {
+      "id": "f21b6d3e-cf8a-3465-84c5-18cf2be41981",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "text": "Enter a number.",
+    "timestamp": "2018-05-17T19:29:46.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "1"
+    },
+    "id": "6b8be730-2c8e-42b5-a541-13e25d2236ea",
+    "recipient": {
+      "id": "f21b6d3e-cf8a-3465-84c5-18cf2be41981",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "from": {
+      "id": "ba5e7bc5-e343-37b4-bc03-05ecf7fe7c5a",
+      "name": "User",
+      "role": "user"
+    },
+    "text": "42",
+    "timestamp": "2018-05-17T19:29:48.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "1"
+    },
+    "id": "08d15596-6f99-4bbb-a9fc-f689d747c1b7",
+    "recipient": {
+      "id": "ba5e7bc5-e343-37b4-bc03-05ecf7fe7c5a",
+      "name": "User",
+      "role": "user"
+    },
+    "from": {
+      "id": "f21b6d3e-cf8a-3465-84c5-18cf2be41981",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "text": "Bot received the number '42'.",
+    "timestamp": "2018-05-17T19:29:50.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  }
+]

@@ -1,0 +1,87 @@
+[
+  {
+    "conversation": {
+      "id": "1"
+    },
+    "id": "359a55e7-093f-4cca-b0d6-35f08ff5e486",
+    "recipient": {
+      "id": "17e7c42c-56a2-3c24-a3c0-6861b56dac77",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "from": {
+      "id": "4a587bbd-2b95-3efa-a68b-d604f615e9ec",
+      "name": "User",
+      "role": "user"
+    },
+    "text": "hello",
+    "timestamp": "2018-05-17T22:19:13.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "1"
+    },
+    "id": "269cf63c-fbed-44da-bec5-1bc26985a2a5",
+    "recipient": {
+      "id": "4a587bbd-2b95-3efa-a68b-d604f615e9ec",
+      "name": "User",
+      "role": "user"
+    },
+    "from": {
+      "id": "17e7c42c-56a2-3c24-a3c0-6861b56dac77",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "text": "please add an attachment.",
+    "timestamp": "2018-05-17T22:19:15.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "1"
+    },
+    "id": "dcaf4cfe-42e2-474f-88e9-545928245a4a",
+    "recipient": {
+      "id": "17e7c42c-56a2-3c24-a3c0-6861b56dac77",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "from": {
+      "id": "4a587bbd-2b95-3efa-a68b-d604f615e9ec",
+      "name": "User",
+      "role": "user"
+    },
+    "attachmentLayout": "list",
+    "inputHint": "acceptingInput",
+    "attachments": [{
+      "contentType": "text/plain",
+      "content": "some content"
+    }],
+    "timestamp": "2018-05-17T22:19:17.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "1"
+    },
+    "id": "c9d44bbb-5d55-47f9-9623-8488f9d0ea68",
+    "recipient": {
+      "id": "4a587bbd-2b95-3efa-a68b-d604f615e9ec",
+      "name": "User",
+      "role": "user"
+    },
+    "from": {
+      "id": "17e7c42c-56a2-3c24-a3c0-6861b56dac77",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "text": "some content",
+    "timestamp": "2018-05-17T22:19:19.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  }
+]

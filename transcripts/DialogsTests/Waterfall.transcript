@@ -1,0 +1,122 @@
+[
+  {
+    "conversation": {
+      "id": "1"
+    },
+    "id": "1ac63fba-13ae-46e1-9c94-4bd4a025e1f5",
+    "recipient": {
+      "id": "6306117a-5771-3108-8d5a-3cdb520e9f6d",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "from": {
+      "id": "3958356d-5bae-37cf-bae3-52e6cf08dedc",
+      "name": "User",
+      "role": "user"
+    },
+    "text": "hello",
+    "timestamp": "2018-05-17T19:54:08.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "1"
+    },
+    "id": "808facc7-cc03-4d03-ac1a-91ec302f6679",
+    "recipient": {
+      "id": "3958356d-5bae-37cf-bae3-52e6cf08dedc",
+      "name": "User",
+      "role": "user"
+    },
+    "from": {
+      "id": "6306117a-5771-3108-8d5a-3cdb520e9f6d",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "text": "step1",
+    "timestamp": "2018-05-17T19:54:10.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "1"
+    },
+    "id": "e8dceac2-97be-46e4-b920-7fb7df085c88",
+    "recipient": {
+      "id": "6306117a-5771-3108-8d5a-3cdb520e9f6d",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "from": {
+      "id": "3958356d-5bae-37cf-bae3-52e6cf08dedc",
+      "name": "User",
+      "role": "user"
+    },
+    "text": "hello",
+    "timestamp": "2018-05-17T19:54:12.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "1"
+    },
+    "id": "dcf573f1-e001-43e7-8a74-c349cd03c6ff",
+    "recipient": {
+      "id": "3958356d-5bae-37cf-bae3-52e6cf08dedc",
+      "name": "User",
+      "role": "user"
+    },
+    "from": {
+      "id": "6306117a-5771-3108-8d5a-3cdb520e9f6d",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "text": "step2",
+    "timestamp": "2018-05-17T19:54:14.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "1"
+    },
+    "id": "d95a8c54-500f-4947-8799-f5d9da63ff42",
+    "recipient": {
+      "id": "6306117a-5771-3108-8d5a-3cdb520e9f6d",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "from": {
+      "id": "3958356d-5bae-37cf-bae3-52e6cf08dedc",
+      "name": "User",
+      "role": "user"
+    },
+    "text": "hello",
+    "timestamp": "2018-05-17T19:54:16.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "1"
+    },
+    "id": "5399fe1b-06fe-4246-98e8-c05b48bf86cd",
+    "recipient": {
+      "id": "3958356d-5bae-37cf-bae3-52e6cf08dedc",
+      "name": "User",
+      "role": "user"
+    },
+    "from": {
+      "id": "6306117a-5771-3108-8d5a-3cdb520e9f6d",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "text": "step3",
+    "timestamp": "2018-05-17T19:54:18.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  }
+]
