@@ -17,7 +17,7 @@ namespace Connector.Tests
         [Fact]
         public void OAuthClient_ShouldThrowOnInvalidUrl()
         {
-            Assert.Throws<InvalidOperationException>(() => new OAuthClient(mockConnectorClient, "http://localhost"));
+            Assert.Throws<ArgumentException>(() => new OAuthClient(mockConnectorClient, "http://localhost"));
         }
 
         [Fact]
