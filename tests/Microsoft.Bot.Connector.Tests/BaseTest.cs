@@ -68,6 +68,27 @@ namespace Connector.Tests
                 context.Stop();
             }
         }
+
+        public async Task UseOAuthClientFor(Func<OAuthClient, Task> doTest, string className = null, [CallerMemberName] string methodName = "")
+        {
+            using (MockContext context = MockContext.Start(className ?? ClassName, methodName))
+            {
+                HttpMockServer.Initialize(className ?? ClassName, methodName, mode);
+                using (var client = new ConnectorClient(hostUri, new BotAccessTokenStub(token), handlers: HttpMockServer.CreateInstance()))
+                using (var oauthClient = new OAuthClient(client, AuthenticationConstants.OAuthUrl))
+                {
+                    client.UseSharedHttpClient = false;
+                    await doTest(oauthClient);
+                }
+
+                if (mode == HttpRecorderMode.Record)
+                {
+                    HttpMockServer.FileSystemUtilsObject = new FileSystemUtils();
+                    HttpMockServer.Flush();
+                }
+                context.Stop();
+            }
+        }
     }
 
     public class BotAccessTokenStub : ServiceClientCredentials
