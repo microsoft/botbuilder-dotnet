@@ -36,8 +36,10 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Handlers
 
         public BotMessageHandlerBase(BotFrameworkAdapter botFrameworkAdapter)
         {
-            _botFrameworkAdapter = botFrameworkAdapter;
+            _botFrameworkAdapter = botFrameworkAdapter ?? throw new ArgumentNullException(nameof(botFrameworkAdapter));
         }
+
+        internal BotFrameworkAdapter BotFrameworkAdapter => _botFrameworkAdapter;
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {

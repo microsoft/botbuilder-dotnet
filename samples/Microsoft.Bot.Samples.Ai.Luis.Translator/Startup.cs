@@ -56,8 +56,8 @@ namespace Microsoft.Bot.Samples.Ai.Luis.Translator
                 userCustomDictonaries.Add("fr", frenctDictionary);
                 var middleware = options.Middleware;
                 middleware.Add(new ConversationState<CurrentUserState>(new MemoryStorage()));
+                middleware.Add(new LocaleConverterMiddleware(TranslatorLocaleHelper.GetActiveLocale, TranslatorLocaleHelper.CheckUserChangedLanguageOrLocale, "en-us", LocaleConverter.Converter));
                 middleware.Add(new TranslationMiddleware(new string[] { "en" }, "<your translator key here>", patterns, userCustomDictonaries, TranslatorLocaleHelper.GetActiveLanguage, TranslatorLocaleHelper.CheckUserChangedLanguage));
-                middleware.Add(new LocaleConverterMiddleware(TranslatorLocaleHelper.GetActiveLocale, TranslatorLocaleHelper.CheckUserChangedLocale, "en-us", LocaleConverter.Converter));
                 middleware.Add(new LuisRecognizerMiddleware(luisModel, luisOptions: luisOptions));
             });
         }

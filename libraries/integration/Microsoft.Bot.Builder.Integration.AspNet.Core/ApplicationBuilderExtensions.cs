@@ -51,29 +51,23 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                 throw new ArgumentNullException(nameof(configurePaths));
             }
 
-            var options = applicationBuilder.ApplicationServices.GetRequiredService<IOptions<BotFrameworkOptions>>().Value;
-
-            var botFrameworkAdapter = new BotFrameworkAdapter(options.CredentialProvider, options.ConnectorClientRetryPolicy);
-
-            foreach (var middleware in options.Middleware)
-            {
-                botFrameworkAdapter.Use(middleware);
-            }
-
             var paths = new BotFrameworkPaths();
 
             configurePaths(paths);
+
+            var applicationServices = applicationBuilder.ApplicationServices;
+            var options = applicationServices.GetRequiredService<IOptions<BotFrameworkOptions>>().Value;
 
             if (options.EnableProactiveMessages)
             {
                 applicationBuilder.Map(
                     paths.BasePath + paths.ProactiveMessagesPath,
-                    botProactiveAppBuilder => botProactiveAppBuilder.Run(new BotProactiveMessageHandler(botFrameworkAdapter).HandleAsync));
+                    botProactiveAppBuilder => botProactiveAppBuilder.Run(new BotProactiveMessageHandler().HandleAsync));
             }
 
             applicationBuilder.Map(
                 paths.BasePath + paths.MessagesPath, 
-                botActivitiesAppBuilder => botActivitiesAppBuilder.Run(new BotMessageHandler(botFrameworkAdapter).HandleAsync));
+                botActivitiesAppBuilder => botActivitiesAppBuilder.Run(new BotMessageHandler().HandleAsync));
 
             return applicationBuilder;
 
