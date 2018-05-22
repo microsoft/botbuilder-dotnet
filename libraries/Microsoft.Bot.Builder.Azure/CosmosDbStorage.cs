@@ -106,14 +106,14 @@ namespace Microsoft.Bot.Builder.Azure
         /// Loads store items from storage.
         /// </summary>
         /// <param name="keys">Array of item keys to read from the store.</param>
-        public async Task<IEnumerable<KeyValuePair<string, object>>> Read(params string[] keys)
+        public async Task<IDictionary<string, object>> Read(params string[] keys)
         {
             if (keys.Length == 0)
             {
                 throw new ArgumentException("Please provide at least one key to read from storage", nameof(keys));
             }
 
-            var storeItems = new List<KeyValuePair<string, object>>();
+            IDictionary<string, object> storeItems = new Dictionary<string, object>();
 
             // Ensure collection exists
             var collectionLink = await GetCollectionLink();
@@ -149,7 +149,7 @@ namespace Microsoft.Bot.Builder.Azure
         /// Saves store items to storage.
         /// </summary>
         /// <param name="changes">Map of items to write to storage.</param>
-        public async Task Write(IEnumerable<KeyValuePair<string, object>> changes)
+        public async Task Write(IDictionary<string, object> changes)
         {
             if (changes == null)
             {
