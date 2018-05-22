@@ -1,0 +1,82 @@
+[
+  {
+    "conversation": {
+      "id": "1"
+    },
+    "id": "3af945bb-5215-4ea0-992a-ecf5f2d27ab8",
+    "recipient": {
+      "id": "5ef128b6-800a-3d08-bcda-27d32227ae9c",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "from": {
+      "id": "37890eff-b1a7-3dbd-95a6-70db71ff3f12",
+      "name": "User",
+      "role": "user"
+    },
+    "text": "hello",
+    "timestamp": "2018-05-17T22:04:01.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "1"
+    },
+    "id": "512ce070-064c-44e2-b6e2-e64a98ed9df2",
+    "recipient": {
+      "id": "37890eff-b1a7-3dbd-95a6-70db71ff3f12",
+      "name": "User",
+      "role": "user"
+    },
+    "from": {
+      "id": "5ef128b6-800a-3d08-bcda-27d32227ae9c",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "text": "favorite color? (1) red, (2) green, or (3) blue",
+    "timestamp": "2018-05-17T22:04:03.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "1"
+    },
+    "id": "7515b603-f120-426c-9a9b-ce5f1ab74f08",
+    "recipient": {
+      "id": "5ef128b6-800a-3d08-bcda-27d32227ae9c",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "from": {
+      "id": "37890eff-b1a7-3dbd-95a6-70db71ff3f12",
+      "name": "User",
+      "role": "user"
+    },
+    "text": "green",
+    "timestamp": "2018-05-17T22:04:05.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "1"
+    },
+    "id": "addfff93-fa4a-41d6-84da-375b83d6f76c",
+    "recipient": {
+      "id": "37890eff-b1a7-3dbd-95a6-70db71ff3f12",
+      "name": "User",
+      "role": "user"
+    },
+    "from": {
+      "id": "5ef128b6-800a-3d08-bcda-27d32227ae9c",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "text": "Bot received the choice 'green'.",
+    "timestamp": "2018-05-17T22:04:07.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  }
+]

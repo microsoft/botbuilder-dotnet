@@ -1,0 +1,7 @@
+user=User
+bot=Bot
+
+User: hello
+Bot: Enter some text.
+User: some text
+Bot: Bot received the text 'some text'.
