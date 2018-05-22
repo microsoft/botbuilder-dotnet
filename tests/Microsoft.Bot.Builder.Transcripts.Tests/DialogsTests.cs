@@ -179,34 +179,6 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
             TestAdapter adapter = new TestAdapter()
                 .Use(new ConversationState<Dictionary<string, object>>(new MemoryStorage()));
 
-            await new TestFlow(adapter, async (turnContext) =>
-            {
-                var state = ConversationState<Dictionary<string, object>>.Get(turnContext);
-                var prompt = new TextPrompt();
-
-                var dialogCompletion = await prompt.Continue(turnContext, state);
-                if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
-                {
-                    await prompt.Begin(turnContext, state, new PromptOptions { PromptString = "Enter some text." });
-                }
-                else if (dialogCompletion.IsCompleted)
-                {
-                    var textResult = (Prompts.TextResult)dialogCompletion.Result;
-                    await turnContext.SendActivity($"Bot received the text '{textResult.Value}'.");
-                }
-            })
-            .Test(activities)
-            .StartTest();
-        }
-
-        [TestMethod]
-        public async Task TextPromptValidator()
-        {
-            var activities = TranscriptUtilities.GetFromTestContext(TestContext);
-
-            TestAdapter adapter = new TestAdapter()
-                .Use(new ConversationState<Dictionary<string, object>>(new MemoryStorage()));
-
             Prompts.PromptValidatorEx.PromptValidator<Prompts.TextResult> validator = async (ctx, result) =>
             {
                 if (result.Value.Length <= 3)
