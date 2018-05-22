@@ -5,6 +5,9 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Schema
 {
+    /// <summary>
+    /// State object passed to the bot token service.
+    /// </summary>
     public class TokenExchangeState
     {
         /// <summary>

@@ -45,10 +45,9 @@ namespace Microsoft.Bot.Builder.Prompts
         /// <returns></returns>
         public async Task Prompt(ITurnContext context, IMessageActivity activity)
         {
-            if (context == null)
-                throw new ArgumentNullException(nameof(context));
-            if (activity == null)
-                throw new ArgumentNullException(nameof(activity));
+            BotAssert.ContextNotNull(context);
+            BotAssert.ActivityNotNull(activity);
+
 
             var adapter = context.Adapter as BotFrameworkAdapter;
             if (adapter == null)
@@ -59,7 +58,7 @@ namespace Microsoft.Bot.Builder.Prompts
 
             var cards = activity.Attachments.Where(a => a.Content is OAuthCard);
             if (cards.Count() == 0)
-                throw new InvalidOperationException("OAuthPrompt.Prompt(): atleast one of the cards should be an oauth card");
+                throw new InvalidOperationException("OAuthPrompt.Prompt(): at least one of the cards should be an oauth card");
 
             var replyActivity = MessageFactory.Attachment(cards.First());//todo:send an oauth or signin card based on channel id
             await context.SendActivity(replyActivity).ConfigureAwait(false);
@@ -74,9 +73,8 @@ namespace Microsoft.Bot.Builder.Prompts
         /// <returns></returns>
         public async Task Prompt(ITurnContext context, string text, string speak = null)
         {
-            if (context == null)
-                throw new ArgumentNullException(nameof(context));
-            if (string.IsNullOrEmpty(text))
+            BotAssert.ContextNotNull(context);
+            if (string.IsNullOrWhiteSpace(text))
                 throw new ArgumentNullException(nameof(text));
 
             await context.SendActivity(text, speak).ConfigureAwait(false);
