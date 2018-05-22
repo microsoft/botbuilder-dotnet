@@ -39,9 +39,9 @@ namespace Microsoft.Bot.Builder.Ai.Translation.PostProcessor
                 foreach (string pattern in item.Value)
                 {
                     string processedLine = pattern.Trim();
-                    if (!pattern.Contains('('))
+                    if (!processedLine.Contains('('))
                     {
-                        processedLine = '(' + pattern + ')';
+                        processedLine = '(' + processedLine + ')';
                     }
                     _processedPatterns[item.Key].Add(processedLine);
                 }
