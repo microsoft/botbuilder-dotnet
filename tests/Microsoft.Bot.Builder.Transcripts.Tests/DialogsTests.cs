@@ -58,60 +58,6 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
                     new Prompts.Choices.Choice { Value = "red" },
                     new Prompts.Choices.Choice { Value = "green" },
                     new Prompts.Choices.Choice { Value = "blue" },
-                }
-            };
-
-            dialogs.Add("test",
-                new WaterfallStep[]
-                {
-                    async (dc, args, next) =>
-                    {
-                        await dc.Prompt("test-prompt", "favorite color?", promptOptions);
-                    },
-                    async (dc, args, next) =>
-                    {
-                        var choiceResult = (Prompts.ChoiceResult)args;
-                        await dc.Context.SendActivity($"Bot received the choice '{choiceResult.Value.Value}'.");
-                        await dc.End();
-                    }
-                }
-            );
-
-            var activities = TranscriptUtilities.GetFromTestContext(TestContext);
-
-            TestAdapter adapter = new TestAdapter()
-                .Use(new ConversationState<Dictionary<string, object>>(new MemoryStorage()));
-
-            await new TestFlow(adapter, async (turnContext) =>
-            {
-                var state = ConversationState<Dictionary<string, object>>.Get(turnContext);
-                var dc = dialogs.CreateContext(turnContext, state);
-
-                await dc.Continue();
-
-                if (!turnContext.Responded)
-                {
-                    await dc.Begin("test");
-                }
-            })
-            .Test(activities)
-            .StartTest();
-        }
-
-        [TestMethod]
-        public async Task ChoicePromptRetry()
-        {
-            var dialogs = new DialogSet();
-
-            dialogs.Add("test-prompt", new Dialogs.ChoicePrompt(Culture.English) { Style = Prompts.ListStyle.Inline });
-
-            var promptOptions = new ChoicePromptOptions
-            {
-                Choices = new List<Prompts.Choices.Choice>
-                {
-                    new Prompts.Choices.Choice { Value = "red" },
-                    new Prompts.Choices.Choice { Value = "green" },
-                    new Prompts.Choices.Choice { Value = "blue" },
                 },
                 RetryPromptString = "I didn't catch that. Select a color from the list."
             };
