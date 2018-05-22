@@ -100,6 +100,45 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
         }
 
         [TestMethod]
+        public async Task ConfirmPrompt()
+        {
+            var activities = TranscriptUtilities.GetFromTestContext(TestContext);
+
+            TestAdapter adapter = new TestAdapter()
+                .Use(new ConversationState<Dictionary<string, object>>(new MemoryStorage()));
+
+            await new TestFlow(adapter, async (turnContext) =>
+            {
+                var state = ConversationState<Dictionary<string, object>>.Get(turnContext);
+                var prompt = new ConfirmPrompt(Culture.English);
+
+                var dialogCompletion = await prompt.Continue(turnContext, state);
+                if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
+                {
+                    await prompt.Begin(turnContext, state,
+                        new PromptOptions
+                        {
+                            PromptString = "Please confirm.",
+                            RetryPromptString = "Please confirm, say 'yes' or 'no' or something like that."
+                        });
+                }
+                else if (dialogCompletion.IsCompleted)
+                {
+                    if (((Prompts.ConfirmResult)dialogCompletion.Result).Confirmation)
+                    {
+                        await turnContext.SendActivity("Confirmed.");
+                    }
+                    else
+                    {
+                        await turnContext.SendActivity("Not confirmed.");
+                    }
+                }
+            })
+            .Test(activities)
+            .StartTest();
+        }
+
+        [TestMethod]
         public async Task DateTimePrompt()
         {
             var activities = TranscriptUtilities.GetFromTestContext(TestContext);
@@ -205,79 +244,6 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
                 {
                     var textResult = (Prompts.TextResult)dialogCompletion.Result;
                     await turnContext.SendActivity($"Bot received the text '{textResult.Value}'.");
-                }
-            })
-            .Test(activities)
-            .StartTest();
-        }
-
-        [TestMethod]
-        public async Task ConfirmPrompt()
-        {
-            var activities = TranscriptUtilities.GetFromTestContext(TestContext);
-
-            TestAdapter adapter = new TestAdapter()
-                .Use(new ConversationState<Dictionary<string, object>>(new MemoryStorage()));
-
-            await new TestFlow(adapter, async (turnContext) =>
-            {
-                var state = ConversationState<Dictionary<string, object>>.Get(turnContext);
-                var prompt = new ConfirmPrompt(Culture.English);
-
-                var dialogCompletion = await prompt.Continue(turnContext, state);
-                if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
-                {
-                    await prompt.Begin(turnContext, state, new PromptOptions { PromptString = "Please confirm." });
-                }
-                else if (dialogCompletion.IsCompleted)
-                {
-                    if (((Prompts.ConfirmResult)dialogCompletion.Result).Confirmation)
-                    {
-                        await turnContext.SendActivity("Confirmed.");
-                    }
-                    else
-                    {
-                        await turnContext.SendActivity("Not confirmed.");
-                    }
-                }
-            })
-            .Test(activities)
-            .StartTest();
-        }
-
-        [TestMethod]
-        public async Task ConfirmPromptRetry()
-        {
-            var activities = TranscriptUtilities.GetFromTestContext(TestContext);
-
-            TestAdapter adapter = new TestAdapter()
-                .Use(new ConversationState<Dictionary<string, object>>(new MemoryStorage()));
-
-            await new TestFlow(adapter, async (turnContext) =>
-            {
-                var state = ConversationState<Dictionary<string, object>>.Get(turnContext);
-                var prompt = new ConfirmPrompt(Culture.English);
-
-                var dialogCompletion = await prompt.Continue(turnContext, state);
-                if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
-                {
-                    await prompt.Begin(turnContext, state,
-                        new PromptOptions
-                        {
-                            PromptString = "Please confirm.",
-                            RetryPromptString = "Please confirm, say 'yes' or 'no' or something like that."
-                        });
-                }
-                else if (dialogCompletion.IsCompleted)
-                {
-                    if (((Prompts.ConfirmResult)dialogCompletion.Result).Confirmation)
-                    {
-                        await turnContext.SendActivity("Confirmed.");
-                    }
-                    else
-                    {
-                        await turnContext.SendActivity("Not confirmed.");
-                    }
                 }
             })
             .Test(activities)
