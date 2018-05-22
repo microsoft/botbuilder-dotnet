@@ -3,5 +3,5 @@ bot=Bot
 
 User: hello
 Bot: please add an attachment.
-User: [The attachement activity was manually edited after the Chatdown conversion]
+User: [Attachment=ContentAttachment.json]
 Bot: some content
