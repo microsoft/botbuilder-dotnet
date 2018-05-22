@@ -3,19 +3,19 @@
     "conversation": {
       "id": "1"
     },
-    "id": "359a55e7-093f-4cca-b0d6-35f08ff5e486",
+    "id": "0a4dfc43-7a03-45f9-a810-378c2d2b1ffa",
     "recipient": {
-      "id": "17e7c42c-56a2-3c24-a3c0-6861b56dac77",
+      "id": "93e81423-43ec-31e4-86ee-15927a0e7616",
       "name": "Bot",
       "role": "bot"
     },
     "from": {
-      "id": "4a587bbd-2b95-3efa-a68b-d604f615e9ec",
+      "id": "f7dcae02-0593-3e2d-8045-9fbf2c662a47",
       "name": "User",
       "role": "user"
     },
     "text": "hello",
-    "timestamp": "2018-05-17T22:19:13.000Z",
+    "timestamp": "2018-05-22T16:12:09.000Z",
     "type": "message",
     "channelId": "chatdown"
   },
@@ -23,44 +23,45 @@
     "conversation": {
       "id": "1"
     },
-    "id": "269cf63c-fbed-44da-bec5-1bc26985a2a5",
+    "id": "df13592b-b588-476e-a7e0-9dfe77263d8f",
     "recipient": {
-      "id": "4a587bbd-2b95-3efa-a68b-d604f615e9ec",
+      "id": "f7dcae02-0593-3e2d-8045-9fbf2c662a47",
       "name": "User",
       "role": "user"
     },
     "from": {
-      "id": "17e7c42c-56a2-3c24-a3c0-6861b56dac77",
+      "id": "93e81423-43ec-31e4-86ee-15927a0e7616",
       "name": "Bot",
       "role": "bot"
     },
     "text": "please add an attachment.",
-    "timestamp": "2018-05-17T22:19:15.000Z",
+    "timestamp": "2018-05-22T16:12:11.000Z",
     "type": "message",
     "channelId": "chatdown"
   },
   {
+    "attachments": [
+      {
+        "contentType": "application/json",
+        "content": "some content"
+      }
+    ],
     "conversation": {
       "id": "1"
     },
-    "id": "dcaf4cfe-42e2-474f-88e9-545928245a4a",
+    "id": "a524d249-878a-4f2c-abbe-640dc28981b4",
     "recipient": {
-      "id": "17e7c42c-56a2-3c24-a3c0-6861b56dac77",
+      "id": "93e81423-43ec-31e4-86ee-15927a0e7616",
       "name": "Bot",
       "role": "bot"
     },
     "from": {
-      "id": "4a587bbd-2b95-3efa-a68b-d604f615e9ec",
+      "id": "f7dcae02-0593-3e2d-8045-9fbf2c662a47",
       "name": "User",
       "role": "user"
     },
-    "attachmentLayout": "list",
-    "inputHint": "acceptingInput",
-    "attachments": [{
-      "contentType": "text/plain",
-      "content": "some content"
-    }],
-    "timestamp": "2018-05-17T22:19:17.000Z",
+    "text": null,
+    "timestamp": "2018-05-22T16:12:15.000Z",
     "type": "message",
     "channelId": "chatdown"
   },
@@ -68,19 +69,19 @@
     "conversation": {
       "id": "1"
     },
-    "id": "c9d44bbb-5d55-47f9-9623-8488f9d0ea68",
+    "id": "b2992d9a-8462-4ff7-9329-8b001610dc28",
     "recipient": {
-      "id": "4a587bbd-2b95-3efa-a68b-d604f615e9ec",
+      "id": "f7dcae02-0593-3e2d-8045-9fbf2c662a47",
       "name": "User",
       "role": "user"
     },
     "from": {
-      "id": "17e7c42c-56a2-3c24-a3c0-6861b56dac77",
+      "id": "93e81423-43ec-31e4-86ee-15927a0e7616",
       "name": "Bot",
       "role": "bot"
     },
     "text": "some content",
-    "timestamp": "2018-05-17T22:19:19.000Z",
+    "timestamp": "2018-05-22T16:12:17.000Z",
     "type": "message",
     "channelId": "chatdown"
   }
