@@ -11,7 +11,7 @@
           "Microsoft.Bot.Connector.ConnectorClient/4.0.0.0"
         ]
       },
-      "ResponseBody": "{\r\n  \"connectionName\": \"mygithubconnection\",\r\n  \"token\": \"cd0e3ee685ccf7d52a1909c02874a17e98914b0a\"\r\n}",
+      "ResponseBody": "{\r\n  \"connectionName\": \"mygithubconnection\",\r\n  \"token\": \"randomtoken\"\r\n}",
       "ResponseHeaders": {
         "Content-Length": [
           "102"
