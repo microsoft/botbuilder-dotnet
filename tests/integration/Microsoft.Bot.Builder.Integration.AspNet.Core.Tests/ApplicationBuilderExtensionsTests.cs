@@ -51,46 +51,6 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             }
 
             [Fact]
-            public void WithExplicitNullPathConfigurationCallback()
-            {
-                var applicationBuilderMock = new Mock<IApplicationBuilder>();
-
-                var action = new Action(() => applicationBuilderMock.Object.UseBotFramework(null));
-
-                action.Should().Throw<ArgumentNullException>();
-            }
-
-            [Fact]
-            public void WithPathConfigurationCallback()
-            {
-                var botFrameworkOptionsMock = new Mock<IOptions<BotFrameworkOptions>>();
-                botFrameworkOptionsMock.Setup(o => o.Value)
-                    .Returns(new BotFrameworkOptions());
-
-                var serviceProviderMock = new Mock<IServiceProvider>();
-                serviceProviderMock.Setup(sp => sp.GetService(typeof(IOptions<BotFrameworkOptions>)))
-                    .Returns(botFrameworkOptionsMock.Object);
-
-                var mappedApplicationBuilderMock = new Mock<IApplicationBuilder>();
-
-                var applicationBuilderMock = new Mock<IApplicationBuilder>();
-                applicationBuilderMock.Setup(ab => ab.ApplicationServices)
-                    .Returns(serviceProviderMock.Object);
-
-                applicationBuilderMock.Setup(ab => ab.New())
-                    .Returns(mappedApplicationBuilderMock.Object);
-
-                applicationBuilderMock.Object.UseBotFramework(paths =>
-                {
-                    paths.Should().NotBeNull();
-                });
-
-                applicationBuilderMock.Verify(ab => ab.New(), Times.Once());
-                mappedApplicationBuilderMock.Verify(mab => mab.Build(), Times.Once());
-                mappedApplicationBuilderMock.Verify(mab => mab.Use(It.IsAny<Func<RequestDelegate, RequestDelegate>>()), Times.Once());
-            }
-
-            [Fact]
             public void WhenEnableProactiveTrueShouldMapMultipleHandlers()
             {
                 var botFrameworkOptionsMock = new Mock<IOptions<BotFrameworkOptions>>();
@@ -118,10 +78,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
                 applicationBuilderMock.Setup(ab => ab.New())
                     .Returns(() => mappedApplicationBlocks[rootApplicationBuilderNewCallCount++].Object);
 
-                applicationBuilderMock.Object.UseBotFramework(paths =>
-                {
-                    paths.Should().NotBeNull();
-                });
+                applicationBuilderMock.Object.UseBotFramework();
 
                 applicationBuilderMock.Verify(ab => ab.New(), Times.Exactly(2));
 
