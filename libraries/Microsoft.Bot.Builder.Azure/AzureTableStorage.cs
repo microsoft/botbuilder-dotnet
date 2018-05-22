@@ -83,7 +83,7 @@ namespace Microsoft.Bot.Builder.Azure
         /// Loads store items from storage.
         /// </summary>
         /// <param name="keys">Array of item keys to read from the store.</param>
-        public async Task<IEnumerable<KeyValuePair<string, object>>> Read(params string[] keys)
+        public async Task<IDictionary<string, object>> Read(params string[] keys)
         {
             if (keys == null || keys.Length == 0)
             {
@@ -107,15 +107,22 @@ namespace Microsoft.Bot.Builder.Azure
                 return new KeyValuePair<string, object>();
             });
 
-            return (await Task.WhenAll(readTasks).ConfigureAwait(false))
-                .Where(kv => kv.Key != null);
+            var kvps = (await Task.WhenAll(readTasks).ConfigureAwait(false)).Where(kv => kv.Key != null);
+
+            IDictionary<string, object> items = new Dictionary<string, object>();
+            foreach(var kvp in kvps)
+            {
+                items.Add(kvp);
+            }
+
+            return items; 
         }
 
         /// <summary>
         /// Saves store items to storage.
         /// </summary>
         /// <param name="changes">Map of items to write to storage.</param>
-        public async Task Write(IEnumerable<KeyValuePair<string, object>> changes)
+        public async Task Write(IDictionary<string, object> changes)
         {
             if (changes == null) throw new ArgumentNullException(nameof(changes));
 

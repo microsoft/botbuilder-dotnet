@@ -13,14 +13,14 @@ namespace Microsoft.Bot.Builder.Core.Extensions
         /// Read StoreItems from storage
         /// </summary>
         /// <param name="keys">keys of the storeItems to read</param>
-        /// <returns>StoreItem dictionary</returns>
-        Task<IEnumerable<KeyValuePair<string, object>>> Read(params string[] keys);
+        /// <returns>Dictionary of Key/Value pairs</returns>
+        Task<IDictionary<string, object>> Read(params string[] keys);
 
         /// <summary>
-        /// Write StoreItems to storage
+        /// Dictionary of Key/Value pairs to write
         /// </summary>
         /// <param name="changes"></param>
-        Task Write(IEnumerable<KeyValuePair<string, object>> changes);
+        Task Write(IDictionary<string, object> changes);
 
         /// <summary>
         /// Delete StoreItems from storage
@@ -48,22 +48,19 @@ namespace Microsoft.Bot.Builder.Core.Extensions
         /// <param name="storage"></param>
         /// <param name="keys"></param>
         /// <returns></returns>
-        public static async Task<IEnumerable<KeyValuePair<string, StoreItemT>>> Read<StoreItemT>(this IStorage storage, params string[] keys) where StoreItemT : class
+        public static async Task<IDictionary<string, StoreItemT>> Read<StoreItemT>(this IStorage storage, params string[] keys) where StoreItemT : class
         {
             var storeItems = await storage.Read(keys).ConfigureAwait(false);
-
-            return ReturnStoreItemsOfDesiredType();
-
-            IEnumerable<KeyValuePair<string, StoreItemT>> ReturnStoreItemsOfDesiredType()
+            IDictionary<string, StoreItemT> values = new Dictionary<string, StoreItemT>();
+            foreach (var entry in storeItems)
             {
-                foreach (var entry in storeItems)
+                if (entry.Value is StoreItemT valueAsType)
                 {
-                    if (entry.Value is StoreItemT valueAsType)
-                    {
-                        yield return new KeyValuePair<string, StoreItemT>(entry.Key, valueAsType);
-                    }
+                    values.Add(new KeyValuePair<string, StoreItemT>(entry.Key, valueAsType));
                 }
             }
+
+            return values;
         }
     }
 }
