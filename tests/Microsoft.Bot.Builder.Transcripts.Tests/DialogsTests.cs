@@ -128,70 +128,9 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
             .Test(activities)
             .StartTest();
         }
-
+        
         [TestMethod]
         public async Task NumberPrompt()
-        {
-            var activities = TranscriptUtilities.GetFromTestContext(TestContext);
-
-            TestAdapter adapter = new TestAdapter()
-                .Use(new ConversationState<Dictionary<string, object>>(new MemoryStorage()));
-
-            await new TestFlow(adapter, async (turnContext) =>
-            {
-                var state = ConversationState<Dictionary<string, object>>.Get(turnContext);
-                var prompt = new NumberPrompt<int>(Culture.English);
-
-                var dialogCompletion = await prompt.Continue(turnContext, state);
-                if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
-                {
-                    await prompt.Begin(turnContext, state, new PromptOptions { PromptString = "Enter a number." });
-                }
-                else if (dialogCompletion.IsCompleted)
-                {
-                    var numberResult = (Prompts.NumberResult<int>)dialogCompletion.Result;
-                    await turnContext.SendActivity($"Bot received the number '{numberResult.Value}'.");
-                }
-            })
-            .Test(activities)
-            .StartTest(); ;
-        }
-
-        [TestMethod]
-        public async Task NumberPromptRetry()
-        {
-            var activities = TranscriptUtilities.GetFromTestContext(TestContext);
-
-            TestAdapter adapter = new TestAdapter()
-                .Use(new ConversationState<Dictionary<string, object>>(new MemoryStorage()));
-
-            await new TestFlow(adapter, async (turnContext) =>
-            {
-                var state = ConversationState<Dictionary<string, object>>.Get(turnContext);
-                var prompt = new NumberPrompt<int>(Culture.English);
-
-                var dialogCompletion = await prompt.Continue(turnContext, state);
-                if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
-                {
-                    await prompt.Begin(turnContext, state,
-                        new PromptOptions
-                        {
-                            PromptString = "Enter a number.",
-                            RetryPromptString = "You must enter a number."
-                        });
-                }
-                else if (dialogCompletion.IsCompleted)
-                {
-                    var numberResult = (Prompts.NumberResult<int>)dialogCompletion.Result;
-                    await turnContext.SendActivity($"Bot received the number '{numberResult.Value}'.");
-                }
-            })
-            .Test(activities)
-            .StartTest();
-        }
-
-        [TestMethod]
-        public async Task NumberPromptValidator()
         {
             var activities = TranscriptUtilities.GetFromTestContext(TestContext);
 
@@ -219,7 +158,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
                         new PromptOptions
                         {
                             PromptString = "Enter a number.",
-                            RetryPromptString = "You must enter a positive number less than 100."
+                            RetryPromptString = "You must enter a valid positive number less than 100."
                         });
                 }
                 else if (dialogCompletion.IsCompleted)
