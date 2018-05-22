@@ -142,6 +142,48 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
         [TestMethod]
         [TestCategory("AI")]
         [TestCategory("Translator")]
+        public async Task Translator_PatternsAndDictionaryTest()
+        {
+            if (!EnvironmentVariablesDefined())
+            {
+                Assert.Inconclusive("Missing Translator Environment variables - Skipping test");
+                return;
+            }
+
+            List<IPostProcessor> attachedPostProcessors = new List<IPostProcessor>();
+            Translator translator = new Translator(translatorKey);
+            Dictionary<string, List<string>> patterns = new Dictionary<string, List<string>>();
+            List<string> frenchPatterns = new List<string> { "mon nom est (.+)" };
+
+            patterns.Add("fr", frenchPatterns);
+            IPostProcessor patternsPostProcessor = new PatternsPostProcessor(patterns);
+
+            attachedPostProcessors.Add(patternsPostProcessor);
+
+            Dictionary<string, Dictionary<string, string>> userCustomDictonaries = new Dictionary<string, Dictionary<string, string>>();
+            Dictionary<string, string> frenctDictionary = new Dictionary<string, string>();
+            frenctDictionary.Add("etat", "Eldad");
+            userCustomDictonaries.Add("fr", frenctDictionary);
+            IPostProcessor customDictionaryPostProcessor = new CustomDictionaryPostProcessor(userCustomDictonaries);
+
+            attachedPostProcessors.Add(customDictionaryPostProcessor);
+
+            var sentence = "mon nom est etat";
+
+            var translatedDocuments = await translator.TranslateArray(new string[] { sentence }, "fr", "en");
+            Assert.IsNotNull(translatedDocuments);
+            string postProcessedMessage =  null;
+            foreach (IPostProcessor postProcessor in attachedPostProcessors)
+            {
+                postProcessedMessage = postProcessor.Process(translatedDocuments[0], "fr").PostProcessedMessage;
+            }
+            Assert.IsNotNull(postProcessedMessage);
+            Assert.AreEqual("My name is Eldad", postProcessedMessage);
+        }
+
+        [TestMethod]
+        [TestCategory("AI")]
+        [TestCategory("Translator")]
         public async Task Translator_TranslateFrenchToEnglish()
         {
             if (!EnvironmentVariablesDefined())
