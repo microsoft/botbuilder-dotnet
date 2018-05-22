@@ -114,7 +114,7 @@
       "name": "Bot",
       "role": "bot"
     },
-    "text": "Timex:'2018-12-05T09' Value:'2018-12-05 09:00:00'\n",
+    "text": "Timex:'2018-12-05T09' Value:'2018-12-05 09:00:00'",
     "timestamp": "2018-05-22T14:13:50.000Z",
     "type": "message",
     "channelId": "chatdown"
