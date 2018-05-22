@@ -184,6 +184,36 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
         }
 
         [TestMethod]
+        public async Task DateTimePromptRetry()
+        {
+            var activities = TranscriptUtilities.GetFromTestContext(TestContext);
+
+            TestAdapter adapter = new TestAdapter()
+                .Use(new ConversationState<Dictionary<string, object>>(new MemoryStorage()));
+
+            await new TestFlow(adapter, async (turnContext) =>
+            {
+                var state = ConversationState<Dictionary<string, object>>.Get(turnContext);
+                var prompt = new DateTimePrompt(Culture.English);
+
+                var dialogCompletion = await prompt.Continue(turnContext, state);
+                if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
+                {
+                    await prompt.Begin(turnContext, state, new PromptOptions { PromptString = "What date would you like?", RetryPromptString = "Sorry, but that is not a date. What date would you like?" });
+                    }
+                else if (dialogCompletion.IsCompleted)
+                {
+                    var dateTimeResult = (Prompts.DateTimeResult)dialogCompletion.Result;
+                    var resolution = dateTimeResult.Resolution.First();
+                    var reply = $"Timex:'{resolution.Timex}' Value:'{resolution.Value}'";
+                    await turnContext.SendActivity(reply);
+                }
+            })
+            .Test(activities)
+            .StartTest();
+        }
+
+        [TestMethod]
         public async Task NumberPrompt()
         {
             var activities = TranscriptUtilities.GetFromTestContext(TestContext);
