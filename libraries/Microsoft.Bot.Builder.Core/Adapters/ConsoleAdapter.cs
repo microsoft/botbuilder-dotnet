@@ -64,7 +64,7 @@ namespace Microsoft.Bot.Builder.Adapters
                             IMessageActivity message = activity.AsMessageActivity();
                             if (message.Attachments != null && message.Attachments.Any())
                             {
-                                var attachment = message.Attachments.Count == 1 ? "1 attachments" : $"{message.Attachments.Count()} attachments";
+                                var attachment = message.Attachments.Count == 1 ? "1 attachment" : $"{message.Attachments.Count()} attachments";
                                 Console.WriteLine($"{message.Text} with {attachment} ");
                             }
                             else

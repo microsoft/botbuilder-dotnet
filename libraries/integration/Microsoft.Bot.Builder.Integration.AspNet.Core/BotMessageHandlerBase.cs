@@ -28,11 +28,8 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Handlers
             Converters = new List<JsonConverter> { new Iso8601TimeSpanConverter() }
         });
 
-        private BotFrameworkAdapter _botFrameworkAdapter;
-
-        public BotMessageHandlerBase(BotFrameworkAdapter botFrameworkAdapter)
+        public BotMessageHandlerBase()
         {
-            _botFrameworkAdapter = botFrameworkAdapter;
         }
 
         public async Task HandleAsync(HttpContext httpContext)
@@ -63,17 +60,16 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Handlers
                 return;
             }
 
+            var requestServices = httpContext.RequestServices;
+            var botFrameworkAdapter = requestServices.GetRequiredService<BotFrameworkAdapter>();
+            var bot = requestServices.GetRequiredService<IBot>();
+
             try
             {
                 var invokeResponse = await ProcessMessageRequestAsync(
                     request,
-                    _botFrameworkAdapter,
-                    context =>
-                    {
-                        var bot = httpContext.RequestServices.GetRequiredService<IBot>();
-
-                        return bot.OnTurn(context);
-                    });
+                    botFrameworkAdapter,
+                    bot.OnTurn);
 
                 if (invokeResponse == null)
                 {

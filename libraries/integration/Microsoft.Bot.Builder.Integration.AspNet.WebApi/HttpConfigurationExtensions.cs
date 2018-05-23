@@ -3,7 +3,9 @@
 
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Integration.AspNet.WebApi.Handlers;
+using Microsoft.Bot.Connector.Authentication;
 using System;
+using System.Configuration;
 using System.Web.Http;
 
 namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
@@ -18,25 +20,41 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
         /// <returns>A reference to this instance after the operation has completed.</returns>
         public static HttpConfiguration MapBotFramework(this HttpConfiguration httpConfiguration, Action<BotFrameworkConfigurationBuilder> configurer = null)
         {
+            if (httpConfiguration == null)
+            {
+                throw new ArgumentNullException(nameof(httpConfiguration));
+            }
+
             var options = new BotFrameworkOptions();
             var optionsBuilder = new BotFrameworkConfigurationBuilder(options);
 
-            configurer(optionsBuilder);
+            configurer?.Invoke(optionsBuilder);
 
-            ConfigureBotRoutes(BuildAdapter());
+            var botFrameworkAdapter = GetOrCreateBotFrameworkAdapter();
+
+            ConfigureMiddleware(botFrameworkAdapter);
+            ConfigureBotRoutes(botFrameworkAdapter);
 
             return httpConfiguration;
 
-            BotFrameworkAdapter BuildAdapter()
+            BotFrameworkAdapter GetOrCreateBotFrameworkAdapter()
             {
-                var adapter = new BotFrameworkAdapter(options.CredentialProvider, options.ConnectorClientRetryPolicy);
+                if (!(httpConfiguration.DependencyResolver.GetService(typeof(BotFrameworkAdapter)) is BotFrameworkAdapter adapter))
+                {
+                    var credentialProvider = ResolveCredentialProvider();
 
+                    adapter = new BotFrameworkAdapter(credentialProvider, options.ConnectorClientRetryPolicy, options.HttpClient);
+                }
+
+                return adapter;
+            }
+
+            void ConfigureMiddleware(BotFrameworkAdapter adapter)
+            {
                 foreach (var middleware in options.Middleware)
                 {
                     adapter.Use(middleware);
                 }
-
-                return adapter;
             }
 
             void ConfigureBotRoutes(BotFrameworkAdapter adapter)
@@ -52,7 +70,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
                 if (options.EnableProactiveMessages)
                 {
                     routes.MapHttpRoute(
-                        "BotFramework - Proactive Message Handler",
+                        BotProactiveMessageHandler.RouteName,
                         baseUrl + options.Paths.ProactiveMessagesPath,
                         defaults: null,
                         constraints: null,
@@ -60,12 +78,25 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
                 }
 
                 routes.MapHttpRoute(
-                        "BotFramework - Message Handler",
+                        BotMessageHandler.RouteName,
                         baseUrl + options.Paths.MessagesPath,
                         defaults: null,
                         constraints: null,
                         handler: new BotMessageHandler(adapter));
             }
-        }        
+
+            ICredentialProvider ResolveCredentialProvider()
+            {
+                var credentialProvider = options.CredentialProvider;
+
+                // If a credential provider was explicitly configured, just return that straight away
+                if (credentialProvider != null)
+                {
+                    return credentialProvider;
+                }
+
+                return new SimpleCredentialProvider(ConfigurationManager.AppSettings[MicrosoftAppCredentials.MicrosoftAppIdKey], ConfigurationManager.AppSettings[MicrosoftAppCredentials.MicrosoftAppPasswordKey]);
+            }
+        }
     }
 }
