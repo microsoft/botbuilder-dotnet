@@ -14,9 +14,11 @@ namespace Microsoft.Bot.Builder.Adapters
     {
         private int _nextId = 0;
         private readonly Queue<Activity> botReplies = new Queue<Activity>();
+        private readonly bool sendTraceActivity;
 
-        public TestAdapter(ConversationReference reference = null)
+        public TestAdapter(ConversationReference reference = null, bool sendTraceActivity = false)
         {
+            this.sendTraceActivity = sendTraceActivity;
             if (reference != null)
             {
                 this.ConversationReference = reference;
@@ -83,7 +85,7 @@ namespace Microsoft.Bot.Builder.Adapters
                     activity.Timestamp = DateTime.UtcNow;
 
                 responses.Add(new ResourceResponse(activity.Id));
-
+                
                 if (activity.Type == ActivityTypesEx.Delay)
                 {
                     // The BotFrameworkAdapter and Console adapter implement this
@@ -92,6 +94,16 @@ namespace Microsoft.Bot.Builder.Adapters
                     // more realistic tests.                     
                     int delayMs = (int)activity.Value;
                     await Task.Delay(delayMs);
+                }
+                else if (activity.Type == ActivityTypes.Trace)
+                {
+                    if (sendTraceActivity)
+                    {
+                        lock (this.botReplies)
+                        {
+                            this.botReplies.Enqueue(activity);
+                        }
+                    }
                 }
                 else
                 {
