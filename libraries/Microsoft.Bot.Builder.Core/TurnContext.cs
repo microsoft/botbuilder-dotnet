@@ -190,7 +190,7 @@ namespace Microsoft.Bot.Builder
             if (activity == null)
                 throw new ArgumentNullException(nameof(activity));
 
-            ResourceResponse[] responses = await SendActivities(new IActivity[] { activity });
+            ResourceResponse[] responses = await SendActivities(new [] { activity });
             if (responses == null || responses.Length == 0)
             {
                 // It's possible an interceptor prevented the activity from having been sent. 
@@ -211,61 +211,63 @@ namespace Microsoft.Bot.Builder
         /// <remarks>If the activities are successfully sent, the task result contains
         /// an array of <see cref="ResourceResponse"/> objects containing the IDs that 
         /// the receiving channel assigned to the activities.</remarks>
-        public async Task<ResourceResponse[]> SendActivities(IActivity[] activities)
+        public Task<ResourceResponse[]> SendActivities(IActivity[] activities)
         {
-            // Bind the relevant Conversation Reference properties, such as URLs and 
-            // ChannelId's, to the activities we're about to send. 
-            ConversationReference cr = GetConversationReference(this._activity);
-            foreach (Activity a in activities)
+            var conversationReference = GetConversationReference(this._activity);
+
+            // Buffer the incoming activities into a List<T> since we allow the set to be manipulated by the callbacks
+            var bufferedActivities = activities.Cast<Activity>().ToList();
+
+            foreach (var activity in bufferedActivities)
             {
-                ApplyConversationReference(a, cr);
+                // Bind the relevant Conversation Reference properties, such as URLs and 
+                // ChannelId's, to the activity we're about to send
+
+                ApplyConversationReference(activity, conversationReference);
             }
 
-            // Convert the IActivities to Activies. 
-            Activity[] activityArray = Array.ConvertAll(activities, (input) => (Activity)input);
-
-            // Create the list used by the recursive methods. 
-            List<Activity> activityList = new List<Activity>(activityArray);
-
-            async Task<ResourceResponse[]> ActuallySendStuff()
+            // If there are no callbacks registered, bypass the overhead of invoking them and send directly to the adapter
+            if (_onSendActivities.Count == 0)
             {
-                // Are the any non-trace activities to send? 
-                // The thinking here is that a Trace event isn't user relevant data
-                // so the "Responded" flag should not be set by Trace messages being 
-                // sent out. 
-                bool sentNonTraceActivities = false;
-                if (activities.Any( (a) => a.Type != ActivityTypes.Trace) )
+                return SendActivitiesThroughAdapter();
+            }
+
+            // Send through the full callback pipeline
+            return SendActivitiesThroughCallbackPipeline();
+
+            Task<ResourceResponse[]> SendActivitiesThroughCallbackPipeline(int nextCallbackIndex = 0)
+            {
+                // If we've executed the last callback, we now send straight to the adapter
+                if (nextCallbackIndex == _onSendActivities.Count)
                 {
-                    sentNonTraceActivities = true;
+                    return SendActivitiesThroughAdapter();
                 }
 
+                return _onSendActivities[nextCallbackIndex].Invoke(this, bufferedActivities, () => SendActivitiesThroughCallbackPipeline(nextCallbackIndex + 1));
+            }
 
-                // Send from the list, which may have been manipulated via the event handlers. 
+            async Task<ResourceResponse[]> SendActivitiesThroughAdapter()
+            {
+                // Send from the list which may have been manipulated via the event handlers. 
                 // Note that 'responses' was captured from the root of the call, and will be
                 // returned to the original caller.
-                var responses = await this.Adapter.SendActivities(this, activityList.ToArray());
+                var responses = await this.Adapter.SendActivities(this, bufferedActivities.ToArray());
+                var sentNonTraceActivity = false;
 
-                if (responses != null && responses.Count() == activityList.Count)
+                foreach (var (response, activity) in responses.Zip(bufferedActivities, (rr, a) => (rr, a)))
                 {
-                    // stitch up activity ids
-                    for (int i = 0; i < responses.Length; i++)
-                    {
-                        var response = responses[i];
-                        var activity = activityList[i];
-                        activity.Id = response.Id;
-                    }
+                    activity.Id = response.Id;
+
+                    sentNonTraceActivity |= activity.Type != ActivityTypes.Trace;
                 }
 
-                // If we actually sent something (that's not Trace), set the flag. 
-                if (sentNonTraceActivities)
+                if (sentNonTraceActivity)
                 {
                     this.Responded = true;
                 }
 
                 return responses;
             }
-
-            return await SendActivitiesInternal(activityList, _onSendActivities, ActuallySendStuff);
         }
 
         /// <summary>
@@ -337,38 +339,6 @@ namespace Microsoft.Bot.Builder
             }
 
             await DeleteActivityInternal(conversationReference, _onDeleteActivity, ActuallyDeleteStuff);
-        }
-
-        private async Task<ResourceResponse[]> SendActivitiesInternal(
-            List<Activity> activities,
-            IEnumerable<SendActivitiesHandler> sendHandlers,
-            Func<Task<ResourceResponse[]>> callAtBottom)
-        {
-            if (activities == null)
-                throw new ArgumentException(nameof(activities));
-            if (sendHandlers == null)
-                throw new ArgumentException(nameof(sendHandlers));
-
-            if (sendHandlers.Count() == 0) // No middleware to run.
-            {
-                if (callAtBottom != null)
-                    return await callAtBottom();
-
-                return new ResourceResponse[0];
-            }
-
-            // Default to "No more Middleware after this".
-            async Task<ResourceResponse[]> next()
-            {
-                // Remove the first item from the list of middleware to call,
-                // so that the next call just has the remaining items to worry about. 
-                IEnumerable<SendActivitiesHandler> remaining = sendHandlers.Skip(1);
-                return await SendActivitiesInternal(activities, remaining, callAtBottom).ConfigureAwait(false);
-            }
-
-            // Grab the current middleware, which is the 1st element in the array, and execute it            
-            SendActivitiesHandler caller = sendHandlers.First();
-            return await caller(this, activities, next);
         }
 
         private async Task<ResourceResponse> UpdateActivityInternal(Activity activity,
