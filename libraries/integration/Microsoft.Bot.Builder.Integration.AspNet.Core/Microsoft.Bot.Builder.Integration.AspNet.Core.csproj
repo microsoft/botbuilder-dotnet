@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<Version Condition=" '$(BUILD_BUILDNUMBER)' == '' ">4.0.0-local</Version>
@@ -68,5 +68,5 @@
 		<ProjectReference Include="..\..\Microsoft.Bot.Builder\Microsoft.Bot.Builder.csproj" />
 		<ProjectReference Include="..\..\Microsoft.Bot.Connector\Microsoft.Bot.Connector.csproj" />
 	</ItemGroup>
-
+  
 </Project>
