@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Prompts.Choices;
 using Microsoft.Bot.Schema;
 using static Microsoft.Bot.Builder.Prompts.PromptValidatorEx;
+using static Microsoft.Recognizers.Text.Culture;
 
 namespace Microsoft.Bot.Builder.Prompts
 {
@@ -32,6 +33,7 @@ namespace Microsoft.Bot.Builder.Prompts
             Style = listStyle;
             Validator = validator;
             Culture = culture;
+            ChoiceOptions = InlineChoiceOptions.ContainsKey(culture) ? InlineChoiceOptions[culture] : InlineChoiceOptions[English];
         }
 
         public ListStyle Style { get; set; }
@@ -39,6 +41,18 @@ namespace Microsoft.Bot.Builder.Prompts
         public string Culture { get; set; }
         public ChoiceFactoryOptions ChoiceOptions { get; set; }
         public FindChoicesOptions RecognizerOptions { get; set; }
+
+        private static readonly Dictionary<string, ChoiceFactoryOptions> InlineChoiceOptions = new Dictionary<string, ChoiceFactoryOptions>()
+        {
+            { Spanish, new ChoiceFactoryOptions{ InlineSeparator = ", ", InlineOr = " o ", InlineOrMore = ", o ", IncludeNumbers = true} },
+            { Dutch, new ChoiceFactoryOptions{ InlineSeparator = ", ", InlineOr = " of ", InlineOrMore = ", of ", IncludeNumbers = true} },
+            { English, new ChoiceFactoryOptions{ InlineSeparator = ", ", InlineOr = " or ", InlineOrMore = ", or ", IncludeNumbers = true} },
+            { French, new ChoiceFactoryOptions{ InlineSeparator = ", ", InlineOr = " ou ", InlineOrMore = ", ou ", IncludeNumbers = true} },
+            { German, new ChoiceFactoryOptions{ InlineSeparator = ", ", InlineOr = " oder ", InlineOrMore = ", oder ", IncludeNumbers = true} },
+            { Japanese, new ChoiceFactoryOptions{ InlineSeparator = "、 ", InlineOr = " または ", InlineOrMore = "、 または ", IncludeNumbers = true} },
+            { Portuguese, new ChoiceFactoryOptions{ InlineSeparator = ", ", InlineOr = " ou ", InlineOrMore = ", ou ", IncludeNumbers = true} },
+            { Chinese, new ChoiceFactoryOptions{ InlineSeparator = "， ", InlineOr = " 要么 ", InlineOrMore = "， 要么 ", IncludeNumbers = true} }
+        };
 
         public Task Prompt(ITurnContext context, List<string> choices, string prompt = null, string speak = null)
         {
@@ -73,7 +87,6 @@ namespace Microsoft.Bot.Builder.Prompts
                     msg.Text = prompt;
                     msg.Speak = speak;
                     break;
-                case ListStyle.Auto:
                 default:
                     msg = ChoiceFactory.ForChannel(context, choices, prompt, speak, ChoiceOptions);
                     break;
