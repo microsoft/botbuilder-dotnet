@@ -1,0 +1,20 @@
+<Project>
+  <PropertyGroup>
+    <CleanDependsOn>$(CleanDependsOn);CleanBinaries;</CleanDependsOn>
+  </PropertyGroup>
+
+  <Target Name="CleanBinaries">
+    <PropertyGroup>
+      <TargetFolder>$(BaseOutputPath)</TargetFolder>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <FilesToClean Include="$(TargetFolder)\**\*"/>
+      <Directories Include="$([System.IO.Directory]::GetDirectories('$(TargetFolder)', '*', System.IO.SearchOption.AllDirectories))"
+                   Exclude="$(TargetFolder)"/>
+    </ItemGroup>
+
+    <Delete Files="@(FilesToClean)" ContinueOnError="true"/>
+    <RemoveDir Directories="@(Directories)" />
+  </Target>
+</Project>
