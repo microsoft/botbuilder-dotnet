@@ -21,6 +21,9 @@ namespace Microsoft.Bot.Builder.Azure
     /// </summary>
     public class CosmosDbStorage : IStorage
     {
+        private static readonly char[] IllegalKeyCharacters = new char[] { '\\', '?', '/', '#', ' ' };
+        private static Lazy<Dictionary<char, string>> IllegalKeyCharacterReplacementMap = new Lazy<Dictionary<char, string>>(() => IllegalKeyCharacters.ToDictionary(c => c, c => '*' + ((int)c).ToString("x2")));
+
         private readonly string _databaseId;
         private readonly string _collectionId;
         private readonly DocumentClient _client;
@@ -213,27 +216,42 @@ namespace Microsoft.Bot.Builder.Azure
         /// The following characters are restricted and cannot be used in the Id property: '/', '\', '?', '#'
         /// More information at https://docs.microsoft.com/en-us/dotnet/api/microsoft.azure.documents.resource.id?view=azure-dotnet#remarks
         /// </summary>
-        private static string SanitizeKey(string key)
+        public static string SanitizeKey(string key)
         {
-            StringBuilder sb = new StringBuilder();
-            foreach (char ch in key)
-            {
-                if (_badChars.Value.TryGetValue(ch, out string val))
-                    sb.Append(val);
-                else
-                    sb.Append(ch);
-            }
-            return sb.ToString();
-        }
+            var firstIllegalCharIndex = key.IndexOfAny(IllegalKeyCharacters);
 
-        private static Lazy<Dictionary<char, string>> _badChars = new Lazy<Dictionary<char, string>>(() =>
-        {
-            char[] badChars = new char[] { '\\', '?', '/', '#', ' ' };
-            var dict = new Dictionary<char, string>();
-            foreach (var badChar in badChars)
-                dict[badChar] = '*' + ((int)badChar).ToString("x2");
-            return dict;
-        });
+            // If there are no illegal characters return immediately and avoid any further processing/allocations
+            if (firstIllegalCharIndex == -1) return key;
+
+            // Allocate a builder that assumes that all remaining characters might be replaced to avoid any extra allocations
+            var sanitizedKeyBuilder = new StringBuilder(key.Length + (key.Length - firstIllegalCharIndex + 1) * 3);
+
+            // Add all good characters up to the first bad character to the builder first
+            for (int index = 0; index < firstIllegalCharIndex; index++)
+            {
+                sanitizedKeyBuilder.Append(key[index]);
+            }
+
+            var illegalCharacterReplacementMap = IllegalKeyCharacterReplacementMap.Value;
+
+            // Now walk the remaining characters, starting at the first known bad character, replacing any bad ones with their designated replacement value from the map
+            for (int index = firstIllegalCharIndex; index < key.Length; index++)
+            {
+                var ch = key[index];
+
+                // Check if this next character is considered illegal and, if so, append its replacement; otherwise just append the good character as is
+                if (illegalCharacterReplacementMap.TryGetValue(ch, out var replacement))
+                {
+                    sanitizedKeyBuilder.Append(replacement);
+                }
+                else
+                {
+                    sanitizedKeyBuilder.Append(ch);
+                }
+            }
+
+            return sanitizedKeyBuilder.ToString();
+        }
 
         /// <summary>
         /// Internal data structure for storing items in a CosmosDB Collection.
