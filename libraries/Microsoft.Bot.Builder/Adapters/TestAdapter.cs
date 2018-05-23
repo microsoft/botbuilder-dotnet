@@ -179,6 +179,16 @@ namespace Microsoft.Bot.Builder.Adapters
                         }
                     }
                 }
+                else if (activity.Type == ActivityTypes.Trace)
+                {
+                    if (sendTraceActivity)
+                    {
+                        lock (this.botReplies)
+                        {
+                            this.botReplies.Enqueue(activity);
+                        }
+                    }
+                }
                 else
                 {
                     lock (_activeQueueLock)
