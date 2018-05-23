@@ -20,13 +20,15 @@ namespace Microsoft.Bot.Builder.Adapters
         private object _activeQueueLock = new object();
 
         private int _nextId = 0;
+        private readonly bool sendTraceActivity;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TestAdapter"/> class.
         /// </summary>
         /// <param name="conversation">A reference to the conversation to begin the adapter state with.</param>
-        public TestAdapter(ConversationReference conversation = null)
+        public TestAdapter(ConversationReference conversation = null, bool sendTraceActivity = false)
         {
+            this.sendTraceActivity = sendTraceActivity;
             if (conversation != null)
             {
                 Conversation = conversation;
@@ -166,6 +168,16 @@ namespace Microsoft.Bot.Builder.Adapters
                     var delayMs = (int)activity.Value;
 
                     await Task.Delay(delayMs).ConfigureAwait(false);
+                }
+                else if (activity.Type == ActivityTypes.Trace)
+                {
+                    if (sendTraceActivity)
+                    {
+                        lock (this.botReplies)
+                        {
+                            this.botReplies.Enqueue(activity);
+                        }
+                    }
                 }
                 else
                 {
