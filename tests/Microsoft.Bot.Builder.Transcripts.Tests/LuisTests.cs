@@ -20,9 +20,15 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
         [TestMethod]
         public async Task LuisMiddleware()
         {
+            if (!EnvironmentVariablesDefined())
+            {
+                Assert.Inconclusive("Missing Luis Environment variables - Skipping test");
+                return;
+            }
+
             var activities = TranscriptUtilities.GetFromTestContext(TestContext);
 
-            TestAdapter adapter = new TestAdapter()
+            TestAdapter adapter = new TestAdapter(null, true)
                 .Use(GetLuisMiddleware());
 
             var flow = new TestFlow(adapter, async (context) => {
