@@ -40,14 +40,14 @@ namespace Microsoft.Bot.Builder.Core.Extensions
 
         public async Task<IDictionary<string, object>> Read(string[] keys)
         {
-            IDictionary<string, object> storeItems = new Dictionary<string, object>(keys.Length);
+            var storeItems = new Dictionary<string, object>(keys.Length);
 
             foreach (var key in keys)
             {
                 var item = await ReadIStoreItem(key).ConfigureAwait(false);
                 if (item != null)
                 {
-                    storeItems.Add(new KeyValuePair<string, object>(key, item));
+                    storeItems.Add(key, item);
                 }
             }
 

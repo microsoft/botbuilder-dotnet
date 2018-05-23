@@ -109,17 +109,12 @@ namespace Microsoft.Bot.Builder.Azure
             await Task.WhenAll(readTasks);
 
             // Project back the entries that were read, filtering out any entries that were not found.
-            // This gives us a List<KeyValuePair<>>. 
-            var items = readTasks.Select(readTask => readTask.Result).Where(kvp => kvp.Key != null);
-
-            // Iterate over the KVPs and add them into a dictionary. 
-            IDictionary<string, object> values = new Dictionary<string, object>();
-            foreach(var i in items)
-            {
-                values.Add(i);
-            }
-
-            return values; 
+            // This gives us a Dictionary(key, value) 
+            var items = readTasks.Select(readTask => readTask.Result)
+                .Where(kvp => kvp.Key != null)
+                .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+          
+            return items; 
 
             async Task<KeyValuePair<string, object>> ReadIndividualKey(string key)
             {

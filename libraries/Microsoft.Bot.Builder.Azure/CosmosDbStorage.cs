@@ -113,7 +113,7 @@ namespace Microsoft.Bot.Builder.Azure
                 throw new ArgumentException("Please provide at least one key to read from storage", nameof(keys));
             }
 
-            IDictionary<string, object> storeItems = new Dictionary<string, object>();
+            var storeItems = new Dictionary<string, object>(keys.Length);
 
             // Ensure collection exists
             var collectionLink = await GetCollectionLink();
@@ -138,7 +138,7 @@ namespace Microsoft.Bot.Builder.Azure
                     }
 
                     // doc.Id cannot be used since it is escaped, read it from RealId property instead
-                    storeItems.Add(new KeyValuePair<string, object>(doc.ReadlId, item));
+                    storeItems.Add(doc.ReadlId, item);
                 }
             }
 
