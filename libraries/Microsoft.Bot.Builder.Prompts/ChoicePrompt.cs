@@ -43,19 +43,18 @@ namespace Microsoft.Bot.Builder.Prompts
     };
 
     /// <summary>
-    /// Represents recognition result for the prompt.
+    /// Represents recognition result for the ChoicePrompt.
     /// </summary>
     public class ChoiceResult : PromptResult
     {
         /// <summary>
-        /// Creates a <see cref="ChoiceResult"/> object.
-        /// </summary>
-        public ChoiceResult() { }
-
-        /// <summary>
         /// The value recognized; or <c>null</c>, if recognition fails.
         /// </summary>
-        public FoundChoice Value { get; set; }
+        public FoundChoice Value
+        {
+            get { return GetProperty<FoundChoice>(nameof(Value)); }
+            set { this[nameof(Value)] = value; }
+        }
     }
 
     public class ChoicePrompt

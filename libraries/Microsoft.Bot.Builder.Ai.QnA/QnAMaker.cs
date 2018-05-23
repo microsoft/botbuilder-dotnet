@@ -6,6 +6,7 @@ using System;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 
 namespace Microsoft.Bot.Builder.Ai.QnA
 {
@@ -14,58 +15,52 @@ namespace Microsoft.Bot.Builder.Ai.QnA
     /// </summary>
     public class QnAMaker
     {
-        /// <summary>
-        /// The base service endpoint for QnA Maker.
-        /// </summary>
-        public const string qnaMakerServiceEndpoint = "https://westus.api.cognitive.microsoft.com/qnamaker/v3.0/knowledgebases/";
-
-        /// <summary>
-        /// The title for the HTTP header for the QnA Maker subscription key.
-        /// </summary>
-        public const string APIManagementHeader = "Ocp-Apim-Subscription-Key";
-
-        /// <summary>
-        /// The request content type.
-        /// </summary>
-        public const string JsonMimeType = "application/json";
-
         private static HttpClient g_httpClient = new HttpClient();
         private readonly HttpClient _httpClient;
+
+        private readonly QnAMakerEndpoint _endpoint;
         private readonly QnAMakerOptions _options;
-        private readonly string _answerUrl;
 
         /// <summary>
         /// Creates a new <see cref="QnAMaker"/> instance.
         /// </summary>
+        /// <param name="endpoint">The endpoint of the knowledge base to query.</param>
         /// <param name="options">The options for the QnA Maker knowledge base.</param>
         /// <param name="httpClient">A client with which to talk to QnAMaker.
         /// If null, a default client is used for this instance.</param>
-        public QnAMaker(QnAMakerOptions options, HttpClient httpClient = null)
+        public QnAMaker(QnAMakerEndpoint endpoint, QnAMakerOptions options = null, HttpClient httpClient = null)
         {
             _httpClient = httpClient ?? g_httpClient;
-            _options = options ?? throw new ArgumentNullException(nameof(options));
-            if (string.IsNullOrEmpty(options.KnowledgeBaseId))
+
+            _endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
+
+            if (string.IsNullOrEmpty(endpoint.KnowledgeBaseId))
             {
-                throw new ArgumentException(nameof(options.KnowledgeBaseId));
+                throw new ArgumentException(nameof(endpoint.KnowledgeBaseId));
+            }
+            if (string.IsNullOrEmpty(endpoint.Host))
+            {
+                throw new ArgumentException(nameof(endpoint.Host));
+            }
+            if (string.IsNullOrEmpty(endpoint.EndpointKey))
+            {
+                throw new ArgumentException(nameof(endpoint.EndpointKey));
             }
 
-            _answerUrl = $"{qnaMakerServiceEndpoint}{options.KnowledgeBaseId}/generateanswer";
+            _options = options ?? new QnAMakerOptions();
 
             if (_options.ScoreThreshold == 0)
             {
                 _options.ScoreThreshold = 0.3F;
             }
-
             if (_options.Top == 0)
             {
                 _options.Top = 1;
             }
-
             if (_options.ScoreThreshold < 0 || _options.ScoreThreshold > 1)
             {
                 throw new ArgumentOutOfRangeException(nameof(_options.ScoreThreshold), "Score threshold should be a value between 0 and 1");
             }
-
             if (_options.Top < 1)
             {
                 throw new ArgumentOutOfRangeException(nameof(_options.Top), "Top should be an integer greater than 0");
@@ -73,9 +68,8 @@ namespace Microsoft.Bot.Builder.Ai.QnA
 
             if (_options.StrictFilters == null)
             {
-                _options.StrictFilters = new Metadata[] {};
+                _options.StrictFilters = new Metadata[] { };
             }
-
             if (_options.MetadataBoost == null)
             {
                 _options.MetadataBoost = new Metadata[] { };
@@ -89,7 +83,9 @@ namespace Microsoft.Bot.Builder.Ai.QnA
         /// <returns>A list of answers for the user query, sorted in decreasing order of ranking score.</returns>
         public async Task<QueryResult[]> GetAnswers(string question)
         {
-            var request = new HttpRequestMessage(HttpMethod.Post, _answerUrl);
+            var requestUrl = $"{_endpoint.Host}/knowledgebases/{_endpoint.KnowledgeBaseId}/generateanswer";
+
+            var request = new HttpRequestMessage(HttpMethod.Post, requestUrl);
 
             string jsonRequest = JsonConvert.SerializeObject(new
             {
@@ -99,23 +95,96 @@ namespace Microsoft.Bot.Builder.Ai.QnA
                 metadataBoost = _options.MetadataBoost
             }, Formatting.None);
 
-            var content = new StringContent(jsonRequest, System.Text.Encoding.UTF8, JsonMimeType);
-            content.Headers.Add(APIManagementHeader, _options.SubscriptionKey);
+            request.Content = new StringContent(jsonRequest, System.Text.Encoding.UTF8, "application/json");
 
-            var response = await _httpClient.PostAsync(_answerUrl, content).ConfigureAwait(false);
+            bool isLegacyProtocol = (_endpoint.Host.EndsWith("v2.0") || _endpoint.Host.EndsWith("v3.0"));
+
+            if (isLegacyProtocol)
+            {
+                request.Headers.Add("Ocp-Apim-Subscription-Key", _endpoint.EndpointKey);
+            }
+            else
+            {
+                request.Headers.Add("Authorization", $"EndpointKey {_endpoint.EndpointKey}");
+            }
+
+            var response = await _httpClient.SendAsync(request).ConfigureAwait(false);
             if (response.IsSuccessStatusCode)
             {
                 var jsonResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-                var results = JsonConvert.DeserializeObject<QueryResults>(jsonResponse);
+
+                var results = isLegacyProtocol ?
+                    ConvertLegacyResults(JsonConvert.DeserializeObject<InternalQueryResults>(jsonResponse))
+                        :
+                    JsonConvert.DeserializeObject<QueryResults>(jsonResponse);
+
                 foreach (var answer in results.Answers)
                 {
                     answer.Score = answer.Score / 100;
                 }
-
                 return results.Answers.Where(answer => answer.Score > _options.ScoreThreshold).ToArray();
             }
+
             return null;
         }
+
+        // The old version of the protocol returns the id in a field called qnaId the
+        // following classes and helper function translate this old structure
+        private QueryResults ConvertLegacyResults(InternalQueryResults legacyResults)
+        {
+            return new QueryResults
+            {
+                Answers = legacyResults.Answers
+                    .Select(answer => new QueryResult
+                    {
+                        // The old version of the protocol returns the "id" in a field called "qnaId"
+                        Id = answer.QnaId,
+                        Answer = answer.Answer,
+                        Metadata = answer.Metadata,
+                        Score = answer.Score,
+                        Source = answer.Source,
+                        Questions = answer.Questions
+                    })
+                    .ToArray()
+            };
+        }
+
+        private class InternalQueryResult : QueryResult
+        {
+            [JsonProperty(PropertyName = "qnaId")]
+            public int QnaId { get; set; }
+        }
+
+        private class InternalQueryResults
+        {
+            /// <summary>
+            /// The answers for a user query,
+            /// sorted in decreasing order of ranking score.
+            /// </summary>
+            [JsonProperty("answers")]
+            public InternalQueryResult[] Answers { get; set; }
+        }
+    }
+
+    /// <summary>
+    /// Defines an endpoint used to connect to a QnA Maker Knowledge base.
+    /// </summary>
+    public class QnAMakerEndpoint
+    {
+        /// <summary>
+        /// The knowledge base ID.
+        /// </summary>
+        public string KnowledgeBaseId { get; set; }
+
+        /// <summary>
+        /// The endpoint key for the knowledge base.
+        /// </summary>
+        public string EndpointKey { get; set; }
+
+        /// <summary>
+        /// The host path. For example "https://westus.api.cognitive.microsoft.com/qnamaker/v2.0"
+        /// </summary>
+        public string Host { get; set; }
     }
 
     /// <summary>
@@ -123,15 +192,10 @@ namespace Microsoft.Bot.Builder.Ai.QnA
     /// </summary>
     public class QnAMakerOptions
     {
-        /// <summary>
-        /// The subscription key for the knowledge base.
-        /// </summary>
-        public string SubscriptionKey { get; set; }
-
-        /// <summary>
-        /// The knowledge base ID.
-        /// </summary>
-        public string KnowledgeBaseId { get; set; }
+        public QnAMakerOptions()
+        {
+            ScoreThreshold = 0.3f;
+        }
 
         /// <summary>
         /// The minimum score threshold, used to filter returned results.
@@ -183,14 +247,24 @@ namespace Microsoft.Bot.Builder.Ai.QnA
         [JsonProperty("score")]
         public float Score { get; set; }
 
+        /// <summary>
+        /// Metadata that is associated with the answer
+        /// </summary>
         [JsonProperty(PropertyName = "metadata")]
         public Metadata[] Metadata { get; set; }
 
+        /// <summary>
+        /// The source from which the QnA was extracted
+        /// </summary>
         [JsonProperty(PropertyName = "source")]
         public string Source { get; set; }
 
-        [JsonProperty(PropertyName = "qnaId")]
-        public int QnaId { get; set; }
+        /// <summary>
+        /// The index of the answer in the knowledge base. V3 uses
+        /// 'qnaId', V4 uses 'id'.
+        /// </summary>
+        [JsonProperty(PropertyName = "id")]
+        public int Id { get; set; }
     }
 
     /// <summary>

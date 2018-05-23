@@ -30,7 +30,8 @@ namespace Microsoft.Bot.Samples.Ai.Luis
                         var intentsResult = new List<string>();
                         foreach (var intent in luisResult.Intents)
                         {
-                            intentsResult.Add($"* '{intent.Key}', score {intent.Value}");
+                            var intentScore = (double)intent.Value["score"];
+                            intentsResult.Add($"* '{intent.Key}', score {intentScore}");
                         }
                         await context.SendActivity(string.Join("\n\n", intentsResult));
                     }

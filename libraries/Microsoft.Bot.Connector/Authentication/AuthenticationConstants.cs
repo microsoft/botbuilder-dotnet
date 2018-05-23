@@ -22,6 +22,11 @@ namespace Microsoft.Bot.Connector.Authentication
         /// TO BOT FROM CHANNEL: Token issuer
         /// </summary>
         public const string ToBotFromChannelTokenIssuer = "https://api.botframework.com";
+        
+        /// <summary>
+        /// OAuth Url used to get a token from OAuthApiClient
+        /// </summary>
+        public const string OAuthUrl = "https://api.botframework.com";
 
         /// <summary>
         /// TO BOT FROM CHANNEL: OpenID metadata document for tokens coming from MSA

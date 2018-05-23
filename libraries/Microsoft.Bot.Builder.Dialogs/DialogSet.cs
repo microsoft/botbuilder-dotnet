@@ -51,20 +51,13 @@ namespace Microsoft.Bot.Builder.Dialogs
             return waterfall;
         }
 
-        public DialogContext CreateContext(ITurnContext context, object state)
+        public DialogContext CreateContext(ITurnContext context, IDictionary<string, object> state)
         {
             BotAssert.ContextNotNull(context);
             if (state == null)
                 throw new ArgumentNullException(nameof(state));
 
-            var d = (IDictionary<string, object>)state;
-            object value;
-            if (!d.TryGetValue("dialogStack", out value))
-            {
-                value = new List<DialogInstance>();
-                d["dialogStack"] = value;
-            }
-            return new DialogContext(this, context, (List<DialogInstance>)value);
+            return new DialogContext(this, context, state);
         }
 
         /// <summary>

@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Core.Extensions.Tests;
@@ -14,7 +13,8 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
     public class QnaMakerMiddlewareTests
     {
         public string knowlegeBaseId = TestUtilities.GetKey("QNAKNOWLEDGEBASEID");
-        public string subscriptionKey = TestUtilities.GetKey("QNASUBSCRIPTIONKEY");
+        public string endpointKey = TestUtilities.GetKey("QNAENDPOINTKEY");
+        public readonly string hostname = TestUtilities.GetKey("QNAHOSTNAME");
 
         [TestMethod]
         [TestCategory("AI")]
@@ -28,12 +28,17 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
             }
             const string passUtterance = @"Foo";
             TestAdapter adapter = new TestAdapter()
-                .Use(new QnAMakerMiddleware(new QnAMakerMiddlewareOptions()
-                {
-                    KnowledgeBaseId = knowlegeBaseId,
-                    SubscriptionKey = subscriptionKey,
-                    Top = 1
-                }));
+                .Use(new QnAMakerMiddleware(
+                    new QnAMakerEndpoint
+                    {
+                        KnowledgeBaseId = knowlegeBaseId,
+                        EndpointKey = endpointKey,
+                        Host = hostname
+                    },
+                    new QnAMakerMiddlewareOptions
+                    {
+                        Top = 1
+                    }));
 
             await new TestFlow(adapter, async (context) =>
             {
@@ -48,6 +53,7 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
 
                     var qnaMakerTraceInfo = traceActivity.Value as QnAMakerTraceInfo;
                     Assert.IsNotNull(qnaMakerTraceInfo);
+                    Assert.IsNotNull(qnaMakerTraceInfo.Message);
                     Assert.IsNotNull(qnaMakerTraceInfo.QueryResults);
                     Assert.IsNotNull(qnaMakerTraceInfo.KnowledgeBaseId);
                     Assert.IsNotNull(qnaMakerTraceInfo.ScoreThreshold);
@@ -55,6 +61,7 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
                     Assert.IsNotNull(qnaMakerTraceInfo.StrictFilters);
                     Assert.IsNotNull(qnaMakerTraceInfo.MetadataBoost);
 
+                    Assert.AreEqual(qnaMakerTraceInfo.Message.Text, passUtterance);
                     Assert.AreEqual(qnaMakerTraceInfo.QueryResults.Length, 0);
                 }, "qnaMakerTraceInfo")
                 .Send(passUtterance)
@@ -73,14 +80,19 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
                 return;
             }
             const string goodUtterance = @"how do I clean the stove?";
-            const string botResponse = @"BaseCamp: You can use a damp rag to clean around the Power Pack. Do not attempt to detach it from the stove body. As with any electronic device, never pour water on it directly. CampStove 2 &amp; CookStove: Power module: Remove the plastic power module from the fuel chamber and wipe it down with a damp cloth with soap and water. DO NOT submerge the power module in water or get it excessively wet. Fuel chamber: Wipe out with a nylon brush as needed. The pot stand at the top of the fuel chamber can be wiped off with a damp cloth and dried well. The fuel chamber can also be washed in a dishwasher. Dry very thoroughly.";
+            const string botResponse = @"BaseCamp: You can use a damp rag to clean around the Power Pack. Do not attempt to detach it from the stove body. As with any electronic device, never pour water on it directly. CampStove 2 & CookStove: Power module: Remove the plastic power module from the fuel chamber and wipe it down with a damp cloth with soap and water. DO NOT submerge the power module in water or get it excessively wet. Fuel chamber: Wipe out with a nylon brush as needed. The pot stand at the top of the fuel chamber can be wiped off with a damp cloth and dried well. The fuel chamber can also be washed in a dishwasher. Dry very thoroughly.";
             TestAdapter adapter = new TestAdapter()
-                .Use(new QnAMakerMiddleware(new QnAMakerMiddlewareOptions()
-                {
-                    KnowledgeBaseId = knowlegeBaseId,
-                    SubscriptionKey = subscriptionKey,
-                    Top = 1
-                }));
+                .Use(new QnAMakerMiddleware(
+                    new QnAMakerEndpoint
+                    {
+                        KnowledgeBaseId = knowlegeBaseId,
+                        EndpointKey = endpointKey,
+                        Host = hostname
+                    },
+                    new QnAMakerMiddlewareOptions
+                    {
+                        Top = 1
+                    }));
 
             await new TestFlow(adapter, async (context) =>
             {
@@ -98,6 +110,7 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
 
                     var qnaMakerTraceInfo = traceActivity.Value as QnAMakerTraceInfo;
                     Assert.IsNotNull(qnaMakerTraceInfo);
+                    Assert.IsNotNull(qnaMakerTraceInfo.Message);
                     Assert.IsNotNull(qnaMakerTraceInfo.QueryResults);
                     Assert.IsNotNull(qnaMakerTraceInfo.KnowledgeBaseId);
                     Assert.IsNotNull(qnaMakerTraceInfo.ScoreThreshold);
@@ -105,6 +118,7 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
                     Assert.IsNotNull(qnaMakerTraceInfo.StrictFilters);
                     Assert.IsNotNull(qnaMakerTraceInfo.MetadataBoost);
 
+                    Assert.AreEqual(qnaMakerTraceInfo.Message.Text, goodUtterance);
                     Assert.AreEqual(qnaMakerTraceInfo.QueryResults.Length, 1);
                     Assert.AreEqual(qnaMakerTraceInfo.QueryResults[0].Answer, botResponse);
                     Assert.AreEqual(qnaMakerTraceInfo.KnowledgeBaseId, knowlegeBaseId);
@@ -116,7 +130,7 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
 
         private bool EnvironmentVariablesDefined()
         {
-            return knowlegeBaseId != null && subscriptionKey != null;
+            return knowlegeBaseId != null && endpointKey != null && hostname != null;
         }
     }
 }

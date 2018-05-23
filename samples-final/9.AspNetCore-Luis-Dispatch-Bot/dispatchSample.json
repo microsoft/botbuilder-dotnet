@@ -1,0 +1,389 @@
+{
+  "luis_schema_version": "2.1.0",
+  "versionId": "Dispatch",
+  "name": "dispatchSample",
+  "desc": "Dispatch model for dispatchSample",
+  "culture": "en-us",
+  "intents": [
+    {
+      "name": "l_homeautomation"
+    },
+    {
+      "name": "l_weather"
+    },
+    {
+      "name": "q_faq"
+    }
+  ],
+  "entities": [],
+  "composites": [],
+  "closedLists": [],
+  "bing_entities": [],
+  "model_features": [],
+  "regex_features": [],
+  "utterances": [
+    {
+      "text": "make camera 1 off please",
+      "intent": "l_homeautomation",
+      "entities": []
+    },
+    {
+      "text": "turn off ac please",
+      "intent": "l_homeautomation",
+      "entities": []
+    },
+    {
+      "text": "turn off living room light",
+      "intent": "l_homeautomation",
+      "entities": []
+    },
+    {
+      "text": "fish pond on please",
+      "intent": "l_homeautomation",
+      "entities": []
+    },
+    {
+      "text": "living room lamps off please",
+      "intent": "l_homeautomation",
+      "entities": []
+    },
+    {
+      "text": "set lights out bedroom",
+      "intent": "l_homeautomation",
+      "entities": []
+    },
+    {
+      "text": "turn dimmer off",
+      "intent": "l_homeautomation",
+      "entities": []
+    },
+    {
+      "text": "start master bedroom light .",
+      "intent": "l_homeautomation",
+      "entities": []
+    },
+    {
+      "text": "turn on the internet in my bedroom please",
+      "intent": "l_homeautomation",
+      "entities": []
+    },
+    {
+      "text": "turn on my bedroom lights .",
+      "intent": "l_homeautomation",
+      "entities": []
+    },
+    {
+      "text": "turn off staircase",
+      "intent": "l_homeautomation",
+      "entities": []
+    },
+    {
+      "text": "fish pond off please",
+      "intent": "l_homeautomation",
+      "entities": []
+    },
+    {
+      "text": "turn on bathroom heater",
+      "intent": "l_homeautomation",
+      "entities": []
+    },
+    {
+      "text": "turn off foyer lights",
+      "intent": "l_homeautomation",
+      "entities": []
+    },
+    {
+      "text": "illuminate please",
+      "intent": "l_homeautomation",
+      "entities": []
+    },
+    {
+      "text": "lock the doors for me please",
+      "intent": "l_homeautomation",
+      "entities": []
+    },
+    {
+      "text": "set lights bright",
+      "intent": "l_homeautomation",
+      "entities": []
+    },
+    {
+      "text": "silence the phone",
+      "intent": "l_homeautomation",
+      "entities": []
+    },
+    {
+      "text": "set lights concentrate",
+      "intent": "l_homeautomation",
+      "entities": []
+    },
+    {
+      "text": "make some coffee",
+      "intent": "l_homeautomation",
+      "entities": []
+    },
+    {
+      "text": "turn on thermostat please",
+      "intent": "l_homeautomation",
+      "entities": []
+    },
+    {
+      "text": "turn thermostat on 70 .",
+      "intent": "l_homeautomation",
+      "entities": []
+    },
+    {
+      "text": "change temperature to seventy two degrees",
+      "intent": "l_homeautomation",
+      "entities": []
+    },
+    {
+      "text": "decrease temperature for me please",
+      "intent": "l_homeautomation",
+      "entities": []
+    },
+    {
+      "text": "turn on the furnace room lights",
+      "intent": "l_homeautomation",
+      "entities": []
+    },
+    {
+      "text": "living room lamp on please",
+      "intent": "l_homeautomation",
+      "entities": []
+    },
+    {
+      "text": "lower your volume",
+      "intent": "l_homeautomation",
+      "entities": []
+    },
+    {
+      "text": "coffee bar on please",
+      "intent": "l_homeautomation",
+      "entities": []
+    },
+    {
+      "text": "play dvd",
+      "intent": "l_homeautomation",
+      "entities": []
+    },
+    {
+      "text": "dim kitchen lights to 25 .",
+      "intent": "l_homeautomation",
+      "entities": []
+    },
+    {
+      "text": "shut down my work computer",
+      "intent": "l_homeautomation",
+      "entities": []
+    },
+    {
+      "text": "turn on external speaker",
+      "intent": "l_homeautomation",
+      "entities": []
+    },
+    {
+      "text": "snap switch fan fifty percent",
+      "intent": "l_homeautomation",
+      "entities": []
+    },
+    {
+      "text": "turn the fan to high",
+      "intent": "l_homeautomation",
+      "entities": []
+    },
+    {
+      "text": "turn off venice lamp",
+      "intent": "l_homeautomation",
+      "entities": []
+    },
+    {
+      "text": "theater on please",
+      "intent": "l_homeautomation",
+      "entities": []
+    },
+    {
+      "text": "breezeway on please",
+      "intent": "l_homeautomation",
+      "entities": []
+    },
+    {
+      "text": "what ' s the weather going to be like in hawaii ?",
+      "intent": "l_weather",
+      "entities": []
+    },
+    {
+      "text": "what ' s the weather like in minneapolis",
+      "intent": "l_weather",
+      "entities": []
+    },
+    {
+      "text": "\\\" i need to know the temperature at bangor , sme \\",
+      "intent": "l_weather",
+      "entities": []
+    },
+    {
+      "text": "show average rainfall for boise",
+      "intent": "l_weather",
+      "entities": []
+    },
+    {
+      "text": "temperature of delhi in celsius please",
+      "intent": "l_weather",
+      "entities": []
+    },
+    {
+      "text": "get the daily temperature greenwood indiana",
+      "intent": "l_weather",
+      "entities": []
+    },
+    {
+      "text": "how much rain does chambersburg get a year",
+      "intent": "l_weather",
+      "entities": []
+    },
+    {
+      "text": "get florence temperature in september",
+      "intent": "l_weather",
+      "entities": []
+    },
+    {
+      "text": "get the forcast for me",
+      "intent": "l_weather",
+      "entities": []
+    },
+    {
+      "text": "show me the forecast at alabama",
+      "intent": "l_weather",
+      "entities": []
+    },
+    {
+      "text": "soliciting today ' s weather",
+      "intent": "l_weather",
+      "entities": []
+    },
+    {
+      "text": "current weather ?",
+      "intent": "l_weather",
+      "entities": []
+    },
+    {
+      "text": "what is the weather today at 10 day durham ?",
+      "intent": "l_weather",
+      "entities": []
+    },
+    {
+      "text": "get the weather at saint george utah",
+      "intent": "l_weather",
+      "entities": []
+    },
+    {
+      "text": "\\\" tell me perth weather , sclimate & temperature at australia \\",
+      "intent": "l_weather",
+      "entities": []
+    },
+    {
+      "text": "what is the rain volume in sonoma county ?",
+      "intent": "l_weather",
+      "entities": []
+    },
+    {
+      "text": "i want to know the temperature at death valley",
+      "intent": "l_weather",
+      "entities": []
+    },
+    {
+      "text": "was last year about this time as wet as it is now in the south ?",
+      "intent": "l_weather",
+      "entities": []
+    },
+    {
+      "text": "provide me by toronto weather please",
+      "intent": "l_weather",
+      "entities": []
+    },
+    {
+      "text": "get for me the weather conditions in sonoma county",
+      "intent": "l_weather",
+      "entities": []
+    },
+    {
+      "text": "do fl residents usually need ice scrapers",
+      "intent": "l_weather",
+      "entities": []
+    },
+    {
+      "text": "forecast in celcius",
+      "intent": "l_weather",
+      "entities": []
+    },
+    {
+      "text": "will it be raining in ranchi",
+      "intent": "l_weather",
+      "entities": []
+    },
+    {
+      "text": "what will the weather be tomorrow in accord new york ?",
+      "intent": "l_weather",
+      "entities": []
+    },
+    {
+      "text": "what is the weather in redmond ?",
+      "intent": "l_weather",
+      "entities": []
+    },
+    {
+      "text": "will it rain this weekend",
+      "intent": "l_weather",
+      "entities": []
+    },
+    {
+      "text": "will it snow today",
+      "intent": "l_weather",
+      "entities": []
+    },
+    {
+      "text": "what to wear in march in california",
+      "intent": "l_weather",
+      "entities": []
+    },
+    {
+      "text": "hi",
+      "intent": "q_faq",
+      "entities": []
+    },
+    {
+      "text": "what do you do?",
+      "intent": "q_faq",
+      "entities": []
+    },
+    {
+      "text": "what are you?",
+      "intent": "q_faq",
+      "entities": []
+    },
+    {
+      "text": "greetings",
+      "intent": "q_faq",
+      "entities": []
+    },
+    {
+      "text": "good morning",
+      "intent": "q_faq",
+      "entities": []
+    },
+    {
+      "text": "good evening",
+      "intent": "q_faq",
+      "entities": []
+    },
+    {
+      "text": "what?",
+      "intent": "q_faq",
+      "entities": []
+    }
+  ],
+  "patterns": [],
+  "patternAnyEntities": [],
+  "prebuiltEntities": []
+}

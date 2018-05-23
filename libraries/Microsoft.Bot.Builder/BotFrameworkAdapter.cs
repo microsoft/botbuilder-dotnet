@@ -38,7 +38,7 @@ namespace Microsoft.Bot.Builder.Adapters
         private readonly ICredentialProvider _credentialProvider;
         private readonly HttpClient _httpClient;
         private readonly RetryPolicy _connectorClientRetryPolicy;
-        private Dictionary<string, MicrosoftAppCredentials> _appCredentialMap = new Dictionary<string, MicrosoftAppCredentials>();                
+        private Dictionary<string, MicrosoftAppCredentials> _appCredentialMap = new Dictionary<string, MicrosoftAppCredentials>();
 
         private const string InvokeReponseKey = "BotFrameworkAdapter.InvokeResponse";
 
@@ -135,7 +135,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// components in the conustructor. Use the <see cref="Use(IMiddleware)"/> method to 
         /// add additional middleware to the adapter after construction.
         /// </remarks>
-        public BotFrameworkAdapter(string appId, string appPassword, RetryPolicy connectorClientRetryPolicy = null, HttpClient httpClient = null, IMiddleware middleware = null) 
+        public BotFrameworkAdapter(string appId, string appPassword, RetryPolicy connectorClientRetryPolicy = null, HttpClient httpClient = null, IMiddleware middleware = null)
             : this(new SimpleCredentialProvider(appId, appPassword), connectorClientRetryPolicy, httpClient, middleware)
         {
         }
@@ -180,7 +180,7 @@ namespace Microsoft.Bot.Builder.Adapters
         {
             BotAssert.ActivityNotNull(activity);
 
-            var claimsIdentity =  await JwtTokenValidation.AuthenticateRequest(activity, authHeader, _credentialProvider, _httpClient).ConfigureAwait(false);
+            var claimsIdentity = await JwtTokenValidation.AuthenticateRequest(activity, authHeader, _credentialProvider, _httpClient).ConfigureAwait(false);
 
             return await ProcessActivity(claimsIdentity, activity, callback).ConfigureAwait(false);
         }
@@ -232,7 +232,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <seealso cref="ITurnContext.OnSendActivities(SendActivitiesHandler)"/>
         public override async Task<ResourceResponse[]> SendActivities(ITurnContext context, Activity[] activities)
         {
-            List<ResourceResponse> responses = new List<ResourceResponse>(); 
+            List<ResourceResponse> responses = new List<ResourceResponse>();
 
             foreach (var activity in activities)
             {
@@ -247,7 +247,7 @@ namespace Microsoft.Bot.Builder.Adapters
                     // No need to create a response. One will be created below. 
                 }
                 else if (activity.Type == "invokeResponse") // Aligning name with Node            
-                {                    
+                {
                     context.Services.Add<Activity>(InvokeReponseKey, activity);
                     // No need to create a response. One will be created below.                     
                 }
@@ -255,7 +255,7 @@ namespace Microsoft.Bot.Builder.Adapters
                 {
                     // if it is a Trace activity we only send to the channel if it's the emulator.
                 }
-                else if( !string.IsNullOrWhiteSpace(activity.ReplyToId))
+                else if (!string.IsNullOrWhiteSpace(activity.ReplyToId))
                 {
                     var connectorClient = context.Services.Get<IConnectorClient>();
                     response = await connectorClient.Conversations.ReplyToActivityAsync(activity).ConfigureAwait(false);
@@ -263,7 +263,7 @@ namespace Microsoft.Bot.Builder.Adapters
                 else
                 {
                     var connectorClient = context.Services.Get<IConnectorClient>();
-                    response = await connectorClient.Conversations.SendToConversationAsync(activity).ConfigureAwait(false);                    
+                    response = await connectorClient.Conversations.SendToConversationAsync(activity).ConfigureAwait(false);
                 }
 
                 // If No response is set, then defult to a "simple" response. This can't really be done
@@ -281,7 +281,7 @@ namespace Microsoft.Bot.Builder.Adapters
                 }
 
                 // Collect all the responses that come from the service. 
-                responses.Add(response); 
+                responses.Add(response);
             }
 
             return responses.ToArray();
@@ -366,7 +366,7 @@ namespace Microsoft.Bot.Builder.Adapters
 
             return accounts;
         }
-     
+
         /// <summary>
         /// Lists the members of the current conversation.
         /// </summary>
@@ -409,9 +409,9 @@ namespace Microsoft.Bot.Builder.Adapters
                 throw new ArgumentNullException(nameof(serviceUrl));
 
             if (credentials == null)
-                throw new ArgumentNullException(nameof(credentials)); 
+                throw new ArgumentNullException(nameof(credentials));
 
-            var connectorClient = this.CreateConnectorClient(serviceUrl, credentials);            
+            var connectorClient = this.CreateConnectorClient(serviceUrl, credentials);
             ConversationsResult results = await connectorClient.Conversations.GetConversationsAsync(continuationToken).ConfigureAwait(false);
             return results;
         }
@@ -439,6 +439,54 @@ namespace Microsoft.Bot.Builder.Adapters
         }
 
 
+
+        /// Attempts to retrieve the token for a user that's in a login flow.
+        /// </summary>
+        /// <param name="context">Context for the current turn of conversation with the user.</param>
+        /// <param name="connectionName">Name of the auth connection to use.</param>
+        /// <param name="magicCode">(Optional) Optional user entered code to validate.</param>
+        /// <returns>Token Response</returns>
+        public async Task<TokenResponse> GetUserToken(ITurnContext context, string connectionName, string magicCode)
+        {
+            BotAssert.ContextNotNull(context);
+            if (string.IsNullOrWhiteSpace(connectionName))
+                throw new ArgumentNullException(nameof(connectionName));
+
+            var client = this.CreateOAuthApiClient(context.Services.Get<IConnectorClient>() as ConnectorClient);
+            return await client.GetUserTokenAsync(context.Activity.From.Id, connectionName, magicCode).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Get the raw signin link to be sent to the user for signin for a connection name.
+        /// </summary>
+        /// <param name="context">Context for the current turn of conversation with the user.</param>
+        /// <param name="connectionName">Name of the auth connection to use.</param>
+        /// <returns></returns>
+        public async Task<string> GetOauthSignInLink(ITurnContext context, string connectionName)
+        {
+            BotAssert.ContextNotNull(context);
+            if (string.IsNullOrWhiteSpace(connectionName))
+                throw new ArgumentNullException(nameof(connectionName));
+
+            var client = this.CreateOAuthApiClient(context.Services.Get<IConnectorClient>() as ConnectorClient);
+            return await client.GetSignInLinkAsync(context.Activity, connectionName).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Signs the user out with the token server.
+        /// </summary>
+        /// <param name="context">Context for the current turn of conversation with the user.</param>
+        /// <param name="connectionName">Name of the auth connection to use.</param>
+        /// <returns></returns>
+        public async Task SignOutUser(ITurnContext context, string connectionName)
+        {
+            BotAssert.ContextNotNull(context);
+            if (string.IsNullOrWhiteSpace(connectionName))
+                throw new ArgumentNullException(nameof(connectionName));
+
+            var client = this.CreateOAuthApiClient(context.Services.Get<IConnectorClient>() as ConnectorClient);
+            await client.SignOutUserAsync(context.Activity.From.Id, connectionName).ConfigureAwait(false);
+        }
 
         /// <summary>
         /// Creates a conversation on the specified channel.
@@ -480,6 +528,11 @@ namespace Microsoft.Bot.Builder.Adapters
             {
                 await this.RunPipeline(context, callback).ConfigureAwait(false);
             }
+        }
+
+        private OAuthClient CreateOAuthApiClient(ConnectorClient client)
+        {
+            return new OAuthClient(client, AuthenticationConstants.OAuthUrl);
         }
 
         /// <summary>

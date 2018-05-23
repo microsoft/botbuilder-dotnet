@@ -27,26 +27,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             await new TestFlow(adapter, async (turnContext) =>
             {
-                var dialogs = new DialogSet();
-                dialogs.Add("test-prompt", new NumberPrompt<int>(Culture.English));
-
                 var state = ConversationState<Dictionary<string, object>>.Get(turnContext);
-                var dc = dialogs.CreateContext(turnContext, state);
+                var prompt = new NumberPrompt<int>(Culture.English);
 
-                await dc.Continue();
-                var dialogResult = dc.DialogResult;
-
-                if (!dialogResult.Active)
+                var dialogCompletion = await prompt.Continue(turnContext, state);
+                if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
                 {
-                    if (dialogResult.Result != null)
-                    {
-                        var numberResult = (NumberResult<int>)dialogResult.Result;
-                        await turnContext.SendActivity($"Bot received the number '{numberResult.Value}'.");
-                    }
-                    else
-                    {
-                        await dc.Prompt("test-prompt", "Enter a number.");
-                    }
+                    await prompt.Begin(turnContext, state, new PromptOptions { PromptString = "Enter a number." });
+                }
+                else if (dialogCompletion.IsCompleted)
+                {
+                    var numberResult = (NumberResult<int>)dialogCompletion.Result;
+                    await turnContext.SendActivity($"Bot received the number '{numberResult.Value}'.");
                 }
             })
             .Send("hello")
@@ -64,26 +56,23 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             await new TestFlow(adapter, async (turnContext) =>
             {
-                var dialogs = new DialogSet();
-                dialogs.Add("test-prompt", new NumberPrompt<int>(Culture.English));
-
                 var state = ConversationState<Dictionary<string, object>>.Get(turnContext);
-                var dc = dialogs.CreateContext(turnContext, state);
+                var prompt = new NumberPrompt<int>(Culture.English);
 
-                await dc.Continue();
-                var dialogResult = dc.DialogResult;
-
-                if (!dialogResult.Active)
+                var dialogCompletion = await prompt.Continue(turnContext, state);
+                if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
                 {
-                    if (dialogResult.Result != null)
-                    {
-                        var numberResult = (NumberResult<int>)dialogResult.Result;
-                        await turnContext.SendActivity($"Bot received the number '{numberResult.Value}'.");
-                    }
-                    else
-                    {
-                        await dc.Prompt("test-prompt", "Enter a number.", new PromptOptions { RetryPromptString = "You must enter a number." });
-                    }
+                    await prompt.Begin(turnContext, state,
+                        new PromptOptions
+                        {
+                            PromptString = "Enter a number.",
+                            RetryPromptString = "You must enter a number."
+                        });
+                }
+                else if (dialogCompletion.IsCompleted)
+                {
+                    var numberResult = (NumberResult<int>)dialogCompletion.Result;
+                    await turnContext.SendActivity($"Bot received the number '{numberResult.Value}'.");
                 }
             })
             .Send("hello")
@@ -112,30 +101,23 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             await new TestFlow(adapter, async (turnContext) =>
             {
-                var dialogs = new DialogSet();
-                dialogs.Add("test-prompt", new NumberPrompt<int>(Culture.English, validator));
-
                 var state = ConversationState<Dictionary<string, object>>.Get(turnContext);
-                var dc = dialogs.CreateContext(turnContext, state);
+                var prompt = new NumberPrompt<int>(Culture.English, validator);
 
-                await dc.Continue();
-                var dialogResult = dc.DialogResult;
-
-                if (!dialogResult.Active)
+                var dialogCompletion = await prompt.Continue(turnContext, state);
+                if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
                 {
-                    if (dialogResult.Result != null)
-                    {
-                        var numberResult = (NumberResult<int>)dialogResult.Result;
-                        await turnContext.SendActivity($"Bot received the number '{numberResult.Value}'.");
-                    }
-                    else
-                    {
-                        await dc.Prompt("test-prompt", "Enter a number.", 
-                            new PromptOptions
-                            {
-                                RetryPromptString = "You must enter a positive number less than 100."
-                            });
-                    }
+                    await prompt.Begin(turnContext, state,
+                        new PromptOptions
+                        {
+                            PromptString = "Enter a number.",
+                            RetryPromptString = "You must enter a positive number less than 100."
+                        });
+                }
+                else if (dialogCompletion.IsCompleted)
+                {
+                    var numberResult = (NumberResult<int>)dialogCompletion.Result;
+                    await turnContext.SendActivity($"Bot received the number '{numberResult.Value}'.");
                 }
             })
             .Send("hello")
@@ -155,26 +137,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             await new TestFlow(adapter, async (turnContext) =>
             {
-                var dialogs = new DialogSet();
-                dialogs.Add("test-prompt", new TextPrompt());
-
                 var state = ConversationState<Dictionary<string, object>>.Get(turnContext);
-                var dc = dialogs.CreateContext(turnContext, state);
+                var prompt = new TextPrompt();
 
-                await dc.Continue();
-                var dialogResult = dc.DialogResult;
-
-                if (!dialogResult.Active)
+                var dialogCompletion = await prompt.Continue(turnContext, state);
+                if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
                 {
-                    if (dialogResult.Result != null)
-                    {
-                        var textResult = (TextResult)dialogResult.Result;
-                        await turnContext.SendActivity($"Bot received the text '{textResult.Value}'.");
-                    }
-                    else
-                    {
-                        await dc.Prompt("test-prompt", "Enter some text.");
-                    }
+                    await prompt.Begin(turnContext, state, new PromptOptions { PromptString = "Enter some text." });
+                }
+                else if (dialogCompletion.IsCompleted)
+                {
+                    var textResult = (TextResult)dialogCompletion.Result;
+                    await turnContext.SendActivity($"Bot received the text '{textResult.Value}'.");
                 }
             })
             .Send("hello")
@@ -199,29 +173,23 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             await new TestFlow(adapter, async (turnContext) =>
             {
-                var dialogs = new DialogSet();
-                dialogs.Add("test-prompt", new TextPrompt(validator));
-
                 var state = ConversationState<Dictionary<string, object>>.Get(turnContext);
-                var dc = dialogs.CreateContext(turnContext, state);
+                var prompt = new TextPrompt(validator);
 
-                await dc.Continue();
-                var dialogResult = dc.DialogResult;
-
-                if (!dialogResult.Active)
+                var dialogCompletion = await prompt.Continue(turnContext, state);
+                if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
                 {
-                    if (dialogResult.Result != null)
-                    {
-                        var textResult = (TextResult)dialogResult.Result;
-                        await turnContext.SendActivity($"Bot received the text '{textResult.Value}'.");
-                    }
-                    else
-                    {
-                        await dc.Prompt("test-prompt", "Enter some text.", new PromptOptions
+                    await prompt.Begin(turnContext, state,
+                        new PromptOptions
                         {
+                            PromptString = "Enter some text.",
                             RetryPromptString = "Make sure the text is greater than three characters."
                         });
-                    }
+                }
+                else if (dialogCompletion.IsCompleted)
+                {
+                    var textResult = (TextResult)dialogCompletion.Result;
+                    await turnContext.SendActivity($"Bot received the text '{textResult.Value}'.");
                 }
             })
             .Send("hello")
@@ -241,31 +209,23 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             await new TestFlow(adapter, async (turnContext) =>
             {
-                var dialogs = new DialogSet();
-                dialogs.Add("test-prompt", new ConfirmPrompt(Culture.English));
-
                 var state = ConversationState<Dictionary<string, object>>.Get(turnContext);
-                var dc = dialogs.CreateContext(turnContext, state);
+                var prompt = new ConfirmPrompt(Culture.English);
 
-                await dc.Continue();
-                var dialogResult = dc.DialogResult;
-
-                if (!dialogResult.Active)
+                var dialogCompletion = await prompt.Continue(turnContext, state);
+                if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
                 {
-                    if (dialogResult.Result != null)
+                    await prompt.Begin(turnContext, state, new PromptOptions { PromptString = "Please confirm." });
+                }
+                else if (dialogCompletion.IsCompleted)
+                {
+                    if (((ConfirmResult)dialogCompletion.Result).Confirmation)
                     {
-                        if (((ConfirmResult)dialogResult.Result).Confirmation)
-                        {
-                            await turnContext.SendActivity("Confirmed.");
-                        }
-                        else
-                        {
-                            await turnContext.SendActivity("Not confirmed.");
-                        }
+                        await turnContext.SendActivity("Confirmed.");
                     }
                     else
                     {
-                        await dc.Prompt("test-prompt", "Please confirm.");
+                        await turnContext.SendActivity("Not confirmed.");
                     }
                 }
             })
@@ -284,35 +244,28 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             await new TestFlow(adapter, async (turnContext) =>
             {
-                var dialogs = new DialogSet();
-                dialogs.Add("test-prompt", new ConfirmPrompt(Culture.English));
-
                 var state = ConversationState<Dictionary<string, object>>.Get(turnContext);
-                var dc = dialogs.CreateContext(turnContext, state);
+                var prompt = new ConfirmPrompt(Culture.English);
 
-                await dc.Continue();
-                var dialogResult = dc.DialogResult;
-
-                if (!dialogResult.Active)
+                var dialogCompletion = await prompt.Continue(turnContext, state);
+                if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
                 {
-                    if (dialogResult.Result != null)
+                    await prompt.Begin(turnContext, state,
+                        new PromptOptions
+                        {
+                            PromptString = "Please confirm.",
+                            RetryPromptString = "Please confirm, say 'yes' or 'no' or something like that."
+                        });
+                }
+                else if (dialogCompletion.IsCompleted)
+                {
+                    if (((ConfirmResult)dialogCompletion.Result).Confirmation)
                     {
-                        if (((ConfirmResult)dialogResult.Result).Confirmation)
-                        {
-                            await turnContext.SendActivity("Confirmed.");
-                        }
-                        else
-                        {
-                            await turnContext.SendActivity("Not confirmed.");
-                        }
+                        await turnContext.SendActivity("Confirmed.");
                     }
                     else
                     {
-                        await dc.Prompt("test-prompt", "Please confirm.",
-                            new PromptOptions
-                            {
-                                RetryPromptString = "Please confirm, say 'yes' or 'no' or something like that."
-                            });
+                        await turnContext.SendActivity("Not confirmed.");
                     }
                 }
             })
@@ -333,25 +286,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             await new TestFlow(adapter, async (turnContext) =>
             {
-                var dialogs = new DialogSet();
-                dialogs.Add("test-waterfall", Create_Waterfall1());
+                var waterfall = new Waterfall(new WaterfallStep[]
+                {
+                    async (dc, args, next) => { await dc.Context.SendActivity("step1"); },
+                    async (dc, args, next) => { await dc.Context.SendActivity("step2"); },
+                    async (dc, args, next) => { await dc.Context.SendActivity("step3"); },
+                });
 
                 var state = ConversationState<Dictionary<string, object>>.Get(turnContext);
-                var dc = dialogs.CreateContext(turnContext, state);
 
-                await dc.Continue();
-                var dialogResult = dc.DialogResult;
-
-                if (!dialogResult.Active)
+                var dialogCompletion = await waterfall.Continue(turnContext, state);
+                if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
                 {
-                    if (dialogResult.Result != null)
-                    {
-                        await turnContext.SendActivity((string)dialogResult.Result);
-                    }
-                    else
-                    {
-                        await dc.Begin("test-waterfall");
-                    }
+                    await waterfall.Begin(turnContext, state);
                 }
             })
             .Send("hello")
@@ -360,31 +307,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .AssertReply("step2")
             .Send("hello")
             .AssertReply("step3")
-            .AssertReply("All Done!")
             .StartTest();
-        }
-
-        private static WaterfallStep[] Create_Waterfall1()
-        {
-            return new WaterfallStep[] {
-                Waterfall1_Step1,
-                Waterfall1_Step2,
-                Waterfall1_Step3
-            };
-        }
-
-        private static async Task Waterfall1_Step1(DialogContext dc, object args, SkipStepFunction next)
-        {
-            await dc.Context.SendActivity("step1");
-        }
-        private static async Task Waterfall1_Step2(DialogContext dc, object args, SkipStepFunction next)
-        {
-            await dc.Context.SendActivity("step2");
-        }
-        private static async Task Waterfall1_Step3(DialogContext dc, object args, SkipStepFunction next)
-        {
-            await dc.Context.SendActivity("step3");
-            await dc.End("All Done!");
         }
 
         [TestMethod]
@@ -403,18 +326,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 var dc = dialogs.CreateContext(turnContext, state);
 
                 await dc.Continue();
-                var dialogResult = dc.DialogResult;
 
-                if (!dialogResult.Active)
+                if (!turnContext.Responded)
                 {
-                    if (dialogResult.Result != null)
-                    {
-                        await turnContext.SendActivity((string)dialogResult.Result);
-                    }
-                    else
-                    {
-                        await dc.Begin("test-waterfall");
-                    }
+                    await dc.Begin("test-waterfall");
                 }
             })
             .Send("hello")
@@ -433,7 +348,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .Send("64")
             .AssertReply("Thanks for '64'")
             .AssertReply("step3")
-            .AssertReply("All Done!")
             .StartTest();
         }
 
@@ -469,7 +383,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 await dc.Context.SendActivity($"Thanks for '{numberResult.Value}'");
             }
             await dc.Context.SendActivity("step3");
-            await dc.End("All Done!");
+            await dc.End(new Dictionary<string, object> { { "Value", "All Done!" } });
         }
 
         [TestMethod]
@@ -489,18 +403,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 var dc = dialogs.CreateContext(turnContext, state);
 
                 await dc.Continue();
-                var dialogResult = dc.DialogResult;
 
-                if (!dialogResult.Active)
+                if (!turnContext.Responded)
                 {
-                    if (dialogResult.Result != null)
-                    {
-                        await turnContext.SendActivity((string)dialogResult.Result);
-                    }
-                    else
-                    {
-                        await dc.Begin("test-waterfall-a");
-                    }
+                    await dc.Begin("test-waterfall-a");
                 }
             })
             .Send("hello")
@@ -513,7 +419,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .AssertReply("step2.1")
             .Send("hello")
             .AssertReply("step2.2")
-            .AssertReply("All Done!")
             .StartTest();
         }
 
@@ -567,7 +472,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         private static async Task Waterfall5_Step2(DialogContext dc, object args, SkipStepFunction next)
         {
             await dc.Context.SendActivity("step2.2");
-            await dc.End("All Done!");
+            await dc.End();
         }
     }
 }

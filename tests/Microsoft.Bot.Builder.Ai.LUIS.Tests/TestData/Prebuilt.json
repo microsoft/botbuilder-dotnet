@@ -1,16 +1,36 @@
 {
   "text": "http://foo.com is where you can get a weather forecast for seattle",
-  "alteredText": null,
   "intents": {
-    "Weather_GetForecast": 0.8995508,
-    "EntityTests": 0.6866408,
-    "None": 0.05172678,
-    "Travel": 0.00585644227,
-    "Delivery": 0.00387669052,
-    "SpecifyName": 0.00387319084,
-    "Help": 0.00177787163,
-    "Cancel": 0.000588835566,
-    "Greeting": 0.000149518673
+    "Weather_GetForecast": {
+      "score": 0.8924456
+    },
+    "EntityTests": {
+      "score": 0.635434449
+    },
+    "None": {
+      "score": 0.04799512
+    },
+    "search": {
+      "score": 0.0217808
+    },
+    "Travel": {
+      "score": 0.005861538
+    },
+    "SpecifyName": {
+      "score": 0.005182907
+    },
+    "Delivery": {
+      "score": 0.00352461357
+    },
+    "Help": {
+      "score": 0.00179672148
+    },
+    "Cancel": {
+      "score": 0.0006153381
+    },
+    "Greeting": {
+      "score": 0.000140723525
+    }
   },
   "entities": {
     "$instance": {
@@ -19,19 +39,18 @@
           "startIndex": 0,
           "endIndex": 66,
           "text": "http : / / foo . com is where you can get a weather forecast for seattle",
-          "score": 0.6154704
+          "score": 0.6157282
         }
       ]
     },
     "Composite2": [
       {
         "$instance": {
-          "builtin_url": [
+          "url": [
             {
               "startIndex": 0,
               "endIndex": 14,
-              "text": "http://foo.com",
-              "score": null
+              "text": "http://foo.com"
             }
           ],
           "Weather_Location": [
@@ -39,11 +58,11 @@
               "startIndex": 59,
               "endIndex": 66,
               "text": "seattle",
-              "score": 0.896951556
+              "score": 0.8966654
             }
           ]
         },
-        "builtin_url": [
+        "url": [
           "http://foo.com"
         ],
         "Weather_Location": [
@@ -56,83 +75,70 @@
     "query": "http://foo.com is where you can get a weather forecast for seattle",
     "topScoringIntent": {
       "intent": "Weather.GetForecast",
-      "score": 0.8995508,
-      "actions": null
+      "score": 0.8924456
     },
     "intents": [
       {
         "intent": "Weather.GetForecast",
-        "score": 0.8995508,
-        "actions": null
+        "score": 0.8924456
       },
       {
         "intent": "EntityTests",
-        "score": 0.6866408,
-        "actions": null
+        "score": 0.635434449
       },
       {
         "intent": "None",
-        "score": 0.05172678,
-        "actions": null
+        "score": 0.04799512
+      },
+      {
+        "intent": "search",
+        "score": 0.0217808
       },
       {
         "intent": "Travel",
-        "score": 0.00585644227,
-        "actions": null
-      },
-      {
-        "intent": "Delivery",
-        "score": 0.00387669052,
-        "actions": null
+        "score": 0.005861538
       },
       {
         "intent": "SpecifyName",
-        "score": 0.00387319084,
-        "actions": null
+        "score": 0.005182907
+      },
+      {
+        "intent": "Delivery",
+        "score": 0.00352461357
       },
       {
         "intent": "Help",
-        "score": 0.00177787163,
-        "actions": null
+        "score": 0.00179672148
       },
       {
         "intent": "Cancel",
-        "score": 0.000588835566,
-        "actions": null
+        "score": 0.0006153381
       },
       {
         "intent": "Greeting",
-        "score": 0.000149518673,
-        "actions": null
+        "score": 0.000140723525
       }
     ],
     "entities": [
       {
-        "role": null,
         "entity": "http : / / foo . com is where you can get a weather forecast for seattle",
         "type": "Composite2",
         "startIndex": 0,
         "endIndex": 65,
-        "score": 0.6154704,
-        "resolution": null
+        "score": 0.6157282
       },
       {
-        "role": null,
         "entity": "http://foo.com",
         "type": "builtin.url",
         "startIndex": 0,
-        "endIndex": 13,
-        "score": null,
-        "resolution": null
+        "endIndex": 13
       },
       {
-        "role": null,
         "entity": "seattle",
         "type": "Weather.Location",
         "startIndex": 59,
         "endIndex": 65,
-        "score": 0.896951556,
-        "resolution": null
+        "score": 0.8966654
       }
     ],
     "compositeEntities": [
@@ -150,7 +156,6 @@
           }
         ]
       }
-    ],
-    "alteredQuery": null
+    ]
   }
 }
