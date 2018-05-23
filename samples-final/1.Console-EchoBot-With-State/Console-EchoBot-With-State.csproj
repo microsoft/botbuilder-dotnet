@@ -6,19 +6,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="Microsoft.Bot.Builder.Core">
-      <HintPath>..\..\libraries\Microsoft.Bot.Builder.Core\bin\Debug - NuGet Packages\netstandard2.0\Microsoft.Bot.Builder.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Bot.Builder.Core.Extensions">
-      <HintPath>..\..\libraries\Microsoft.Bot.Builder.Core.Extensions\bin\Debug - NuGet Packages\netstandard2.0\Microsoft.Bot.Builder.Core.Extensions.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Bot.Schema">
-      <HintPath>..\..\libraries\Microsoft.Bot.Schema\bin\Debug - NuGet Packages\netstandard2.0\Microsoft.Bot.Schema.dll</HintPath>
-    </Reference>
+    <PackageReference Include="Microsoft.Bot.Builder.Core" Version="4.0.1-preview" />
+    <PackageReference Include="Microsoft.Bot.Builder.Core.Extensions" Version="4.0.1-preview" />
   </ItemGroup>
 
 </Project>

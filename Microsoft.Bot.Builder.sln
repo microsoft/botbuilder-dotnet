@@ -102,7 +102,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Integ
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Builder.Integration.AspNet.WebApi.Tests", "tests\integration\Microsoft.Bot.Builder.Integration.AspNet.WebApi.Tests\Microsoft.Bot.Builder.Integration.AspNet.WebApi.Tests.csproj", "{2614D290-1345-4A41-BE90-F85F817CEADE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Builder.Transcripts.Tests", "tests\Microsoft.Bot.Builder.Transcripts.Tests\Microsoft.Bot.Builder.Transcripts.Tests.csproj", "{71698D71-4C6F-40D5-8BDE-2587514CA21C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Transcripts.Tests", "tests\Microsoft.Bot.Builder.Transcripts.Tests\Microsoft.Bot.Builder.Transcripts.Tests.csproj", "{71698D71-4C6F-40D5-8BDE-2587514CA21C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Builder.Testing", "libraries\Microsoft.Bot.Builder.Testing\Microsoft.Bot.Builder.Testing.csproj", "{CCB53A00-B8CB-43F8-876D-98842560DEE6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -441,6 +443,14 @@ Global
 		{71698D71-4C6F-40D5-8BDE-2587514CA21C}.Documentation|Any CPU.Build.0 = Debug|Any CPU
 		{71698D71-4C6F-40D5-8BDE-2587514CA21C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{71698D71-4C6F-40D5-8BDE-2587514CA21C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CCB53A00-B8CB-43F8-876D-98842560DEE6}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
+		{CCB53A00-B8CB-43F8-876D-98842560DEE6}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
+		{CCB53A00-B8CB-43F8-876D-98842560DEE6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CCB53A00-B8CB-43F8-876D-98842560DEE6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CCB53A00-B8CB-43F8-876D-98842560DEE6}.Documentation|Any CPU.ActiveCfg = Debug|Any CPU
+		{CCB53A00-B8CB-43F8-876D-98842560DEE6}.Documentation|Any CPU.Build.0 = Debug|Any CPU
+		{CCB53A00-B8CB-43F8-876D-98842560DEE6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CCB53A00-B8CB-43F8-876D-98842560DEE6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -494,6 +504,7 @@ Global
 		{62C4DC83-3B07-45D7-856E-224FFB368E5F} = {0A0E26B0-7A46-4F1A-8BFE-9A763FDF6CF8}
 		{2614D290-1345-4A41-BE90-F85F817CEADE} = {0A0E26B0-7A46-4F1A-8BFE-9A763FDF6CF8}
 		{71698D71-4C6F-40D5-8BDE-2587514CA21C} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
+		{CCB53A00-B8CB-43F8-876D-98842560DEE6} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7173C9F3-A7F9-496E-9078-9156E35D6E16}

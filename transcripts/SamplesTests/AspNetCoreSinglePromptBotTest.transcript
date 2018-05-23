@@ -1,0 +1,82 @@
+[
+  {
+    "conversation": {
+      "id": "1"
+    },
+    "id": "a514b171-df3c-4690-bbe9-8adef74f247f",
+    "recipient": {
+      "id": "23139044-d52b-3542-9310-88981422eca8",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "from": {
+      "id": "924f030b-7861-3369-9778-fa82c89d586a",
+      "name": "User",
+      "role": "user"
+    },
+    "text": "Hello",
+    "timestamp": "2018-05-24T17:20:31.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "1"
+    },
+    "id": "4a22152a-55f4-4e3c-aba3-d7548f994643",
+    "recipient": {
+      "id": "924f030b-7861-3369-9778-fa82c89d586a",
+      "name": "User",
+      "role": "user"
+    },
+    "from": {
+      "id": "23139044-d52b-3542-9310-88981422eca8",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "text": "Hello, I'm the demo bot. What is your name?",
+    "timestamp": "2018-05-24T17:20:33.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "1"
+    },
+    "id": "d5b9f7e4-4939-44a9-8d95-f083a8d4323c",
+    "recipient": {
+      "id": "23139044-d52b-3542-9310-88981422eca8",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "from": {
+      "id": "924f030b-7861-3369-9778-fa82c89d586a",
+      "name": "User",
+      "role": "user"
+    },
+    "text": "John",
+    "timestamp": "2018-05-24T17:20:35.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "1"
+    },
+    "id": "04d46e02-3fb0-468f-9b9e-bd5ac875587e",
+    "recipient": {
+      "id": "924f030b-7861-3369-9778-fa82c89d586a",
+      "name": "User",
+      "role": "user"
+    },
+    "from": {
+      "id": "23139044-d52b-3542-9310-88981422eca8",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "text": "Bot received the text 'John'.",
+    "timestamp": "2018-05-24T17:20:37.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  }
+]

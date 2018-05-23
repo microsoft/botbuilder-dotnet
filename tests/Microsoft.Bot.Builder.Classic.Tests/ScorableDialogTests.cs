@@ -31,25 +31,23 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using Autofac;
-using Microsoft.Bot.Builder.Classic.Dialogs;
-using Microsoft.Bot.Builder.Classic.Dialogs.Internals;
-using Microsoft.Bot.Builder.Classic.Internals.Fibers;
-using Microsoft.Bot.Builder.Classic.Scorables.Internals;
-using Microsoft.Bot.Builder.Classic.Scorables;
-using Microsoft.Bot.Schema;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.XPath;
-using Microsoft.Bot.Builder.Adapters;
+using Autofac;
+using Microsoft.Bot.Builder.Classic.Dialogs;
+using Microsoft.Bot.Builder.Classic.Dialogs.Internals;
+using Microsoft.Bot.Builder.Classic.Internals.Fibers;
+using Microsoft.Bot.Builder.Classic.Scorables;
+using Microsoft.Bot.Builder.Classic.Scorables.Internals;
+using Microsoft.Bot.Builder.Testing;
+using Microsoft.Bot.Schema;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
 
 namespace Microsoft.Bot.Builder.Classic.Tests
 {

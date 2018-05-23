@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Core.Extensions.Tests;
+using Microsoft.Bot.Builder.Testing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Bot.Builder.Transcripts.Tests
@@ -14,7 +15,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
         [TestMethod]
         public async Task BotAdapted_Bracketing()
         {
-            var activities = TranscriptUtilities.GetFromTestContext(TestContext);
+            var activities = TranscriptUtilities.GetActivities($@"{nameof(CoreTests)}\{nameof(BotAdapted_Bracketing)}.transcript");
 
             TestAdapter adapter = new TestAdapter()
                 .Use(new BeforeAfterMiddleware())

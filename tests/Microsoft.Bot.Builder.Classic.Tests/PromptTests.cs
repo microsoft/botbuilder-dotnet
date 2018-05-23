@@ -31,20 +31,20 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using Autofac;
-using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Builder.Classic.Dialogs;
-using Microsoft.Bot.Builder.Classic.Dialogs.Internals;
-using Microsoft.Bot.Builder.Classic.Internals.Fibers;
-using Microsoft.Bot.Schema;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Autofac;
+using Microsoft.Bot.Builder.Classic.Dialogs;
+using Microsoft.Bot.Builder.Classic.Dialogs.Internals;
+using Microsoft.Bot.Builder.Classic.Internals.Fibers;
+using Microsoft.Bot.Builder.Testing;
+using Microsoft.Bot.Schema;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
 using static Microsoft.Bot.Builder.Classic.Dialogs.PromptDialog;
 
 namespace Microsoft.Bot.Builder.Classic.Tests

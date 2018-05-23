@@ -4,17 +4,18 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.Core.Extensions
+namespace Microsoft.Bot.Builder.Testing
 {
     /// <summary>
     /// Helpers to get activities from trancript files
     /// </summary>
     public static class TranscriptUtilities
     {
+        public static string DefaultTranscriptsRootFolder { get; set; } = @"..\..\..\..\..\transcripts";
+
         /// <summary>
         /// Loads a list of activities from a transcript file.
         /// Use the context of the test to find the transcript file
@@ -23,6 +24,12 @@ namespace Microsoft.Bot.Builder.Core.Extensions
         /// <returns>A list of activities to test</returns>
         public static IEnumerable<IActivity> GetActivities(string path)
         {
+            if (!Path.IsPathRooted(path))
+            {
+                var transcriptsRootFolder = Environment.GetEnvironmentVariable("TranscriptsRootFolder") ?? DefaultTranscriptsRootFolder;
+                path = Path.Combine(transcriptsRootFolder, path);
+            }
+
             if (!File.Exists(path))
             {
                 throw new FileNotFoundException($"Required transcript file '{path}' does not exists. Review the 'TranscriptsRootFolder' environment variable value.");

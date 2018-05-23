@@ -1,8 +1,0 @@
-user=User
-bot=Bot
-
-Bot: Hello and welcome to the echo bot.
-User: Hi!
-Bot: You sent 'Hi!'
-User: This is a test
-Bot: You sent 'This is a test'

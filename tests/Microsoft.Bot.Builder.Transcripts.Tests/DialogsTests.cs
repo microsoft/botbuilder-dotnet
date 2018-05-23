@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Core.Extensions;
-using Microsoft.Bot.Builder.Core.Extensions.Tests;
 using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Bot.Builder.Testing;
 using Microsoft.Recognizers.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -18,7 +17,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
         [TestMethod]
         public async Task AttachmentPrompt()
         {
-            var activities = TranscriptUtilities.GetFromTestContext(TestContext);
+            var activities = TranscriptUtilities.GetActivities($@"{nameof(DialogsTests)}\{nameof(AttachmentPrompt)}.transcript");
 
             TestAdapter adapter = new TestAdapter()
                 .Use(new ConversationState<Dictionary<string, object>>(new MemoryStorage()));
@@ -78,7 +77,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
                 }
             );
 
-            var activities = TranscriptUtilities.GetFromTestContext(TestContext);
+            var activities = TranscriptUtilities.GetActivities($@"{nameof(DialogsTests)}\{nameof(ChoicePrompt)}.transcript");
 
             TestAdapter adapter = new TestAdapter()
                 .Use(new ConversationState<Dictionary<string, object>>(new MemoryStorage()));
@@ -102,7 +101,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
         [TestMethod]
         public async Task ConfirmPrompt()
         {
-            var activities = TranscriptUtilities.GetFromTestContext(TestContext);
+            var activities = TranscriptUtilities.GetActivities($@"{nameof(DialogsTests)}\{nameof(ConfirmPrompt)}.transcript");
 
             TestAdapter adapter = new TestAdapter()
                 .Use(new ConversationState<Dictionary<string, object>>(new MemoryStorage()));
@@ -141,7 +140,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
         [TestMethod]
         public async Task DateTimePrompt()
         {
-            var activities = TranscriptUtilities.GetFromTestContext(TestContext);
+            var activities = TranscriptUtilities.GetActivities($@"{nameof(DialogsTests)}\{nameof(DateTimePrompt)}.transcript");
 
             TestAdapter adapter = new TestAdapter()
                 .Use(new ConversationState<Dictionary<string, object>>(new MemoryStorage()));
@@ -171,7 +170,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
         [TestMethod]
         public async Task NumberPrompt()
         {
-            var activities = TranscriptUtilities.GetFromTestContext(TestContext);
+            var activities = TranscriptUtilities.GetActivities($@"{nameof(DialogsTests)}\{nameof(NumberPrompt)}.transcript");
 
             TestAdapter adapter = new TestAdapter()
                 .Use(new ConversationState<Dictionary<string, object>>(new MemoryStorage()));
@@ -213,7 +212,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
         [TestMethod]
         public async Task TextPrompt()
         {
-            var activities = TranscriptUtilities.GetFromTestContext(TestContext);
+            var activities = TranscriptUtilities.GetActivities($@"{nameof(DialogsTests)}\{nameof(TextPrompt)}.transcript");
 
             TestAdapter adapter = new TestAdapter()
                 .Use(new ConversationState<Dictionary<string, object>>(new MemoryStorage()));
@@ -253,7 +252,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
         [TestMethod]
         public async Task Waterfall()
         {
-            var activities = TranscriptUtilities.GetFromTestContext(TestContext);
+            var activities = TranscriptUtilities.GetActivities($@"{nameof(DialogsTests)}\{nameof(Waterfall)}.transcript");
 
             TestAdapter adapter = new TestAdapter()
                 .Use(new ConversationState<Dictionary<string, object>>(new MemoryStorage()));
@@ -282,7 +281,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
         [TestMethod]
         public async Task WaterfallPrompt()
         {
-            var activities = TranscriptUtilities.GetFromTestContext(TestContext);
+            var activities = TranscriptUtilities.GetActivities($@"{nameof(DialogsTests)}\{nameof(WaterfallPrompt)}.transcript");
 
             TestAdapter adapter = new TestAdapter()
                 .Use(new ConversationState<Dictionary<string, object>>(new MemoryStorage()));
@@ -345,7 +344,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
         [TestMethod]
         public async Task WaterfallNested()
         {
-            var activities = TranscriptUtilities.GetFromTestContext(TestContext);
+            var activities = TranscriptUtilities.GetActivities($@"{nameof(DialogsTests)}\{nameof(WaterfallNested)}.transcript");
 
             TestAdapter adapter = new TestAdapter()
                 .Use(new ConversationState<Dictionary<string, object>>(new MemoryStorage()));

@@ -1,0 +1,7 @@
+user=User
+bot=Bot
+
+User: Hello
+Bot: Turn 1: You sent 'Hello'
+User: Hello again
+Bot: Turn 2: You sent 'Hello again'
