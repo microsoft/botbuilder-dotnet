@@ -72,17 +72,18 @@ namespace Microsoft.Bot.Builder.Adapters
 
         public async override Task<ResourceResponse[]> SendActivities(ITurnContext context, Activity[] activities)
         {
-            List<ResourceResponse> responses = new List<ResourceResponse>();
+            var responses = new ResourceResponse[activities.Length];
 
-            foreach (var activity in activities)
+            for(var index = 0; index < activities.Length; index++)
             {
+                var activity = activities[index];
+
                 if (String.IsNullOrEmpty(activity.Id))
                     activity.Id = Guid.NewGuid().ToString("n");
 
                 if (activity.Timestamp == null)
                     activity.Timestamp = DateTime.UtcNow;
 
-                responses.Add(new ResourceResponse(activity.Id));
 
                 if (activity.Type == ActivityTypesEx.Delay)
                 {
@@ -100,9 +101,11 @@ namespace Microsoft.Bot.Builder.Adapters
                         this.botReplies.Enqueue(activity);
                     }
                 }
+
+                responses[index] = new ResourceResponse(activity.Id);
             }
 
-            return responses.ToArray();
+            return responses;
         }
 
         public override Task<ResourceResponse> UpdateActivity(ITurnContext context, Activity activity)

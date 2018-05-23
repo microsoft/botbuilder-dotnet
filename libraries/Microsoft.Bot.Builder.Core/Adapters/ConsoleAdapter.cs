@@ -50,11 +50,11 @@ namespace Microsoft.Bot.Builder.Adapters
 
         public override async Task<ResourceResponse[]> SendActivities(ITurnContext context, Activity[] activities)
         {
-            List<ResourceResponse> responses = new List<ResourceResponse>();
+            var responses = new ResourceResponse[activities.Length];
 
-            foreach (var activity in activities)
+            for(var index = 0; index < activities.Length; index++)
             {
-                responses.Add(new ResourceResponse(activity.Id));
+                var activity = activities[index];
 
                 switch (activity.Type)
                 {
@@ -88,9 +88,11 @@ namespace Microsoft.Bot.Builder.Adapters
                         Console.WriteLine("Bot: activity type: {0}", activity.Type);
                         break;
                 }
+
+                responses[index] = new ResourceResponse(activity.Id);
             }
 
-            return responses.ToArray();
+            return responses;
         }
 
         public override Task<ResourceResponse> UpdateActivity(ITurnContext context, Activity activity)
