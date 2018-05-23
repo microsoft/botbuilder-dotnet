@@ -14,6 +14,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Ai.LUIS\Microsoft.Bot.Builder.Ai.LUIS.csproj" />
+    <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Ai.QnA\Microsoft.Bot.Builder.Ai.QnA.csproj" />
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Ai.Translation\Microsoft.Bot.Builder.Ai.Translation.csproj" />
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Core.Extensions\Microsoft.Bot.Builder.Core.Extensions.csproj" />
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Core\Microsoft.Bot.Builder.Core.csproj" />
