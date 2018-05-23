@@ -6,10 +6,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Microsoft.Bot.Schema;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.Core.Extensions.Tests
+namespace Microsoft.Bot.Builder.Core.Extensions
 {
     /// <summary>
     /// Helpers to get activities from trancript files
@@ -22,15 +21,11 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
         /// </summary>
         /// <param name="context">Test context</param>
         /// <returns>A list of activities to test</returns>
-        public static IEnumerable<IActivity> GetFromTestContext(TestContext context)
+        public static IEnumerable<IActivity> GetActivities(string path)
         {
-            var transcriptsRootFolder = TestUtilities.GetKey("TranscriptsRootFolder") ?? @"..\..\..\..\..\transcripts";
-            var directory = Path.Combine(transcriptsRootFolder, context.FullyQualifiedTestClassName.Split('.').Last());
-            var fileName = $"{context.TestName}.transcript";
-            var path = Path.Combine(directory, fileName);
             if (!File.Exists(path))
             {
-                Assert.Fail($"Required transcript file '{path}' does not exists in '{transcriptsRootFolder}' folder. Review the 'TranscriptsRootFolder' environment variable value.");
+                throw new FileNotFoundException($"Required transcript file '{path}' does not exists. Review the 'TranscriptsRootFolder' environment variable value.");
             }
 
             var content = File.ReadAllText(path);
