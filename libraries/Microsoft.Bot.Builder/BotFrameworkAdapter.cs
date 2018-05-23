@@ -232,11 +232,12 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <seealso cref="ITurnContext.OnSendActivities(SendActivitiesHandler)"/>
         public override async Task<ResourceResponse[]> SendActivities(ITurnContext context, Activity[] activities)
         {
-            List<ResourceResponse> responses = new List<ResourceResponse>();
+            var responses = new ResourceResponse[activities.Length];
 
-            foreach (var activity in activities)
+            for (var index = 0; index < activities.Length; index++)
             {
-                ResourceResponse response = null;
+                var activity = activities[index];
+                var response = default(ResourceResponse);
 
                 if (activity.Type == ActivityTypesEx.Delay)
                 {
@@ -280,11 +281,10 @@ namespace Microsoft.Bot.Builder.Adapters
                     response = new ResourceResponse(activity.Id ?? string.Empty);
                 }
 
-                // Collect all the responses that come from the service. 
-                responses.Add(response);
+                responses[index] = response;
             }
 
-            return responses.ToArray();
+            return responses;
         }
 
         /// <summary>
