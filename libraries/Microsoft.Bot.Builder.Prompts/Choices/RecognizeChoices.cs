@@ -28,7 +28,7 @@ namespace Microsoft.Bot.Builder.Prompts.Choices
             {
                 // Next try finding by ordinal
                 var matches = RecognizeOrdinal(utterance, locale);
-                if (matches.Count() > 0)
+                if (matches.Any())
                 {
                     foreach (var match in matches)
                     {
