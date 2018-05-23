@@ -51,12 +51,12 @@ namespace Microsoft.Bot.Builder.Core.Extensions
         public static async Task<IDictionary<string, StoreItemT>> Read<StoreItemT>(this IStorage storage, params string[] keys) where StoreItemT : class
         {
             var storeItems = await storage.Read(keys).ConfigureAwait(false);
-            IDictionary<string, StoreItemT> values = new Dictionary<string, StoreItemT>();
+            var values = new Dictionary<string, StoreItemT>(keys.Length);
             foreach (var entry in storeItems)
             {
                 if (entry.Value is StoreItemT valueAsType)
                 {
-                    values.Add(new KeyValuePair<string, StoreItemT>(entry.Key, valueAsType));
+                    values.Add(entry.Key, valueAsType);
                 }
             }
 

@@ -39,7 +39,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions
 
         public Task<IDictionary<string, object>> Read(string[] keys)
         {
-            IDictionary<string, object> storeItems = new Dictionary<string, object>(keys.Length);
+            var storeItems = new Dictionary<string, object>(keys.Length);
             lock (_syncroot)
             {
                 foreach (var key in keys)
@@ -48,7 +48,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions
                     {
                         if (state != null)
                         {
-                            storeItems.Add(new KeyValuePair<string, object>(key, state.ToObject<object>(StateJsonSerializer)));
+                            storeItems.Add(key, state.ToObject<object>(StateJsonSerializer));
                         }
                     }
                 }

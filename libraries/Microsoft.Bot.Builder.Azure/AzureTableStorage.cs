@@ -107,15 +107,14 @@ namespace Microsoft.Bot.Builder.Azure
                 return new KeyValuePair<string, object>();
             });
 
-            var kvps = (await Task.WhenAll(readTasks).ConfigureAwait(false)).Where(kv => kv.Key != null);
+            // Wait for all the reads to complete
+            var completedTasks = await Task.WhenAll(readTasks).ConfigureAwait(false);
 
-            IDictionary<string, object> items = new Dictionary<string, object>();
-            foreach(var kvp in kvps)
-            {
-                items.Add(kvp);
-            }
+            // Filter out the Nulls and convert to a dictionary
+            var dict = completedTasks.Where(kv => kv.Key != null)
+                .ToDictionary(kvp => kvp.Key, kvp => kvp.Value); 
 
-            return items; 
+            return dict; 
         }
 
         /// <summary>
