@@ -2,14 +2,10 @@ user=User
 bot=Bot
 
 user:test
-bot:trace (needs set type to trace)
 bot:default message
 user:add imax theater to my upcoming events
-bot:trace (needs set type to trace)
 bot:intent:Calendar_Add
 user:display weekend plans
-bot:trace (needs set type to trace)
 bot:intent:Calendar_Find
 user:test
-bot:trace (needs set type to trace)
 bot:default message
