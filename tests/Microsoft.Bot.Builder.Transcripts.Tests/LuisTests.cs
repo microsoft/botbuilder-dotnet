@@ -28,7 +28,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
 
             var activities = TranscriptUtilities.GetFromTestContext(TestContext);
 
-            TestAdapter adapter = new TestAdapter(null, true)
+            TestAdapter adapter = new TestAdapter()
                 .Use(GetLuisMiddleware());
 
             var flow = new TestFlow(adapter, async (context) => {
