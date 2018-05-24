@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Bot.Builder.Core.Extensions;
@@ -189,6 +190,15 @@ namespace Microsoft.Bot.Builder.Prompts.Choices
                 new List<Choice>()
                     :
                 choices.Select(choice => new Choice { Value = choice }).ToList();
+        }
+
+        public static List<Choice> ToChoicesList(Tuple<Choice, Choice> choices)
+        {
+            return (choices == null)
+                    ?
+                new List<Choice>()
+                    :
+                new List<Choice> { choices.Item1, choices.Item2 };
         }
     }
 }
