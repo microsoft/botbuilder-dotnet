@@ -43,7 +43,7 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                 }
             })
                 .Send("hello")
-                .AssertReply("Gimme:")
+                .AssertReply("Gimme: (1) Yes or (2) No")
                 .Send("tyest tnot")
                     .AssertReply(PromptStatus.NotRecognized.ToString())
                 .Send(".. yes please ")
@@ -83,7 +83,7 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                 }
             })
                 .Send("hello")
-                .AssertReply("Gimme:")
+                .AssertReply("Gimme: (1) Yes or (2) No")
                 .Send(" yes you xxx")
                     .AssertReply(PromptStatus.NotRecognized.ToString())
                 .Send(" no way you xxx")
