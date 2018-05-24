@@ -65,12 +65,17 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
             var chatdown = new System.Diagnostics.Process();
             chatdown.StartInfo.UseShellExecute = false;
             chatdown.StartInfo.RedirectStandardOutput = true;
-            chatdown.StartInfo.FileName = Environment.ExpandEnvironmentVariables(@"%PROGRAMFILES%\nodejs\chatdown.cmd");
+            chatdown.StartInfo.FileName = GetChatdownPath();
             chatdown.StartInfo.Arguments = file.FullName;
             chatdown.Start();
             var content = chatdown.StandardOutput.ReadToEnd();
             chatdown.WaitForExit();
             return content;
+        }
+
+        private static string GetChatdownPath()
+        {
+            return TestUtilities.GetKey("ChatdownPath") ?? Environment.ExpandEnvironmentVariables(@"%PROGRAMFILES%\nodejs\chatdown.cmd");
         }
 
         /// <summary>
