@@ -213,17 +213,16 @@ namespace Microsoft.Bot.Builder
         /// the receiving channel assigned to the activities.</remarks>
         public Task<ResourceResponse[]> SendActivities(IActivity[] activities)
         {
-            var conversationReference = GetConversationReference(this._activity);
+            var conversationReference = GetConversationReference(this.Activity);
 
-            // Buffer the incoming activities into a List<T> since we allow the set to be manipulated by the callbacks
-            var bufferedActivities = activities.Cast<Activity>().ToList();
+            var bufferedActivities = new List<Activity>(activities.Length);
 
-            foreach (var activity in bufferedActivities)
+            for (var index = 0; index < activities.Length; index++)
             {
+                // Buffer the incoming activities into a List<T> since we allow the set to be manipulated by the callbacks
                 // Bind the relevant Conversation Reference properties, such as URLs and 
                 // ChannelId's, to the activity we're about to send
-
-                ApplyConversationReference(activity, conversationReference);
+                bufferedActivities.Add(ApplyConversationReference((Activity)activities[index], conversationReference));
             }
 
             // If there are no callbacks registered, bypass the overhead of invoking them and send directly to the adapter
