@@ -93,7 +93,7 @@ namespace Microsoft.Bot.Builder.Azure
         /// </summary>
         /// <param name="keys">An array of entity keys</param>
         /// <returns></returns>
-        public async Task<IEnumerable<KeyValuePair<string, object>>> Read(params string[] keys)
+        public async Task<IDictionary<string, object>> Read(params string[] keys)
         {
             if (keys == null) throw new ArgumentNullException(nameof(keys));
 
@@ -108,8 +108,13 @@ namespace Microsoft.Bot.Builder.Azure
 
             await Task.WhenAll(readTasks);
 
-            // Project back the entries that were read, filtering out any entries that were not found
-            return readTasks.Select(readTask => readTask.Result).Where(kvp => kvp.Key != null);
+            // Project back the entries that were read, filtering out any entries that were not found.
+            // This gives us a Dictionary(key, value) 
+            var items = readTasks.Select(readTask => readTask.Result)
+                .Where(kvp => kvp.Key != null)
+                .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+          
+            return items; 
 
             async Task<KeyValuePair<string, object>> ReadIndividualKey(string key)
             {
@@ -150,7 +155,7 @@ namespace Microsoft.Bot.Builder.Azure
         /// </summary>
         /// <param name="changes"></param>
         /// <returns></returns>
-        public async Task Write(IEnumerable<KeyValuePair<string, object>> changes)
+        public async Task Write(IDictionary<string, object> changes)
         {
             if (changes == null) throw new ArgumentNullException(nameof(changes));
 
