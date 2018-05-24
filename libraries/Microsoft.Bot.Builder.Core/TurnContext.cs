@@ -254,9 +254,11 @@ namespace Microsoft.Bot.Builder
                 var responses = await this.Adapter.SendActivities(this, bufferedActivities.ToArray());
                 var sentNonTraceActivity = false;
 
-                foreach (var (response, activity) in responses.Zip(bufferedActivities, (rr, a) => (rr, a)))
+                for (var index = 0; index < responses.Length; index++)
                 {
-                    activity.Id = response.Id;
+                    var activity = bufferedActivities[index];
+
+                    activity.Id = responses[index].Id;
 
                     sentNonTraceActivity |= activity.Type != ActivityTypes.Trace;
                 }
