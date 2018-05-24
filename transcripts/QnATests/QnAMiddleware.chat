@@ -1,7 +1,7 @@
 user=User
 bot=Bot
 
-user:hello
+user:random text
 bot:default message
 user:hi
 bot:hello
@@ -9,5 +9,5 @@ user:test
 bot:message
 user:tests
 bot:message
-user:hello bot
+user:custom random text
 bot:default message
