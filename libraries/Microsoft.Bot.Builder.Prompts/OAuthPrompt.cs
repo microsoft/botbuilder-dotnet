@@ -1,13 +1,13 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.Core.Extensions;
+using Microsoft.Bot.Schema;
 using System;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Builder.Core.Extensions;
-using Microsoft.Bot.Schema;
 using static Microsoft.Bot.Builder.Prompts.PromptValidatorEx;
 
 namespace Microsoft.Bot.Builder.Prompts
@@ -28,6 +28,7 @@ namespace Microsoft.Bot.Builder.Prompts
     {
         // regex to check if code supplied is a 6 digit numerical code (hence, a magic code).
         private readonly Regex magicCodeRegex = new Regex(@"(\d{6})");
+
         private readonly OAuthPromptSettings _settings;
         private readonly PromptValidator<TokenResult> _promptValidator;
 
@@ -47,7 +48,6 @@ namespace Microsoft.Bot.Builder.Prompts
         {
             BotAssert.ContextNotNull(context);
             BotAssert.ActivityNotNull(activity);
-
 
             var adapter = context.Adapter as BotFrameworkAdapter;
             if (adapter == null)
@@ -132,7 +132,6 @@ namespace Microsoft.Bot.Builder.Prompts
             {
                 var tokenResponse = context.Activity.Value as TokenResponse;
                 return new TokenResult() { Status = PromptStatus.Recognized, Value = tokenResponse };
-
             }
             else if (context.Activity.Type == ActivityTypes.Message)
             {

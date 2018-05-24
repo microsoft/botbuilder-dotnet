@@ -1,11 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using Microsoft.Bot.Builder.Core.Extensions;
+using Microsoft.Bot.Schema;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Bot.Builder.Core.Extensions;
-using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.Prompts.Choices
 {
@@ -15,14 +15,17 @@ namespace Microsoft.Bot.Builder.Prompts.Choices
         {
             return ForChannel(Channel.GetChannelId(context), choices, text, speak, options);
         }
+
         public static IMessageActivity ForChannel(ITurnContext context, List<string> choices, string text = null, string speak = null, ChoiceFactoryOptions options = null)
         {
             return ForChannel(Channel.GetChannelId(context), ToChoices(choices), text, speak, options);
         }
+
         public static IMessageActivity ForChannel(string channelId, List<string> choices, string text = null, string speak = null, ChoiceFactoryOptions options = null)
         {
             return ForChannel(channelId, ToChoices(choices), text, speak, options);
         }
+
         public static IMessageActivity ForChannel(string channelId, List<Choice> list, string text = null, string speak = null, ChoiceFactoryOptions options = null)
         {
             list = list ?? new List<Choice>();
@@ -146,7 +149,7 @@ namespace Microsoft.Bot.Builder.Prompts.Choices
                     txt += "- ";
                 }
                 txt += title;
-                connector =  "\n   ";
+                connector = "\n   ";
             }
 
             // Return activity with choices as a numbered list.
@@ -163,7 +166,8 @@ namespace Microsoft.Bot.Builder.Prompts.Choices
             choices = choices ?? new List<Choice>();
 
             // Map choices to actions
-            var actions = choices.Select((choice) => {
+            var actions = choices.Select((choice) =>
+            {
                 if (choice.Action != null)
                 {
                     return choice.Action;

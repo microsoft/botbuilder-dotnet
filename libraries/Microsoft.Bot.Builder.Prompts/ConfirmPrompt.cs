@@ -1,29 +1,29 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Prompts.Choices;
 using Microsoft.Bot.Builder.Prompts.Results;
 using Microsoft.Bot.Schema;
 using Microsoft.Recognizers.Text;
 using Microsoft.Recognizers.Text.Choice;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using static Microsoft.Bot.Builder.Prompts.PromptValidatorEx;
 using static Microsoft.Recognizers.Text.Culture;
 
 namespace Microsoft.Bot.Builder.Prompts
 {
     /// <summary>
-    /// ConfirmPrompt recognizes confrimation expressions as bool 
+    /// ConfirmPrompt recognizes confrimation expressions as bool
     /// </summary>
     public class ConfirmPrompt
     {
         private readonly IModel model;
         private List<Choice> ChoicesList => ChoiceFactory.ToChoicesList(this.Choices);
-        private static readonly Dictionary<string, Tuple<Choice,Choice>> DefaultConfirmOptions = new Dictionary<string, Tuple<Choice, Choice>>()
+
+        private static readonly Dictionary<string, Tuple<Choice, Choice>> DefaultConfirmOptions = new Dictionary<string, Tuple<Choice, Choice>>()
         {
             { Spanish, new Tuple<Choice,Choice>( new Choice { Value = "Sí" }, new Choice { Value = "No" } ) },
             { Dutch, new Tuple<Choice,Choice>( new Choice { Value = "Ja" }, new Choice { Value = "Niet" } ) },
@@ -34,6 +34,7 @@ namespace Microsoft.Bot.Builder.Prompts
             { Portuguese, new Tuple<Choice,Choice>( new Choice { Value = "Sim" }, new Choice { Value = "Não" } ) },
             { Chinese, new Tuple<Choice,Choice>( new Choice { Value = "是的" }, new Choice { Value = "不" } ) }
         };
+
         private static readonly Dictionary<string, ChoiceFactoryOptions> DefaultInlineChoiceOptions = new Dictionary<string, ChoiceFactoryOptions>()
         {
             { Spanish, new ChoiceFactoryOptions{ InlineSeparator = ", ", InlineOr = " o ", InlineOrMore = ", o ", IncludeNumbers = true} },
@@ -51,10 +52,10 @@ namespace Microsoft.Bot.Builder.Prompts
         public string Culture { get; set; }
         public Tuple<Choice, Choice> Choices { get; set; }
         public ChoiceFactoryOptions ChoiceOptions { get; set; }
-        public Dictionary<string, Tuple<Choice,Choice>> ConfirmOptions { get; set; }
+        public Dictionary<string, Tuple<Choice, Choice>> ConfirmOptions { get; set; }
         public Dictionary<string, ChoiceFactoryOptions> InlineChoiceOptions { get; set; }
-        
-        public ConfirmPrompt(string culture, PromptValidator<ConfirmResult> validator = null, Dictionary<string, Tuple<Choice,Choice>> confirmOptions = null, Dictionary<string, ChoiceFactoryOptions> inlineChoiceOptions = null, ListStyle listStyle = ListStyle.Auto)
+
+        public ConfirmPrompt(string culture, PromptValidator<ConfirmResult> validator = null, Dictionary<string, Tuple<Choice, Choice>> confirmOptions = null, Dictionary<string, ChoiceFactoryOptions> inlineChoiceOptions = null, ListStyle listStyle = ListStyle.Auto)
         {
             model = new ChoiceRecognizer(culture).GetBooleanModel(culture);
             Style = listStyle;
@@ -85,17 +86,21 @@ namespace Microsoft.Bot.Builder.Prompts
                 case ListStyle.Inline:
                     msg = ChoiceFactory.Inline(ChoicesList, prompt, speak, ChoiceOptions);
                     break;
+
                 case ListStyle.List:
                     msg = ChoiceFactory.List(ChoicesList, prompt, speak, ChoiceOptions);
                     break;
+
                 case ListStyle.SuggestedAction:
                     msg = ChoiceFactory.SuggestedAction(ChoicesList, prompt, speak);
                     break;
+
                 case ListStyle.None:
                     msg = Activity.CreateMessageActivity();
                     msg.Text = prompt;
                     msg.Speak = speak;
                     break;
+
                 default:
                     msg = ChoiceFactory.ForChannel(context, ChoicesList, prompt, speak, ChoiceOptions);
                     break;
