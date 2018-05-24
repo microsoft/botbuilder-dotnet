@@ -11,9 +11,9 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
     [TestClass]
     public class LuisTests
     {
-        private readonly string _luisAppId = TestUtilities.GetKey("LUISAPPID");
-        private readonly string _subscriptionKey = TestUtilities.GetKey("LUISAPPKEY");
-        private readonly string _luisUriBase = TestUtilities.GetKey("LUISURIBASE");
+        private readonly string _luisAppId = TestUtilities.GetKey("LUISAPPID_TRANSCRIPT");
+        private readonly string _subscriptionKey = TestUtilities.GetKey("LUISAPPKEY_TRANSCRIPT");
+        private readonly string _luisUriBase = TestUtilities.GetKey("LUISURIBASE_TRANSCRIPT");
 
         public TestContext TestContext { get; set; }
 

@@ -9,9 +9,9 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
     [TestClass]
     public class QnATests
     {
-        private readonly string knowlegeBaseId = TestUtilities.GetKey("QNAKNOWLEDGEBASEID");
-        private readonly string endpointKey = TestUtilities.GetKey("QNAENDPOINTKEY");
-        private readonly string hostname = TestUtilities.GetKey("QNAHOSTNAME");
+        private readonly string knowlegeBaseId = TestUtilities.GetKey("QNAKNOWLEDGEBASEID_TRANSCRIPT");
+        private readonly string endpointKey = TestUtilities.GetKey("QNAENDPOINTKEY_TRANSCRIPT");
+        private readonly string hostname = TestUtilities.GetKey("QNAHOSTNAME_TRANSCRIPT");
         
         public TestContext TestContext { get; set; }
 

@@ -11,7 +11,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
     [TestClass]
     public class TranslationTests
     {
-        private string translatorKey = TestUtilities.GetKey("TRANSLATORKEY");
+        private string translatorKey = TestUtilities.GetKey("TRANSLATORKEY_TRANSCRIPT");
 
         public TestContext TestContext { get; set; }
 
