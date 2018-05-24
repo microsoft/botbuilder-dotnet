@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Microsoft.Bot.Builder.Prompts.Choices
+﻿namespace Microsoft.Bot.Builder.Prompts.Choices
 {
     ///<summary>
     /// Controls the way that choices for a `ChoicePrompt` or yes/no options for a `ConfirmPrompt` are

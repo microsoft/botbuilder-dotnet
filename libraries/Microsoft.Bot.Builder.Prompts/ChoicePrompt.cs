@@ -1,11 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using Microsoft.Bot.Builder.Prompts.Choices;
+using Microsoft.Bot.Schema;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Prompts.Choices;
-using Microsoft.Bot.Schema;
 using static Microsoft.Bot.Builder.Prompts.PromptValidatorEx;
 using static Microsoft.Recognizers.Text.Culture;
 
@@ -76,17 +76,21 @@ namespace Microsoft.Bot.Builder.Prompts
                 case ListStyle.Inline:
                     msg = ChoiceFactory.Inline(choices, prompt, speak, ChoiceOptions);
                     break;
+
                 case ListStyle.List:
                     msg = ChoiceFactory.List(choices, prompt, speak, ChoiceOptions);
                     break;
+
                 case ListStyle.SuggestedAction:
                     msg = ChoiceFactory.SuggestedAction(choices, prompt, speak);
                     break;
+
                 case ListStyle.None:
                     msg = Activity.CreateMessageActivity();
                     msg.Text = prompt;
                     msg.Speak = speak;
                     break;
+
                 default:
                     msg = ChoiceFactory.ForChannel(context, choices, prompt, speak, ChoiceOptions);
                     break;

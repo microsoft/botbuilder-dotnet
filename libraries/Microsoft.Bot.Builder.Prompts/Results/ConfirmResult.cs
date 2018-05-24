@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Microsoft.Bot.Builder.Prompts.Results
+﻿namespace Microsoft.Bot.Builder.Prompts.Results
 {
     public class ConfirmResult : PromptResult
     {
