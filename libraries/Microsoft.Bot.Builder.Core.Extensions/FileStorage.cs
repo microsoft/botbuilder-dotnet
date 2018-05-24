@@ -38,16 +38,16 @@ namespace Microsoft.Bot.Builder.Core.Extensions
             return Task.CompletedTask;
         }
 
-        public async Task<IEnumerable<KeyValuePair<string, object>>> Read(string[] keys)
+        public async Task<IDictionary<string, object>> Read(string[] keys)
         {
-            var storeItems = new List<KeyValuePair<string, object>>(keys.Length);
+            var storeItems = new Dictionary<string, object>(keys.Length);
 
             foreach (var key in keys)
             {
                 var item = await ReadIStoreItem(key).ConfigureAwait(false);
                 if (item != null)
                 {
-                    storeItems.Add(new KeyValuePair<string, object>(key, item));
+                    storeItems.Add(key, item);
                 }
             }
 
@@ -96,7 +96,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions
             }
         }
 
-        public async Task Write(IEnumerable<KeyValuePair<string, object>> changes)
+        public async Task Write(IDictionary<string, object> changes)
         {
             // Similar to the Read method, the funky threading in here is due to 
             // concurrency and async methods. 
