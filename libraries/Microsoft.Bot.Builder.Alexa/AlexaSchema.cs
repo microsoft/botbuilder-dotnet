@@ -361,13 +361,13 @@ namespace Microsoft.Bot.Builder.Alexa
             var profession = default(IAlexaRequest);
             switch (jsonObject["type"].Value<string>())
             {
-                case "LaunchRequest":
+                case AlexaRequestTypes.LaunchRequest:
                     profession = new AlexaLaunchRequest();
                     break;
-                case "SessionEndedRequest":
+                case AlexaRequestTypes.SessionEndedRequest:
                     profession = new AlexaSessionEndRequest();
                     break;
-                case "IntentRequest":
+                case AlexaRequestTypes.IntentRequest:
                     profession = new AlexaIntentRequest();
                     break;
             }

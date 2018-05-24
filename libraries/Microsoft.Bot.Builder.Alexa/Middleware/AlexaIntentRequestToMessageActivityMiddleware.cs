@@ -21,7 +21,7 @@ namespace Microsoft.Bot.Builder.Alexa.Middleware
 
         public async Task OnTurn(ITurnContext context, MiddlewareSet.NextDelegate next)
         {
-            if (context.Activity.ChannelId == "alexa" && context.Activity.Type == "IntentRequest")
+            if (context.Activity.ChannelId == "alexa" && context.Activity.Type == AlexaRequestTypes.IntentRequest)
             {
                 var alexaRequestBody = (AlexaRequestBody) context.Activity.ChannelData;
                 var alexaIntentRequest = (AlexaIntentRequest) alexaRequestBody.Request;

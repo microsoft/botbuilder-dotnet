@@ -110,11 +110,11 @@ namespace Microsoft.Bot.Builder.Alexa
 
             switch (activity.Type)
             {
-                case "IntentRequest":
+                case AlexaRequestTypes.IntentRequest:
                     activity.Value = (skillRequest.Request as AlexaIntentRequest)?.Intent;
                     activity.Code = (skillRequest.Request as AlexaIntentRequest)?.DialogState.ToString();
                     break;
-                case "SessionEndedRequest":
+                case AlexaRequestTypes.SessionEndedRequest:
                     activity.Code = (skillRequest.Request as AlexaSessionEndRequest)?.Reason;
                     activity.Value = (skillRequest.Request as AlexaSessionEndRequest)?.Error;
                     break;
