@@ -36,6 +36,11 @@ namespace Microsoft.Bot.Builder.Alexa.Integration.AspNet.WebApi
                 var routes = httpConfiguration.Routes;
                 var baseUrl = options.Paths.BasePath;
 
+                if (!baseUrl.StartsWith("/"))
+                {
+                    baseUrl = baseUrl.Substring(1, baseUrl.Length - 1);
+                }
+
                 if (!baseUrl.EndsWith("/"))
                 {
                     baseUrl += "/";
