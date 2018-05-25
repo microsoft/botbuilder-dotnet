@@ -1,12 +1,12 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 using Microsoft.Recognizers.Text;
 using Microsoft.Recognizers.Text.DateTime;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using static Microsoft.Bot.Builder.Prompts.PromptValidatorEx;
 
 namespace Microsoft.Bot.Builder.Prompts
@@ -74,8 +74,8 @@ namespace Microsoft.Bot.Builder.Prompts
 
         /// <summary>
         /// Used to validate the incoming text, expected on context.Request, is
-        /// valid according to the rules defined in the validation steps. 
-        /// </summary>        
+        /// valid according to the rules defined in the validation steps.
+        /// </summary>
         public override async Task<DateTimeResult> Recognize(ITurnContext context)
         {
             BotAssert.ContextNotNull(context);
