@@ -50,6 +50,21 @@ namespace Microsoft.Bot.Builder.Adapters
 
         public override async Task<ResourceResponse[]> SendActivities(ITurnContext context, Activity[] activities)
         {
+            if (context == null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
+            if (activities == null)
+            {
+                throw new ArgumentNullException(nameof(activities));
+            }
+
+            if (activities.Length == 0)
+            {
+                throw new ArgumentException("Expecting one or more activities, but the array was empty.", nameof(activities));
+            }
+
             var responses = new ResourceResponse[activities.Length];
 
             for(var index = 0; index < activities.Length; index++)
