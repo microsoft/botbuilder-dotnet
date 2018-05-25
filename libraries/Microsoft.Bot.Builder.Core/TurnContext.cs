@@ -213,6 +213,16 @@ namespace Microsoft.Bot.Builder
         /// the receiving channel assigned to the activities.</remarks>
         public Task<ResourceResponse[]> SendActivities(IActivity[] activities)
         {
+            if (activities == null)
+            {
+                throw new ArgumentNullException(nameof(activities));
+            }
+
+            if (activities.Length == 0)
+            {
+                throw new ArgumentException("Expecting one or more activities, but the array was empty.", nameof(activities));
+            }
+
             var conversationReference = GetConversationReference(this.Activity);
 
             var bufferedActivities = new List<Activity>(activities.Length);
