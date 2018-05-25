@@ -231,7 +231,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 }
             })
             .Send("hello")
-            .AssertReply("Please confirm.")
+            .AssertReply("Please confirm. (1) Yes or (2) No")
             .Send("yes")
             .AssertReply("Confirmed.")
             .StartTest();
@@ -271,9 +271,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 }
             })
             .Send("hello")
-            .AssertReply("Please confirm.")
+            .AssertReply("Please confirm. (1) Yes or (2) No")
             .Send("lala")
-            .AssertReply("Please confirm, say 'yes' or 'no' or something like that.")
+            .AssertReply("Please confirm, say 'yes' or 'no' or something like that. (1) Yes or (2) No")
             .Send("no")
             .AssertReply("Not confirmed.")
             .StartTest();
