@@ -31,15 +31,15 @@ namespace Microsoft.Bot.Builder.Prompts.Choices
             Token token = null;
 
             // Parse text
-            var length = text != null  ? text.Length : 0;
+            var length = text != null ? text.Length : 0;
             var i = 0;
 
-            while (i<length)
+            while (i < length)
             {
                 // Get both the UNICODE value of the current character and the complete character itself
                 // which can potentially be multiple segments.
 
-                int codePoint = char.IsSurrogatePair(text, i) 
+                int codePoint = char.IsSurrogatePair(text, i)
                         ?
                     char.ConvertToUtf32(text, i)
                         :
@@ -66,7 +66,7 @@ namespace Microsoft.Bot.Builder.Prompts.Choices
                         End = i + (chr.Length - 1),
                         Text = chr,
                         Normalized = chr
-                    }); 
+                    });
                 }
                 else if (token == null)
                 {
@@ -100,13 +100,13 @@ namespace Microsoft.Bot.Builder.Prompts.Choices
 
         private static bool IsBreakingChar(int codePoint)
         {
-            return (IsBetween(codePoint, 0x0000, 0x002F) || 
+            return (IsBetween(codePoint, 0x0000, 0x002F) ||
                     IsBetween(codePoint, 0x003A, 0x0040) ||
                     IsBetween(codePoint, 0x005B, 0x0060) ||
                     IsBetween(codePoint, 0x007B, 0x00BF) ||
                     IsBetween(codePoint, 0x02B9, 0x036F) ||
                     IsBetween(codePoint, 0x2000, 0x2BFF) ||
-                    IsBetween(codePoint, 0x2E00, 0x2E7F)); 
+                    IsBetween(codePoint, 0x2E00, 0x2E7F));
         }
 
         private static bool IsBetween(int value, int from, int to)

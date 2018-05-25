@@ -1,9 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using Microsoft.Bot.Schema;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.Bot.Schema;
 using static Microsoft.Bot.Builder.Prompts.PromptValidatorEx;
 
 namespace Microsoft.Bot.Builder.Prompts
@@ -38,7 +38,7 @@ namespace Microsoft.Bot.Builder.Prompts
         /// </summary>
         /// <param name="validator">The input validator for the prompt object.</param>
         /// <remarks><paramref name="validator"/> is called only if the
-        /// <see cref="Recognize(ITurnContext)"/> method recognizes a value. 
+        /// <see cref="Recognize(ITurnContext)"/> method recognizes a value.
         /// </remarks>
         public AttachmentPrompt(PromptValidator<AttachmentResult> validator = null)
             : base(validator)

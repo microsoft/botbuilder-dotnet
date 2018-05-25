@@ -31,7 +31,7 @@ namespace Microsoft.Bot.Builder.Prompts.Choices
             //   used to map the search results back to their choice.
             var synonyms = new List<SortedValue>();
 
-            for (int index=0; index<choices.Count; index++)
+            for (int index = 0; index < choices.Count; index++)
             {
                 var choice = choices[index];
 
@@ -87,11 +87,11 @@ namespace Microsoft.Bot.Builder.Prompts.Choices
             var tokens = tokenizer(utterance, opt.Locale);
             var maxDistance = opt.MaxTokenDistance ?? 2;
 
-            for (var index=0; index<list.Count; index++)
+            for (var index = 0; index < list.Count; index++)
             {
                 var entry = list[index];
                 // Find all matches for a value
-                // - To match "last one" in "the last time I chose the last one" we need 
+                // - To match "last one" in "the last time I chose the last one" we need
                 //   to re-search the string starting from the end of the previous match.
                 // - The start & end position returned for the match are token positions.
                 var startPos = 0;
@@ -115,9 +115,9 @@ namespace Microsoft.Bot.Builder.Prompts.Choices
             matches.Sort((a, b) => (int)(b.Resolution.Score - a.Resolution.Score));
 
             // Filter out duplicate matching indexes and overlapping characters.
-            // - The start & end positions are token positions and need to be translated to 
+            // - The start & end positions are token positions and need to be translated to
             //   character positions before returning. We also need to populate the "text"
-            //   field as well. 
+            //   field as well.
             var results = new List<ModelResult<FoundValue>>();
             var foundIndexes = new HashSet<int>();
             var usedTokens = new HashSet<int>();
@@ -164,7 +164,8 @@ namespace Microsoft.Bot.Builder.Prompts.Choices
         {
             for (var i = startPos; i < tokens.Count; i++)
             {
-                if (tokens[i].Normalized == token.Normalized) {
+                if (tokens[i].Normalized == token.Normalized)
+                {
                     return i;
                 }
             }
@@ -174,11 +175,11 @@ namespace Microsoft.Bot.Builder.Prompts.Choices
         private static ModelResult<FoundValue> MatchValue(List<Token> tokens, int maxDistance, FindValuesOptions options, int index, string value, List<Token> vTokens, int startPos)
         {
             // Match value to utterance and calculate total deviation.
-            // - The tokens are matched in order so "second last" will match in 
+            // - The tokens are matched in order so "second last" will match in
             //   "the second from last one" but not in "the last from the second one".
-            // - The total deviation is a count of the number of tokens skipped in the 
+            // - The total deviation is a count of the number of tokens skipped in the
             //   match so for the example above the number of tokens matched would be
-            //   2 and the total deviation would be 1. 
+            //   2 and the total deviation would be 1.
             var matched = 0;
             var totalDeviation = 0;
             var start = -1;
@@ -200,7 +201,7 @@ namespace Microsoft.Bot.Builder.Prompts.Choices
                         startPos = pos + 1;
 
                         // Update start & end position that will track the span of the utterance that's matched.
-                        if (start< 0)
+                        if (start < 0)
                         {
                             start = pos;
                         }
@@ -215,7 +216,7 @@ namespace Microsoft.Bot.Builder.Prompts.Choices
 
             if (matched > 0 && (matched == vTokens.Count || options.AllowPartialMatches))
             {
-                // Percentage of tokens matched. If matching "second last" in 
+                // Percentage of tokens matched. If matching "second last" in
                 // "the second from last one" the completeness would be 1.0 since
                 // all tokens were found.
                 var completeness = matched / vTokens.Count;
@@ -223,7 +224,7 @@ namespace Microsoft.Bot.Builder.Prompts.Choices
                 // Accuracy of the match. The accuracy is reduced by additional tokens
                 // occurring in the value that weren't in the utterance. So an utterance
                 // of "second last" matched against a value of "second from last" would
-                // result in an accuracy of 0.5. 
+                // result in an accuracy of 0.5.
                 var accuracy = (matched / (matched + totalDeviation));
 
                 // The final score is simply the completeness multiplied by the accuracy.
@@ -240,7 +241,7 @@ namespace Microsoft.Bot.Builder.Prompts.Choices
                         Value = value,
                         Index = index,
                         Score = score
-                    } 
+                    }
                 };
             }
             return result;
