@@ -2,13 +2,13 @@ user=User
 bot=Bot
 
 User: hello
-Bot: Please confirm.
+Bot: Please confirm. (1) Yes or (2) No
 User: hello
-Bot: Please confirm, say 'yes' or 'no' or something like that.
+Bot: Please confirm, say 'yes' or 'no' or something like that. (1) Yes or (2) No
 User: no
 Bot: Not confirmed.
 
 User: hello
-Bot: Please confirm.
+Bot: Please confirm. (1) Yes or (2) No
 User: yes
 Bot: Confirmed.
