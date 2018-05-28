@@ -1,0 +1,202 @@
+[
+  {
+    "conversation": {
+      "id": "1"
+    },
+    "id": "f8d48322-9912-4757-9c0f-5fc0d27084f9",
+    "recipient": {
+      "id": "d330681d-080b-38fd-86ff-6df3f3d70c07",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "from": {
+      "id": "de85fb8f-cfd7-3a1a-80df-6df9169dc7a0",
+      "name": "User",
+      "role": "user"
+    },
+    "text": "Hello",
+    "timestamp": "2018-05-24T17:51:52.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "1"
+    },
+    "id": "8274f8ca-3c35-4e79-a1dd-2c00b0d9e19c",
+    "recipient": {
+      "id": "de85fb8f-cfd7-3a1a-80df-6df9169dc7a0",
+      "name": "User",
+      "role": "user"
+    },
+    "from": {
+      "id": "d330681d-080b-38fd-86ff-6df3f3d70c07",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "text": "What is your name?",
+    "timestamp": "2018-05-24T17:51:54.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "1"
+    },
+    "id": "a6e39a11-5ac0-4763-b3a1-562d355f4946",
+    "recipient": {
+      "id": "d330681d-080b-38fd-86ff-6df3f3d70c07",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "from": {
+      "id": "de85fb8f-cfd7-3a1a-80df-6df9169dc7a0",
+      "name": "User",
+      "role": "user"
+    },
+    "text": "Jo",
+    "timestamp": "2018-05-24T17:51:56.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "1"
+    },
+    "id": "c8cac338-1f87-4790-99cc-003c0ef7c2a1",
+    "recipient": {
+      "id": "de85fb8f-cfd7-3a1a-80df-6df9169dc7a0",
+      "name": "User",
+      "role": "user"
+    },
+    "from": {
+      "id": "d330681d-080b-38fd-86ff-6df3f3d70c07",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "text": "Your name should be at least 2 characters long.",
+    "timestamp": "2018-05-24T17:51:58.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "1"
+    },
+    "id": "9d3eb6ac-e486-42ba-bae1-5e0fff316fe8",
+    "recipient": {
+      "id": "d330681d-080b-38fd-86ff-6df3f3d70c07",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "from": {
+      "id": "de85fb8f-cfd7-3a1a-80df-6df9169dc7a0",
+      "name": "User",
+      "role": "user"
+    },
+    "text": "John",
+    "timestamp": "2018-05-24T17:52:00.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "1"
+    },
+    "id": "4d81e517-43b1-49e0-9a2d-a10b8e3c9ab2",
+    "recipient": {
+      "id": "de85fb8f-cfd7-3a1a-80df-6df9169dc7a0",
+      "name": "User",
+      "role": "user"
+    },
+    "from": {
+      "id": "d330681d-080b-38fd-86ff-6df3f3d70c07",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "text": "What is your age?",
+    "timestamp": "2018-05-24T17:52:02.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "1"
+    },
+    "id": "3332a26a-83e6-47d9-8d7a-f2f4c42f7a9d",
+    "recipient": {
+      "id": "d330681d-080b-38fd-86ff-6df3f3d70c07",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "from": {
+      "id": "de85fb8f-cfd7-3a1a-80df-6df9169dc7a0",
+      "name": "User",
+      "role": "user"
+    },
+    "text": "123",
+    "timestamp": "2018-05-24T17:52:04.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "1"
+    },
+    "id": "2d669858-798c-4333-8245-35f07784ff7b",
+    "recipient": {
+      "id": "de85fb8f-cfd7-3a1a-80df-6df9169dc7a0",
+      "name": "User",
+      "role": "user"
+    },
+    "from": {
+      "id": "d330681d-080b-38fd-86ff-6df3f3d70c07",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "text": "Your age should be between 0 and 122.",
+    "timestamp": "2018-05-24T17:52:06.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "1"
+    },
+    "id": "168f3961-d0c7-40a9-ad99-ebcca0af4c9b",
+    "recipient": {
+      "id": "d330681d-080b-38fd-86ff-6df3f3d70c07",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "from": {
+      "id": "de85fb8f-cfd7-3a1a-80df-6df9169dc7a0",
+      "name": "User",
+      "role": "user"
+    },
+    "text": "23",
+    "timestamp": "2018-05-24T17:52:08.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "1"
+    },
+    "id": "8a403f6a-e17a-45e6-904b-cf6a4837060f",
+    "recipient": {
+      "id": "de85fb8f-cfd7-3a1a-80df-6df9169dc7a0",
+      "name": "User",
+      "role": "user"
+    },
+    "from": {
+      "id": "d330681d-080b-38fd-86ff-6df3f3d70c07",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "text": "Your name is John and your age is 23",
+    "timestamp": "2018-05-24T17:52:10.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  }
+]

@@ -1,0 +1,13 @@
+user=User
+bot=Bot
+
+User: Hello
+Bot: What is your name?
+User: Jo
+Bot: Your name should be at least 2 characters long.
+User: John
+Bot: What is your age?
+User: 123
+Bot: Your age should be between 0 and 122.
+User: 23
+Bot: Your name is John and your age is 23

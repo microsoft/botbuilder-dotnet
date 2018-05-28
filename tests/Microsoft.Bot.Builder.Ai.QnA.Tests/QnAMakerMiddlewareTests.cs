@@ -2,8 +2,8 @@
 // Licensed under the MIT License.
 
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Core.Extensions.Tests;
+using Microsoft.Bot.Builder.Testing;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 

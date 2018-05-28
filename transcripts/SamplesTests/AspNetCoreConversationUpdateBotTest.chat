@@ -1,0 +1,7 @@
+user=User
+bot=Bot
+
+User: [ConversationUpdate]
+Bot: Hello User!
+User: Hello
+Bot: Welcome to the conversationUpdate-bot! On a _"conversationUpdate"_-type activity, this bot will greet new users.

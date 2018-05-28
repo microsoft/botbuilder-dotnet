@@ -1,0 +1,88 @@
+[
+  {
+    "conversation": {
+      "id": "1"
+    },
+    "id": "0a4dfc43-7a03-45f9-a810-378c2d2b1ffa",
+    "recipient": {
+      "id": "93e81423-43ec-31e4-86ee-15927a0e7616",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "from": {
+      "id": "f7dcae02-0593-3e2d-8045-9fbf2c662a47",
+      "name": "User",
+      "role": "user"
+    },
+    "text": "hello",
+    "timestamp": "2018-05-22T16:12:09.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "1"
+    },
+    "id": "df13592b-b588-476e-a7e0-9dfe77263d8f",
+    "recipient": {
+      "id": "f7dcae02-0593-3e2d-8045-9fbf2c662a47",
+      "name": "User",
+      "role": "user"
+    },
+    "from": {
+      "id": "93e81423-43ec-31e4-86ee-15927a0e7616",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "text": "please add an attachment.",
+    "timestamp": "2018-05-22T16:12:11.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "attachments": [
+      {
+        "contentType": "application/json",
+        "content": "some content"
+      }
+    ],
+    "conversation": {
+      "id": "1"
+    },
+    "id": "a524d249-878a-4f2c-abbe-640dc28981b4",
+    "recipient": {
+      "id": "93e81423-43ec-31e4-86ee-15927a0e7616",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "from": {
+      "id": "f7dcae02-0593-3e2d-8045-9fbf2c662a47",
+      "name": "User",
+      "role": "user"
+    },
+    "text": null,
+    "timestamp": "2018-05-22T16:12:15.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "1"
+    },
+    "id": "b2992d9a-8462-4ff7-9329-8b001610dc28",
+    "recipient": {
+      "id": "f7dcae02-0593-3e2d-8045-9fbf2c662a47",
+      "name": "User",
+      "role": "user"
+    },
+    "from": {
+      "id": "93e81423-43ec-31e4-86ee-15927a0e7616",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "text": "some content",
+    "timestamp": "2018-05-22T16:12:17.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  }
+]

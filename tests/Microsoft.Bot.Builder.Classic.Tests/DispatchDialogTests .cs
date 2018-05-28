@@ -1,21 +1,18 @@
-﻿using Autofac;
+﻿using System;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using Autofac;
 using Microsoft.Bot.Builder.Classic.Dialogs;
 using Microsoft.Bot.Builder.Classic.Dialogs.Internals;
 using Microsoft.Bot.Builder.Classic.Internals.Fibers;
 using Microsoft.Bot.Builder.Classic.Luis;
 using Microsoft.Bot.Builder.Classic.Luis.Models;
 using Microsoft.Bot.Builder.Classic.Scorables;
+using Microsoft.Bot.Builder.Testing;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
 using Match = System.Text.RegularExpressions.Match;
-using System.Threading.Tasks;
-using System.Threading;
-using Microsoft.Bot.Builder.Adapters;
 
 namespace Microsoft.Bot.Builder.Classic.Tests
 {

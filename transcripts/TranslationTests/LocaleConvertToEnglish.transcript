@@ -1,0 +1,182 @@
+[
+  {
+    "conversation": {
+      "id": "1"
+    },
+    "id": "95c5668e-828c-4f67-a84f-88201be64e6e",
+    "recipient": {
+      "id": "d4295e1c-f876-3e81-930d-48290078a652",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "from": {
+      "id": "bd3fc19e-a059-3ee0-a1b5-d1482a160201",
+      "name": "User",
+      "role": "user"
+    },
+    "text": "set language fr-ca",
+    "timestamp": "2018-05-22T19:14:57.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "1"
+    },
+    "id": "5dc11aa5-8b17-4482-afd7-df02ff47df43",
+    "recipient": {
+      "id": "d4295e1c-f876-3e81-930d-48290078a652",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "from": {
+      "id": "bd3fc19e-a059-3ee0-a1b5-d1482a160201",
+      "name": "User",
+      "role": "user"
+    },
+    "text": "Set a meeting on 2018-10-04",
+    "timestamp": "2018-05-22T19:14:59.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "1"
+    },
+    "id": "70af948c-bc42-4f5b-9773-93332fa102a6",
+    "recipient": {
+      "id": "bd3fc19e-a059-3ee0-a1b5-d1482a160201",
+      "name": "User",
+      "role": "user"
+    },
+    "from": {
+      "id": "d4295e1c-f876-3e81-930d-48290078a652",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "text": "message: Set a meeting on 10/04/2018",
+    "timestamp": "2018-05-22T19:15:01.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "1"
+    },
+    "id": "07291741-da97-4616-bf2d-77fa20f2b2f8",
+    "recipient": {
+      "id": "d4295e1c-f876-3e81-930d-48290078a652",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "from": {
+      "id": "bd3fc19e-a059-3ee0-a1b5-d1482a160201",
+      "name": "User",
+      "role": "user"
+    },
+    "text": "set language fr-fr",
+    "timestamp": "2018-05-22T19:15:03.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "1"
+    },
+    "id": "e544ae2d-af8d-49d1-b113-e7e16d8ad2ae",
+    "recipient": {
+      "id": "d4295e1c-f876-3e81-930d-48290078a652",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "from": {
+      "id": "bd3fc19e-a059-3ee0-a1b5-d1482a160201",
+      "name": "User",
+      "role": "user"
+    },
+    "text": "Set a meeting on 26/08/2018",
+    "timestamp": "2018-05-22T19:15:05.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "1"
+    },
+    "id": "a1b5181f-5127-40dd-a18c-9dfb6a7123ad",
+    "recipient": {
+      "id": "bd3fc19e-a059-3ee0-a1b5-d1482a160201",
+      "name": "User",
+      "role": "user"
+    },
+    "from": {
+      "id": "d4295e1c-f876-3e81-930d-48290078a652",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "text": "message: Set a meeting on 08/26/2018",
+    "timestamp": "2018-05-22T19:15:07.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "1"
+    },
+    "id": "f71a49ca-906d-4950-8d69-179b63ddf84f",
+    "recipient": {
+      "id": "d4295e1c-f876-3e81-930d-48290078a652",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "from": {
+      "id": "bd3fc19e-a059-3ee0-a1b5-d1482a160201",
+      "name": "User",
+      "role": "user"
+    },
+    "text": "set language en-us",
+    "timestamp": "2018-05-22T19:15:09.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "1"
+    },
+    "id": "35a83d1f-8c97-4adb-bb03-bd6ec5c0f847",
+    "recipient": {
+      "id": "d4295e1c-f876-3e81-930d-48290078a652",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "from": {
+      "id": "bd3fc19e-a059-3ee0-a1b5-d1482a160201",
+      "name": "User",
+      "role": "user"
+    },
+    "text": "Set a meeting on 05/29/2018",
+    "timestamp": "2018-05-22T19:15:11.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "1"
+    },
+    "id": "c4dec02e-3f90-42d6-9668-cd74172ff240",
+    "recipient": {
+      "id": "bd3fc19e-a059-3ee0-a1b5-d1482a160201",
+      "name": "User",
+      "role": "user"
+    },
+    "from": {
+      "id": "d4295e1c-f876-3e81-930d-48290078a652",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "text": "message: Set a meeting on 05/29/2018",
+    "timestamp": "2018-05-22T19:15:13.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  }
+]

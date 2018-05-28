@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.Testing;
 using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.Core.Extensions.Tests

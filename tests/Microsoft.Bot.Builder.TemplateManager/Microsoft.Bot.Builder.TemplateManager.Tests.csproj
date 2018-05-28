@@ -25,6 +25,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.TemplateManager\Microsoft.Bot.Builder.TemplateManager.csproj" />
+		<ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Testing\Microsoft.Bot.Builder.Testing.csproj" />
 		<ProjectReference Include="..\..\libraries\Microsoft.Bot.Schema\Microsoft.Bot.Schema.csproj" />
 	</ItemGroup>
 

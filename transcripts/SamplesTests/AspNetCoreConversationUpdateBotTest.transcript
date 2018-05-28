@@ -1,0 +1,134 @@
+[
+  {
+    "type": "conversationUpdate",
+    "membersAdded": [
+      {
+        "id": "d5e5f100-5f7c-11e8-824d-1d0ef78c646e",
+        "name": "Bot"
+      }
+    ],
+    "channelId": "emulator",
+    "conversation": {
+      "id": "d83ab670-5f7c-11e8-ac9d-4b50ceb0d7fa|livechat"
+    },
+    "id": "d83e38e2-5f7c-11e8-824d-1d0ef78c646e",
+    "localTimestamp": "2018-05-24T15:04:04-03:00",
+    "recipient": {
+      "id": "d5e5f100-5f7c-11e8-824d-1d0ef78c646e",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "timestamp": "2018-05-24T18:04:04.334Z",
+    "from": {
+      "id": "default-user",
+      "name": "User"
+    },
+    "serviceUrl": "http://localhost:57679"
+  },
+  {
+    "type": "conversationUpdate",
+    "membersAdded": [
+      {
+        "id": "default-user",
+        "name": "User"
+      }
+    ],
+    "channelId": "emulator",
+    "conversation": {
+      "id": "d83ab670-5f7c-11e8-ac9d-4b50ceb0d7fa|livechat"
+    },
+    "id": "d83e5ff0-5f7c-11e8-824d-1d0ef78c646e",
+    "localTimestamp": "2018-05-24T15:04:04-03:00",
+    "recipient": {
+      "id": "d5e5f100-5f7c-11e8-824d-1d0ef78c646e",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "timestamp": "2018-05-24T18:04:04.335Z",
+    "from": {
+      "id": "default-user",
+      "name": "User"
+    },
+    "serviceUrl": "http://localhost:57679"
+  },
+  {
+    "type": "message",
+    "serviceUrl": "http://localhost:57679",
+    "channelId": "emulator",
+    "from": {
+      "id": "d5e5f100-5f7c-11e8-824d-1d0ef78c646e",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "conversation": {
+      "id": "d83ab670-5f7c-11e8-ac9d-4b50ceb0d7fa|livechat"
+    },
+    "recipient": {
+      "id": "default-user",
+      "role": "user"
+    },
+    "text": "Hello User!",
+    "inputHint": "acceptingInput",
+    "replyToId": "d83e5ff0-5f7c-11e8-824d-1d0ef78c646e",
+    "id": "d89a1481-5f7c-11e8-824d-1d0ef78c646e",
+    "localTimestamp": "2018-05-24T15:04:04-03:00",
+    "timestamp": "2018-05-24T18:04:04.936Z"
+  },
+  {
+    "type": "message",
+    "text": "Hello",
+    "from": {
+      "id": "default-user",
+      "name": "User"
+    },
+    "locale": "en-US",
+    "textFormat": "plain",
+    "timestamp": "2018-05-24T18:04:13.126Z",
+    "channelData": {
+      "clientActivityId": "1527185044311.9241325640509925.0"
+    },
+    "entities": [
+      {
+        "type": "ClientCapabilities",
+        "requiresBotState": true,
+        "supportsTts": true,
+        "supportsListening": true
+      }
+    ],
+    "channelId": "emulator",
+    "conversation": {
+      "id": "d83ab670-5f7c-11e8-ac9d-4b50ceb0d7fa|livechat"
+    },
+    "id": "dd7bc660-5f7c-11e8-824d-1d0ef78c646e",
+    "localTimestamp": "2018-05-24T15:04:13-03:00",
+    "recipient": {
+      "id": "d5e5f100-5f7c-11e8-824d-1d0ef78c646e",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "serviceUrl": "http://localhost:57679"
+  },
+  {
+    "type": "message",
+    "serviceUrl": "http://localhost:57679",
+    "channelId": "emulator",
+    "from": {
+      "id": "d5e5f100-5f7c-11e8-824d-1d0ef78c646e",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "conversation": {
+      "id": "d83ab670-5f7c-11e8-ac9d-4b50ceb0d7fa|livechat"
+    },
+    "recipient": {
+      "id": "default-user",
+      "role": "user"
+    },
+    "text": "Welcome to the conversationUpdate-bot! On a _\"conversationUpdate\"_-type activity, this bot will greet new users.",
+    "inputHint": "acceptingInput",
+    "replyToId": "dd7bc660-5f7c-11e8-824d-1d0ef78c646e",
+    "id": "dd917141-5f7c-11e8-824d-1d0ef78c646e",
+    "localTimestamp": "2018-05-24T15:04:13-03:00",
+    "timestamp": "2018-05-24T18:04:13.268Z"
+  }
+]

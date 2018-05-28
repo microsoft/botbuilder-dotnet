@@ -8,7 +8,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
-namespace Microsoft.Bot.Builder.Adapters
+namespace Microsoft.Bot.Builder.Testing
 {
     /// <summary>
     /// Called by TestFlow to validate and activity

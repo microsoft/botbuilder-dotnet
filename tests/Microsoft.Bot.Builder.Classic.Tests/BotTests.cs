@@ -33,7 +33,6 @@
 
 using System;
 using System.Collections.Generic;
-using Diag = System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -41,7 +40,6 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
-using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Classic.Dialogs;
 using Microsoft.Bot.Builder.Classic.Dialogs.Internals;
 using Microsoft.Bot.Builder.Classic.History;
@@ -50,10 +48,12 @@ using Microsoft.Bot.Builder.Classic.Luis;
 using Microsoft.Bot.Builder.Classic.Luis.Models;
 using Microsoft.Bot.Builder.Classic.Scorables;
 using Microsoft.Bot.Builder.Classic.Scorables.Internals;
+using Microsoft.Bot.Builder.Testing;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Newtonsoft.Json;
+using Diag = System.Diagnostics;
 
 namespace Microsoft.Bot.Builder.Classic.Tests
 {

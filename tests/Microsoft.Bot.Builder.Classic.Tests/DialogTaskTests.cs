@@ -33,23 +33,19 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-
+using Autofac;
 using Microsoft.Bot.Builder.Classic.Base;
 using Microsoft.Bot.Builder.Classic.Dialogs;
 using Microsoft.Bot.Builder.Classic.Dialogs.Internals;
-using Microsoft.Bot.Builder.Classic.Scorables;
 using Microsoft.Bot.Builder.Classic.Internals.Fibers;
+using Microsoft.Bot.Builder.Classic.Scorables;
 using Microsoft.Bot.Builder.Classic.Scorables.Internals;
+using Microsoft.Bot.Builder.Testing;
 using Microsoft.Bot.Schema;
-
-using Autofac;
-using Moq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.Bot.Builder.Adapters;
+using Moq;
 
 namespace Microsoft.Bot.Builder.Classic.Tests
 {
