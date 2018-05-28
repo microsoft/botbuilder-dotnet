@@ -49,7 +49,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
         {
             var dialogs = new DialogSet();
 
-            dialogs.Add("test-prompt", new Dialogs.ChoicePrompt(Culture.English) { Style = Prompts.ListStyle.Inline });
+            dialogs.Add("test-prompt", new Dialogs.ChoicePrompt(Culture.English) { Style = Prompts.Choices.ListStyle.Inline });
 
             var promptOptions = new ChoicePromptOptions
             {
@@ -124,7 +124,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
                 }
                 else if (dialogCompletion.IsCompleted)
                 {
-                    if (((Prompts.ConfirmResult)dialogCompletion.Result).Confirmation)
+                    if (((Prompts.Results.ConfirmResult)dialogCompletion.Result).Confirmation)
                     {
                         await turnContext.SendActivity("Confirmed.");
                     }
