@@ -3,23 +3,23 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27130.2027
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Console-EchoBot-With-State", "samples-final\Console-EchoBot-With-State\Console-EchoBot-With-State.csproj", "{0549C776-A599-49B7-AF01-D0B9F46A2BCD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Console-EchoBot-With-State", "samples-final\1.Console-EchoBot-With-State\Console-EchoBot-With-State.csproj", "{0549C776-A599-49B7-AF01-D0B9F46A2BCD}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspNetCore-EchoBot-With-State", "samples-final\AspNetCore-EchoBot-With-State\AspNetCore-EchoBot-With-State.csproj", "{4E798715-1A00-49FA-A4F9-C3F3EF884442}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspNetCore-EchoBot-With-State", "samples-final\3.AspNetCore-EchoBot-With-State\AspNetCore-EchoBot-With-State.csproj", "{4E798715-1A00-49FA-A4F9-C3F3EF884442}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspNetCore-SinglePrompt-Bot", "samples-final\AspNetCore-SinglePrompt-Bot\AspNetCore-SinglePrompt-Bot.csproj", "{B262213B-33AA-4A01-97C6-12BF79EDEAA6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspNetCore-SinglePrompt-Bot", "samples-final\4.AspNetCore-SinglePrompt-Bot\AspNetCore-SinglePrompt-Bot.csproj", "{B262213B-33AA-4A01-97C6-12BF79EDEAA6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspNetCore-MultiplePrompts-Bot", "samples-final\AspNetCore-MultiplePrompts-Bot\AspNetCore-MultiplePrompts-Bot.csproj", "{D4DBD202-CF46-4FB2-8A51-94DD1B9EBF39}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspNetCore-MultiplePrompts-Bot", "samples-final\5.AspNetCore-MultiplePrompts-Bot\AspNetCore-MultiplePrompts-Bot.csproj", "{D4DBD202-CF46-4FB2-8A51-94DD1B9EBF39}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspNetCore-ConversationUpdate-Bot", "samples-final\AspNetCore-ConversationUpdate-Bot\AspNetCore-ConversationUpdate-Bot.csproj", "{7A157D63-57D0-40F3-9F5F-3F868B3F9690}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspNetCore-ConversationUpdate-Bot", "samples-final\2.AspNetCore-ConversationUpdate-Bot\AspNetCore-ConversationUpdate-Bot.csproj", "{7A157D63-57D0-40F3-9F5F-3F868B3F9690}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspNetCore-RichCards-Bot", "samples-final\AspNetCore-RichCards-Bot\AspNetCore-RichCards-Bot.csproj", "{68DFB72F-8348-4521-918E-8A86B00E1BA5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspNetCore-RichCards-Bot", "samples-final\6.AspNetCore-RichCards-Bot\AspNetCore-RichCards-Bot.csproj", "{68DFB72F-8348-4521-918E-8A86B00E1BA5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspNetCore-Luis-Dispatch-Bot", "samples-final\AspNetCore-Luis-Dispatch-Bot\AspNetCore-Luis-Dispatch-Bot.csproj", "{190D9D9B-34C2-4597-B3F3-27EF4BB2A032}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspNetCore-Luis-Dispatch-Bot", "samples-final\9.AspNetCore-Luis-Dispatch-Bot\AspNetCore-Luis-Dispatch-Bot.csproj", "{190D9D9B-34C2-4597-B3F3-27EF4BB2A032}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspNetCore-LUIS-Bot", "samples-final\AspNetCore-LUIS-Bot\AspNetCore-LUIS-Bot.csproj", "{C4B026E6-7B20-48DF-84A6-F7DEC53A1D68}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspNetCore-LUIS-Bot", "samples-final\8.AspNetCore-LUIS-Bot\AspNetCore-LUIS-Bot.csproj", "{C4B026E6-7B20-48DF-84A6-F7DEC53A1D68}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspNetCore-QnA-Bot", "samples-final\AspNetCore-QnA-Bot\AspNetCore-QnA-Bot.csproj", "{72E9DF07-1404-447B-8C50-1898B8FE2F5F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspNetCore-QnA-Bot", "samples-final\7.AspNetCore-QnA-Bot\AspNetCore-QnA-Bot.csproj", "{72E9DF07-1404-447B-8C50-1898B8FE2F5F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
