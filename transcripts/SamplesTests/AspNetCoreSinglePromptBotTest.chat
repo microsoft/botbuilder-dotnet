@@ -4,4 +4,4 @@ bot=Bot
 User: Hello
 Bot: Hello, I'm the demo bot. What is your name?
 User: John
-Bot: Bot received the text 'John'.
+Bot: 'John' is a great name!

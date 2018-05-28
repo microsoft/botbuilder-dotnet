@@ -212,11 +212,4 @@ namespace Microsoft.Bot.Builder.Testing
             return this.ProcessActivity(this.MakeActivity(userSays), callback);
         }
     }
-
-    /// <summary>
-    /// Called by TestFlow to validate and activity
-    /// </summary>
-    /// <param name="expected">Activity from trnascript file</param>
-    /// <param name="actual">Activity from bot</param>
-    public delegate void ValidateReply(IActivity expected, IActivity actual);
 }

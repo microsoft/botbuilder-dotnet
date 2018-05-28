@@ -17,12 +17,15 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\libraries\Microsoft.Bot.Builder.Testing\Microsoft.Bot.Builder.Testing.csproj" />
-    <ProjectReference Include="..\..\AspNetCore-ConversationUpdate-Bot\AspNetCore-ConversationUpdate-Bot.csproj" />
-    <ProjectReference Include="..\..\AspNetCore-EchoBot-With-State\AspNetCore-EchoBot-With-State.csproj" />
-    <ProjectReference Include="..\..\AspNetCore-MultiplePrompts-Bot\AspNetCore-MultiplePrompts-Bot.csproj" />
-    <ProjectReference Include="..\..\AspNetCore-RichCards-Bot\AspNetCore-RichCards-Bot.csproj" />
-    <ProjectReference Include="..\..\AspNetCore-SinglePrompt-Bot\AspNetCore-SinglePrompt-Bot.csproj" />
-    <ProjectReference Include="..\..\Console-EchoBot-With-State\Console-EchoBot-With-State.csproj" />
+    <ProjectReference Include="..\..\1.Console-EchoBot-With-State\Console-EchoBot-With-State.csproj" />
+    <ProjectReference Include="..\..\2.AspNetCore-ConversationUpdate-Bot\AspNetCore-ConversationUpdate-Bot.csproj" />
+    <ProjectReference Include="..\..\3.AspNetCore-EchoBot-With-State\AspNetCore-EchoBot-With-State.csproj" />
+    <ProjectReference Include="..\..\4.AspNetCore-SinglePrompt-Bot\AspNetCore-SinglePrompt-Bot.csproj" />
+    <ProjectReference Include="..\..\5.AspNetCore-MultiplePrompts-Bot\AspNetCore-MultiplePrompts-Bot.csproj" />
+    <ProjectReference Include="..\..\6.AspNetCore-RichCards-Bot\AspNetCore-RichCards-Bot.csproj" />
+    <ProjectReference Include="..\..\7.AspNetCore-QnA-Bot\AspNetCore-QnA-Bot.csproj" />
+    <ProjectReference Include="..\..\8.AspNetCore-LUIS-Bot\AspNetCore-LUIS-Bot.csproj" />
+    <ProjectReference Include="..\..\9.AspNetCore-Luis-Dispatch-Bot\AspNetCore-Luis-Dispatch-Bot.csproj" />
   </ItemGroup>
 
 </Project>

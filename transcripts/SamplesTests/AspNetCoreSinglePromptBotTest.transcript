@@ -74,7 +74,7 @@
       "name": "Bot",
       "role": "bot"
     },
-    "text": "Bot received the text 'John'.",
+    "text": "'John' is a great name!",
     "timestamp": "2018-05-24T17:20:37.000Z",
     "type": "message",
     "channelId": "chatdown"
