@@ -34,7 +34,7 @@
       "name": "Bot",
       "role": "bot"
     },
-    "text": "Please confirm.",
+    "text": "Please confirm. (1) Yes or (2) No",
     "timestamp": "2018-05-22T16:41:12.000Z",
     "type": "message",
     "channelId": "chatdown"
@@ -74,7 +74,7 @@
       "name": "Bot",
       "role": "bot"
     },
-    "text": "Please confirm, say 'yes' or 'no' or something like that.",
+    "text": "Please confirm, say 'yes' or 'no' or something like that. (1) Yes or (2) No",
     "timestamp": "2018-05-22T16:41:16.000Z",
     "type": "message",
     "channelId": "chatdown"
@@ -154,7 +154,7 @@
       "name": "Bot",
       "role": "bot"
     },
-    "text": "Please confirm.",
+    "text": "Please confirm. (1) Yes or (2) No",
     "timestamp": "2018-05-22T16:41:24.000Z",
     "type": "message",
     "channelId": "chatdown"
