@@ -4,7 +4,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
+using System.Net.Http;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
@@ -30,7 +32,7 @@ namespace Microsoft.Bot.Builder.Tests
 
         public static IEnumerable<IActivity> GetActivities(string relativePath)
         {
-            var transcriptsRootFolder = TestUtilities.GetKey("TranscriptsRootFolder") ?? @"..\..\..\..\..\transcripts";
+            var transcriptsRootFolder = TranscriptUtilities.EnsureTranscriptsDownload();
             var path = Path.Combine(transcriptsRootFolder, relativePath);
             if (!File.Exists(path))
             {
@@ -60,6 +62,80 @@ namespace Microsoft.Bot.Builder.Tests
             }
 
             return activities.Take(activities.Count - 1).Append(lastActivity);
+        }
+
+        private static readonly object syncRoot = new object();
+        private static string TranscriptsTemporalPath { get; set; }
+
+        public static string EnsureTranscriptsDownload()
+        {
+            if (!string.IsNullOrWhiteSpace(TranscriptsTemporalPath))
+            {
+                return TranscriptsTemporalPath;
+            }
+
+            var transcriptsZipUrl = TestUtilities.GetKey("TranscriptsZipUrl") ?? "https://github.com/Microsoft/BotBuilder/archive/master.zip";
+            var transcriptsZipFolder = TestUtilities.GetKey("TranscriptsZipFolder") ?? "/Common/Transcripts/";
+            var tempPath = Path.GetTempPath();
+            var zipFilePath = Path.Combine(tempPath, Path.GetFileName(transcriptsZipUrl));
+
+            lock (syncRoot)
+            {
+                if (!string.IsNullOrWhiteSpace(TranscriptsTemporalPath))
+                {
+                    return TranscriptsTemporalPath;
+                }
+
+                // Download file from url to disk
+                using (var httpClient = new HttpClient())
+                using (var zipUrlStream = httpClient.GetStreamAsync(transcriptsZipUrl).Result)
+                using (var zipFileStream = new FileStream(zipFilePath, FileMode.Create, FileAccess.Write))
+                {
+                    zipUrlStream.CopyTo(zipFileStream);
+                }
+
+                var transcriptsExtractionPath = Path.Combine(tempPath, "Transcripts/");
+                using (var zipArchive = ZipFile.OpenRead(zipFilePath))
+                {
+                    var zipCommonTranscriptEntry = zipArchive.Entries.SingleOrDefault(e => e.FullName.EndsWith(transcriptsZipFolder));
+                    if (zipCommonTranscriptEntry==null)
+                    {
+                        throw new InvalidOperationException($"Folder '{transcriptsZipFolder}' not found in '{transcriptsZipUrl}' file.");
+                    }
+
+                    // Create extraction folder in temp folder
+                    CreateDirectoryIfNotExists(transcriptsExtractionPath);
+
+                    // Iterate each entry in the zip file
+                    foreach (var entry in zipArchive.Entries
+                        .Where(e => e.FullName.StartsWith(zipCommonTranscriptEntry.FullName)))
+                    {
+                        var entryName = entry.FullName.Remove(0, zipCommonTranscriptEntry.FullName.Length);
+
+                        if (string.IsNullOrEmpty(entry.Name))
+                        {
+                            // No Name, it is a folder
+                            CreateDirectoryIfNotExists(Path.Combine(transcriptsExtractionPath, entryName));
+                        }
+                        else
+                        {
+                            entry.ExtractToFile(Path.Combine(transcriptsExtractionPath, entryName), overwrite: true);
+                        }
+                    }
+                }
+
+                // 
+                TranscriptsTemporalPath = transcriptsExtractionPath;
+                return TranscriptsTemporalPath;
+            }
+        }
+
+        private static void CreateDirectoryIfNotExists(string tempTranscriptPath)
+        {
+            if (!Directory.Exists(tempTranscriptPath))
+            {
+                Directory.CreateDirectory(tempTranscriptPath);
+            }
         }
 
         public static string Chatdown(string path)
