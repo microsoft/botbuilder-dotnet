@@ -34,10 +34,11 @@ namespace Microsoft.Bot.Samples.Dialog.Prompts
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            //services.AddBot<WaterfallBot>(options =>
+            //services.AddBot<OAuthPromptBot>(options =>
+            services.AddBot<WaterfallBot>(options =>
             //services.AddBot<WaterfallNestedBot>(options =>
             //services.AddBot<WaterfallAndPromptBot>(options =>
-            services.AddBot<DialogContainerBot>(options =>
+            //services.AddBot<DialogContainerBot>(options =>
             {
                 options.CredentialProvider = new ConfigurationCredentialProvider(Configuration);
                 options.EnableProactiveMessages = true;

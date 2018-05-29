@@ -41,6 +41,7 @@ namespace Microsoft.Bot.Builder.Adapters
         private Dictionary<string, MicrosoftAppCredentials> _appCredentialMap = new Dictionary<string, MicrosoftAppCredentials>();
 
         private const string InvokeReponseKey = "BotFrameworkAdapter.InvokeResponse";
+        private bool _isEmulatingOAuthCards = false;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BotFrameworkAdapter"/> class,
@@ -449,10 +450,13 @@ namespace Microsoft.Bot.Builder.Adapters
         public async Task<TokenResponse> GetUserToken(ITurnContext context, string connectionName, string magicCode)
         {
             BotAssert.ContextNotNull(context);
-            if (string.IsNullOrWhiteSpace(connectionName))
-                throw new ArgumentNullException(nameof(connectionName));
+            if (context.Activity.From == null || string.IsNullOrWhiteSpace(context.Activity.From.Id))
+                throw new ArgumentNullException("BotFrameworkAdapter.GetuserToken(): missing from or from.id");
 
-            var client = this.CreateOAuthApiClient(context.Services.Get<IConnectorClient>() as ConnectorClient);
+            if (string.IsNullOrWhiteSpace(connectionName))
+                    throw new ArgumentNullException(nameof(connectionName));
+
+            var client = this.CreateOAuthApiClient(context);
             return await client.GetUserTokenAsync(context.Activity.From.Id, connectionName, magicCode).ConfigureAwait(false);
         }
 
@@ -468,7 +472,7 @@ namespace Microsoft.Bot.Builder.Adapters
             if (string.IsNullOrWhiteSpace(connectionName))
                 throw new ArgumentNullException(nameof(connectionName));
 
-            var client = this.CreateOAuthApiClient(context.Services.Get<IConnectorClient>() as ConnectorClient);
+            var client = this.CreateOAuthApiClient(context);
             return await client.GetSignInLinkAsync(context.Activity, connectionName).ConfigureAwait(false);
         }
 
@@ -484,7 +488,7 @@ namespace Microsoft.Bot.Builder.Adapters
             if (string.IsNullOrWhiteSpace(connectionName))
                 throw new ArgumentNullException(nameof(connectionName));
 
-            var client = this.CreateOAuthApiClient(context.Services.Get<IConnectorClient>() as ConnectorClient);
+            var client = this.CreateOAuthApiClient(context);
             await client.SignOutUserAsync(context.Activity.From.Id, connectionName).ConfigureAwait(false);
         }
 
@@ -530,8 +534,29 @@ namespace Microsoft.Bot.Builder.Adapters
             }
         }
 
-        private OAuthClient CreateOAuthApiClient(ConnectorClient client)
+        protected async Task<bool> TrySetEmulatingOAuthCards(ITurnContext turnContext)
         {
+            if (!_isEmulatingOAuthCards &&
+                string.Equals(turnContext.Activity.ChannelId, "emulator", StringComparison.InvariantCultureIgnoreCase) &&
+                (await _credentialProvider.IsAuthenticationDisabledAsync()))
+            {
+                _isEmulatingOAuthCards = true;
+            }
+            return _isEmulatingOAuthCards;
+
+        }
+
+        protected OAuthClient CreateOAuthApiClient(ITurnContext context)
+        {
+            var client = context.Services.Get<IConnectorClient>() as ConnectorClient;
+            if (client == null)
+            {
+                throw new ArgumentNullException("CreateOAuthApiClient: OAuth requires a valid ConnectorClient instance");
+            }
+            if (_isEmulatingOAuthCards)
+            {
+                return new OAuthClient(client, context.Activity.ServiceUrl);
+            }
             return new OAuthClient(client, AuthenticationConstants.OAuthUrl);
         }
 

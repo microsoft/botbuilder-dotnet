@@ -21,6 +21,14 @@ namespace Microsoft.Bot.Builder.Dialogs
     public class OAuthPromptOptions : PromptOptions
     {
         /// <summary>
+        /// Default Constructor for serialization/deserialization
+        /// </summary>
+        public OAuthPromptOptions() : base()
+        {
+
+        }
+
+        /// <summary>
         /// Constuct a OAuth prompt options from a base prompt options object.
         /// If null is passed as default, then fallback to just default options for the base class.
         /// </summary>
