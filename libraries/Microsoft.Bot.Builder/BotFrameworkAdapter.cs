@@ -232,11 +232,32 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <seealso cref="ITurnContext.OnSendActivities(SendActivitiesHandler)"/>
         public override async Task<ResourceResponse[]> SendActivities(ITurnContext context, Activity[] activities)
         {
-            List<ResourceResponse> responses = new List<ResourceResponse>();
-
-            foreach (var activity in activities)
+            if (context == null)
             {
-                ResourceResponse response = null;
+                throw new ArgumentNullException(nameof(context));
+            }
+
+            if (activities == null)
+            {
+                throw new ArgumentNullException(nameof(activities));
+            }
+
+            if (activities.Length == 0)
+            {
+                throw new ArgumentException("Expecting one or more activities, but the array was empty.", nameof(activities));
+            }
+
+            var responses = new ResourceResponse[activities.Length];
+
+            /* 
+             * NOTE: we're using for here (vs. foreach) because we want to simultaneously index into the
+             * activities array to get the activity to process as well as use that index to assign
+             * the response to the responses array and this is the most cost effective way to do that.
+             */
+            for (var index = 0; index < activities.Length; index++)
+            {
+                var activity = activities[index];
+                var response = default(ResourceResponse);
 
                 if (activity.Type == ActivityTypesEx.Delay)
                 {
@@ -280,11 +301,10 @@ namespace Microsoft.Bot.Builder.Adapters
                     response = new ResourceResponse(activity.Id ?? string.Empty);
                 }
 
-                // Collect all the responses that come from the service. 
-                responses.Add(response);
+                responses[index] = response;
             }
 
-            return responses.ToArray();
+            return responses;
         }
 
         /// <summary>
