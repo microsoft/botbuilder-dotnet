@@ -1,5 +1,5 @@
 <Project>
   <PropertyGroup>
-    <BaseOutputPath>$(MSBuildThisFileDirectory)binaries\</BaseOutputPath>
+    <PackageOutputPath>$(MSBuildThisFileDirectory)outputpackages\</PackageOutputPath>
   </PropertyGroup>
 </Project>
