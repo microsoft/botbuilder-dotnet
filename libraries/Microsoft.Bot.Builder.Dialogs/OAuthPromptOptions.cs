@@ -25,7 +25,6 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </summary>
         public OAuthPromptOptions() : base()
         {
-
         }
 
         /// <summary>
