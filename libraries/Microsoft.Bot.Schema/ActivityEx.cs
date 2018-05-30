@@ -180,6 +180,15 @@ namespace Microsoft.Bot.Schema
         /// </summary>
         protected bool IsActivity(string activityType)
         {
+            /*
+             * NOTE: While it is possible to come up with a fancy looking "one-liner" to solve 
+             * this problem, this code is purposefully more verbose due to optimizations. 
+             * 
+             * This main goal of the optimizations was to make zero allocations because it is called 
+             * by all of the .AsXXXActivity methods which are used in a pattern heavily upstream to 
+             * "pseudo-cast" the activity based on its type.
+             */
+
             var type = this.Type;
 
             // If there's no type set then we can't tell if it's the type they're looking for
