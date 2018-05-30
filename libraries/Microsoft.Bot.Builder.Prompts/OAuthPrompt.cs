@@ -8,6 +8,10 @@ using System;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.Core.Extensions;
+using Microsoft.Bot.Schema;
+using Newtonsoft.Json.Linq;
 using static Microsoft.Bot.Builder.Prompts.PromptValidatorEx;
 
 namespace Microsoft.Bot.Builder.Prompts
@@ -21,7 +25,11 @@ namespace Microsoft.Bot.Builder.Prompts
 
     public class TokenResult : PromptResult
     {
-        public TokenResponse Value { get; set; }
+        public TokenResponse TokenResponse
+        {
+            get { return GetProperty<TokenResponse>(nameof(TokenResponse)); }
+            set { this[nameof(TokenResponse)] = value; }
+        }
     }
 
     public class OAuthPrompt
@@ -71,13 +79,9 @@ namespace Microsoft.Bot.Builder.Prompts
         /// <param name="text"></param>
         /// <param name="speak"></param>
         /// <returns></returns>
-        public async Task Prompt(ITurnContext context, string text, string speak = null)
+        public async Task Prompt(ITurnContext context)
         {
             BotAssert.ContextNotNull(context);
-            if (string.IsNullOrWhiteSpace(text))
-                throw new ArgumentNullException(nameof(text));
-
-            await context.SendActivity(text, speak).ConfigureAwait(false);
 
             var adapter = context.Adapter as BotFrameworkAdapter;
             if (adapter == null)
@@ -85,7 +89,7 @@ namespace Microsoft.Bot.Builder.Prompts
 
             Attachment cardAttachment = null;
 
-            if (ChannelSupportsOAuthCard(context.Activity.ChannelId))
+            if (!ChannelSupportsOAuthCard(context.Activity.ChannelId))
             {
                 var link = await adapter.GetOauthSignInLink(context, _settings.ConnectionName).ConfigureAwait(false);
                 cardAttachment = new Attachment()
@@ -130,8 +134,9 @@ namespace Microsoft.Bot.Builder.Prompts
         {
             if (IsTokenResponseEvent(context))
             {
-                var tokenResponse = context.Activity.Value as TokenResponse;
-                return new TokenResult() { Status = PromptStatus.Recognized, Value = tokenResponse };
+                var tokenResponseObject = context.Activity.Value as JObject;
+                var tokenResponse = tokenResponseObject?.ToObject<TokenResponse>();
+                return new TokenResult() { Status = PromptStatus.Recognized, TokenResponse = tokenResponse };
             }
             else if (context.Activity.Type == ActivityTypes.Message)
             {
@@ -142,7 +147,7 @@ namespace Microsoft.Bot.Builder.Prompts
                     if (adapter == null)
                         throw new InvalidOperationException("OAuthPrompt.Recognize(): not supported by the current adapter");
                     var token = await adapter.GetUserToken(context, _settings.ConnectionName, matched.Value).ConfigureAwait(false);
-                    var tokenResult = new TokenResult() { Status = PromptStatus.Recognized, Value = token };
+                    var tokenResult = new TokenResult() { Status = PromptStatus.Recognized, TokenResponse = token };
                     if (_promptValidator != null)
                         await _promptValidator(context, tokenResult).ConfigureAwait(false);
                     return tokenResult;
@@ -176,7 +181,7 @@ namespace Microsoft.Bot.Builder.Prompts
                 tokenResult = new TokenResult()
                 {
                     Status = PromptStatus.Recognized,
-                    Value = token
+                    TokenResponse = token
                 };
             }
             if (_promptValidator != null)
@@ -213,10 +218,10 @@ namespace Microsoft.Bot.Builder.Prompts
                 case "cortana":
                 case "skype":
                 case "skypeforbusiness":
-                    return true;
+                    return false;
             }
 
-            return false;
+            return true;
         }
     }
 }
