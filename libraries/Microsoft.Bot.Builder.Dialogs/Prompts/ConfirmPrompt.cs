@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using Microsoft.Bot.Builder.Prompts.Choices;
 using System;
 using System.Threading.Tasks;
 using static Microsoft.Bot.Builder.Dialogs.PromptValidatorEx;
@@ -14,6 +15,12 @@ namespace Microsoft.Bot.Builder.Dialogs
         public ConfirmPrompt(string culture, PromptValidator<ConfirmResult> validator = null)
         {
             _prompt = new ConfirmPromptInternal(culture, validator);
+        }
+
+        public ListStyle Style
+        {
+            get { return _prompt.Style; }
+            set { _prompt.Style = value; }
         }
 
         protected override async Task OnPrompt(DialogContext dc, PromptOptions options, bool isRetry)
