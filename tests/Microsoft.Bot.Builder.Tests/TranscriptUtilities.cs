@@ -86,47 +86,57 @@ namespace Microsoft.Bot.Builder.Tests
                     return TranscriptsTemporalPath;
                 }
 
-                // Download file from url to disk
-                using (var httpClient = new HttpClient())
-                using (var zipUrlStream = httpClient.GetStreamAsync(transcriptsZipUrl).Result)
-                using (var zipFileStream = new FileStream(zipFilePath, FileMode.Create, FileAccess.Write))
-                {
-                    zipUrlStream.CopyTo(zipFileStream);
-                }
+                DownloadFile(transcriptsZipUrl, zipFilePath);
 
                 var transcriptsExtractionPath = Path.Combine(tempPath, "Transcripts/");
-                using (var zipArchive = ZipFile.OpenRead(zipFilePath))
-                {
-                    var zipCommonTranscriptEntry = zipArchive.Entries.SingleOrDefault(e => e.FullName.EndsWith(transcriptsZipFolder));
-                    if (zipCommonTranscriptEntry==null)
-                    {
-                        throw new InvalidOperationException($"Folder '{transcriptsZipFolder}' not found in '{transcriptsZipUrl}' file.");
-                    }
+                ExtractZipFolder(zipFilePath, transcriptsZipFolder, transcriptsExtractionPath);
 
-                    // Create extraction folder in temp folder
-                    CreateDirectoryIfNotExists(transcriptsExtractionPath);
-
-                    // Iterate each entry in the zip file
-                    foreach (var entry in zipArchive.Entries
-                        .Where(e => e.FullName.StartsWith(zipCommonTranscriptEntry.FullName)))
-                    {
-                        var entryName = entry.FullName.Remove(0, zipCommonTranscriptEntry.FullName.Length);
-
-                        if (string.IsNullOrEmpty(entry.Name))
-                        {
-                            // No Name, it is a folder
-                            CreateDirectoryIfNotExists(Path.Combine(transcriptsExtractionPath, entryName));
-                        }
-                        else
-                        {
-                            entry.ExtractToFile(Path.Combine(transcriptsExtractionPath, entryName), overwrite: true);
-                        }
-                    }
-                }
-
-                // 
+                // Set TranscriptsTemporalPath for next use
                 TranscriptsTemporalPath = transcriptsExtractionPath;
                 return TranscriptsTemporalPath;
+            }
+        }
+
+        private static void ExtractZipFolder(string zipFilePath, string zipFolder, string path)
+        {
+            using (var zipArchive = ZipFile.OpenRead(zipFilePath))
+            {
+                var zipFolderEntry = zipArchive.Entries.SingleOrDefault(e => e.FullName.EndsWith(zipFolder));
+                if (zipFolderEntry == null)
+                {
+                    throw new InvalidOperationException($"Folder '{zipFolder}' not found in '{zipFilePath}' file.");
+                }
+
+                // Create extraction folder in temp folder
+                CreateDirectoryIfNotExists(path);
+
+                // Iterate each entry in the zip file
+                foreach (var entry in zipArchive.Entries
+                    .Where(e => e.FullName.StartsWith(zipFolderEntry.FullName)))
+                {
+                    var entryName = entry.FullName.Remove(0, zipFolderEntry.FullName.Length);
+
+                    if (string.IsNullOrEmpty(entry.Name))
+                    {
+                        // No Name, it is a folder
+                        CreateDirectoryIfNotExists(Path.Combine(path, entryName));
+                    }
+                    else
+                    {
+                        entry.ExtractToFile(Path.Combine(path, entryName), overwrite: true);
+                    }
+                }
+            }
+        }
+
+        private static void DownloadFile(string url, string path)
+        {
+            // Download file from url to disk
+            using (var httpClient = new HttpClient())
+            using (var urlStream = httpClient.GetStreamAsync(url).Result)
+            using (var fileStream = new FileStream(path, FileMode.Create, FileAccess.Write))
+            {
+                urlStream.CopyTo(fileStream);
             }
         }
 
