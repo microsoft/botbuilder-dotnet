@@ -110,7 +110,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
             await new TestFlow(adapter, async (turnContext) =>
             {
                 var state = ConversationState<Dictionary<string, object>>.Get(turnContext);
-                var prompt = new ConfirmPrompt(Culture.English);
+                var prompt = new ConfirmPrompt(Culture.English) { Style = Prompts.Choices.ListStyle.None };
 
                 var dialogCompletion = await prompt.Continue(turnContext, state);
                 if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
