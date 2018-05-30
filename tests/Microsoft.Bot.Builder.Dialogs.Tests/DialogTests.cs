@@ -131,6 +131,35 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         }
 
         [TestMethod]
+        public async Task TextPromptNoOptions()
+        {
+            TestAdapter adapter = new TestAdapter()
+                .Use(new ConversationState<Dictionary<string, object>>(new MemoryStorage()));
+
+            await new TestFlow(adapter, async (turnContext) =>
+            {
+                var state = ConversationState<Dictionary<string, object>>.Get(turnContext);
+                var prompt = new TextPrompt();
+
+                var dialogCompletion = await prompt.Continue(turnContext, state);
+                if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
+                {
+                    await prompt.Begin(turnContext, state);
+                }
+                else if (dialogCompletion.IsCompleted)
+                {
+                    var textResult = (TextResult)dialogCompletion.Result;
+                    await turnContext.SendActivity($"Bot received the text '{textResult.Value}'.");
+                }
+            })
+            .Send("hello")
+            .AssertReply("Enter some text.")
+            .Send("some text")
+            .AssertReply("Bot received the text 'some text'.")
+            .StartTest();
+        }
+
+        [TestMethod]
         public async Task TextPrompt()
         {
             TestAdapter adapter = new TestAdapter()
