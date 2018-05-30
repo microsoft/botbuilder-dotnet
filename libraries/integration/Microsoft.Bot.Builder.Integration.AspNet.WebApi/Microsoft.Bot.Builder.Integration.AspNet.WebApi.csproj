@@ -37,7 +37,8 @@
 		<PackageTags>bots;ai;botframework;botbuilder</PackageTags>
 		<NeutralLanguage />
 		<AssemblyName>Microsoft.Bot.Builder.Integration.AspNet.WebApi</AssemblyName>
-		<RootNamespace>Microsoft.Bot.Builder.Integration.AspNet.NetFx</RootNamespace>
+		<RootNamespace>Microsoft.Bot.Builder.Integration.AspNet.WebApi</RootNamespace>
+    <PackageOutputPath Condition="'$(SolutionDir)' != ''">$(SolutionDir)\artifacts\$(Configuration)\packages</PackageOutputPath>
 	</PropertyGroup>
 
   <PropertyGroup Condition="$(Configuration) == 'Debug - NuGet Packages'">

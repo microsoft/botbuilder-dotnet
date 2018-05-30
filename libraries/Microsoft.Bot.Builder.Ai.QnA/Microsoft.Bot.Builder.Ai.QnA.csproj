@@ -35,6 +35,7 @@
 		<RepositoryType />
 		<PackageTags>bots;ai;botframework;botbuilder</PackageTags>
 		<NeutralLanguage />
+		<PackageOutputPath Condition="'$(SolutionDir)' != ''">$(SolutionDir)\artifacts\$(Configuration)\packages</PackageOutputPath>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="$(Configuration) == 'Debug - NuGet Packages'">

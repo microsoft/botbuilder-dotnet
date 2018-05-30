@@ -37,7 +37,8 @@
 		<PackageTags>bots;ai;botframework;botbuilder</PackageTags>
 		<NeutralLanguage />
 		<AssemblyName>Microsoft.Bot.Builder</AssemblyName>
-	</PropertyGroup>
+    <PackageOutputPath Condition="'$(SolutionDir)' != ''">$(SolutionDir)\artifacts\$(Configuration)\packages</PackageOutputPath>
+  </PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
 	  <DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Builder.xml</DocumentationFile>

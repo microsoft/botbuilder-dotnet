@@ -37,7 +37,8 @@
 		<PackageTags>bots;ai;botframework;botbuilder</PackageTags>
 		<NeutralLanguage />
 		<AssemblyName>Microsoft.Bot.Builder.Integration.AspNet.Core</AssemblyName>
-	</PropertyGroup>
+    <PackageOutputPath Condition="'$(SolutionDir)' != ''">$(SolutionDir)\artifacts\$(Configuration)\packages</PackageOutputPath>
+  </PropertyGroup>
 
 	<PropertyGroup Condition="$(Configuration) == 'Debug - NuGet Packages'">
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
