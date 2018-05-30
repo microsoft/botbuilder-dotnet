@@ -74,8 +74,9 @@ namespace Microsoft.Bot.Builder.Tests
                 return TranscriptsTemporalPath;
             }
 
-            var transcriptsZipUrl = TestUtilities.GetKey("TranscriptsZipUrl") ?? "https://github.com/Microsoft/BotBuilder/archive/master.zip";
-            var transcriptsZipFolder = TestUtilities.GetKey("TranscriptsZipFolder") ?? "/Common/Transcripts/";
+            var transcriptsZipUrl = TestUtilities.GetKey("BOTBUILDER_TRANSCRIPTS_LOCATION") ?? "https://github.com/Microsoft/BotBuilder/archive/master.zip";
+            const string transcriptsZipFolder = "/Common/Transcripts/"; // Folder within the repo/zip
+
             var tempPath = Path.GetTempPath();
             var zipFilePath = Path.Combine(tempPath, Path.GetFileName(transcriptsZipUrl));
 
@@ -86,13 +87,22 @@ namespace Microsoft.Bot.Builder.Tests
                     return TranscriptsTemporalPath;
                 }
 
-                DownloadFile(transcriptsZipUrl, zipFilePath);
+                // Only download and extract zip when provided a valid absolute url. Otherwise, use it as local path
+                if (Uri.IsWellFormedUriString(transcriptsZipUrl, UriKind.Absolute))
+                {
+                    DownloadFile(transcriptsZipUrl, zipFilePath);
 
-                var transcriptsExtractionPath = Path.Combine(tempPath, "Transcripts/");
-                ExtractZipFolder(zipFilePath, transcriptsZipFolder, transcriptsExtractionPath);
+                    var transcriptsExtractionPath = Path.Combine(tempPath, "Transcripts/");
+                    ExtractZipFolder(zipFilePath, transcriptsZipFolder, transcriptsExtractionPath);
 
-                // Set TranscriptsTemporalPath for next use
-                TranscriptsTemporalPath = transcriptsExtractionPath;
+                    // Set TranscriptsTemporalPath for next use
+                    TranscriptsTemporalPath = transcriptsExtractionPath;
+                }
+                else
+                {
+                    TranscriptsTemporalPath = transcriptsZipUrl;
+                }
+
                 return TranscriptsTemporalPath;
             }
         }
