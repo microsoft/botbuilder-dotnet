@@ -131,7 +131,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         }
 
         [TestMethod]
-        public async Task TextPromptNoOptions()
+        public async Task TextPromptOptionsAsDictionary()
         {
             TestAdapter adapter = new TestAdapter()
                 .Use(new ConversationState<Dictionary<string, object>>(new MemoryStorage()));
@@ -144,7 +144,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 var dialogCompletion = await prompt.Continue(turnContext, state);
                 if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
                 {
-                    await prompt.Begin(turnContext, state);
+                    var options = new Dictionary<string, object>
+                    {
+                        { nameof(PromptOptions.PromptActivity), MessageFactory.Text("Enter some text.") }
+                    };
+
+                    await prompt.Begin(turnContext, state, options);
                 }
                 else if (dialogCompletion.IsCompleted)
                 {
