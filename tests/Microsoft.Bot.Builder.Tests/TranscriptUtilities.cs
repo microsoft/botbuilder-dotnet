@@ -62,25 +62,26 @@ namespace Microsoft.Bot.Builder.Tests
             return activities.Take(activities.Count - 1).Append(lastActivity);
         }
 
-        private static string Chatdown(string path)
+        public static string Chatdown(string path)
         {
             var file = new FileInfo(path);
-            var chatdown = new System.Diagnostics.Process();
-            chatdown.StartInfo.UseShellExecute = false;
-            chatdown.StartInfo.RedirectStandardOutput = true;
-            chatdown.StartInfo.FileName = GetChatdownPath();
-            chatdown.StartInfo.Arguments = file.FullName;
-            chatdown.Start();
-            var content = chatdown.StandardOutput.ReadToEnd();
-            chatdown.WaitForExit();
+            var chatdown = new System.Diagnostics.ProcessStartInfo
+            {
+                FileName = "chatdown_gen.cmd",
+                Arguments = file.FullName,
+                UseShellExecute = false,
+                RedirectStandardOutput = true
+            };
+            var chatdownProcess = System.Diagnostics.Process.Start(chatdown);
+            var content = chatdownProcess.StandardOutput.ReadToEnd();
+            chatdownProcess.WaitForExit();
+            if (string.IsNullOrEmpty(content))
+            {
+                throw new Exception("Chatdown error. Please check if chatdown is correctly installed or install it with \"npm i -g chatdown\"");
+            }
             return content;
         }
-
-        private static string GetChatdownPath()
-        {
-            return TestUtilities.GetKey("ChatdownPath") ?? Environment.ExpandEnvironmentVariables(@"%PROGRAMFILES%\nodejs\chatdown.cmd");
-        }
-
+        
         /// <summary>
         /// Get a conversation reference.
         /// This method can be used to set the conversation reference needed to create a <see cref="Adapters.TestAdapter"/>
