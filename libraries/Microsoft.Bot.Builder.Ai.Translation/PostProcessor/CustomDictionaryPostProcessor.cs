@@ -26,8 +26,8 @@ namespace Microsoft.Bot.Builder.Ai.Translation.PostProcessor
         /// <summary>
         /// Process the logic for custom dictionary post processor used to handle user custom vocab translation.
         /// </summary>
-        /// <param name="translatedDocument">Translated document</param>
-        /// <param name="currentLanguage">Current source language</param>
+        /// <param name="translatedDocument">Translated document.</param>
+        /// <param name="languageId">Current source language id.</param>
         /// <returns>A <see cref="PostProcessedDocument"/> stores the original translated document state and the newly post processed message</returns>
         public PostProcessedDocument Process(TranslatedDocument translatedDocument, string languageId)
         {
