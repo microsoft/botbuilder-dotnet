@@ -1,1 +1,0 @@
-msbuild Microsoft.Bot.Builder.sln /p:Configuration="Debug - Nuget Packages" /p:PackageOutputPath="%~dp0binaries\Debug\packages"
