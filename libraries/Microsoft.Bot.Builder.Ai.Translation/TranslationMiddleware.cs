@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation
     {
         private readonly string[] _nativeLanguages;
         private readonly Translator _translator;
-        private readonly Dictionary<string, Dictionary<string, string>> _userCustomDictonaries;
+        private readonly CustomDictionary _userCustomDictonaries;
         private readonly Dictionary<string, List<string>> _patterns;
         private readonly Func<ITurnContext, string> _getUserLanguage;
         private readonly Func<ITurnContext, Task<bool>> _isUserLanguageChanged;
@@ -41,7 +41,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation
                 throw new ArgumentNullException(nameof(translatorKey));
             this._translator = new Translator(translatorKey);
             _patterns = new Dictionary<string, List<string>>();
-            _userCustomDictonaries = new Dictionary<string, Dictionary<string, string>>();
+            _userCustomDictonaries = new CustomDictionary();
             _toUserLanguage = toUserLanguage;
         }
 
@@ -53,12 +53,12 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         /// <param name="translatorKey">Your subscription key for the Microsoft Translator Text API.</param>
         /// <param name="patterns">List of regex patterns, indexed by language identifier, 
         /// that can be used to flag text that should not be translated.</param>
-        /// <param name="userCustomDictonaries">Map of custom dictionaries, indexed by language identifier, 
-        /// that can be used to translate certain vocab into user pre-defined translations.</param>
+        /// /// <param name="userCustomDictonaries">Custom languages dictionary object, used to store all the different languages dictionaries
+        /// configured by the user to overwrite the translator output to certain vocab by the custom dictionary translation.</param>
         /// <param name="toUserLanguage">Indicates whether to transalte messages sent from the bot into the user's language.</param>
         /// <remarks>Each pattern the <paramref name="patterns"/> describes an entity that should not be translated.
         /// For example, in French <c>je m’appelle ([a-z]+)</c>, which will avoid translation of anything coming after je m’appelle.</remarks>
-        public TranslationMiddleware(string[] nativeLanguages, string translatorKey, Dictionary<string, List<string>> patterns, Dictionary<string, Dictionary<string, string>> userCustomDictonaries, bool toUserLanguage = false) : this(nativeLanguages, translatorKey, toUserLanguage)
+        public TranslationMiddleware(string[] nativeLanguages, string translatorKey, Dictionary<string, List<string>> patterns, CustomDictionary userCustomDictonaries, bool toUserLanguage = false) : this(nativeLanguages, translatorKey, toUserLanguage)
         {
             if (patterns != null)
                 this._patterns = patterns;
@@ -73,13 +73,15 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         /// <param name="translatorKey">Your subscription key for the Microsoft Translator Text API.</param>
         /// <param name="patterns">List of regex patterns, indexed by language identifier, 
         /// that can be used to flag text that should not be translated.</param>
+        /// <param name="userCustomDictonaries">Custom languages dictionary object, used to store all the different languages dictionaries
+        /// configured by the user to overwrite the translator output to certain vocab by the custom dictionary translation.</param>
         /// <param name="getUserLanguage">A delegate for getting the user language, 
         /// to use in place of the Detect method of the Microsoft Translator Text API.</param>
         /// <param name="isUserLanguageChanged">A delegate for checking whether the user requested to change their language.</param>
         /// <param name="toUserLanguage">Indicates whether to transalte messages sent from the bot into the user's language.</param>
         /// <remarks>Each pattern the <paramref name="patterns"/> describes an entity that should not be translated.
         /// For example, in French <c>je m’appelle ([a-z]+)</c>, which will avoid translation of anything coming after je m’appelle.</remarks>
-        public TranslationMiddleware(string[] nativeLanguages, string translatorKey, Dictionary<string, List<string>> patterns, Dictionary<string, Dictionary<string, string>> userCustomDictonaries, Func<ITurnContext, string> getUserLanguage, Func<ITurnContext, Task<bool>> isUserLanguageChanged, bool toUserLanguage = false) : this(nativeLanguages, translatorKey, patterns, userCustomDictonaries, toUserLanguage)
+        public TranslationMiddleware(string[] nativeLanguages, string translatorKey, Dictionary<string, List<string>> patterns, CustomDictionary userCustomDictonaries, Func<ITurnContext, string> getUserLanguage, Func<ITurnContext, Task<bool>> isUserLanguageChanged, bool toUserLanguage = false) : this(nativeLanguages, translatorKey, patterns, userCustomDictonaries, toUserLanguage)
         {
             this._getUserLanguage = getUserLanguage ?? throw new ArgumentNullException(nameof(getUserLanguage));
             this._isUserLanguageChanged = isUserLanguageChanged ?? throw new ArgumentNullException(nameof(isUserLanguageChanged));
@@ -178,7 +180,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation
             {
                 attachedPostProcessors.Add(new PatternsPostProcessor(_patterns));
             }
-            if (_userCustomDictonaries != null && _userCustomDictonaries.Count > 0)
+            if (_userCustomDictonaries != null && !_userCustomDictonaries.IsEmpty())
             {
                 attachedPostProcessors.Add(new CustomDictionaryPostProcessor(_userCustomDictonaries));
             }

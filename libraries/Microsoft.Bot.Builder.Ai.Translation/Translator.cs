@@ -31,6 +31,10 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         /// <param name="apiKey">Your subscription key for the Microsoft Translator Text API.</param>
         public Translator(string apiKey)
         {
+            if (string.IsNullOrWhiteSpace(apiKey))
+            {
+                throw new ArgumentNullException(nameof(apiKey));
+            }
             _authToken = new AzureAuthToken(apiKey);
         }
 
@@ -215,7 +219,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation
                             currentTranslatedDocument.RawAlignment = xe.Element(ns + "Alignment").Value;
                             if (!string.IsNullOrEmpty(currentTranslatedDocument.RawAlignment))
                             {
-                                string[] alignments = xe.Element(ns + "Alignment").Value.Trim().Split(' ');
+                                string[] alignments = currentTranslatedDocument.RawAlignment.Trim().Split(' ');
                                 currentTranslatedDocument.SourceTokens = PostProcessingUtilities.SplitSentence(currentTranslatedDocument.SourceMessage, alignments);
                                 currentTranslatedDocument.TranslatedTokens = PostProcessingUtilities.SplitSentence(xe.Element(ns + "TranslatedText").Value, alignments, false);
                                 currentTranslatedDocument.IndexedAlignment = PostProcessingUtilities.WordAlignmentParse(alignments, currentTranslatedDocument.SourceTokens, currentTranslatedDocument.TranslatedTokens);

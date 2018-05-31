@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -9,21 +12,14 @@ namespace Microsoft.Bot.Builder.Ai.Translation
     /// </summary>
     public class TranslatedDocument
     {
-        private string sourceMessage;
-        private string targetMessage;
-        private string rawAlignment;
-        private Dictionary<int, int> indexedAlignment;
-        private string[] sourceTokens;
-        private string[] translatedTokens;
-        private HashSet<string> literanlNoTranslatePhrases;
-
         /// <summary>
         /// Construct Translated document object using only source message.
         /// </summary>
         /// <param name="sourceMessage">Source message</param>
         public TranslatedDocument(string sourceMessage)
         {
-            this.sourceMessage = sourceMessage;
+            if (string.IsNullOrWhiteSpace(sourceMessage)) throw new ArgumentNullException(nameof(sourceMessage));
+            this.SourceMessage = sourceMessage;
         }
 
         /// <summary>
@@ -33,16 +29,18 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         /// <param name="targetMessage">Target/translated message</param>
         public TranslatedDocument(string sourceMessage, string targetMessage)
         {
-            this.sourceMessage = sourceMessage;
-            this.targetMessage = targetMessage;
+            if (string.IsNullOrWhiteSpace(sourceMessage)) throw new ArgumentNullException(nameof(sourceMessage));
+            if (string.IsNullOrWhiteSpace(targetMessage)) throw new ArgumentNullException(nameof(targetMessage));
+            this.SourceMessage = sourceMessage;
+            this.TargetMessage = targetMessage;
         }
 
-        public string SourceMessage { get => sourceMessage; set => sourceMessage = value; }
-        public string TargetMessage { get => targetMessage; set => targetMessage = value; }
-        public string RawAlignment { get => rawAlignment; set => rawAlignment = value; }
-        public Dictionary<int, int> IndexedAlignment { get => indexedAlignment; set => indexedAlignment = value; }
-        public string[] SourceTokens { get => sourceTokens; set => sourceTokens = value; }
-        public string[] TranslatedTokens { get => translatedTokens; set => translatedTokens = value; }
-        public HashSet<string> LiteranlNoTranslatePhrases { get => literanlNoTranslatePhrases; set => literanlNoTranslatePhrases = value; }
+        public string SourceMessage { get; set; }
+        public string TargetMessage { get; set; }
+        public string RawAlignment { get; set; }
+        public Dictionary<int, int> IndexedAlignment { get; set; }
+        public string[] SourceTokens { get; set; }
+        public string[] TranslatedTokens { get; set; }
+        public HashSet<string> LiteranlNoTranslatePhrases { get; set; }
     }
 }

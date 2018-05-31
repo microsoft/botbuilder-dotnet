@@ -18,6 +18,34 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
         [TestMethod]
         [TestCategory("AI")]
         [TestCategory("Translator")]
+        public void Translator_InvalidArguments_NullTranslatorKey()
+        {
+            if (!EnvironmentVariablesDefined())
+            {
+                Assert.Inconclusive("Missing Translator Environment variables - Skipping test");
+                return;
+            }
+            string translatorKey = null;
+            Assert.ThrowsException<ArgumentNullException>(() => new Translator(translatorKey));
+        }
+
+        [TestMethod]
+        [TestCategory("AI")]
+        [TestCategory("Translator")]
+        public void Translator_InvalidArguments_EmptyTranslatorKey()
+        {
+            if (!EnvironmentVariablesDefined())
+            {
+                Assert.Inconclusive("Missing Translator Environment variables - Skipping test");
+                return;
+            }
+            string translatorKey = "";
+            Assert.ThrowsException<ArgumentNullException>(() => new Translator(translatorKey));
+        }
+
+        [TestMethod]
+        [TestCategory("AI")]
+        [TestCategory("Translator")]
         public async Task Translator_DetectAndTranslateToEnglish()
         {
             if (!EnvironmentVariablesDefined())
@@ -60,125 +88,6 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
             PostProcessedDocument postProcessedDocument = postProcessor.Process(translatedSentence[0], "fr");
             Assert.IsNotNull(translatedSentence);
             Assert.AreEqual("Hi Jean Bouchier mon ami", postProcessedDocument.PostProcessedMessage);
-        }
-
-        [TestMethod]
-        [TestCategory("AI")]
-        [TestCategory("Translator")]
-        public async Task Translator_PatternsTest()
-        {
-            if (!EnvironmentVariablesDefined())
-            {
-                Assert.Inconclusive("Missing Translator Environment variables - Skipping test");
-                return;
-            }
-
-            Translator translator = new Translator(translatorKey);
-            Dictionary<string, List<string>> patterns = new Dictionary<string, List<string>>();
-            List<string> spanishPatterns = new List<string> { "perr[oa]" };
-            patterns.Add("es", spanishPatterns);
-            List<string> frenchPatterns = new List<string> { "mon nom est (.+)" };
-            patterns.Add("fr", frenchPatterns);
-
-
-            IPostProcessor patternsPostProcessor = new PatternsPostProcessor(patterns);
-            var sentence = "mi perro se llama Enzo";
-
-            var translatedDocuments = await translator.TranslateArray(new string[] { sentence }, "es", "en");
-            Assert.IsNotNull(translatedDocuments);
-            string postProcessedMessage = patternsPostProcessor.Process(translatedDocuments[0], "es").PostProcessedMessage;
-            Assert.IsNotNull(postProcessedMessage);
-            Assert.AreEqual("My perro's name is Enzo", postProcessedMessage);
-
-
-            sentence = "mon nom est l'etat";
-            translatedDocuments = await translator.TranslateArray(new string[] { sentence }, "fr", "en");
-            Assert.IsNotNull(translatedDocuments);
-            postProcessedMessage = patternsPostProcessor.Process(translatedDocuments[0], "fr").PostProcessedMessage;
-            Assert.IsNotNull(postProcessedMessage);
-            Assert.AreEqual("My name is l'etat", postProcessedMessage);
-        }
-
-        [TestMethod]
-        [TestCategory("AI")]
-        [TestCategory("Translator")]
-        public async Task Translator_DictionaryTest()
-        {
-            if (!EnvironmentVariablesDefined())
-            {
-                Assert.Inconclusive("Missing Translator Environment variables - Skipping test");
-                return;
-            }
-
-            Translator translator = new Translator(translatorKey);
-
-            Dictionary<string, Dictionary<string, string>> userCustomDictonaries = new Dictionary<string, Dictionary<string, string>>();
-            Dictionary<string, string> frenctDictionary = new Dictionary<string, string>();
-            frenctDictionary.Add("éclair", "eclairs tart");
-            userCustomDictonaries.Add("fr", frenctDictionary);
-            Dictionary<string, string> italianDictionary = new Dictionary<string, string>();
-            italianDictionary.Add("camera", "bedroom");
-            userCustomDictonaries.Add("it", italianDictionary);
-
-            IPostProcessor customDictionaryPostProcessor = new CustomDictionaryPostProcessor(userCustomDictonaries);
-
-            var frenchSentence = "Je veux voir éclair";
-
-            var translatedDocuments = await translator.TranslateArray(new string[] { frenchSentence }, "fr", "en");
-            Assert.IsNotNull(translatedDocuments);
-            string postProcessedMessage = customDictionaryPostProcessor.Process(translatedDocuments[0], "fr").PostProcessedMessage;
-            Assert.IsNotNull(postProcessedMessage);
-            Assert.AreEqual("I want to see eclairs tart", postProcessedMessage);
-
-            var italianSentence = "Voglio fare una foto nella camera";
-
-            translatedDocuments = await translator.TranslateArray(new string[] { italianSentence }, "it", "en");
-            Assert.IsNotNull(translatedDocuments);
-            postProcessedMessage = customDictionaryPostProcessor.Process(translatedDocuments[0], "it").PostProcessedMessage;
-            Assert.IsNotNull(postProcessedMessage);
-            Assert.AreEqual("I want to take a picture in the bedroom", postProcessedMessage);
-        }
-
-        [TestMethod]
-        [TestCategory("AI")]
-        [TestCategory("Translator")]
-        public async Task Translator_PatternsAndDictionaryTest()
-        {
-            if (!EnvironmentVariablesDefined())
-            {
-                Assert.Inconclusive("Missing Translator Environment variables - Skipping test");
-                return;
-            }
-
-            List<IPostProcessor> attachedPostProcessors = new List<IPostProcessor>();
-            Translator translator = new Translator(translatorKey);
-            Dictionary<string, List<string>> patterns = new Dictionary<string, List<string>>();
-            List<string> frenchPatterns = new List<string> { "mon nom est (.+)" };
-
-            patterns.Add("fr", frenchPatterns);
-            IPostProcessor patternsPostProcessor = new PatternsPostProcessor(patterns);
-
-            attachedPostProcessors.Add(patternsPostProcessor);
-
-            Dictionary<string, Dictionary<string, string>> userCustomDictonaries = new Dictionary<string, Dictionary<string, string>>();
-            Dictionary<string, string> frenctDictionary = new Dictionary<string, string>();
-            frenctDictionary.Add("etat", "Eldad");
-            userCustomDictonaries.Add("fr", frenctDictionary);
-            IPostProcessor customDictionaryPostProcessor = new CustomDictionaryPostProcessor(userCustomDictonaries);
-
-            attachedPostProcessors.Add(customDictionaryPostProcessor);
-
-            var sentence = "mon nom est etat";
-
-            var translatedDocuments = await translator.TranslateArray(new string[] { sentence }, "fr", "en");
-            Assert.IsNotNull(translatedDocuments);
-            string postProcessedMessage =  null;
-            foreach (IPostProcessor postProcessor in attachedPostProcessors)
-            {
-                postProcessedMessage = postProcessor.Process(translatedDocuments[0], "fr").PostProcessedMessage;
-            }
-            Assert.IsNotNull(postProcessedMessage);
-            Assert.AreEqual("My name is Eldad", postProcessedMessage);
         }
 
         [TestMethod]

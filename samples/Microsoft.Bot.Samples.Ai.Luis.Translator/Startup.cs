@@ -50,10 +50,12 @@ namespace Microsoft.Bot.Samples.Ai.Luis.Translator
                 var luisOptions = new LuisRequest { Verbose = true };
                 Dictionary<string, List<string>> patterns = new Dictionary<string, List<string>>();
                 patterns.Add("fr", new List<string> { "mon nom est (.+)" });//single pattern for fr language
-                Dictionary<string, Dictionary<string, string>> userCustomDictonaries = new Dictionary<string, Dictionary<string, string>>();
-                Dictionary<string, string> frenctDictionary = new Dictionary<string, string>();
-                frenctDictionary.Add("content", "excited");
-                userCustomDictonaries.Add("fr", frenctDictionary);
+                CustomDictionary userCustomDictonaries = new CustomDictionary();
+                Dictionary<string, string> frenctDictionary = new Dictionary<string, string>
+                {
+                    { "content", "excited" }
+                };
+                userCustomDictonaries.AddNewLanguageDictionary("fr", frenctDictionary);
                 var middleware = options.Middleware;
                 middleware.Add(new ConversationState<CurrentUserState>(new MemoryStorage()));
                 middleware.Add(new LocaleConverterMiddleware(TranslatorLocaleHelper.GetActiveLocale, TranslatorLocaleHelper.CheckUserChangedLanguageOrLocale, "en-us", LocaleConverter.Converter));
