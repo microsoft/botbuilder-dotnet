@@ -185,12 +185,13 @@ namespace Microsoft.Bot.Builder.Ai.Translation
                 attachedPostProcessors.Add(new CustomDictionaryPostProcessor(_userCustomDictonaries));
             }
         }
+
         /// <summary>
         /// Applies all the attached post processors to the translated messages.
         /// </summary>
         /// <param name="translatedDocuments">List of <see cref="TranslatedDocument"/> represent the output of the translator module</param>
-        /// <returns>A task that represents the asynchronous operation</returns>
-        private void PostProcesseDocuments(List<TranslatedDocument> translatedDocuments, string currentLanguage)
+        /// <param name="languageId">Current language id</param>
+        private void PostProcesseDocuments(List<TranslatedDocument> translatedDocuments, string languageId)
         {
             if (attachedPostProcessors == null)
             {
@@ -200,7 +201,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation
             {
                 foreach (IPostProcessor postProcessor in attachedPostProcessors)
                 {
-                    translatedDocument.TargetMessage = postProcessor.Process(translatedDocument, currentLanguage).PostProcessedMessage;
+                    translatedDocument.TargetMessage = postProcessor.Process(translatedDocument, languageId).PostProcessedMessage;
                 }
             }
         }

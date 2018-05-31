@@ -11,9 +11,10 @@ using System.Threading.Tasks;
 namespace Microsoft.Bot.Builder.Ai.Translation.Tests
 {
     [TestClass]
-    public class PostProcessorsTests
+    public class TranslatorPostProcessorsTests
     {
         public string translatorKey = TestUtilities.GetKey("TRANSLATORKEY");
+
 
         [TestMethod]
         [TestCategory("AI")]
@@ -101,6 +102,60 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
             string postProcessedMessage = patternsPostProcessor.Process(translatedDocuments[0], "fr").PostProcessedMessage;
             Assert.IsNotNull(postProcessedMessage);
             Assert.AreEqual("My name is l'etat", postProcessedMessage);
+        }
+
+        [TestMethod]
+        [TestCategory("AI")]
+        [TestCategory("Translator")]
+        public async Task Translator_PatternsTest_FrenchPatternsWithMultipleSpaces()
+        {
+            if (!EnvironmentVariablesDefined())
+            {
+                Assert.Inconclusive("Missing Translator Environment variables - Skipping test");
+                return;
+            }
+
+            Translator translator = new Translator(translatorKey);
+            Dictionary<string, List<string>> patterns = new Dictionary<string, List<string>>();
+            List<string> frenchPatterns = new List<string> { "mon nom est (.+)" };
+            patterns.Add("fr", frenchPatterns);
+
+
+            IPostProcessor patternsPostProcessor = new PatternsPostProcessor(patterns);
+
+            var sentence = "mon     nom     est    l'etat   ";
+            var translatedDocuments = await translator.TranslateArray(new string[] { sentence }, "fr", "en");
+            Assert.IsNotNull(translatedDocuments);
+            string postProcessedMessage = patternsPostProcessor.Process(translatedDocuments[0], "fr").PostProcessedMessage;
+            Assert.IsNotNull(postProcessedMessage);
+            Assert.AreEqual("My name is l'etat", postProcessedMessage);
+        }
+
+        [TestMethod]
+        [TestCategory("AI")]
+        [TestCategory("Translator")]
+        public async Task Translator_PatternsTest_FrenchPatternsWithNumbers()
+        {
+            if (!EnvironmentVariablesDefined())
+            {
+                Assert.Inconclusive("Missing Translator Environment variables - Skipping test");
+                return;
+            }
+
+            Translator translator = new Translator(translatorKey);
+            Dictionary<string, List<string>> patterns = new Dictionary<string, List<string>>();
+            List<string> frenchPatterns = new List<string> { "mon nom est (.+)" };
+            patterns.Add("fr", frenchPatterns);
+
+
+            IPostProcessor patternsPostProcessor = new PatternsPostProcessor(patterns);
+
+            var sentence = "J'ai 25 ans et mon nom est l'etat";
+            var translatedDocuments = await translator.TranslateArray(new string[] { sentence }, "fr", "en");
+            Assert.IsNotNull(translatedDocuments);
+            string postProcessedMessage = patternsPostProcessor.Process(translatedDocuments[0], "fr").PostProcessedMessage;
+            Assert.IsNotNull(postProcessedMessage);
+            Assert.AreEqual("I am 25 years old and my name is l'etat", postProcessedMessage);
         }
 
         [TestMethod]

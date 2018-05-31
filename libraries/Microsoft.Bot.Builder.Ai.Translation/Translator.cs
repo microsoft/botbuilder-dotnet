@@ -197,6 +197,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation
             using (var client = new HttpClient())
             using (var request = new HttpRequestMessage())
             {
+                client.Timeout = TimeSpan.FromSeconds(20);
                 request.Method = HttpMethod.Post;
                 request.RequestUri = new Uri(uri);
                 request.Content = new StringContent(body, Encoding.UTF8, "text/xml");
@@ -299,7 +300,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation
                 request.RequestUri = ServiceUrl;
                 request.Content = new StringContent(string.Empty);
                 request.Headers.TryAddWithoutValidation(OcpApimSubscriptionKeyHeader, this.SubscriptionKey);
-                client.Timeout = TimeSpan.FromSeconds(2);
+                client.Timeout = TimeSpan.FromSeconds(20);
                 var response = await client.SendAsync(request);
                 this.RequestStatusCode = response.StatusCode;
                 response.EnsureSuccessStatusCode();
