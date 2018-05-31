@@ -50,7 +50,9 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
             var key = "!@#$%^&*()~/\\><,.?';\"`~";
             var storeItem = new PocoStoreItem() { Id = "1" };
 
-            await storage.Write(new[] { new KeyValuePair<string, object>(key, storeItem) });
+            var dict = new Dictionary<string, object>() { { key, storeItem } };
+
+            await storage.Write(dict);
 
             var storeItems = await storage.Read(key);
 
@@ -71,11 +73,13 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
             var originalPocoStoreItem = new PocoStoreItem() { Id = "1", Count = 1 };
 
             // first write should work
-            await storage.Write(new [] 
+            var dict = new Dictionary<string, object>()
             {
-                new KeyValuePair<string, object>("pocoItem", originalPocoItem),
-                new KeyValuePair<string, object>("pocoStoreItem", originalPocoStoreItem )
-            });
+                { "pocoItem", originalPocoItem },
+                { "pocoStoreItem", originalPocoStoreItem }
+            };
+
+            await storage.Write(dict);
 
             var loadedStoreItems = new Dictionary<string, object>(await storage.Read("pocoItem", "pocoStoreItem"));
 
@@ -103,11 +107,10 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
             try
             {
                 updatePocoItem.Count = 123;
-
-                await storage.Write(new[]
-                {
-                    new KeyValuePair<string, object>("pocoItem", updatePocoItem)
-                });
+                
+                await storage.Write(
+                    new Dictionary<string, object>() { { "pocoItem", updatePocoItem } }
+                );
             }
             catch
             {
@@ -118,11 +121,10 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
             try
             {
                 updatePocoStoreItem.Count = 123;
-
-                await storage.Write(new[]
-                {
-                    new KeyValuePair<string, object>("pocoStoreItem", updatePocoStoreItem)
-                });
+                
+                await storage.Write(
+                    new Dictionary<string, object>() { { "pocoStoreItem", updatePocoStoreItem } }
+                );
 
                 Assert.Fail("Should have thrown exception on write with store item because of old etag");
             }
@@ -143,11 +145,12 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
             reloadedPocoStoreItem2.Count = 100;
             reloadedPocoStoreItem2.eTag = "*";
 
-            await storage.Write(new[]
-            {
-                new KeyValuePair<string, object>("pocoItem", reloadedPocoItem2),
-                new KeyValuePair<string, object>("pocoStoreItem", reloadedPocoStoreItem2)
-            });
+            var wildcardEtagedict = new Dictionary<string, object>() {
+                { "pocoItem", reloadedPocoItem2 },
+                { "pocoStoreItem", reloadedPocoStoreItem2 }                    
+            };
+
+            await storage.Write(wildcardEtagedict);
 
             var reloadedStoreItems3 = new Dictionary<string, object>(await storage.Read("pocoItem", "pocoStoreItem"));
 
@@ -160,10 +163,13 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
                 var reloadedStoreItem4 = (await storage.Read("pocoStoreItem")).OfType<PocoStoreItem>().First();
 
                 reloadedStoreItem4.eTag = "";
-                await storage.Write(new[]
-                {
-                    new KeyValuePair<string, object>("pocoStoreItem", reloadedStoreItem4)
-                });
+                var dict2 = new Dictionary<string, object>()
+                {                
+                    { "pocoStoreItem", reloadedStoreItem4 }
+                };
+
+
+                await storage.Write(dict2);
 
                 Assert.Fail("Should have thrown exception on write with storeitem because of empty etag");
             }
@@ -180,7 +186,12 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
         protected async Task _deleteObjectTest(IStorage storage)
         {
             //first write should work
-            await storage.Write(new[] { new KeyValuePair<string, object>("delete1", new PocoStoreItem() { Id = "1", Count = 1 }) });
+            var dict = new Dictionary<string, object>()
+                {
+                    { "delete1", new PocoStoreItem() { Id = "1", Count = 1 } }
+                };
+
+            await storage.Write(dict);
 
             var storeItems = await storage.Read("delete1");
             var storeItem = storeItems.First().Value as PocoStoreItem;
@@ -199,6 +210,45 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
         {
             await storage.Delete("unknown_key");
         }
+
+        protected async Task _batchCreateObjectTest(IStorage storage, long minimumExtraBytes = 0)
+        {
+            string[] stringArray = null;
+
+            if (minimumExtraBytes > 0)
+            {
+                // chunks of maximum string size to fill the extra bytes request
+                var extraStringCount = (int)(minimumExtraBytes / int.MaxValue);
+                stringArray = Enumerable.Range(0, extraStringCount).Select(i => new string('X', int.MaxValue / 2)).ToArray();
+
+                // Append the remaining string size
+                stringArray = stringArray.Append(new string('X', (int)(minimumExtraBytes % int.MaxValue) / 2)).ToArray();
+            }
+
+            var storeItemsList = new List<Dictionary<string, object>>(new[]
+                {
+                new Dictionary<string, object> {["createPoco"] = new PocoItem() { Id = "1", Count = 0, ExtraBytes = stringArray }},
+                new Dictionary<string, object> {["createPoco"] = new PocoItem() { Id = "1", Count = 1, ExtraBytes = stringArray }},
+                new Dictionary<string, object> {["createPoco"] = new PocoItem() { Id = "1", Count = 2, ExtraBytes = stringArray }}
+            });
+
+            // Writing large objects in parallel might raise a Microsoft.Bot.Builder.Core.Extensions.StorageException
+            try
+            {
+                await Task.WhenAll(
+                    storeItemsList.Select(storeItems =>
+                        Task.Run(async () => await storage.Write(storeItems))));
+            }
+            catch (Exception ex)
+            {
+                Assert.IsInstanceOfType(ex, typeof(BotStorageException));
+            }
+
+            var readStoreItems = new Dictionary<string, object>(await storage.Read("createPoco"));
+            Assert.IsInstanceOfType(readStoreItems["createPoco"], typeof(PocoItem));
+            var createPoco = readStoreItems["createPoco"] as PocoItem;
+            Assert.AreEqual(createPoco.Id, "1", "createPoco.id should be 1");
+        }
     }
 
     public class PocoItem
@@ -206,6 +256,8 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
         public string Id { get; set; }
 
         public int Count { get; set; }
+
+        public string[] ExtraBytes { get; set; }
     }
 
     public class PocoStoreItem : IStoreItem

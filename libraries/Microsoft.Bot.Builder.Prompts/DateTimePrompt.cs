@@ -1,13 +1,12 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 using Microsoft.Recognizers.Text;
 using Microsoft.Recognizers.Text.DateTime;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using static Microsoft.Bot.Builder.Prompts.PromptValidatorEx;
 
 namespace Microsoft.Bot.Builder.Prompts
@@ -27,9 +26,23 @@ namespace Microsoft.Bot.Builder.Prompts
             Resolution = new List<DateTimeResolution>();
         }
 
-        public string Text { get; set; }
+        /// <summary>
+        /// The input text recognized; or <c>null</c>, if recognition fails.
+        /// </summary>
+        public string Text
+        {
+            get { return GetProperty<string>(nameof(Text)); }
+            set { this[nameof(Text)] = value; }
+        }
 
-        public List<DateTimeResolution> Resolution { get; private set; }
+        /// <summary>
+        /// The various resolutions for the recognized value; or and empty list.
+        /// </summary>
+        public List<DateTimeResolution> Resolution
+        {
+            get { return GetProperty<List<DateTimeResolution>>(nameof(Resolution)); }
+            private set { this[nameof(Resolution)] = value; }
+        }
 
         public class DateTimeResolution
         {
@@ -61,8 +74,8 @@ namespace Microsoft.Bot.Builder.Prompts
 
         /// <summary>
         /// Used to validate the incoming text, expected on context.Request, is
-        /// valid according to the rules defined in the validation steps. 
-        /// </summary>        
+        /// valid according to the rules defined in the validation steps.
+        /// </summary>
         public override async Task<DateTimeResult> Recognize(ITurnContext context)
         {
             BotAssert.ContextNotNull(context);

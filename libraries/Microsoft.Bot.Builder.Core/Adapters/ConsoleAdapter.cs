@@ -50,11 +50,26 @@ namespace Microsoft.Bot.Builder.Adapters
 
         public override async Task<ResourceResponse[]> SendActivities(ITurnContext context, Activity[] activities)
         {
-            List<ResourceResponse> responses = new List<ResourceResponse>();
-
-            foreach (var activity in activities)
+            if (context == null)
             {
-                responses.Add(new ResourceResponse(activity.Id));
+                throw new ArgumentNullException(nameof(context));
+            }
+
+            if (activities == null)
+            {
+                throw new ArgumentNullException(nameof(activities));
+            }
+
+            if (activities.Length == 0)
+            {
+                throw new ArgumentException("Expecting one or more activities, but the array was empty.", nameof(activities));
+            }
+
+            var responses = new ResourceResponse[activities.Length];
+
+            for(var index = 0; index < activities.Length; index++)
+            {
+                var activity = activities[index];
 
                 switch (activity.Type)
                 {
@@ -64,7 +79,7 @@ namespace Microsoft.Bot.Builder.Adapters
                             IMessageActivity message = activity.AsMessageActivity();
                             if (message.Attachments != null && message.Attachments.Any())
                             {
-                                var attachment = message.Attachments.Count == 1 ? "1 attachments" : $"{message.Attachments.Count()} attachments";
+                                var attachment = message.Attachments.Count == 1 ? "1 attachment" : $"{message.Attachments.Count()} attachments";
                                 Console.WriteLine($"{message.Text} with {attachment} ");
                             }
                             else
@@ -88,9 +103,11 @@ namespace Microsoft.Bot.Builder.Adapters
                         Console.WriteLine("Bot: activity type: {0}", activity.Type);
                         break;
                 }
+
+                responses[index] = new ResourceResponse(activity.Id);
             }
 
-            return responses.ToArray();
+            return responses;
         }
 
         public override Task<ResourceResponse> UpdateActivity(ITurnContext context, Activity activity)

@@ -6,6 +6,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.Recognizers.Text;
 using Microsoft.Recognizers.Text.DateTime;
@@ -31,6 +32,9 @@ namespace Microsoft.Bot.Builder.Ai.Translation
     {
         public string Text { get; set; }
         public DateTime dateTime { get; set; }
+        public string type { get; set; }
+        public bool range { get; set; }
+        public DateTime endDateTime { get; set; }
     }
 
     /// <summary>
@@ -127,26 +131,62 @@ namespace Microsoft.Bot.Builder.Ai.Translation
             foreach (ModelResult result in results)
             {
                 var resolutionValues = (IList<Dictionary<string, string>>)result.Resolution["values"];
-                string type = result.TypeName.Split('.').Last();
-                DateTime moment = new DateTime();
-                if (type.Contains("date") && !type.Contains("range"))
+                string type = result.TypeName.Replace("datetimeV2.", "");
+                DateTime moment; ;
+                string momentType;
+                DateTime momentEnd;
+                TextAndDateTime curDateTimeText;
+                if (type.Contains("range"))
                 {
-                    moment = resolutionValues.Select(v => DateTime.Parse(v["value"])).FirstOrDefault();
-
-                }
-                else if (type.Contains("date") && type.Contains("range"))
-                {
+                    if (type.Contains("date") && type.Contains("time"))
+                    {
+                        momentType = "datetime";
+                    }
+                    else if (type.Contains("date"))
+                    {
+                        momentType = "date";
+                    }
+                    else
+                    {
+                        momentType = "time";
+                    }
                     moment = DateTime.Parse(resolutionValues.First()["start"]);
+                    momentEnd = DateTime.Parse(resolutionValues.First()["end"]);
+                    curDateTimeText = new TextAndDateTime
+                    {
+                        dateTime = moment,
+                        Text = result.Text,
+                        type = momentType,
+                        range = true,
+                        endDateTime = momentEnd
+                    };
+
                 }
                 else
                 {
-                    continue;
+                    if (type.Contains("date") && type.Contains("time"))
+                    {
+                        momentType = "datetime";
+                    }
+                    else if (type.Contains("date"))
+                    {
+                        momentType = "date";
+                    }
+                    else
+                    {
+                        momentType = "time";
+                    }
+                    moment = resolutionValues.Select(v => DateTime.Parse(v["value"])).FirstOrDefault();
+                    curDateTimeText = new TextAndDateTime
+                    {
+                        dateTime = moment,
+                        Text = result.Text,
+                        type = momentType,
+                        range = false,
+                    };
                 }
-                var curDateTimeText = new TextAndDateTime
-                {
-                    dateTime = moment,
-                    Text = result.Text
-                };
+                
+                
                 fndDates.Add(curDateTimeText);
             }
             return fndDates;
@@ -206,13 +246,44 @@ namespace Microsoft.Bot.Builder.Ai.Translation
             string processedMessage = message;
             foreach (TextAndDateTime date in dates)
             {
-                if (date.dateTime.Date == DateTime.Now.Date)
+                if (date.range)
                 {
-                    processedMessage = processedMessage.Replace(date.Text, String.Format(_mapLocaleToFunction[toLocale].TimeFormat, date.dateTime));
+                    if (date.type == "time")
+                    {
+                        var timeRange = $"{String.Format(_mapLocaleToFunction[toLocale].TimeFormat, date.dateTime)} - {String.Format(_mapLocaleToFunction[toLocale].TimeFormat, date.endDateTime)}";
+                        processedMessage = Regex.Replace(processedMessage, $"\\b{date.Text}\\b", timeRange, RegexOptions.Singleline | RegexOptions.IgnoreCase);
+                    }
+                    else if (date.type == "date")
+                    {
+                        var dateRange = $"{String.Format(_mapLocaleToFunction[toLocale].DateFormat, date.dateTime)} - {String.Format(_mapLocaleToFunction[toLocale].DateFormat, date.endDateTime)}";
+                        processedMessage = Regex.Replace(processedMessage, $"\\b{date.Text}\\b", dateRange, RegexOptions.Singleline | RegexOptions.IgnoreCase);
+                    }
+                    else
+                    {
+                        var convertedStartDate = String.Format(_mapLocaleToFunction[toLocale].DateFormat, date.dateTime);
+                        var convertedStartTime = String.Format(_mapLocaleToFunction[toLocale].TimeFormat, date.dateTime);
+
+                        var convertedEndDate = String.Format(_mapLocaleToFunction[toLocale].DateFormat, date.endDateTime);
+                        var convertedEndTime = String.Format(_mapLocaleToFunction[toLocale].TimeFormat, date.endDateTime);
+                        processedMessage = Regex.Replace(processedMessage, $"\\b{date.Text}\\b", $"{convertedStartDate} {convertedStartTime} - {convertedEndDate} {convertedEndTime}", RegexOptions.Singleline | RegexOptions.IgnoreCase);
+                    }
                 }
                 else
                 {
-                    processedMessage = processedMessage.Replace(date.Text, String.Format(_mapLocaleToFunction[toLocale].DateFormat, date.dateTime));
+                    if (date.type == "time")
+                    {
+                        processedMessage = Regex.Replace(processedMessage, $"\\b{date.Text}\\b", String.Format(_mapLocaleToFunction[toLocale].TimeFormat, date.dateTime), RegexOptions.Singleline | RegexOptions.IgnoreCase);
+                    }
+                    else if (date.type == "date")
+                    {
+                        processedMessage = Regex.Replace(processedMessage, $"\\b{date.Text}\\b", String.Format(_mapLocaleToFunction[toLocale].DateFormat, date.dateTime), RegexOptions.Singleline | RegexOptions.IgnoreCase);
+                    }
+                    else
+                    {
+                        var convertedDate = String.Format(_mapLocaleToFunction[toLocale].DateFormat, date.dateTime);
+                        var convertedTime = String.Format(_mapLocaleToFunction[toLocale].TimeFormat, date.dateTime);
+                        processedMessage = Regex.Replace(processedMessage, $"\\b{date.Text}\\b", $"{convertedDate} {convertedTime}", RegexOptions.Singleline | RegexOptions.IgnoreCase);
+                    }
                 }
             }
             return processedMessage;

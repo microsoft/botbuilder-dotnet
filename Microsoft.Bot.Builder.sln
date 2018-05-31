@@ -74,8 +74,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FormTest", "tests\FormTest\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Builder.Classic", "libraries\Microsoft.Bot.Builder.Classic\Microsoft.Bot.Builder.Classic\Microsoft.Bot.Builder.Classic.csproj", "{CDFEC7D6-847E-4C13-956B-0A960AE3EB60}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Tests", "tests\Microsoft.Bot.Builder.Tests\Microsoft.Bot.Builder.Tests.csproj", "{7C7F5C89-C3A4-43B8-90D1-53F13C3A0510}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Schema.Tests", "tests\Microsoft.Bot.Schema.Tests\Microsoft.Bot.Schema.Tests.csproj", "{A4184239-F13F-4A09-B2D3-0B9532609248}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Samples.Ai.Luis", "samples\Microsoft.Bot.Samples.Ai.Luis\Microsoft.Bot.Samples.Ai.Luis.csproj", "{ED20DED8-C985-4C66-A58E-2A9CF4ECF6C3}"
@@ -97,6 +95,12 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Dialogs.Tests", "tests\Microsoft.Bot.Builder.Dialogs.Tests\Microsoft.Bot.Builder.Dialogs.Tests.csproj", "{2F77CA1D-E6F0-4DEA-96BB-8A039F4D0FF8}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Samples.Ai.Luis.Dispatch", "samples\Microsoft.Bot.Samples.Ai.Luis.Dispatch\Microsoft.Bot.Samples.Ai.Luis.Dispatch.csproj", "{91178F5C-303C-43B8-9284-84125FB07FFF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Integration", "Integration", "{0A0E26B0-7A46-4F1A-8BFE-9A763FDF6CF8}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Integration.AspNet.Core.Tests", "tests\integration\Microsoft.Bot.Builder.Integration.AspNet.Core.Tests\Microsoft.Bot.Builder.Integration.AspNet.Core.Tests.csproj", "{62C4DC83-3B07-45D7-856E-224FFB368E5F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Builder.Integration.AspNet.WebApi.Tests", "tests\integration\Microsoft.Bot.Builder.Integration.AspNet.WebApi.Tests\Microsoft.Bot.Builder.Integration.AspNet.WebApi.Tests.csproj", "{2614D290-1345-4A41-BE90-F85F817CEADE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -158,8 +162,8 @@ Global
 		{6462DA5D-27DC-4CD5-9467-5EFB998FD838}.Documentation|Any CPU.Build.0 = Documentation|Any CPU
 		{6462DA5D-27DC-4CD5-9467-5EFB998FD838}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6462DA5D-27DC-4CD5-9467-5EFB998FD838}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C1F54CDC-AD1D-45BB-8F7D-F49E411AFAF1}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{C1F54CDC-AD1D-45BB-8F7D-F49E411AFAF1}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
+		{C1F54CDC-AD1D-45BB-8F7D-F49E411AFAF1}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug - NuGet Packages|Any CPU
+		{C1F54CDC-AD1D-45BB-8F7D-F49E411AFAF1}.Debug - NuGet Packages|Any CPU.Build.0 = Debug - NuGet Packages|Any CPU
 		{C1F54CDC-AD1D-45BB-8F7D-F49E411AFAF1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C1F54CDC-AD1D-45BB-8F7D-F49E411AFAF1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C1F54CDC-AD1D-45BB-8F7D-F49E411AFAF1}.Documentation|Any CPU.ActiveCfg = Documentation|Any CPU
@@ -270,8 +274,8 @@ Global
 		{8D6F4046-0971-4E24-8E4D-F8175C6DFF2B}.Documentation|Any CPU.ActiveCfg = Documentation|Any CPU
 		{8D6F4046-0971-4E24-8E4D-F8175C6DFF2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8D6F4046-0971-4E24-8E4D-F8175C6DFF2B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{183B3324-4CFF-477A-8EAE-73953D3E383D}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{183B3324-4CFF-477A-8EAE-73953D3E383D}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
+		{183B3324-4CFF-477A-8EAE-73953D3E383D}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug - NuGet Packages|Any CPU
+		{183B3324-4CFF-477A-8EAE-73953D3E383D}.Debug - NuGet Packages|Any CPU.Build.0 = Debug - NuGet Packages|Any CPU
 		{183B3324-4CFF-477A-8EAE-73953D3E383D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{183B3324-4CFF-477A-8EAE-73953D3E383D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{183B3324-4CFF-477A-8EAE-73953D3E383D}.Documentation|Any CPU.ActiveCfg = Documentation|Any CPU
@@ -337,13 +341,6 @@ Global
 		{CDFEC7D6-847E-4C13-956B-0A960AE3EB60}.Documentation|Any CPU.Build.0 = Documentation|Any CPU
 		{CDFEC7D6-847E-4C13-956B-0A960AE3EB60}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CDFEC7D6-847E-4C13-956B-0A960AE3EB60}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7C7F5C89-C3A4-43B8-90D1-53F13C3A0510}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{7C7F5C89-C3A4-43B8-90D1-53F13C3A0510}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
-		{7C7F5C89-C3A4-43B8-90D1-53F13C3A0510}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7C7F5C89-C3A4-43B8-90D1-53F13C3A0510}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7C7F5C89-C3A4-43B8-90D1-53F13C3A0510}.Documentation|Any CPU.ActiveCfg = Documentation|Any CPU
-		{7C7F5C89-C3A4-43B8-90D1-53F13C3A0510}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7C7F5C89-C3A4-43B8-90D1-53F13C3A0510}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A4184239-F13F-4A09-B2D3-0B9532609248}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
 		{A4184239-F13F-4A09-B2D3-0B9532609248}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
 		{A4184239-F13F-4A09-B2D3-0B9532609248}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -418,6 +415,22 @@ Global
 		{91178F5C-303C-43B8-9284-84125FB07FFF}.Documentation|Any CPU.Build.0 = Debug|Any CPU
 		{91178F5C-303C-43B8-9284-84125FB07FFF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{91178F5C-303C-43B8-9284-84125FB07FFF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{62C4DC83-3B07-45D7-856E-224FFB368E5F}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
+		{62C4DC83-3B07-45D7-856E-224FFB368E5F}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
+		{62C4DC83-3B07-45D7-856E-224FFB368E5F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{62C4DC83-3B07-45D7-856E-224FFB368E5F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{62C4DC83-3B07-45D7-856E-224FFB368E5F}.Documentation|Any CPU.ActiveCfg = Debug|Any CPU
+		{62C4DC83-3B07-45D7-856E-224FFB368E5F}.Documentation|Any CPU.Build.0 = Debug|Any CPU
+		{62C4DC83-3B07-45D7-856E-224FFB368E5F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{62C4DC83-3B07-45D7-856E-224FFB368E5F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2614D290-1345-4A41-BE90-F85F817CEADE}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
+		{2614D290-1345-4A41-BE90-F85F817CEADE}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
+		{2614D290-1345-4A41-BE90-F85F817CEADE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2614D290-1345-4A41-BE90-F85F817CEADE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2614D290-1345-4A41-BE90-F85F817CEADE}.Documentation|Any CPU.ActiveCfg = Debug|Any CPU
+		{2614D290-1345-4A41-BE90-F85F817CEADE}.Documentation|Any CPU.Build.0 = Debug|Any CPU
+		{2614D290-1345-4A41-BE90-F85F817CEADE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2614D290-1345-4A41-BE90-F85F817CEADE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -456,7 +469,6 @@ Global
 		{12CAE029-7B8D-4928-8504-28746C36ADB3} = {2A46FEEF-4FD9-4DD5-8650-39C36CFDF2BB}
 		{77BD8C61-FB06-4BF7-A346-D2C87284390A} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 		{CDFEC7D6-847E-4C13-956B-0A960AE3EB60} = {2A46FEEF-4FD9-4DD5-8650-39C36CFDF2BB}
-		{7C7F5C89-C3A4-43B8-90D1-53F13C3A0510} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 		{A4184239-F13F-4A09-B2D3-0B9532609248} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 		{ED20DED8-C985-4C66-A58E-2A9CF4ECF6C3} = {3ADFB27A-95FA-4330-B211-1D66A29A17AB}
 		{57188218-5497-4CEE-B7FC-515FAA1F1151} = {3ADFB27A-95FA-4330-B211-1D66A29A17AB}
@@ -468,6 +480,9 @@ Global
 		{B71A123F-09FE-45D7-9644-4EE3E1E221AE} = {3ADFB27A-95FA-4330-B211-1D66A29A17AB}
 		{2F77CA1D-E6F0-4DEA-96BB-8A039F4D0FF8} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 		{91178F5C-303C-43B8-9284-84125FB07FFF} = {3ADFB27A-95FA-4330-B211-1D66A29A17AB}
+		{0A0E26B0-7A46-4F1A-8BFE-9A763FDF6CF8} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
+		{62C4DC83-3B07-45D7-856E-224FFB368E5F} = {0A0E26B0-7A46-4F1A-8BFE-9A763FDF6CF8}
+		{2614D290-1345-4A41-BE90-F85F817CEADE} = {0A0E26B0-7A46-4F1A-8BFE-9A763FDF6CF8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7173C9F3-A7F9-496E-9078-9156E35D6E16}

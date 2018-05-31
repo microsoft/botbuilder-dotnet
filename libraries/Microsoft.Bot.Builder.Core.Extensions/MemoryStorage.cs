@@ -37,9 +37,9 @@ namespace Microsoft.Bot.Builder.Core.Extensions
             return Task.CompletedTask;
         }
 
-        public Task<IEnumerable<KeyValuePair<string, object>>> Read(string[] keys)
+        public Task<IDictionary<string, object>> Read(string[] keys)
         {
-            var storeItems = new List<KeyValuePair<string, object>>(keys.Length);
+            var storeItems = new Dictionary<string, object>(keys.Length);
             lock (_syncroot)
             {
                 foreach (var key in keys)
@@ -48,17 +48,17 @@ namespace Microsoft.Bot.Builder.Core.Extensions
                     {
                         if (state != null)
                         {
-                            storeItems.Add(new KeyValuePair<string, object>(key, state.ToObject<object>(StateJsonSerializer)));
+                            storeItems.Add(key, state.ToObject<object>(StateJsonSerializer));
                         }
                     }
                 }
             }
 
-            return Task.FromResult<IEnumerable<KeyValuePair<string, object>>>(storeItems);
+            return Task.FromResult<IDictionary<string, object>>(storeItems);
         }
 
 
-        public Task Write(IEnumerable<KeyValuePair<string, object>> changes)
+        public Task Write(IDictionary<string, object> changes)
         {
             lock (_syncroot)
             {

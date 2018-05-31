@@ -94,12 +94,13 @@ namespace Microsoft.Bot.Builder.Core.Extensions
         /// <param name="state">The state object.</param>
         public virtual async Task Write(ITurnContext context, TState state)
         {
-            var changes = new List<KeyValuePair<string, object>>();
+            var changes = new Dictionary<string, object>();
 
             if (state == null)
                 state = new TState();
             var key = _keyDelegate(context);
-            changes.Add(new KeyValuePair<string, object>(key, state));
+
+            changes.Add(key, state);
 
             if (this._settings.LastWriterWins)
             {

@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Builder.Prompts.Choices
         /// (Optional) maximum tokens allowed between two matched tokens in the utterance. So with
         /// a max distance of 2 the value "second last" would match the utterance "second from the last"
         /// but it wouldn't match "Wait a second. That's not the last one is it?".
-        /// The default value is "2".  
+        /// The default value is "2".
         ///</summary>
         public int? MaxTokenDistance { get; set; }
 

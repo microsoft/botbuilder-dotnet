@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<Version Condition=" '$(BUILD_BUILDNUMBER)' == '' ">4.0.0-local</Version>
@@ -61,6 +61,7 @@
 		<PackageReference Include="Microsoft.Extensions.Options" Version="2.0.1" />
 		<PackageReference Include="Microsoft.Net.Http.Headers" Version="2.0.1" />
 		<PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
+		<PackageReference Include="SourceLink.Create.CommandLine" Version="2.8.1" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -68,5 +69,5 @@
 		<ProjectReference Include="..\..\Microsoft.Bot.Builder\Microsoft.Bot.Builder.csproj" />
 		<ProjectReference Include="..\..\Microsoft.Bot.Connector\Microsoft.Bot.Connector.csproj" />
 	</ItemGroup>
-
+  
 </Project>

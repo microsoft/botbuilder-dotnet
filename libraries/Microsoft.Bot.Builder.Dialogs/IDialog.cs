@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Dialogs
@@ -18,6 +19,6 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </summary>
         /// <param name="dc">The dialog context for the current turn of conversation.</param>
         /// <param name="dialogArgs">(Optional) arguments that were passed to the dialog during `begin()` call that started the instance.</param>  
-        Task DialogBegin(DialogContext dc, object dialogArgs = null);
+        Task DialogBegin(DialogContext dc, IDictionary<string, object> dialogArgs = null);
     }
 }
