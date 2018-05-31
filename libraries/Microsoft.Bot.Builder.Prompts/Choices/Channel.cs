@@ -30,12 +30,15 @@ namespace Microsoft.Bot.Builder.Prompts.Choices
                 case Channels.Facebook:
                 case Channels.Skype:
                     return (buttonCnt <= 10);
+
                 case Channels.Kik:
                     return (buttonCnt <= 20);
+
                 case Channels.Slack:
                 case Channels.Telegram:
                 case Channels.Emulator:
                     return (buttonCnt <= 100);
+
                 default:
                     return false;
             }
@@ -49,26 +52,31 @@ namespace Microsoft.Bot.Builder.Prompts.Choices
                 case Channels.Skype:
                 case Channels.Msteams:
                     return (buttonCnt <= 3);
+
                 case Channels.Slack:
                 case Channels.Emulator:
                 case Channels.Directline:
                 case Channels.Webchat:
                 case Channels.Cortana:
                     return (buttonCnt <= 100);
+
                 default:
                     return false;
             }
         }
+
         public static bool HasMessageFeed(string channelId)
         {
             switch (channelId)
             {
                 case Channels.Cortana:
                     return false;
+
                 default:
                     return true;
             }
         }
+
         public static int MaxActionTitleLength(string channelId)
         {
             return 20;

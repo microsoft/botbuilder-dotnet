@@ -1,13 +1,12 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
+using System.Threading.Tasks;
 using static Microsoft.Bot.Builder.Prompts.PromptValidatorEx;
 
 namespace Microsoft.Bot.Builder.Prompts
 {
-
     /// <summary>
     /// Represents a user prompt utility class, that includes an optional input validator.
     /// This class is abstract.
@@ -34,14 +33,14 @@ namespace Microsoft.Bot.Builder.Prompts
         /// </summary>
         /// <param name="context">The context.</param>
         /// <param name="text">The text of the message to send.</param>
-        /// <param name="speak">Optional, text to be spoken by your bot on a speech-enabled 
+        /// <param name="speak">Optional, text to be spoken by your bot on a speech-enabled
         /// channel.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <remarks>The message is sent with the "expectingInput" input hint.
-        /// <para>See the channel's documentation for limits imposed upon the contents of 
+        /// <para>See the channel's documentation for limits imposed upon the contents of
         /// <paramref name="text"/>.</para>
-        /// <para>To control various characteristics of your bot's speech such as voice, 
-        /// rate, volume, pronunciation, and pitch, specify <paramref name="speak"/> in 
+        /// <para>To control various characteristics of your bot's speech such as voice,
+        /// rate, volume, pronunciation, and pitch, specify <paramref name="speak"/> in
         /// Speech Synthesis Markup Language (SSML) format.</para>
         /// </remarks>
         public Task Prompt(ITurnContext context, string text, string speak = null)
@@ -99,6 +98,5 @@ namespace Microsoft.Bot.Builder.Prompts
             value.Status = PromptStatus.Recognized;
             return Task.CompletedTask;
         }
-
     }
 }

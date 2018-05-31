@@ -1,13 +1,14 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Core.Extensions;
 using Microsoft.Bot.Builder.Prompts;
+using Microsoft.Bot.Builder.Prompts.Results;
 using Microsoft.Recognizers.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using static Microsoft.Bot.Builder.Prompts.PromptValidatorEx;
 
 namespace Microsoft.Bot.Builder.Dialogs.Tests
@@ -230,7 +231,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 }
             })
             .Send("hello")
-            .AssertReply("Please confirm.")
+            .AssertReply("Please confirm. (1) Yes or (2) No")
             .Send("yes")
             .AssertReply("Confirmed.")
             .StartTest();
@@ -270,9 +271,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 }
             })
             .Send("hello")
-            .AssertReply("Please confirm.")
+            .AssertReply("Please confirm. (1) Yes or (2) No")
             .Send("lala")
-            .AssertReply("Please confirm, say 'yes' or 'no' or something like that.")
+            .AssertReply("Please confirm, say 'yes' or 'no' or something like that. (1) Yes or (2) No")
             .Send("no")
             .AssertReply("Not confirmed.")
             .StartTest();

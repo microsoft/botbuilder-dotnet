@@ -1,47 +1,16 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using Microsoft.Bot.Builder.Prompts.Choices;
+using Microsoft.Bot.Schema;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Prompts.Choices;
-using Microsoft.Bot.Schema;
 using static Microsoft.Bot.Builder.Prompts.PromptValidatorEx;
+using static Microsoft.Recognizers.Text.Culture;
 
 namespace Microsoft.Bot.Builder.Prompts
 {
-    ///<summary>
-    /// Controls the way that choices for a `ChoicePrompt` or yes/no options for a `ConfirmPrompt` are
-    /// presented to a user.
-    ///</summary>
-    public enum ListStyle
-    {
-        ///<summary>
-        /// Don't include any choices for prompt.
-        /// </summary>
-        None,
-
-        ///<summary>
-        /// Automatically select the appropriate style for the current channel.
-        /// </summary>
-        Auto,
-
-        ///<summary>
-        /// Add choices to prompt as an inline list.
-        ///</summary>
-        Inline,
-
-        ///<summary>
-        /// Add choices to prompt as a numbered list.
-        ///</summary>
-        List,
-
-        ///<summary>
-        /// Add choices to prompt as suggested actions.
-        ///</summary>
-        SuggestedAction
-    };
-
     /// <summary>
     /// Represents recognition result for the ChoicePrompt.
     /// </summary>
@@ -59,11 +28,12 @@ namespace Microsoft.Bot.Builder.Prompts
 
     public class ChoicePrompt
     {
-        public ChoicePrompt(string culture, PromptValidator<ChoiceResult> validator = null)
+        public ChoicePrompt(string culture, PromptValidator<ChoiceResult> validator = null, ListStyle listStyle = ListStyle.Auto)
         {
-            Style = ListStyle.Auto;
+            Style = listStyle;
             Validator = validator;
             Culture = culture;
+            ChoiceOptions = InlineChoiceOptions.ContainsKey(culture) ? InlineChoiceOptions[culture] : InlineChoiceOptions[English];
         }
 
         public ListStyle Style { get; set; }
@@ -71,6 +41,18 @@ namespace Microsoft.Bot.Builder.Prompts
         public string Culture { get; set; }
         public ChoiceFactoryOptions ChoiceOptions { get; set; }
         public FindChoicesOptions RecognizerOptions { get; set; }
+
+        private static readonly Dictionary<string, ChoiceFactoryOptions> InlineChoiceOptions = new Dictionary<string, ChoiceFactoryOptions>()
+        {
+            { Spanish, new ChoiceFactoryOptions{ InlineSeparator = ", ", InlineOr = " o ", InlineOrMore = ", o ", IncludeNumbers = true} },
+            { Dutch, new ChoiceFactoryOptions{ InlineSeparator = ", ", InlineOr = " of ", InlineOrMore = ", of ", IncludeNumbers = true} },
+            { English, new ChoiceFactoryOptions{ InlineSeparator = ", ", InlineOr = " or ", InlineOrMore = ", or ", IncludeNumbers = true} },
+            { French, new ChoiceFactoryOptions{ InlineSeparator = ", ", InlineOr = " ou ", InlineOrMore = ", ou ", IncludeNumbers = true} },
+            { German, new ChoiceFactoryOptions{ InlineSeparator = ", ", InlineOr = " oder ", InlineOrMore = ", oder ", IncludeNumbers = true} },
+            { Japanese, new ChoiceFactoryOptions{ InlineSeparator = "、 ", InlineOr = " または ", InlineOrMore = "、 または ", IncludeNumbers = true} },
+            { Portuguese, new ChoiceFactoryOptions{ InlineSeparator = ", ", InlineOr = " ou ", InlineOrMore = ", ou ", IncludeNumbers = true} },
+            { Chinese, new ChoiceFactoryOptions{ InlineSeparator = "， ", InlineOr = " 要么 ", InlineOrMore = "， 要么 ", IncludeNumbers = true} }
+        };
 
         public Task Prompt(ITurnContext context, List<string> choices, string prompt = null, string speak = null)
         {
@@ -94,18 +76,21 @@ namespace Microsoft.Bot.Builder.Prompts
                 case ListStyle.Inline:
                     msg = ChoiceFactory.Inline(choices, prompt, speak, ChoiceOptions);
                     break;
+
                 case ListStyle.List:
                     msg = ChoiceFactory.List(choices, prompt, speak, ChoiceOptions);
                     break;
+
                 case ListStyle.SuggestedAction:
                     msg = ChoiceFactory.SuggestedAction(choices, prompt, speak);
                     break;
+
                 case ListStyle.None:
                     msg = Activity.CreateMessageActivity();
                     msg.Text = prompt;
                     msg.Speak = speak;
                     break;
-                case ListStyle.Auto:
+
                 default:
                     msg = ChoiceFactory.ForChannel(context, choices, prompt, speak, ChoiceOptions);
                     break;
