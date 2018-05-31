@@ -18,6 +18,9 @@ namespace Microsoft.Bot.Builder.Azure
     /// </summary>
     public class AzureTableStorage : IStorage
     {
+        private static readonly char[] IllegalKeyCharacters = new char[] { '\\', '?', '/', '#', '\t', '\n', '\r' };
+        private static Lazy<Dictionary<char, string>> IllegalKeyCharacterReplacementMap = new Lazy<Dictionary<char, string>>(() => IllegalKeyCharacters.ToDictionary(c => c, c => '%' + ((int)c).ToString("x2")));
+
         private readonly CloudStorageAccount _storageAccount;
         private readonly string _tableName;
         private CloudTable _table;
@@ -83,7 +86,7 @@ namespace Microsoft.Bot.Builder.Azure
         /// Loads store items from storage.
         /// </summary>
         /// <param name="keys">Array of item keys to read from the store.</param>
-        public async Task<IEnumerable<KeyValuePair<string, object>>> Read(params string[] keys)
+        public async Task<IDictionary<string, object>> Read(params string[] keys)
         {
             if (keys == null || keys.Length == 0)
             {
@@ -107,15 +110,21 @@ namespace Microsoft.Bot.Builder.Azure
                 return new KeyValuePair<string, object>();
             });
 
-            return (await Task.WhenAll(readTasks).ConfigureAwait(false))
-                .Where(kv => kv.Key != null);
+            // Wait for all the reads to complete
+            var completedTasks = await Task.WhenAll(readTasks).ConfigureAwait(false);
+
+            // Filter out the Nulls and convert to a dictionary
+            var dict = completedTasks.Where(kv => kv.Key != null)
+                .ToDictionary(kvp => kvp.Key, kvp => kvp.Value); 
+
+            return dict; 
         }
 
         /// <summary>
         /// Saves store items to storage.
         /// </summary>
         /// <param name="changes">Map of items to write to storage.</param>
-        public async Task Write(IEnumerable<KeyValuePair<string, object>> changes)
+        public async Task Write(IDictionary<string, object> changes)
         {
             if (changes == null) throw new ArgumentNullException(nameof(changes));
 
@@ -238,25 +247,40 @@ namespace Microsoft.Bot.Builder.Azure
             /// <returns>Sanitized key that can be used as PartitionKey</returns>
             public static string SanitizeKey(string key)
             {
-                StringBuilder sb = new StringBuilder();
-                foreach (char ch in key)
-                {
-                    if (badChars.Value.TryGetValue(ch, out string val))
-                        sb.Append(val);
-                    else
-                        sb.Append(ch);
-                }
-                return sb.ToString();
-            }
+                var firstIllegalCharIndex = key.IndexOfAny(IllegalKeyCharacters);
 
-            private static Lazy<Dictionary<char, string>> badChars = new Lazy<Dictionary<char, string>>(() =>
-            {
-                char[] badChars = new char[] { '\\', '?', '/', '#', '\t', '\n', '\r' };
-                var dict = new Dictionary<char, string>();
-                foreach (var badChar in badChars)
-                    dict[badChar] = '%' + ((int)badChar).ToString("x2");
-                return dict;
-            });
+                // If there are no illegal characters return immediately and avoid any further processing/allocations
+                if (firstIllegalCharIndex == -1) return key;
+
+                // Allocate a builder that assumes that all remaining characters might be replaced to avoid any extra allocations
+                var sanitizedKeyBuilder = new StringBuilder(key.Length + (key.Length - firstIllegalCharIndex + 1) * 3);
+
+                // Add all good characters up to the first bad character to the builder first
+                for (int index = 0; index < firstIllegalCharIndex; index++)
+                {
+                    sanitizedKeyBuilder.Append(key[index]);
+                }
+
+                var illegalCharacterReplacementMap = IllegalKeyCharacterReplacementMap.Value;
+
+                // Now walk the remaining characters, starting at the first known bad character, replacing any bad ones with their designated replacement value from the map
+                for (int index = firstIllegalCharIndex; index < key.Length; index++)
+                {
+                    var ch = key[index];
+
+                    // Check if this next character is considered illegal and, if so, append its replacement; otherwise just append the good character as is
+                    if (illegalCharacterReplacementMap.TryGetValue(ch, out var replacement))
+                    {
+                        sanitizedKeyBuilder.Append(replacement);
+                    }
+                    else
+                    {
+                        sanitizedKeyBuilder.Append(ch);
+                    }
+                }
+
+                return sanitizedKeyBuilder.ToString();
+            }
         }
     }
 }

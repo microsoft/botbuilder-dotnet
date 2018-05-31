@@ -52,8 +52,8 @@
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(PackageVersion)' == '' " Version="4.0.0-local" />
 		<PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(PackageVersion)' != '' " Version="$(PackageVersion)" />
-		<PackageReference Include="Microsoft.Recognizers.Text" Version="1.0.4" />
-		<PackageReference Include="Microsoft.Recognizers.Text.DateTime" Version="1.0.4" />
+		<PackageReference Include="Microsoft.Recognizers.Text" Version="1.0.5.1" />
+		<PackageReference Include="Microsoft.Recognizers.Text.DateTime" Version="1.0.5.1" />
 	</ItemGroup>
 
 	<ItemGroup>
