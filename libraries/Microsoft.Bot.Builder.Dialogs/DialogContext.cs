@@ -11,7 +11,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 {
     public class DialogContext
     {
-        private object _finalResult;
+        private Action<IDictionary<string, object>> _onCompleted;
 
         public DialogSet Dialogs { get; set; }
         public ITurnContext Context { get; set; }
@@ -23,17 +23,25 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="dialogs">Parent dialog set.</param>
         /// <param name="context">Context for the current turn of conversation with the user.</param>
         /// <param name="stack">Current dialog stack.</param>
-        internal DialogContext(DialogSet dialogs, ITurnContext context, List<DialogInstance> stack)
+        internal DialogContext(DialogSet dialogs, ITurnContext context, IDictionary<string, object> state, Action<IDictionary<string, object>> onCompleted = null)
         {
-            Dialogs = dialogs;
-            Context = context;
-            Stack = stack;
+            Dialogs = dialogs ?? throw new ArgumentNullException(nameof(dialogs));
+            Context = context ?? throw new ArgumentNullException(nameof(context));
+            _onCompleted = onCompleted;
+
+            object value;
+            if (!state.TryGetValue("dialogStack", out value))
+            {
+                value = new List<DialogInstance>();
+                state["dialogStack"] = value;
+            }
+            Stack = (List<DialogInstance>)state["dialogStack"];
         }
 
         /// <summary>
         /// Returns the cached instance of the active dialog on the top of the stack or `null` if the stack is empty.
         /// </summary>
-        public DialogInstance Instance
+        public DialogInstance ActiveDialog
         {
             get
             {
@@ -45,25 +53,12 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
         }
 
-        public DialogResult DialogResult
-        {
-            get
-            {
-                return new DialogResult
-                {
-                    Active = Stack.Count > 0,
-                    Result = _finalResult
-                };
-            }
-        }
-
-
         /// <summary>
         /// Pushes a new dialog onto the dialog stack.
         /// </summary>
         /// <param name="dialogId">ID of the dialog to start.</param>
         /// <param name="dialogArgs">(Optional) additional argument(s) to pass to the dialog being started.</param>
-        public async Task Begin(string dialogId, object dialogArgs = null)
+        public async Task Begin(string dialogId, IDictionary<string, object> dialogArgs = null)
         {
             if (string.IsNullOrEmpty(dialogId))
                 throw new ArgumentNullException(nameof(dialogId));
@@ -79,7 +74,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             var instance = new DialogInstance
             {
                 Id = dialogId,
-                State = new object()
+                State = new Dictionary<string, object>()
             };
 
             Stack.Insert(0, instance);
@@ -135,13 +130,13 @@ namespace Microsoft.Bot.Builder.Dialogs
         public async Task Continue()
         {
             // Check for a dialog on the stack
-            if (Instance != null)
+            if (ActiveDialog != null)
             {
                 // Lookup dialog
-                var dialog = Dialogs.Find(Instance.Id);
+                var dialog = Dialogs.Find(ActiveDialog.Id);
                 if (dialog == null)
                 {
-                    throw new Exception($"DialogSet.continue(): Can't continue dialog. A dialog with an id of '{Instance.Id}' wasn't found.");
+                    throw new Exception($"DialogSet.continue(): Can't continue dialog. A dialog with an id of '{ActiveDialog.Id}' wasn't found.");
                 }
 
                 // Check for existence of a continue() method
@@ -164,7 +159,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// parent dialogs on the stack then processing of the turn will end.
         /// </summary>
         /// @param result (Optional) result to pass to the parent dialogs `Dialog.resume()` method.
-        public async Task End(object result = null)
+        public async Task End(IDictionary<string, object> result = null)
         {
             // Pop active dialog off the stack
             if (Stack.Any())
@@ -173,13 +168,13 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             // Resume previous dialog
-            if (Instance != null)
+            if (ActiveDialog != null)
             {
                 // Lookup dialog
-                var dialog = Dialogs.Find(Instance.Id);
+                var dialog = Dialogs.Find(ActiveDialog.Id);
                 if (dialog == null)
                 {
-                    throw new Exception($"DialogContext.end(): Can't resume previous dialog. A dialog with an id of '{Instance.Id}' wasn't found.");
+                    throw new Exception($"DialogContext.end(): Can't resume previous dialog. A dialog with an id of '{ActiveDialog.Id}' wasn't found.");
                 }
 
                 // Check for existence of a resumeDialog() method
@@ -194,9 +189,9 @@ namespace Microsoft.Bot.Builder.Dialogs
                     await End(result);
                 }
             }
-            else
+            else if (_onCompleted != null)
             {
-                _finalResult = result;
+                _onCompleted(result);
             }
         }
 
@@ -216,7 +211,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </summary>
         /// <param name="dialogId">ID of the new dialog to start.</param>
         /// <param name="dialogArgs">(Optional) additional argument(s) to pass to the new dialog.</param>
-        public async Task Replace(string dialogId, object dialogArgs = null)
+        public async Task Replace(string dialogId, IDictionary<string, object> dialogArgs = null)
         {
             // Pop stack
             if (Stack.Any())

@@ -20,41 +20,49 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [TestMethod]
         public async Task BasicChoicePrompt()
         {
+            var dialogs = new DialogSet();
+
+            dialogs.Add("test-prompt", new ChoicePrompt(Culture.English) { Style = ListStyle.Inline });
+
+            var promptOptions = new ChoicePromptOptions
+            {
+                Choices = new List<Choice>
+                {
+                    new Choice { Value = "red" },
+                    new Choice { Value = "green" },
+                    new Choice { Value = "blue" },
+                }
+            };
+
+            dialogs.Add("test",
+                new WaterfallStep[]
+                {
+                    async (dc, args, next) =>
+                    {
+                        await dc.Prompt("test-prompt", "favorite color?", promptOptions);
+                    },
+                    async (dc, args, next) =>
+                    {
+                        var choiceResult = (ChoiceResult)args;
+                        await dc.Context.SendActivity($"Bot received the choice '{choiceResult.Value.Value}'.");
+                        await dc.End();
+                    }
+                }
+            );
+
             TestAdapter adapter = new TestAdapter()
                 .Use(new ConversationState<Dictionary<string, object>>(new MemoryStorage()));
 
             await new TestFlow(adapter, async (turnContext) =>
             {
-                var dialogs = new DialogSet();
-                dialogs.Add("test-prompt", new ChoicePrompt(Culture.English) { Style = ListStyle.Inline });
-
                 var state = ConversationState<Dictionary<string, object>>.Get(turnContext);
                 var dc = dialogs.CreateContext(turnContext, state);
 
                 await dc.Continue();
-                var dialogResult = dc.DialogResult;
 
-                if (!dialogResult.Active)
+                if (!turnContext.Responded)
                 {
-                    if (dialogResult.Result != null)
-                    {
-                        var choiceResult = (ChoiceResult)dialogResult.Result;
-                        await turnContext.SendActivity($"Bot received the choice '{choiceResult.Value.Value}'.");
-                    }
-                    else
-                    {
-                        var promptOptions = new ChoicePromptOptions
-                        {
-                            Choices = new List<Choice>
-                            {
-                                new Choice { Value = "red" },
-                                new Choice { Value = "green" },
-                                new Choice { Value = "blue" },
-                            }
-                        };
-
-                        await dc.Prompt("test-prompt", "favorite color?", promptOptions);
-                    }
+                    await dc.Begin("test");
                 }
             })
             .Send("hello")

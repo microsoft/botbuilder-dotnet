@@ -3,7 +3,7 @@
 
 namespace Microsoft.Bot.Builder.Prompts.Choices
 {
-    public class FindChoicesOptions: FindValuesOptions
+    public class FindChoicesOptions : FindValuesOptions
     {
         /// <summary>
         /// (Optional) If `true`, the choices value will NOT be search over. The default is `false`.

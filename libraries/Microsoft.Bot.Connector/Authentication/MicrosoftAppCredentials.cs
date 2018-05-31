@@ -38,12 +38,13 @@ namespace Microsoft.Bot.Connector.Authentication
         /// pretty deep, the static solution used here is much cleaner. If this becomes an issue we could
         /// consider circling back and exposing developer control over this HttpClient. 
         /// </summary>
-        private static readonly HttpClient _httpClient = new HttpClient(); 
+        private static readonly HttpClient _httpClient = new HttpClient();
 
         private static object _trustedHostNamesSync = new object();
         private static readonly IDictionary<string, DateTime> _trustedHostNames = new Dictionary<string, DateTime>()
         {
-            { "state.botframework.com", DateTime.MaxValue }
+            { "state.botframework.com", DateTime.MaxValue },
+            { "api.botframework.com", DateTime.MaxValue}
         };
 
         private static object _cacheSync = new object();
@@ -53,7 +54,7 @@ namespace Microsoft.Bot.Connector.Authentication
         {
             this.MicrosoftAppId = appId;
             this.MicrosoftAppPassword = password;
-            this.TokenCacheKey = $"{MicrosoftAppId}-cache";            
+            this.TokenCacheKey = $"{MicrosoftAppId}-cache";
         }
 
         public string MicrosoftAppId { get; set; }

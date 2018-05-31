@@ -14,13 +14,20 @@ namespace Microsoft.Bot.Samples.Ai.QnA.Translator
     public static class TranslatorLocaleHelper
     {
         private static readonly string[] _supportedLanguages = new string[] { "fr", "en" }; //Define supported Languages
-        private static readonly string[] _supportedLocales = new string[] { "fr-fr", "en-us" }; //Define supported locales
+        private static readonly  string[] _supportedLocales = new string[] { "fr-fr", "en-us" }; //Define supported locales
         private static string currentLanguage = null;
         private static string currentLocale = null;
         public static void SetLanguage(ITurnContext context, string language) => context.GetConversationState<CurrentUserState>().Language = language;
         public static void SetLocale(ITurnContext context, string locale) => context.GetConversationState<CurrentUserState>().Locale = locale;
         public static bool IsSupportedLanguage(string language) => _supportedLanguages.Contains(language);
-        public static async Task<bool> CheckUserChangedLanguage(ITurnContext context)
+        public static bool IsSupportedLocale(string locale) => _supportedLocales.Contains(locale);
+        public static async  Task<bool> CheckUserChangedLanguageOrLocale(ITurnContext context)
+        {
+            bool userChangedLocale = await CheckUserChangedLocale(context);
+            bool userChangedLanguage = await CheckUserChangedLanguage(context);
+            return userChangedLocale  || userChangedLanguage;
+        }
+        private static async Task<bool> CheckUserChangedLanguage(ITurnContext context)
         {
             bool changeLang = false;//logic implemented by developper to make a signal for language changing 
             //use a specific message from user to change language
@@ -69,7 +76,7 @@ namespace Microsoft.Bot.Samples.Ai.QnA.Translator
 
             return "en";
         }
-        public static async Task<bool> CheckUserChangedLocale(ITurnContext context)
+        private static async Task<bool> CheckUserChangedLocale(ITurnContext context)
         {
             bool changeLocale = false;//logic implemented by developper to make a signal for language changing 
             //use a specific message from user to change language
@@ -84,7 +91,7 @@ namespace Microsoft.Bot.Samples.Ai.QnA.Translator
                 {
                     var newLocale = messageActivity.Text.ToLower().Replace("set my locale to", "").Trim(); //extracted by the user using user state 
                     if (!string.IsNullOrWhiteSpace(newLocale)
-                            && IsSupportedLanguage(newLocale))
+                            && IsSupportedLocale(newLocale))
                     {
                         SetLocale(context, newLocale);
                         await context.SendActivity($@"Changing your language to {newLocale}");

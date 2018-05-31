@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<Version Condition=" '$(BUILD_BUILDNUMBER)' == '' ">4.0.0-local</Version>
@@ -8,7 +8,7 @@
 		<Configurations>Debug;Release;Documentation;Debug - NuGet Packages;</Configurations>
 	</PropertyGroup>
 
-	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
 		<SignAssembly>true</SignAssembly>
 		<DelaySign>true</DelaySign>
 		<AssemblyOriginatorKeyFile>..\..\..\build\35MSSharedLib1024.snk</AssemblyOriginatorKeyFile>
@@ -60,6 +60,7 @@
 		<PackageReference Include="Microsoft.Bot.Connector" Condition=" '$(PackageVersion)' != '' " Version="$(PackageVersion)" />
     <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(PackageVersion)' == '' " Version="4.0.0-local" />
     <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(PackageVersion)' != '' " Version="$(PackageVersion)" />
+    <PackageReference Include="SourceLink.Create.CommandLine" Version="2.8.1" />
   </ItemGroup>
 
 	<ItemGroup>
@@ -69,6 +70,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Reference Include="System.Configuration" />
 	  <Reference Include="System.Web" />
 	</ItemGroup>
 

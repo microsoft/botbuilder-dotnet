@@ -23,28 +23,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             await new TestFlow(adapter, async (turnContext) =>
             {
-                var dialogs = new DialogSet();
-                dialogs.Add("test-prompt", new DateTimePrompt(Culture.English));
-
                 var state = ConversationState<Dictionary<string, object>>.Get(turnContext);
-                var dc = dialogs.CreateContext(turnContext, state);
+                var prompt = new DateTimePrompt(Culture.English);
 
-                await dc.Continue();
-                var dialogResult = dc.DialogResult;
-
-                if (!dialogResult.Active)
+                var dialogCompletion = await prompt.Continue(turnContext, state);
+                if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
                 {
-                    var result = dialogResult.Result as DateTimeResult;
-                    if (result != null)
-                    {
-                        var resolution = result.Resolution.First();
-                        var reply = $"Timex:'{resolution.Timex}' Value:'{resolution.Value}'";
-                        await turnContext.SendActivity(reply);
-                    }
-                    else
-                    {
-                        await dc.Prompt("test-prompt", "What date would you like?");
-                    }
+                    await prompt.Begin(turnContext, state, new PromptOptions { PromptString = "What date would you like?" });
+                }
+                else if (dialogCompletion.IsCompleted)
+                {
+                    var dateTimeResult = (DateTimeResult)dialogCompletion.Result;
+                    var resolution = dateTimeResult.Resolution.First();
+                    var reply = $"Timex:'{resolution.Timex}' Value:'{resolution.Value}'";
+                    await turnContext.SendActivity(reply);
                 }
             })
             .Send("hello")

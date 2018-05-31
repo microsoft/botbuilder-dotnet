@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Bot.Builder;
@@ -33,17 +34,18 @@ namespace Microsoft.Bot.Samples.Dialog.Prompts
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            //services.AddBot<WaterfallBot>(options =>
-            //services.AddBot<PromptBot>(options =>
+            //services.AddBot<OAuthPromptBot>(options =>
+            services.AddBot<WaterfallBot>(options =>
             //services.AddBot<WaterfallNestedBot>(options =>
-            services.AddBot<WaterfallAndPromptBot>(options =>
+            //services.AddBot<WaterfallAndPromptBot>(options =>
+            //services.AddBot<DialogContainerBot>(options =>
             {
                 options.CredentialProvider = new ConfigurationCredentialProvider(Configuration);
                 options.EnableProactiveMessages = true;
                 options.ConnectorClientRetryPolicy = new RetryPolicy(
                     new BotFrameworkHttpStatusCodeErrorDetectionStrategy(), 3, TimeSpan.FromSeconds(2), TimeSpan.FromSeconds(20), TimeSpan.FromSeconds(1));
 
-                options.Middleware.Add(new ConversationState<ConversationData>(new MemoryStorage()));
+                options.Middleware.Add(new ConversationState<Dictionary<string, object>>(new MemoryStorage()));
             });
         }
 

@@ -11,6 +11,8 @@ using System.Web;
 using Microsoft.Bot.Builder.Core.Extensions;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
+using Microsoft.WindowsAzure.Storage.Blob.Protocol;
+using Microsoft.WindowsAzure.Storage.Core;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Azure
@@ -33,6 +35,7 @@ namespace Microsoft.Bot.Builder.Azure
             // we use All so that we get typed roundtrip out of storage, but we don't use validation because we don't know what types are valid
             TypeNameHandling = TypeNameHandling.All
         });
+        
 
         private readonly CloudStorageAccount _storageAccount;
         private readonly string _containerName;
@@ -90,7 +93,7 @@ namespace Microsoft.Bot.Builder.Azure
         /// </summary>
         /// <param name="keys">An array of entity keys</param>
         /// <returns></returns>
-        public async Task<IEnumerable<KeyValuePair<string, object>>> Read(params string[] keys)
+        public async Task<IDictionary<string, object>> Read(params string[] keys)
         {
             if (keys == null) throw new ArgumentNullException(nameof(keys));
 
@@ -105,8 +108,13 @@ namespace Microsoft.Bot.Builder.Azure
 
             await Task.WhenAll(readTasks);
 
-            // Project back the entries that were read, filtering out any entries that were not found
-            return readTasks.Select(readTask => readTask.Result).Where(kvp => kvp.Key != null);
+            // Project back the entries that were read, filtering out any entries that were not found.
+            // This gives us a Dictionary(key, value) 
+            var items = readTasks.Select(readTask => readTask.Result)
+                .Where(kvp => kvp.Key != null)
+                .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+          
+            return items; 
 
             async Task<KeyValuePair<string, object>> ReadIndividualKey(string key)
             {
@@ -147,11 +155,13 @@ namespace Microsoft.Bot.Builder.Azure
         /// </summary>
         /// <param name="changes"></param>
         /// <returns></returns>
-        public async Task Write(IEnumerable<KeyValuePair<string, object>> changes)
+        public async Task Write(IDictionary<string, object> changes)
         {
             if (changes == null) throw new ArgumentNullException(nameof(changes));
 
             var blobContainer = await GetBlobContainer().ConfigureAwait(false);
+            var blobRequestOptions = new BlobRequestOptions();
+            var operationContext = new OperationContext();
 
             await Task.WhenAll(
                 changes.Select(async (keyValuePair) =>
@@ -159,17 +169,31 @@ namespace Microsoft.Bot.Builder.Azure
                     var newValue = keyValuePair.Value;
                     var storeItem = newValue as IStoreItem;
                     // "*" eTag in IStoreItem converts to null condition for AccessCondition
-                    var calculatedETag = storeItem?.eTag == "*" ? null : storeItem?.eTag;
+                    var accessCondition = storeItem?.eTag == "*"
+                        ? AccessCondition.GenerateEmptyCondition()
+                        : AccessCondition.GenerateIfMatchCondition(storeItem?.eTag);
 
                     var blobName = GetBlobName(keyValuePair.Key);
                     var blobReference = blobContainer.GetBlockBlobReference(blobName);
-                    using (var blobStream = await blobReference.OpenWriteAsync(
-                        AccessCondition.GenerateIfMatchCondition(calculatedETag),
-                        new BlobRequestOptions(),
-                        new OperationContext()))
-                    using (var jsonWriter = new JsonTextWriter(new StreamWriter(blobStream)))
+
+                    try
                     {
-                        JsonSerializer.Serialize(jsonWriter, newValue);
+                        using (var memoryStream = new MultiBufferMemoryStream(blobReference.ServiceClient.BufferManager))
+                        using (var streamWriter = new StreamWriter(memoryStream))
+                        {
+                            JsonSerializer.Serialize(streamWriter, newValue);
+                            streamWriter.Flush();
+                            memoryStream.Seek(0, SeekOrigin.Begin);
+                            await blobReference.UploadFromStreamAsync(memoryStream, accessCondition, blobRequestOptions, operationContext);
+                        }
+                    }
+                    catch (StorageException ex)
+                    when (ex.RequestInformation.HttpStatusCode == (int)HttpStatusCode.BadRequest
+                    && ex.RequestInformation.ErrorCode == BlobErrorCodeStrings.InvalidBlockList)
+                    {
+                        throw new BotStorageException(
+                            $"An error ocurred while trying to write an object. The underlying '{BlobErrorCodeStrings.InvalidBlockList}' error is commonly caused due to concurrently uploading an object larger than 128MB in size.",
+                            ex);
                     }
                 }));
         }
@@ -195,9 +219,11 @@ namespace Microsoft.Bot.Builder.Azure
             async Task<CloudBlobContainer> EnsureBlobContainerExists()
             {
                 var blobClient = _storageAccount.CreateCloudBlobClient();
-                _container = blobClient.GetContainerReference(_containerName);
+                var container = blobClient.GetContainerReference(_containerName);
 
-                await _container.CreateIfNotExistsAsync().ConfigureAwait(false);
+                await container.CreateIfNotExistsAsync().ConfigureAwait(false);
+
+                _container = container;
 
                 return _container;
             }

@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 
@@ -12,7 +13,7 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// functions which will be executed in sequence.Each waterfall step can ask a question of the user
     /// and the users response will be passed as an argument to the next waterfall step.
     /// </summary>
-    public class Waterfall : IDialogContinue, IDialogResume
+    public class Waterfall : Dialog, IDialogContinue, IDialogResume
     {
         private WaterfallStep[] _steps;
 
@@ -21,13 +22,12 @@ namespace Microsoft.Bot.Builder.Dialogs
             _steps = steps;
         }
 
-        public Task DialogBegin(DialogContext dc, object dialogArgs = null)
+        public Task DialogBegin(DialogContext dc, IDictionary<string, object> dialogArgs = null)
         {
             if (dc == null)
                 throw new ArgumentNullException(nameof(dc));
 
-            var instance = dc.Instance;
-            instance.State = new WaterfallInstance { Step = 0 };
+            dc.ActiveDialog.Step = 0;
             return RunStep(dc, dialogArgs);
         }
 
@@ -38,34 +38,31 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             if (dc.Context.Activity.Type == ActivityTypes.Message)
             {
-                var instance = (WaterfallInstance)dc.Instance.State;
-                instance.Step++;
-                await RunStep(dc, dc.Context.Activity.Text);
+                dc.ActiveDialog.Step++;
+                await RunStep(dc, new Dictionary<string, object> { { "Activity", dc.Context.Activity } });
             }
         }
 
-        public Task DialogResume(DialogContext dc, object result)
+        public Task DialogResume(DialogContext dc, IDictionary<string, object> result)
         {
             if (dc == null)
                 throw new ArgumentNullException(nameof(dc));
 
-            var instance = (WaterfallInstance)dc.Instance.State;
-            instance.Step++;
+            dc.ActiveDialog.Step++;
             return RunStep(dc, result);
         }
 
-        private async Task RunStep(DialogContext dc, object result = null)
+        private async Task RunStep(DialogContext dc, IDictionary<string, object> result = null)
         {
             if (dc == null)
                 throw new ArgumentNullException(nameof(dc));
 
-            var instance = (WaterfallInstance)dc.Instance.State;
-            var step = instance.Step;
+            var step = dc.ActiveDialog.Step;
             if (step >= 0 && step < _steps.Length)
             {
                 SkipStepFunction next = (r) => {
                     // Skip to next step
-                    instance.Step++;
+                    dc.ActiveDialog.Step++;
                     return RunStep(dc, r);
                 };
 

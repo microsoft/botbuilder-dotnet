@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Core.Extensions;
@@ -31,24 +32,15 @@ namespace Microsoft.Bot.Samples.Dialog.Prompts
                 switch (turnContext.Activity.Type)
                 {
                     case ActivityTypes.Message:
-                        var state = ConversationState<ConversationData>.Get(turnContext);
+                        var state = ConversationState<Dictionary<string, object>>.Get(turnContext);
                         var dc = _dialogs.CreateContext(turnContext, state);
 
                         await dc.Continue();
-                        var dialogResult = dc.DialogResult;
 
-                        if (!dialogResult.Active)
+                        if (!turnContext.Responded)
                         {
-                            if (dialogResult.Result != null)
-                            {
-                                await turnContext.SendActivity($"Waterfall concluded with '{dialogResult.Result}'.");
-                            }
-                            else
-                            {
-                                await dc.Begin("waterfall");
-                            }
+                            await dc.Begin("waterfall");
                         }
-
                         break;
 
                     case ActivityTypes.ConversationUpdate:
@@ -100,7 +92,7 @@ namespace Microsoft.Bot.Samples.Dialog.Prompts
                 await dc.Context.SendActivity($"Thanks for '{numberResult.Value}'");
             }
             await dc.Context.SendActivity("step3");
-            await dc.End("All Done!");
+            await dc.End();
         }
     }
 }
