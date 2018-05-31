@@ -74,7 +74,7 @@ namespace Microsoft.Bot.Builder.Tests
                 return TranscriptsTemporalPath;
             }
 
-            var transcriptsZipUrl = TestUtilities.GetKey("BOTBUILDER_TRANSCRIPTS_LOCATION") ?? "https://github.com/Microsoft/BotBuilder/archive/master.zip";
+            var transcriptsZipUrl = TestUtilities.GetKey("BOTBUILDER_TRANSCRIPTS_LOCATION") ?? "https://github.com/southworkscom/BotBuilder/archive/botbuilder-v4-transcripts.zip";
             const string transcriptsZipFolder = "/Common/Transcripts/"; // Folder within the repo/zip
 
             var tempPath = Path.GetTempPath();
