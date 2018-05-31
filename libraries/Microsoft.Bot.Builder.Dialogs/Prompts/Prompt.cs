@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 throw new ArgumentNullException(nameof(dc));
 
             if (dialogArgs == null)
-                throw new Exception("Prompt options are required for Prompt dialogs");
+                throw new ArgumentNullException(nameof(dialogArgs), "Prompt options are required for Prompt dialogs");
 
             var promptOptions = PromptOptions.Create(dialogArgs);
 
