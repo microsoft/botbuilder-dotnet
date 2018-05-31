@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -9,19 +12,15 @@ namespace Microsoft.Bot.Builder.Ai.Translation.PostProcessor
     /// </summary>
     public class CustomDictionaryPostProcessor : IPostProcessor
     {
-        private readonly Dictionary<string, Dictionary<string, string>> _userCustomDictionaries;
+        private readonly CustomDictionary _userCustomDictionaries;
 
         /// <summary>
-        /// Constructor using the custom dictionaries map.
+        /// Constructor a new <see cref="CustomDictionaryPostProcessor"/> object.
         /// </summary>
-        /// <param name="userCustomDictionaries">The dictionary/map that stores all the different languages dictionaries keyed by language short name</param>
-        public CustomDictionaryPostProcessor(Dictionary<string, Dictionary<string, string>> userCustomDictionaries)
+        /// <param name="userCustomDictionaries">A <see cref="CustomDictionary"/> object that stores all the different languages dictionaries keyed by language id</param>
+        public CustomDictionaryPostProcessor(CustomDictionary userCustomDictionaries)
         {
             this._userCustomDictionaries = userCustomDictionaries ?? throw new ArgumentNullException(nameof(userCustomDictionaries));
-            if(this._userCustomDictionaries.Count == 0)
-            {
-                throw new ArgumentException("Custom dictionaries map can't be empty");
-            }
         }
 
         /// <summary>
@@ -29,19 +28,29 @@ namespace Microsoft.Bot.Builder.Ai.Translation.PostProcessor
         /// </summary>
         /// <param name="translatedDocument">Translated document</param>
         /// <param name="currentLanguage">Current source language</param>
-        /// <returns>A Task represents the asynchronus operation</returns>
-        public PostProcessedDocument Process(TranslatedDocument translatedDocument, string currentLanguage)
+        /// <returns>A <see cref="PostProcessedDocument"/> stores the original translated document state and the newly post processed message</returns>
+        public PostProcessedDocument Process(TranslatedDocument translatedDocument, string languageId)
         {
-            if (_userCustomDictionaries[currentLanguage].Count > 0)
+            // Check if provided custom dictionary for this language is not empty
+            if (_userCustomDictionaries.GetLanguageDictionary(languageId).Count > 0)
             {
+                string processedResult;
+                var languageDictionary = _userCustomDictionaries.GetLanguageDictionary(languageId);
+                // Loop for all the original message tokens, and check if any of these tokens exists in the user custom dictionary,
+                // to forcibly overwrite this token's translation with the user provided translation
                 for (int i = 0; i < translatedDocument.SourceTokens.Length; i++)
                 {
-                    if (_userCustomDictionaries[currentLanguage].ContainsKey(translatedDocument.SourceTokens[i]))
+                    if (languageDictionary.ContainsKey(translatedDocument.SourceTokens[i]))
                     {
-                        translatedDocument.TranslatedTokens[translatedDocument.IndexedAlignment[i]] = _userCustomDictionaries[currentLanguage][translatedDocument.SourceTokens[i]];
+                        // If a token of the original source message/phrase found in the user dictionary , 
+                        // replace it's equivalent translated token with the user provided translation
+                        // the equivalent translated token can be found using the alignment map in the translated document
+                        translatedDocument.TranslatedTokens[translatedDocument.IndexedAlignment[i]] = languageDictionary[translatedDocument.SourceTokens[i]];
                     }
                 }
-                return new PostProcessedDocument(translatedDocument, string.Join(" ", translatedDocument.TranslatedTokens));
+                // Finally return PostProcessedDocument object that holds the orignal TRanslatedDocument and a string that joins all the translated tokens together 
+                processedResult = PostProcessingUtilities.Join(" ", translatedDocument.TranslatedTokens);
+                return new PostProcessedDocument(translatedDocument, processedResult);
             }
             else
             {

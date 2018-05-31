@@ -64,7 +64,7 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
 
             TestAdapter adapter = new TestAdapter()
                 .Use(new UserState<LanguageState>(new MemoryStorage()))
-                .Use(new TranslationMiddleware(new string[] { "en-us" }, translatorKey, new Dictionary<string, List<string>>(), new Dictionary<string, Dictionary<string, string>>(), GetActiveLanguage, SetActiveLanguage));
+                .Use(new TranslationMiddleware(new string[] { "en-us" }, translatorKey, new Dictionary<string, List<string>>(), new CustomDictionary(), GetActiveLanguage, SetActiveLanguage));
 
             await new TestFlow(adapter, (context) =>
             {
@@ -94,7 +94,7 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
 
             TestAdapter adapter = new TestAdapter()
                 .Use(new UserState<LanguageState>(new MemoryStorage()))
-                .Use(new TranslationMiddleware(new string[] { "en-us" }, translatorKey, new Dictionary<string, List<string>>(), new Dictionary<string, Dictionary<string, string>>(), GetActiveLanguage, SetActiveLanguage, true));
+                .Use(new TranslationMiddleware(new string[] { "en-us" }, translatorKey, new Dictionary<string, List<string>>(), new CustomDictionary(), GetActiveLanguage, SetActiveLanguage, true));
 
             await new TestFlow(adapter, (context) =>
             {

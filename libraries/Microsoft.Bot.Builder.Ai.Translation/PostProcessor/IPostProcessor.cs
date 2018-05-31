@@ -1,6 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
 
 namespace Microsoft.Bot.Builder.Ai.Translation.PostProcessor
 {
@@ -10,11 +9,12 @@ namespace Microsoft.Bot.Builder.Ai.Translation.PostProcessor
     public interface IPostProcessor
     {
         /// <summary>
-        /// Process the specific logic of the implemented post processor.
+        /// Process the specific logic of the implemented post processor, and represents the abstraction for any post processor to be created
+        /// so that all post processors follow the same pattern implementing Process function, and all the custom logic being wrapped inside the postprocessor implementation .
         /// </summary>
         /// <param name="translatedDocument">Translated document</param>
         /// <param name="currentLanguage">Current source language</param>
-        /// <returns></returns>
+        /// <returns><see cref="PostProcessedDocument"/> that holds the original document and the newly post processed message/phrease</returns>
         PostProcessedDocument Process(TranslatedDocument translatedDocument, string currentLanguage);
     }
 }
