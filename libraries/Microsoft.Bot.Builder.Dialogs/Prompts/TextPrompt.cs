@@ -3,18 +3,17 @@
 
 using System;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Prompts;
-using static Microsoft.Bot.Builder.Prompts.PromptValidatorEx;
+using static Microsoft.Bot.Builder.Dialogs.PromptValidatorEx;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
     public class TextPrompt : Prompt<TextResult>
     {
-        private Builder.Prompts.TextPrompt _prompt;
+        private TextPromptInternal _prompt;
 
         public TextPrompt(PromptValidator<TextResult> validator = null)
         {
-            _prompt = new Builder.Prompts.TextPrompt(validator);
+            _prompt = new TextPromptInternal(validator);
         }
 
         protected override Task OnPrompt(DialogContext dc, PromptOptions options, bool isRetry)

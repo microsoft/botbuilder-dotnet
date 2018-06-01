@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System;
-using Microsoft.Bot.Builder.Prompts;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
