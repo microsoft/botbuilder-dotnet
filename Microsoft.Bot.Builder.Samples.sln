@@ -21,6 +21,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspNetCore-LUIS-Bot", "samp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspNetCore-QnA-Bot", "samples-final\7.AspNetCore-QnA-Bot\AspNetCore-QnA-Bot.csproj", "{72E9DF07-1404-447B-8C50-1898B8FE2F5F}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspNetCore-ProactiveMessage-Bot", "samples-final\AspNetCore-ProactiveMessage-Bot\AspNetCore-ProactiveMessage-Bot.csproj", "{DC0766B8-3795-48BE-95FD-F5FB5A1DACBF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -63,6 +65,10 @@ Global
 		{72E9DF07-1404-447B-8C50-1898B8FE2F5F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{72E9DF07-1404-447B-8C50-1898B8FE2F5F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{72E9DF07-1404-447B-8C50-1898B8FE2F5F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DC0766B8-3795-48BE-95FD-F5FB5A1DACBF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DC0766B8-3795-48BE-95FD-F5FB5A1DACBF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DC0766B8-3795-48BE-95FD-F5FB5A1DACBF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DC0766B8-3795-48BE-95FD-F5FB5A1DACBF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
