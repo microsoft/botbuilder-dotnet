@@ -33,7 +33,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// and related issues.</param>
         public EndorsementsRetriever(HttpClient httpClient)
         {
-            _httpClient = httpClient;
+            _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
         }
 
         /// <summary>
