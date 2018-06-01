@@ -172,27 +172,29 @@ namespace Microsoft.Bot.Builder.Prompts.Choices
             }
             sb.Append(Environment.NewLine + Environment.NewLine + "   ");
 
-            if (choices != null)
+            int index = 1;
+            foreach (var choice in choices)
             {
-                int index = 1;
-                foreach (var choice in choices.Where(c => c != null))
+                if (choice is null)
                 {
-                    string title = GetTitle(choice);
-                    sb.Append(separator);
-                    if (includeNumbers)
-                    {
-                        sb.Append(index);
-                        sb.Append(". ");
-                    }
-                    else
-                    {
-                        sb.Append("- ");
-                    }
-                    sb.Append(title);
-
-                    separator = Environment.NewLine + "   ";
-                    index++;
+                    throw new ArgumentException("Set of choices contained a null element, which is not allowed.", nameof(choices));
                 }
+
+                string title = GetTitle(choice);
+                sb.Append(separator);
+                if (includeNumbers)
+                {
+                    sb.Append(index);
+                    sb.Append(". ");
+                }
+                else
+                {
+                    sb.Append("- ");
+                }
+                sb.Append(title);
+
+                separator = Environment.NewLine + "   ";
+                index++;
             }
 
             // Return activity with choices as a numbered list.
