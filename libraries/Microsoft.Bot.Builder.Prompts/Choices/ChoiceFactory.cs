@@ -29,23 +29,24 @@ namespace Microsoft.Bot.Builder.Prompts.Choices
 
         public static IMessageActivity ForChannel(string channelId, IEnumerable<Choice> choices, string text = null, string speak = null, ChoiceFactoryOptions options = null)
         {
+            if (choices is null)
+            {
+                throw new ArgumentNullException("The collection of choices can not be null.", nameof(choices));
+            }
+
             var list = new List<Choice>();
 
             // Find maximum title length
             var maxTitleLength = 0;
-            if (choices != null)
+            foreach (var choice in choices)
             {
-                // Ignore null choices.
-                foreach (var choice in choices.Where(c => c != null))
+                int len = GetTitle(choice).Length;
+                if (len > maxTitleLength)
                 {
-                    int len = GetTitle(choice).Length;
-                    if (len > maxTitleLength)
-                    {
-                        maxTitleLength = len;
-                    }
-
-                    list.Add(choice);
+                    maxTitleLength = len;
                 }
+
+                list.Add(choice);
             }
 
             // Determine list style
@@ -80,6 +81,11 @@ namespace Microsoft.Bot.Builder.Prompts.Choices
 
         public static Activity Inline(IEnumerable<Choice> choices, string text = null, string speak = null, ChoiceFactoryOptions options = null)
         {
+            if (choices is null)
+            {
+                throw new ArgumentNullException("The collection of choices can not be null.", nameof(choices));
+            }
+
             options = options ?? new ChoiceFactoryOptions();
 
             var opt = new ChoiceFactoryOptions
@@ -97,27 +103,32 @@ namespace Microsoft.Bot.Builder.Prompts.Choices
             {
                 sb.Append(text);
             }
-            sb.Append(" ");
+            sb.Append(' ');
 
-            if (choices != null)
+            var list = choices.ToList();
+            for (int i = 0; i < list.Count; i++)
             {
-                int count = choices.Where(c => c != null).Count();
-                int index = 1;
-                foreach (var choice in choices.Where(c => c != null))
+                var choice = list[i];
+                if (choice is null)
                 {
-                    string title = GetTitle(choice);
-                    sb.Append($"{separator}");
-                    if (opt.IncludeNumbers.Value)
-                    {
-                        sb.Append($"({index}) ");
-                    }
-                    sb.Append(title);
-
-                    separator = (index == count - 1)
-                        ? (index == 1 ? opt.InlineOr : opt.InlineOrMore) ?? string.Empty
-                        : opt.InlineSeparator ?? string.Empty;
-                    index++;
+                    throw new ArgumentException("Set of choices contained a null element, which is not allowed.", nameof(choices));
                 }
+
+                string title = GetTitle(choice);
+                sb.Append(separator);
+                if (opt.IncludeNumbers.Value)
+                {
+                    sb.Append('(');
+                    sb.Append(i + 1);
+                    sb.Append(") ");
+                }
+                sb.Append(title);
+
+                // Insert separators between items.
+                // Use an "Oxford comma"-style separator for three or more items.
+                separator = (i == list.Count - 2)
+                    ? (i == 0 ? opt.InlineOr : opt.InlineOrMore) ?? string.Empty
+                    : opt.InlineSeparator ?? string.Empty;
             }
 
             // Return activity with choices as an inline list.
@@ -129,10 +140,11 @@ namespace Microsoft.Bot.Builder.Prompts.Choices
         /// </summary>
         /// <param name="choice">The choice object.</param>
         /// <returns>The normalized title.</returns>
+        /// <exception cref="ArgumentNullException"/>
         /// <exception cref="InvalidOperationException">The choice does not have a valid action title or value to use as a title.</exception>
         private static string GetTitle(Choice choice)
         {
-            if (choice is null) return null;
+            if (choice is null) throw new ArgumentException();
 
             if (!string.IsNullOrWhiteSpace(choice.Action?.Title)) return choice.Action.Title.Trim();
             if (!string.IsNullOrWhiteSpace(choice.Value)) return choice.Value.Trim();
@@ -162,13 +174,20 @@ namespace Microsoft.Bot.Builder.Prompts.Choices
 
             if (choices != null)
             {
-                int count = choices.Where(c => c != null).Count();
                 int index = 1;
                 foreach (var choice in choices.Where(c => c != null))
                 {
                     string title = GetTitle(choice);
                     sb.Append(separator);
-                    sb.Append((includeNumbers) ? $"{index}. " : "- ");
+                    if (includeNumbers)
+                    {
+                        sb.Append(index);
+                        sb.Append(". ");
+                    }
+                    else
+                    {
+                        sb.Append("- ");
+                    }
                     sb.Append(title);
 
                     separator = Environment.NewLine + "   ";
