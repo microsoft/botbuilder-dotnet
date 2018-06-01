@@ -56,7 +56,14 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestInitialize]
         public void TestInit()
         {
-            connectionString = Environment.GetEnvironmentVariable("STORAGECONNECTIONSTRING") ?? emulatorConnectionString;
+            connectionString = emulatorConnectionString;
+
+            // The commented out code below allows the tests to run against actual Azure Blobs
+            // rather than the local emulator. We used to have this enabled to run on our
+            // build servers, but hitting network resources as part of automated builds is problematic
+            // so it's been commented out here. 
+            
+            // connectionString = Environment.GetEnvironmentVariable("STORAGECONNECTIONSTRING") ?? emulatorConnectionString;
 
             if (connectionString != emulatorConnectionString || hasStorageEmulator.Value)
             {
