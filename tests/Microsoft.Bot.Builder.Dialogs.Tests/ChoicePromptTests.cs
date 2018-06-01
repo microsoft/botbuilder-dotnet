@@ -349,7 +349,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                             Choices = ChoiceFactory.ToChoices(colorChoices)
                         });
                 }
-                // TODO: this is a very awkward way to check for failure in teh current model
+                // TODO: this is a very awkward way to check for failure in the current model
                 else if (dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
                 {
                     if (dialogCompletion.Result == null)
