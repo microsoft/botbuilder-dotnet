@@ -155,7 +155,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions
             IMessageActivity ma = Activity.CreateMessageActivity();
             SetTextAndSpeak(ma, text, ssml, inputHint);
 
-            ma.SuggestedActions = new SuggestedActions { Actions = cardActions?.ToList() };
+            ma.SuggestedActions = new SuggestedActions { Actions = cardActions.ToList() };
 
             return ma;
         }
