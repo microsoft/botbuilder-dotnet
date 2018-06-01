@@ -41,7 +41,8 @@ namespace Microsoft.Bot.Builder.Ai.Translation.PostProcessor
                 foreach (string pattern in item.Value)
                 {
                     string processedLine = pattern.Trim();
-                    if (!processedLine.Contains('('))
+                    //if (the pattern doesn't follow this format (pattern), add the braces around the pattern
+                    if (!Regex.IsMatch(pattern, "(\\(.+\\))"))
                     {
                         processedLine = '(' + processedLine + ')';
                     }
