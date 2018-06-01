@@ -37,8 +37,8 @@ namespace Microsoft.Bot.Schema
         /// <param name="actions">Actions that can be shown to the user</param>
         public SuggestedActions(IEnumerable<string> to = default(IEnumerable<string>), IEnumerable<CardAction> actions = default(IEnumerable<CardAction>))
         {
-            To = to.ToList();
-            Actions = actions.ToList();
+            To = to?.ToList();
+            Actions = actions?.ToList();
             CustomInit();
         }
 
