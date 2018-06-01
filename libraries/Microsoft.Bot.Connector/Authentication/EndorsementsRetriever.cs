@@ -53,59 +53,82 @@ namespace Microsoft.Bot.Connector.Authentication
         /// </summary>
         public const string JsonWebKeySetUri = "jwks_uri";
 
-        public async Task<IDictionary<string, string[]>> GetConfigurationAsync(string address, IDocumentRetriever retriever, CancellationToken cancel)
+        public async Task<IDictionary<string, string[]>> GetConfigurationAsync(string address, IDocumentRetriever retriever, CancellationToken cancellationToken)
         {
-            var res = await retriever.GetDocumentAsync(address, cancel);
-            var obj = JsonConvert.DeserializeObject<JObject>(res);
-            if (obj != null && obj.HasValues && obj["keys"] != null)
+            if (address == null)
             {
-                var keys = obj.SelectToken("keys").Value<JArray>();
-                var endorsements = keys.Where(key => key["endorsements"] != null).Select(
-                    key => Tuple.Create(
-                        key.SelectToken(AuthenticationConstants.KeyIdHeader).Value<string>(),
-                        key.SelectToken("endorsements").Values<string>()));
-
-                return endorsements.Distinct(new EndorsementsComparer())
-                    .ToDictionary(item => item.Item1, item => item.Item2.ToArray());
+                throw new ArgumentNullException(nameof(address));
             }
-            else
-            {
-                return new Dictionary<string, string[]>();
-            }
-        }
 
-        public async Task<string> GetDocumentAsync(string address, CancellationToken cancel)
-        {
-            using (var response = await _httpClient.GetAsync(address, cancel))
+            if (retriever == null)
             {
-                response.EnsureSuccessStatusCode();
-                var json = await response.Content.ReadAsStringAsync();
-                JObject obj = JsonConvert.DeserializeObject<JObject>(json);
-                if (obj != null && obj.HasValues && obj[JsonWebKeySetUri] != null)
+                throw new ArgumentNullException(nameof(retriever));
+            }
+
+            var jsonDocument = await retriever.GetDocumentAsync(address, cancellationToken);
+            var configurationRoot = JObject.Parse(jsonDocument);
+
+            var keys = configurationRoot["keys"]?.Value<JArray>();
+
+            if (keys == null)
+            {
+                return new Dictionary<string, string[]>(0);
+            }
+
+            var results = new Dictionary<string, string[]>(keys.Count);
+
+            foreach (var key in keys)
+            {
+                var keyId = key["keyid"]?.Value<string>();
+
+                if (keyId != null
+                        &&
+                   !results.ContainsKey(keyId))
                 {
-                    var keysUrl = obj.SelectToken(JsonWebKeySetUri).Value<string>();
-                    using (var keysResponse = await _httpClient.GetAsync(keysUrl, cancel))
+                    var endorsementsToken = key["endorsements"];
+
+                    if (endorsementsToken != null)
                     {
-                        keysResponse.EnsureSuccessStatusCode();
-                        return await keysResponse.Content.ReadAsStringAsync();
+                        results.Add(keyId, endorsementsToken.Values<string>().ToArray());
                     }
                 }
-                else
+            }
+
+            return results;
+        }
+
+        public async Task<string> GetDocumentAsync(string address, CancellationToken cancellationToken)
+        {
+            if (address == null)
+            {
+                throw new ArgumentNullException(nameof(address));
+            }
+
+            using (var documentResponse = await _httpClient.GetAsync(address, cancellationToken))
+            {
+                documentResponse.EnsureSuccessStatusCode();
+
+                var json = await documentResponse.Content.ReadAsStringAsync();
+                var obj = JObject.Parse(json);
+
+                if (!obj.HasValues)
                 {
                     return string.Empty;
                 }
-            }
-        }
 
-        private class EndorsementsComparer : IEqualityComparer<Tuple<string, IEnumerable<string>>>
-        {
-            public bool Equals(Tuple<string, IEnumerable<string>> x, Tuple<string, IEnumerable<string>> y)
-            {
-                return x.Item1 == y.Item1;
-            }
-            public int GetHashCode(Tuple<string, IEnumerable<string>> obj)
-            {
-                return obj.Item1.GetHashCode();
+                var keysUrl = obj[JsonWebKeySetUri]?.Value<string>();
+
+                if (keysUrl == null)
+                {
+                    return string.Empty;
+                }
+
+                using (var keysResponse = await _httpClient.GetAsync(keysUrl, cancellationToken))
+                {
+                    keysResponse.EnsureSuccessStatusCode();
+
+                    return await keysResponse.Content.ReadAsStringAsync();
+                }
             }
         }
     }
