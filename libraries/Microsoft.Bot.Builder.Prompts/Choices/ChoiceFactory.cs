@@ -109,12 +109,12 @@ namespace Microsoft.Bot.Builder.Prompts.Choices
                     sb.Append($"{separator}");
                     if (opt.IncludeNumbers.Value)
                     {
-                        sb.Append($"(${index}) ");
+                        sb.Append($"({index}) ");
                     }
                     sb.Append(title);
 
-                    separator = (index == count - 2)
-                        ? (index == 0 ? opt.InlineOr : opt.InlineOrMore) ?? string.Empty
+                    separator = (index == count - 1)
+                        ? (index == 1 ? opt.InlineOr : opt.InlineOrMore) ?? string.Empty
                         : opt.InlineSeparator ?? string.Empty;
                     index++;
                 }
@@ -158,7 +158,7 @@ namespace Microsoft.Bot.Builder.Prompts.Choices
             {
                 sb.Append(text);
             }
-            sb.Append(" ");
+            sb.Append(Environment.NewLine + Environment.NewLine + "   ");
 
             if (choices != null)
             {
@@ -171,7 +171,7 @@ namespace Microsoft.Bot.Builder.Prompts.Choices
                     sb.Append((includeNumbers) ? $"{index}. " : "- ");
                     sb.Append(title);
 
-                    separator = Environment.NewLine + " ";
+                    separator = Environment.NewLine + "   ";
                     index++;
                 }
             }

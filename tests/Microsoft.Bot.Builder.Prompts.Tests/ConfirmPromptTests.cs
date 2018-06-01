@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Core.Extensions;
@@ -162,7 +163,10 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                 }
             })
                 .Send("hello")
-                .AssertReply("Gimme:\n\n   1. Yes\n   2. No")
+                .AssertReply(
+                    $"Gimme:{Environment.NewLine}{Environment.NewLine}" +
+                    $"   1. Yes{Environment.NewLine}" +
+                    $"   2. No")
                 .Send("tyest tnot")
                     .AssertReply(PromptStatus.NotRecognized.ToString())
                 .Send(".. yes please ")

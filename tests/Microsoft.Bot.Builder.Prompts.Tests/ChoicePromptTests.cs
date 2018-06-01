@@ -97,7 +97,11 @@ namespace Microsoft.Bot.Builder.Prompts.Tests
                 await choicePrompt.Prompt(context, colorChoices, "favorite color?");
             })
             .Send("hello")
-            .AssertReply("favorite color?\n\n   1. red\n   2. green\n   3. blue")
+            .AssertReply(
+                $"favorite color?{Environment.NewLine}{Environment.NewLine}" +
+                $"   1. red{Environment.NewLine}" +
+                $"   2. green{Environment.NewLine}" +
+                $"   3. blue")
             .StartTest();
         }
 
