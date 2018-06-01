@@ -4,9 +4,8 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Prompts;
-using Microsoft.Bot.Builder.Prompts.Choices;
-using static Microsoft.Bot.Builder.Prompts.PromptValidatorEx;
+using Microsoft.Bot.Builder.Dialogs.Choices;
+using static Microsoft.Bot.Builder.Dialogs.PromptValidatorEx;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
@@ -21,11 +20,11 @@ namespace Microsoft.Bot.Builder.Dialogs
 
     public class ChoicePrompt : Prompt<ChoiceResult>
     {
-        private Prompts.ChoicePrompt _prompt;
+        private ChoicePromptInternal _prompt;
 
         public ChoicePrompt(string culture, PromptValidator<ChoiceResult> validator = null)
         {
-            _prompt = new Prompts.ChoicePrompt(culture, validator);
+            _prompt = new ChoicePromptInternal(culture, validator);
         }
 
         public ListStyle Style

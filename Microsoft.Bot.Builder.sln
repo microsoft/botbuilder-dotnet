@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27130.2027
+VisualStudioVersion = 15.0.26730.12
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{4269F3C3-6B42-419B-B64A-3E6DC0F1574A}"
 EndProject
@@ -39,10 +39,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Ai.LUIS", "libraries\Microsoft.Bot.Builder.Ai.LUIS\Microsoft.Bot.Builder.Ai.LUIS.csproj", "{67AA3C00-E2C5-4D13-BA5E-72EB0E5B8DAA}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Ai.LUIS.Tests", "tests\Microsoft.Bot.Builder.Ai.LUIS.Tests\Microsoft.Bot.Builder.Ai.LUIS.Tests.csproj", "{7BCEBDC1-D57F-4717-9B15-4FACD5473489}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Prompts", "libraries\Microsoft.Bot.Builder.Prompts\Microsoft.Bot.Builder.Prompts.csproj", "{7A197F41-3411-47BF-87A6-5BC8A44CDB74}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Prompts.Tests", "tests\Microsoft.Bot.Builder.Prompts.Tests\Microsoft.Bot.Builder.Prompts.Tests.csproj", "{5D145BFC-1C30-4FC5-989A-82260F8225BE}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Integration.AspNet.WebApi", "libraries\integration\Microsoft.Bot.Builder.Integration.AspNet.WebApi\Microsoft.Bot.Builder.Integration.AspNet.WebApi.csproj", "{BD0B82EF-1601-4E87-B78A-B43DE7EB36B0}"
 EndProject
@@ -222,21 +218,6 @@ Global
 		{7BCEBDC1-D57F-4717-9B15-4FACD5473489}.Documentation|Any CPU.ActiveCfg = Documentation|Any CPU
 		{7BCEBDC1-D57F-4717-9B15-4FACD5473489}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7BCEBDC1-D57F-4717-9B15-4FACD5473489}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7A197F41-3411-47BF-87A6-5BC8A44CDB74}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug - NuGet Packages|Any CPU
-		{7A197F41-3411-47BF-87A6-5BC8A44CDB74}.Debug - NuGet Packages|Any CPU.Build.0 = Debug - NuGet Packages|Any CPU
-		{7A197F41-3411-47BF-87A6-5BC8A44CDB74}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7A197F41-3411-47BF-87A6-5BC8A44CDB74}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7A197F41-3411-47BF-87A6-5BC8A44CDB74}.Documentation|Any CPU.ActiveCfg = Documentation|Any CPU
-		{7A197F41-3411-47BF-87A6-5BC8A44CDB74}.Documentation|Any CPU.Build.0 = Documentation|Any CPU
-		{7A197F41-3411-47BF-87A6-5BC8A44CDB74}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7A197F41-3411-47BF-87A6-5BC8A44CDB74}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5D145BFC-1C30-4FC5-989A-82260F8225BE}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{5D145BFC-1C30-4FC5-989A-82260F8225BE}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
-		{5D145BFC-1C30-4FC5-989A-82260F8225BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5D145BFC-1C30-4FC5-989A-82260F8225BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5D145BFC-1C30-4FC5-989A-82260F8225BE}.Documentation|Any CPU.ActiveCfg = Documentation|Any CPU
-		{5D145BFC-1C30-4FC5-989A-82260F8225BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5D145BFC-1C30-4FC5-989A-82260F8225BE}.Release|Any CPU.Build.0 = Release|Any CPU
 		{BD0B82EF-1601-4E87-B78A-B43DE7EB36B0}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug - NuGet Packages|Any CPU
 		{BD0B82EF-1601-4E87-B78A-B43DE7EB36B0}.Debug - NuGet Packages|Any CPU.Build.0 = Debug - NuGet Packages|Any CPU
 		{BD0B82EF-1601-4E87-B78A-B43DE7EB36B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -452,8 +433,6 @@ Global
 		{276EBE79-A13A-46BD-A566-B01DC0477A9B} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
 		{67AA3C00-E2C5-4D13-BA5E-72EB0E5B8DAA} = {763168FA-A590-482C-84D8-2922F7ADB1A2}
 		{7BCEBDC1-D57F-4717-9B15-4FACD5473489} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
-		{7A197F41-3411-47BF-87A6-5BC8A44CDB74} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
-		{5D145BFC-1C30-4FC5-989A-82260F8225BE} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 		{BD0B82EF-1601-4E87-B78A-B43DE7EB36B0} = {276EBE79-A13A-46BD-A566-B01DC0477A9B}
 		{053BD8B8-B5C1-4C45-81D4-C9BA8D5B3CE2} = {276EBE79-A13A-46BD-A566-B01DC0477A9B}
 		{BEDBA9E2-FE6E-44D9-914D-03AE63EF6768} = {3ADFB27A-95FA-4330-B211-1D66A29A17AB}
