@@ -11,24 +11,24 @@ namespace Microsoft.Bot.Builder.Prompts.Choices
 {
     public class ChoiceFactory
     {
-        public static IMessageActivity ForChannel(ITurnContext context, List<Choice> choices, string text = null, string speak = null, ChoiceFactoryOptions options = null)
+        public static IMessageActivity ForChannel(ITurnContext context, IEnumerable<Choice> choices, string text = null, string speak = null, ChoiceFactoryOptions options = null)
         {
             return ForChannel(Channel.GetChannelId(context), choices, text, speak, options);
         }
 
-        public static IMessageActivity ForChannel(ITurnContext context, List<string> choices, string text = null, string speak = null, ChoiceFactoryOptions options = null)
+        public static IMessageActivity ForChannel(ITurnContext context, IEnumerable<string> choices, string text = null, string speak = null, ChoiceFactoryOptions options = null)
         {
             return ForChannel(Channel.GetChannelId(context), ToChoices(choices), text, speak, options);
         }
 
-        public static IMessageActivity ForChannel(string channelId, List<string> choices, string text = null, string speak = null, ChoiceFactoryOptions options = null)
+        public static IMessageActivity ForChannel(string channelId, IEnumerable<string> choices, string text = null, string speak = null, ChoiceFactoryOptions options = null)
         {
             return ForChannel(channelId, ToChoices(choices), text, speak, options);
         }
 
-        public static IMessageActivity ForChannel(string channelId, List<Choice> list, string text = null, string speak = null, ChoiceFactoryOptions options = null)
+        public static IMessageActivity ForChannel(string channelId, IEnumerable<Choice> choices, string text = null, string speak = null, ChoiceFactoryOptions options = null)
         {
-            list = list ?? new List<Choice>();
+            var list = choices?.ToList() ?? new List<Choice>();
 
             // Find maximum title length
             var maxTitleLength = 0;
@@ -66,14 +66,14 @@ namespace Microsoft.Bot.Builder.Prompts.Choices
             }
         }
 
-        public static Activity Inline(List<string> choices, string text = null, string speak = null, ChoiceFactoryOptions options = null)
+        public static Activity Inline(IEnumerable<string> choices, string text = null, string speak = null, ChoiceFactoryOptions options = null)
         {
             return Inline(ToChoices(choices), text, speak, options);
         }
 
-        public static Activity Inline(List<Choice> choices, string text = null, string speak = null, ChoiceFactoryOptions options = null)
+        public static Activity Inline(IEnumerable<Choice> choiceList, string text = null, string speak = null, ChoiceFactoryOptions options = null)
         {
-            choices = choices ?? new List<Choice>();
+            var choices = choiceList?.ToList() ?? new List<Choice>();
             options = options ?? new ChoiceFactoryOptions();
 
             var opt = new ChoiceFactoryOptions
@@ -116,14 +116,14 @@ namespace Microsoft.Bot.Builder.Prompts.Choices
             return MessageFactory.Text(txt, speak, InputHints.ExpectingInput);
         }
 
-        public static Activity List(List<string> choices, string text = null, string speak = null, ChoiceFactoryOptions options = null)
+        public static Activity List(IEnumerable<string> choices, string text = null, string speak = null, ChoiceFactoryOptions options = null)
         {
             return List(ToChoices(choices), text, speak, options);
         }
 
-        public static Activity List(List<Choice> choices, string text = null, string speak = null, ChoiceFactoryOptions options = null)
+        public static Activity List(IEnumerable<Choice> choiceList, string text = null, string speak = null, ChoiceFactoryOptions options = null)
         {
-            choices = choices ?? new List<Choice>();
+            var choices = choiceList?.ToList() ?? new List<Choice>();
             options = options ?? new ChoiceFactoryOptions();
 
             bool includeNumbers = options.IncludeNumbers ?? true;
@@ -156,14 +156,14 @@ namespace Microsoft.Bot.Builder.Prompts.Choices
             return MessageFactory.Text(txt, speak, InputHints.ExpectingInput);
         }
 
-        public static IMessageActivity SuggestedAction(List<string> choices, string text = null, string speak = null)
+        public static IMessageActivity SuggestedAction(IEnumerable<string> choices, string text = null, string speak = null)
         {
             return SuggestedAction(ToChoices(choices), text, speak);
         }
 
-        public static IMessageActivity SuggestedAction(List<Choice> choices, string text = null, string speak = null)
+        public static IMessageActivity SuggestedAction(IEnumerable<Choice> choiceList, string text = null, string speak = null)
         {
-            choices = choices ?? new List<Choice>();
+            var choices = choiceList?.ToList() ?? new List<Choice>();
 
             // Map choices to actions
             var actions = choices.Select((choice) =>
@@ -187,7 +187,7 @@ namespace Microsoft.Bot.Builder.Prompts.Choices
             return MessageFactory.SuggestedActions(actions, text, speak, InputHints.ExpectingInput);
         }
 
-        public static List<Choice> ToChoices(List<string> choices)
+        public static List<Choice> ToChoices(IEnumerable<string> choices)
         {
             return (choices == null)
                     ?
