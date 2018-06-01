@@ -5,10 +5,10 @@
         {
             "type": "endpoint",
             "name": "AspNetCore-CardActions-Bot",
-            "id": "http://localhost:51601/api/messages",
+            "id": "http://localhost:5000/api/messages",
             "appId": "",
             "appPassword": "",
-            "endpoint": "http://localhost:51601/api/messages"
+            "endpoint": "http://localhost:5000/api/messages"
         }
     ]
 }
