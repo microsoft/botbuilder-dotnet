@@ -35,10 +35,10 @@ namespace Microsoft.Bot.Schema
         /// shown to.  These Ids are relative to the channelId and a subset of
         /// all recipients of the activity</param>
         /// <param name="actions">Actions that can be shown to the user</param>
-        public SuggestedActions(IEnumerable<string> to = default(IEnumerable<string>), IEnumerable<CardAction> actions = default(IEnumerable<CardAction>))
+        public SuggestedActions(IList<string> to = default(IList<string>), IList<CardAction> actions = default(IList<CardAction>))
         {
-            To = to?.ToList();
-            Actions = actions?.ToList();
+            To = to;
+            Actions = actions;
             CustomInit();
         }
 
