@@ -53,7 +53,16 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             containerName = nameof(BlobTranscriptTests).ToLower() + Guid.NewGuid().ToString("n");
             cloudStorageAccount = (hasStorageEmulator.Value) ? CloudStorageAccount.DevelopmentStorageAccount : null;
-            var connectionString = Environment.GetEnvironmentVariable("STORAGECONNECTIONSTRING");
+
+            // The commented out code below allows the tests to run against actual Azure Blobs
+            // rather than the local emulator. We used to have this enabled to run on our
+            // build servers, but hitting network resources as part of automated builds is problematic
+            // so it's been commented out here. 
+
+            var connectionString = "";
+            // var connectionString = Environment.GetEnvironmentVariable("STORAGECONNECTIONSTRING");
+
+
             if (!String.IsNullOrEmpty(connectionString))
                 cloudStorageAccount = CloudStorageAccount.Parse(connectionString);
         }
