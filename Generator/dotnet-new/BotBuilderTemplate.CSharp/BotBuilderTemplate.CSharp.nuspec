@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>BotBuilderTemplate.CSharp</id>
+    <version>1.0.0</version>
+    <description>
+      Template to create conversational bots using Microsoft Bot Framework. 
+    </description>
+    <authors>Microsoft</authors>
+    <packageTypes>
+      <packageType name="Template" />
+    </packageTypes>
+  </metadata>
+</package>
