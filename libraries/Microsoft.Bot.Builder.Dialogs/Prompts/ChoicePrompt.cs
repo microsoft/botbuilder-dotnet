@@ -64,7 +64,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             {
                 if (options.RetryPromptActivity != null)
                 {
-                    await _prompt.Prompt(dc.Context, options.RetryPromptActivity.AsMessageActivity());
+                    await _prompt.Prompt(dc.Context, options.RetryPromptActivity.AsMessageActivity(), options.Speak);
                 }
                 else if (options.RetryPromptString != null)
                 {
@@ -75,7 +75,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             {
                 if (options.PromptActivity != null)
                 {
-                    await _prompt.Prompt(dc.Context, options.PromptActivity);
+                    await _prompt.Prompt(dc.Context, options.PromptActivity, options.Speak);
                 }
                 else if (options.PromptString != null)
                 {
