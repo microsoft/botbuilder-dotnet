@@ -23,6 +23,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspNetCore-QnA-Bot", "sampl
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspNetCore-CardActions-Bot", "samples-final\AspNetCore-CardActions-Bot\AspNetCore-CardActions-Bot.csproj", "{11EDB6C4-0513-4741-970E-AF45F505E2DC}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspNetCore-HelpAndCancel-Bot", "samples-final\AspNetCore-HelpAndCancel-Bot\AspNetCore-HelpAndCancel-Bot.csproj", "{B4174CF5-6FFA-45F2-B1B6-45F88FAAA5CF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -69,6 +71,10 @@ Global
 		{11EDB6C4-0513-4741-970E-AF45F505E2DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{11EDB6C4-0513-4741-970E-AF45F505E2DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{11EDB6C4-0513-4741-970E-AF45F505E2DC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B4174CF5-6FFA-45F2-B1B6-45F88FAAA5CF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B4174CF5-6FFA-45F2-B1B6-45F88FAAA5CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B4174CF5-6FFA-45F2-B1B6-45F88FAAA5CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B4174CF5-6FFA-45F2-B1B6-45F88FAAA5CF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
