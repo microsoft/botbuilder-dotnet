@@ -3,13 +3,11 @@
 
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Core.Extensions;
-using Microsoft.Bot.Builder.Prompts;
-using Microsoft.Bot.Builder.Prompts.Results;
 using Microsoft.Recognizers.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using static Microsoft.Bot.Builder.Prompts.PromptValidatorEx;
+using static Microsoft.Bot.Builder.Dialogs.PromptValidatorEx;
 
 namespace Microsoft.Bot.Builder.Dialogs.Tests
 {

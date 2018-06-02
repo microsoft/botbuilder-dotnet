@@ -3,17 +3,16 @@
 
 using System;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Prompts;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
     public class AttachmentPrompt : Prompt<AttachmentResult>
     {
-        private Prompts.AttachmentPrompt _prompt;
+        private AttachmentPromptInternal _prompt;
 
         public AttachmentPrompt()
         {
-            _prompt = new Prompts.AttachmentPrompt();
+            _prompt = new AttachmentPromptInternal();
         }
 
         protected override Task OnPrompt(DialogContext dc, PromptOptions options, bool isRetry)
