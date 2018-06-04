@@ -56,11 +56,11 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
         public async Task ShowTyping_TestMiddleware_Context_Completes_Before_Typing_Interval()
         {
             TestAdapter adapter = new TestAdapter()
-                .Use(new ShowTypingMiddleware(500, 5000));
+                .Use(new ShowTypingMiddleware(100, 5000));
 
             await new TestFlow(adapter, async (context) =>
                 {
-                    Thread.Sleep(1000);
+                    Thread.Sleep(2000);
                     await context.SendActivity("Message sent after delay");
                     await Task.CompletedTask;
                 })
