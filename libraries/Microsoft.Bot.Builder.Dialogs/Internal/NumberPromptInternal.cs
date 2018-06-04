@@ -68,6 +68,16 @@ namespace Microsoft.Bot.Builder.Dialogs
                         await Validate(context, numberResult);
                     }
                 }
+                else if (typeof(T) == typeof(long))
+                {
+                    if (long.TryParse(result.Resolution["value"].ToString(), out long value))
+                    {
+                        numberResult.Status = PromptStatus.Recognized;
+                        numberResult.Value = (T)(object)value;
+                        numberResult.Text = result.Text;
+                        await Validate(context, numberResult);
+                    }
+                }
                 else if (typeof(T) == typeof(double))
                 {
                     if (double.TryParse(result.Resolution["value"].ToString(), out double value))

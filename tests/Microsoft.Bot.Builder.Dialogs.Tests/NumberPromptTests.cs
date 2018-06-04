@@ -154,6 +154,35 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         }
 
         [TestMethod]
+        public async Task LongNumberPrompt()
+        {
+            TestAdapter adapter = new TestAdapter()
+                .Use(new ConversationState<Dictionary<string, object>>(new MemoryStorage()));
+
+            await new TestFlow(adapter, async (turnContext) =>
+            {
+                var state = ConversationState<Dictionary<string, object>>.Get(turnContext);
+                var prompt = new NumberPrompt<long>(Culture.English);
+
+                var dialogCompletion = await prompt.Continue(turnContext, state);
+                if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
+                {
+                    await prompt.Begin(turnContext, state, new PromptOptions { PromptString = "Enter a number." });
+                }
+                else if (dialogCompletion.IsCompleted)
+                {
+                    var numberResult = (NumberResult<long>)dialogCompletion.Result;
+                    await turnContext.SendActivity($"Bot received the number '{numberResult.Value}'.");
+                }
+            })
+            .Send("hello")
+            .AssertReply("Enter a number.")
+            .Send("42")
+            .AssertReply("Bot received the number '42'.")
+            .StartTest();
+        }
+
+        [TestMethod]
         public async Task DoubleNumberPrompt()
         {
             TestAdapter adapter = new TestAdapter()
