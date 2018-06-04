@@ -14,6 +14,7 @@ namespace Microsoft.Bot.Schema
         /// all recipients of the activity</param>
         /// <param name="actions">Actions that can be shown to the user</param>
         /// <exception cref="ArgumentNullException"/>
-        public SuggestedActions(IEnumerable<string> to, IEnumerable<CardAction> actions) : this(to.ToArray(), actions.ToArray()) { }
+        public SuggestedActions(IEnumerable<string> to, IEnumerable<CardAction> actions)
+            : this(to.ToArray(), actions.ToArray()) { }
     }
 }

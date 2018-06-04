@@ -26,11 +26,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         public void ShouldRenderChoicesAsAList()
         {
             var activity = ChoiceFactory.List(colorChoices, "select from:");
-            Assert.AreEqual(
-                $"select from:{Environment.NewLine}{Environment.NewLine}" +
-                $"   1. red{Environment.NewLine}" +
-                $"   2. green{Environment.NewLine}" +
-                $"   3. blue", activity.Text);
+            Assert.AreEqual("select from:\n\n   1. red\n   2. green\n   3. blue", activity.Text);
         }
 
         [TestMethod]
