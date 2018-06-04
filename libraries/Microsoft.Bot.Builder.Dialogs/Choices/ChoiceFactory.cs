@@ -170,7 +170,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
             {
                 sb.Append(text);
             }
-            sb.Append(Environment.NewLine + Environment.NewLine + "   ");
+            sb.Append("\n\n   ");
 
             int index = 1;
             foreach (var choice in choices)
@@ -193,7 +193,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
                 }
                 sb.Append(title);
 
-                separator = Environment.NewLine + "   ";
+                separator = "\n   ";
                 index++;
             }
 
