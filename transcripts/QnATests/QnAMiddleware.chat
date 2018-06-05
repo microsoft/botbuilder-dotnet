@@ -1,0 +1,13 @@
+user=User
+bot=Bot
+
+user:random text
+bot:default message
+user:hi
+bot:hello
+user:test
+bot:message
+user:tests
+bot:message
+user:custom random text
+bot:default message

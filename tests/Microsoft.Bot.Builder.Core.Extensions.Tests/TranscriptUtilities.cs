@@ -24,19 +24,64 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
         /// <returns>A list of activities to test</returns>
         public static IEnumerable<IActivity> GetFromTestContext(TestContext context)
         {
+            var relativePath = Path.Combine(context.FullyQualifiedTestClassName.Split('.').Last(), $"{context.TestName}.chat");
+            return GetActivities(relativePath);
+        }
+
+        public static IEnumerable<IActivity> GetActivities(string relativePath)
+        {
             var transcriptsRootFolder = TestUtilities.GetKey("TranscriptsRootFolder") ?? @"..\..\..\..\..\transcripts";
-            var directory = Path.Combine(transcriptsRootFolder, context.FullyQualifiedTestClassName.Split('.').Last());
-            var fileName = $"{context.TestName}.transcript";
-            var path = Path.Combine(directory, fileName);
+            var path = Path.Combine(transcriptsRootFolder, relativePath);
+            if (!File.Exists(path))
+            {
+                path = Path.Combine(transcriptsRootFolder, relativePath.Replace(".chat", ".transcript", StringComparison.InvariantCultureIgnoreCase));
+            }
             if (!File.Exists(path))
             {
                 Assert.Fail($"Required transcript file '{path}' does not exists in '{transcriptsRootFolder}' folder. Review the 'TranscriptsRootFolder' environment variable value.");
             }
 
-            var content = File.ReadAllText(path);
-            return JsonConvert.DeserializeObject<Activity[]>(content);
+            string content;
+            if (string.Equals(path.Split('.').Last(), "chat", StringComparison.InvariantCultureIgnoreCase))
+            {
+                content = Chatdown(path);
+            }
+            else
+            {
+                content = File.ReadAllText(path);
+            }
+
+            var activities = JsonConvert.DeserializeObject<List<Activity>>(content);
+
+            var lastActivity = activities.Last();
+            if (lastActivity.Text.Last() == '\n')
+            {
+                lastActivity.Text = lastActivity.Text.Remove(lastActivity.Text.Length - 1);
+            }
+
+            return activities.Take(activities.Count - 1).Append(lastActivity);
         }
 
+        public static string Chatdown(string path)
+        {
+            var file = new FileInfo(path);
+            var chatdown = new System.Diagnostics.ProcessStartInfo
+            {
+                FileName = "chatdown_gen.cmd",
+                Arguments = file.FullName,
+                UseShellExecute = false,
+                RedirectStandardOutput = true
+            };
+            var chatdownProcess = System.Diagnostics.Process.Start(chatdown);
+            var content = chatdownProcess.StandardOutput.ReadToEnd();
+            chatdownProcess.WaitForExit();
+            if (string.IsNullOrEmpty(content))
+            {
+                throw new Exception("Chatdown error. Please check if chatdown is correctly installed or install it with \"npm i -g chatdown\"");
+            }
+            return content;
+        }
+        
         /// <summary>
         /// Get a conversation reference.
         /// This method can be used to set the conversation reference needed to create a <see cref="Adapters.TestAdapter"/>

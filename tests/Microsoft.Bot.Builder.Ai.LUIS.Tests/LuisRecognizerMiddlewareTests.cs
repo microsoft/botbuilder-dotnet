@@ -41,7 +41,7 @@ namespace Microsoft.Bot.Builder.Ai.LUIS.Tests
                 return;
             }
 
-            var adapter = new TestAdapter()
+            var adapter = new TestAdapter(sendTraceActivity: true)
                 .Use(GetLuisRecognizerMiddleware(true));
 
             const string utterance = @"My name is Emad";
