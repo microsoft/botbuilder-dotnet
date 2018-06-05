@@ -5,6 +5,7 @@ using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Core.Extensions;
 using Microsoft.Bot.Builder.Core.Extensions.Tests;
 using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Recognizers.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -35,7 +36,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
                 }
                 else if (dialogCompletion.IsCompleted)
                 {
-                    var attachmentResult = (Prompts.AttachmentResult)dialogCompletion.Result;
+                    var attachmentResult = (AttachmentResult)dialogCompletion.Result;
                     var reply = (string)attachmentResult.Attachments.First().Content;
                     await turnContext.SendActivity(reply);
                 }
@@ -49,15 +50,15 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
         {
             var dialogs = new DialogSet();
 
-            dialogs.Add("test-prompt", new Dialogs.ChoicePrompt(Culture.English) { Style = Prompts.Choices.ListStyle.Inline });
+            dialogs.Add("test-prompt", new Dialogs.ChoicePrompt(Culture.English) { Style = ListStyle.Inline });
 
             var promptOptions = new ChoicePromptOptions
             {
-                Choices = new List<Prompts.Choices.Choice>
+                Choices = new List<Choice>
                 {
-                    new Prompts.Choices.Choice { Value = "red" },
-                    new Prompts.Choices.Choice { Value = "green" },
-                    new Prompts.Choices.Choice { Value = "blue" },
+                    new Choice { Value = "red" },
+                    new Choice { Value = "green" },
+                    new Choice { Value = "blue" },
                 },
                 RetryPromptString = "I didn't catch that. Select a color from the list."
             };
@@ -71,7 +72,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
                     },
                     async (dc, args, next) =>
                     {
-                        var choiceResult = (Prompts.ChoiceResult)args;
+                        var choiceResult = (ChoiceResult)args;
                         await dc.Context.SendActivity($"Bot received the choice '{choiceResult.Value.Value}'.");
                         await dc.End();
                     }
@@ -110,7 +111,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
             await new TestFlow(adapter, async (turnContext) =>
             {
                 var state = ConversationState<Dictionary<string, object>>.Get(turnContext);
-                var prompt = new ConfirmPrompt(Culture.English) { Style = Prompts.Choices.ListStyle.None };
+                var prompt = new ConfirmPrompt(Culture.English) { Style = ListStyle.None };
 
                 var dialogCompletion = await prompt.Continue(turnContext, state);
                 if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
@@ -124,7 +125,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
                 }
                 else if (dialogCompletion.IsCompleted)
                 {
-                    if (((Prompts.Results.ConfirmResult)dialogCompletion.Result).Confirmation)
+                    if (((ConfirmResult)dialogCompletion.Result).Confirmation)
                     {
                         await turnContext.SendActivity("Confirmed.");
                     }
@@ -155,10 +156,10 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
                 if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
                 {
                     await prompt.Begin(turnContext, state, new PromptOptions { PromptString = "What date would you like?", RetryPromptString = "Sorry, but that is not a date. What date would you like?" });
-                    }
+                }
                 else if (dialogCompletion.IsCompleted)
                 {
-                    var dateTimeResult = (Prompts.DateTimeResult)dialogCompletion.Result;
+                    var dateTimeResult = (DateTimeResult)dialogCompletion.Result;
                     var resolution = dateTimeResult.Resolution.First();
                     var reply = $"Timex:'{resolution.Timex}' Value:'{resolution.Value}'";
                     await turnContext.SendActivity(reply);
@@ -167,7 +168,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
             .Test(activities)
             .StartTest();
         }
-        
+
         [TestMethod]
         public async Task NumberPrompt()
         {
@@ -176,12 +177,12 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
             TestAdapter adapter = new TestAdapter()
                 .Use(new ConversationState<Dictionary<string, object>>(new MemoryStorage()));
 
-            Prompts.PromptValidatorEx.PromptValidator<Prompts.NumberResult<int>> validator = async (ctx, result) =>
+            PromptValidatorEx.PromptValidator<NumberResult<int>> validator = async (ctx, result) =>
             {
                 if (result.Value < 0)
-                    result.Status = Prompts.PromptStatus.TooSmall;
+                    result.Status = PromptStatus.TooSmall;
                 if (result.Value > 100)
-                    result.Status = Prompts.PromptStatus.TooBig;
+                    result.Status = PromptStatus.TooBig;
                 await Task.CompletedTask;
             };
 
@@ -202,7 +203,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
                 }
                 else if (dialogCompletion.IsCompleted)
                 {
-                    var numberResult = (Prompts.NumberResult<int>)dialogCompletion.Result;
+                    var numberResult = (NumberResult<int>)dialogCompletion.Result;
                     await turnContext.SendActivity($"Bot received the number '{numberResult.Value}'.");
                 }
             })
@@ -218,10 +219,10 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
             TestAdapter adapter = new TestAdapter()
                 .Use(new ConversationState<Dictionary<string, object>>(new MemoryStorage()));
 
-            Prompts.PromptValidatorEx.PromptValidator<Prompts.TextResult> validator = async (ctx, result) =>
+            PromptValidatorEx.PromptValidator<TextResult> validator = async (ctx, result) =>
             {
                 if (result.Value.Length <= 3)
-                    result.Status = Prompts.PromptStatus.TooSmall;
+                    result.Status = PromptStatus.TooSmall;
                 await Task.CompletedTask;
             };
 
@@ -242,7 +243,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
                 }
                 else if (dialogCompletion.IsCompleted)
                 {
-                    var textResult = (Prompts.TextResult)dialogCompletion.Result;
+                    var textResult = (TextResult)dialogCompletion.Result;
                     await turnContext.SendActivity($"Bot received the text '{textResult.Value}'.");
                 }
             })
@@ -325,7 +326,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
         {
             if (args != null)
             {
-                var numberResult = (Prompts.NumberResult<int>)args;
+                var numberResult = (NumberResult<int>)args;
                 await dc.Context.SendActivity($"Thanks for '{numberResult.Value}'");
             }
             await dc.Context.SendActivity("step2");
@@ -335,7 +336,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
         {
             if (args != null)
             {
-                var numberResult = (Prompts.NumberResult<int>)args;
+                var numberResult = (NumberResult<int>)args;
                 await dc.Context.SendActivity($"Thanks for '{numberResult.Value}'");
             }
             await dc.Context.SendActivity("step3");
