@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Net.Mime;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace Microsoft.Bot.Builder.Core.Extensions.Tests
 {
@@ -77,6 +78,29 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
             Assert.IsTrue((string)message.SuggestedActions.Actions[1].Value == "two");
             Assert.IsTrue(message.SuggestedActions.Actions[1].Title == "two");
             Assert.IsTrue(message.SuggestedActions.Actions[1].Type == ActionTypes.ImBack);
+        }
+
+        [TestMethod]
+        public void SuggestedActionEnumerable()
+        {
+            string text = Guid.NewGuid().ToString();
+            string ssml = Guid.NewGuid().ToString();
+            string inputHint = InputHints.ExpectingInput;
+            HashSet<string> textActions = new HashSet<string> { "one", "two", "three" };
+
+            IMessageActivity message = MessageFactory.SuggestedActions(textActions, text, ssml, inputHint);
+            Assert.AreEqual(message.Text, text, "Message Text does not match");
+            Assert.AreEqual(message.Type, ActivityTypes.Message, "Incorrect Activity Type");
+            Assert.AreEqual(message.InputHint, inputHint, "InputHint does not match");
+            Assert.AreEqual(message.Speak, ssml, "ssml text is incorrect");
+            Assert.IsNotNull(message.SuggestedActions);
+            Assert.IsNotNull(message.SuggestedActions.Actions);
+            Assert.IsTrue(textActions.SetEquals(message.SuggestedActions.Actions.Select(action => (string)action.Value)),
+                "The message's suggested actions have the wrong set of values.");
+            Assert.IsTrue(textActions.SetEquals(message.SuggestedActions.Actions.Select(action=>action.Title)),
+                "The message's suggested actions have the wrong set of titles.");
+            Assert.IsTrue(message.SuggestedActions.Actions.All(action => action.Type.Equals(ActionTypes.ImBack)),
+                "The message's suggested actions are of the wrong action type.");
         }
 
         [TestMethod]
