@@ -63,7 +63,7 @@ namespace Microsoft.Bot.Builder.Adapters
 
             using (var context = new TurnContext(this, activity))
             {
-                await base.RunPipeline(context, callback, cancelToken);
+                await base.RunPipeline(context, callback);
             }
         }
 

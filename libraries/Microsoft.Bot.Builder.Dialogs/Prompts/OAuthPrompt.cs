@@ -4,9 +4,8 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Prompts;
 using Microsoft.Bot.Schema;
-using static Microsoft.Bot.Builder.Prompts.PromptValidatorEx;
+using static Microsoft.Bot.Builder.Dialogs.PromptValidatorEx;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
@@ -71,7 +70,7 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// </summary>
     public class OAuthPrompt : Dialog, IDialogContinue
     {
-        private Prompts.OAuthPrompt _prompt;
+        private OAuthPromptInternal _prompt;
         private OAuthPromptSettingsWithTimeout _settings;
 
         // Default prompt timeout of 15 minutes (in ms)
@@ -80,7 +79,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         public OAuthPrompt(OAuthPromptSettingsWithTimeout settings, PromptValidator<TokenResult> validator = null)
         {
             _settings = settings ?? throw new ArgumentNullException(nameof(settings));
-            _prompt = new Prompts.OAuthPrompt(settings, validator);
+            _prompt = new OAuthPromptInternal(settings, validator);
         }
 
         public async Task DialogBegin(DialogContext dc, IDictionary<string, object> dialogArgs = null)
