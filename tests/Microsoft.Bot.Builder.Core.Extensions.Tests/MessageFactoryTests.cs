@@ -6,6 +6,7 @@ using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Mime;
 using System.Threading.Tasks;
 
@@ -193,6 +194,38 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
         }
 
 
+        public void CarouselUnorderedAttachments()
+        {
+            string text = Guid.NewGuid().ToString();
+            string ssml = Guid.NewGuid().ToString();
+            string inputHint = InputHints.ExpectingInput;
+
+            string attachmentName1 = Guid.NewGuid().ToString();
+            Attachment attachment1 = new Attachment
+            {
+                Name = attachmentName1
+            };
+
+            string attachmentName2 = Guid.NewGuid().ToString();
+            Attachment attachment2 = new Attachment
+            {
+                Name = attachmentName2
+            };
+
+            HashSet<Attachment> multipleAttachments = new HashSet<Attachment> { attachment1, attachment2 };
+            IMessageActivity message = MessageFactory.Carousel(multipleAttachments, text, ssml, inputHint);
+
+            HashSet<string> names = new HashSet<string> { attachmentName1, attachmentName2 };
+
+            Assert.AreEqual(message.Text, text, "Message Text does not match");
+            Assert.AreEqual(message.Type, ActivityTypes.Message, "Incorrect Activity Type");
+            Assert.AreEqual(message.InputHint, inputHint, "InputHint does not match");
+            Assert.AreEqual(message.Speak, ssml, "ssml text is incorrect");
+            Assert.IsTrue(message.AttachmentLayout == AttachmentLayoutTypes.Carousel);
+            Assert.IsTrue(message.Attachments.Count == 2, "Incorrect Attachment Count");
+            Assert.IsTrue(names.SetEquals(message.Attachments.Select(a => a.Name)), "Incorrect set of attachment names.");
+        }
+
         [TestMethod]
         public void AttachmentMultiple()
         {
@@ -200,7 +233,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
             string ssml = Guid.NewGuid().ToString();
             string inputHint = InputHints.ExpectingInput;
 
-            string attachmentName = Guid.NewGuid().ToString();            
+            string attachmentName = Guid.NewGuid().ToString();
             Attachment a = new Attachment
             {
                 Name = attachmentName
@@ -223,6 +256,39 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
             Assert.IsTrue(message.Attachments.Count == 2, "Incorrect Attachment Count");
             Assert.IsTrue(message.Attachments[0].Name == attachmentName, "Incorrect Attachment1 Name");
             Assert.IsTrue(message.Attachments[1].Name == attachmentName2, "Incorrect Attachment2 Name");
+        }
+
+        [TestMethod]
+        public void AttachmentMultipleUnordered()
+        {
+            string text = Guid.NewGuid().ToString();
+            string ssml = Guid.NewGuid().ToString();
+            string inputHint = InputHints.ExpectingInput;
+
+            string attachmentName1 = Guid.NewGuid().ToString();
+            Attachment attachment1 = new Attachment
+            {
+                Name = attachmentName1
+            };
+
+            string attachmentName2 = Guid.NewGuid().ToString();
+            Attachment attachment2 = new Attachment
+            {
+                Name = attachmentName2
+            };
+
+            HashSet<Attachment> multipleAttachments = new HashSet<Attachment> { attachment1, attachment2 };
+            IMessageActivity message = MessageFactory.Attachment(multipleAttachments, text, ssml, inputHint);
+
+            HashSet<string> names = new HashSet<string> { attachmentName1, attachmentName2 };
+
+            Assert.AreEqual(message.Text, text, "Message Text does not match");
+            Assert.AreEqual(message.Type, ActivityTypes.Message, "Incorrect Activity Type");
+            Assert.AreEqual(message.InputHint, inputHint, "InputHint does not match");
+            Assert.AreEqual(message.Speak, ssml, "ssml text is incorrect");
+            Assert.IsTrue(message.AttachmentLayout == AttachmentLayoutTypes.List);
+            Assert.IsTrue(message.Attachments.Count == 2, "Incorrect Attachment Count");
+            Assert.IsTrue(names.SetEquals(message.Attachments.Select(a => a.Name)), "Incorrect set of attachment names.");
         }
 
         [TestMethod]
