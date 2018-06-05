@@ -93,7 +93,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions
         /// <see cref="Microsoft.Bot.Schema.ActionTypes.ImBack"/>.
         /// </remarks>
         /// <seealso cref="SuggestedActions(IList{CardAction}, string, string, string)"/>
-        public static IMessageActivity SuggestedActions(IList<string> actions, string text = null, string ssml = null, string inputHint = null)
+        public static IMessageActivity SuggestedActions(IEnumerable<string> actions, string text = null, string ssml = null, string inputHint = null)
         {
             if (actions == null)
                 throw new ArgumentNullException(nameof(actions));
