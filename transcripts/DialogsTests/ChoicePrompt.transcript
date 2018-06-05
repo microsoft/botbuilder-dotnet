@@ -1,0 +1,282 @@
+[
+  {
+    "conversation": {
+      "id": "1"
+    },
+    "id": "09e03359-9cd0-43d7-8701-ed1c93712be6",
+    "recipient": {
+      "id": "5f321b3e-3929-3be8-af7c-eab17fbbe2ca",
+      "name": "bot",
+      "role": "bot"
+    },
+    "from": {
+      "id": "e0db8d41-8f9f-3013-9d0a-a2955877e014",
+      "name": "user",
+      "role": "user"
+    },
+    "text": "Hello!",
+    "timestamp": "2018-05-22T15:56:21.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "1"
+    },
+    "id": "0754c907-db64-4264-8f03-59024ea90fd4",
+    "recipient": {
+      "id": "e0db8d41-8f9f-3013-9d0a-a2955877e014",
+      "name": "user",
+      "role": "user"
+    },
+    "from": {
+      "id": "5f321b3e-3929-3be8-af7c-eab17fbbe2ca",
+      "name": "bot",
+      "role": "bot"
+    },
+    "text": "favorite color? (1) red, (2) green, or (3) blue",
+    "timestamp": "2018-05-22T15:56:23.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "1"
+    },
+    "id": "594a1c9d-47b6-41f1-be4e-5fb51afa7dd1",
+    "recipient": {
+      "id": "5f321b3e-3929-3be8-af7c-eab17fbbe2ca",
+      "name": "bot",
+      "role": "bot"
+    },
+    "from": {
+      "id": "e0db8d41-8f9f-3013-9d0a-a2955877e014",
+      "name": "user",
+      "role": "user"
+    },
+    "text": "red",
+    "timestamp": "2018-05-22T15:56:25.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "1"
+    },
+    "id": "4cf81414-45d1-43f7-93c2-3ce62b9880a4",
+    "recipient": {
+      "id": "e0db8d41-8f9f-3013-9d0a-a2955877e014",
+      "name": "user",
+      "role": "user"
+    },
+    "from": {
+      "id": "5f321b3e-3929-3be8-af7c-eab17fbbe2ca",
+      "name": "bot",
+      "role": "bot"
+    },
+    "text": "Bot received the choice 'red'.",
+    "timestamp": "2018-05-22T15:56:27.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "1"
+    },
+    "id": "ed2c0441-c3fd-48ee-8c4e-576dc603b3b9",
+    "recipient": {
+      "id": "5f321b3e-3929-3be8-af7c-eab17fbbe2ca",
+      "name": "bot",
+      "role": "bot"
+    },
+    "from": {
+      "id": "e0db8d41-8f9f-3013-9d0a-a2955877e014",
+      "name": "user",
+      "role": "user"
+    },
+    "text": "Hello!",
+    "timestamp": "2018-05-22T15:56:29.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "1"
+    },
+    "id": "06526330-9d26-4def-a26c-ddd84c184c4c",
+    "recipient": {
+      "id": "e0db8d41-8f9f-3013-9d0a-a2955877e014",
+      "name": "user",
+      "role": "user"
+    },
+    "from": {
+      "id": "5f321b3e-3929-3be8-af7c-eab17fbbe2ca",
+      "name": "bot",
+      "role": "bot"
+    },
+    "text": "favorite color? (1) red, (2) green, or (3) blue",
+    "timestamp": "2018-05-22T15:56:31.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "1"
+    },
+    "id": "fc82f276-8c3f-4672-befd-9d0d8a240d20",
+    "recipient": {
+      "id": "5f321b3e-3929-3be8-af7c-eab17fbbe2ca",
+      "name": "bot",
+      "role": "bot"
+    },
+    "from": {
+      "id": "e0db8d41-8f9f-3013-9d0a-a2955877e014",
+      "name": "user",
+      "role": "user"
+    },
+    "text": "3",
+    "timestamp": "2018-05-22T15:56:33.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "1"
+    },
+    "id": "0dfc1f73-4755-48cf-8699-c2936c6aff98",
+    "recipient": {
+      "id": "e0db8d41-8f9f-3013-9d0a-a2955877e014",
+      "name": "user",
+      "role": "user"
+    },
+    "from": {
+      "id": "5f321b3e-3929-3be8-af7c-eab17fbbe2ca",
+      "name": "bot",
+      "role": "bot"
+    },
+    "text": "Bot received the choice 'blue'.",
+    "timestamp": "2018-05-22T15:56:35.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "1"
+    },
+    "id": "d5160a9b-94d4-4c9c-b6dc-64d6639d5ef5",
+    "recipient": {
+      "id": "5f321b3e-3929-3be8-af7c-eab17fbbe2ca",
+      "name": "bot",
+      "role": "bot"
+    },
+    "from": {
+      "id": "e0db8d41-8f9f-3013-9d0a-a2955877e014",
+      "name": "user",
+      "role": "user"
+    },
+    "text": "Hello!",
+    "timestamp": "2018-05-22T15:56:37.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "1"
+    },
+    "id": "bb700149-fbac-46b0-b6d1-0030a8a842bd",
+    "recipient": {
+      "id": "e0db8d41-8f9f-3013-9d0a-a2955877e014",
+      "name": "user",
+      "role": "user"
+    },
+    "from": {
+      "id": "5f321b3e-3929-3be8-af7c-eab17fbbe2ca",
+      "name": "bot",
+      "role": "bot"
+    },
+    "text": "favorite color? (1) red, (2) green, or (3) blue",
+    "timestamp": "2018-05-22T15:56:39.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "1"
+    },
+    "id": "e9a18f56-b35e-4a7f-b2f2-943333a8ab20",
+    "recipient": {
+      "id": "5f321b3e-3929-3be8-af7c-eab17fbbe2ca",
+      "name": "bot",
+      "role": "bot"
+    },
+    "from": {
+      "id": "e0db8d41-8f9f-3013-9d0a-a2955877e014",
+      "name": "user",
+      "role": "user"
+    },
+    "text": "cat",
+    "timestamp": "2018-05-22T15:56:41.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "1"
+    },
+    "id": "5d7733e8-9eed-40bd-afc6-a0c42d5c086f",
+    "recipient": {
+      "id": "e0db8d41-8f9f-3013-9d0a-a2955877e014",
+      "name": "user",
+      "role": "user"
+    },
+    "from": {
+      "id": "5f321b3e-3929-3be8-af7c-eab17fbbe2ca",
+      "name": "bot",
+      "role": "bot"
+    },
+    "text": "I didn't catch that. Select a color from the list. (1) red, (2) green, or (3) blue",
+    "timestamp": "2018-05-22T15:56:43.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "1"
+    },
+    "id": "64b7bd53-18ea-49d5-8522-3b8677650679",
+    "recipient": {
+      "id": "5f321b3e-3929-3be8-af7c-eab17fbbe2ca",
+      "name": "bot",
+      "role": "bot"
+    },
+    "from": {
+      "id": "e0db8d41-8f9f-3013-9d0a-a2955877e014",
+      "name": "user",
+      "role": "user"
+    },
+    "text": "green",
+    "timestamp": "2018-05-22T15:56:45.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "1"
+    },
+    "id": "00da4ce3-cd52-4ddb-827d-89f9a5fda19d",
+    "recipient": {
+      "id": "e0db8d41-8f9f-3013-9d0a-a2955877e014",
+      "name": "user",
+      "role": "user"
+    },
+    "from": {
+      "id": "5f321b3e-3929-3be8-af7c-eab17fbbe2ca",
+      "name": "bot",
+      "role": "bot"
+    },
+    "text": "Bot received the choice 'green'.",
+    "timestamp": "2018-05-22T15:56:47.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  }
+]

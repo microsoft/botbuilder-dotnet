@@ -27,7 +27,7 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
                 return;
             }
             const string passUtterance = @"Foo";
-            TestAdapter adapter = new TestAdapter()
+            TestAdapter adapter = new TestAdapter(sendTraceActivity: true)
                 .Use(new QnAMakerMiddleware(
                     new QnAMakerEndpoint
                     {
@@ -81,7 +81,7 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
             }
             const string goodUtterance = @"how do I clean the stove?";
             const string botResponse = @"BaseCamp: You can use a damp rag to clean around the Power Pack. Do not attempt to detach it from the stove body. As with any electronic device, never pour water on it directly. CampStove 2 & CookStove: Power module: Remove the plastic power module from the fuel chamber and wipe it down with a damp cloth with soap and water. DO NOT submerge the power module in water or get it excessively wet. Fuel chamber: Wipe out with a nylon brush as needed. The pot stand at the top of the fuel chamber can be wiped off with a damp cloth and dried well. The fuel chamber can also be washed in a dishwasher. Dry very thoroughly.";
-            TestAdapter adapter = new TestAdapter()
+            TestAdapter adapter = new TestAdapter(sendTraceActivity: true)
                 .Use(new QnAMakerMiddleware(
                     new QnAMakerEndpoint
                     {
