@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using Microsoft.Bot.Builder.Core.Extensions;
 using Microsoft.Bot.Schema;
 
@@ -11,35 +12,42 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
 {
     public class ChoiceFactory
     {
-        public static IMessageActivity ForChannel(ITurnContext context, List<Choice> choices, string text = null, string speak = null, ChoiceFactoryOptions options = null)
+        public static IMessageActivity ForChannel(ITurnContext context, IEnumerable<Choice> choices, string text = null, string speak = null, ChoiceFactoryOptions options = null)
         {
             return ForChannel(Channel.GetChannelId(context), choices, text, speak, options);
         }
 
-        public static IMessageActivity ForChannel(ITurnContext context, List<string> choices, string text = null, string speak = null, ChoiceFactoryOptions options = null)
+        public static IMessageActivity ForChannel(ITurnContext context, IEnumerable<string> choices, string text = null, string speak = null, ChoiceFactoryOptions options = null)
         {
             return ForChannel(Channel.GetChannelId(context), ToChoices(choices), text, speak, options);
         }
 
-        public static IMessageActivity ForChannel(string channelId, List<string> choices, string text = null, string speak = null, ChoiceFactoryOptions options = null)
+        public static IMessageActivity ForChannel(string channelId, IEnumerable<string> choices, string text = null, string speak = null, ChoiceFactoryOptions options = null)
         {
             return ForChannel(channelId, ToChoices(choices), text, speak, options);
         }
 
-        public static IMessageActivity ForChannel(string channelId, List<Choice> list, string text = null, string speak = null, ChoiceFactoryOptions options = null)
+        public static IMessageActivity ForChannel(string channelId, IEnumerable<Choice> choices, string text = null, string speak = null, ChoiceFactoryOptions options = null)
         {
-            list = list ?? new List<Choice>();
+            if (choices is null)
+            {
+                throw new ArgumentNullException("The collection of choices can not be null.", nameof(choices));
+            }
+
+            var list = new List<Choice>();
 
             // Find maximum title length
             var maxTitleLength = 0;
-            foreach (var choice in list)
+            foreach (var choice in choices)
             {
-                var l = choice.Action != null && string.IsNullOrEmpty(choice.Action.Title) ? choice.Action.Title.Length : choice.Value.Length;
-                if (l > maxTitleLength)
+                int len = GetTitle(choice).Length;
+                if (len > maxTitleLength)
                 {
-                    maxTitleLength = l;
+                    maxTitleLength = len;
                 }
-            };
+
+                list.Add(choice);
+            }
 
             // Determine list style
             var supportsSuggestedActions = Channel.SupportsSuggestedActions(channelId, list.Count);
@@ -66,14 +74,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
             }
         }
 
-        public static Activity Inline(List<string> choices, string text = null, string speak = null, ChoiceFactoryOptions options = null)
+        public static Activity Inline(IEnumerable<string> choices, string text = null, string speak = null, ChoiceFactoryOptions options = null)
         {
             return Inline(ToChoices(choices), text, speak, options);
         }
 
-        public static Activity Inline(List<Choice> choices, string text = null, string speak = null, ChoiceFactoryOptions options = null)
+        public static Activity Inline(IEnumerable<Choice> choices, string text = null, string speak = null, ChoiceFactoryOptions options = null)
         {
-            choices = choices ?? new List<Choice>();
+            if (choices is null)
+            {
+                throw new ArgumentNullException("The collection of choices can not be null.", nameof(choices));
+            }
+
             options = options ?? new ChoiceFactoryOptions();
 
             var opt = new ChoiceFactoryOptions
@@ -85,88 +97,121 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
             };
 
             // Format list of choices
-            var connector = string.Empty;
-            var txt = text ?? string.Empty;
-            txt += " ";
-
-            for (var index = 0; index < choices.Count; index++)
+            var separator = string.Empty;
+            var sb = new StringBuilder();
+            if (text != null)
             {
-                var choice = choices[index];
+                sb.Append(text);
+            }
+            sb.Append(' ');
 
-                var title = choice.Action != null && choice.Action.Title != null ? choice.Action.Title : choice.Value;
+            var list = choices.ToList();
+            for (int i = 0; i < list.Count; i++)
+            {
+                var choice = list[i];
+                if (choice is null)
+                {
+                    throw new ArgumentException("Set of choices contained a null element, which is not allowed.", nameof(choices));
+                }
 
-                txt += $"{connector}";
+                string title = GetTitle(choice);
+                sb.Append(separator);
                 if (opt.IncludeNumbers.Value)
                 {
-                    txt += "(" + (index + 1).ToString() + ") ";
+                    sb.Append('(');
+                    sb.Append(i + 1);
+                    sb.Append(") ");
                 }
-                txt += $"{title}";
-                if (index == (choices.Count - 2))
-                {
-                    connector = (index == 0 ? opt.InlineOr : opt.InlineOrMore) ?? string.Empty;
-                }
-                else
-                {
-                    connector = opt.InlineSeparator ?? string.Empty;
-                }
+                sb.Append(title);
+
+                // Insert separators between items.
+                // Use an "Oxford comma"-style separator for three or more items.
+                separator = (i == list.Count - 2)
+                    ? (i == 0 ? opt.InlineOr : opt.InlineOrMore) ?? string.Empty
+                    : opt.InlineSeparator ?? string.Empty;
             }
-            txt += "";
 
             // Return activity with choices as an inline list.
-            return MessageFactory.Text(txt, speak, InputHints.ExpectingInput);
+            return MessageFactory.Text(sb.ToString(), speak, InputHints.ExpectingInput);
         }
 
-        public static Activity List(List<string> choices, string text = null, string speak = null, ChoiceFactoryOptions options = null)
+        /// <summary>
+        /// Gets a "normalized" title for a <see cref="Choice"/> object.
+        /// </summary>
+        /// <param name="choice">The choice object.</param>
+        /// <returns>The normalized title.</returns>
+        /// <exception cref="ArgumentNullException"/>
+        /// <exception cref="InvalidOperationException">The choice does not have a valid action title or value to use as a title.</exception>
+        private static string GetTitle(Choice choice)
+        {
+            if (choice is null) throw new ArgumentException();
+
+            if (!string.IsNullOrWhiteSpace(choice.Action?.Title)) return choice.Action.Title.Trim();
+            if (!string.IsNullOrWhiteSpace(choice.Value)) return choice.Value.Trim();
+
+            throw new InvalidOperationException("Each choice must specify either an action title or a value.");
+        }
+
+        public static Activity List(IEnumerable<string> choices, string text = null, string speak = null, ChoiceFactoryOptions options = null)
         {
             return List(ToChoices(choices), text, speak, options);
         }
 
-        public static Activity List(List<Choice> choices, string text = null, string speak = null, ChoiceFactoryOptions options = null)
+        public static Activity List(IEnumerable<Choice> choices, string text = null, string speak = null, ChoiceFactoryOptions options = null)
         {
-            choices = choices ?? new List<Choice>();
             options = options ?? new ChoiceFactoryOptions();
 
             bool includeNumbers = options.IncludeNumbers ?? true;
 
             // Format list of choices
-            var connector = string.Empty;
-            var txt = (text ?? string.Empty);
-            txt += "\n\n   ";
-
-            for (var index = 0; index < choices.Count; index++)
+            var separator = string.Empty;
+            var sb = new StringBuilder();
+            if (text != null)
             {
-                var choice = choices[index];
+                sb.Append(text);
+            }
+            sb.Append("\n\n   ");
 
-                var title = choice.Action != null && choice.Action.Title != null ? choice.Action.Title : choice.Value;
+            int index = 1;
+            foreach (var choice in choices)
+            {
+                if (choice is null)
+                {
+                    throw new ArgumentException("Set of choices contained a null element, which is not allowed.", nameof(choices));
+                }
 
-                txt += connector;
+                string title = GetTitle(choice);
+                sb.Append(separator);
                 if (includeNumbers)
                 {
-                    txt += (index + 1).ToString() + ". ";
+                    sb.Append(index);
+                    sb.Append(". ");
                 }
                 else
                 {
-                    txt += "- ";
+                    sb.Append("- ");
                 }
-                txt += title;
-                connector = "\n   ";
+                sb.Append(title);
+
+                separator = "\n   ";
+                index++;
             }
 
             // Return activity with choices as a numbered list.
-            return MessageFactory.Text(txt, speak, InputHints.ExpectingInput);
+            return MessageFactory.Text(sb.ToString(), speak, InputHints.ExpectingInput);
         }
 
-        public static IMessageActivity SuggestedAction(List<string> choices, string text = null, string speak = null)
+        public static IMessageActivity SuggestedAction(IEnumerable<string> choices, string text = null, string speak = null)
         {
             return SuggestedAction(ToChoices(choices), text, speak);
         }
 
-        public static IMessageActivity SuggestedAction(List<Choice> choices, string text = null, string speak = null)
+        public static IMessageActivity SuggestedAction(IEnumerable<Choice> choices, string text = null, string speak = null)
         {
-            choices = choices ?? new List<Choice>();
+            var choiceList = choices?.ToList() ?? new List<Choice>();
 
             // Map choices to actions
-            var actions = choices.Select((choice) =>
+            var actions = choiceList.Select((choice) =>
             {
                 if (choice.Action != null)
                 {
@@ -187,7 +232,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
             return MessageFactory.SuggestedActions(actions, text, speak, InputHints.ExpectingInput);
         }
 
-        public static List<Choice> ToChoices(List<string> choices)
+        public static List<Choice> ToChoices(IEnumerable<string> choices)
         {
             return (choices == null)
                     ?
