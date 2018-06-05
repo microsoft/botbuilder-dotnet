@@ -103,7 +103,6 @@ namespace Microsoft.Bot.Builder
         /// </summary>
         /// <param name="context">The turn's context object.</param>
         /// <param name="callback">A callback method to run at the end of the pipeline.</param>
-        /// <param name="cancelToken">A cancellation token for the task.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <exception cref="ArgumentNullException">
         /// <paramref name="context"/> is null.</exception>
@@ -121,7 +120,7 @@ namespace Microsoft.Bot.Builder
         /// initiated by a call to <see cref="ContinueConversation(ConversationReference, Func{ITurnContext, Task})"/>
         /// (proactive messaging), the callback method is the callback method that was provided in the call.</para>
         /// </remarks>
-        protected async Task RunPipeline(ITurnContext context, Func<ITurnContext, Task> callback = null, CancellationTokenSource cancelToken = null)
+        protected async Task RunPipeline(ITurnContext context, Func<ITurnContext, Task> callback = null)
         {
             BotAssert.ContextNotNull(context);
 
