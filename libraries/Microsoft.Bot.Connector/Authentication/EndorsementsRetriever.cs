@@ -106,16 +106,19 @@ namespace Microsoft.Bot.Connector.Authentication
 
             using (var documentResponse = await _httpClient.GetAsync(address, cancellationToken))
             {
-                documentResponse.EnsureSuccessStatusCode();
+                if (!documentResponse.IsSuccessStatusCode)
+                {
+                    throw new EndorsementsDocumentRetrievalException(address, $"An non-success status code of {documentResponse.StatusCode} was received while fetching the endorsements document.");
+                }
 
                 var json = await documentResponse.Content.ReadAsStringAsync();
-                var obj = JObject.Parse(json);
 
-                if (!obj.HasValues)
+                if(string.IsNullOrWhiteSpace(json))
                 {
                     return string.Empty;
                 }
 
+                var obj = JObject.Parse(json);
                 var keysUrl = obj[JsonWebKeySetUri]?.Value<string>();
 
                 if (keysUrl == null)
@@ -125,11 +128,42 @@ namespace Microsoft.Bot.Connector.Authentication
 
                 using (var keysResponse = await _httpClient.GetAsync(keysUrl, cancellationToken))
                 {
-                    keysResponse.EnsureSuccessStatusCode();
+                    if (!keysResponse.IsSuccessStatusCode)
+                    {
+                        throw new EndorsementsDocumentRetrievalException(keysUrl, $"An non-success status code of {keysResponse.StatusCode} was received while fetching the web key set document.");
+                    }
 
                     return await keysResponse.Content.ReadAsStringAsync();
                 }
             }
         }
+    }
+
+
+    [Serializable]
+    public class EndorsementsRetrieverException : Exception
+    {
+        public EndorsementsRetrieverException(string message) : base(message)
+        {
+        }
+
+        public EndorsementsRetrieverException(string message, Exception inner) : base(message, inner)
+        {
+        }
+
+        protected EndorsementsRetrieverException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) : base(info, context)
+        {
+        }
+    }
+
+    [Serializable]
+    public sealed class EndorsementsDocumentRetrievalException : EndorsementsRetrieverException
+    {
+        public EndorsementsDocumentRetrievalException(string address, string message) : base(message)
+        {
+            Address = address;
+        }
+
+        public string Address { get; private set; }
     }
 }
