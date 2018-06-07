@@ -7,6 +7,7 @@ using RichardSzalay.MockHttp;
 using System.Net.Http;
 using Microsoft.IdentityModel.Protocols;
 using System.Threading;
+using System.Net;
 
 namespace Microsoft.Bot.Connector.Authentication.Tests
 {
@@ -137,6 +138,117 @@ namespace Microsoft.Bot.Connector.Authentication.Tests
                 Func<Task> action = async () => await _endorsementsRetriever.GetConfigurationAsync(FakeDocumentAddress, _mockDocumentRetriever.Object, CancellationToken.None);
 
                 action.Should().Throw<Exception>().And.Message.Should().Be(nameof(ThrowsIfDocumentRetrieverThrows));
+            }
+        }
+
+        public class GetDocumentAsyncTests
+        {
+            private const string FakeDocumentAddress = "http://fakeendorsementsaddress";
+            private const string FakeKeysAddressUrl = "http://fakekeysaddress";
+
+            private readonly MockHttpMessageHandler _mockHttpMessageHandler;
+            private readonly EndorsementsRetriever _endorsementsRetriever;
+
+            public GetDocumentAsyncTests()
+            {
+                _mockHttpMessageHandler = new MockHttpMessageHandler();
+                _endorsementsRetriever = new EndorsementsRetriever(_mockHttpMessageHandler.ToHttpClient());
+            }
+
+            [Fact]
+            public void NullAddressParameterShouldThrow()
+            {
+                Func<Task> action = async () => await _endorsementsRetriever.GetDocumentAsync(null, CancellationToken.None);
+
+                action.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("address");
+            }
+
+            [Fact]
+            public void NonSuccessHttpStatusResponseForEndorsementsDocumentShouldThrow()
+            {
+                _mockHttpMessageHandler.When(FakeDocumentAddress)
+                    .Respond(HttpStatusCode.NotFound);
+
+                Func<Task> action = async () => await _endorsementsRetriever.GetDocumentAsync(FakeDocumentAddress, CancellationToken.None);
+
+                action.Should().Throw<EndorsementsDocumentRetrievalException>().And.Address.Should().Be(FakeDocumentAddress);
+            }
+
+            [Fact]
+            public void NonSuccessHttpStatusResponseForWebKeySetDocumentShouldThrow()
+            {
+                _mockHttpMessageHandler.When(FakeDocumentAddress)
+                    .Respond(new StringContent($@"{{ ""{EndorsementsRetriever.JsonWebKeySetUri}"": ""{FakeKeysAddressUrl}"" }}"));
+
+                _mockHttpMessageHandler.When(FakeKeysAddressUrl)
+                    .Respond(HttpStatusCode.NotFound);
+
+                Func <Task> action = async () => await _endorsementsRetriever.GetDocumentAsync(FakeDocumentAddress, CancellationToken.None);
+
+                action.Should().Throw<EndorsementsDocumentRetrievalException>().And.Address.Should().Be(FakeKeysAddressUrl);
+            }
+
+            [Fact]
+            public async Task EmptyEndorsementsResponseReturnsEmptyResult()
+            {
+                _mockHttpMessageHandler.When(FakeDocumentAddress)
+                    .Respond(new StringContent(string.Empty));
+
+                var result = await _endorsementsRetriever.GetDocumentAsync(FakeDocumentAddress, CancellationToken.None);
+
+                result.Should().BeEmpty();
+            }
+
+            [Fact]
+            public async Task EmptyEndorsementsDocumentReturnsEmptyResult()
+            {
+                _mockHttpMessageHandler.When(FakeDocumentAddress)
+                    .Respond(new StringContent("{}"));
+
+                var result = await _endorsementsRetriever.GetDocumentAsync(FakeDocumentAddress, CancellationToken.None);
+
+                result.Should().BeEmpty();
+
+                _mockHttpMessageHandler.VerifyNoOutstandingRequest();
+            }
+
+            [Fact]
+            public async Task EndorsementsDocumentWithNoKeyReturnsEmptyResult()
+            {
+                _mockHttpMessageHandler.When(FakeDocumentAddress)
+                    .Respond(new StringContent(@"{ ""somkey1"": 123, ""somekey2"": ""hello world"" }"));
+
+                var result = await _endorsementsRetriever.GetDocumentAsync(FakeDocumentAddress, CancellationToken.None);
+
+                result.Should().BeEmpty();
+            }
+
+            [Fact]
+            public async Task EmptyKeySetDocumentResponseReturnsEmptyResult()
+            {
+                _mockHttpMessageHandler.When(FakeDocumentAddress)
+                    .Respond(new StringContent($@"{{ ""{EndorsementsRetriever.JsonWebKeySetUri}"": ""{FakeKeysAddressUrl}"" }}"));
+
+                _mockHttpMessageHandler.When(FakeKeysAddressUrl)
+                    .Respond(new StringContent(string.Empty));
+
+                var result = await _endorsementsRetriever.GetDocumentAsync(FakeDocumentAddress, CancellationToken.None);
+
+                result.Should().BeEmpty();
+            }
+
+            [Fact]
+            public async Task ExpectedKeySetDocumentReturnsSuccessfully()
+            {
+                _mockHttpMessageHandler.When(FakeDocumentAddress)
+                    .Respond(new StringContent($@"{{ ""{EndorsementsRetriever.JsonWebKeySetUri}"": ""{FakeKeysAddressUrl}"" }}"));
+
+                _mockHttpMessageHandler.When(FakeKeysAddressUrl)
+                    .Respond(new StringContent(nameof(ExpectedKeySetDocumentReturnsSuccessfully)));
+
+                var result = await _endorsementsRetriever.GetDocumentAsync(FakeDocumentAddress, CancellationToken.None);
+
+                result.Should().Be(nameof(ExpectedKeySetDocumentReturnsSuccessfully));
             }
         }
     }
