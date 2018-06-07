@@ -73,31 +73,41 @@ namespace Microsoft.Bot.Builder.Dialogs
             if (!ChannelSupportsOAuthCard(context.Activity.ChannelId))
             {
                 var link = await adapter.GetOauthSignInLink(context, _settings.ConnectionName).ConfigureAwait(false);
-                cardAttachment = new Attachment()
+                cardAttachment = new Attachment
                 {
                     ContentType = SigninCard.ContentType,
-                    Content = new SigninCard()
+                    Content = new SigninCard
                     {
                         Text = _settings.Text,
-                        Buttons = new CardAction[]
+                        Buttons = new []
                         {
-                        new CardAction() {Title = _settings.Title, Value = link, Type = ActionTypes.Signin }
+                            new CardAction
+                            {
+                                Title = _settings.Title,
+                                Value = link,
+                                Type = ActionTypes.Signin
+                            }
                         }
                     }
                 };
             }
             else
             {
-                cardAttachment = new Attachment()
+                cardAttachment = new Attachment
                 {
                     ContentType = OAuthCard.ContentType,
-                    Content = new OAuthCard()
+                    Content = new OAuthCard
                     {
                         Text = _settings.Text,
                         ConnectionName = _settings.ConnectionName,
-                        Buttons = new CardAction[]
+                        Buttons = new []
                         {
-                        new CardAction() {Title = _settings.Title, Text = _settings.Text, Type = ActionTypes.Signin }
+                            new CardAction
+                            {
+                                Title = _settings.Title,
+                                Text = _settings.Text,
+                                Type = ActionTypes.Signin
+                            }
                         }
                     }
                 };
@@ -117,7 +127,11 @@ namespace Microsoft.Bot.Builder.Dialogs
             {
                 var tokenResponseObject = context.Activity.Value as JObject;
                 var tokenResponse = tokenResponseObject?.ToObject<TokenResponse>();
-                return new TokenResult() { Status = PromptStatus.Recognized, TokenResponse = tokenResponse };
+                return new TokenResult
+                {
+                    Status = PromptStatus.Recognized,
+                    TokenResponse = tokenResponse
+                };
             }
             else if (context.Activity.Type == ActivityTypes.Message)
             {
@@ -127,14 +141,23 @@ namespace Microsoft.Bot.Builder.Dialogs
                     var adapter = context.Adapter as BotFrameworkAdapter;
                     if (adapter == null)
                         throw new InvalidOperationException("OAuthPrompt.Recognize(): not supported by the current adapter");
+
                     var token = await adapter.GetUserToken(context, _settings.ConnectionName, matched.Value).ConfigureAwait(false);
-                    var tokenResult = new TokenResult() { Status = PromptStatus.Recognized, TokenResponse = token };
+                    var tokenResult = new TokenResult
+                    {
+                        Status = PromptStatus.Recognized,
+                        TokenResponse = token
+                    };
+
                     if (_promptValidator != null)
+                    {
                         await _promptValidator(context, tokenResult).ConfigureAwait(false);
+                    }
+
                     return tokenResult;
                 }
             }
-            return new TokenResult() { Status = PromptStatus.NotRecognized };
+            return new TokenResult { Status = PromptStatus.NotRecognized };
         }
 
         /// <summary>
@@ -152,21 +175,25 @@ namespace Microsoft.Bot.Builder.Dialogs
             TokenResult tokenResult = null;
             if (token == null)
             {
-                tokenResult = new TokenResult()
+                tokenResult = new TokenResult
                 {
                     Status = PromptStatus.NotRecognized
                 };
             }
             else
             {
-                tokenResult = new TokenResult()
+                tokenResult = new TokenResult
                 {
                     Status = PromptStatus.Recognized,
                     TokenResponse = token
                 };
             }
+
             if (_promptValidator != null)
+            {
                 await _promptValidator(context, tokenResult).ConfigureAwait(false);
+            }
+
             return tokenResult;
         }
 

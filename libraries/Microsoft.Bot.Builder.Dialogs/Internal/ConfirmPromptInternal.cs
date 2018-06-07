@@ -72,7 +72,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             return Prompt(context, ChoicesList, prompt, speak);
         }
 
-        public async Task Prompt(ITurnContext context, List<Choice> choices, string prompt = null, string speak = null)
+        private async Task Prompt(ITurnContext context, List<Choice> choices, string prompt = null, string speak = null)
         {
             BotAssert.ContextNotNull(context);
             if (Choices == null)
@@ -101,7 +101,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                     break;
 
                 default:
-                    msg = ChoiceFactory.ForChannel(context, ChoicesList, prompt, speak, ChoiceOptions);
+                    msg = ChoiceFactory.ForChannel(context.Activity.ChannelId, ChoicesList, prompt, speak, ChoiceOptions);
                     break;
             }
 
