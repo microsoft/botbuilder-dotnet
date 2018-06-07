@@ -11,23 +11,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
 {
     public class ChoiceFactory
     {
-        public static IMessageActivity ForChannel(ITurnContext context, List<Choice> choices, string text = null, string speak = null, ChoiceFactoryOptions options = null)
-        {
-            return ForChannel(Channel.GetChannelId(context), choices, text, speak, options);
-        }
-
-        public static IMessageActivity ForChannel(ITurnContext context, List<string> choices, string text = null, string speak = null, ChoiceFactoryOptions options = null)
-        {
-            return ForChannel(Channel.GetChannelId(context), ToChoices(choices), text, speak, options);
-        }
-
-        public static IMessageActivity ForChannel(string channelId, List<string> choices, string text = null, string speak = null, ChoiceFactoryOptions options = null)
-        {
-            return ForChannel(channelId, ToChoices(choices), text, speak, options);
-        }
-
         public static IMessageActivity ForChannel(string channelId, List<Choice> list, string text = null, string speak = null, ChoiceFactoryOptions options = null)
         {
+            channelId = channelId ?? string.Empty;
+
             list = list ?? new List<Choice>();
 
             // Find maximum title length
@@ -64,11 +51,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
                 // Show a numbered list.
                 return List(list, text, speak, options);
             }
-        }
-
-        public static Activity Inline(List<string> choices, string text = null, string speak = null, ChoiceFactoryOptions options = null)
-        {
-            return Inline(ToChoices(choices), text, speak, options);
         }
 
         public static Activity Inline(List<Choice> choices, string text = null, string speak = null, ChoiceFactoryOptions options = null)
