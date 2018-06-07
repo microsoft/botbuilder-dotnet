@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.Core.Extensions
@@ -92,8 +93,8 @@ namespace Microsoft.Bot.Builder.Core.Extensions
         /// <see cref="CardAction.Title"/> and sets the <see cref="CardAction.Type"/> to
         /// <see cref="Microsoft.Bot.Schema.ActionTypes.ImBack"/>.
         /// </remarks>
-        /// <seealso cref="SuggestedActions(IList{CardAction}, string, string, string)"/>
-        public static IMessageActivity SuggestedActions(IList<string> actions, string text = null, string ssml = null, string inputHint = null)
+        /// <seealso cref="SuggestedActions(IEnumerable{CardAction}, string, string, string)"/>
+        public static IMessageActivity SuggestedActions(IEnumerable<string> actions, string text = null, string ssml = null, string inputHint = null)
         {
             if (actions == null)
                 throw new ArgumentNullException(nameof(actions));
@@ -145,8 +146,8 @@ namespace Microsoft.Bot.Builder.Core.Extensions
         /// <returns>A message activity that contains the suggested actions.</returns>
         /// <exception cref="ArgumentNullException">
         /// <paramref name="cardActions"/> is <c>null</c>.</exception>
-        /// <seealso cref="SuggestedActions(IList{string}, string, string, string)"/>
-        public static IMessageActivity SuggestedActions(IList<CardAction> cardActions, string text = null, string ssml = null, string inputHint = null)
+        /// <seealso cref="SuggestedActions(IEnumerable{string}, string, string, string)"/>
+        public static IMessageActivity SuggestedActions(IEnumerable<CardAction> cardActions, string text = null, string ssml = null, string inputHint = null)
         {
             if (cardActions == null)
                 throw new ArgumentNullException(nameof(cardActions));
@@ -154,7 +155,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions
             IMessageActivity ma = Activity.CreateMessageActivity();
             SetTextAndSpeak(ma, text, ssml, inputHint);
 
-            ma.SuggestedActions = new SuggestedActions { Actions = cardActions };
+            ma.SuggestedActions = new SuggestedActions { Actions = cardActions.ToList() };
 
             return ma;
         }
