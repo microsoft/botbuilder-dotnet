@@ -44,7 +44,8 @@ namespace Microsoft.Bot.Connector.Authentication
         private static readonly IDictionary<string, DateTime> _trustedHostNames = new Dictionary<string, DateTime>()
         {
             { "state.botframework.com", DateTime.MaxValue },
-            { "api.botframework.com", DateTime.MaxValue}
+            { "api.botframework.com", DateTime.MaxValue},
+            { "token.botframework.com", DateTime.MaxValue }
         };
 
         private static object _cacheSync = new object();

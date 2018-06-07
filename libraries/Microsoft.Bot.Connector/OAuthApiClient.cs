@@ -85,9 +85,6 @@ namespace Microsoft.Bot.Connector
             httpRequest.Method = new HttpMethod("GET");
             httpRequest.RequestUri = new Uri(tokenUrl);
 
-            // add botframework api service url to the list of trusted service url's for these app credentials.
-            MicrosoftAppCredentials.TrustServiceUrl(tokenUrl);
-
             // Set Credentials
             if (_client.Credentials != null)
             {
@@ -170,10 +167,7 @@ namespace Microsoft.Bot.Connector
             var tokenUrl = new Uri(new Uri(_uri + (_uri.EndsWith("/") ? "" : "/")), "api/usertoken/SignOut?&userId={userId}&connectionName={connectionName}").ToString();
             tokenUrl = tokenUrl.Replace("{connectionName}", Uri.EscapeDataString(connectionName));
             tokenUrl = tokenUrl.Replace("{userId}", Uri.EscapeDataString(userId));
-
-            // add botframework api service url to the list of trusted service url's for these app credentials.
-            MicrosoftAppCredentials.TrustServiceUrl(tokenUrl);
-
+            
             // Create HTTP transport objects
             var httpRequest = new HttpRequestMessage();
             HttpResponseMessage httpResponse = null;
@@ -262,10 +256,7 @@ namespace Microsoft.Bot.Connector
             // Construct URL
             var tokenUrl = new Uri(new Uri(_uri + (_uri.EndsWith("/") ? "" : "/")), "api/botsignin/getsigninurl?&state={state}").ToString();
             tokenUrl = tokenUrl.Replace("{state}", finalState);
-
-            // add botframework api service url to the list of trusted service url's for these app credentials.
-            MicrosoftAppCredentials.TrustServiceUrl(tokenUrl);
-
+            
             // Create HTTP transport objects
             var httpRequest = new HttpRequestMessage();
             HttpResponseMessage httpResponse = null;
@@ -328,9 +319,6 @@ namespace Microsoft.Bot.Connector
             httpRequest.Method = new HttpMethod("POST");
             httpRequest.RequestUri = new Uri(tokenUrl);
             
-            // add botframework api service url to the list of trusted service url's for these app credentials.
-            MicrosoftAppCredentials.TrustServiceUrl(tokenUrl);
-
             // Set Credentials
             if (_client.Credentials != null)
             {

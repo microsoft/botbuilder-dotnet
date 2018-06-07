@@ -573,10 +573,19 @@ namespace Microsoft.Bot.Builder.Adapters
             {
                 throw new ArgumentNullException("CreateOAuthApiClient: OAuth requires a valid ConnectorClient instance");
             }
+
+            // if using the emulator, then tell it whether to emulate OAuthCards or not
+            if (string.Equals(context.Activity.ChannelId, "emulator", StringComparison.InvariantCultureIgnoreCase))
+            {
+                var emulatorOAuthClient = new OAuthClient(client, context.Activity.ServiceUrl);
+                Task.Run(async () => await emulatorOAuthClient.SendEmulateOAuthCardsAsync(_isEmulatingOAuthCards).ConfigureAwait(false)).Wait();
+            }
+
             if (_isEmulatingOAuthCards)
             {
                 return new OAuthClient(client, context.Activity.ServiceUrl);
             }
+            
             return new OAuthClient(client, AuthenticationConstants.OAuthUrl);
         }
 
