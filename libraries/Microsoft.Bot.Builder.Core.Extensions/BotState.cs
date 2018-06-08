@@ -168,7 +168,8 @@ namespace Microsoft.Bot.Builder.Core.Extensions
         public UserState(IStorage storage, StateSettings settings = null) :
             base(storage,
                 PropertyName,
-                (context) => $"user/{context.Activity.ChannelId}/{context.Activity.From.Id}")
+                (context) => $"user/{context.Activity.ChannelId}/{context.Activity.From.Id}",
+                settings)
         {
         }
 
