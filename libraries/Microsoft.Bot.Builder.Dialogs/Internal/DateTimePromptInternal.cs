@@ -47,22 +47,21 @@ namespace Microsoft.Bot.Builder.Dialogs
                     var result = results.First();
                     if (result.Resolution.Any())
                     {
+                        var values = (List<Dictionary<string, string>>)results[0].Resolution["values"];
+
                         var dateTimeResult = new DateTimeResult
                         {
                             Status = PromptStatus.Recognized,
                             Text = result.Text
                         };
 
-                        foreach (var resolution in result.Resolution)
+                        foreach (var value in values)
                         {
-                            var values = (List<Dictionary<string, string>>)resolution.Value;
-                            if (values.Any())
-                            {
-                                dateTimeResult.Resolution.Add(ReadResolution(values.First()));
-                                await Validate(context, dateTimeResult);
-                                return dateTimeResult;
-                            }
+                            dateTimeResult.Resolution.Add(ReadResolution(value));
                         }
+
+                        await Validate(context, dateTimeResult);
+                        return dateTimeResult;
                     }
                 }
             }
