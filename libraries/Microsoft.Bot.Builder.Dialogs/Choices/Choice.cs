@@ -8,6 +8,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
 {
     public class Choice
     {
+        public Choice(string s = null)
+        {
+            Value = s;
+        }
+
         ///<summary>
         /// Value to return when selected.
         ///</summary>

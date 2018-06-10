@@ -77,7 +77,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                     break;
 
                 default:
-                    msg = ChoiceFactory.ForChannel(context, choices, prompt, speak, ChoiceOptions);
+                    msg = ChoiceFactory.ForChannel(context.Activity.ChannelId, choices, prompt, speak, ChoiceOptions);
                     break;
             }
 
@@ -94,18 +94,6 @@ namespace Microsoft.Bot.Builder.Dialogs
                 prompt.Speak = speak ?? prompt.Speak;
                 await context.SendActivity(prompt);
             }
-        }
-
-        public Task<ChoiceResult> Recognize(ITurnContext context, List<string> choices)
-        {
-            BotAssert.ContextNotNull(context);
-            BotAssert.ActivityNotNull(context.Activity);
-            if (context.Activity.Type != ActivityTypes.Message)
-                throw new InvalidOperationException("No Message to Recognize");
-            if (choices == null)
-                throw new ArgumentNullException(nameof(choices));
-
-            return Recognize(context, ChoiceFactory.ToChoices(choices));
         }
 
         public async Task<ChoiceResult> Recognize(ITurnContext context, List<Choice> choices)

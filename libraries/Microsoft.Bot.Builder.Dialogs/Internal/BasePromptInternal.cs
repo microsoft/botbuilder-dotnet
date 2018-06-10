@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System.Threading.Tasks;
-using Microsoft.Bot.Schema;
 using static Microsoft.Bot.Builder.Dialogs.PromptValidatorEx;
 
 namespace Microsoft.Bot.Builder.Dialogs
@@ -26,41 +25,6 @@ namespace Microsoft.Bot.Builder.Dialogs
         public BasePromptInternal(PromptValidator<T> validator = null)
         {
             _customValidator = validator;
-        }
-
-        /// <summary>
-        /// Sends a message to the user, using the context for the current turn.
-        /// </summary>
-        /// <param name="context">The context.</param>
-        /// <param name="text">The text of the message to send.</param>
-        /// <param name="speak">Optional, text to be spoken by your bot on a speech-enabled
-        /// channel.</param>
-        /// <returns>A task that represents the work queued to execute.</returns>
-        /// <remarks>The message is sent with the "expectingInput" input hint.
-        /// <para>See the channel's documentation for limits imposed upon the contents of
-        /// <paramref name="text"/>.</para>
-        /// <para>To control various characteristics of your bot's speech such as voice,
-        /// rate, volume, pronunciation, and pitch, specify <paramref name="speak"/> in
-        /// Speech Synthesis Markup Language (SSML) format.</para>
-        /// </remarks>
-        public Task Prompt(ITurnContext context, string text, string speak = null)
-        {
-            IMessageActivity ma = Activity.CreateMessageActivity();
-            ma.Text = !string.IsNullOrWhiteSpace(text) ? text : null;
-            ma.Speak = !string.IsNullOrWhiteSpace(speak) ? speak : null;
-            ma.InputHint = InputHints.ExpectingInput;
-            return Prompt(context, ma);
-        }
-
-        /// <summary>
-        /// Sends a message to the user, using the context for the current turn.
-        /// </summary>
-        /// <param name="context">The context.</param>
-        /// <param name="activity">The message activity to send.</param>
-        /// <returns>A task that represents the work queued to execute.</returns>
-        public async Task Prompt(ITurnContext context, IMessageActivity activity)
-        {
-            await context.SendActivity(activity);
         }
 
         /// <summary>
