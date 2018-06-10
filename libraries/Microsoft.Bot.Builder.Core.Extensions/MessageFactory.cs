@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.Core.Extensions
@@ -92,8 +93,8 @@ namespace Microsoft.Bot.Builder.Core.Extensions
         /// <see cref="CardAction.Title"/> and sets the <see cref="CardAction.Type"/> to
         /// <see cref="Microsoft.Bot.Schema.ActionTypes.ImBack"/>.
         /// </remarks>
-        /// <seealso cref="SuggestedActions(IList{CardAction}, string, string, string)"/>
-        public static IMessageActivity SuggestedActions(IList<string> actions, string text = null, string ssml = null, string inputHint = null)
+        /// <seealso cref="SuggestedActions(IEnumerable{CardAction}, string, string, string)"/>
+        public static IMessageActivity SuggestedActions(IEnumerable<string> actions, string text = null, string ssml = null, string inputHint = null)
         {
             if (actions == null)
                 throw new ArgumentNullException(nameof(actions));
@@ -145,8 +146,8 @@ namespace Microsoft.Bot.Builder.Core.Extensions
         /// <returns>A message activity that contains the suggested actions.</returns>
         /// <exception cref="ArgumentNullException">
         /// <paramref name="cardActions"/> is <c>null</c>.</exception>
-        /// <seealso cref="SuggestedActions(IList{string}, string, string, string)"/>
-        public static IMessageActivity SuggestedActions(IList<CardAction> cardActions, string text = null, string ssml = null, string inputHint = null)
+        /// <seealso cref="SuggestedActions(IEnumerable{string}, string, string, string)"/>
+        public static IMessageActivity SuggestedActions(IEnumerable<CardAction> cardActions, string text = null, string ssml = null, string inputHint = null)
         {
             if (cardActions == null)
                 throw new ArgumentNullException(nameof(cardActions));
@@ -154,7 +155,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions
             IMessageActivity ma = Activity.CreateMessageActivity();
             SetTextAndSpeak(ma, text, ssml, inputHint);
 
-            ma.SuggestedActions = new SuggestedActions { Actions = cardActions };
+            ma.SuggestedActions = new SuggestedActions { Actions = cardActions.ToList() };
 
             return ma;
         }
@@ -173,8 +174,8 @@ namespace Microsoft.Bot.Builder.Core.Extensions
         /// <returns>A message activity containing the attachment.</returns>
         /// <exception cref="ArgumentNullException">
         /// <paramref name="attachment"/> is <c>null</c>.</exception>
-        /// <seealso cref="Attachment(IList{Attachment}, string, string, string)"/>
-        /// <seealso cref="Carousel(IList{Attachment}, string, string, string)"/>
+        /// <seealso cref="Attachment(IEnumerable{Attachment}, string, string, string)"/>
+        /// <seealso cref="Carousel(IEnumerable{Attachment}, string, string, string)"/>
         public static IMessageActivity Attachment(Attachment attachment, string text = null, string ssml = null, string inputHint = null)
         {
             if (attachment == null)
@@ -197,9 +198,9 @@ namespace Microsoft.Bot.Builder.Core.Extensions
         /// <returns>A message activity containing the attachment.</returns>
         /// <exception cref="ArgumentNullException">
         /// <paramref name="attachments"/> is <c>null</c>.</exception>
-        /// <seealso cref="Carousel(IList{Attachment}, string, string, string)"/>
+        /// <seealso cref="Carousel(IEnumerable{Attachment}, string, string, string)"/>
         /// <seealso cref="Attachment(Schema.Attachment, string, string, string)"/>
-        public static IMessageActivity Attachment(IList<Attachment> attachments, string text = null, string ssml = null, string inputHint = null)
+        public static IMessageActivity Attachment(IEnumerable<Attachment> attachments, string text = null, string ssml = null, string inputHint = null)
         {
             if (attachments == null)
                 throw new ArgumentNullException(nameof(attachments));
@@ -257,8 +258,8 @@ namespace Microsoft.Bot.Builder.Core.Extensions
         /// await context.SendActivity(activity);
         /// </code>
         /// </example>
-        /// <seealso cref="Attachment(IList{Attachment}, string, string, string)"/>
-        public static IMessageActivity Carousel(IList<Attachment> attachments, string text = null, string ssml = null, string inputHint = null)
+        /// <seealso cref="Attachment(IEnumerable{Attachment}, string, string, string)"/>
+        public static IMessageActivity Carousel(IEnumerable<Attachment> attachments, string text = null, string ssml = null, string inputHint = null)
         {
             if (attachments == null)
                 throw new ArgumentNullException(nameof(attachments));
@@ -307,11 +308,11 @@ namespace Microsoft.Bot.Builder.Core.Extensions
             return AttachmentActivity(AttachmentLayoutTypes.List, new List<Attachment> { a }, text, ssml, inputHint);
         }
 
-        private static IMessageActivity AttachmentActivity(string attachmentLayout, IList<Attachment> attachments, string text = null, string ssml = null, string inputHint = null)
+        private static IMessageActivity AttachmentActivity(string attachmentLayout, IEnumerable<Attachment> attachments, string text = null, string ssml = null, string inputHint = null)
         {
             IMessageActivity ma = Activity.CreateMessageActivity();
             ma.AttachmentLayout = attachmentLayout;
-            ma.Attachments = attachments;
+            ma.Attachments = attachments.ToList();
             SetTextAndSpeak(ma, text, ssml, inputHint);
             return ma;
         }

@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -12,7 +13,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
     [TestCategory("Choice Tests")]
     public class ChoiceFactoryTests
     {
-        private static List<string> colorChoices = new List<string> { "red", "green", "blue" };
+        private static List<Choice> colorChoices = new List<Choice> { new Choice("red"), new Choice("green"), new Choice("blue") };
 
         [TestMethod]
         public void ShouldRenderChoicesInline()

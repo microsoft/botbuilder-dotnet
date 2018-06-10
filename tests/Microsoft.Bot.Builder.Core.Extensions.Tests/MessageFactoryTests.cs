@@ -6,8 +6,10 @@ using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Mime;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace Microsoft.Bot.Builder.Core.Extensions.Tests
 {
@@ -80,6 +82,29 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
         }
 
         [TestMethod]
+        public void SuggestedActionEnumerable()
+        {
+            string text = Guid.NewGuid().ToString();
+            string ssml = Guid.NewGuid().ToString();
+            string inputHint = InputHints.ExpectingInput;
+            HashSet<string> textActions = new HashSet<string> { "one", "two", "three" };
+
+            IMessageActivity message = MessageFactory.SuggestedActions(textActions, text, ssml, inputHint);
+            Assert.AreEqual(message.Text, text, "Message Text does not match");
+            Assert.AreEqual(message.Type, ActivityTypes.Message, "Incorrect Activity Type");
+            Assert.AreEqual(message.InputHint, inputHint, "InputHint does not match");
+            Assert.AreEqual(message.Speak, ssml, "ssml text is incorrect");
+            Assert.IsNotNull(message.SuggestedActions);
+            Assert.IsNotNull(message.SuggestedActions.Actions);
+            Assert.IsTrue(textActions.SetEquals(message.SuggestedActions.Actions.Select(action => (string)action.Value)),
+                "The message's suggested actions have the wrong set of values.");
+            Assert.IsTrue(textActions.SetEquals(message.SuggestedActions.Actions.Select(action=>action.Title)),
+                "The message's suggested actions have the wrong set of titles.");
+            Assert.IsTrue(message.SuggestedActions.Actions.All(action => action.Type.Equals(ActionTypes.ImBack)),
+                "The message's suggested actions are of the wrong action type.");
+        }
+
+        [TestMethod]
         public void SuggestedActionCardAction()
         {
             string text = Guid.NewGuid().ToString();
@@ -110,6 +135,54 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
             Assert.IsTrue((string)message.SuggestedActions.Actions[0].Value == cardActionValue);
             Assert.IsTrue(message.SuggestedActions.Actions[0].Title == cardActionTitle);
             Assert.IsTrue(message.SuggestedActions.Actions[0].Type == ActionTypes.ImBack);
+        }
+
+        [TestMethod]
+        public void SuggestedActionCardActionUnordered()
+        {
+            string text = Guid.NewGuid().ToString();
+            string ssml = Guid.NewGuid().ToString();
+            string inputHint = InputHints.ExpectingInput;
+
+            string caValue1 = Guid.NewGuid().ToString();
+            string caTitle1 = Guid.NewGuid().ToString();
+
+            CardAction cardAction1 = new CardAction
+            {
+                Type = ActionTypes.ImBack,
+                Value = caValue1,
+                Title = caTitle1
+            };
+
+            string caValue2 = Guid.NewGuid().ToString();
+            string caTitle2 = Guid.NewGuid().ToString();
+
+            CardAction cardAction2 = new CardAction
+            {
+                Type = ActionTypes.ImBack,
+                Value = caValue2,
+                Title = caTitle2
+            };
+
+            HashSet<CardAction> cardActions = new HashSet<CardAction> { cardAction1, cardAction2 };
+            HashSet<object> values = new HashSet<object> { caValue1, caValue2 };
+            HashSet<string> titles = new HashSet<string> { caTitle1, caTitle2 };
+
+            IMessageActivity message = MessageFactory.SuggestedActions(cardActions, text, ssml, inputHint);
+
+            Assert.AreEqual(message.Text, text, "Message Text does not match");
+            Assert.AreEqual(message.Type, ActivityTypes.Message, "Incorrect Activity Type");
+            Assert.AreEqual(message.InputHint, inputHint, "InputHint does not match");
+            Assert.AreEqual(message.Speak, ssml, "ssml text is incorrect");
+            Assert.IsNotNull(message.SuggestedActions);
+            Assert.IsNotNull(message.SuggestedActions.Actions);
+            Assert.IsTrue(message.SuggestedActions.Actions.Count == 2);
+            Assert.IsTrue(values.SetEquals(message.SuggestedActions.Actions.Select(action=>action.Value)),
+                "The message's suggested actions have the wrong set of values.");
+            Assert.IsTrue(titles.SetEquals(message.SuggestedActions.Actions.Select(action => action.Title)),
+                "The message's suggested actions have the wrong set of titles.");
+            Assert.IsTrue(message.SuggestedActions.Actions.All(action=>action.Type.Equals(ActionTypes.ImBack)),
+                "The message's suggested actions are of the wrong action type.");
         }
 
         [TestMethod]
@@ -193,6 +266,38 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
         }
 
 
+        public void CarouselUnorderedAttachments()
+        {
+            string text = Guid.NewGuid().ToString();
+            string ssml = Guid.NewGuid().ToString();
+            string inputHint = InputHints.ExpectingInput;
+
+            string attachmentName1 = Guid.NewGuid().ToString();
+            Attachment attachment1 = new Attachment
+            {
+                Name = attachmentName1
+            };
+
+            string attachmentName2 = Guid.NewGuid().ToString();
+            Attachment attachment2 = new Attachment
+            {
+                Name = attachmentName2
+            };
+
+            HashSet<Attachment> multipleAttachments = new HashSet<Attachment> { attachment1, attachment2 };
+            IMessageActivity message = MessageFactory.Carousel(multipleAttachments, text, ssml, inputHint);
+
+            HashSet<string> names = new HashSet<string> { attachmentName1, attachmentName2 };
+
+            Assert.AreEqual(message.Text, text, "Message Text does not match");
+            Assert.AreEqual(message.Type, ActivityTypes.Message, "Incorrect Activity Type");
+            Assert.AreEqual(message.InputHint, inputHint, "InputHint does not match");
+            Assert.AreEqual(message.Speak, ssml, "ssml text is incorrect");
+            Assert.IsTrue(message.AttachmentLayout == AttachmentLayoutTypes.Carousel);
+            Assert.IsTrue(message.Attachments.Count == 2, "Incorrect Attachment Count");
+            Assert.IsTrue(names.SetEquals(message.Attachments.Select(a => a.Name)), "Incorrect set of attachment names.");
+        }
+
         [TestMethod]
         public void AttachmentMultiple()
         {
@@ -200,7 +305,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
             string ssml = Guid.NewGuid().ToString();
             string inputHint = InputHints.ExpectingInput;
 
-            string attachmentName = Guid.NewGuid().ToString();            
+            string attachmentName = Guid.NewGuid().ToString();
             Attachment a = new Attachment
             {
                 Name = attachmentName
@@ -223,6 +328,39 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
             Assert.IsTrue(message.Attachments.Count == 2, "Incorrect Attachment Count");
             Assert.IsTrue(message.Attachments[0].Name == attachmentName, "Incorrect Attachment1 Name");
             Assert.IsTrue(message.Attachments[1].Name == attachmentName2, "Incorrect Attachment2 Name");
+        }
+
+        [TestMethod]
+        public void AttachmentMultipleUnordered()
+        {
+            string text = Guid.NewGuid().ToString();
+            string ssml = Guid.NewGuid().ToString();
+            string inputHint = InputHints.ExpectingInput;
+
+            string attachmentName1 = Guid.NewGuid().ToString();
+            Attachment attachment1 = new Attachment
+            {
+                Name = attachmentName1
+            };
+
+            string attachmentName2 = Guid.NewGuid().ToString();
+            Attachment attachment2 = new Attachment
+            {
+                Name = attachmentName2
+            };
+
+            HashSet<Attachment> multipleAttachments = new HashSet<Attachment> { attachment1, attachment2 };
+            IMessageActivity message = MessageFactory.Attachment(multipleAttachments, text, ssml, inputHint);
+
+            HashSet<string> names = new HashSet<string> { attachmentName1, attachmentName2 };
+
+            Assert.AreEqual(message.Text, text, "Message Text does not match");
+            Assert.AreEqual(message.Type, ActivityTypes.Message, "Incorrect Activity Type");
+            Assert.AreEqual(message.InputHint, inputHint, "InputHint does not match");
+            Assert.AreEqual(message.Speak, ssml, "ssml text is incorrect");
+            Assert.IsTrue(message.AttachmentLayout == AttachmentLayoutTypes.List);
+            Assert.IsTrue(message.Attachments.Count == 2, "Incorrect Attachment Count");
+            Assert.IsTrue(names.SetEquals(message.Attachments.Select(a => a.Name)), "Incorrect set of attachment names.");
         }
 
         [TestMethod]
