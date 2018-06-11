@@ -7,7 +7,7 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// Predefined recognition result status strings.
     /// </summary>
     /// <seealso cref="PromptResult"/>
-    /// <seealso cref="BasePrompt{T}"/>
+    /// <seealso cref="BasePromptInternal{T}"/>
     public class PromptStatus
     {
         /// <summary>
