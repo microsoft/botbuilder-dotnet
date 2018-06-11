@@ -12,7 +12,8 @@ using Microsoft.Bot.Builder.Ai.Translation;
 
 namespace Microsoft.Bot.Builder.Ai.QnA.Tests
 {
-    class LanguageState { 
+    class LanguageState
+    {
         public string Language { get; set; }
     }
 
@@ -32,7 +33,7 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
                 return;
             }
 
-            TestAdapter adapter = new TestAdapter() 
+            TestAdapter adapter = new TestAdapter()
             .Use(new TranslationMiddleware(new string[] { "en-us" }, translatorKey));
 
             await new TestFlow(adapter, (context) =>
@@ -42,7 +43,7 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
                     context.SendActivity(context.Activity.AsMessageActivity().Text);
                 }
                 return Task.CompletedTask;
-            })  
+            })
             .Send("salut")
                 .AssertReply("Hello")
             .Send("salut 10-20")
@@ -63,13 +64,13 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
 
             TestAdapter adapter = new TestAdapter()
                 .Use(new UserState<LanguageState>(new MemoryStorage()))
-                .Use(new TranslationMiddleware(new string[] { "en-us" }, translatorKey, new Dictionary<string, List<string>>(), GetActiveLanguage, SetActiveLanguage));
+                .Use(new TranslationMiddleware(new string[] { "en-us" }, translatorKey, new Dictionary<string, List<string>>(), new CustomDictionary(), GetActiveLanguage, SetActiveLanguage));
 
             await new TestFlow(adapter, (context) =>
             {
                 if (!context.Responded)
                 {
-                    context.SendActivity(context.Activity.AsMessageActivity().Text);  
+                    context.SendActivity(context.Activity.AsMessageActivity().Text);
                 }
                 return Task.CompletedTask;
             })
@@ -93,7 +94,7 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
 
             TestAdapter adapter = new TestAdapter()
                 .Use(new UserState<LanguageState>(new MemoryStorage()))
-                .Use(new TranslationMiddleware(new string[] { "en-us" }, translatorKey, new Dictionary<string, List<string>>(), GetActiveLanguage, SetActiveLanguage,true));
+                .Use(new TranslationMiddleware(new string[] { "en-us" }, translatorKey, new Dictionary<string, List<string>>(), new CustomDictionary(), GetActiveLanguage, SetActiveLanguage, true));
 
             await new TestFlow(adapter, (context) =>
             {
@@ -110,8 +111,8 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
                 .StartTest();
         }
 
-        private void SetLanguage(ITurnContext context, string language) =>context.GetUserState<LanguageState>().Language = language ; 
-       
+        private void SetLanguage(ITurnContext context, string language) => context.GetUserState<LanguageState>().Language = language;
+
         protected async Task<bool> SetActiveLanguage(ITurnContext context)
         {
             bool changeLang = false;//logic implemented by developper to make a signal for language changing 
