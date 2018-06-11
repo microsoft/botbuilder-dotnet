@@ -56,9 +56,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <summary>
         /// Prompt the User to signin if not already signed in for the given connection name.
         /// </summary>
-        /// <param name="context"></param>
-        /// <param name="text"></param>
-        /// <param name="speak"></param>
+        /// <param name="context">The current turn context.</param>
         /// <returns></returns>
         public async Task Prompt(ITurnContext context)
         {
