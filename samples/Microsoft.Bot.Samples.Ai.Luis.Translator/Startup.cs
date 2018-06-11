@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Samples.Ai.Luis.Translator
 {
 
     public class Startup
-    { 
+    {
         public Startup(IHostingEnvironment env)
         {
             var builder = new ConfigurationBuilder()
@@ -39,22 +39,28 @@ namespace Microsoft.Bot.Samples.Ai.Luis.Translator
         {
             services.AddBot<LuisTranslatorBot>(options =>
             {
-            options.CredentialProvider = new ConfigurationCredentialProvider(Configuration);
+                options.CredentialProvider = new ConfigurationCredentialProvider(Configuration);
 
-            string luisModelId = "<Your Model Here>";
-            string luisSubscriptionKey = "<Your Key here>";
-            Uri luisUri = new Uri("https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/");
-            var luisModel = new LuisModel(luisModelId, luisSubscriptionKey, luisUri); 
+                string luisModelId = "<Your Model Here>";
+                string luisSubscriptionKey = "<Your Key here>";
+                Uri luisUri = new Uri("https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/");
+                var luisModel = new LuisModel(luisModelId, luisSubscriptionKey, luisUri);
 
-            // If you want to get all intents scorings, add verbose in luisOptions
-            var luisOptions = new LuisRequest { Verbose = true };
-            Dictionary<string, List<string>> patterns = new Dictionary<string, List<string>>();
-            patterns.Add("fr", new List<string> { "mon nom est (.+)" });//single pattern for fr language
-            var middleware = options.Middleware;
-            middleware.Add(new ConversationState<CurrentUserState>(new MemoryStorage()));
-            middleware.Add(new LocaleConverterMiddleware(TranslatorLocaleHelper.GetActiveLocale, TranslatorLocaleHelper.CheckUserChangedLanguageOrLocale, "en-us", LocaleConverter.Converter));
-            middleware.Add(new TranslationMiddleware(new string[] { "en" }, "<your translator key here>", patterns, TranslatorLocaleHelper.GetActiveLanguage, TranslatorLocaleHelper.CheckUserChangedLanguageOrLocale)); 
-            middleware.Add(new LuisRecognizerMiddleware(luisModel, luisOptions: luisOptions));
+                // If you want to get all intents scorings, add verbose in luisOptions
+                var luisOptions = new LuisRequest { Verbose = true };
+                Dictionary<string, List<string>> patterns = new Dictionary<string, List<string>>();
+                patterns.Add("fr", new List<string> { "mon nom est (.+)" });//single pattern for fr language
+                CustomDictionary userCustomDictonaries = new CustomDictionary();
+                Dictionary<string, string> frenctDictionary = new Dictionary<string, string>
+                {
+                    { "content", "excited" }
+                };
+                userCustomDictonaries.AddNewLanguageDictionary("fr", frenctDictionary);
+                var middleware = options.Middleware;
+                middleware.Add(new ConversationState<CurrentUserState>(new MemoryStorage()));
+                middleware.Add(new LocaleConverterMiddleware(TranslatorLocaleHelper.GetActiveLocale, TranslatorLocaleHelper.CheckUserChangedLanguageOrLocale, "en-us", LocaleConverter.Converter));
+                middleware.Add(new TranslationMiddleware(new string[] { "en" }, "<your translator key here>", patterns, userCustomDictonaries, TranslatorLocaleHelper.GetActiveLanguage, TranslatorLocaleHelper.CheckUserChangedLanguageOrLocale));
+                middleware.Add(new LuisRecognizerMiddleware(luisModel, luisOptions: luisOptions));
             });
         }
 
