@@ -94,7 +94,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// </para>
         /// </remarks>
         /// <seealso cref="ProcessActivity(string, Activity, Func{ITurnContext, Task})"/>
-        /// <seealso cref="BotAdapter.RunPipeline(ITurnContext, Func{ITurnContext, Task}, System.Threading.CancellationTokenSource)"/>
+        /// <seealso cref="BotAdapter.RunPipeline(ITurnContext, Func{ITurnContext, Task})"/>
         public override async Task ContinueConversation(string botAppId, ConversationReference reference, Func<ITurnContext, Task> callback)
         {
             if (string.IsNullOrWhiteSpace(botAppId))
@@ -176,7 +176,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// </list></para>
         /// </remarks>
         /// <seealso cref="ContinueConversation(string, ConversationReference, Func{ITurnContext, Task})"/>
-        /// <seealso cref="BotAdapter.RunPipeline(ITurnContext, Func{ITurnContext, Task}, System.Threading.CancellationTokenSource)"/>
+        /// <seealso cref="BotAdapter.RunPipeline(ITurnContext, Func{ITurnContext, Task})"/>
         public async Task<InvokeResponse> ProcessActivity(string authHeader, Activity activity, Func<ITurnContext, Task> callback)
         {
             BotAssert.ActivityNotNull(activity);

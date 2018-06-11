@@ -13,7 +13,7 @@ namespace Microsoft.Bot.Builder.Dialogs
     internal class AttachmentPromptInternal : BasePromptInternal<AttachmentResult>
     {
         /// <summary>
-        /// Creates a <see cref="BasePrompt{T}"/> object.
+        /// Creates a <see cref="AttachmentPromptInternal"/> object.
         /// </summary>
         /// <param name="validator">The input validator for the prompt object.</param>
         /// <remarks><paramref name="validator"/> is called only if the
