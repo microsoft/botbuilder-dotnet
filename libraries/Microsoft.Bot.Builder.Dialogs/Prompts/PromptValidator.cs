@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// <summary>
     /// Defines a delegate for adding custom validation to a prompt object.
     /// </summary>
-    /// <seealso cref="BasePrompt{T}"/>
+    /// <seealso cref="BasePromptInternal{T}"/>
     /// <seealso cref="PromptResult"/>
     public static class PromptValidatorEx
     {

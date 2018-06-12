@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Builder.Dialogs
     internal class TextPromptInternal : BasePromptInternal<TextResult>
     {
         /// <summary>
-        /// Creates a <see cref="BasePrompt{T}"/> object.
+        /// Creates a <see cref="TextPromptInternal"/> object.
         /// </summary>
         /// <param name="validator">The input validator for the prompt object.</param>
         /// <remarks><paramref name="validator"/> is called only if the
