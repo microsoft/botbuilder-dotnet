@@ -79,7 +79,7 @@ namespace Microsoft.Bot.Connector.Authentication
 
             foreach (var key in keys)
             {
-                var keyId = key["keyid"]?.Value<string>();
+                var keyId = key[AuthenticationConstants.KeyIdHeader]?.Value<string>();
 
                 if (keyId != null
                         &&
