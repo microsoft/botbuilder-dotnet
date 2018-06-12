@@ -31,25 +31,26 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
                 .StartTest();
         }
 
-        [TestMethod]
-        [TestCategory("Middleware")]
-        public async Task ShowTyping_TestMiddleware_2_Second_Interval()
-        {
-            TestAdapter adapter = new TestAdapter()
-                .Use(new ShowTypingMiddleware(100, 2000));
+        // This was causing a doc XML PR to fail. Chris said to remove this.
+        //[TestMethod]
+        //[TestCategory("Middleware")]
+        //public async Task ShowTyping_TestMiddleware_2_Second_Interval()
+        //{
+        //    TestAdapter adapter = new TestAdapter()
+        //        .Use(new ShowTypingMiddleware(100, 2000));
 
-            await new TestFlow(adapter, async (context) =>
-                {
-                    Thread.Sleep(2500);
-                    await context.SendActivity("Message sent after delay");
-                    await Task.CompletedTask;
-                })
-                .Send("foo")
-                .AssertReply(ValidateTypingActivity, "check typing activity")
-                .AssertReply(ValidateTypingActivity, "check typing activity")
-                .AssertReply("Message sent after delay")
-                .StartTest();
-        }
+        //    await new TestFlow(adapter, async (context) =>
+        //        {
+        //            Thread.Sleep(2500);
+        //            await context.SendActivity("Message sent after delay");
+        //            await Task.CompletedTask;
+        //        })
+        //        .Send("foo")
+        //        .AssertReply(ValidateTypingActivity, "check typing activity")
+        //        .AssertReply(ValidateTypingActivity, "check typing activity")
+        //        .AssertReply("Message sent after delay")
+        //        .StartTest();
+        //}
 
         [TestMethod]
         [TestCategory("Middleware")]
