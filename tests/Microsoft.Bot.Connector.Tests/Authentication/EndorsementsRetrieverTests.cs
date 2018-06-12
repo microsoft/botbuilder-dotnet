@@ -111,7 +111,7 @@ namespace Microsoft.Bot.Connector.Authentication.Tests
             public async Task ReturnsEmptyValues_SingleKeyWithNoEndorsements()
             {
                 _mockDocumentRetriever.Setup(dr => dr.GetDocumentAsync(FakeDocumentAddress, It.IsAny<CancellationToken>()))
-                    .ReturnsAsync(@"{ ""keys"": [ { ""keyid"": ""keyid123"" } ] }");
+                    .ReturnsAsync(@"{ ""keys"": [ { ""kid"": ""keyid123"" } ] }");
 
                 var results = await _endorsementsRetriever.GetConfigurationAsync(FakeDocumentAddress, _mockDocumentRetriever.Object, CancellationToken.None);
 
@@ -122,7 +122,7 @@ namespace Microsoft.Bot.Connector.Authentication.Tests
             public async Task ReturnsEmptyValues_MultipleKeysWithNoEndorsements()
             {
                 _mockDocumentRetriever.Setup(dr => dr.GetDocumentAsync(FakeDocumentAddress, It.IsAny<CancellationToken>()))
-                    .ReturnsAsync(@"{ ""keys"": [ { ""keyid"": ""keyid123"" }, { ""keyid"": ""keyid456"" }, { ""keyid"": ""keyid789"" } ] }");
+                    .ReturnsAsync(@"{ ""keys"": [ { ""kid"": ""keyid123"" }, { ""kid"": ""keyid456"" }, { ""kid"": ""keyid789"" } ] }");
 
                 var results = await _endorsementsRetriever.GetConfigurationAsync(FakeDocumentAddress, _mockDocumentRetriever.Object, CancellationToken.None);
 
