@@ -157,26 +157,5 @@ namespace Microsoft.Bot.Connector.Tests
 
             Assert.False(MicrosoftAppCredentials.IsTrustedServiceUrl("https://webchat.botframework.com/"));
         }
-
-
-        /// <summary>
-        /// Tests with a valid Token and service url; and ensures that Service url is added to Trusted service url list.
-        /// </summary>
-        [Fact]
-        public async void Channel_EndorsementsValidated()
-        {
-            string header = $"Bearer {await new MicrosoftAppCredentials("2cd87869-38a0-4182-9251-d056e8f0ac24", "2.30Vs3VQLKt974F").GetTokenAsync()}";
-            var credentials = new SimpleCredentialProvider("2cd87869-38a0-4182-9251-d056e8f0ac24", "");
-
-            await JwtTokenValidation.AuthenticateRequest(
-                new Activity {
-                    ServiceUrl = "https://smba.trafficmanager.net/amer-client-ss.msg/", ChannelId = "foo"
-                },
-                header,
-                credentials,
-                emptyClient);
-
-            Assert.True(MicrosoftAppCredentials.IsTrustedServiceUrl("https://smba.trafficmanager.net/amer-client-ss.msg/"));
-        }
     }
 }
