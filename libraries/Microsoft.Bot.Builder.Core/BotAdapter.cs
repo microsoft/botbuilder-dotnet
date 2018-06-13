@@ -117,7 +117,7 @@ namespace Microsoft.Bot.Builder
         /// <para>When the turn is initiated by a user activity (reactive messaging), the
         /// callback method will be a reference to the bot's 
         /// <see cref="IBot.OnTurn(ITurnContext)"/> method. When the turn is
-        /// initiated by a call to <see cref="ContinueConversation(ConversationReference, Func{ITurnContext, Task})"/>
+        /// initiated by a call to <see cref="ContinueConversation(string, ConversationReference, Func{ITurnContext, Task})"/>
         /// (proactive messaging), the callback method is the callback method that was provided in the call.</para>
         /// </remarks>
         protected async Task RunPipeline(ITurnContext context, Func<ITurnContext, Task> callback = null)
@@ -156,7 +156,7 @@ namespace Microsoft.Bot.Builder
         /// <summary>
         /// Sends a proactive message to a conversation.
         /// </summary>
-        /// <param name="botAppId">The application ID of the bot. This paramter is ignored in 
+        /// <param name="botId">The application ID of the bot. This paramter is ignored in 
         /// single tenant the Adpters (Console, Test, etc) but is critical to the BotFrameworkAdapter
         /// which is multi-tenant aware. </param>    
         /// <param name="reference">A reference to the conversation to continue.</param>
@@ -165,7 +165,7 @@ namespace Microsoft.Bot.Builder
         /// <remarks>Call this method to proactively send a message to a conversation.
         /// Most channels require a user to initaiate a conversation with a bot
         /// before the bot can send activities to the user.</remarks>
-        /// <seealso cref="RunPipeline(ITurnContext, Func{ITurnContext, Task}, CancellationTokenSource)"/>
+        /// <seealso cref="RunPipeline(ITurnContext, Func{ITurnContext, Task})"/>
         public virtual Task ContinueConversation(string botId, ConversationReference reference, Func<ITurnContext, Task> callback)
         {
             using (var context = new TurnContext(this, reference.GetPostToBotMessage()))

@@ -9,7 +9,6 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// <summary>
     /// A related set of dialogs that can all call each other.
     /// </summary>
-    /// <typeparam name="C">TurnContext</typeparam>
     public class DialogSet
     {
         private IDictionary<string, IDialog> _dialogs;
