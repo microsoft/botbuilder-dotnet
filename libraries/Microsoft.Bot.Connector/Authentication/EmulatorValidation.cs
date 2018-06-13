@@ -104,15 +104,15 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <remarks>
         /// A token issued by the Bot Framework will FAIL this check. Only Emulator tokens will pass.
         /// </remarks>
-        public static async Task<ClaimsIdentity> AuthenticateEmulatorToken(string authHeader, ICredentialProvider credentials, HttpClient httpClient)
+        public static async Task<ClaimsIdentity> AuthenticateEmulatorToken(string authHeader, ICredentialProvider credentials, HttpClient httpClient, string channelId)
         {
             var tokenExtractor = new JwtTokenExtractor(
                     httpClient,
                     ToBotFromEmulatorTokenValidationParameters,
                     AuthenticationConstants.ToBotFromEmulatorOpenIdMetadataUrl,
-                    AuthenticationConstants.AllowedSigningAlgorithms, null);
+                    AuthenticationConstants.AllowedSigningAlgorithms);
 
-            var identity = await tokenExtractor.GetIdentityAsync(authHeader);
+            var identity = await tokenExtractor.GetIdentityAsync(authHeader, channelId);
             if (identity == null)
             {
                 // No valid identity. Not Authorized. 
