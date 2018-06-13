@@ -9,7 +9,7 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// Represents the prompt recognition result.
     /// </summary>
     /// <seealso cref="PromptStatus"/>
-    /// <seealso cref="BasePrompt{T}"/>
+    /// <seealso cref="BasePromptInternal{T}"/>
     public class PromptResult : Dictionary<string, object>
     {
         /// <summary>

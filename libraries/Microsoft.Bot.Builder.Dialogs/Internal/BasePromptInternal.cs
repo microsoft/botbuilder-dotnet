@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         private readonly PromptValidator<T> _customValidator = null;
 
         /// <summary>
-        /// Creates a <see cref="BasePrompt{T}"/> object.
+        /// Creates a <see cref="BasePromptInternal{T}"/> object.
         /// </summary>
         /// <param name="validator">The input validator for the prompt object.</param>
         public BasePromptInternal(PromptValidator<T> validator = null)
