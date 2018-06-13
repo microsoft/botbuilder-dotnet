@@ -46,7 +46,7 @@ namespace Microsoft.Bot.Connector.Authentication.Tests
             }
 
             [Fact]
-            public void NullAddressParameterShouldThrow()
+            public void NullChannelIdParameterShouldThrow()
             {
                 Func<Task> action = async () => await _endorsementsRetriever.GetConfigurationAsync(null, _mockDocumentRetriever.Object, CancellationToken.None);
 
