@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
     public class EndorsementsValidatorTests
     {
         [Fact]
-        public void NullAddressParameterShouldPass()
+        public void NullChannelIdParameterShouldPass()
         {
             bool isEndorsed = EndorsementsValidator.Validate(null, new string[] { });
             isEndorsed.Should().BeTrue();

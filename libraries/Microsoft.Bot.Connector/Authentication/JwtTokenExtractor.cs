@@ -80,7 +80,7 @@ namespace Microsoft.Bot.Connector.Authentication
             });
         }
 
-        public async Task<ClaimsIdentity> GetIdentityAsync(HttpRequestMessage request, string channelIdFromActivity)
+        public async Task<ClaimsIdentity> GetIdentityAsync(HttpRequestMessage request, string channelId)
         {
             if (request.Headers.Authorization != null)
                 return await GetIdentityAsync(
@@ -90,14 +90,14 @@ namespace Microsoft.Bot.Connector.Authentication
             return null;
         }
 
-        public async Task<ClaimsIdentity> GetIdentityAsync(string authorizationHeader, string channelIdFromActivity)
+        public async Task<ClaimsIdentity> GetIdentityAsync(string authorizationHeader, string channelId)
         {
             if (authorizationHeader == null)
                 return null;
 
             string[] parts = authorizationHeader?.Split(' ');
             if (parts.Length == 2)
-                return await GetIdentityAsync(parts[0], parts[1], channelIdFromActivity).ConfigureAwait(false);
+                return await GetIdentityAsync(parts[0], parts[1], channelId).ConfigureAwait(false);
 
             return null;
         }
@@ -126,7 +126,7 @@ namespace Microsoft.Bot.Connector.Authentication
             return parts[1]; 
         }
 
-        public async Task<ClaimsIdentity> GetIdentityAsync(string scheme, string parameter, string channelIdFromActivity)
+        public async Task<ClaimsIdentity> GetIdentityAsync(string scheme, string parameter, string channelId)
         {
             // No header in correct scheme or no token
             if (scheme != "Bearer" || string.IsNullOrEmpty(parameter))
@@ -138,7 +138,7 @@ namespace Microsoft.Bot.Connector.Authentication
 
             try
             {
-                ClaimsPrincipal claimsPrincipal = await ValidateTokenAsync(parameter, channelIdFromActivity).ConfigureAwait(false);
+                ClaimsPrincipal claimsPrincipal = await ValidateTokenAsync(parameter, channelId).ConfigureAwait(false);
                 return claimsPrincipal.Identities.OfType<ClaimsIdentity>().FirstOrDefault();
             }
             catch (Exception e)
@@ -160,7 +160,7 @@ namespace Microsoft.Bot.Connector.Authentication
             return false;
         }
               
-        private async Task<ClaimsPrincipal> ValidateTokenAsync(string jwtToken, string channelIdFromActivity)
+        private async Task<ClaimsPrincipal> ValidateTokenAsync(string jwtToken, string channelId)
         {
             // _openIdMetadata only does a full refresh when the cache expires every 5 days
             OpenIdConnectConfiguration config = null;
@@ -195,7 +195,7 @@ namespace Microsoft.Bot.Connector.Authentication
                 // below won't run. This is normal. 
                 if (!string.IsNullOrEmpty(keyId) && endorsements.ContainsKey(keyId))
                 {
-                    bool isEndorsed = EndorsementsValidator.Validate(channelIdFromActivity, endorsements[keyId]);
+                    bool isEndorsed = EndorsementsValidator.Validate(channelId, endorsements[keyId]);
                     if (!isEndorsed)
                     {
                         throw new UnauthorizedAccessException($"Could not validate endorsement for key: {keyId} with endorsements: {string.Join(",", endorsements[keyId])}");

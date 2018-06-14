@@ -6,21 +6,21 @@ namespace Microsoft.Bot.Connector.Authentication
 {
     public static class EndorsementsValidator
     {
-        //Original Code from V3 SDK, shown here
-        //public static bool Validate(IEnumerable<IActivity> activities, string[] endorsements)
-        //{
-        //    return !activities.Select(activity => activity.ChannelId).Except(endorsements).Any();
-        //}
-
         /// <summary>
         /// Verify that the set of ChannelIds, which come from the incoming activities,
         /// all match the endorsements found on the JWT Token. 
         /// For example, if an Activity comes from DirectLine, that channelId should
         /// say that, and the jwt token endorsement must also match that. 
         /// </summary>
-        /// <param name="channelIds"></param>
-        /// <param name="endorsements"></param>
-        /// <returns></returns>
+        /// <param name="channelId">The channel name, typically extracted from the activity.ChannelId field, that
+        /// to which the Activity is affinitized.</param>
+        /// <param name="endorsements">Whoever signed the JWT token is permitted to send activities only for
+        /// some specific channels. That list is the endorsement list, and is validated here against the channelId.</param>
+        /// <param name="allowUnendorsedChannels">In channel development scenarios, a channel will send activities
+        /// prior to being able to sign a JWT token. When debugging that channel, it's necessary to allow
+        /// unendorsed activities to be acted on. Setting this to true effectivly disables the endorsement
+        /// validation.</param>
+        /// <returns>True is the channelId is found in the Endorsement set. False if the channelId is not found.</returns>
         public static bool Validate(string channelId, string[] endorsements, bool allowUnendorsedChannels = false)
         {
             // If the Activity came in and doesn't have a Channel ID then it's making no 

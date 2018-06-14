@@ -41,14 +41,14 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <returns>
         /// A valid ClaimsIdentity.
         /// </returns>
-        public static async Task<ClaimsIdentity> AuthenticateChannelToken(string authHeader, ICredentialProvider credentials, HttpClient httpClient, string channelIdFromActivity)
+        public static async Task<ClaimsIdentity> AuthenticateChannelToken(string authHeader, ICredentialProvider credentials, HttpClient httpClient, string channelId)
         {
             var tokenExtractor = new JwtTokenExtractor(httpClient,
                   ToBotFromChannelTokenValidationParameters,
                   AuthenticationConstants.ToBotFromChannelOpenIdMetadataUrl,
                   AuthenticationConstants.AllowedSigningAlgorithms);
 
-            var identity = await tokenExtractor.GetIdentityAsync(authHeader, channelIdFromActivity);
+            var identity = await tokenExtractor.GetIdentityAsync(authHeader, channelId);
             if (identity == null)
             {
                 // No valid identity. Not Authorized. 
@@ -103,9 +103,9 @@ namespace Microsoft.Bot.Connector.Authentication
         /// HttpClient is used for making those calls. Those calls generally require TLS connections, which are expensive to
         /// setup and teardown, so a shared HttpClient is recommended.</param>
         /// <returns></returns>
-        public static async Task<ClaimsIdentity> AuthenticateChannelToken(string authHeader, ICredentialProvider credentials, string serviceUrl, HttpClient httpClient, string channelIdFromActivity)
+        public static async Task<ClaimsIdentity> AuthenticateChannelToken(string authHeader, ICredentialProvider credentials, string serviceUrl, HttpClient httpClient, string channelId)
         {
-            var identity = await AuthenticateChannelToken(authHeader, credentials, httpClient, channelIdFromActivity);      
+            var identity = await AuthenticateChannelToken(authHeader, credentials, httpClient, channelId);      
 
             var serviceUrlClaim = identity.Claims.FirstOrDefault(claim => claim.Type == AuthenticationConstants.ServiceUrlClaim)?.Value;
             if (string.IsNullOrWhiteSpace(serviceUrlClaim))
