@@ -98,7 +98,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         /// </summary>
         /// <param name="context">The context object for this turn.</param>
         /// <param name="next">The delegate to call to continue the bot middleware pipeline.</param>
-        public async Task OnTurn(ITurnContext context, MiddlewareSet.NextDelegate next)
+        public virtual async Task OnTurn(ITurnContext context, MiddlewareSet.NextDelegate next)
         {
             if (context.Activity.Type == ActivityTypes.Message)
             {
