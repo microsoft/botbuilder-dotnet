@@ -105,10 +105,6 @@
       <Project>{bd0b82ef-1601-4e87-b78a-b43de7eb36b0}</Project>
       <Name>Microsoft.Bot.Builder.Integration.AspNet.WebApi</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\libraries\Microsoft.Bot.Builder.Core\Microsoft.Bot.Builder.Core.csproj">
-      <Project>{f0c150e2-9b8a-444c-b70e-97ad918cb3d4}</Project>
-      <Name>Microsoft.Bot.Builder.Core</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\libraries\Microsoft.Bot.Connector\Microsoft.Bot.Connector.csproj">
       <Project>{6462DA5D-27DC-4CD5-9467-5EFB998FD838}</Project>
       <Name>Microsoft.Bot.Connector</Name>

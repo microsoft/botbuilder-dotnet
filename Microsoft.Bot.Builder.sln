@@ -24,8 +24,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Connector", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Schema", "libraries\Microsoft.Bot.Schema\Microsoft.Bot.Schema.csproj", "{C1F54CDC-AD1D-45BB-8F7D-F49E411AFAF1}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Core", "libraries\Microsoft.Bot.Builder.Core\Microsoft.Bot.Builder.Core.csproj", "{F0C150E2-9B8A-444C-B70E-97AD918CB3D4}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder", "libraries\Microsoft.Bot.Builder\Microsoft.Bot.Builder.csproj", "{ADA8AB8B-2066-4193-B8F7-985669B23E00}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Samples.EchoBot-Console", "samples\Microsoft.Bot.Samples.EchoBot-Console\Microsoft.Bot.Samples.EchoBot-Console.csproj", "{C8DF8AE3-0A4D-445D-993E-F7A1784BFDD4}"
@@ -49,12 +47,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Samples.EchoBot-AspNetWebApi", "samples\Microsoft.Bot.Samples.EchoBot-AspNetWebApi\Microsoft.Bot.Samples.EchoBot-AspNetWebApi.csproj", "{AAC0F76C-4114-4D64-A99E-8BE4C43982F9}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Samples.Connector.EchoBot", "samples\Microsoft.Bot.Samples.Connector.EchoBot\Microsoft.Bot.Samples.Connector.EchoBot.csproj", "{8D6F4046-0971-4E24-8E4D-F8175C6DFF2B}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Core.Extensions", "libraries\Microsoft.Bot.Builder.Core.Extensions\Microsoft.Bot.Builder.Core.Extensions.csproj", "{183B3324-4CFF-477A-8EAE-73953D3E383D}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Core.Tests", "tests\Microsoft.Bot.Builder.Core.Tests\Microsoft.Bot.Builder.Core.Tests.csproj", "{99100609-26D5-4BBD-ACD7-4CC810977A06}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Core.Extensions.Tests", "tests\Microsoft.Bot.Builder.Core.Extensions.Tests\Microsoft.Bot.Builder.Core.Extensions.Tests.csproj", "{6034B365-C87B-4A90-A8C7-F24374BFE2E7}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.TemplateManager", "libraries\Microsoft.Bot.Builder.TemplateManager\Microsoft.Bot.Builder.TemplateManager.csproj", "{EED5F0D3-6F00-4ED1-9108-5ADCB10A3734}"
 EndProject
@@ -97,6 +89,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Integration.AspNet.Core.Tests", "tests\integration\Microsoft.Bot.Builder.Integration.AspNet.Core.Tests\Microsoft.Bot.Builder.Integration.AspNet.Core.Tests.csproj", "{62C4DC83-3B07-45D7-856E-224FFB368E5F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Builder.Integration.AspNet.WebApi.Tests", "tests\integration\Microsoft.Bot.Builder.Integration.AspNet.WebApi.Tests\Microsoft.Bot.Builder.Integration.AspNet.WebApi.Tests.csproj", "{2614D290-1345-4A41-BE90-F85F817CEADE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Tests", "tests\Microsoft.Bot.Builder.Tests\Microsoft.Bot.Builder.Tests.csproj", "{35F9B8A8-1974-4795-930B-5E4980EE85E5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -166,14 +160,6 @@ Global
 		{C1F54CDC-AD1D-45BB-8F7D-F49E411AFAF1}.Documentation|Any CPU.Build.0 = Documentation|Any CPU
 		{C1F54CDC-AD1D-45BB-8F7D-F49E411AFAF1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C1F54CDC-AD1D-45BB-8F7D-F49E411AFAF1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F0C150E2-9B8A-444C-B70E-97AD918CB3D4}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug - NuGet Packages|Any CPU
-		{F0C150E2-9B8A-444C-B70E-97AD918CB3D4}.Debug - NuGet Packages|Any CPU.Build.0 = Debug - NuGet Packages|Any CPU
-		{F0C150E2-9B8A-444C-B70E-97AD918CB3D4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F0C150E2-9B8A-444C-B70E-97AD918CB3D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F0C150E2-9B8A-444C-B70E-97AD918CB3D4}.Documentation|Any CPU.ActiveCfg = Documentation|Any CPU
-		{F0C150E2-9B8A-444C-B70E-97AD918CB3D4}.Documentation|Any CPU.Build.0 = Documentation|Any CPU
-		{F0C150E2-9B8A-444C-B70E-97AD918CB3D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F0C150E2-9B8A-444C-B70E-97AD918CB3D4}.Release|Any CPU.Build.0 = Release|Any CPU
 		{ADA8AB8B-2066-4193-B8F7-985669B23E00}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug - NuGet Packages|Any CPU
 		{ADA8AB8B-2066-4193-B8F7-985669B23E00}.Debug - NuGet Packages|Any CPU.Build.0 = Debug - NuGet Packages|Any CPU
 		{ADA8AB8B-2066-4193-B8F7-985669B23E00}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -255,28 +241,6 @@ Global
 		{8D6F4046-0971-4E24-8E4D-F8175C6DFF2B}.Documentation|Any CPU.ActiveCfg = Documentation|Any CPU
 		{8D6F4046-0971-4E24-8E4D-F8175C6DFF2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8D6F4046-0971-4E24-8E4D-F8175C6DFF2B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{183B3324-4CFF-477A-8EAE-73953D3E383D}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug - NuGet Packages|Any CPU
-		{183B3324-4CFF-477A-8EAE-73953D3E383D}.Debug - NuGet Packages|Any CPU.Build.0 = Debug - NuGet Packages|Any CPU
-		{183B3324-4CFF-477A-8EAE-73953D3E383D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{183B3324-4CFF-477A-8EAE-73953D3E383D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{183B3324-4CFF-477A-8EAE-73953D3E383D}.Documentation|Any CPU.ActiveCfg = Documentation|Any CPU
-		{183B3324-4CFF-477A-8EAE-73953D3E383D}.Documentation|Any CPU.Build.0 = Documentation|Any CPU
-		{183B3324-4CFF-477A-8EAE-73953D3E383D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{183B3324-4CFF-477A-8EAE-73953D3E383D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{99100609-26D5-4BBD-ACD7-4CC810977A06}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{99100609-26D5-4BBD-ACD7-4CC810977A06}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
-		{99100609-26D5-4BBD-ACD7-4CC810977A06}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{99100609-26D5-4BBD-ACD7-4CC810977A06}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{99100609-26D5-4BBD-ACD7-4CC810977A06}.Documentation|Any CPU.ActiveCfg = Documentation|Any CPU
-		{99100609-26D5-4BBD-ACD7-4CC810977A06}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{99100609-26D5-4BBD-ACD7-4CC810977A06}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6034B365-C87B-4A90-A8C7-F24374BFE2E7}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{6034B365-C87B-4A90-A8C7-F24374BFE2E7}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
-		{6034B365-C87B-4A90-A8C7-F24374BFE2E7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6034B365-C87B-4A90-A8C7-F24374BFE2E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6034B365-C87B-4A90-A8C7-F24374BFE2E7}.Documentation|Any CPU.ActiveCfg = Documentation|Any CPU
-		{6034B365-C87B-4A90-A8C7-F24374BFE2E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6034B365-C87B-4A90-A8C7-F24374BFE2E7}.Release|Any CPU.Build.0 = Release|Any CPU
 		{EED5F0D3-6F00-4ED1-9108-5ADCB10A3734}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug - NuGet Packages|Any CPU
 		{EED5F0D3-6F00-4ED1-9108-5ADCB10A3734}.Debug - NuGet Packages|Any CPU.Build.0 = Debug - NuGet Packages|Any CPU
 		{EED5F0D3-6F00-4ED1-9108-5ADCB10A3734}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -412,6 +376,14 @@ Global
 		{2614D290-1345-4A41-BE90-F85F817CEADE}.Documentation|Any CPU.Build.0 = Debug|Any CPU
 		{2614D290-1345-4A41-BE90-F85F817CEADE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2614D290-1345-4A41-BE90-F85F817CEADE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{35F9B8A8-1974-4795-930B-5E4980EE85E5}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
+		{35F9B8A8-1974-4795-930B-5E4980EE85E5}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
+		{35F9B8A8-1974-4795-930B-5E4980EE85E5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{35F9B8A8-1974-4795-930B-5E4980EE85E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{35F9B8A8-1974-4795-930B-5E4980EE85E5}.Documentation|Any CPU.ActiveCfg = Debug|Any CPU
+		{35F9B8A8-1974-4795-930B-5E4980EE85E5}.Documentation|Any CPU.Build.0 = Debug|Any CPU
+		{35F9B8A8-1974-4795-930B-5E4980EE85E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{35F9B8A8-1974-4795-930B-5E4980EE85E5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -425,7 +397,6 @@ Global
 		{3B5BFCCB-23CF-4849-8B2C-74D05DC3E402} = {3ADFB27A-95FA-4330-B211-1D66A29A17AB}
 		{6462DA5D-27DC-4CD5-9467-5EFB998FD838} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
 		{C1F54CDC-AD1D-45BB-8F7D-F49E411AFAF1} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
-		{F0C150E2-9B8A-444C-B70E-97AD918CB3D4} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
 		{ADA8AB8B-2066-4193-B8F7-985669B23E00} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
 		{C8DF8AE3-0A4D-445D-993E-F7A1784BFDD4} = {3ADFB27A-95FA-4330-B211-1D66A29A17AB}
 		{BF414C86-DB3B-4022-9B29-DCE8AA954C12} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
@@ -438,9 +409,6 @@ Global
 		{BEDBA9E2-FE6E-44D9-914D-03AE63EF6768} = {3ADFB27A-95FA-4330-B211-1D66A29A17AB}
 		{AAC0F76C-4114-4D64-A99E-8BE4C43982F9} = {3ADFB27A-95FA-4330-B211-1D66A29A17AB}
 		{8D6F4046-0971-4E24-8E4D-F8175C6DFF2B} = {3ADFB27A-95FA-4330-B211-1D66A29A17AB}
-		{183B3324-4CFF-477A-8EAE-73953D3E383D} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
-		{99100609-26D5-4BBD-ACD7-4CC810977A06} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
-		{6034B365-C87B-4A90-A8C7-F24374BFE2E7} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 		{EED5F0D3-6F00-4ED1-9108-5ADCB10A3734} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
 		{C93F6192-0123-4121-AD92-374A71E4B0F3} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 		{2A46FEEF-4FD9-4DD5-8650-39C36CFDF2BB} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
@@ -462,6 +430,7 @@ Global
 		{0A0E26B0-7A46-4F1A-8BFE-9A763FDF6CF8} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 		{62C4DC83-3B07-45D7-856E-224FFB368E5F} = {0A0E26B0-7A46-4F1A-8BFE-9A763FDF6CF8}
 		{2614D290-1345-4A41-BE90-F85F817CEADE} = {0A0E26B0-7A46-4F1A-8BFE-9A763FDF6CF8}
+		{35F9B8A8-1974-4795-930B-5E4980EE85E5} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7173C9F3-A7F9-496E-9078-9156E35D6E16}

@@ -1,6 +1,6 @@
 ﻿using Microsoft.Bot.Schema;
 
-namespace Microsoft.Bot.Builder.Core.Tests
+namespace Microsoft.Bot.Builder.Tests
 {
     public static class TestMessage
     {
