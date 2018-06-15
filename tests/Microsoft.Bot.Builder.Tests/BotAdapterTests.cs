@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.Bot.Builder.Core.Tests
+namespace Microsoft.Bot.Builder.Tests
 {
     [TestClass]
     [TestCategory("BotAdapter")]
