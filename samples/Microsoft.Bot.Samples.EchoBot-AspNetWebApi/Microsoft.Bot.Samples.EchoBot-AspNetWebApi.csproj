@@ -171,10 +171,6 @@
       <Project>{f0c150e2-9b8a-444c-b70e-97ad918cb3d4}</Project>
       <Name>Microsoft.Bot.Builder.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Core\Microsoft.Bot.Builder.Core.csproj">
-      <Project>{f0c150e2-9b8a-444c-b70e-97ad918cb3d4}</Project>
-      <Name>Microsoft.Bot.Builder.Core</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder\Microsoft.Bot.Builder.csproj">
       <Project>{74908F42-3842-49B4-9344-60BB791FDE32}</Project>
       <Name>Microsoft.Bot.Builder</Name>
