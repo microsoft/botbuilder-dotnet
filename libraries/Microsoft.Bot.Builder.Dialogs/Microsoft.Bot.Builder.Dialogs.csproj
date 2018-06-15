@@ -57,7 +57,8 @@
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Bot.Builder.Core" Condition=" '$(PackageVersion)' == '' " Version="4.0.0-local" />
 		<PackageReference Include="Microsoft.Bot.Builder.Core" Condition=" '$(PackageVersion)' != '' " Version="$(PackageVersion)" />
-		<PackageReference Include="Microsoft.Bot.Builder.Prompts" Condition=" '$(PackageVersion)' == '' " Version="4.0.0-local" />
+    <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(PackageVersion)' == '' " Version="4.0.0-local" />
+    <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(PackageVersion)' != '' " Version="$(PackageVersion)" />
 		<PackageReference Include="Microsoft.Bot.Schema" Condition=" '$(PackageVersion)' == '' " Version="4.0.0-local" />
 		<PackageReference Include="Microsoft.Bot.Schema" Condition=" '$(PackageVersion)' != '' " Version="$(PackageVersion)" />
 		<PackageReference Include="Microsoft.Recognizers.Text.Choice" Version="1.0.6" />

@@ -56,12 +56,15 @@
 		<PackageReference Include="System.Threading.Tasks.Extensions" Version="4.4.0" />
 		<PackageReference Include="Microsoft.Bot.Builder.Core" Condition=" '$(PackageVersion)' == '' " Version="4.0.0-local" />
 		<PackageReference Include="Microsoft.Bot.Builder.Core" Condition=" '$(PackageVersion)' != '' " Version="$(PackageVersion)" />
-	</ItemGroup>
+    <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(PackageVersion)' == '' " Version="4.0.0-local" />
+    <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(PackageVersion)' != '' " Version="$(PackageVersion)" />
+  </ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\Microsoft.Bot.Builder.Core.Extensions\Microsoft.Bot.Builder.Core.Extensions.csproj" />
 		<ProjectReference Include="..\Microsoft.Bot.Builder.Core\Microsoft.Bot.Builder.Core.csproj" />
-		<ProjectReference Include="..\Microsoft.Bot.Connector\Microsoft.Bot.Connector.csproj" />
+    <ProjectReference Include="..\Microsoft.Bot.Builder\Microsoft.Bot.Builder.csproj" />
+    <ProjectReference Include="..\Microsoft.Bot.Connector\Microsoft.Bot.Connector.csproj" />
 	</ItemGroup>
 
 </Project>
