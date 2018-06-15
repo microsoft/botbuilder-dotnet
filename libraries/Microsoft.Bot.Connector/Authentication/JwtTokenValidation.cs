@@ -49,7 +49,8 @@ namespace Microsoft.Bot.Connector.Authentication
 
         public static async Task<ClaimsIdentity> ValidateAuthHeader(string authHeader, ICredentialProvider credentials, string channelId, string serviceUrl = null, HttpClient httpClient = null)
         {
-            if (string.IsNullOrEmpty(authHeader)) throw new ArgumentNullException(nameof(authHeader));
+            if (string.IsNullOrEmpty(authHeader))
+                throw new ArgumentNullException(nameof(authHeader));
 
             bool usingEmulator = EmulatorValidation.IsTokenFromEmulator(authHeader);
 

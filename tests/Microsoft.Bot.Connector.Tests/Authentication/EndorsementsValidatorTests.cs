@@ -55,12 +55,5 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
             bool isEndorsed = EndorsementsValidator.Validate(string.Empty, new[] { "right", "wrong" });
             isEndorsed.Should().BeTrue();
         }
-
-        [Fact]
-        public void UnendorsedChannelShouldPassDueToOverride()
-        {
-            bool isEndorsed = EndorsementsValidator.Validate("unendorsed", new[] { "wrong" }, true);
-            isEndorsed.Should().BeTrue();
-        }
     }
 }
