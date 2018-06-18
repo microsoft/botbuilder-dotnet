@@ -49,8 +49,8 @@ namespace Microsoft.Bot.Builder.Ai.Translation.PostProcessor
         /// </summary>
         /// <param name="sentence">String containing sentence to be splitted.</param>
         /// <param name="alignments">Alignment information from translator output.</param>
-        /// <param name="isSrcSentence">Flag to indicate if the sentence sent is a source sentence or translated sentence</param>
-        /// <returns>A <see cref="string[]"/> contains splitted sentence tokens.</returns>
+        /// <param name="isSourceSentence">Flag to indicate if the sentence sent is a source sentence or translated sentence</param>
+        /// <returns>An array that contains the split sentence tokens.</returns>
 
         public static string[] SplitSentence(string sentence, string[] alignments = null, bool isSourceSentence = true)
         {
@@ -204,11 +204,11 @@ namespace Microsoft.Bot.Builder.Ai.Translation.PostProcessor
         /// Use alignment information source sentence and translated sentence
         /// to keep a specific word from the source onto target translation.
         /// </summary>
-        /// <param name="alignment">Dictionary containing the alignments.</param>
+        /// <param name="alignmentMap">Dictionary containing the alignments.</param>
         /// <param name="sourceTokens">Source message tokens.</param>
         /// <param name="translatedTokens">Translated message tokens.</param>
         /// <param name="sourceTokenIndex">Source word index.</param>
-        /// <returns>A <see cref="String[]"/> represents the translated tokens after processing.</returns>
+        /// <returns>An array that represents the translated tokens after processing.</returns>
         public static string[] KeepSourceWordInTranslation(Dictionary<int, int> alignmentMap, string[] sourceTokens, string[] translatedTokens, int sourceTokenIndex)
         {
             //parameter validation
@@ -224,10 +224,10 @@ namespace Microsoft.Bot.Builder.Ai.Translation.PostProcessor
         /// <summary>
         /// Validate arguments of <see cref="KeepSourceWordInTranslation(Dictionary{int, int}, string[], string[], int)"/>.
         /// </summary>
-        /// <param name="alignment">Dictionary containing the alignments.</param>
-        /// <param name="sourceTokens">Source message tokens.</param>
-        /// <param name="translatedTokens">Translated message tokens.</param>
-        /// <param name="sourceTokenIndex">Source word index.</param>
+        /// <param name="alignmentMap">Dictionary containing the alignments.</param>
+        /// <param name="sourceWords">Source message tokens.</param>
+        /// <param name="translatedWords">Translated message tokens.</param>
+        /// <param name="sourceWordIndex">Source word index.</param>
         private static void ValidateParametersKeepSourceWordInTranslation(Dictionary<int, int> alignmentMap, string[] sourceWords, string[] translatedWords, int sourceWordIndex)
         {
             if (alignmentMap == null)

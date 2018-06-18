@@ -47,7 +47,7 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
         /// </summary>
         /// <param name="luisModel">The LUIS model to use to recognize text.</param>
         /// <param name="luisRecognizerOptions">The LUIS recognizer options to use.</param>
-        /// <param name="options">The LUIS request options to use.</param>
+        /// <param name="luisOptions">The LUIS request options to use.</param>
         public LuisRecognizerMiddleware(ILuisModel luisModel, ILuisRecognizerOptions luisRecognizerOptions = null, ILuisOptions luisOptions = null)
         {
             _luisModel = luisModel ?? throw new ArgumentNullException(nameof(luisModel));
