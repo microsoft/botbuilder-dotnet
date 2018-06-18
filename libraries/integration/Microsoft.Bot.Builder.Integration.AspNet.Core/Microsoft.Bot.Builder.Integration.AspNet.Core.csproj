@@ -39,10 +39,6 @@
 		<AssemblyName>Microsoft.Bot.Builder.Integration.AspNet.Core</AssemblyName>
 	</PropertyGroup>
 
-	<PropertyGroup Condition="$(Configuration) == 'Debug - NuGet Packages'">
-		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-	</PropertyGroup>
-
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Documentation|AnyCPU'">
 		<DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Builder.Integration.AspNet.Core.xml</DocumentationFile>
 	</PropertyGroup>
