@@ -29,8 +29,9 @@ namespace Microsoft.Bot.Builder.Core.Extensions
         /// <summary>
         /// Creates a new <see cref="BotState{TState}"/> middleware object.
         /// </summary>
-        /// <param name="name">The name to use to load or save the state object.</param>
         /// <param name="storage">The storage provider to use.</param>
+        /// <param name="propertyName">The name to use to load or save the state object.</param>
+        /// <param name="keyDelegate"></param>
         /// <param name="settings">The state persistance options to use.</param>
         public BotState(IStorage storage, string propertyName, Func<ITurnContext, string> keyDelegate, StateSettings settings = null)
         {
