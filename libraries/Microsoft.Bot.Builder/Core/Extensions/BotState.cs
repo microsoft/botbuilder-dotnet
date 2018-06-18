@@ -76,8 +76,9 @@ namespace Microsoft.Bot.Builder.Core.Extensions
         /// <summary>
         /// Reads state from storage.
         /// </summary>
-        /// <typeparam name="TState">The type of the bot state object.</typeparam>
         /// <param name="context">The context object for this turn.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>If successful, the task result contains the state object, read from storage.</remarks>
         public virtual async Task<TState> Read(ITurnContext context)
         {
             var key = this._keyDelegate(context);
