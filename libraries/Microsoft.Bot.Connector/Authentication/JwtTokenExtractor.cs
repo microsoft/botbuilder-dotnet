@@ -27,8 +27,8 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <summary>
         /// Cache for Endorsement configuration managers (one per metadata URL)
         /// </summary>
-        private static readonly ConcurrentDictionary<string, ConfigurationManager<IDictionary<string, string[]>>> _endorsementsCache =
-            new ConcurrentDictionary<string, ConfigurationManager<IDictionary<string, string[]>>>();
+        private static readonly ConcurrentDictionary<string, ConfigurationManager<IDictionary<string, HashSet<string>>>> _endorsementsCache =
+            new ConcurrentDictionary<string, ConfigurationManager<IDictionary<string, HashSet<string>>>>();
 
         /// <summary>
         /// Token validation parameters for this instance
@@ -43,12 +43,12 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <summary>
         /// Endorsements configuration manager for this instance
         /// </summary>
-        private readonly ConfigurationManager<IDictionary<string, string[]>> _endorsementsData;
+        private readonly ConfigurationManager<IDictionary<string, HashSet<string>>> _endorsementsData;
 
         /// <summary>
         /// Allowed signing algorithms
         /// </summary>
-        private readonly string[] _allowedSigningAlgorithms;
+        private readonly HashSet<string> _allowedSigningAlgorithms;
                 
         /// <summary>
         /// Extracts relevant data from JWT Tokens
@@ -60,7 +60,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <param name="tokenValidationParameters"></param>
         /// <param name="metadataUrl"></param>
         /// <param name="allowedSigningAlgorithms"></param>
-        public JwtTokenExtractor(HttpClient httpClient, TokenValidationParameters tokenValidationParameters, string metadataUrl, string[] allowedSigningAlgorithms)
+        public JwtTokenExtractor(HttpClient httpClient, TokenValidationParameters tokenValidationParameters, string metadataUrl, HashSet<string> allowedSigningAlgorithms)
         {
             // Make our own copy so we can edit it
             _tokenValidationParameters = tokenValidationParameters.Clone();
@@ -75,7 +75,7 @@ namespace Microsoft.Bot.Connector.Authentication
             _endorsementsData = _endorsementsCache.GetOrAdd(metadataUrl, key =>
             {
                 var retriever = new EndorsementsRetriever(httpClient);
-                return new ConfigurationManager<IDictionary<string, string[]>>(metadataUrl, retriever, retriever);
+                return new ConfigurationManager<IDictionary<string, HashSet<string>>>(metadataUrl, retriever, retriever);
             });
         }
 
@@ -155,23 +155,23 @@ namespace Microsoft.Bot.Connector.Authentication
 
                 // Validate Channel / Token Endorsements. For this, the channelID present on the Activity 
                 // needs to be matched by an endorsement.  
-                string keyId = (string)parsedJwtToken?.Header?[AuthenticationConstants.KeyIdHeader];
+                var keyId = (string)parsedJwtToken?.Header?[AuthenticationConstants.KeyIdHeader];
                 var endorsements = await _endorsementsData.GetConfigurationAsync();
 
                 // Note: On the Emulator Code Path, the endorsements collection is empty so the validation code
                 // below won't run. This is normal. 
-                if (!string.IsNullOrEmpty(keyId) && endorsements.ContainsKey(keyId))
+                if (!string.IsNullOrEmpty(keyId) && endorsements.TryGetValue(keyId, out var endorsementsForKey))
                 {
-                    bool isEndorsed = EndorsementsValidator.Validate(channelId, endorsements[keyId]);
+                    var isEndorsed = EndorsementsValidator.Validate(channelId, endorsementsForKey);
                     if (!isEndorsed)
                     {
-                        throw new UnauthorizedAccessException($"Could not validate endorsement for key: {keyId} with endorsements: {string.Join(",", endorsements[keyId])}");
+                        throw new UnauthorizedAccessException($"Could not validate endorsement for key: {keyId} with endorsements: {string.Join(",", endorsementsForKey)}");
                     }
                 }
 
                 if (_allowedSigningAlgorithms != null)
                 {
-                    string algorithm = parsedJwtToken?.Header?.Alg;
+                    var algorithm = parsedJwtToken?.Header?.Alg;
                     if (!_allowedSigningAlgorithms.Contains(algorithm))
                     {
                         throw new UnauthorizedAccessException($"Token signing algorithm '{algorithm}' not in allowed list");
@@ -181,7 +181,7 @@ namespace Microsoft.Bot.Connector.Authentication
             }
             catch (SecurityTokenSignatureKeyNotFoundException)
             {
-                string keys = string.Join(", ", ((config?.SigningKeys) ?? Enumerable.Empty<SecurityKey>()).Select(t => t.KeyId));
+                var keys = string.Join(", ", ((config?.SigningKeys) ?? Enumerable.Empty<SecurityKey>()).Select(t => t.KeyId));
                 Trace.TraceError("Error finding key for token. Available keys: " + keys);
                 throw;
             }
