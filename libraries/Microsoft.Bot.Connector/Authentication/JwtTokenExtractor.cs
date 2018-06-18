@@ -60,7 +60,6 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <param name="tokenValidationParameters"></param>
         /// <param name="metadataUrl"></param>
         /// <param name="allowedSigningAlgorithms"></param>
-        /// <param name="validator"></param>
         public JwtTokenExtractor(HttpClient httpClient, TokenValidationParameters tokenValidationParameters, string metadataUrl, HashSet<string> allowedSigningAlgorithms)
         {
             // Make our own copy so we can edit it

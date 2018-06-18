@@ -68,14 +68,18 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <summary>
         /// Adds the host of service url to <see cref="MicrosoftAppCredentials"/> trusted hosts.
         /// </summary>
-        /// <param name="serviceUrl">The service url</param>
-        /// <param name="expirationTime">The expiration time after which this service url is not trusted anymore</param>
+        /// <param name="serviceUrl">The service URL.</param>
         /// <remarks>If expiration time is not provided, the expiration time will DateTime.UtcNow.AddDays(1).</remarks>
         public static void TrustServiceUrl(string serviceUrl)
         {
             TrustServiceUrl(serviceUrl, DateTime.UtcNow.Add(TimeSpan.FromDays(1)));
         }
 
+        /// <summary>
+        /// Adds the host of service url to <see cref="MicrosoftAppCredentials"/> trusted hosts.
+        /// </summary>
+        /// <param name="serviceUrl">The service URL.</param>
+        /// <param name="expirationTime">The expiration time after which this service url is not trusted anymore.</param>
         public static void TrustServiceUrl(string serviceUrl, DateTime expirationTime)
         {
             lock (_trustedHostNamesSync)

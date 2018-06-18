@@ -322,7 +322,6 @@ namespace Microsoft.Bot.Schema
         /// <summary>
         /// Get channeldata as typed structure
         /// </summary>
-        /// <param name="activity"></param>
         /// <typeparam name="TypeT">type to use</typeparam>
         /// <returns>typed object or default(TypeT)</returns>
         public TypeT GetChannelData<TypeT>()
@@ -337,7 +336,6 @@ namespace Microsoft.Bot.Schema
         /// <summary>
         /// Get channeldata as typed structure
         /// </summary>
-        /// <param name="activity"></param>
         /// <typeparam name="TypeT">type to use</typeparam>
         /// <param name="instance">The resulting instance, if possible</param>
         /// <returns>
