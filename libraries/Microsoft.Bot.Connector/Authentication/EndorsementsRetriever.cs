@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Connector.Authentication
     /// More details at:
     ///     https://docs.microsoft.com/en-us/bot-framework/rest-api/bot-framework-rest-connector-authentication
     /// </summary>
-    public sealed class EndorsementsRetriever : IDocumentRetriever, IConfigurationRetriever<IDictionary<string, string[]>>
+    public sealed class EndorsementsRetriever : IDocumentRetriever, IConfigurationRetriever<IDictionary<string, HashSet<string>>>
     {
         private readonly HttpClient _httpClient;
 
@@ -53,7 +53,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// </summary>
         public const string JsonWebKeySetUri = "jwks_uri";
 
-        public async Task<IDictionary<string, string[]>> GetConfigurationAsync(string address, IDocumentRetriever retriever, CancellationToken cancellationToken)
+        public async Task<IDictionary<string, HashSet<string>>> GetConfigurationAsync(string address, IDocumentRetriever retriever, CancellationToken cancellationToken)
         {
             if (address == null)
             {
@@ -72,10 +72,10 @@ namespace Microsoft.Bot.Connector.Authentication
 
             if (keys == null)
             {
-                return new Dictionary<string, string[]>(0);
+                return new Dictionary<string, HashSet<string>>(0);
             }
 
-            var results = new Dictionary<string, string[]>(keys.Count);
+            var results = new Dictionary<string, HashSet<string>>(keys.Count);
 
             foreach (var key in keys)
             {
@@ -89,7 +89,7 @@ namespace Microsoft.Bot.Connector.Authentication
 
                     if (endorsementsToken != null)
                     {
-                        results.Add(keyId, endorsementsToken.Values<string>().ToArray());
+                        results.Add(keyId, new HashSet<string>(endorsementsToken.Values<string>()));
                     }
                 }
             }

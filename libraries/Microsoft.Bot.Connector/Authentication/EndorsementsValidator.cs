@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Microsoft.Bot.Connector.Authentication
@@ -19,7 +20,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <param name="endorsements">Whoever signed the JWT token is permitted to send activities only for
         /// some specific channels. That list is the endorsement list, and is validated here against the channelId.</param>
         /// <returns>True is the channelId is found in the Endorsement set. False if the channelId is not found.</returns>
-        public static bool Validate(string channelId, string[] endorsements)
+        public static bool Validate(string channelId, HashSet<string> endorsements)
         {
             // If the Activity came in and doesn't have a Channel ID then it's making no 
             // assertions as to who endorses it. This means it should pass. 
@@ -38,14 +39,8 @@ namespace Microsoft.Bot.Connector.Authentication
             //       -> 
             //          JWTTokenExtractor
 
-            // Does the set of endorsements match the channelId that was passed in? 
-
-            // ToDo: Consider moving this to a HashSet instead of a string
-            // array, to make lookups O(1) instead of O(N). To give a sense 
-            // of scope, tokens from WebChat have about 10 endorsements, and 
-            // tokens coming from Teams have about 20. 
-
-            bool endorsementPresent = endorsements.Contains(channelId);
+            // Does the set of endorsements match the channelId that was passed in?
+            var endorsementPresent = endorsements.Contains(channelId);
             return endorsementPresent;
         }
     }

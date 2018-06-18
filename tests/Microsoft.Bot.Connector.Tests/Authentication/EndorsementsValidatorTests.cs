@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using FluentAssertions;
 using Microsoft.Bot.Connector.Authentication;
 using Xunit;
@@ -10,7 +11,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
         [Fact]
         public void NullChannelIdParameterShouldPass()
         {
-            bool isEndorsed = EndorsementsValidator.Validate(null, new string[] { });
+            var isEndorsed = EndorsementsValidator.Validate(null, new HashSet<string>());
             isEndorsed.Should().BeTrue();
         }
 
@@ -24,35 +25,35 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
         [Fact]
         public void UnendorsedChannelIdShouldFail()
         {
-            bool isEndorsed = EndorsementsValidator.Validate("channelOne", new string[] { });
+            var isEndorsed = EndorsementsValidator.Validate("channelOne", new HashSet<string>());
             isEndorsed.Should().BeFalse();
         }
 
         [Fact]
         public void MismatchedEndorsementsChannelIdShouldFail()
         {
-            bool isEndorsed = EndorsementsValidator.Validate("right", new[] { "wrong" });
+            var isEndorsed = EndorsementsValidator.Validate("right", new HashSet<string>(new[] { "wrong" }));
             isEndorsed.Should().BeFalse();
         }
 
         [Fact]
         public void EndorsedChannelIdShouldPass()
         {
-            bool isEndorsed = EndorsementsValidator.Validate("right", new[] { "right" });
+            var isEndorsed = EndorsementsValidator.Validate("right", new HashSet<string>(new[] { "right" }));
             isEndorsed.Should().BeTrue();
         }
 
         [Fact]
         public void EndorsedChannelIdShouldPassWithTwoEndorsements()
         {
-            bool isEndorsed = EndorsementsValidator.Validate("right", new[] { "right", "wrong" });
+            var isEndorsed = EndorsementsValidator.Validate("right", new HashSet<string>(new [] { "right", "wrong" }));
             isEndorsed.Should().BeTrue();
         }
 
         [Fact]
         public void UnaffinitizedActivityShouldPass()
         {
-            bool isEndorsed = EndorsementsValidator.Validate(string.Empty, new[] { "right", "wrong" });
+            var isEndorsed = EndorsementsValidator.Validate(string.Empty, new HashSet<string>(new[] { "right", "wrong" }));
             isEndorsed.Should().BeTrue();
         }
     }
