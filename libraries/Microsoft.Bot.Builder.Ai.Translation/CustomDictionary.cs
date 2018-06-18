@@ -36,7 +36,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         /// <summary>
         /// Adds new custom language dictionary for the set of configured dictionaries.
         /// </summary>
-        /// <param name="language"></param>
+        /// <param name="languageId"></param>
         /// <param name="dictionary"></param>
         public void AddNewLanguageDictionary(string languageId, Dictionary<string, string> dictionary)
         {
