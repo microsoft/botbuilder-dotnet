@@ -118,7 +118,6 @@ namespace Microsoft.Bot.Builder.Core.Extensions
         /// </summary>
         /// <param name="channelId">channelid for the conversation</param>
         /// <param name="conversationId">conversation id</param>
-        /// <param name="cancel"></param>
         /// <returns></returns>
         public async Task DeleteTranscript(string channelId, string conversationId)
         {
