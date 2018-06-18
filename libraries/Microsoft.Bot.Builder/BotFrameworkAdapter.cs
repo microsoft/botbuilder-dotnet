@@ -461,7 +461,7 @@ namespace Microsoft.Bot.Builder.Adapters
 
 
 
-        /// Attempts to retrieve the token for a user that's in a login flow.
+        /// <summary>Attempts to retrieve the token for a user that's in a login flow.
         /// </summary>
         /// <param name="context">Context for the current turn of conversation with the user.</param>
         /// <param name="connectionName">Name of the auth connection to use.</param>
