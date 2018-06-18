@@ -165,7 +165,7 @@ namespace Microsoft.Bot.Connector.Authentication
                     var isEndorsed = EndorsementsValidator.Validate(channelId, endorsementsForKey);
                     if (!isEndorsed)
                     {
-                        throw new UnauthorizedAccessException($"Could not validate endorsement for key: {keyId} with endorsements: {string.Join(",", endorsements[keyId])}");
+                        throw new UnauthorizedAccessException($"Could not validate endorsement for key: {keyId} with endorsements: {string.Join(",", endorsementsForKey)}");
                     }
                 }
 
