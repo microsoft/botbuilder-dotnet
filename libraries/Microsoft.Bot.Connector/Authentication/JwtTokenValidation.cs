@@ -40,33 +40,34 @@ namespace Microsoft.Bot.Connector.Authentication
                 throw new UnauthorizedAccessException();
             }
 
-            var claimsIdentity = await ValidateAuthHeader(authHeader, credentials, activity.ServiceUrl, httpClient ?? _httpClient);
+            var claimsIdentity = await ValidateAuthHeader(authHeader, credentials, activity.ChannelId, activity.ServiceUrl, httpClient ?? _httpClient);
 
             MicrosoftAppCredentials.TrustServiceUrl(activity.ServiceUrl);
 
             return claimsIdentity;
         }
 
-        public static async Task<ClaimsIdentity> ValidateAuthHeader(string authHeader, ICredentialProvider credentials, string serviceUrl = null, HttpClient httpClient = null)
+        public static async Task<ClaimsIdentity> ValidateAuthHeader(string authHeader, ICredentialProvider credentials, string channelId, string serviceUrl = null, HttpClient httpClient = null)
         {
-            if (string.IsNullOrEmpty(authHeader)) throw new ArgumentNullException(nameof(authHeader));
+            if (string.IsNullOrEmpty(authHeader))
+                throw new ArgumentNullException(nameof(authHeader));
 
             bool usingEmulator = EmulatorValidation.IsTokenFromEmulator(authHeader);
 
             if (usingEmulator)
             {
-                return await EmulatorValidation.AuthenticateEmulatorToken(authHeader, credentials, httpClient ?? _httpClient);
+                return await EmulatorValidation.AuthenticateEmulatorToken(authHeader, credentials, httpClient ?? _httpClient, channelId);
             }
             else
             {
                 // No empty or null check. Empty can point to issues. Null checks only.
                 if (serviceUrl != null)
                 {
-                    return await ChannelValidation.AuthenticateChannelToken(authHeader, credentials, serviceUrl, httpClient ?? _httpClient);
+                    return await ChannelValidation.AuthenticateChannelToken(authHeader, credentials, serviceUrl, httpClient ?? _httpClient, channelId);
                 }
                 else
                 {
-                    return await ChannelValidation.AuthenticateChannelToken(authHeader, credentials, httpClient ?? _httpClient);
+                    return await ChannelValidation.AuthenticateChannelToken(authHeader, credentials, httpClient ?? _httpClient, channelId);
                 }
             }
         }
