@@ -38,10 +38,6 @@
 		<NeutralLanguage />
 		<AssemblyName>Microsoft.Bot.Builder</AssemblyName>
 	</PropertyGroup>
-
-	<PropertyGroup Condition="$(Configuration) == 'Debug - NuGet Packages'">
-		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-	</PropertyGroup>
     
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
 	  <DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Builder.xml</DocumentationFile>

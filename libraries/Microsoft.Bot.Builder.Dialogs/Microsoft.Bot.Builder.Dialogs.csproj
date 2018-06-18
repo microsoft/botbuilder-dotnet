@@ -38,10 +38,6 @@
 		<NeutralLanguage />
 	</PropertyGroup>
 
-	<PropertyGroup Condition="$(Configuration) == 'Debug - NuGet Packages'">
-		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-	</PropertyGroup>
-
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Documentation|AnyCPU'">
 		<DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Builder.Dialogs.xml</DocumentationFile>
 	</PropertyGroup>
