@@ -128,7 +128,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.PostProcessor
         /// <param name="alignments">Alignments array.</param>
         /// <param name="sourceTokens">Array containing source message tokens.</param>
         /// <param name="translatedTokens">Array containing translated message tokens.</param>
-        /// <returns>A <see cref="Dictionary{int, int}"/> represents the source to target tokens mapping.</returns>
+        /// <returns>A <see cref="Dictionary{Int32, UInt32}"/> represents the source to target tokens mapping.</returns>
         public static Dictionary<int, int> WordAlignmentParse(string[] alignments, string[] sourceTokens, string[] translatedTokens)
         {
             //parameter validation
