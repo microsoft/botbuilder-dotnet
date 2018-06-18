@@ -38,10 +38,6 @@
 		<NeutralLanguage />
 	</PropertyGroup>
 
-  <PropertyGroup Condition="$(Configuration) == 'Debug - NuGet Packages'">
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-  </PropertyGroup>
-
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
 	  <NoWarn>1701;1702;1705;CS1998</NoWarn>
 	</PropertyGroup>
