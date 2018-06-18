@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// <summary>
         /// Adds and configures services for a <typeparamref name="TBot">specified bot type</typeparamref> to the <see cref="IServiceCollection" />.
         /// </summary>
-        /// <typeparam name="TBot">A concrete type of <see cref="IBot"/ > that is to be registered and exposed to the Bot Framework.</typeparam>
+        /// <typeparam name="TBot">A concrete type of <see cref="IBot"/> that is to be registered and exposed to the Bot Framework.</typeparam>
         /// <param name="services">The <see cref="IServiceCollection"/>.</param>
         /// <param name="configureAction">A callback that can further be used to configure the bot.</param>
         /// <returns>A reference to this instance after the operation has completed.</returns>
