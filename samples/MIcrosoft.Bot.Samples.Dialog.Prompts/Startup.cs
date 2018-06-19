@@ -35,7 +35,7 @@ namespace Microsoft.Bot.Samples.Dialog.Prompts
         public void ConfigureServices(IServiceCollection services)
         {
             //services.AddBot<OAuthPromptBot>(options =>
-            services.AddBot<WaterfallBot>(options =>
+            services.AddBot<WaterfallBot>((Action<BotFrameworkOptions>)(options =>
             //services.AddBot<WaterfallNestedBot>(options =>
             //services.AddBot<WaterfallAndPromptBot>(options =>
             //services.AddBot<DialogContainerBot>(options =>
@@ -46,7 +46,7 @@ namespace Microsoft.Bot.Samples.Dialog.Prompts
                     new BotFrameworkHttpStatusCodeErrorDetectionStrategy(), 3, TimeSpan.FromSeconds(2), TimeSpan.FromSeconds(20), TimeSpan.FromSeconds(1));
 
                 options.Middleware.Add(new ConversationState<Dictionary<string, object>>(new MemoryStorage()));
-            });
+            }));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

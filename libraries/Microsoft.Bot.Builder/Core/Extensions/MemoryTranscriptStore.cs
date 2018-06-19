@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,25 +19,25 @@ namespace Microsoft.Bot.Builder.Core.Extensions
     /// </note>
     public class MemoryTranscriptStore : ITranscriptStore
     {
-        Dictionary<string, Dictionary<string, List<IActivity>>> channels = new Dictionary<string, Dictionary<string, List<IActivity>>>();
+        private Dictionary<string, Dictionary<string, List<IActivity>>> _channels = new Dictionary<string, Dictionary<string, List<IActivity>>>();
 
         /// <summary>
         /// Log an activity to the transcript
         /// </summary>
         /// <param name="activity">activity to log</param>
         /// <returns></returns>
-        public async Task LogActivity(IActivity activity)
+        public Task LogActivity(IActivity activity)
         {
             if (activity == null)
                 throw new ArgumentNullException("activity cannot be null for LogActivity()");
 
-            lock (this.channels)
+            lock (_channels)
             {
                 Dictionary<string, List<IActivity>> channel;
-                if (!channels.TryGetValue(activity.ChannelId, out channel))
+                if (!_channels.TryGetValue(activity.ChannelId, out channel))
                 {
                     channel = new Dictionary<string, List<IActivity>>();
-                    channels[activity.ChannelId] = channel;
+                    _channels[activity.ChannelId] = channel;
                 }
                 List<IActivity> transcript;
                 if (!channel.TryGetValue(activity.Conversation.Id, out transcript))
@@ -44,6 +47,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions
                 }
                 transcript.Add(activity);
             }
+            return Task.CompletedTask;
         }
 
         /// <summary>
@@ -54,7 +58,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions
         /// <param name="continuationToken"></param>
         /// <param name="startDate"></param>
         /// <returns></returns>
-        public async Task<PagedResult<IActivity>> GetTranscriptActivities(string channelId, string conversationId, string continuationToken = null, DateTime startDate = default(DateTime))
+        public Task<PagedResult<IActivity>> GetTranscriptActivities(string channelId, string conversationId, string continuationToken = null, DateTime startDate = default(DateTime))
         {
             if (channelId == null)
                 throw new ArgumentNullException($"missing {nameof(channelId)}");
@@ -63,10 +67,10 @@ namespace Microsoft.Bot.Builder.Core.Extensions
                 throw new ArgumentNullException($"missing {nameof(conversationId)}");
 
             var pagedResult = new PagedResult<IActivity>();
-            lock (this.channels)
+            lock (_channels)
             {
                 Dictionary<string, List<IActivity>> channel;
-                if (channels.TryGetValue(channelId, out channel))
+                if (_channels.TryGetValue(channelId, out channel))
                 {
                     List<IActivity> transcript;
                     if (channel.TryGetValue(conversationId, out transcript))
@@ -96,7 +100,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions
                     }
                 }
             }
-            return pagedResult;
+            return Task.FromResult(pagedResult);
         }
 
         /// <summary>
@@ -105,7 +109,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions
         /// <param name="channelId">channelid for the conversation</param>
         /// <param name="conversationId">conversation id</param>
         /// <returns></returns>
-        public async Task DeleteTranscript(string channelId, string conversationId)
+        public Task DeleteTranscript(string channelId, string conversationId)
         {
             if (channelId == null)
                 throw new ArgumentNullException($"{nameof(channelId)} should not be null");
@@ -113,15 +117,16 @@ namespace Microsoft.Bot.Builder.Core.Extensions
             if (conversationId == null)
                 throw new ArgumentNullException($"{nameof(conversationId)} should not be null");
 
-            lock (this.channels)
+            lock (_channels)
             {
                 Dictionary<string, List<IActivity>> channel;
-                if (channels.TryGetValue(channelId, out channel))
+                if (_channels.TryGetValue(channelId, out channel))
                 {
                     if (channel.ContainsKey(conversationId))
                         channel.Remove(conversationId);
                 }
             }
+            return Task.CompletedTask;
         }
 
 
@@ -131,16 +136,16 @@ namespace Microsoft.Bot.Builder.Core.Extensions
         /// <param name="channelId"></param>
         /// <param name="continuationToken"></param>
         /// <returns></returns>
-        public async Task<PagedResult<Transcript>> ListTranscripts(string channelId, string continuationToken = null)
+        public Task<PagedResult<Transcript>> ListTranscripts(string channelId, string continuationToken = null)
         {
             if (channelId == null)
                 throw new ArgumentNullException($"missing {nameof(channelId)}");
 
             var pagedResult = new PagedResult<Transcript>();
-            lock (this.channels)
+            lock (_channels)
             {
                 Dictionary<string, List<IActivity>> channel;
-                if (channels.TryGetValue(channelId, out channel))
+                if (_channels.TryGetValue(channelId, out channel))
                 {
                     if (continuationToken != null)
                     {
@@ -175,7 +180,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions
                     }
                 }
             }
-            return pagedResult;
+            return Task.FromResult(pagedResult);
         }
 
     }

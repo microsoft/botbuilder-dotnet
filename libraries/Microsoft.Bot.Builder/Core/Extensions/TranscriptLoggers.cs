@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
+
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 using System;
@@ -19,10 +20,11 @@ namespace Microsoft.Bot.Builder.Core.Extensions
         /// </summary>
         /// <param name="activity">activity to log</param>
         /// <returns></returns>
-        public async Task LogActivity(IActivity activity)
+        public Task LogActivity(IActivity activity)
         {
             BotAssert.ActivityNotNull(activity);
             System.Diagnostics.Trace.TraceInformation(JsonConvert.SerializeObject(activity, serializationSettings));
+            return Task.CompletedTask;
         }
     }
 
@@ -41,7 +43,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions
         public async Task LogActivity(IActivity activity)
         {
             BotAssert.ActivityNotNull(activity);
-            Console.WriteLine(JsonConvert.SerializeObject(activity, serializationSettings));
+            await Console.Out.WriteLineAsync(JsonConvert.SerializeObject(activity, serializationSettings));
         }
     }
 

@@ -32,7 +32,7 @@ namespace AlarmBot
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton(_ => Configuration);
-            services.AddBot<AlarmBot>(options =>
+            services.AddBot<AlarmBot>((Action<BotFrameworkOptions>)(options =>
             { 
                 options.CredentialProvider = new ConfigurationCredentialProvider(Configuration);
 
@@ -56,7 +56,7 @@ namespace AlarmBot
                         .AddIntent("cancel", new Regex("cancel(.*)", RegexOptions.IgnoreCase))
                         .AddIntent("confirmYes", new Regex("(yes|yep|yessir|^y$)", RegexOptions.IgnoreCase))
                         .AddIntent("confirmNo", new Regex("(no|nope|^n$)", RegexOptions.IgnoreCase)));
-            });
+            }));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

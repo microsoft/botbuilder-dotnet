@@ -32,16 +32,16 @@ namespace AlarmBot
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton(_ => Configuration);            
-            services.AddBot<AlarmBot>(options =>
+            services.AddBot<AlarmBot>((Action<BotFrameworkOptions>)(options =>
             {
                 options.CredentialProvider = new SimpleCredentialProvider(Configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppIdKey)?.Value, Configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppPasswordKey)?.Value);
                 var middleware = options.Middleware;
 
                 // Add middleware to send an appropriate message to the user if an exception occurs
-                middleware.Add(new CatchExceptionMiddleware<Exception>(async (context, exception) =>
-                    {
-                        await context.SendActivity("Sorry, it looks like something went wrong!");
-                    }));
+                //middleware.Add(new CatchExceptionMiddleware<Exception>(async (context, exception) =>
+                //    {
+                //        await context.SendActivity("Sorry, it looks like something went wrong!");
+                //    }));
                 // Add middleware to send periodic typing activities until the bot responds. The initial
                 // delay before sending a typing activity and the frequency of additional activities can also be specified
                 middleware.Add(new ShowTypingMiddleware());
@@ -56,7 +56,7 @@ namespace AlarmBot
                                 .AddIntent("confirmYes", new Regex("(yes|yep|yessir|^y$)", RegexOptions.IgnoreCase))
                                 .AddIntent("confirmNo", new Regex("(no|nope|^n$)", RegexOptions.IgnoreCase)));
                             
-            });
+            }));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
