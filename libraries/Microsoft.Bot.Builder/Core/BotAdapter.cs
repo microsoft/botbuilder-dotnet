@@ -2,10 +2,6 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 
@@ -42,6 +38,15 @@ namespace Microsoft.Bot.Builder
         /// </summary>
         public BotAdapter() : base()
         {
+        }
+
+        /// <summary>
+        /// Error handler that catches exceptions in the pipeline and providing access to the context 
+        /// </summary>
+        public Func<ITurnContext, Exception, Task> ErrorHandler
+        {
+            get;
+            set;
         }
 
         /// <summary>
@@ -127,7 +132,21 @@ namespace Microsoft.Bot.Builder
             // Call any registered Middleware Components looking for ReceiveActivity()
             if (context.Activity != null)
             {
-                await _middlewareSet.ReceiveActivityWithStatus(context, callback).ConfigureAwait(false);
+                try
+                {
+                    await _middlewareSet.ReceiveActivityWithStatus(context, callback).ConfigureAwait(false);
+                }
+                catch (Exception e)
+                {
+                    if (ErrorHandler != null)
+                    {
+                        await ErrorHandler.Invoke(context, e).ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
             }
             else
             {
@@ -148,7 +167,7 @@ namespace Microsoft.Bot.Builder
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <exception cref="NotImplementedException"></exception>
         /// <remarks>No base implementation is provided.</remarks>
-        public virtual async Task CreateConversation(string channelId, Func<ITurnContext, Task> callback)
+        public virtual Task CreateConversation(string channelId, Func<ITurnContext, Task> callback)
         {
             throw new NotImplementedException("Adapter does not support CreateConversation with this arguments");
         }
@@ -163,7 +182,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="callback">The method to call for the resulting bot turn.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <remarks>Call this method to proactively send a message to a conversation.
-        /// Most channels require a user to initaiate a conversation with a bot
+        /// Most _channels require a user to initaiate a conversation with a bot
         /// before the bot can send activities to the user.</remarks>
         /// <seealso cref="RunPipeline(ITurnContext, Func{ITurnContext, Task})"/>
         public virtual Task ContinueConversation(string botId, ConversationReference reference, Func<ITurnContext, Task> callback)

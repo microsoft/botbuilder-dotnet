@@ -37,7 +37,7 @@ namespace Microsoft.Bot.Samples.Ai.Luis.Translator
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddBot<LuisTranslatorBot>(options =>
+            services.AddBot<LuisTranslatorBot>((Action<BotFrameworkOptions>)(options =>
             {
                 options.CredentialProvider = new ConfigurationCredentialProvider(Configuration);
 
@@ -61,7 +61,7 @@ namespace Microsoft.Bot.Samples.Ai.Luis.Translator
                 middleware.Add(new LocaleConverterMiddleware(TranslatorLocaleHelper.GetActiveLocale, TranslatorLocaleHelper.CheckUserChangedLanguageOrLocale, "en-us", LocaleConverter.Converter));
                 middleware.Add(new TranslationMiddleware(new string[] { "en" }, "<your translator key here>", patterns, userCustomDictonaries, TranslatorLocaleHelper.GetActiveLanguage, TranslatorLocaleHelper.CheckUserChangedLanguageOrLocale));
                 middleware.Add(new LuisRecognizerMiddleware(luisModel, luisOptions: luisOptions));
-            });
+            }));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

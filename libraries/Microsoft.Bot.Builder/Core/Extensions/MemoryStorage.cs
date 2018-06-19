@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions
     /// <summary>
     /// Models IStorage around a dictionary 
     /// </summary>
-    public class DictionaryStorage : IStorage
+    public class MemoryStorage : IStorage
     {
         private static readonly JsonSerializer StateJsonSerializer = new JsonSerializer() { TypeNameHandling = TypeNameHandling.All };
 
@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions
         private readonly object _syncroot = new object();
         private int _eTag = 0;
 
-        public DictionaryStorage(Dictionary<string, JObject> dictionary = null)
+        public MemoryStorage(Dictionary<string, JObject> dictionary = null)
         {
             _memory = dictionary ?? new Dictionary<string, JObject>();
         }
@@ -96,19 +96,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions
                     _memory[change.Key] = newState;
                 }
             }
-
             return Task.CompletedTask;
-        }
-
-    }
-
-    /// <summary>
-    /// RamStorage stores data in volative dictionary
-    /// </summary>
-    public class MemoryStorage : DictionaryStorage
-    {
-        public MemoryStorage() : base(null)
-        {
         }
     }
 }

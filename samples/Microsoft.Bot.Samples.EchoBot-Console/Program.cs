@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System;
-using Microsoft.Bot.Builder.Adapters;
 
 namespace Microsoft.Bot.Samples.Echo
 {

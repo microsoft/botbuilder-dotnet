@@ -119,7 +119,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions
         /// <param name="channelId">channelid for the conversation</param>
         /// <param name="conversationId">conversation id</param>
         /// <returns></returns>
-        public async Task DeleteTranscript(string channelId, string conversationId)
+        public Task DeleteTranscript(string channelId, string conversationId)
         {
             if (channelId == null)
                 throw new ArgumentNullException($"{nameof(channelId)} should not be null");
@@ -129,6 +129,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions
 
             var transcriptFolder = GetTranscriptFolder(channelId, conversationId);
             Directory.Delete(transcriptFolder, true);
+            return Task.CompletedTask;
         }
 
         /// <summary>

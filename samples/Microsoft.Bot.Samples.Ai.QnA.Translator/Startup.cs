@@ -33,7 +33,7 @@ namespace Microsoft.Bot.Samples.Ai.QnA.Translator
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddBot<QnAMakerBot>(options =>
+            services.AddBot<QnAMakerBot>((System.Action<BotFrameworkOptions>)(options =>
             {
                 options.CredentialProvider = new ConfigurationCredentialProvider(Configuration);
 
@@ -57,7 +57,7 @@ namespace Microsoft.Bot.Samples.Ai.QnA.Translator
                 middleware.Add(new TranslationMiddleware(new string[] { "en" }, "<your translator key here>", patterns, userCustomDictonaries, TranslatorLocaleHelper.GetActiveLanguage, TranslatorLocaleHelper.CheckUserChangedLanguageOrLocale, true)); 
                 middleware.Add(new QnAMakerMiddleware(qnaEndpoint));
 
-            });
+            }));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
