@@ -3,18 +3,17 @@
 
 using System;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Prompts;
-using static Microsoft.Bot.Builder.Prompts.PromptValidatorEx;
+using static Microsoft.Bot.Builder.Dialogs.PromptValidatorEx;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
     public class ConfirmPrompt : Prompt<ConfirmResult>
     {
-        private Prompts.ConfirmPrompt _prompt;
+        private ConfirmPromptInternal _prompt;
 
         public ConfirmPrompt(string culture, PromptValidator<ConfirmResult> validator = null)
         {
-            _prompt = new Prompts.ConfirmPrompt(culture, validator);
+            _prompt = new ConfirmPromptInternal(culture, validator);
         }
 
         protected override async Task OnPrompt(DialogContext dc, PromptOptions options, bool isRetry)

@@ -88,7 +88,7 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs
         /// <remarks>
         /// This method:
         /// 1. Instantiates and composes the required components.
-        /// 2. Deserializes the dialog state (the dialog stack and each dialog's state) from the <paramref name="toBot"/> <see cref="IMessageActivity"/>.
+        /// 2. Deserializes the dialog state (the dialog stack and each dialog's state) from the <paramref name="v4Context"/> <see cref="IMessageActivity"/>.
         /// 3. Resumes the conversation processes where the dialog suspended to wait for a <see cref="IMessageActivity"/>.
         /// 4. Queues <see cref="IMessageActivity"/>s to be sent to the user.
         /// 5. Serializes the updated dialog state in the messages to be sent to the user.
@@ -96,7 +96,7 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs
         /// The <paramref name="MakeRoot"/> factory method is invoked for new conversations only,
         /// because existing conversations have the dialog stack and state serialized in the <see cref="IMessageActivity"/> data.
         /// </remarks>
-        /// <param name="toBot">The message sent to the bot.</param>
+        /// <param name="v4Context">The turn context containing the message sent to the bot.</param>
         /// <param name="MakeRoot">The factory method to make the root dialog.</param>
         /// <param name="token">The cancellation token.</param>
         /// <returns>A task that represents the message to send inline back to the user.</returns>
@@ -113,7 +113,7 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs
         /// Resume a conversation and post the data to the dialog waiting.
         /// </summary>
         /// <param name="resumptionCookie"> The resumption cookie.</param>
-        /// <param name="toBot"> The data sent to bot.</param>
+        /// <param name="v4Context">The turn context containing the message sent to the bot.</param>
         /// <param name="token"> The cancellation token.</param>
         /// <returns> A task that represent the message to send back to the user after resumption of the conversation.</returns>
         [Obsolete("Use the overload that uses ConversationReference instead of ResumptionCookie")]
@@ -127,7 +127,7 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs
         /// Resume a conversation and post the data to the dialog waiting.
         /// </summary>
         /// <param name="conversationReference"> The resumption cookie.</param>
-        /// <param name="toBot"> The data sent to bot.</param>
+        /// <param name="v4Context">The turn context containing the message sent to the bot.</param>
         /// <param name="token"> The cancellation token.</param>
         /// <returns> A task that represent the message to send back to the user after resumption of the conversation.</returns>
         public static async Task ResumeAsync(ConversationReference conversationReference, Microsoft.Bot.Builder.ITurnContext v4Context, CancellationToken token = default(CancellationToken))

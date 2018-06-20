@@ -2,10 +2,10 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Prompts;
 using Microsoft.Bot.Schema;
-using static Microsoft.Bot.Builder.Prompts.PromptValidatorEx;
+using static Microsoft.Bot.Builder.Dialogs.PromptValidatorEx;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
@@ -68,9 +68,9 @@ namespace Microsoft.Bot.Builder.Dialogs
     ///      }
     ///
     /// </summary>
-    public class OAuthPrompt : Dialog
+    public class OAuthPrompt : Dialog, IDialogContinue
     {
-        private Prompts.OAuthPrompt _prompt;
+        private OAuthPromptInternal _prompt;
         private OAuthPromptSettingsWithTimeout _settings;
 
         // Default prompt timeout of 15 minutes (in ms)
@@ -79,10 +79,10 @@ namespace Microsoft.Bot.Builder.Dialogs
         public OAuthPrompt(OAuthPromptSettingsWithTimeout settings, PromptValidator<TokenResult> validator = null)
         {
             _settings = settings ?? throw new ArgumentNullException(nameof(settings));
-            _prompt = new Prompts.OAuthPrompt(settings, validator);
+            _prompt = new OAuthPromptInternal(settings, validator);
         }
 
-        public async Task DialogBegin(DialogContext dc, object dialogArgs = null)
+        public async Task DialogBegin(DialogContext dc, IDictionary<string, object> dialogArgs = null)
         {
             if (dc == null)
                 throw new ArgumentNullException(nameof(dc));
@@ -103,24 +103,28 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             var tokenResult = await _prompt.GetUserToken(dc.Context).ConfigureAwait(false);
 
-            if (tokenResult != null && tokenResult.Value != null)
+            if (tokenResult != null && tokenResult.TokenResponse != null)
             {
                 // end the prompt, since a token is available.
                 await dc.End(tokenResult).ConfigureAwait(false);
             }
-            else if (!string.IsNullOrEmpty(promptOptions.PromptString))
+            else if (!string.IsNullOrEmpty(promptOptions?.PromptString))
             {
-                // if no token is avaialable, display an oauth/signin card for the user to enter credentials.
-                await _prompt.Prompt(dc.Context, promptOptions.PromptString, promptOptions.Speak).ConfigureAwait(false);
-            }
-            else if (promptOptions.PromptActivity != null)
-            {
-                // if the bot developer has supplied an activity to show the user for signin, use that.
-                await _prompt.Prompt(dc.Context, promptOptions.PromptActivity).ConfigureAwait(false);
+                //send supplied prompt and then OAuthCard
+                await dc.Context.SendActivity(promptOptions.PromptString, promptOptions.Speak).ConfigureAwait(false);
+                await _prompt.Prompt(dc.Context);
             }
             else
             {
-                // no suitable promptactivity or message provided. Hence ignoring this prompt.
+                // if the bot developer has supplied an activity to show the user for signin, use that.
+                if (promptOptions == null)
+                {
+                    await _prompt.Prompt(dc.Context).ConfigureAwait(false);
+                }
+                else
+                {
+                    await _prompt.Prompt(dc.Context, promptOptions.PromptActivity);
+                }
             }
         }
 
@@ -135,9 +139,14 @@ namespace Microsoft.Bot.Builder.Dialogs
             var isMessage = dc.Context.Activity.Type == ActivityTypes.Message;
             var hasTimedOut = isMessage && (DateTime.Compare(DateTime.Now, state.Expires) > 0);
 
-            if (tokenResult == null || hasTimedOut)
+            if (hasTimedOut)
             {
-                // if the token fetch request timeouts or doesn't return a token, complete the prompt with no result.
+                // if the token fetch request timesout, complete the prompt with no result.
+                await dc.End(null).ConfigureAwait(false);
+            }
+            else if (tokenResult != null)
+            {
+                // if the token fetch was successful and it hasn't timed out (as verified in the above if)
                 await dc.End(tokenResult).ConfigureAwait(false);
             }
             else if (isMessage && !string.IsNullOrEmpty(state.RetryPromptString))

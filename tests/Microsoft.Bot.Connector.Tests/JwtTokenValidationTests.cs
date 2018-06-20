@@ -29,7 +29,7 @@ namespace Microsoft.Bot.Connector.Tests
         {
             string header = $"Bearer {await new MicrosoftAppCredentials("2cd87869-38a0-4182-9251-d056e8f0ac24", "2.30Vs3VQLKt974F").GetTokenAsync()}";
             var credentials = new SimpleCredentialProvider("2cd87869-38a0-4182-9251-d056e8f0ac24", "");
-            var result = await JwtTokenValidation.ValidateAuthHeader(header, credentials, "https://webchat.botframework.com/", client);
+            var result = await JwtTokenValidation.ValidateAuthHeader(header, credentials, "", "https://webchat.botframework.com/", client);
 
             Assert.True(result.IsAuthenticated);
         }
@@ -41,7 +41,7 @@ namespace Microsoft.Bot.Connector.Tests
             var credentials = new SimpleCredentialProvider("00000000-0000-0000-0000-000000000000", "");
 
             await Assert.ThrowsAsync<UnauthorizedAccessException>(
-                async () => await JwtTokenValidation.ValidateAuthHeader(header, credentials, null, client));
+                async () => await JwtTokenValidation.ValidateAuthHeader(header, credentials, "", null, client));
         }
 
         [Fact]
@@ -52,7 +52,7 @@ namespace Microsoft.Bot.Connector.Tests
             var credentials = new SimpleCredentialProvider("", "");
 
             await Assert.ThrowsAsync<UnauthorizedAccessException>(
-                async () => await JwtTokenValidation.ValidateAuthHeader(header, credentials, null, client));
+                async () => await JwtTokenValidation.ValidateAuthHeader(header, credentials, "", null, client));
         }
 
         [Fact]
@@ -63,7 +63,7 @@ namespace Microsoft.Bot.Connector.Tests
 
 
             await Assert.ThrowsAsync<ArgumentNullException>(
-                async () => await JwtTokenValidation.ValidateAuthHeader(header, credentials, null, emptyClient));
+                async () => await JwtTokenValidation.ValidateAuthHeader(header, credentials, "", null, emptyClient));
         }
 
         [Fact]
@@ -71,7 +71,7 @@ namespace Microsoft.Bot.Connector.Tests
         {
             string header = $"Bearer {await new MicrosoftAppCredentials("2cd87869-38a0-4182-9251-d056e8f0ac24", "2.30Vs3VQLKt974F").GetTokenAsync()}";
             var credentials = new SimpleCredentialProvider("2cd87869-38a0-4182-9251-d056e8f0ac24", "");
-            var result = await JwtTokenValidation.ValidateAuthHeader(header, credentials, "https://webchat.botframework.com/", emptyClient);
+            var result = await JwtTokenValidation.ValidateAuthHeader(header, credentials, "", "https://webchat.botframework.com/", emptyClient);
 
             Assert.True(result.IsAuthenticated);
         }
@@ -82,8 +82,7 @@ namespace Microsoft.Bot.Connector.Tests
             string header = $"Bearer {await new MicrosoftAppCredentials("2cd87869-38a0-4182-9251-d056e8f0ac24", "2.30Vs3VQLKt974F").GetTokenAsync()}";
             var credentials = new SimpleCredentialProvider("00000000-0000-0000-0000-000000000000", "");
             await Assert.ThrowsAsync<UnauthorizedAccessException>(
-                async () => await JwtTokenValidation.ValidateAuthHeader(header, credentials, null, emptyClient));
-            
+                async () => await JwtTokenValidation.ValidateAuthHeader(header, credentials, "", null, emptyClient));            
         }
 
         /// <summary>

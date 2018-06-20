@@ -21,7 +21,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// <summary>
         /// Maps various endpoint handlers for the <see cref="ServiceCollectionExtensions.AddBot{TBot}(IServiceCollection, Action{BotFrameworkOptions})">registered bot</see> into the request execution pipeline.
         /// </summary>
-        /// <param name="appicationBuilder">The <see cref="IApplicationBuilder"/>.</param>
+        /// <param name="applicationBuilder">The <see cref="IApplicationBuilder"/>.</param>
         /// <returns>A reference to this instance after the operation has completed.</returns>
         public static IApplicationBuilder UseBotFramework(this IApplicationBuilder applicationBuilder)
         {
