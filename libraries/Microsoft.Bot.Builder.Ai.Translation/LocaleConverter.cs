@@ -76,7 +76,8 @@ namespace Microsoft.Bot.Builder.Ai.Translation
             var supportedLocales = new string[]
             {
                 "en-us", "en-za", "en-ie", "en-gb", "en-ca", "fr-ca", "zh-cn", "zh-sg", "zh-hk", "zh-mo", "zh-tw",
-                "en-au", "fr-be", "fr-ch", "fr-fr", "fr-lu", "fr-mc", "de-at", "de-ch", "de-de", "de-lu", "de-li"
+                "en-au", "fr-be", "fr-ch", "fr-fr", "fr-lu", "fr-mc", "de-at", "de-ch", "de-de", "de-lu", "de-li",
+                "es-es"
             };
             foreach (string locale in supportedLocales)
             {
