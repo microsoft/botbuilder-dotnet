@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
@@ -90,7 +93,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
 
         [TestMethod]
         [TestCategory("Middleware")]
-        public async Task ShowTyping_TestMiddleware_NegativeDelay()
+        public void ShowTyping_TestMiddleware_NegativeDelay()
         {
             try
             {
@@ -105,7 +108,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
 
         [TestMethod]
         [TestCategory("Middleware")]
-        public async Task ShowTyping_TestMiddleware_ZeroFrequency()
+        public void ShowTyping_TestMiddleware_ZeroFrequency()
         {
             try
             {

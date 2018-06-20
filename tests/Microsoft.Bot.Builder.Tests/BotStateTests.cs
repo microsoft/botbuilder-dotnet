@@ -29,10 +29,11 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
 
             TestAdapter adapter = new TestAdapter();
 
-            await new TestFlow(adapter, async (context) =>
+            await new TestFlow(adapter, (context) =>
                    {
                        var obj = context.GetConversationState<TestPocoState>();
                        Assert.IsNull(obj, "context.state should not exist");
+                       return Task.CompletedTask;
                    }
                 )
                 .Send("set value")

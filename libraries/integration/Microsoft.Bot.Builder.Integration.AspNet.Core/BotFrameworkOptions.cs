@@ -3,7 +3,6 @@
 
 using System.Collections.Generic;
 using System.Net.Http;
-using Microsoft.Bot.Builder;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Rest.TransientFaultHandling;
 

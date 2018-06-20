@@ -3,12 +3,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.IdentityModel.Protocols;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Connector.Authentication
@@ -108,7 +106,7 @@ namespace Microsoft.Bot.Connector.Authentication
             {
                 if (!documentResponse.IsSuccessStatusCode)
                 {
-                    throw new EndorsementsDocumentRetrievalException(address, $"An non-success status code of {documentResponse.StatusCode} was received while fetching the endorsements document.");
+                    throw new Exception($"An non-success status code of {documentResponse.StatusCode} was received while fetching the endorsements document.");
                 }
 
                 var json = await documentResponse.Content.ReadAsStringAsync();
@@ -130,40 +128,12 @@ namespace Microsoft.Bot.Connector.Authentication
                 {
                     if (!keysResponse.IsSuccessStatusCode)
                     {
-                        throw new EndorsementsDocumentRetrievalException(keysUrl, $"An non-success status code of {keysResponse.StatusCode} was received while fetching the web key set document.");
+                        throw new Exception($"An non-success status code of {keysResponse.StatusCode} was received while fetching the web key set document.");
                     }
 
                     return await keysResponse.Content.ReadAsStringAsync();
                 }
             }
         }
-    }
-
-
-    [Serializable]
-    public class EndorsementsRetrieverException : Exception
-    {
-        public EndorsementsRetrieverException(string message) : base(message)
-        {
-        }
-
-        public EndorsementsRetrieverException(string message, Exception inner) : base(message, inner)
-        {
-        }
-
-        protected EndorsementsRetrieverException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) : base(info, context)
-        {
-        }
-    }
-
-    [Serializable]
-    public sealed class EndorsementsDocumentRetrievalException : EndorsementsRetrieverException
-    {
-        public EndorsementsDocumentRetrievalException(string address, string message) : base(message)
-        {
-            Address = address;
-        }
-
-        public string Address { get; private set; }
     }
 }

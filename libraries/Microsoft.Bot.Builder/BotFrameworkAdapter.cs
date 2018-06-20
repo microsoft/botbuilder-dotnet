@@ -13,7 +13,7 @@ using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Rest.TransientFaultHandling;
 
-namespace Microsoft.Bot.Builder.Adapters
+namespace Microsoft.Bot.Builder
 {
     /// <summary>
     /// A bot adapter that can connect a bot to a service endpoint. 
@@ -81,7 +81,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <paramref name="botAppId"/>, <paramref name="reference"/>, or
         /// <paramref name="callback"/> is <c>null</c>.</exception>
         /// <remarks>Call this method to proactively send a message to a conversation.
-        /// Most channels require a user to initaiate a conversation with a bot
+        /// Most _channels require a user to initaiate a conversation with a bot
         /// before the bot can send activities to the user.
         /// <para>This method registers the following services for the turn.<list type="bullet">
         /// <item><see cref="IIdentity"/> (key = "BotIdentity"), a claims identity for the bot.</item>
@@ -294,7 +294,7 @@ namespace Microsoft.Bot.Builder.Adapters
 
                 // Note: In addition to the Invoke / Delay / Activity cases, this code also applies
                 // with Skype and Teams with regards to typing events.  When sending a typing event in 
-                // these channels they do not return a RequestResponse which causes the bot to blow up.
+                // these _channels they do not return a RequestResponse which causes the bot to blow up.
                 // https://github.com/Microsoft/botbuilder-dotnet/issues/460
                 // bug report : https://github.com/Microsoft/botbuilder-dotnet/issues/465
                 if (response == null)
@@ -524,7 +524,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <remarks>To start a conversation, your bot must know its account information 
         /// and the user's account information on that channel.
-        /// Most channels only support initiating a direct message (non-group) conversation.
+        /// Most _channels only support initiating a direct message (non-group) conversation.
         /// <para>The adapter attempts to create a new conversation on the channel, and
         /// then sends a <c>conversationUpdate</c> activity through its middleware pipeline
         /// to the <paramref name="callback"/> method.</para>

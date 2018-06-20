@@ -7,9 +7,9 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
     {
         public BotFrameworkPaths()
         {
-            this.BasePath = "api/";
-            this.MessagesPath = "messages";
-            this.ProactiveMessagesPath = "messages/proactive";
+            BasePath = "api/";
+            MessagesPath = "messages";
+            ProactiveMessagesPath = "messages/proactive";
         }
 
         /// <summary>
