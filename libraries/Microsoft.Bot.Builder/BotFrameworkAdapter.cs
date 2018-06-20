@@ -42,6 +42,7 @@ namespace Microsoft.Bot.Builder.Adapters
         private ConcurrentDictionary<string, MicrosoftAppCredentials> _appCredentialMap = new ConcurrentDictionary<string, MicrosoftAppCredentials>();
 
         private const string InvokeReponseKey = "BotFrameworkAdapter.InvokeResponse";
+        private bool _isEmulatingOAuthCards = false;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BotFrameworkAdapter"/> class,
@@ -98,7 +99,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// </para>
         /// </remarks>
         /// <seealso cref="ProcessActivity(string, Activity, Func{ITurnContext, Task})"/>
-        /// <seealso cref="BotAdapter.RunPipeline(ITurnContext, Func{ITurnContext, Task}, System.Threading.CancellationTokenSource)"/>
+        /// <seealso cref="BotAdapter.RunPipeline(ITurnContext, Func{ITurnContext, Task})"/>
         public override async Task ContinueConversation(string botAppId, ConversationReference reference, Func<ITurnContext, Task> callback)
         {
             if (string.IsNullOrWhiteSpace(botAppId))
@@ -180,7 +181,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// </list></para>
         /// </remarks>
         /// <seealso cref="ContinueConversation(string, ConversationReference, Func{ITurnContext, Task})"/>
-        /// <seealso cref="BotAdapter.RunPipeline(ITurnContext, Func{ITurnContext, Task}, System.Threading.CancellationTokenSource)"/>
+        /// <seealso cref="BotAdapter.RunPipeline(ITurnContext, Func{ITurnContext, Task})"/>
         public async Task<InvokeResponse> ProcessActivity(string authHeader, Activity activity, Func<ITurnContext, Task> callback)
         {
             BotAssert.ActivityNotNull(activity);
@@ -251,11 +252,32 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <seealso cref="ITurnContext.OnSendActivities(SendActivitiesHandler)"/>
         public override async Task<ResourceResponse[]> SendActivities(ITurnContext context, Activity[] activities)
         {
-            List<ResourceResponse> responses = new List<ResourceResponse>();
-
-            foreach (var activity in activities)
+            if (context == null)
             {
-                ResourceResponse response = null;
+                throw new ArgumentNullException(nameof(context));
+            }
+
+            if (activities == null)
+            {
+                throw new ArgumentNullException(nameof(activities));
+            }
+
+            if (activities.Length == 0)
+            {
+                throw new ArgumentException("Expecting one or more activities, but the array was empty.", nameof(activities));
+            }
+
+            var responses = new ResourceResponse[activities.Length];
+
+            /* 
+             * NOTE: we're using for here (vs. foreach) because we want to simultaneously index into the
+             * activities array to get the activity to process as well as use that index to assign
+             * the response to the responses array and this is the most cost effective way to do that.
+             */
+            for (var index = 0; index < activities.Length; index++)
+            {
+                var activity = activities[index];
+                var response = default(ResourceResponse);
 
                 if (activity.Type == ActivityTypesEx.Delay)
                 {
@@ -299,11 +321,10 @@ namespace Microsoft.Bot.Builder.Adapters
                     response = new ResourceResponse(activity.Id ?? string.Empty);
                 }
 
-                // Collect all the responses that come from the service. 
-                responses.Add(response);
+                responses[index] = response;
             }
 
-            return responses.ToArray();
+            return responses;
         }
 
         /// <summary>
@@ -459,6 +480,57 @@ namespace Microsoft.Bot.Builder.Adapters
 
 
 
+        /// <summary>Attempts to retrieve the token for a user that's in a login flow.
+        /// </summary>
+        /// <param name="context">Context for the current turn of conversation with the user.</param>
+        /// <param name="connectionName">Name of the auth connection to use.</param>
+        /// <param name="magicCode">(Optional) Optional user entered code to validate.</param>
+        /// <returns>Token Response</returns>
+        public async Task<TokenResponse> GetUserToken(ITurnContext context, string connectionName, string magicCode)
+        {
+            BotAssert.ContextNotNull(context);
+            if (context.Activity.From == null || string.IsNullOrWhiteSpace(context.Activity.From.Id))
+                throw new ArgumentNullException("BotFrameworkAdapter.GetuserToken(): missing from or from.id");
+
+            if (string.IsNullOrWhiteSpace(connectionName))
+                    throw new ArgumentNullException(nameof(connectionName));
+
+            var client = this.CreateOAuthApiClient(context);
+            return await client.GetUserTokenAsync(context.Activity.From.Id, connectionName, magicCode).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Get the raw signin link to be sent to the user for signin for a connection name.
+        /// </summary>
+        /// <param name="context">Context for the current turn of conversation with the user.</param>
+        /// <param name="connectionName">Name of the auth connection to use.</param>
+        /// <returns></returns>
+        public async Task<string> GetOauthSignInLink(ITurnContext context, string connectionName)
+        {
+            BotAssert.ContextNotNull(context);
+            if (string.IsNullOrWhiteSpace(connectionName))
+                throw new ArgumentNullException(nameof(connectionName));
+
+            var client = this.CreateOAuthApiClient(context);
+            return await client.GetSignInLinkAsync(context.Activity, connectionName).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Signs the user out with the token server.
+        /// </summary>
+        /// <param name="context">Context for the current turn of conversation with the user.</param>
+        /// <param name="connectionName">Name of the auth connection to use.</param>
+        /// <returns></returns>
+        public async Task SignOutUser(ITurnContext context, string connectionName)
+        {
+            BotAssert.ContextNotNull(context);
+            if (string.IsNullOrWhiteSpace(connectionName))
+                throw new ArgumentNullException(nameof(connectionName));
+
+            var client = this.CreateOAuthApiClient(context);
+            await client.SignOutUserAsync(context.Activity.From.Id, connectionName).ConfigureAwait(false);
+        }
+
         /// <summary>
         /// Creates a conversation on the specified channel.
         /// </summary>
@@ -499,6 +571,32 @@ namespace Microsoft.Bot.Builder.Adapters
             {
                 await this.RunPipeline(context, callback).ConfigureAwait(false);
             }
+        }
+
+        protected async Task<bool> TrySetEmulatingOAuthCards(ITurnContext turnContext)
+        {
+            if (!_isEmulatingOAuthCards &&
+                string.Equals(turnContext.Activity.ChannelId, "emulator", StringComparison.InvariantCultureIgnoreCase) &&
+                (await _credentialProvider.IsAuthenticationDisabledAsync()))
+            {
+                _isEmulatingOAuthCards = true;
+            }
+            return _isEmulatingOAuthCards;
+
+        }
+
+        protected OAuthClient CreateOAuthApiClient(ITurnContext context)
+        {
+            var client = context.Services.Get<IConnectorClient>() as ConnectorClient;
+            if (client == null)
+            {
+                throw new ArgumentNullException("CreateOAuthApiClient: OAuth requires a valid ConnectorClient instance");
+            }
+            if (_isEmulatingOAuthCards)
+            {
+                return new OAuthClient(client, context.Activity.ServiceUrl);
+            }
+            return new OAuthClient(client, AuthenticationConstants.OAuthUrl);
         }
 
         /// <summary>

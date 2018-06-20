@@ -1,6 +1,6 @@
 <VSTemplate Version="3.0.0" Type="Project" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" xmlns:sdk="http://schemas.microsoft.com/developer/vstemplate-sdkextension/2010">  
   <TemplateData>
-    <Name>Bot Builder Echo Bot</Name>
+    <Name>Bot Builder Echo Bot V4</Name>
     <Description>Project template and extension to create bots using Microsoft Bot Framework</Description>
     <ProjectType>CSharp</ProjectType>
     <ProjectSubType>Bot Framework</ProjectSubType>
@@ -12,7 +12,7 @@
     <CreateInPlace>true</CreateInPlace>
     <EnableLocationBrowseButton>true</EnableLocationBrowseButton>
     <Icon>vstg0001.png</Icon>
-    <PreviewImage>vstg0002.png</PreviewImage>
+    <PreviewImage></PreviewImage>
   </TemplateData>
   <TemplateContent>
     <Project TargetFileName="AspNetCore-EchoBot-With-State.csproj" File="AspNetCore-EchoBot-With-State.csproj" ReplaceParameters="true">
@@ -24,6 +24,7 @@
       </Folder>
       <ProjectItem ReplaceParameters="true" TargetFileName="appsettings.json">appsettings.json</ProjectItem>
       <ProjectItem ReplaceParameters="true" TargetFileName="EchoBot.cs">EchoBot.cs</ProjectItem>
+      <ProjectItem ReplaceParameters="true" TargetFileName="$safeprojectname$.bot">$safeprojectname$.bot</ProjectItem>
       <ProjectItem ReplaceParameters="true" TargetFileName="EchoState.cs">EchoState.cs</ProjectItem>
       <ProjectItem ReplaceParameters="true" TargetFileName="Program.cs">Program.cs</ProjectItem>
       <ProjectItem ReplaceParameters="false" TargetFileName="readme.md">readme.md</ProjectItem>

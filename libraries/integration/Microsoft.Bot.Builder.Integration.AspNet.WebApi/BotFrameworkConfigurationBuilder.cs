@@ -47,13 +47,25 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
         }
 
         /// <summary>
-        /// Adds retry policy on failure for BotFramework calls.
+        /// Adds retry policy on failure for Bot Framework Service calls.
         /// </summary>
         /// <param name="retryPolicy">The retry policy.</param>
         /// <returns><see cref="BotFrameworkConfigurationBuilder"/> instance with the retry policy set.</returns>
         public BotFrameworkConfigurationBuilder UseRetryPolicy(RetryPolicy retryPolicy)
         {
             _options.ConnectorClientRetryPolicy = retryPolicy;
+            return this;
+        }
+
+        /// <summary>
+        /// Sets the <see cref="HttpClient"/> instance that will be used to make Bot Framework Service calls.
+        /// </summary>
+        /// <param name="httpClient">The <see cref="HttpClient"/> to be used when calling the Bot Framework Service.</param>
+        /// <returns><see cref="BotFrameworkConfigurationBuilder"/> instance with the <see cref="HttpClient"/> set.</returns>
+        public BotFrameworkConfigurationBuilder UseHttpClient(HttpClient httpClient)
+        {
+            _options.HttpClient = httpClient;
+
             return this;
         }
 

@@ -178,7 +178,45 @@ namespace Microsoft.Bot.Schema
         /// <summary>
         /// True if the Activity is of the specified activity type
         /// </summary>
-        protected bool IsActivity(string activity) { return string.Compare(this.Type?.Split('/').First(), activity, true) == 0; }
+        protected bool IsActivity(string activityType)
+        {
+            /*
+             * NOTE: While it is possible to come up with a fancy looking "one-liner" to solve 
+             * this problem, this code is purposefully more verbose due to optimizations. 
+             * 
+             * This main goal of the optimizations was to make zero allocations because it is called 
+             * by all of the .AsXXXActivity methods which are used in a pattern heavily upstream to 
+             * "pseudo-cast" the activity based on its type.
+             */
+
+            var type = this.Type;
+
+            // If there's no type set then we can't tell if it's the type they're looking for
+            if (type == null)
+            {
+                return false;
+            }
+
+            // Check if the full type value starts with the type they're looking for
+            var result = type.StartsWith(activityType, StringComparison.OrdinalIgnoreCase);
+
+            // If the full type value starts with the type they're looking for, then we need to check a little further to check if it's definitely the right type
+            if (result)
+            {
+                // If the lengths are equal, then it's the exact type they're looking for
+                result = type.Length == activityType.Length;
+
+                if (!result)
+                {
+                    // Finally, if the type is longer than the type they're looking for then we need to check if there's a / separator right after the type they're looking for
+                    result = type.Length > activityType.Length
+                                    &&
+                            type[activityType.Length] == '/';
+                }
+            }
+
+            return result;
+        }
 
         /// <summary>
         /// Return an IMessageActivity mask if this is a message activity
@@ -284,7 +322,6 @@ namespace Microsoft.Bot.Schema
         /// <summary>
         /// Get channeldata as typed structure
         /// </summary>
-        /// <param name="activity"></param>
         /// <typeparam name="TypeT">type to use</typeparam>
         /// <returns>typed object or default(TypeT)</returns>
         public TypeT GetChannelData<TypeT>()
@@ -299,7 +336,6 @@ namespace Microsoft.Bot.Schema
         /// <summary>
         /// Get channeldata as typed structure
         /// </summary>
-        /// <param name="activity"></param>
         /// <typeparam name="TypeT">type to use</typeparam>
         /// <param name="instance">The resulting instance, if possible</param>
         /// <returns>

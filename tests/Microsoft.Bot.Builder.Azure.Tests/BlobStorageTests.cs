@@ -56,7 +56,14 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestInitialize]
         public void TestInit()
         {
-            connectionString = Environment.GetEnvironmentVariable("STORAGECONNECTIONSTRING") ?? emulatorConnectionString;
+            connectionString = emulatorConnectionString;
+
+            // The commented out code below allows the tests to run against actual Azure Blobs
+            // rather than the local emulator. We used to have this enabled to run on our
+            // build servers, but hitting network resources as part of automated builds is problematic
+            // so it's been commented out here. 
+            
+            // connectionString = Environment.GetEnvironmentVariable("STORAGECONNECTIONSTRING") ?? emulatorConnectionString;
 
             if (connectionString != emulatorConnectionString || hasStorageEmulator.Value)
             {
@@ -128,6 +135,26 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             if (HasStorage())
                 await base._handleCrazyKeys(storage);
+        }
+
+        // NOTE: THESE TESTS REQUIRE THAT THE AZURE STORAGE EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
+        [TestMethod]
+        public async Task BlobStorage_BatchCreateObjectsTest()
+        {
+            if (HasStorage())
+                await base._batchCreateObjectTest(storage);
+        }
+
+        // NOTE: THESE TESTS REQUIRE THAT THE AZURE STORAGE EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
+        [TestMethod]
+        public async Task BlobStorage_BatchCreateLargeObjectsTest()
+        {
+            // The maximum size of a blob before it must be separated into blocks.
+            // https://docs.microsoft.com/en-us/dotnet/api/microsoft.windowsazure.storage.shared.protocol.constants.maxsingleuploadblobsize
+            var extraBytesToUploadBlobinBlocks = Microsoft.WindowsAzure.Storage.Shared.Protocol.Constants.MaxSingleUploadBlobSize;
+
+            if (HasStorage())
+                await base._batchCreateObjectTest(storage, extraBytesToUploadBlobinBlocks);
         }
     }
 }

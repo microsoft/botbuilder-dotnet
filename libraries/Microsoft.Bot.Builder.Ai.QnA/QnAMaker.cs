@@ -28,18 +28,6 @@ namespace Microsoft.Bot.Builder.Ai.QnA
         /// <param name="options">The options for the QnA Maker knowledge base.</param>
         /// <param name="httpClient">A client with which to talk to QnAMaker.
         /// If null, a default client is used for this instance.</param>
-        public QnAMaker(string endpoint, QnAMakerOptions options = null, HttpClient httpClient = null)
-            : this(new QnAMakerEndpoint(endpoint), options, httpClient)
-        {
-        }
-
-        /// <summary>
-        /// Creates a new <see cref="QnAMaker"/> instance.
-        /// </summary>
-        /// <param name="endpoint">The endpoint of the knowledge base to query.</param>
-        /// <param name="options">The options for the QnA Maker knowledge base.</param>
-        /// <param name="httpClient">A client with which to talk to QnAMaker.
-        /// If null, a default client is used for this instance.</param>
         public QnAMaker(QnAMakerEndpoint endpoint, QnAMakerOptions options = null, HttpClient httpClient = null)
         {
             _httpClient = httpClient ?? g_httpClient;
@@ -80,7 +68,7 @@ namespace Microsoft.Bot.Builder.Ai.QnA
 
             if (_options.StrictFilters == null)
             {
-                _options.StrictFilters = new Metadata[] {};
+                _options.StrictFilters = new Metadata[] { };
             }
             if (_options.MetadataBoost == null)
             {
@@ -109,7 +97,9 @@ namespace Microsoft.Bot.Builder.Ai.QnA
 
             request.Content = new StringContent(jsonRequest, System.Text.Encoding.UTF8, "application/json");
 
-            if (_endpoint.Host.EndsWith("v2.0") || _endpoint.Host.EndsWith("v3.0"))
+            bool isLegacyProtocol = (_endpoint.Host.EndsWith("v2.0") || _endpoint.Host.EndsWith("v3.0"));
+
+            if (isLegacyProtocol)
             {
                 request.Headers.Add("Ocp-Apim-Subscription-Key", _endpoint.EndpointKey);
             }
@@ -122,15 +112,57 @@ namespace Microsoft.Bot.Builder.Ai.QnA
             if (response.IsSuccessStatusCode)
             {
                 var jsonResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-                var results = JsonConvert.DeserializeObject<QueryResults>(jsonResponse);
+
+                var results = isLegacyProtocol ?
+                    ConvertLegacyResults(JsonConvert.DeserializeObject<InternalQueryResults>(jsonResponse))
+                        :
+                    JsonConvert.DeserializeObject<QueryResults>(jsonResponse);
+
                 foreach (var answer in results.Answers)
                 {
                     answer.Score = answer.Score / 100;
                 }
-
                 return results.Answers.Where(answer => answer.Score > _options.ScoreThreshold).ToArray();
             }
+
             return null;
+        }
+
+        // The old version of the protocol returns the id in a field called qnaId the
+        // following classes and helper function translate this old structure
+        private QueryResults ConvertLegacyResults(InternalQueryResults legacyResults)
+        {
+            return new QueryResults
+            {
+                Answers = legacyResults.Answers
+                    .Select(answer => new QueryResult
+                    {
+                        // The old version of the protocol returns the "id" in a field called "qnaId"
+                        Id = answer.QnaId,
+                        Answer = answer.Answer,
+                        Metadata = answer.Metadata,
+                        Score = answer.Score,
+                        Source = answer.Source,
+                        Questions = answer.Questions
+                    })
+                    .ToArray()
+            };
+        }
+
+        private class InternalQueryResult : QueryResult
+        {
+            [JsonProperty(PropertyName = "qnaId")]
+            public int QnaId { get; set; }
+        }
+
+        private class InternalQueryResults
+        {
+            /// <summary>
+            /// The answers for a user query,
+            /// sorted in decreasing order of ranking score.
+            /// </summary>
+            [JsonProperty("answers")]
+            public InternalQueryResult[] Answers { get; set; }
         }
     }
 
@@ -139,36 +171,6 @@ namespace Microsoft.Bot.Builder.Ai.QnA
     /// </summary>
     public class QnAMakerEndpoint
     {
-        private const string ENDPOINT_REGEXP = "/knowledgebases/(.*)/generateAnswer\\r\\nHost:\\s(.*)\\r\\n.* (?:EndpointKey|Ocp-Apim-Subscription-Key:)\\s(.*)\\r\\n";
-        private const string UNIX_ENDPOINT_REGEXP = "/knowledgebases/(.*)/generateAnswer\\nHost:\\s(.*)\\n.* (?:EndpointKey|Ocp-Apim-Subscription-Key:)\\s(.*)\\n";
-
-        public QnAMakerEndpoint()
-        {
-        }
-
-        public QnAMakerEndpoint(string endpoint)
-        {
-            if (string.IsNullOrEmpty(endpoint))
-            {
-                throw new ArgumentNullException(nameof(endpoint));
-            }
-            var regex = new Regex(ENDPOINT_REGEXP);
-            var matches = regex.Matches(endpoint);
-            if (matches.Count == 0)
-            {
-                var regexUnix = new Regex(UNIX_ENDPOINT_REGEXP);
-                matches = regexUnix.Matches(endpoint);
-            }
-            if (matches.Count == 0)
-            {
-                throw new Exception($"QnAMaker: invalid endpoint of '{endpoint}' passed to constructor.");
-            }
-            var matched = matches[0];
-            KnowledgeBaseId = matched.Groups[1].Value;
-            Host = matched.Groups[2].Value;
-            EndpointKey = matched.Groups[3].Value;
-        }
-
         /// <summary>
         /// The knowledge base ID.
         /// </summary>
@@ -245,14 +247,24 @@ namespace Microsoft.Bot.Builder.Ai.QnA
         [JsonProperty("score")]
         public float Score { get; set; }
 
+        /// <summary>
+        /// Metadata that is associated with the answer
+        /// </summary>
         [JsonProperty(PropertyName = "metadata")]
         public Metadata[] Metadata { get; set; }
 
+        /// <summary>
+        /// The source from which the QnA was extracted
+        /// </summary>
         [JsonProperty(PropertyName = "source")]
         public string Source { get; set; }
 
-        [JsonProperty(PropertyName = "qnaId")]
-        public int QnaId { get; set; }
+        /// <summary>
+        /// The index of the answer in the knowledge base. V3 uses
+        /// 'qnaId', V4 uses 'id'.
+        /// </summary>
+        [JsonProperty(PropertyName = "id")]
+        public int Id { get; set; }
     }
 
     /// <summary>

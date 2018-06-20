@@ -24,8 +24,8 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AdaptiveCards" Version="0.5.1" />
-    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.6" />
-    <PackageReference Include="Microsoft.Recognizers.Text.DateTime" Version="1.0.1.1" />
+    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.8" />
+    <PackageReference Include="Microsoft.Recognizers.Text.DateTime" Version="1.0.5.1" />
 
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
   </ItemGroup>
@@ -36,11 +36,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\libraries\integration\Microsoft.Bot.Builder.Integration.AspNet.Core\Microsoft.Bot.Builder.Integration.AspNet.Core.csproj" />
-    <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Core.Extensions\Microsoft.Bot.Builder.Core.Extensions.csproj" />
-    <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Core\Microsoft.Bot.Builder.Core.csproj" />
-    <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder\Microsoft.Bot.Builder.csproj" />
-    <ProjectReference Include="..\..\libraries\Microsoft.Bot.Connector\Microsoft.Bot.Connector.csproj" />
-    <ProjectReference Include="..\..\libraries\Microsoft.Bot.Schema\Microsoft.Bot.Schema.csproj" />
   </ItemGroup>
 
 </Project>
