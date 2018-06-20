@@ -4,7 +4,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Microsoft.Bot.Builder.Core.Extensions
+namespace Microsoft.Bot.Builder
 {
     /// <summary>
     /// Can convert from a generic recognizer result to a strongly typed one.

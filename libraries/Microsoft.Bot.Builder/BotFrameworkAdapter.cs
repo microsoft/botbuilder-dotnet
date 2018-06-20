@@ -13,7 +13,7 @@ using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Rest.TransientFaultHandling;
 
-namespace Microsoft.Bot.Builder.Adapters
+namespace Microsoft.Bot.Builder
 {
     /// <summary>
     /// A bot adapter that can connect a bot to a service endpoint. 

@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Builder.Core.Extensions;
 using Microsoft.Recognizers.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
