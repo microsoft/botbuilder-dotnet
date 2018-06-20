@@ -4,12 +4,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 
-namespace Microsoft.Bot.Builder.Core.Extensions
+namespace Microsoft.Bot.Builder
 {
     /// <summary>
     /// The memory transcript store stores transcripts in volatile memory in a Dictionary.

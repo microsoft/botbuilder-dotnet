@@ -3,7 +3,7 @@
 
 using System;
 
-namespace Microsoft.Bot.Builder.Core.Extensions
+namespace Microsoft.Bot.Builder
 {
     public static class RecognizerResultExtensions
     {

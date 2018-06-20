@@ -5,7 +5,7 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 
-namespace Microsoft.Bot.Builder.Core.Extensions
+namespace Microsoft.Bot.Builder
 {
 
     public class Transcript

@@ -1,11 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Newtonsoft.Json;
-using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
-namespace Microsoft.Bot.Builder.Core.Extensions
+namespace Microsoft.Bot.Builder
 {
     public interface IStorage
     {
