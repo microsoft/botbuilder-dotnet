@@ -62,7 +62,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
                 .Send("set my locale to es-es")
                 .AssertReply("Changing your locale to es-es")
                 .Send("La reunión será a las 15:00")
-                .AssertReply("La reunión será a las 15:00")
+                .AssertReply("La reunión será a las 3:00 PM")
                 .StartTest();
         }
 
