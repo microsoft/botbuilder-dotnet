@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using Microsoft.Cognitive.LUIS;
 using Microsoft.Cognitive.LUIS.Models;
 using Newtonsoft.Json.Linq;
-using Microsoft.Bot.Builder.Core.Extensions;
 
 namespace Microsoft.Bot.Builder.Ai.LUIS
 {
