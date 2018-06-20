@@ -58,18 +58,6 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
         }
 
         /// <summary>
-        /// Sets the <see cref="HttpClient"/> instance that will be used to make Bot Framework Service calls.
-        /// </summary>
-        /// <param name="httpClient">The <see cref="HttpClient"/> to be used when calling the Bot Framework Service.</param>
-        /// <returns><see cref="BotFrameworkConfigurationBuilder"/> instance with the <see cref="HttpClient"/> set.</returns>
-        public BotFrameworkConfigurationBuilder UseHttpClient(HttpClient httpClient)
-        {
-            _options.HttpClient = httpClient;
-
-            return this;
-        }
-
-        /// <summary>
         /// Adds the delegating handler to use for Bot Framework SDK requests.
         /// </summary>
         /// <param name="delegatingHandler">The delegating handler.</param>
