@@ -1,0 +1,14 @@
+{
+    "name": "AspNetCore-CardActions-Bot",
+    "secretKey": "",
+    "services": [
+        {
+            "type": "endpoint",
+            "name": "AspNetCore-CardActions-Bot",
+            "id": "http://localhost:5000/api/messages",
+            "appId": "",
+            "appPassword": "",
+            "endpoint": "http://localhost:5000/api/messages"
+        }
+    ]
+}

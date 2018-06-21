@@ -70,13 +70,13 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs
         /// <summary>
         /// Indicates if channel is TTS enabled.
         /// </summary>
-        /// <returns>True if channel support TTS and the bot can set <see cref="Connector.Activity.Speak"/>; false otherwise.</returns>
+        /// <returns>True if channel support TTS and the bot can set <see cref="Schema.Activity.Speak"/>; false otherwise.</returns>
         bool SupportsSpeak();
 
         /// <summary>
-        /// Indicates if channel relies on <see cref="Connector.Activity.InputHint"/>.
+        /// Indicates if channel relies on <see cref="Schema.Activity.InputHint"/>.
         /// </summary>
-        /// <returns>True if channel expect bot setting <see cref="Connector.Activity.InputHint"/>; false otherwise </returns>
+        /// <returns>True if channel expect bot setting <see cref="Schema.Activity.InputHint"/>; false otherwise </returns>
         bool NeedsInputHint();
     }
 

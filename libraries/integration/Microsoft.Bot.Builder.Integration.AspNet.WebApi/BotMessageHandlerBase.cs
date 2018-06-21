@@ -8,7 +8,6 @@ using System.Net.Http;
 using System.Net.Http.Formatting;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Rest.Serialization;
 using Newtonsoft.Json;
 
@@ -73,11 +72,11 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Handlers
 
                         try
                         {
-                            bot = (IBot)request.GetDependencyScope().GetService(typeof(IBot));
+                            bot = (IBot)request.GetDependencyScope()?.GetService(typeof(IBot));
                         }
-                        catch
+                        catch(Exception exception)
                         {
-                            bot = null;
+                            throw new Exception($"An exception occurred attempting to resolve an {typeof(IBot).Name} service via the dependency resolver. Please check the inner exception for more details.", exception);
                         }
 
                         if (bot == null)

@@ -1,11 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Microsoft.Bot.Builder;
 using System;
+using System.Net.Http;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Rest.TransientFaultHandling;
-using System.Net.Http;
 
 namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
 {

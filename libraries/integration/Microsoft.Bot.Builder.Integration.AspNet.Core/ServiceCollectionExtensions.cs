@@ -1,14 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Builder.BotFramework;
+using System;
 using Microsoft.Bot.Connector.Authentication;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
-using System;
 
 namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 {
@@ -22,7 +18,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// <summary>
         /// Adds and configures services for a <typeparamref name="TBot">specified bot type</typeparamref> to the <see cref="IServiceCollection" />.
         /// </summary>
-        /// <typeparam name="TBot">A concrete type of <see cref="IBot"/ > that is to be registered and exposed to the Bot Framework.</typeparam>
+        /// <typeparam name="TBot">A concrete type of <see cref="IBot"/> that is to be registered and exposed to the Bot Framework.</typeparam>
         /// <param name="services">The <see cref="IServiceCollection"/>.</param>
         /// <param name="configureAction">A callback that can further be used to configure the bot.</param>
         /// <returns>A reference to this instance after the operation has completed.</returns>
@@ -40,7 +36,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 
             services.PostConfigure<BotFrameworkOptions>(options => 
             {
-                if (options.CredentialProvider== null)
+                if (options.CredentialProvider == null)
                 {
                     options.CredentialProvider = new SimpleCredentialProvider();
                 }

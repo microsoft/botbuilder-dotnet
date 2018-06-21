@@ -85,10 +85,10 @@ namespace Microsoft.Bot.Schema
         dynamic ChannelData { get; set; }
 
         /// <summary>
-        /// Get the channel data as strongly typed object
+        /// Gets the channel data as strongly typed object.
         /// </summary>
-        /// <typeparatm name="TypeT"></typeparam>
-        /// <returns></returns>
+        /// <typeparam name="TypeT">The expected type of the object.</typeparam>
+        /// <returns>The strongly typed channel data.</returns>
         TypeT GetChannelData<TypeT>();
 
         /// <summary>

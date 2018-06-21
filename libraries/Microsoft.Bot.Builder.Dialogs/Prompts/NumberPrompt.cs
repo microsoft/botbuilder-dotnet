@@ -3,22 +3,17 @@
 
 using System;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Prompts;
-using static Microsoft.Bot.Builder.Prompts.PromptValidatorEx;
+using static Microsoft.Bot.Builder.Dialogs.PromptValidatorEx;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
     public class NumberPrompt<T> : Prompt<NumberResult<T>>
     {
-        private Prompts.NumberPrompt<T> _prompt;
+        private NumberPromptInternal<T> _prompt;
 
         public NumberPrompt(string culture, PromptValidator<NumberResult<T>> validator = null)
         {
-            _prompt = new Prompts.NumberPrompt<T>(culture, validator);
-        }
-        protected NumberPrompt(Prompts.NumberPrompt<T> prompt, PromptValidator<NumberResult<T>> validator = null)
-        {
-            _prompt = prompt;
+            _prompt = new NumberPromptInternal<T>(culture, validator);
         }
         protected override Task OnPrompt(DialogContext dc, PromptOptions options, bool isRetry)
         {
@@ -27,29 +22,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             if (options == null)
                 throw new ArgumentNullException(nameof(options));
 
-            if (isRetry)
-            {
-                if (options.RetryPromptActivity != null)
-                {
-                    return _prompt.Prompt(dc.Context, options.RetryPromptActivity.AsMessageActivity());
-                }
-                if (options.RetryPromptString != null)
-                {
-                    return _prompt.Prompt(dc.Context, options.RetryPromptString, options.RetrySpeak);
-                }
-            }
-            else
-            {
-                if (options.PromptActivity != null)
-                {
-                    return _prompt.Prompt(dc.Context, options.PromptActivity);
-                }
-                if (options.PromptString != null)
-                {
-                    return _prompt.Prompt(dc.Context, options.PromptString, options.Speak);
-                }
-            }
-            return Task.CompletedTask;
+            return dc.Context.SendActivity(PromptMessageFactory.CreateActivity(options, isRetry));
         }
 
         protected override async Task<NumberResult<T>> OnRecognize(DialogContext dc, PromptOptions options)
