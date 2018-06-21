@@ -85,7 +85,8 @@ namespace Microsoft.Bot.Builder.Alexa
 
     public class AlexaSupportedInterfaces
     {
-        public List<string> Interfaces { get; set; }
+        [JsonExtensionData]
+        public IDictionary<string, JToken> Interfaces { get; set; }
     }
 
     public class AlexaUser

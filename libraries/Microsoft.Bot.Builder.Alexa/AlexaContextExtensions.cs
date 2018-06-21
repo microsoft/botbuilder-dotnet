@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Alexa.Directives;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
@@ -13,6 +14,11 @@ namespace Microsoft.Bot.Builder.Alexa
         public static Dictionary<string, string> AlexaSessionAttributes(this ITurnContext context)
         {
             return context.Services.Get<Dictionary<string, string>>("AlexaSessionAttributes");
+        }
+
+        public static List<IAlexaDirective> AlexaResponseDirectives(this ITurnContext context)
+        {
+            return context.Services.Get<List<IAlexaDirective>>("AlexaResponseDirectives");
         }
 
         public static async Task<HttpResponseMessage> AlexaSendProgressiveResponse(this ITurnContext context, string content)
@@ -34,7 +40,7 @@ namespace Microsoft.Bot.Builder.Alexa
 
             var client = new HttpClient();
 
-            var jsonRequest = JsonConvert.SerializeObject(directive, 
+            var jsonRequest = JsonConvert.SerializeObject(directive,
                 new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() });
 
             var directiveContent = new StringContent(jsonRequest, System.Text.Encoding.UTF8, "application/json");
@@ -50,12 +56,28 @@ namespace Microsoft.Bot.Builder.Alexa
         {
             try
             {
-                return (AlexaRequestBody) context.Activity.ChannelData;
+                return (AlexaRequestBody)context.Activity.ChannelData;
             }
             catch (Exception ex)
             {
                 return null;
             }
+        }
+
+        public static bool AlexaDeviceHasDisplay(this ITurnContext context)
+        {
+            var alexaRequest = (AlexaRequestBody)context.Activity.ChannelData;
+            var hasDisplay =
+                alexaRequest?.Context?.System?.Device?.SupportedInterfaces?.Interfaces?.Keys.Contains("Display");
+            return hasDisplay.HasValue && hasDisplay.Value;
+        }
+
+        public static bool AlexaDeviceHasAudioPlayer(this ITurnContext context)
+        {
+            var alexaRequest = (AlexaRequestBody)context.Activity.ChannelData;
+            var hasDisplay =
+                alexaRequest?.Context?.System?.Device?.SupportedInterfaces?.Interfaces?.Keys.Contains("AudioPlayer");
+            return hasDisplay.HasValue && hasDisplay.Value;
         }
     }
 }

@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Alexa.Directives;
 using Microsoft.Bot.Builder.Alexa.Integration;
 using Microsoft.Bot.Schema;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Alexa
 {
@@ -28,8 +31,10 @@ namespace Microsoft.Bot.Builder.Alexa
             }
             else
             {
-                context.Services.Add("AlexaSessionAttributes", new Dictionary<string,string>());
+                context.Services.Add("AlexaSessionAttributes", new Dictionary<string, string>());
             }
+
+            context.Services.Add("AlexaResponseDirectives", new List<IAlexaDirective>());
 
             Responses = new Dictionary<string, List<Activity>>();
 
@@ -40,7 +45,7 @@ namespace Microsoft.Bot.Builder.Alexa
             try
             {
                 var activities = Responses.ContainsKey(key) ? Responses[key] : new List<Activity>();
-                var response = CreateResponseFromLastActivity(activities);
+                var response = CreateResponseFromLastActivity(activities, context);
                 response.SessionAttributes = context.AlexaSessionAttributes();
                 return response;
             }
@@ -104,7 +109,7 @@ namespace Microsoft.Bot.Builder.Alexa
 
                 Type = skillRequest.Request.Type,
                 Id = skillRequest.Request.RequestId,
-                Timestamp = DateTime.Parse(skillRequest.Request.Timestamp),
+                Timestamp = DateTime.ParseExact(skillRequest.Request.Timestamp, "MM/dd/yyyy HH:mm:ss", CultureInfo.InvariantCulture),
                 Locale = skillRequest.Request.Locale
             };
 
@@ -125,7 +130,7 @@ namespace Microsoft.Bot.Builder.Alexa
             return activity;
         }
 
-        private AlexaResponseBody CreateResponseFromLastActivity(IEnumerable<Activity> activities)
+        private AlexaResponseBody CreateResponseFromLastActivity(IEnumerable<Activity> activities, ITurnContext context)
         {
             var response = new AlexaResponseBody()
             {
@@ -170,28 +175,11 @@ namespace Microsoft.Bot.Builder.Alexa
                 }
             }
 
-            var attachment = activity.Attachments != null && activity.Attachments.Any()
-                ? activity.Attachments[0]
-                : null;
+            AddDirectivesToResponse(context, response);
 
-            if (attachment != null)
+            if (Options.ConvertFirstActivityAttachmentToAlexaCard)
             {
-                switch (attachment.ContentType)
-                {
-                    case HeroCard.ContentType:
-                    case ThumbnailCard.ContentType:
-                        if (attachment.Content is HeroCard)
-                        {
-                            response.Response.Card = CreateAlexaCardFromHeroCard(attachment);
-                        }
-                        break;
-                    case SigninCard.ContentType:
-                        response.Response.Card = new AlexaCard()
-                        {
-                            Type = AlexaCardType.LinkAccount
-                        };
-                        break;
-                }
+                CreateAlexaCardFromAttachment(activity, response);
             }
 
             switch (activity.InputHint)
@@ -206,6 +194,39 @@ namespace Microsoft.Bot.Builder.Alexa
             }
 
             return response;
+        }
+
+        private static void AddDirectivesToResponse(ITurnContext context, AlexaResponseBody response)
+        {
+            response.Response.Directives = context.AlexaResponseDirectives().Select(a => a).ToArray();
+        }
+
+        private static void CreateAlexaCardFromAttachment(Activity activity, AlexaResponseBody response)
+        {
+            var attachment = activity.Attachments != null && activity.Attachments.Any()
+                ? activity.Attachments[0]
+                : null;
+
+            if (attachment != null)
+            {
+                switch (attachment.ContentType)
+                {
+                    case HeroCard.ContentType:
+                    case ThumbnailCard.ContentType:
+                        if (attachment.Content is HeroCard)
+                        {
+                            response.Response.Card = CreateAlexaCardFromHeroCard(attachment);
+                        }
+
+                        break;
+                    case SigninCard.ContentType:
+                        response.Response.Card = new AlexaCard()
+                        {
+                            Type = AlexaCardType.LinkAccount
+                        };
+                        break;
+                }
+            }
         }
 
         private static AlexaCard CreateAlexaCardFromHeroCard(Attachment attachment)

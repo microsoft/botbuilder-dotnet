@@ -93,6 +93,8 @@ If the activity type you send from your bot is of type MessageActivity the follo
 
 The Alexa Adapter supports sending Bot Framework cards of type HeroCard, ThumbnailCard and SigninCard as part of your replies to the Alexa skill request.
 
+The Alexa adapter will use the first card attachment by default, unless you have disabled this using the AlexaBotOptions property ConvertFirstActivityAttachmentToAlexaCard.
+
 * **HeroCard and ThumbnailCard** : 
 
  * Alexa Card Small Image URL = The first image in the Images collection on the Hero / Thumbnail card
@@ -103,6 +105,65 @@ The Alexa Adapter supports sending Bot Framework cards of type HeroCard, Thumbna
 ***Note: You should ensure that the images you use on your HeroCard / Thumbnail cards are the correct expected size for Alexa Skills responses.***
 
 * **SigninCard** : If a SignInCard is attached to your outgoing activity, this will be mapped as a LinkAccount card in the Alexa response.
+
+## Alexa Show / Spot Display Support
+
+Display Directives to support devices with screens, such as the Echo Show and Spot, can be added to your bots response.  A class for each of the currently supported templates 
+exists within the Alexa.Directives namespace.  A context extension method allows you to add directives to the services collection which will then be used by the Alexa Adapter 
+when processing outgoing activities and will add the appropriate JSON to the response.
+
+***Note: You should also use the AlexaDeviceHasDisplay() extension method on the ITurnContext object to check if the Alexa device that has sent the incoming 
+request has a display - this is because if you send a display directive to a device without a display it will cause an error and not simply be ignored.***
+
+``` cs
+
+            var displayDirective = new DisplayDirective()
+            {
+                Template = new DisplayRenderBodyTemplate1()
+                {
+                    BackButton = BackButtonVisibility.HIDDEN,
+                    Title = "Claim Update",
+                    TextContent = new TextContent()
+                    {
+                        PrimaryText = new InnerTextContent()
+                        {
+                            Text = "<font size=\"7\"><b>Good news!</b></font>",
+                            Type = TextContentType.RichText
+                        },
+                        SecondaryText = new InnerTextContent()
+                        {
+                            Text = "<br/><font size=\"3\">This is your Secondary Text",
+                            Type = TextContentType.RichText
+                        },
+                        TertiaryText = new InnerTextContent()
+                        {
+                            Text = "This is tertiary text - this time it is plain text",
+                            Type = TextContentType.PlainText
+                        }
+                    },
+                    Token = "",
+                    BackgroundImage = new Image()
+                    {
+                        ContentDescription = "test",
+                        Sources = new ImageSource[]
+                                {
+                                    new ImageSource()
+                                    {
+                                        Url = "https://www.yourimageurl.com/background.jpg",
+                                        WidthPixels = 1025,
+                                        HeightPixels = 595
+                                    }
+                                }
+                    }
+                }
+            };
+
+            if (dialogContext.Context.AlexaDeviceHasDisplay())
+            {
+                dialogContext.Context.AlexaResponseDirectives().Add(displayDirective);
+            }
+
+```
 
 ## Extension Methods
 
@@ -138,6 +199,24 @@ We have provided an extension method to allow you to get the original Alexa requ
 ```
 
 ***Note: If you call this extension method when the incoming Activity is not from an Alexa skill then the extension method will simply return null.*** 
+
+
+### Add Directives to response
+
+Add objects of type IAlexaDirective to a collection used when sending outgoing requests to add directives to the response.  This allows you to do things like 
+controlling the display on Echo Show / Spot devices.  Classes are included for Display and Hint Directives.
+
+```cs
+	dialogContext.Context.AlexaResponseDirectives().Add(displayDirective);
+```
+
+### Check if device has Display or Audio Player support
+
+```cs 
+    dialogContext.Context.AlexaDeviceHasDisplay()
+
+	dialogContext.Context.AlexaDeviceHasAudioPlayer()
+```
 
 
 ## Alexa Middleware

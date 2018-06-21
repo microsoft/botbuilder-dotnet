@@ -14,5 +14,7 @@ namespace Microsoft.Bot.Builder.Alexa.Integration
         public bool ValidateIncomingAlexaRequests { get; set; }
 
         public bool ShouldEndSessionByDefault { get; set; }
+
+        public bool ConvertFirstActivityAttachmentToAlexaCard { get; set; }
     }
 }
