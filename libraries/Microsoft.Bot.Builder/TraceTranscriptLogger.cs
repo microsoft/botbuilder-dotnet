@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
@@ -22,7 +23,7 @@ namespace Microsoft.Bot.Builder
         public Task LogActivity(IActivity activity)
         {
             BotAssert.ActivityNotNull(activity);
-            System.Diagnostics.Trace.TraceInformation(JsonConvert.SerializeObject(activity, serializationSettings));
+            Trace.TraceInformation(JsonConvert.SerializeObject(activity, serializationSettings));
             return Task.CompletedTask;
         }
     }
