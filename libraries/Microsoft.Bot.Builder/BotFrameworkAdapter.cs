@@ -267,7 +267,7 @@ namespace Microsoft.Bot.Builder
                     await Task.Delay(delayMs).ConfigureAwait(false);
                     // No need to create a response. One will be created below. 
                 }
-                else if (activity.Type == "invokeResponse") // Aligning name with Node            
+                else if (activity.Type == ActivityTypesEx.InvokeResponse) // Aligning name with Node            
                 {
                     context.Services.Add(InvokeReponseKey, activity);
                     // No need to create a response. One will be created below.                     
