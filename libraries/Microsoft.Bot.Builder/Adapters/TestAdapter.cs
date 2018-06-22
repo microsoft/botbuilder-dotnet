@@ -13,29 +13,28 @@ namespace Microsoft.Bot.Builder.Adapters
     public class TestAdapter : BotAdapter
     {
         private int _nextId = 0;
-        private readonly Queue<Activity> botReplies = new Queue<Activity>();
 
         public TestAdapter(ConversationReference reference = null)
         {
             if (reference != null)
             {
-                this.ConversationReference = reference;
+                ConversationReference = reference;
             }
             else
             {
-                this.ConversationReference = new ConversationReference
+                ConversationReference = new ConversationReference
                 {
                     ChannelId = "test",
                     ServiceUrl = "https://test.com"
                 };
 
-                this.ConversationReference.User = new ChannelAccount("user1", "User1");
-                this.ConversationReference.Bot = new ChannelAccount("bot", "Bot");
-                this.ConversationReference.Conversation = new ConversationAccount(false, "convo1", "Conversation1");
+                ConversationReference.User = new ChannelAccount("user1", "User1");
+                ConversationReference.Bot = new ChannelAccount("bot", "Bot");
+                ConversationReference.Conversation = new ConversationAccount(false, "convo1", "Conversation1");
             }
         }
 
-        public Queue<Activity> ActiveQueue { get { return botReplies; } }
+        public Queue<Activity> ActiveQueue { get; } = new Queue<Activity>();
 
         public new TestAdapter Use(IMiddleware middleware)
         {
@@ -45,18 +44,18 @@ namespace Microsoft.Bot.Builder.Adapters
 
         public async Task ProcessActivity(Activity activity, Func<ITurnContext, Task> callback, CancellationTokenSource cancelToken = null)
         {
-            lock (this.ConversationReference)
+            lock (ConversationReference)
             {
                 // ready for next reply
                 if (activity.Type == null)
                     activity.Type = ActivityTypes.Message;
-                activity.ChannelId = this.ConversationReference.ChannelId;
-                activity.From = this.ConversationReference.User;
-                activity.Recipient = this.ConversationReference.Bot;
-                activity.Conversation = this.ConversationReference.Conversation;
-                activity.ServiceUrl = this.ConversationReference.ServiceUrl;
+                activity.ChannelId = ConversationReference.ChannelId;
+                activity.From = ConversationReference.User;
+                activity.Recipient = ConversationReference.Bot;
+                activity.Conversation = ConversationReference.Conversation;
+                activity.ServiceUrl = ConversationReference.ServiceUrl;
 
-                var id = activity.Id = (this._nextId++).ToString();
+                var id = activity.Id = (_nextId++).ToString();
             }
             if (activity.Timestamp == null || activity.Timestamp == default(DateTime))
                 activity.Timestamp = DateTime.UtcNow;
@@ -121,9 +120,9 @@ namespace Microsoft.Bot.Builder.Adapters
                 }
                 else
                 {
-                    lock (this.botReplies)
+                    lock (ActiveQueue)
                     {
-                        this.botReplies.Enqueue(activity);
+                        ActiveQueue.Enqueue(activity);
                     }
                 }
 
@@ -135,18 +134,18 @@ namespace Microsoft.Bot.Builder.Adapters
 
         public override Task<ResourceResponse> UpdateActivity(ITurnContext context, Activity activity)
         {
-            lock (this.botReplies)
+            lock (ActiveQueue)
             {
-                var replies = this.botReplies.ToList();
-                for (int i = 0; i < this.botReplies.Count; i++)
+                var replies = ActiveQueue.ToList();
+                for (int i = 0; i < ActiveQueue.Count; i++)
                 {
                     if (replies[i].Id == activity.Id)
                     {
                         replies[i] = activity;
-                        this.botReplies.Clear();
+                        ActiveQueue.Clear();
                         foreach (var item in replies)
                         {
-                            this.botReplies.Enqueue(item);
+                            ActiveQueue.Enqueue(item);
                         }
                         return Task.FromResult(new ResourceResponse(activity.Id));
                     }
@@ -157,18 +156,18 @@ namespace Microsoft.Bot.Builder.Adapters
 
         public override Task DeleteActivity(ITurnContext context, ConversationReference reference)
         {
-            lock (this.botReplies)
+            lock (ActiveQueue)
             {
-                var replies = this.botReplies.ToList();
-                for (int i = 0; i < this.botReplies.Count; i++)
+                var replies = ActiveQueue.ToList();
+                for (int i = 0; i < ActiveQueue.Count; i++)
                 {
                     if (replies[i].Id == reference.ActivityId)
                     {
                         replies.RemoveAt(i);
-                        this.botReplies.Clear();
+                        ActiveQueue.Clear();
                         foreach (var item in replies)
                         {
-                            this.botReplies.Enqueue(item);
+                            ActiveQueue.Enqueue(item);
                         }
                         break;
                     }
@@ -183,9 +182,10 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <param name="channelId"></param>
         /// <param name="callback"></param>
         /// <returns></returns>
-        public override Task CreateConversation(string channelId, Func<ITurnContext, Task> callback)
+        //public override Task CreateConversation(string channelId, Func<ITurnContext, Task> callback)
+        public Task CreateConversation(string channelId, Func<ITurnContext, Task> callback)
         {
-            this.ActiveQueue.Clear();
+            ActiveQueue.Clear();
             var update = Activity.CreateConversationUpdateActivity();
             update.Conversation = new ConversationAccount() { Id = Guid.NewGuid().ToString("n") };
             var context = new TurnContext(this, (Activity)update);
@@ -198,11 +198,11 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <returns></returns>
         public IActivity GetNextReply()
         {
-            lock (this.botReplies)
+            lock (ActiveQueue)
             {
-                if (this.botReplies.Count > 0)
+                if (ActiveQueue.Count > 0)
                 {
-                    return this.botReplies.Dequeue();
+                    return ActiveQueue.Dequeue();
                 }
             }
             return null;
@@ -237,7 +237,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <returns></returns>
         public Task SendTextToBot(string userSays, Func<ITurnContext, Task> callback)
         {
-            return this.ProcessActivity(this.MakeActivity(userSays), callback);
+            return ProcessActivity(MakeActivity(userSays), callback);
         }
     }
 }
