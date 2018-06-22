@@ -12,25 +12,28 @@ namespace Microsoft.Bot.Builder.Adapters
 {
     public class TestAdapter : BotAdapter
     {
+        private object _conversationLock = new object();
+        private object _activeQueueLock = new object();
+
         private int _nextId = 0;
 
-        public TestAdapter(ConversationReference reference = null)
+        public TestAdapter(ConversationReference conversation = null)
         {
-            if (reference != null)
+            if (conversation != null)
             {
-                ConversationReference = reference;
+                Conversation = conversation;
             }
             else
             {
-                ConversationReference = new ConversationReference
+                Conversation = new ConversationReference
                 {
                     ChannelId = "test",
                     ServiceUrl = "https://test.com"
                 };
 
-                ConversationReference.User = new ChannelAccount("user1", "User1");
-                ConversationReference.Bot = new ChannelAccount("bot", "Bot");
-                ConversationReference.Conversation = new ConversationAccount(false, "convo1", "Conversation1");
+                Conversation.User = new ChannelAccount("user1", "User1");
+                Conversation.Bot = new ChannelAccount("bot", "Bot");
+                Conversation.Conversation = new ConversationAccount(false, "convo1", "Conversation1");
             }
         }
 
@@ -44,16 +47,16 @@ namespace Microsoft.Bot.Builder.Adapters
 
         public async Task ProcessActivity(Activity activity, Func<ITurnContext, Task> callback, CancellationTokenSource cancelToken = null)
         {
-            lock (ConversationReference)
+            lock (_conversationLock)
             {
                 // ready for next reply
                 if (activity.Type == null)
                     activity.Type = ActivityTypes.Message;
-                activity.ChannelId = ConversationReference.ChannelId;
-                activity.From = ConversationReference.User;
-                activity.Recipient = ConversationReference.Bot;
-                activity.Conversation = ConversationReference.Conversation;
-                activity.ServiceUrl = ConversationReference.ServiceUrl;
+                activity.ChannelId = Conversation.ChannelId;
+                activity.From = Conversation.User;
+                activity.Recipient = Conversation.Bot;
+                activity.Conversation = Conversation.Conversation;
+                activity.ServiceUrl = Conversation.ServiceUrl;
 
                 var id = activity.Id = (_nextId++).ToString();
             }
@@ -66,7 +69,7 @@ namespace Microsoft.Bot.Builder.Adapters
             }
         }
 
-        public ConversationReference ConversationReference { get; set; }
+        public ConversationReference Conversation { get; set; }
 
 
         public async override Task<ResourceResponse[]> SendActivities(ITurnContext context, Activity[] activities)
@@ -88,11 +91,9 @@ namespace Microsoft.Bot.Builder.Adapters
 
             var responses = new ResourceResponse[activities.Length];
 
-            /* 
-             * NOTE: we're using for here (vs. foreach) because we want to simultaneously index into the
-             * activities array to get the activity to process as well as use that index to assign
-             * the response to the responses array and this is the most cost effective way to do that.
-             */
+            // NOTE: we're using for here (vs. foreach) because we want to simultaneously index into the
+            // activities array to get the activity to process as well as use that index to assign
+            // the response to the responses array and this is the most cost effective way to do that.
             for (var index = 0; index < activities.Length; index++)
             {
                 var activity = activities[index];
@@ -120,7 +121,7 @@ namespace Microsoft.Bot.Builder.Adapters
                 }
                 else
                 {
-                    lock (ActiveQueue)
+                    lock (_activeQueueLock)
                     {
                         ActiveQueue.Enqueue(activity);
                     }
@@ -134,7 +135,7 @@ namespace Microsoft.Bot.Builder.Adapters
 
         public override Task<ResourceResponse> UpdateActivity(ITurnContext context, Activity activity)
         {
-            lock (ActiveQueue)
+            lock (_activeQueueLock)
             {
                 var replies = ActiveQueue.ToList();
                 for (int i = 0; i < ActiveQueue.Count; i++)
@@ -156,7 +157,7 @@ namespace Microsoft.Bot.Builder.Adapters
 
         public override Task DeleteActivity(ITurnContext context, ConversationReference reference)
         {
-            lock (ActiveQueue)
+            lock (_activeQueueLock)
             {
                 var replies = ActiveQueue.ToList();
                 for (int i = 0; i < ActiveQueue.Count; i++)
@@ -198,7 +199,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <returns></returns>
         public IActivity GetNextReply()
         {
-            lock (ActiveQueue)
+            lock (_activeQueueLock)
             {
                 if (ActiveQueue.Count > 0)
                 {
@@ -218,10 +219,10 @@ namespace Microsoft.Bot.Builder.Adapters
             Activity activity = new Activity
             {
                 Type = ActivityTypes.Message,
-                From = ConversationReference.User,
-                Recipient = ConversationReference.Bot,
-                Conversation = ConversationReference.Conversation,
-                ServiceUrl = ConversationReference.ServiceUrl,
+                From = Conversation.User,
+                Recipient = Conversation.Bot,
+                Conversation = Conversation.Conversation,
+                ServiceUrl = Conversation.ServiceUrl,
                 Id = (_nextId++).ToString(),
                 Text = text
             };
