@@ -65,7 +65,7 @@ namespace Microsoft.Bot.Builder
 
             if (middleware != null)
             {
-                this.Use(middleware);
+                Use(middleware);
             }
         }
 
@@ -117,8 +117,8 @@ namespace Microsoft.Bot.Builder
                 });
 
                 context.Services.Add<IIdentity>("BotIdentity", claimsIdentity);
-                var connectorClient = await this.CreateConnectorClientAsync(reference.ServiceUrl, claimsIdentity).ConfigureAwait(false);
-                context.Services.Add<IConnectorClient>(connectorClient);
+                var connectorClient = await CreateConnectorClientAsync(reference.ServiceUrl, claimsIdentity).ConfigureAwait(false);
+                context.Services.Add(connectorClient);
                 await RunPipeline(context, callback);
             }
         }
@@ -151,7 +151,7 @@ namespace Microsoft.Bot.Builder
         /// </remarks>
         public new BotFrameworkAdapter Use(IMiddleware middleware)
         {
-            base._middlewareSet.Use(middleware);
+            _middlewareSet.Use(middleware);
             return this;
         }
 
@@ -182,7 +182,6 @@ namespace Microsoft.Bot.Builder
             BotAssert.ActivityNotNull(activity);
 
             var claimsIdentity = await JwtTokenValidation.AuthenticateRequest(activity, authHeader, _credentialProvider, _httpClient).ConfigureAwait(false);
-
             return await ProcessActivity(claimsIdentity, activity, callback).ConfigureAwait(false);
         }
 
@@ -194,10 +193,10 @@ namespace Microsoft.Bot.Builder
             {
                 context.Services.Add<IIdentity>("BotIdentity", identity);
 
-                var connectorClient = await this.CreateConnectorClientAsync(activity.ServiceUrl, identity).ConfigureAwait(false);
-                context.Services.Add<IConnectorClient>(connectorClient);
+                var connectorClient = await CreateConnectorClientAsync(activity.ServiceUrl, identity).ConfigureAwait(false);
+                context.Services.Add(connectorClient);
 
-                await base.RunPipeline(context, callback).ConfigureAwait(false);
+                await RunPipeline(context, callback).ConfigureAwait(false);
 
                 // Handle Invoke scenarios, which deviate from the request/response model in that 
                 // the Bot will return a specific body and return code. 
@@ -270,7 +269,7 @@ namespace Microsoft.Bot.Builder
                 }
                 else if (activity.Type == "invokeResponse") // Aligning name with Node            
                 {
-                    context.Services.Add<Activity>(InvokeReponseKey, activity);
+                    context.Services.Add(InvokeReponseKey, activity);
                     // No need to create a response. One will be created below.                     
                 }
                 else if (activity.Type == ActivityTypes.Trace && activity.ChannelId != "emulator")
@@ -432,7 +431,7 @@ namespace Microsoft.Bot.Builder
             if (credentials == null)
                 throw new ArgumentNullException(nameof(credentials));
 
-            var connectorClient = this.CreateConnectorClient(serviceUrl, credentials);
+            var connectorClient = CreateConnectorClient(serviceUrl, credentials);
             ConversationsResult results = await connectorClient.Conversations.GetConversationsAsync(continuationToken).ConfigureAwait(false);
             return results;
         }
@@ -455,11 +454,9 @@ namespace Microsoft.Bot.Builder
         public async Task<ConversationsResult> GetConversations(ITurnContext context, string continuationToken = null)
         {
             var connectorClient = context.Services.Get<IConnectorClient>();
-            ConversationsResult results = await connectorClient.Conversations.GetConversationsAsync(continuationToken).ConfigureAwait(false);
+            var results = await connectorClient.Conversations.GetConversationsAsync(continuationToken).ConfigureAwait(false);
             return results;
         }
-
-
 
         /// <summary>Attempts to retrieve the token for a user that's in a login flow.
         /// </summary>
@@ -476,7 +473,7 @@ namespace Microsoft.Bot.Builder
             if (string.IsNullOrWhiteSpace(connectionName))
                     throw new ArgumentNullException(nameof(connectionName));
 
-            var client = this.CreateOAuthApiClient(context);
+            var client = CreateOAuthApiClient(context);
             return await client.GetUserTokenAsync(context.Activity.From.Id, connectionName, magicCode).ConfigureAwait(false);
         }
 
@@ -492,7 +489,7 @@ namespace Microsoft.Bot.Builder
             if (string.IsNullOrWhiteSpace(connectionName))
                 throw new ArgumentNullException(nameof(connectionName));
 
-            var client = this.CreateOAuthApiClient(context);
+            var client = CreateOAuthApiClient(context);
             return await client.GetSignInLinkAsync(context.Activity, connectionName).ConfigureAwait(false);
         }
 
@@ -534,7 +531,7 @@ namespace Microsoft.Bot.Builder
         /// </remarks>
         public virtual async Task CreateConversation(string channelId, string serviceUrl, MicrosoftAppCredentials credentials, ConversationParameters conversationParameters, Func<ITurnContext, Task> callback)
         {
-            var connectorClient = this.CreateConnectorClient(serviceUrl, credentials);
+            var connectorClient = CreateConnectorClient(serviceUrl, credentials);
 
             var result = await connectorClient.Conversations.CreateConversationAsync(conversationParameters).ConfigureAwait(false);
 
@@ -605,12 +602,12 @@ namespace Microsoft.Bot.Builder
             if (botAppIdClaim != null)
             {
                 string botId = botAppIdClaim.Value;
-                var appCredentials = await this.GetAppCredentialsAsync(botId).ConfigureAwait(false);
-                return this.CreateConnectorClient(serviceUrl, appCredentials);
+                var appCredentials = await GetAppCredentialsAsync(botId).ConfigureAwait(false);
+                return CreateConnectorClient(serviceUrl, appCredentials);
             }
             else
             {
-                return this.CreateConnectorClient(serviceUrl);
+                return CreateConnectorClient(serviceUrl);
             }
         }
 
@@ -632,9 +629,9 @@ namespace Microsoft.Bot.Builder
                 connectorClient = new ConnectorClient(new Uri(serviceUrl));
             }
 
-            if (this._connectorClientRetryPolicy != null)
+            if (_connectorClientRetryPolicy != null)
             {
-                connectorClient.SetRetryPolicy(this._connectorClientRetryPolicy);
+                connectorClient.SetRetryPolicy(_connectorClientRetryPolicy);
             }
 
             return connectorClient;

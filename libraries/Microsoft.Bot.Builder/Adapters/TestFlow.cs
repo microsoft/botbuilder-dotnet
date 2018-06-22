@@ -19,22 +19,22 @@ namespace Microsoft.Bot.Builder.Adapters
 
     public class TestFlow
     {
-        private readonly TestAdapter adapter;
-        private readonly Task testTask;
-        private Func<ITurnContext, Task> callback;
+        private readonly TestAdapter _adapter;
+        private readonly Task _testTask;
+        private Func<ITurnContext, Task> _callback;
 
         public TestFlow(TestAdapter adapter, Func<ITurnContext, Task> callback = null)
         {
-            this.adapter = adapter;
-            this.callback = callback;
-            this.testTask = testTask ?? Task.CompletedTask;
+            _adapter = adapter;
+            _callback = callback;
+            _testTask = _testTask ?? Task.CompletedTask;
         }
 
         public TestFlow(Task testTask, TestFlow flow)
         {
-            this.testTask = testTask ?? Task.CompletedTask;
-            this.callback = flow.callback;
-            this.adapter = flow.adapter;
+            _testTask = testTask ?? Task.CompletedTask;
+            _callback = flow._callback;
+            _adapter = flow._adapter;
         }
 
         public TestFlow(TestAdapter adapter, IBot bot) : this(adapter, (ctx) => bot.OnTurn(ctx))
@@ -46,7 +46,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <returns></returns>
         public Task StartTest()
         {
-            return this.testTask;
+            return _testTask;
         }
 
         /// <summary>
@@ -59,7 +59,7 @@ namespace Microsoft.Bot.Builder.Adapters
             if (userSays == null)
                 throw new ArgumentNullException("You have to pass a userSays parameter");
 
-            return new TestFlow(this.testTask.ContinueWith((task) =>
+            return new TestFlow(_testTask.ContinueWith((task) =>
             {
                 // NOTE: we need to .Wait() on the original Task to properly observe any exceptions that might have occurred
                 // and to have them propagate correctly up through the chain to whomever is waiting on the parent task
@@ -74,7 +74,7 @@ namespace Microsoft.Bot.Builder.Adapters
                 //  could be thrown.
                 task.Wait();
 
-                return this.adapter.SendTextToBot(userSays, this.callback);
+                return _adapter.SendTextToBot(userSays, _callback);
             }).Unwrap(), this);
         }
 
@@ -88,12 +88,12 @@ namespace Microsoft.Bot.Builder.Adapters
             if (userActivity == null)
                 throw new ArgumentNullException("You have to pass an Activity");
 
-            return new TestFlow(this.testTask.ContinueWith((task) =>
+            return new TestFlow(_testTask.ContinueWith((task) =>
             {
                 // NOTE: See details code in above method.
                 task.Wait();
 
-                return this.adapter.ProcessActivity((Activity)userActivity, this.callback);
+                return _adapter.ProcessActivity((Activity)userActivity, _callback);
             }).Unwrap(), this);
         }
 
@@ -104,7 +104,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <returns></returns>
         public TestFlow Delay(UInt32 ms)
         {
-            return new TestFlow(this.testTask.ContinueWith((task) =>
+            return new TestFlow(_testTask.ContinueWith((task) =>
             {
                 // NOTE: See details code in above method.
                 task.Wait();
@@ -122,7 +122,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <returns></returns>
         public TestFlow AssertReply(string expected, string description = null, UInt32 timeout = 3000)
         {
-            return this.AssertReply(this.adapter.MakeActivity(expected), description, timeout);
+            return AssertReply(_adapter.MakeActivity(expected), description, timeout);
         }
 
         /// <summary>
@@ -134,7 +134,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <returns></returns>
         public TestFlow AssertReply(IActivity expected, [CallerMemberName] string description = null, UInt32 timeout = 3000)
         {
-            return this.AssertReply((reply) =>
+            return AssertReply((reply) =>
             {
                 if (expected.Type != reply.Type)
                     throw new Exception($"{description}: Type should match");
@@ -158,7 +158,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <returns></returns>
         public TestFlow AssertReply(Action<IActivity> validateActivity, [CallerMemberName] string description = null, UInt32 timeout = 3000)
         {
-            return new TestFlow(this.testTask.ContinueWith((task) =>
+            return new TestFlow(_testTask.ContinueWith((task) =>
             {
                 // NOTE: See details code in above method.
                 task.Wait();
@@ -176,7 +176,7 @@ namespace Microsoft.Bot.Builder.Adapters
                         throw new TimeoutException($"{timeout}ms Timed out waiting for:'{description}'");
                     }
 
-                    IActivity replyActivity = this.adapter.GetNextReply();
+                    IActivity replyActivity = _adapter.GetNextReply();
                     if (replyActivity != null)
                     {
                         // if we have a reply
@@ -200,7 +200,7 @@ namespace Microsoft.Bot.Builder.Adapters
             if (expected == null)
                 throw new ArgumentNullException(nameof(expected));
 
-            return this.Send(userSays)
+            return Send(userSays)
                 .AssertReply(expected, description, timeout);
         }
 
@@ -217,7 +217,7 @@ namespace Microsoft.Bot.Builder.Adapters
             if (expected == null)
                 throw new ArgumentNullException(nameof(expected));
 
-            return this.Send(userSays)
+            return Send(userSays)
                 .AssertReply(expected, description, timeout);
         }
 
@@ -234,7 +234,7 @@ namespace Microsoft.Bot.Builder.Adapters
             if (expected == null)
                 throw new ArgumentNullException(nameof(expected));
 
-            return this.Send(userSays)
+            return Send(userSays)
                 .AssertReply(expected, description, timeout);
         }
 
@@ -307,7 +307,7 @@ namespace Microsoft.Bot.Builder.Adapters
             if (candidates == null)
                 throw new ArgumentNullException(nameof(candidates));
 
-            return this.AssertReply((reply) =>
+            return AssertReply((reply) =>
             {
                 foreach (var candidate in candidates)
                 {
