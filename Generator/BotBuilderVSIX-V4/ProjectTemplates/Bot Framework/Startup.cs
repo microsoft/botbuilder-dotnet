@@ -36,9 +36,9 @@ namespace $safeprojectname$
 
                 // The CatchExceptionMiddleware provides a top-level exception handler for your bot. 
                 // Any exceptions thrown by other Middleware, or by your OnTurn method, will be 
-                // caught here. To facillitate debugging, the exception is sent out, via Trace, 
+                // caught here. To facilitate debugging, the exception is sent out, via Trace, 
                 // to the emulator. Trace activities are NOT displayed to users, so in addition
-                // an "Ooops" message is sent. 
+                // an "Oops" message is sent.
                 options.Middleware.Add(new CatchExceptionMiddleware<Exception>(async (context, exception) =>
                 {
                     await context.TraceActivity("EchoBot Exception", exception);

@@ -1,4 +1,7 @@
-﻿namespace Microsoft.Bot.Builder.Ai.QnA
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+namespace Microsoft.Bot.Builder.Ai.QnA
 {
     /// <summary>
     /// Contains options to control the behaviour of the QnA Maker middleware.

@@ -13,7 +13,7 @@ using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Rest.TransientFaultHandling;
 
-namespace Microsoft.Bot.Builder.Adapters
+namespace Microsoft.Bot.Builder
 {
     /// <summary>
     /// A bot adapter that can connect a bot to a service endpoint. 
@@ -66,7 +66,7 @@ namespace Microsoft.Bot.Builder.Adapters
 
             if (middleware != null)
             {
-                this.Use(middleware);
+                Use(middleware);
             }
         }
 
@@ -82,7 +82,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <paramref name="botAppId"/>, <paramref name="reference"/>, or
         /// <paramref name="callback"/> is <c>null</c>.</exception>
         /// <remarks>Call this method to proactively send a message to a conversation.
-        /// Most channels require a user to initaiate a conversation with a bot
+        /// Most _channels require a user to initaiate a conversation with a bot
         /// before the bot can send activities to the user.
         /// <para>This method registers the following services for the turn.<list type="bullet">
         /// <item><see cref="IIdentity"/> (key = "BotIdentity"), a claims identity for the bot.</item>
@@ -117,9 +117,9 @@ namespace Microsoft.Bot.Builder.Adapters
                     new Claim(AuthenticationConstants.AppIdClaim, botAppId)
                 });
 
-                context.Services.Add<IIdentity>(BotIdentityKey, claimsIdentity);
-                var connectorClient = await this.CreateConnectorClientAsync(reference.ServiceUrl, claimsIdentity).ConfigureAwait(false);
-                context.Services.Add<IConnectorClient>(connectorClient);
+                context.Services.Add<IIdentity>("BotIdentity", claimsIdentity);
+                var connectorClient = await CreateConnectorClientAsync(reference.ServiceUrl, claimsIdentity).ConfigureAwait(false);
+                context.Services.Add(connectorClient);
                 await RunPipeline(context, callback);
             }
         }
@@ -152,7 +152,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// </remarks>
         public new BotFrameworkAdapter Use(IMiddleware middleware)
         {
-            base._middlewareSet.Use(middleware);
+            _middlewareSet.Use(middleware);
             return this;
         }
 
@@ -183,7 +183,6 @@ namespace Microsoft.Bot.Builder.Adapters
             BotAssert.ActivityNotNull(activity);
 
             var claimsIdentity = await JwtTokenValidation.AuthenticateRequest(activity, authHeader, _credentialProvider, _httpClient).ConfigureAwait(false);
-
             return await ProcessActivity(claimsIdentity, activity, callback).ConfigureAwait(false);
         }
 
@@ -195,10 +194,10 @@ namespace Microsoft.Bot.Builder.Adapters
             {
                 context.Services.Add<IIdentity>("BotIdentity", identity);
 
-                var connectorClient = await this.CreateConnectorClientAsync(activity.ServiceUrl, identity).ConfigureAwait(false);
-                context.Services.Add<IConnectorClient>(connectorClient);
+                var connectorClient = await CreateConnectorClientAsync(activity.ServiceUrl, identity).ConfigureAwait(false);
+                context.Services.Add(connectorClient);
 
-                await base.RunPipeline(context, callback).ConfigureAwait(false);
+                await RunPipeline(context, callback).ConfigureAwait(false);
 
                 // Handle Invoke scenarios, which deviate from the request/response model in that 
                 // the Bot will return a specific body and return code. 
@@ -269,9 +268,9 @@ namespace Microsoft.Bot.Builder.Adapters
                     await Task.Delay(delayMs).ConfigureAwait(false);
                     // No need to create a response. One will be created below. 
                 }
-                else if (activity.Type == "invokeResponse") // Aligning name with Node            
+                else if (activity.Type == ActivityTypesEx.InvokeResponse) // Aligning name with Node            
                 {
-                    context.Services.Add<Activity>(InvokeReponseKey, activity);
+                    context.Services.Add(InvokeReponseKey, activity);
                     // No need to create a response. One will be created below.                     
                 }
                 else if (activity.Type == ActivityTypes.Trace && activity.ChannelId != "emulator")
@@ -295,7 +294,7 @@ namespace Microsoft.Bot.Builder.Adapters
 
                 // Note: In addition to the Invoke / Delay / Activity cases, this code also applies
                 // with Skype and Teams with regards to typing events.  When sending a typing event in 
-                // these channels they do not return a RequestResponse which causes the bot to blow up.
+                // these _channels they do not return a RequestResponse which causes the bot to blow up.
                 // https://github.com/Microsoft/botbuilder-dotnet/issues/460
                 // bug report : https://github.com/Microsoft/botbuilder-dotnet/issues/465
                 if (response == null)
@@ -433,7 +432,7 @@ namespace Microsoft.Bot.Builder.Adapters
             if (credentials == null)
                 throw new ArgumentNullException(nameof(credentials));
 
-            var connectorClient = this.CreateConnectorClient(serviceUrl, credentials);
+            var connectorClient = CreateConnectorClient(serviceUrl, credentials);
             ConversationsResult results = await connectorClient.Conversations.GetConversationsAsync(continuationToken).ConfigureAwait(false);
             return results;
         }
@@ -456,11 +455,9 @@ namespace Microsoft.Bot.Builder.Adapters
         public async Task<ConversationsResult> GetConversations(ITurnContext context, string continuationToken = null)
         {
             var connectorClient = context.Services.Get<IConnectorClient>();
-            ConversationsResult results = await connectorClient.Conversations.GetConversationsAsync(continuationToken).ConfigureAwait(false);
+            var results = await connectorClient.Conversations.GetConversationsAsync(continuationToken).ConfigureAwait(false);
             return results;
         }
-
-
 
         /// <summary>Attempts to retrieve the token for a user that's in a login flow.
         /// </summary>
@@ -477,7 +474,7 @@ namespace Microsoft.Bot.Builder.Adapters
             if (string.IsNullOrWhiteSpace(connectionName))
                     throw new ArgumentNullException(nameof(connectionName));
 
-            var client = this.CreateOAuthApiClient(context);
+            var client = CreateOAuthApiClient(context);
             return await client.GetUserTokenAsync(context.Activity.From.Id, connectionName, magicCode).ConfigureAwait(false);
         }
 
@@ -493,7 +490,7 @@ namespace Microsoft.Bot.Builder.Adapters
             if (string.IsNullOrWhiteSpace(connectionName))
                 throw new ArgumentNullException(nameof(connectionName));
 
-            var client = this.CreateOAuthApiClient(context);
+            var client = CreateOAuthApiClient(context);
             return await client.GetSignInLinkAsync(context.Activity, connectionName).ConfigureAwait(false);
         }
 
@@ -525,7 +522,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <remarks>To start a conversation, your bot must know its account information 
         /// and the user's account information on that channel.
-        /// Most channels only support initiating a direct message (non-group) conversation.
+        /// Most _channels only support initiating a direct message (non-group) conversation.
         /// <para>The adapter attempts to create a new conversation on the channel, and
         /// then sends a <c>conversationUpdate</c> activity through its middleware pipeline
         /// to the <paramref name="callback"/> method.</para>
@@ -535,7 +532,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// </remarks>
         public virtual async Task CreateConversation(string channelId, string serviceUrl, MicrosoftAppCredentials credentials, ConversationParameters conversationParameters, Func<ITurnContext, Task> callback)
         {
-            var connectorClient = this.CreateConnectorClient(serviceUrl, credentials);
+            var connectorClient = CreateConnectorClient(serviceUrl, credentials);
 
             var result = await connectorClient.Conversations.CreateConversationAsync(conversationParameters).ConfigureAwait(false);
             
@@ -614,12 +611,12 @@ namespace Microsoft.Bot.Builder.Adapters
             if (botAppIdClaim != null)
             {
                 string botId = botAppIdClaim.Value;
-                var appCredentials = await this.GetAppCredentialsAsync(botId).ConfigureAwait(false);
-                return this.CreateConnectorClient(serviceUrl, appCredentials);
+                var appCredentials = await GetAppCredentialsAsync(botId).ConfigureAwait(false);
+                return CreateConnectorClient(serviceUrl, appCredentials);
             }
             else
             {
-                return this.CreateConnectorClient(serviceUrl);
+                return CreateConnectorClient(serviceUrl);
             }
         }
 
@@ -641,9 +638,9 @@ namespace Microsoft.Bot.Builder.Adapters
                 connectorClient = new ConnectorClient(new Uri(serviceUrl));
             }
 
-            if (this._connectorClientRetryPolicy != null)
+            if (_connectorClientRetryPolicy != null)
             {
-                connectorClient.SetRetryPolicy(this._connectorClientRetryPolicy);
+                connectorClient.SetRetryPolicy(_connectorClientRetryPolicy);
             }
 
             return connectorClient;

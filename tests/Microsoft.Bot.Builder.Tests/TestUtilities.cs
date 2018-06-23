@@ -8,7 +8,7 @@ using System.Linq;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Schema;
 
-namespace Microsoft.Bot.Builder.Core.Extensions.Tests
+namespace Microsoft.Bot.Builder.Tests
 {
     public class TestUtilities
     {

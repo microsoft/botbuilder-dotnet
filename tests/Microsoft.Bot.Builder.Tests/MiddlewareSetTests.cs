@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -40,11 +43,12 @@ namespace Microsoft.Bot.Builder.Tests
         [TestMethod]
         public async Task NoMiddlewareWithDelegate()
         {
-            MiddlewareSet m = new MiddlewareSet();
+            var m = new MiddlewareSet();
             bool wasCalled = false;
-            async Task CallMe(ITurnContext context)
+            Task CallMe(ITurnContext context)
             {
-                wasCalled = true; 
+                wasCalled = true;
+                return Task.CompletedTask;
             }
             // No middleware. Should not explode. 
             await m.ReceiveActivityWithStatus(null, CallMe);
@@ -54,12 +58,13 @@ namespace Microsoft.Bot.Builder.Tests
         [TestMethod]
         public async Task OneMiddlewareItem()
         {
-            WasCalledMiddlware simple = new WasCalledMiddlware();
+            var simple = new WasCalledMiddlware();
 
             bool wasCalled = false;
-            async Task CallMe(ITurnContext context)
+            Task CallMe(ITurnContext context)
             {
                 wasCalled = true;
+                return Task.CompletedTask;
             }
 
             MiddlewareSet m = new MiddlewareSet();
@@ -89,7 +94,7 @@ namespace Microsoft.Bot.Builder.Tests
         public async Task BubbleUncaughtException()
         {
             MiddlewareSet m = new MiddlewareSet();
-            m.Use(new AnonymousReceiveMiddleware(async (context, next) =>
+            m.Use(new AnonymousReceiveMiddleware((context, next) =>
             {
                 throw new InvalidOperationException("test");
             }));
@@ -120,9 +125,10 @@ namespace Microsoft.Bot.Builder.Tests
             WasCalledMiddlware two = new WasCalledMiddlware();
 
             int called = 0;
-            async Task CallMe(ITurnContext context)
+            Task CallMe(ITurnContext context)
             {
                 called++;
+                return Task.CompletedTask;
             }
 
             MiddlewareSet m = new MiddlewareSet();
@@ -167,14 +173,18 @@ namespace Microsoft.Bot.Builder.Tests
         {
             bool called1 = false;
 
-            CallMeMiddlware one = new CallMeMiddlware(() => { called1 = true; });
+            var one = new CallMeMiddlware(() => { called1 = true; });
 
-            MiddlewareSet m = new MiddlewareSet();
+            var m = new MiddlewareSet();
             m.Use(one);
 
             // The middlware in this pipeline calls next(), so the delegate should be called
             bool didAllRun = false;
-            await m.ReceiveActivityWithStatus(null, async (ctx) => didAllRun = true);
+            await m.ReceiveActivityWithStatus(null, (ctx) =>
+            {
+                didAllRun = true;
+                return Task.CompletedTask;
+            });
 
             Assert.IsTrue(called1);
             Assert.IsTrue(didAllRun);
@@ -183,14 +193,17 @@ namespace Microsoft.Bot.Builder.Tests
         [TestMethod]
         public async Task Status_RunAtEndEmptyPipeline()
         {
-            MiddlewareSet m = new MiddlewareSet();
+            var m = new MiddlewareSet();
             bool didAllRun = false;
 
             // This middlware pipeline has no entries. This should result in
             // the status being TRUE. 
-            await m.ReceiveActivityWithStatus(null, async (ctx) => didAllRun = true);
+            await m.ReceiveActivityWithStatus(null, (ctx) =>
+            {
+                didAllRun = true;
+                return Task.CompletedTask;
+            });
             Assert.IsTrue(didAllRun);
-
         }
 
         [TestMethod]
@@ -199,24 +212,28 @@ namespace Microsoft.Bot.Builder.Tests
             bool called1 = false;
             bool called2 = false;
 
-            CallMeMiddlware one = new CallMeMiddlware(() =>
+            var one = new CallMeMiddlware(() =>
             {
                 Assert.IsFalse(called2, "Second Middleware was called");
                 called1 = true;
             });
 
-            DoNotCallNextMiddleware two = new DoNotCallNextMiddleware(() =>
+            var two = new DoNotCallNextMiddleware(() =>
             {
                 Assert.IsTrue(called1, "First Middleware was not called");
                 called2 = true;
             });
 
-            MiddlewareSet m = new MiddlewareSet();
+            var m = new MiddlewareSet();
             m.Use(one);
             m.Use(two);
 
             bool didAllRun = false;
-            await m.ReceiveActivityWithStatus(null, async (ctx) => didAllRun = true);
+            await m.ReceiveActivityWithStatus(null, (ctx) =>
+            {
+                didAllRun = true;
+                return Task.CompletedTask;
+            });
             Assert.IsTrue(called1);
             Assert.IsTrue(called2);
 
@@ -229,14 +246,18 @@ namespace Microsoft.Bot.Builder.Tests
         {
             bool called1 = false;
 
-            DoNotCallNextMiddleware one = new DoNotCallNextMiddleware(() => { called1 = true; });
+            var one = new DoNotCallNextMiddleware(() => { called1 = true; });
 
-            MiddlewareSet m = new MiddlewareSet();
+            var m = new MiddlewareSet();
             m.Use(one);
 
             // The middlware in this pipeline DOES NOT call next(), so this must not be called 
             bool didAllRun = false;
-            await m.ReceiveActivityWithStatus(null, async (ctx) => didAllRun = true);
+            await m.ReceiveActivityWithStatus(null, (ctx) =>
+            {
+                didAllRun = true;
+                return Task.CompletedTask;
+            });
 
             Assert.IsTrue(called1);
 
@@ -250,7 +271,7 @@ namespace Microsoft.Bot.Builder.Tests
         {
             bool didRun = false;
 
-            MiddlewareSet m = new MiddlewareSet();
+            var m = new MiddlewareSet();
             m.Use(new AnonymousReceiveMiddleware(async (context, next) =>
             {
                 didRun = true;
@@ -404,7 +425,7 @@ namespace Microsoft.Bot.Builder.Tests
         [TestMethod]
         public async Task CatchAnExceptionViaMiddlware()
         {
-            MiddlewareSet m = new MiddlewareSet();
+            var m = new MiddlewareSet();
             bool caughtException = false;
 
             m.Use(new AnonymousReceiveMiddleware(async (context, next) =>
@@ -421,7 +442,7 @@ namespace Microsoft.Bot.Builder.Tests
                 }
             }));
 
-            m.Use(new AnonymousReceiveMiddleware(async (context, next) =>
+            m.Use(new AnonymousReceiveMiddleware((context, next) =>
             {
                 throw new Exception("test");
             }));

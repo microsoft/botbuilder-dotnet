@@ -1,24 +1,22 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Microsoft.Bot.Builder;
 using System;
+using System.Net.Http;
+using System.Threading.Tasks;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Rest.TransientFaultHandling;
-using System.Net.Http;
 
 namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
 {
     public class BotFrameworkConfigurationBuilder
     {
-        private BotFrameworkOptions _options;
-
         public BotFrameworkConfigurationBuilder(BotFrameworkOptions botFrameworkOptions)
         {
-            _options = botFrameworkOptions;
+            BotFrameworkOptions = botFrameworkOptions;
         }
 
-        public BotFrameworkOptions BotFrameworkOptions { get => _options; }
+        public BotFrameworkOptions BotFrameworkOptions { get; }
 
         /// <summary>
         /// Configures an <see cref="ICredentialProvider"/> that should be used to store and retrieve credentials used during authentication with the Bot Framework.
@@ -28,8 +26,19 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
         /// <seealso cref="ICredentialProvider" />
         public BotFrameworkConfigurationBuilder UseCredentialProvider(ICredentialProvider credentialProvider)
         {
-            _options.CredentialProvider = credentialProvider;
+            BotFrameworkOptions.CredentialProvider = credentialProvider;
+            return this;
+        }
 
+        /// <summary>
+        /// Adds an Error Handler the bot.
+        /// </summary>
+        /// <param name="middleware">An instance of <see cref="IMiddleware">middleware</see> that should be added to the bot's middleware pipeline.</param>
+        /// <returns>A reference to this instance after the operation has completed.</returns>
+        /// <seealso cref="IMiddleware"/>
+        public BotFrameworkConfigurationBuilder UseMiddleware(Func<ITurnContext, Exception, Task> errorHandler)
+        {
+            BotFrameworkOptions.ErrorHandler = errorHandler;
             return this;
         }
 
@@ -41,8 +50,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
         /// <seealso cref="IMiddleware"/>
         public BotFrameworkConfigurationBuilder UseMiddleware(IMiddleware middleware)
         {
-            _options.Middleware.Add(middleware);
-
+            BotFrameworkOptions.Middleware.Add(middleware);
             return this;
         }
 
@@ -53,7 +61,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
         /// <returns><see cref="BotFrameworkConfigurationBuilder"/> instance with the retry policy set.</returns>
         public BotFrameworkConfigurationBuilder UseRetryPolicy(RetryPolicy retryPolicy)
         {
-            _options.ConnectorClientRetryPolicy = retryPolicy;
+            BotFrameworkOptions.ConnectorClientRetryPolicy = retryPolicy;
             return this;
         }
 
@@ -64,8 +72,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
         /// <returns><see cref="BotFrameworkConfigurationBuilder"/> instance with the <see cref="HttpClient"/> set.</returns>
         public BotFrameworkConfigurationBuilder UseHttpClient(HttpClient httpClient)
         {
-            _options.HttpClient = httpClient;
-
+            BotFrameworkOptions.HttpClient = httpClient;
             return this;
         }
 
@@ -78,12 +85,11 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
         /// <seealso cref="UsePaths(Action{BotFrameworkPaths})"/>
         public BotFrameworkConfigurationBuilder EnableProactiveMessages(string proactiveMessagesPath = default(string))
         {
-            _options.EnableProactiveMessages = true;
+            BotFrameworkOptions.EnableProactiveMessages = true;
             
             if (proactiveMessagesPath != null)
-            
-{
-                _options.Paths.ProactiveMessagesPath = proactiveMessagesPath;
+            {
+                BotFrameworkOptions.Paths.ProactiveMessagesPath = proactiveMessagesPath;
             }
 
             return this;
@@ -97,7 +103,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
         /// <seealso cref="BotFrameworkPaths"/>
         public BotFrameworkConfigurationBuilder UsePaths(Action<BotFrameworkPaths> configurePaths)
         {
-            configurePaths(_options.Paths);
+            configurePaths(BotFrameworkOptions.Paths);
 
             return this;
         }
