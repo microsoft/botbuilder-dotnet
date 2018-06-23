@@ -117,7 +117,7 @@ namespace Microsoft.Bot.Builder
                     new Claim(AuthenticationConstants.AppIdClaim, botAppId)
                 });
 
-                context.Services.Add<IIdentity>("BotIdentity", claimsIdentity);
+                context.Services.Add<IIdentity>(BotIdentityKey, claimsIdentity);
                 var connectorClient = await CreateConnectorClientAsync(reference.ServiceUrl, claimsIdentity).ConfigureAwait(false);
                 context.Services.Add(connectorClient);
                 await RunPipeline(context, callback);
@@ -192,7 +192,7 @@ namespace Microsoft.Bot.Builder
 
             using (var context = new TurnContext(this, activity))
             {
-                context.Services.Add<IIdentity>("BotIdentity", identity);
+                context.Services.Add<IIdentity>(BotIdentityKey, identity);
 
                 var connectorClient = await CreateConnectorClientAsync(activity.ServiceUrl, identity).ConfigureAwait(false);
                 context.Services.Add(connectorClient);
