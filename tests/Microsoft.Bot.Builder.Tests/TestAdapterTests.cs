@@ -31,13 +31,6 @@ namespace Microsoft.Bot.Builder.Tests
                     break;
             }
         }
-        [TestMethod]
-        public async Task SingleParameterConstructor()
-        {
-            var adapter = new TestAdapter();
-
-            // If this compiles, the test has passed. :) 
-        }
 
         [TestMethod]
         public async Task TestAdapter_ExceptionTypesOnTest()
@@ -70,7 +63,7 @@ namespace Microsoft.Bot.Builder.Tests
 
             try
             {
-                await new TestFlow(adapter, async (context) => { throw new Exception(uniqueExceptionId); })
+                await new TestFlow(adapter, (context) => { throw new Exception(uniqueExceptionId); })
                     .Test("test", activity => Assert.IsNull(null), "uh oh!")
                     .StartTest();
 
@@ -180,7 +173,7 @@ namespace Microsoft.Bot.Builder.Tests
                     return taskSource.Task;
                 })
                 .Send(new Activity());
-            Task task = testFlow.StartTest()
+            await testFlow.StartTest()
                 .ContinueWith(action =>
                 {
                     Assert.IsInstanceOfType(action.Exception.InnerException, exceptionType);

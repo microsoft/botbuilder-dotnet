@@ -6,7 +6,6 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Ai.QnA
 {
-
     /// <summary>
     /// This class represents all the trace info that we collect from the QnAMaker Middleware
     /// </summary>

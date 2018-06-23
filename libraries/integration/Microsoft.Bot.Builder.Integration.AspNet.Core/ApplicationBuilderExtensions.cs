@@ -1,12 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Integration.AspNet.Core.Handlers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using System;
 
 namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 {
@@ -47,8 +46,6 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                 botActivitiesAppBuilder => botActivitiesAppBuilder.Run(new BotMessageHandler().HandleAsync));
 
             return applicationBuilder;
-
-            
         }
     }
 }

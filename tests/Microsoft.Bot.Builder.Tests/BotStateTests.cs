@@ -1,10 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Microsoft.Bot.Builder.Adapters;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Adapters;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Bot.Builder.Core.Extensions.Tests
 {
@@ -29,10 +29,11 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
 
             TestAdapter adapter = new TestAdapter();
 
-            await new TestFlow(adapter, async (context) =>
+            await new TestFlow(adapter, (context) =>
                    {
                        var obj = context.GetConversationState<TestPocoState>();
                        Assert.IsNull(obj, "context.state should not exist");
+                       return Task.CompletedTask;
                    }
                 )
                 .Send("set value")

@@ -9,5 +9,6 @@ namespace Microsoft.Bot.Schema
     public static class ActivityTypesEx
     {
         public const string Delay = "delay";
+        public const string InvokeResponse = "invokeResponse";
     }
 }

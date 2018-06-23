@@ -232,7 +232,8 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
                 new Dictionary<string, object> {["createPoco"] = new PocoItem() { Id = "1", Count = 2, ExtraBytes = stringArray }}
             });
 
-            // Writing large objects in parallel might raise a Microsoft.Bot.Builder.Core.Extensions.StorageException
+            // TODO: this code as a generic test doesn't make much sense - for now just eliminating the custom exception 
+            // Writing large objects in parallel might raise an InvalidOperationException
             try
             {
                 await Task.WhenAll(
@@ -241,7 +242,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
             }
             catch (Exception ex)
             {
-                Assert.IsInstanceOfType(ex, typeof(BotStorageException));
+                Assert.IsInstanceOfType(ex, typeof(InvalidOperationException));
             }
 
             var readStoreItems = new Dictionary<string, object>(await storage.Read("createPoco"));

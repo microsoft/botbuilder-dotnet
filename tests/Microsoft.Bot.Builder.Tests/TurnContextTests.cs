@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
@@ -13,37 +16,37 @@ namespace Microsoft.Bot.Builder.Tests
     {
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
-        public async Task ConstructorNullAdapter()
+        public void ConstructorNullAdapter()
         {
-            TurnContext c = new TurnContext(null, new Activity());
+            var c = new TurnContext(null, new Activity());
             Assert.Fail("Should Fail due to null Adapter");
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
-        public async Task ConstructorNullActivity()
+        public void ConstructorNullActivity()
         {
-            TestAdapter a = new TestAdapter();
-            TurnContext c = new TurnContext(a, null);
+            var a = new TestAdapter();
+            var c = new TurnContext(a, null);
             Assert.Fail("Should Fail due to null Activty");
         }
         [TestMethod]
-        public async Task Constructor()
+        public void Constructor()
         {
-            TurnContext c = new TurnContext(new TestAdapter(), new Activity());
+            var c = new TurnContext(new TestAdapter(), new Activity());
             Assert.IsNotNull(c);
         }
 
         [TestMethod]
-        public async Task RespondedIsFalse()
+        public void RespondedIsFalse()
         {
-            TurnContext c = new TurnContext(new TestAdapter(), new Activity());
+            var c = new TurnContext(new TestAdapter(), new Activity());
             Assert.IsFalse(c.Responded);
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
-        public async Task UnableToSetRespondedToFalse()
+        public void UnableToSetRespondedToFalse()
         {
             TurnContext c = new TurnContext(new TestAdapter(), new Activity())
             {
@@ -63,33 +66,32 @@ namespace Microsoft.Bot.Builder.Tests
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
-        public async Task GetThrowsOnNullKey()
+        public void GetThrowsOnNullKey()
         {
-            TurnContext c = new TurnContext(new SimpleAdapter(), new Activity());
+            var c = new TurnContext(new SimpleAdapter(), new Activity());
             c.Services.Get<object>(null);
         }
 
         [TestMethod]
-        public async Task GetReturnsNullOnEmptyKey()
+        public void GetReturnsNullOnEmptyKey()
         {
-            TurnContext c = new TurnContext(new SimpleAdapter(), new Activity());
-            object service = c.Services.Get<object>(string.Empty); // empty key
+            var c = new TurnContext(new SimpleAdapter(), new Activity());
+            var service = c.Services.Get<object>(string.Empty); // empty key
             Assert.IsNull(service, "Should not have found a service under an empty key");
         }
 
-
         [TestMethod]
-        public async Task GetReturnsNullWithUnknownKey()
+        public void GetReturnsNullWithUnknownKey()
         {
-            TurnContext c = new TurnContext(new SimpleAdapter(), new Activity());
-            object o = c.Services.Get<object>("test");
+            var c = new TurnContext(new SimpleAdapter(), new Activity());
+            var o = c.Services.Get<object>("test");
             Assert.IsNull(o);
         }
 
         [TestMethod]
-        public async Task CacheValueUsingGetAndSet()
+        public void CacheValueUsingGetAndSet()
         {
-            TurnContext c = new TurnContext(new SimpleAdapter(), new Activity());
+            var c = new TurnContext(new SimpleAdapter(), new Activity());
 
             c.Services.Add("bar", "foo");
             var result = c.Services.Get<string>("bar");
@@ -97,9 +99,9 @@ namespace Microsoft.Bot.Builder.Tests
             Assert.AreEqual("foo", result);
         }
         [TestMethod]
-        public async Task CacheValueUsingGetAndSetGenericWithTypeAsKeyName()
+        public void CacheValueUsingGetAndSetGenericWithTypeAsKeyName()
         {
-            TurnContext c = new TurnContext(new SimpleAdapter(), new Activity());
+            var c = new TurnContext(new SimpleAdapter(), new Activity());
 
             c.Services.Add<string>("foo");
             string result = c.Services.Get<string>();
@@ -108,17 +110,17 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [TestMethod]
-        public async Task RequestIsSet()
+        public void RequestIsSet()
         {
-            TurnContext c = new TurnContext(new SimpleAdapter(), TestMessage.Message());
+            var c = new TurnContext(new SimpleAdapter(), TestMessage.Message());
             Assert.IsTrue(c.Activity.Id == "1234");
         }
 
         [TestMethod]
         public async Task SendAndSetResponded()
         {
-            SimpleAdapter a = new SimpleAdapter();
-            TurnContext c = new TurnContext(a, new Activity());
+            var a = new SimpleAdapter();
+            var c = new TurnContext(a, new Activity());
             Assert.IsFalse(c.Responded);            
             var response = await c.SendActivity(TestMessage.Message("testtest"));
 
@@ -129,8 +131,8 @@ namespace Microsoft.Bot.Builder.Tests
         [TestMethod]
         public async Task SendBatchOfActivities()
         {
-            SimpleAdapter a = new SimpleAdapter();
-            TurnContext c = new TurnContext(a, new Activity());
+            var a = new SimpleAdapter();
+            var c = new TurnContext(a, new Activity());
             Assert.IsFalse(c.Responded);
 
             var message1 = TestMessage.Message("message1");
@@ -147,11 +149,11 @@ namespace Microsoft.Bot.Builder.Tests
         [TestMethod]
         public async Task SendAndSetRespondedUsingIMessageActivity()
         {
-            SimpleAdapter a = new SimpleAdapter();
-            TurnContext c = new TurnContext(a, new Activity());
+            var a = new SimpleAdapter();
+            var c = new TurnContext(a, new Activity());
             Assert.IsFalse(c.Responded);
 
-            IMessageActivity msg = TestMessage.Message().AsMessageActivity();
+            var msg = TestMessage.Message().AsMessageActivity();
             await c.SendActivity(msg);
             Assert.IsTrue(c.Responded);
         }
@@ -159,18 +161,18 @@ namespace Microsoft.Bot.Builder.Tests
         [TestMethod]
         public async Task TraceActivitiesDoNoSetResponded()
         {
-            SimpleAdapter a = new SimpleAdapter();
-            TurnContext c = new TurnContext(a, new Activity());
+            var a = new SimpleAdapter();
+            var c = new TurnContext(a, new Activity());
             Assert.IsFalse(c.Responded);
 
             // Send a Trace Activity, and make sure responded is NOT set. 
-            ITraceActivity trace  = Activity.CreateTraceActivity("trace");            
+            var trace  = Activity.CreateTraceActivity("trace");            
             await c.SendActivity(trace);
             Assert.IsFalse(c.Responded);
 
             // Just to sanity check everything, send a Message and verify the 
             // responded flag IS set. 
-            IMessageActivity msg = TestMessage.Message().AsMessageActivity();
+            var msg = TestMessage.Message().AsMessageActivity();
             await c.SendActivity(msg);
             Assert.IsTrue(c.Responded);
         }
@@ -187,17 +189,17 @@ namespace Microsoft.Bot.Builder.Tests
                 foundActivity = true;
             }
 
-            SimpleAdapter a = new SimpleAdapter(ValidateResponses);
-            TurnContext c = new TurnContext(a, new Activity());            
+            var a = new SimpleAdapter(ValidateResponses);
+            var c = new TurnContext(a, new Activity());            
             await c.SendActivity(TestMessage.Message());
             Assert.IsTrue(foundActivity);
         }
 
         [TestMethod]
         public async Task CallOnSendBeforeDelivery()
-        {         
-            SimpleAdapter a = new SimpleAdapter();
-            TurnContext c = new TurnContext(a, new Activity());
+        {
+            var a = new SimpleAdapter();
+            var c = new TurnContext(a, new Activity());
 
             int count = 0;
             c.OnSendActivities(async (context, activities, next) =>
@@ -222,16 +224,16 @@ namespace Microsoft.Bot.Builder.Tests
                 Assert.Fail("Should not be called. Interceptor did not work");
             }
 
-            SimpleAdapter a = new SimpleAdapter(ValidateResponses);
-            TurnContext c = new TurnContext(a, new Activity());
+            var a = new SimpleAdapter(ValidateResponses);
+            var c = new TurnContext(a, new Activity());
           
             int count = 0;
-            c.OnSendActivities(async (context, activities, next) =>
+            c.OnSendActivities((context, activities, next) =>
             {
                 Assert.IsNotNull(activities, "Null Array passed in");
                 count = activities.Count();
                 // Do not call next. 
-                return null;
+                return Task.FromResult<ResourceResponse[]>(null);
             });
 
             await c.SendActivity(TestMessage.Message());
@@ -252,8 +254,8 @@ namespace Microsoft.Bot.Builder.Tests
                 foundIt = true;
             }
 
-            SimpleAdapter a = new SimpleAdapter(ValidateResponses);
-            TurnContext c = new TurnContext(a, new Activity());
+            var a = new SimpleAdapter(ValidateResponses);
+            var c = new TurnContext(a, new Activity());
             
             c.OnSendActivities(async (context, activities, next) =>
             {
@@ -282,8 +284,8 @@ namespace Microsoft.Bot.Builder.Tests
                 foundActivity = true;
             }
 
-            SimpleAdapter a = new SimpleAdapter(ValidateUpdate);
-            TurnContext c = new TurnContext(a, new Activity());
+            var a = new SimpleAdapter(ValidateUpdate);
+            var c = new TurnContext(a, new Activity());
             
             var message = TestMessage.Message("test");            
             var updateResult = await c.UpdateActivity(message);
@@ -329,16 +331,16 @@ namespace Microsoft.Bot.Builder.Tests
                 Assert.Fail("Should not be called.");
             }
 
-            SimpleAdapter a = new SimpleAdapter(ValidateUpdate);
-            TurnContext c = new TurnContext(a, new Activity());
+            var a = new SimpleAdapter(ValidateUpdate);
+            var c = new TurnContext(a, new Activity());
 
             bool wasCalled = false;
-            c.OnUpdateActivity(async (context, activity, next) =>
+            c.OnUpdateActivity((context, activity, next) =>
             {
                 Assert.IsNotNull(activity, "Null activity passed in");
                 wasCalled = true;
                 // Do Not Call Next
-                return null;
+                return Task.FromResult<ResourceResponse>(null);
             });
 
             await c.UpdateActivity(TestMessage.Message());
@@ -356,8 +358,8 @@ namespace Microsoft.Bot.Builder.Tests
                 adapterCalled = true;
             }
 
-            SimpleAdapter a = new SimpleAdapter(ValidateUpdate);
-            TurnContext c = new TurnContext(a, new Activity());
+            var a = new SimpleAdapter(ValidateUpdate);
+            var c = new TurnContext(a, new Activity());
 
             c.OnUpdateActivity(async (context, activity, next) =>
             {
@@ -383,8 +385,8 @@ namespace Microsoft.Bot.Builder.Tests
                 deleteCalled = true;
             }
 
-            SimpleAdapter a = new SimpleAdapter(ValidateDelete);
-            TurnContext c = new TurnContext(a, TestMessage.Message()); 
+            var a = new SimpleAdapter(ValidateDelete);
+            var c = new TurnContext(a, TestMessage.Message()); 
             await c.DeleteActivity("12345"); 
             Assert.IsTrue(deleteCalled);
         }
@@ -401,8 +403,8 @@ namespace Microsoft.Bot.Builder.Tests
                 deleteCalled = true;
             }
 
-            SimpleAdapter a = new SimpleAdapter(ValidateDelete);
-            TurnContext c = new TurnContext(a, TestMessage.Message());
+            var a = new SimpleAdapter(ValidateDelete);
+            var c = new TurnContext(a, TestMessage.Message());
 
             var reference = new ConversationReference("12345");
 
@@ -421,15 +423,16 @@ namespace Microsoft.Bot.Builder.Tests
                 Assert.Fail("Should not be called.");
             }
 
-            SimpleAdapter a = new SimpleAdapter(ValidateDelete);
-            TurnContext c = new TurnContext(a, new Activity());
+            var a = new SimpleAdapter(ValidateDelete);
+            var c = new TurnContext(a, new Activity());
 
             bool wasCalled = false;
-            c.OnDeleteActivity(async (context, convRef, next) =>
+            c.OnDeleteActivity((context, convRef, next) =>
             {
                 Assert.IsNotNull(convRef, "Null activity passed in");
                 wasCalled = true;
                 // Do Not Call Next
+                return Task.FromResult<ResourceResponse[]>(null);
             });
 
             await c.DeleteActivity("1234"); 
@@ -448,8 +451,8 @@ namespace Microsoft.Bot.Builder.Tests
                 adapterCalled = true;                
             }
 
-            SimpleAdapter a = new SimpleAdapter(ValidateDelete);
-            TurnContext c = new TurnContext(a, new Activity());
+            var a = new SimpleAdapter(ValidateDelete);
+            var c = new TurnContext(a, new Activity());
             
             c.OnDeleteActivity(async (context, convRef, next) =>
             {
@@ -466,10 +469,10 @@ namespace Microsoft.Bot.Builder.Tests
         [TestMethod]
         public async Task ThrowExceptionInOnSend()
         {
-            SimpleAdapter a = new SimpleAdapter();
-            TurnContext c = new TurnContext(a, new Activity());
+            var a = new SimpleAdapter();
+            var c = new TurnContext(a, new Activity());
             
-            c.OnSendActivities(async (context, activities, next) =>
+            c.OnSendActivities((context, activities, next) =>
             {
                 throw new Exception("test");                 
             });

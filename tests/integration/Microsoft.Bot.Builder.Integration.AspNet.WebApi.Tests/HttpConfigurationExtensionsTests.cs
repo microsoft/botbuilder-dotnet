@@ -1,9 +1,10 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.Web.Http;
 using FluentAssertions;
 using Microsoft.Bot.Builder.Integration.AspNet.WebApi.Handlers;
-using Microsoft.Bot.Connector.Authentication;
-using Moq;
 using Xunit;
 
 namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Tests
