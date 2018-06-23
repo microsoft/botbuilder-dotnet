@@ -41,13 +41,9 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
-        /// Error handler that catches exceptions in the pipeline and providing access to the context 
+        /// Error handler that catches exceptions in the middleware or application 
         /// </summary>
-        public Func<ITurnContext, Exception, Task> ErrorHandler
-        {
-            get;
-            set;
-        }
+        public Func<ITurnContext, Exception, Task> ErrorHandler { get; set; }
 
         /// <summary>
         /// Adds middleware to the adapter's pipeline.
@@ -156,20 +152,6 @@ namespace Microsoft.Bot.Builder
                     await callback(context).ConfigureAwait(false);
                 }
             }
-        }
-
-
-        /// <summary>
-        /// Creates a conversation on the specified channel.
-        /// </summary>
-        /// <param name="channelId">The ID of the channel.</param>
-        /// <param name="callback">A method to call when the new conversation is available.</param>
-        /// <returns>A task that represents the work queued to execute.</returns>
-        /// <exception cref="NotImplementedException"></exception>
-        /// <remarks>No base implementation is provided.</remarks>
-        public virtual Task CreateConversation(string channelId, Func<ITurnContext, Task> callback)
-        {
-            throw new NotImplementedException("Adapter does not support CreateConversation with this arguments");
         }
 
         /// <summary>
