@@ -18,7 +18,19 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
 
             var convertedMessage = localeConverter.Convert("Set a meeting on 30/9/2017", "fr-fr", "en-us");
             Assert.IsNotNull(convertedMessage);
-            Assert.AreEqual("Set a meeting on 09/30/2017", convertedMessage);
+            Assert.AreEqual("Set a meeting on 9/30/2017", convertedMessage);
+        }
+
+        [TestMethod]
+        [TestCategory("AI")]
+        [TestCategory("Locale Converter")]
+        public void LocaleConverter_ConvertTimeFromSpanishSpain()
+        {
+            LocaleConverter localeConverter = LocaleConverter.Converter;
+
+            var convertedMessage = localeConverter.Convert("Book a meeting for 15:00", "es-es", "en-us");
+            Assert.IsNotNull(convertedMessage);
+            Assert.AreEqual("Book a meeting for 3:00 PM", convertedMessage);
         }
 
         [TestMethod]
@@ -30,7 +42,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
 
             var convertedMessage = localeConverter.Convert("Book me a plane ticket for France on 12/25/2018", "en-us", "zh-cn");
             Assert.IsNotNull(convertedMessage);
-            Assert.AreEqual("Book me a plane ticket for France on 2018-12-25", convertedMessage); 
+            Assert.AreEqual("Book me a plane ticket for France on 2018/12/25", convertedMessage); 
         }
 
         [TestMethod]
@@ -72,7 +84,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
 
             var convertedMessage = localeConverter.Convert("half past 9 am 02/03/2010", "en-us", "fr-fr");
             Assert.IsNotNull(convertedMessage);
-            Assert.AreEqual("03/02/2010 09:30 AM", convertedMessage);
+            Assert.AreEqual("03/02/2010 09:30", convertedMessage);
         }
 
         [TestMethod]
@@ -96,7 +108,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
 
             var convertedMessage = localeConverter.Convert("half past 9 am", "en-us", "fr-fr");
             Assert.IsNotNull(convertedMessage);
-            Assert.AreEqual("09:30 AM", convertedMessage);
+            Assert.AreEqual("09:30", convertedMessage);
         }
 
         [TestMethod]
@@ -108,7 +120,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
 
             var convertedMessage = localeConverter.Convert("from 10/21/2018 9 am to 10/23/2018 1 pm", "en-us", "fr-fr");
             Assert.IsNotNull(convertedMessage);
-            Assert.AreEqual("21/10/2018 09:00 AM - 23/10/2018 01:00 PM", convertedMessage);
+            Assert.AreEqual("21/10/2018 09:00 - 23/10/2018 13:00", convertedMessage);
         }
 
         [TestMethod]
@@ -132,7 +144,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
 
             var convertedMessage = localeConverter.Convert("from 9 am to 1 pm", "en-us", "fr-fr");
             Assert.IsNotNull(convertedMessage);
-            Assert.AreEqual("09:00 AM - 01:00 PM", convertedMessage);
+            Assert.AreEqual("09:00 - 13:00", convertedMessage);
         }
     }
 }
