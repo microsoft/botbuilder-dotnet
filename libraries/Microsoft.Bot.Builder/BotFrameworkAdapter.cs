@@ -41,6 +41,7 @@ namespace Microsoft.Bot.Builder
         private Dictionary<string, MicrosoftAppCredentials> _appCredentialMap = new Dictionary<string, MicrosoftAppCredentials>();
 
         private const string InvokeReponseKey = "BotFrameworkAdapter.InvokeResponse";
+        private const string BotIdentityKey = "BotIdentity";
         private bool _isEmulatingOAuthCards = false;
 
         /// <summary>
@@ -116,7 +117,7 @@ namespace Microsoft.Bot.Builder
                     new Claim(AuthenticationConstants.AppIdClaim, botAppId)
                 });
 
-                context.Services.Add<IIdentity>("BotIdentity", claimsIdentity);
+                context.Services.Add<IIdentity>(BotIdentityKey, claimsIdentity);
                 var connectorClient = await CreateConnectorClientAsync(reference.ServiceUrl, claimsIdentity).ConfigureAwait(false);
                 context.Services.Add(connectorClient);
                 await RunPipeline(context, callback);
@@ -191,7 +192,7 @@ namespace Microsoft.Bot.Builder
 
             using (var context = new TurnContext(this, activity))
             {
-                context.Services.Add<IIdentity>("BotIdentity", identity);
+                context.Services.Add<IIdentity>(BotIdentityKey, identity);
 
                 var connectorClient = await CreateConnectorClientAsync(activity.ServiceUrl, identity).ConfigureAwait(false);
                 context.Services.Add(connectorClient);
@@ -534,6 +535,7 @@ namespace Microsoft.Bot.Builder
             var connectorClient = CreateConnectorClient(serviceUrl, credentials);
 
             var result = await connectorClient.Conversations.CreateConversationAsync(conversationParameters).ConfigureAwait(false);
+            
 
             // Create a conversation update activity to represent the result.
             var conversationUpdate = Activity.CreateConversationUpdateActivity();
@@ -547,6 +549,13 @@ namespace Microsoft.Bot.Builder
 
             using (TurnContext context = new TurnContext(this, (Activity)conversationUpdate))
             {
+                ClaimsIdentity claimsIdentity = new ClaimsIdentity();
+                claimsIdentity.AddClaim(new Claim(AuthenticationConstants.AudienceClaim, credentials.MicrosoftAppId));
+                claimsIdentity.AddClaim(new Claim(AuthenticationConstants.AppIdClaim, credentials.MicrosoftAppId));
+                claimsIdentity.AddClaim(new Claim(AuthenticationConstants.ServiceUrlClaim, serviceUrl));
+
+                context.Services.Add<IIdentity>(BotIdentityKey, claimsIdentity);
+                context.Services.Add<IConnectorClient>(connectorClient);
                 await this.RunPipeline(context, callback).ConfigureAwait(false);
             }
         }
