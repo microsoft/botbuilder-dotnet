@@ -19,10 +19,14 @@ namespace Microsoft.Bot.Builder
     /// the next registered handler. If a handler doesn’t call the next delegate,
     /// the adapter does not call any of the subsequent handlers and does not send the
     /// <paramref name="activities"/>.
+    /// <para>If the activities are successfully sent, the <paramref name="next"/> delegate returns
+    /// an array of <see cref="ResourceResponse"/> objects containing the IDs that 
+    /// the receiving channel assigned to the activities. Use this array as the return value of this handler.</para>
     /// </remarks>
     /// <seealso cref="BotAdapter"/>
     /// <seealso cref="UpdateActivityHandler"/>
     /// <seealso cref="DeleteActivityHandler"/>
+    /// <seealso cref="ITurnContext.OnSendActivities(SendActivitiesHandler)"/>
     public delegate Task<ResourceResponse[]> SendActivitiesHandler(ITurnContext context, List<Activity> activities, Func<Task<ResourceResponse[]>> next);
 
     /// <summary>
@@ -38,10 +42,14 @@ namespace Microsoft.Bot.Builder
     /// activity.
     /// <para>The activity's <see cref="IActivity.Id"/> indicates the activity in the
     /// conversation to replace.</para>
+    /// <para>If the activity is successfully sent, the <paramref name="next"/> delegater returns
+    /// a <see cref="ResourceResponse"/> object containing the ID that the receiving 
+    /// channel assigned to the activity. Use this response object as the return value of this handler.</para>
     /// </remarks>
     /// <seealso cref="BotAdapter"/>
     /// <seealso cref="SendActivitiesHandler"/>
     /// <seealso cref="DeleteActivityHandler"/>
+    /// <seealso cref="ITurnContext.OnUpdateActivity(UpdateActivityHandler)"/>
     public delegate Task<ResourceResponse> UpdateActivityHandler(ITurnContext context, Activity activity, Func<Task<ResourceResponse>> next);
 
     /// <summary>
@@ -61,6 +69,7 @@ namespace Microsoft.Bot.Builder
     /// <seealso cref="BotAdapter"/>
     /// <seealso cref="SendActivitiesHandler"/>
     /// <seealso cref="UpdateActivityHandler"/>
+    /// <seealso cref="ITurnContext.OnDeleteActivity(DeleteActivityHandler)"/>
     public delegate Task DeleteActivityHandler(ITurnContext context, ConversationReference reference, Func<Task> next);
 
     /// <summary>
@@ -114,8 +123,13 @@ namespace Microsoft.Bot.Builder
         /// rate, volume, pronunciation, and pitch, specify <paramref name="speak"/> in 
         /// Speech Synthesis Markup Language (SSML) format.</para>
         /// </remarks>
+        /// <seealso cref="OnSendActivities(SendActivitiesHandler)"/>
+        /// <seealso cref="SendActivity(IActivity)"/>
+        /// <seealso cref="SendActivities(IActivity[])"/>
+        /// <seealso cref="UpdateActivity(IActivity)"/>
+        /// <seealso cref="DeleteActivity(ConversationReference)"/>
         Task<ResourceResponse> SendActivity(string textReplyToSend, string speak = null, string inputHint = InputHints.AcceptingInput);
-        
+
         /// <summary>
         /// Sends an activity to the sender of the incoming activity.
         /// </summary>
@@ -124,6 +138,11 @@ namespace Microsoft.Bot.Builder
         /// <remarks>If the activity is successfully sent, the task result contains
         /// a <see cref="ResourceResponse"/> object containing the ID that the receiving 
         /// channel assigned to the activity.</remarks>
+        /// <seealso cref="OnSendActivities(SendActivitiesHandler)"/>
+        /// <seealso cref="SendActivity(string, string, string)"/>
+        /// <seealso cref="SendActivities(IActivity[])"/>
+        /// <seealso cref="UpdateActivity(IActivity)"/>
+        /// <seealso cref="DeleteActivity(ConversationReference)"/>
         Task<ResourceResponse> SendActivity(IActivity activity);
 
         /// <summary>
@@ -134,6 +153,11 @@ namespace Microsoft.Bot.Builder
         /// <remarks>If the activities are successfully sent, the task result contains
         /// an array of <see cref="ResourceResponse"/> objects containing the IDs that 
         /// the receiving channel assigned to the activities.</remarks>
+        /// <seealso cref="OnSendActivities(SendActivitiesHandler)"/>
+        /// <seealso cref="SendActivity(string, string, string)"/>
+        /// <seealso cref="SendActivity(IActivity)"/>
+        /// <seealso cref="UpdateActivity(IActivity)"/>
+        /// <seealso cref="DeleteActivity(ConversationReference)"/>
         Task<ResourceResponse[]> SendActivities(IActivity[] activities);
 
         /// <summary>
@@ -145,7 +169,11 @@ namespace Microsoft.Bot.Builder
         /// a <see cref="ResourceResponse"/> object containing the ID that the receiving 
         /// channel assigned to the activity.
         /// <para>Before calling this, set the ID of the replacement activity to the ID
-        /// of the activity to replace.</para></remarks>
+        /// of the activity to replace.</para>
+        /// <para>Not all channels support this operation. Channels that don't, may throw an exception.</para></remarks>
+        /// <seealso cref="OnUpdateActivity(UpdateActivityHandler)"/>
+        /// <seealso cref="SendActivities(IActivity[])"/>
+        /// <seealso cref="DeleteActivity(ConversationReference)"/>
         Task<ResourceResponse> UpdateActivity(IActivity activity);
 
         /// <summary>
@@ -153,6 +181,11 @@ namespace Microsoft.Bot.Builder
         /// </summary>
         /// <param name="activityId">The ID of the activity to delete.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>Not all channels support this operation. Channels that don't, may throw an exception.</remarks>
+        /// <seealso cref="OnDeleteActivity(DeleteActivityHandler)"/>
+        /// <seealso cref="DeleteActivity(ConversationReference)"/>
+        /// <seealso cref="SendActivities(IActivity[])"/>
+        /// <seealso cref="UpdateActivity(IActivity)"/>
         Task DeleteActivity(string activityId);
 
         /// <summary>
@@ -161,7 +194,12 @@ namespace Microsoft.Bot.Builder
         /// <param name="conversationReference">The conversation containing the activity to delete.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <remarks>The conversation reference's <see cref="ConversationReference.ActivityId"/> 
-        /// indicates the activity in the conversation to delete.</remarks>
+        /// indicates the activity in the conversation to delete.
+        /// <para>Not all channels support this operation. Channels that don't, may throw an exception.</para></remarks>
+        /// <seealso cref="OnDeleteActivity(DeleteActivityHandler)"/>
+        /// <seealso cref="DeleteActivity(string)"/>
+        /// <seealso cref="SendActivities(IActivity[])"/>
+        /// <seealso cref="UpdateActivity(IActivity)"/>
         Task DeleteActivity(ConversationReference conversationReference);
 
         /// <summary>
@@ -174,6 +212,12 @@ namespace Microsoft.Bot.Builder
         /// the adapter calls the registered handlers in the order in which they were 
         /// added to the context object.
         /// </remarks>
+        /// <seealso cref="SendActivity(string, string, string)"/>
+        /// <seealso cref="SendActivity(IActivity)"/>
+        /// <seealso cref="SendActivities(IActivity[])"/>
+        /// <seealso cref="SendActivitiesHandler"/>
+        /// <seealso cref="OnUpdateActivity(UpdateActivityHandler)"/>
+        /// <seealso cref="OnDeleteActivity(DeleteActivityHandler)"/>
         ITurnContext OnSendActivities(SendActivitiesHandler handler);
 
         /// <summary>
@@ -185,6 +229,10 @@ namespace Microsoft.Bot.Builder
         /// the adapter calls the registered handlers in the order in which they were 
         /// added to the context object.
         /// </remarks>
+        /// <seealso cref="UpdateActivity(IActivity)"/>
+        /// <seealso cref="UpdateActivityHandler"/>
+        /// <seealso cref="OnSendActivities(SendActivitiesHandler)"/>
+        /// <seealso cref="OnDeleteActivity(DeleteActivityHandler)"/>
         ITurnContext OnUpdateActivity(UpdateActivityHandler handler);
 
         /// <summary>
@@ -197,6 +245,11 @@ namespace Microsoft.Bot.Builder
         /// the adapter calls the registered handlers in the order in which they were 
         /// added to the context object.
         /// </remarks>
+        /// <seealso cref="DeleteActivity(ConversationReference)"/>
+        /// <seealso cref="DeleteActivity(string)"/>
+        /// <seealso cref="DeleteActivityHandler"/>
+        /// <seealso cref="OnSendActivities(SendActivitiesHandler)"/>
+        /// <seealso cref="OnUpdateActivity(UpdateActivityHandler)"/>
         ITurnContext OnDeleteActivity(DeleteActivityHandler handler);
     }
 }
