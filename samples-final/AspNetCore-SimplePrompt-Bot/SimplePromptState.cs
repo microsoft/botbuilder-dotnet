@@ -1,7 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License.
-
-namespace AspNetCore_SimplePrompt_Bot
+﻿namespace AspNetCore_SimplePrompt_Bot
 {
     public class SimplePromptState
     {
