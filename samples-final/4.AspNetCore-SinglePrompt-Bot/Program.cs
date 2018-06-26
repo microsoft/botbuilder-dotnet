@@ -4,7 +4,7 @@
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 
-namespace AspNetCore_Single_Prompts
+namespace AspNetCore_Single_Prompt
 {
     public class Program
     {

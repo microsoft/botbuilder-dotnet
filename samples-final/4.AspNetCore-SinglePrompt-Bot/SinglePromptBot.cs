@@ -3,13 +3,11 @@
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.Bot;
 using Microsoft.Bot.Builder;
-using Microsoft.Bot.Builder.Core.Extensions;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
 
-namespace AspNetCore_Single_Prompts
+namespace AspNetCore_Single_Prompt
 {
     public class SinglePromptBot : IBot
     {
@@ -35,7 +33,7 @@ namespace AspNetCore_Single_Prompts
                     }
                     else if (dialogCompletion.IsCompleted)
                     {
-                        var textResult = (Microsoft.Bot.Builder.Prompts.TextResult)dialogCompletion.Result;
+                        var textResult = (TextResult)dialogCompletion.Result;
                         await context.SendActivity($"'{textResult.Value}' is a great name!");
                     }
                     break;

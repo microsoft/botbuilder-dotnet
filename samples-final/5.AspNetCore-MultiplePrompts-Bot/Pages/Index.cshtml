@@ -1,5 +1,5 @@
 ﻿@page
-@using  AspNetCore_EchoBot_With_State
+@using  AspNetCore_Multiple_Prompts
 @model IndexModel
 
 <!DOCTYPE html>
@@ -10,13 +10,13 @@
 
 </head>
 <body style="font-family:'Segoe UI'">
-    <h1>EchoBot sample using ASP.Net Core 2</h1>
+    <h1>Multiple prompts sample using ASP.Net Core 2</h1>
     <p>Describe your bot here and your terms of use etc.</p>
     <p>To debug you bot using the Bot Framework Emulator, paste this URL into the Emulator window:</p>
     <div style="padding-left: 50px;">
         <a href="@Model.DebugLink">@Model.DebugLink</a>
     </div>
-    <p>Alternatively, click the following link to debug your bot using the <a href="https://github.com/Microsoft/BotFramework-Emulator/releases" target="_blank">Bot Framework Emulator v4</a>:</p>
+    <p>Or click the following link to debug your bot using the <a href="https://github.com/Microsoft/BotFramework-Emulator/releases" target="_blank">Bot Framework Emulator v4</a>:</p>
     <div style="padding-left: 50px;">
         <a href="@Model.EmulatorDeepLink">@Model.EmulatorDeepLink</a>
     </div>

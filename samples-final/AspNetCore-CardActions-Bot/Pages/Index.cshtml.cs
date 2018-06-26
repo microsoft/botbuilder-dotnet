@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Extensions.Options;
 
-namespace AspNetCore_EchoBot_With_State
+namespace AspNetCore_CardActions_Bot
 {
     public class IndexModel : PageModel
     {
@@ -31,7 +31,7 @@ namespace AspNetCore_EchoBot_With_State
             DebugLink = botUrl;
 
             // construct emulator protocol URI
-            string botFilePath = Path.Combine(_hostingEnv.ContentRootPath, "AspNetCore-EchoBot-With-State.bot");
+            string botFilePath = Path.Combine(_hostingEnv.ContentRootPath, "AspNetCore-CardActions-Bot.bot");
             string protocolUri = $"bfemulator://bot.open?path={ HttpUtility.UrlEncode(botFilePath) }&endpoint={ HttpUtility.UrlEncode(botUrl) }";
             EmulatorDeepLink = protocolUri;
         }

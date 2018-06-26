@@ -2,16 +2,14 @@
 // Licensed under the MIT License.
 
 using System.Threading.Tasks;
-using Microsoft.Bot;
 using Microsoft.Bot.Builder;
-using Microsoft.Bot.Builder.Core.Extensions;
 using Microsoft.Bot.Schema;
 using Microsoft.Bot.Builder.Ai.LUIS;
 using Microsoft.Bot.Builder.Dialogs;
 using System.Collections.Generic;
-using Prompts = Microsoft.Bot.Builder.Prompts;
 using Microsoft.Recognizers.Text;
 using System.Linq;
+using Microsoft.Bot.Builder.Dialogs.Choices;
 
 namespace AspNetCore_LUIS_Bot
 {
@@ -31,11 +29,11 @@ namespace AspNetCore_LUIS_Bot
             dialogs.Add("ShowReminderPrompt", new ChoicePrompt(Culture.English));
         }
 
-        private async Task TitleValidator(ITurnContext context, Prompts.TextResult result)
+        private async Task TitleValidator(ITurnContext context, TextResult result)
         {
             if (string.IsNullOrWhiteSpace(result.Value) || result.Value.Length < 3)
             {
-                result.Status = Prompts.PromptStatus.NotRecognized;
+                result.Status = PromptStatus.NotRecognized;
                 await context.SendActivity("Title should be at least 3 characters long.");
             }
         }
@@ -62,7 +60,7 @@ namespace AspNetCore_LUIS_Bot
         private async Task SaveReminder(DialogContext dialogContext, object args, SkipStepFunction next)
         {
             var reminder = new Reminder(dialogContext.ActiveDialog.State);
-            if (args is Prompts.TextResult textResult)
+            if (args is TextResult textResult)
             {
                 reminder.Title = textResult.Value;
             }
@@ -82,7 +80,7 @@ namespace AspNetCore_LUIS_Bot
             }
             else
             {
-                var choices = userContext.Reminders.Select(x => new Prompts.Choices.Choice() { Value = x.Title.Length < 15 ? x.Title : x.Title.Substring(0, 15) + "..." }).ToList();
+                var choices = userContext.Reminders.Select(x => new Choice() { Value = x.Title.Length < 15 ? x.Title : x.Title.Substring(0, 15) + "..." }).ToList();
                 await dialogContext.Prompt("ShowReminderPrompt", "Select the reminder to show: ", new ChoicePromptOptions() { Choices = choices });
             }
         }
@@ -90,7 +88,7 @@ namespace AspNetCore_LUIS_Bot
         private async Task ConfirmShow(DialogContext dialogContext, object args, SkipStepFunction next)
         {
             var userContext = dialogContext.Context.GetUserState<UserState>();
-            if (args is Prompts.ChoiceResult choice)
+            if (args is ChoiceResult choice)
             {
                 var reminder = userContext.Reminders[choice.Value.Index];
                 await dialogContext.Context.SendActivity($"Reminder: {reminder.Title}");

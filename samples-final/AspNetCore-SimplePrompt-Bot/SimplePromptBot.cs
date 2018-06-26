@@ -2,10 +2,8 @@
 // Licensed under the MIT License.
 
 using System.Threading.Tasks;
-using Microsoft.Bot;
 using Microsoft.Bot.Builder;
-using Microsoft.Bot.Builder.Core.Extensions;
-using Microsoft.Bot.Builder.Prompts;
+using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
 using Microsoft.Recognizers.Text;
 
@@ -33,16 +31,16 @@ namespace AspNetCore_SimplePrompt_Bot
                 {
                     // Prompt for Name
                     state.PromptinName = true;
-                    await namePrompt.Prompt(context, "Hello! What is your name?");
+                    await namePrompt.OnPrompt(context, "Hello! What is your name?");
                 }
                 else if (state.PromptinName)
                 {
                     // Attempt to recognize the user name
-                    var name = await namePrompt.Recognize(context);
+                    var name = await namePrompt.OnRecognize(context);
                     if (!name.Succeeded())
                     {
                         // Not recognized, re-prompt
-                        await namePrompt.Prompt(context, "Sorry, I didn't get that. What is your name?");
+                        await namePrompt.OnPrompt(context, "Sorry, I didn't get that. What is your name?");
                     }
                     else
                     {
@@ -59,15 +57,15 @@ namespace AspNetCore_SimplePrompt_Bot
                     if (!state.PromptinAge)
                     {
                         state.PromptinAge = true;
-                        await agePrompt.Prompt(context, $"How old are you, {state.Name}?");
+                        await agePrompt.OnPrompt(context, $"How old are you, {state.Name}?");
                     }
                     else
                     {
-                        var age = await agePrompt.Recognize(context);
+                        var age = await agePrompt.OnRecognize(context);
                         if (!age.Succeeded())
                         {
                             // Not recognized, re-prompt
-                            await agePrompt.Prompt(context, "Sorry, that doesn't look right. Ages 13 to 90 only. What is your age?");
+                            await agePrompt.OnPrompt(context, "Sorry, that doesn't look right. Ages 13 to 90 only. What is your age?");
                         }
                         else
                         {
