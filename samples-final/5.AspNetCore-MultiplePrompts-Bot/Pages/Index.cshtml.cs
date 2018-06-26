@@ -27,7 +27,7 @@ namespace AspNetCore_Multiple_Prompts
 
         public void OnGet()
         {
-            string botUrl = $"{ Request.Scheme }://{ Request.Host }/api/messages";
+            string botUrl = $"{ Request.Scheme }://{ Request.Host }{ _options.Value.Paths.BasePath }{ _options.Value.Paths.MessagesPath }";
             DebugLink = botUrl;
 
             // construct emulator protocol URI
