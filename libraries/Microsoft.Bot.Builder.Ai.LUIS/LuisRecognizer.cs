@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Cognitive.LUIS;
 using Microsoft.Cognitive.LUIS.Models;
 using Newtonsoft.Json.Linq;
 

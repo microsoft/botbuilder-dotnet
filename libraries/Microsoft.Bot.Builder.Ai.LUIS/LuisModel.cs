@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System;
-using Microsoft.Cognitive.LUIS;
 
 namespace Microsoft.Bot.Builder.Ai.LUIS
 {
