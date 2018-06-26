@@ -4,11 +4,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using Microsoft.Bot;
 using Microsoft.Bot.Builder;
-using Microsoft.Bot.Builder.Core.Extensions;
 using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Builder.Prompts.Choices;
+using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Schema;
 using Microsoft.Recognizers.Text;
 using Newtonsoft.Json;
@@ -26,7 +24,7 @@ namespace AspNetCore_RichCards_Bot
             // Choice prompt with list style to show card types
             var cardPrompt = new ChoicePrompt(Culture.English)
             {
-                Style = Microsoft.Bot.Builder.Prompts.ListStyle.List
+                Style = ListStyle.List
             };
             cardOptions = GenerateOptions();
 
@@ -114,7 +112,7 @@ namespace AspNetCore_RichCards_Bot
 
         private async Task ShowCardStep(DialogContext dialogContext, object result, SkipStepFunction next)
         {
-            var selectedCard = (result as Microsoft.Bot.Builder.Prompts.ChoiceResult).Value.Value;
+            var selectedCard = (result as ChoiceResult).Value.Value;
             var activity = dialogContext.Context.Activity;
             switch (selectedCard)
             {

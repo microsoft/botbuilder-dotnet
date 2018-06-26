@@ -4,9 +4,7 @@
 using System.Threading.Tasks;
 using Microsoft.Bot;
 using Microsoft.Bot.Builder;
-using Microsoft.Bot.Builder.Core.Extensions;
 using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Builder.Prompts;
 using Microsoft.Bot.Schema;
 using Microsoft.Recognizers.Text;
 using PromptsDialog = Microsoft.Bot.Builder.Dialogs;

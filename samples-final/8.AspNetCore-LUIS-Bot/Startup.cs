@@ -5,11 +5,10 @@ using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Ai.LUIS;
 using Microsoft.Bot.Builder.BotFramework;
-using Microsoft.Bot.Builder.Core.Extensions;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
-using Microsoft.Bot.Builder.TraceExtensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -45,12 +44,14 @@ namespace AspNetCore_LUIS_Bot
                 // Any exceptions thrown by other Middleware, or by your OnTurn method, will be 
                 // caught here. To facillitate debugging, the exception is sent out, via Trace, 
                 // to the emulator. Trace activities are NOT displayed to users, so in addition
-                // an "Ooops" message is sent. 
-                options.Middleware.Add(new CatchExceptionMiddleware<Exception>(async (context, exception) =>
+                // an "Ooops" message is sent.
+
+                // TODO: Update block against new code. (CatchExceptionMiddleware doesn't exist)
+                /*options.Middleware.Add(new CatchExceptionMiddleware<Exception>(async (context, exception) =>
                 {
                     await context.TraceActivity("EchoBot Exception", exception);
                     await context.SendActivity("Sorry, it looks like something went wrong!");
-                }));
+                }));*/
 
                 // The Memory Storage used here is for local bot debugging only. When the bot
                 // is restarted, anything stored in memory will be gone. 

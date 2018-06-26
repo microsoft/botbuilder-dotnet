@@ -3,9 +3,7 @@
 
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Bot;
 using Microsoft.Bot.Builder;
-using Microsoft.Bot.Builder.Core.Extensions;
 using Microsoft.Bot.Schema;
 
 namespace AspNetCore_CardActions_Bot

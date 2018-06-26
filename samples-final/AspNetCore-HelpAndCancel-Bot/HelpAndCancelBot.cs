@@ -3,10 +3,8 @@
 
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Bot;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
-using Microsoft.Bot.Builder.Core.Extensions;
 
 namespace AspNetCore_HelpAndCancel_Bot
 {

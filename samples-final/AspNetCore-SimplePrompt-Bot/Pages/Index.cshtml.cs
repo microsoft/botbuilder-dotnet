@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
 using System.IO;
@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Extensions.Options;
 
-namespace AspNetCore_Multiple_Prompts
+namespace AspNetCore_SimplePrompt_Bot
 {
     public class IndexModel : PageModel
     {
@@ -27,11 +27,11 @@ namespace AspNetCore_Multiple_Prompts
 
         public void OnGet()
         {
-            string botUrl = $"{ Request.Scheme }://{ Request.Host }/api/messages";
+            string botUrl = $"{ Request.Scheme }://{ Request.Host }{ _options.Value.Paths.BasePath }{ _options.Value.Paths.MessagesPath }";
             DebugLink = botUrl;
 
             // construct emulator protocol URI
-            string botFilePath = Path.Combine(_hostingEnv.ContentRootPath, "AspNetCore-MultiplePrompts-Bot.bot");
+            string botFilePath = Path.Combine(_hostingEnv.ContentRootPath, "AspNetCore-SimplePrompt-Bot.bot");
             string protocolUri = $"bfemulator://bot.open?path={ HttpUtility.UrlEncode(botFilePath) }&endpoint={ HttpUtility.UrlEncode(botUrl) }";
             EmulatorDeepLink = protocolUri;
         }
