@@ -37,41 +37,31 @@ namespace Microsoft.Bot.Builder.Azure
         /// Creates a new <see cref="CosmosDbStorage"/> object,
         /// using the provided CosmosDB credentials, database ID, and collection ID.
         /// </summary>
-        /// <param name="serviceEndpoint">The URI of the service endpoint for the Azure Cosmos DB service.</param>
-        /// <param name="authKey">The AuthKey used by the client from the Azure Cosmos DB service.</param>
-        /// <param name="databaseId">The database ID.</param>
-        /// <param name="collectionId">The collection ID.</param>
-        /// <param name="connectionPolicyConfigurator">A connection policy delegate.</param>
-        /// <remarks>
-        /// You can use the <paramref name="connectionPolicyConfigurator"/> delegate to 
-        /// further customize the connection to CosmosDB, 
-        /// such as setting connection mode, retry options, timeouts, and so on.
-        /// See https://docs.microsoft.com/en-us/dotnet/api/microsoft.azure.documents.client.connectionpolicy?view=azure-dotnet
-        /// for more information.</remarks>
-        public CosmosDbStorage(Uri serviceEndpoint, string authKey, string databaseId, string collectionId, Action<ConnectionPolicy> connectionPolicyConfigurator = null)
+        /// <param name="cosmosDbStorageOptions">Cosmos DB storage configuration options.</param>
+        public CosmosDbStorage(CosmosDbStorageOptions cosmosDbStorageOptions)
         {
-            if (serviceEndpoint == null)
+            if (cosmosDbStorageOptions.CosmosDBEndpoint == null)
             {
-                throw new ArgumentNullException(nameof(serviceEndpoint), "Service EndPoint for CosmosDB is required.");
+                throw new ArgumentNullException(nameof(cosmosDbStorageOptions.CosmosDBEndpoint), "Service EndPoint for CosmosDB is required.");
             }
 
-            if (string.IsNullOrEmpty(authKey))
+            if (string.IsNullOrEmpty(cosmosDbStorageOptions.AuthKey))
             {
-                throw new ArgumentException("AuthKey for CosmosDB is required.", nameof(authKey));
+                throw new ArgumentException("AuthKey for CosmosDB is required.", nameof(cosmosDbStorageOptions.AuthKey));
             }
 
-            if (string.IsNullOrEmpty(databaseId))
+            if (string.IsNullOrEmpty(cosmosDbStorageOptions.DatabaseId))
             {
-                throw new ArgumentException("DatabaseId is required.", nameof(databaseId));
+                throw new ArgumentException("DatabaseId is required.", nameof(cosmosDbStorageOptions.DatabaseId));
             }
 
-            if (string.IsNullOrEmpty(collectionId))
+            if (string.IsNullOrEmpty(cosmosDbStorageOptions.CollectionId))
             {
-                throw new ArgumentException("CollectionId is required.", nameof(collectionId));
+                throw new ArgumentException("CollectionId is required.", nameof(cosmosDbStorageOptions.CollectionId));
             }
 
-            _databaseId = databaseId;
-            _collectionId = collectionId;
+            _databaseId = cosmosDbStorageOptions.DatabaseId;
+            _collectionId = cosmosDbStorageOptions.CollectionId;
 
             // Inject BotBuilder version to CosmosDB Requests
             var version = GetType().Assembly.GetName().Version;
@@ -81,8 +71,8 @@ namespace Microsoft.Bot.Builder.Azure
             };
 
             // Invoke CollectionPolicy delegate to further customize settings
-            connectionPolicyConfigurator?.Invoke(connectionPolicy);
-            _client = new DocumentClient(serviceEndpoint, authKey, connectionPolicy);
+            cosmosDbStorageOptions.ConnectionPolicyConfigurator?.Invoke(connectionPolicy);
+            _client = new DocumentClient(cosmosDbStorageOptions.CosmosDBEndpoint, cosmosDbStorageOptions.AuthKey, connectionPolicy);
         }
 
         /// <summary>
