@@ -49,7 +49,13 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             if (_hasEmulator.Value)
             {
-                _storage = new CosmosDbStorage(new Uri(CosmosServiceEndpoint), CosmosAuthKey, CosmosDatabaseName, CosmosCollectionName);
+                _storage = new CosmosDbStorage(new CosmosDbStorageOptions
+                {
+                    AuthKey = CosmosAuthKey,
+                    CollectionId = CosmosCollectionName,
+                    CosmosDBEndpoint = new Uri(CosmosServiceEndpoint),
+                    DatabaseId = CosmosDatabaseName,
+                });
             }
         }
 
@@ -127,7 +133,15 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             if (CheckEmulator())
             {
                 ConnectionPolicy policyRef = null;
-                new CosmosDbStorage(new Uri(CosmosServiceEndpoint), CosmosAuthKey, CosmosDatabaseName, CosmosCollectionName, (ConnectionPolicy policy) => policyRef = policy);
+
+                _storage = new CosmosDbStorage(new CosmosDbStorageOptions
+                {
+                    AuthKey = CosmosAuthKey,
+                    CollectionId = CosmosCollectionName,
+                    CosmosDBEndpoint = new Uri(CosmosServiceEndpoint),
+                    DatabaseId = CosmosDatabaseName,
+                    ConnectionPolicyConfigurator = (ConnectionPolicy policy) => policyRef = policy
+                });
 
                 Assert.IsNotNull(policyRef, "ConnectionPolicy configurator was not called.");
             }
