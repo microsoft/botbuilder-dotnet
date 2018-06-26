@@ -46,20 +46,6 @@ namespace Microsoft.Bot.Builder
     /// <summary>
     /// Transcript logger stores activities for conversations for recall
     /// </summary>
-    public interface ITranscriptLogger
-    {
-        /// <summary>
-        /// Log an activity to the transcript
-        /// </summary>
-        /// <param name="activity"></param>
-        /// <returns></returns>
-        Task LogActivity(IActivity activity);
-    }
-
-
-    /// <summary>
-    /// Transcript logger stores activities for conversations for recall
-    /// </summary>
     public interface ITranscriptStore : ITranscriptLogger
     {
         /// <summary>

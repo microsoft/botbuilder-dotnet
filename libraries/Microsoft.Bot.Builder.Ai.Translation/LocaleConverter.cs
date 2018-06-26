@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -72,30 +73,22 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         {
             if (_mapLocaleToFunction.Count > 0)
                 return;
-            DateAndTimeLocaleFormat yearMonthDay = new DateAndTimeLocaleFormat
+            var supportedLocales = new string[]
             {
-                TimeFormat = "{0:hh:mm tt}",
-                DateFormat = "{0:yyyy-MM-dd}"
+                "en-us", "en-za", "en-ie", "en-gb", "en-ca", "fr-ca", "zh-cn", "zh-sg", "zh-hk", "zh-mo", "zh-tw",
+                "en-au", "fr-be", "fr-ch", "fr-fr", "fr-lu", "fr-mc", "de-at", "de-ch", "de-de", "de-lu", "de-li",
+                "es-es"
             };
-            DateAndTimeLocaleFormat dayMonthYear = new DateAndTimeLocaleFormat
+            foreach (string locale in supportedLocales)
             {
-                TimeFormat = "{0:hh:mm tt}",
-                DateFormat = "{0:dd/MM/yyyy}"
-            };
-            DateAndTimeLocaleFormat monthDayYEar = new DateAndTimeLocaleFormat
-            {
-                TimeFormat = "{0:hh:mm tt}",
-                DateFormat = "{0:MM/dd/yyyy}"
-            };
-            foreach (string locale in new string[] { "en-za", "en-ie", "en-gb", "en-ca", "fr-ca", "zh-cn", "zh-sg", "zh-hk", "zh-mo", "zh-tw" })
-            {
-                _mapLocaleToFunction[locale] = yearMonthDay;
+                CultureInfo cultureInfo = new CultureInfo(locale);
+                var dateTimeInfo = new DateAndTimeLocaleFormat()
+                {
+                    DateFormat = $"{{0:{cultureInfo.DateTimeFormat.ShortDatePattern}}}",
+                    TimeFormat = $"{{0:{cultureInfo.DateTimeFormat.ShortTimePattern}}}"
+                };
+                _mapLocaleToFunction[locale] = dateTimeInfo;
             }
-            foreach (string locale in new string[] { "en-au", "fr-be", "fr-ch", "fr-fr", "fr-lu", "fr-mc", "de-at", "de-ch", "de-de", "de-lu", "de-li" })
-            {
-                _mapLocaleToFunction[locale] = dayMonthYear;
-            }
-            _mapLocaleToFunction["en-us"] = monthDayYEar;
         }
 
         /// <summary>

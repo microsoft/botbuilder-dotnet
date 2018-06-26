@@ -1,12 +1,14 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Threading.Tasks;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Rest.TransientFaultHandling;
 
-namespace Microsoft.Bot.Builder.Integration.AspNet.Core
+namespace Microsoft.Bot.Builder.Integration
 {
     /// <summary>
     /// Contains settings that your ASP.NET application uses to initialize the <see cref="BotAdapter"/>
@@ -26,6 +28,11 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// An <see cref="ICredentialProvider"/> that should be used to store and retrieve credentials used during authentication with the Bot Framework Service.
         /// </summary>
         public ICredentialProvider CredentialProvider { get; set; }
+
+        /// <summary>
+        /// Error handler that catches exceptions in the middleware or application 
+        /// </summary>
+        public Func<ITurnContext, Exception, Task> ErrorHandler { get; set; }
 
         /// <summary>
         /// A list of <see cref="IMiddleware"/> that will be executed for each turn of the conversation.

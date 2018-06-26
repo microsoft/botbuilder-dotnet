@@ -56,7 +56,7 @@ namespace Microsoft.Bot.Builder
         /// <returns>A message activity containing the text.</returns>
         public static Activity Text(string text, string ssml = null, string inputHint = null)
         {
-            IMessageActivity ma = Activity.CreateMessageActivity();
+            var ma = Activity.CreateMessageActivity();
             SetTextAndSpeak(ma, text, ssml, inputHint);
             return (Activity)ma;
         }
@@ -99,10 +99,10 @@ namespace Microsoft.Bot.Builder
             if (actions == null)
                 throw new ArgumentNullException(nameof(actions));
 
-            IList<CardAction> cardActions = new List<CardAction>();
+            var cardActions = new List<CardAction>();
             foreach (string s in actions)
             {
-                CardAction ca = new CardAction
+                var ca = new CardAction
                 {
                     Type = ActionTypes.ImBack,
                     Value = s,
@@ -152,7 +152,7 @@ namespace Microsoft.Bot.Builder
             if (cardActions == null)
                 throw new ArgumentNullException(nameof(cardActions));
 
-            IMessageActivity ma = Activity.CreateMessageActivity();
+            var ma = Activity.CreateMessageActivity();
             SetTextAndSpeak(ma, text, ssml, inputHint);
 
             ma.SuggestedActions = new SuggestedActions { Actions = cardActions.ToList() };
@@ -298,7 +298,7 @@ namespace Microsoft.Bot.Builder
             if (string.IsNullOrWhiteSpace(contentType))
                 throw new ArgumentNullException(nameof(contentType));
 
-            Attachment a = new Attachment
+            var a = new Attachment
             {
                 ContentType = contentType,
                 ContentUrl = url,
@@ -310,7 +310,7 @@ namespace Microsoft.Bot.Builder
 
         private static IMessageActivity AttachmentActivity(string attachmentLayout, IEnumerable<Attachment> attachments, string text = null, string ssml = null, string inputHint = null)
         {
-            IMessageActivity ma = Activity.CreateMessageActivity();
+            var ma = Activity.CreateMessageActivity();
             ma.AttachmentLayout = attachmentLayout;
             ma.Attachments = attachments.ToList();
             SetTextAndSpeak(ma, text, ssml, inputHint);
