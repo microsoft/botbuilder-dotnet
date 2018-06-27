@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 
 namespace Microsoft.Bot.Builder
@@ -13,10 +12,8 @@ namespace Microsoft.Bot.Builder
     /// <remarks>
     /// TODO: add more details on what kind of services can/should be stored here, by whom and what the lifetime semantics are, etc.
     /// </remarks>
-    public sealed class TurnContextServiceCollection : ITurnContextServiceCollection, IDisposable
+    public sealed class TurnContextServiceCollection : Dictionary<string, object>, IDisposable
     {
-        private readonly Dictionary<string, object> _services = new Dictionary<string, object>();
-
         public TurnContextServiceCollection()
         {
         }
@@ -25,12 +22,20 @@ namespace Microsoft.Bot.Builder
         {
             if (key == null) throw new ArgumentNullException(nameof(key));
 
-            if(!_services.TryGetValue(key, out var service))
+            if(TryGetValue(key, out var service))
             {
-                // TODO: log that we didn't find the requested service
+                if (service is TService result)
+                {
+                    return result;
+                }
             }
 
-            return service as TService;
+            throw new KeyNotFoundException($"Service of type '{typeof(TService).FullName}' was not found under key '{key}'");
+        }
+
+        public TService Get<TService>() where TService : class
+        {
+            return Get<TService>(typeof(TService).FullName);
         }
 
         public void Add<TService>(string key, TService service) where TService : class
@@ -38,25 +43,19 @@ namespace Microsoft.Bot.Builder
             if (key == null) throw new ArgumentNullException(nameof(key));
             if (service == null) throw new ArgumentNullException(nameof(service));
 
-            try
-            {
-                _services.Add(key, service);
-            }
-            catch(ArgumentException)
-            {
-                throw new Exception($"A services is already registered with the specified key: {key}");
-            }
+            Add(key, service);
         }
-        
-        public IEnumerator<KeyValuePair<string, object>> GetEnumerator() => _services.GetEnumerator();
 
-        IEnumerator IEnumerable.GetEnumerator() => _services.GetEnumerator();
+        public void Add<TService>(TService service) where TService : class
+        {
+            Add(typeof(TService).FullName, service);
+        }
 
         public void Dispose()
         {
-            foreach(var entry in _services)
+            foreach(var entry in Values)
             {
-                if(entry.Value is IDisposable disposableService)
+                if(entry is IDisposable disposableService)
                 {
                     disposableService.Dispose();
                 }

@@ -90,7 +90,7 @@ namespace Microsoft.Bot.Builder
         /// <summary>
         /// Gets the services registered on this context object.
         /// </summary>
-        ITurnContextServiceCollection Services { get; }
+        TurnContextServiceCollection Services { get; }
 
         /// <summary>
         /// Incoming request

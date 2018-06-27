@@ -19,15 +19,11 @@ namespace Microsoft.Bot.Builder
     /// <seealso cref="IMiddleware"/>
     public class TurnContext : ITurnContext, IDisposable
     {
-        private readonly BotAdapter _adapter;
-        private readonly Activity _activity;
         private bool _responded = false;
 
         private readonly IList<SendActivitiesHandler> _onSendActivities = new List<SendActivitiesHandler>();
         private readonly IList<UpdateActivityHandler> _onUpdateActivity = new List<UpdateActivityHandler>();
         private readonly IList<DeleteActivityHandler> _onDeleteActivity = new List<DeleteActivityHandler>();
-
-        private readonly TurnContextServiceCollection _turnServices;
 
         /// <summary>
         /// Creates a context object.
@@ -40,10 +36,8 @@ namespace Microsoft.Bot.Builder
         /// <remarks>For use by bot adapter implementations only.</remarks>
         public TurnContext(BotAdapter adapter, Activity activity)
         {
-            _adapter = adapter ?? throw new ArgumentNullException(nameof(adapter));
-            _activity = activity ?? throw new ArgumentNullException(nameof(activity));
-
-            _turnServices = new TurnContextServiceCollection();
+            Adapter = adapter ?? throw new ArgumentNullException(nameof(adapter));
+            Activity = activity ?? throw new ArgumentNullException(nameof(activity));
         }
 
         /// <summary>
@@ -107,18 +101,18 @@ namespace Microsoft.Bot.Builder
         /// <summary>
         /// Gets the bot adapter that created this context object.
         /// </summary>
-        public BotAdapter Adapter => _adapter;
+        public BotAdapter Adapter { get; }
 
         /// <summary>
         /// Gets the services registered on this context object.
         /// </summary>
-        public ITurnContextServiceCollection Services => _turnServices;
+        public TurnContextServiceCollection Services { get; } = new TurnContextServiceCollection();
 
         /// <summary>
         /// Gets the activity associated with this turn; or <c>null</c> when processing
         /// a proactive message.
         /// </summary>
-        public Activity Activity => _activity;
+        public Activity Activity { get; }
 
         /// <summary>
         /// Indicates whether at least one response was sent for the current turn.
@@ -214,16 +208,14 @@ namespace Microsoft.Bot.Builder
         public Task<ResourceResponse[]> SendActivities(IActivity[] activities)
         {
             if (activities == null)
-            {
                 throw new ArgumentNullException(nameof(activities));
-            }
 
             if (activities.Length == 0)
             {
                 throw new ArgumentException("Expecting one or more activities, but the array was empty.", nameof(activities));
             }
 
-            var conversationReference = GetConversationReference(this.Activity);
+            var conversationReference = GetConversationReference(Activity);
 
             var bufferedActivities = new List<Activity>(activities.Length);
 
@@ -260,7 +252,7 @@ namespace Microsoft.Bot.Builder
                 // Send from the list which may have been manipulated via the event handlers. 
                 // Note that 'responses' was captured from the root of the call, and will be
                 // returned to the original caller.
-                var responses = await this.Adapter.SendActivities(this, bufferedActivities.ToArray());
+                var responses = await Adapter.SendActivities(this, bufferedActivities.ToArray());
                 var sentNonTraceActivity = false;
 
                 for (var index = 0; index < responses.Length; index++)
@@ -274,7 +266,7 @@ namespace Microsoft.Bot.Builder
 
                 if (sentNonTraceActivity)
                 {
-                    this.Responded = true;
+                    Responded = true;
                 }
 
                 return responses;
@@ -301,7 +293,7 @@ namespace Microsoft.Bot.Builder
 
             async Task<ResourceResponse> ActuallyUpdateStuff()
             {
-                return await this.Adapter.UpdateActivity(this, a);
+                return await Adapter.UpdateActivity(this, a);
             }
 
             return await UpdateActivityInternal(a, _onUpdateActivity, ActuallyUpdateStuff);
@@ -319,12 +311,12 @@ namespace Microsoft.Bot.Builder
             if (string.IsNullOrWhiteSpace(activityId))
                 throw new ArgumentNullException(nameof(activityId));
 
-            ConversationReference cr = GetConversationReference(this.Activity);
+            ConversationReference cr = GetConversationReference(Activity);
             cr.ActivityId = activityId;
 
             async Task ActuallyDeleteStuff()
             {
-                await this.Adapter.DeleteActivity(this, cr);
+                await Adapter.DeleteActivity(this, cr);
             }
 
             await DeleteActivityInternal(cr, _onDeleteActivity, ActuallyDeleteStuff);
@@ -346,7 +338,7 @@ namespace Microsoft.Bot.Builder
 
             async Task ActuallyDeleteStuff()
             {
-                await this.Adapter.DeleteActivity(this, conversationReference);
+                await Adapter.DeleteActivity(this, conversationReference);
             }
 
             await DeleteActivityInternal(conversationReference, _onDeleteActivity, ActuallyDeleteStuff);
@@ -482,7 +474,7 @@ namespace Microsoft.Bot.Builder
 
         public void Dispose()
         {
-            _turnServices.Dispose();
+            Services.Dispose();
         }
     }
 }
