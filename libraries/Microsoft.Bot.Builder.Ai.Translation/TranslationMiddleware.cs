@@ -32,7 +32,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         /// </summary>
         /// <param name="nativeLanguages">The languages supported by your app.</param>
         /// <param name="translatorKey">Your subscription key for the Microsoft Translator Text API.</param>
-        /// <param name="toUserLanguage">Indicates whether to transalte messages sent from the bot into the user's language.</param>
+        /// <param name="toUserLanguage">Indicates whether to translate messages sent from the bot into the user's language.</param>
         public TranslationMiddleware(string[] nativeLanguages, string translatorKey, bool toUserLanguage = false)
         {
             AssertValidNativeLanguages(nativeLanguages);
@@ -55,9 +55,9 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         /// that can be used to flag text that should not be translated.</param>
         /// /// <param name="userCustomDictonaries">Custom languages dictionary object, used to store all the different languages dictionaries
         /// configured by the user to overwrite the translator output to certain vocab by the custom dictionary translation.</param>
-        /// <param name="toUserLanguage">Indicates whether to transalte messages sent from the bot into the user's language.</param>
+        /// <param name="toUserLanguage">Indicates whether to translate messages sent from the bot into the user's language.</param>
         /// <remarks>Each pattern the <paramref name="patterns"/> describes an entity that should not be translated.
-        /// For example, in French <c>je m’appelle ([a-z]+)</c>, which will avoid translation of anything coming after je m’appelle.</remarks>
+        /// For example, in French <c>je mï¿½appelle ([a-z]+)</c>, which will avoid translation of anything coming after je mï¿½appelle.</remarks>
         public TranslationMiddleware(string[] nativeLanguages, string translatorKey, Dictionary<string, List<string>> patterns, CustomDictionary userCustomDictonaries, bool toUserLanguage = false) : this(nativeLanguages, translatorKey, toUserLanguage)
         {
             if (patterns != null)
@@ -78,9 +78,9 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         /// <param name="getUserLanguage">A delegate for getting the user language, 
         /// to use in place of the Detect method of the Microsoft Translator Text API.</param>
         /// <param name="isUserLanguageChanged">A delegate for checking whether the user requested to change their language.</param>
-        /// <param name="toUserLanguage">Indicates whether to transalte messages sent from the bot into the user's language.</param>
+        /// <param name="toUserLanguage">Indicates whether to translate messages sent from the bot into the user's language.</param>
         /// <remarks>Each pattern the <paramref name="patterns"/> describes an entity that should not be translated.
-        /// For example, in French <c>je m’appelle ([a-z]+)</c>, which will avoid translation of anything coming after je m’appelle.</remarks>
+        /// For example, in French <c>je mï¿½appelle ([a-z]+)</c>, which will avoid translation of anything coming after je mï¿½appelle.</remarks>
         public TranslationMiddleware(string[] nativeLanguages, string translatorKey, Dictionary<string, List<string>> patterns, CustomDictionary userCustomDictonaries, Func<ITurnContext, string> getUserLanguage, Func<ITurnContext, Task<bool>> isUserLanguageChanged, bool toUserLanguage = false) : this(nativeLanguages, translatorKey, patterns, userCustomDictonaries, toUserLanguage)
         {
             this._getUserLanguage = getUserLanguage ?? throw new ArgumentNullException(nameof(getUserLanguage));
