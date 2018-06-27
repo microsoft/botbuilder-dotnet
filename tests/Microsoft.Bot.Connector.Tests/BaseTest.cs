@@ -61,7 +61,6 @@ namespace Connector.Tests
 
                 using (var client = new ConnectorClient(hostUri, new BotAccessTokenStub(token), handlers: HttpMockServer.CreateInstance()))
                 {
-                    client.UseSharedHttpClient = false;
                     await doTest(client);
                 }
 
@@ -77,7 +76,6 @@ namespace Connector.Tests
                 using (var client = new ConnectorClient(hostUri, new BotAccessTokenStub(token), handlers: HttpMockServer.CreateInstance()))
                 using (var oauthClient = new OAuthClient(client, AuthenticationConstants.OAuthUrl))
                 {
-                    client.UseSharedHttpClient = false;
                     await doTest(oauthClient);
                 }
 
