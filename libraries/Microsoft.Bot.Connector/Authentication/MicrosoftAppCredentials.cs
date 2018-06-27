@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -31,24 +32,20 @@ namespace Microsoft.Bot.Connector.Authentication
         /// The key for Microsoft app Password.
         /// </summary>
         public const string MicrosoftAppPasswordKey = "MicrosoftAppPassword";
+        
+        private static HttpClient _httpClient = new HttpClient();
 
-        /// <summary>
-        /// The token refresh code uses this client. Ideally, this would be passed in or set via a DI system to 
-        /// allow developer control over behavior / headers / timeouts and such. Unfortunately this is buried
-        /// pretty deep, the static solution used here is much cleaner. If this becomes an issue we could
-        /// consider circling back and exposing developer control over this HttpClient. 
-        /// </summary>
-        private static readonly HttpClient _httpClient = new HttpClient();
+        protected static ConcurrentDictionary<string, DateTime> TrustedHostNames = new ConcurrentDictionary<string, DateTime>(
+                                                                                        new Dictionary<string, DateTime>() {
+                                                                                            { "state.botframework.com", DateTime.MaxValue },
+                                                                                            { "api.botframework.com", DateTime.MaxValue },
+                                                                                            { "token.botframework.com", DateTime.MaxValue }
+                                                                                        });
 
-        private static object _trustedHostNamesSync = new object();
-        private static readonly IDictionary<string, DateTime> _trustedHostNames = new Dictionary<string, DateTime>()
-        {
-            { "state.botframework.com", DateTime.MaxValue },
-            { "api.botframework.com", DateTime.MaxValue}
-        };
-
-        private static object _cacheSync = new object();
-        protected static readonly IDictionary<string, OAuthResponse> _cache = new Dictionary<string, OAuthResponse>();
+        protected static readonly Dictionary<string, Task<OAuthResponse>> tokenTaskCache = new Dictionary<string, Task<OAuthResponse>>();
+        protected static readonly ConcurrentDictionary<string, DateTime> autoRefreshTimes = new ConcurrentDictionary<string, DateTime>();
+        protected static readonly ConcurrentDictionary<string, OAuthResponse> tokenCache = new ConcurrentDictionary<string, OAuthResponse>();
+        protected readonly string TokenCacheKey;
 
         public MicrosoftAppCredentials(string appId, string password)
         {
@@ -63,28 +60,54 @@ namespace Microsoft.Bot.Connector.Authentication
         public virtual string OAuthEndpoint { get { return AuthenticationConstants.ToChannelFromBotLoginUrl; } }
         public virtual string OAuthScope { get { return AuthenticationConstants.ToChannelFromBotOAuthScope; } }
 
-        protected readonly string TokenCacheKey;
+
+        /// <summary>
+        /// TimeWindow which controlls how often the token will be automatically updated
+        /// </summary>
+        public static TimeSpan AutoTokenRefreshTimeSpan { get; set; } = TimeSpan.FromMinutes(10);
 
         /// <summary>
         /// Adds the host of service url to <see cref="MicrosoftAppCredentials"/> trusted hosts.
         /// </summary>
-        /// <param name="serviceUrl">The service URL.</param>
+        /// <param name="serviceUrl">The service url</param>
+        /// <param name="expirationTime">The expiration time after which this service url is not trusted anymore</param>
         /// <remarks>If expiration time is not provided, the expiration time will DateTime.UtcNow.AddDays(1).</remarks>
-        public static void TrustServiceUrl(string serviceUrl)
+        public static void TrustServiceUrl(string serviceUrl, DateTime expirationTime = default(DateTime))
         {
-            TrustServiceUrl(serviceUrl, DateTime.UtcNow.Add(TimeSpan.FromDays(1)));
-        }
-
-        /// <summary>
-        /// Adds the host of service url to <see cref="MicrosoftAppCredentials"/> trusted hosts.
-        /// </summary>
-        /// <param name="serviceUrl">The service URL.</param>
-        /// <param name="expirationTime">The expiration time after which this service url is not trusted anymore.</param>
-        public static void TrustServiceUrl(string serviceUrl, DateTime expirationTime)
-        {
-            lock (_trustedHostNamesSync)
+            try
             {
-                _trustedHostNames[new Uri(serviceUrl).Host] = expirationTime;
+                if (expirationTime == default(DateTime))
+                {
+                    // by default the service url is valid for one day
+                    var extensionPeriod = TimeSpan.FromDays(1);
+                    TrustedHostNames.AddOrUpdate(new Uri(serviceUrl).Host, DateTime.UtcNow.Add(extensionPeriod), (key, oldValue) =>
+                    {
+                        var newExpiration = DateTime.UtcNow.Add(extensionPeriod);
+                        // try not to override expirations that are greater than one day from now
+                        if (oldValue > newExpiration)
+                        {
+                            // make sure that extension can be added to oldValue and ArgumentOutOfRangeException
+                            // is not thrown
+                            if (oldValue >= DateTime.MaxValue.Subtract(extensionPeriod))
+                            {
+                                newExpiration = oldValue;
+                            }
+                            else
+                            {
+                                newExpiration = oldValue.Add(extensionPeriod);
+                            }
+                        }
+                        return newExpiration;
+                    });
+                }
+                else
+                {
+                    TrustedHostNames.AddOrUpdate(new Uri(serviceUrl).Host, expirationTime, (key, oldValue) => expirationTime);
+                }
+            }
+            catch (Exception err)
+            {
+                System.Diagnostics.Debug.WriteLine(err.ToString());
             }
         }
 
@@ -95,9 +118,10 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <returns>True if the host of the service url is trusted; False otherwise.</returns>
         public static bool IsTrustedServiceUrl(string serviceUrl)
         {
-            if (Uri.TryCreate(serviceUrl, UriKind.Absolute, out Uri uri))
+            Uri uri;
+            if (Uri.TryCreate(serviceUrl, UriKind.Absolute, out uri))
             {
-                return IsTrustedUrl(uri);
+                return TrustedUri(uri);
             }
             return false;
         }
@@ -110,70 +134,148 @@ namespace Microsoft.Bot.Connector.Authentication
         {
             if (ShouldSetToken(request))
             {
-                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await GetTokenAsync());
+                string token = await this.GetTokenAsync().ConfigureAwait(false);
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
             }
-            await base.ProcessHttpRequestAsync(request, cancellationToken);
+            await base.ProcessHttpRequestAsync(request, cancellationToken).ConfigureAwait(false);
         }
 
         public async Task<string> GetTokenAsync(bool forceRefresh = false)
         {
-            if (forceRefresh == false)
+            Task<OAuthResponse> oAuthTokenTask = null;
+            OAuthResponse oAuthToken = null;
+
+            // get tokenTask from cache 
+            lock (tokenTaskCache)
             {
-                // check the global cache for the token. If we have it, and it's valid, we're done. 
-                lock (_cacheSync)
+                // if we are being forced or don't have a token in our cache at all
+                if (forceRefresh || !tokenCache.TryGetValue(TokenCacheKey, out oAuthToken))
                 {
-                    bool foundToken = _cache.TryGetValue(TokenCacheKey, out OAuthResponse oAuthToken);
-                    if (foundToken)
+                    // we will await this task, because we don't have a token and we need it
+                    oAuthTokenTask = _getCurrentTokenTask(forceRefresh: forceRefresh);
+                }
+                else
+                {
+                    // we have an oAuthToken
+                    // check to see if our token is expired 
+                    if (TokenExpired(oAuthToken))
                     {
-                        // we have the token. Is it valid? 
-                        if (oAuthToken.expiration_time > DateTime.UtcNow)
+                        // it is, we should await the current task (someone could have already asked for a new token)
+                        oAuthTokenTask = _getCurrentTokenTask(forceRefresh: false);
+
+                        // if the task is completed and is the expired token, then we need to force a new one 
+                        // (This happens if bot has been 100% idle past the expiration point)
+                        if (oAuthTokenTask.Status == TaskStatus.RanToCompletion && oAuthTokenTask.Result.access_token == oAuthToken.access_token)
                         {
-                            return oAuthToken.access_token;
+                            oAuthTokenTask = _getCurrentTokenTask(forceRefresh: true);
                         }
                     }
+
+                    // always check the autorefresh
+                    CheckAutoRefreshToken();
                 }
             }
 
-            // We need to refresh the token, because:
-            // 1. The user requested it via the forceRefresh parameter
-            // 2. We have it, but it's expired
-            // 3. We don't have it in the cache. 
-
-            OAuthResponse token = await RefreshTokenAsync().ConfigureAwait(false);
-            lock (_cacheSync)
+            // if we have an oAuthTokenTask then we need to await it
+            if (oAuthTokenTask != null)
             {
-                _cache[TokenCacheKey] = token;
+                oAuthToken = await oAuthTokenTask;
+                tokenCache[TokenCacheKey] = oAuthToken;
             }
 
-            return token.access_token;
+            return oAuthToken?.access_token;
+        }
+
+        private void CheckAutoRefreshToken()
+        {
+            // get the current autorefreshTime for this key
+            DateTime refreshTime;
+            if (autoRefreshTimes.TryGetValue(TokenCacheKey, out refreshTime))
+            {
+                // if we are past the refresh time
+                if (DateTime.UtcNow > refreshTime)
+                {
+                    // set new refresh time (this keeps only one outstanding refresh Task at a time)
+                    autoRefreshTimes[TokenCacheKey] = DateTime.UtcNow + AutoTokenRefreshTimeSpan;
+
+                    // background task to refresh the token
+                    // NOTE: This is not awaited, but is observed with the ContinueWith() clause.  
+                    // It is gated by the AutoRefreshTimes[] array
+                    RefreshTokenAsync()
+                        .ContinueWith(task =>
+                        {
+                            // observe the background task and put in cache when done
+                            if (task.Status == TaskStatus.RanToCompletion)
+                            {
+                                // update the cache with completed task so all new requests will get it
+                                tokenTaskCache[TokenCacheKey] = task;
+                            }
+                            else
+                            {
+                                // it failed, shorten the refresh time for another task to try again in a 30s
+                                autoRefreshTimes[TokenCacheKey] = DateTime.UtcNow + TimeSpan.FromSeconds(30);
+                            }
+                        });
+                }
+            }
+        }
+
+        /// <summary>
+        /// Do not call this except from GetTokenRefreshAsync() 
+        /// </summary>
+        /// <returns></returns>
+        private Task<OAuthResponse> _getCurrentTokenTask(bool forceRefresh)
+        {
+            Task<OAuthResponse> oAuthTokenTask;
+
+            // if there is not a task or we are forcing it
+            if (forceRefresh || tokenTaskCache.TryGetValue(TokenCacheKey, out oAuthTokenTask) == false)
+            {
+                // create it
+                oAuthTokenTask = RefreshTokenAsync();
+                tokenTaskCache[TokenCacheKey] = oAuthTokenTask;
+
+                // set initial refresh time
+                autoRefreshTimes[TokenCacheKey] = DateTime.UtcNow + AutoTokenRefreshTimeSpan;
+            }
+            // if task is in faulted or canceled state then replace it with another attempt
+            else if (oAuthTokenTask.IsFaulted || oAuthTokenTask.IsCanceled)
+            {
+                oAuthTokenTask = RefreshTokenAsync();
+                tokenTaskCache[TokenCacheKey] = oAuthTokenTask;
+
+                // set initial refresh time
+                autoRefreshTimes[TokenCacheKey] = DateTime.UtcNow + AutoTokenRefreshTimeSpan;
+            }
+
+            return oAuthTokenTask;
         }
 
         private bool ShouldSetToken(HttpRequestMessage request)
         {
-            if (IsTrustedUrl(request.RequestUri))
+            if (TrustedUri(request.RequestUri))
             {
                 return true;
             }
 
+            System.Diagnostics.Debug.WriteLine($"Service url {request.RequestUri.Authority} is not trusted and JwtToken cannot be sent to it.");
             return false;
         }
 
-        private static bool IsTrustedUrl(Uri uri)
+        private static bool TrustedUri(Uri uri)
         {
-            lock (_trustedHostNamesSync)
+            DateTime trustedServiceUrlExpiration;
+            if (TrustedHostNames.TryGetValue(uri.Host, out trustedServiceUrlExpiration))
             {
-                if (_trustedHostNames.TryGetValue(uri.Host, out DateTime trustedServiceUrlExpiration))
+                // check if the trusted service url is still valid
+                if (trustedServiceUrlExpiration > DateTime.UtcNow.Subtract(TimeSpan.FromMinutes(5)))
                 {
-                    // check if the trusted service url is still valid
-                    if (trustedServiceUrlExpiration > DateTime.UtcNow.Subtract(TimeSpan.FromMinutes(5)))
-                    {
-                        return true;
-                    }
+                    return true;
                 }
-                return false;
             }
+            return false;
         }
-
+        
         public sealed class OAuthException : Exception
         {
             public OAuthException(string body, Exception inner)
@@ -208,6 +310,17 @@ namespace Microsoft.Bot.Connector.Authentication
                     throw new OAuthException(body ?? response.ReasonPhrase, error);
                 }
             }
+        }
+
+        private bool TokenExpired(OAuthResponse token)
+        {
+            return DateTime.UtcNow > token.expiration_time;
+        }
+
+        private bool TokenOld(OAuthResponse token)
+        {
+            var halfwayExpiration = (token.expiration_time - TimeSpan.FromSeconds(token.expires_in / 2));
+            return DateTime.UtcNow > halfwayExpiration;
         }
 
 #pragma warning disable IDE1006
