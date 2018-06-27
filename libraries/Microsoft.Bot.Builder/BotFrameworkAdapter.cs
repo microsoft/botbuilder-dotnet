@@ -538,16 +538,15 @@ namespace Microsoft.Bot.Builder
             
 
             // Create a conversation update activity to represent the result.
-            var conversationUpdate = Activity.CreateConversationUpdateActivity();
-            conversationUpdate.ChannelId = channelId;
-            conversationUpdate.TopicName = conversationParameters.TopicName;
-            conversationUpdate.ServiceUrl = serviceUrl;
-            conversationUpdate.MembersAdded = conversationParameters.Members;
-            conversationUpdate.Id = result.ActivityId ?? Guid.NewGuid().ToString("n");
-            conversationUpdate.Conversation = new ConversationAccount(id: result.Id);
-            conversationUpdate.Recipient = conversationParameters.Bot;
+            var eventActivity = Activity.CreateEventActivity();
+            eventActivity.Name = "CreateConversation";
+            eventActivity.ChannelId = channelId;
+            eventActivity.ServiceUrl = serviceUrl;
+            eventActivity.Id = result.ActivityId ?? Guid.NewGuid().ToString("n");
+            eventActivity.Conversation = new ConversationAccount(id: result.Id);
+            eventActivity.Recipient = conversationParameters.Bot;
 
-            using (TurnContext context = new TurnContext(this, (Activity)conversationUpdate))
+            using (TurnContext context = new TurnContext(this, (Activity)eventActivity))
             {
                 ClaimsIdentity claimsIdentity = new ClaimsIdentity();
                 claimsIdentity.AddClaim(new Claim(AuthenticationConstants.AudienceClaim, credentials.MicrosoftAppId));

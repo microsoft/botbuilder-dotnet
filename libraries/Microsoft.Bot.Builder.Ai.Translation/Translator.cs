@@ -24,6 +24,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation
     public class Translator
     {
         private readonly AzureAuthToken _authToken;
+        private static HttpClient _httpClient = new HttpClient() { Timeout = TimeSpan.FromSeconds(20) };
 
         /// <summary>
         /// Creates a new <see cref="Translator"/> object.
@@ -92,13 +93,12 @@ namespace Microsoft.Bot.Builder.Ai.Translation
             string url = "http://api.microsofttranslator.com/v2/Http.svc/Detect";
             string query = $"?text={System.Net.WebUtility.UrlEncode(textToDetect)}";
 
-            using (var client = new HttpClient())
             using (var request = new HttpRequestMessage())
             {
                 var accessToken = await _authToken.GetAccessTokenAsync().ConfigureAwait(false);
                 request.Headers.Add("Authorization", accessToken);
                 request.RequestUri = new Uri(url + query);
-                var response = await client.SendAsync(request);
+                var response = await _httpClient.SendAsync(request);
                 var result = await response.Content.ReadAsStringAsync();
 
                 if (!response.IsSuccessStatusCode)
@@ -130,13 +130,12 @@ namespace Microsoft.Bot.Builder.Ai.Translation
                                  $"&from={from}" +
                                  $"&to={to}";
 
-            using (var client = new HttpClient())
             using (var request = new HttpRequestMessage())
             {
                 var accessToken = await _authToken.GetAccessTokenAsync().ConfigureAwait(false);
                 request.Headers.Add("Authorization", accessToken);
                 request.RequestUri = new Uri(url + query);
-                var response = await client.SendAsync(request);
+                var response = await _httpClient.SendAsync(request);
                 var result = await response.Content.ReadAsStringAsync();
 
                 if (!response.IsSuccessStatusCode)
@@ -194,16 +193,14 @@ namespace Microsoft.Bot.Builder.Ai.Translation
 
             var accessToken = await _authToken.GetAccessTokenAsync().ConfigureAwait(false);
 
-            using (var client = new HttpClient())
             using (var request = new HttpRequestMessage())
             {
-                client.Timeout = TimeSpan.FromSeconds(20);
                 request.Method = HttpMethod.Post;
                 request.RequestUri = new Uri(uri);
                 request.Content = new StringContent(body, Encoding.UTF8, "text/xml");
                 request.Headers.Add("Authorization", accessToken);
 
-                var response = await client.SendAsync(request);
+                var response = await _httpClient.SendAsync(request);
                 var responseBody = await response.Content.ReadAsStringAsync();
                 switch (response.StatusCode)
                 {
@@ -238,6 +235,8 @@ namespace Microsoft.Bot.Builder.Ai.Translation
 
     internal class AzureAuthToken
     {
+        private static HttpClient _httpClient = new HttpClient() { Timeout = TimeSpan.FromSeconds(20) };
+
         /// URL of the token service
         private static readonly Uri ServiceUrl = new Uri("https://api.cognitive.microsoft.com/sts/v1.0/issueToken");
 
@@ -293,15 +292,13 @@ namespace Microsoft.Bot.Builder.Ai.Translation
             if ((DateTime.Now - _storedTokenTime) < TokenCacheDuration)
                 return _storedTokenValue;
 
-            using (var client = new HttpClient())
             using (var request = new HttpRequestMessage())
             {
                 request.Method = HttpMethod.Post;
                 request.RequestUri = ServiceUrl;
                 request.Content = new StringContent(string.Empty);
                 request.Headers.TryAddWithoutValidation(OcpApimSubscriptionKeyHeader, this.SubscriptionKey);
-                client.Timeout = TimeSpan.FromSeconds(20);
-                var response = await client.SendAsync(request);
+                var response = await _httpClient.SendAsync(request);
                 this.RequestStatusCode = response.StatusCode;
                 response.EnsureSuccessStatusCode();
                 var token = await response.Content.ReadAsStringAsync();
