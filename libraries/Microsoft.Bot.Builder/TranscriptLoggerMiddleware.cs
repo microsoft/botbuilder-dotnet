@@ -79,11 +79,13 @@ namespace Microsoft.Bot.Builder
 
                 // add MessageDelete activity
                 // log as MessageDelete activity
-                var deleteActivity = TurnContext.ApplyConversationReference(new Activity()
+                var deleteActivity = new Activity()
                 {
                     Type = ActivityTypes.MessageDelete,
                     Id = reference.ActivityId
-                }, reference, isIncoming: false).AsMessageDeleteActivity();
+                }
+                .ApplyConversationReference(reference, isIncoming: false)
+                .AsMessageDeleteActivity();
 
                 LogActivity(deleteActivity);
             });

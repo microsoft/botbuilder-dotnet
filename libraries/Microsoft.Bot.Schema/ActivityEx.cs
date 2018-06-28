@@ -358,5 +358,64 @@ namespace Microsoft.Bot.Schema
                 return false;
             }
         }
+
+        /// <summary>
+        /// Creates a conversation reference from an activity.
+        /// </summary>
+        /// <returns>A conversation reference for the conversation that contains the activity.</returns>
+        /// <exception cref="ArgumentNullException">
+        public ConversationReference GetConversationReference()
+        {
+            ConversationReference reference = new ConversationReference
+            {
+                ActivityId = this.Id,
+                User = this.From,
+                Bot = this.Recipient,
+                Conversation = this.Conversation,
+                ChannelId = this.ChannelId,
+                ServiceUrl = this.ServiceUrl
+            };
+
+            return reference;
+        }
+
+        /// <summary>
+        /// Updates an activity with the delivery information from an existing 
+        /// conversation reference.
+        /// </summary>
+        /// <param name="activity">The activity to update.</param>
+        /// <param name="reference">The conversation reference.</param>
+        /// <param name="isIncoming">(Optional) <c>true</c> to treat the activity as an 
+        /// incoming activity, where the bot is the recipient; otherwaire <c>false</c>.
+        /// Default is <c>false</c>, and the activity will show the bot as the sender.</param>
+        /// <remarks>Call <see cref="GetConversationReference(Activity)"/> on an incoming
+        /// activity to get a conversation reference that you can then use to update an
+        /// outgoing activity with the correct delivery information.
+        /// <para>The <see cref="SendActivity(IActivity)"/> and <see cref="SendActivities(IActivity[])"/>
+        /// methods do this for you.</para>
+        /// </remarks>
+        public Activity ApplyConversationReference(ConversationReference reference, bool isIncoming = false)
+        {
+            this.ChannelId = reference.ChannelId;
+            this.ServiceUrl = reference.ServiceUrl;
+            this.Conversation = reference.Conversation;
+
+            if (isIncoming)
+            {
+                this.From = reference.User;
+                this.Recipient = reference.Bot;
+                if (reference.ActivityId != null)
+                    this.Id = reference.ActivityId;
+            }
+            else  // Outgoing
+            {
+                this.From = reference.Bot;
+                this.Recipient = reference.User;
+                if (reference.ActivityId != null)
+                    this.ReplyToId = reference.ActivityId;
+            }
+            return this;
+        }
+
     }
 }

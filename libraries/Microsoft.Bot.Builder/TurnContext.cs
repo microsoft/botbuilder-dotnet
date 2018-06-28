@@ -223,7 +223,7 @@ namespace Microsoft.Bot.Builder
                 throw new ArgumentException("Expecting one or more activities, but the array was empty.", nameof(activities));
             }
 
-            var conversationReference = GetConversationReference(this.Activity);
+            var conversationReference = this.Activity.GetConversationReference();
 
             var bufferedActivities = new List<Activity>(activities.Length);
 
@@ -232,7 +232,7 @@ namespace Microsoft.Bot.Builder
                 // Buffer the incoming activities into a List<T> since we allow the set to be manipulated by the callbacks
                 // Bind the relevant Conversation Reference properties, such as URLs and 
                 // ChannelId's, to the activity we're about to send
-                bufferedActivities.Add(ApplyConversationReference((Activity)activities[index], conversationReference));
+                bufferedActivities.Add(activities[index].ApplyConversationReference(conversationReference));
             }
 
             // If there are no callbacks registered, bypass the overhead of invoking them and send directly to the adapter
@@ -319,7 +319,7 @@ namespace Microsoft.Bot.Builder
             if (string.IsNullOrWhiteSpace(activityId))
                 throw new ArgumentNullException(nameof(activityId));
 
-            ConversationReference cr = GetConversationReference(this.Activity);
+            ConversationReference cr = this.Activity.GetConversationReference();
             cr.ActivityId = activityId;
 
             async Task ActuallyDeleteStuff()
@@ -418,67 +418,6 @@ namespace Microsoft.Bot.Builder
             await toCall(this, cr, next);
         }
 
-        /// <summary>
-        /// Creates a conversation reference from an activity.
-        /// </summary>
-        /// <param name="activity">The activity.</param>
-        /// <returns>A conversation reference for the conversation that contains the activity.</returns>
-        /// <exception cref="ArgumentNullException">
-        /// <paramref name="activity"/> is <c>null</c>.</exception>
-        public static ConversationReference GetConversationReference(Activity activity)
-        {
-            BotAssert.ActivityNotNull(activity);
-
-            ConversationReference r = new ConversationReference
-            {
-                ActivityId = activity.Id,
-                User = activity.From,
-                Bot = activity.Recipient,
-                Conversation = activity.Conversation,
-                ChannelId = activity.ChannelId,
-                ServiceUrl = activity.ServiceUrl
-            };
-
-            return r;
-        }
-
-        /// <summary>
-        /// Updates an activity with the delivery information from an existing 
-        /// conversation reference.
-        /// </summary>
-        /// <param name="activity">The activity to update.</param>
-        /// <param name="reference">The conversation reference.</param>
-        /// <param name="isIncoming">(Optional) <c>true</c> to treat the activity as an 
-        /// incoming activity, where the bot is the recipient; otherwaire <c>false</c>.
-        /// Default is <c>false</c>, and the activity will show the bot as the sender.</param>
-        /// <remarks>Call <see cref="GetConversationReference(Activity)"/> on an incoming
-        /// activity to get a conversation reference that you can then use to update an
-        /// outgoing activity with the correct delivery information.
-        /// <para>The <see cref="SendActivity(IActivity)"/> and <see cref="SendActivities(IActivity[])"/>
-        /// methods do this for you.</para>
-        /// </remarks>
-        public static Activity ApplyConversationReference(Activity activity, ConversationReference reference, bool isIncoming = false)
-        {
-            activity.ChannelId = reference.ChannelId;
-            activity.ServiceUrl = reference.ServiceUrl;
-            activity.Conversation = reference.Conversation;
-
-            if (isIncoming)
-            {
-                activity.From = reference.User;
-                activity.Recipient = reference.Bot;
-                if (reference.ActivityId != null)
-                    activity.Id = reference.ActivityId;
-            }
-            else  // Outgoing
-            {
-                activity.From = reference.Bot;
-                activity.Recipient = reference.User;
-                if (reference.ActivityId != null)
-                    activity.ReplyToId = reference.ActivityId;
-            }
-            return activity;
-        }
 
         public void Dispose()
         {
