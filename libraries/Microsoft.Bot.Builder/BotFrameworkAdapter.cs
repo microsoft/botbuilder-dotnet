@@ -36,7 +36,7 @@ namespace Microsoft.Bot.Builder
     public class BotFrameworkAdapter : BotAdapter
     {
         private readonly ICredentialProvider _credentialProvider;
-        private static readonly HttpClient g_httpClient = new HttpClient();
+        private static readonly HttpClient DefaultHttpClient = new HttpClient();
         private readonly HttpClient _httpClient;
         private readonly RetryPolicy _connectorClientRetryPolicy;
         private Dictionary<string, MicrosoftAppCredentials> _appCredentialMap = new Dictionary<string, MicrosoftAppCredentials>();
@@ -51,7 +51,7 @@ namespace Microsoft.Bot.Builder
         /// </summary>
         /// <param name="credentialProvider">The credential provider.</param>
         /// <param name="connectorClientRetryPolicy">Retry policy for retrying HTTP operations.</param>
-        /// <param name="httpClient">The HTTP client.</param>
+        /// <param name="customHttpClient">The HTTP client.</param>
         /// <param name="middleware">The middleware to initially add to the adapter.</param>
         /// <exception cref="ArgumentNullException">
         /// <paramref name="credentialProvider"/> is <c>null</c>.</exception>
@@ -59,10 +59,10 @@ namespace Microsoft.Bot.Builder
         /// components in the conustructor. Use the <see cref="Use(IMiddleware)"/> method to 
         /// add additional middleware to the adapter after construction.
         /// </remarks>
-        public BotFrameworkAdapter(ICredentialProvider credentialProvider, RetryPolicy connectorClientRetryPolicy = null, HttpClient httpClient = null, IMiddleware middleware = null)
+        public BotFrameworkAdapter(ICredentialProvider credentialProvider, RetryPolicy connectorClientRetryPolicy = null, HttpClient customHttpClient = null, IMiddleware middleware = null)
         {
             _credentialProvider = credentialProvider ?? throw new ArgumentNullException(nameof(credentialProvider));
-            _httpClient = httpClient ?? g_httpClient;
+            _httpClient = customHttpClient ?? DefaultHttpClient;
             _connectorClientRetryPolicy = connectorClientRetryPolicy;
 
             if (middleware != null)

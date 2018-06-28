@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<Version Condition=" '$(BUILD_BUILDNUMBER)' == '' ">4.0.0-local</Version>
 		<Version Condition=" '$(BUILD_BUILDNUMBER)' != '' ">$(BUILD_BUILDNUMBER)</Version>
@@ -66,15 +66,6 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\Microsoft.Bot.Schema\Microsoft.Bot.Schema.csproj" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Reference Include="Microsoft.Extensions.Configuration.Abstractions">
-	    <HintPath>..\..\..\..\..\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.extensions.configuration.abstractions\2.0.1\lib\netstandard2.0\Microsoft.Extensions.Configuration.Abstractions.dll</HintPath>
-	  </Reference>
-	  <Reference Include="Microsoft.Extensions.Logging.Abstractions">
-	    <HintPath>..\..\..\..\..\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.extensions.logging.abstractions\2.0.0\lib\netstandard2.0\Microsoft.Extensions.Logging.Abstractions.dll</HintPath>
-	  </Reference>
 	</ItemGroup>
 
 </Project>
