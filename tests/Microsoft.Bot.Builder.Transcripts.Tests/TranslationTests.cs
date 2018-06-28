@@ -5,8 +5,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Ai.Translation;
-using Microsoft.Bot.Builder.Core.Extensions;
-using Microsoft.Bot.Builder.Core.Extensions.Tests;
+using Microsoft.Bot.Builder.Tests;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Bot.Builder.Transcripts.Tests
@@ -34,7 +33,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
 
             TestAdapter adapter = new TestAdapter()
                 .Use(new UserState<LanguageState>(new MemoryStorage()))
-                .Use(new TranslationMiddleware(nativeLanguages, translatorKey, patterns, GetUserLanguage, SetUserLanguage, false));
+                .Use(new TranslationMiddleware(nativeLanguages, translatorKey, patterns, new CustomDictionary(), GetUserLanguage, SetUserLanguage, false));
 
             var flow = new TestFlow(adapter, async (context) => {
                 if (!context.Responded)
@@ -62,7 +61,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
 
             TestAdapter adapter = new TestAdapter()
                 .Use(new UserState<LanguageState>(new MemoryStorage()))
-                .Use(new TranslationMiddleware(nativeLanguages, translatorKey, patterns, GetUserLanguage, SetUserLanguage, true));
+                .Use(new TranslationMiddleware(nativeLanguages, translatorKey, patterns, new CustomDictionary(), GetUserLanguage, SetUserLanguage, true));
 
             var flow = new TestFlow(adapter, async (context) => {
                 if (!context.Responded)
@@ -92,7 +91,9 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
                 }
             });
 
-            await flow.Test(activities).StartTest();
+            await flow.Test(activities, (expected, actual) => {
+                Assert.AreEqual(expected.AsMessageActivity().Text, actual.AsMessageActivity().Text);
+            }).StartTest();
         }
 
         private Task<bool> SetUserLanguage(ITurnContext context)

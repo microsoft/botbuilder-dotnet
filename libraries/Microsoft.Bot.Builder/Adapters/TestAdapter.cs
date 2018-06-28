@@ -173,19 +173,9 @@ namespace Microsoft.Bot.Builder.Adapters
                 {
                     if (sendTraceActivity)
                     {
-                        lock (this.botReplies)
+                        lock (_activeQueueLock)
                         {
-                            this.botReplies.Enqueue(activity);
-                        }
-                    }
-                }
-                else if (activity.Type == ActivityTypes.Trace)
-                {
-                    if (sendTraceActivity)
-                    {
-                        lock (this.botReplies)
-                        {
-                            this.botReplies.Enqueue(activity);
+                            ActiveQueue.Enqueue(activity);
                         }
                     }
                 }
