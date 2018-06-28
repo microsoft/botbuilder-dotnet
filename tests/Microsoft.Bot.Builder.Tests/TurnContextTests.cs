@@ -45,17 +45,6 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
-        public void UnableToSetRespondedToFalse()
-        {
-            TurnContext c = new TurnContext(new TestAdapter(), new Activity())
-            {
-                Responded = false // should throw
-            };
-            Assert.Fail("Should have thrown");
-        }
-
-        [TestMethod]
         public async Task CacheValueUsingSetAndGet()
         {
             var adapter = new TestAdapter();
