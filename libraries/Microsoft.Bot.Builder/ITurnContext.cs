@@ -101,7 +101,7 @@ namespace Microsoft.Bot.Builder
         /// Indicates whether at least one response was sent for the current turn.
         /// </summary>
         /// <value><c>true</c> if at least one response was sent for the current turn.</value>
-        bool Responded { get; set; }
+        bool Responded { get; }
 
         /// <summary>
         /// Sends a message activity to the sender of the incoming activity.

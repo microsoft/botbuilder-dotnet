@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Builder
     /// <remarks>
     /// TODO: add more details on what kind of services can/should be stored here, by whom and what the lifetime semantics are, etc.
     /// </remarks>
-    public sealed class TurnContextServiceCollection : Dictionary<string, object>, IDisposable
+    public class TurnContextServiceCollection : Dictionary<string, object>, IDisposable
     {
         public TurnContextServiceCollection()
         {
@@ -20,7 +20,8 @@ namespace Microsoft.Bot.Builder
 
         public TService Get<TService>(string key) where TService : class
         {
-            if (key == null) throw new ArgumentNullException(nameof(key));
+            if (key == null)
+                throw new ArgumentNullException(nameof(key));
 
             if(TryGetValue(key, out var service))
             {
@@ -41,10 +42,12 @@ namespace Microsoft.Bot.Builder
 
         public void Add<TService>(string key, TService service) where TService : class
         {
-            if (key == null) throw new ArgumentNullException(nameof(key));
-            if (service == null) throw new ArgumentNullException(nameof(service));
+            if (key == null)
+                throw new ArgumentNullException(nameof(key));
+            if (service == null)
+                throw new ArgumentNullException(nameof(service));
 
-            // note this can throw with a duplicate key
+            // note this can throw if teh key is already present
             base.Add(key, service);
         }
 

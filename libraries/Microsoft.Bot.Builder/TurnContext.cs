@@ -19,8 +19,6 @@ namespace Microsoft.Bot.Builder
     /// <seealso cref="IMiddleware"/>
     public class TurnContext : ITurnContext, IDisposable
     {
-        private bool _responded = false;
-
         private readonly IList<SendActivitiesHandler> _onSendActivities = new List<SendActivitiesHandler>();
         private readonly IList<UpdateActivityHandler> _onUpdateActivity = new List<UpdateActivityHandler>();
         private readonly IList<DeleteActivityHandler> _onDeleteActivity = new List<DeleteActivityHandler>();
@@ -118,18 +116,10 @@ namespace Microsoft.Bot.Builder
         /// Indicates whether at least one response was sent for the current turn.
         /// </summary>
         /// <value><c>true</c> if at least one response was sent for the current turn.</value>
-        /// <exception cref="ArgumentException">You attempted to set the value to <c>false</c>.</exception>
         public bool Responded
         {
-            get { return _responded; }
-            set
-            {
-                if (value == false)
-                {
-                    throw new ArgumentException("TurnContext: cannot set 'responded' to a value of 'false'.");
-                }
-                _responded = true;
-            }
+            get;
+            private set;
         }
 
         /// <summary>
@@ -181,8 +171,7 @@ namespace Microsoft.Bot.Builder
         /// channel assigned to the activity.</remarks>
         public async Task<ResourceResponse> SendActivity(IActivity activity)
         {
-            if (activity == null)
-                throw new ArgumentNullException(nameof(activity));
+            BotAssert.ActivityNotNull(activity);
 
             ResourceResponse[] responses = await SendActivities(new [] { activity });
             if (responses == null || responses.Length == 0)
@@ -211,9 +200,7 @@ namespace Microsoft.Bot.Builder
                 throw new ArgumentNullException(nameof(activities));
 
             if (activities.Length == 0)
-            {
                 throw new ArgumentException("Expecting one or more activities, but the array was empty.", nameof(activities));
-            }
 
             var conversationReference = GetConversationReference(Activity);
 
@@ -252,7 +239,7 @@ namespace Microsoft.Bot.Builder
                 // Send from the list which may have been manipulated via the event handlers. 
                 // Note that 'responses' was captured from the root of the call, and will be
                 // returned to the original caller.
-                var responses = await Adapter.SendActivities(this, bufferedActivities.ToArray());
+                var responses = await Adapter.SendActivities(this, bufferedActivities.ToArray()).ConfigureAwait(false);
                 var sentNonTraceActivity = false;
 
                 for (var index = 0; index < responses.Length; index++)
@@ -293,10 +280,10 @@ namespace Microsoft.Bot.Builder
 
             async Task<ResourceResponse> ActuallyUpdateStuff()
             {
-                return await Adapter.UpdateActivity(this, a);
+                return await Adapter.UpdateActivity(this, a).ConfigureAwait(false);
             }
 
-            return await UpdateActivityInternal(a, _onUpdateActivity, ActuallyUpdateStuff);
+            return await UpdateActivityInternal(a, _onUpdateActivity, ActuallyUpdateStuff).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -316,7 +303,7 @@ namespace Microsoft.Bot.Builder
 
             async Task ActuallyDeleteStuff()
             {
-                await Adapter.DeleteActivity(this, cr);
+                await Adapter.DeleteActivity(this, cr).ConfigureAwait(false);
             }
 
             await DeleteActivityInternal(cr, _onDeleteActivity, ActuallyDeleteStuff);
@@ -338,7 +325,7 @@ namespace Microsoft.Bot.Builder
 
             async Task ActuallyDeleteStuff()
             {
-                await Adapter.DeleteActivity(this, conversationReference);
+                await Adapter.DeleteActivity(this, conversationReference).ConfigureAwait(false);
             }
 
             await DeleteActivityInternal(conversationReference, _onDeleteActivity, ActuallyDeleteStuff);
@@ -356,7 +343,7 @@ namespace Microsoft.Bot.Builder
             {
                 if (callAtBottom != null)
                 {
-                    return await callAtBottom();
+                    return await callAtBottom().ConfigureAwait(false);
                 }
 
                 return null;
@@ -375,7 +362,7 @@ namespace Microsoft.Bot.Builder
 
             // Grab the current middleware, which is the 1st element in the array, and execute it            
             UpdateActivityHandler toCall = updateHandlers.First();
-            return await toCall(this, activity, next);
+            return await toCall(this, activity, next).ConfigureAwait(false);
         }
 
         private async Task DeleteActivityInternal(ConversationReference cr,
@@ -383,6 +370,7 @@ namespace Microsoft.Bot.Builder
            Func<Task> callAtBottom)
         {
             BotAssert.ConversationReferenceNotNull(cr);
+
             if (updateHandlers == null)
                 throw new ArgumentException(nameof(updateHandlers));
 
@@ -390,7 +378,7 @@ namespace Microsoft.Bot.Builder
             {
                 if (callAtBottom != null)
                 {
-                    await callAtBottom();
+                    await callAtBottom().ConfigureAwait(false);
                 }
 
                 return;
@@ -407,7 +395,7 @@ namespace Microsoft.Bot.Builder
 
             // Grab the current middleware, which is the 1st element in the array, and execute it.
             DeleteActivityHandler toCall = updateHandlers.First();
-            await toCall(this, cr, next);
+            await toCall(this, cr, next).ConfigureAwait(false);
         }
 
         /// <summary>
