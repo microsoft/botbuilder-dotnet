@@ -70,60 +70,7 @@ namespace Microsoft.Bot.Builder
             }
         }
 
-        /// <summary>
-        /// Sends a proactive message from the bot to a conversation.
-        /// </summary>
-        /// <param name="botAppId">The application ID of the bot. This is the appId returned by Portal registration, and is
-        /// generally found in the "MicrosoftAppId" parameter in appSettings.json.</param>
-        /// <param name="reference">A reference to the conversation to continue.</param>
-        /// <param name="callback">The method to call for the resulting bot turn.</param>
-        /// <returns>A task that represents the work queued to execute.</returns>
-        /// <exception cref="ArgumentNullException">
-        /// <paramref name="botAppId"/>, <paramref name="reference"/>, or
-        /// <paramref name="callback"/> is <c>null</c>.</exception>
-        /// <remarks>Call this method to proactively send a message to a conversation.
-        /// Most _channels require a user to initaiate a conversation with a bot
-        /// before the bot can send activities to the user.
-        /// <para>This method registers the following services for the turn.<list type="bullet">
-        /// <item><see cref="IIdentity"/> (key = "BotIdentity"), a claims identity for the bot.</item>
-        /// <item><see cref="IConnectorClient"/>, the channel connector client to use this turn.</item>
-        /// </list></para>
-        /// <para>
-        /// This overload differers from the Node implementation by requiring the BotId to be 
-        /// passed in. The .Net code allows multiple bots to be hosted in a single adapter which
-        /// isn't something supported by Node.
-        /// </para>
-        /// </remarks>
-        /// <seealso cref="ProcessActivity(string, Activity, Func{ITurnContext, Task})"/>
-        /// <seealso cref="BotAdapter.RunPipeline(ITurnContext, Func{ITurnContext, Task})"/>
-        public override async Task ContinueConversation(string botAppId, ConversationReference reference, Func<ITurnContext, Task> callback)
-        {
-            if (string.IsNullOrWhiteSpace(botAppId))
-                throw new ArgumentNullException(nameof(botAppId));
-
-            if (reference == null)
-                throw new ArgumentNullException(nameof(reference));
-
-            if (callback == null)
-                throw new ArgumentNullException(nameof(callback));
-
-            using (var context = new TurnContext(this, reference.GetPostToBotMessage()))
-            {
-                // Hand craft Claims Identity.
-                var claimsIdentity = new ClaimsIdentity(new List<Claim>
-                {
-                    // Adding claims for both Emulator and Channel.
-                    new Claim(AuthenticationConstants.AudienceClaim, botAppId),
-                    new Claim(AuthenticationConstants.AppIdClaim, botAppId)
-                });
-
-                context.Services.Add<IIdentity>(BotIdentityKey, claimsIdentity);
-                var connectorClient = await CreateConnectorClientAsync(reference.ServiceUrl, claimsIdentity).ConfigureAwait(false);
-                context.Services.Add(connectorClient);
-                await RunPipeline(context, callback);
-            }
-        }
-
+        
         /// <summary>
         /// Initializes a new instance of the <see cref="BotFrameworkAdapter"/> class,
         /// using an application ID and secret.
@@ -538,16 +485,15 @@ namespace Microsoft.Bot.Builder
             
 
             // Create a conversation update activity to represent the result.
-            var conversationUpdate = Activity.CreateConversationUpdateActivity();
-            conversationUpdate.ChannelId = channelId;
-            conversationUpdate.TopicName = conversationParameters.TopicName;
-            conversationUpdate.ServiceUrl = serviceUrl;
-            conversationUpdate.MembersAdded = conversationParameters.Members;
-            conversationUpdate.Id = result.ActivityId ?? Guid.NewGuid().ToString("n");
-            conversationUpdate.Conversation = new ConversationAccount(id: result.Id);
-            conversationUpdate.Recipient = conversationParameters.Bot;
+            var eventActivity = Activity.CreateEventActivity();
+            eventActivity.Name = "CreateConversation";
+            eventActivity.ChannelId = channelId;
+            eventActivity.ServiceUrl = serviceUrl;
+            eventActivity.Id = result.ActivityId ?? Guid.NewGuid().ToString("n");
+            eventActivity.Conversation = new ConversationAccount(id: result.Id);
+            eventActivity.Recipient = conversationParameters.Bot;
 
-            using (TurnContext context = new TurnContext(this, (Activity)conversationUpdate))
+            using (TurnContext context = new TurnContext(this, (Activity)eventActivity))
             {
                 ClaimsIdentity claimsIdentity = new ClaimsIdentity();
                 claimsIdentity.AddClaim(new Claim(AuthenticationConstants.AudienceClaim, credentials.MicrosoftAppId));
@@ -559,6 +505,61 @@ namespace Microsoft.Bot.Builder
                 await this.RunPipeline(context, callback).ConfigureAwait(false);
             }
         }
+
+        /// <summary>
+        /// Sends a proactive message from the bot to a conversation.
+        /// </summary>
+        /// <param name="botAppId">The application ID of the bot. This is the appId returned by Portal registration, and is
+        /// generally found in the "MicrosoftAppId" parameter in appSettings.json.</param>
+        /// <param name="reference">A reference to the conversation to continue.</param>
+        /// <param name="callback">The method to call for the resulting bot turn.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="botAppId"/>, <paramref name="reference"/>, or
+        /// <paramref name="callback"/> is <c>null</c>.</exception>
+        /// <remarks>Call this method to proactively send a message to a conversation.
+        /// Most _channels require a user to initaiate a conversation with a bot
+        /// before the bot can send activities to the user.
+        /// <para>This method registers the following services for the turn.<list type="bullet">
+        /// <item><see cref="IIdentity"/> (key = "BotIdentity"), a claims identity for the bot.</item>
+        /// <item><see cref="IConnectorClient"/>, the channel connector client to use this turn.</item>
+        /// </list></para>
+        /// <para>
+        /// This overload differers from the Node implementation by requiring the BotId to be 
+        /// passed in. The .Net code allows multiple bots to be hosted in a single adapter which
+        /// isn't something supported by Node.
+        /// </para>
+        /// </remarks>
+        /// <seealso cref="ProcessActivity(string, Activity, Func{ITurnContext, Task})"/>
+        /// <seealso cref="BotAdapter.RunPipeline(ITurnContext, Func{ITurnContext, Task})"/>
+        public override async Task ContinueConversation(string botAppId, ConversationReference reference, Func<ITurnContext, Task> callback)
+        {
+            if (string.IsNullOrWhiteSpace(botAppId))
+                throw new ArgumentNullException(nameof(botAppId));
+
+            if (reference == null)
+                throw new ArgumentNullException(nameof(reference));
+
+            if (callback == null)
+                throw new ArgumentNullException(nameof(callback));
+
+            using (var context = new TurnContext(this, reference.GetContinuationActivity()))
+            {
+                // Hand craft Claims Identity.
+                var claimsIdentity = new ClaimsIdentity(new List<Claim>
+                {
+                    // Adding claims for both Emulator and Channel.
+                    new Claim(AuthenticationConstants.AudienceClaim, botAppId),
+                    new Claim(AuthenticationConstants.AppIdClaim, botAppId)
+                });
+
+                context.Services.Add<IIdentity>(BotIdentityKey, claimsIdentity);
+                var connectorClient = await CreateConnectorClientAsync(reference.ServiceUrl, claimsIdentity).ConfigureAwait(false);
+                context.Services.Add(connectorClient);
+                await RunPipeline(context, callback);
+            }
+        }
+
 
         protected async Task<bool> TrySetEmulatingOAuthCards(ITurnContext turnContext)
         {

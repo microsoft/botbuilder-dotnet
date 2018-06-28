@@ -158,5 +158,29 @@ namespace Microsoft.Bot.Schema
         /// Returns IMessageDeleteActivity if this is a message delete activity, null otherwise
         /// </summary>
         ISuggestionActivity AsSuggestionActivity();
+
+        /// <summary>
+        /// Updates an activity with the delivery information from an existing 
+        /// conversation reference.
+        /// </summary>
+        /// <param name="activity">The activity to update.</param>
+        /// <param name="reference">The conversation reference.</param>
+        /// <param name="isIncoming">(Optional) <c>true</c> to treat the activity as an 
+        /// incoming activity, where the bot is the recipient; otherwaire <c>false</c>.
+        /// Default is <c>false</c>, and the activity will show the bot as the sender.</param>
+        /// <remarks>Call <see cref="GetConversationReference(Activity)"/> on an incoming
+        /// activity to get a conversation reference that you can then use to update an
+        /// outgoing activity with the correct delivery information.
+        /// <para>The <see cref="SendActivity(IActivity)"/> and <see cref="SendActivities(IActivity[])"/>
+        /// methods do this for you.</para>
+        /// </remarks>
+        ConversationReference GetConversationReference();
+
+        /// <summary>
+        /// Creates a conversation reference from an activity.
+        /// </summary>
+        /// <returns>A conversation reference for the conversation that contains the activity.</returns>
+        /// <exception cref="ArgumentNullException">
+        Activity ApplyConversationReference(ConversationReference reference, bool isIncoming = false);
     }
 }
