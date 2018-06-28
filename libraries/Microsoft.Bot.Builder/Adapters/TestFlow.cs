@@ -11,18 +11,29 @@ using Microsoft.Bot.Schema;
 namespace Microsoft.Bot.Builder.Adapters
 {
     /// <summary>
-    /// Called by TestFlow to validate and activity
+    /// Represents a method the <see cref="TestFlow"/> can call to validate an activity.
     /// </summary>
-    /// <param name="expected">Activity from trnascript file</param>
-    /// <param name="actual">Activity from bot</param>
+    /// <param name="expected">The expected activity from the bot or adapter.</param>
+    /// <param name="actual">The actual activity from the bot or adapter.</param>
     public delegate void ValidateReply(IActivity expected, IActivity actual);
 
+    /// <summary>
+    /// A mock channel that can be used for unit testing of bot logic.
+    /// </summary>
+    /// <remarks>You can use this class to mimic input from a a user or a channel to validate
+    /// that the bot or adapter responds as expected.</remarks>
+    /// <seealso cref="TestAdapter"/>
     public class TestFlow
     {
         private readonly TestAdapter _adapter;
         private readonly Task _testTask;
         private Func<ITurnContext, Task> _callback;
 
+        /// <summary>
+        /// Creates a new test flow.
+        /// </summary>
+        /// <param name="adapter">The test adapter to use.</param>
+        /// <param name="callback">The bot turn processing logic to test.</param>
         public TestFlow(TestAdapter adapter, Func<ITurnContext, Task> callback = null)
         {
             _adapter = adapter;
@@ -37,23 +48,32 @@ namespace Microsoft.Bot.Builder.Adapters
             _adapter = flow._adapter;
         }
 
+        /// <summary>
+        /// Creates a new test flow.
+        /// </summary>
+        /// <param name="adapter">The test adapter to use.</param>
+        /// <param name="bot">The bot containing the turn processing logic to test.</param>
         public TestFlow(TestAdapter adapter, IBot bot) : this(adapter, (ctx) => bot.OnTurn(ctx))
         { }
 
         /// <summary>
-        /// Start the execution of the test flow
+        /// Starts the execution of the test flow.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Runs the exchange between the user and the bot.</returns>
+        /// <remarks>This methods sends the activities from the user to the bot and
+        /// checks the responses from the bot based on the activiies described in the
+        /// current test flow.</remarks>
         public Task StartTest()
         {
             return _testTask;
         }
 
         /// <summary>
-        /// Send a message from the user to the bot
+        /// Adds a message activity from the user to the bot.
         /// </summary>
-        /// <param name="userSays"></param>
-        /// <returns></returns>
+        /// <param name="userSays">The text of the message to send.</param>
+        /// <returns>A new <see cref="TestFlow"/> object that appends a new message activity from the user to the modeled exchange.</returns>
+        /// <remarks>This method does not modify the original <see cref="TestFlow"/> object.</remarks>
         public TestFlow Send(string userSays)
         {
             if (userSays == null)
@@ -79,10 +99,11 @@ namespace Microsoft.Bot.Builder.Adapters
         }
 
         /// <summary>
-        /// Send an activity from the user to the bot
+        /// Adds an activity from the user to the bot.
         /// </summary>
-        /// <param name="userActivity"></param>
-        /// <returns></returns>
+        /// <param name="userActivity">The activity to send.</param>
+        /// <returns>A new <see cref="TestFlow"/> object that appends a new activity from the user to the modeled exchange.</returns>
+        /// <remarks>This method does not modify the original <see cref="TestFlow"/> object.</remarks>
         public TestFlow Send(IActivity userActivity)
         {
             if (userActivity == null)
@@ -98,10 +119,11 @@ namespace Microsoft.Bot.Builder.Adapters
         }
 
         /// <summary>
-        /// Delay for time period
+        /// Adds a delay in the conversation.
         /// </summary>
-        /// <param name="ms"></param>
-        /// <returns></returns>
+        /// <param name="ms">The delay length in milliseconds.</param>
+        /// <returns>A new <see cref="TestFlow"/> object that appends a delay to the modeled exchange.</returns>
+        /// <remarks>This method does not modify the original <see cref="TestFlow"/> object.</remarks>
         public TestFlow Delay(UInt32 ms)
         {
             return new TestFlow(_testTask.ContinueWith((task) =>
@@ -114,24 +136,28 @@ namespace Microsoft.Bot.Builder.Adapters
         }
 
         /// <summary>
-        /// Assert that reply is expected text
+        /// Adds an assertion that the turn processing logic responds as expected.
         /// </summary>
-        /// <param name="expected"></param>
-        /// <param name="description"></param>
-        /// <param name="timeout"></param>
-        /// <returns></returns>
+        /// <param name="expected">The expected text of a message from the bot.</param>
+        /// <param name="description">A message to send if the actual response is not as expected.</param>
+        /// <param name="timeout">The amount of time in milliseconds within which a response is expected.</param>
+        /// <returns>A new <see cref="TestFlow"/> object that appends this assertion to the modeled exchange.</returns>
+        /// <remarks>This method does not modify the original <see cref="TestFlow"/> object.</remarks>
+        /// <exception cref="Exception">The bot did not respond as expected.</exception>
         public TestFlow AssertReply(string expected, string description = null, UInt32 timeout = 3000)
         {
             return AssertReply(_adapter.MakeActivity(expected), description, timeout);
         }
 
         /// <summary>
-        /// Assert that the reply is expected activity
+        /// Adds an assertion that the turn processing logic responds as expected.
         /// </summary>
-        /// <param name="expected"></param>
-        /// <param name="description"></param>
-        /// <param name="timeout"></param>
-        /// <returns></returns>
+        /// <param name="expected">The expected activity from the bot.</param>
+        /// <param name="description">A message to send if the actual response is not as expected.</param>
+        /// <param name="timeout">The amount of time in milliseconds within which a response is expected.</param>
+        /// <returns>A new <see cref="TestFlow"/> object that appends this assertion to the modeled exchange.</returns>
+        /// <remarks>This method does not modify the original <see cref="TestFlow"/> object.</remarks>
+        /// <exception cref="Exception">The bot did not respond as expected.</exception>
         public TestFlow AssertReply(IActivity expected, [CallerMemberName] string description = null, UInt32 timeout = 3000)
         {
             return AssertReply((reply) =>
@@ -150,12 +176,14 @@ namespace Microsoft.Bot.Builder.Adapters
         }
 
         /// <summary>
-        /// Assert that the reply matches a custom validation routine
+        /// Adds an assertion that the turn processing logic responds as expected.
         /// </summary>
-        /// <param name="validateActivity"></param>
-        /// <param name="description"></param>
-        /// <param name="timeout"></param>
-        /// <returns></returns>
+        /// <param name="validateActivity">A validation method to apply to an activity from the bot.
+        /// This activity should throw an exception if validation fails.</param>
+        /// <param name="description">A message to send if the actual response is not as expected.</param>
+        /// <param name="timeout">The amount of time in milliseconds within which a response is expected.</param>
+        /// <returns>A new <see cref="TestFlow"/> object that appends this assertion to the modeled exchange.</returns>
+        /// <remarks>This method does not modify the original <see cref="TestFlow"/> object.</remarks>
         public TestFlow AssertReply(Action<IActivity> validateActivity, [CallerMemberName] string description = null, UInt32 timeout = 3000)
         {
             return new TestFlow(_testTask.ContinueWith((task) =>
@@ -188,13 +216,15 @@ namespace Microsoft.Bot.Builder.Adapters
         }
 
         /// <summary>
-        /// Say() -> shortcut for .Send(user).AssertReply(Expected)
+        /// Shortcut for calling <see cref="Send(string)"/> followed by <see cref="AssertReply(string, string, uint)"/>.
         /// </summary>
-        /// <param name="userSays"></param>
-        /// <param name="expected"></param>
-        /// <param name="description"></param>
-        /// <param name="timeout"></param>
-        /// <returns></returns>
+        /// <param name="userSays">The text of the message to send.</param>
+        /// <param name="expected">The expected text of a message from the bot.</param>
+        /// <param name="description">A message to send if the actual response is not as expected.</param>
+        /// <param name="timeout">The amount of time in milliseconds within which a response is expected.</param>
+        /// <returns>A new <see cref="TestFlow"/> object that appends this exchange to the modeled exchange.</returns>
+        /// <remarks>This method does not modify the original <see cref="TestFlow"/> object.</remarks>
+        /// <exception cref="Exception">The bot did not respond as expected.</exception>
         public TestFlow Test(string userSays, string expected, string description = null, UInt32 timeout = 3000)
         {
             if (expected == null)
@@ -205,13 +235,15 @@ namespace Microsoft.Bot.Builder.Adapters
         }
 
         /// <summary>
-        /// Test() -> shortcut for .Send(user).AssertReply(Expected)
+        /// Shortcut for calling <see cref="Send(string)"/> followed by <see cref="AssertReply(IActivity, string, uint)"/>.
         /// </summary>
-        /// <param name="userSays"></param>
-        /// <param name="expected"></param>
-        /// <param name="description"></param>
-        /// <param name="timeout"></param>
-        /// <returns></returns>
+        /// <param name="userSays">The text of the message to send.</param>
+        /// <param name="expected">The expected activity from the bot.</param>
+        /// <param name="description">A message to send if the actual response is not as expected.</param>
+        /// <param name="timeout">The amount of time in milliseconds within which a response is expected.</param>
+        /// <returns>A new <see cref="TestFlow"/> object that appends this exchange to the modeled exchange.</returns>
+        /// <remarks>This method does not modify the original <see cref="TestFlow"/> object.</remarks>
+        /// <exception cref="Exception">The bot did not respond as expected.</exception>
         public TestFlow Test(string userSays, Activity expected, string description = null, UInt32 timeout = 3000)
         {
             if (expected == null)
@@ -222,31 +254,37 @@ namespace Microsoft.Bot.Builder.Adapters
         }
 
         /// <summary>
-        /// Say() -> shortcut for .Send(user).AssertReply(Expected)
+        /// Shortcut for calling <see cref="Send(string)"/> followed by <see cref="AssertReply(Action{IActivity}, string, uint)"/>.
         /// </summary>
-        /// <param name="userSays"></param>
-        /// <param name="expected"></param>
-        /// <param name="description"></param>
-        /// <param name="timeout"></param>
-        /// <returns></returns>
-        public TestFlow Test(string userSays, Action<IActivity> expected, string description = null, UInt32 timeout = 3000)
+        /// <param name="userSays">The text of the message to send.</param>
+        /// <param name="validateActivity">A validation method to apply to an activity from the bot.
+        /// This activity should throw an exception if validation fails.</param>
+        /// <param name="description">A message to send if the actual response is not as expected.</param>
+        /// <param name="timeout">The amount of time in milliseconds within which a response is expected.</param>
+        /// <returns>A new <see cref="TestFlow"/> object that appends this exchange to the modeled exchange.</returns>
+        /// <remarks>This method does not modify the original <see cref="TestFlow"/> object.</remarks>
+        /// <exception cref="Exception">The bot did not respond as expected.</exception>
+        public TestFlow Test(string userSays, Action<IActivity> validateActivity, string description = null, UInt32 timeout = 3000)
         {
-            if (expected == null)
-                throw new ArgumentNullException(nameof(expected));
+            if (validateActivity == null)
+                throw new ArgumentNullException(nameof(validateActivity));
 
             return Send(userSays)
-                .AssertReply(expected, description, timeout);
+                .AssertReply(validateActivity, description, timeout);
         }
 
         /// <summary>
-        /// Shorcut to test a conversation for .Send(user).AssertReply(bot)
-        /// Each activity with From.Role equals to "bot" will be processed with AssertReply method
-        /// Every other activity will be processed as User's message with Send method
+        /// Shorcut for adding an arbitray exchange between the user and bot.
+        /// Each activity with a <see cref="IActivity.From"/>.<see cref="ChannelAccount.Role"/> equals to "bot"
+        /// will be processed with the <see cref="AssertReply(IActivity, string, uint)"/> method.
+        /// Every other activity will be processed as user's message via the <see cref="Send(IActivity)"/> method
         /// </summary>
-        /// <param name="activities">List of activities to test</param>
-        /// <param name="description"></param>
-        /// <param name="timeout"></param>
-        /// <returns>TestFlow to test</returns>
+        /// <param name="activities">The list of activities to test.</param>
+        /// <param name="description">A message to send if the actual response is not as expected.</param>
+        /// <param name="timeout">The amount of time in milliseconds within which a response is expected.</param>
+        /// <returns>A new <see cref="TestFlow"/> object that appends this exchange to the modeled exchange.</returns>
+        /// <remarks>This method does not modify the original <see cref="TestFlow"/> object.</remarks>
+        /// <exception cref="Exception">The bot did not respond as expected.</exception>
         public TestFlow Test(IEnumerable<IActivity> activities, [CallerMemberName] string description = null, UInt32 timeout = 3000)
         {
             if (activities == null)
@@ -262,15 +300,18 @@ namespace Microsoft.Bot.Builder.Adapters
         }
 
         /// <summary>
-        /// Shorcut to test a conversation for .Send(user).AssertReply(bot)
-        /// Each activity with From.Role equals to "bot" will be processed with AssertReply method
-        /// Every other activity will be processed as User's message with Send method
+        /// Shorcut for adding an arbitray exchange between the user and bot.
+        /// Each activity with a <see cref="IActivity.From"/>.<see cref="ChannelAccount.Role"/> equals to "bot"
+        /// will be processed with the <see cref="AssertReply(IActivity, string, uint)"/> method.
+        /// Every other activity will be processed as user's message via the <see cref="Send(IActivity)"/> method
         /// </summary>
-        /// <param name="activities">List of activities to test</param>
-        /// <param name="validateReply">Custom validation between an expected response and the actual response</param>
-        /// <param name="description"></param>
-        /// <param name="timeout"></param>
-        /// <returns>TestFlow to test</returns>
+        /// <param name="activities">The list of activities to test.</param>
+        /// <param name="validateReply">The delegate to call to validate responses from the bot.</param>
+        /// <param name="description">A message to send if the actual response is not as expected.</param>
+        /// <param name="timeout">The amount of time in milliseconds within which a response is expected.</param>
+        /// <returns>A new <see cref="TestFlow"/> object that appends this exchange to the modeled exchange.</returns>
+        /// <remarks>This method does not modify the original <see cref="TestFlow"/> object.</remarks>
+        /// <exception cref="Exception">The bot did not respond as expected.</exception>
         public TestFlow Test(IEnumerable<IActivity> activities, ValidateReply validateReply, [CallerMemberName] string description = null, UInt32 timeout = 3000)
         {
             if (activities == null)
@@ -296,12 +337,14 @@ namespace Microsoft.Bot.Builder.Adapters
         }
 
         /// <summary>
-        /// Assert that reply is one of the candidate responses
+        /// Adds an assertion that the bot's response is contained within a set of acceptable responses.
         /// </summary>
-        /// <param name="candidates"></param>
-        /// <param name="description"></param>
-        /// <param name="timeout"></param>
-        /// <returns></returns>
+        /// <param name="candidates">The set of acceptable messages.</param>
+        /// <param name="description">A message to send if the actual response is not as expected.</param>
+        /// <param name="timeout">The amount of time in milliseconds within which a response is expected.</param>
+        /// <returns>A new <see cref="TestFlow"/> object that appends this assertion to the modeled exchange.</returns>
+        /// <remarks>This method does not modify the original <see cref="TestFlow"/> object.</remarks>
+        /// <exception cref="Exception">The bot did not respond as expected.</exception>
         public TestFlow AssertReplyOneOf(string[] candidates, string description = null, UInt32 timeout = 3000)
         {
             if (candidates == null)
