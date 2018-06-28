@@ -157,7 +157,7 @@ namespace Microsoft.Bot.Builder
             if (!string.IsNullOrEmpty(inputHint))
                 activityToSend.InputHint = inputHint;
 
-            return await SendActivity(activityToSend);
+            return await SendActivity(activityToSend).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -173,7 +173,7 @@ namespace Microsoft.Bot.Builder
         {
             BotAssert.ActivityNotNull(activity);
 
-            ResourceResponse[] responses = await SendActivities(new [] { activity });
+            ResourceResponse[] responses = await SendActivities(new [] { activity }).ConfigureAwait(false);
             if (responses == null || responses.Length == 0)
             {
                 // It's possible an interceptor prevented the activity from having been sent. 
@@ -328,7 +328,7 @@ namespace Microsoft.Bot.Builder
                 await Adapter.DeleteActivity(this, conversationReference).ConfigureAwait(false);
             }
 
-            await DeleteActivityInternal(conversationReference, _onDeleteActivity, ActuallyDeleteStuff);
+            await DeleteActivityInternal(conversationReference, _onDeleteActivity, ActuallyDeleteStuff).ConfigureAwait(false);
         }
 
         private async Task<ResourceResponse> UpdateActivityInternal(Activity activity,
