@@ -32,15 +32,16 @@ namespace Microsoft.Bot.Connector.Authentication
         /// The key for Microsoft app Password.
         /// </summary>
         public const string MicrosoftAppPasswordKey = "MicrosoftAppPassword";
-        
+
         private static HttpClient _httpClient = new HttpClient();
 
-        protected static ConcurrentDictionary<string, DateTime> TrustedHostNames = new ConcurrentDictionary<string, DateTime>(
-                                                                                        new Dictionary<string, DateTime>() {
-                                                                                            { "state.botframework.com", DateTime.MaxValue },
-                                                                                            { "api.botframework.com", DateTime.MaxValue },
-                                                                                            { "token.botframework.com", DateTime.MaxValue }
-                                                                                        });
+        private static readonly IDictionary<string, DateTime> _trustedHostNames = new Dictionary<string, DateTime>()
+        {
+            // { "state.botframework.com", DateTime.MaxValue }, // deprecated state api
+            { "api.botframework.com", DateTime.MaxValue},       // bot connector API
+            { "token.botframework.com", DateTime.MaxValue }     // oauth token endpoint
+        };
+
 
         protected static readonly Dictionary<string, Task<OAuthResponse>> tokenTaskCache = new Dictionary<string, Task<OAuthResponse>>();
         protected static readonly ConcurrentDictionary<string, DateTime> autoRefreshTimes = new ConcurrentDictionary<string, DateTime>();
@@ -62,52 +63,30 @@ namespace Microsoft.Bot.Connector.Authentication
 
 
         /// <summary>
-        /// TimeWindow which controlls how often the token will be automatically updated
+        /// TimeWindow which controls how often the token will be automatically updated
         /// </summary>
         public static TimeSpan AutoTokenRefreshTimeSpan { get; set; } = TimeSpan.FromMinutes(10);
 
         /// <summary>
         /// Adds the host of service url to <see cref="MicrosoftAppCredentials"/> trusted hosts.
         /// </summary>
-        /// <param name="serviceUrl">The service url</param>
-        /// <param name="expirationTime">The expiration time after which this service url is not trusted anymore</param>
+        /// <param name="serviceUrl">The service URL.</param>
         /// <remarks>If expiration time is not provided, the expiration time will DateTime.UtcNow.AddDays(1).</remarks>
-        public static void TrustServiceUrl(string serviceUrl, DateTime expirationTime = default(DateTime))
+        public static void TrustServiceUrl(string serviceUrl)
         {
-            try
+            TrustServiceUrl(serviceUrl, DateTime.UtcNow.Add(TimeSpan.FromDays(1)));
+        }
+
+        /// <summary>
+        /// Adds the host of service url to <see cref="MicrosoftAppCredentials"/> trusted hosts.
+        /// </summary>
+        /// <param name="serviceUrl">The service URL.</param>
+        /// <param name="expirationTime">The expiration time after which this service url is not trusted anymore.</param>
+        public static void TrustServiceUrl(string serviceUrl, DateTime expirationTime)
+        {
+            lock (_trustedHostNames)
             {
-                if (expirationTime == default(DateTime))
-                {
-                    // by default the service url is valid for one day
-                    var extensionPeriod = TimeSpan.FromDays(1);
-                    TrustedHostNames.AddOrUpdate(new Uri(serviceUrl).Host, DateTime.UtcNow.Add(extensionPeriod), (key, oldValue) =>
-                    {
-                        var newExpiration = DateTime.UtcNow.Add(extensionPeriod);
-                        // try not to override expirations that are greater than one day from now
-                        if (oldValue > newExpiration)
-                        {
-                            // make sure that extension can be added to oldValue and ArgumentOutOfRangeException
-                            // is not thrown
-                            if (oldValue >= DateTime.MaxValue.Subtract(extensionPeriod))
-                            {
-                                newExpiration = oldValue;
-                            }
-                            else
-                            {
-                                newExpiration = oldValue.Add(extensionPeriod);
-                            }
-                        }
-                        return newExpiration;
-                    });
-                }
-                else
-                {
-                    TrustedHostNames.AddOrUpdate(new Uri(serviceUrl).Host, expirationTime, (key, oldValue) => expirationTime);
-                }
-            }
-            catch (Exception err)
-            {
-                System.Diagnostics.Debug.WriteLine(err.ToString());
+                _trustedHostNames[new Uri(serviceUrl).Host] = expirationTime;
             }
         }
 
@@ -118,10 +97,9 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <returns>True if the host of the service url is trusted; False otherwise.</returns>
         public static bool IsTrustedServiceUrl(string serviceUrl)
         {
-            Uri uri;
-            if (Uri.TryCreate(serviceUrl, UriKind.Absolute, out uri))
+            if (Uri.TryCreate(serviceUrl, UriKind.Absolute, out Uri uri))
             {
-                return TrustedUri(uri);
+                return IsTrustedUrl(uri);
             }
             return false;
         }
@@ -158,7 +136,7 @@ namespace Microsoft.Bot.Connector.Authentication
                 {
                     // we have an oAuthToken
                     // check to see if our token is expired 
-                    if (TokenExpired(oAuthToken))
+                    if (IsTokenExpired(oAuthToken))
                     {
                         // it is, we should await the current task (someone could have already asked for a new token)
                         oAuthTokenTask = _getCurrentTokenTask(forceRefresh: false);
@@ -253,7 +231,7 @@ namespace Microsoft.Bot.Connector.Authentication
 
         private bool ShouldSetToken(HttpRequestMessage request)
         {
-            if (TrustedUri(request.RequestUri))
+            if (IsTrustedUrl(request.RequestUri))
             {
                 return true;
             }
@@ -262,20 +240,22 @@ namespace Microsoft.Bot.Connector.Authentication
             return false;
         }
 
-        private static bool TrustedUri(Uri uri)
+        private static bool IsTrustedUrl(Uri uri)
         {
-            DateTime trustedServiceUrlExpiration;
-            if (TrustedHostNames.TryGetValue(uri.Host, out trustedServiceUrlExpiration))
+            lock (_trustedHostNames)
             {
-                // check if the trusted service url is still valid
-                if (trustedServiceUrlExpiration > DateTime.UtcNow.Subtract(TimeSpan.FromMinutes(5)))
+                if (_trustedHostNames.TryGetValue(uri.Host, out DateTime trustedServiceUrlExpiration))
                 {
-                    return true;
+                    // check if the trusted service url is still valid
+                    if (trustedServiceUrlExpiration > DateTime.UtcNow.Subtract(TimeSpan.FromMinutes(5)))
+                    {
+                        return true;
+                    }
                 }
+                return false;
             }
-            return false;
         }
-        
+
         public sealed class OAuthException : Exception
         {
             public OAuthException(string body, Exception inner)
@@ -312,12 +292,22 @@ namespace Microsoft.Bot.Connector.Authentication
             }
         }
 
-        private bool TokenExpired(OAuthResponse token)
+        /// <summary>
+        /// Has the token expired?  If so, then we await on every attempt to get a new token
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        private bool IsTokenExpired(OAuthResponse token)
         {
             return DateTime.UtcNow > token.expiration_time;
         }
 
-        private bool TokenOld(OAuthResponse token)
+        /// <summary>
+        /// has token reached half/life ? If so, we get more agressive about trying to refresh it in the background
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        private bool IsTokenOld(OAuthResponse token)
         {
             var halfwayExpiration = (token.expiration_time - TimeSpan.FromSeconds(token.expires_in / 2));
             return DateTime.UtcNow > halfwayExpiration;

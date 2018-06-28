@@ -65,7 +65,7 @@ namespace Microsoft.Bot.Connector
             this.HttpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("Microsoft-BotFramework", "3.1"));
 
             // The client SDK version is coupled to the version number of the package. 
-            this.HttpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue($"(BotBuilder .Net/{typeof(ConnectorClient).GetTypeInfo().Assembly.GetName().Version})"));
+            this.HttpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue($"(BotBuilder .Net/{GetClientVersion(this)})"));
             this.HttpClient.DefaultRequestHeaders.ExpectContinue = false;
         }
 
