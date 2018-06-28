@@ -225,7 +225,7 @@ namespace Microsoft.Bot.Builder.Classic.Luis
     [Serializable]
     public sealed class LuisService : ILuisService
     {
-        private static HttpClient g_httpClient = new HttpClient();
+        private static readonly HttpClient DefaultHttpClient = new HttpClient() { Timeout = TimeSpan.FromSeconds(20) };
         private HttpClient _httpClient;
         private readonly ILuisModel model;
 
@@ -233,9 +233,10 @@ namespace Microsoft.Bot.Builder.Classic.Luis
         /// Construct the LUIS service using the model information.
         /// </summary>
         /// <param name="model">The LUIS model information.</param>
-        public LuisService(ILuisModel model, HttpClient client=null)
+        /// <param name="customHttpClient">an optional custom http client</param>
+        public LuisService(ILuisModel model, HttpClient customHttpClient = null)
         {
-            _httpClient = client ?? g_httpClient;
+            _httpClient = customHttpClient ?? DefaultHttpClient;
             SetField.NotNull(out this.model, nameof(model), model);
         }
 
