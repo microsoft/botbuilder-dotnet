@@ -34,7 +34,7 @@ namespace Microsoft.Bot.Builder.Azure
         /// <summary>
         /// Gets or sets the connection policy configurator. This action allows you to customise the connection parameters.
         /// </summary>
-        /// <remarks>You can use the <paramref name="connectionPolicyConfigurator"/> delegate to 
+        /// <remarks>You can use this delegate to 
         /// further customize the connection to CosmosDB, 
         /// such as setting connection mode, retry options, timeouts, and so on.
         /// See https://docs.microsoft.com/en-us/dotnet/api/microsoft.azure.documents.client.connectionpolicy?view=azure-dotnet

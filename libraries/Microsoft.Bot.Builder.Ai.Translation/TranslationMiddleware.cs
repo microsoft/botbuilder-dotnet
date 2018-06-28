@@ -207,13 +207,15 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         }
 
         /// <summary>
-        /// Translate .Text field of a message
+        /// Translates the <see cref="Activity.Text"/> of a message.
         /// </summary>
-        /// <param name="context"/>
-        /// <param name="message"></param>
-        /// <param name="sourceLanguage"/>
-        /// <param name="targetLanguage"></param>
-        /// <returns></returns>
+        /// <param name="context">The current turn context.</param>
+        /// <param name="message">The activity containing the text to translate.</param>
+        /// <param name="sourceLanguage">An identifier for the language to translate from.</param>
+        /// <param name="targetLanguage">An identifier for the language to translate to.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>When the task completes successfully, the <see cref="Activity.Text"/> property
+        /// of the message contains the translated text.</remarks>
         private async Task TranslateMessageAsync(ITurnContext context, IMessageActivity message, string sourceLanguage, string targetLanguage, bool InNativeLanguages)
         {
             if (!InNativeLanguages && sourceLanguage != targetLanguage)
