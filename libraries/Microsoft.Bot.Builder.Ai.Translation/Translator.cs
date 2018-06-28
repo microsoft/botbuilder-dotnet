@@ -24,14 +24,17 @@ namespace Microsoft.Bot.Builder.Ai.Translation
     public class Translator
     {
         private readonly AzureAuthToken _authToken;
-        private static HttpClient _httpClient = new HttpClient() { Timeout = TimeSpan.FromSeconds(20) };
+        private static HttpClient g_httpClient = new HttpClient() { Timeout = TimeSpan.FromSeconds(20) };
+        private HttpClient _httpClient = null;
 
         /// <summary>
         /// Creates a new <see cref="Translator"/> object.
         /// </summary>
         /// <param name="apiKey">Your subscription key for the Microsoft Translator Text API.</param>
-        public Translator(string apiKey)
+        /// <param name="client">alternate http client</param>
+        public Translator(string apiKey, HttpClient client=null)
         {
+            _httpClient = client ?? g_httpClient;
             if (string.IsNullOrWhiteSpace(apiKey))
             {
                 throw new ArgumentNullException(nameof(apiKey));
@@ -235,7 +238,8 @@ namespace Microsoft.Bot.Builder.Ai.Translation
 
     internal class AzureAuthToken
     {
-        private static HttpClient _httpClient = new HttpClient() { Timeout = TimeSpan.FromSeconds(20) };
+        private static HttpClient g_httpClient = new HttpClient() { Timeout = TimeSpan.FromSeconds(20) };
+        private HttpClient _httpClient = null;
 
         /// URL of the token service
         private static readonly Uri ServiceUrl = new Uri("https://api.cognitive.microsoft.com/sts/v1.0/issueToken");
@@ -263,8 +267,9 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         /// Creates a client to obtain an access token.
         /// </summary>
         /// <param name="key">Subscription key to use to get an authentication token.</param>
-        internal AzureAuthToken(string key)
+        internal AzureAuthToken(string key, HttpClient client=null)
         {
+            _httpClient = client ?? g_httpClient;
             if (string.IsNullOrEmpty(key))
                 throw new ArgumentNullException(nameof(key), "A subscription key is required");
 

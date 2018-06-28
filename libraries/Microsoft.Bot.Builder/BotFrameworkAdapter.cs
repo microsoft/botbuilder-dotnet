@@ -36,6 +36,7 @@ namespace Microsoft.Bot.Builder
     public class BotFrameworkAdapter : BotAdapter
     {
         private readonly ICredentialProvider _credentialProvider;
+        private static readonly HttpClient g_httpClient = new HttpClient();
         private readonly HttpClient _httpClient;
         private readonly RetryPolicy _connectorClientRetryPolicy;
         private Dictionary<string, MicrosoftAppCredentials> _appCredentialMap = new Dictionary<string, MicrosoftAppCredentials>();
@@ -61,7 +62,7 @@ namespace Microsoft.Bot.Builder
         public BotFrameworkAdapter(ICredentialProvider credentialProvider, RetryPolicy connectorClientRetryPolicy = null, HttpClient httpClient = null, IMiddleware middleware = null)
         {
             _credentialProvider = credentialProvider ?? throw new ArgumentNullException(nameof(credentialProvider));
-            _httpClient = httpClient ?? new HttpClient();
+            _httpClient = httpClient ?? g_httpClient;
             _connectorClientRetryPolicy = connectorClientRetryPolicy;
 
             if (middleware != null)

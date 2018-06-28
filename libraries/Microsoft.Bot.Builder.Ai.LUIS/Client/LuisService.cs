@@ -204,14 +204,18 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
     [Serializable]
     public sealed class LuisService : ILuisService
     {
+        private static HttpClient g_httpClient = new HttpClient();
+        private HttpClient _httpClient = null;
+
         private readonly ILuisModel model;
 
         /// <summary>
         /// Construct the LUIS service using the model information.
         /// </summary>
         /// <param name="model">The LUIS model information.</param>
-        public LuisService(ILuisModel model)
+        public LuisService(ILuisModel model, HttpClient client = null)
         {
+            _httpClient = client ?? g_httpClient;
             SetField.NotNull(out this.model, nameof(model), model);
         }
 
@@ -253,8 +257,7 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
         async Task<LuisResult> ILuisService.QueryAsync(Uri uri, CancellationToken token)
         {
             string json;
-            using (var client = new HttpClient())
-            using (var response = await client.GetAsync(uri, HttpCompletionOption.ResponseContentRead, token))
+            using (var response = await _httpClient.GetAsync(uri, HttpCompletionOption.ResponseContentRead, token))
             {
                 response.EnsureSuccessStatusCode();
                 json = await response.Content.ReadAsStringAsync();
