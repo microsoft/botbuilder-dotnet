@@ -10,6 +10,10 @@ using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.Adapters
 {
+    /// <summary>
+    /// A mock adapter that can be used for unit testing of bot logic.
+    /// </summary>
+    /// <seealso cref="TestFlow"/>
     public class TestAdapter : BotAdapter
     {
         private object _conversationLock = new object();
