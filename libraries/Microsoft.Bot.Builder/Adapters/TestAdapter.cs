@@ -236,10 +236,12 @@ namespace Microsoft.Bot.Builder.Adapters
 
 
         /// <summary>
-        /// Called by TestFlow to send text to the bot
+        /// Processes a message activity from a user.
         /// </summary>
-        /// <param name="userSays"></param>
-        /// <returns></returns>
+        /// <param name="userSays">The text of the user's message.</param>
+        /// <param name="callback">The turn processing logic to use.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <seealso cref="TestFlow.Send(string)"/>
         public Task SendTextToBot(string userSays, Func<ITurnContext, Task> callback)
         {
             return ProcessActivity(MakeActivity(userSays), callback);
