@@ -30,7 +30,8 @@ namespace Microsoft.Bot.Builder
                 }
             }
 
-            throw new KeyNotFoundException($"Service of type '{typeof(TService).FullName}' was not found under key '{key}'");
+            // return null if either the key or type don't match
+            return null;
         }
 
         public TService Get<TService>() where TService : class
@@ -43,7 +44,8 @@ namespace Microsoft.Bot.Builder
             if (key == null) throw new ArgumentNullException(nameof(key));
             if (service == null) throw new ArgumentNullException(nameof(service));
 
-            Add(key, service);
+            // note this can throw with a duplicate key
+            base.Add(key, service);
         }
 
         public void Add<TService>(TService service) where TService : class
