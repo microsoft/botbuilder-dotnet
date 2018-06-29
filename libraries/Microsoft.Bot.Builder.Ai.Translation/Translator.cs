@@ -101,14 +101,16 @@ namespace Microsoft.Bot.Builder.Ai.Translation
                 var accessToken = await _authToken.GetAccessTokenAsync().ConfigureAwait(false);
                 request.Headers.Add("Authorization", accessToken);
                 request.RequestUri = new Uri(url + query);
-                var response = await _httpClient.SendAsync(request);
-                var result = await response.Content.ReadAsStringAsync();
+                using (var response = await _httpClient.SendAsync(request))
+                {
+                    var result = await response.Content.ReadAsStringAsync();
 
-                if (!response.IsSuccessStatusCode)
-                    return "ERROR: " + result;
+                    if (!response.IsSuccessStatusCode)
+                        return "ERROR: " + result;
 
-                var detectedLang = XElement.Parse(result).Value;
-                return detectedLang;
+                    var detectedLang = XElement.Parse(result).Value;
+                    return detectedLang;
+                }
             }
         }
 
@@ -138,16 +140,18 @@ namespace Microsoft.Bot.Builder.Ai.Translation
                 var accessToken = await _authToken.GetAccessTokenAsync().ConfigureAwait(false);
                 request.Headers.Add("Authorization", accessToken);
                 request.RequestUri = new Uri(url + query);
-                var response = await _httpClient.SendAsync(request);
-                var result = await response.Content.ReadAsStringAsync();
+                using (var response = await _httpClient.SendAsync(request))
+                {
+                    var result = await response.Content.ReadAsStringAsync();
 
-                if (!response.IsSuccessStatusCode)
-                    throw new ArgumentException(result);
+                    if (!response.IsSuccessStatusCode)
+                        throw new ArgumentException(result);
 
-                var translatedText = XElement.Parse(result).Value.Trim();
+                    var translatedText = XElement.Parse(result).Value.Trim();
 
-                currentTranslatedDocument.TargetMessage = translatedText;
-                return currentTranslatedDocument;
+                    currentTranslatedDocument.TargetMessage = translatedText;
+                    return currentTranslatedDocument;
+                }
             }
         }
 
@@ -203,33 +207,35 @@ namespace Microsoft.Bot.Builder.Ai.Translation
                 request.Content = new StringContent(body, Encoding.UTF8, "text/xml");
                 request.Headers.Add("Authorization", accessToken);
 
-                var response = await _httpClient.SendAsync(request);
-                var responseBody = await response.Content.ReadAsStringAsync();
-                switch (response.StatusCode)
+                using (var response = await _httpClient.SendAsync(request))
                 {
-                    case HttpStatusCode.OK:
-                        Console.WriteLine("Request status is OK. Result of translate array method is:");
-                        var doc = XDocument.Parse(responseBody);
-                        var ns = XNamespace.Get("http://schemas.datacontract.org/2004/07/Microsoft.MT.Web.Service.V2");
-                        List<string> results = new List<string>();
-                        int sentIndex = 0;
-                        foreach (XElement xe in doc.Descendants(ns + "TranslateArray2Response"))
-                        {
-                            TranslatedDocument currentTranslatedDocument = translatedDocuments[sentIndex];
-                            currentTranslatedDocument.TargetMessage = xe.Element(ns + "TranslatedText").Value;
-                            currentTranslatedDocument.RawAlignment = xe.Element(ns + "Alignment").Value;
-                            if (!string.IsNullOrEmpty(currentTranslatedDocument.RawAlignment))
+                    var responseBody = await response.Content.ReadAsStringAsync();
+                    switch (response.StatusCode)
+                    {
+                        case HttpStatusCode.OK:
+                            Console.WriteLine("Request status is OK. Result of translate array method is:");
+                            var doc = XDocument.Parse(responseBody);
+                            var ns = XNamespace.Get("http://schemas.datacontract.org/2004/07/Microsoft.MT.Web.Service.V2");
+                            List<string> results = new List<string>();
+                            int sentIndex = 0;
+                            foreach (XElement xe in doc.Descendants(ns + "TranslateArray2Response"))
                             {
-                                string[] alignments = currentTranslatedDocument.RawAlignment.Trim().Split(' ');
-                                currentTranslatedDocument.SourceTokens = PostProcessingUtilities.SplitSentence(currentTranslatedDocument.SourceMessage, alignments);
-                                currentTranslatedDocument.TranslatedTokens = PostProcessingUtilities.SplitSentence(xe.Element(ns + "TranslatedText").Value, alignments, false);
-                                currentTranslatedDocument.IndexedAlignment = PostProcessingUtilities.WordAlignmentParse(alignments, currentTranslatedDocument.SourceTokens, currentTranslatedDocument.TranslatedTokens);
+                                TranslatedDocument currentTranslatedDocument = translatedDocuments[sentIndex];
+                                currentTranslatedDocument.TargetMessage = xe.Element(ns + "TranslatedText").Value;
+                                currentTranslatedDocument.RawAlignment = xe.Element(ns + "Alignment").Value;
+                                if (!string.IsNullOrEmpty(currentTranslatedDocument.RawAlignment))
+                                {
+                                    string[] alignments = currentTranslatedDocument.RawAlignment.Trim().Split(' ');
+                                    currentTranslatedDocument.SourceTokens = PostProcessingUtilities.SplitSentence(currentTranslatedDocument.SourceMessage, alignments);
+                                    currentTranslatedDocument.TranslatedTokens = PostProcessingUtilities.SplitSentence(xe.Element(ns + "TranslatedText").Value, alignments, false);
+                                    currentTranslatedDocument.IndexedAlignment = PostProcessingUtilities.WordAlignmentParse(alignments, currentTranslatedDocument.SourceTokens, currentTranslatedDocument.TranslatedTokens);
+                                }
+                                sentIndex += 1;
                             }
-                            sentIndex += 1;
-                        }
-                        return translatedDocuments;
-                    default:
-                        throw new Exception(response.ReasonPhrase);
+                            return translatedDocuments;
+                        default:
+                            throw new Exception(response.ReasonPhrase);
+                    }
                 }
             }
         }
@@ -303,13 +309,15 @@ namespace Microsoft.Bot.Builder.Ai.Translation
                 request.RequestUri = ServiceUrl;
                 request.Content = new StringContent(string.Empty);
                 request.Headers.TryAddWithoutValidation(OcpApimSubscriptionKeyHeader, this.SubscriptionKey);
-                var response = await _httpClient.SendAsync(request);
-                this.RequestStatusCode = response.StatusCode;
-                response.EnsureSuccessStatusCode();
-                var token = await response.Content.ReadAsStringAsync();
-                _storedTokenTime = DateTime.Now;
-                _storedTokenValue = "Bearer " + token;
-                return _storedTokenValue;
+                using (var response = await _httpClient.SendAsync(request))
+                {
+                    this.RequestStatusCode = response.StatusCode;
+                    response.EnsureSuccessStatusCode();
+                    var token = await response.Content.ReadAsStringAsync();
+                    _storedTokenTime = DateTime.Now;
+                    _storedTokenValue = "Bearer " + token;
+                    return _storedTokenValue;
+                }
             }
         }
     }
