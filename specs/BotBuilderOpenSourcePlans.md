@@ -40,10 +40,17 @@ We love external pull requests. For submitted PR's we require:
 2. Signed the relevant CLA
 3. Follow coding standards for relevant platform
 4. Unit Tests all pass. 
+5. New code has all necessary and relevant Unit Tests.
+6. Changed code has corresponding unit tests to validate changes. 
 
 The BotBuilder team is following the [.Net Core FX/CLR contribution guidelines](https://github.com/dotnet/coreclr/blob/master/Documentation/project-docs/contributing.md). 
 
 Each PR will be assigned to a BotBuilder team member for review and reviewed against the relevant guidelines. 
+
+# Multi-Platform Pull Requests
+As a general rule, external 3rd party pull requests are expected to be in a particular language (C#, JS, etc). If the BotBuilder team believes there is sufficient value in the PR then the team will work with the contributor to port the PR to other platforms. In most cases, this will involve the BotBuilder team porting the PR to other platforms. 
+
+Note: Generally, bug fixes are not expected to be multi-platform. They will be dealt with on an as-needed basis. 
 
 # Stand-up
 The ASP.Net team does a [weekly public standup](https://live.asp.net/). At this time, the BotBuilder team doesn't think this is needed. Any voice/video discussions that need to happen can be scheduled, but most discussion should take place via GitHub. 
@@ -62,6 +69,16 @@ In Github, we are going with 5 repos. These break down as:
 
 By design, most Issues and discussions should happen on the platform-agnostic "BotBuilder" repo. Issues that are incorrectly filed on a platform specific repo will be closed and re-opened on the correct repo. Likewise, platform specific issues will be moved as needed. 
 
+# Branching Strategy
+The "Master" branch in each repo represents the most current codebase. In the Master Branch:
+* All "new" code must be added to a branch. Any necessary rebasing against master must happen in that branch. 
+* Upon completion of a PR, a member of the BotBuilder team will merge the branch into master. 
+* Each time a Release is done, a new branch will be created. 
+
+The branching strategy should be the same as other major open-source code such as typescript:
+https://github.com/Microsoft/TypeScript/branches
+
+
 # Issue Tags
 The following tags are used across repos:
 
@@ -74,9 +91,9 @@ on-hold | The issue is acknowledged, but not actively being worked | Orange
 Docs | The issue in some way pertains to docs. Common uses are to report docs that are  incorrect, need enhancements, or generally unclear | Green
 Samples | The issue is pertains to samples. Common uses are to request new samples, changes to existing samples, or questions about a samples | Coral
 DCR | A Discussion thread about a potential change or new feature. | Purple
-Dialogs | Issue pertains to the dialog and prompt system | Pink
-Proactive | Issue relevant to proactive messaging | Dark Blue
-State-Management | Issue relevant to state management in the Bot | Light Yellow
+Feature:Dialogs | Issue pertains to the dialog and prompt system | Pink
+Feature:Proactive | Issue relevant to proactive messaging | Dark Blue
+Feature:State-Management | Issue relevant to state management in the Bot | Light Yellow
 
 
 
