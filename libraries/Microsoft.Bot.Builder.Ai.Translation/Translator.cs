@@ -24,13 +24,17 @@ namespace Microsoft.Bot.Builder.Ai.Translation
     public class Translator
     {
         private readonly AzureAuthToken _authToken;
+        private static readonly HttpClient DefaultHttpClient = new HttpClient() { Timeout = TimeSpan.FromSeconds(20) };
+        private HttpClient _httpClient = null;
 
         /// <summary>
         /// Creates a new <see cref="Translator"/> object.
         /// </summary>
         /// <param name="apiKey">Your subscription key for the Microsoft Translator Text API.</param>
-        public Translator(string apiKey)
+        /// <param name="customHttpClient">alternate http client</param>
+        public Translator(string apiKey, HttpClient customHttpClient = null)
         {
+            _httpClient = customHttpClient ?? DefaultHttpClient;
             if (string.IsNullOrWhiteSpace(apiKey))
             {
                 throw new ArgumentNullException(nameof(apiKey));
@@ -92,20 +96,21 @@ namespace Microsoft.Bot.Builder.Ai.Translation
             string url = "http://api.microsofttranslator.com/v2/Http.svc/Detect";
             string query = $"?text={System.Net.WebUtility.UrlEncode(textToDetect)}";
 
-            using (var client = new HttpClient())
             using (var request = new HttpRequestMessage())
             {
                 var accessToken = await _authToken.GetAccessTokenAsync().ConfigureAwait(false);
                 request.Headers.Add("Authorization", accessToken);
                 request.RequestUri = new Uri(url + query);
-                var response = await client.SendAsync(request);
-                var result = await response.Content.ReadAsStringAsync();
+                using (var response = await _httpClient.SendAsync(request))
+                {
+                    var result = await response.Content.ReadAsStringAsync();
 
-                if (!response.IsSuccessStatusCode)
-                    return "ERROR: " + result;
+                    if (!response.IsSuccessStatusCode)
+                        return "ERROR: " + result;
 
-                var detectedLang = XElement.Parse(result).Value;
-                return detectedLang;
+                    var detectedLang = XElement.Parse(result).Value;
+                    return detectedLang;
+                }
             }
         }
 
@@ -130,22 +135,23 @@ namespace Microsoft.Bot.Builder.Ai.Translation
                                  $"&from={from}" +
                                  $"&to={to}";
 
-            using (var client = new HttpClient())
             using (var request = new HttpRequestMessage())
             {
                 var accessToken = await _authToken.GetAccessTokenAsync().ConfigureAwait(false);
                 request.Headers.Add("Authorization", accessToken);
                 request.RequestUri = new Uri(url + query);
-                var response = await client.SendAsync(request);
-                var result = await response.Content.ReadAsStringAsync();
+                using (var response = await _httpClient.SendAsync(request))
+                {
+                    var result = await response.Content.ReadAsStringAsync();
 
-                if (!response.IsSuccessStatusCode)
-                    throw new ArgumentException(result);
+                    if (!response.IsSuccessStatusCode)
+                        throw new ArgumentException(result);
 
-                var translatedText = XElement.Parse(result).Value.Trim();
+                    var translatedText = XElement.Parse(result).Value.Trim();
 
-                currentTranslatedDocument.TargetMessage = translatedText;
-                return currentTranslatedDocument;
+                    currentTranslatedDocument.TargetMessage = translatedText;
+                    return currentTranslatedDocument;
+                }
             }
         }
 
@@ -194,42 +200,42 @@ namespace Microsoft.Bot.Builder.Ai.Translation
 
             var accessToken = await _authToken.GetAccessTokenAsync().ConfigureAwait(false);
 
-            using (var client = new HttpClient())
             using (var request = new HttpRequestMessage())
             {
-                client.Timeout = TimeSpan.FromSeconds(20);
                 request.Method = HttpMethod.Post;
                 request.RequestUri = new Uri(uri);
                 request.Content = new StringContent(body, Encoding.UTF8, "text/xml");
                 request.Headers.Add("Authorization", accessToken);
 
-                var response = await client.SendAsync(request);
-                var responseBody = await response.Content.ReadAsStringAsync();
-                switch (response.StatusCode)
+                using (var response = await _httpClient.SendAsync(request))
                 {
-                    case HttpStatusCode.OK:
-                        Console.WriteLine("Request status is OK. Result of translate array method is:");
-                        var doc = XDocument.Parse(responseBody);
-                        var ns = XNamespace.Get("http://schemas.datacontract.org/2004/07/Microsoft.MT.Web.Service.V2");
-                        List<string> results = new List<string>();
-                        int sentIndex = 0;
-                        foreach (XElement xe in doc.Descendants(ns + "TranslateArray2Response"))
-                        {
-                            TranslatedDocument currentTranslatedDocument = translatedDocuments[sentIndex];
-                            currentTranslatedDocument.TargetMessage = xe.Element(ns + "TranslatedText").Value;
-                            currentTranslatedDocument.RawAlignment = xe.Element(ns + "Alignment").Value;
-                            if (!string.IsNullOrEmpty(currentTranslatedDocument.RawAlignment))
+                    var responseBody = await response.Content.ReadAsStringAsync();
+                    switch (response.StatusCode)
+                    {
+                        case HttpStatusCode.OK:
+                            Console.WriteLine("Request status is OK. Result of translate array method is:");
+                            var doc = XDocument.Parse(responseBody);
+                            var ns = XNamespace.Get("http://schemas.datacontract.org/2004/07/Microsoft.MT.Web.Service.V2");
+                            List<string> results = new List<string>();
+                            int sentIndex = 0;
+                            foreach (XElement xe in doc.Descendants(ns + "TranslateArray2Response"))
                             {
-                                string[] alignments = currentTranslatedDocument.RawAlignment.Trim().Split(' ');
-                                currentTranslatedDocument.SourceTokens = PostProcessingUtilities.SplitSentence(currentTranslatedDocument.SourceMessage, alignments);
-                                currentTranslatedDocument.TranslatedTokens = PostProcessingUtilities.SplitSentence(xe.Element(ns + "TranslatedText").Value, alignments, false);
-                                currentTranslatedDocument.IndexedAlignment = PostProcessingUtilities.WordAlignmentParse(alignments, currentTranslatedDocument.SourceTokens, currentTranslatedDocument.TranslatedTokens);
+                                TranslatedDocument currentTranslatedDocument = translatedDocuments[sentIndex];
+                                currentTranslatedDocument.TargetMessage = xe.Element(ns + "TranslatedText").Value;
+                                currentTranslatedDocument.RawAlignment = xe.Element(ns + "Alignment").Value;
+                                if (!string.IsNullOrEmpty(currentTranslatedDocument.RawAlignment))
+                                {
+                                    string[] alignments = currentTranslatedDocument.RawAlignment.Trim().Split(' ');
+                                    currentTranslatedDocument.SourceTokens = PostProcessingUtilities.SplitSentence(currentTranslatedDocument.SourceMessage, alignments);
+                                    currentTranslatedDocument.TranslatedTokens = PostProcessingUtilities.SplitSentence(xe.Element(ns + "TranslatedText").Value, alignments, false);
+                                    currentTranslatedDocument.IndexedAlignment = PostProcessingUtilities.WordAlignmentParse(alignments, currentTranslatedDocument.SourceTokens, currentTranslatedDocument.TranslatedTokens);
+                                }
+                                sentIndex += 1;
                             }
-                            sentIndex += 1;
-                        }
-                        return translatedDocuments;
-                    default:
-                        throw new Exception(response.ReasonPhrase);
+                            return translatedDocuments;
+                        default:
+                            throw new Exception(response.ReasonPhrase);
+                    }
                 }
             }
         }
@@ -238,6 +244,9 @@ namespace Microsoft.Bot.Builder.Ai.Translation
 
     internal class AzureAuthToken
     {
+        private static HttpClient DefaultHttpClient = new HttpClient();
+        private HttpClient _httpClient = null;
+
         /// URL of the token service
         private static readonly Uri ServiceUrl = new Uri("https://api.cognitive.microsoft.com/sts/v1.0/issueToken");
 
@@ -264,8 +273,9 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         /// Creates a client to obtain an access token.
         /// </summary>
         /// <param name="key">Subscription key to use to get an authentication token.</param>
-        internal AzureAuthToken(string key)
+        internal AzureAuthToken(string key, HttpClient client = null)
         {
+            _httpClient = client ?? DefaultHttpClient;
             if (string.IsNullOrEmpty(key))
                 throw new ArgumentNullException(nameof(key), "A subscription key is required");
 
@@ -293,21 +303,21 @@ namespace Microsoft.Bot.Builder.Ai.Translation
             if ((DateTime.Now - _storedTokenTime) < TokenCacheDuration)
                 return _storedTokenValue;
 
-            using (var client = new HttpClient())
             using (var request = new HttpRequestMessage())
             {
                 request.Method = HttpMethod.Post;
                 request.RequestUri = ServiceUrl;
                 request.Content = new StringContent(string.Empty);
                 request.Headers.TryAddWithoutValidation(OcpApimSubscriptionKeyHeader, this.SubscriptionKey);
-                client.Timeout = TimeSpan.FromSeconds(20);
-                var response = await client.SendAsync(request);
-                this.RequestStatusCode = response.StatusCode;
-                response.EnsureSuccessStatusCode();
-                var token = await response.Content.ReadAsStringAsync();
-                _storedTokenTime = DateTime.Now;
-                _storedTokenValue = "Bearer " + token;
-                return _storedTokenValue;
+                using (var response = await _httpClient.SendAsync(request))
+                {
+                    this.RequestStatusCode = response.StatusCode;
+                    response.EnsureSuccessStatusCode();
+                    var token = await response.Content.ReadAsStringAsync();
+                    _storedTokenTime = DateTime.Now;
+                    _storedTokenValue = "Bearer " + token;
+                    return _storedTokenValue;
+                }
             }
         }
     }

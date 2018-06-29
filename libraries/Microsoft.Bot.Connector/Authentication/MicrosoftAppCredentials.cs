@@ -2,9 +2,11 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Rest;
@@ -32,23 +34,36 @@ namespace Microsoft.Bot.Connector.Authentication
         /// </summary>
         public const string MicrosoftAppPasswordKey = "MicrosoftAppPassword";
 
-        /// <summary>
-        /// The token refresh code uses this client. Ideally, this would be passed in or set via a DI system to 
-        /// allow developer control over behavior / headers / timeouts and such. Unfortunately this is buried
-        /// pretty deep, the static solution used here is much cleaner. If this becomes an issue we could
-        /// consider circling back and exposing developer control over this HttpClient. 
-        /// </summary>
-        private static readonly HttpClient _httpClient = new HttpClient();
+        private static readonly HttpClient DefaultHttpClient = new HttpClient();
 
-        private static object _trustedHostNamesSync = new object();
-        private static readonly IDictionary<string, DateTime> _trustedHostNames = new Dictionary<string, DateTime>()
+        private static readonly IDictionary<string, DateTime> TrustedHostNames = new Dictionary<string, DateTime>()
         {
-            { "state.botframework.com", DateTime.MaxValue },
-            { "api.botframework.com", DateTime.MaxValue}
+            // { "state.botframework.com", DateTime.MaxValue }, // deprecated state api
+            { "api.botframework.com", DateTime.MaxValue},       // bot connector API
+            { "token.botframework.com", DateTime.MaxValue }     // oauth token endpoint
         };
 
-        private static object _cacheSync = new object();
-        protected static readonly IDictionary<string, OAuthResponse> _cache = new Dictionary<string, OAuthResponse>();
+        /// <summary>
+        /// Cache of outstanding uncompleted or completed tasks for a given token, this is to make sure that we never have more then 1 token request in flight
+        /// per token at a time
+        /// </summary>
+        protected static readonly Dictionary<string, Task<OAuthResponse>> TokenTaskCache = new Dictionary<string, Task<OAuthResponse>>();
+
+        /// <summary>
+        /// Time at which we will next refresh a token
+        /// </summary>
+        protected static readonly ConcurrentDictionary<string, DateTime> AutoRefreshTimes = new ConcurrentDictionary<string, DateTime>();
+
+        /// <summary>
+        /// Cache of the actual valid tokens, this is what is consumed 99.99% of the time regardless if there is a token refresh task in flight (as we refresh tokens on a schedule
+        /// which is faster then their expiration and if there is a network failure we continue to use the good token from the tokenCache while a new background refresh task gets scheduled)
+        /// </summary>
+        protected static readonly ConcurrentDictionary<string, OAuthResponse> TokenCache = new ConcurrentDictionary<string, OAuthResponse>();
+
+        /// <summary>
+        /// The actual key we use for the token cache
+        /// </summary>
+        protected readonly string TokenCacheKey;
 
         public MicrosoftAppCredentials(string appId, string password)
         {
@@ -63,7 +78,11 @@ namespace Microsoft.Bot.Connector.Authentication
         public virtual string OAuthEndpoint { get { return AuthenticationConstants.ToChannelFromBotLoginUrl; } }
         public virtual string OAuthScope { get { return AuthenticationConstants.ToChannelFromBotOAuthScope; } }
 
-        protected readonly string TokenCacheKey;
+
+        /// <summary>
+        /// TimeWindow which controls how often the token will be automatically updated
+        /// </summary>
+        public static TimeSpan AutoTokenRefreshTimeSpan { get; set; } = TimeSpan.FromMinutes(10);
 
         /// <summary>
         /// Adds the host of service url to <see cref="MicrosoftAppCredentials"/> trusted hosts.
@@ -82,9 +101,9 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <param name="expirationTime">The expiration time after which this service url is not trusted anymore.</param>
         public static void TrustServiceUrl(string serviceUrl, DateTime expirationTime)
         {
-            lock (_trustedHostNamesSync)
+            lock (TrustedHostNames)
             {
-                _trustedHostNames[new Uri(serviceUrl).Host] = expirationTime;
+                TrustedHostNames[new Uri(serviceUrl).Host] = expirationTime;
             }
         }
 
@@ -110,42 +129,117 @@ namespace Microsoft.Bot.Connector.Authentication
         {
             if (ShouldSetToken(request))
             {
-                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await GetTokenAsync());
+                string token = await this.GetTokenAsync().ConfigureAwait(false);
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
             }
-            await base.ProcessHttpRequestAsync(request, cancellationToken);
+            await base.ProcessHttpRequestAsync(request, cancellationToken).ConfigureAwait(false);
         }
 
         public async Task<string> GetTokenAsync(bool forceRefresh = false)
         {
-            if (forceRefresh == false)
+            Task<OAuthResponse> oAuthTokenTask = null;
+            OAuthResponse oAuthToken = null;
+
+            // get tokenTask from cache 
+            lock (TokenTaskCache)
             {
-                // check the global cache for the token. If we have it, and it's valid, we're done. 
-                lock (_cacheSync)
+                // if we are being forced or don't have a token in our cache at all
+                if (forceRefresh || !TokenCache.TryGetValue(TokenCacheKey, out oAuthToken))
                 {
-                    bool foundToken = _cache.TryGetValue(TokenCacheKey, out OAuthResponse oAuthToken);
-                    if (foundToken)
+                    // we will await this task, because we don't have a token and we need it
+                    oAuthTokenTask = _getCurrentTokenTask(forceRefresh: forceRefresh);
+                }
+                else
+                {
+                    // we have an oAuthToken
+                    // check to see if our token is expired 
+                    if (IsTokenExpired(oAuthToken))
                     {
-                        // we have the token. Is it valid? 
-                        if (oAuthToken.expiration_time > DateTime.UtcNow)
+                        // it is, we should await the current task (someone could have already asked for a new token)
+                        oAuthTokenTask = _getCurrentTokenTask(forceRefresh: false);
+
+                        // if the task is completed and is the expired token, then we need to force a new one 
+                        // (This happens if bot has been 100% idle past the expiration point)
+                        if (oAuthTokenTask.Status == TaskStatus.RanToCompletion && oAuthTokenTask.Result.access_token == oAuthToken.access_token)
                         {
-                            return oAuthToken.access_token;
+                            oAuthTokenTask = _getCurrentTokenTask(forceRefresh: true);
                         }
                     }
+
+                    // always check the autorefresh
+                    CheckAutoRefreshToken();
                 }
             }
 
-            // We need to refresh the token, because:
-            // 1. The user requested it via the forceRefresh parameter
-            // 2. We have it, but it's expired
-            // 3. We don't have it in the cache. 
-
-            OAuthResponse token = await RefreshTokenAsync().ConfigureAwait(false);
-            lock (_cacheSync)
+            // if we have an oAuthTokenTask then we need to await it
+            if (oAuthTokenTask != null)
             {
-                _cache[TokenCacheKey] = token;
+                oAuthToken = await oAuthTokenTask;
+                TokenCache[TokenCacheKey] = oAuthToken;
             }
 
-            return token.access_token;
+            return oAuthToken?.access_token;
+        }
+
+        private void CheckAutoRefreshToken()
+        {
+            // get the current autorefreshTime for this key
+            DateTime refreshTime;
+            if (AutoRefreshTimes.TryGetValue(TokenCacheKey, out refreshTime))
+            {
+                // if we are past the refresh time
+                if (DateTime.UtcNow > refreshTime)
+                {
+                    // set new refresh time (this keeps only one outstanding refresh Task at a time)
+                    AutoRefreshTimes[TokenCacheKey] = DateTime.UtcNow + AutoTokenRefreshTimeSpan;
+
+                    // background task to refresh the token
+                    // NOTE: This is not awaited, but is observed with the ContinueWith() clause.  
+                    // It is gated by the AutoRefreshTimes[] array
+                    RefreshTokenAsync()
+                        .ContinueWith(task =>
+                        {
+                            // observe the background task and put in cache when done
+                            if (task.Status == TaskStatus.RanToCompletion)
+                            {
+                                // update the cache with completed task so all new requests will get it
+                                TokenTaskCache[TokenCacheKey] = task;
+                            }
+                            else
+                            {
+                                // it failed, shorten the refresh time for another task to try again in a 30s
+                                AutoRefreshTimes[TokenCacheKey] = DateTime.UtcNow + TimeSpan.FromSeconds(30);
+                            }
+                        });
+                }
+            }
+        }
+
+        private Task<OAuthResponse> _getCurrentTokenTask(bool forceRefresh)
+        {
+            Task<OAuthResponse> oAuthTokenTask;
+
+            // if there is not a task or we are forcing it
+            if (forceRefresh || TokenTaskCache.TryGetValue(TokenCacheKey, out oAuthTokenTask) == false)
+            {
+                // create it
+                oAuthTokenTask = RefreshTokenAsync();
+                TokenTaskCache[TokenCacheKey] = oAuthTokenTask;
+
+                // set initial refresh time
+                AutoRefreshTimes[TokenCacheKey] = DateTime.UtcNow + AutoTokenRefreshTimeSpan;
+            }
+            // if task is in faulted or canceled state then replace it with another attempt
+            else if (oAuthTokenTask.IsFaulted || oAuthTokenTask.IsCanceled)
+            {
+                oAuthTokenTask = RefreshTokenAsync();
+                TokenTaskCache[TokenCacheKey] = oAuthTokenTask;
+
+                // set initial refresh time
+                AutoRefreshTimes[TokenCacheKey] = DateTime.UtcNow + AutoTokenRefreshTimeSpan;
+            }
+
+            return oAuthTokenTask;
         }
 
         private bool ShouldSetToken(HttpRequestMessage request)
@@ -155,14 +249,15 @@ namespace Microsoft.Bot.Connector.Authentication
                 return true;
             }
 
+            System.Diagnostics.Debug.WriteLine($"Service url {request.RequestUri.Authority} is not trusted and JwtToken cannot be sent to it.");
             return false;
         }
 
         private static bool IsTrustedUrl(Uri uri)
         {
-            lock (_trustedHostNamesSync)
+            lock (TrustedHostNames)
             {
-                if (_trustedHostNames.TryGetValue(uri.Host, out DateTime trustedServiceUrlExpiration))
+                if (TrustedHostNames.TryGetValue(uri.Host, out DateTime trustedServiceUrlExpiration))
                 {
                     // check if the trusted service url is still valid
                     if (trustedServiceUrlExpiration > DateTime.UtcNow.Subtract(TimeSpan.FromMinutes(5)))
@@ -192,7 +287,7 @@ namespace Microsoft.Bot.Connector.Authentication
                     { "scope", OAuthScope }
                 });
 
-            using (var response = await _httpClient.PostAsync(OAuthEndpoint, content).ConfigureAwait(false))
+            using (var response = await DefaultHttpClient.PostAsync(OAuthEndpoint, content).ConfigureAwait(false))
             {
                 string body = null;
                 try
@@ -208,6 +303,29 @@ namespace Microsoft.Bot.Connector.Authentication
                     throw new OAuthException(body ?? response.ReasonPhrase, error);
                 }
             }
+        }
+
+        /// <summary>
+        /// Has the token expired?  If so, then we await on every attempt to get a new token
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static bool IsTokenExpired(OAuthResponse token) 
+        {
+            return DateTime.UtcNow > token.expiration_time;
+        }
+
+        /// <summary>
+        /// has token reached half/life ? If so, we get more agressive about trying to refresh it in the background
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static bool IsTokenOld(OAuthResponse token)
+        {
+            var halfwayExpiration = (token.expiration_time - TimeSpan.FromSeconds(token.expires_in / 2));
+            return DateTime.UtcNow > halfwayExpiration;
         }
 
 #pragma warning disable IDE1006
