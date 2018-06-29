@@ -38,6 +38,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <param name="httpClient">Authentication of tokens requires calling out to validate Endorsements and related documents. The
         /// HttpClient is used for making those calls. Those calls generally require TLS connections, which are expensive to
         /// setup and teardown, so a shared HttpClient is recommended.</param>
+        /// <param name="channelId">The ID of the channel to validate.</param>
         /// <returns>
         /// A valid ClaimsIdentity.
         /// </returns>
@@ -102,6 +103,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <param name="httpClient">Authentication of tokens requires calling out to validate Endorsements and related documents. The
         /// HttpClient is used for making those calls. Those calls generally require TLS connections, which are expensive to
         /// setup and teardown, so a shared HttpClient is recommended.</param>
+        /// <param name="channelId">The ID of the channel to validate.</param>
         /// <returns></returns>
         public static async Task<ClaimsIdentity> AuthenticateChannelToken(string authHeader, ICredentialProvider credentials, string serviceUrl, HttpClient httpClient, string channelId)
         {

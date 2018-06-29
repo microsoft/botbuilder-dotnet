@@ -33,7 +33,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
         /// <summary>
         /// Adds an Error Handler the bot.
         /// </summary>
-        /// <param name="middleware">An instance of <see cref="IMiddleware">middleware</see> that should be added to the bot's middleware pipeline.</param>
+        /// <param name="errorHandler">An instance of <see cref="IMiddleware">middleware</see> that should be added to the bot's middleware pipeline.</param>
         /// <returns>A reference to this instance after the operation has completed.</returns>
         /// <seealso cref="IMiddleware"/>
         public BotFrameworkConfigurationBuilder UseMiddleware(Func<ITurnContext, Exception, Task> errorHandler)
