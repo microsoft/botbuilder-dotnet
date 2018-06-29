@@ -258,10 +258,10 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
         async Task<LuisResult> ILuisService.QueryAsync(Uri uri, CancellationToken token)
         {
             string json;
-            using (var response = await _httpClient.GetAsync(uri, HttpCompletionOption.ResponseContentRead, token))
+            using (var response = await _httpClient.GetAsync(uri, HttpCompletionOption.ResponseContentRead, token).ConfigureAwait(false))
             {
                 response.EnsureSuccessStatusCode();
-                json = await response.Content.ReadAsStringAsync();
+                json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             }
 
             try
@@ -293,7 +293,7 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
         public static async Task<LuisResult> QueryAsync(this ILuisService service, string text, CancellationToken token)
         {
             var luisRequest = service.ModifyRequest(new LuisRequest(query: text));
-            return await service.QueryAsync(luisRequest, token);
+            return await service.QueryAsync(luisRequest, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -307,7 +307,7 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
         {
             service.ModifyRequest(request);
             var uri = service.BuildUri(request);
-            return await service.QueryAsync(uri, token);
+            return await service.QueryAsync(uri, token).ConfigureAwait(false);
         }
 
         /// <summary>
