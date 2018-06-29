@@ -169,7 +169,7 @@ namespace Microsoft.Bot.Builder
         /// <seealso cref="RunPipeline(ITurnContext, Func{ITurnContext, Task})"/>
         public virtual Task ContinueConversation(string botId, ConversationReference reference, Func<ITurnContext, Task> callback)
         {
-            using (var context = new TurnContext(this, reference.GetPostToBotMessage()))
+            using (var context = new TurnContext(this, reference.GetContinuationActivity()))
             {
                 return RunPipeline(context, callback);
             }
