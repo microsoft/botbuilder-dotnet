@@ -1,4 +1,6 @@
 # EditorConfig is awesome:http://EditorConfig.org
+# This file is a clone of the Roslyn editor config found here:
+# https://github.com/dotnet/roslyn/blob/master/.editorconfig
 
 # top-most EditorConfig file
 root = true
