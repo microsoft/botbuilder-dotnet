@@ -456,8 +456,8 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                 });
 
                 var conversationReference = msg.ToConversationReference();
-                var continuationMessage = conversationReference.GetPostToBotMessage();
-                await new TestAdapter().ProcessActivity((Activity)continuationMessage, async (context) =>
+                var continuationActivity = conversationReference.GetContinuationActivity();
+                await new TestAdapter().ProcessActivity((Activity)continuationActivity, async (context) =>
                 {
                     using (var scope = DialogModule.BeginLifetimeScope(container, context))
                     {
