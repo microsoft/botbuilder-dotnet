@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 
@@ -94,7 +95,7 @@ namespace Microsoft.Bot.Builder.Adapters
                 //  could be thrown.
                 task.Wait();
 
-                return _adapter.SendTextToBot(userSays, _callback);
+                return _adapter.SendTextToBot(userSays, _callback, default(CancellationToken));
             }).Unwrap(), this);
         }
 
@@ -114,7 +115,7 @@ namespace Microsoft.Bot.Builder.Adapters
                 // NOTE: See details code in above method.
                 task.Wait();
 
-                return _adapter.ProcessActivity((Activity)userActivity, _callback);
+                return _adapter.ProcessActivity((Activity)userActivity, _callback, default(CancellationToken));
             }).Unwrap(), this);
         }
 

@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -65,10 +66,13 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Handlers
 
             try
             {
+                // TODO wire up cancellation
+
                 var invokeResponse = await ProcessMessageRequestAsync(
                     request,
                     botFrameworkAdapter,
-                    bot.OnTurn);
+                    bot.OnTurn,
+                    default(CancellationToken));
 
                 if (invokeResponse == null)
                 {
@@ -94,6 +98,6 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Handlers
             }
         }
 
-        protected abstract Task<InvokeResponse> ProcessMessageRequestAsync(HttpRequest request, BotFrameworkAdapter botFrameworkAdapter, Func<ITurnContext, Task> botCallbackHandler);
+        protected abstract Task<InvokeResponse> ProcessMessageRequestAsync(HttpRequest request, BotFrameworkAdapter botFrameworkAdapter, Func<ITurnContext, Task> botCallbackHandler, CancellationToken cancellationToken);
     }
 }

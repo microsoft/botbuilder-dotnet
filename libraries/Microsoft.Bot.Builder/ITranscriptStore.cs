@@ -7,49 +7,13 @@ using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder
 {
-
-    public class Transcript
-    {
-        /// <summary>
-        /// ChannelId that the transcript was taken from
-        /// </summary>
-        public string ChannelId { get; set; }
-
-        /// <summary>
-        /// Conversation Id
-        /// </summary>
-        public string Id { get; set; }
-
-        /// <summary>
-        /// Date conversation was started
-        /// </summary>
-        public DateTimeOffset Created { get; set; }
-    }
-
     /// <summary>
-    /// Page of results from an enumeration
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    public class PagedResult<T>
-    {
-        /// <summary>
-        /// Page of items
-        /// </summary>
-        public T[] Items { get; set; } = new T[0];
-
-        /// <summary>
-        /// Token used to page through multiple pages
-        /// </summary>
-        public string ContinuationToken { get; set; }
-    }
-
-    /// <summary>
-    /// Transcript logger stores activities for conversations for recall
+    /// Transcript logger stores activities for conversations for recall.
     /// </summary>
     public interface ITranscriptStore : ITranscriptLogger
     {
         /// <summary>
-        /// Get activities for a conversation (Aka the transcript)
+        /// Get activities for a conversation (Aka the transcript).
         /// </summary>
         /// <param name="channelId">Channel id</param>
         /// <param name="conversationId">Conversation id</param>

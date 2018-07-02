@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Schema;
@@ -22,7 +21,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
             
             await new TestFlow(adapter, async (context) =>
                 {
-                    Thread.Sleep(2500);
+                    await Task.Delay(TimeSpan.FromMilliseconds(2500));
                     await context.SendActivity("Message sent after delay");
                     await Task.CompletedTask;
                 })
@@ -34,27 +33,6 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
                 .StartTest();
         }
 
-        // This was causing a doc XML PR to fail. Chris said to remove this.
-        //[TestMethod]
-        //[TestCategory("Middleware")]
-        //public async Task ShowTyping_TestMiddleware_2_Second_Interval()
-        //{
-        //    TestAdapter adapter = new TestAdapter()
-        //        .Use(new ShowTypingMiddleware(100, 2000));
-
-        //    await new TestFlow(adapter, async (context) =>
-        //        {
-        //            Thread.Sleep(2500);
-        //            await context.SendActivity("Message sent after delay");
-        //            await Task.CompletedTask;
-        //        })
-        //        .Send("foo")
-        //        .AssertReply(ValidateTypingActivity, "check typing activity")
-        //        .AssertReply(ValidateTypingActivity, "check typing activity")
-        //        .AssertReply("Message sent after delay")
-        //        .StartTest();
-        //}
-
         [TestMethod]
         [TestCategory("Middleware")]
         public async Task ShowTyping_TestMiddleware_Context_Completes_Before_Typing_Interval()
@@ -64,7 +42,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
 
             await new TestFlow(adapter, async (context) =>
                 {
-                    Thread.Sleep(2000);
+                    await Task.Delay(TimeSpan.FromMilliseconds(2000));
                     await context.SendActivity("Message sent after delay");
                     await Task.CompletedTask;
                 })

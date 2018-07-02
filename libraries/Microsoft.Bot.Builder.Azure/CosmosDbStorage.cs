@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
@@ -79,9 +80,9 @@ namespace Microsoft.Bot.Builder.Azure
         /// Removes store items from storage.
         /// </summary>
         /// <param name="keys">Array of item keys to remove from the store.</param>
-        public async Task Delete(params string[] keys)
+        public async Task Delete(string[] keys, CancellationToken cancellationToken)
         {
-            if (keys.Length == 0) return;
+            if (keys == null || keys.Length == 0) return;
 
             // Ensure collection exists
             var collectionLink = await GetCollectionLink();
@@ -98,9 +99,9 @@ namespace Microsoft.Bot.Builder.Azure
         /// Loads store items from storage.
         /// </summary>
         /// <param name="keys">Array of item keys to read from the store.</param>
-        public async Task<IDictionary<string, object>> Read(params string[] keys)
+        public async Task<IDictionary<string, object>> Read(string[] keys, CancellationToken cancellationToken)
         {
-            if (keys.Length == 0)
+            if (keys == null || keys.Length == 0)
             {
                 throw new ArgumentException("Please provide at least one key to read from storage", nameof(keys));
             }
@@ -141,7 +142,7 @@ namespace Microsoft.Bot.Builder.Azure
         /// Saves store items to storage.
         /// </summary>
         /// <param name="changes">Map of items to write to storage.</param>
-        public async Task Write(IDictionary<string, object> changes)
+        public async Task Write(IDictionary<string, object> changes, CancellationToken cancellationToken)
         {
             if (changes == null)
             {

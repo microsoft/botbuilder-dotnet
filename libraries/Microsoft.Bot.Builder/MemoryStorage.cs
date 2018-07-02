@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -25,7 +26,7 @@ namespace Microsoft.Bot.Builder
             _memory = dictionary ?? new Dictionary<string, JObject>();
         }
                 
-        public Task Delete(string[] keys)
+        public Task Delete(string[] keys, CancellationToken cancellationToken)
         {
             lock (_syncroot)
             {
@@ -34,10 +35,11 @@ namespace Microsoft.Bot.Builder
                     _memory.Remove(key);
                 }
             }
+
             return Task.CompletedTask;
         }
 
-        public Task<IDictionary<string, object>> Read(string[] keys)
+        public Task<IDictionary<string, object>> Read(string[] keys, CancellationToken cancellationToken)
         {
             var storeItems = new Dictionary<string, object>(keys.Length);
             lock (_syncroot)
@@ -56,9 +58,8 @@ namespace Microsoft.Bot.Builder
 
             return Task.FromResult<IDictionary<string, object>>(storeItems);
         }
-
-
-        public Task Write(IDictionary<string, object> changes)
+        
+        public Task Write(IDictionary<string, object> changes, CancellationToken cancellationToken)
         {
             lock (_syncroot)
             {
@@ -68,7 +69,7 @@ namespace Microsoft.Bot.Builder
 
                     var oldStateETag = default(string);
 
-                    if(_memory.TryGetValue(change.Key, out var oldState))
+                    if (_memory.TryGetValue(change.Key, out var oldState))
                     {
                         if (oldState.TryGetValue("eTag", out var eTagToken))
                         {
@@ -81,7 +82,7 @@ namespace Microsoft.Bot.Builder
                     // Set ETag if applicable
                     if (newValue is IStoreItem newStoreItem)
                     {
-                        if(oldStateETag != null
+                        if (oldStateETag != null
                                 &&
                            newStoreItem.eTag != "*"
                                 &&
@@ -96,6 +97,7 @@ namespace Microsoft.Bot.Builder
                     _memory[change.Key] = newState;
                 }
             }
+
             return Task.CompletedTask;
         }
     }
