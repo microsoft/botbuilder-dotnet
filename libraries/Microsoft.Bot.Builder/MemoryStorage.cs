@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -25,7 +26,7 @@ namespace Microsoft.Bot.Builder
             _memory = dictionary ?? new Dictionary<string, JObject>();
         }
                 
-        public Task Delete(string[] keys)
+        public Task Delete(string[] keys, CancellationToken cancellationToken)
         {
             lock (_syncroot)
             {
@@ -37,7 +38,7 @@ namespace Microsoft.Bot.Builder
             return Task.CompletedTask;
         }
 
-        public Task<IDictionary<string, object>> Read(string[] keys)
+        public Task<IDictionary<string, object>> Read(string[] keys, CancellationToken cancellationToken)
         {
             var storeItems = new Dictionary<string, object>(keys.Length);
             lock (_syncroot)
@@ -58,7 +59,7 @@ namespace Microsoft.Bot.Builder
         }
 
 
-        public Task Write(IDictionary<string, object> changes)
+        public Task Write(IDictionary<string, object> changes, CancellationToken cancellationToken)
         {
             lock (_syncroot)
             {

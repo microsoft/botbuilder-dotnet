@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 
@@ -128,7 +129,7 @@ namespace Microsoft.Bot.Builder
         /// <seealso cref="SendActivities(IActivity[])"/>
         /// <seealso cref="UpdateActivity(IActivity)"/>
         /// <seealso cref="DeleteActivity(ConversationReference)"/>
-        Task<ResourceResponse> SendActivity(string textReplyToSend, string speak = null, string inputHint = InputHints.AcceptingInput);
+        Task<ResourceResponse> SendActivity(string textReplyToSend, string speak = null, string inputHint = InputHints.AcceptingInput, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// Sends an activity to the sender of the incoming activity.
@@ -143,7 +144,7 @@ namespace Microsoft.Bot.Builder
         /// <seealso cref="SendActivities(IActivity[])"/>
         /// <seealso cref="UpdateActivity(IActivity)"/>
         /// <seealso cref="DeleteActivity(ConversationReference)"/>
-        Task<ResourceResponse> SendActivity(IActivity activity);
+        Task<ResourceResponse> SendActivity(IActivity activity, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// Sends a set of activities to the sender of the incoming activity.
@@ -158,7 +159,7 @@ namespace Microsoft.Bot.Builder
         /// <seealso cref="SendActivity(IActivity)"/>
         /// <seealso cref="UpdateActivity(IActivity)"/>
         /// <seealso cref="DeleteActivity(ConversationReference)"/>
-        Task<ResourceResponse[]> SendActivities(IActivity[] activities);
+        Task<ResourceResponse[]> SendActivities(IActivity[] activities, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// Replaces an existing activity. 
@@ -174,7 +175,7 @@ namespace Microsoft.Bot.Builder
         /// <seealso cref="OnUpdateActivity(UpdateActivityHandler)"/>
         /// <seealso cref="SendActivities(IActivity[])"/>
         /// <seealso cref="DeleteActivity(ConversationReference)"/>
-        Task<ResourceResponse> UpdateActivity(IActivity activity);
+        Task<ResourceResponse> UpdateActivity(IActivity activity, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// Deletes an existing activity.
@@ -186,7 +187,7 @@ namespace Microsoft.Bot.Builder
         /// <seealso cref="DeleteActivity(ConversationReference)"/>
         /// <seealso cref="SendActivities(IActivity[])"/>
         /// <seealso cref="UpdateActivity(IActivity)"/>
-        Task DeleteActivity(string activityId);
+        Task DeleteActivity(string activityId, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// Deletes an existing activity.
@@ -200,7 +201,7 @@ namespace Microsoft.Bot.Builder
         /// <seealso cref="DeleteActivity(string)"/>
         /// <seealso cref="SendActivities(IActivity[])"/>
         /// <seealso cref="UpdateActivity(IActivity)"/>
-        Task DeleteActivity(ConversationReference conversationReference);
+        Task DeleteActivity(ConversationReference conversationReference, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// Adds a response handler for send activity operations.

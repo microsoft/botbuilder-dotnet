@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
@@ -34,7 +35,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="context"></param>
         /// <param name="nextTurn"></param>
         /// <returns></returns>
-        public async Task OnTurn(ITurnContext context, MiddlewareSet.NextDelegate nextTurn)
+        public async Task OnTurn(ITurnContext context, NextDelegate nextTurn, CancellationToken cancellationToken)
         {
             // log incoming activity at beginning of turn
             if (context.Activity != null)
@@ -91,7 +92,7 @@ namespace Microsoft.Bot.Builder
             });
 
             // process bot logic
-            await nextTurn().ConfigureAwait(false);
+            await nextTurn(cancellationToken).ConfigureAwait(false);
 
             // flush transcript at end of turn
             while (transcript.Count > 0)

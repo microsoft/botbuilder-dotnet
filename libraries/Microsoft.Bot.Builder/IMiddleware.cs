@@ -1,10 +1,13 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder
 {
+    public delegate Task NextDelegate(CancellationToken cancellationToken);
+
     /// <summary>
     /// Represents middleware that can operate on incoming activities.
     /// </summary>
@@ -43,6 +46,7 @@ namespace Microsoft.Bot.Builder
         /// </summary>
         /// <param name="context">The context object for this turn.</param>
         /// <param name="next">The delegate to call to continue the bot middleware pipeline.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <remarks>Middleware calls the <paramref name="next"/> delegate to pass control to 
         /// the next middleware in the pipeline. If middleware doesn’t call the next delegate,
@@ -53,6 +57,6 @@ namespace Microsoft.Bot.Builder
         /// </remarks>
         /// <seealso cref="ITurnContext"/>
         /// <seealso cref="Bot.Schema.IActivity"/>
-        Task OnTurn(ITurnContext context, MiddlewareSet.NextDelegate next);
+        Task OnTurn(ITurnContext context, NextDelegate next, CancellationToken cancellationToken = default(CancellationToken));
     }
 }
