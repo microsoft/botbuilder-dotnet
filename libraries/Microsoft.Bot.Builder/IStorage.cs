@@ -10,45 +10,47 @@ namespace Microsoft.Bot.Builder
     public interface IStorage
     {
         /// <summary>
-        /// Read StoreItems from storage
+        /// Read StoreItems from storage.
         /// </summary>
-        /// <param name="keys">keys of the storeItems to read</param>
-        /// <returns>Dictionary of Key/Value pairs</returns>
-        Task<IDictionary<string, object>> Read(string[] keys, CancellationToken cancellationToken);
+        /// <param name="keys">keys of the storeItems to read.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>Dictionary of Key/Value pairs.</returns>
+        Task<IDictionary<string, object>> Read(string[] keys, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
-        /// Dictionary of Key/Value pairs to write
+        /// Dictionary of Key/Value pairs to write.
         /// </summary>
-        /// <param name="changes"></param>
-        Task Write(IDictionary<string, object> changes, CancellationToken cancellationToken);
+        /// <param name="changes">The changes to write.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        Task Write(IDictionary<string, object> changes, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
-        /// Delete StoreItems from storage
+        /// Delete StoreItems from storage.
         /// </summary>
-        /// <param name="keys">keys of the storeItems to delete</param>
-        Task Delete(string[] keys, CancellationToken cancellationToken);
+        /// <param name="keys">keys of the storeItems to delete.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        Task Delete(string[] keys, CancellationToken cancellationToken = default(CancellationToken));
     }
 
     public interface IStoreItem
     {
         /// <summary>
-        /// eTag for concurrency
+        /// eTag for concurrency.
         /// </summary>
         string eTag { get; set; }
     }
 
-
     public static class StorageExtensions
     {
-
         /// <summary>
-        /// Storage extension to Read as strong typed StoreItem objects
+        /// Storage extension to Read as strong typed StoreItem objects.
         /// </summary>
         /// <typeparam name="StoreItemT"></typeparam>
         /// <param name="storage"></param>
         /// <param name="keys"></param>
         /// <returns></returns>
-        public static async Task<IDictionary<string, StoreItemT>> Read<StoreItemT>(this IStorage storage, string[] keys, CancellationToken cancellationToken) where StoreItemT : class
+        public static async Task<IDictionary<string, StoreItemT>> Read<StoreItemT>(this IStorage storage, string[] keys, CancellationToken cancellationToken = default(CancellationToken))
+            where StoreItemT : class
         {
             var storeItems = await storage.Read(keys, cancellationToken).ConfigureAwait(false);
             var values = new Dictionary<string, StoreItemT>(keys.Length);

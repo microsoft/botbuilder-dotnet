@@ -18,12 +18,13 @@ namespace Microsoft.Bot.Builder
         {
         }
 
-        public TService Get<TService>(string key) where TService : class
+        public TService Get<TService>(string key)
+            where TService : class
         {
             if (key == null)
                 throw new ArgumentNullException(nameof(key));
 
-            if(TryGetValue(key, out var service))
+            if (TryGetValue(key, out var service))
             {
                 if (service is TService result)
                 {
@@ -51,16 +52,17 @@ namespace Microsoft.Bot.Builder
             base.Add(key, service);
         }
 
-        public void Add<TService>(TService service) where TService : class
+        public void Add<TService>(TService service)
+            where TService : class
         {
             Add(typeof(TService).FullName, service);
         }
 
         public void Dispose()
         {
-            foreach(var entry in Values)
+            foreach (var entry in Values)
             {
-                if(entry is IDisposable disposableService)
+                if (entry is IDisposable disposableService)
                 {
                     disposableService.Dispose();
                 }

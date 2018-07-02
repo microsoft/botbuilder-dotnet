@@ -21,14 +21,15 @@ namespace Microsoft.Bot.Builder
                 throw new ArgumentNullException(nameof(result.Intents));
 
             var topIntent = (string.Empty, 0.0d);
-            foreach(var intent in result.Intents)
+            foreach (var intent in result.Intents)
             {
-                var score = (double) intent.Value["score"];
+                var score = (double)intent.Value["score"];
                 if (score > topIntent.Item2)
                 {
                     topIntent = (intent.Key, score);
                 }
             }
+
             return topIntent;
         }
     }

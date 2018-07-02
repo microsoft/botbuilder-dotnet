@@ -82,7 +82,7 @@ namespace Microsoft.Bot.Builder.Azure
         /// <param name="keys">Array of item keys to remove from the store.</param>
         public async Task Delete(string[] keys, CancellationToken cancellationToken)
         {
-            if (keys.Length == 0) return;
+            if (keys == null || keys.Length == 0) return;
 
             // Ensure collection exists
             var collectionLink = await GetCollectionLink();
@@ -101,7 +101,7 @@ namespace Microsoft.Bot.Builder.Azure
         /// <param name="keys">Array of item keys to read from the store.</param>
         public async Task<IDictionary<string, object>> Read(string[] keys, CancellationToken cancellationToken)
         {
-            if (keys.Length == 0)
+            if (keys == null || keys.Length == 0)
             {
                 throw new ArgumentException("Please provide at least one key to read from storage", nameof(keys));
             }

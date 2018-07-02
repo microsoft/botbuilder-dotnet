@@ -3,6 +3,7 @@
 
 using System.Collections.Generic;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Ai.Translation;
@@ -25,7 +26,7 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
         public SpecializedTranslatorMiddleware(string[] nativeLanguages, string translatorKey) : base(nativeLanguages, translatorKey)
         { }
 
-        public override async Task OnTurn(ITurnContext context, MiddlewareSet.NextDelegate next)
+        public override async Task OnTurn(ITurnContext context, NextDelegate next, CancellationToken cancellationToken)
         {
             // alter the original utterance before translation. 
             if (context.Activity.Text == "mañana")
@@ -33,7 +34,7 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
                 context.Activity.Text = "para mañana";
             }
 
-            await base.OnTurn(context, next);
+            await base.OnTurn(context, next, cancellationToken);
         }
     }
 

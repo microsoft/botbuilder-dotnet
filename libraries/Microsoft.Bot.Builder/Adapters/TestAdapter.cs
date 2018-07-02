@@ -152,10 +152,12 @@ namespace Microsoft.Bot.Builder.Adapters
                         {
                             ActiveQueue.Enqueue(item);
                         }
+
                         return Task.FromResult(new ResourceResponse(activity.Id));
                     }
                 }
             }
+
             return Task.FromResult(new ResourceResponse());
         }
 
@@ -174,6 +176,7 @@ namespace Microsoft.Bot.Builder.Adapters
                         {
                             ActiveQueue.Enqueue(item);
                         }
+
                         break;
                     }
                 }

@@ -23,11 +23,11 @@ namespace Microsoft.Bot.Builder
     /// activities to and receives activities from the Bot Connector Service. When your 
     /// bot receives an activity, the adapter creates a context object, passes it to your 
     /// bot's application logic, and sends responses back to the user's channel.
-    /// <para>Use <see cref="Use(IMiddleware)"/> to add <see cref="IMiddleware"/> objects 
-    /// to your adapter’s middleware collection. The adapter processes and directs 
-    /// incoming activities in through the bot middleware pipeline to your bot’s logic 
-    /// and then back out again. As each activity flows in and out of the bot, each piece 
-    /// of middleware can inspect or act upon the activity, both before and after the bot 
+    /// <para>Use <see cref="Use(IMiddleware)"/> to add <see cref="IMiddleware"/> objects
+    /// to your adapter’s middleware collection. The adapter processes and directs
+    /// incoming activities in through the bot middleware pipeline to your bot’s logic
+    /// and then back out again. As each activity flows in and out of the bot, each piece
+    /// of middleware can inspect or act upon the activity, both before and after the bot
     /// logic runs.</para>
     /// </remarks>
     /// <seealso cref="ITurnContext"/>
@@ -110,7 +110,7 @@ namespace Microsoft.Bot.Builder
             if (callback == null)
                 throw new ArgumentNullException(nameof(callback));
 
-            using (var context = new TurnContext(this, reference.GetPostToBotMessage()))
+            using (var context = new TurnContext(this, reference.GetContinuationActivity()))
             {
                 // Hand craft Claims Identity.
                 var claimsIdentity = new ClaimsIdentity(new List<Claim>
@@ -250,15 +250,15 @@ namespace Microsoft.Bot.Builder
                 if (activity.Type == ActivityTypesEx.Delay)
                 {
                     // The Activity Schema doesn't have a delay type build in, so it's simulated
-                    // here in the Bot. This matches the behavior in the Node connector. 
+                    // here in the Bot. This matches the behavior in the Node connector.
                     int delayMs = (int)activity.Value;
                     await Task.Delay(delayMs, cancellationToken).ConfigureAwait(false);
-                    // No need to create a response. One will be created below. 
+                    // No need to create a response. One will be created below.
                 }
-                else if (activity.Type == ActivityTypesEx.InvokeResponse) // Aligning name with Node            
+                else if (activity.Type == ActivityTypesEx.InvokeResponse) // Aligning name with Node
                 {
                     context.Services.Add(InvokeReponseKey, activity);
-                    // No need to create a response. One will be created below.                     
+                    // No need to create a response. One will be created below.
                 }
                 else if (activity.Type == ActivityTypes.Trace && activity.ChannelId != "emulator")
                 {
@@ -361,7 +361,7 @@ namespace Microsoft.Bot.Builder
         /// <returns>List of Members of the activity</returns>
         public async Task<IList<ChannelAccount>> GetActivityMembers(ITurnContext context, string activityId, CancellationToken cancellationToken)
         {
-            // If no activity was passed in, use the current activity. 
+            // If no activity was passed in, use the current activity.
             if (activityId == null)
                 activityId = context.Activity.Id;
 
@@ -560,12 +560,12 @@ namespace Microsoft.Bot.Builder
         {
             if (!_isEmulatingOAuthCards &&
                 string.Equals(turnContext.Activity.ChannelId, "emulator", StringComparison.InvariantCultureIgnoreCase) &&
-                (await _credentialProvider.IsAuthenticationDisabledAsync()))
+                (await _credentialProvider.IsAuthenticationDisabledAsync().ConfigureAwait(false)))
             {
                 _isEmulatingOAuthCards = true;
             }
-            return _isEmulatingOAuthCards;
 
+            return _isEmulatingOAuthCards;
         }
 
         protected OAuthClient CreateOAuthApiClient(ITurnContext context)

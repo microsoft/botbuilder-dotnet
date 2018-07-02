@@ -11,7 +11,7 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder
 {
     /// <summary>
-    /// When added, this middleware will log incoming and outgoing activitites to a ITranscriptStore 
+    /// When added, this middleware will log incoming and outgoing activitites to a ITranscriptStore
     /// </summary>
     public class TranscriptLoggerMiddleware : IMiddleware
     {
@@ -21,9 +21,9 @@ namespace Microsoft.Bot.Builder
         private Queue<IActivity> transcript = new Queue<IActivity>();
 
         /// <summary>
-        /// Middleware for logging incoming and outgoing activities to a transcript store 
+        /// Middleware for logging incoming and outgoing activities to a transcript store.
         /// </summary>
-        /// <param name="transcriptLogger"></param>
+        /// <param name="transcriptLogger">The transcript logger to use.</param>
         public TranscriptLoggerMiddleware(ITranscriptLogger transcriptLogger)
         {
             logger = transcriptLogger ?? throw new ArgumentNullException("TranscriptLoggerMiddleware requires a ITranscriptLogger implementation.  ");
@@ -34,14 +34,17 @@ namespace Microsoft.Bot.Builder
         /// </summary>
         /// <param name="context"></param>
         /// <param name="nextTurn"></param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         public async Task OnTurn(ITurnContext context, NextDelegate nextTurn, CancellationToken cancellationToken)
         {
             // log incoming activity at beginning of turn
             if (context.Activity != null)
             {
-                if (String.IsNullOrEmpty((String)context.Activity.From.Properties["role"]))
+                if (string.IsNullOrEmpty((string)context.Activity.From.Properties["role"]))
+                {
                     context.Activity.From.Properties["role"] = "user";
+                }
 
                 LogActivity(CloneActivity(context.Activity));
             }
@@ -50,12 +53,13 @@ namespace Microsoft.Bot.Builder
             context.OnSendActivities(async (ctx, activities, nextSend) =>
             {
                 // run full pipeline
-                var responses = await nextSend();
+                var responses = await nextSend().ConfigureAwait(false);
 
                 foreach (var activity in activities)
                 {
                     LogActivity(CloneActivity(activity));
                 }
+
                 return responses;
             });
 
@@ -63,7 +67,7 @@ namespace Microsoft.Bot.Builder
             context.OnUpdateActivity(async (ctx, activity, nextUpdate) =>
             {
                 // run full pipeline
-                var response = await nextUpdate();
+                var response = await nextUpdate().ConfigureAwait(false);
 
                 // add Message Update activity
                 var updateActivity = CloneActivity(activity);
@@ -76,14 +80,14 @@ namespace Microsoft.Bot.Builder
             context.OnDeleteActivity(async (ctx, reference, nextDelete) =>
             {
                 // run full pipeline
-                await nextDelete();
+                await nextDelete().ConfigureAwait(false);
 
                 // add MessageDelete activity
                 // log as MessageDelete activity
-                var deleteActivity = new Activity()
+                var deleteActivity = new Activity
                 {
                     Type = ActivityTypes.MessageDelete,
-                    Id = reference.ActivityId
+                    Id = reference.ActivityId,
                 }
                 .ApplyConversationReference(reference, isIncoming: false)
                 .AsMessageDeleteActivity();
@@ -100,7 +104,7 @@ namespace Microsoft.Bot.Builder
                 try
                 {
                     var activity = transcript.Dequeue();
-                    await logger.LogActivity(activity);
+                    await logger.LogActivity(activity).ConfigureAwait(false);
                 }
                 catch (Exception err)
                 {
