@@ -166,15 +166,19 @@ namespace Microsoft.Bot.Builder.Tests
                 FileName = "chatdown_gen.cmd",
                 Arguments = file.FullName,
                 UseShellExecute = false,
-                RedirectStandardOutput = true
+                RedirectStandardOutput = true,
+                RedirectStandardError = true
             };
             var chatdownProcess = System.Diagnostics.Process.Start(chatdown);
             var content = chatdownProcess.StandardOutput.ReadToEnd();
+            var errorContent = chatdownProcess.StandardError.ReadToEnd();
             chatdownProcess.WaitForExit();
             if (string.IsNullOrEmpty(content))
             {
-                throw new Exception("Chatdown error. Please check if chatdown is correctly installed or install it with \"npm i -g chatdown\"");
+                string message = String.Format("Chatdown error. Please check if chatdown is correctly installed or install it with \"npm i -g chatdown\". Error details: {0}", errorContent);
+                throw new Exception(message);
             }
+
             return content;
         }
         
