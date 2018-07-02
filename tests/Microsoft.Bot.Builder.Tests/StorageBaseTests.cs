@@ -54,7 +54,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
 
             await storage.Write(dict);
 
-            var storeItems = await storage.Read(key);
+            var storeItems = await storage.Read(new[] { key });
 
             storeItem = storeItems.FirstOrDefault(si => si.Key == key).Value as PocoStoreItem;
 
@@ -81,7 +81,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
 
             await storage.Write(dict);
 
-            var loadedStoreItems = new Dictionary<string, object>(await storage.Read("pocoItem", "pocoStoreItem"));
+            var loadedStoreItems = new Dictionary<string, object>(await storage.Read(new[] { "pocoItem", "pocoStoreItem" }));
 
             var updatePocoItem = loadedStoreItems["pocoItem"] as PocoItem;
             var updatePocoStoreItem = loadedStoreItems["pocoStoreItem"] as PocoStoreItem;
@@ -93,7 +93,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
 
             await storage.Write(loadedStoreItems);
 
-            var reloadedStoreItems = new Dictionary<string, object>(await storage.Read("pocoItem", "pocoStoreItem"));
+            var reloadedStoreItems = new Dictionary<string, object>(await storage.Read(new[] { "pocoItem", "pocoStoreItem" }));
 
             var reloeadedUpdatePocoItem = reloadedStoreItems["pocoItem"] as PocoItem;
             var reloadedUpdatePocoStoreItem = reloadedStoreItems["pocoStoreItem"] as PocoStoreItem;
@@ -132,7 +132,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
             {
             }
 
-            var reloadedStoreItems2 = new Dictionary<string, object>(await storage.Read("pocoItem", "pocoStoreItem"));
+            var reloadedStoreItems2 = new Dictionary<string, object>(await storage.Read(new[] { "pocoItem", "pocoStoreItem" }));
 
             var reloadedPocoItem2 = reloadedStoreItems2["pocoItem"] as PocoItem;
             var reloadedPocoStoreItem2 = reloadedStoreItems2["pocoStoreItem"] as PocoStoreItem;
@@ -152,7 +152,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
 
             await storage.Write(wildcardEtagedict);
 
-            var reloadedStoreItems3 = new Dictionary<string, object>(await storage.Read("pocoItem", "pocoStoreItem"));
+            var reloadedStoreItems3 = new Dictionary<string, object>(await storage.Read(new [] { "pocoItem", "pocoStoreItem" }));
 
             Assert.AreEqual(100, (reloadedStoreItems3["pocoItem"] as PocoItem).Count);
             Assert.AreEqual(100, (reloadedStoreItems3["pocoStoreItem"] as PocoStoreItem).Count);
@@ -160,7 +160,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
             // write with empty etag should not work
             try
             {
-                var reloadedStoreItem4 = (await storage.Read("pocoStoreItem")).OfType<PocoStoreItem>().First();
+                var reloadedStoreItem4 = (await storage.Read(new [] { "pocoStoreItem" })).OfType<PocoStoreItem>().First();
 
                 reloadedStoreItem4.eTag = "";
                 var dict2 = new Dictionary<string, object>()
@@ -178,7 +178,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
             }
 
 
-            var finalStoreItems = new Dictionary<string, object>(await storage.Read("pocoItem", "pocoStoreItem"));
+            var finalStoreItems = new Dictionary<string, object>(await storage.Read(new[] { "pocoItem", "pocoStoreItem" }));
             Assert.AreEqual(100, (finalStoreItems["pocoItem"] as PocoItem).Count);
             Assert.AreEqual(100, (finalStoreItems["pocoStoreItem"] as PocoStoreItem).Count);
         }
@@ -193,22 +193,22 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
 
             await storage.Write(dict);
 
-            var storeItems = await storage.Read("delete1");
+            var storeItems = await storage.Read(new [] { "delete1" });
             var storeItem = storeItems.First().Value as PocoStoreItem;
 
             Assert.IsNotNull(storeItem.eTag, "etag should be set");
             Assert.AreEqual(1, storeItem.Count);
 
-            await storage.Delete("delete1");
+            await storage.Delete(new[] { "delete1" });
 
-            var reloadedStoreItems = await storage.Read("delete1");
+            var reloadedStoreItems = await storage.Read(new[] { "delete1" });
 
             Assert.IsFalse(reloadedStoreItems.Any(), "no store item should have been found because it was deleted");
         }
 
         protected async Task _deleteUnknownObjectTest(IStorage storage)
         {
-            await storage.Delete("unknown_key");
+            await storage.Delete(new[] { "unknown_key" });
         }
 
         protected async Task _batchCreateObjectTest(IStorage storage, long minimumExtraBytes = 0)
@@ -245,7 +245,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
                 Assert.IsInstanceOfType(ex, typeof(InvalidOperationException));
             }
 
-            var readStoreItems = new Dictionary<string, object>(await storage.Read("createPoco"));
+            var readStoreItems = new Dictionary<string, object>(await storage.Read(new[] { "createPoco" }));
             Assert.IsInstanceOfType(readStoreItems["createPoco"], typeof(PocoItem));
             var createPoco = readStoreItems["createPoco"] as PocoItem;
             Assert.AreEqual(createPoco.Id, "1", "createPoco.id should be 1");

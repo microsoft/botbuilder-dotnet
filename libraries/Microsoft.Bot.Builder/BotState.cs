@@ -77,15 +77,20 @@ namespace Microsoft.Bot.Builder
         /// Reads state from storage.
         /// </summary>
         /// <param name="context">The context object for this turn.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <remarks>If successful, the task result contains the state object, read from storage.</remarks>
         public virtual async Task<TState> Read(ITurnContext context, CancellationToken cancellationToken = default(CancellationToken))
         {
             var key = _keyDelegate(context);
-            var items = await _storage.Read(new[] { key }, cancellationToken);
+            var items = await _storage.Read(new[] { key }, cancellationToken).ConfigureAwait(false);
             var state = items.Where(entry => entry.Key == key).Select(entry => entry.Value).OfType<TState>().FirstOrDefault();
+
             if (state == null)
+            {
                 state = new TState();
+            }
+
             return state;
         }
 

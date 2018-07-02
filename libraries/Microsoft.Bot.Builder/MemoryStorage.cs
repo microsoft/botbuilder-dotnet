@@ -35,6 +35,7 @@ namespace Microsoft.Bot.Builder
                     _memory.Remove(key);
                 }
             }
+
             return Task.CompletedTask;
         }
 
@@ -57,8 +58,7 @@ namespace Microsoft.Bot.Builder
 
             return Task.FromResult<IDictionary<string, object>>(storeItems);
         }
-
-
+        
         public Task Write(IDictionary<string, object> changes, CancellationToken cancellationToken)
         {
             lock (_syncroot)
@@ -69,7 +69,7 @@ namespace Microsoft.Bot.Builder
 
                     var oldStateETag = default(string);
 
-                    if(_memory.TryGetValue(change.Key, out var oldState))
+                    if (_memory.TryGetValue(change.Key, out var oldState))
                     {
                         if (oldState.TryGetValue("eTag", out var eTagToken))
                         {
@@ -82,7 +82,7 @@ namespace Microsoft.Bot.Builder
                     // Set ETag if applicable
                     if (newValue is IStoreItem newStoreItem)
                     {
-                        if(oldStateETag != null
+                        if (oldStateETag != null
                                 &&
                            newStoreItem.eTag != "*"
                                 &&
@@ -97,6 +97,7 @@ namespace Microsoft.Bot.Builder
                     _memory[change.Key] = newState;
                 }
             }
+
             return Task.CompletedTask;
         }
     }

@@ -153,7 +153,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             if (CheckEmulator())
             {
-                await Assert.ThrowsExceptionAsync<ArgumentException>(() => _storage.Read());
+                await Assert.ThrowsExceptionAsync<ArgumentException>(() => _storage.Read(new string[] { }));
             }
         }
 

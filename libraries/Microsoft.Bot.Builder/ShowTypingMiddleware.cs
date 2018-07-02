@@ -11,73 +11,94 @@ namespace Microsoft.Bot.Builder
     /// <summary>
     /// When added, this middleware will send typing activities back to the user when a Message activity
     /// is receieved to let them know that the bot has receieved the message and is working on the response.
-    /// You can specify a delay in milliseconds before the first typing activity is sent and then a frequency, 
-    /// also in milliseconds which determines how often another typing activity is sent. Typing activities 
+    /// You can specify a delay in milliseconds before the first typing activity is sent and then a frequency,
+    /// also in milliseconds which determines how often another typing activity is sent. Typing activities
     /// will continue to be sent until your bot sends another message back to the user.
     /// </summary>
     public class ShowTypingMiddleware : IMiddleware
     {
-        /// <summary>
-        /// (Optional) initial delay before sending first typing indicator. Defaults to 500ms.
-        /// </summary>
-        private readonly int _delay;
+        private readonly TimeSpan _delay;
+        private readonly TimeSpan _period;
 
         /// <summary>
-        /// (Optional) rate at which additional typing indicators will be sent. Defaults to every 2000ms.
+        /// Initializes a new instance of the <see cref="ShowTypingMiddleware"/> class.
         /// </summary>
-        private readonly int _freqency;
-
-        public ShowTypingMiddleware(int delay = 500, int frequency = 2000)
+        /// <param name="delay">Initial delay before sending first typing indicator. Defaults to 500ms.</param>
+        /// <param name="period">Rate at which additional typing indicators will be sent. Defaults to every 2000ms.</param>
+        public ShowTypingMiddleware(int delay = 500, int period = 2000)
         {
-            if(delay < 0)
+            if (delay < 0)
+            {
                 throw new ArgumentOutOfRangeException(nameof(delay), "Delay must be greater than or equal to zero");
+            }
 
-            if (frequency <= 0)
-                throw new ArgumentOutOfRangeException(nameof(frequency), "Frequency must be greater than zero");
+            if (period <= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(period), "Repeat period must be greater than zero");
+            }
 
-            _delay = delay;
-            _freqency = frequency;
+            _delay = TimeSpan.FromMilliseconds(delay);
+            _period = TimeSpan.FromMilliseconds(period);
         }
 
         public async Task OnTurn(ITurnContext context, NextDelegate next, CancellationToken cancellationToken)
         {
-            Timer typingActivityTimer = null;
-
+            CancellationTokenSource cts = null;
             try
             {
                 // If the incoming activity is a MessageActivity, start a timer to periodically send the typing activity
                 if (context.Activity.Type == ActivityTypes.Message)
                 {
-                    typingActivityTimer = new Timer(SendTypingTimerCallback, context, _delay, _freqency);
-                    cancellationToken.Register(() => typingActivityTimer.Change(Timeout.Infinite, Timeout.Infinite));
+                    cts = new CancellationTokenSource();
+                    cancellationToken.Register(() => cts.Cancel());
+
+                    // do not await task - we want this to run in thw background and we wil cancel it when its done
+                    var task = Task.Run(() => SendTypingAsync(context, _delay, _period, cts.Token), cancellationToken);
                 }
 
                 await next(cancellationToken).ConfigureAwait(false);
             }
             finally
             {
-                // Once the bot has processed the activity, the middleware should dispose of the timer
-                // on the trailing edge of the activity.
-                typingActivityTimer?.Dispose();
+                if (cts != null)
+                {
+                    cts.Cancel();
+                }
             }
         }
 
-        private async void SendTypingTimerCallback(object state)
+        private static async Task SendTypingAsync(ITurnContext context, TimeSpan delay, TimeSpan period, CancellationToken cancellationToken)
         {
-            var context = (ITurnContext) state;
-            await SendTypingActivity(context);
+            try
+            {
+                await Task.Delay(delay, cancellationToken).ConfigureAwait(false);
+
+                while (!cancellationToken.IsCancellationRequested)
+                {
+                    if (!cancellationToken.IsCancellationRequested)
+                    {
+                        await SendTypingActivityAsync(context, cancellationToken).ConfigureAwait(false);
+                    }
+
+                    // if we happen to cancel when in the delay we will get a TaskCanceledException
+                    await Task.Delay(period, cancellationToken).ConfigureAwait(false);
+                }
+            }
+            catch (TaskCanceledException)
+            {
+                // do nothing
+            }
         }
 
-        private async Task SendTypingActivity(ITurnContext context)
+        private static async Task SendTypingActivityAsync(ITurnContext context, CancellationToken cancellationToken)
         {
-            // create a TypingActivity, associate it with the conversation 
-            // and send immediately
+            // create a TypingActivity, associate it with the conversation and send immediately
             var typingActivity = new Activity
             {
                 Type = ActivityTypes.Typing,
-                RelatesTo = context.Activity.RelatesTo
+                RelatesTo = context.Activity.RelatesTo,
             };
-            await context.SendActivity(typingActivity, default(CancellationToken));
+            await context.SendActivity(typingActivity, cancellationToken).ConfigureAwait(false);
         }
     }
 }
