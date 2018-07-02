@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder
@@ -13,19 +14,19 @@ namespace Microsoft.Bot.Builder
         /// </summary>
         /// <param name="keys">keys of the storeItems to read</param>
         /// <returns>Dictionary of Key/Value pairs</returns>
-        Task<IDictionary<string, object>> Read(params string[] keys);
+        Task<IDictionary<string, object>> Read(string[] keys, CancellationToken cancellationToken);
 
         /// <summary>
         /// Dictionary of Key/Value pairs to write
         /// </summary>
         /// <param name="changes"></param>
-        Task Write(IDictionary<string, object> changes);
+        Task Write(IDictionary<string, object> changes, CancellationToken cancellationToken);
 
         /// <summary>
         /// Delete StoreItems from storage
         /// </summary>
         /// <param name="keys">keys of the storeItems to delete</param>
-        Task Delete(params string[] keys);
+        Task Delete(string[] keys, CancellationToken cancellationToken);
     }
 
     public interface IStoreItem
@@ -47,9 +48,9 @@ namespace Microsoft.Bot.Builder
         /// <param name="storage"></param>
         /// <param name="keys"></param>
         /// <returns></returns>
-        public static async Task<IDictionary<string, StoreItemT>> Read<StoreItemT>(this IStorage storage, params string[] keys) where StoreItemT : class
+        public static async Task<IDictionary<string, StoreItemT>> Read<StoreItemT>(this IStorage storage, string[] keys, CancellationToken cancellationToken) where StoreItemT : class
         {
-            var storeItems = await storage.Read(keys).ConfigureAwait(false);
+            var storeItems = await storage.Read(keys, cancellationToken).ConfigureAwait(false);
             var values = new Dictionary<string, StoreItemT>(keys.Length);
             foreach (var entry in storeItems)
             {

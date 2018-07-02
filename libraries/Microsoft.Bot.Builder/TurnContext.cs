@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 
@@ -144,7 +145,7 @@ namespace Microsoft.Bot.Builder
         /// rate, volume, pronunciation, and pitch, specify <paramref name="speak"/> in 
         /// Speech Synthesis Markup Language (SSML) format.</para>
         /// </remarks>
-        public async Task<ResourceResponse> SendActivity(string textReplyToSend, string speak = null, string inputHint = null)
+        public async Task<ResourceResponse> SendActivity(string textReplyToSend, string speak = null, string inputHint = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (string.IsNullOrWhiteSpace(textReplyToSend))
                 throw new ArgumentNullException(nameof(textReplyToSend));
@@ -157,7 +158,7 @@ namespace Microsoft.Bot.Builder
             if (!string.IsNullOrEmpty(inputHint))
                 activityToSend.InputHint = inputHint;
 
-            return await SendActivity(activityToSend).ConfigureAwait(false);
+            return await SendActivity(activityToSend, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -169,11 +170,11 @@ namespace Microsoft.Bot.Builder
         /// <remarks>If the activity is successfully sent, the task result contains
         /// a <see cref="ResourceResponse"/> object containing the ID that the receiving 
         /// channel assigned to the activity.</remarks>
-        public async Task<ResourceResponse> SendActivity(IActivity activity)
+        public async Task<ResourceResponse> SendActivity(IActivity activity, CancellationToken cancellationToken = default(CancellationToken))
         {
             BotAssert.ActivityNotNull(activity);
 
-            ResourceResponse[] responses = await SendActivities(new [] { activity }).ConfigureAwait(false);
+            ResourceResponse[] responses = await SendActivities(new [] { activity }, cancellationToken).ConfigureAwait(false);
             if (responses == null || responses.Length == 0)
             {
                 // It's possible an interceptor prevented the activity from having been sent. 
@@ -194,7 +195,7 @@ namespace Microsoft.Bot.Builder
         /// <remarks>If the activities are successfully sent, the task result contains
         /// an array of <see cref="ResourceResponse"/> objects containing the IDs that 
         /// the receiving channel assigned to the activities.</remarks>
-        public Task<ResourceResponse[]> SendActivities(IActivity[] activities)
+        public Task<ResourceResponse[]> SendActivities(IActivity[] activities, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (activities == null)
                 throw new ArgumentNullException(nameof(activities));
@@ -239,7 +240,7 @@ namespace Microsoft.Bot.Builder
                 // Send from the list which may have been manipulated via the event handlers. 
                 // Note that 'responses' was captured from the root of the call, and will be
                 // returned to the original caller.
-                var responses = await Adapter.SendActivities(this, bufferedActivities.ToArray()).ConfigureAwait(false);
+                var responses = await Adapter.SendActivities(this, bufferedActivities.ToArray(), cancellationToken).ConfigureAwait(false);
                 var sentNonTraceActivity = false;
 
                 for (var index = 0; index < responses.Length; index++)
@@ -274,16 +275,16 @@ namespace Microsoft.Bot.Builder
         /// channel assigned to the activity.
         /// <para>Before calling this, set the ID of the replacement activity to the ID
         /// of the activity to replace.</para></remarks>
-        public async Task<ResourceResponse> UpdateActivity(IActivity activity)
+        public async Task<ResourceResponse> UpdateActivity(IActivity activity, CancellationToken cancellationToken = default(CancellationToken))
         {
             Activity a = (Activity)activity;
 
             async Task<ResourceResponse> ActuallyUpdateStuff()
             {
-                return await Adapter.UpdateActivity(this, a).ConfigureAwait(false);
+                return await Adapter.UpdateActivity(this, a, cancellationToken).ConfigureAwait(false);
             }
 
-            return await UpdateActivityInternal(a, _onUpdateActivity, ActuallyUpdateStuff).ConfigureAwait(false);
+            return await UpdateActivityInternal(a, _onUpdateActivity, ActuallyUpdateStuff, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -293,7 +294,7 @@ namespace Microsoft.Bot.Builder
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <exception cref="Microsoft.Bot.Schema.ErrorResponseException">
         /// The HTTP operation failed and the response contained additional information.</exception>
-        public async Task DeleteActivity(string activityId)
+        public async Task DeleteActivity(string activityId, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (string.IsNullOrWhiteSpace(activityId))
                 throw new ArgumentNullException(nameof(activityId));
@@ -303,10 +304,10 @@ namespace Microsoft.Bot.Builder
 
             async Task ActuallyDeleteStuff()
             {
-                await Adapter.DeleteActivity(this, cr).ConfigureAwait(false);
+                await Adapter.DeleteActivity(this, cr, cancellationToken).ConfigureAwait(false);
             }
 
-            await DeleteActivityInternal(cr, _onDeleteActivity, ActuallyDeleteStuff);
+            await DeleteActivityInternal(cr, _onDeleteActivity, ActuallyDeleteStuff, cancellationToken);
         }
 
         /// <summary>
@@ -318,22 +319,23 @@ namespace Microsoft.Bot.Builder
         /// The HTTP operation failed and the response contained additional information.</exception>
         /// <remarks>The conversation reference's <see cref="ConversationReference.ActivityId"/> 
         /// indicates the activity in the conversation to delete.</remarks>
-        public async Task DeleteActivity(ConversationReference conversationReference)
+        public async Task DeleteActivity(ConversationReference conversationReference, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (conversationReference == null)
                 throw new ArgumentNullException(nameof(conversationReference));
 
             async Task ActuallyDeleteStuff()
             {
-                await Adapter.DeleteActivity(this, conversationReference).ConfigureAwait(false);
+                await Adapter.DeleteActivity(this, conversationReference, cancellationToken).ConfigureAwait(false);
             }
 
-            await DeleteActivityInternal(conversationReference, _onDeleteActivity, ActuallyDeleteStuff).ConfigureAwait(false);
+            await DeleteActivityInternal(conversationReference, _onDeleteActivity, ActuallyDeleteStuff, cancellationToken).ConfigureAwait(false);
         }
 
         private async Task<ResourceResponse> UpdateActivityInternal(Activity activity,
             IEnumerable<UpdateActivityHandler> updateHandlers,
-            Func<Task<ResourceResponse>> callAtBottom)
+            Func<Task<ResourceResponse>> callAtBottom,
+            CancellationToken cancellationToken)
         {
             BotAssert.ActivityNotNull(activity);
             if (updateHandlers == null)
@@ -355,7 +357,7 @@ namespace Microsoft.Bot.Builder
                 // Remove the first item from the list of middleware to call,
                 // so that the next call just has the remaining items to worry about. 
                 IEnumerable<UpdateActivityHandler> remaining = updateHandlers.Skip(1);
-                var result = await UpdateActivityInternal(activity, remaining, callAtBottom).ConfigureAwait(false);
+                var result = await UpdateActivityInternal(activity, remaining, callAtBottom, cancellationToken).ConfigureAwait(false);
                 activity.Id = result.Id;
                 return result;
             }
@@ -367,7 +369,8 @@ namespace Microsoft.Bot.Builder
 
         private async Task DeleteActivityInternal(ConversationReference cr,
            IEnumerable<DeleteActivityHandler> updateHandlers,
-           Func<Task> callAtBottom)
+           Func<Task> callAtBottom,
+           CancellationToken cancellationToken)
         {
             BotAssert.ConversationReferenceNotNull(cr);
 
@@ -390,7 +393,7 @@ namespace Microsoft.Bot.Builder
                 // Remove the first item from the list of middleware to call,
                 // so that the next call just has the remaining items to worry about. 
                 IEnumerable<DeleteActivityHandler> remaining = updateHandlers.Skip(1);
-                await DeleteActivityInternal(cr, remaining, callAtBottom).ConfigureAwait(false);
+                await DeleteActivityInternal(cr, remaining, callAtBottom, cancellationToken).ConfigureAwait(false);
             }
 
             // Grab the current middleware, which is the 1st element in the array, and execute it.

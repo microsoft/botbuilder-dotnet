@@ -39,7 +39,7 @@ namespace Microsoft.Bot.Builder
             _freqency = frequency;
         }
 
-        public async Task OnTurn(ITurnContext context, MiddlewareSet.NextDelegate next)
+        public async Task OnTurn(ITurnContext context, NextDelegate next, CancellationToken cancellationToken)
         {
             Timer typingActivityTimer = null;
 
@@ -49,9 +49,10 @@ namespace Microsoft.Bot.Builder
                 if (context.Activity.Type == ActivityTypes.Message)
                 {
                     typingActivityTimer = new Timer(SendTypingTimerCallback, context, _delay, _freqency);
+                    cancellationToken.Register(() => typingActivityTimer.Change(Timeout.Infinite, Timeout.Infinite));
                 }
 
-                await next().ConfigureAwait(false);
+                await next(cancellationToken).ConfigureAwait(false);
             }
             finally
             {
@@ -76,7 +77,7 @@ namespace Microsoft.Bot.Builder
                 Type = ActivityTypes.Typing,
                 RelatesTo = context.Activity.RelatesTo
             };
-            await context.SendActivity(typingActivity);
+            await context.SendActivity(typingActivity, default(CancellationToken));
         }
     }
 }
