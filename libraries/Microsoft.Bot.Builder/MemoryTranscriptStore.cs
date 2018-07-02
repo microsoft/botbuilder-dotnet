@@ -37,14 +37,17 @@ namespace Microsoft.Bot.Builder
                     channel = new Dictionary<string, List<IActivity>>();
                     _channels[activity.ChannelId] = channel;
                 }
+
                 List<IActivity> transcript;
                 if (!channel.TryGetValue(activity.Conversation.Id, out transcript))
                 {
                     transcript = new List<IActivity>();
                     channel[activity.Conversation.Id] = transcript;
                 }
+
                 transcript.Add(activity);
             }
+
             return Task.CompletedTask;
         }
 
@@ -98,6 +101,7 @@ namespace Microsoft.Bot.Builder
                     }
                 }
             }
+
             return Task.FromResult(pagedResult);
         }
 
@@ -121,15 +125,17 @@ namespace Microsoft.Bot.Builder
                 if (_channels.TryGetValue(channelId, out channel))
                 {
                     if (channel.ContainsKey(conversationId))
+                    {
                         channel.Remove(conversationId);
+                    }
                 }
             }
+
             return Task.CompletedTask;
         }
 
-
         /// <summary>
-        /// List conversations in a channel 
+        /// List conversations in a channel.
         /// </summary>
         /// <param name="channelId"></param>
         /// <param name="continuationToken"></param>
@@ -151,7 +157,7 @@ namespace Microsoft.Bot.Builder
                         {
                             ChannelId = channelId,
                             Id = c.Key,
-                            Created = c.Value.FirstOrDefault()?.Timestamp ?? default(DateTimeOffset)
+                            Created = c.Value.FirstOrDefault()?.Timestamp ?? default(DateTimeOffset),
                         })
                         .OrderBy(c => c.Created)
                         .SkipWhile(c => c.Id != continuationToken)
@@ -160,26 +166,30 @@ namespace Microsoft.Bot.Builder
                         .ToArray();
 
                         if (pagedResult.Items.Count() == 20)
+                        {
                             pagedResult.ContinuationToken = pagedResult.Items.Last().Id;
+                        }
                     }
                     else
                     {
-                        pagedResult.Items = channel.Select(c => new Transcript()
+                        pagedResult.Items = channel.Select(c => new Transcript
                         {
                             ChannelId = channelId,
                             Id = c.Key,
-                            Created = c.Value.FirstOrDefault()?.Timestamp ?? default(DateTimeOffset)
+                            Created = c.Value.FirstOrDefault()?.Timestamp ?? default(DateTimeOffset),
                         })
                         .OrderBy(c => c.Created)
                         .Take(20)
                         .ToArray();
                         if (pagedResult.Items.Count() == 20)
+                        {
                             pagedResult.ContinuationToken = pagedResult.Items.Last().Id;
+                        }
                     }
                 }
             }
+
             return Task.FromResult(pagedResult);
         }
-
     }
 }

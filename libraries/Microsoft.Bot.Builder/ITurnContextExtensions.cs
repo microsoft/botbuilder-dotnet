@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 
@@ -18,9 +19,9 @@ namespace Microsoft.Bot.Builder.TraceExtensions
         /// <param name="valueType">valueType if helpful to identify the value schema (default is value.GetType().Name)</param>
         /// <param name="label">descritive label of context. (Default is calling function name)</param>
         /// <returns></returns>
-        public static Task<ResourceResponse> TraceActivity(this ITurnContext turnContext, string name, object value = null, string valueType = null, [CallerMemberName] string label = null)
+        public static Task<ResourceResponse> TraceActivity(this ITurnContext turnContext, string name, object value = null, string valueType = null, [CallerMemberName] string label = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return turnContext.SendActivity(turnContext.Activity.CreateTrace(name, value, valueType, label));
+            return turnContext.SendActivity(turnContext.Activity.CreateTrace(name, value, valueType, label), cancellationToken);
         }
     }
 }

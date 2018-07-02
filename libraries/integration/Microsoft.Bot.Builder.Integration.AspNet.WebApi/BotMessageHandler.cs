@@ -24,7 +24,8 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Handlers
             var invokeResponse = await botFrameworkAdapter.ProcessActivity(
                 request.Headers.Authorization?.ToString(),
                 activity,
-                botCallbackHandler);
+                botCallbackHandler,
+                cancellationToken);
 
             return invokeResponse;
         }

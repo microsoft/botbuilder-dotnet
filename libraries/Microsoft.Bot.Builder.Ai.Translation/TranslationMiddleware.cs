@@ -3,9 +3,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Ai.Translation.PostProcessor;
 using Microsoft.Bot.Schema;
@@ -83,8 +82,8 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         /// For example, in French <c>je m’appelle ([a-z]+)</c>, which will avoid translation of anything coming after je m’appelle.</remarks>
         public TranslationMiddleware(string[] nativeLanguages, string translatorKey, Dictionary<string, List<string>> patterns, CustomDictionary userCustomDictonaries, Func<ITurnContext, string> getUserLanguage, Func<ITurnContext, Task<bool>> isUserLanguageChanged, bool toUserLanguage = false) : this(nativeLanguages, translatorKey, patterns, userCustomDictonaries, toUserLanguage)
         {
-            this._getUserLanguage = getUserLanguage ?? throw new ArgumentNullException(nameof(getUserLanguage));
-            this._isUserLanguageChanged = isUserLanguageChanged ?? throw new ArgumentNullException(nameof(isUserLanguageChanged));
+            _getUserLanguage = getUserLanguage ?? throw new ArgumentNullException(nameof(getUserLanguage));
+            _isUserLanguageChanged = isUserLanguageChanged ?? throw new ArgumentNullException(nameof(isUserLanguageChanged));
         }
 
         private static void AssertValidNativeLanguages(string[] nativeLanguages)
@@ -98,7 +97,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         /// </summary>
         /// <param name="context">The context object for this turn.</param>
         /// <param name="next">The delegate to call to continue the bot middleware pipeline.</param>
-        public virtual async Task OnTurn(ITurnContext context, MiddlewareSet.NextDelegate next)
+        public virtual async Task OnTurn(ITurnContext context, NextDelegate next, CancellationToken cancellationToken)
         {
             if (context.Activity.Type == ActivityTypes.Message)
             {
@@ -127,7 +126,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation
                                 sourceLanguage = _getUserLanguage(context);
                             }
 
-                            targetLanguage = (_nativeLanguages.Contains(sourceLanguage)) ? sourceLanguage : this._nativeLanguages.FirstOrDefault() ?? "en";
+                            targetLanguage = (_nativeLanguages.Contains(sourceLanguage)) ? sourceLanguage : _nativeLanguages.FirstOrDefault() ?? "en";
                             await TranslateMessageAsync(context, message, sourceLanguage, targetLanguage, _nativeLanguages.Contains(sourceLanguage)).ConfigureAwait(false);
 
                             if (_toUserLanguage)
@@ -167,7 +166,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation
                     }
                 }
             }
-            await next().ConfigureAwait(false);
+            await next(cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>

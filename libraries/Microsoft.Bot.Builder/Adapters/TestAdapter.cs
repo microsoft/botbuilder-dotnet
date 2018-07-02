@@ -49,7 +49,7 @@ namespace Microsoft.Bot.Builder.Adapters
             return this;
         }
 
-        public async Task ProcessActivity(Activity activity, Func<ITurnContext, Task> callback, CancellationTokenSource cancelToken = null)
+        public async Task ProcessActivity(Activity activity, Func<ITurnContext, Task> callback, CancellationToken cancellationToken = default(CancellationToken))
         {
             lock (_conversationLock)
             {
@@ -69,14 +69,14 @@ namespace Microsoft.Bot.Builder.Adapters
 
             using (var context = new TurnContext(this, activity))
             {
-                await base.RunPipeline(context, callback);
+                await RunPipeline(context, callback, cancellationToken);
             }
         }
 
         public ConversationReference Conversation { get; set; }
 
 
-        public async override Task<ResourceResponse[]> SendActivities(ITurnContext context, Activity[] activities)
+        public async override Task<ResourceResponse[]> SendActivities(ITurnContext context, Activity[] activities, CancellationToken cancellationToken)
         {
             if (context == null)
             {
@@ -137,7 +137,7 @@ namespace Microsoft.Bot.Builder.Adapters
             return responses;
         }
 
-        public override Task<ResourceResponse> UpdateActivity(ITurnContext context, Activity activity)
+        public override Task<ResourceResponse> UpdateActivity(ITurnContext context, Activity activity, CancellationToken cancellationToken)
         {
             lock (_activeQueueLock)
             {
@@ -152,14 +152,16 @@ namespace Microsoft.Bot.Builder.Adapters
                         {
                             ActiveQueue.Enqueue(item);
                         }
+
                         return Task.FromResult(new ResourceResponse(activity.Id));
                     }
                 }
             }
+
             return Task.FromResult(new ResourceResponse());
         }
 
-        public override Task DeleteActivity(ITurnContext context, ConversationReference reference)
+        public override Task DeleteActivity(ITurnContext context, ConversationReference reference, CancellationToken cancellationToken)
         {
             lock (_activeQueueLock)
             {
@@ -174,6 +176,7 @@ namespace Microsoft.Bot.Builder.Adapters
                         {
                             ActiveQueue.Enqueue(item);
                         }
+
                         break;
                     }
                 }
@@ -188,7 +191,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <param name="callback"></param>
         /// <returns></returns>
         //public override Task CreateConversation(string channelId, Func<ITurnContext, Task> callback)
-        public Task CreateConversation(string channelId, Func<ITurnContext, Task> callback)
+        public Task CreateConversation(string channelId, Func<ITurnContext, Task> callback, CancellationToken cancellationToken)
         {
             ActiveQueue.Clear();
             var update = Activity.CreateConversationUpdateActivity();
@@ -242,9 +245,9 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <param name="callback">The turn processing logic to use.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <seealso cref="TestFlow.Send(string)"/>
-        public Task SendTextToBot(string userSays, Func<ITurnContext, Task> callback)
+        public Task SendTextToBot(string userSays, Func<ITurnContext, Task> callback, CancellationToken cancellationToken)
         {
-            return ProcessActivity(MakeActivity(userSays), callback);
+            return ProcessActivity(MakeActivity(userSays), callback, cancellationToken);
         }
     }
 }
