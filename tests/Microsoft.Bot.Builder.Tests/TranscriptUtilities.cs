@@ -26,27 +26,39 @@ namespace Microsoft.Bot.Builder.Tests
         /// <returns>A list of activities to test</returns>
         public static IEnumerable<IActivity> GetFromTestContext(TestContext context)
         {
-            var relativePath = Path.Combine(context.FullyQualifiedTestClassName.Split('.').Last(), $"{context.TestName}.chat");
+            // Use TestContext to find transcripts using the following naming convention:
+            // {BOTBUILDER_TRANSCRIPTS_LOCATION}\{TestClassName}\{TestMethodName}.chat
+            var testClassName = context.FullyQualifiedTestClassName.Split('.').Last();
+            var relativePath = Path.Combine(testClassName, $"{context.TestName}.chat");
             return GetActivities(relativePath);
         }
 
+        /// <summary>
+        /// Loads a list of activities from a trnascript file.
+        /// </summary>
+        /// <param name="relativePath">Path relative to the BOTBUILDER_TRANSCRIPTS_LOCATION environment variable value.</param>
+        /// <returns>A list of activities to test</returns>
         public static IEnumerable<IActivity> GetActivities(string relativePath)
         {
             var transcriptsRootFolder = TranscriptUtilities.EnsureTranscriptsDownload();
             var path = Path.Combine(transcriptsRootFolder, relativePath);
+
+            // Look for .chat files first and use Chatdown tool to generate .transcripts
+            // If .chat file does not exists, try .transcript instead. Throw an exception if neither .chat nor .transcript file is found.
             if (!File.Exists(path))
             {
                 path = Path.Combine(transcriptsRootFolder, relativePath.Replace(".chat", ".transcript", StringComparison.InvariantCultureIgnoreCase));
             }
+
             if (!File.Exists(path))
             {
-                Assert.Fail($"Required transcript file '{path}' does not exists in '{transcriptsRootFolder}' folder. Review the 'TranscriptsRootFolder' environment variable value.");
+                throw new InvalidOperationException($"Required transcript file '{path}' does not exists in '{transcriptsRootFolder}' folder. Review the 'TranscriptsRootFolder' environment variable value.");
             }
 
             string content;
-            if (string.Equals(path.Split('.').Last(), "chat", StringComparison.InvariantCultureIgnoreCase))
+            if (string.Equals(Path.GetExtension(path), ".chat", StringComparison.InvariantCultureIgnoreCase))
             {
-                content = Chatdown(path);
+                content = ExecuteChatdownTool(path);
             }
             else
             {
@@ -64,46 +76,46 @@ namespace Microsoft.Bot.Builder.Tests
             return activities.Take(activities.Count - 1).Append(lastActivity);
         }
 
-        private static readonly object syncRoot = new object();
-        private static string TranscriptsTemporalPath { get; set; }
+        private const string TranscriptsZipFolder = "/Common/Transcripts/"; // Folder within the repo/zip
+        private static readonly object _syncRoot = new object();
+        private static string TranscriptsLocalPath { get; set; }
 
         public static string EnsureTranscriptsDownload()
         {
-            if (!string.IsNullOrWhiteSpace(TranscriptsTemporalPath))
+            if (!string.IsNullOrWhiteSpace(TranscriptsLocalPath))
             {
-                return TranscriptsTemporalPath;
+                return TranscriptsLocalPath;
             }
 
-            var transcriptsZipUrl = TestUtilities.GetKey("BOTBUILDER_TRANSCRIPTS_LOCATION") ?? "https://github.com/Microsoft/BotBuilder/archive/master.zip";
-            const string transcriptsZipFolder = "/Common/Transcripts/"; // Folder within the repo/zip
+            var transcriptsLocation = TestUtilities.GetKey("BOTBUILDER_TRANSCRIPTS_LOCATION") ?? "https://github.com/Microsoft/BotBuilder/archive/master.zip";
 
             var tempPath = Path.GetTempPath();
-            var zipFilePath = Path.Combine(tempPath, Path.GetFileName(transcriptsZipUrl));
+            var zipFilePath = Path.Combine(tempPath, Path.GetFileName(transcriptsLocation));
 
-            lock (syncRoot)
+            lock (_syncRoot)
             {
-                if (!string.IsNullOrWhiteSpace(TranscriptsTemporalPath))
+                if (!string.IsNullOrWhiteSpace(TranscriptsLocalPath))
                 {
-                    return TranscriptsTemporalPath;
+                    return TranscriptsLocalPath;
                 }
 
                 // Only download and extract zip when provided a valid absolute url. Otherwise, use it as local path
-                if (Uri.IsWellFormedUriString(transcriptsZipUrl, UriKind.Absolute))
+                if (Uri.IsWellFormedUriString(transcriptsLocation, UriKind.Absolute))
                 {
-                    DownloadFile(transcriptsZipUrl, zipFilePath);
+                    DownloadFile(transcriptsLocation, zipFilePath);
 
                     var transcriptsExtractionPath = Path.Combine(tempPath, "Transcripts/");
-                    ExtractZipFolder(zipFilePath, transcriptsZipFolder, transcriptsExtractionPath);
+                    ExtractZipFolder(zipFilePath, TranscriptsZipFolder, transcriptsExtractionPath);
 
-                    // Set TranscriptsTemporalPath for next use
-                    TranscriptsTemporalPath = transcriptsExtractionPath;
+                    // Set TranscriptsLocalPath for next use
+                    TranscriptsLocalPath = transcriptsExtractionPath;
                 }
                 else
                 {
-                    TranscriptsTemporalPath = transcriptsZipUrl;
+                    TranscriptsLocalPath = transcriptsLocation;
                 }
 
-                return TranscriptsTemporalPath;
+                return TranscriptsLocalPath;
             }
         }
 
@@ -143,10 +155,14 @@ namespace Microsoft.Bot.Builder.Tests
         {
             // Download file from url to disk
             using (var httpClient = new HttpClient())
-            using (var urlStream = httpClient.GetStreamAsync(url).Result)
-            using (var fileStream = new FileStream(path, FileMode.Create, FileAccess.Write))
             {
-                urlStream.CopyTo(fileStream);
+                using (var urlStream = httpClient.GetStreamAsync(url).Result)
+                {
+                    using (var fileStream = new FileStream(path, FileMode.Create, FileAccess.Write))
+                    {
+                        urlStream.CopyTo(fileStream);
+                    }
+                }
             }
         }
 
@@ -158,7 +174,7 @@ namespace Microsoft.Bot.Builder.Tests
             }
         }
 
-        public static string Chatdown(string path)
+        private static string ExecuteChatdownTool(string path)
         {
             var file = new FileInfo(path);
             var chatdown = new System.Diagnostics.ProcessStartInfo
@@ -175,7 +191,7 @@ namespace Microsoft.Bot.Builder.Tests
             chatdownProcess.WaitForExit();
             if (string.IsNullOrEmpty(content))
             {
-                string message = String.Format("Chatdown error. Please check if chatdown is correctly installed or install it with \"npm i -g chatdown\". Error details: {0}", errorContent);
+                string message = $"Chatdown error. Please check if chatdown is correctly installed or install it with \"npm i -g chatdown\". Error details: {errorContent}";
                 throw new Exception(message);
             }
 
