@@ -2,8 +2,8 @@
 // Licensed under the MIT License.
 using System;
 using Microsoft.Bot.Builder.Core.Extensions;
-using Microsoft.Cognitive.LUIS;
-using Microsoft.Cognitive.LUIS.Models;
+using Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime;
+using Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 
@@ -17,7 +17,7 @@ namespace Microsoft.Bot.Builder.Ai.LUIS.Tests
         {
             var luisTraceInfo = new LuisTraceInfo
             {
-                LuisModel = new LuisModel(Guid.NewGuid().ToString(), "abc", new Uri("https://luis.ai")),
+                LuisModel = new LuisApplication(Guid.NewGuid().ToString(), "abc", new Uri("https://luis.ai")),
                 LuisOptions = new LuisRequest {Verbose = true},
                 LuisResult = new LuisResult {Query = "hi"},
                 RecognizerResult = new RecognizerResult {Text = "hi"}

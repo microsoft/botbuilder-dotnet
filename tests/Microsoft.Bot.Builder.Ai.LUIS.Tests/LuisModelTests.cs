@@ -1,5 +1,5 @@
 ﻿using System;
-using Microsoft.Cognitive.LUIS;
+using Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 
@@ -15,11 +15,11 @@ namespace Microsoft.Bot.Builder.Ai.LUIS.Tests
             var model = GetValidModel();
             Assert.IsNotNull(model);
 
-            Assert.ThrowsException<ArgumentNullException>(() => new LuisModel(null, "abc", new Uri("https://luis.ai"), LuisApiVersion.V2));
-            Assert.ThrowsException<ArgumentNullException>(() => new LuisModel(string.Empty, "abc", new Uri("https://luis.ai"), LuisApiVersion.V2));
-            Assert.ThrowsException<ArgumentNullException>(() => new LuisModel(Guid.Empty.ToString(), null, new Uri("https://luis.ai"), LuisApiVersion.V2));
-            Assert.ThrowsException<ArgumentNullException>(() => new LuisModel(Guid.Empty.ToString(), string.Empty, new Uri("https://luis.ai"), LuisApiVersion.V2));
-            Assert.ThrowsException<ArgumentNullException>(() => new LuisModel(Guid.Empty.ToString(), "abc", null, LuisApiVersion.V2));
+            Assert.ThrowsException<ArgumentNullException>(() => new LuisApplication(null, "abc", new Uri("https://luis.ai"), LuisApiVersion.V2));
+            Assert.ThrowsException<ArgumentNullException>(() => new LuisApplication(string.Empty, "abc", new Uri("https://luis.ai"), LuisApiVersion.V2));
+            Assert.ThrowsException<ArgumentNullException>(() => new LuisApplication(Guid.Empty.ToString(), null, new Uri("https://luis.ai"), LuisApiVersion.V2));
+            Assert.ThrowsException<ArgumentNullException>(() => new LuisApplication(Guid.Empty.ToString(), string.Empty, new Uri("https://luis.ai"), LuisApiVersion.V2));
+            Assert.ThrowsException<ArgumentNullException>(() => new LuisApplication(Guid.Empty.ToString(), "abc", null, LuisApiVersion.V2));
         }
 
         [TestMethod]
@@ -27,7 +27,7 @@ namespace Microsoft.Bot.Builder.Ai.LUIS.Tests
         {
             var model = GetValidModel();
             var serialized = JsonConvert.SerializeObject(model);
-            var deserialized = JsonConvert.DeserializeObject<LuisModel>(serialized);
+            var deserialized = JsonConvert.DeserializeObject<LuisApplication>(serialized);
 
             Assert.IsNotNull(deserialized);
             Assert.AreEqual(model.ApiVersion, deserialized.ApiVersion);
@@ -37,9 +37,9 @@ namespace Microsoft.Bot.Builder.Ai.LUIS.Tests
             Assert.AreEqual(model.UriBase.Host, deserialized.UriBase.Host);
         }
 
-        private LuisModel GetValidModel()
+        private LuisApplication GetValidModel()
         {
-            return new LuisModel(Guid.Empty.ToString(), "abc", new Uri("https://luis.ai"), LuisApiVersion.V2);
+            return new LuisApplication(Guid.Empty.ToString(), "abc", new Uri("https://luis.ai"), LuisApiVersion.V2);
         }
     }
 }

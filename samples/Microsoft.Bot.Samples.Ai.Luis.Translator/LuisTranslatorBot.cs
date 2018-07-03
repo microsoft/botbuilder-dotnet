@@ -5,7 +5,7 @@ using Microsoft.Bot.Builder.Ai.LUIS;
 using Microsoft.Bot.Builder.Core.Extensions;
 using Microsoft.Bot.Schema;
 
-namespace Microsoft.Bot.Samples.Ai.Luis.Translator
+namespace Microsoft.Bot.Samples.Ai.LUIS.Translator
 {
     public class LuisTranslatorBot : IBot
     {

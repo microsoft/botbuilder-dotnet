@@ -6,10 +6,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Cognitive.LUIS;
-using Microsoft.Cognitive.LUIS.Models;
-using Newtonsoft.Json.Linq;
+using Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime;
 using Microsoft.Bot.Builder.Core.Extensions;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Ai.LUIS
 {
@@ -19,10 +18,10 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
     /// </summary>
     public class LuisRecognizer : IRecognizer
     {
-        private readonly LuisService _luisService;
-        private readonly ILuisOptions _luisOptions;
-        private readonly ILuisRecognizerOptions _luisRecognizerOptions;
         private const string MetadataKey = "$instance";
+        private readonly LuisRuntimeAPI luisService;
+        private readonly LuisPredictionOptions luisOptions;
+        private readonly ILuisRecognizerOptions luisRecognizerOptions;
 
         /// <summary> 
         /// Creates a new <see cref="LuisRecognizer"/> object. 
@@ -30,11 +29,11 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
         /// <param name="luisModel">The LUIS model to use to recognize text.</param> 
         /// <param name="luisRecognizerOptions">The LUIS recognizer options to use.</param> 
         /// <param name="options">The LUIS request options to use.</param> 
-        public LuisRecognizer(ILuisModel luisModel, ILuisRecognizerOptions luisRecognizerOptions = null, ILuisOptions options = null)
+        public LuisRecognizer(LuisApplication luisModel, ILuisRecognizerOptions luisRecognizerOptions = null, LuisPredictionOptions options = null)
         {
-            _luisService = new LuisService(luisModel);
-            _luisOptions = options ?? new LuisRequest();
-            _luisRecognizerOptions = luisRecognizerOptions ?? new LuisRecognizerOptions { Verbose = true };
+            luisService = new LuisRuntimeAPI(new );
+            luisOptions = options ?? new LuisOptions();
+            this.luisRecognizerOptions = luisRecognizerOptions ?? new LuisRecognizerOptions { Verbose = true };
         }
 
         /// <inheritdoc />
@@ -58,13 +57,13 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
                 throw new ArgumentNullException(nameof(utterance));
 
             var luisRequest = new LuisRequest(utterance);
-            _luisOptions.Apply(luisRequest);
-            return Recognize(luisRequest, ct, _luisRecognizerOptions.Verbose);
+            luisOptions.Apply(luisRequest);
+            return Recognize(luisRequest, ct, luisRecognizerOptions.Verbose);
         }
 
         private async Task<RecognizerResult> Recognize(LuisRequest request, CancellationToken ct, bool verbose)
         {
-            var luisResult = await _luisService.QueryAsync(request, ct).ConfigureAwait(false);
+            var luisResult = await luisService.QueryAsync(request, ct).ConfigureAwait(false);
             var recognizerResult = new RecognizerResult
             {
                 Text = request.Query,

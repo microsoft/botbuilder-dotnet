@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Core.Extensions.Tests;
 using Microsoft.Bot.Schema;
-using Microsoft.Cognitive.LUIS;
+using Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Bot.Builder.Ai.LUIS.Tests
@@ -82,7 +82,7 @@ namespace Microsoft.Bot.Builder.Ai.LUIS.Tests
         [TestMethod]
         public void LuisRecognizer_ObfuscateSensitiveData()
         {
-            var model = new LuisModel(Guid.NewGuid().ToString(), "abc", new Uri("http://luis.ai"));
+            var model = new LuisApplication(Guid.NewGuid().ToString(), "abc", new Uri("http://luis.ai"));
             var obfuscated = LuisRecognizerMiddleware.RemoveSensitiveData(model);
 
             Assert.AreEqual(LuisRecognizerMiddleware.Obfuscated, obfuscated.SubscriptionKey);
@@ -96,7 +96,7 @@ namespace Microsoft.Bot.Builder.Ai.LUIS.Tests
         private LuisRecognizerMiddleware GetLuisRecognizerMiddleware(bool verbose = false, ILuisOptions luisOptions = null)
         {
             var luisRecognizerOptions = new LuisRecognizerOptions { Verbose = verbose };
-            var luisModel = new LuisModel(_luisAppId, _subscriptionKey, new Uri(_luisUriBase));
+            var luisModel = new LuisApplication(_luisAppId, _subscriptionKey, new Uri(_luisUriBase));
             return new LuisRecognizerMiddleware(luisModel, luisRecognizerOptions, luisOptions ?? new LuisRequest{Verbose = verbose});
         }
 

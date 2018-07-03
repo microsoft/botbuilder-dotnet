@@ -3,8 +3,8 @@
 
 
 using Microsoft.Bot.Builder.Core.Extensions;
-using Microsoft.Cognitive.LUIS;
-using Microsoft.Cognitive.LUIS.Models;
+using Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime;
+using Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime.Models;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Ai.LUIS
@@ -19,12 +19,12 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
         public RecognizerResult RecognizerResult { set; get; }
 
         [JsonProperty("luisResult")]
-        public LuisResult LuisResult { set; get; }
+        public LuisResult Result { set; get; }
 
         [JsonProperty("luisModel")]
-        public ILuisModel LuisModel { set; get; }
+        public ILuisApplication Application { set; get; }
 
         [JsonProperty("luisOptions")]
-        public ILuisOptions LuisOptions { set; get; }
+        public ILuisOptions Options { set; get; }
     }
 }

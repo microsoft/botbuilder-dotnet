@@ -6,8 +6,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Core.Extensions;
 using Microsoft.Bot.Schema;
-using Microsoft.Cognitive.LUIS;
-using Microsoft.Cognitive.LUIS.Models;
+using Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime;
+using Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime.Models;
 
 namespace Microsoft.Bot.Builder.Ai.LUIS
 {
@@ -90,7 +90,7 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
         /// <returns>A new model with the sensitive information removed.</returns>
         public static ILuisModel RemoveSensitiveData(ILuisModel luisModel)
         {
-            return new LuisModel(luisModel.ModelID, Obfuscated, luisModel.UriBase, luisModel.ApiVersion);
+            return new LuisApplication(luisModel.ModelID, Obfuscated, luisModel.UriBase, luisModel.ApiVersion);
         }
     }
 }

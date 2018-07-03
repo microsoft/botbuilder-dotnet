@@ -7,7 +7,7 @@ using Microsoft.Bot.Builder.Ai.LUIS;
 using Microsoft.Bot.Builder.Core.Extensions;
 using Microsoft.Bot.Schema;
 
-namespace Microsoft.Bot.Samples.Ai.Luis
+namespace Microsoft.Bot.Samples.Ai.LUIS
 {
     public class LuisBot : IBot
     {

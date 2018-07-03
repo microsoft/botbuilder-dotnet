@@ -4,12 +4,12 @@
 namespace Microsoft.Bot.Builder.Ai.LUIS
 {
     /// <summary>
-    /// Options for the Luis Recognizer
+    /// Options for the LUIS Recognizer.
     /// </summary>
     public interface ILuisRecognizerOptions
     {
         /// <summary>
-        /// If set to true, metadata is added to the recognizer's results
+        /// Gets a value indicating whether if set to true, metadata is added to the recognizer's results.
         /// </summary>
         bool Verbose { get; }
     }
