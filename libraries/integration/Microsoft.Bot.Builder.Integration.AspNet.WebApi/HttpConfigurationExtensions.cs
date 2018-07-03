@@ -1,10 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Builder.Integration.AspNet.WebApi.Handlers;
 using System;
+using System.Configuration;
 using System.Web.Http;
+using Microsoft.Bot.Builder.Integration.AspNet.WebApi.Handlers;
+using Microsoft.Bot.Connector.Authentication;
 
 namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
 {
@@ -18,54 +19,73 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
         /// <returns>A reference to this instance after the operation has completed.</returns>
         public static HttpConfiguration MapBotFramework(this HttpConfiguration httpConfiguration, Action<BotFrameworkConfigurationBuilder> configurer = null)
         {
+            if (httpConfiguration == null)
+            {
+                throw new ArgumentNullException(nameof(httpConfiguration));
+            }
+
             var options = new BotFrameworkOptions();
             var optionsBuilder = new BotFrameworkConfigurationBuilder(options);
 
-            configurer(optionsBuilder);
+            configurer?.Invoke(optionsBuilder);
 
-            ConfigureBotRoutes(BuildAdapter());
+            var botFrameworkAdapter = httpConfiguration.DependencyResolver.GetService(typeof(BotFrameworkAdapter)) as BotFrameworkAdapter;
+            if (botFrameworkAdapter == null)
+            {
+                var credentialProvider = ResolveCredentialProvider(options);
+
+                // TODO: fix up constructor to take options
+                botFrameworkAdapter = new BotFrameworkAdapter(credentialProvider, options.ConnectorClientRetryPolicy, options.HttpClient);
+            }
+
+            // error handler
+            botFrameworkAdapter.ErrorHandler = options.ErrorHandler;
+
+            // add middleware
+            foreach (var middleware in options.Middleware)
+            {
+                botFrameworkAdapter.Use(middleware);
+            }
+
+            ConfigureBotRoutes(httpConfiguration, options, botFrameworkAdapter);
 
             return httpConfiguration;
+        }
 
-            BotFrameworkAdapter BuildAdapter()
+        private static void ConfigureBotRoutes(HttpConfiguration httpConfiguration, BotFrameworkOptions options, BotFrameworkAdapter adapter)
+        {
+            var routes = httpConfiguration.Routes;
+            var baseUrl = options.Paths.BasePath;
+
+            if (options.EnableProactiveMessages)
             {
-                var adapter = new BotFrameworkAdapter(options.CredentialProvider, options.ConnectorClientRetryPolicy);
-
-                foreach (var middleware in options.Middleware)
-                {
-                    adapter.Use(middleware);
-                }
-
-                return adapter;
-            }
-
-            void ConfigureBotRoutes(BotFrameworkAdapter adapter)
-            {
-                var routes = httpConfiguration.Routes;
-                var baseUrl = options.Paths.BasePath;
-
-                if (!baseUrl.EndsWith("/"))
-                {
-                    baseUrl += "/";
-                }
-
-                if (options.EnableProactiveMessages)
-                {
-                    routes.MapHttpRoute(
-                        "BotFramework - Proactive Message Handler",
-                        baseUrl + options.Paths.ProactiveMessagesPath,
-                        defaults: null,
-                        constraints: null,
-                        handler: new BotProactiveMessageHandler(adapter));
-                }
-
                 routes.MapHttpRoute(
-                        "BotFramework - Message Handler",
-                        baseUrl + options.Paths.MessagesPath,
-                        defaults: null,
-                        constraints: null,
-                        handler: new BotMessageHandler(adapter));
+                    BotProactiveMessageHandler.RouteName,
+                    baseUrl.Trim('/') + "/" + options.Paths.ProactiveMessagesPath.Trim('/'),
+                    defaults: null,
+                    constraints: null,
+                    handler: new BotProactiveMessageHandler(adapter));
             }
-        }        
+
+            routes.MapHttpRoute(
+                    BotMessageHandler.RouteName,
+                    baseUrl.Trim('/') + "/" + options.Paths.MessagesPath.Trim('/'),
+                    defaults: null,
+                    constraints: null,
+                    handler: new BotMessageHandler(adapter));
+        }
+
+        private static ICredentialProvider ResolveCredentialProvider(BotFrameworkOptions options)
+        {
+            var credentialProvider = options.CredentialProvider;
+
+            // If a credential provider was explicitly configured, just return that straight away
+            if (credentialProvider != null)
+            {
+                return credentialProvider;
+            }
+
+            return new SimpleCredentialProvider(ConfigurationManager.AppSettings[MicrosoftAppCredentials.MicrosoftAppIdKey], ConfigurationManager.AppSettings[MicrosoftAppCredentials.MicrosoftAppPasswordKey]);
+        }
     }
 }

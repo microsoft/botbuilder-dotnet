@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<Version Condition=" '$(BUILD_BUILDNUMBER)' == '' ">4.0.0-local</Version>
-		<Version Condition=" '$(BUILD_BUILDNUMBER)' != '' ">$(BUILD_BUILDNUMBER)</Version>
+		<Version Condition=" '$(PackageVersion)' == '' ">4.0.0-local</Version>
+		<Version Condition=" '$(PackageVersion)' != '' ">$(PackageVersion)</Version>
 		<PackageVersion Condition=" '$(PackageVersion)' == '' ">4.0.0-local</PackageVersion>
 		<PackageVersion Condition=" '$(PackageVersion)' != '' ">$(PackageVersion)</PackageVersion>
 		<Configurations>Debug;Release;Documentation;Debug - NuGet Packages;</Configurations>
@@ -37,10 +37,6 @@
 		<NeutralLanguage />
 	</PropertyGroup>
 
-	<PropertyGroup Condition="$(Configuration) == 'Debug - NuGet Packages'">
-		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-	</PropertyGroup>
-
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Documentation|AnyCPU'">
 		<DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Builder.Ai.LUIS.xml</DocumentationFile>
 		<CodeAnalysisRuleSet>Microsoft.Bot.Builder.Ai.LUIS.ruleset</CodeAnalysisRuleSet>
@@ -61,15 +57,13 @@
 	
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime" Version="0.9.0-preview" />
-		<PackageReference Include="Microsoft.Bot.Builder.Core" Condition=" '$(PackageVersion)' == '' " Version="4.0.0-local" />
-		<PackageReference Include="Microsoft.Bot.Builder.Core" Condition=" '$(PackageVersion)' != '' " Version="$(PackageVersion)" />
+    <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(PackageVersion)' != '' " Version="$(PackageVersion)" />
+		<PackageReference Include="Microsoft.Rest.ClientRuntime" Version="2.3.10" />
 		<PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
 		<PackageReference Include="StyleCop.Analyzers" Version="1.1.0-beta008" />
 	</ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Microsoft.Bot.Builder.Core.Extensions\Microsoft.Bot.Builder.Core.Extensions.csproj" />
-    <ProjectReference Include="..\Microsoft.Bot.Builder.Core\Microsoft.Bot.Builder.Core.csproj" />
-    <ProjectReference Include="..\Microsoft.Bot.Schema\Microsoft.Bot.Schema.csproj" />
+    <ProjectReference Include="..\Microsoft.Bot.Builder\Microsoft.Bot.Builder.csproj" />
   </ItemGroup>
 </Project>

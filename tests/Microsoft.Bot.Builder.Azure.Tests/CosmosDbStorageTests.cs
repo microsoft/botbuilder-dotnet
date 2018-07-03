@@ -27,8 +27,19 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         private const string _noEmulatorMessage = "This test requires CosmosDB Emulator! go to https://aka.ms/documentdb-emulator-docs to download and install.";
         private static Lazy<bool> _hasEmulator = new Lazy<bool>(() =>
         {
-            // return true if it's installed.  If it's installed not running you will get test errors
-            return File.Exists(_emulatorPath);
+            if (File.Exists(_emulatorPath))
+            { 
+                Process p = new Process();
+                p.StartInfo.UseShellExecute = true;
+                p.StartInfo.FileName = _emulatorPath;
+                p.StartInfo.Arguments = "/GetStatus";
+                p.Start();
+                p.WaitForExit();
+
+                return p.ExitCode == 2;
+            }
+
+            return false;
         });
 
         private IStorage _storage;
@@ -38,7 +49,13 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             if (_hasEmulator.Value)
             {
-                _storage = new CosmosDbStorage(new Uri(CosmosServiceEndpoint), CosmosAuthKey, CosmosDatabaseName, CosmosCollectionName);
+                _storage = new CosmosDbStorage(new CosmosDbStorageOptions
+                {
+                    AuthKey = CosmosAuthKey,
+                    CollectionId = CosmosCollectionName,
+                    CosmosDBEndpoint = new Uri(CosmosServiceEndpoint),
+                    DatabaseId = CosmosDatabaseName,
+                });
             }
         }
 
@@ -116,7 +133,15 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             if (CheckEmulator())
             {
                 ConnectionPolicy policyRef = null;
-                new CosmosDbStorage(new Uri(CosmosServiceEndpoint), CosmosAuthKey, CosmosDatabaseName, CosmosCollectionName, (ConnectionPolicy policy) => policyRef = policy);
+
+                _storage = new CosmosDbStorage(new CosmosDbStorageOptions
+                {
+                    AuthKey = CosmosAuthKey,
+                    CollectionId = CosmosCollectionName,
+                    CosmosDBEndpoint = new Uri(CosmosServiceEndpoint),
+                    DatabaseId = CosmosDatabaseName,
+                    ConnectionPolicyConfigurator = (ConnectionPolicy policy) => policyRef = policy
+                });
 
                 Assert.IsNotNull(policyRef, "ConnectionPolicy configurator was not called.");
             }
@@ -128,7 +153,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             if (CheckEmulator())
             {
-                await Assert.ThrowsExceptionAsync<ArgumentException>(() => _storage.Read());
+                await Assert.ThrowsExceptionAsync<ArgumentException>(() => _storage.Read(new string[] { }));
             }
         }
 

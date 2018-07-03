@@ -22,7 +22,9 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </summary>
         /// <param name="dialogs">Parent dialog set.</param>
         /// <param name="context">Context for the current turn of conversation with the user.</param>
-        /// <param name="stack">Current dialog stack.</param>
+        /// <param name="state">Current dialog state.</param>
+        /// <param name="onCompleted">An action to perform when the dialog completes, that is, 
+        /// when <see cref="End(IDictionary{string, object})"/> is called on the current context.</param>
         internal DialogContext(DialogSet dialogs, ITurnContext context, IDictionary<string, object> state, Action<IDictionary<string, object>> onCompleted = null)
         {
             Dialogs = dialogs ?? throw new ArgumentNullException(nameof(dialogs));
@@ -89,7 +91,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </summary>
         /// <param name="dialogId">ID of the prompt to start.</param>
         /// <param name="prompt">Initial prompt to send the user.</param>
-        /// <param name="choicesOrOptions">(Optional) array of choices to prompt the user for or additional prompt options.</param>
+        /// <param name="options">(Optional) array of choices to prompt the user for or additional prompt options.</param>
             
         public Task Prompt(string dialogId, string prompt, PromptOptions options = null)
         {
@@ -151,8 +153,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <summary>
         /// Ends a dialog by popping it off the stack and returns an optional result to the dialogs
         /// parent.The parent dialog is the dialog the started the on being ended via a call to 
-        /// either[begin()](#begin) or [prompt()](#prompt). 
-
+        /// either[begin()](#begin) or [prompt()](#prompt).
         /// The parent dialog will have its `Dialog.resume()` method invoked with any returned
         /// result. If the parent dialog hasn't implemented a `resume()` method then it will be
         /// automatically ended as well and the result passed to its parent. If there are no more

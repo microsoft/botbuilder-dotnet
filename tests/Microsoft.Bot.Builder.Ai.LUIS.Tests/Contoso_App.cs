@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 using System.Collections.Generic;
 namespace Microsoft.Bot.Builder.Ai.LUIS.Tests
 {
-    public class Contoso_App: Microsoft.Bot.Builder.Core.Extensions.IRecognizerConvert
+    public class Contoso_App: Microsoft.Bot.Builder.IRecognizerConvert
     {
         public string Text;
         public string AlteredText;

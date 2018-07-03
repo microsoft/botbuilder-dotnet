@@ -3,10 +3,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Ai.Translation.PostProcessor;
 using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.Ai.Translation
@@ -19,17 +19,19 @@ namespace Microsoft.Bot.Builder.Ai.Translation
     {
         private readonly string[] _nativeLanguages;
         private readonly Translator _translator;
+        private readonly CustomDictionary _userCustomDictonaries;
         private readonly Dictionary<string, List<string>> _patterns;
         private readonly Func<ITurnContext, string> _getUserLanguage;
         private readonly Func<ITurnContext, Task<bool>> _isUserLanguageChanged;
         private readonly bool _toUserLanguage;
+        private List<IPostProcessor> attachedPostProcessors;
 
         /// <summary>
         /// Creates a new <see cref="TranslationMiddleware"/> object.
         /// </summary>
         /// <param name="nativeLanguages">The languages supported by your app.</param>
         /// <param name="translatorKey">Your subscription key for the Microsoft Translator Text API.</param>
-        /// <param name="toUserLanguage">Indicates whether to transalte messages sent from the bot into the user's language.</param>
+        /// <param name="toUserLanguage">Indicates whether to translate messages sent from the bot into the user's language.</param>
         public TranslationMiddleware(string[] nativeLanguages, string translatorKey, bool toUserLanguage = false)
         {
             AssertValidNativeLanguages(nativeLanguages);
@@ -38,6 +40,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation
                 throw new ArgumentNullException(nameof(translatorKey));
             this._translator = new Translator(translatorKey);
             _patterns = new Dictionary<string, List<string>>();
+            _userCustomDictonaries = new CustomDictionary();
             _toUserLanguage = toUserLanguage;
         }
 
@@ -49,12 +52,17 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         /// <param name="translatorKey">Your subscription key for the Microsoft Translator Text API.</param>
         /// <param name="patterns">List of regex patterns, indexed by language identifier, 
         /// that can be used to flag text that should not be translated.</param>
-        /// <param name="toUserLanguage">Indicates whether to transalte messages sent from the bot into the user's language.</param>
+        /// /// <param name="userCustomDictonaries">Custom languages dictionary object, used to store all the different languages dictionaries
+        /// configured by the user to overwrite the translator output to certain vocab by the custom dictionary translation.</param>
+        /// <param name="toUserLanguage">Indicates whether to translate messages sent from the bot into the user's language.</param>
         /// <remarks>Each pattern the <paramref name="patterns"/> describes an entity that should not be translated.
         /// For example, in French <c>je m’appelle ([a-z]+)</c>, which will avoid translation of anything coming after je m’appelle.</remarks>
-        public TranslationMiddleware(string[] nativeLanguages, string translatorKey, Dictionary<string, List<string>> patterns, bool toUserLanguage = false) : this(nativeLanguages, translatorKey, toUserLanguage)
+        public TranslationMiddleware(string[] nativeLanguages, string translatorKey, Dictionary<string, List<string>> patterns, CustomDictionary userCustomDictonaries, bool toUserLanguage = false) : this(nativeLanguages, translatorKey, toUserLanguage)
         {
-            this._patterns = patterns ?? throw new ArgumentNullException(nameof(patterns));
+            if (patterns != null)
+                this._patterns = patterns;
+            if (userCustomDictonaries != null)
+                this._userCustomDictonaries = userCustomDictonaries;
         }
 
         /// <summary>
@@ -64,16 +72,18 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         /// <param name="translatorKey">Your subscription key for the Microsoft Translator Text API.</param>
         /// <param name="patterns">List of regex patterns, indexed by language identifier, 
         /// that can be used to flag text that should not be translated.</param>
+        /// <param name="userCustomDictonaries">Custom languages dictionary object, used to store all the different languages dictionaries
+        /// configured by the user to overwrite the translator output to certain vocab by the custom dictionary translation.</param>
         /// <param name="getUserLanguage">A delegate for getting the user language, 
         /// to use in place of the Detect method of the Microsoft Translator Text API.</param>
         /// <param name="isUserLanguageChanged">A delegate for checking whether the user requested to change their language.</param>
-        /// <param name="toUserLanguage">Indicates whether to transalte messages sent from the bot into the user's language.</param>
+        /// <param name="toUserLanguage">Indicates whether to translate messages sent from the bot into the user's language.</param>
         /// <remarks>Each pattern the <paramref name="patterns"/> describes an entity that should not be translated.
         /// For example, in French <c>je m’appelle ([a-z]+)</c>, which will avoid translation of anything coming after je m’appelle.</remarks>
-        public TranslationMiddleware(string[] nativeLanguages, string translatorKey, Dictionary<string, List<string>> patterns, Func<ITurnContext, string> getUserLanguage, Func<ITurnContext, Task<bool>> isUserLanguageChanged, bool toUserLanguage = false) : this(nativeLanguages, translatorKey, patterns, toUserLanguage)
+        public TranslationMiddleware(string[] nativeLanguages, string translatorKey, Dictionary<string, List<string>> patterns, CustomDictionary userCustomDictonaries, Func<ITurnContext, string> getUserLanguage, Func<ITurnContext, Task<bool>> isUserLanguageChanged, bool toUserLanguage = false) : this(nativeLanguages, translatorKey, patterns, userCustomDictonaries, toUserLanguage)
         {
-            this._getUserLanguage = getUserLanguage ?? throw new ArgumentNullException(nameof(getUserLanguage));
-            this._isUserLanguageChanged = isUserLanguageChanged ?? throw new ArgumentNullException(nameof(isUserLanguageChanged));
+            _getUserLanguage = getUserLanguage ?? throw new ArgumentNullException(nameof(getUserLanguage));
+            _isUserLanguageChanged = isUserLanguageChanged ?? throw new ArgumentNullException(nameof(isUserLanguageChanged));
         }
 
         private static void AssertValidNativeLanguages(string[] nativeLanguages)
@@ -87,7 +97,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         /// </summary>
         /// <param name="context">The context object for this turn.</param>
         /// <param name="next">The delegate to call to continue the bot middleware pipeline.</param>
-        public async Task OnTurn(ITurnContext context, MiddlewareSet.NextDelegate next)
+        public virtual async Task OnTurn(ITurnContext context, NextDelegate next, CancellationToken cancellationToken)
         {
             if (context.Activity.Type == ActivityTypes.Message)
             {
@@ -116,7 +126,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation
                                 sourceLanguage = _getUserLanguage(context);
                             }
 
-                            targetLanguage = (_nativeLanguages.Contains(sourceLanguage)) ? sourceLanguage : this._nativeLanguages.FirstOrDefault() ?? "en";
+                            targetLanguage = (_nativeLanguages.Contains(sourceLanguage)) ? sourceLanguage : _nativeLanguages.FirstOrDefault() ?? "en";
                             await TranslateMessageAsync(context, message, sourceLanguage, targetLanguage, _nativeLanguages.Contains(sourceLanguage)).ConfigureAwait(false);
 
                             if (_toUserLanguage)
@@ -156,21 +166,55 @@ namespace Microsoft.Bot.Builder.Ai.Translation
                     }
                 }
             }
-            await next().ConfigureAwait(false);
+            await next(cancellationToken).ConfigureAwait(false);
         }
 
-
-
-
+        /// <summary>
+        /// Initialize attached post processors according to what the user sent in the middle ware constructor.
+        /// </summary>
+        private void InitializePostProcessors()
+        {
+            attachedPostProcessors = new List<IPostProcessor>();
+            if (_patterns != null && _patterns.Count > 0)
+            {
+                attachedPostProcessors.Add(new PatternsPostProcessor(_patterns));
+            }
+            if (_userCustomDictonaries != null && !_userCustomDictonaries.IsEmpty())
+            {
+                attachedPostProcessors.Add(new CustomDictionaryPostProcessor(_userCustomDictonaries));
+            }
+        }
 
         /// <summary>
-        /// Translate .Text field of a message
+        /// Applies all the attached post processors to the translated messages.
         /// </summary>
-        /// <param name="context"/>
-        /// <param name="message"></param>
-        /// <param name="sourceLanguage"/>
-        /// <param name="targetLanguage"></param>
-        /// <returns></returns>
+        /// <param name="translatedDocuments">List of <see cref="TranslatedDocument"/> represent the output of the translator module</param>
+        /// <param name="languageId">Current language id</param>
+        private void PostProcesseDocuments(List<TranslatedDocument> translatedDocuments, string languageId)
+        {
+            if (attachedPostProcessors == null)
+            {
+                InitializePostProcessors();
+            }
+            foreach (TranslatedDocument translatedDocument in translatedDocuments)
+            {
+                foreach (IPostProcessor postProcessor in attachedPostProcessors)
+                {
+                    translatedDocument.TargetMessage = postProcessor.Process(translatedDocument, languageId).PostProcessedMessage;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Translates the <see cref="Activity.Text"/> of a message.
+        /// </summary>
+        /// <param name="context">The current turn context.</param>
+        /// <param name="message">The activity containing the text to translate.</param>
+        /// <param name="sourceLanguage">An identifier for the language to translate from.</param>
+        /// <param name="targetLanguage">An identifier for the language to translate to.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>When the task completes successfully, the <see cref="Activity.Text"/> property
+        /// of the message contains the translated text.</remarks>
         private async Task TranslateMessageAsync(ITurnContext context, IMessageActivity message, string sourceLanguage, string targetLanguage, bool InNativeLanguages)
         {
             if (!InNativeLanguages && sourceLanguage != targetLanguage)
@@ -180,16 +224,18 @@ namespace Microsoft.Bot.Builder.Ai.Translation
                 {
                     if (targetLanguage == sourceLanguage)
                         return;
-                    //check if the developer has added pattern list for the input source language
-                    if (_patterns.ContainsKey(sourceLanguage) && _patterns[sourceLanguage].Count > 0)
-                    {
-                        //if we have a list of patterns for the current user's language send it to the translator post processor.
-                        _translator.SetPostProcessorTemplate(_patterns[sourceLanguage]);
-                    }
+
                     var text = message.Text;
                     string[] lines = text.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None);
                     var translateResult = await this._translator.TranslateArray(lines, sourceLanguage, targetLanguage).ConfigureAwait(false);
-                    text = String.Join("\n", translateResult);
+
+                    // post process all translated documents
+                    PostProcesseDocuments(translateResult, sourceLanguage);
+                    text = string.Empty;
+                    foreach (TranslatedDocument translatedDocument in translateResult)
+                    {
+                        text += string.Join("\n", translatedDocument.TargetMessage);
+                    }
                     message.Text = text;
                 }
             }

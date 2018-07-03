@@ -1,12 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Newtonsoft.Json;
 using System;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using System.Text.RegularExpressions;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Ai.QnA
 {
@@ -15,7 +14,7 @@ namespace Microsoft.Bot.Builder.Ai.QnA
     /// </summary>
     public class QnAMaker
     {
-        private static HttpClient g_httpClient = new HttpClient();
+        private static readonly HttpClient DefaultHttpClient = new HttpClient();
         private readonly HttpClient _httpClient;
 
         private readonly QnAMakerEndpoint _endpoint;
@@ -26,11 +25,11 @@ namespace Microsoft.Bot.Builder.Ai.QnA
         /// </summary>
         /// <param name="endpoint">The endpoint of the knowledge base to query.</param>
         /// <param name="options">The options for the QnA Maker knowledge base.</param>
-        /// <param name="httpClient">A client with which to talk to QnAMaker.
+        /// <param name="customHttpClient">An alternate client with which to talk to QnAMaker.
         /// If null, a default client is used for this instance.</param>
-        public QnAMaker(QnAMakerEndpoint endpoint, QnAMakerOptions options = null, HttpClient httpClient = null)
+        public QnAMaker(QnAMakerEndpoint endpoint, QnAMakerOptions options = null, HttpClient customHttpClient = null)
         {
-            _httpClient = httpClient ?? g_httpClient;
+            _httpClient = customHttpClient ?? DefaultHttpClient;
 
             _endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
 

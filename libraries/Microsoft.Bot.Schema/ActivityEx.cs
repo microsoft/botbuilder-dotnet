@@ -178,7 +178,45 @@ namespace Microsoft.Bot.Schema
         /// <summary>
         /// True if the Activity is of the specified activity type
         /// </summary>
-        protected bool IsActivity(string activity) { return string.Compare(this.Type?.Split('/').First(), activity, true) == 0; }
+        protected bool IsActivity(string activityType)
+        {
+            /*
+             * NOTE: While it is possible to come up with a fancy looking "one-liner" to solve 
+             * this problem, this code is purposefully more verbose due to optimizations. 
+             * 
+             * This main goal of the optimizations was to make zero allocations because it is called 
+             * by all of the .AsXXXActivity methods which are used in a pattern heavily upstream to 
+             * "pseudo-cast" the activity based on its type.
+             */
+
+            var type = this.Type;
+
+            // If there's no type set then we can't tell if it's the type they're looking for
+            if (type == null)
+            {
+                return false;
+            }
+
+            // Check if the full type value starts with the type they're looking for
+            var result = type.StartsWith(activityType, StringComparison.OrdinalIgnoreCase);
+
+            // If the full type value starts with the type they're looking for, then we need to check a little further to check if it's definitely the right type
+            if (result)
+            {
+                // If the lengths are equal, then it's the exact type they're looking for
+                result = type.Length == activityType.Length;
+
+                if (!result)
+                {
+                    // Finally, if the type is longer than the type they're looking for then we need to check if there's a / separator right after the type they're looking for
+                    result = type.Length > activityType.Length
+                                    &&
+                            type[activityType.Length] == '/';
+                }
+            }
+
+            return result;
+        }
 
         /// <summary>
         /// Return an IMessageActivity mask if this is a message activity
@@ -284,7 +322,6 @@ namespace Microsoft.Bot.Schema
         /// <summary>
         /// Get channeldata as typed structure
         /// </summary>
-        /// <param name="activity"></param>
         /// <typeparam name="TypeT">type to use</typeparam>
         /// <returns>typed object or default(TypeT)</returns>
         public TypeT GetChannelData<TypeT>()
@@ -299,7 +336,6 @@ namespace Microsoft.Bot.Schema
         /// <summary>
         /// Get channeldata as typed structure
         /// </summary>
-        /// <param name="activity"></param>
         /// <typeparam name="TypeT">type to use</typeparam>
         /// <param name="instance">The resulting instance, if possible</param>
         /// <returns>
@@ -322,5 +358,64 @@ namespace Microsoft.Bot.Schema
                 return false;
             }
         }
+
+        /// <summary>
+        /// Creates a conversation reference from an activity.
+        /// </summary>
+        /// <returns>A conversation reference for the conversation that contains the activity.</returns>
+        /// <exception cref="ArgumentNullException">
+        public ConversationReference GetConversationReference()
+        {
+            ConversationReference reference = new ConversationReference
+            {
+                ActivityId = this.Id,
+                User = this.From,
+                Bot = this.Recipient,
+                Conversation = this.Conversation,
+                ChannelId = this.ChannelId,
+                ServiceUrl = this.ServiceUrl
+            };
+
+            return reference;
+        }
+
+        /// <summary>
+        /// Updates an activity with the delivery information from an existing 
+        /// conversation reference.
+        /// </summary>
+        /// <param name="activity">The activity to update.</param>
+        /// <param name="reference">The conversation reference.</param>
+        /// <param name="isIncoming">(Optional) <c>true</c> to treat the activity as an 
+        /// incoming activity, where the bot is the recipient; otherwaire <c>false</c>.
+        /// Default is <c>false</c>, and the activity will show the bot as the sender.</param>
+        /// <remarks>Call <see cref="GetConversationReference(Activity)"/> on an incoming
+        /// activity to get a conversation reference that you can then use to update an
+        /// outgoing activity with the correct delivery information.
+        /// <para>The <see cref="SendActivity(IActivity)"/> and <see cref="SendActivities(IActivity[])"/>
+        /// methods do this for you.</para>
+        /// </remarks>
+        public Activity ApplyConversationReference(ConversationReference reference, bool isIncoming = false)
+        {
+            this.ChannelId = reference.ChannelId;
+            this.ServiceUrl = reference.ServiceUrl;
+            this.Conversation = reference.Conversation;
+
+            if (isIncoming)
+            {
+                this.From = reference.User;
+                this.Recipient = reference.Bot;
+                if (reference.ActivityId != null)
+                    this.Id = reference.ActivityId;
+            }
+            else  // Outgoing
+            {
+                this.From = reference.Bot;
+                this.Recipient = reference.User;
+                if (reference.ActivityId != null)
+                    this.ReplyToId = reference.ActivityId;
+            }
+            return this;
+        }
+
     }
 }

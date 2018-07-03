@@ -1,25 +1,21 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Microsoft.AspNetCore.Http;
-using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Schema;
-using Newtonsoft.Json;
 using System;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Bot.Schema;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Handlers
 {
     public class BotProactiveMessageHandler : BotMessageHandlerBase
     {
-        public BotProactiveMessageHandler(BotFrameworkAdapter botFrameworkAdapter) : base(botFrameworkAdapter)
-        {
-        }
-
-        protected override async Task<InvokeResponse> ProcessMessageRequestAsync(HttpRequest request, BotFrameworkAdapter botFrameworkAdapter, Func<ITurnContext, Task> botCallbackHandler)
+        protected override async Task<InvokeResponse> ProcessMessageRequestAsync(HttpRequest request, BotFrameworkAdapter botFrameworkAdapter, Func<ITurnContext, Task> botCallbackHandler, CancellationToken cancellationToken)
         {
             const string BotAppIdHttpHeaderName = "MS-BotFramework-BotAppId";
             const string BotIdQueryStringParameterName = "BotAppId";
@@ -40,7 +36,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Handlers
                 conversationReference = BotMessageHandlerBase.BotMessageSerializer.Deserialize<ConversationReference>(bodyReader);
             }
 
-            await botFrameworkAdapter.ContinueConversation(botAppId, conversationReference, botCallbackHandler);
+            await botFrameworkAdapter.ContinueConversation(botAppId, conversationReference, botCallbackHandler, cancellationToken);
 
             return null;
         }

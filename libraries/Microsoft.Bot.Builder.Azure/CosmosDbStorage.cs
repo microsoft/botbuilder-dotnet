@@ -5,11 +5,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
 using Microsoft.Azure.Documents.Linq;
-using Microsoft.Bot.Builder.Core.Extensions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
@@ -21,6 +21,9 @@ namespace Microsoft.Bot.Builder.Azure
     /// </summary>
     public class CosmosDbStorage : IStorage
     {
+        private static readonly char[] IllegalKeyCharacters = new char[] { '\\', '?', '/', '#', ' ' };
+        private static Lazy<Dictionary<char, string>> IllegalKeyCharacterReplacementMap = new Lazy<Dictionary<char, string>>(() => IllegalKeyCharacters.ToDictionary(c => c, c => '*' + ((int)c).ToString("x2")));
+
         private readonly string _databaseId;
         private readonly string _collectionId;
         private readonly DocumentClient _client;
@@ -35,41 +38,31 @@ namespace Microsoft.Bot.Builder.Azure
         /// Creates a new <see cref="CosmosDbStorage"/> object,
         /// using the provided CosmosDB credentials, database ID, and collection ID.
         /// </summary>
-        /// <param name="serviceEndpoint">The URI of the service endpoint for the Azure Cosmos DB service.</param>
-        /// <param name="authKey">The AuthKey used by the client from the Azure Cosmos DB service.</param>
-        /// <param name="databaseId">The database ID.</param>
-        /// <param name="collectionId">The collection ID.</param>
-        /// <param name="connectionPolicyConfigurator">A connection policy delegate.</param>
-        /// <remarks>
-        /// You can use the <paramref name="connectionPolicyConfigurator"/> delegate to 
-        /// further customize the connection to CosmosDB, 
-        /// such as setting connection mode, retry options, timeouts, and so on.
-        /// See https://docs.microsoft.com/en-us/dotnet/api/microsoft.azure.documents.client.connectionpolicy?view=azure-dotnet
-        /// for more information.</remarks>
-        public CosmosDbStorage(Uri serviceEndpoint, string authKey, string databaseId, string collectionId, Action<ConnectionPolicy> connectionPolicyConfigurator = null)
+        /// <param name="cosmosDbStorageOptions">Cosmos DB storage configuration options.</param>
+        public CosmosDbStorage(CosmosDbStorageOptions cosmosDbStorageOptions)
         {
-            if (serviceEndpoint == null)
+            if (cosmosDbStorageOptions.CosmosDBEndpoint == null)
             {
-                throw new ArgumentNullException(nameof(serviceEndpoint), "Service EndPoint for CosmosDB is required.");
+                throw new ArgumentNullException(nameof(cosmosDbStorageOptions.CosmosDBEndpoint), "Service EndPoint for CosmosDB is required.");
             }
 
-            if (string.IsNullOrEmpty(authKey))
+            if (string.IsNullOrEmpty(cosmosDbStorageOptions.AuthKey))
             {
-                throw new ArgumentException("AuthKey for CosmosDB is required.", nameof(authKey));
+                throw new ArgumentException("AuthKey for CosmosDB is required.", nameof(cosmosDbStorageOptions.AuthKey));
             }
 
-            if (string.IsNullOrEmpty(databaseId))
+            if (string.IsNullOrEmpty(cosmosDbStorageOptions.DatabaseId))
             {
-                throw new ArgumentException("DatabaseId is required.", nameof(databaseId));
+                throw new ArgumentException("DatabaseId is required.", nameof(cosmosDbStorageOptions.DatabaseId));
             }
 
-            if (string.IsNullOrEmpty(collectionId))
+            if (string.IsNullOrEmpty(cosmosDbStorageOptions.CollectionId))
             {
-                throw new ArgumentException("CollectionId is required.", nameof(collectionId));
+                throw new ArgumentException("CollectionId is required.", nameof(cosmosDbStorageOptions.CollectionId));
             }
 
-            _databaseId = databaseId;
-            _collectionId = collectionId;
+            _databaseId = cosmosDbStorageOptions.DatabaseId;
+            _collectionId = cosmosDbStorageOptions.CollectionId;
 
             // Inject BotBuilder version to CosmosDB Requests
             var version = GetType().Assembly.GetName().Version;
@@ -79,17 +72,17 @@ namespace Microsoft.Bot.Builder.Azure
             };
 
             // Invoke CollectionPolicy delegate to further customize settings
-            connectionPolicyConfigurator?.Invoke(connectionPolicy);
-            _client = new DocumentClient(serviceEndpoint, authKey, connectionPolicy);
+            cosmosDbStorageOptions.ConnectionPolicyConfigurator?.Invoke(connectionPolicy);
+            _client = new DocumentClient(cosmosDbStorageOptions.CosmosDBEndpoint, cosmosDbStorageOptions.AuthKey, connectionPolicy);
         }
 
         /// <summary>
         /// Removes store items from storage.
         /// </summary>
         /// <param name="keys">Array of item keys to remove from the store.</param>
-        public async Task Delete(params string[] keys)
+        public async Task Delete(string[] keys, CancellationToken cancellationToken)
         {
-            if (keys.Length == 0) return;
+            if (keys == null || keys.Length == 0) return;
 
             // Ensure collection exists
             var collectionLink = await GetCollectionLink();
@@ -106,14 +99,14 @@ namespace Microsoft.Bot.Builder.Azure
         /// Loads store items from storage.
         /// </summary>
         /// <param name="keys">Array of item keys to read from the store.</param>
-        public async Task<IEnumerable<KeyValuePair<string, object>>> Read(params string[] keys)
+        public async Task<IDictionary<string, object>> Read(string[] keys, CancellationToken cancellationToken)
         {
-            if (keys.Length == 0)
+            if (keys == null || keys.Length == 0)
             {
                 throw new ArgumentException("Please provide at least one key to read from storage", nameof(keys));
             }
 
-            var storeItems = new List<KeyValuePair<string, object>>();
+            var storeItems = new Dictionary<string, object>(keys.Length);
 
             // Ensure collection exists
             var collectionLink = await GetCollectionLink();
@@ -138,7 +131,7 @@ namespace Microsoft.Bot.Builder.Azure
                     }
 
                     // doc.Id cannot be used since it is escaped, read it from RealId property instead
-                    storeItems.Add(new KeyValuePair<string, object>(doc.ReadlId, item));
+                    storeItems.Add(doc.ReadlId, item);
                 }
             }
 
@@ -149,7 +142,7 @@ namespace Microsoft.Bot.Builder.Azure
         /// Saves store items to storage.
         /// </summary>
         /// <param name="changes">Map of items to write to storage.</param>
-        public async Task Write(IEnumerable<KeyValuePair<string, object>> changes)
+        public async Task Write(IDictionary<string, object> changes, CancellationToken cancellationToken)
         {
             if (changes == null)
             {
@@ -213,27 +206,42 @@ namespace Microsoft.Bot.Builder.Azure
         /// The following characters are restricted and cannot be used in the Id property: '/', '\', '?', '#'
         /// More information at https://docs.microsoft.com/en-us/dotnet/api/microsoft.azure.documents.resource.id?view=azure-dotnet#remarks
         /// </summary>
-        private static string SanitizeKey(string key)
+        public static string SanitizeKey(string key)
         {
-            StringBuilder sb = new StringBuilder();
-            foreach (char ch in key)
-            {
-                if (_badChars.Value.TryGetValue(ch, out string val))
-                    sb.Append(val);
-                else
-                    sb.Append(ch);
-            }
-            return sb.ToString();
-        }
+            var firstIllegalCharIndex = key.IndexOfAny(IllegalKeyCharacters);
 
-        private static Lazy<Dictionary<char, string>> _badChars = new Lazy<Dictionary<char, string>>(() =>
-        {
-            char[] badChars = new char[] { '\\', '?', '/', '#', ' ' };
-            var dict = new Dictionary<char, string>();
-            foreach (var badChar in badChars)
-                dict[badChar] = '*' + ((int)badChar).ToString("x2");
-            return dict;
-        });
+            // If there are no illegal characters return immediately and avoid any further processing/allocations
+            if (firstIllegalCharIndex == -1) return key;
+
+            // Allocate a builder that assumes that all remaining characters might be replaced to avoid any extra allocations
+            var sanitizedKeyBuilder = new StringBuilder(key.Length + (key.Length - firstIllegalCharIndex + 1) * 3);
+
+            // Add all good characters up to the first bad character to the builder first
+            for (int index = 0; index < firstIllegalCharIndex; index++)
+            {
+                sanitizedKeyBuilder.Append(key[index]);
+            }
+
+            var illegalCharacterReplacementMap = IllegalKeyCharacterReplacementMap.Value;
+
+            // Now walk the remaining characters, starting at the first known bad character, replacing any bad ones with their designated replacement value from the map
+            for (int index = firstIllegalCharIndex; index < key.Length; index++)
+            {
+                var ch = key[index];
+
+                // Check if this next character is considered illegal and, if so, append its replacement; otherwise just append the good character as is
+                if (illegalCharacterReplacementMap.TryGetValue(ch, out var replacement))
+                {
+                    sanitizedKeyBuilder.Append(replacement);
+                }
+                else
+                {
+                    sanitizedKeyBuilder.Append(ch);
+                }
+            }
+
+            return sanitizedKeyBuilder.ToString();
+        }
 
         /// <summary>
         /// Internal data structure for storing items in a CosmosDB Collection.

@@ -1,0 +1,14 @@
+{
+    "name": "AspNetCore-LUIS-Bot",
+    "secretKey": "",
+    "services": [
+        {
+            "type": "endpoint",
+            "name": "AspNetCore-LUIS-Bot",
+            "id": "http://localhost:5000/api/messages",
+            "appId": "",
+            "appPassword": "",
+            "endpoint": "http://localhost:5000/api/messages"
+        }
+    ]
+}

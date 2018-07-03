@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System.Collections.Generic;
+
 namespace Microsoft.Bot.Connector.Authentication
 {
     /// <summary>
@@ -22,6 +24,11 @@ namespace Microsoft.Bot.Connector.Authentication
         /// TO BOT FROM CHANNEL: Token issuer
         /// </summary>
         public const string ToBotFromChannelTokenIssuer = "https://api.botframework.com";
+        
+        /// <summary>
+        /// OAuth Url used to get a token from OAuthApiClient
+        /// </summary>
+        public const string OAuthUrl = "https://api.botframework.com";
 
         /// <summary>
         /// TO BOT FROM CHANNEL: OpenID metadata document for tokens coming from MSA
@@ -37,7 +44,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// Allowed token signing algorithms. Tokens come from channels to the bot. The code
         /// that uses this also supports tokens coming from the emulator.
         /// </summary>
-        public static readonly string[] AllowedSigningAlgorithms = new[] { "RS256", "RS384", "RS512" };
+        public static readonly HashSet<string> AllowedSigningAlgorithms = new HashSet<string>(new [] { "RS256", "RS384", "RS512" });
 
         /// <summary>
         /// "azp" Claim. 

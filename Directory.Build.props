@@ -1,0 +1,11 @@
+<Project>
+
+  <PropertyGroup>
+    <PackageOutputPath>$(MSBuildThisFileDirectory)outputpackages\</PackageOutputPath>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="$(Configuration) == 'Debug - NuGet Packages'">
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+</Project>

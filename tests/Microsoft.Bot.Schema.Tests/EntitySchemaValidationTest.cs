@@ -42,7 +42,7 @@ namespace Microsoft.Bot.Schema.Tests
                 Text = "TESTTEST"
             };
 
-            Assert.AreEqual("Mention", mentionEntity.Type);
+            Assert.AreEqual("mention", mentionEntity.Type);
             string serialized = JsonConvert.SerializeObject(mentionEntity);
 
             Entity deserializedEntity = JsonConvert.DeserializeObject<Entity>(serialized);
