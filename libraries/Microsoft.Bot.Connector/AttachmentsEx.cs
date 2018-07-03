@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Connector
         /// </summary>
         /// <remarks>
         /// Relativly few bots use attachments, so rather than paying the startup cost, this is
-        /// a Lazy<> simply to avoid paying a static initialization penalty for every bot. 
+        /// a <see cref="Lazy{T}"/> simply to avoid paying a static initialization penalty for every bot. 
         /// </remarks>
         private static Lazy<HttpClient> _httpClient = new Lazy<HttpClient>(); 
 

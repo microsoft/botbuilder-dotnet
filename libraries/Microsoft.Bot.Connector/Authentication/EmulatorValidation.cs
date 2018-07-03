@@ -98,21 +98,22 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <param name="httpClient">Authentication of tokens requires calling out to validate Endorsements and related documents. The
         /// HttpClient is used for making those calls. Those calls generally require TLS connections, which are expensive to 
         /// setup and teardown, so a shared HttpClient is recommended.</param>
+        /// <param name="channelId">The ID of the channel to validate.</param>
         /// <returns>
         /// A valid ClaimsIdentity. 
         /// </returns>
         /// <remarks>
         /// A token issued by the Bot Framework will FAIL this check. Only Emulator tokens will pass.
         /// </remarks>
-        public static async Task<ClaimsIdentity> AuthenticateEmulatorToken(string authHeader, ICredentialProvider credentials, HttpClient httpClient)
+        public static async Task<ClaimsIdentity> AuthenticateEmulatorToken(string authHeader, ICredentialProvider credentials, HttpClient httpClient, string channelId)
         {
             var tokenExtractor = new JwtTokenExtractor(
                     httpClient,
                     ToBotFromEmulatorTokenValidationParameters,
                     AuthenticationConstants.ToBotFromEmulatorOpenIdMetadataUrl,
-                    AuthenticationConstants.AllowedSigningAlgorithms, null);
+                    AuthenticationConstants.AllowedSigningAlgorithms);
 
-            var identity = await tokenExtractor.GetIdentityAsync(authHeader);
+            var identity = await tokenExtractor.GetIdentityAsync(authHeader, channelId);
             if (identity == null)
             {
                 // No valid identity. Not Authorized. 

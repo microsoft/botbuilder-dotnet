@@ -1,11 +1,14 @@
-﻿namespace Connector.Tests
-{
-    using System.IO;
-    using Microsoft.Bot.Connector;
-    using Microsoft.Bot.Schema;
-    using Microsoft.Rest;
-    using Xunit;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
 
+using System.IO;
+using Microsoft.Bot.Connector;
+using Microsoft.Bot.Schema;
+using Microsoft.Rest;
+using Xunit;
+
+namespace Connector.Tests
+{
     public class AttachmentsTests : BaseTest
     {
         protected const string conversationId = "B21UTEF8S:T03CWQ0QB:D2369CT7C";

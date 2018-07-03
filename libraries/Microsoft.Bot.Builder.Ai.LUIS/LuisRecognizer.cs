@@ -7,7 +7,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime;
-using Microsoft.Bot.Builder.Core.Extensions;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Ai.LUIS

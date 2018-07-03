@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Prompts;
 using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.Dialogs
@@ -22,10 +21,11 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             if (dc == null)
                 throw new ArgumentNullException(nameof(dc));
-            if (dialogArgs == null)
-                throw new ArgumentNullException(nameof(dialogArgs));
 
-            var promptOptions = (PromptOptions)dialogArgs;
+            if (dialogArgs == null)
+                throw new ArgumentNullException(nameof(dialogArgs), "Prompt options are required for Prompt dialogs");
+
+            var promptOptions = PromptOptions.Create(dialogArgs);
 
             // Persist options
             var instance = dc.ActiveDialog;

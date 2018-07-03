@@ -4,6 +4,7 @@
 
 using Microsoft.Bot.Schema;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Ai.Translation
@@ -43,7 +44,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         /// <param name="context"></param>
         /// <param name="next"></param>
         /// <returns></returns>
-        public async Task OnTurn(ITurnContext context, MiddlewareSet.NextDelegate next)
+        public async Task OnTurn(ITurnContext context, NextDelegate next, CancellationToken cancellationToken)
         {
             if (context.Activity.Type == ActivityTypes.Message)
             {
@@ -58,11 +59,15 @@ namespace Microsoft.Bot.Builder.Ai.Translation
                             string fromLocale = _getUserLocale(context);
                             ConvertLocaleMessage(context, fromLocale);
                         }
+                        else {
+                            // skip routing in case of user changed the locale
+                            return ;
+                        }
 
                     }
                 }
             }
-            await next().ConfigureAwait(false);
+            await next(cancellationToken).ConfigureAwait(false);
         }
 
         private void ConvertLocaleMessage(ITurnContext context,string fromLocale)
@@ -77,7 +82,5 @@ namespace Microsoft.Bot.Builder.Ai.Translation
                 }
             }
         }
-
-
     }
 }

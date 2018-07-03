@@ -3,18 +3,17 @@
 
 using System;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Prompts;
-using static Microsoft.Bot.Builder.Prompts.PromptValidatorEx;
+using static Microsoft.Bot.Builder.Dialogs.PromptValidatorEx;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
     public class TextPrompt : Prompt<TextResult>
     {
-        private Builder.Prompts.TextPrompt _prompt;
+        private TextPromptInternal _prompt;
 
         public TextPrompt(PromptValidator<TextResult> validator = null)
         {
-            _prompt = new Builder.Prompts.TextPrompt(validator);
+            _prompt = new TextPromptInternal(validator);
         }
 
         protected override Task OnPrompt(DialogContext dc, PromptOptions options, bool isRetry)
@@ -24,29 +23,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             if (options == null)
                 throw new ArgumentNullException(nameof(options));
 
-            if (isRetry)
-            {
-                if (options.RetryPromptActivity != null)
-                {
-                    return _prompt.Prompt(dc.Context, options.RetryPromptActivity.AsMessageActivity());
-                }
-                if (options.RetryPromptString != null)
-                {
-                    return _prompt.Prompt(dc.Context, options.RetryPromptString, options.RetrySpeak);
-                }
-            }
-            else
-            {
-                if (options.PromptActivity != null)
-                {
-                    return _prompt.Prompt(dc.Context, options.PromptActivity);
-                }
-                if (options.PromptString != null)
-                {
-                    return _prompt.Prompt(dc.Context, options.PromptString, options.Speak);
-                }
-            }
-            return Task.CompletedTask;
+            return dc.Context.SendActivity(PromptMessageFactory.CreateActivity(options, isRetry));
         }
 
         protected override async Task<TextResult> OnRecognize(DialogContext dc, PromptOptions options)

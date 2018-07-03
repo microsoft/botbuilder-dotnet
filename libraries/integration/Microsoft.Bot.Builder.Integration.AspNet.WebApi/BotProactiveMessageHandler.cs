@@ -1,18 +1,19 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Schema;
 using System;
 using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Handlers
 {
     public sealed class BotProactiveMessageHandler : BotMessageHandlerBase
     {
+        public static readonly string RouteName = "BotFramework - Proactive Message Handler";
+
         public BotProactiveMessageHandler(BotFrameworkAdapter botFrameworkAdapter) : base(botFrameworkAdapter)
         {
         }
@@ -43,7 +44,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Handlers
 
             var conversationReference = await request.Content.ReadAsAsync<ConversationReference>(BotMessageHandlerBase.BotMessageMediaTypeFormatters, cancellationToken);
 
-            await botFrameworkAdapter.ContinueConversation(botAppId, conversationReference, botCallbackHandler);
+            await botFrameworkAdapter.ContinueConversation(botAppId, conversationReference, botCallbackHandler, cancellationToken);
 
             return null;
         }

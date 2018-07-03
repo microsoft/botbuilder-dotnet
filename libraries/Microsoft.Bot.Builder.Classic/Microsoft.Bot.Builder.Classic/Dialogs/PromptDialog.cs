@@ -1017,7 +1017,7 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs
         }
 
         /// <summary> Prompt for an attachment</summary>
-        /// <remarks> Normally used through <see cref="PromptDialog.Attachment(IDialogContext, ResumeAfter{IEnumerable{Connector.Attachment}}, string, IEnumerable{string}, string, int)"/>.</remarks>
+        /// <remarks> Normally used through <see cref="PromptDialog.Attachment(IDialogContext, ResumeAfter{IEnumerable{Attachment}}, string, IEnumerable{string}, string, int)"/>.</remarks>
         [Serializable]
         public class PromptAttachment : Prompt<IEnumerable<Attachment>, Attachment>
         {

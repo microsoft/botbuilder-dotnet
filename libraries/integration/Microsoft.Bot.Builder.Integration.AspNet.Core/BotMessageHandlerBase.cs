@@ -5,9 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Net.Http.Headers;
 using Microsoft.Rest.Serialization;
@@ -28,11 +28,8 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Handlers
             Converters = new List<JsonConverter> { new Iso8601TimeSpanConverter() }
         });
 
-        private BotFrameworkAdapter _botFrameworkAdapter;
-
-        public BotMessageHandlerBase(BotFrameworkAdapter botFrameworkAdapter)
+        public BotMessageHandlerBase()
         {
-            _botFrameworkAdapter = botFrameworkAdapter;
         }
 
         public async Task HandleAsync(HttpContext httpContext)
@@ -63,17 +60,19 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Handlers
                 return;
             }
 
+            var requestServices = httpContext.RequestServices;
+            var botFrameworkAdapter = requestServices.GetRequiredService<BotFrameworkAdapter>();
+            var bot = requestServices.GetRequiredService<IBot>();
+
             try
             {
+                // TODO wire up cancellation
+
                 var invokeResponse = await ProcessMessageRequestAsync(
                     request,
-                    _botFrameworkAdapter,
-                    context =>
-                    {
-                        var bot = httpContext.RequestServices.GetRequiredService<IBot>();
-
-                        return bot.OnTurn(context);
-                    });
+                    botFrameworkAdapter,
+                    bot.OnTurn,
+                    default(CancellationToken));
 
                 if (invokeResponse == null)
                 {
@@ -99,6 +98,6 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Handlers
             }
         }
 
-        protected abstract Task<InvokeResponse> ProcessMessageRequestAsync(HttpRequest request, BotFrameworkAdapter botFrameworkAdapter, Func<ITurnContext, Task> botCallbackHandler);
+        protected abstract Task<InvokeResponse> ProcessMessageRequestAsync(HttpRequest request, BotFrameworkAdapter botFrameworkAdapter, Func<ITurnContext, Task> botCallbackHandler, CancellationToken cancellationToken);
     }
 }
