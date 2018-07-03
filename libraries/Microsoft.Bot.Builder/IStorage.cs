@@ -45,18 +45,18 @@ namespace Microsoft.Bot.Builder
         /// <summary>
         /// Storage extension to Read as strong typed StoreItem objects.
         /// </summary>
-        /// <typeparam name="StoreItemT"></typeparam>
+        /// <typeparam name="TStoreItem"></typeparam>
         /// <param name="storage"></param>
         /// <param name="keys"></param>
         /// <returns></returns>
-        public static async Task<IDictionary<string, StoreItemT>> Read<StoreItemT>(this IStorage storage, string[] keys, CancellationToken cancellationToken = default(CancellationToken))
-            where StoreItemT : class
+        public static async Task<IDictionary<string, TStoreItem>> Read<TStoreItem>(this IStorage storage, string[] keys, CancellationToken cancellationToken = default(CancellationToken))
+            where TStoreItem : class
         {
             var storeItems = await storage.Read(keys, cancellationToken).ConfigureAwait(false);
-            var values = new Dictionary<string, StoreItemT>(keys.Length);
+            var values = new Dictionary<string, TStoreItem>(keys.Length);
             foreach (var entry in storeItems)
             {
-                if (entry.Value is StoreItemT valueAsType)
+                if (entry.Value is TStoreItem valueAsType)
                 {
                     values.Add(entry.Key, valueAsType);
                 }
