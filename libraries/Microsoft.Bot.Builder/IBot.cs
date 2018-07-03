@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Builder
     /// <summary>
     /// Represents a bot that can operate on incoming activities.
     /// </summary>
-    /// <remarks>A <see cref="BotAdapter"/> passes incoming activities from the user's 
+    /// <remarks>A <see cref="BotAdapter"/> passes incoming activities from the user's
     /// channel to the bot's <see cref="OnTurn(ITurnContext)"/> method.</remarks>
     /// <example>
     /// This defines a bot that responds with "Hello world!" to any incoming message.
@@ -33,7 +33,7 @@ namespace Microsoft.Bot.Builder
         /// </summary>
         /// <param name="turnContext">The context object for this turn.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
-        /// <remarks>The <paramref name="turnContext"/> provides information about the 
+        /// <remarks>The <paramref name="turnContext"/> provides information about the
         /// incoming activity, and other data needed to process the activity.</remarks>
         /// <seealso cref="ITurnContext"/>
         /// <seealso cref="Bot.Schema.IActivity"/>
