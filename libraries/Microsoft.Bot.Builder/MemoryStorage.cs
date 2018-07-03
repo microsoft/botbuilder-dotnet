@@ -26,7 +26,7 @@ namespace Microsoft.Bot.Builder
             _memory = dictionary ?? new Dictionary<string, JObject>();
         }
 
-        public Task Delete(string[] keys, CancellationToken cancellationToken)
+        public Task DeleteAsync(string[] keys, CancellationToken cancellationToken)
         {
             lock (_syncroot)
             {
@@ -39,7 +39,7 @@ namespace Microsoft.Bot.Builder
             return Task.CompletedTask;
         }
 
-        public Task<IDictionary<string, object>> Read(string[] keys, CancellationToken cancellationToken)
+        public Task<IDictionary<string, object>> ReadAsync(string[] keys, CancellationToken cancellationToken)
         {
             var storeItems = new Dictionary<string, object>(keys.Length);
             lock (_syncroot)
@@ -59,7 +59,7 @@ namespace Microsoft.Bot.Builder
             return Task.FromResult<IDictionary<string, object>>(storeItems);
         }
 
-        public Task Write(IDictionary<string, object> changes, CancellationToken cancellationToken)
+        public Task WriteAsync(IDictionary<string, object> changes, CancellationToken cancellationToken)
         {
             lock (_syncroot)
             {
@@ -71,9 +71,9 @@ namespace Microsoft.Bot.Builder
 
                     if (_memory.TryGetValue(change.Key, out var oldState))
                     {
-                        if (oldState.TryGetValue("eTag", out var eTagToken))
+                        if (oldState.TryGetValue("eTag", out var etag))
                         {
-                            oldStateETag = eTagToken.Value<string>();
+                            oldStateETag = etag.Value<string>();
                         }
                     }
 
@@ -84,11 +84,11 @@ namespace Microsoft.Bot.Builder
                     {
                         if (oldStateETag != null
                                 &&
-                           newStoreItem.eTag != "*"
+                           newStoreItem.ETag != "*"
                                 &&
-                           newStoreItem.eTag != oldStateETag)
+                           newStoreItem.ETag != oldStateETag)
                         {
-                            throw new Exception($"Etag conflict.\r\n\r\nOriginal: {newStoreItem.eTag}\r\nCurrent: {oldStateETag}");
+                            throw new Exception($"Etag conflict.\r\n\r\nOriginal: {newStoreItem.ETag}\r\nCurrent: {oldStateETag}");
                         }
 
                         newState["eTag"] = (_eTag++).ToString();

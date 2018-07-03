@@ -42,7 +42,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                     async (dc, args, next) =>
                     {
                         var choiceResult = (ChoiceResult)args;
-                        await dc.Context.SendActivity($"Bot received the choice '{choiceResult.Value.Value}'.");
+                        await dc.Context.SendActivityAsync($"Bot received the choice '{choiceResult.Value.Value}'.");
                         await dc.End();
                     }
                 }
@@ -67,7 +67,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .AssertReply("favorite color? (1) red, (2) green, or (3) blue")
             .Send("green")
             .AssertReply("Bot received the choice 'green'.")
-            .StartTest();
+            .StartTestAsync();
         }
     }
 }

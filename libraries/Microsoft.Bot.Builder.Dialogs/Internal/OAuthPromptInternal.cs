@@ -49,7 +49,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 throw new InvalidOperationException("OAuthPrompt.Prompt(): at least one of the cards should be an oauth card");
 
             var replyActivity = MessageFactory.Attachment(cards.First());//todo:send an oauth or signin card based on channel id
-            await context.SendActivity(replyActivity).ConfigureAwait(false);
+            await context.SendActivityAsync(replyActivity).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -69,7 +69,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             if (!ChannelSupportsOAuthCard(context.Activity.ChannelId))
             {
-                var link = await adapter.GetOauthSignInLink(context, _settings.ConnectionName, default(CancellationToken)).ConfigureAwait(false);
+                var link = await adapter.GetOauthSignInLinkAsync(context, _settings.ConnectionName, default(CancellationToken)).ConfigureAwait(false);
                 cardAttachment = new Attachment
                 {
                     ContentType = SigninCard.ContentType,
@@ -110,7 +110,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 };
             }
             var replyActivity = MessageFactory.Attachment(cardAttachment);
-            await context.SendActivity(replyActivity).ConfigureAwait(false);
+            await context.SendActivityAsync(replyActivity).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -139,7 +139,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                     if (adapter == null)
                         throw new InvalidOperationException("OAuthPrompt.Recognize(): not supported by the current adapter");
 
-                    var token = await adapter.GetUserToken(context, _settings.ConnectionName, matched.Value, default(CancellationToken)).ConfigureAwait(false);
+                    var token = await adapter.GetUserTokenAsync(context, _settings.ConnectionName, matched.Value, default(CancellationToken)).ConfigureAwait(false);
                     var tokenResult = new TokenResult
                     {
                         Status = PromptStatus.Recognized,
@@ -168,7 +168,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             if (adapter == null)
                 throw new InvalidOperationException("OAuthPrompt.GetUserToken(): not supported by the current adapter");
 
-            var token = await adapter.GetUserToken(context, _settings.ConnectionName, null, default(CancellationToken)).ConfigureAwait(false);
+            var token = await adapter.GetUserTokenAsync(context, _settings.ConnectionName, null, default(CancellationToken)).ConfigureAwait(false);
             TokenResult tokenResult = null;
             if (token == null)
             {
@@ -206,7 +206,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 throw new InvalidOperationException("OAuthPrompt.SignOutUser(): not supported by the current adapter");
 
             // Sign out user
-            await adapter.SignOutUser(context, _settings.ConnectionName, default(CancellationToken)).ConfigureAwait(false);
+            await adapter.SignOutUserAsync(context, _settings.ConnectionName, default(CancellationToken)).ConfigureAwait(false);
         }
 
         private bool IsTokenResponseEvent(ITurnContext context)

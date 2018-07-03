@@ -80,7 +80,7 @@ namespace Microsoft.Bot.Builder.Azure
         /// Removes store items from storage.
         /// </summary>
         /// <param name="keys">Array of item keys to remove from the store.</param>
-        public async Task Delete(string[] keys, CancellationToken cancellationToken)
+        public async Task DeleteAsync(string[] keys, CancellationToken cancellationToken)
         {
             if (keys == null || keys.Length == 0) return;
 
@@ -99,7 +99,7 @@ namespace Microsoft.Bot.Builder.Azure
         /// Loads store items from storage.
         /// </summary>
         /// <param name="keys">Array of item keys to read from the store.</param>
-        public async Task<IDictionary<string, object>> Read(string[] keys, CancellationToken cancellationToken)
+        public async Task<IDictionary<string, object>> ReadAsync(string[] keys, CancellationToken cancellationToken)
         {
             if (keys == null || keys.Length == 0)
             {
@@ -127,7 +127,7 @@ namespace Microsoft.Bot.Builder.Azure
                     var item = doc.Document.ToObject(typeof(object), _jsonSerializer);
                     if (item is IStoreItem storeItem)
                     {
-                        storeItem.eTag = doc.ETag;
+                        storeItem.ETag = doc.ETag;
                     }
 
                     // doc.Id cannot be used since it is escaped, read it from RealId property instead
@@ -142,7 +142,7 @@ namespace Microsoft.Bot.Builder.Azure
         /// Saves store items to storage.
         /// </summary>
         /// <param name="changes">Map of items to write to storage.</param>
-        public async Task Write(IDictionary<string, object> changes, CancellationToken cancellationToken)
+        public async Task WriteAsync(IDictionary<string, object> changes, CancellationToken cancellationToken)
         {
             if (changes == null)
             {
@@ -165,7 +165,7 @@ namespace Microsoft.Bot.Builder.Azure
                     Document = json
                 };
 
-                string eTag = (change.Value as IStoreItem)?.eTag;
+                string eTag = (change.Value as IStoreItem)?.ETag;
                 if (eTag == null || eTag == "*")
                 {
                     // if new item or * then insert or replace unconditionaly

@@ -106,7 +106,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             msg.InputHint = InputHints.ExpectingInput;
-            await context.SendActivity(msg);
+            await context.SendActivityAsync(msg);
         }
 
         public async Task Prompt(ITurnContext context, IMessageActivity prompt = null, string speak = null)
@@ -116,7 +116,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             if (prompt != null)
             {
                 prompt.Speak = speak ?? prompt.Speak;
-                await context.SendActivity(prompt);
+                await context.SendActivityAsync(prompt);
             }
         }
 

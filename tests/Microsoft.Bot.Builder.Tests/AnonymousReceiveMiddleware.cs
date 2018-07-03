@@ -32,7 +32,7 @@ namespace Microsoft.Bot.Builder.Tests
         /// <param name="next">The delegate to call to continue the bot middleware pipeline.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
-        public Task OnTurn(ITurnContext context, NextDelegate next, CancellationToken cancellationToken)
+        public Task OnTurnAsync(ITurnContext context, NextDelegate next, CancellationToken cancellationToken)
         {
             return _toCall(context, next, cancellationToken);
         }

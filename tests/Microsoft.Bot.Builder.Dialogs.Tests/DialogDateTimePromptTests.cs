@@ -34,14 +34,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                     var dateTimeResult = (DateTimeResult)dialogCompletion.Result;
                     var resolution = dateTimeResult.Resolution.First();
                     var reply = $"Timex:'{resolution.Timex}' Value:'{resolution.Value}'";
-                    await turnContext.SendActivity(reply);
+                    await turnContext.SendActivityAsync(reply);
                 }
             })
             .Send("hello")
             .AssertReply("What date would you like?")
             .Send("5th December 2018 at 9am")
             .AssertReply("Timex:'2018-12-05T09' Value:'2018-12-05 09:00:00'")
-            .StartTest();
+            .StartTestAsync();
         }
 
         [TestMethod]
@@ -65,14 +65,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                     var dateTimeResult = (DateTimeResult)dialogCompletion.Result;
                     var timexExpressions = dateTimeResult.Resolution.Select(r => r.Timex).Distinct();
                     var reply = string.Join(" ", timexExpressions);
-                    await turnContext.SendActivity(reply);
+                    await turnContext.SendActivityAsync(reply);
                 }
             })
             .Send("hello")
             .AssertReply("What date would you like?")
             .Send("Wednesday 4 oclock")
             .AssertReply("XXXX-WXX-3T04 XXXX-WXX-3T16")
-            .StartTest();
+            .StartTestAsync();
         }
     }
 }

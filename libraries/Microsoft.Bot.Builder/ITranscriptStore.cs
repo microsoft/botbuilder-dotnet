@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="continuationToken">continuatuation token to page through results.</param>
         /// <param name="startDate">Earliest time to include.</param>
         /// <returns>Enumeration over the recorded activities.</returns>
-        Task<PagedResult<IActivity>> GetTranscriptActivities(string channelId, string conversationId, string continuationToken = null, DateTime startDate = default(DateTime));
+        Task<PagedResult<IActivity>> GetTranscriptActivitiesAsync(string channelId, string conversationId, string continuationToken = null, DateTime startDate = default(DateTime));
 
         /// <summary>
         /// List conversations in the channelId.
@@ -28,14 +28,14 @@ namespace Microsoft.Bot.Builder
         /// <param name="channelId"></param>
         /// <param name="continuationToken">continuation token to get next page of results.</param>
         /// <returns></returns>
-        Task<PagedResult<Transcript>> ListTranscripts(string channelId, string continuationToken = null);
+        Task<PagedResult<Transcript>> ListTranscriptsAsync(string channelId, string continuationToken = null);
 
         /// <summary>
-        /// Delete a specific conversation and all of it's activities.
+        /// DeleteAsync a specific conversation and all of it's activities.
         /// </summary>
         /// <param name="channelId">Channel where conversation took place.</param>
         /// <param name="conversationId">Id of conversation to delete.</param>
         /// <returns>Task.</returns>
-        Task DeleteTranscript(string channelId, string conversationId);
+        Task DeleteTranscriptAsync(string channelId, string conversationId);
     }
 }

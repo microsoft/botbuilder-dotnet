@@ -71,7 +71,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Handlers
                 var invokeResponse = await ProcessMessageRequestAsync(
                     request,
                     botFrameworkAdapter,
-                    bot.OnTurn,
+                    bot.OnTurnAsync,
                     default(CancellationToken));
 
                 if (invokeResponse == null)

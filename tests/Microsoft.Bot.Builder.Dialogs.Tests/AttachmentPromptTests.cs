@@ -36,14 +36,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 {
                     var attachmentResult = (AttachmentResult)dialogCompletion.Result;
                     var reply = (string)attachmentResult.Attachments.First().Content;
-                    await turnContext.SendActivity(reply);
+                    await turnContext.SendActivityAsync(reply);
                 }
             })
             .Send("hello")
             .AssertReply("please add an attachment.")
             .Send(activityWithAttachment)
             .AssertReply("some content")
-            .StartTest();
+            .StartTestAsync();
         }
     }
 }

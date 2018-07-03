@@ -44,12 +44,12 @@ namespace Microsoft.Bot.Builder.Classic.FormFlowTest
 
                 using (var context = new TurnContext(this, activity))
                 {
-                    await base.RunPipeline(context, callback, default(CancellationToken));
+                    await base.RunPipelineAsync(context, callback, default(CancellationToken));
                 }
             }
         }
 
-        public override async Task<ResourceResponse[]> SendActivities(ITurnContext context, Activity[] activities, CancellationToken cancellationToken)
+        public override async Task<ResourceResponse[]> SendActivitiesAsync(ITurnContext context, Activity[] activities, CancellationToken cancellationToken)
         {
             if (context == null)
             {
@@ -111,12 +111,12 @@ namespace Microsoft.Bot.Builder.Classic.FormFlowTest
             return responses;
         }
 
-        public override Task<ResourceResponse> UpdateActivity(ITurnContext context, Activity activity, CancellationToken cancellationToken)
+        public override Task<ResourceResponse> UpdateActivityAsync(ITurnContext context, Activity activity, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
 
-        public override Task DeleteActivity(ITurnContext context, ConversationReference reference, CancellationToken cancellationToken)
+        public override Task DeleteActivityAsync(ITurnContext context, ConversationReference reference, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }

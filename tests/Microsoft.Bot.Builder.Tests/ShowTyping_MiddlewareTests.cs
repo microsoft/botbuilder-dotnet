@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
             await new TestFlow(adapter, async (context) =>
                 {
                     await Task.Delay(TimeSpan.FromMilliseconds(2500));
-                    await context.SendActivity("Message sent after delay");
+                    await context.SendActivityAsync("Message sent after delay");
                     await Task.CompletedTask;
                 })
                 .Send("foo")
@@ -30,7 +30,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
                 .AssertReply(ValidateTypingActivity, "check typing activity")
                 .AssertReply(ValidateTypingActivity, "check typing activity")
                 .AssertReply("Message sent after delay")
-                .StartTest();
+                .StartTestAsync();
         }
 
         [TestMethod]
@@ -43,13 +43,13 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
             await new TestFlow(adapter, async (context) =>
                 {
                     await Task.Delay(TimeSpan.FromMilliseconds(2000));
-                    await context.SendActivity("Message sent after delay");
+                    await context.SendActivityAsync("Message sent after delay");
                     await Task.CompletedTask;
                 })
                 .Send("foo")
                 .AssertReply(ValidateTypingActivity, "check typing activity")
                 .AssertReply("Message sent after delay")
-                .StartTest();
+                .StartTestAsync();
         }
 
         [TestMethod]
@@ -61,12 +61,12 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
 
             await new TestFlow(adapter, async (context) =>
                 {
-                    await context.SendActivity("Message sent after delay");
+                    await context.SendActivityAsync("Message sent after delay");
                     await Task.CompletedTask;
                 })
                 .Send("foo")
                 .AssertReply("Message sent after delay")
-                .StartTest();
+                .StartTestAsync();
         }
 
         [TestMethod]

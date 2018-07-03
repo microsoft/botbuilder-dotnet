@@ -16,6 +16,6 @@ namespace Microsoft.Bot.Builder
         /// </summary>
         /// <param name="activity"></param>
         /// <returns></returns>
-        Task LogActivity(IActivity activity);
+        Task LogActivityAsync(IActivity activity);
     }
 }

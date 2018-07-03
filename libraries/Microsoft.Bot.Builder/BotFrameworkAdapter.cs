@@ -99,7 +99,7 @@ namespace Microsoft.Bot.Builder
         /// </remarks>
         /// <seealso cref="ProcessActivity(string, Activity, Func{ITurnContext, Task})"/>
         /// <seealso cref="BotAdapter.RunPipeline(ITurnContext, Func{ITurnContext, Task})"/>
-        public override async Task ContinueConversation(string botAppId, ConversationReference reference, Func<ITurnContext, Task> callback, CancellationToken cancellationToken)
+        public override async Task ContinueConversationAsync(string botAppId, ConversationReference reference, Func<ITurnContext, Task> callback, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(botAppId))
             {
@@ -129,7 +129,7 @@ namespace Microsoft.Bot.Builder
                 context.Services.Add<IIdentity>(BotIdentityKey, claimsIdentity);
                 var connectorClient = await CreateConnectorClientAsync(reference.ServiceUrl, claimsIdentity, cancellationToken).ConfigureAwait(false);
                 context.Services.Add(connectorClient);
-                await RunPipeline(context, callback, cancellationToken).ConfigureAwait(false);
+                await RunPipelineAsync(context, callback, cancellationToken).ConfigureAwait(false);
             }
         }
 
@@ -170,15 +170,15 @@ namespace Microsoft.Bot.Builder
         /// </remarks>
         /// <seealso cref="ContinueConversation(string, ConversationReference, Func{ITurnContext, Task})"/>
         /// <seealso cref="BotAdapter.RunPipeline(ITurnContext, Func{ITurnContext, Task})"/>
-        public async Task<InvokeResponse> ProcessActivity(string authHeader, Activity activity, Func<ITurnContext, Task> callback, CancellationToken cancellationToken)
+        public async Task<InvokeResponse> ProcessActivityAsync(string authHeader, Activity activity, Func<ITurnContext, Task> callback, CancellationToken cancellationToken)
         {
             BotAssert.ActivityNotNull(activity);
 
             var claimsIdentity = await JwtTokenValidation.AuthenticateRequest(activity, authHeader, _credentialProvider, _httpClient).ConfigureAwait(false);
-            return await ProcessActivity(claimsIdentity, activity, callback, cancellationToken).ConfigureAwait(false);
+            return await ProcessActivityAsync(claimsIdentity, activity, callback, cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task<InvokeResponse> ProcessActivity(ClaimsIdentity identity, Activity activity, Func<ITurnContext, Task> callback, CancellationToken cancellationToken)
+        public async Task<InvokeResponse> ProcessActivityAsync(ClaimsIdentity identity, Activity activity, Func<ITurnContext, Task> callback, CancellationToken cancellationToken)
         {
             BotAssert.ActivityNotNull(activity);
 
@@ -189,7 +189,7 @@ namespace Microsoft.Bot.Builder
                 var connectorClient = await CreateConnectorClientAsync(activity.ServiceUrl, identity, cancellationToken).ConfigureAwait(false);
                 context.Services.Add(connectorClient);
 
-                await RunPipeline(context, callback, cancellationToken).ConfigureAwait(false);
+                await RunPipelineAsync(context, callback, cancellationToken).ConfigureAwait(false);
 
                 // Handle Invoke scenarios, which deviate from the request/response model in that
                 // the Bot will return a specific body and return code.
@@ -224,7 +224,7 @@ namespace Microsoft.Bot.Builder
         /// an array of <see cref="ResourceResponse"/> objects containing the IDs that
         /// the receiving channel assigned to the activities.</remarks>
         /// <seealso cref="ITurnContext.OnSendActivities(SendActivitiesHandler)"/>
-        public override async Task<ResourceResponse[]> SendActivities(ITurnContext context, Activity[] activities, CancellationToken cancellationToken)
+        public override async Task<ResourceResponse[]> SendActivitiesAsync(ITurnContext context, Activity[] activities, CancellationToken cancellationToken)
         {
             if (context == null)
             {
@@ -316,7 +316,7 @@ namespace Microsoft.Bot.Builder
         /// <para>Before calling this, set the ID of the replacement activity to the ID
         /// of the activity to replace.</para></remarks>
         /// <seealso cref="ITurnContext.OnUpdateActivity(UpdateActivityHandler)"/>
-        public override async Task<ResourceResponse> UpdateActivity(ITurnContext context, Activity activity, CancellationToken cancellationToken)
+        public override async Task<ResourceResponse> UpdateActivityAsync(ITurnContext context, Activity activity, CancellationToken cancellationToken)
         {
             var connectorClient = context.Services.Get<IConnectorClient>();
             return await connectorClient.Conversations.UpdateActivityAsync(activity, cancellationToken).ConfigureAwait(false);
@@ -332,7 +332,7 @@ namespace Microsoft.Bot.Builder
         /// <remarks>The <see cref="ConversationReference.ActivityId"/> of the conversation
         /// reference identifies the activity to delete.</remarks>
         /// <seealso cref="ITurnContext.OnDeleteActivity(DeleteActivityHandler)"/>
-        public override async Task DeleteActivity(ITurnContext context, ConversationReference reference, CancellationToken cancellationToken)
+        public override async Task DeleteActivityAsync(ITurnContext context, ConversationReference reference, CancellationToken cancellationToken)
         {
             var connectorClient = context.Services.Get<IConnectorClient>();
             await connectorClient.Conversations.DeleteActivityAsync(reference.Conversation.Id, reference.ActivityId, cancellationToken).ConfigureAwait(false);
@@ -345,7 +345,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="memberId">ID of the member to delete from the conversation.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns></returns>
-        public async Task DeleteConversationMember(ITurnContext context, string memberId, CancellationToken cancellationToken)
+        public async Task DeleteConversationMemberAsync(ITurnContext context, string memberId, CancellationToken cancellationToken)
         {
             if (context.Activity.Conversation == null)
             {
@@ -371,7 +371,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="activityId">(Optional) Activity ID to enumerate. If not specified the current activities ID will be used.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>List of Members of the activity.</returns>
-        public async Task<IList<ChannelAccount>> GetActivityMembers(ITurnContext context, string activityId, CancellationToken cancellationToken)
+        public async Task<IList<ChannelAccount>> GetActivityMembersAsync(ITurnContext context, string activityId, CancellationToken cancellationToken)
         {
             // If no activity was passed in, use the current activity.
             if (activityId == null)
@@ -403,7 +403,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="context">The context object for the turn.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>List of Members of the current conversation.</returns>
-        public async Task<IList<ChannelAccount>> GetConversationMembers(ITurnContext context, CancellationToken cancellationToken)
+        public async Task<IList<ChannelAccount>> GetConversationMembersAsync(ITurnContext context, CancellationToken cancellationToken)
         {
             if (context.Activity.Conversation == null)
             {
@@ -439,7 +439,7 @@ namespace Microsoft.Bot.Builder
         /// This overload may be called from outside the context of a conversation, as only the
         /// Bot's ServiceUrl and credentials are required.
         /// </remarks>
-        public async Task<ConversationsResult> GetConversations(string serviceUrl, MicrosoftAppCredentials credentials, string continuationToken, CancellationToken cancellationToken)
+        public async Task<ConversationsResult> GetConversationsAsync(string serviceUrl, MicrosoftAppCredentials credentials, string continuationToken, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(serviceUrl))
             {
@@ -472,7 +472,7 @@ namespace Microsoft.Bot.Builder
         /// service URL and credentials that are part of the current activity processing pipeline
         /// will be used.
         /// </remarks>
-        public async Task<ConversationsResult> GetConversations(ITurnContext context, string continuationToken, CancellationToken cancellationToken)
+        public async Task<ConversationsResult> GetConversationsAsync(ITurnContext context, string continuationToken, CancellationToken cancellationToken)
         {
             var connectorClient = context.Services.Get<IConnectorClient>();
             var results = await connectorClient.Conversations.GetConversationsAsync(continuationToken, cancellationToken).ConfigureAwait(false);
@@ -486,7 +486,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="magicCode">(Optional) Optional user entered code to validate.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Token Response.</returns>
-        public async Task<TokenResponse> GetUserToken(ITurnContext context, string connectionName, string magicCode, CancellationToken cancellationToken)
+        public async Task<TokenResponse> GetUserTokenAsync(ITurnContext context, string connectionName, string magicCode, CancellationToken cancellationToken)
         {
             BotAssert.ContextNotNull(context);
             if (context.Activity.From == null || string.IsNullOrWhiteSpace(context.Activity.From.Id))
@@ -510,7 +510,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="connectionName">Name of the auth connection to use.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns></returns>
-        public async Task<string> GetOauthSignInLink(ITurnContext context, string connectionName, CancellationToken cancellationToken)
+        public async Task<string> GetOauthSignInLinkAsync(ITurnContext context, string connectionName, CancellationToken cancellationToken)
         {
             BotAssert.ContextNotNull(context);
             if (string.IsNullOrWhiteSpace(connectionName))
@@ -529,7 +529,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="connectionName">Name of the auth connection to use.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
-        public async Task SignOutUser(ITurnContext context, string connectionName, CancellationToken cancellationToken)
+        public async Task SignOutUserAsync(ITurnContext context, string connectionName, CancellationToken cancellationToken)
         {
             BotAssert.ContextNotNull(context);
             if (string.IsNullOrWhiteSpace(connectionName))
@@ -562,7 +562,7 @@ namespace Microsoft.Bot.Builder
         /// specified users, the ID of the activity's <see cref="IActivity.Conversation"/>
         /// will contain the ID of the new conversation.</para>
         /// </remarks>
-        public virtual async Task CreateConversation(string channelId, string serviceUrl, MicrosoftAppCredentials credentials, ConversationParameters conversationParameters, Func<ITurnContext, Task> callback, CancellationToken cancellationToken)
+        public virtual async Task CreateConversationAsync(string channelId, string serviceUrl, MicrosoftAppCredentials credentials, ConversationParameters conversationParameters, Func<ITurnContext, Task> callback, CancellationToken cancellationToken)
         {
             var connectorClient = CreateConnectorClient(serviceUrl, credentials);
 
@@ -585,12 +585,12 @@ namespace Microsoft.Bot.Builder
                 claimsIdentity.AddClaim(new Claim(AuthenticationConstants.ServiceUrlClaim, serviceUrl));
 
                 context.Services.Add<IIdentity>(BotIdentityKey, claimsIdentity);
-                context.Services.Add<IConnectorClient>(connectorClient);
-                await RunPipeline(context, callback, cancellationToken).ConfigureAwait(false);
+                context.Services.Add(connectorClient);
+                await RunPipelineAsync(context, callback, cancellationToken).ConfigureAwait(false);
             }
         }
 
-        protected async Task<bool> TrySetEmulatingOAuthCards(ITurnContext turnContext, CancellationToken cancellationToken)
+        protected async Task<bool> TrySetEmulatingOAuthCardsAsync(ITurnContext turnContext, CancellationToken cancellationToken)
         {
             if (!_isEmulatingOAuthCards &&
                 string.Equals(turnContext.Activity.ChannelId, "emulator", StringComparison.InvariantCultureIgnoreCase) &&
