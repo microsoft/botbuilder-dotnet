@@ -1,9 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Microsoft.Bot.Builder.Dialogs.Choices;
 using System;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Dialogs.Choices;
 using static Microsoft.Bot.Builder.Dialogs.PromptValidatorEx;
 
 namespace Microsoft.Bot.Builder.Dialogs
