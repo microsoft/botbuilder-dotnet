@@ -63,7 +63,7 @@ namespace Microsoft.Bot.Builder
     /// <remarks>A handler calls the <paramref name="next"/> delegate to pass control to
     /// the next registered handler. If a handler doesn’t call the next delegate,
     /// the adapter does not call any of the subsequent handlers and does not delete the
-    ///activity.
+    /// activity.
     /// <para>The conversation reference's <see cref="ConversationReference.ActivityId"/>
     /// indicates the activity in the conversation to replace.</para>
     /// </remarks>
@@ -94,7 +94,7 @@ namespace Microsoft.Bot.Builder
         TurnContextServiceCollection Services { get; }
 
         /// <summary>
-        /// Incoming request
+        /// Incoming request.
         /// </summary>
         Activity Activity { get; }
 
@@ -122,7 +122,7 @@ namespace Microsoft.Bot.Builder
         /// <para>See the channel's documentation for limits imposed upon the contents of
         /// <paramref name="textReplyToSend"/>.</para>
         /// <para>To control various characteristics of your bot's speech such as voice,
-        /// rate, volume, pronunciation, and pitch, specify <paramref name="speak"/> in 
+        /// rate, volume, pronunciation, and pitch, specify <paramref name="speak"/> in
         /// Speech Synthesis Markup Language (SSML) format.</para>
         /// </remarks>
         /// <seealso cref="OnSendActivities(SendActivitiesHandler)"/>
@@ -139,7 +139,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <remarks>If the activity is successfully sent, the task result contains
-        /// a <see cref="ResourceResponse"/> object containing the ID that the receiving 
+        /// a <see cref="ResourceResponse"/> object containing the ID that the receiving
         /// channel assigned to the activity.</remarks>
         /// <seealso cref="OnSendActivities(SendActivitiesHandler)"/>
         /// <seealso cref="SendActivity(string, string, string)"/>
@@ -155,7 +155,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <remarks>If the activities are successfully sent, the task result contains
-        /// an array of <see cref="ResourceResponse"/> objects containing the IDs that 
+        /// an array of <see cref="ResourceResponse"/> objects containing the IDs that
         /// the receiving channel assigned to the activities.</remarks>
         /// <seealso cref="OnSendActivities(SendActivitiesHandler)"/>
         /// <seealso cref="SendActivity(string, string, string)"/>
@@ -165,7 +165,7 @@ namespace Microsoft.Bot.Builder
         Task<ResourceResponse[]> SendActivities(IActivity[] activities, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
-        /// Replaces an existing activity. 
+        /// Replaces an existing activity.
         /// </summary>
         /// <param name="activity">New replacement activity.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
@@ -213,7 +213,6 @@ namespace Microsoft.Bot.Builder
         /// Adds a response handler for send activity operations.
         /// </summary>
         /// <param name="handler">The handler to add to the context object.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The updated context object.</returns>
         /// <remarks>When the context's <see cref="SendActivity(IActivity)"/>
         /// or <see cref="SendActivities(IActivity[])"/> methods are called,

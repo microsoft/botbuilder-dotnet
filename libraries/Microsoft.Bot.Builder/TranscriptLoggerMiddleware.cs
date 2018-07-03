@@ -11,7 +11,7 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder
 {
     /// <summary>
-    /// When added, this middleware will log incoming and outgoing activitites to a ITranscriptStore
+    /// When added, this middleware will log incoming and outgoing activitites to a ITranscriptStore.
     /// </summary>
     public class TranscriptLoggerMiddleware : IMiddleware
     {
@@ -30,7 +30,7 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
-        /// initialization for middleware turn
+        /// initialization for middleware turn.
         /// </summary>
         /// <param name="context"></param>
         /// <param name="nextTurn"></param>
@@ -113,21 +113,23 @@ namespace Microsoft.Bot.Builder
             }
         }
 
+        private static IActivity CloneActivity(IActivity activity)
+        {
+            activity = JsonConvert.DeserializeObject<Activity>(JsonConvert.SerializeObject(activity, JsonSettings));
+            return activity;
+        }
+
         private void LogActivity(IActivity activity)
         {
             lock (transcript)
             {
                 if (activity.Timestamp == null)
+                {
                     activity.Timestamp = DateTime.UtcNow;
+                }
 
                 transcript.Enqueue(activity);
             }
-        }
-
-        private static IActivity CloneActivity(IActivity activity)
-        {
-            activity = JsonConvert.DeserializeObject<Activity>(JsonConvert.SerializeObject(activity, JsonSettings));
-            return activity;
         }
     }
 }

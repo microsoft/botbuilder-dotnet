@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Builder
     public class BotFrameworkHttpStatusCodeErrorDetectionStrategy : ITransientErrorDetectionStrategy
     {
         /// <summary>
-        /// Returns true if status code in HttpRequestExceptionWithStatus exception is RequestTimeout, TooManyRequests, NotFound or greater 
+        /// Returns true if status code in HttpRequestExceptionWithStatus exception is RequestTimeout, TooManyRequests, NotFound or greater
         /// than or equal to 500 and not NotImplemented (501) or HttpVersionNotSupported (505).
         /// </summary>
         /// <param name="ex">Exception to check against.</param>

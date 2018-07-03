@@ -20,11 +20,11 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
-        /// Implementation of the IMiddleware interface
+        /// Implementation of the IMiddleware interface.
         /// </summary>
-        /// <param name="context">The turn context</param>
-        /// <param name="next">The next middleware component</param>
-        /// <param name="cancellationToken">cancellation token</param>
+        /// <param name="context">The turn context.</param>
+        /// <param name="next">The next middleware component.</param>
+        /// <param name="cancellationToken">cancellation token.</param>
         public async Task OnTurn(ITurnContext context, NextDelegate next, CancellationToken cancellationToken)
         {
             await ReceiveActivityInternal(context, null, 0, cancellationToken).ConfigureAwait(false);

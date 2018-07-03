@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Builder
         private readonly IList<DeleteActivityHandler> _onDeleteActivity = new List<DeleteActivityHandler>();
 
         /// <summary>
-        /// Creates a context object.
+        /// Initializes a new instance of the <see cref="TurnContext"/> class.
         /// </summary>
         /// <param name="adapter">The adapter creating the context.</param>
         /// <param name="activity">The incoming activity for the turn;
@@ -53,7 +53,9 @@ namespace Microsoft.Bot.Builder
         public ITurnContext OnSendActivities(SendActivitiesHandler handler)
         {
             if (handler == null)
+            {
                 throw new ArgumentNullException(nameof(handler));
+            }
 
             _onSendActivities.Add(handler);
             return this;
@@ -72,7 +74,9 @@ namespace Microsoft.Bot.Builder
         public ITurnContext OnUpdateActivity(UpdateActivityHandler handler)
         {
             if (handler == null)
+            {
                 throw new ArgumentNullException(nameof(handler));
+            }
 
             _onUpdateActivity.Add(handler);
             return this;
@@ -91,7 +95,9 @@ namespace Microsoft.Bot.Builder
         public ITurnContext OnDeleteActivity(DeleteActivityHandler handler)
         {
             if (handler == null)
+            {
                 throw new ArgumentNullException(nameof(handler));
+            }
 
             _onDeleteActivity.Add(handler);
             return this;
@@ -149,15 +155,21 @@ namespace Microsoft.Bot.Builder
         public async Task<ResourceResponse> SendActivity(string textReplyToSend, string speak = null, string inputHint = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (string.IsNullOrWhiteSpace(textReplyToSend))
+            {
                 throw new ArgumentNullException(nameof(textReplyToSend));
+            }
 
             var activityToSend = new Activity(ActivityTypes.Message) { Text = textReplyToSend };
 
             if (!string.IsNullOrEmpty(speak))
+            {
                 activityToSend.Speak = speak;
+            }
 
             if (!string.IsNullOrEmpty(inputHint))
+            {
                 activityToSend.InputHint = inputHint;
+            }
 
             return await SendActivity(activityToSend, cancellationToken).ConfigureAwait(false);
         }
@@ -166,6 +178,7 @@ namespace Microsoft.Bot.Builder
         /// Sends an activity to the sender of the incoming activity.
         /// </summary>
         /// <param name="activity">The activity to send.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="activity"/> is <c>null</c>.</exception>
         /// <remarks>If the activity is successfully sent, the task result contains
@@ -175,7 +188,7 @@ namespace Microsoft.Bot.Builder
         {
             BotAssert.ActivityNotNull(activity);
 
-            ResourceResponse[] responses = await SendActivities(new [] { activity }, cancellationToken).ConfigureAwait(false);
+            ResourceResponse[] responses = await SendActivities(new[] { activity }, cancellationToken).ConfigureAwait(false);
             if (responses == null || responses.Length == 0)
             {
                 // It's possible an interceptor prevented the activity from having been sent.
@@ -192,6 +205,7 @@ namespace Microsoft.Bot.Builder
         /// Sends a set of activities to the sender of the incoming activity.
         /// </summary>
         /// <param name="activities">The activities to send.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <remarks>If the activities are successfully sent, the task result contains
         /// an array of <see cref="ResourceResponse"/> objects containing the IDs that
@@ -199,10 +213,14 @@ namespace Microsoft.Bot.Builder
         public Task<ResourceResponse[]> SendActivities(IActivity[] activities, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (activities == null)
+            {
                 throw new ArgumentNullException(nameof(activities));
+            }
 
             if (activities.Length == 0)
+            {
                 throw new ArgumentException("Expecting one or more activities, but the array was empty.", nameof(activities));
+            }
 
             var conversationReference = this.Activity.GetConversationReference();
 
@@ -266,6 +284,7 @@ namespace Microsoft.Bot.Builder
         /// Replaces an existing activity.
         /// </summary>
         /// <param name="activity">New replacement activity.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <exception cref="Microsoft.Bot.Schema.ErrorResponseException">
         /// The HTTP operation failed and the response contained additional information.</exception>
@@ -292,15 +311,18 @@ namespace Microsoft.Bot.Builder
         /// Deletes an existing activity.
         /// </summary>
         /// <param name="activityId">The ID of the activity to delete.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <exception cref="Microsoft.Bot.Schema.ErrorResponseException">
         /// The HTTP operation failed and the response contained additional information.</exception>
         public async Task DeleteActivity(string activityId, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (string.IsNullOrWhiteSpace(activityId))
+            {
                 throw new ArgumentNullException(nameof(activityId));
+            }
 
-            ConversationReference cr = this.Activity.GetConversationReference();
+            var cr = Activity.GetConversationReference();
             cr.ActivityId = activityId;
 
             async Task ActuallyDeleteStuff()
@@ -315,6 +337,7 @@ namespace Microsoft.Bot.Builder
         /// Deletes an existing activity.
         /// </summary>
         /// <param name="conversationReference">The conversation containing the activity to delete.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <exception cref="Microsoft.Bot.Schema.ErrorResponseException">
         /// The HTTP operation failed and the response contained additional information.</exception>
@@ -323,7 +346,9 @@ namespace Microsoft.Bot.Builder
         public async Task DeleteActivity(ConversationReference conversationReference, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (conversationReference == null)
+            {
                 throw new ArgumentNullException(nameof(conversationReference));
+            }
 
             async Task ActuallyDeleteStuff()
             {
@@ -346,9 +371,12 @@ namespace Microsoft.Bot.Builder
         {
             BotAssert.ActivityNotNull(activity);
             if (updateHandlers == null)
+            {
                 throw new ArgumentException(nameof(updateHandlers));
+            }
 
-            if (updateHandlers.Count() == 0) // No middleware to run.
+            // No middleware to run.
+            if (updateHandlers.Count() == 0)
             {
                 if (callAtBottom != null)
                 {
@@ -383,9 +411,12 @@ namespace Microsoft.Bot.Builder
             BotAssert.ConversationReferenceNotNull(cr);
 
             if (updateHandlers == null)
+            {
                 throw new ArgumentException(nameof(updateHandlers));
+            }
 
-            if (updateHandlers.Count() == 0) // No middleware to run.
+            // No middleware to run.
+            if (updateHandlers.Count() == 0)
             {
                 if (callAtBottom != null)
                 {
