@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Tests;
@@ -41,21 +42,21 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
 
         public class BeforeAfterMiddleware : IMiddleware
         {
-            public async Task OnTurn(ITurnContext context, MiddlewareSet.NextDelegate next)
+            public async Task OnTurn(ITurnContext context, NextDelegate next, CancellationToken cancellationToken = default(CancellationToken))
             {
                 await context.SendActivity("before message");
-                await next();
+                await next(cancellationToken);
                 await context.SendActivity("after message");
             }
         }
 
         public class CatchExceptionMiddleware : IMiddleware
         {
-            public async Task OnTurn(ITurnContext context, MiddlewareSet.NextDelegate next)
+            public async Task OnTurn(ITurnContext context, NextDelegate next, CancellationToken cancellationToken = default(CancellationToken))
             {
                 try
                 {
-                    await next();
+                    await next(cancellationToken);
                 }
                 catch (Exception ex)
                 {
