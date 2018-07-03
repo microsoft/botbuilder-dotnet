@@ -9,7 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Core.Extensions;
 using Microsoft.Bot.Builder.Core.Extensions.Tests;
-using Microsoft.Cognitive.LUIS;
+using Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -311,7 +311,7 @@ namespace Microsoft.Bot.Builder.Ai.LUIS.Tests
 
             var expectedPath = Path.Combine(@"..\..\..\TestData\", file);
             var newPath = expectedPath + ".new";
-            var luisRecognizer = GetLuisRecognizer(verbose: true, luisOptions: new LuisRequest { Verbose = true });
+            var luisRecognizer = GetLuisRecognizer(verbose: true, luisOptions: new LuisOptions{ Verbose = true });
             var expected = new StreamReader(expectedPath).ReadToEnd();
             dynamic expectedJson = JsonConvert.DeserializeObject(expected);
             var query = (string)expectedJson.text ?? (string)expectedJson.Text;
@@ -382,7 +382,7 @@ namespace Microsoft.Bot.Builder.Ai.LUIS.Tests
         private IRecognizer GetLuisRecognizer(bool verbose = false, ILuisOptions luisOptions = null)
         {
             var luisRecognizerOptions = new LuisRecognizerOptions { Verbose = verbose };
-            var luisModel = new LuisModel(_luisAppId, _subscriptionKey, new Uri(_luisUriBase), LuisApiVersion.V2);
+            var luisModel = new LuisApplication(_luisAppId, _subscriptionKey, new Uri(_luisUriBase), LuisApiVersion.V2);
             return new LuisRecognizer(luisModel, luisRecognizerOptions, luisOptions);
         }
     }

@@ -4,7 +4,7 @@
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 
-namespace Microsoft.Bot.Samples.Ai.Luis
+namespace Microsoft.Bot.Samples.Ai.LUIS
 {
     public class Program
     {

@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
-namespace Microsoft.Bot.Samples.Ai.Luis.Dispatch
+namespace Microsoft.Bot.Samples.Ai.LUIS.Dispatch
 {
     public class Program
     {

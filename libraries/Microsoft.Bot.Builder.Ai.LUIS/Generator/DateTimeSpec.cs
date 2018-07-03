@@ -1,9 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Ai.LUIS
 {
@@ -12,13 +12,34 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
     /// </summary>
     /// <remarks>
     /// LUIS recognizes time expressions like "next monday" and converts those to a type and set of timex expressions.
-    /// More information on timex can be found here: http://www.timeml.org/publications/timeMLdocs/timeml_1.2.1.html#timex3
-    /// More information on the library which does the recognition can be found here: https://github.com/Microsoft/Recognizers-Text
+    /// More information on timex can be found here: http://www.timeml.org/publications/timeMLdocs/timeml_1.2.1.html#timex3.
+    /// More information on the library which does the recognition can be found here: https://github.com/Microsoft/Recognizers-Text.
     /// </remarks>
     public class DateTimeSpec
     {
         /// <summary>
-        /// Type of expression.
+        /// Initializes a new instance of the <see cref="DateTimeSpec"/> class.
+        /// </summary>
+        /// <param name="type">Type of time expression, <see cref="Type"/>.</param>
+        /// <param name="expressions">Sequence of timex expressions <see cref="DateTimeSpec"/>.</param>
+        public DateTimeSpec(string type, IEnumerable<string> expressions)
+        {
+            if (string.IsNullOrWhiteSpace(type))
+            {
+                throw new ArgumentNullException(nameof(type));
+            }
+
+            if (expressions == null)
+            {
+                throw new ArgumentNullException(nameof(expressions));
+            }
+
+            Type = type;
+            Expressions = expressions.ToList();
+        }
+
+        /// <summary>
+        /// Gets type of expression.
         /// </summary>
         /// <remarks>Example types include:
         /// <list type="*">
@@ -32,25 +53,18 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
         /// </list>
         /// </remarks>
         [JsonProperty("type")]
-        public readonly string Type;
+        public string Type { get; }
 
         /// <summary>
-        /// Timex expressions.
+        /// Gets Timex expressions.
         /// </summary>
         [JsonProperty("timex")]
-        public readonly IList<string> Expressions;
+        public IReadOnlyList<string> Expressions { get; };
 
-        public DateTimeSpec(string type, IEnumerable<string> expressions)
-        {
-            if (string.IsNullOrWhiteSpace(type)) throw new ArgumentNullException(nameof(type));
-            if (expressions == null) throw new ArgumentNullException(nameof(expressions));
-            Type = type;
-            Expressions = expressions.ToList();
-        }
-
+        /// <inheritdoc/>
         public override string ToString()
         {
-            return $"DateTimeSpec({Type}, [{String.Join(", ", Expressions)}]";
+            return $"DateTimeSpec({Type}, [{string.Join(", ", Expressions)}]";
         }
     }
 }

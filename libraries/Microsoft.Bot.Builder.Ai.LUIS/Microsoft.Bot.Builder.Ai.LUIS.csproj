@@ -43,17 +43,28 @@
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Documentation|AnyCPU'">
 		<DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Builder.Ai.LUIS.xml</DocumentationFile>
+		<CodeAnalysisRuleSet>Microsoft.Bot.Builder.Ai.LUIS.ruleset</CodeAnalysisRuleSet>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
 		<DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Builder.Ai.LUIS.xml</DocumentationFile>
+		<CodeAnalysisRuleSet>Microsoft.Bot.Builder.Ai.LUIS.ruleset</CodeAnalysisRuleSet>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+	  <CodeAnalysisRuleSet>Microsoft.Bot.Builder.Ai.LUIS.ruleset</CodeAnalysisRuleSet>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug - NuGet Packages|AnyCPU'">
+	  <CodeAnalysisRuleSet>Microsoft.Bot.Builder.Ai.LUIS.ruleset</CodeAnalysisRuleSet>
 	</PropertyGroup>
 	
 	<ItemGroup>
+		<PackageReference Include="Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime" Version="0.9.0-preview" />
 		<PackageReference Include="Microsoft.Bot.Builder.Core" Condition=" '$(PackageVersion)' == '' " Version="4.0.0-local" />
 		<PackageReference Include="Microsoft.Bot.Builder.Core" Condition=" '$(PackageVersion)' != '' " Version="$(PackageVersion)" />
-		<PackageReference Include="Microsoft.Rest.ClientRuntime" Version="2.3.10" />
 		<PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
+		<PackageReference Include="StyleCop.Analyzers" Version="1.1.0-beta008" />
 	</ItemGroup>
 
   <ItemGroup>

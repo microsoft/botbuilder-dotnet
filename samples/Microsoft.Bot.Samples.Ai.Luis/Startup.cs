@@ -7,12 +7,12 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Bot.Builder.BotFramework;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Builder.Ai.LUIS;
-using Microsoft.Cognitive.LUIS;
+using Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace Microsoft.Bot.Samples.Ai.Luis
+namespace Microsoft.Bot.Samples.Ai.LUIS
 {
     public class Startup
     {
@@ -39,7 +39,7 @@ namespace Microsoft.Bot.Samples.Ai.Luis
                 string luisSubscriptionKey = "<Your Key here>";
                 Uri luisUri = new Uri("https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/");
 
-                var luisModel = new LuisModel(luisModelId, luisSubscriptionKey, luisUri);
+                var luisModel = new LuisApplication(luisModelId, luisSubscriptionKey, luisUri);
 
                 // If you want to get all intents scorings, add verbose in luisOptions
                 var luisOptions = new LuisRequest { Verbose = true };
