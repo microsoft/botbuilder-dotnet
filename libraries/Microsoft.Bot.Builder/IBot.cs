@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Builder
     /// <code>
     /// public class EchoBot : IBot
     /// {
-    ///     public async Task OnTurn(ITurnContext context)
+    ///     public async Task OnTurnAsync(ITurnContext context)
     ///     {
     ///         if (context.Activity.Type is ActivityTypes.Message)
     ///         {
@@ -37,6 +37,6 @@ namespace Microsoft.Bot.Builder
         /// incoming activity, and other data needed to process the activity.</remarks>
         /// <seealso cref="ITurnContext"/>
         /// <seealso cref="Bot.Schema.IActivity"/>
-        Task OnTurn(ITurnContext turnContext);
+        Task OnTurnAsync(ITurnContext turnContext);
     }
 }

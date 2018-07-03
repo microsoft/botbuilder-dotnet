@@ -41,7 +41,7 @@ namespace Microsoft.Bot.Builder
             _period = TimeSpan.FromMilliseconds(period);
         }
 
-        public async Task OnTurn(ITurnContext context, NextDelegate next, CancellationToken cancellationToken)
+        public async Task OnTurnAsync(ITurnContext context, NextDelegate next, CancellationToken cancellationToken)
         {
             CancellationTokenSource cts = null;
             try
@@ -98,7 +98,7 @@ namespace Microsoft.Bot.Builder
                 Type = ActivityTypes.Typing,
                 RelatesTo = context.Activity.RelatesTo,
             };
-            await context.SendActivity(typingActivity, cancellationToken).ConfigureAwait(false);
+            await context.SendActivityAsync(typingActivity, cancellationToken).ConfigureAwait(false);
         }
     }
 }

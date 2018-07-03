@@ -398,7 +398,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
                         new CardAction(type: "imBack", text: "red", title: "redTitle")
                     }, "Select color");
 
-                    await ctx.SendActivity((Activity)activity); 
+                    await ctx.SendActivityAsync((Activity)activity); 
                 }
             }
 
@@ -418,7 +418,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
             await new TestFlow(adapter, ReplyWithimBackBack)
                 .Send("test")
                 .AssertReply(ValidateIMBack, "IMBack Did not validate")
-                .StartTest();
+                .StartTestAsync();
         }
 
         [TestMethod]
@@ -435,7 +435,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
                         new CardAction(type: "imBack", text: "red", title: "redTitle")
                     }, "");
 
-                    await ctx.SendActivity((Activity) activity); 
+                    await ctx.SendActivityAsync((Activity) activity); 
                 }
             }
 
@@ -455,7 +455,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
             await new TestFlow(adapter, ReplyWithimBackBack)
                 .Send("test")
                 .AssertReply(ValidateIMBack, "IMBack Did not validate")
-                .StartTest();
+                .StartTestAsync();
         }
     }
 }

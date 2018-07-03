@@ -126,11 +126,11 @@ namespace Microsoft.Bot.Builder
         /// Speech Synthesis Markup Language (SSML) format.</para>
         /// </remarks>
         /// <seealso cref="OnSendActivities(SendActivitiesHandler)"/>
-        /// <seealso cref="SendActivity(IActivity)"/>
-        /// <seealso cref="SendActivities(IActivity[])"/>
-        /// <seealso cref="UpdateActivity(IActivity)"/>
-        /// <seealso cref="DeleteActivity(ConversationReference)"/>
-        Task<ResourceResponse> SendActivity(string textReplyToSend, string speak = null, string inputHint = InputHints.AcceptingInput, CancellationToken cancellationToken = default(CancellationToken));
+        /// <seealso cref="SendActivityAsync(IActivity)"/>
+        /// <seealso cref="SendActivitiesAsync(IActivity[])"/>
+        /// <seealso cref="UpdateActivityAsync(IActivity)"/>
+        /// <seealso cref="DeleteActivityAsync(ConversationReference)"/>
+        Task<ResourceResponse> SendActivityAsync(string textReplyToSend, string speak = null, string inputHint = InputHints.AcceptingInput, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// Sends an activity to the sender of the incoming activity.
@@ -146,7 +146,7 @@ namespace Microsoft.Bot.Builder
         /// <seealso cref="SendActivities(IActivity[])"/>
         /// <seealso cref="UpdateActivity(IActivity)"/>
         /// <seealso cref="DeleteActivity(ConversationReference)"/>
-        Task<ResourceResponse> SendActivity(IActivity activity, CancellationToken cancellationToken = default(CancellationToken));
+        Task<ResourceResponse> SendActivityAsync(IActivity activity, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// Sends a set of activities to the sender of the incoming activity.
@@ -158,11 +158,11 @@ namespace Microsoft.Bot.Builder
         /// an array of <see cref="ResourceResponse"/> objects containing the IDs that
         /// the receiving channel assigned to the activities.</remarks>
         /// <seealso cref="OnSendActivities(SendActivitiesHandler)"/>
-        /// <seealso cref="SendActivity(string, string, string)"/>
-        /// <seealso cref="SendActivity(IActivity)"/>
-        /// <seealso cref="UpdateActivity(IActivity)"/>
-        /// <seealso cref="DeleteActivity(ConversationReference)"/>
-        Task<ResourceResponse[]> SendActivities(IActivity[] activities, CancellationToken cancellationToken = default(CancellationToken));
+        /// <seealso cref="SendActivityAsync(string, string, string)"/>
+        /// <seealso cref="SendActivityAsync(IActivity)"/>
+        /// <seealso cref="UpdateActivityAsync(IActivity)"/>
+        /// <seealso cref="DeleteActivityAsync(ConversationReference)"/>
+        Task<ResourceResponse[]> SendActivitiesAsync(IActivity[] activities, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// Replaces an existing activity.
@@ -177,9 +177,9 @@ namespace Microsoft.Bot.Builder
         /// of the activity to replace.</para>
         /// <para>Not all channels support this operation. Channels that don't, may throw an exception.</para></remarks>
         /// <seealso cref="OnUpdateActivity(UpdateActivityHandler)"/>
-        /// <seealso cref="SendActivities(IActivity[])"/>
-        /// <seealso cref="DeleteActivity(ConversationReference)"/>
-        Task<ResourceResponse> UpdateActivity(IActivity activity, CancellationToken cancellationToken = default(CancellationToken));
+        /// <seealso cref="SendActivitiesAsync(IActivity[])"/>
+        /// <seealso cref="DeleteActivityAsync(ConversationReference)"/>
+        Task<ResourceResponse> UpdateActivityAsync(IActivity activity, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// Deletes an existing activity.
@@ -189,10 +189,10 @@ namespace Microsoft.Bot.Builder
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <remarks>Not all channels support this operation. Channels that don't, may throw an exception.</remarks>
         /// <seealso cref="OnDeleteActivity(DeleteActivityHandler)"/>
-        /// <seealso cref="DeleteActivity(ConversationReference)"/>
-        /// <seealso cref="SendActivities(IActivity[])"/>
-        /// <seealso cref="UpdateActivity(IActivity)"/>
-        Task DeleteActivity(string activityId, CancellationToken cancellationToken = default(CancellationToken));
+        /// <seealso cref="DeleteActivityAsync(ConversationReference)"/>
+        /// <seealso cref="SendActivitiesAsync(IActivity[])"/>
+        /// <seealso cref="UpdateActivityAsync(IActivity)"/>
+        Task DeleteActivityAsync(string activityId, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// Deletes an existing activity.
@@ -207,21 +207,21 @@ namespace Microsoft.Bot.Builder
         /// <seealso cref="DeleteActivity(string)"/>
         /// <seealso cref="SendActivities(IActivity[])"/>
         /// <seealso cref="UpdateActivity(IActivity)"/>
-        Task DeleteActivity(ConversationReference conversationReference, CancellationToken cancellationToken = default(CancellationToken));
+        Task DeleteActivityAsync(ConversationReference conversationReference, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// Adds a response handler for send activity operations.
         /// </summary>
         /// <param name="handler">The handler to add to the context object.</param>
         /// <returns>The updated context object.</returns>
-        /// <remarks>When the context's <see cref="SendActivity(IActivity)"/>
-        /// or <see cref="SendActivities(IActivity[])"/> methods are called,
+        /// <remarks>When the context's <see cref="SendActivityAsync(IActivity)"/>
+        /// or <see cref="SendActivitiesAsync(IActivity[])"/> methods are called,
         /// the adapter calls the registered handlers in the order in which they were
         /// added to the context object.
         /// </remarks>
-        /// <seealso cref="SendActivity(string, string, string)"/>
-        /// <seealso cref="SendActivity(IActivity)"/>
-        /// <seealso cref="SendActivities(IActivity[])"/>
+        /// <seealso cref="SendActivityAsync(string, string, string)"/>
+        /// <seealso cref="SendActivityAsync(IActivity)"/>
+        /// <seealso cref="SendActivitiesAsync(IActivity[])"/>
         /// <seealso cref="SendActivitiesHandler"/>
         /// <seealso cref="OnUpdateActivity(UpdateActivityHandler)"/>
         /// <seealso cref="OnDeleteActivity(DeleteActivityHandler)"/>

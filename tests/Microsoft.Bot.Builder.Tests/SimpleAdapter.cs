@@ -22,14 +22,14 @@ namespace Microsoft.Bot.Builder.Tests
         public SimpleAdapter(Action<Activity> callOnUpdate) { _callOnUpdate = callOnUpdate; }
         public SimpleAdapter(Action<ConversationReference> callOnDelete) { _callOnDelete = callOnDelete; }
 
-        public override Task DeleteActivity(ITurnContext context, ConversationReference reference, CancellationToken cancellationToken)
+        public override Task DeleteActivityAsync(ITurnContext context, ConversationReference reference, CancellationToken cancellationToken)
         {
             Assert.IsNotNull(reference, "SimpleAdapter.deleteActivity: missing reference");
             _callOnDelete?.Invoke(reference);
             return Task.CompletedTask;
         }
 
-        public override Task<ResourceResponse[]> SendActivities(ITurnContext context, Activity[] activities, CancellationToken cancellationToken)
+        public override Task<ResourceResponse[]> SendActivitiesAsync(ITurnContext context, Activity[] activities, CancellationToken cancellationToken)
         {
             Assert.IsNotNull(activities, "SimpleAdapter.deleteActivity: missing reference");
             Assert.IsTrue(activities.Count() > 0, "SimpleAdapter.sendActivities: empty activities array.");
@@ -44,7 +44,7 @@ namespace Microsoft.Bot.Builder.Tests
             return Task.FromResult(responses.ToArray());
         }
 
-        public override Task<ResourceResponse> UpdateActivity(ITurnContext context, Activity activity, CancellationToken cancellationToken)
+        public override Task<ResourceResponse> UpdateActivityAsync(ITurnContext context, Activity activity, CancellationToken cancellationToken)
         {
             Assert.IsNotNull(activity, "SimpleAdapter.updateActivity: missing activity");
             _callOnUpdate?.Invoke(activity);
@@ -55,7 +55,7 @@ namespace Microsoft.Bot.Builder.Tests
         {
             using (var ctx = new TurnContext(this, activty))
             {
-                await this.RunPipeline(ctx, callback, cancellationToken);
+                await this.RunPipelineAsync(ctx, callback, cancellationToken);
             }
         }
     }

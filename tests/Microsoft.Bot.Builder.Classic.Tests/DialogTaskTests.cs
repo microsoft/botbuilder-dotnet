@@ -85,7 +85,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
             using (new FiberTestBase.ResolveMoqAssembly(dialog.Object))
             using (var container = Build(Options.MockConnectorFactory, dialog.Object))
             {
-                await new TestAdapter().ProcessActivity((Activity)toBot, async (context) =>
+                await new TestAdapter().ProcessActivityAsync((Activity)toBot, async (context) =>
                 {
                     using (var scope = DialogModule.BeginLifetimeScope(container, context))
                     {
@@ -100,7 +100,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                 dialog.Verify(d => d.MessageReceived(It.IsAny<IDialogContext>(), It.IsAny<IAwaitable<IMessageActivity>>()), Times.Once);
                 dialog.Verify(d => d.Throw(It.IsAny<IDialogContext>(), It.IsAny<IAwaitable<IMessageActivity>>()), Times.Never);
 
-                await new TestAdapter().ProcessActivity((Activity)toBot, async (context) =>
+                await new TestAdapter().ProcessActivityAsync((Activity)toBot, async (context) =>
                 {
                     using (var scope = DialogModule.BeginLifetimeScope(container, context))
                     {
@@ -112,7 +112,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                     }
                 });
 
-                await new TestAdapter().ProcessActivity((Activity)toBot, async (context) =>
+                await new TestAdapter().ProcessActivityAsync((Activity)toBot, async (context) =>
                 {
                     using (var scope = DialogModule.BeginLifetimeScope(container, context))
                     {
@@ -140,7 +140,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                 dialog.Verify(d => d.Throw(It.IsAny<IDialogContext>(), It.IsAny<IAwaitable<IMessageActivity>>()), Times.Once);
 
                 //make sure that data is persisted with connector
-                await new TestAdapter().ProcessActivity((Activity)toBot, async (context) =>
+                await new TestAdapter().ProcessActivityAsync((Activity)toBot, async (context) =>
                 {
                     using (var scope = DialogModule.BeginLifetimeScope(container, context))
                     {
@@ -153,7 +153,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                     }
                 });
 
-                await new TestAdapter().ProcessActivity((Activity)toBot, async (context) =>
+                await new TestAdapter().ProcessActivityAsync((Activity)toBot, async (context) =>
                 {
                     using (var scope = DialogModule.BeginLifetimeScope(container, context))
                     {
@@ -165,7 +165,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                     }
                 });
 
-                await new TestAdapter().ProcessActivity((Activity)toBot, async (context) =>
+                await new TestAdapter().ProcessActivityAsync((Activity)toBot, async (context) =>
                 {
                     using (var scope = DialogModule.BeginLifetimeScope(container, context))
                     {
@@ -202,7 +202,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
             using (new FiberTestBase.ResolveMoqAssembly(dialog.Object))
             using (var container = Build(Options.None, dialog.Object))
             {
-                await new TestAdapter().ProcessActivity((Activity)toBot, async (context) =>
+                await new TestAdapter().ProcessActivityAsync((Activity)toBot, async (context) =>
                 {
                     using (var scope = DialogModule.BeginLifetimeScope(container, context))
                     {
@@ -225,7 +225,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                     }
                 });
 
-                await new TestAdapter().ProcessActivity((Activity)toBot, async (context) =>
+                await new TestAdapter().ProcessActivityAsync((Activity)toBot, async (context) =>
                 {
                     using (var scope = DialogModule.BeginLifetimeScope(container, context))
                     {
@@ -272,7 +272,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
 
         //            using (var scope = DialogModule.BeginLifetimeScope(container, context))
         //            {
-        //                await new TestAdapter().ProcessActivity((Activity)toBot, async (context) =>
+        //                await new TestAdapter().ProcessActivityAsync((Activity)toBot, async (context) =>
         //                {
         //                    await PostActivityAsync(container, toBot, source.Token);
         //                    await PostActivityAsync(container, toBot, source.Token);
@@ -298,7 +298,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
             using (new FiberTestBase.ResolveMoqAssembly(dialog.Object))
             using (var container = Build(Options.None, dialog.Object))
             {
-                await new TestAdapter().ProcessActivity((Activity)toBot, async (context) =>
+                await new TestAdapter().ProcessActivityAsync((Activity)toBot, async (context) =>
                 {
                     using (var scope = DialogModule.BeginLifetimeScope(container, context))
                     {
@@ -322,7 +322,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                     }
                 });
 
-                await new TestAdapter().ProcessActivity((Activity)toBot, async (context) =>
+                await new TestAdapter().ProcessActivityAsync((Activity)toBot, async (context) =>
                 {
                     using (var scope = DialogModule.BeginLifetimeScope(container, context))
                     {
@@ -385,7 +385,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
             using (new FiberTestBase.ResolveMoqAssembly(dialogOne.Object, dialogTwo.Object))
             using (var container = Build(Options.None, dialogOne.Object, dialogTwo.Object))
             {
-                await new TestAdapter().ProcessActivity((Activity)toBot, async (context) =>
+                await new TestAdapter().ProcessActivityAsync((Activity)toBot, async (context) =>
                 {
                     using (var scope = DialogModule.BeginLifetimeScope(container, context))
                     {
@@ -489,7 +489,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
             using (new FiberTestBase.ResolveMoqAssembly(dialogOne.Object, dialogTwo.Object, dialogNew.Object))
             using (var container = Build(Options.None, dialogOne.Object, dialogTwo.Object, dialogNew.Object))
             {
-                await new TestAdapter().ProcessActivity((Activity)toBot, async (context) =>
+                await new TestAdapter().ProcessActivityAsync((Activity)toBot, async (context) =>
                 {
                     using (var scope = DialogModule.BeginLifetimeScope(container, context))
                     {
@@ -707,7 +707,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
             using (new FiberTestBase.ResolveMoqAssembly(dialogOne.Object))
             using (var container = Build(Options.None, dialogOne.Object))
             {
-                await new TestAdapter().ProcessActivity((Activity)toBot, async (context) =>
+                await new TestAdapter().ProcessActivityAsync((Activity)toBot, async (context) =>
                 {
                     using (var scope = DialogModule.BeginLifetimeScope(container, context))
                     {
@@ -721,7 +721,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                     }
                 });
 
-                await new TestAdapter().ProcessActivity((Activity)toBot, async (context) =>
+                await new TestAdapter().ProcessActivityAsync((Activity)toBot, async (context) =>
                 {
                     using (var scope = DialogModule.BeginLifetimeScope(container, context))
                     {
@@ -789,7 +789,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
             {
                 int count = 2;
                 var adapter = new TestAdapter();
-                await adapter.ProcessActivity((Activity)toBot, async (context) =>
+                await adapter.ProcessActivityAsync((Activity)toBot, async (context) =>
                 {
                     for (int i = 0; i < count; i++)
                     {

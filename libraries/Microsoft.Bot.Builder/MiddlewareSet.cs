@@ -25,28 +25,28 @@ namespace Microsoft.Bot.Builder
         /// <param name="context">The turn context.</param>
         /// <param name="next">The next middleware component.</param>
         /// <param name="cancellationToken">cancellation token.</param>
-        public async Task OnTurn(ITurnContext context, NextDelegate next, CancellationToken cancellationToken)
+        public async Task OnTurnAsync(ITurnContext context, NextDelegate next, CancellationToken cancellationToken)
         {
-            await ReceiveActivityInternal(context, null, 0, cancellationToken).ConfigureAwait(false);
+            await ReceiveActivityInternalAsync(context, null, 0, cancellationToken).ConfigureAwait(false);
             await next(cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task ReceiveActivity(ITurnContext context, CancellationToken cancellationToken)
+        public async Task ReceiveActivityAsync(ITurnContext context, CancellationToken cancellationToken)
         {
-            await ReceiveActivityInternal(context, null, 0, cancellationToken).ConfigureAwait(false);
+            await ReceiveActivityInternalAsync(context, null, 0, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
         /// Intended to be called from Bot, this method performs exactly the same as the
-        /// standard ReceiveActivity, except that it runs a user-defined delegate returns
+        /// standard ReceiveActivityAsync, except that it runs a user-defined delegate returns
         /// if all Middlware in the receive pipeline was run.
         /// </summary>
-        public async Task ReceiveActivityWithStatus(ITurnContext context, Func<ITurnContext, Task> callback, CancellationToken cancellationToken)
+        public async Task ReceiveActivityWithStatusAsync(ITurnContext context, Func<ITurnContext, Task> callback, CancellationToken cancellationToken)
         {
-            await ReceiveActivityInternal(context, callback, 0, cancellationToken).ConfigureAwait(false);
+            await ReceiveActivityInternalAsync(context, callback, 0, cancellationToken).ConfigureAwait(false);
         }
 
-        private Task ReceiveActivityInternal(ITurnContext context, Func<ITurnContext, Task> callback, int nextMiddlewareIndex, CancellationToken cancellationToken)
+        private Task ReceiveActivityInternalAsync(ITurnContext context, Func<ITurnContext, Task> callback, int nextMiddlewareIndex, CancellationToken cancellationToken)
         {
             // Check if we're at the end of the middleware list yet
             if (nextMiddlewareIndex == _middleware.Count)
@@ -68,9 +68,9 @@ namespace Microsoft.Bot.Builder
             var nextMiddleware = _middleware[nextMiddlewareIndex];
 
             // Execute the next middleware passing a closure that will recurse back into this method at the next piece of middlware as the NextDelegate
-            return nextMiddleware.OnTurn(
+            return nextMiddleware.OnTurnAsync(
                 context,
-                (ct) => ReceiveActivityInternal(context, callback, nextMiddlewareIndex + 1, ct),
+                (ct) => ReceiveActivityInternalAsync(context, callback, nextMiddlewareIndex + 1, ct),
                 cancellationToken);
         }
     }

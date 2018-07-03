@@ -44,7 +44,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         /// <param name="context"></param>
         /// <param name="next"></param>
         /// <returns></returns>
-        public async Task OnTurn(ITurnContext context, NextDelegate next, CancellationToken cancellationToken)
+        public async Task OnTurnAsync(ITurnContext context, NextDelegate next, CancellationToken cancellationToken)
         {
             if (context.Activity.Type == ActivityTypes.Message)
             {

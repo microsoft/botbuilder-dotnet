@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             if (options == null)
                 throw new ArgumentNullException(nameof(options));
 
-            return dc.Context.SendActivity(PromptMessageFactory.CreateActivity(options, isRetry));
+            return dc.Context.SendActivityAsync(PromptMessageFactory.CreateActivity(options, isRetry));
         }
 
         protected override async Task<NumberResult<T>> OnRecognize(DialogContext dc, PromptOptions options)

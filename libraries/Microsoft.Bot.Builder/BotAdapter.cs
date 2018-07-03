@@ -71,7 +71,7 @@ namespace Microsoft.Bot.Builder
         /// an array of <see cref="ResourceResponse"/> objects containing the IDs that
         /// the receiving channel assigned to the activities.</remarks>
         /// <seealso cref="ITurnContext.OnSendActivities(SendActivitiesHandler)"/>
-        public abstract Task<ResourceResponse[]> SendActivities(ITurnContext context, Activity[] activities, CancellationToken cancellationToken);
+        public abstract Task<ResourceResponse[]> SendActivitiesAsync(ITurnContext context, Activity[] activities, CancellationToken cancellationToken);
 
         /// <summary>
         /// When overridden in a derived class, replaces an existing activity in the
@@ -86,7 +86,7 @@ namespace Microsoft.Bot.Builder
         /// <para>Before calling this, set the ID of the replacement activity to the ID
         /// of the activity to replace.</para></remarks>
         /// <seealso cref="ITurnContext.OnUpdateActivity(UpdateActivityHandler)"/>
-        public abstract Task<ResourceResponse> UpdateActivity(ITurnContext context, Activity activity, CancellationToken cancellationToken);
+        public abstract Task<ResourceResponse> UpdateActivityAsync(ITurnContext context, Activity activity, CancellationToken cancellationToken);
 
         /// <summary>
         /// When overridden in a derived class, deletes an existing activity in the
@@ -98,7 +98,7 @@ namespace Microsoft.Bot.Builder
         /// <remarks>The <see cref="ConversationReference.ActivityId"/> of the conversation
         /// reference identifies the activity to delete.</remarks>
         /// <seealso cref="ITurnContext.OnDeleteActivity(DeleteActivityHandler)"/>
-        public abstract Task DeleteActivity(ITurnContext context, ConversationReference reference, CancellationToken cancellationToken);
+        public abstract Task DeleteActivityAsync(ITurnContext context, ConversationReference reference, CancellationToken cancellationToken);
 
         /// <summary>
         /// Sends a proactive message to a conversation.
@@ -113,11 +113,11 @@ namespace Microsoft.Bot.Builder
         /// Most _channels require a user to initaiate a conversation with a bot
         /// before the bot can send activities to the user.</remarks>
         /// <seealso cref="RunPipeline(ITurnContext, Func{ITurnContext, Task})"/>
-        public virtual Task ContinueConversation(string botId, ConversationReference reference, Func<ITurnContext, Task> callback, CancellationToken cancellationToken)
+        public virtual Task ContinueConversationAsync(string botId, ConversationReference reference, Func<ITurnContext, Task> callback, CancellationToken cancellationToken)
         {
             using (var context = new TurnContext(this, reference.GetContinuationActivity()))
             {
-                return RunPipeline(context, callback, cancellationToken);
+                return RunPipelineAsync(context, callback, cancellationToken);
             }
         }
 
@@ -140,19 +140,19 @@ namespace Microsoft.Bot.Builder
         /// <para>When the turn is initiated by a user activity (reactive messaging), the
         /// callback method will be a reference to the bot's
         /// <see cref="IBot.OnTurn(ITurnContext)"/> method. When the turn is
-        /// initiated by a call to <see cref="ContinueConversation(string, ConversationReference, Func{ITurnContext, Task})"/>
+        /// initiated by a call to <see cref="ContinueConversationAsync(string, ConversationReference, Func{ITurnContext, Task})"/>
         /// (proactive messaging), the callback method is the callback method that was provided in the call.</para>
         /// </remarks>
-        protected async Task RunPipeline(ITurnContext context, Func<ITurnContext, Task> callback, CancellationToken cancellationToken)
+        protected async Task RunPipelineAsync(ITurnContext context, Func<ITurnContext, Task> callback, CancellationToken cancellationToken)
         {
             BotAssert.ContextNotNull(context);
 
-            // Call any registered Middleware Components looking for ReceiveActivity()
+            // Call any registered Middleware Components looking for ReceiveActivityAsync()
             if (context.Activity != null)
             {
                 try
                 {
-                    await MiddlewareSet.ReceiveActivityWithStatus(context, callback, cancellationToken).ConfigureAwait(false);
+                    await MiddlewareSet.ReceiveActivityWithStatusAsync(context, callback, cancellationToken).ConfigureAwait(false);
                 }
                 catch (Exception e)
                 {

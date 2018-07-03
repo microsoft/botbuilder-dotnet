@@ -36,14 +36,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 else if (dialogCompletion.IsCompleted)
                 {
                     var textResult = (TextResult)dialogCompletion.Result;
-                    await turnContext.SendActivity($"Bot received the text '{textResult.Value}'.");
+                    await turnContext.SendActivityAsync($"Bot received the text '{textResult.Value}'.");
                 }
             })
             .Send("hello")
             .AssertReply("Enter some text.")
             .Send("some text")
             .AssertReply("Bot received the text 'some text'.")
-            .StartTest();
+            .StartTestAsync();
         }
 
         [TestMethod]
@@ -65,14 +65,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 else if (dialogCompletion.IsCompleted)
                 {
                     var textResult = (TextResult)dialogCompletion.Result;
-                    await turnContext.SendActivity($"Bot received the text '{textResult.Value}'.");
+                    await turnContext.SendActivityAsync($"Bot received the text '{textResult.Value}'.");
                 }
             })
             .Send("hello")
             .AssertReply("Enter some text.")
             .Send("some text")
             .AssertReply("Bot received the text 'some text'.")
-            .StartTest();
+            .StartTestAsync();
         }
 
         [TestMethod]
@@ -106,7 +106,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 else if (dialogCompletion.IsCompleted)
                 {
                     var textResult = (TextResult)dialogCompletion.Result;
-                    await turnContext.SendActivity($"Bot received the text '{textResult.Value}'.");
+                    await turnContext.SendActivityAsync($"Bot received the text '{textResult.Value}'.");
                 }
             })
             .Send("hello")
@@ -115,7 +115,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .AssertReply("Make sure the text is greater than three characters.")
             .Send("hello")
             .AssertReply("Bot received the text 'hello'.")
-            .StartTest();
+            .StartTestAsync();
         }
     }
 }

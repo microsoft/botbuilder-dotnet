@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Builder
         /// </summary>
         /// <param name="activity">activity to log.</param>
         /// <returns></returns>
-        public Task LogActivity(IActivity activity)
+        public Task LogActivityAsync(IActivity activity)
         {
             if (activity == null)
             {
@@ -61,7 +61,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="continuationToken"></param>
         /// <param name="startDate"></param>
         /// <returns></returns>
-        public Task<PagedResult<IActivity>> GetTranscriptActivities(string channelId, string conversationId, string continuationToken = null, DateTime startDate = default(DateTime))
+        public Task<PagedResult<IActivity>> GetTranscriptActivitiesAsync(string channelId, string conversationId, string continuationToken = null, DateTime startDate = default(DateTime))
         {
             if (channelId == null)
             {
@@ -118,12 +118,12 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
-        /// Delete a conversation.
+        /// DeleteAsync a conversation.
         /// </summary>
         /// <param name="channelId">channelid for the conversation.</param>
         /// <param name="conversationId">conversation id.</param>
         /// <returns></returns>
-        public Task DeleteTranscript(string channelId, string conversationId)
+        public Task DeleteTranscriptAsync(string channelId, string conversationId)
         {
             if (channelId == null)
             {
@@ -156,7 +156,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="channelId"></param>
         /// <param name="continuationToken"></param>
         /// <returns></returns>
-        public Task<PagedResult<Transcript>> ListTranscripts(string channelId, string continuationToken = null)
+        public Task<PagedResult<Transcript>> ListTranscriptsAsync(string channelId, string continuationToken = null)
         {
             if (channelId == null)
             {
