@@ -4,6 +4,8 @@
     <TargetFramework>netcoreapp2.0</TargetFramework>
 
     <IsPackable>false</IsPackable>
+
+    <Configurations>Debug;Release;Documentation</Configurations>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,8 +15,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Ai.LUIS\Microsoft.Bot.Builder.Ai.LUIS.csproj" />
-    <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Ai.QnA\Microsoft.Bot.Builder.Ai.QnA.csproj" />
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Ai.Translation\Microsoft.Bot.Builder.Ai.Translation.csproj" />
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Dialogs\Microsoft.Bot.Builder.Dialogs.csproj" />
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder\Microsoft.Bot.Builder.csproj" />

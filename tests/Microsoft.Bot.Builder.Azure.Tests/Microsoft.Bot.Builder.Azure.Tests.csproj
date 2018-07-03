@@ -19,8 +19,4 @@
     <ProjectReference Include="..\Microsoft.Bot.Builder.Tests\Microsoft.Bot.Builder.Tests.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Properties\" />
-  </ItemGroup>
-
 </Project>
