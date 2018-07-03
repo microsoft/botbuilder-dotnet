@@ -16,11 +16,14 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Ai.QnA\Microsoft.Bot.Builder.Ai.QnA.csproj" />
+    <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Ai.Translation\Microsoft.Bot.Builder.Ai.Translation.csproj" />
+    <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Azure\Microsoft.Bot.Builder.Azure.csproj" />
+    <ProjectReference Include="..\..\libraries\Microsoft.Bot.Schema\Microsoft.Bot.Schema.csproj" />
     <ProjectReference Include="..\Microsoft.Bot.Builder.Tests\Microsoft.Bot.Builder.Tests.csproj" />
   </ItemGroup>
-  
-	<ItemGroup>
-		<Folder Include="Properties\" />
-	</ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
 
 </Project>
