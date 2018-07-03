@@ -51,7 +51,7 @@ namespace Microsoft.Bot.Builder.Adapters
             return this;
         }
 
-        public async Task ProcessActivity(Activity activity, Func<ITurnContext, Task> callback, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task ProcessActivityAsync(Activity activity, Func<ITurnContext, Task> callback, CancellationToken cancellationToken = default(CancellationToken))
         {
             lock (_conversationLock)
             {
@@ -77,11 +77,11 @@ namespace Microsoft.Bot.Builder.Adapters
 
             using (var context = new TurnContext(this, activity))
             {
-                await RunPipeline(context, callback, cancellationToken).ConfigureAwait(false);
+                await RunPipelineAsync(context, callback, cancellationToken).ConfigureAwait(false);
             }
         }
 
-        public async override Task<ResourceResponse[]> SendActivities(ITurnContext context, Activity[] activities, CancellationToken cancellationToken)
+        public async override Task<ResourceResponse[]> SendActivitiesAsync(ITurnContext context, Activity[] activities, CancellationToken cancellationToken)
         {
             if (context == null)
             {
@@ -141,7 +141,7 @@ namespace Microsoft.Bot.Builder.Adapters
             return responses;
         }
 
-        public override Task<ResourceResponse> UpdateActivity(ITurnContext context, Activity activity, CancellationToken cancellationToken)
+        public override Task<ResourceResponse> UpdateActivityAsync(ITurnContext context, Activity activity, CancellationToken cancellationToken)
         {
             lock (_activeQueueLock)
             {
@@ -165,7 +165,7 @@ namespace Microsoft.Bot.Builder.Adapters
             return Task.FromResult(new ResourceResponse());
         }
 
-        public override Task DeleteActivity(ITurnContext context, ConversationReference reference, CancellationToken cancellationToken)
+        public override Task DeleteActivityAsync(ITurnContext context, ConversationReference reference, CancellationToken cancellationToken)
         {
             lock (_activeQueueLock)
             {
@@ -196,7 +196,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <param name="callback"></param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
-        public Task CreateConversation(string channelId, Func<ITurnContext, Task> callback, CancellationToken cancellationToken)
+        public Task CreateConversationAsync(string channelId, Func<ITurnContext, Task> callback, CancellationToken cancellationToken)
         {
             ActiveQueue.Clear();
             var update = Activity.CreateConversationUpdateActivity();
@@ -251,9 +251,9 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <seealso cref="TestFlow.Send(string)"/>
-        public Task SendTextToBot(string userSays, Func<ITurnContext, Task> callback, CancellationToken cancellationToken)
+        public Task SendTextToBotAsync(string userSays, Func<ITurnContext, Task> callback, CancellationToken cancellationToken)
         {
-            return ProcessActivity(MakeActivity(userSays), callback, cancellationToken);
+            return ProcessActivityAsync(MakeActivity(userSays), callback, cancellationToken);
         }
     }
 }

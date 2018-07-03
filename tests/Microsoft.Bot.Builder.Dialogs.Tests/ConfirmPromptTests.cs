@@ -32,11 +32,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 {
                     if (((ConfirmResult)dialogCompletion.Result).Confirmation)
                     {
-                        await turnContext.SendActivity("Confirmed.");
+                        await turnContext.SendActivityAsync("Confirmed.");
                     }
                     else
                     {
-                        await turnContext.SendActivity("Not confirmed.");
+                        await turnContext.SendActivityAsync("Not confirmed.");
                     }
                 }
             })
@@ -44,7 +44,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .AssertReply("Please confirm. (1) Yes or (2) No")
             .Send("yes")
             .AssertReply("Confirmed.")
-            .StartTest();
+            .StartTestAsync();
         }
 
         [TestMethod]
@@ -72,11 +72,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 {
                     if (((ConfirmResult)dialogCompletion.Result).Confirmation)
                     {
-                        await turnContext.SendActivity("Confirmed.");
+                        await turnContext.SendActivityAsync("Confirmed.");
                     }
                     else
                     {
-                        await turnContext.SendActivity("Not confirmed.");
+                        await turnContext.SendActivityAsync("Not confirmed.");
                     }
                 }
             })
@@ -86,7 +86,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .AssertReply("Please confirm, say 'yes' or 'no' or something like that. (1) Yes or (2) No")
             .Send("no")
             .AssertReply("Not confirmed.")
-            .StartTest();
+            .StartTestAsync();
         }
     }
 }

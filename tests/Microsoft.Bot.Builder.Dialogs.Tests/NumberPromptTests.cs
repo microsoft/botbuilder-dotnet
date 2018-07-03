@@ -32,14 +32,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 else if (dialogCompletion.IsCompleted)
                 {
                     var numberResult = (NumberResult<int>)dialogCompletion.Result;
-                    await turnContext.SendActivity($"Bot received the number '{numberResult.Value}'.");
+                    await turnContext.SendActivityAsync($"Bot received the number '{numberResult.Value}'.");
                 }
             })
             .Send("hello")
             .AssertReply("Enter a number.")
             .Send("42")
             .AssertReply("Bot received the number '42'.")
-            .StartTest();
+            .StartTestAsync();
         }
 
         [TestMethod]
@@ -66,7 +66,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 else if (dialogCompletion.IsCompleted)
                 {
                     var numberResult = (NumberResult<int>)dialogCompletion.Result;
-                    await turnContext.SendActivity($"Bot received the number '{numberResult.Value}'.");
+                    await turnContext.SendActivityAsync($"Bot received the number '{numberResult.Value}'.");
                 }
             })
             .Send("hello")
@@ -75,7 +75,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .AssertReply("You must enter a number.")
             .Send("64")
             .AssertReply("Bot received the number '64'.")
-            .StartTest();
+            .StartTestAsync();
         }
 
         [TestMethod]
@@ -111,7 +111,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 else if (dialogCompletion.IsCompleted)
                 {
                     var numberResult = (NumberResult<int>)dialogCompletion.Result;
-                    await turnContext.SendActivity($"Bot received the number '{numberResult.Value}'.");
+                    await turnContext.SendActivityAsync($"Bot received the number '{numberResult.Value}'.");
                 }
             })
             .Send("hello")
@@ -120,7 +120,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .AssertReply("You must enter a positive number less than 100.")
             .Send("64")
             .AssertReply("Bot received the number '64'.")
-            .StartTest();
+            .StartTestAsync();
         }
 
         [TestMethod]
@@ -142,14 +142,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 else if (dialogCompletion.IsCompleted)
                 {
                     var numberResult = (NumberResult<float>)dialogCompletion.Result;
-                    await turnContext.SendActivity($"Bot received the number '{numberResult.Value}'.");
+                    await turnContext.SendActivityAsync($"Bot received the number '{numberResult.Value}'.");
                 }
             })
             .Send("hello")
             .AssertReply("Enter a number.")
             .Send("3.14")
             .AssertReply("Bot received the number '3.14'.")
-            .StartTest();
+            .StartTestAsync();
         }
 
         [TestMethod]
@@ -171,14 +171,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 else if (dialogCompletion.IsCompleted)
                 {
                     var numberResult = (NumberResult<long>)dialogCompletion.Result;
-                    await turnContext.SendActivity($"Bot received the number '{numberResult.Value}'.");
+                    await turnContext.SendActivityAsync($"Bot received the number '{numberResult.Value}'.");
                 }
             })
             .Send("hello")
             .AssertReply("Enter a number.")
             .Send("42")
             .AssertReply("Bot received the number '42'.")
-            .StartTest();
+            .StartTestAsync();
         }
 
         [TestMethod]
@@ -200,14 +200,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 else if (dialogCompletion.IsCompleted)
                 {
                     var numberResult = (NumberResult<double>)dialogCompletion.Result;
-                    await turnContext.SendActivity($"Bot received the number '{numberResult.Value}'.");
+                    await turnContext.SendActivityAsync($"Bot received the number '{numberResult.Value}'.");
                 }
             })
             .Send("hello")
             .AssertReply("Enter a number.")
             .Send("3.14")
             .AssertReply("Bot received the number '3.14'.")
-            .StartTest();
+            .StartTestAsync();
         }
 
         [TestMethod]
@@ -229,14 +229,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 else if (dialogCompletion.IsCompleted)
                 {
                     var numberResult = (NumberResult<decimal>)dialogCompletion.Result;
-                    await turnContext.SendActivity($"Bot received the number '{numberResult.Value}'.");
+                    await turnContext.SendActivityAsync($"Bot received the number '{numberResult.Value}'.");
                 }
             })
             .Send("hello")
             .AssertReply("Enter a number.")
             .Send("3.14")
             .AssertReply("Bot received the number '3.14'.")
-            .StartTest();
+            .StartTestAsync();
         }
     }
 }

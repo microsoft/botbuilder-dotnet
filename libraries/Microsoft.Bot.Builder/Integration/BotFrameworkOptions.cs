@@ -18,29 +18,29 @@ namespace Microsoft.Bot.Builder.Integration
     public class BotFrameworkOptions
     {
         /// <summary>
-        /// Creates a <see cref="BotFrameworkOptions"/> object.
+        /// Initializes a new instance of the <see cref="BotFrameworkOptions"/> class.
         /// </summary>
         public BotFrameworkOptions()
         {
         }
 
         /// <summary>
-        /// An <see cref="ICredentialProvider"/> that should be used to store and retrieve credentials used during authentication with the Bot Framework Service.
+        /// Gets or sets an <see cref="ICredentialProvider"/> that should be used to store and retrieve credentials used during authentication with the Bot Framework Service.
         /// </summary>
         public ICredentialProvider CredentialProvider { get; set; }
 
         /// <summary>
-        /// Error handler that catches exceptions in the middleware or application.
+        /// Gets or sets error handler that catches exceptions in the middleware or application.
         /// </summary>
         public Func<ITurnContext, Exception, Task> ErrorHandler { get; set; }
 
         /// <summary>
-        /// A list of <see cref="IMiddleware"/> that will be executed for each turn of the conversation.
+        /// Gets a list of <see cref="IMiddleware"/> that will be executed for each turn of the conversation.
         /// </summary>
         public IList<IMiddleware> Middleware { get; } = new List<IMiddleware>();
 
         /// <summary>
-        /// Gets or sets whether a proactive messaging endpoint should be exposed for the bot.
+        /// Gets or sets a value indicating whether gets or sets whether a proactive messaging endpoint should be exposed for the bot.
         /// </summary>
         /// <value>
         /// True if the proactive messaging endpoint should be enabled, otherwise false.

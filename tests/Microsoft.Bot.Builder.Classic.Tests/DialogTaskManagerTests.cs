@@ -45,7 +45,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                 string foo = "foo";
                 string bar = "bar";
                 toBot.Text = foo;
-                await new TestAdapter().ProcessActivity((Activity)toBot, async (context) =>
+                await new TestAdapter().ProcessActivityAsync((Activity)toBot, async (context) =>
                 {
                     using (var scope = DialogModule.BeginLifetimeScope(container, context))
                     {
@@ -71,7 +71,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
 
                 //create another dialog task and make sure that it is not overriding the default dialog task
                 toBot.Text = bar;
-                await new TestAdapter().ProcessActivity((Activity)toBot, async (context) =>
+                await new TestAdapter().ProcessActivityAsync((Activity)toBot, async (context) =>
                 {
                     using (var scope = DialogModule.BeginLifetimeScope(container, context))
                     {
@@ -146,7 +146,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                 string foo = "foo";
                 string bar = "bar";
                 toBot.Text = foo;
-                await new TestAdapter().ProcessActivity((Activity)toBot, async (context) =>
+                await new TestAdapter().ProcessActivityAsync((Activity)toBot, async (context) =>
                 {
                     using (var scope = DialogModule.BeginLifetimeScope(container, context))
                     {
@@ -173,7 +173,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                     }
                 });
 
-                await new TestAdapter().ProcessActivity((Activity)toBot, async (context) =>
+                await new TestAdapter().ProcessActivityAsync((Activity)toBot, async (context) =>
                 {
                     using (var scope = DialogModule.BeginLifetimeScope(container, context))
                     {

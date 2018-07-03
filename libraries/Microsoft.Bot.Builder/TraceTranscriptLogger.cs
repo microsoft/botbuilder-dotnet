@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Builder
         /// </summary>
         /// <param name="activity">activity to log</param>
         /// <returns></returns>
-        public Task LogActivity(IActivity activity)
+        public Task LogActivityAsync(IActivity activity)
         {
             BotAssert.ActivityNotNull(activity);
             Trace.TraceInformation(JsonConvert.SerializeObject(activity, serializationSettings));

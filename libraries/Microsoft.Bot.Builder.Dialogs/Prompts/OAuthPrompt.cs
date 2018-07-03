@@ -111,7 +111,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             else if (!string.IsNullOrEmpty(promptOptions?.PromptString))
             {
                 //send supplied prompt and then OAuthCard
-                await dc.Context.SendActivity(promptOptions.PromptString, promptOptions.Speak).ConfigureAwait(false);
+                await dc.Context.SendActivityAsync(promptOptions.PromptString, promptOptions.Speak).ConfigureAwait(false);
                 await _prompt.Prompt(dc.Context);
             }
             else
@@ -152,7 +152,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             else if (isMessage && !string.IsNullOrEmpty(state.RetryPromptString))
             {
                 // if this is a retry, then retry getting user credentials by resending the activity.
-                await dc.Context.SendActivity(state.RetryPromptString, state.RetrySpeak).ConfigureAwait(false);
+                await dc.Context.SendActivityAsync(state.RetryPromptString, state.RetrySpeak).ConfigureAwait(false);
             }
         }
     }

@@ -29,7 +29,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
             {
                 if (!context.Responded)
                 {
-                    context.SendActivity(context.Activity.AsMessageActivity().Text);
+                    context.SendActivityAsync(context.Activity.AsMessageActivity().Text);
                 }
                 return Task.CompletedTask;
             })
@@ -37,7 +37,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
                     .AssertReply("Changing your locale to fr-fr")
                 .Send("Set a meeting on 30/9/2017")
                     .AssertReply("Set a meeting on 9/30/2017")
-                    .StartTest();
+                    .StartTestAsync();
         }
 
         [TestMethod]
@@ -54,7 +54,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
                 {
                     if (!context.Responded)
                     {
-                        context.SendActivity(context.Activity.AsMessageActivity().Text);
+                        context.SendActivityAsync(context.Activity.AsMessageActivity().Text);
                     }
                     return Task.CompletedTask;
                 })
@@ -62,7 +62,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
                 .AssertReply("Changing your locale to es-es")
                 .Send("La reunión será a las 15:00")
                 .AssertReply("La reunión será a las 3:00 PM")
-                .StartTest();
+                .StartTestAsync();
         }
 
         [TestMethod]
@@ -79,7 +79,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
             {
                 if (!context.Responded)
                 {
-                    context.SendActivity(context.Activity.AsMessageActivity().Text);
+                    context.SendActivityAsync(context.Activity.AsMessageActivity().Text);
                 }
                 return Task.CompletedTask;
             })
@@ -87,7 +87,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
                     .AssertReply("Changing your locale to en-us")
                 .Send("Book me a plane ticket for France on 12/25/2018")
                     .AssertReply("Book me a plane ticket for France on 2018/12/25")
-                .StartTest();
+                .StartTestAsync();
         }
 
         private void SetLocale(ITurnContext context, string locale) => context.GetUserState<LocaleState>().Locale  = locale;
@@ -107,11 +107,11 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
                 if (!string.IsNullOrWhiteSpace(newLocale))
                 {
                     SetLocale(context, newLocale);
-                    await context.SendActivity($@"Changing your locale to {newLocale}");
+                    await context.SendActivityAsync($@"Changing your locale to {newLocale}");
                 }
                 else
                 {
-                    await context.SendActivity($@"{newLocale} is not a supported locale.");
+                    await context.SendActivityAsync($@"{newLocale} is not a supported locale.");
                 }
                 //intercepts message
                 return true;

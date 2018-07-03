@@ -29,7 +29,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="utterance">Utterance to analyze.</param>
         /// <param name="ct">Cancellation token.</param>
         /// <returns>Analysis of utterance.</returns>
-        Task<RecognizerResult> Recognize(string utterance, CancellationToken ct);
+        Task<RecognizerResult> RecognizeAsync(string utterance, CancellationToken ct);
 
         /// <summary>
         /// Runs an utterance through a recognizer and returns a strongly typed recognizer result.
@@ -37,7 +37,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="utterance">Utterance to analyze.</param>
         /// <param name="ct">Cancellation token.</param>
         /// <returns>Analysis of utterance.</returns>
-        Task<T> Recognize<T>(string utterance, CancellationToken ct)
+        Task<T> RecognizeAsync<T>(string utterance, CancellationToken ct)
             where T : IRecognizerConvert, new();
     }
 }

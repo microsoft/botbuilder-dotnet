@@ -15,13 +15,13 @@ namespace Microsoft.Bot.Builder
     /// </summary>
     public class TranscriptLoggerMiddleware : IMiddleware
     {
-        private static JsonSerializerSettings JsonSettings = new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore };
+        private static JsonSerializerSettings _jsonSettings = new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore };
         private ITranscriptLogger logger;
 
         private Queue<IActivity> transcript = new Queue<IActivity>();
 
         /// <summary>
-        /// Middleware for logging incoming and outgoing activities to a transcript store.
+        /// Initializes a new instance of the <see cref="TranscriptLoggerMiddleware"/> class.
         /// </summary>
         /// <param name="transcriptLogger">The transcript logger to use.</param>
         public TranscriptLoggerMiddleware(ITranscriptLogger transcriptLogger)
@@ -36,7 +36,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="nextTurn"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public async Task OnTurn(ITurnContext context, NextDelegate nextTurn, CancellationToken cancellationToken)
+        public async Task OnTurnAsync(ITurnContext context, NextDelegate nextTurn, CancellationToken cancellationToken)
         {
             // log incoming activity at beginning of turn
             if (context.Activity != null)
@@ -104,7 +104,7 @@ namespace Microsoft.Bot.Builder
                 try
                 {
                     var activity = transcript.Dequeue();
-                    await logger.LogActivity(activity).ConfigureAwait(false);
+                    await logger.LogActivityAsync(activity).ConfigureAwait(false);
                 }
                 catch (Exception err)
                 {
@@ -115,7 +115,7 @@ namespace Microsoft.Bot.Builder
 
         private static IActivity CloneActivity(IActivity activity)
         {
-            activity = JsonConvert.DeserializeObject<Activity>(JsonConvert.SerializeObject(activity, JsonSettings));
+            activity = JsonConvert.DeserializeObject<Activity>(JsonConvert.SerializeObject(activity, _jsonSettings));
             return activity;
         }
 
