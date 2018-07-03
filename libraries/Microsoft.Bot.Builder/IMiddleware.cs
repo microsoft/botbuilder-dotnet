@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Builder
     /// Represents middleware that can operate on incoming activities.
     /// </summary>
     /// <remarks>A <see cref="BotAdapter"/> passes incoming activities from the user's
-    /// channel to the middleware's <see cref="OnTurn(ITurnContext, NextDelegate)"/>
+    /// channel to the middleware's <see cref="OnTurnAsync(ITurnContext, NextDelegate)"/>
     /// method.
     /// <para>You can add middleware objects to your adapter’s middleware collection. The
     /// adapter processes and directs incoming activities in through the bot middleware
@@ -25,11 +25,11 @@ namespace Microsoft.Bot.Builder
     /// <example>
     /// This defines middleware that sends "before" and "after" messages
     /// before and after the adapter calls the bot's
-    /// <see cref="IBot.OnTurn(ITurnContext)"/> method.
+    /// <see cref="IBot.OnTurnAsync(ITurnContext)"/> method.
     /// <code>
     /// public class SampleMiddleware : IMiddleware
     /// {
-    ///     public async Task OnTurn(ITurnContext context, MiddlewareSet.NextDelegate next)
+    ///     public async Task OnTurnAsync(ITurnContext context, MiddlewareSet.NextDelegate next)
     ///     {
     ///         context.SendActivity("before");
     ///         await next().ConfigureAwait(false);
@@ -57,6 +57,6 @@ namespace Microsoft.Bot.Builder
         /// </remarks>
         /// <seealso cref="ITurnContext"/>
         /// <seealso cref="Bot.Schema.IActivity"/>
-        Task OnTurn(ITurnContext context, NextDelegate next, CancellationToken cancellationToken = default(CancellationToken));
+        Task OnTurnAsync(ITurnContext context, NextDelegate next, CancellationToken cancellationToken = default(CancellationToken));
     }
 }

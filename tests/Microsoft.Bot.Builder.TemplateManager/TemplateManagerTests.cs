@@ -123,7 +123,7 @@ namespace Microsoft.Bot.Builder.TemplateManager.Tests
                 })
                 .Send("stringTemplate").AssertReply("default: joe")
                 .Send("activityTemplate").AssertReply("(Activity)default: joe")
-                .StartTest();
+                .StartTestAsync();
         }
 
         [TestMethod]
@@ -143,7 +143,7 @@ namespace Microsoft.Bot.Builder.TemplateManager.Tests
             })
                 .Send("stringTemplate").AssertReply("en: joe")
                 .Send("activityTemplate").AssertReply("(Activity)en: joe")
-                .StartTest();
+                .StartTestAsync();
         }
 
         [TestMethod]
@@ -163,7 +163,7 @@ namespace Microsoft.Bot.Builder.TemplateManager.Tests
                 })
                 .Send("stringTemplate").AssertReply("fr: joe")
                 .Send("activityTemplate").AssertReply("(Activity)fr: joe")
-                .StartTest();
+                .StartTestAsync();
         }
 
         [TestMethod]
@@ -183,7 +183,7 @@ namespace Microsoft.Bot.Builder.TemplateManager.Tests
                 })
                 .Send("stringTemplate2").AssertReply("fr: Yo joe")
                 .Send("activityTemplate").AssertReply("(Activity)fr: joe")
-                .StartTest();
+                .StartTestAsync();
         }
 
         [TestMethod]
@@ -202,7 +202,7 @@ namespace Microsoft.Bot.Builder.TemplateManager.Tests
                 })
                 .Send("stringTemplate").AssertReply("default: joe")
                 .Send("activityTemplate").AssertReply("(Activity)default: joe")
-                .StartTest();
+                .StartTestAsync();
         }
     }
 }

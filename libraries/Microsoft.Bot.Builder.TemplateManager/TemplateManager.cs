@@ -67,7 +67,7 @@ namespace Microsoft.Bot.Builder.TemplateManager
             Activity boundActivity = await this.RenderTemplate(context, context.Activity?.AsMessageActivity()?.Locale, templateId, data).ConfigureAwait(false);
             if (boundActivity != null)
             {
-                await context.SendActivity(boundActivity);
+                await context.SendActivityAsync(boundActivity);
                 return;
             }
             return;

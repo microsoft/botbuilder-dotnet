@@ -119,7 +119,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                 var toBotText = pairs[index];
                 toBot.Text = toBotText;
 
-                await new TestAdapter().ProcessActivity((Activity)toBot, async (context) =>
+                await new TestAdapter().ProcessActivityAsync((Activity)toBot, async (context) =>
                 {
                     using (var scope = DialogModule.BeginLifetimeScope(container, context))
                     {

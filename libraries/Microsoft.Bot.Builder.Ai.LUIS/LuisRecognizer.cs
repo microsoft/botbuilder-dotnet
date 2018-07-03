@@ -36,13 +36,13 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
         }
 
         /// <inheritdoc />
-        public async Task<RecognizerResult> Recognize(string utterance, CancellationToken ct)
+        public async Task<RecognizerResult> RecognizeAsync(string utterance, CancellationToken ct)
         {
             return (await RecognizeInternal(utterance, ct).ConfigureAwait(false));
         }
 
         /// <inheritdoc />
-        public async Task<T> Recognize<T>(string utterance, CancellationToken ct)
+        public async Task<T> RecognizeAsync<T>(string utterance, CancellationToken ct)
             where T : IRecognizerConvert, new()
         {
             var result = new T();

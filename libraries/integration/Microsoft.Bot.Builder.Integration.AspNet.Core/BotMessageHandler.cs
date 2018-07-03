@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Handlers
                 activity = BotMessageHandlerBase.BotMessageSerializer.Deserialize<Activity>(bodyReader);
             }
 
-            var invokeResponse = await botFrameworkAdapter.ProcessActivity(
+            var invokeResponse = await botFrameworkAdapter.ProcessActivityAsync(
                     request.Headers["Authorization"],
                     activity,
                     botCallbackHandler,
