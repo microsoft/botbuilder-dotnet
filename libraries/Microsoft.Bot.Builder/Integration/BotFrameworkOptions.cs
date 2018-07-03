@@ -30,7 +30,7 @@ namespace Microsoft.Bot.Builder.Integration
         public ICredentialProvider CredentialProvider { get; set; }
 
         /// <summary>
-        /// Error handler that catches exceptions in the middleware or application 
+        /// Error handler that catches exceptions in the middleware or application.
         /// </summary>
         public Func<ITurnContext, Exception, Task> ErrorHandler { get; set; }
 

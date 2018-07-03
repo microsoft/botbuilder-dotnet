@@ -21,7 +21,9 @@ namespace Microsoft.Bot.Builder
         public static void ActivityNotNull(IActivity activity)
         {
             if (activity == null)
+            {
                 throw new ArgumentNullException(nameof(activity));
+            }
         }
 
         /// <summary>
@@ -33,7 +35,9 @@ namespace Microsoft.Bot.Builder
         public static void ContextNotNull(ITurnContext context)
         {
             if (context == null)
-                throw new ArgumentNullException(nameof(context)); 
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
         }
 
         /// <summary>
@@ -45,7 +49,9 @@ namespace Microsoft.Bot.Builder
         public static void ConversationReferenceNotNull(ConversationReference reference)
         {
             if (reference == null)
+            {
                 throw new ArgumentNullException(nameof(reference));
+            }
         }
 
         /// <summary>
@@ -57,7 +63,9 @@ namespace Microsoft.Bot.Builder
         public static void ActivityListNotNull(IEnumerable<Activity> activities)
         {
             if (activities == null)
-                throw new ArgumentNullException(nameof(activities)); 
+            {
+                throw new ArgumentNullException(nameof(activities));
+            }
         }
 
         /// <summary>
@@ -69,7 +77,9 @@ namespace Microsoft.Bot.Builder
         public static void MiddlewareNotNull(IMiddleware middleware)
         {
             if (middleware == null)
+            {
                 throw new ArgumentNullException(nameof(middleware));
+            }
         }
 
         /// <summary>
@@ -81,7 +91,9 @@ namespace Microsoft.Bot.Builder
         public static void MiddlewareNotNull(IEnumerable<IMiddleware> middleware)
         {
             if (middleware == null)
+            {
                 throw new ArgumentNullException(nameof(middleware));
+            }
         }
     }
 }

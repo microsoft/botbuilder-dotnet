@@ -32,7 +32,7 @@ namespace Microsoft.Bot.Builder.Adapters
                 Conversation = new ConversationReference
                 {
                     ChannelId = "test",
-                    ServiceUrl = "https://test.com"
+                    ServiceUrl = "https://test.com",
                 };
 
                 Conversation.User = new ChannelAccount("user1", "User1");
@@ -42,6 +42,8 @@ namespace Microsoft.Bot.Builder.Adapters
         }
 
         public Queue<Activity> ActiveQueue { get; } = new Queue<Activity>();
+
+        public ConversationReference Conversation { get; set; }
 
         public new TestAdapter Use(IMiddleware middleware)
         {
@@ -55,7 +57,10 @@ namespace Microsoft.Bot.Builder.Adapters
             {
                 // ready for next reply
                 if (activity.Type == null)
+                {
                     activity.Type = ActivityTypes.Message;
+                }
+
                 activity.ChannelId = Conversation.ChannelId;
                 activity.From = Conversation.User;
                 activity.Recipient = Conversation.Bot;
@@ -64,17 +69,17 @@ namespace Microsoft.Bot.Builder.Adapters
 
                 var id = activity.Id = (_nextId++).ToString();
             }
+
             if (activity.Timestamp == null || activity.Timestamp == default(DateTime))
+            {
                 activity.Timestamp = DateTime.UtcNow;
+            }
 
             using (var context = new TurnContext(this, activity))
             {
-                await RunPipeline(context, callback, cancellationToken);
+                await RunPipeline(context, callback, cancellationToken).ConfigureAwait(false);
             }
         }
-
-        public ConversationReference Conversation { get; set; }
-
 
         public async override Task<ResourceResponse[]> SendActivities(ITurnContext context, Activity[] activities, CancellationToken cancellationToken)
         {
@@ -102,7 +107,7 @@ namespace Microsoft.Bot.Builder.Adapters
             {
                 var activity = activities[index];
 
-                if (String.IsNullOrEmpty(activity.Id))
+                if (string.IsNullOrEmpty(activity.Id))
                 {
                     activity.Id = Guid.NewGuid().ToString("n");
                 }
@@ -112,16 +117,15 @@ namespace Microsoft.Bot.Builder.Adapters
                     activity.Timestamp = DateTime.UtcNow;
                 }
 
-
                 if (activity.Type == ActivityTypesEx.Delay)
                 {
                     // The BotFrameworkAdapter and Console adapter implement this
                     // hack directly in the POST method. Replicating that here
                     // to keep the behavior as close as possible to facillitate
-                    // more realistic tests.                     
-                    int delayMs = (int)activity.Value;
+                    // more realistic tests.
+                    var delayMs = (int)activity.Value;
 
-                    await Task.Delay(delayMs);
+                    await Task.Delay(delayMs).ConfigureAwait(false);
                 }
                 else
                 {
@@ -181,16 +185,17 @@ namespace Microsoft.Bot.Builder.Adapters
                     }
                 }
             }
+
             return Task.CompletedTask;
         }
 
         /// <summary>
-        /// NOTE: this resets the queue, it doesn't actually maintain multiple converstion queues
+        /// NOTE: this resets the queue, it doesn't actually maintain multiple converstion queues.
         /// </summary>
         /// <param name="channelId"></param>
         /// <param name="callback"></param>
+        /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
-        //public override Task CreateConversation(string channelId, Func<ITurnContext, Task> callback)
         public Task CreateConversation(string channelId, Func<ITurnContext, Task> callback, CancellationToken cancellationToken)
         {
             ActiveQueue.Clear();
@@ -201,7 +206,7 @@ namespace Microsoft.Bot.Builder.Adapters
         }
 
         /// <summary>
-        /// Called by TestFlow to check next reply
+        /// Called by TestFlow to check next reply.
         /// </summary>
         /// <returns></returns>
         public IActivity GetNextReply()
@@ -213,11 +218,12 @@ namespace Microsoft.Bot.Builder.Adapters
                     return ActiveQueue.Dequeue();
                 }
             }
+
             return null;
         }
 
         /// <summary>
-        /// Called by TestFlow to get appropriate activity for conversationReference of testbot
+        /// Called by TestFlow to get appropriate activity for conversationReference of testbot.
         /// </summary>
         /// <param name="text"></param>
         /// <returns></returns>
@@ -231,18 +237,18 @@ namespace Microsoft.Bot.Builder.Adapters
                 Conversation = Conversation.Conversation,
                 ServiceUrl = Conversation.ServiceUrl,
                 Id = (_nextId++).ToString(),
-                Text = text
+                Text = text,
             };
 
             return activity;
         }
-
 
         /// <summary>
         /// Processes a message activity from a user.
         /// </summary>
         /// <param name="userSays">The text of the user's message.</param>
         /// <param name="callback">The turn processing logic to use.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <seealso cref="TestFlow.Send(string)"/>
         public Task SendTextToBot(string userSays, Func<ITurnContext, Task> callback, CancellationToken cancellationToken)

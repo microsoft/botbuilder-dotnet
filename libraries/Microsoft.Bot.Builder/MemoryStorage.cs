@@ -11,7 +11,7 @@ using Newtonsoft.Json.Linq;
 namespace Microsoft.Bot.Builder
 {
     /// <summary>
-    /// Models IStorage around a dictionary 
+    /// Models IStorage around a dictionary.
     /// </summary>
     public class MemoryStorage : IStorage
     {
@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Builder
         {
             _memory = dictionary ?? new Dictionary<string, JObject>();
         }
-                
+
         public Task Delete(string[] keys, CancellationToken cancellationToken)
         {
             lock (_syncroot)
@@ -58,7 +58,7 @@ namespace Microsoft.Bot.Builder
 
             return Task.FromResult<IDictionary<string, object>>(storeItems);
         }
-        
+
         public Task Write(IDictionary<string, object> changes, CancellationToken cancellationToken)
         {
             lock (_syncroot)
@@ -76,7 +76,7 @@ namespace Microsoft.Bot.Builder
                             oldStateETag = eTagToken.Value<string>();
                         }
                     }
-                    
+
                     var newState = JObject.FromObject(newValue, StateJsonSerializer);
 
                     // Set ETag if applicable

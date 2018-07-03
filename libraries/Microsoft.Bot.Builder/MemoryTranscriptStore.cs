@@ -13,21 +13,23 @@ namespace Microsoft.Bot.Builder
     /// The memory transcript store stores transcripts in volatile memory in a Dictionary.
     /// </summary>
     /// <note>
-    /// Because this uses an unbounded volitile dictionary this should only be used for unit tests or non-production environments
+    /// Because this uses an unbounded volitile dictionary this should only be used for unit tests or non-production environments.
     /// </note>
     public class MemoryTranscriptStore : ITranscriptStore
     {
         private Dictionary<string, Dictionary<string, List<IActivity>>> _channels = new Dictionary<string, Dictionary<string, List<IActivity>>>();
 
         /// <summary>
-        /// Log an activity to the transcript
+        /// Log an activity to the transcript.
         /// </summary>
-        /// <param name="activity">activity to log</param>
+        /// <param name="activity">activity to log.</param>
         /// <returns></returns>
         public Task LogActivity(IActivity activity)
         {
             if (activity == null)
+            {
                 throw new ArgumentNullException("activity cannot be null for LogActivity()");
+            }
 
             lock (_channels)
             {
@@ -52,20 +54,24 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
-        /// Get activities from the memory transcript store
+        /// Get activities from the memory transcript store.
         /// </summary>
-        /// <param name="channelId">channelId</param>
-        /// <param name="conversationId">conversationId</param>
+        /// <param name="channelId">channelId.</param>
+        /// <param name="conversationId">conversationId.</param>
         /// <param name="continuationToken"></param>
         /// <param name="startDate"></param>
         /// <returns></returns>
         public Task<PagedResult<IActivity>> GetTranscriptActivities(string channelId, string conversationId, string continuationToken = null, DateTime startDate = default(DateTime))
         {
             if (channelId == null)
+            {
                 throw new ArgumentNullException($"missing {nameof(channelId)}");
+            }
 
             if (conversationId == null)
+            {
                 throw new ArgumentNullException($"missing {nameof(conversationId)}");
+            }
 
             var pagedResult = new PagedResult<IActivity>();
             lock (_channels)
@@ -85,8 +91,11 @@ namespace Microsoft.Bot.Builder
                                 .Skip(1)
                                 .Take(20)
                                 .ToArray();
+
                             if (pagedResult.Items.Count() == 20)
+                            {
                                 pagedResult.ContinuationToken = pagedResult.Items.Last().Id;
+                            }
                         }
                         else
                         {
@@ -95,8 +104,11 @@ namespace Microsoft.Bot.Builder
                                 .Where(a => a.Timestamp >= startDate)
                                 .Take(20)
                                 .ToArray();
+
                             if (pagedResult.Items.Count() == 20)
+                            {
                                 pagedResult.ContinuationToken = pagedResult.Items.Last().Id;
+                            }
                         }
                     }
                 }
@@ -106,18 +118,22 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
-        /// Delete a conversation
+        /// Delete a conversation.
         /// </summary>
-        /// <param name="channelId">channelid for the conversation</param>
-        /// <param name="conversationId">conversation id</param>
+        /// <param name="channelId">channelid for the conversation.</param>
+        /// <param name="conversationId">conversation id.</param>
         /// <returns></returns>
         public Task DeleteTranscript(string channelId, string conversationId)
         {
             if (channelId == null)
+            {
                 throw new ArgumentNullException($"{nameof(channelId)} should not be null");
+            }
 
             if (conversationId == null)
+            {
                 throw new ArgumentNullException($"{nameof(conversationId)} should not be null");
+            }
 
             lock (_channels)
             {
@@ -143,7 +159,9 @@ namespace Microsoft.Bot.Builder
         public Task<PagedResult<Transcript>> ListTranscripts(string channelId, string continuationToken = null)
         {
             if (channelId == null)
+            {
                 throw new ArgumentNullException($"missing {nameof(channelId)}");
+            }
 
             var pagedResult = new PagedResult<Transcript>();
             lock (_channels)
@@ -172,15 +190,17 @@ namespace Microsoft.Bot.Builder
                     }
                     else
                     {
-                        pagedResult.Items = channel.Select(c => new Transcript
-                        {
-                            ChannelId = channelId,
-                            Id = c.Key,
-                            Created = c.Value.FirstOrDefault()?.Timestamp ?? default(DateTimeOffset),
-                        })
-                        .OrderBy(c => c.Created)
-                        .Take(20)
-                        .ToArray();
+                        pagedResult.Items = channel.Select(
+                            c => new Transcript
+                            {
+                                ChannelId = channelId,
+                                Id = c.Key,
+                                Created = c.Value.FirstOrDefault()?.Timestamp ?? default(DateTimeOffset),
+                            })
+                            .OrderBy(c => c.Created)
+                            .Take(20)
+                            .ToArray();
+
                         if (pagedResult.Items.Count() == 20)
                         {
                             pagedResult.ContinuationToken = pagedResult.Items.Last().Id;
