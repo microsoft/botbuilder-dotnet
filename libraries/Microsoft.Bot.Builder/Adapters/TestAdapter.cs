@@ -16,11 +16,11 @@ namespace Microsoft.Bot.Builder.Adapters
     /// <seealso cref="TestFlow"/>
     public class TestAdapter : BotAdapter
     {
+        private readonly bool _sendTraceActivity;
         private object _conversationLock = new object();
         private object _activeQueueLock = new object();
 
         private int _nextId = 0;
-        private readonly bool sendTraceActivity;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TestAdapter"/> class.
@@ -28,7 +28,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <param name="conversation">A reference to the conversation to begin the adapter state with.</param>
         public TestAdapter(ConversationReference conversation = null, bool sendTraceActivity = false)
         {
-            this.sendTraceActivity = sendTraceActivity;
+            _sendTraceActivity = sendTraceActivity;
             if (conversation != null)
             {
                 Conversation = conversation;
@@ -171,7 +171,7 @@ namespace Microsoft.Bot.Builder.Adapters
                 }
                 else if (activity.Type == ActivityTypes.Trace)
                 {
-                    if (sendTraceActivity)
+                    if (_sendTraceActivity)
                     {
                         lock (_activeQueueLock)
                         {
