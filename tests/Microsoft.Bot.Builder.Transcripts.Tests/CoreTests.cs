@@ -29,30 +29,30 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
                 switch (userMessage)
                 {
                     case "use middleware":
-                        await context.SendActivity("using middleware");
+                        await context.SendActivityAsync("using middleware");
                         break;
                     case "catch exception":
-                        await context.SendActivity("generating exception");
+                        await context.SendActivityAsync("generating exception");
                         throw new Exception("exception to catch");
                 }
             });
 
-            await flow.Test(activities).StartTest();
+            await flow.Test(activities).StartTestAsync();
         }
 
         public class BeforeAfterMiddleware : IMiddleware
         {
-            public async Task OnTurn(ITurnContext context, NextDelegate next, CancellationToken cancellationToken = default(CancellationToken))
+            public async Task OnTurnAsync(ITurnContext context, NextDelegate next, CancellationToken cancellationToken = default(CancellationToken))
             {
-                await context.SendActivity("before message");
+                await context.SendActivityAsync("before message");
                 await next(cancellationToken);
-                await context.SendActivity("after message");
+                await context.SendActivityAsync("after message");
             }
         }
 
         public class CatchExceptionMiddleware : IMiddleware
         {
-            public async Task OnTurn(ITurnContext context, NextDelegate next, CancellationToken cancellationToken = default(CancellationToken))
+            public async Task OnTurnAsync(ITurnContext context, NextDelegate next, CancellationToken cancellationToken = default(CancellationToken))
             {
                 try
                 {
@@ -60,7 +60,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
                 }
                 catch (Exception ex)
                 {
-                    await context.SendActivity($"Caught: {ex.Message}");
+                    await context.SendActivityAsync($"Caught: {ex.Message}");
                 }
             }
         }

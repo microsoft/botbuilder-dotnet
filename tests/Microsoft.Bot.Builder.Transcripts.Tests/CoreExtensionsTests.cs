@@ -34,15 +34,15 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
                         context.GetUserState<UserStateObject>().Value = value;
                         break;
                     case "read":
-                        await context.SendActivity($"value:{context.GetUserState<UserStateObject>().Value}");
+                        await context.SendActivityAsync($"value:{context.GetUserState<UserStateObject>().Value}");
                         break;
                     default:
-                        await context.SendActivity("bot message");
+                        await context.SendActivityAsync("bot message");
                         break;
                 }
             });
 
-            await flow.Test(activities).StartTest();
+            await flow.Test(activities).StartTestAsync();
         }
 
         [TestMethod]
@@ -66,15 +66,15 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
                         context.GetConversationState<ConversationStateObject>().Value = value;
                         break;
                     case "read":
-                        await context.SendActivity($"value:{context.GetConversationState<ConversationStateObject>().Value}");
+                        await context.SendActivityAsync($"value:{context.GetConversationState<ConversationStateObject>().Value}");
                         break;
                     default:
-                        await context.SendActivity("bot message");
+                        await context.SendActivityAsync("bot message");
                         break;
                 }
             });
 
-            await flow.Test(activities).StartTest();
+            await flow.Test(activities).StartTestAsync();
         }
 
         [TestMethod]
@@ -98,15 +98,15 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
                         CustomState.Get(context).Value = value;
                         break;
                     case "read":
-                        await context.SendActivity($"value:{CustomState.Get(context).Value}");
+                        await context.SendActivityAsync($"value:{CustomState.Get(context).Value}");
                         break;
                     default:
-                        await context.SendActivity("bot message");
+                        await context.SendActivityAsync("bot message");
                         break;
                 }
             });
 
-            await flow.Test(activities).StartTest();
+            await flow.Test(activities).StartTestAsync();
         }
 
         private (string command, string value) GetCommandValue(ITurnContext context)

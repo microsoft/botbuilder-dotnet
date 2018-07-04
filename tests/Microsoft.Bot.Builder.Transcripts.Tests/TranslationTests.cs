@@ -38,11 +38,11 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
             var flow = new TestFlow(adapter, async (context) => {
                 if (!context.Responded)
                 {
-                    await context.SendActivity($"message: {context.Activity.Text}");
+                    await context.SendActivityAsync($"message: {context.Activity.Text}");
                 }
             });
 
-            await flow.Test(activities).StartTest();
+            await flow.Test(activities).StartTestAsync();
         }
         
         [TestMethod]
@@ -66,11 +66,11 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
             var flow = new TestFlow(adapter, async (context) => {
                 if (!context.Responded)
                 {
-                    await context.SendActivity($"message: {context.Activity.Text}");
+                    await context.SendActivityAsync($"message: {context.Activity.Text}");
                 }
             });
 
-            await flow.Test(activities).StartTest();
+            await flow.Test(activities).StartTestAsync();
         }
 
         [TestMethod]
@@ -87,13 +87,13 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
             var flow = new TestFlow(adapter, async (context) => {
                 if (!context.Responded)
                 {
-                    await context.SendActivity($"message: {context.Activity.Text}");
+                    await context.SendActivityAsync($"message: {context.Activity.Text}");
                 }
             });
 
             await flow.Test(activities, (expected, actual) => {
                 Assert.AreEqual(expected.AsMessageActivity().Text, actual.AsMessageActivity().Text);
-            }).StartTest();
+            }).StartTestAsync();
         }
 
         private Task<bool> SetUserLanguage(ITurnContext context)
