@@ -7,18 +7,6 @@ using System.Threading.Tasks;
 namespace Microsoft.Bot.Builder
 {
     /// <summary>
-    /// Can convert from a generic recognizer result to a strongly typed one.
-    /// </summary>
-    public interface IRecognizerConvert
-    {
-        /// <summary>
-        /// Convert recognizer result.
-        /// </summary>
-        /// <param name="result">Result to convert.</param>
-        void Convert(dynamic result);
-    }
-
-    /// <summary>
     /// Interface for Recognizers.
     /// </summary>
     public interface IRecognizer
