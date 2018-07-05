@@ -7,15 +7,15 @@ using Microsoft.Bot.Schema;
 namespace Microsoft.Bot.Builder
 {
     /// <summary>
-    /// Transcript logger stores activities for conversations for recall
+    /// Transcript logger stores activities for conversations for recall.
     /// </summary>
     public interface ITranscriptLogger
     {
         /// <summary>
-        /// Log an activity to the transcript
+        /// Log an activity to the transcript.
         /// </summary>
-        /// <param name="activity"></param>
-        /// <returns></returns>
+        /// <param name="activity">The activity to transcribe.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
         Task LogActivityAsync(IActivity activity);
     }
 }

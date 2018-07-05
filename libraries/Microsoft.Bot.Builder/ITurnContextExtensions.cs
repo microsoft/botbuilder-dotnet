@@ -8,17 +8,24 @@ using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.TraceExtensions
 {
+    /// <summary>
+    /// Contains methods for woring with <see cref="ITurnContext"/> objects.
+    /// </summary>
     public static class ITurnContextExtensions
     {
         /// <summary>
-        /// Send a TraceActivityAsync to transcript and/or emulator if attached
+        /// Sends a trace activity to the <see cref="BotAdapter"/> for logging purposes.
         /// </summary>
-        /// <param name="turnContext"></param>
-        /// <param name="name">Name of the operation</param>
-        /// <param name="value">value of the operation</param>
-        /// <param name="valueType">valueType if helpful to identify the value schema (default is value.GetType().Name)</param>
-        /// <param name="label">descritive label of context. (Default is calling function name)</param>
-        /// <returns></returns>
+        /// <param name="turnContext">The context for the current turn.</param>
+        /// <param name="name">The value to assign to the activity's <see cref="Activity.Name"/> property.</param>
+        /// <param name="value">The value to assign to the activity's <see cref="Activity.Value"/> property.</param>
+        /// <param name="valueType">The value to assign to the activity's <see cref="Activity.ValueType"/> property.</param>
+        /// <param name="label">The value to assign to the activity's <see cref="Activity.Label"/> property.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>If the activity is successfully sent, the task result contains
+        /// a <see cref="ResourceResponse"/> object with a default ID.</remarks>
         public static Task<ResourceResponse> TraceActivityAsync(this ITurnContext turnContext, string name, object value = null, string valueType = null, [CallerMemberName] string label = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             return turnContext.SendActivityAsync(turnContext.Activity.CreateTrace(name, value, valueType, label), cancellationToken);

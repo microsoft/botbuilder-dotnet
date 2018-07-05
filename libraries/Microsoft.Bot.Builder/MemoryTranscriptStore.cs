@@ -12,18 +12,18 @@ namespace Microsoft.Bot.Builder
     /// <summary>
     /// The memory transcript store stores transcripts in volatile memory in a Dictionary.
     /// </summary>
-    /// <note>
+    /// <remarks>
     /// Because this uses an unbounded volitile dictionary this should only be used for unit tests or non-production environments.
-    /// </note>
+    /// </remarks>
     public class MemoryTranscriptStore : ITranscriptStore
     {
         private Dictionary<string, Dictionary<string, List<IActivity>>> _channels = new Dictionary<string, Dictionary<string, List<IActivity>>>();
 
         /// <summary>
-        /// Log an activity to the transcript.
+        /// Logs an activity to the transcript.
         /// </summary>
-        /// <param name="activity">activity to log.</param>
-        /// <returns></returns>
+        /// <param name="activity">The activity to log.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
         public Task LogActivityAsync(IActivity activity)
         {
             if (activity == null)
@@ -33,15 +33,13 @@ namespace Microsoft.Bot.Builder
 
             lock (_channels)
             {
-                Dictionary<string, List<IActivity>> channel;
-                if (!_channels.TryGetValue(activity.ChannelId, out channel))
+                if (!_channels.TryGetValue(activity.ChannelId, out var channel))
                 {
                     channel = new Dictionary<string, List<IActivity>>();
                     _channels[activity.ChannelId] = channel;
                 }
 
-                List<IActivity> transcript;
-                if (!channel.TryGetValue(activity.Conversation.Id, out transcript))
+                if (!channel.TryGetValue(activity.Conversation.Id, out var transcript))
                 {
                     transcript = new List<IActivity>();
                     channel[activity.Conversation.Id] = transcript;
@@ -54,13 +52,14 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
-        /// Get activities from the memory transcript store.
+        /// Gets from the store activities that match a set of criteria.
         /// </summary>
-        /// <param name="channelId">channelId.</param>
-        /// <param name="conversationId">conversationId.</param>
+        /// <param name="channelId">The ID of the channel the conversation is in.</param>
+        /// <param name="conversationId">The ID of the conversation.</param>
         /// <param name="continuationToken"></param>
-        /// <param name="startDate"></param>
-        /// <returns></returns>
+        /// <param name="startDate">A cutoff date. Activities older than this date are not included.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>If the task completes successfully, the result contains the matching activities.</remarks>
         public Task<PagedResult<IActivity>> GetTranscriptActivitiesAsync(string channelId, string conversationId, string continuationToken = null, DateTime startDate = default(DateTime))
         {
             if (channelId == null)
@@ -118,11 +117,11 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
-        /// DeleteAsync a conversation.
+        /// Deletes conversation data from the store.
         /// </summary>
-        /// <param name="channelId">channelid for the conversation.</param>
-        /// <param name="conversationId">conversation id.</param>
-        /// <returns></returns>
+        /// <param name="channelId">The ID of the channel the conversation is in.</param>
+        /// <param name="conversationId">The ID of the conversation to delete.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
         public Task DeleteTranscriptAsync(string channelId, string conversationId)
         {
             if (channelId == null)
@@ -137,8 +136,7 @@ namespace Microsoft.Bot.Builder
 
             lock (_channels)
             {
-                Dictionary<string, List<IActivity>> channel;
-                if (_channels.TryGetValue(channelId, out channel))
+                if (_channels.TryGetValue(channelId, out var channel))
                 {
                     if (channel.ContainsKey(conversationId))
                     {
@@ -151,11 +149,12 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
-        /// List conversations in a channel.
+        /// Gets the conversations on a channel from the store.
         /// </summary>
-        /// <param name="channelId"></param>
+        /// <param name="channelId">The ID of the channel.</param>
         /// <param name="continuationToken"></param>
-        /// <returns></returns>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks></remarks>
         public Task<PagedResult<Transcript>> ListTranscriptsAsync(string channelId, string continuationToken = null)
         {
             if (channelId == null)
@@ -166,8 +165,7 @@ namespace Microsoft.Bot.Builder
             var pagedResult = new PagedResult<Transcript>();
             lock (_channels)
             {
-                Dictionary<string, List<IActivity>> channel;
-                if (_channels.TryGetValue(channelId, out channel))
+                if (_channels.TryGetValue(channelId, out var channel))
                 {
                     if (continuationToken != null)
                     {

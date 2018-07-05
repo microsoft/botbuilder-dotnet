@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
 using System;
@@ -363,7 +363,7 @@ namespace Microsoft.Bot.Schema
         /// Creates a conversation reference from an activity.
         /// </summary>
         /// <returns>A conversation reference for the conversation that contains the activity.</returns>
-        /// <exception cref="ArgumentNullException">
+        /// <exception cref="ArgumentNullException"/>
         public ConversationReference GetConversationReference()
         {
             ConversationReference reference = new ConversationReference

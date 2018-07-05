@@ -97,8 +97,8 @@ namespace Microsoft.Bot.Builder
         /// isn't something supported by Node.
         /// </para>
         /// </remarks>
-        /// <seealso cref="ProcessActivity(string, Activity, Func{ITurnContext, Task})"/>
-        /// <seealso cref="BotAdapter.RunPipeline(ITurnContext, Func{ITurnContext, Task})"/>
+        /// <seealso cref="ProcessActivityAsync(string, Activity, Func{ITurnContext, Task}, CancellationToken)"/>
+        /// <seealso cref="BotAdapter.RunPipelineAsync(ITurnContext, Func{ITurnContext, Task}, CancellationToken)"/>
         public override async Task ContinueConversationAsync(string botAppId, ConversationReference reference, Func<ITurnContext, Task> callback, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(botAppId))
@@ -168,8 +168,8 @@ namespace Microsoft.Bot.Builder
         /// <item><see cref="IConnectorClient"/>, the channel connector client to use this turn.</item>
         /// </list></para>
         /// </remarks>
-        /// <seealso cref="ContinueConversation(string, ConversationReference, Func{ITurnContext, Task})"/>
-        /// <seealso cref="BotAdapter.RunPipeline(ITurnContext, Func{ITurnContext, Task})"/>
+        /// <seealso cref="ContinueConversationAsync(string, ConversationReference, Func{ITurnContext, Task}, CancellationToken)"/>
+        /// <seealso cref="BotAdapter.RunPipelineAsync(ITurnContext, Func{ITurnContext, Task}, CancellationToken)"/>
         public async Task<InvokeResponse> ProcessActivityAsync(string authHeader, Activity activity, Func<ITurnContext, Task> callback, CancellationToken cancellationToken)
         {
             BotAssert.ActivityNotNull(activity);
@@ -339,12 +339,13 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
-        /// Deletes a member from the current conversation.
+        /// Removes a member from the current conversation.
         /// </summary>
         /// <param name="context">The context object for the turn.</param>
-        /// <param name="memberId">ID of the member to delete from the conversation.</param>
-        /// <param name="cancellationToken">Cancellation token.</param>
-        /// <returns></returns>
+        /// <param name="memberId">The ID of the member to remove from the conversation.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
         public async Task DeleteConversationMemberAsync(ITurnContext context, string memberId, CancellationToken cancellationToken)
         {
             if (context.Activity.Conversation == null)
@@ -430,9 +431,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="serviceUrl">The URL of the channel server to query.  This can be retrieved
         /// from `context.activity.serviceUrl`. </param>
         /// <param name="credentials">The credentials needed for the Bot to connect to the services.</param>
-        /// <param name="continuationToken">(Optional) token used to fetch the next page of results
-        /// from the channel server. This should be left as `null` to retrieve the first page
-        /// of results.</param>
+        /// <param name="continuationToken"></param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>List of Members of the current conversation.</returns>
         /// <remarks>
@@ -462,9 +461,7 @@ namespace Microsoft.Bot.Builder
         /// that can be used to fetch the next page of results from the server.
         /// </summary>
         /// <param name="context">The context object for the turn.</param>
-        /// <param name="continuationToken">(Optional) token used to fetch the next page of results
-        /// from the channel server. This should be left as `null` to retrieve the first page
-        /// of results.</param>
+        /// <param name="continuationToken"></param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>List of Members of the current conversation.</returns>
         /// <remarks>
