@@ -39,7 +39,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
             }
 
             // error handler
-            botFrameworkAdapter.OnError = options.OnError;
+            botFrameworkAdapter.OnTurnError = options.OnTurnError;
 
             // add middleware
             foreach (var middleware in options.Middleware)
