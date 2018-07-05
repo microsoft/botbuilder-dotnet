@@ -38,7 +38,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
         /// <seealso cref="IMiddleware"/>
         public BotFrameworkConfigurationBuilder UseMiddleware(Func<ITurnContext, Exception, Task> errorHandler)
         {
-            BotFrameworkOptions.ErrorHandler = errorHandler;
+            BotFrameworkOptions.OnError = errorHandler;
             return this;
         }
 
