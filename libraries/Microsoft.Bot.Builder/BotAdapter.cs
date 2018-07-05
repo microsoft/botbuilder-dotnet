@@ -40,7 +40,7 @@ namespace Microsoft.Bot.Builder
         /// <summary>
         /// Gets or sets an error handler that catches exceptions in the middleware or application.
         /// </summary>
-        public Func<ITurnContext, Exception, Task> ErrorHandler { get; set; }
+        public Func<ITurnContext, Exception, Task> OnError { get; set; }
 
         /// <summary>
         /// Gets the collection of middleware in the adapter's pipeline.
@@ -156,9 +156,9 @@ namespace Microsoft.Bot.Builder
                 }
                 catch (Exception e)
                 {
-                    if (ErrorHandler != null)
+                    if (OnError != null)
                     {
-                        await ErrorHandler.Invoke(context, e).ConfigureAwait(false);
+                        await OnError.Invoke(context, e).ConfigureAwait(false);
                     }
                     else
                     {

@@ -49,7 +49,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                 var options = sp.GetRequiredService<IOptions<BotFrameworkOptions>>().Value;
                 var botFrameworkAdapter = new BotFrameworkAdapter(options.CredentialProvider, options.ConnectorClientRetryPolicy, options.HttpClient);
 
-                botFrameworkAdapter.ErrorHandler = options.ErrorHandler;
+                botFrameworkAdapter.OnError = options.OnError;
 
                 foreach (var middleware in options.Middleware)
                 {

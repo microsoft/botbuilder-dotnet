@@ -9,14 +9,14 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Microsoft.Bot.Builder.Core.Extensions.Tests
 {
     [TestClass]
-    public class ErrorHandlerTests
+    public class OnErrorTests
     {
         [TestMethod]
         [TestCategory("Middleware")]
-        public async Task ErrorHandler_Test()
+        public async Task OnError_Test()
         {
             TestAdapter adapter = new TestAdapter();
-            adapter.ErrorHandler = async (context, exception) =>
+            adapter.OnError = async (context, exception) =>
             {
                 if (exception is NotImplementedException)
                 {
