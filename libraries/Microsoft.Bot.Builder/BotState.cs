@@ -79,7 +79,9 @@ namespace Microsoft.Bot.Builder
         /// </summary>
         /// <param name="context">The context object for this turn.</param>
         /// <param name="state">The state object.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
         public virtual async Task WriteAsync(ITurnContext context, TState state, CancellationToken cancellationToken = default(CancellationToken))
         {
             var changes = new Dictionary<string, object>();

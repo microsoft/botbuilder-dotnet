@@ -4,7 +4,7 @@ using System.Linq;
 namespace Microsoft.Bot.Schema
 {
     /// <summary>
-    /// Indicates a delete of an existing Message Activity
+    /// Represents a request to delete a previous message activity in a conversation.
     /// </summary>
     public interface IMessageDeleteActivity : IActivity
     {
