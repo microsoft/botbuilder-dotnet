@@ -6,23 +6,26 @@ using System;
 namespace Microsoft.Bot.Builder
 {
     /// <summary>
-    /// Transcript store item.
+    /// Represents a copy of a conversation.
     /// </summary>
     public class Transcript
     {
         /// <summary>
-        /// ChannelId that the transcript was taken from.
+        /// Gets or sets the ID of the channel in which the conversation occurred.
         /// </summary>
+        /// <value>The ID of the channel in which the conversation occurred.</value>
         public string ChannelId { get; set; }
 
         /// <summary>
-        /// Conversation Id.
+        /// Gets or sets the ID of the conversation.
         /// </summary>
+        /// <value>The ID of the conversation.</value>
         public string Id { get; set; }
 
         /// <summary>
-        /// Date conversation was started.
+        /// Gets or sets the date the conversation began.
         /// </summary>
+        /// <value>The date then conversation began.</value>
         public DateTimeOffset Created { get; set; }
     }
 }
