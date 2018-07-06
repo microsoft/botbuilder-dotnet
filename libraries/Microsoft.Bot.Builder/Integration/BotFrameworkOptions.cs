@@ -25,18 +25,23 @@ namespace Microsoft.Bot.Builder.Integration
         }
 
         /// <summary>
-        /// Gets or sets an <see cref="ICredentialProvider"/> that should be used to store and retrieve credentials used during authentication with the Bot Framework Service.
+        /// Gets or sets an <see cref="ICredentialProvider"/> that should be used to store and retrieve the
+        /// credentials used during authentication with the Bot Framework Service.
         /// </summary>
+        /// <value>The credential provider.</value>
         public ICredentialProvider CredentialProvider { get; set; }
 
         /// <summary>
-        /// Gets or sets error handler that catches exceptions in the middleware or application.
+        /// Gets or sets an error handler to use to catche exceptions in the middleware or application.
         /// </summary>
+        /// <value>The error handler.</value>
         public Func<ITurnContext, Exception, Task> ErrorHandler { get; set; }
 
         /// <summary>
-        /// Gets a list of <see cref="IMiddleware"/> that will be executed for each turn of the conversation.
+        /// Gets a list of the <see cref="IMiddleware"/> to use on each incoming activity.
         /// </summary>
+        /// <value>The middleware list.</value>
+        /// <seealso cref="BotAdapter.Use(IMiddleware)"/>
         public IList<IMiddleware> Middleware { get; } = new List<IMiddleware>();
 
         /// <summary>
@@ -48,18 +53,21 @@ namespace Microsoft.Bot.Builder.Integration
         public bool EnableProactiveMessages { get; set; }
 
         /// <summary>
-        /// Gets or sets the retry policy to retry operations in case of errors from Bot Framework Service.
+        /// Gets or sets the retry policy to use in case of errors from Bot Framework Service.
         /// </summary>
+        /// <value>The retry policy.</value>
         public RetryPolicy ConnectorClientRetryPolicy { get; set; }
 
         /// <summary>
         /// Gets or sets the <see cref="HttpClient"/> instance that should be used to make requests to the Bot Framework Service.
         /// </summary>
+        /// <value>The HTTP client.</value>
         public HttpClient HttpClient { get; set; }
 
         /// <summary>
         /// Gets or sets what paths should be used when exposing the various bot endpoints.
         /// </summary>
+        /// <value>The path strings.</value>
         /// <seealso cref="BotFrameworkPaths"/>
         public BotFrameworkPaths Paths { get; set; } = new BotFrameworkPaths();
     }
