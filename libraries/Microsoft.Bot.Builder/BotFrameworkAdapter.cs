@@ -152,17 +152,19 @@ namespace Microsoft.Bot.Builder
         /// </summary>
         /// <param name="authHeader">The HTTP authentication header of the request.</param>
         /// <param name="activity">The incoming activity.</param>
-        /// <param name="callback">The code to run at the end of the adapter's middleware
-        /// pipeline.</param>
-        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <param name="callback">The code to run at the end of the adapter's middleware pipeline.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute. If the activity type
         /// was 'Invoke' and the corresponding key (channelId + activityId) was found
         /// then an InvokeResponse is returned, otherwise null is returned.</returns>
-        /// <exception cref="ArgumentNullException">
-        /// <paramref name="activity"/> is <c>null</c>.</exception>
-        /// <exception cref="UnauthorizedAccessException">
-        /// authentication failed.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="activity"/> is <c>null</c>.</exception>
+        /// <exception cref="UnauthorizedAccessException">authentication failed.</exception>
         /// <remarks>Call this method to reactively send a message to a conversation.
+        /// If the task completes successfully, then if the activity's <see cref="Activity.Type"/>
+        /// is <see cref="ActivityTypes.Invoke"/> and the corresponding key
+        /// (<see cref="Activity.ChannelId"/> + <see cref="Activity.Id"/>) is found
+        /// then an <see cref="InvokeResponse"/> is returned, otherwise null is returned.
         /// <para>This method registers the following services for the turn.<list type="bullet">
         /// <item><see cref="IIdentity"/> (key = "BotIdentity"), a claims identity for the bot.</item>
         /// <item><see cref="IConnectorClient"/>, the channel connector client to use this turn.</item>
@@ -178,6 +180,15 @@ namespace Microsoft.Bot.Builder
             return await ProcessActivityAsync(claimsIdentity, activity, callback, cancellationToken).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Creates a turn context and runs the middleware pipeline for an incoming activity.
+        /// </summary>
+        /// <param name="identity">A <see cref="ClaimsIdentity"/> for the request.</param>
+        /// <param name="activity">The incoming activity.</param>
+        /// <param name="callback">The code to run at the end of the adapter's middleware pipeline.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
         public async Task<InvokeResponse> ProcessActivityAsync(ClaimsIdentity identity, Activity activity, Func<ITurnContext, Task> callback, CancellationToken cancellationToken)
         {
             BotAssert.ActivityNotNull(activity);
@@ -432,11 +443,12 @@ namespace Microsoft.Bot.Builder
         /// from `context.activity.serviceUrl`. </param>
         /// <param name="credentials">The credentials needed for the Bot to connect to the services.</param>
         /// <param name="continuationToken"></param>
-        /// <param name="cancellationToken">Cancellation token.</param>
-        /// <returns>List of Members of the current conversation.</returns>
-        /// <remarks>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>If the task completes successfully, the result contains the members of the current conversation.
         /// This overload may be called from outside the context of a conversation, as only the
-        /// Bot's ServiceUrl and credentials are required.
+        /// bot's service URL and credentials are required.
         /// </remarks>
         public async Task<ConversationsResult> GetConversationsAsync(string serviceUrl, MicrosoftAppCredentials credentials, string continuationToken, CancellationToken cancellationToken)
         {
@@ -462,10 +474,11 @@ namespace Microsoft.Bot.Builder
         /// </summary>
         /// <param name="context">The context object for the turn.</param>
         /// <param name="continuationToken"></param>
-        /// <param name="cancellationToken">Cancellation token.</param>
-        /// <returns>List of Members of the current conversation.</returns>
-        /// <remarks>
-        /// This overload may be called during standard Activity processing, at which point the Bot's
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>If the task completes successfully, the result contains the members of the current conversation.
+        /// This overload may be called during standard activity processing, at which point the Bot's
         /// service URL and credentials that are part of the current activity processing pipeline
         /// will be used.
         /// </remarks>
@@ -505,8 +518,10 @@ namespace Microsoft.Bot.Builder
         /// </summary>
         /// <param name="context">Context for the current turn of conversation with the user.</param>
         /// <param name="connectionName">Name of the auth connection to use.</param>
-        /// <param name="cancellationToken">Cancellation token.</param>
-        /// <returns></returns>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>If the task completes successfully, the result contains the raw signin link.</remarks>
         public async Task<string> GetOauthSignInLinkAsync(ITurnContext context, string connectionName, CancellationToken cancellationToken)
         {
             BotAssert.ContextNotNull(context);
@@ -524,8 +539,9 @@ namespace Microsoft.Bot.Builder
         /// </summary>
         /// <param name="context">Context for the current turn of conversation with the user.</param>
         /// <param name="connectionName">Name of the auth connection to use.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns></returns>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
         public async Task SignOutUserAsync(ITurnContext context, string connectionName, CancellationToken cancellationToken)
         {
             BotAssert.ContextNotNull(context);
@@ -547,7 +563,8 @@ namespace Microsoft.Bot.Builder
         /// <param name="conversationParameters">The conversation information to use to
         /// create the conversation.</param>
         /// <param name="callback">The method to call for the resulting bot turn.</param>
-        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <remarks>To start a conversation, your bot must know its account information
         /// and the user's account information on that channel.
@@ -587,6 +604,15 @@ namespace Microsoft.Bot.Builder
             }
         }
 
+        /// <summary>
+        /// Checks the current operating environment to determine whether to emulate the client for OAuth requests.
+        /// </summary>
+        /// <param name="turnContext">The context object for the current turn.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>If the task completes successfully, the result indicates whether the adapter will
+        /// emaulate an OAuth client.</remarks>
         protected async Task<bool> TrySetEmulatingOAuthCardsAsync(ITurnContext turnContext, CancellationToken cancellationToken)
         {
             if (!_isEmulatingOAuthCards &&
@@ -599,6 +625,11 @@ namespace Microsoft.Bot.Builder
             return _isEmulatingOAuthCards;
         }
 
+        /// <summary>
+        /// Creates an OAuth client for the bot.
+        /// </summary>
+        /// <param name="context">The context object for the current turn.</param>
+        /// <returns>An OAuth client for the bot.</returns>
         protected OAuthClient CreateOAuthApiClient(ITurnContext context)
         {
             var client = context.Services.Get<IConnectorClient>() as ConnectorClient;
