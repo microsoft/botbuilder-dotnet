@@ -35,7 +35,7 @@ namespace Microsoft.Bot.Builder.Integration
         /// Gets or sets an error handler to use to catche exceptions in the middleware or application.
         /// </summary>
         /// <value>The error handler.</value>
-        public Func<ITurnContext, Exception, Task> ErrorHandler { get; set; }
+        public Func<ITurnContext, Exception, Task> OnTurnError { get; set; }
 
         /// <summary>
         /// Gets a list of the <see cref="IMiddleware"/> to use on each incoming activity.
