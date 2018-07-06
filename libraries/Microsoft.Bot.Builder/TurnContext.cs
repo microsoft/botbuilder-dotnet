@@ -42,23 +42,27 @@ namespace Microsoft.Bot.Builder
         /// <summary>
         /// Gets the bot adapter that created this context object.
         /// </summary>
+        /// <value>The bot adapter that created this context object.</value>
         public BotAdapter Adapter { get; }
 
         /// <summary>
         /// Gets the services registered on this context object.
         /// </summary>
+        /// <value>The services registered on this context object.</value>
         public TurnContextServiceCollection Services { get; } = new TurnContextServiceCollection();
 
         /// <summary>
         /// Gets the activity associated with this turn; or <c>null</c> when processing
         /// a proactive message.
         /// </summary>
+        /// <value>The activity associated with this turn.</value>
         public Activity Activity { get; }
 
         /// <summary>
-        /// Indicates whether at least one response was sent for the current turn.
+        /// Gets a value indicating whether at least one response was sent for the current turn.
         /// </summary>
         /// <value><c>true</c> if at least one response was sent for the current turn.</value>
+        /// <remarks><see cref="ITraceActivity"/> activities on their own do not set this flag.</remarks>
         public bool Responded
         {
             get;
@@ -71,8 +75,8 @@ namespace Microsoft.Bot.Builder
         /// <param name="handler">The handler to add to the context object.</param>
         /// <returns>The updated context object.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="handler"/> is <c>null</c>.</exception>
-        /// <remarks>When the context's <see cref="SendActivity(IActivity)"/>
-        /// or <see cref="SendActivities(IActivity[])"/> methods are called,
+        /// <remarks>When the context's <see cref="SendActivityAsync(IActivity, CancellationToken)"/>
+        /// or <see cref="SendActivitiesAsync(IActivity[], CancellationToken)"/> methods are called,
         /// the adapter calls the registered handlers in the order in which they were
         /// added to the context object.
         /// </remarks>
@@ -93,7 +97,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="handler">The handler to add to the context object.</param>
         /// <returns>The updated context object.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="handler"/> is <c>null</c>.</exception>
-        /// <remarks>When the context's <see cref="UpdateActivity(IActivity)"/> is called,
+        /// <remarks>When the context's <see cref="UpdateActivityAsync(IActivity, CancellationToken)"/> is called,
         /// the adapter calls the registered handlers in the order in which they were
         /// added to the context object.
         /// </remarks>
@@ -114,7 +118,8 @@ namespace Microsoft.Bot.Builder
         /// <param name="handler">The handler to add to the context object.</param>
         /// <returns>The updated context object.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="handler"/> is <c>null</c>.</exception>
-        /// <remarks>When the context's <see cref="DeleteActivity(string)"/> is called,
+        /// <remarks>When the context's <see cref="DeleteActivityAsync(ConversationReference, CancellationToken)"/>
+        /// or <see cref="DeleteActivityAsync(string, CancellationToken)"/> is called,
         /// the adapter calls the registered handlers in the order in which they were
         /// added to the context object.
         /// </remarks>
