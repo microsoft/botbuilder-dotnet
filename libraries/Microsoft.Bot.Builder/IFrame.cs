@@ -10,7 +10,7 @@ namespace Microsoft.Bot.Builder
     {
         IFrame Parent { get; set; }
 
-        void AddSlot<T>(IReadWriteSlot<T> slot);
+        void AddSlot(IReadWriteSlot slot);
 
         Task LoadAsync(TurnContext context, bool accessed = false);
 

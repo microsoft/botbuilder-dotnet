@@ -9,6 +9,8 @@ namespace Microsoft.Bot.Builder
     {
         string Name { get; set; }
 
+        object DefaultValue { get; set; }
+
         ReadOnlyCollection<string> ChangeTags { get; }
 
         int ExpiresAfterSeconds { get; set; }
