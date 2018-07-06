@@ -41,7 +41,7 @@ namespace Microsoft.Bot.Builder
         /// Gets or sets an error handler that can catche exceptions in the middleware or application.
         /// </summary>
         /// <value>An error handler that can catch exceptions in the middleware or application.</value>
-        public Func<ITurnContext, Exception, Task> ErrorHandler { get; set; }
+        public Func<ITurnContext, Exception, Task> OnTurnError { get; set; }
 
         /// <summary>
         /// Gets the collection of middleware in the adapter's pipeline.
@@ -120,7 +120,7 @@ namespace Microsoft.Bot.Builder
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <remarks>Call this method to proactively send a message to a conversation.
-        /// Most _channels require a user to initaiate a conversation with a bot
+        /// Most _channels require a user to initiate a conversation with a bot
         /// before the bot can send activities to the user.</remarks>
         /// <seealso cref="RunPipelineAsync(ITurnContext, Func{ITurnContext, Task}, CancellationToken)"/>
         public virtual Task ContinueConversationAsync(string botId, ConversationReference reference, Func<ITurnContext, Task> callback, CancellationToken cancellationToken)
@@ -168,9 +168,9 @@ namespace Microsoft.Bot.Builder
                 }
                 catch (Exception e)
                 {
-                    if (ErrorHandler != null)
+                    if (OnTurnError != null)
                     {
-                        await ErrorHandler.Invoke(context, e).ConfigureAwait(false);
+                        await OnTurnError.Invoke(context, e).ConfigureAwait(false);
                     }
                     else
                     {
