@@ -5,16 +5,16 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder
 {
-    public interface IReadWriteSlot<T> : IReadOnlySlot<T>
+    public interface IReadWriteSlot : IReadOnlySlot
     {
         ISlotDefinition Definition { get; }
 
         IFrame Frame { get;  }
 
-        IReadOnlySlot<T> AsReadOnly();
+        IReadOnlySlot AsReadOnly();
 
         Task DeleteAsync(TurnContext context);
 
-        Task SetAsync(TurnContext context, T value);
+        Task SetAsync(TurnContext context, object value);
     }
 }
