@@ -20,8 +20,9 @@ namespace Microsoft.Bot.Builder
         Task<RecognizerResult> RecognizeAsync(string utterance, CancellationToken ct);
 
         /// <summary>
-        /// Runs an utterance through a recognizer and returns a strongly typed recognizer result.
+        /// Runs an utterance through a recognizer and returns a strongly-typed recognizer result.
         /// </summary>
+        /// <typeparam name="T">The recognition result type.</typeparam>
         /// <param name="utterance">Utterance to analyze.</param>
         /// <param name="ct">Cancellation token.</param>
         /// <returns>Analysis of utterance.</returns>
