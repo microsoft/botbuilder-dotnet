@@ -4,7 +4,7 @@
 namespace Microsoft.Bot.Schema
 {
     /// <summary>
-    /// A bot was installed or removed from a channel
+    /// A bot was installed or removed from a channel.
     /// </summary>
     public interface IInstallationUpdateActivity : IActivity
     {

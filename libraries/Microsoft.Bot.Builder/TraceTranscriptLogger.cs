@@ -9,17 +9,17 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder
 {
     /// <summary>
-    /// TraceTranscriptLogger, writes activites to System.Diagnostics.Trace
+    /// Representas a transcript logger that writes activites to a <see cref="Trace"/> object.
     /// </summary>
     public class TraceTranscriptLogger : ITranscriptLogger
     {
         private static JsonSerializerSettings serializationSettings = new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore, Formatting = Formatting.Indented };
 
         /// <summary>
-        /// Log an activity to the transcript
+        /// Log an activity to the transcript.
         /// </summary>
-        /// <param name="activity">activity to log</param>
-        /// <returns></returns>
+        /// <param name="activity">The activity to transcribe.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
         public Task LogActivityAsync(IActivity activity)
         {
             BotAssert.ActivityNotNull(activity);
