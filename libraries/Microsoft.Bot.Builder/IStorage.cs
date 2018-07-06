@@ -21,14 +21,18 @@ namespace Microsoft.Bot.Builder
         /// Dictionary of Key/Value pairs to write.
         /// </summary>
         /// <param name="changes">The changes to write.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
         Task WriteAsync(IDictionary<string, object> changes, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// DeleteAsync StoreItems from storage.
         /// </summary>
         /// <param name="keys">keys of the storeItems to delete.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
         Task DeleteAsync(string[] keys, CancellationToken cancellationToken = default(CancellationToken));
     }
 

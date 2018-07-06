@@ -13,29 +13,31 @@ namespace Microsoft.Bot.Builder
     public interface ITranscriptStore : ITranscriptLogger
     {
         /// <summary>
-        /// Get activities for a conversation (Aka the transcript).
+        /// Gets from the store activities that match a set of criteria.
         /// </summary>
-        /// <param name="channelId">Channel id.</param>
-        /// <param name="conversationId">Conversation id.</param>
-        /// <param name="continuationToken">continuatuation token to page through results.</param>
-        /// <param name="startDate">Earliest time to include.</param>
-        /// <returns>Enumeration over the recorded activities.</returns>
+        /// <param name="channelId">The ID of the channel the conversation is in.</param>
+        /// <param name="conversationId">The ID of the conversation.</param>
+        /// <param name="continuationToken"></param>
+        /// <param name="startDate">A cutoff date. Activities older than this date are not included.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>If the task completes successfully, the result contains the matching activities.</remarks>
         Task<PagedResult<IActivity>> GetTranscriptActivitiesAsync(string channelId, string conversationId, string continuationToken = null, DateTime startDate = default(DateTime));
 
         /// <summary>
-        /// List conversations in the channelId.
+        /// Gets the conversations on a channel from the store.
         /// </summary>
-        /// <param name="channelId"></param>
-        /// <param name="continuationToken">continuation token to get next page of results.</param>
-        /// <returns></returns>
+        /// <param name="channelId">The ID of the channel.</param>
+        /// <param name="continuationToken"></param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks></remarks>
         Task<PagedResult<Transcript>> ListTranscriptsAsync(string channelId, string continuationToken = null);
 
         /// <summary>
-        /// DeleteAsync a specific conversation and all of it's activities.
+        /// Deletes conversation data from the store.
         /// </summary>
-        /// <param name="channelId">Channel where conversation took place.</param>
-        /// <param name="conversationId">Id of conversation to delete.</param>
-        /// <returns>Task.</returns>
+        /// <param name="channelId">The ID of the channel the conversation is in.</param>
+        /// <param name="conversationId">The ID of the conversation to delete.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
         Task DeleteTranscriptAsync(string channelId, string conversationId);
     }
 }

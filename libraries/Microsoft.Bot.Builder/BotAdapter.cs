@@ -38,13 +38,15 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
-        /// Gets or sets an error handler that catches exceptions in the middleware or application.
+        /// Gets or sets an error handler that can catche exceptions in the middleware or application.
         /// </summary>
+        /// <value>An error handler that can catch exceptions in the middleware or application.</value>
         public Func<ITurnContext, Exception, Task> OnTurnError { get; set; }
 
         /// <summary>
         /// Gets the collection of middleware in the adapter's pipeline.
         /// </summary>
+        /// <value>The middleware collection for the pipeline.</value>
         protected MiddlewareSet MiddlewareSet { get; } = new MiddlewareSet();
 
         /// <summary>
@@ -66,6 +68,8 @@ namespace Microsoft.Bot.Builder
         /// </summary>
         /// <param name="context">The context object for the turn.</param>
         /// <param name="activities">The activities to send.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <remarks>If the activities are successfully sent, the task result contains
         /// an array of <see cref="ResourceResponse"/> objects containing the IDs that
@@ -79,6 +83,8 @@ namespace Microsoft.Bot.Builder
         /// </summary>
         /// <param name="context">The context object for the turn.</param>
         /// <param name="activity">New replacement activity.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <remarks>If the activity is successfully sent, the task result contains
         /// a <see cref="ResourceResponse"/> object containing the ID that the receiving
@@ -94,6 +100,8 @@ namespace Microsoft.Bot.Builder
         /// </summary>
         /// <param name="context">The context object for the turn.</param>
         /// <param name="reference">Conversation reference for the activity to delete.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <remarks>The <see cref="ConversationReference.ActivityId"/> of the conversation
         /// reference identifies the activity to delete.</remarks>
@@ -108,11 +116,13 @@ namespace Microsoft.Bot.Builder
         /// which is multi-tenant aware. </param>
         /// <param name="reference">A reference to the conversation to continue.</param>
         /// <param name="callback">The method to call for the resulting bot turn.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <remarks>Call this method to proactively send a message to a conversation.
-        /// Most _channels require a user to initaiate a conversation with a bot
+        /// Most _channels require a user to initiate a conversation with a bot
         /// before the bot can send activities to the user.</remarks>
-        /// <seealso cref="RunPipeline(ITurnContext, Func{ITurnContext, Task})"/>
+        /// <seealso cref="RunPipelineAsync(ITurnContext, Func{ITurnContext, Task}, CancellationToken)"/>
         public virtual Task ContinueConversationAsync(string botId, ConversationReference reference, Func<ITurnContext, Task> callback, CancellationToken cancellationToken)
         {
             using (var context = new TurnContext(this, reference.GetContinuationActivity()))
@@ -126,6 +136,8 @@ namespace Microsoft.Bot.Builder
         /// </summary>
         /// <param name="context">The turn's context object.</param>
         /// <param name="callback">A callback method to run at the end of the pipeline.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <exception cref="ArgumentNullException">
         /// <paramref name="context"/> is null.</exception>
@@ -135,12 +147,12 @@ namespace Microsoft.Bot.Builder
         /// in the pipeline. Once control reaches the end of the pipeline, the adapter calls
         /// the <paramref name="callback"/> method. If a middleware component doesn’t call
         /// the next delegate, the adapter does not call  any of the subsequent middleware’s
-        /// <see cref="IMiddleware.OnTurn(ITurnContext, MiddlewareSet.NextDelegate)"/>
+        /// <see cref="IMiddleware.OnTurnAsync(ITurnContext, NextDelegate, CancellationToken)"/>
         /// methods or the callback method, and the pipeline short circuits.
         /// <para>When the turn is initiated by a user activity (reactive messaging), the
         /// callback method will be a reference to the bot's
-        /// <see cref="IBot.OnTurn(ITurnContext)"/> method. When the turn is
-        /// initiated by a call to <see cref="ContinueConversationAsync(string, ConversationReference, Func{ITurnContext, Task})"/>
+        /// <see cref="IBot.OnTurnAsync(ITurnContext)"/> method. When the turn is
+        /// initiated by a call to <see cref="ContinueConversationAsync(string, ConversationReference, Func{ITurnContext, Task}, CancellationToken)"/>
         /// (proactive messaging), the callback method is the callback method that was provided in the call.</para>
         /// </remarks>
         protected async Task RunPipelineAsync(ITurnContext context, Func<ITurnContext, Task> callback, CancellationToken cancellationToken)

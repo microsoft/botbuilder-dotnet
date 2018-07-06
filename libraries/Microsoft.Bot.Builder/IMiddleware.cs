@@ -46,7 +46,8 @@ namespace Microsoft.Bot.Builder
         /// </summary>
         /// <param name="context">The context object for this turn.</param>
         /// <param name="next">The delegate to call to continue the bot middleware pipeline.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <remarks>Middleware calls the <paramref name="next"/> delegate to pass control to
         /// the next middleware in the pipeline. If middleware doesn’t call the next delegate,

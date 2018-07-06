@@ -21,6 +21,10 @@ namespace Microsoft.Bot.Builder.Adapters
 
         private int _nextId = 0;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TestAdapter"/> class.
+        /// </summary>
+        /// <param name="conversation">A reference to the conversation to begin the adapter state with.</param>
         public TestAdapter(ConversationReference conversation = null)
         {
             if (conversation != null)
@@ -41,16 +45,40 @@ namespace Microsoft.Bot.Builder.Adapters
             }
         }
 
+        /// <summary>
+        /// Gets the queue of responses from the bot.
+        /// </summary>
+        /// <value>The queue of responses from the bot.</value>
         public Queue<Activity> ActiveQueue { get; } = new Queue<Activity>();
 
+        /// <summary>
+        /// Gets or sets a reference to the current coversation.
+        /// </summary>
+        /// <value>A reference to the current conversation.</value>
         public ConversationReference Conversation { get; set; }
 
+        /// <summary>
+        /// Adds middleware to the adapter's pipeline.
+        /// </summary>
+        /// <param name="middleware">The middleware to add.</param>
+        /// <returns>The updated adapter object.</returns>
+        /// <remarks>Middleware is added to the adapter at initialization time.
+        /// For each turn, the adapter calls middleware in the order in which you added it.
+        /// </remarks>
         public new TestAdapter Use(IMiddleware middleware)
         {
             base.Use(middleware);
             return this;
         }
 
+        /// <summary>
+        /// Receives an activity and runs it through the middleware pipeline.
+        /// </summary>
+        /// <param name="activity">The activity to process.</param>
+        /// <param name="callback">The bot logic to invoke.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
         public async Task ProcessActivityAsync(Activity activity, Func<ITurnContext, Task> callback, CancellationToken cancellationToken = default(CancellationToken))
         {
             lock (_conversationLock)
@@ -81,6 +109,18 @@ namespace Microsoft.Bot.Builder.Adapters
             }
         }
 
+        /// <summary>
+        /// Sends activities to the conversation.
+        /// </summary>
+        /// <param name="context">The context object for the turn.</param>
+        /// <param name="activities">The activities to send.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>If the activities are successfully sent, the task result contains
+        /// an array of <see cref="ResourceResponse"/> objects containing the IDs that
+        /// the receiving channel assigned to the activities.</remarks>
+        /// <seealso cref="ITurnContext.OnSendActivities(SendActivitiesHandler)"/>
         public async override Task<ResourceResponse[]> SendActivitiesAsync(ITurnContext context, Activity[] activities, CancellationToken cancellationToken)
         {
             if (context == null)
@@ -141,6 +181,20 @@ namespace Microsoft.Bot.Builder.Adapters
             return responses;
         }
 
+        /// <summary>
+        /// Replaces an existing activity in the <see cref="ActiveQueue"/>.
+        /// </summary>
+        /// <param name="context">The context object for the turn.</param>
+        /// <param name="activity">New replacement activity.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>If the activity is successfully sent, the task result contains
+        /// a <see cref="ResourceResponse"/> object containing the ID that the receiving
+        /// channel assigned to the activity.
+        /// <para>Before calling this, set the ID of the replacement activity to the ID
+        /// of the activity to replace.</para></remarks>
+        /// <seealso cref="ITurnContext.OnUpdateActivity(UpdateActivityHandler)"/>
         public override Task<ResourceResponse> UpdateActivityAsync(ITurnContext context, Activity activity, CancellationToken cancellationToken)
         {
             lock (_activeQueueLock)
@@ -165,6 +219,17 @@ namespace Microsoft.Bot.Builder.Adapters
             return Task.FromResult(new ResourceResponse());
         }
 
+        /// <summary>
+        /// Deletes an existing activity in the <see cref="ActiveQueue"/>.
+        /// </summary>
+        /// <param name="context">The context object for the turn.</param>
+        /// <param name="reference">Conversation reference for the activity to delete.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>The <see cref="ConversationReference.ActivityId"/> of the conversation
+        /// reference identifies the activity to delete.</remarks>
+        /// <seealso cref="ITurnContext.OnDeleteActivity(DeleteActivityHandler)"/>
         public override Task DeleteActivityAsync(ITurnContext context, ConversationReference reference, CancellationToken cancellationToken)
         {
             lock (_activeQueueLock)
@@ -190,12 +255,14 @@ namespace Microsoft.Bot.Builder.Adapters
         }
 
         /// <summary>
-        /// NOTE: this resets the queue, it doesn't actually maintain multiple converstion queues.
+        /// Creates a new conversation on the specified channel.
         /// </summary>
-        /// <param name="channelId"></param>
-        /// <param name="callback"></param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns></returns>
+        /// <param name="channelId">The ID of the channel.</param>
+        /// <param name="callback">The bot logic to call when the conversation is created.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>This resets the <see cref="ActiveQueue"/>, and does not maintain multiple converstion queues.</remarks>
         public Task CreateConversationAsync(string channelId, Func<ITurnContext, Task> callback, CancellationToken cancellationToken)
         {
             ActiveQueue.Clear();
@@ -206,9 +273,10 @@ namespace Microsoft.Bot.Builder.Adapters
         }
 
         /// <summary>
-        /// Called by TestFlow to check next reply.
+        /// Dequeues and returns the next bot response from the <see cref="ActiveQueue"/>.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The next activity in the queue; or null, if the queue is empty.</returns>
+        /// <remarks>A <see cref="TestFlow"/> object calls this to get the next response from the bot.</remarks>
         public IActivity GetNextReply()
         {
             lock (_activeQueueLock)
@@ -223,10 +291,12 @@ namespace Microsoft.Bot.Builder.Adapters
         }
 
         /// <summary>
-        /// Called by TestFlow to get appropriate activity for conversationReference of testbot.
+        /// Creates a message activity from text and the current conversational context.
         /// </summary>
-        /// <param name="text"></param>
-        /// <returns></returns>
+        /// <param name="text">The message text.</param>
+        /// <returns>An appropriate message activity.</returns>
+        /// <remarks>A <see cref="TestFlow"/> object calls this to get a message activity
+        /// appropriate to the current conversation.</remarks>
         public Activity MakeActivity(string text = null)
         {
             Activity activity = new Activity
