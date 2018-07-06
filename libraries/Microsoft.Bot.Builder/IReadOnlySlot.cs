@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder
 {
-    public interface IReadOnlySlot<T>
+    public interface IReadOnlySlot
     {
-        Task<T> GetAsync(TurnContext context);
+        Task<object> GetAsync(TurnContext context);
 
         Task<bool> HasAsync(TurnContext context);
 
-        Task<IEnumerable<SlotHistoryValue<T>>> HistoryAsync(TurnContext context);
+        Task<IEnumerable<SlotHistoryValue<object>>> HistoryAsync(TurnContext context);
     }
 }
