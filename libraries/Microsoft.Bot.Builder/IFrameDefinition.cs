@@ -4,10 +4,10 @@ namespace Microsoft.Bot.Builder
 {
     public interface IFrameDefinition
     {
-        string FrameScope { get; set; }
+        string Scope { get; set; }
 
         string NameSpace { get; set; }
 
-        List<ISlotDefinition> Slots { get; set; }
+        List<ISlotDefinition> SlotDefinitions { get; set; }
     }
 }
