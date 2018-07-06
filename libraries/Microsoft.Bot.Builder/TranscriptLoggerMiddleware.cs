@@ -11,7 +11,7 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder
 {
     /// <summary>
-    /// When added, this middleware will log incoming and outgoing activitites to a ITranscriptStore.
+    /// Middleware for logging incoming and outgoing activitites to an <see cref="ITranscriptStore"/>.
     /// </summary>
     public class TranscriptLoggerMiddleware : IMiddleware
     {
@@ -23,19 +23,22 @@ namespace Microsoft.Bot.Builder
         /// <summary>
         /// Initializes a new instance of the <see cref="TranscriptLoggerMiddleware"/> class.
         /// </summary>
-        /// <param name="transcriptLogger">The transcript logger to use.</param>
+        /// <param name="transcriptLogger">The conversation store to use.</param>
         public TranscriptLoggerMiddleware(ITranscriptLogger transcriptLogger)
         {
             logger = transcriptLogger ?? throw new ArgumentNullException("TranscriptLoggerMiddleware requires a ITranscriptLogger implementation.  ");
         }
 
         /// <summary>
-        /// initialization for middleware turn.
+        /// Records incoming and outgoing activities to the conversation store.
         /// </summary>
-        /// <param name="context"></param>
-        /// <param name="nextTurn"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
+        /// <param name="context">The context object for this turn.</param>
+        /// <param name="nextTurn">The delegate to call to continue the bot middleware pipeline.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <seealso cref="ITurnContext"/>
+        /// <seealso cref="Bot.Schema.IActivity"/>
         public async Task OnTurnAsync(ITurnContext context, NextDelegate nextTurn, CancellationToken cancellationToken)
         {
             // log incoming activity at beginning of turn

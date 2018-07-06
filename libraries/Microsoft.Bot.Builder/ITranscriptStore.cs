@@ -8,7 +8,7 @@ using Microsoft.Bot.Schema;
 namespace Microsoft.Bot.Builder
 {
     /// <summary>
-    /// Transcript logger stores activities for conversations for recall.
+    /// Represents a store for recording conversations.
     /// </summary>
     public interface ITranscriptStore : ITranscriptLogger
     {
