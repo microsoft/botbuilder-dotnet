@@ -6,22 +6,27 @@ using System.Collections.Generic;
 
 namespace Microsoft.Bot.Connector.Authentication
 {
+    /// <summary>
+    /// Contains helper methods for verifying JWT endorsements.
+    /// </summary>
     public static class EndorsementsValidator
     {
         /// <summary>
-        /// Verify that the set of ChannelIds, which come from the incoming activities,
-        /// all match the endorsements found on the JWT Token. 
-        /// For example, if an Activity comes from webchat, that channelId says 
-        /// says "webchat" and the jwt token endorsement MUST match that. 
+        /// Verify that a channel matches the endorsements found on the JWT token.
+        /// For example, if an <see cref="Schema.Activity"/> comes from WebChat, that activity's
+        /// <see cref="Schema.Activity.ChannelId"/> property is set to "webchat" and the signing party
+        /// of the JWT token must have a corresponding endorsement of “Webchat”.
         /// </summary>
-        /// <param name="channelId">The channel name, typically extracted from the activity.ChannelId field, that
-        /// to which the Activity is affinitized.</param>
-        /// <param name="endorsements">Whoever signed the JWT token is permitted to send activities only for
-        /// some specific channels. That list is the endorsement list, and is validated here against the channelId.</param>
-        /// <returns>True is the channelId is found in the Endorsement set. False if the channelId is not found.</returns>
+        /// <param name="channelId">The ID of the channel to validate, typically extracted from the activity's
+        /// <see cref="Schema.Activity.ChannelId"/> property, that to which the Activity is affinitized.</param>
+        /// <param name="endorsements">The JWT token’s signing party is permitted to send activities only for
+        /// specific channels. That list, the set of channels the service can sign for, is called the the endorsement list.
+        /// The activity’s <see cref="Schema.Activity.ChannelId"/> MUST be found in the endorsement list, or the incoming 
+        /// activity is not considered valid.</param>
+        /// <returns>True if the channel ID is found in the endorsements list; otherwise, false.</returns>
         public static bool Validate(string channelId, HashSet<string> endorsements)
         {
-            // If the Activity came in and doesn't have a Channel ID then it's making no 
+            // If the Activity came in and doesn't have a channel ID then it's making no 
             // assertions as to who endorses it. This means it should pass. 
             if (string.IsNullOrEmpty(channelId))
                 return true;
