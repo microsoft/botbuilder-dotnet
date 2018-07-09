@@ -24,8 +24,10 @@ namespace Microsoft.Bot.Builder.TraceExtensions
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
-        /// <remarks>If the activity is successfully sent, the task result contains
-        /// a <see cref="ResourceResponse"/> object with a default ID.</remarks>
+        /// <remarks>If the adapter is being hosted in the Emulator, the task result contains
+        /// a <see cref="ResourceResponse"/> object with the original trace activity's ID; otherwise,
+        /// it containsa <see cref="ResourceResponse"/> object containing the ID that the receiving
+        /// channel assigned to the activity.</remarks>
         public static Task<ResourceResponse> TraceActivityAsync(this ITurnContext turnContext, string name, object value = null, string valueType = null, [CallerMemberName] string label = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             return turnContext.SendActivityAsync(turnContext.Activity.CreateTrace(name, value, valueType, label), cancellationToken);
