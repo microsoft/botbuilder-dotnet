@@ -163,7 +163,7 @@ namespace Microsoft.Bot.Schema
         /// <param name="name">Name of the operation</param>
         /// <param name="value">value of the operation</param>
         /// <param name="valueType">valueType if helpful to identify the value schema (default is value.GetType().Name)</param>
-        /// <param name="label">descritive label of context. (Default is calling function name)</param>
+        /// <param name="label">descriptive label of context. (Default is calling function name)</param>
         public static ITraceActivity CreateTraceActivity(string name, string valueType = null, object value = null, [CallerMemberName] string label=null)
         {
             return new Activity(ActivityTypes.Trace)
@@ -259,7 +259,7 @@ namespace Microsoft.Bot.Schema
         public IInvokeActivity AsInvokeActivity() { return IsActivity(ActivityTypes.Invoke) ? this : null; }
 
         /// <summary>
-        /// Return an IMessageUpdateAcitvity if this is a MessageUpdate activity
+        /// Return an IMessageUpdateActivity if this is a MessageUpdate activity
         /// </summary>
         /// <returns></returns>
         public IMessageUpdateActivity AsMessageUpdateActivity() { return IsActivity(ActivityTypes.MessageUpdate) ? this : null; }
@@ -380,14 +380,14 @@ namespace Microsoft.Bot.Schema
         }
 
         /// <summary>
-        /// Updates an activity with the delivery information from an existing 
+        /// Updates this activity with the delivery information from an existing 
         /// conversation reference.
         /// </summary>
         /// <param name="reference">The conversation reference.</param>
         /// <param name="isIncoming">(Optional) <c>true</c> to treat the activity as an 
         /// incoming activity, where the bot is the recipient; otherwaire <c>false</c>.
         /// Default is <c>false</c>, and the activity will show the bot as the sender.</param>
-        /// <remarks>Call <see cref="GetConversationReference"/> on an incoming
+        /// <remarks>Call <see cref="GetConversationReference()"/> on an incoming
         /// activity to get a conversation reference that you can then use to update an
         /// outgoing activity with the correct delivery information.
         /// </remarks>
