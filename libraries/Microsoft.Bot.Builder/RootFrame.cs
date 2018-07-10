@@ -8,9 +8,11 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder
 {
-    public class FrameRoot : IFrame
+    public class RootFrame : IFrame
     {
-        public FrameRoot(IStorage storage, IFrameDefinition definition)
+        private readonly string _cacheKey = $"RootFrame-{Guid.NewGuid()}";
+
+        public RootFrame(IStorage storage, FrameDefinition definition)
         {
             if (storage == null)
             {
@@ -61,7 +63,7 @@ namespace Microsoft.Bot.Builder
             throw new NotImplementedException();
         }
 
-        public Task SlotValueChangedAsync(TurnContext context, List<string> tags, object value)
+        public Task SlotValueChangedAsync(TurnContext context, string[] tags, object value)
         {
             throw new NotImplementedException();
         }

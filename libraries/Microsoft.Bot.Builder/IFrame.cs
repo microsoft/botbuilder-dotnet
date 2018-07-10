@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder
@@ -14,6 +13,6 @@ namespace Microsoft.Bot.Builder
 
         Task LoadAsync(TurnContext context, bool accessed = false);
 
-        Task SlotValueChangedAsync(TurnContext context, List<string> tags, object value);
+        Task SlotValueChangedAsync(TurnContext context, string[] tags, object value);
     }
 }

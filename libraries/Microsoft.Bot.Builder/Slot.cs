@@ -10,7 +10,7 @@ namespace Microsoft.Bot.Builder
 {
     public class Slot : IReadWriteSlot
     {
-        public Slot(IFrame frame, ISlotDefinition definition)
+        public Slot(IFrame frame, SlotDefinition definition)
         {
             this.Frame = frame ?? throw new ArgumentNullException(nameof(frame));
             this.Definition = definition ?? throw new ArgumentNullException(nameof(definition));
@@ -18,7 +18,7 @@ namespace Microsoft.Bot.Builder
             this.Frame.AddSlot(this);
         }
 
-        public ISlotDefinition Definition { get; private set; }
+        public SlotDefinition Definition { get; private set; }
 
         public IFrame Frame { get; private set; }
 
