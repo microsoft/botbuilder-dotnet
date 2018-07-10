@@ -7,13 +7,18 @@ using Newtonsoft.Json.Linq;
 namespace Microsoft.Bot.Schema
 {
     /// <summary>
-    /// Addition helper code for ChannelAccount objects 
+    /// Channel account information needed to route a message
     /// </summary>
     public partial class ChannelAccount 
     {
         /// <summary>
-        /// Extension data for overflow of properties
+        /// Gets or sets properties that are not otherwise defined by the <see cref="ChannelAccount"/> type but that
+        /// might appear in the REST JSON object.
         /// </summary>
+        /// <value>The extended properties for the object.</value>
+        /// <remarks>With this, properties not represented in the defined type are not dropped when
+        /// the JSON object is deserialized, but are instead stored in this property. Such properties
+        /// will be written to a JSON object when the instance is serialized.</remarks>
         [JsonExtensionData(ReadData = true, WriteData = true)]
         public JObject Properties { get; set; } = new JObject();
     }
