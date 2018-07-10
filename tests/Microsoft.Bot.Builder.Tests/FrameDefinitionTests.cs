@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Builder.Tests
             var fd = new FrameDefinition()
             {
                 Scope = targetScope,
-                NameSpace = targetScope,
+                NameSpace = targetNs,
             };
 
             Assert.AreEqual(targetScope, fd.Scope);
