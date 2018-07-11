@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder
@@ -12,15 +11,14 @@ namespace Microsoft.Bot.Builder
     {
         private readonly string _cacheKey = $"RootFrame-{Guid.NewGuid()}";
         private readonly FrameDefinition _definition;
+        private readonly Dictionary<string, IReadWriteSlot> _slots = new Dictionary<string, IReadWriteSlot>();
 
-        public RootFrame(IStorage storage, FrameDefinition definition)
+        public RootFrame(FrameDefinition definition)
         {
-            if (storage == null)
+            if (definition == null)
             {
-                throw new ArgumentNullException(nameof(storage));
+                throw new ArgumentNullException(nameof(definition));
             }
-
-            _definition = definition ?? throw new ArgumentNullException(nameof(definition));
 
             if (string.IsNullOrWhiteSpace(definition.NameSpace))
             {
@@ -31,6 +29,8 @@ namespace Microsoft.Bot.Builder
             {
                 throw new ArgumentException(nameof(definition.Scope));
             }
+
+            _definition = definition;
 
             if (definition.SlotDefinitions != null)
             {
@@ -50,7 +50,49 @@ namespace Microsoft.Bot.Builder
 
         public void AddSlot(IReadWriteSlot slot)
         {
-            throw new NotImplementedException();
+            if (slot == null)
+            {
+                throw new ArgumentNullException(nameof(slot));
+            }
+
+            if (slot.Definition == null)
+            {
+                throw new ArgumentNullException(nameof(slot.Definition));
+            }
+
+            if (string.IsNullOrWhiteSpace(slot.Definition.Name))
+            {
+                throw new ArgumentNullException(nameof(slot.Definition.Name));
+            }
+
+            if (slot.Frame != this)
+            {
+                throw new InvalidOperationException($"RootFrame.addSlot(): The slot named '{slot.Definition.Name}' has already been added to a different frame.");
+            }
+
+            if (_slots.ContainsKey(slot.Definition.Name))
+            {
+                throw new InvalidOperationException($"RootFrame.addSlot(): A slot named '{slot.Definition.Name}' has already been added to the current frame.");
+            }
+
+            _slots[slot.Definition.Name] = slot;
+        }
+
+        public IReadWriteSlot GetSlot(string slotName)
+        {
+            if (string.IsNullOrWhiteSpace(slotName))
+            {
+                throw new ArgumentNullException(nameof(slotName));
+            }
+
+            if (_slots.TryGetValue(slotName, out var slot))
+            {
+                return slot;
+            }
+            else
+            {
+                throw new KeyNotFoundException($"RootFrame.getSlot(): A slot named '{slotName}' couldn't be found.");
+            }
         }
 
         public Task LoadAsync(TurnContext context, bool accessed = false)
