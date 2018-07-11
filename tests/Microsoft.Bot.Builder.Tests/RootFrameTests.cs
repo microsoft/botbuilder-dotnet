@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
 
 namespace Microsoft.Bot.Builder.Tests
 {
@@ -13,9 +14,16 @@ namespace Microsoft.Bot.Builder.Tests
     {
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
-        public void Ctor_Should_Throw_On_NullFrameDefinition()
+        public void Ctor_Should_Throw_On_NullStorage()
         {
-            var x = new RootFrame(null);
+            var x = new RootFrame(null, new FrameDefinition());
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void Ctor_Should_Throw_On_NullFrameDefinition()
+        {            
+            var x = new RootFrame(new Mock<IStorage>().Object, null);
         }
 
         [TestMethod]
@@ -23,8 +31,8 @@ namespace Microsoft.Bot.Builder.Tests
         public void Ctor_Should_Throw_On_Empty_Definition_Namespace()
         {            
             var fd = new FrameDefinition();
-            var x = new RootFrame(fd);
-        }
+            var x = new RootFrame(new Mock<IStorage>().Object, fd);
+        }  
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
@@ -35,7 +43,7 @@ namespace Microsoft.Bot.Builder.Tests
                 NameSpace = "testNamespace",
             };
 
-            var x = new RootFrame(fd);
+            var x = new RootFrame(new Mock<IStorage>().Object, fd);
         }
 
         [TestMethod]
@@ -47,7 +55,7 @@ namespace Microsoft.Bot.Builder.Tests
                 Scope = "testScope"
             };
 
-            var x = new RootFrame(fd);
+            var x = new RootFrame(new Mock<IStorage>().Object, fd);
         }
 
         [TestMethod]
@@ -166,7 +174,7 @@ namespace Microsoft.Bot.Builder.Tests
                 Scope = "testScope",
             };
 
-            return new RootFrame(fd);
+            return new RootFrame(new Mock<IStorage>().Object, fd);
         }
     }
 }

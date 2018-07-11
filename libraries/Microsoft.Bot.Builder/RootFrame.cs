@@ -12,9 +12,12 @@ namespace Microsoft.Bot.Builder
         private readonly string _cacheKey = $"RootFrame-{Guid.NewGuid()}";
         private readonly FrameDefinition _definition;
         private readonly Dictionary<string, IReadWriteSlot> _slots = new Dictionary<string, IReadWriteSlot>();
+        private readonly IStorage _storage = null;
 
-        public RootFrame(FrameDefinition definition)
+        public RootFrame(IStorage storage, FrameDefinition definition)
         {
+            _storage = storage ?? throw new ArgumentNullException(nameof(storage));
+
             if (definition == null)
             {
                 throw new ArgumentNullException(nameof(definition));
@@ -47,6 +50,8 @@ namespace Microsoft.Bot.Builder
         public string Scope => _definition.Scope;
 
         public string Namespace => _definition.NameSpace;
+
+        public IStorage Storage => _storage;
 
         public void AddSlot(IReadWriteSlot slot)
         {
