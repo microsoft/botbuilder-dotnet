@@ -45,11 +45,12 @@ namespace Microsoft.Bot.Builder.Integration
         public IList<IMiddleware> Middleware { get; } = new List<IMiddleware>();
 
         /// <summary>
-        /// Gets or sets whether an endpoint should be enabled that allows external events to be sent to the bot.
+        /// Gets or sets whether an endpoint should be enabled that allows external <see cref="Microsoft.Bot.Schema.IEventActivity">event activities</see> to be sent to the bot.
         /// </summary>
         /// <value>
-        /// True if the external events endpoint should be enabled, otherwise false.
+        /// True if the endpoint should be enabled, otherwise false.
         /// </value>
+        /// <seealso cref="BotFrameworkPaths.ExternalEventsPath" />
         public bool EnableExternalEventsEndpoint { get; set; }
 
         /// <summary>
