@@ -3,9 +3,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
 
 namespace Microsoft.Bot.Builder.Tests
 {
@@ -30,7 +28,7 @@ namespace Microsoft.Bot.Builder.Tests
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
-        public void Ctor_Should_Throw_On_Empty_Definition_Ccope()
+        public void Ctor_Should_Throw_On_Empty_Definition_Scope()
         {            
             var fd = new FrameDefinition()
             {
@@ -62,7 +60,7 @@ namespace Microsoft.Bot.Builder.Tests
         }  
 
         [TestMethod]
-        public void Parent_Should_Pickup_Scope_And_Namespace_From_Definition()
+        public void Root_Should_Pickup_Scope_And_Namespace_From_Definition()
         {            
             var root = CreateRootFrame("testNamespace", "testScope");
 
