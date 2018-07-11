@@ -43,5 +43,18 @@ namespace Microsoft.Bot.Builder.Tests
             var x = new Slot(mockFrame.Object, sd);                 
             mockFrame.Verify(t => t.AddSlot(x));
         }
+
+        [TestMethod]
+        public void Ctor_Should_Register_SlotDefinition()
+        {
+            var mockFrame = new Mock<IFrame>();                        
+            var sd = new SlotDefinition()
+            {
+                Name = "testName",
+            };
+
+            var x = new Slot(mockFrame.Object, sd);
+            Assert.IsTrue(x.Definition.Name == "testName");            
+        }
     }
 }

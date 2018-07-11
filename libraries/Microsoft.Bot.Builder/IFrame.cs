@@ -7,7 +7,7 @@ namespace Microsoft.Bot.Builder
 {
     public interface IFrame
     {
-        IFrame Parent { get; set; }
+        IFrame Parent { get; }
 
         void AddSlot(IReadWriteSlot slot);
 

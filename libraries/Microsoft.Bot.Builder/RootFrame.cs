@@ -11,6 +11,7 @@ namespace Microsoft.Bot.Builder
     public class RootFrame : IFrame
     {
         private readonly string _cacheKey = $"RootFrame-{Guid.NewGuid()}";
+        private readonly FrameDefinition _definition;
 
         public RootFrame(IStorage storage, FrameDefinition definition)
         {
@@ -19,10 +20,7 @@ namespace Microsoft.Bot.Builder
                 throw new ArgumentNullException(nameof(storage));
             }
 
-            if (definition == null)
-            {
-                throw new ArgumentNullException(nameof(definition));
-            }
+            _definition = definition ?? throw new ArgumentNullException(nameof(definition));
 
             if (string.IsNullOrWhiteSpace(definition.NameSpace))
             {
@@ -34,9 +32,6 @@ namespace Microsoft.Bot.Builder
                 throw new ArgumentException(nameof(definition.Scope));
             }
 
-            this.Scope = definition.Scope;
-            this.Namespace = definition.NameSpace;
-
             if (definition.SlotDefinitions != null)
             {
                 foreach (var slotDefinition in definition.SlotDefinitions)
@@ -47,11 +42,11 @@ namespace Microsoft.Bot.Builder
             }
         }
 
-        public IFrame Parent { get; set; } = null;
+        public IFrame Parent => null;
 
-        public string Scope { get; private set; }
+        public string Scope => _definition.Scope;
 
-        public string Namespace { get; private set; }
+        public string Namespace => _definition.NameSpace;
 
         public void AddSlot(IReadWriteSlot slot)
         {
