@@ -91,7 +91,7 @@ namespace Microsoft.Bot.Builder.Azure
             var sanitizedKeyBuilder = new StringBuilder(key.Length + ((key.Length - firstIllegalCharIndex + 1) * 3));
 
             // Add all good characters up to the first bad character to the builder first
-            for (int index = 0; index < firstIllegalCharIndex; index++)
+            for (var index = 0; index < firstIllegalCharIndex; index++)
             {
                 sanitizedKeyBuilder.Append(key[index]);
             }
@@ -99,7 +99,7 @@ namespace Microsoft.Bot.Builder.Azure
             var illegalCharacterReplacementMap = IllegalKeyCharacterReplacementMap.Value;
 
             // Now walk the remaining characters, starting at the first known bad character, replacing any bad ones with their designated replacement value from the map
-            for (int index = firstIllegalCharIndex; index < key.Length; index++)
+            for (var index = firstIllegalCharIndex; index < key.Length; index++)
             {
                 var ch = key[index];
 
@@ -218,7 +218,7 @@ namespace Microsoft.Bot.Builder.Azure
                     Document = json,
                 };
 
-                string etag = (change.Value as IStoreItem)?.ETag;
+                var etag = (change.Value as IStoreItem)?.ETag;
                 if (etag == null || etag == "*")
                 {
                     // if new item or * then insert or replace unconditionaly
