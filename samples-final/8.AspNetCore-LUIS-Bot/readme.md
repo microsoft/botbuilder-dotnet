@@ -15,6 +15,8 @@ git clone https://github.com/Microsoft/botbuilder-dotnet.git
     - Luis-ModelId = XXXXXXXXXXXXX
     - Luis-SubscriptionId = YYYYYYYYYYYY
     - Luis-Url = https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/
+    
+NOTE: Once you publish your app on LUIS portal for the first time, it takes some time for the endpoint to become available, about 5 minutes of wait should be sufficient.
 
 ### Visual studio
 - Navigate to the samples folder and open AspNetCore-LUIS-Bot.csproj in Visual studio 
