@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime;
 
-namespace Microsoft.Bot.Builder.Ai.LUIS
+namespace Microsoft.Bot.Builder.Ai.Luis
 {
     /// <summary>
     /// Data describing a LUIS application.

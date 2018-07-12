@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime;
 using Newtonsoft.Json.Linq;
 
-namespace Microsoft.Bot.Builder.Ai.LUIS
+namespace Microsoft.Bot.Builder.Ai.Luis
 {
     /// <inheritdoc />
     /// <summary>
@@ -30,7 +30,7 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
         /// <param name="options">The LUIS request options to use.</param> 
         public LuisRecognizer(LuisApplication luisModel, ILuisRecognizerOptions luisRecognizerOptions = null, LuisPredictionOptions options = null)
         {
-            luisService = new LuisRuntimeAPI(new );
+            luisService = new LuisRuntimeAPI();
             luisOptions = options ?? new LuisOptions();
             this.luisRecognizerOptions = luisRecognizerOptions ?? new LuisRecognizerOptions { Verbose = true };
         }

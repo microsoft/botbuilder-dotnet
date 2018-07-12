@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.Ai.LUIS
+namespace Microsoft.Bot.Builder.Ai.Luis
 {
     /// <summary>
     /// Type for LUIS builtin_datetime.
@@ -59,7 +59,7 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
         /// Gets Timex expressions.
         /// </summary>
         [JsonProperty("timex")]
-        public IReadOnlyList<string> Expressions { get; };
+        public IReadOnlyList<string> Expressions { get; }
 
         /// <inheritdoc/>
         public override string ToString()
