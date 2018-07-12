@@ -77,9 +77,14 @@ namespace Microsoft.Bot.Builder.Azure
         }
 
         /// <summary>
-        /// Removes store items from storage.
+        /// Deletes storage items from storage.
         /// </summary>
-        /// <param name="keys">Array of item keys to remove from the store.</param>
+        /// <param name="keys">keys of the <see cref="IStoreItem"/> objects to delete.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <seealso cref="ReadAsync(string[], CancellationToken)"/>
+        /// <seealso cref="WriteAsync(IDictionary{string, object}, CancellationToken)"/>
         public async Task DeleteAsync(string[] keys, CancellationToken cancellationToken)
         {
             if (keys == null || keys.Length == 0) return;
@@ -96,9 +101,16 @@ namespace Microsoft.Bot.Builder.Azure
         }
 
         /// <summary>
-        /// Loads store items from storage.
+        /// Reads storage items from storage.
         /// </summary>
-        /// <param name="keys">Array of item keys to read from the store.</param>
+        /// <param name="keys">keys of the <see cref="IStoreItem"/> objects to read.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>If the activities are successfully sent, the task result contains
+        /// the items read, indexed by key.</remarks>
+        /// <seealso cref="DeleteAsync(string[], CancellationToken)"/>
+        /// <seealso cref="WriteAsync(IDictionary{string, object}, CancellationToken)"/>
         public async Task<IDictionary<string, object>> ReadAsync(string[] keys, CancellationToken cancellationToken)
         {
             if (keys == null || keys.Length == 0)
@@ -139,9 +151,14 @@ namespace Microsoft.Bot.Builder.Azure
         }
 
         /// <summary>
-        /// Saves store items to storage.
+        /// Writes storage items to storage.
         /// </summary>
-        /// <param name="changes">Map of items to write to storage.</param>
+        /// <param name="changes">The items to write, indexed by key.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <seealso cref="DeleteAsync(string[], CancellationToken)"/>
+        /// <seealso cref="ReadAsync(string[], CancellationToken)"/>
         public async Task WriteAsync(IDictionary<string, object> changes, CancellationToken cancellationToken)
         {
             if (changes == null)
@@ -202,7 +219,7 @@ namespace Microsoft.Bot.Builder.Azure
         }
 
         /// <summary>
-        /// Converts the key into a DocumentID that can be used safely with CosmosDB.
+        /// Converts the key into a Document ID that can be used safely with CosmosDB.
         /// The following characters are restricted and cannot be used in the Id property: '/', '\', '?', '#'
         /// More information at https://docs.microsoft.com/en-us/dotnet/api/microsoft.azure.documents.resource.id?view=azure-dotnet#remarks
         /// </summary>
