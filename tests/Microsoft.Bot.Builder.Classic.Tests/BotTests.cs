@@ -797,7 +797,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                             Score = 1.0
                         }
                     },
-                    Entities = Array.Empty<EntityRecommendation>(),
+                    Entities = Array.Empty<EntityModel>(),
                 });
 
             mock
@@ -805,7 +805,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                 .ReturnsAsync(new LuisResult()
                 {
                     Intents = Array.Empty<IntentRecommendation>(),
-                    Entities = Array.Empty<EntityRecommendation>(),
+                    Entities = Array.Empty<EntityModel>(),
                 });
 
             return mock.Object;
