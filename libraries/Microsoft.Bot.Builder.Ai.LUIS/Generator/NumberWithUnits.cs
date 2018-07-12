@@ -13,31 +13,40 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
     /// </remarks>
     public class NumberWithUnits
     {
-        /// <summary>
-        /// Recognized number, or null if unit only.
-        /// </summary>
-        [JsonProperty("number")]
-        public readonly double? Number;
-
-        /// <summary>
-        /// Normalized recognized unit.
-        /// </summary>
-        [JsonProperty("units")]
-        public readonly string Units;
-
         public NumberWithUnits(double? number, string units)
         {
             Number = number;
             Units = units;
         }
+
+        /// <summary>
+        /// Gets the recognized number, or null if unit only.
+        /// </summary>
+        /// <value>
+        /// Recognized number, or null if unit only.
+        /// </value>
+        [JsonProperty("number")]
+        public double? Number { get; }
+
+        /// <summary>
+        /// Gets the normalized recognized unit.
+        /// </summary>
+        /// <value>
+        /// Normalized recognized unit.
+        /// </value>
+        [JsonProperty("units")]
+        public string Units { get; }
     }
 
     /// <summary>
     /// Strongly typed LUIS builtin_age.
     /// </summary>
-    public class Age: NumberWithUnits
+    public class Age : NumberWithUnits
     {
-        public Age(double number, string units) : base(number, units) { }
+        public Age(double number, string units)
+            : base(number, units)
+        {
+        }
 
         public override string ToString() => $"Age({Number} {Units})";
     }
@@ -45,9 +54,13 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
     /// <summary>
     /// Strongly typed LUIS builtin_dimension.
     /// </summary>
-    public class Dimension: NumberWithUnits
+    public class Dimension : NumberWithUnits
     {
-        public Dimension(double number, string units) : base(number, units) { }
+        public Dimension(double number, string units)
+            : base(number, units)
+        {
+        }
+
         public override string ToString() => $"Dimension({Number} {Units})";
     }
 
@@ -56,7 +69,11 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
     /// </summary>
     public class Money : NumberWithUnits
     {
-        public Money(double number, string units) : base(number, units) { }
+        public Money(double number, string units)
+            : base(number, units)
+        {
+        }
+
         public override string ToString() => $"Currency({Number} {Units})";
     }
 
@@ -65,7 +82,11 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
     /// </summary>
     public class Temperature : NumberWithUnits
     {
-        public Temperature(double number, string units) : base(number, units) { }
+        public Temperature(double number, string units)
+            : base(number, units)
+        {
+        }
+
         public override string ToString() => $"Temperature({Number} {Units})";
     }
 }

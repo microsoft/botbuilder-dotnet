@@ -8,13 +8,15 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
 {
     public static class SetField
     {
-        public static void NotNull<T>(out T field, string name, T value) where T : class
+        public static void NotNull<T>(out T field, string name, T value)
+            where T : class
         {
             CheckNull(name, value);
             field = value;
         }
 
-        public static void CheckNull<T>(string name, T value) where T : class
+        public static void CheckNull<T>(string name, T value)
+            where T : class
         {
             if (value == null)
             {
@@ -22,7 +24,8 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
             }
         }
 
-        public static void NotNullFrom<T>(out T field, string name, SerializationInfo info) where T : class
+        public static void NotNullFrom<T>(out T field, string name, SerializationInfo info)
+            where T : class
         {
             var value = (T)info.GetValue(name, typeof(T));
             NotNull(out field, name, value);
