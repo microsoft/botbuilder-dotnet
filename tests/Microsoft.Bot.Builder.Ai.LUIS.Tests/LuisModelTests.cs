@@ -6,7 +6,7 @@ using Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.Ai.LUIS.Tests
+namespace Microsoft.Bot.Builder.Ai.Luis.Tests
 {
     [TestClass]
     public class LuisModelTests

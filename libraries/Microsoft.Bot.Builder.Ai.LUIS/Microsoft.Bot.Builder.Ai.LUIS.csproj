@@ -16,7 +16,7 @@
 
 	<PropertyGroup>
 		<TargetFramework>netstandard2.0</TargetFramework>
-		<PackageId>Microsoft.Bot.Builder.Ai.LUIS</PackageId>
+		<PackageId>Microsoft.Bot.Builder.Ai.Luis</PackageId>
 		<Description>LUIS Middleware and Recognizers for the Microsoft Bot Builder SDK</Description>
 		<Summary>This library implements C# classes for building bots using LUIS.</Summary>
 	</PropertyGroup>
@@ -58,7 +58,7 @@
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime" Version="0.9.0-preview" />
     <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(PackageVersion)' != '' " Version="$(PackageVersion)" />
-		<PackageReference Include="Microsoft.Rest.ClientRuntime" Version="2.3.10" />
+    <PackageReference Include="Microsoft.Rest.ClientRuntime" Version="2.3.11" />
 		<PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
 		<PackageReference Include="StyleCop.Analyzers" Version="1.1.0-beta008" />
 	</ItemGroup>
