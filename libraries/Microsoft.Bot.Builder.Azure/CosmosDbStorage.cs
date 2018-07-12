@@ -120,19 +120,12 @@ namespace Microsoft.Bot.Builder.Azure
         /// <summary>
         /// Deletes storage items from storage.
         /// </summary>
-<<<<<<< HEAD
-        /// <param name="keys">keys of the <see cref="IStoreItem"/> objects to delete.</param>
+        /// <param name="keys">keys of the <see cref="IStoreItem"/> objects to remove from the store.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <seealso cref="ReadAsync(string[], CancellationToken)"/>
         /// <seealso cref="WriteAsync(IDictionary{string, object}, CancellationToken)"/>
-=======
-        /// <param name="keys">Array of item keys to remove from the store.</param>
-        /// <param name="cancellationToken">A cancellation token that can be used by other objects
-        /// or threads to receive notice of cancellation.</param>
-        /// <returns>>A <see cref="Task"/> representing the asynchronous operation.</returns>
->>>>>>> master
         public async Task DeleteAsync(string[] keys, CancellationToken cancellationToken)
         {
             if (keys == null || keys.Length == 0)
@@ -154,8 +147,7 @@ namespace Microsoft.Bot.Builder.Azure
         /// <summary>
         /// Reads storage items from storage.
         /// </summary>
-<<<<<<< HEAD
-        /// <param name="keys">keys of the <see cref="IStoreItem"/> objects to read.</param>
+        /// <param name="keys">keys of the <see cref="IStoreItem"/> objects to read from the store.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
@@ -163,12 +155,6 @@ namespace Microsoft.Bot.Builder.Azure
         /// the items read, indexed by key.</remarks>
         /// <seealso cref="DeleteAsync(string[], CancellationToken)"/>
         /// <seealso cref="WriteAsync(IDictionary{string, object}, CancellationToken)"/>
-=======
-        /// <param name="keys">Array of item keys to read from the store.</param>
-        /// <param name="cancellationToken">A cancellation token that can be used by other objects
-        /// or threads to receive notice of cancellation.</param>
-        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
->>>>>>> master
         public async Task<IDictionary<string, object>> ReadAsync(string[] keys, CancellationToken cancellationToken)
         {
             if (keys == null || keys.Length == 0)
@@ -211,19 +197,12 @@ namespace Microsoft.Bot.Builder.Azure
         /// <summary>
         /// Writes storage items to storage.
         /// </summary>
-<<<<<<< HEAD
-        /// <param name="changes">The items to write, indexed by key.</param>
+        /// <param name="changes">The items to write to storage, indexed by key.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <seealso cref="DeleteAsync(string[], CancellationToken)"/>
         /// <seealso cref="ReadAsync(string[], CancellationToken)"/>
-=======
-        /// <param name="changes">Map of items to write to storage.</param>
-        /// <param name="cancellationToken">A cancellation token that can be used by other objects
-        /// or threads to receive notice of cancellation.</param>
-        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
->>>>>>> master
         public async Task WriteAsync(IDictionary<string, object> changes, CancellationToken cancellationToken)
         {
             if (changes == null)
@@ -284,51 +263,6 @@ namespace Microsoft.Bot.Builder.Azure
         }
 
         /// <summary>
-<<<<<<< HEAD
-        /// Converts the key into a Document ID that can be used safely with CosmosDB.
-        /// The following characters are restricted and cannot be used in the Id property: '/', '\', '?', '#'
-        /// More information at https://docs.microsoft.com/en-us/dotnet/api/microsoft.azure.documents.resource.id?view=azure-dotnet#remarks
-        /// </summary>
-        public static string SanitizeKey(string key)
-        {
-            var firstIllegalCharIndex = key.IndexOfAny(IllegalKeyCharacters);
-
-            // If there are no illegal characters return immediately and avoid any further processing/allocations
-            if (firstIllegalCharIndex == -1) return key;
-
-            // Allocate a builder that assumes that all remaining characters might be replaced to avoid any extra allocations
-            var sanitizedKeyBuilder = new StringBuilder(key.Length + (key.Length - firstIllegalCharIndex + 1) * 3);
-
-            // Add all good characters up to the first bad character to the builder first
-            for (int index = 0; index < firstIllegalCharIndex; index++)
-            {
-                sanitizedKeyBuilder.Append(key[index]);
-            }
-
-            var illegalCharacterReplacementMap = IllegalKeyCharacterReplacementMap.Value;
-
-            // Now walk the remaining characters, starting at the first known bad character, replacing any bad ones with their designated replacement value from the map
-            for (int index = firstIllegalCharIndex; index < key.Length; index++)
-            {
-                var ch = key[index];
-
-                // Check if this next character is considered illegal and, if so, append its replacement; otherwise just append the good character as is
-                if (illegalCharacterReplacementMap.TryGetValue(ch, out var replacement))
-                {
-                    sanitizedKeyBuilder.Append(replacement);
-                }
-                else
-                {
-                    sanitizedKeyBuilder.Append(ch);
-                }
-            }
-
-            return sanitizedKeyBuilder.ToString();
-        }
-
-        /// <summary>
-=======
->>>>>>> master
         /// Internal data structure for storing items in a CosmosDB Collection.
         /// </summary>
         private class DocumentStoreItem
