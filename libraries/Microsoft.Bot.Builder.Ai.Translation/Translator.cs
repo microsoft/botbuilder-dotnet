@@ -31,7 +31,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         /// Creates a new <see cref="Translator"/> object.
         /// </summary>
         /// <param name="apiKey">Your subscription key for the Microsoft Translator Text API.</param>
-        /// <param name="customHttpClient">alternate http client</param>
+        /// <param name="customHttpClient">An alternate HTTP client to use.</param>
         public Translator(string apiKey, HttpClient customHttpClient = null)
         {
             _httpClient = customHttpClient ?? DefaultHttpClient;
@@ -242,6 +242,9 @@ namespace Microsoft.Bot.Builder.Ai.Translation
 
     }
 
+    /// <summary>
+    /// Wraps an HTTP client with which to obtain an access token.
+    /// </summary>
     internal class AzureAuthToken
     {
         private static HttpClient DefaultHttpClient = new HttpClient();
@@ -270,9 +273,10 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         internal HttpStatusCode RequestStatusCode { get; private set; }
 
         /// <summary>
-        /// Creates a client to obtain an access token.
+        /// Creates a new instance of the <see cref="AzureAuthToken"/> class.
         /// </summary>
         /// <param name="key">Subscription key to use to get an authentication token.</param>
+        /// <param name="client">An alternate HTTP client to use.</param>
         internal AzureAuthToken(string key, HttpClient client = null)
         {
             _httpClient = client ?? DefaultHttpClient;
