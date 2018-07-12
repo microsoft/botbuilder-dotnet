@@ -38,8 +38,7 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
             {
                 foreach (var entity in entities)
                 {
-                    Resolution resolution;
-                    if (parser.TryParse(entity.Resolution, out resolution))
+                    if (parser.TryParse(entity.Resolution, out var resolution))
                     {
                         yield return resolution;
                     }
@@ -48,7 +47,7 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
         }
 
         /// <summary>
-        /// Return the next <see cref="BuiltIn.DateTime.DayPart"/>. 
+        /// Return the next <see cref="BuiltIn.DateTime.DayPart"/>.
         /// </summary>
         /// <param name="part">The <see cref="BuiltIn.DateTime.DayPart"/> query.</param>
         /// <returns>The next <see cref="BuiltIn.DateTime.DayPart"/> after the query.</returns>
@@ -64,6 +63,5 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
                 default: throw new NotImplementedException();
             }
         }
-
     }
 }
