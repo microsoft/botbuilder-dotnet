@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+ï»¿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
 using System;
@@ -56,7 +56,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         /// configured by the user to overwrite the translator output to certain vocab by the custom dictionary translation.</param>
         /// <param name="toUserLanguage">Indicates whether to translate messages sent from the bot into the user's language.</param>
         /// <remarks>Each pattern the <paramref name="patterns"/> describes an entity that should not be translated.
-        /// For example, in French <c>je m’appelle ([a-z]+)</c>, which will avoid translation of anything coming after je m’appelle.</remarks>
+        /// For example, in French <c>je mâ€™appelle ([a-z]+)</c>, which will avoid translation of anything coming after je mâ€™appelle.</remarks>
         public TranslationMiddleware(string[] nativeLanguages, string translatorKey, Dictionary<string, List<string>> patterns, CustomDictionary userCustomDictonaries, bool toUserLanguage = false) : this(nativeLanguages, translatorKey, toUserLanguage)
         {
             if (patterns != null)
@@ -79,7 +79,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         /// <param name="isUserLanguageChanged">A delegate for checking whether the user requested to change their language.</param>
         /// <param name="toUserLanguage">Indicates whether to translate messages sent from the bot into the user's language.</param>
         /// <remarks>Each pattern the <paramref name="patterns"/> describes an entity that should not be translated.
-        /// For example, in French <c>je m’appelle ([a-z]+)</c>, which will avoid translation of anything coming after je m’appelle.</remarks>
+        /// For example, in French <c>je mâ€™appelle ([a-z]+)</c>, which will avoid translation of anything coming after je mâ€™appelle.</remarks>
         public TranslationMiddleware(string[] nativeLanguages, string translatorKey, Dictionary<string, List<string>> patterns, CustomDictionary userCustomDictonaries, Func<ITurnContext, string> getUserLanguage, Func<ITurnContext, Task<bool>> isUserLanguageChanged, bool toUserLanguage = false) : this(nativeLanguages, translatorKey, patterns, userCustomDictonaries, toUserLanguage)
         {
             _getUserLanguage = getUserLanguage ?? throw new ArgumentNullException(nameof(getUserLanguage));
@@ -97,6 +97,11 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         /// </summary>
         /// <param name="context">The context object for this turn.</param>
         /// <param name="next">The delegate to call to continue the bot middleware pipeline.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>This middleware converts the text of incoming message activities to the target language
+        /// on the leading edge of the middleware pipeline.</remarks>
         public virtual async Task OnTurnAsync(ITurnContext context, NextDelegate next, CancellationToken cancellationToken)
         {
             if (context.Activity.Type == ActivityTypes.Message)
@@ -212,6 +217,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         /// <param name="message">The activity containing the text to translate.</param>
         /// <param name="sourceLanguage">An identifier for the language to translate from.</param>
         /// <param name="targetLanguage">An identifier for the language to translate to.</param>
+        /// <param name="InNativeLanguages">Indicates whether the input text does not need to be translated.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <remarks>When the task completes successfully, the <see cref="Activity.Text"/> property
         /// of the message contains the translated text.</remarks>
