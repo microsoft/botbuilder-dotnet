@@ -41,6 +41,18 @@ namespace Microsoft.Bot.Builder
             _period = TimeSpan.FromMilliseconds(period);
         }
 
+        /// <summary>
+        /// Processess an incoming activity.
+        /// </summary>
+        /// <param name="context">The context object for this turn.</param>
+        /// <param name="next">The delegate to call to continue the bot middleware pipeline.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>Spawns a thread that sends the periodic typing activities until the turn ends.
+        /// </remarks>
+        /// <seealso cref="ITurnContext"/>
+        /// <seealso cref="Bot.Schema.IActivity"/>
         public async Task OnTurnAsync(ITurnContext context, NextDelegate next, CancellationToken cancellationToken)
         {
             CancellationTokenSource cts = null;

@@ -363,6 +363,9 @@ namespace Microsoft.Bot.Builder
             await DeleteActivityInternalAsync(conversationReference, _onDeleteActivity, ActuallyDeleteStuff, cancellationToken).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Frees resources.
+        /// </summary>
         public void Dispose()
         {
             Services.Dispose();
