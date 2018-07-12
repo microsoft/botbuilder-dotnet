@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
-using Newtonsoft.Json;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Ai.LUIS
 {
@@ -11,32 +11,47 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
     public class InstanceData
     {
         /// <summary>
+        /// Gets or sets 0-based index in the analyzed text for where entity starts.
+        /// </summary>
+        /// <value>
         /// 0-based index in the analyzed text for where entity starts.
-        /// </summary>
+        /// </value>
         [JsonProperty("startIndex")]
-        public int StartIndex;
+        public int StartIndex { get; set; }
 
         /// <summary>
+        /// Gets or sets 0-based index of the first character beyond the recognized entity.
+        /// </summary>
+        /// <value>
         /// 0-based index of the first character beyond the recognized entity.
-        /// </summary>
+        /// </value>
         [JsonProperty("endIndex")]
-        public int EndIndex;
+        public int EndIndex { get; set; }
 
         /// <summary>
+        /// Gets or sets word broken and normalized text for the entity.
+        /// </summary>
+        /// <value>
         /// Word broken and normalized text for the entity.
-        /// </summary>
+        /// </value>
         [JsonProperty("text")]
-        public string Text;
+        public string Text { get; set; }
 
         /// <summary>
+        /// Gets or sets optional confidence in the recognition.
+        /// </summary>
+        /// <value>
         /// Optional confidence in the recognition.
-        /// </summary>
+        /// </value>
         [JsonProperty("score")]
-        public double? Score;
+        public double? Score { get; set; }
 
         /// <summary>
-        /// Any extra properties.
+        /// Gets or sets any extra properties.
         /// </summary>
+        /// <value>
+        /// Any extra properties.
+        /// </value>
         [JsonExtensionData(ReadData = true, WriteData = true)]
         public IDictionary<string, object> Properties { get; set; }
     }
