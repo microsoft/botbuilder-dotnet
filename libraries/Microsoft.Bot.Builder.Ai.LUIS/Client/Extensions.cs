@@ -4,6 +4,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Cognitive.LUIS.Models;
 
 namespace Microsoft.Bot.Builder.Ai.LUIS
@@ -62,6 +64,44 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
                 case BuiltIn.DateTime.DayPart.NI: return BuiltIn.DateTime.DayPart.MO;
                 default: throw new NotImplementedException();
             }
+        }
+
+        /// <summary>
+        /// Query the LUIS service using this text.
+        /// </summary>
+        /// <param name="service">LUIS service.</param>
+        /// <param name="text">The query text.</param>
+        /// <param name="token">The cancellation token.</param>
+        /// <returns>The LUIS result.</returns>
+        public static async Task<LuisResult> QueryAsync(this ILuisService service, string text, CancellationToken token)
+        {
+            var luisRequest = service.ModifyRequest(new LuisRequest(query: text));
+            return await service.QueryAsync(luisRequest, token).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Query the LUIS service using this request.
+        /// </summary>
+        /// <param name="service">LUIS service.</param>
+        /// <param name="request">Query request.</param>
+        /// <param name="token">Cancellation token.</param>
+        /// <returns>LUIS result.</returns>
+        public static async Task<LuisResult> QueryAsync(this ILuisService service, LuisRequest request, CancellationToken token)
+        {
+            service.ModifyRequest(request);
+            var uri = service.BuildUri(request);
+            return await service.QueryAsync(uri, token).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Builds luis uri with text query.
+        /// </summary>
+        /// <param name="service">LUIS service.</param>
+        /// <param name="text">The query text.</param>
+        /// <returns>The LUIS request Uri.</returns>
+        public static Uri BuildUri(this ILuisService service, string text)
+        {
+            return service.BuildUri(service.ModifyRequest(new LuisRequest(query: text)));
         }
     }
 }
