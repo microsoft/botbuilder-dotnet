@@ -5,8 +5,8 @@ namespace Microsoft.Bot.Builder
 {
     public class SlotHistoryPolicy
     {
-        public int MaxCount { get; set; }
+        public int MaxCount { get; set; } = 0;
 
-        public int ExpiresAfterSeconds { get; set; }
+        public int ExpiresAfterSeconds { get; set; } = 0;
     }
 }

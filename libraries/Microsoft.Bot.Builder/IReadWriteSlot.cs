@@ -7,7 +7,7 @@ namespace Microsoft.Bot.Builder
 {
     public interface IReadWriteSlot : IReadOnlySlot
     {
-        ISlotDefinition Definition { get; }
+        SlotDefinition Definition { get; }
 
         IFrame Frame { get;  }
 
