@@ -169,7 +169,7 @@ namespace Microsoft.Bot.Builder.Ai.Luis.Tests
         }
 
         [TestMethod]
-        public async Task MultipleIntens_CompositeEntity()
+        public async Task MultipleIntens_CompositeEntityModel()
         {
             if (!EnvironmentVariablesDefined())
             {

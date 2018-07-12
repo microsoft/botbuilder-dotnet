@@ -7,6 +7,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime;
+using Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime.Models;
+using Microsoft.Bot.Builder;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Ai.Luis
@@ -88,7 +90,7 @@ namespace Microsoft.Bot.Builder.Ai.Luis
                 new JObject { [NormalizedIntent(luisResult.TopScoringIntent.Intent)] = new JProperty("score", luisResult.TopScoringIntent.Score ?? 0) };
         }
 
-        private static JObject ExtractEntitiesAndMetadata(IList<EntityRecommendation> entities, IList<CompositeEntity> compositeEntities, bool verbose)
+        private static JObject ExtractEntitiesAndMetadata(IList<EntityModel> entities, IList<CompositeEntityModel> compositeEntities, bool verbose)
         {
             var entitiesAndMetadata = new JObject();
             if (verbose)
@@ -101,7 +103,7 @@ namespace Microsoft.Bot.Builder.Ai.Luis
             if (compositeEntities != null && compositeEntities.Any())
             {
                 compositeEntityTypes = new HashSet<string>(compositeEntities.Select(ce => ce.ParentType));
-                entities = compositeEntities.Aggregate(entities, (current, compositeEntity) => PopulateCompositeEntity(compositeEntity, current, entitiesAndMetadata, verbose));
+                entities = compositeEntities.Aggregate(entities, (current, compositeEntity) => PopulateCompositeEntityModel(compositeEntity, current, entitiesAndMetadata, verbose));
             }
 
             foreach (var entity in entities)
@@ -132,7 +134,7 @@ namespace Microsoft.Bot.Builder.Ai.Luis
                             new JValue(double.Parse((string)value));
         }
 
-        private static JToken ExtractEntityValue(EntityRecommendation entity)
+        private static JToken ExtractEntityValue(EntityModel entity)
         {
             if (entity.Resolution == null)
                 return entity.Entity;
@@ -189,7 +191,7 @@ namespace Microsoft.Bot.Builder.Ai.Luis
             }
         }
 
-        private static JObject ExtractEntityMetadata(EntityRecommendation entity)
+        private static JObject ExtractEntityMetadata(EntityModel entity)
         {
             var obj = JObject.FromObject(new
             {
@@ -204,7 +206,7 @@ namespace Microsoft.Bot.Builder.Ai.Luis
             return obj;
         }
 
-        private static string ExtractNormalizedEntityName(EntityRecommendation entity)
+        private static string ExtractNormalizedEntityName(EntityModel entity)
         {
             // Type::Role -> Role
             var type = entity.Type.Split(':').Last();
@@ -227,7 +229,7 @@ namespace Microsoft.Bot.Builder.Ai.Luis
             return type.Replace('.', '_').Replace(' ', '_');
         }
 
-        private static IList<EntityRecommendation> PopulateCompositeEntity(CompositeEntity compositeEntity, IList<EntityRecommendation> entities, JObject entitiesAndMetadata, bool verbose)
+        private static IList<EntityModel> PopulateCompositeEntityModel(CompositeEntityModel compositeEntity, IList<EntityModel> entities, JObject entitiesAndMetadata, bool verbose)
         {
             var childrenEntites = new JObject();
             var childrenEntitiesMetadata = new JObject();
@@ -249,7 +251,7 @@ namespace Microsoft.Bot.Builder.Ai.Luis
                 childrenEntites[MetadataKey] = new JObject();
             }
 
-            var coveredSet = new HashSet<EntityRecommendation>();
+            var coveredSet = new HashSet<EntityModel>();
             foreach (var child in compositeEntity.Children)
             {
                 foreach (var entity in entities)
@@ -283,7 +285,7 @@ namespace Microsoft.Bot.Builder.Ai.Luis
             return entities.Except(coveredSet).ToList();
         }
 
-        private static bool CompositeContainsEntity(EntityRecommendation compositeEntityMetadata, EntityRecommendation entity)
+        private static bool CompositeContainsEntity(EntityModel compositeEntityMetadata, EntityModel entity)
         {
             return entity.StartIndex >= compositeEntityMetadata.StartIndex &&
                    entity.EndIndex <= compositeEntityMetadata.EndIndex;

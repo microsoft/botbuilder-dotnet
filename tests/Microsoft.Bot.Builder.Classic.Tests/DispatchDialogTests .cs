@@ -143,20 +143,20 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                 [Entity("entityTypeA")] IEnumerable<string> entityA_as_IEnumerable_String,
                 [Entity("entityTypeA")] IReadOnlyCollection<string> entityA_as_IReadOnlyCollection_String,
                 [Entity("entityTypeA")] IReadOnlyList<string> entityA_as_IReadOnlyList_String,
-                [Entity("entityTypeA")] EntityRecommendation entityA_as_EntityRecommendation,
-                [Entity("entityTypeA")] IEnumerable<EntityRecommendation> entityA_as_IEnumerable_EntityRecommendation,
-                [Entity("entityTypeA")] IReadOnlyCollection<EntityRecommendation> entityA_as_IReadOnlyCollection_EntityRecommendation,
-                [Entity("entityTypeA")] IReadOnlyList<EntityRecommendation> entityA_as_IReadOnlyList_EntityRecommendation,
+                [Entity("entityTypeA")] EntityModel entityA_as_EntityModel,
+                [Entity("entityTypeA")] IEnumerable<EntityModel> entityA_as_IEnumerable_EntityModel,
+                [Entity("entityTypeA")] IReadOnlyCollection<EntityModel> entityA_as_IReadOnlyCollection_EntityModel,
+                [Entity("entityTypeA")] IReadOnlyList<EntityModel> entityA_as_IReadOnlyList_EntityModel,
                 [Entity("entityTypeB")] string entityB_as_String,
                 [Entity("entityTypeB")] IEnumerable<string> entityB_as_IEnumerable_String,
                 [Entity("entityTypeB")] IReadOnlyCollection<string> entityB_as_IReadOnlyCollection_String,
                 [Entity("entityTypeB")] IReadOnlyList<string> entityB_as_IReadOnlyList_String,
-                [Entity("entityTypeB")] EntityRecommendation entityB_as_EntityRecommendation,
-                [Entity("entityTypeB")] IEnumerable<EntityRecommendation> entityB_as_IEnumerable_EntityRecommendation,
-                [Entity("entityTypeB")] IReadOnlyCollection<EntityRecommendation> entityB_as_IReadOnlyCollection_EntityRecommendation,
-                [Entity("entityTypeB")] IReadOnlyList<EntityRecommendation> entityB_as_IReadOnlyList_EntityRecommendation)
+                [Entity("entityTypeB")] EntityModel entityB_as_EntityModel,
+                [Entity("entityTypeB")] IEnumerable<EntityModel> entityB_as_IEnumerable_EntityModel,
+                [Entity("entityTypeB")] IReadOnlyCollection<EntityModel> entityB_as_IReadOnlyCollection_EntityModel,
+                [Entity("entityTypeB")] IReadOnlyList<EntityModel> entityB_as_IReadOnlyList_EntityModel)
             {
-                return methods.LuisAllTypes(model, intent, result, entityA_as_String, entityA_as_IEnumerable_String, entityA_as_IReadOnlyCollection_String, entityA_as_IReadOnlyList_String, entityA_as_EntityRecommendation, entityA_as_IEnumerable_EntityRecommendation, entityA_as_IReadOnlyCollection_EntityRecommendation, entityA_as_IReadOnlyList_EntityRecommendation, entityB_as_String, entityB_as_IEnumerable_String, entityB_as_IReadOnlyCollection_String, entityB_as_IReadOnlyList_String, entityB_as_EntityRecommendation, entityB_as_IEnumerable_EntityRecommendation, entityB_as_IReadOnlyCollection_EntityRecommendation, entityB_as_IReadOnlyList_EntityRecommendation);
+                return methods.LuisAllTypes(model, intent, result, entityA_as_String, entityA_as_IEnumerable_String, entityA_as_IReadOnlyCollection_String, entityA_as_IReadOnlyList_String, entityA_as_EntityModel, entityA_as_IEnumerable_EntityModel, entityA_as_IReadOnlyCollection_EntityModel, entityA_as_IReadOnlyList_EntityModel, entityB_as_String, entityB_as_IEnumerable_String, entityB_as_IReadOnlyCollection_String, entityB_as_IReadOnlyList_String, entityB_as_EntityModel, entityB_as_IEnumerable_EntityModel, entityB_as_IReadOnlyCollection_EntityModel, entityB_as_IReadOnlyList_EntityModel);
             }
 
             public Task LuisNone(ILuisModel model)
