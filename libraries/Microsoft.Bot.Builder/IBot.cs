@@ -9,7 +9,7 @@ namespace Microsoft.Bot.Builder
     /// Represents a bot that can operate on incoming activities.
     /// </summary>
     /// <remarks>A <see cref="BotAdapter"/> passes incoming activities from the user's
-    /// channel to the bot's <see cref="OnTurn(ITurnContext)"/> method.</remarks>
+    /// channel to the bot's <see cref="OnTurnAsync(ITurnContext)"/> method.</remarks>
     /// <example>
     /// This defines a bot that responds with "Hello world!" to any incoming message.
     /// <code>

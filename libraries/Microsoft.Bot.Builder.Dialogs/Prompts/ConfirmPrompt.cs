@@ -3,6 +3,7 @@
 
 using System;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Dialogs.Choices;
 using static Microsoft.Bot.Builder.Dialogs.PromptValidatorEx;
 
 namespace Microsoft.Bot.Builder.Dialogs
@@ -14,6 +15,12 @@ namespace Microsoft.Bot.Builder.Dialogs
         public ConfirmPrompt(string culture, PromptValidator<ConfirmResult> validator = null)
         {
             _prompt = new ConfirmPromptInternal(culture, validator);
+        }
+
+        public ListStyle Style
+        {
+            get { return _prompt.Style; }
+            set { _prompt.Style = value; }
         }
 
         protected override async Task OnPrompt(DialogContext dc, PromptOptions options, bool isRetry)

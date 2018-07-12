@@ -16,7 +16,7 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Connector
 {
     /// <summary>
-    /// Service client to handle requests to the botframework api service.
+    /// Service client to handle requests to the Bot Framework API service.
     /// </summary>
     public class OAuthClient : ServiceClient<OAuthClient>
     {
@@ -24,24 +24,30 @@ namespace Microsoft.Bot.Connector
         private readonly string _uri;
 
 
+        /// <summary>
+        /// Initializes an new instance of the <see cref="OAuthClient"/> class.
+        /// </summary>
+        /// <param name="client">The Bot Connector REST client to use.</param>
+        /// <param name="uri">The URL to use to get a token.</param>
         public OAuthClient(ConnectorClient client, string uri)
         {
-            Uri uriResult;
-            if (!(Uri.TryCreate(uri, UriKind.Absolute, out uriResult) && uriResult.Scheme == Uri.UriSchemeHttps))
+            if (!(Uri.TryCreate(uri, UriKind.Absolute, out var uriResult) && uriResult.Scheme == Uri.UriSchemeHttps))
                 throw new ArgumentException("Please supply a valid https uri");
-            this._client = client ?? throw new ArgumentNullException(nameof(client));
-            this._uri = uri;
+            _client = client ?? throw new ArgumentNullException(nameof(client));
+            _uri = uri;
         }
 
         /// <summary>
-        /// Get User Token for given user and connection.
+        /// Gets a user token for a given user and connection.
         /// </summary>
-        /// <param name="userId"></param>
-        /// <param name="connectionName"></param>
-        /// <param name="magicCode"></param>
+        /// <param name="userId">The user's ID.</param>
+        /// <param name="connectionName">Name of the auth connection to use.</param>
+        /// <param name="magicCode">The user entered code to validate.</param>
         /// <param name="customHeaders"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>If the task completes successfully, the <see cref="TokenResponse"/> contains the user token.</remarks>
         public async Task<TokenResponse> GetUserTokenAsync(string userId, string connectionName, string magicCode, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (string.IsNullOrWhiteSpace(userId))
@@ -135,14 +141,17 @@ namespace Microsoft.Bot.Connector
                 return null;
             }
         }
-        
+
         /// <summary>
-        /// Signs Out the User for the given ConnectionName.
+        /// Signs the user out of a connection.
         /// </summary>
-        /// <param name="userId"></param>
-        /// <param name="connectionName"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
+        /// <param name="userId">The user's ID.</param>
+        /// <param name="connectionName">Name of the auth connection to sign out of.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>If the task completes successfully, the response indicates whether the call to
+        /// sign the user out was successful.</remarks>
         public async Task<bool> SignOutUserAsync(string userId, string connectionName, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (string.IsNullOrEmpty(userId))
@@ -209,14 +218,17 @@ namespace Microsoft.Bot.Connector
                 return false;
             }
         }
-        
+
         /// <summary>
-        /// Gets the Link to be sent to the user for signin into the given ConnectionName
+        /// Get the raw signin link to be sent to the user for signin for a connection name.
         /// </summary>
-        /// <param name="activity"></param>
-        /// <param name="connectionName"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
+        /// <param name="activity">An activity from the user to the bot.</param>
+        /// <param name="connectionName">Name of the auth connection to get a link for.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>If the task completes successfully and the call to the OAuth client is successful,
+        /// the result contains the signin link.</remarks>
         public async Task<string> GetSignInLinkAsync(IActivity activity, string connectionName, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (string.IsNullOrEmpty(connectionName))
@@ -301,10 +313,10 @@ namespace Microsoft.Bot.Connector
         }
 
         /// <summary>
-        /// Send a dummy OAuth card when the bot is being used on the emulator for testing without fetching a real token.
+        /// Send a dummy OAuth card when the bot is being used on the Emulator for testing without fetching a real token.
         /// </summary>
-        /// <param name="emulateOAuthCards"></param>
-        /// <returns></returns>
+        /// <param name="emulateOAuthCards">Indicates whether the Emulator should emulate the OAuth card.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
         public async Task SendEmulateOAuthCardsAsync(bool emulateOAuthCards)
         {
             bool shouldTrace = ServiceClientTracing.IsEnabled;

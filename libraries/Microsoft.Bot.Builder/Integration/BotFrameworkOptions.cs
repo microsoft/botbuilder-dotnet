@@ -14,7 +14,6 @@ namespace Microsoft.Bot.Builder.Integration
     /// Contains settings that your ASP.NET application uses to initialize the <see cref="BotAdapter"/>
     /// that it adds to the HTTP request pipeline.
     /// </summary>
-    /// <seealso cref="ApplicationBuilderExtensions"/>
     public class BotFrameworkOptions
     {
         /// <summary>

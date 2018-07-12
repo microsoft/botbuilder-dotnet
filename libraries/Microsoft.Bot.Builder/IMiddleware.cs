@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Builder
     /// Represents middleware that can operate on incoming activities.
     /// </summary>
     /// <remarks>A <see cref="BotAdapter"/> passes incoming activities from the user's
-    /// channel to the middleware's <see cref="OnTurnAsync(ITurnContext, NextDelegate)"/>
+    /// channel to the middleware's <see cref="OnTurnAsync(ITurnContext, NextDelegate, CancellationToken)"/>
     /// method.
     /// <para>You can add middleware objects to your adapter’s middleware collection. The
     /// adapter processes and directs incoming activities in through the bot middleware
@@ -22,22 +22,6 @@ namespace Microsoft.Bot.Builder
     /// <para>For each activity, the adapter calls middleware in the order in which you
     /// added it.</para>
     /// </remarks>
-    /// <example>
-    /// This defines middleware that sends "before" and "after" messages
-    /// before and after the adapter calls the bot's
-    /// <see cref="IBot.OnTurnAsync(ITurnContext)"/> method.
-    /// <code>
-    /// public class SampleMiddleware : IMiddleware
-    /// {
-    ///     public async Task OnTurnAsync(ITurnContext context, MiddlewareSet.NextDelegate next)
-    ///     {
-    ///         context.SendActivity("before");
-    ///         await next().ConfigureAwait(false);
-    ///         context.SendActivity("after");
-    ///     }
-    /// }
-    /// </code>
-    /// </example>
     /// <seealso cref="IBot"/>
     public interface IMiddleware
     {
