@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace Microsoft.Bot.Builder.Ai.Translation
 {
     /// <summary>
-    /// Middleware to convert messages between different locales specified
+    /// Middleware that translates from the input locale to a specified locale.
     /// </summary>
     public class LocaleConverterMiddleware : IMiddleware
     {
@@ -20,12 +20,14 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         private readonly Func<ITurnContext, Task<bool>> _setUserLocale;
 
         /// <summary>
-        /// Constructor for developer defined detection of user messages
+        /// Creates a new instance of the <see cref="LocaleConverterMiddleware"/> class.
         /// </summary>
-        /// <param name="getUserLocale">Delegate for getting the user locale</param>
-        /// <param name="checkUserLocaleChanged">Delegate that returns true if the locale was changed (implements logic to change locale by intercepting the message)</param>
-        /// <param name="toLocale">Target Locale</param>
-        /// <param name="localeConverter">An ILocaleConverter instance</param>
+        /// <param name="getUserLocale">Delegate for getting the user locale.</param>
+        /// <param name="checkUserLocaleChanged">Delegate that returns true if the locale was 
+        /// changed (implements logic to change locale by intercepting the message).</param>
+        /// <param name="toLocale">The target locale.</param>
+        /// <param name="localeConverter">The locale converter to use.</param>
+        /// <exception cref="ArgumentNullException"/>
         public LocaleConverterMiddleware(Func<ITurnContext, string> getUserLocale, Func<ITurnContext, Task<bool>> checkUserLocaleChanged, string toLocale, ILocaleConverter localeConverter)
         {
             _localeConverter = localeConverter ?? throw new ArgumentNullException(nameof(localeConverter));
@@ -39,11 +41,15 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         }
 
         /// <summary>
-        /// Incoming activity
+        /// Processess an incoming activity.
         /// </summary>
-        /// <param name="context"></param>
-        /// <param name="next"></param>
-        /// <returns></returns>
+        /// <param name="context">The context object for this turn.</param>
+        /// <param name="next">The delegate to call to continue the bot middleware pipeline.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>This middleware converts the text of incoming message activities to the target locale
+        /// on the leading edge of the middleware pipeline.</remarks>
         public async Task OnTurnAsync(ITurnContext context, NextDelegate next, CancellationToken cancellationToken)
         {
             if (context.Activity.Type == ActivityTypes.Message)
