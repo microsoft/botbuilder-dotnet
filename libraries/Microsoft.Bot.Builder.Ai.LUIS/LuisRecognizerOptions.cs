@@ -9,8 +9,11 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
     public class LuisRecognizerOptions : ILuisRecognizerOptions
     {
         /// <summary>
-        /// Indicates whether to add metadata to the recognizer's results.
+        /// Gets or sets a value indicating whether to add metadata to the recognizer's results.
         /// </summary>
+        /// <value>
+        /// A value indicating whether to add metadata to the recognizer's results.
+        /// </value>
         public bool Verbose { get; set; }
     }
 }
