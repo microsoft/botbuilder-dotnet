@@ -13,34 +13,6 @@ using Microsoft.Recognizers.Text.DateTime;
 namespace Microsoft.Bot.Builder.Ai.Translation
 {
     /// <summary>
-    /// DateAndTimeLocaleFormat Class used to store date format and time format
-    /// for different locales.
-    /// </summary>
-    internal class DateAndTimeLocaleFormat
-    {
-        public string TimeFormat { get; set; }
-
-        public string DateFormat { get; set; }
-    }
-
-    /// <summary>
-    /// TextAndDateTime Class used to store  text and date time object
-    /// from Microsoft Recognizer recognition result.
-    /// </summary>
-    internal class TextAndDateTime
-    {
-        public string Text { get; set; }
-
-        public DateTime DateTime { get; set; }
-
-        public string Type { get; set; }
-
-        public bool Range { get; set; }
-
-        public DateTime EndDateTime { get; set; }
-    }
-
-    /// <summary>
     /// Locale Converter Class Converts dates and times
     /// between different locales.
     /// </summary>
@@ -48,6 +20,11 @@ namespace Microsoft.Bot.Builder.Ai.Translation
     {
         private static readonly ConcurrentDictionary<string, DateAndTimeLocaleFormat> _mapLocaleToFunction = new ConcurrentDictionary<string, DateAndTimeLocaleFormat>();
         private static LocaleConverter _localeConverter;
+
+        private LocaleConverter()
+        {
+            InitLocales();
+        }
 
         public static LocaleConverter Converter
         {
@@ -62,9 +39,129 @@ namespace Microsoft.Bot.Builder.Ai.Translation
             }
         }
 
-        private LocaleConverter()
+        /// <summary>
+        /// Check if a specific locale is available.
+        /// </summary>
+        /// <param name="locale">input locale that we need to check if available.</param>
+        /// <returns>true if the locale is found, otherwise false.</returns>
+        public bool IsLocaleAvailable(string locale)
         {
-            InitLocales();
+            AssertValidLocale(locale);
+            return _mapLocaleToFunction.ContainsKey(locale);
+        }
+
+        /// <summary>
+        /// Convert a message from locale to another locale.
+        /// </summary>
+        /// <param name="message"> input user message.</param>
+        /// <param name="fromLocale">Source Locale.</param>
+        /// <param name="toLocale">Target Locale.</param>
+        /// <returns>The message converted to the target locale.</returns>
+        public string Convert(string message, string fromLocale, string toLocale)
+        {
+            if (string.IsNullOrEmpty(message))
+            {
+                throw new ArgumentException("Empty message");
+            }
+
+            var dates = ExtractDate(message, fromLocale);
+            if (!IsLocaleAvailable(toLocale))
+            {
+                throw new InvalidOperationException($"Unsupported from locale: {toLocale}");
+            }
+
+            var processedMessage = message;
+            foreach (var date in dates)
+            {
+                if (date.Range)
+                {
+                    if (date.Type == "time")
+                    {
+                        var timeRange = $"{string.Format(_mapLocaleToFunction[toLocale].TimeFormat, date.DateTime)} - {string.Format(_mapLocaleToFunction[toLocale].TimeFormat, date.EndDateTime)}";
+                        processedMessage = Regex.Replace(processedMessage, $"\\b{date.Text}\\b", timeRange, RegexOptions.Singleline | RegexOptions.IgnoreCase);
+                    }
+                    else if (date.Type == "date")
+                    {
+                        var dateRange = $"{string.Format(_mapLocaleToFunction[toLocale].DateFormat, date.DateTime)} - {string.Format(_mapLocaleToFunction[toLocale].DateFormat, date.EndDateTime)}";
+                        processedMessage = Regex.Replace(processedMessage, $"\\b{date.Text}\\b", dateRange, RegexOptions.Singleline | RegexOptions.IgnoreCase);
+                    }
+                    else
+                    {
+                        var convertedStartDate = string.Format(_mapLocaleToFunction[toLocale].DateFormat, date.DateTime);
+                        var convertedStartTime = string.Format(_mapLocaleToFunction[toLocale].TimeFormat, date.DateTime);
+
+                        var convertedEndDate = string.Format(_mapLocaleToFunction[toLocale].DateFormat, date.EndDateTime);
+                        var convertedEndTime = string.Format(_mapLocaleToFunction[toLocale].TimeFormat, date.EndDateTime);
+                        processedMessage = Regex.Replace(processedMessage, $"\\b{date.Text}\\b", $"{convertedStartDate} {convertedStartTime} - {convertedEndDate} {convertedEndTime}", RegexOptions.Singleline | RegexOptions.IgnoreCase);
+                    }
+                }
+                else
+                {
+                    if (date.Type == "time")
+                    {
+                        processedMessage = Regex.Replace(processedMessage, $"\\b{date.Text}\\b", string.Format(_mapLocaleToFunction[toLocale].TimeFormat, date.DateTime), RegexOptions.Singleline | RegexOptions.IgnoreCase);
+                    }
+                    else if (date.Type == "date")
+                    {
+                        processedMessage = Regex.Replace(processedMessage, $"\\b{date.Text}\\b", string.Format(_mapLocaleToFunction[toLocale].DateFormat, date.DateTime), RegexOptions.Singleline | RegexOptions.IgnoreCase);
+                    }
+                    else
+                    {
+                        var convertedDate = string.Format(_mapLocaleToFunction[toLocale].DateFormat, date.DateTime);
+                        var convertedTime = string.Format(_mapLocaleToFunction[toLocale].TimeFormat, date.DateTime);
+                        processedMessage = Regex.Replace(processedMessage, $"\\b{date.Text}\\b", $"{convertedDate} {convertedTime}", RegexOptions.Singleline | RegexOptions.IgnoreCase);
+                    }
+                }
+            }
+
+            return processedMessage;
+        }
+
+        /// <summary>
+        /// Get all available locales.
+        /// </summary>
+        /// <returns>The available locales.</returns>
+        public string[] GetAvailableLocales() => _mapLocaleToFunction.Keys.ToArray();
+
+        private static void AssertValidLocale(string locale)
+        {
+            if (string.IsNullOrWhiteSpace(locale))
+            {
+                throw new ArgumentNullException(nameof(locale));
+            }
+        }
+
+        private static string FindCulture(string fromLocale)
+        {
+            var culture = fromLocale.Split('-')[0];
+            if (fromLocale.StartsWith("fr"))
+            {
+                return Culture.French;
+            }
+            else if (fromLocale.StartsWith("de"))
+            {
+                return Culture.German;
+            }
+            else if (fromLocale.StartsWith("pt"))
+            {
+                return Culture.Portuguese;
+            }
+            else if (fromLocale.StartsWith("zh"))
+            {
+                return Culture.Chinese;
+            }
+            else if (fromLocale.StartsWith("es"))
+            {
+                return Culture.Spanish;
+            }
+            else if (fromLocale.StartsWith("en"))
+            {
+                return Culture.English;
+            }
+            else
+            {
+                throw new InvalidOperationException($"Unsupported from locale: {fromLocale}");
+            }
         }
 
         /// <summary>
@@ -93,25 +190,6 @@ namespace Microsoft.Bot.Builder.Ai.Translation
                     TimeFormat = $"{{0:{cultureInfo.DateTimeFormat.ShortTimePattern}}}",
                 };
                 _mapLocaleToFunction[locale] = dateTimeInfo;
-            }
-        }
-
-        /// <summary>
-        /// Check if a specific locale is available.
-        /// </summary>
-        /// <param name="locale">input locale that we need to check if available.</param>
-        /// <returns>true if the locale is found, otherwise false.</returns>
-        public bool IsLocaleAvailable(string locale)
-        {
-            AssertValidLocale(locale);
-            return _mapLocaleToFunction.ContainsKey(locale);
-        }
-
-        private static void AssertValidLocale(string locale)
-        {
-            if (string.IsNullOrWhiteSpace(locale))
-            {
-                throw new ArgumentNullException(nameof(locale));
             }
         }
 
@@ -194,111 +272,5 @@ namespace Microsoft.Bot.Builder.Ai.Translation
 
             return fndDates;
         }
-
-        private static string FindCulture(string fromLocale)
-        {
-            var culture = fromLocale.Split('-')[0];
-            if (fromLocale.StartsWith("fr"))
-            {
-                return Culture.French;
-            }
-            else if (fromLocale.StartsWith("de"))
-            {
-                return Culture.German;
-            }
-            else if (fromLocale.StartsWith("pt"))
-            {
-                return Culture.Portuguese;
-            }
-            else if (fromLocale.StartsWith("zh"))
-            {
-                return Culture.Chinese;
-            }
-            else if (fromLocale.StartsWith("es"))
-            {
-                return Culture.Spanish;
-            }
-            else if (fromLocale.StartsWith("en"))
-            {
-                return Culture.English;
-            }
-            else
-            {
-                throw new InvalidOperationException($"Unsupported from locale: {fromLocale}");
-            }
-        }
-
-        /// <summary>
-        /// Convert a message from locale to another locale.
-        /// </summary>
-        /// <param name="message"> input user message.</param>
-        /// <param name="fromLocale">Source Locale.</param>
-        /// <param name="toLocale">Target Locale.</param>
-        /// <returns>The message converted to the target locale.</returns>
-        public string Convert(string message, string fromLocale, string toLocale)
-        {
-            if (string.IsNullOrEmpty(message))
-            {
-                throw new ArgumentException("Empty message");
-            }
-
-            var dates = ExtractDate(message, fromLocale);
-            if (!IsLocaleAvailable(toLocale))
-            {
-                throw new InvalidOperationException($"Unsupported from locale: {toLocale}");
-            }
-
-            var processedMessage = message;
-            foreach (var date in dates)
-            {
-                if (date.Range)
-                {
-                    if (date.Type == "time")
-                    {
-                        var timeRange = $"{string.Format(_mapLocaleToFunction[toLocale].TimeFormat, date.DateTime)} - {string.Format(_mapLocaleToFunction[toLocale].TimeFormat, date.EndDateTime)}";
-                        processedMessage = Regex.Replace(processedMessage, $"\\b{date.Text}\\b", timeRange, RegexOptions.Singleline | RegexOptions.IgnoreCase);
-                    }
-                    else if (date.Type == "date")
-                    {
-                        var dateRange = $"{string.Format(_mapLocaleToFunction[toLocale].DateFormat, date.DateTime)} - {string.Format(_mapLocaleToFunction[toLocale].DateFormat, date.EndDateTime)}";
-                        processedMessage = Regex.Replace(processedMessage, $"\\b{date.Text}\\b", dateRange, RegexOptions.Singleline | RegexOptions.IgnoreCase);
-                    }
-                    else
-                    {
-                        var convertedStartDate = string.Format(_mapLocaleToFunction[toLocale].DateFormat, date.DateTime);
-                        var convertedStartTime = string.Format(_mapLocaleToFunction[toLocale].TimeFormat, date.DateTime);
-
-                        var convertedEndDate = string.Format(_mapLocaleToFunction[toLocale].DateFormat, date.EndDateTime);
-                        var convertedEndTime = string.Format(_mapLocaleToFunction[toLocale].TimeFormat, date.EndDateTime);
-                        processedMessage = Regex.Replace(processedMessage, $"\\b{date.Text}\\b", $"{convertedStartDate} {convertedStartTime} - {convertedEndDate} {convertedEndTime}", RegexOptions.Singleline | RegexOptions.IgnoreCase);
-                    }
-                }
-                else
-                {
-                    if (date.Type == "time")
-                    {
-                        processedMessage = Regex.Replace(processedMessage, $"\\b{date.Text}\\b", string.Format(_mapLocaleToFunction[toLocale].TimeFormat, date.DateTime), RegexOptions.Singleline | RegexOptions.IgnoreCase);
-                    }
-                    else if (date.Type == "date")
-                    {
-                        processedMessage = Regex.Replace(processedMessage, $"\\b{date.Text}\\b", string.Format(_mapLocaleToFunction[toLocale].DateFormat, date.DateTime), RegexOptions.Singleline | RegexOptions.IgnoreCase);
-                    }
-                    else
-                    {
-                        var convertedDate = string.Format(_mapLocaleToFunction[toLocale].DateFormat, date.DateTime);
-                        var convertedTime = string.Format(_mapLocaleToFunction[toLocale].TimeFormat, date.DateTime);
-                        processedMessage = Regex.Replace(processedMessage, $"\\b{date.Text}\\b", $"{convertedDate} {convertedTime}", RegexOptions.Singleline | RegexOptions.IgnoreCase);
-                    }
-                }
-            }
-
-            return processedMessage;
-        }
-
-        /// <summary>
-        /// Get all available locales.
-        /// </summary>
-        /// <returns>The available locales.</returns>
-        public string[] GetAvailableLocales() => _mapLocaleToFunction.Keys.ToArray();
     }
 }

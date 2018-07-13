@@ -42,52 +42,6 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         }
 
         /// <summary>
-        /// Performs pre-processing to remove "literal" tags and flag sections of the text that will not be translated.
-        /// </summary>
-        /// <param name="textToTranslate">The text to translate.</param>
-        /// <param name="processedTextToTranslate">The processed text after removing the literal tags and other unwanted characters.</param>
-        /// <param name="noTranslatePhrases">The extracted no translate phrases.</param>
-        private void PreprocessMessage(string textToTranslate, out string processedTextToTranslate, out HashSet<string> noTranslatePhrases)
-        {
-            textToTranslate = Regex.Replace(textToTranslate, @"\s+", " "); // used to remove multiple spaces in input user message
-            var literalPattern = "<literal>(.*)</literal>";
-            noTranslatePhrases = new HashSet<string>();
-            var literalMatches = Regex.Matches(textToTranslate, literalPattern);
-            if (literalMatches.Count > 0)
-            {
-                foreach (Match literalMatch in literalMatches)
-                {
-                    if (literalMatch.Groups.Count > 1)
-                    {
-                        noTranslatePhrases.Add("(" + literalMatch.Groups[1].Value + ")");
-                    }
-                }
-
-                textToTranslate = Regex.Replace(textToTranslate, "</?literal>", " ");
-            }
-
-            textToTranslate = Regex.Replace(textToTranslate, @"\s+", " ");
-            processedTextToTranslate = textToTranslate;
-        }
-
-        /// <summary>
-        /// Performs pre-processing to remove "literal" tags .
-        /// </summary>
-        /// <param name="textToTranslate">The text to translate.</param>
-        private string PreprocessMessage(string textToTranslate)
-        {
-            textToTranslate = Regex.Replace(textToTranslate, @"\s+", " "); // used to remove multiple spaces in input user message
-            var literalPattern = "<literal>(.*)</literal>";
-            var literalMatches = Regex.Matches(textToTranslate, literalPattern);
-            if (literalMatches.Count > 0)
-            {
-                textToTranslate = Regex.Replace(textToTranslate, "</?literal>", " ");
-            }
-
-            return Regex.Replace(textToTranslate, @"\s+", " ");
-        }
-
-        /// <summary>
         /// Detects the language of the input text.
         /// </summary>
         /// <param name="textToDetect">The text to translate.</param>
@@ -241,6 +195,52 @@ namespace Microsoft.Bot.Builder.Ai.Translation
                 }
             }
         }
+
+        /// <summary>
+        /// Performs pre-processing to remove "literal" tags and flag sections of the text that will not be translated.
+        /// </summary>
+        /// <param name="textToTranslate">The text to translate.</param>
+        /// <param name="processedTextToTranslate">The processed text after removing the literal tags and other unwanted characters.</param>
+        /// <param name="noTranslatePhrases">The extracted no translate phrases.</param>
+        private void PreprocessMessage(string textToTranslate, out string processedTextToTranslate, out HashSet<string> noTranslatePhrases)
+        {
+            textToTranslate = Regex.Replace(textToTranslate, @"\s+", " "); // used to remove multiple spaces in input user message
+            var literalPattern = "<literal>(.*)</literal>";
+            noTranslatePhrases = new HashSet<string>();
+            var literalMatches = Regex.Matches(textToTranslate, literalPattern);
+            if (literalMatches.Count > 0)
+            {
+                foreach (Match literalMatch in literalMatches)
+                {
+                    if (literalMatch.Groups.Count > 1)
+                    {
+                        noTranslatePhrases.Add("(" + literalMatch.Groups[1].Value + ")");
+                    }
+                }
+
+                textToTranslate = Regex.Replace(textToTranslate, "</?literal>", " ");
+            }
+
+            textToTranslate = Regex.Replace(textToTranslate, @"\s+", " ");
+            processedTextToTranslate = textToTranslate;
+        }
+
+        /// <summary>
+        /// Performs pre-processing to remove "literal" tags .
+        /// </summary>
+        /// <param name="textToTranslate">The text to translate.</param>
+        private string PreprocessMessage(string textToTranslate)
+        {
+            textToTranslate = Regex.Replace(textToTranslate, @"\s+", " "); // used to remove multiple spaces in input user message
+            var literalPattern = "<literal>(.*)</literal>";
+            var literalMatches = Regex.Matches(textToTranslate, literalPattern);
+            if (literalMatches.Count > 0)
+            {
+                textToTranslate = Regex.Replace(textToTranslate, "</?literal>", " ");
+            }
+
+            return Regex.Replace(textToTranslate, @"\s+", " ");
+        }
     }
 
     /// <summary>
@@ -268,12 +268,6 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         // When the last valid token was obtained.
         private DateTime _storedTokenTime = DateTime.MinValue;
 
-        // Gets the subscription key.
-        internal string SubscriptionKey { get; }
-
-        // Gets the HTTP status code for the most recent request to the token service.
-        internal HttpStatusCode RequestStatusCode { get; private set; }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="AzureAuthToken"/> class.
         /// </summary>
@@ -290,6 +284,12 @@ namespace Microsoft.Bot.Builder.Ai.Translation
             this.SubscriptionKey = key;
             this.RequestStatusCode = HttpStatusCode.InternalServerError;
         }
+
+        // Gets the subscription key.
+        internal string SubscriptionKey { get; }
+
+        // Gets the HTTP status code for the most recent request to the token service.
+        internal HttpStatusCode RequestStatusCode { get; private set; }
 
         /// <summary>
         /// Gets a token for the specified subscription.
