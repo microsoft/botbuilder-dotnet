@@ -45,7 +45,6 @@
 		<ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder\Microsoft.Bot.Builder.csproj" />
 		<ProjectReference Include="..\..\libraries\Microsoft.Bot.Connector\Microsoft.Bot.Connector.csproj" />
 		<ProjectReference Include="..\..\libraries\Microsoft.Bot.Schema\Microsoft.Bot.Schema.csproj" />
-		<ProjectReference Include="..\FormTest\FormTest.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
