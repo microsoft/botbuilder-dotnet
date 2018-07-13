@@ -95,14 +95,6 @@ namespace Microsoft.Bot.Builder.Ai.Translation
             _isUserLanguageChanged = isUserLanguageChanged ?? throw new ArgumentNullException(nameof(isUserLanguageChanged));
         }
 
-        private static void AssertValidNativeLanguages(string[] nativeLanguages)
-        {
-            if (nativeLanguages == null)
-            {
-                throw new ArgumentNullException(nameof(nativeLanguages));
-            }
-        }
-
         /// <summary>
         /// Processess an incoming activity.
         /// </summary>
@@ -187,6 +179,14 @@ namespace Microsoft.Bot.Builder.Ai.Translation
             }
 
             await next(cancellationToken).ConfigureAwait(false);
+        }
+
+        private static void AssertValidNativeLanguages(string[] nativeLanguages)
+        {
+            if (nativeLanguages == null)
+            {
+                throw new ArgumentNullException(nameof(nativeLanguages));
+            }
         }
 
         /// <summary>

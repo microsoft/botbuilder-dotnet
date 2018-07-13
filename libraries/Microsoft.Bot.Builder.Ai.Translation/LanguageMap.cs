@@ -9,172 +9,6 @@ namespace Microsoft.Bot.Builder.Ai.Translation
 {
     public class LanguageMap
     {
-        private static LanguageMap _global;
-
-        public LanguageMap()
-        {
-            Add("ar", "Arabic");
-            Add("bs-Latn", "Bosnian");
-            Add("bg", "Bulgarian");
-            Add("ca", "Catalan");
-            Add("zh-CHS", "Chinese Simplified");
-            Add("zh-CHT", "Chinese Traditional");
-            NamesToNames.Add("Chinese", new string[] { "Simplified", "Traditional" });
-
-            Add("hr", "Croatian");
-            Add("cs", "Czech");
-            Add("da", "Danish");
-            Add("nl", "Dutch");
-            Add("en", "English");
-            Add("et", "Estonian");
-            Add("fi", "Finnish");
-            Add("fr", "French");
-            Add("de", "German");
-            Add("el", "Greek");
-            Add("ht", "Haitian Creole");
-            NamesToCodes.Add("Creole", "ht");
-            Add("he", "Hebrew");
-            Add("hi", "Hindi");
-            Add("mww", "Hmong Daw");
-            NamesToCodes.Add("Hmong", "mww");
-            NamesToCodes.Add("Daw", "mww");
-
-            Add("hu", "Hungarian");
-            Add("id", "Indonesian");
-            Add("it", "Italian");
-            Add("ja", "Japanese");
-            Add("sw", "Kiswahili");
-            Add("ko", "Korean");
-            Add("tlh", "Klingon");
-            Add("lv", "Latvian");
-            Add("lt", "Lithuanian");
-            Add("ms", "Malay");
-            Add("mt", "Maltese");
-            Add("no", "Norwegian");
-            Add("fa", "Persian");
-            Add("pl", "Polish");
-            Add("pt", "Portuguese");
-            Add("otq", "Querétaro Otomi");
-            NamesToCodes.Add("Querétaro", "otq");
-            NamesToCodes.Add("Otomi", "otq");
-
-            Add("ro", "Romanian");
-            Add("ru", "Russian");
-            Add("sr-Cyrl", "Serbian Cyrillic");
-            Add("sr-Latn", "Serbian Latin");
-            NamesToNames.Add("Serbian", new string[] { "Cyrillic", "Latin" });
-
-            Add("sk", "Slovak");
-            Add("sl", "Slovenian");
-            Add("es", "Spanish");
-            Add("sv", "Swedish");
-            Add("th", "Thai");
-            Add("tr", "Turkish");
-            Add("uk", "Ukrainian");
-            Add("ur", "Urdu");
-            Add("vi", "Vietnamese");
-            Add("cy", "Welsh");
-            Add("yua", "Yucatec Maya");
-            NamesToCodes.Add("yucatec", "yua");
-            NamesToCodes.Add("maya", "yua");
-        }
-
-        public static LanguageMap Global
-        {
-            get
-            {
-                if (_global == null)
-                {
-                    _global = new LanguageMap();
-                }
-
-                return _global;
-            }
-        }
-
-        private void Add(string code, string name)
-        {
-            CodesToNames.Add(code, name);
-            NamesToCodes.Add(name, code);
-        }
-
-        public string GetCodeForInput(IEnumerable<string> values)
-        {
-            foreach (var value in values)
-            {
-                if (this.NamesToCodes.TryGetValue(value, out var code))
-                {
-                    return code;
-                }
-
-                if (this.NamesToNames.ContainsKey(value))
-                {
-                    foreach (var name in this.NamesToNames[value])
-                    {
-                        var secondVal = values.Where(val => string.Compare(val, name, true) == 0).FirstOrDefault();
-                        if (secondVal != null)
-                        {
-                            if (TryCompound(value, secondVal, out code))
-                            {
-                                return code;
-                            }
-                        }
-                    }
-
-                    if (TryCompound(value, this.NamesToNames[value].FirstOrDefault(), out code))
-                    {
-                        return code;
-                    }
-                }
-
-                if (this.NamesToCodes.Values.Contains(value))
-                {
-                    return value;
-                }
-            }
-
-            return null;
-        }
-
-        public string GetCodeOrFallback(string code)
-        {
-            if (string.IsNullOrWhiteSpace(code))
-            {
-                return "en";
-            }
-
-            code = code.Trim();
-            if (CodesToNames.ContainsKey(code))
-            {
-                return code;
-            }
-
-            return "en";
-        }
-
-        private bool TryCompound(string firstVal, string secondVal, out string code)
-        {
-            var compound = $"{firstVal} {secondVal}";
-            if (this.NamesToCodes.TryGetValue(compound, out code))
-            {
-                return true;
-            }
-
-            compound = $"{secondVal} {firstVal}";
-            if (this.NamesToCodes.TryGetValue(compound, out code))
-            {
-                return true;
-            }
-
-            return false;
-        }
-
-        public Dictionary<string, string> CodesToNames { get; } = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
-
-        public Dictionary<string, string> NamesToCodes { get; } = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
-
-        public Dictionary<string, string[]> NamesToNames { get; } = new Dictionary<string, string[]>(StringComparer.InvariantCultureIgnoreCase);
-
         /// <summary>
         /// Names for languages in all languages.
         /// </summary>
@@ -606,5 +440,171 @@ namespace Microsoft.Bot.Builder.Ai.Translation
             "wrdw", "fietnameg", "cymraeg", "xokiko'ob catalan", "chino xíiw",
             "ingles", "frances", "japones", "káastelan", "maaya yucateco",
         };
+
+        private static LanguageMap _global;
+
+        public LanguageMap()
+        {
+            Add("ar", "Arabic");
+            Add("bs-Latn", "Bosnian");
+            Add("bg", "Bulgarian");
+            Add("ca", "Catalan");
+            Add("zh-CHS", "Chinese Simplified");
+            Add("zh-CHT", "Chinese Traditional");
+            NamesToNames.Add("Chinese", new string[] { "Simplified", "Traditional" });
+
+            Add("hr", "Croatian");
+            Add("cs", "Czech");
+            Add("da", "Danish");
+            Add("nl", "Dutch");
+            Add("en", "English");
+            Add("et", "Estonian");
+            Add("fi", "Finnish");
+            Add("fr", "French");
+            Add("de", "German");
+            Add("el", "Greek");
+            Add("ht", "Haitian Creole");
+            NamesToCodes.Add("Creole", "ht");
+            Add("he", "Hebrew");
+            Add("hi", "Hindi");
+            Add("mww", "Hmong Daw");
+            NamesToCodes.Add("Hmong", "mww");
+            NamesToCodes.Add("Daw", "mww");
+
+            Add("hu", "Hungarian");
+            Add("id", "Indonesian");
+            Add("it", "Italian");
+            Add("ja", "Japanese");
+            Add("sw", "Kiswahili");
+            Add("ko", "Korean");
+            Add("tlh", "Klingon");
+            Add("lv", "Latvian");
+            Add("lt", "Lithuanian");
+            Add("ms", "Malay");
+            Add("mt", "Maltese");
+            Add("no", "Norwegian");
+            Add("fa", "Persian");
+            Add("pl", "Polish");
+            Add("pt", "Portuguese");
+            Add("otq", "Querétaro Otomi");
+            NamesToCodes.Add("Querétaro", "otq");
+            NamesToCodes.Add("Otomi", "otq");
+
+            Add("ro", "Romanian");
+            Add("ru", "Russian");
+            Add("sr-Cyrl", "Serbian Cyrillic");
+            Add("sr-Latn", "Serbian Latin");
+            NamesToNames.Add("Serbian", new string[] { "Cyrillic", "Latin" });
+
+            Add("sk", "Slovak");
+            Add("sl", "Slovenian");
+            Add("es", "Spanish");
+            Add("sv", "Swedish");
+            Add("th", "Thai");
+            Add("tr", "Turkish");
+            Add("uk", "Ukrainian");
+            Add("ur", "Urdu");
+            Add("vi", "Vietnamese");
+            Add("cy", "Welsh");
+            Add("yua", "Yucatec Maya");
+            NamesToCodes.Add("yucatec", "yua");
+            NamesToCodes.Add("maya", "yua");
+        }
+
+        public static LanguageMap Global
+        {
+            get
+            {
+                if (_global == null)
+                {
+                    _global = new LanguageMap();
+                }
+
+                return _global;
+            }
+        }
+
+        public Dictionary<string, string> CodesToNames { get; } = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
+
+        public Dictionary<string, string> NamesToCodes { get; } = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
+
+        public Dictionary<string, string[]> NamesToNames { get; } = new Dictionary<string, string[]>(StringComparer.InvariantCultureIgnoreCase);
+
+        public string GetCodeForInput(IEnumerable<string> values)
+        {
+            foreach (var value in values)
+            {
+                if (this.NamesToCodes.TryGetValue(value, out var code))
+                {
+                    return code;
+                }
+
+                if (this.NamesToNames.ContainsKey(value))
+                {
+                    foreach (var name in this.NamesToNames[value])
+                    {
+                        var secondVal = values.Where(val => string.Compare(val, name, true) == 0).FirstOrDefault();
+                        if (secondVal != null)
+                        {
+                            if (TryCompound(value, secondVal, out code))
+                            {
+                                return code;
+                            }
+                        }
+                    }
+
+                    if (TryCompound(value, this.NamesToNames[value].FirstOrDefault(), out code))
+                    {
+                        return code;
+                    }
+                }
+
+                if (this.NamesToCodes.Values.Contains(value))
+                {
+                    return value;
+                }
+            }
+
+            return null;
+        }
+
+        public string GetCodeOrFallback(string code)
+        {
+            if (string.IsNullOrWhiteSpace(code))
+            {
+                return "en";
+            }
+
+            code = code.Trim();
+            if (CodesToNames.ContainsKey(code))
+            {
+                return code;
+            }
+
+            return "en";
+        }
+
+        private void Add(string code, string name)
+        {
+            CodesToNames.Add(code, name);
+            NamesToCodes.Add(name, code);
+        }
+
+        private bool TryCompound(string firstVal, string secondVal, out string code)
+        {
+            var compound = $"{firstVal} {secondVal}";
+            if (this.NamesToCodes.TryGetValue(compound, out code))
+            {
+                return true;
+            }
+
+            compound = $"{secondVal} {firstVal}";
+            if (this.NamesToCodes.TryGetValue(compound, out code))
+            {
+                return true;
+            }
+
+            return false;
+        }
     }
 }

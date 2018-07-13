@@ -194,6 +194,28 @@ namespace Microsoft.Bot.Builder.Ai.Translation.PostProcessor
         }
 
         /// <summary>
+        /// Use alignment information source sentence and translated sentence
+        /// to keep a specific word from the source onto target translation.
+        /// </summary>
+        /// <param name="alignmentMap">Dictionary containing the alignments.</param>
+        /// <param name="sourceTokens">Source message tokens.</param>
+        /// <param name="translatedTokens">Translated message tokens.</param>
+        /// <param name="sourceTokenIndex">Source word index.</param>
+        /// <returns>An array that represents the translated tokens after processing.</returns>
+        public static string[] KeepSourceWordInTranslation(Dictionary<int, int> alignmentMap, string[] sourceTokens, string[] translatedTokens, int sourceTokenIndex)
+        {
+            // parameter validation
+            ValidateParametersKeepSourceWordInTranslation(alignmentMap, sourceTokens, translatedTokens, sourceTokenIndex);
+
+            if (alignmentMap.ContainsKey(sourceTokenIndex))
+            {
+                translatedTokens[alignmentMap[sourceTokenIndex]] = sourceTokens[sourceTokenIndex];
+            }
+
+            return translatedTokens;
+        }
+
+        /// <summary>
         /// Validate arguments of <see cref="WordAlignmentParse(string[], string[], string[])"/>.
         /// </summary>
         /// <param name="alignments">Alignments array.</param>
@@ -221,28 +243,6 @@ namespace Microsoft.Bot.Builder.Ai.Translation.PostProcessor
             {
                 throw new ArgumentNullException(nameof(translatedTokens));
             }
-        }
-
-        /// <summary>
-        /// Use alignment information source sentence and translated sentence
-        /// to keep a specific word from the source onto target translation.
-        /// </summary>
-        /// <param name="alignmentMap">Dictionary containing the alignments.</param>
-        /// <param name="sourceTokens">Source message tokens.</param>
-        /// <param name="translatedTokens">Translated message tokens.</param>
-        /// <param name="sourceTokenIndex">Source word index.</param>
-        /// <returns>An array that represents the translated tokens after processing.</returns>
-        public static string[] KeepSourceWordInTranslation(Dictionary<int, int> alignmentMap, string[] sourceTokens, string[] translatedTokens, int sourceTokenIndex)
-        {
-            // parameter validation
-            ValidateParametersKeepSourceWordInTranslation(alignmentMap, sourceTokens, translatedTokens, sourceTokenIndex);
-
-            if (alignmentMap.ContainsKey(sourceTokenIndex))
-            {
-                translatedTokens[alignmentMap[sourceTokenIndex]] = sourceTokens[sourceTokenIndex];
-            }
-
-            return translatedTokens;
         }
 
         /// <summary>
