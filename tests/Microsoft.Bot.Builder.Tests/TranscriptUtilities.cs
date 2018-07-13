@@ -10,6 +10,7 @@ using System.Net.Http;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Tests
 {
@@ -69,15 +70,29 @@ namespace Microsoft.Bot.Builder.Tests
                 content = File.ReadAllText(path);
             }
 
-            // TODO: this needs to use IActivityDeserializer now
-            var activities = JsonConvert.DeserializeObject<List<Activity>>(content);
+            JToken rootToken = JToken.Parse(content);
+
+            if(rootToken.Type != JTokenType.Array)
+            {
+                throw new InvalidOperationException($"Expected transcript file to contain an array of activities, but root JSON token is: {rootToken.Type}");
+            }
+
+            var activities = new List<Activity>();
+
+            foreach(var activityObject in rootToken.Children<JObject>())
+            {
+                var activityType = ActivityTypes.GetRuntimeType(activityObject["type"]?.Value<string>());
+                var activity = (Activity)activityObject.ToObject(activityType);
+
+                activities.Add(activity);
+            }
 
             var lastActivity = activities.Last();
 
             // If the last activity is a MessageActivity and its Text ends with a trailing line feed, remove it
             if (lastActivity is MessageActivity lastMessageActivity)
             {
-                lastMessageActivity.Text = lastMessageActivity.Text.TrimEnd('\n');
+                lastMessageActivity.Text = lastMessageActivity.Text.TrimEnd('\r', '\n');
             }
 
             return activities.Take(activities.Count - 1).Append(lastActivity);
