@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
@@ -13,9 +14,14 @@ using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Serialization
 {
+    /// <summary>
+    /// Serializes <see cref="Activity"/> instances to and from their JSON representation.
+    /// </summary>
     public sealed class JsonActivitySerializer : IActivitySerializer
     {
-        public static readonly JsonSerializerSettings ActivityJsonSerializerSettings = new JsonSerializerSettings
+        private const int JsonWriterBufferSize = 8192;
+
+        private static readonly JsonSerializerSettings ActivityJsonSerializerSettings = new JsonSerializerSettings
         {
             NullValueHandling = NullValueHandling.Ignore,
             Formatting = Formatting.Indented,
@@ -26,10 +32,13 @@ namespace Microsoft.Bot.Builder.Serialization
             Converters = new List<JsonConverter> { new Iso8601TimeSpanConverter() },
         };
 
+        private static readonly JsonSerializer ActivityJsonSerializer = JsonSerializer.Create(ActivityJsonSerializerSettings);
+
         public JsonActivitySerializer()
         {
         }
 
+        /// <inheritdoc />
         public async Task<Activity> DeserializeAsync(Stream stream, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (stream == null)
@@ -50,9 +59,15 @@ namespace Microsoft.Bot.Builder.Serialization
             return (Activity)activityJsonToken.ToObject(activityRuntimeType);
         }
 
-        public Task SerializeAsync(Activity activity, Stream stream, CancellationToken cancellationToken = default(CancellationToken))
+        /// <inheritdoc />
+        public async Task SerializeAsync(Activity activity, Stream stream, CancellationToken cancellationToken = default(CancellationToken))
         {
-            throw new NotImplementedException();
+            var activityJsonObject = JObject.FromObject(activity);
+
+            using (var writer = new JsonTextWriter(new StreamWriter(stream, Encoding.UTF8, JsonWriterBufferSize, leaveOpen: true)))
+            {
+                await activityJsonObject.WriteToAsync(writer).ConfigureAwait(false);
+            }
         }
     }
 }
