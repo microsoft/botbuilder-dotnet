@@ -57,13 +57,13 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Tests
             }
 
             [Fact]
-            public void EnableProactiveShouldMapMultipleHandlers()
+            public void EnableExternalEventsEndpointShouldMapMultipleHandlers()
             {
                 var httpConfiguration = new HttpConfiguration();
 
                 httpConfiguration.MapBotFramework(config =>
                 {
-                    config.EnableProactiveMessages();
+                    config.EnableExternalEventsEndpoint();
                 });
 
                 var routes = httpConfiguration.Routes;
@@ -72,8 +72,8 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Tests
                 var botMessageHandlerRoute = routes[BotMessageHandler.RouteName];
                 botMessageHandlerRoute.Handler.Should().BeOfType<BotMessageHandler>();
 
-                var botProactiveMessageHandlerRoute = routes[BotProactiveMessageHandler.RouteName];
-                botProactiveMessageHandlerRoute.Handler.Should().BeOfType<BotProactiveMessageHandler>();
+                var botProactiveMessageHandlerRoute = routes[BotExternalEventsHandler.RouteName];
+                botProactiveMessageHandlerRoute.Handler.Should().BeOfType<BotExternalEventsHandler>();
             }
         }
     }

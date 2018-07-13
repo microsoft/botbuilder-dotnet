@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
 using System;
@@ -53,13 +53,13 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             }
 
             [Fact]
-            public void WhenEnableProactiveTrueShouldMapMultipleHandlers()
+            public void WhenEnableExternalEventsTrueShouldMapMultipleHandlers()
             {
                 var botFrameworkOptionsMock = new Mock<IOptions<BotFrameworkOptions>>();
                 botFrameworkOptionsMock.Setup(o => o.Value)
                     .Returns(new BotFrameworkOptions
                     {
-                        EnableProactiveMessages = true
+                        EnableExternalEventsEndpoint = true
                     });
 
                 var serviceProviderMock = new Mock<IServiceProvider>();
