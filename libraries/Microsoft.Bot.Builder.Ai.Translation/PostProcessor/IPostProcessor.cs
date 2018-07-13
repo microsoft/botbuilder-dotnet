@@ -4,7 +4,7 @@
 namespace Microsoft.Bot.Builder.Ai.Translation.PostProcessor
 {
     /// <summary>
-    /// Abstraction for post processor
+    /// Abstraction for post processor.
     /// </summary>
     public interface IPostProcessor
     {
