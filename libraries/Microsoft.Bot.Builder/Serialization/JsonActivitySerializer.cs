@@ -43,7 +43,7 @@ namespace Microsoft.Bot.Builder.Serialization
         {
             if (stream == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException(nameof(stream));
             }
 
             var activityJsonToken = default(JToken);
@@ -62,11 +62,21 @@ namespace Microsoft.Bot.Builder.Serialization
         /// <inheritdoc />
         public async Task SerializeAsync(Activity activity, Stream stream, CancellationToken cancellationToken = default(CancellationToken))
         {
+            if (activity == null)
+            {
+                throw new ArgumentNullException(nameof(activity));
+            }
+
+            if (stream == null)
+            {
+                throw new ArgumentNullException(nameof(stream));
+            }
+
             var activityJsonObject = JObject.FromObject(activity);
 
             using (var writer = new JsonTextWriter(new StreamWriter(stream, Encoding.UTF8, JsonWriterBufferSize, leaveOpen: true)))
             {
-                await activityJsonObject.WriteToAsync(writer).ConfigureAwait(false);
+                await activityJsonObject.WriteToAsync(writer, cancellationToken).ConfigureAwait(false);
             }
         }
     }
