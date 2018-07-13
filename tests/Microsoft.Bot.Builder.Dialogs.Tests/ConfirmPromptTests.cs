@@ -88,5 +88,100 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .AssertReply("Not confirmed.")
             .StartTestAsync();
         }
+
+        [TestMethod]
+        public async Task ConfirmPromptChoiceOptionsNumbers()
+        {
+            TestAdapter adapter = new TestAdapter()
+                .Use(new ConversationState<Dictionary<string, object>>(new MemoryStorage()));
+
+            await new TestFlow(adapter, async (turnContext) =>
+            {
+                var state = ConversationState<Dictionary<string, object>>.Get(turnContext);
+                var prompt = new ConfirmPrompt(Culture.English);
+
+                // Set options
+                Choices.ChoiceFactoryOptions options = new Choices.ChoiceFactoryOptions();
+                options.IncludeNumbers = true;
+                prompt.ChoiceOptions = options;
+
+                var dialogCompletion = await prompt.Continue(turnContext, state);
+                if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
+                {
+                    await prompt.Begin(turnContext, state,
+                        new PromptOptions
+                        {
+                            PromptString = "Please confirm.",
+                            RetryPromptString = "Please confirm, say 'Yes' or 'No' or something like that."
+                        });
+                }
+                else if (dialogCompletion.IsCompleted)
+                {
+                    if (((ConfirmResult)dialogCompletion.Result).Confirmation)
+                    {
+                        await turnContext.SendActivityAsync("Confirmed.");
+                    }
+                    else
+                    {
+                        await turnContext.SendActivityAsync("Not confirmed.");
+                    }
+                }
+            })
+            .Send("hello")
+            .AssertReply("Please confirm. (1) Yes or (2) No")
+            .Send("lala")
+            .AssertReply("Please confirm, say 'Yes' or 'No' or something like that. (1) Yes or (2) No")
+            .Send("no")
+            .AssertReply("Not confirmed.")
+            .StartTestAsync();
+        }
+        [TestMethod]
+        public async Task ConfirmPromptChoiceOptionsNoNumbers()
+        {
+            TestAdapter adapter = new TestAdapter()
+                .Use(new ConversationState<Dictionary<string, object>>(new MemoryStorage()));
+
+            await new TestFlow(adapter, async (turnContext) =>
+            {
+                var state = ConversationState<Dictionary<string, object>>.Get(turnContext);
+                var prompt = new ConfirmPrompt(Culture.English);
+
+                // Set options
+                Choices.ChoiceFactoryOptions options = new Choices.ChoiceFactoryOptions();
+                options.IncludeNumbers = false;
+                options.InlineSeparator = "~"; // Doesn't make sense for ConfirmPrompt =
+                prompt.ChoiceOptions = options;
+
+                var dialogCompletion = await prompt.Continue(turnContext, state);
+                if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
+                {
+                    await prompt.Begin(turnContext, state,
+                        new PromptOptions
+                        {
+                            PromptString = "Please confirm.",
+                            RetryPromptString = "Please confirm, say 'yes' or 'no' or something like that."
+                        });
+                }
+                else if (dialogCompletion.IsCompleted)
+                {
+                    if (((ConfirmResult)dialogCompletion.Result).Confirmation)
+                    {
+                        await turnContext.SendActivityAsync("Confirmed.");
+                    }
+                    else
+                    {
+                        await turnContext.SendActivityAsync("Not confirmed.");
+                    }
+                }
+            })
+            .Send("hello")
+            .AssertReply("Please confirm. Yes or No")
+            .Send("lala")
+            .AssertReply("Please confirm, say 'yes' or 'no' or something like that. Yes or No")
+            .Send("no")
+            .AssertReply("Not confirmed.")
+            .StartTestAsync();
+        }
     }
 }
+
