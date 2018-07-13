@@ -9,11 +9,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation
 {
     public class LanguageMap
     {
-        public static LanguageMap Global = new LanguageMap();
-
-        Dictionary<string, string> codesToNames = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
-        Dictionary<string, string> namesToCode = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
-        Dictionary<string, string[]> namesToNames = new Dictionary<string, string[]>(StringComparer.InvariantCultureIgnoreCase);
+        private static LanguageMap _global;
 
         public LanguageMap()
         {
@@ -23,7 +19,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation
             Add("ca", "Catalan");
             Add("zh-CHS", "Chinese Simplified");
             Add("zh-CHT", "Chinese Traditional");
-            namesToNames.Add("Chinese", new string[] { "Simplified", "Traditional" });
+            NamesToNames.Add("Chinese", new string[] { "Simplified", "Traditional" });
 
             Add("hr", "Croatian");
             Add("cs", "Czech");
@@ -36,12 +32,12 @@ namespace Microsoft.Bot.Builder.Ai.Translation
             Add("de", "German");
             Add("el", "Greek");
             Add("ht", "Haitian Creole");
-            namesToCode.Add("Creole", "ht");
+            NamesToCodes.Add("Creole", "ht");
             Add("he", "Hebrew");
             Add("hi", "Hindi");
             Add("mww", "Hmong Daw");
-            namesToCode.Add("Hmong", "mww");
-            namesToCode.Add("Daw", "mww");
+            NamesToCodes.Add("Hmong", "mww");
+            NamesToCodes.Add("Daw", "mww");
 
             Add("hu", "Hungarian");
             Add("id", "Indonesian");
@@ -59,14 +55,14 @@ namespace Microsoft.Bot.Builder.Ai.Translation
             Add("pl", "Polish");
             Add("pt", "Portuguese");
             Add("otq", "Querétaro Otomi");
-            namesToCode.Add("Querétaro", "otq");
-            namesToCode.Add("Otomi", "otq");
+            NamesToCodes.Add("Querétaro", "otq");
+            NamesToCodes.Add("Otomi", "otq");
 
             Add("ro", "Romanian");
             Add("ru", "Russian");
             Add("sr-Cyrl", "Serbian Cyrillic");
             Add("sr-Latn", "Serbian Latin");
-            namesToNames.Add("Serbian", new string[] { "Cyrillic", "Latin" });
+            NamesToNames.Add("Serbian", new string[] { "Cyrillic", "Latin" });
 
             Add("sk", "Slovak");
             Add("sl", "Slovenian");
@@ -79,75 +75,108 @@ namespace Microsoft.Bot.Builder.Ai.Translation
             Add("vi", "Vietnamese");
             Add("cy", "Welsh");
             Add("yua", "Yucatec Maya");
-            namesToCode.Add("yucatec", "yua");
-            namesToCode.Add("maya", "yua");
+            NamesToCodes.Add("yucatec", "yua");
+            NamesToCodes.Add("maya", "yua");
+        }
+
+        public static LanguageMap Global
+        {
+            get
+            {
+                if (_global == null)
+                {
+                    _global = new LanguageMap();
+                }
+
+                return _global;
+            }
         }
 
         private void Add(string code, string name)
         {
-            codesToNames.Add(code, name);
-            namesToCode.Add(name, code);
+            CodesToNames.Add(code, name);
+            NamesToCodes.Add(name, code);
         }
 
         public string GetCodeForInput(IEnumerable<string> values)
         {
-            string code;
             foreach (var value in values)
             {
-                if (this.NamesToCodes.TryGetValue(value, out code))
+                if (this.NamesToCodes.TryGetValue(value, out var code))
+                {
                     return code;
+                }
 
                 if (this.NamesToNames.ContainsKey(value))
                 {
                     foreach (var name in this.NamesToNames[value])
                     {
-                        var secondVal = values.Where(val => String.Compare(val, name, true) == 0).FirstOrDefault();
+                        var secondVal = values.Where(val => string.Compare(val, name, true) == 0).FirstOrDefault();
                         if (secondVal != null)
                         {
                             if (TryCompound(value, secondVal, out code))
+                            {
                                 return code;
+                            }
                         }
                     }
+
                     if (TryCompound(value, this.NamesToNames[value].FirstOrDefault(), out code))
+                    {
                         return code;
+                    }
                 }
+
                 if (this.NamesToCodes.Values.Contains(value))
+                {
                     return value;
+                }
             }
+
             return null;
         }
 
         public string GetCodeOrFallback(string code)
         {
             if (string.IsNullOrWhiteSpace(code))
+            {
                 return "en";
+            }
 
             code = code.Trim();
             if (CodesToNames.ContainsKey(code))
+            {
                 return code;
+            }
 
             return "en";
         }
 
         private bool TryCompound(string firstVal, string secondVal, out string code)
         {
-            string compound = $"{firstVal} {secondVal}";
+            var compound = $"{firstVal} {secondVal}";
             if (this.NamesToCodes.TryGetValue(compound, out code))
+            {
                 return true;
+            }
+
             compound = $"{secondVal} {firstVal}";
             if (this.NamesToCodes.TryGetValue(compound, out code))
+            {
                 return true;
+            }
+
             return false;
         }
 
-        public Dictionary<string, string> CodesToNames { get { return codesToNames; } }
+        public Dictionary<string, string> CodesToNames { get; } = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
 
-        public Dictionary<string, string> NamesToCodes { get { return namesToCode; } }
+        public Dictionary<string, string> NamesToCodes { get; } = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
 
-        public Dictionary<string, string[]> NamesToNames { get { return namesToNames; } }
+        public Dictionary<string, string[]> NamesToNames { get; } = new Dictionary<string, string[]>(StringComparer.InvariantCultureIgnoreCase);
 
         /// <summary>
-        /// Names for languages in all languages
+        /// Names for languages in all languages.
         /// </summary>
         public static readonly string[] Names =
         {
