@@ -4,6 +4,7 @@
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Bot.Builder.Serialization;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -63,6 +64,46 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
                 var botFrameworkAdapter = serviceProvider.GetService<BotFrameworkAdapter>();
 
                 botFrameworkAdapter.Should().NotBeNull();
+            }
+        }
+
+        public class ResolveIActivityAdapter
+        {
+            [Fact]
+            public void WithoutExplicitlyConfiguredInstanceShouldReturnJsonActivitySerializer()
+            {
+                var serviceCollection = new ServiceCollection()
+                    .AddOptions()
+                    .AddBot<ServiceResolutionTestBot>(options =>
+                    {
+                        options.CredentialProvider = Mock.Of<ICredentialProvider>();
+                    });
+
+                var serviceProvider = serviceCollection.BuildServiceProvider();
+
+                var activitySerializer = serviceProvider.GetRequiredService<IActivitySerializer>();
+
+                activitySerializer.Should().NotBeNull().And.BeOfType<JsonActivitySerializer>();
+            }
+
+            [Fact]
+            public void ExplicitlyConfiguredInstanceShouldReturnExpectedInstance()
+            {
+                var activitySerializerMock = new Mock<IActivitySerializer>();
+
+                var serviceCollection = new ServiceCollection()
+                    .AddOptions()
+                    .AddBot<ServiceResolutionTestBot>(options =>
+                    {
+                        options.CredentialProvider = Mock.Of<ICredentialProvider>();
+                        options.ActivitySerializer = activitySerializerMock.Object;
+                    });
+
+                var serviceProvider = serviceCollection.BuildServiceProvider();
+
+                var activitySerializer = serviceProvider.GetRequiredService<IActivitySerializer>();
+
+                activitySerializer.Should().Be(activitySerializerMock.Object);
             }
         }
 

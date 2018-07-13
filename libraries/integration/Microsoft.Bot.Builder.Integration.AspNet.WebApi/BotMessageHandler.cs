@@ -5,7 +5,7 @@ using System;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Schema;
+using Microsoft.Bot.Builder.Serialization;
 
 namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Handlers
 {
@@ -13,16 +13,16 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Handlers
     {
         public static readonly string RouteName = "BotFramework - Message Handler";
 
-        public BotMessageHandler(BotFrameworkAdapter botFrameworkAdapter)
-            : base(botFrameworkAdapter)
+        public BotMessageHandler(BotFrameworkAdapter botFrameworkAdapter, IActivitySerializer activitySerializer)
+            : base(botFrameworkAdapter, activitySerializer)
         {
         }
 
-        protected override async Task<InvokeResponse> ProcessMessageRequestAsync(HttpRequestMessage request, BotFrameworkAdapter botFrameworkAdapter, Func<ITurnContext, Task> botCallbackHandler, CancellationToken cancellationToken)
+        protected override async Task<InvokeResponse> ProcessMessageRequestAsync(HttpRequestMessage request, Func<ITurnContext, Task> botCallbackHandler, CancellationToken cancellationToken)
         {
-            var activity = await request.Content.ReadAsAsync<Activity>(BotMessageHandlerBase.BotMessageMediaTypeFormatters, cancellationToken);
+            var activity = await ActivitySerializer.DeserializeAsync(await request.Content.ReadAsStreamAsync(), cancellationToken);
 
-            var invokeResponse = await botFrameworkAdapter.ProcessActivityAsync(
+            var invokeResponse = await BotFrameworkAdapter.ProcessActivityAsync(
                 request.Headers.Authorization?.ToString(),
                 activity,
                 botCallbackHandler,

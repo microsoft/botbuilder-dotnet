@@ -53,7 +53,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
     {
         public interface IPromptCaller<T> : IDialog<object>
         {
-            Task FirstMessage(IDialogContext context, IAwaitable<IMessageActivity> message);
+            Task FirstMessage(IDialogContext context, IAwaitable<MessageActivity> message);
             Task PromptResult(IDialogContext context, IAwaitable<T> result);
         }
 
@@ -64,7 +64,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                 .Setup(d => d.StartAsync(It.IsAny<IDialogContext>()))
                 .Returns<IDialogContext>(async c => { c.Wait(dialog.Object.FirstMessage); });
             dialog
-                .Setup(d => d.FirstMessage(It.IsAny<IDialogContext>(), It.IsAny<IAwaitable<IMessageActivity>>()))
+                .Setup(d => d.FirstMessage(It.IsAny<IDialogContext>(), It.IsAny<IAwaitable<MessageActivity>>()))
                 .Returns<IDialogContext, IAwaitable<object>>(async (c, a) => { prompt(c, dialog.Object.PromptResult); });
             dialog
                 .Setup(d => d.PromptResult(It.IsAny<IDialogContext>(), It.IsAny<IAwaitable<T>>()))
@@ -105,7 +105,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
             await PromptSuccessAsync(prompt, toBot, a => a.Equals(expected));
         }
 
-        public async Task PromptSuccessAsync<T>(Action<IDialogContext, ResumeAfter<T>> prompt, IMessageActivity toBot, Func<T, bool> expected)
+        public async Task PromptSuccessAsync<T>(Action<IDialogContext, ResumeAfter<T>> prompt, MessageActivity toBot, Func<T, bool> expected)
         {
             var dialogRoot = MockDialog<T>(prompt);
 
@@ -122,7 +122,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                         DialogModule_MakeRoot.Register(scope, MakeRoot);
                         var task = scope.Resolve<IPostToBot>();
                         await task.PostAsync(toBot, CancellationToken.None);
-                        AssertMentions(PromptText, adapter.ActiveQueue.Dequeue() as IMessageActivity);
+                        AssertMentions(PromptText, adapter.ActiveQueue.Dequeue() as MessageActivity);
                     }
                 });
 
@@ -378,7 +378,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                         var task = scope.Resolve<IPostToBot>();
 
                         await task.PostAsync(toBot, CancellationToken.None);
-                        AssertMentions(PromptText, adapter.ActiveQueue.Dequeue() as IMessageActivity);
+                        AssertMentions(PromptText, adapter.ActiveQueue.Dequeue() as MessageActivity);
                     }
                 });
 
@@ -391,7 +391,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                         var task = scope.Resolve<IPostToBot>();
 
                         await task.PostAsync(toBot, CancellationToken.None);
-                        AssertMentions(RetryText, adapter.ActiveQueue.Dequeue() as IMessageActivity);
+                        AssertMentions(RetryText, adapter.ActiveQueue.Dequeue() as MessageActivity);
                     }
                 });
 
@@ -404,7 +404,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                         var task = scope.Resolve<IPostToBot>();
 
                         await task.PostAsync(toBot, CancellationToken.None);
-                        AssertMentions("too many attempts", adapter.ActiveQueue.Dequeue() as IMessageActivity);
+                        AssertMentions("too many attempts", adapter.ActiveQueue.Dequeue() as MessageActivity);
                         dialogRoot.Verify(d => d.PromptResult(It.IsAny<IDialogContext>(), It.Is<IAwaitable<T>>(actual => actual.ToTask().IsFaulted)), Times.Once);
                     }
                 });

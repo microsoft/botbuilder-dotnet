@@ -28,7 +28,7 @@ namespace Microsoft.Bot.Builder.Tests
         /// </summary>
         /// <param name="context">Test context</param>
         /// <returns>A list of activities to test</returns>
-        public static IEnumerable<IActivity> GetFromTestContext(TestContext context)
+        public static IEnumerable<Activity> GetFromTestContext(TestContext context)
         {
             // Use TestContext to find transcripts using the following naming convention:
             // {BOTBUILDER_TRANSCRIPTS_LOCATION}\{TestClassName}\{TestMethodName}.chat
@@ -42,7 +42,7 @@ namespace Microsoft.Bot.Builder.Tests
         /// </summary>
         /// <param name="relativePath">Path relative to the BOTBUILDER_TRANSCRIPTS_LOCATION environment variable value.</param>
         /// <returns>A list of activities to test</returns>
-        public static IEnumerable<IActivity> GetActivities(string relativePath)
+        public static IEnumerable<Activity> GetActivities(string relativePath)
         {
             var transcriptsRootFolder = TranscriptUtilities.EnsureTranscriptsDownload();
             var path = Path.Combine(transcriptsRootFolder, relativePath);
@@ -51,7 +51,7 @@ namespace Microsoft.Bot.Builder.Tests
             // If .chat file does not exists, try .transcript instead. Throw an exception if neither .chat nor .transcript file is found.
             if (!File.Exists(path))
             {
-                path = Path.Combine(transcriptsRootFolder, relativePath.Replace(".transcript", ".chat", StringComparison.InvariantCultureIgnoreCase));
+                path = Path.Combine(transcriptsRootFolder, relativePath.Replace(".chat", ".transcript", StringComparison.InvariantCultureIgnoreCase));
             }
 
             if (!File.Exists(path))
@@ -69,12 +69,15 @@ namespace Microsoft.Bot.Builder.Tests
                 content = File.ReadAllText(path);
             }
 
+            // TODO: this needs to use IActivityDeserializer now
             var activities = JsonConvert.DeserializeObject<List<Activity>>(content);
 
             var lastActivity = activities.Last();
-            if (lastActivity.Text.Last() == '\n')
+
+            // If the last activity is a MessageActivity and its Text ends with a trailing line feed, remove it
+            if (lastActivity is MessageActivity lastMessageActivity)
             {
-                lastActivity.Text = lastActivity.Text.Remove(lastActivity.Text.Length - 1);
+                lastMessageActivity.Text = lastMessageActivity.Text.TrimEnd('\n');
             }
 
             return activities.Take(activities.Count - 1).Append(lastActivity);
@@ -207,9 +210,9 @@ namespace Microsoft.Bot.Builder.Tests
         /// </summary>
         /// <param name="activity"></param>
         /// <returns>A valid conversation reference to the activity provides</returns>
-        public static ConversationReference GetConversationReference(this IActivity activity)
+        public static ConversationReference GetConversationReference(this Activity activity)
         {
-            bool IsReply(IActivity act) => string.Equals("bot", act.From?.Role, StringComparison.InvariantCultureIgnoreCase);
+            bool IsReply(Activity act) => string.Equals("bot", act.From?.Role, StringComparison.InvariantCultureIgnoreCase);
             var bot = IsReply(activity) ? activity.From : activity.Recipient;
             var user = IsReply(activity) ? activity.Recipient : activity.From;
             return new ConversationReference

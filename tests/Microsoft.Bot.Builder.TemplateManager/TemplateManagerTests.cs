@@ -26,19 +26,19 @@ namespace Microsoft.Bot.Builder.TemplateManager.Tests
                 ["default"] = new TemplateIdMap
                 {
                     { "stringTemplate", (context, data) => $"default: { data.name}" },
-                    { "activityTemplate", (context, data) => { return new Activity() { Type = ActivityTypes.Message, Text = $"(Activity)default: { data.name}" }; } },
+                    { "activityTemplate", (context, data) => { return new MessageActivity { Text = $"(Activity)default: { data.name}" }; } },
                     { "stringTemplate2", (context, data) => $"default: Yo { data.name}" }
                 },
                 ["en"] = new TemplateIdMap
                 {
                     { "stringTemplate", (context, data) => $"en: { data.name}" },
-                    { "activityTemplate", (context, data) => { return new Activity() { Type = ActivityTypes.Message, Text = $"(Activity)en: { data.name}" }; } },
+                    { "activityTemplate", (context, data) => { return new MessageActivity { Text = $"(Activity)en: { data.name}" }; } },
                     { "stringTemplate2", (context, data) => $"en: Yo { data.name}" }
                 },
                 ["fr"] = new TemplateIdMap
                 {
                     { "stringTemplate", (context, data) => $"fr: { data.name}" },
-                    { "activityTemplate", (context, data) => { return new Activity() { Type = ActivityTypes.Message, Text = $"(Activity)fr: { data.name}" }; } },
+                    { "activityTemplate", (context, data) => { return new MessageActivity { Text = $"(Activity)fr: { data.name}" }; } },
                     { "stringTemplate2", (context, data) => $"fr: Yo { data.name}" }
                 }
             };
@@ -99,10 +99,10 @@ namespace Microsoft.Bot.Builder.TemplateManager.Tests
         {
             var engine = new DictionaryRenderer(templates1);
             var result = await engine.RenderTemplate(null, "en", "activityTemplate", new { name = "joe" });
-            Assert.IsInstanceOfType(result, typeof(Activity));
-            var activity = result as Activity;
-            Assert.AreEqual(ActivityTypes.Message, activity.Type);
-            Assert.AreEqual("(Activity)en: joe", activity.Text);
+            Assert.IsInstanceOfType(result, typeof(MessageActivity));
+            var messageActivity = result as MessageActivity;
+            Assert.AreEqual(ActivityTypes.Message, messageActivity.Type);
+            Assert.AreEqual("(Activity)en: joe", messageActivity.Text);
         }
 
 
@@ -118,7 +118,7 @@ namespace Microsoft.Bot.Builder.TemplateManager.Tests
 
             await new TestFlow(adapter, async (context) =>
                 {
-                    var templateId = context.Activity.AsMessageActivity().Text.Trim();
+                    var templateId = (context.Activity as MessageActivity).Text.Trim();
                     await templateManager.ReplyWith(context, templateId, new { name = "joe" });
                 })
                 .Send("stringTemplate").AssertReply("default: joe")
@@ -137,8 +137,9 @@ namespace Microsoft.Bot.Builder.TemplateManager.Tests
 
             await new TestFlow(adapter, async (context) =>
             {
-                context.Activity.AsMessageActivity().Locale = "en"; // force to english
-                var templateId = context.Activity.AsMessageActivity().Text.Trim();
+                var messageActivty = context.Activity as MessageActivity;
+                messageActivty.Locale = "en"; // force to english
+                var templateId = messageActivty.Text.Trim();
                 await templateManager.ReplyWith(context, templateId, new { name = "joe" });
             })
                 .Send("stringTemplate").AssertReply("en: joe")
@@ -157,8 +158,9 @@ namespace Microsoft.Bot.Builder.TemplateManager.Tests
 
             await new TestFlow(adapter, async (context) =>
                 {
-                    context.Activity.AsMessageActivity().Locale = "fr"; // force to french
-                    var templateId = context.Activity.AsMessageActivity().Text.Trim();
+                    var messageActivity = context.Activity as MessageActivity;
+                    messageActivity.Locale = "fr"; // force to french
+                    var templateId = messageActivity.Text.Trim();
                     await templateManager.ReplyWith(context, templateId, new { name = "joe" });
                 })
                 .Send("stringTemplate").AssertReply("fr: joe")
@@ -177,8 +179,10 @@ namespace Microsoft.Bot.Builder.TemplateManager.Tests
 
             await new TestFlow(adapter, async (context) =>
                 {
-                    context.Activity.AsMessageActivity().Locale = "fr"; // force to french
-                    var templateId = context.Activity.AsMessageActivity().Text.Trim();
+                    var messageActivity = context.Activity as MessageActivity;
+
+                    messageActivity.Locale = "fr"; // force to french
+                    var templateId = messageActivity.Text.Trim();
                     await templateManager.ReplyWith(context, templateId, new { name = "joe" });
                 })
                 .Send("stringTemplate2").AssertReply("fr: Yo joe")
@@ -197,7 +201,7 @@ namespace Microsoft.Bot.Builder.TemplateManager.Tests
 
             await new TestFlow(adapter, async (context) =>
                 {
-                    var templateId = context.Activity.AsMessageActivity().Text.Trim();
+                    var templateId = (context.Activity as MessageActivity).Text.Trim();
                     await templateManager.ReplyWith(context, templateId, new { name = "joe" });
                 })
                 .Send("stringTemplate").AssertReply("default: joe")

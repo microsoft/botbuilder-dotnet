@@ -106,7 +106,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
 
             var mock = new Mock<IActivityLogger>(MockBehavior.Strict);
             mock
-                .Setup(l => l.LogAsync(It.IsAny<IActivity>()))
+                .Setup(l => l.LogAsync(It.IsAny<Activity>()))
                 .Returns(Task.CompletedTask);
 
             using (var container = Build(Options.ResolveDialogFromContainer))

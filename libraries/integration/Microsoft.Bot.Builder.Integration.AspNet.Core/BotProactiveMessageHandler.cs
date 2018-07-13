@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Bot.Builder.Serialization;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 
@@ -15,6 +16,11 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Handlers
 {
     public class BotProactiveMessageHandler : BotMessageHandlerBase
     {
+        public BotProactiveMessageHandler(IActivitySerializer activitySerializer) 
+            : base(activitySerializer)
+        {
+        }
+
         protected override async Task<InvokeResponse> ProcessMessageRequestAsync(HttpRequest request, BotFrameworkAdapter botFrameworkAdapter, Func<ITurnContext, Task> botCallbackHandler, CancellationToken cancellationToken)
         {
             const string BotAppIdHttpHeaderName = "MS-BotFramework-BotAppId";
@@ -33,7 +39,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Handlers
 
             using (var bodyReader = new JsonTextReader(new StreamReader(request.Body, Encoding.UTF8)))
             {
-                conversationReference = BotMessageHandlerBase.BotMessageSerializer.Deserialize<ConversationReference>(bodyReader);
+                conversationReference = BotMessageJsonSerializer.Deserialize<ConversationReference>(bodyReader);
             }
 
             await botFrameworkAdapter.ContinueConversationAsync(botAppId, conversationReference, botCallbackHandler, cancellationToken);

@@ -26,9 +26,9 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
                     await Task.CompletedTask;
                 })
                 .Send("foo")
-                .AssertReply(ValidateTypingActivity, "check typing activity")
-                .AssertReply(ValidateTypingActivity, "check typing activity")
-                .AssertReply(ValidateTypingActivity, "check typing activity")
+                .AssertReply(a => Assert.IsInstanceOfType(a, typeof(TypingActivity)), "check typing activity")
+                .AssertReply(a => Assert.IsInstanceOfType(a, typeof(TypingActivity)), "check typing activity")
+                .AssertReply(a => Assert.IsInstanceOfType(a, typeof(TypingActivity)), "check typing activity")
                 .AssertReply("Message sent after delay")
                 .StartTestAsync();
         }
@@ -47,7 +47,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
                     await Task.CompletedTask;
                 })
                 .Send("foo")
-                .AssertReply(ValidateTypingActivity, "check typing activity")
+                .AssertReply(a => Assert.IsInstanceOfType(a, typeof(TypingActivity)), "check typing activity")
                 .AssertReply("Message sent after delay")
                 .StartTestAsync();
         }
@@ -96,19 +96,6 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
             catch (Exception ex)
             {
                 Assert.IsInstanceOfType(ex, typeof(ArgumentOutOfRangeException));
-            }
-        }
-
-        private void ValidateTypingActivity(IActivity obj)
-        {
-            var activity = obj.AsTypingActivity();
-            if (activity != null)
-            {
-                return;
-            }
-            else
-            {
-                throw new Exception("Activity was not of type TypingActivity");
             }
         }
     }

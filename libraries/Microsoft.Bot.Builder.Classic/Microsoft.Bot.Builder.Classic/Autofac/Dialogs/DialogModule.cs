@@ -67,7 +67,7 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs.Internals
         {
             var inner = scope.BeginLifetimeScope(LifetimeScopeTag);
             inner.Resolve<Microsoft.Bot.Builder.ITurnContext>(TypedParameter.From(context));
-            inner.Resolve<IActivity>(TypedParameter.From((IActivity)context.Activity));
+            inner.Resolve<Activity>(TypedParameter.From((Activity)context.Activity));
             return inner;
         }
 
@@ -92,7 +92,7 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs.Internals
                 .InstancePerMatchingLifetimeScope(LifetimeScopeTag);
 
             builder
-                .Register((c, p) => p.TypedAs<IActivity>())
+                .Register((c, p) => p.TypedAs<Activity>())
                 .AsSelf()
                 .AsImplementedInterfaces()
                 .InstancePerMatchingLifetimeScope(LifetimeScopeTag);
@@ -100,7 +100,7 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs.Internals
             // make the address and cookie available for the lifetime scope
 
             builder
-                .Register(c => Address.FromActivity(c.Resolve<IActivity>()))
+                .Register(c => Address.FromActivity(c.Resolve<Activity>()))
                 .AsImplementedInterfaces()
                 .InstancePerMatchingLifetimeScope(LifetimeScopeTag);
 
@@ -112,7 +112,7 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs.Internals
 #pragma warning restore CS0618
 
             builder
-                .Register(c => c.Resolve<IActivity>().ToConversationReference())
+                .Register(c => c.Resolve<Activity>().ToConversationReference())
                 .AsSelf()
                 .InstancePerMatchingLifetimeScope(LifetimeScopeTag);
 
@@ -189,7 +189,7 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs.Internals
                                                      c.Resolve<JObjectBotData>(),
                                                      c.Resolve<IStackStoreFactory<DialogTask>>(),
                                                      c.Resolve<Func<IDialogStack, CancellationToken, IDialogContext>>(),
-                                                     c.Resolve<IEventProducer<IActivity>>()))
+                                                     c.Resolve<IEventProducer<Activity>>()))
                 .AsSelf()
                 .As<IDialogTaskManager>()
                 .As<IDialogTasks>()
@@ -234,7 +234,7 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs.Internals
 
             builder
                 .Register(c => new DeleteProfileScorable(c.Resolve<IDialogStack>(), c.Resolve<IBotData>(), c.Resolve<IBotToUser>(), c.ResolveKeyed<Regex>(Key_DeleteProfile_Regex)))
-                .As<IScorable<IActivity, double>>()
+                .As<IScorable<Activity, double>>()
                 .InstancePerLifetimeScope();
 
             // scorable implementing "end conversation"
@@ -247,7 +247,7 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs.Internals
                 .Register(c =>
                 {
                     var cc = c.Resolve<IComponentContext>();
-                    Func<IActivity, IResolver> make = activity =>
+                    Func<Activity, IResolver> make = activity =>
                     {
                         var resolver = NoneResolver.Instance;
                         resolver = new EnumResolver(resolver);
@@ -269,11 +269,11 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs.Internals
 
             builder
                 .RegisterType<DialogRouter>()
-                .Keyed<IScorable<IActivity, double>>(Key_Dialog_Router)
+                .Keyed<IScorable<Activity, double>>(Key_Dialog_Router)
                 .InstancePerLifetimeScope();
 
             builder
-                .RegisterType<EventQueue<IActivity>>()
+                .RegisterType<EventQueue<Activity>>()
                 .AsImplementedInterfaces()
                 .InstancePerLifetimeScope();
 
@@ -283,7 +283,7 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs.Internals
                 .InstancePerLifetimeScope();
 
             builder
-                .Register(c => new ScoringEventLoop<double>(c.Resolve<ReactiveDialogTask>(), c.Resolve<ReactiveDialogTask>(), c.Resolve<IEventConsumer<IActivity>>(), c.ResolveKeyed<IScorable<IActivity, double>>(Key_Dialog_Router)))
+                .Register(c => new ScoringEventLoop<double>(c.Resolve<ReactiveDialogTask>(), c.Resolve<ReactiveDialogTask>(), c.Resolve<IEventConsumer<Activity>>(), c.ResolveKeyed<IScorable<Activity, double>>(Key_Dialog_Router)))
                 .As<IEventLoop>()
                 .InstancePerLifetimeScope();
 

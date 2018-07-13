@@ -54,7 +54,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             if (choices == null)
                 throw new ArgumentNullException(nameof(choices));
 
-            IMessageActivity msg;
+            MessageActivity msg;
 
             switch (Style)
             {
@@ -71,9 +71,11 @@ namespace Microsoft.Bot.Builder.Dialogs
                     break;
 
                 case ListStyle.None:
-                    msg = Activity.CreateMessageActivity();
-                    msg.Text = prompt;
-                    msg.Speak = speak;
+                    msg = new MessageActivity
+                    { 
+                        Text = prompt,
+                        Speak = speak,
+                    };
                     break;
 
                 default:
@@ -85,7 +87,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             await context.SendActivityAsync(msg);
         }
 
-        public async Task Prompt(ITurnContext context, IMessageActivity prompt = null, string speak = null)
+        public async Task Prompt(ITurnContext context, MessageActivity prompt = null, string speak = null)
         {
             BotAssert.ContextNotNull(context);
 
@@ -105,7 +107,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             if (choices == null)
                 throw new ArgumentNullException(nameof(choices));
 
-            var request = context.Activity;
+            var request = context.Activity as MessageActivity;
             var utterance = request.Text;
             var options = RecognizerOptions ?? new FindChoicesOptions();
             options.Locale = request.Locale ?? options.Locale ?? Culture ?? Recognizers.Text.Culture.English;

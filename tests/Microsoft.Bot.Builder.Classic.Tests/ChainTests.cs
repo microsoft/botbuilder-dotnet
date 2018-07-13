@@ -55,7 +55,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
     {
         public static void AssertQueryText(string expectedText, Queue<Activity> queue)
         {
-            var texts = queue.Select(m => m.Text).ToArray();
+            var texts = queue.OfType<MessageActivity>().Select(m => m.Text).ToArray();
             // last message is re-prompt, next-to-last is result of query expression
             var actualText = texts.Reverse().ElementAt(1);
             Assert.AreEqual(expectedText, actualText);
@@ -170,7 +170,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                     }
                 });
 
-                var texts = adapter.ActiveQueue.Select(m => m.Text).ToArray();
+                var texts = adapter.ActiveQueue.OfType<MessageActivity>().Select(m => m.Text).ToArray();
                 Assert.AreEqual(1, texts.Length);
                 Assert.AreEqual(true.ToString(), texts[0]);
             }
@@ -205,7 +205,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                     }
                 });
 
-                var texts = adapter.ActiveQueue.Select(m => m.Text).ToArray();
+                var texts = adapter.ActiveQueue.OfType<MessageActivity>().Select(m => m.Text).ToArray();
                 Assert.AreEqual(1, texts.Length);
                 Func<string, string, bool> Contains = (text, q) => text.IndexOf(q, StringComparison.OrdinalIgnoreCase) >= 0;
                 Assert.IsTrue(Contains(texts[0], "exception") || Contains(texts[0], "bot code is having an issue"));
@@ -266,7 +266,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                     });
                 }
 
-                var texts = adapter.ActiveQueue.Select(m => m.Text).ToArray();
+                var texts = adapter.ActiveQueue.OfType<MessageActivity>().Select(m => m.Text).ToArray();
                 CollectionAssert.AreEqual(expectedReply, texts);
             }
         }

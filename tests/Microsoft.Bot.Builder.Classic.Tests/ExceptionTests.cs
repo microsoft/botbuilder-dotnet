@@ -74,7 +74,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                 context.Wait(MessageReceived);
             }
 
-            async Task MessageReceived(IDialogContext context, IAwaitable<IMessageActivity> message)
+            async Task MessageReceived(IDialogContext context, IAwaitable<MessageActivity> message)
             {
                 await Task.Yield();
             }
@@ -99,7 +99,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                 context.Wait(MessageReceived);
             }
 
-            async Task MessageReceived(IDialogContext context, IAwaitable<IMessageActivity> message)
+            async Task MessageReceived(IDialogContext context, IAwaitable<MessageActivity> message)
             {
                 await Task.Yield();
             }

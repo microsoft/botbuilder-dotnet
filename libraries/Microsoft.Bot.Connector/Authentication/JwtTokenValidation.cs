@@ -29,7 +29,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <remarks>If the task completes successfully, the result contains the claims-based
         /// identity for the request</remarks>
-        public static async Task<ClaimsIdentity> AuthenticateRequest(IActivity activity, string authHeader, ICredentialProvider credentials, HttpClient httpClient = null)
+        public static async Task<ClaimsIdentity> AuthenticateRequest(Activity activity, string authHeader, ICredentialProvider credentials, HttpClient httpClient = null)
         {
             if (string.IsNullOrWhiteSpace(authHeader))
             {

@@ -31,7 +31,7 @@ namespace Microsoft.Bot.Builder
     /// logic runs.</para>
     /// </remarks>
     /// <seealso cref="ITurnContext"/>
-    /// <seealso cref="IActivity"/>
+    /// <seealso cref="Activity"/>
     /// <seealso cref="IBot"/>
     /// <seealso cref="IMiddleware"/>
     public class BotFrameworkAdapter : BotAdapter
@@ -204,17 +204,18 @@ namespace Microsoft.Bot.Builder
 
                 // Handle Invoke scenarios, which deviate from the request/response model in that
                 // the Bot will return a specific body and return code.
-                if (activity.Type == ActivityTypes.Invoke)
+                if (activity is InvokeActivity)
                 {
-                    Activity invokeResponse = context.Services.Get<Activity>(InvokeReponseKey);
-                    if (invokeResponse == null)
+                    var invokeResponseActivity = context.Services.Get<InvokeResponseActivity>(InvokeReponseKey);
+
+                    if (invokeResponseActivity == null)
                     {
                         // ToDo: Trace Here
                         throw new InvalidOperationException("Bot failed to return a valid 'invokeResponse' activity.");
                     }
                     else
                     {
-                        return (InvokeResponse)invokeResponse.Value;
+                        return (InvokeResponse)invokeResponseActivity.Value;
                     }
                 }
 
@@ -264,22 +265,21 @@ namespace Microsoft.Bot.Builder
                 var activity = activities[index];
                 var response = default(ResourceResponse);
 
-                if (activity.Type == ActivityTypesEx.Delay)
+                if (activity is DelayActivity delayActivity)
                 {
                     // The Activity Schema doesn't have a delay type build in, so it's simulated
                     // here in the Bot. This matches the behavior in the Node connector.
-                    int delayMs = (int)activity.Value;
-                    await Task.Delay(delayMs, cancellationToken).ConfigureAwait(false);
+                    await Task.Delay(delayActivity.Delay, cancellationToken).ConfigureAwait(false);
 
                     // No need to create a response. One will be created below.
                 }
-                else if (activity.Type == ActivityTypesEx.InvokeResponse)
+                else if (activity is InvokeResponseActivity)
                 {
                     context.Services.Add(InvokeReponseKey, activity);
 
                     // No need to create a response. One will be created below.
                 }
-                else if (activity.Type == ActivityTypes.Trace && activity.ChannelId != "emulator")
+                else if (activity is TraceActivity && activity.ChannelId != "emulator")
                 {
                     // if it is a Trace activity we only send to the channel if it's the emulator.
                 }
@@ -573,7 +573,7 @@ namespace Microsoft.Bot.Builder
         /// then sends a <c>conversationUpdate</c> activity through its middleware pipeline
         /// to the <paramref name="callback"/> method.</para>
         /// <para>If the conversation is established with the
-        /// specified users, the ID of the activity's <see cref="IActivity.Conversation"/>
+        /// specified users, the ID of the activity's <see cref="Activity.Conversation"/>
         /// will contain the ID of the new conversation.</para>
         /// </remarks>
         public virtual async Task CreateConversationAsync(string channelId, string serviceUrl, MicrosoftAppCredentials credentials, ConversationParameters conversationParameters, Func<ITurnContext, Task> callback, CancellationToken cancellationToken)
@@ -583,15 +583,17 @@ namespace Microsoft.Bot.Builder
             var result = await connectorClient.Conversations.CreateConversationAsync(conversationParameters, cancellationToken).ConfigureAwait(false);
 
             // Create a conversation update activity to represent the result.
-            var eventActivity = Activity.CreateEventActivity();
-            eventActivity.Name = "CreateConversation";
-            eventActivity.ChannelId = channelId;
-            eventActivity.ServiceUrl = serviceUrl;
-            eventActivity.Id = result.ActivityId ?? Guid.NewGuid().ToString("n");
-            eventActivity.Conversation = new ConversationAccount(id: result.Id);
-            eventActivity.Recipient = conversationParameters.Bot;
+            var eventActivity = new EventActivity
+            {
+                Name = "CreateConversation",
+                ChannelId = channelId,
+                ServiceUrl = serviceUrl,
+                Id = result.ActivityId ?? Guid.NewGuid().ToString("n"),
+                Conversation = new ConversationAccount(id: result.Id),
+                Recipient = conversationParameters.Bot,
+            };
 
-            using (TurnContext context = new TurnContext(this, (Activity)eventActivity))
+            using (TurnContext context = new TurnContext(this, eventActivity))
             {
                 ClaimsIdentity claimsIdentity = new ClaimsIdentity();
                 claimsIdentity.AddClaim(new Claim(AuthenticationConstants.AudienceClaim, credentials.MicrosoftAppId));

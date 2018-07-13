@@ -81,7 +81,7 @@ namespace Microsoft.Bot.Builder.Azure
         /// </summary>
         /// <param name="activity">Activity being logged.</param>
         /// <returns></returns>
-        public async Task LogActivityAsync(IActivity activity)
+        public async Task LogActivityAsync(Activity activity)
         {
             BotAssert.ActivityNotNull(activity);
 
@@ -110,7 +110,7 @@ namespace Microsoft.Bot.Builder.Azure
         /// <param name="continuationToken">Continuatuation token to page through results.</param>
         /// <param name="startDate">Earliest time to include.</param>
         /// <returns>PagedResult of activities</returns>
-        public async Task<PagedResult<IActivity>> GetTranscriptActivitiesAsync(string channelId, string conversationId, string continuationToken = null, DateTimeOffset startDate = default(DateTimeOffset))
+        public async Task<PagedResult<Activity>> GetTranscriptActivitiesAsync(string channelId, string conversationId, string continuationToken = null, DateTimeOffset startDate = default(DateTimeOffset))
         {
             if (string.IsNullOrEmpty(channelId))
             {
@@ -122,7 +122,7 @@ namespace Microsoft.Bot.Builder.Azure
                 throw new ArgumentNullException($"missing {nameof(conversationId)}");
             }
 
-            var pagedResult = new PagedResult<IActivity>();
+            var pagedResult = new PagedResult<Activity>();
 
             var dirName = GetDirName(channelId, conversationId);
             var dir = this.Container.Value.GetDirectoryReference(dirName);
@@ -281,7 +281,7 @@ namespace Microsoft.Bot.Builder.Azure
             while (token != null);
         }
 
-        private static string GetBlobName(IActivity activity)
+        private static string GetBlobName(Activity activity)
         {
             var blobName = $"{SanitizeKey(activity.ChannelId)}/{SanitizeKey(activity.Conversation.Id)}/{activity.Timestamp.Value.Ticks.ToString("x")}-{SanitizeKey(activity.Id)}.json";
             NameValidator.ValidateBlobName(blobName);

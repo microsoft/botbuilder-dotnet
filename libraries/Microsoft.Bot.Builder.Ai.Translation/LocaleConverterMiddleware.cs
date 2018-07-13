@@ -40,25 +40,25 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         }
 
         /// <summary>
-        /// Incoming activity
+        /// Processess an incoming activity.
         /// </summary>
-        /// <param name="context"></param>
-        /// <param name="next"></param>
-        /// <returns></returns>
+        /// <param name="context">The context object for this turn.</param>
+        /// <param name="next">The delegate to call to continue the bot middleware pipeline.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>This middleware converts the text of incoming message activities to the target locale
+        /// on the leading edge of the middleware pipeline.</remarks>
         public async Task OnTurnAsync(ITurnContext context, NextDelegate next, CancellationToken cancellationToken)
         {
-            if (context.Activity.Type == ActivityTypes.Message)
+            if (context.Activity is MessageActivity message)
             {
-                IMessageActivity message = context.Activity.AsMessageActivity();
-                if (message != null)
+                if (!string.IsNullOrWhiteSpace(message.Text))
                 {
-                    if (!string.IsNullOrWhiteSpace(message.Text))
+                    string userLocale = await _userLocaleProperty.GetAsync(context).ConfigureAwait(false);
+                    if (userLocale != _toLocale)
                     {
-                        string userLocale = await _userLocaleProperty.GetAsync(context).ConfigureAwait(false);
-                        if (userLocale != _toLocale)
-                        {
-                            ConvertLocaleMessage(context, userLocale);
-                        }
+                        ConvertLocaleMessage(context, userLocale);
                     }
                 }
             }
@@ -68,8 +68,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation
 
         private void ConvertLocaleMessage(ITurnContext context, string fromLocale)
         {
-            IMessageActivity message = context.Activity.AsMessageActivity();
-            if (message != null)
+            if (context.Activity is MessageActivity message)
             {
                 if (_localeConverter.IsLocaleAvailable(fromLocale) && fromLocale != _toLocale)
                 {

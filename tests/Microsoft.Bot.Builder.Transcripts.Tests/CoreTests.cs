@@ -32,12 +32,11 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
 
             var flow = new TestFlow(adapter, async (context) =>
             {
-                switch (context.Activity.Type)
+                switch (context.Activity)
                 {
-                    case ActivityTypes.Message:
+                    case MessageActivity userMessage:
                         {
-                            var userMessage = context.Activity.AsMessageActivity()?.Text;
-                            switch (userMessage)
+                            switch (userMessage.Text)
                             {
                                 case "use middleware":
                                     await context.SendActivityAsync("using middleware");
@@ -47,9 +46,12 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
                                     throw new Exception("exception to catch");
                             }
                         }
+
                         break;
+
                     default:
                         await context.SendActivityAsync(context.Activity.Type);
+
                         break;
                 }
             });

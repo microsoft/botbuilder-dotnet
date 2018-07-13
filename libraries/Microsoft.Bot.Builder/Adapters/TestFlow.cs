@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Builder.Adapters
     /// </summary>
     /// <param name="expected">The expected activity from the bot or adapter.</param>
     /// <param name="actual">The actual activity from the bot or adapter.</param>
-    public delegate void ValidateReply(IActivity expected, IActivity actual);
+    public delegate void ValidateReply(Activity expected, Activity actual);
 
     /// <summary>
     /// A mock channel that can be used for unit testing of bot logic.
@@ -117,7 +117,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <param name="userActivity">The activity to send.</param>
         /// <returns>A new <see cref="TestFlow"/> object that appends a new activity from the user to the modeled exchange.</returns>
         /// <remarks>This method does not modify the original <see cref="TestFlow"/> object.</remarks>
-        public TestFlow Send(IActivity userActivity)
+        public TestFlow Send(Activity userActivity)
         {
             if (userActivity == null)
             {
@@ -177,26 +177,28 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <returns>A new <see cref="TestFlow"/> object that appends this assertion to the modeled exchange.</returns>
         /// <remarks>This method does not modify the original <see cref="TestFlow"/> object.</remarks>
         /// <exception cref="Exception">The bot did not respond as expected.</exception>
-        public TestFlow AssertReply(IActivity expected, [CallerMemberName] string description = null, uint timeout = 3000)
+        public TestFlow AssertReply(MessageActivity expected, [CallerMemberName] string description = null, uint timeout = 3000)
         {
             return AssertReply(
                 (reply) =>
                 {
-                    if (expected.Type != reply.Type)
+                    if (reply is MessageActivity replyMessageActivity)
                     {
-                        throw new Exception($"{description}: Type should match");
+                        if (expected.Text != replyMessageActivity.Text)
+                        {
+                            if (description == null)
+                            {
+                                throw new Exception($"Expected:{expected.Text}\nReceived:{replyMessageActivity.Text}");
+                            }
+                            else
+                            {
+                                throw new Exception($"{description}: Text should match");
+                            }
+                        }
                     }
-
-                    if (expected.AsMessageActivity().Text != reply.AsMessageActivity().Text)
+                    else
                     {
-                        if (description == null)
-                        {
-                            throw new Exception($"Expected:{expected.AsMessageActivity().Text}\nReceived:{reply.AsMessageActivity().Text}");
-                        }
-                        else
-                        {
-                            throw new Exception($"{description}:\nExpected:{expected.AsMessageActivity().Text}\nReceived:{reply.AsMessageActivity().Text}");
-                        }
+                        throw new Exception($"Expected a {nameof(MessageActivity)}, but got a {reply.GetType().Name}.");
                     }
                 },
                 description,
@@ -212,7 +214,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <param name="timeout">The amount of time in milliseconds within which a response is expected.</param>
         /// <returns>A new <see cref="TestFlow"/> object that appends this assertion to the modeled exchange.</returns>
         /// <remarks>This method does not modify the original <see cref="TestFlow"/> object.</remarks>
-        public TestFlow AssertReply(Action<IActivity> validateActivity, [CallerMemberName] string description = null, uint timeout = 3000)
+        public TestFlow AssertReply(Action<Activity> validateActivity, [CallerMemberName] string description = null, uint timeout = 3000)
         {
             return new TestFlow(
                 _testTask.ContinueWith((task) =>
@@ -235,7 +237,8 @@ namespace Microsoft.Bot.Builder.Adapters
                             throw new TimeoutException($"{timeout}ms Timed out waiting for:'{description}'");
                         }
 
-                        IActivity replyActivity = _adapter.GetNextReply();
+                        var replyActivity = _adapter.GetNextReply();
+
                         if (replyActivity != null)
                         {
                             // if we have a reply
@@ -269,7 +272,7 @@ namespace Microsoft.Bot.Builder.Adapters
         }
 
         /// <summary>
-        /// Shortcut for calling <see cref="Send(string)"/> followed by <see cref="AssertReply(IActivity, string, uint)"/>.
+        /// Shortcut for calling <see cref="Send(string)"/> followed by <see cref="AssertReply(Activity, string, uint)"/>.
         /// </summary>
         /// <param name="userSays">The text of the message to send.</param>
         /// <param name="expected">The expected activity from the bot.</param>
@@ -278,7 +281,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <returns>A new <see cref="TestFlow"/> object that appends this exchange to the modeled exchange.</returns>
         /// <remarks>This method does not modify the original <see cref="TestFlow"/> object.</remarks>
         /// <exception cref="Exception">The bot did not respond as expected.</exception>
-        public TestFlow Test(string userSays, Activity expected, string description = null, uint timeout = 3000)
+        public TestFlow Test(string userSays, MessageActivity expected, string description = null, uint timeout = 3000)
         {
             if (expected == null)
             {
@@ -290,7 +293,7 @@ namespace Microsoft.Bot.Builder.Adapters
         }
 
         /// <summary>
-        /// Shortcut for calling <see cref="Send(string)"/> followed by <see cref="AssertReply(Action{IActivity}, string, uint)"/>.
+        /// Shortcut for calling <see cref="Send(string)"/> followed by <see cref="AssertReply(Action{Activity}, string, uint)"/>.
         /// </summary>
         /// <param name="userSays">The text of the message to send.</param>
         /// <param name="validateActivity">A validation method to apply to an activity from the bot.
@@ -300,7 +303,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <returns>A new <see cref="TestFlow"/> object that appends this exchange to the modeled exchange.</returns>
         /// <remarks>This method does not modify the original <see cref="TestFlow"/> object.</remarks>
         /// <exception cref="Exception">The bot did not respond as expected.</exception>
-        public TestFlow Test(string userSays, Action<IActivity> validateActivity, string description = null, uint timeout = 3000)
+        public TestFlow Test(string userSays, Action<Activity> validateActivity, string description = null, uint timeout = 3000)
         {
             if (validateActivity == null)
             {
@@ -313,9 +316,9 @@ namespace Microsoft.Bot.Builder.Adapters
 
         /// <summary>
         /// Shorcut for adding an arbitray exchange between the user and bot.
-        /// Each activity with a <see cref="IActivity.From"/>.<see cref="ChannelAccount.Role"/> equals to "bot"
-        /// will be processed with the <see cref="AssertReply(IActivity, string, uint)"/> method.
-        /// Every other activity will be processed as user's message via the <see cref="Send(IActivity)"/> method.
+        /// Each activity with a <see cref="Activity.From"/>.<see cref="ChannelAccount.Role"/> equals to "bot"
+        /// will be processed with the <see cref="AssertReply(Activity, string, uint)"/> method.
+        /// Every other activity will be processed as user's message via the <see cref="Send(Activity)"/> method.
         /// </summary>
         /// <param name="activities">The list of activities to test.</param>
         /// <param name="description">A message to send if the actual response is not as expected.</param>
@@ -323,7 +326,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <returns>A new <see cref="TestFlow"/> object that appends this exchange to the modeled exchange.</returns>
         /// <remarks>This method does not modify the original <see cref="TestFlow"/> object.</remarks>
         /// <exception cref="Exception">The bot did not respond as expected.</exception>
-        public TestFlow Test(IEnumerable<IActivity> activities, [CallerMemberName] string description = null, uint timeout = 3000)
+        public TestFlow Test(IEnumerable<Activity> activities, [CallerMemberName] string description = null, uint timeout = 3000)
         {
             if (activities == null)
             {
@@ -334,16 +337,16 @@ namespace Microsoft.Bot.Builder.Adapters
             return activities.Aggregate(this, (flow, activity) =>
             {
                 return IsReply(activity)
-                    ? flow.AssertReply(activity, description, timeout)
+                    ? flow.AssertReply(activity as MessageActivity, description, timeout)
                     : flow.Send(activity);
             });
         }
 
         /// <summary>
         /// Shorcut for adding an arbitray exchange between the user and bot.
-        /// Each activity with a <see cref="IActivity.From"/>.<see cref="ChannelAccount.Role"/> equals to "bot"
-        /// will be processed with the <see cref="AssertReply(IActivity, string, uint)"/> method.
-        /// Every other activity will be processed as user's message via the <see cref="Send(IActivity)"/> method.
+        /// Each activity with a <see cref="Activity.From"/>.<see cref="ChannelAccount.Role"/> equals to "bot"
+        /// will be processed with the <see cref="AssertReply(Activity, string, uint)"/> method.
+        /// Every other activity will be processed as user's message via the <see cref="Send(Activity)"/> method.
         /// </summary>
         /// <param name="activities">The list of activities to test.</param>
         /// <param name="validateReply">The delegate to call to validate responses from the bot.</param>
@@ -352,7 +355,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <returns>A new <see cref="TestFlow"/> object that appends this exchange to the modeled exchange.</returns>
         /// <remarks>This method does not modify the original <see cref="TestFlow"/> object.</remarks>
         /// <exception cref="Exception">The bot did not respond as expected.</exception>
-        public TestFlow Test(IEnumerable<IActivity> activities, ValidateReply validateReply, [CallerMemberName] string description = null, uint timeout = 3000)
+        public TestFlow Test(IEnumerable<Activity> activities, ValidateReply validateReply, [CallerMemberName] string description = null, uint timeout = 3000)
         {
             if (activities == null)
             {
@@ -394,7 +397,7 @@ namespace Microsoft.Bot.Builder.Adapters
                 {
                     foreach (var candidate in candidates)
                     {
-                        if (reply.AsMessageActivity().Text == candidate)
+                        if ((reply as MessageActivity)?.Text == candidate)
                         {
                             return;
                         }
@@ -406,9 +409,6 @@ namespace Microsoft.Bot.Builder.Adapters
                 timeout);
         }
 
-        private bool IsReply(IActivity activity)
-        {
-            return string.Equals("bot", activity.From?.Role, StringComparison.InvariantCultureIgnoreCase);
-        }
+        private bool IsReply(Activity activity) => string.Equals("bot", activity.From?.Role, StringComparison.InvariantCultureIgnoreCase);
     }
 }

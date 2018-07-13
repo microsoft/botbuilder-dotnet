@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Builder.Dialogs
     internal class OAuthPromptInternal
     {
         // regex to check if code supplied is a 6 digit numerical code (hence, a magic code).
-        private readonly Regex magicCodeRegex = new Regex(@"(\d{6})");
+        private static readonly Regex MagicCodeRegex = new Regex(@"(\d{6})");
 
         private readonly OAuthPromptSettings _settings;
         private readonly PromptValidator<TokenResult> _promptValidator;
@@ -32,7 +32,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="context"></param>
         /// <param name="activity"></param>
         /// <returns></returns>
-        public async Task Prompt(ITurnContext context, IMessageActivity activity)
+        public async Task Prompt(ITurnContext context, MessageActivity activity)
         {
             BotAssert.ContextNotNull(context);
             BotAssert.ActivityNotNull(activity);
@@ -122,7 +122,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             if (IsTokenResponseEvent(context))
             {
-                var tokenResponseObject = context.Activity.Value as JObject;
+                var tokenResponseObject = (context.Activity as ActivityWithValue).Value as JObject;
                 var tokenResponse = tokenResponseObject?.ToObject<TokenResponse>();
                 return new TokenResult
                 {
@@ -130,9 +130,9 @@ namespace Microsoft.Bot.Builder.Dialogs
                     TokenResponse = tokenResponse
                 };
             }
-            else if (context.Activity.Type == ActivityTypes.Message)
+            else if (context.Activity is MessageActivity messageActivity)
             {
-                var matched = magicCodeRegex.Match(context.Activity.Text);
+                var matched = MagicCodeRegex.Match(messageActivity.Text);
                 if (matched.Success)
                 {
                     var adapter = context.Adapter as BotFrameworkAdapter;
@@ -209,11 +209,8 @@ namespace Microsoft.Bot.Builder.Dialogs
             await adapter.SignOutUserAsync(context, _settings.ConnectionName, default(CancellationToken)).ConfigureAwait(false);
         }
 
-        private bool IsTokenResponseEvent(ITurnContext context)
-        {
-            var activity = context.Activity;
-            return (activity.Type == ActivityTypes.Event && activity.Name == "tokens/response");
-        }
+        private static bool IsTokenResponseEvent(ITurnContext context) =>
+            (context.Activity as EventActivity)?.Name == "tokens/response";
 
         private bool ChannelSupportsOAuthCard(string channelId)
         {

@@ -109,37 +109,37 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs
         /// <param name="message">Message context.</param>
         /// <param name="expressionKey">Name of the resource with the RegEx.</param>
         /// <param name="resourceManager">Resources with the localized expression.</param>
-        IEnumerable<RecognizeEntity<string>> RecognizeLocalizedRegExp(IMessageActivity message, string expressionKey, ResourceManager resourceManager);
+        IEnumerable<RecognizeEntity<string>> RecognizeLocalizedRegExp(MessageActivity message, string expressionKey, ResourceManager resourceManager);
 
         /// <summary>Recognizer for a number.</summary>
         /// <param name="message">Message context.</param>
         /// <param name="choicesDictionary">Dictionary with the options to choose from as a key and their synonyms as a value.</param>
         /// <param name="options">Options of the Recognizer. <see cref="IPromptRecognizeChoicesOptions" /></param>
-        IEnumerable<RecognizeEntity<T>> RecognizeChoices<T>(IMessageActivity message, IReadOnlyDictionary<T, IReadOnlyList<T>> choicesDictionary, IPromptRecognizeChoicesOptions options = null);
+        IEnumerable<RecognizeEntity<T>> RecognizeChoices<T>(MessageActivity message, IReadOnlyDictionary<T, IReadOnlyList<T>> choicesDictionary, IPromptRecognizeChoicesOptions options = null);
 
         /// <summary>Recognizer for a number.</summary>
         /// <param name="message">Message context.</param>
         /// <param name="choicesKey">Name of the resource with the choices.</param>
         /// <param name="resourceManager">Resources with the localized choices.</param>
         /// <param name="options">Options of the Recognizer. <see cref="IPromptRecognizeChoicesOptions" /></param>
-        IEnumerable<RecognizeEntity<string>> RecognizeLocalizedChoices(IMessageActivity message, string choicesKey, ResourceManager resourceManager, IPromptRecognizeChoicesOptions options = null);
+        IEnumerable<RecognizeEntity<string>> RecognizeLocalizedChoices(MessageActivity message, string choicesKey, ResourceManager resourceManager, IPromptRecognizeChoicesOptions options = null);
 
         /// <summary>Recognizer for a number.</summary>
         /// <param name="message">Message context.</param>
         /// <param name="options">Options of the Recognizer. <see cref="IPromptRecognizeNumbersOptions" /></param>
-        IEnumerable<RecognizeEntity<double>> RecognizeNumbers(IMessageActivity message, IPromptRecognizeNumbersOptions options = null);
+        IEnumerable<RecognizeEntity<double>> RecognizeNumbers(MessageActivity message, IPromptRecognizeNumbersOptions options = null);
 
         /// <summary>Recognizer for a ordinal number.</summary>
         /// <param name="message">Message context.</param>
-        IEnumerable<RecognizeEntity<long>> RecognizeOrdinals(IMessageActivity message);
+        IEnumerable<RecognizeEntity<long>> RecognizeOrdinals(MessageActivity message);
 
         /// <summary>Recognizer for a time or duration.</summary>
         /// <param name="message">Message context.</param>
-        IEnumerable<RecognizeEntity<string>> RecognizeTimes(IMessageActivity message);
+        IEnumerable<RecognizeEntity<string>> RecognizeTimes(MessageActivity message);
 
         /// <summary>Recognizer for true/false expression.</summary>
         /// <param name="message">Message context.</param>
-        IEnumerable<RecognizeEntity<bool>> RecognizeBooleans(IMessageActivity message);
+        IEnumerable<RecognizeEntity<bool>> RecognizeBooleans(MessageActivity message);
     }
 
     internal class ChoicesDictionary : Dictionary<string, IReadOnlyList<string>> { }
@@ -165,7 +165,7 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs
         {
         }
 
-        public IEnumerable<RecognizeEntity<string>> RecognizeLocalizedRegExp(IMessageActivity message, string expressionKey, ResourceManager resourceManager)
+        public IEnumerable<RecognizeEntity<string>> RecognizeLocalizedRegExp(MessageActivity message, string expressionKey, ResourceManager resourceManager)
         {
             var entities = new List<RecognizeEntity<string>>();
             var locale = message?.Locale ?? string.Empty;
@@ -201,7 +201,7 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs
             return entities;
         }
         
-        public IEnumerable<RecognizeEntity<string>> RecognizeLocalizedChoices(IMessageActivity message, string choicesKey, ResourceManager resourceManager, IPromptRecognizeChoicesOptions options = null)
+        public IEnumerable<RecognizeEntity<string>> RecognizeLocalizedChoices(MessageActivity message, string choicesKey, ResourceManager resourceManager, IPromptRecognizeChoicesOptions options = null)
         {
             var locale = message?.Locale ?? string.Empty;
 
@@ -223,7 +223,7 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs
             return RecognizeChoices(message, cachedChoices, options);
         }
         
-        public IEnumerable<RecognizeEntity<double>> RecognizeNumbers(IMessageActivity message, IPromptRecognizeNumbersOptions options = null)
+        public IEnumerable<RecognizeEntity<double>> RecognizeNumbers(MessageActivity message, IPromptRecognizeNumbersOptions options = null)
         {
             var entities = new List<RecognizeEntity<double>>();
 
@@ -258,7 +258,7 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs
             return entities;
         }
 
-        public IEnumerable<RecognizeEntity<long>> RecognizeOrdinals(IMessageActivity message)
+        public IEnumerable<RecognizeEntity<long>> RecognizeOrdinals(MessageActivity message)
         {
             var entities = new List<RecognizeEntity<long>>();
 
@@ -282,7 +282,7 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs
             return entities;
         }
 
-        public IEnumerable<RecognizeEntity<string>> RecognizeTimes(IMessageActivity message)
+        public IEnumerable<RecognizeEntity<string>> RecognizeTimes(MessageActivity message)
         {
             var entities = new List<RecognizeEntity<string>>();
 
@@ -298,7 +298,7 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs
             return entities;
         }
         
-        public IEnumerable<RecognizeEntity<T>> RecognizeChoices<T>(IMessageActivity message, IReadOnlyDictionary<T, IReadOnlyList<T>> choicesDictionary, IPromptRecognizeChoicesOptions options = null)
+        public IEnumerable<RecognizeEntity<T>> RecognizeChoices<T>(MessageActivity message, IReadOnlyDictionary<T, IReadOnlyList<T>> choicesDictionary, IPromptRecognizeChoicesOptions options = null)
         {
             var entities = new List<RecognizeEntity<T>>();
             var index = 0;
@@ -324,7 +324,7 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs
             return entities;
         }
 
-        public IEnumerable<RecognizeEntity<bool>> RecognizeBooleans(IMessageActivity message)
+        public IEnumerable<RecognizeEntity<bool>> RecognizeBooleans(MessageActivity message)
         {
             var entities = new List<RecognizeEntity<bool>>();
 
@@ -339,7 +339,7 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs
             return entities;
         }
 
-        private static IEnumerable<RecognizeEntity<T>> RecognizeValues<T>(IMessageActivity message, IEnumerable<T> values, IPromptRecognizeChoicesOptions options = null)
+        private static IEnumerable<RecognizeEntity<T>> RecognizeValues<T>(MessageActivity message, IEnumerable<T> values, IPromptRecognizeChoicesOptions options = null)
         {
             var utterance = message?.Text?.Trim().ToLowerInvariant() ?? string.Empty;
             var entities = new List<RecognizeEntity<T>>();
@@ -493,7 +493,7 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs
         /// <summary>Recognizer for a Int64 number.</summary>
         /// <param name="recognizer"><see cref="IPromptRecognizer"/></param>
         /// <param name="message">Message context.</param>
-        public static IEnumerable<RecognizeEntity<Int64>> RecognizeInteger(this IPromptRecognizer recognizer, IMessageActivity message)
+        public static IEnumerable<RecognizeEntity<Int64>> RecognizeInteger(this IPromptRecognizer recognizer, MessageActivity message)
         {
             var entities = recognizer.RecognizeNumbers(message, new PromptRecognizeNumbersOptions { IntegerOnly = true });
             return entities.Select(x => new RecognizeEntity<Int64> { Entity = Convert.ToInt64(x.Entity), Score = x.Score });
@@ -502,7 +502,7 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs
         /// <summary>Recognizer for a double number.</summary>
         /// <param name="recognizer"><see cref="IPromptRecognizer"/></param>
         /// <param name="message">Message context.</param>
-        public static IEnumerable<RecognizeEntity<double>> RecognizeDouble(this IPromptRecognizer recognizer, IMessageActivity message)
+        public static IEnumerable<RecognizeEntity<double>> RecognizeDouble(this IPromptRecognizer recognizer, MessageActivity message)
         {
             return recognizer.RecognizeNumbers(message, new PromptRecognizeNumbersOptions { IntegerOnly = false });
         }
@@ -512,7 +512,7 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs
         /// <param name="message">Message context.</param>
         /// <param name="max">Maximum value.</param>
         /// <param name="min">Minimun value.</param>
-        public static IEnumerable<RecognizeEntity<Int64>> RecognizeIntegerInRange(this IPromptRecognizer recognizer, IMessageActivity message, long? min, long? max)
+        public static IEnumerable<RecognizeEntity<Int64>> RecognizeIntegerInRange(this IPromptRecognizer recognizer, MessageActivity message, long? min, long? max)
         {
             var entities = recognizer.RecognizeNumbers(message, new PromptRecognizeNumbersOptions { IntegerOnly = true, MinValue = min, MaxValue = max });
             return entities.Select(x => new RecognizeEntity<Int64> { Entity = Convert.ToInt64(x.Entity), Score = x.Score });
@@ -523,7 +523,7 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs
         /// <param name="message">Message context.</param>
         /// <param name="max">Maximum value.</param>
         /// <param name="min">Minimun value.</param>
-        public static IEnumerable<RecognizeEntity<double>> RecognizeDoubleInRange(this IPromptRecognizer recognizer, IMessageActivity message, double? min, double? max)
+        public static IEnumerable<RecognizeEntity<double>> RecognizeDoubleInRange(this IPromptRecognizer recognizer, MessageActivity message, double? min, double? max)
         {
             var entities = recognizer.RecognizeNumbers(message, new PromptRecognizeNumbersOptions { IntegerOnly = false, MinValue = min, MaxValue = max });
             return entities.Select(x => new RecognizeEntity<double> { Entity = Convert.ToDouble(x.Entity), Score = x.Score });

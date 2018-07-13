@@ -43,7 +43,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
             {
                 if (!context.Responded)
                 {
-                    await context.SendActivityAsync($"message: {context.Activity.Text}");
+                    await context.SendActivityAsync($"message: {(context.Activity as MessageActivity).Text}");
                 }
             });
 
@@ -74,7 +74,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
             {
                 if (!context.Responded)
                 {
-                    await context.SendActivityAsync($"message: {context.Activity.Text}");
+                    await context.SendActivityAsync($"message: {(context.Activity as MessageActivity).Text}");
                 }
             });
 
@@ -97,23 +97,23 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
 
             var flow = new TestFlow(adapter, async (context) =>
             {
-                if (context.Activity.Type == ActivityTypes.Message)
+                if (context.Activity is MessageActivity userMessage)
                 {
-                    var userMessage = context.Activity.Text.ToLowerInvariant();
-                    if (userMessage.StartsWith("set language "))
+                    var userMessageText = userMessage.Text.ToLowerInvariant();
+                    if (userMessageText.StartsWith("set language "))
                     {
-                        await userLangProp.SetAsync(context, userMessage.Substring(13, 5));
+                        await userLangProp.SetAsync(context, userMessageText.Substring(13, 5));
                     }
                     else
                     {
-                        await context.SendActivityAsync($"message: {context.Activity.Text}");
+                        await context.SendActivityAsync($"message: {userMessageText}");
                     }
                 }
             });
 
             await flow.Test(activities, (expected, actual) =>
             {
-                Assert.AreEqual(expected.AsMessageActivity().Text, actual.AsMessageActivity().Text);
+                Assert.AreEqual((expected as MessageActivity).Text, (actual as MessageActivity).Text);
             }).StartTestAsync();
         }
 

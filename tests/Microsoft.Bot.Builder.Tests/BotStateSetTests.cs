@@ -37,13 +37,13 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
                             
                             // System.Diagnostics.Debug.WriteLine($"{context.Activity.Id} UserCount({context.Activity.From.Id}):{userCount} convCount({context.Activity.Conversation.Id}):{convCount}");
 
-                            if (context.Activity.Type == ActivityTypes.Message)
+                            if (context.Activity is MessageActivity message)
                             {
-                                if (context.Activity.Text == "get userCount")
+                                if (message.Text == "get userCount")
                                 {
                                     await context.SendActivityAsync(context.Activity.CreateReply($"{userCount}"));
                                 }
-                                else if (context.Activity.Text == "get convCount")
+                                else if (message.Text == "get convCount")
                                 {
                                     await context.SendActivityAsync(context.Activity.CreateReply($"{convCount}"));
                                 }

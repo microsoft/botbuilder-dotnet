@@ -63,8 +63,11 @@ namespace Microsoft.Bot.Builder.TemplateManager
         {
             BotAssert.ContextNotNull(context);
 
+            var locale = (context.Activity as MessageActivity)?.Locale;
+
             // apply template
-            Activity boundActivity = await this.RenderTemplate(context, context.Activity?.AsMessageActivity()?.Locale, templateId, data).ConfigureAwait(false);
+            Activity boundActivity = await this.RenderTemplate(context, locale, templateId, data).ConfigureAwait(false);
+
             if (boundActivity != null)
             {
                 await context.SendActivityAsync(boundActivity);
@@ -98,12 +101,16 @@ namespace Microsoft.Bot.Builder.TemplateManager
             {
                 foreach (var renderer in this._templateRenderers)
                 {
-                    object templateOutput = await renderer.RenderTemplate(context, locale, templateId, data);
+                    var templateOutput = await renderer.RenderTemplate(context, locale, templateId, data);
+
                     if (templateOutput != null)
                     {
-                        if (templateOutput is string)
+                        if (templateOutput is string templateOutputText)
                         {
-                            return new Activity(type: ActivityTypes.Message, text: (string)templateOutput);
+                            return new MessageActivity
+                            {
+                                Text = templateOutputText,
+                            };
                         }
                         else
                         {

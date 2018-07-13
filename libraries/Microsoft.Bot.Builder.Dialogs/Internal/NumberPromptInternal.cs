@@ -43,7 +43,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             NumberResult<T> numberResult = new NumberResult<T>();
 
-            IMessageActivity message = context.Activity.AsMessageActivity();
+            var message = context.Activity as MessageActivity;
             var results = _model.Parse(message.Text);
             if (results.Any())
             {

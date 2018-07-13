@@ -4,6 +4,7 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Bot.Builder.Core.Extensions.Tests
@@ -30,12 +31,14 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
 
             await new TestFlow(adapter, (context) =>
                 {
-                    if (context.Activity.AsMessageActivity().Text == "foo")
+                    var messageActivity = context.Activity as MessageActivity;
+
+                    if (messageActivity.Text == "foo")
                     {
-                        context.SendActivityAsync(context.Activity.AsMessageActivity().Text);
+                        context.SendActivityAsync(messageActivity.Text);
                     }
 
-                    if (context.Activity.AsMessageActivity().Text == "NotImplementedException")
+                    if (messageActivity.Text == "NotImplementedException")
                     {
                         throw new NotImplementedException("Test");
                     }

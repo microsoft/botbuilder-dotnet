@@ -4,6 +4,7 @@
 using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Bot.Builder.Integration.AspNet.Core.Handlers;
+using Microsoft.Bot.Builder.Serialization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
@@ -38,12 +39,12 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             {
                 applicationBuilder.Map(
                     paths.BasePath + paths.ProactiveMessagesPath,
-                    botProactiveAppBuilder => botProactiveAppBuilder.Run(new BotProactiveMessageHandler().HandleAsync));
+                    botProactiveAppBuilder => botProactiveAppBuilder.Run(new BotProactiveMessageHandler(applicationServices.GetRequiredService<IActivitySerializer>()).HandleAsync));
             }
 
             applicationBuilder.Map(
                 paths.BasePath + paths.MessagesPath,
-                botActivitiesAppBuilder => botActivitiesAppBuilder.Run(new BotMessageHandler().HandleAsync));
+                botActivitiesAppBuilder => botActivitiesAppBuilder.Run(new BotMessageHandler(applicationServices.GetRequiredService<IActivitySerializer>()).HandleAsync));
 
             return applicationBuilder;
         }

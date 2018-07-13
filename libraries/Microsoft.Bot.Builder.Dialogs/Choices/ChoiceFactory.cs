@@ -10,7 +10,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
 {
     public class ChoiceFactory
     {
-        public static IMessageActivity ForChannel(string channelId, List<Choice> list, string text = null, string speak = null, ChoiceFactoryOptions options = null)
+        public static MessageActivity ForChannel(string channelId, List<Choice> list, string text = null, string speak = null, ChoiceFactoryOptions options = null)
         {
             channelId = channelId ?? string.Empty;
 
@@ -52,7 +52,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
             }
         }
 
-        public static Activity Inline(List<Choice> choices, string text = null, string speak = null, ChoiceFactoryOptions options = null)
+        public static MessageActivity Inline(List<Choice> choices, string text = null, string speak = null, ChoiceFactoryOptions options = null)
         {
             choices = choices ?? new List<Choice>();
             options = options ?? new ChoiceFactoryOptions();
@@ -97,12 +97,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
             return MessageFactory.Text(txt, speak, InputHints.ExpectingInput);
         }
 
-        public static Activity List(List<string> choices, string text = null, string speak = null, ChoiceFactoryOptions options = null)
+        public static MessageActivity List(List<string> choices, string text = null, string speak = null, ChoiceFactoryOptions options = null)
         {
             return List(ToChoices(choices), text, speak, options);
         }
 
-        public static Activity List(List<Choice> choices, string text = null, string speak = null, ChoiceFactoryOptions options = null)
+        public static MessageActivity List(List<Choice> choices, string text = null, string speak = null, ChoiceFactoryOptions options = null)
         {
             choices = choices ?? new List<Choice>();
             options = options ?? new ChoiceFactoryOptions();
@@ -137,12 +137,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
             return MessageFactory.Text(txt, speak, InputHints.ExpectingInput);
         }
 
-        public static IMessageActivity SuggestedAction(List<string> choices, string text = null, string speak = null)
+        public static MessageActivity SuggestedAction(List<string> choices, string text = null, string speak = null)
         {
             return SuggestedAction(ToChoices(choices), text, speak);
         }
 
-        public static IMessageActivity SuggestedAction(List<Choice> choices, string text = null, string speak = null)
+        public static MessageActivity SuggestedAction(List<Choice> choices, string text = null, string speak = null)
         {
             choices = choices ?? new List<Choice>();
 

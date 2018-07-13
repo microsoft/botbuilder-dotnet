@@ -40,7 +40,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             BotAssert.ActivityNotNull(context.Activity);
             if (context.Activity.Type == ActivityTypes.Message)
             {
-                var message = context.Activity.AsMessageActivity();
+                var message = context.Activity as MessageActivity;
                 var results = _model.Parse(message.Text);
                 if (results.Any())
                 {

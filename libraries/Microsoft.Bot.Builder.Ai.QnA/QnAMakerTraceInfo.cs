@@ -18,7 +18,7 @@ namespace Microsoft.Bot.Builder.Ai.QnA
         /// Message which instigated the query to QnAMaker.
         /// </value>
         [JsonProperty("message")]
-        public IMessageActivity Message { get; set; }
+        public MessageActivity Message { set; get; }
 
         /// <summary>
         /// Gets or sets results that QnAMaker returned.

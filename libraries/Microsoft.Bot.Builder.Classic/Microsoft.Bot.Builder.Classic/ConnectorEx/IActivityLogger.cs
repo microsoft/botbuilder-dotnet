@@ -46,7 +46,7 @@ namespace Microsoft.Bot.Builder.Classic.History
     /// </summary>
     public interface IActivityLogger
     {
-        Task LogAsync(IActivity activity);
+        Task LogAsync(Activity activity);
     }
 
     /// <summary>
@@ -69,7 +69,7 @@ namespace Microsoft.Bot.Builder.Classic.History
         /// </summary>
         /// <param name="activity">Activity to log.</param>
         /// <returns></returns>
-        async Task IActivityLogger.LogAsync(IActivity activity)
+        async Task IActivityLogger.LogAsync(Activity activity)
         {
             Trace.TraceInformation(JsonConvert.SerializeObject(activity));
         }
@@ -85,7 +85,7 @@ namespace Microsoft.Bot.Builder.Classic.History
         /// </summary>
         /// <param name="activity">Activity to be logged.</param>
         /// <returns></returns>
-        async Task IActivityLogger.LogAsync(IActivity activity)
+        async Task IActivityLogger.LogAsync(Activity activity)
         {
         }
     }
@@ -103,7 +103,7 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs.Internals
             SetField.NotNull(out this.logger, nameof(logger), logger);
         }
 
-        async Task IPostToBot.PostAsync(IActivity activity, CancellationToken token)
+        async Task IPostToBot.PostAsync(Activity activity, CancellationToken token)
         {
             await this.logger.LogAsync(activity);
             await inner.PostAsync(activity, token);
@@ -120,12 +120,12 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs.Internals
             SetField.NotNull(out this.logger, nameof(logger), logger);
         }
 
-        IMessageActivity IBotToUser.MakeMessage()
+        MessageActivity IBotToUser.MakeMessage()
         {
             return this.inner.MakeMessage();
         }
 
-        async Task IBotToUser.PostAsync(IMessageActivity message, CancellationToken cancellationToken)
+        async Task IBotToUser.PostAsync(MessageActivity message, CancellationToken cancellationToken)
         {
             await this.logger.LogAsync(message);
             await this.inner.PostAsync(message, cancellationToken);

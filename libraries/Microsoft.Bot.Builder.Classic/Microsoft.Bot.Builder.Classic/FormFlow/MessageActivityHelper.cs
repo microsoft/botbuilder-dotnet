@@ -4,7 +4,7 @@ namespace Microsoft.Bot.Builder.Classic.FormFlow.Advanced
 {
     internal class MessageActivityHelper
     {
-        internal static string GetSanitizedTextInput(IMessageActivity activity)
+        internal static string GetSanitizedTextInput(MessageActivity activity)
         {
             var text = (activity != null ? activity.Text : null);
 
@@ -19,15 +19,6 @@ namespace Microsoft.Bot.Builder.Classic.FormFlow.Advanced
             }
 
             return result;
-        }
-
-        internal static IMessageActivity BuildMessageWithText(string text)
-        {
-            return new Activity
-            {
-                Type = ActivityTypes.Message,
-                Text = text
-            };
         }
     }
 }

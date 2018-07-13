@@ -53,10 +53,10 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs.Internals
     public sealed class ScoringEventLoop<Score> : IEventLoop
     {
         private readonly IEventLoop innerLoop;
-        private readonly IEventProducer<IActivity> innerProducer;
-        private readonly IEventConsumer<IActivity> consumer;
-        private readonly IScorable<IActivity, Score> scorable;
-        public ScoringEventLoop(IEventLoop innerLoop, IEventProducer<IActivity> innerProducer, IEventConsumer<IActivity> consumer, IScorable<IActivity, Score> scorable)
+        private readonly IEventProducer<Activity> innerProducer;
+        private readonly IEventConsumer<Activity> consumer;
+        private readonly IScorable<Activity, Score> scorable;
+        public ScoringEventLoop(IEventLoop innerLoop, IEventProducer<Activity> innerProducer, IEventConsumer<Activity> consumer, IScorable<Activity, Score> scorable)
         {
             SetField.NotNull(out this.innerLoop, nameof(innerLoop), innerLoop);
             SetField.NotNull(out this.innerProducer, nameof(innerProducer), innerProducer);
@@ -69,7 +69,7 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs.Internals
             // for proactive dialogs
             await this.innerLoop.PollAsync(token);
 
-            IActivity activity;
+            Activity activity;
             while (this.consumer.TryPull(out activity))
             {
                 // for event wait completions

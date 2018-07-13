@@ -82,14 +82,14 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs.Internals
         private readonly IBotData botData;
         private readonly IStackStoreFactory<DialogTask> stackStoreFactory;
         private readonly Func<IDialogStack, CancellationToken, IDialogContext> contextFactory;
-        private readonly IEventProducer<IActivity> queue;
+        private readonly IEventProducer<Activity> queue;
 
         private List<DialogTask> dialogTasks;
 
         public DialogTaskManager(string blobKeyPrefix, IBotData botData,
             IStackStoreFactory<DialogTask> stackStoreFactory,
             Func<IDialogStack, CancellationToken, IDialogContext> contextFactory,
-            IEventProducer<IActivity> queue)
+            IEventProducer<Activity> queue)
         {
             SetField.NotNull(out this.blobKeyPrefix, nameof(blobKeyPrefix), blobKeyPrefix);
             SetField.NotNull(out this.botData, nameof(botData), botData);

@@ -47,7 +47,7 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs.Internals
     /// <summary>
     /// The dialog system represents the top-level interface for the dialog tasks and their event loop.
     /// </summary>
-    public interface IDialogSystem : IDialogTasks, IEventLoop, IEventProducer<IActivity>
+    public interface IDialogSystem : IDialogTasks, IEventLoop, IEventProducer<Activity>
     {
     }
 
@@ -55,8 +55,8 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs.Internals
     {
         private readonly IDialogTasks tasks;
         private readonly IEventLoop loop;
-        private readonly IEventProducer<IActivity> queue;
-        public DialogSystem(IDialogTasks tasks, IEventLoop loop, IEventProducer<IActivity> queue)
+        private readonly IEventProducer<Activity> queue;
+        public DialogSystem(IDialogTasks tasks, IEventLoop loop, IEventProducer<Activity> queue)
         {
             SetField.NotNull(out this.tasks, nameof(tasks), tasks);
             SetField.NotNull(out this.loop, nameof(loop), loop);
@@ -75,7 +75,7 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs.Internals
             await this.loop.PollAsync(token);
         }
 
-        void IEventProducer<IActivity>.Post(IActivity activity, Action onPull)
+        void IEventProducer<Activity>.Post(Activity activity, Action onPull)
         {
             this.queue.Post(activity, onPull);
         }

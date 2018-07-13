@@ -66,7 +66,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             {
                 if (options.RetryPromptActivity != null)
                 {
-                    await _prompt.Prompt(dc.Context, options.RetryPromptActivity.AsMessageActivity());
+                    await _prompt.Prompt(dc.Context, options.RetryPromptActivity);
                 }
                 else if (options.RetryPromptString != null)
                 {

@@ -62,7 +62,7 @@ namespace Microsoft.Bot.Builder
         /// Gets a value indicating whether at least one response was sent for the current turn.
         /// </summary>
         /// <value><c>true</c> if at least one response was sent for the current turn.</value>
-        /// <remarks><see cref="ITraceActivity"/> activities on their own do not set this flag.</remarks>
+        /// <remarks><see cref="TraceActivity"/> activities on their own do not set this flag.</remarks>
         public bool Responded
         {
             get;
@@ -75,8 +75,8 @@ namespace Microsoft.Bot.Builder
         /// <param name="handler">The handler to add to the context object.</param>
         /// <returns>The updated context object.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="handler"/> is <c>null</c>.</exception>
-        /// <remarks>When the context's <see cref="SendActivityAsync(IActivity, CancellationToken)"/>
-        /// or <see cref="SendActivitiesAsync(IActivity[], CancellationToken)"/> methods are called,
+        /// <remarks>When the context's <see cref="SendActivityAsync(Activity, CancellationToken)"/>
+        /// or <see cref="SendActivitiesAsync(Activity[], CancellationToken)"/> methods are called,
         /// the adapter calls the registered handlers in the order in which they were
         /// added to the context object.
         /// </remarks>
@@ -97,7 +97,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="handler">The handler to add to the context object.</param>
         /// <returns>The updated context object.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="handler"/> is <c>null</c>.</exception>
-        /// <remarks>When the context's <see cref="UpdateActivityAsync(IActivity, CancellationToken)"/> is called,
+        /// <remarks>When the context's <see cref="UpdateActivityAsync(Activity, CancellationToken)"/> is called,
         /// the adapter calls the registered handlers in the order in which they were
         /// added to the context object.
         /// </remarks>
@@ -164,7 +164,7 @@ namespace Microsoft.Bot.Builder
                 throw new ArgumentNullException(nameof(textReplyToSend));
             }
 
-            var activityToSend = new Activity(ActivityTypes.Message) { Text = textReplyToSend };
+            var activityToSend = new MessageActivity { Text = textReplyToSend };
 
             if (!string.IsNullOrEmpty(speak))
             {
@@ -189,7 +189,7 @@ namespace Microsoft.Bot.Builder
         /// <remarks>If the activity is successfully sent, the task result contains
         /// a <see cref="ResourceResponse"/> object containing the ID that the receiving
         /// channel assigned to the activity.</remarks>
-        public async Task<ResourceResponse> SendActivityAsync(IActivity activity, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<ResourceResponse> SendActivityAsync(Activity activity, CancellationToken cancellationToken = default(CancellationToken))
         {
             BotAssert.ActivityNotNull(activity);
 
@@ -215,7 +215,7 @@ namespace Microsoft.Bot.Builder
         /// <remarks>If the activities are successfully sent, the task result contains
         /// an array of <see cref="ResourceResponse"/> objects containing the IDs that
         /// the receiving channel assigned to the activities.</remarks>
-        public Task<ResourceResponse[]> SendActivitiesAsync(IActivity[] activities, CancellationToken cancellationToken = default(CancellationToken))
+        public Task<ResourceResponse[]> SendActivitiesAsync(Activity[] activities, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (activities == null)
             {
@@ -300,7 +300,7 @@ namespace Microsoft.Bot.Builder
         /// channel assigned to the activity.
         /// <para>Before calling this, set the ID of the replacement activity to the ID
         /// of the activity to replace.</para></remarks>
-        public async Task<ResourceResponse> UpdateActivityAsync(IActivity activity, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<ResourceResponse> UpdateActivityAsync(Activity activity, CancellationToken cancellationToken = default(CancellationToken))
         {
             Activity a = (Activity)activity;
 

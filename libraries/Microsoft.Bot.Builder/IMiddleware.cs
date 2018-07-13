@@ -49,7 +49,7 @@ namespace Microsoft.Bot.Builder
         /// incoming activity, and other data needed to process the activity.</para>
         /// </remarks>
         /// <seealso cref="ITurnContext"/>
-        /// <seealso cref="Bot.Schema.IActivity"/>
+        /// <seealso cref="Bot.Schema.Activity"/>
         Task OnTurnAsync(ITurnContext context, NextDelegate next, CancellationToken cancellationToken = default(CancellationToken));
     }
 }

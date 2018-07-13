@@ -8,13 +8,13 @@ namespace Microsoft.Bot.Builder.Dialogs
 {
     internal static class PromptMessageFactory
     {
-        public static IMessageActivity CreateActivity(PromptOptions options, bool isRetry)
+        public static MessageActivity CreateActivity(PromptOptions options, bool isRetry)
         {
             if (isRetry)
             {
                 if (options.RetryPromptActivity != null)
                 {
-                    return CreateActivity(options.RetryPromptActivity);
+                    return options.RetryPromptActivity;
                 }
                 if (options.RetryPromptString != null)
                 {
@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             if (options.PromptActivity != null)
             {
-                return CreateActivity(options.PromptActivity);
+                return options.PromptActivity;
             }
             if (options.PromptString != null)
             {
@@ -35,22 +35,12 @@ namespace Microsoft.Bot.Builder.Dialogs
             throw new ArgumentException("Missing required fields on PromptOptions", nameof(options));
         }
 
-        private static IMessageActivity CreateActivity(string text, string speak)
-        {
-            IMessageActivity activity = Activity.CreateMessageActivity();
-            activity.InputHint = InputHints.ExpectingInput;
-            activity.Text = !string.IsNullOrWhiteSpace(text) ? text : null;
-            activity.Speak = !string.IsNullOrWhiteSpace(speak) ? speak : null;
-            return activity;
-        }
-
-        private static IMessageActivity CreateActivity(IActivity activity)
-        {
-            if (activity.Type != ActivityTypes.Message)
-            {
-                throw new ArgumentException("Provided Activity must be a Message Activity");
-            }
-            return activity.AsMessageActivity();
-        }
+        private static MessageActivity CreateActivity(string text, string speak) =>
+            new MessageActivity
+            { 
+                InputHint = InputHints.ExpectingInput,
+                Text = !string.IsNullOrWhiteSpace(text) ? text : null,
+                Speak = !string.IsNullOrWhiteSpace(speak) ? speak : null,
+            };
     }
 }

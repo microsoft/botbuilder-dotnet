@@ -94,10 +94,10 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs
         }
 
         /// <summary>
-        /// Creates an instance of resumption cookie form a <see cref="IMessageActivity"/>
+        /// Creates an instance of resumption cookie form a <see cref="MessageActivity"/>
         /// </summary>
         /// <param name="msg">The message.</param>
-        public ResumptionCookie(IMessageActivity msg)
+        public ResumptionCookie(MessageActivity msg)
             : this
                   (
                     address: Dialogs.Address.FromActivity(msg),
@@ -132,9 +132,8 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs
         /// Creates a message from the resumption cookie.
         /// </summary>
         /// <returns> The message that can be sent to bot based on the resumption cookie</returns>
-        public Activity GetMessage()
-        {
-            return new Activity
+        public MessageActivity GetMessage() => 
+            new MessageActivity
             {
                 Id = Guid.NewGuid().ToString(),
                 Recipient = new ChannelAccount
@@ -155,7 +154,6 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs
                 },
                 Locale = this.Locale
             };
-        }
 
         /// <summary>
         /// Deserializes the GZip serialized <see cref="ResumptionCookie"/> using <see cref="Extensions.GZipSerialize(ResumptionCookie)"/>.

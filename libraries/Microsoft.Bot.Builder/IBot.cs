@@ -36,7 +36,7 @@ namespace Microsoft.Bot.Builder
         /// <remarks>The <paramref name="turnContext"/> provides information about the
         /// incoming activity, and other data needed to process the activity.</remarks>
         /// <seealso cref="ITurnContext"/>
-        /// <seealso cref="Bot.Schema.IActivity"/>
+        /// <seealso cref="Bot.Schema.Activity"/>
         Task OnTurnAsync(ITurnContext turnContext);
     }
 }

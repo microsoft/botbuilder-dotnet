@@ -91,12 +91,10 @@ namespace Microsoft.Bot.Builder.Classic.Tests
             public const string Bot = "testBot";
         }
 
-        public static IMessageActivity MakeTestMessage()
-        {
-            return new Activity()
+        public static MessageActivity MakeTestMessage() =>
+            new MessageActivity()
             {
                 Id = Guid.NewGuid().ToString(),
-                Type = ActivityTypes.Message,
                 From = new ChannelAccount { Id = ChannelID.User },
                 Conversation = new ConversationAccount { Id = Guid.NewGuid().ToString() },
                 Recipient = new ChannelAccount { Id = ChannelID.Bot },
@@ -105,7 +103,6 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                 Attachments = Array.Empty<Attachment>(),
                 Entities = Array.Empty<Microsoft.Bot.Schema.Entity>(),
             };
-        }
 
 
         public static async Task AssertScriptAsync(ILifetimeScope container, params string[] pairs)
@@ -140,14 +137,16 @@ namespace Microsoft.Bot.Builder.Classic.Tests
 
                             var toUser = queue.Dequeue();
                             string actual;
-                            switch (toUser.Type)
+                            switch (toUser)
                             {
-                                case ActivityTypes.Message:
-                                    actual = toUser.Text;
+                                case EndOfConversationActivity endOfConversation:
+                                    actual = endOfConversation.Code;
                                     break;
-                                case ActivityTypes.EndOfConversation:
-                                    actual = toUser.AsEndOfConversationActivity().Code;
+
+                                case MessageActivity message:
+                                    actual = message.Text;
                                     break;
+
                                 default:
                                     throw new NotImplementedException();
                             }
@@ -160,7 +159,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
             }
         }
 
-        public static void AssertMentions(string expectedText, IMessageActivity actualToUser)
+        public static void AssertMentions(string expectedText, MessageActivity actualToUser)
         {
             var index = actualToUser.Text.IndexOf(expectedText, StringComparison.OrdinalIgnoreCase);
             Assert.IsTrue(index >= 0);
@@ -172,12 +171,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
             Assert.AreEqual(0, queue.Count);
         }
 
-        public static string NewID()
-        {
-            return Guid.NewGuid().ToString();
-        }
-
-        public static async Task AssertOutgoingActivity(ILifetimeScope container, Action<IMessageActivity> asserts)
+        public static async Task AssertOutgoingMessageActivity(ILifetimeScope container, Action<MessageActivity> asserts)
         {
             var queue = ((TestAdapter)container.Resolve<Microsoft.Bot.Builder.ITurnContext>().Adapter).ActiveQueue;
 
@@ -186,7 +180,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                 Assert.Fail("Expecting only 1 activity");
             }
 
-            var toUser = queue.Dequeue();
+            var toUser = queue.Dequeue() as MessageActivity;
 
             asserts(toUser);
         }

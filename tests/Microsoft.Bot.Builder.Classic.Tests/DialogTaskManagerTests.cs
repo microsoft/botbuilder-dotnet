@@ -28,8 +28,8 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                 .Returns<IDialogContext>(async context => { context.Wait(dialog.Object.ItemReceived); });
 
             dialog
-                .Setup(d => d.ItemReceived(It.IsAny<IDialogContext>(), It.IsAny<IAwaitable<IMessageActivity>>()))
-                .Returns<IDialogContext, IAwaitable<IMessageActivity>>(async (context, message) =>
+                .Setup(d => d.ItemReceived(It.IsAny<IDialogContext>(), It.IsAny<IAwaitable<MessageActivity>>()))
+                .Returns<IDialogContext, IAwaitable<MessageActivity>>(async (context, message) =>
                 {
                     var msg = await message;
                     await context.PostAsync(msg.Text);
@@ -64,7 +64,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                             botData.PrivateConversationData.ContainsKey(DialogModule.BlobKey +
                                                                           dialogTaskManager.DialogTasks.Count));
                         var queue = ((TestAdapter)context.Adapter).ActiveQueue;
-                        Assert.AreEqual(foo, queue.Dequeue().Text);
+                        Assert.AreEqual(foo, (queue.Dequeue() as MessageActivity).Text);
                     }
                 });
 
@@ -87,7 +87,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                         var post = scope.Resolve<IPostToBot>();
                         await post.PostAsync(toBot, CancellationToken.None);
                         var queue = ((TestAdapter)context.Adapter).ActiveQueue;
-                        Assert.AreEqual(bar, queue.Dequeue().Text);
+                        Assert.AreEqual(bar, (queue.Dequeue() as MessageActivity).Text);
                     }
                 });
             }
@@ -105,8 +105,8 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                 .Returns<IDialogContext>(async context => { context.Wait(dialog.Object.ItemReceived); });
 
             dialog
-                .Setup(d => d.ItemReceived(It.IsAny<IDialogContext>(), It.IsAny<IAwaitable<IMessageActivity>>()))
-                .Returns<IDialogContext, IAwaitable<IMessageActivity>>(async (context, message) =>
+                .Setup(d => d.ItemReceived(It.IsAny<IDialogContext>(), It.IsAny<IAwaitable<MessageActivity>>()))
+                .Returns<IDialogContext, IAwaitable<MessageActivity>>(async (context, message) =>
                 {
                     var msg = await message;
                     await context.PostAsync(msg.Text);
@@ -119,11 +119,11 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                 .Setup(d => d.StartAsync(It.IsAny<IDialogContext>()))
                 .Returns<IDialogContext>(
                     async context =>
-                        { context.Wait(secondStackDialog.Object.ItemReceived<IMessageActivity>); });
+                        { context.Wait(secondStackDialog.Object.ItemReceived<MessageActivity>); });
 
             secondStackDialog
-                .Setup(d => d.ItemReceived(It.IsAny<IDialogContext>(), It.IsAny<IAwaitable<IMessageActivity>>()))
-                .Returns<IDialogContext, IAwaitable<IMessageActivity>>(async (context, message) =>
+                .Setup(d => d.ItemReceived(It.IsAny<IDialogContext>(), It.IsAny<IAwaitable<MessageActivity>>()))
+                .Returns<IDialogContext, IAwaitable<MessageActivity>>(async (context, message) =>
                 {
                     PromptDialog.Text(context, secondStackDialog.Object.ItemReceived, promptMessage);
                 });
@@ -133,7 +133,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                 .Returns<IDialogContext, IAwaitable<string>>(async (context, message) =>
                 {
                     await context.PostAsync($"from prompt {await message}");
-                    context.Wait(secondStackDialog.Object.ItemReceived<IMessageActivity>);
+                    context.Wait(secondStackDialog.Object.ItemReceived<MessageActivity>);
                 });
 
             Func<IDialog<object>> makeRoot = () => dialog.Object;
@@ -162,14 +162,14 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                         var reactiveDialogTask = new ReactiveDialogTask(secondDialogTask, secondStackMakeRoot);
                         IEventLoop loop = reactiveDialogTask;
                         await loop.PollAsync(CancellationToken.None);
-                        IEventProducer<IActivity> producer = reactiveDialogTask;
+                        IEventProducer<Activity> producer = reactiveDialogTask;
                         producer.Post(toBot);
                         await loop.PollAsync(CancellationToken.None);
                         await botData.FlushAsync(CancellationToken.None);
 
                         var queue = ((TestAdapter)context.Adapter).ActiveQueue;
-                        Assert.AreEqual(foo, queue.Dequeue().Text);
-                        Assert.AreEqual(promptMessage, queue.Dequeue().Text);
+                        Assert.AreEqual(foo, (queue.Dequeue() as MessageActivity).Text);
+                        Assert.AreEqual(promptMessage, (queue.Dequeue() as MessageActivity).Text);
                     }
                 });
 
@@ -189,8 +189,8 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                         await secondDialogTask.PollAsync(CancellationToken.None);
 
                         var queue = ((TestAdapter)context.Adapter).ActiveQueue;
-                        Assert.AreEqual(bar, queue.Dequeue().Text);
-                        Assert.AreEqual($"from prompt {bar}", queue.Dequeue().Text);
+                        Assert.AreEqual(bar, (queue.Dequeue() as MessageActivity).Text);
+                        Assert.AreEqual($"from prompt {bar}", (queue.Dequeue() as MessageActivity).Text);
                     }
                 });
             }

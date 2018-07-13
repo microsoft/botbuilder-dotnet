@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
         [TestMethod]
         public void NullText()
         {
-            IMessageActivity message = MessageFactory.Text(null);
+            MessageActivity message = MessageFactory.Text(null);
             Assert.IsNull(message.Text, "Message Text is not null. Null must have been passed through.");
             Assert.AreEqual(message.Type, ActivityTypes.Message, "Incorrect Activity Type");
         }
@@ -28,7 +28,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
         public void TextOnly()
         {
             string messageText = Guid.NewGuid().ToString();
-            IMessageActivity message = MessageFactory.Text(messageText);
+            MessageActivity message = MessageFactory.Text(messageText);
             Assert.AreEqual(message.Text, messageText, "Message Text does not match");
             Assert.AreEqual(message.Type, ActivityTypes.Message, "Incorrect Activity Type");
         }
@@ -49,7 +49,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
                     </s>
                   </p>
                 </speak>";
-            IMessageActivity message = MessageFactory.Text(messageText, ssml);
+            MessageActivity message = MessageFactory.Text(messageText, ssml);
             Assert.AreEqual(message.Text, messageText, "Message Text is not an empty string");
             Assert.AreEqual(message.Speak, ssml, "ssml text is incorrect");
             Assert.AreEqual(message.InputHint, InputHints.AcceptingInput, "InputHint is not AcceptingInput");
@@ -64,7 +64,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
             string inputHint = InputHints.ExpectingInput;
             IList<string> textActions = new List<string> { "one", "two" };
 
-            IMessageActivity message = MessageFactory.SuggestedActions(textActions, text, ssml, inputHint);
+            MessageActivity message = MessageFactory.SuggestedActions(textActions, text, ssml, inputHint);
             Assert.AreEqual(message.Text, text, "Message Text does not match");
             Assert.AreEqual(message.Type, ActivityTypes.Message, "Incorrect Activity Type");
             Assert.AreEqual(message.InputHint, inputHint, "InputHint does not match");
@@ -88,7 +88,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
             string inputHint = InputHints.ExpectingInput;
             HashSet<string> textActions = new HashSet<string> { "one", "two", "three" };
 
-            IMessageActivity message = MessageFactory.SuggestedActions(textActions, text, ssml, inputHint);
+            MessageActivity message = MessageFactory.SuggestedActions(textActions, text, ssml, inputHint);
             Assert.AreEqual(message.Text, text, "Message Text does not match");
             Assert.AreEqual(message.Type, ActivityTypes.Message, "Incorrect Activity Type");
             Assert.AreEqual(message.InputHint, inputHint, "InputHint does not match");
@@ -122,7 +122,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
 
             IList<CardAction> cardActions = new List<CardAction> { ca };
 
-            IMessageActivity message = MessageFactory.SuggestedActions(cardActions, text, ssml, inputHint);
+            MessageActivity message = MessageFactory.SuggestedActions(cardActions, text, ssml, inputHint);
 
             Assert.AreEqual(message.Text, text, "Message Text does not match");
             Assert.AreEqual(message.Type, ActivityTypes.Message, "Incorrect Activity Type");
@@ -167,7 +167,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
             HashSet<object> values = new HashSet<object> { caValue1, caValue2 };
             HashSet<string> titles = new HashSet<string> { caTitle1, caTitle2 };
 
-            IMessageActivity message = MessageFactory.SuggestedActions(cardActions, text, ssml, inputHint);
+            MessageActivity message = MessageFactory.SuggestedActions(cardActions, text, ssml, inputHint);
 
             Assert.AreEqual(message.Text, text, "Message Text does not match");
             Assert.AreEqual(message.Type, ActivityTypes.Message, "Incorrect Activity Type");
@@ -197,7 +197,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
                 Name = attachmentName
             };
 
-            IMessageActivity message = MessageFactory.Attachment(a, text, ssml, inputHint);
+            MessageActivity message = MessageFactory.Attachment(a, text, ssml, inputHint);
 
             Assert.AreEqual(message.Text, text, "Message Text does not match");
             Assert.AreEqual(message.Type, ActivityTypes.Message, "Incorrect Activity Type");
@@ -211,7 +211,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
         [ExpectedException(typeof(ArgumentNullException))]
         public void AttachmentNull()
         {
-            IMessageActivity message = MessageFactory.Attachment((Attachment)null);
+            MessageActivity message = MessageFactory.Attachment((Attachment)null);
             Assert.Fail("Exception not thrown"); 
         }
 
@@ -219,7 +219,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
         [ExpectedException(typeof(ArgumentNullException))]
         public void AttachmentMultipleNull()
         {
-            IMessageActivity message = MessageFactory.Attachment((IList<Attachment>)null);
+            MessageActivity message = MessageFactory.Attachment((IList<Attachment>)null);
             Assert.Fail("Exception not thrown");
         }
 
@@ -227,7 +227,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
         [ExpectedException(typeof(ArgumentNullException))]
         public void CarouselNull()
         {
-            IMessageActivity message = MessageFactory.Carousel((IList<Attachment>)null);
+            MessageActivity message = MessageFactory.Carousel((IList<Attachment>)null);
             Assert.Fail("Exception not thrown");
         }
 
@@ -252,7 +252,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
             };
 
             IList<Attachment> multipleAttachments = new List<Attachment> { attachment1, attachment2 };
-            IMessageActivity message = MessageFactory.Carousel(multipleAttachments, text, ssml, inputHint);
+            MessageActivity message = MessageFactory.Carousel(multipleAttachments, text, ssml, inputHint);
 
             Assert.AreEqual(message.Text, text, "Message Text does not match");
             Assert.AreEqual(message.Type, ActivityTypes.Message, "Incorrect Activity Type");
@@ -284,7 +284,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
             };
 
             HashSet<Attachment> multipleAttachments = new HashSet<Attachment> { attachment1, attachment2 };
-            IMessageActivity message = MessageFactory.Carousel(multipleAttachments, text, ssml, inputHint);
+            MessageActivity message = MessageFactory.Carousel(multipleAttachments, text, ssml, inputHint);
 
             HashSet<string> names = new HashSet<string> { attachmentName1, attachmentName2 };
 
@@ -317,7 +317,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
             };
 
             IList<Attachment> multipleAttachments = new List<Attachment> { a, a2 };
-            IMessageActivity message = MessageFactory.Attachment(multipleAttachments, text, ssml, inputHint);
+            MessageActivity message = MessageFactory.Attachment(multipleAttachments, text, ssml, inputHint);
 
             Assert.AreEqual(message.Text, text, "Message Text does not match");
             Assert.AreEqual(message.Type, ActivityTypes.Message, "Incorrect Activity Type");
@@ -349,7 +349,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
             };
 
             HashSet<Attachment> multipleAttachments = new HashSet<Attachment> { attachment1, attachment2 };
-            IMessageActivity message = MessageFactory.Attachment(multipleAttachments, text, ssml, inputHint);
+            MessageActivity message = MessageFactory.Attachment(multipleAttachments, text, ssml, inputHint);
 
             HashSet<string> names = new HashSet<string> { attachmentName1, attachmentName2 };
 
@@ -372,7 +372,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
             string contentType = MediaTypeNames.Image.Jpeg;
             string name =  Guid.NewGuid().ToString(); 
 
-            IMessageActivity message = MessageFactory.ContentUrl(uri, contentType, name, text, ssml, inputHint);            
+            MessageActivity message = MessageFactory.ContentUrl(uri, contentType, name, text, ssml, inputHint);            
 
             Assert.AreEqual(message.Text, text, "Message Text does not match");
             Assert.AreEqual(message.Type, ActivityTypes.Message, "Incorrect Activity Type");
@@ -391,7 +391,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
 
             async Task ReplyWithimBackBack(ITurnContext ctx)
             {
-                if (ctx.Activity.AsMessageActivity().Text == "test")
+                if ((ctx.Activity as MessageActivity).Text == "test")
                 {
                     var activity = MessageFactory.SuggestedActions(new CardAction[]
                     {
@@ -402,12 +402,13 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
                 }
             }
 
-            void ValidateIMBack(IActivity activity)
+            void ValidateIMBack(Activity activity)
             {
                 Assert.IsTrue(activity.Type == ActivityTypes.Message);
+                Assert.IsInstanceOfType(activity, typeof(MessageActivity));
 
-                var messageActivity = activity.AsMessageActivity(); 
-
+                var messageActivity = (MessageActivity)activity;
+                
                 Assert.IsTrue(messageActivity.Text == "Select color");                
                 Assert.IsTrue(messageActivity.SuggestedActions.Actions.Count == 1, "Incorrect Count");
                 Assert.IsTrue(messageActivity.SuggestedActions.Actions[0].Type == ActionTypes.ImBack, "Incorrect Action Type");
@@ -428,7 +429,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
 
             async Task ReplyWithimBackBack(ITurnContext ctx)
             {
-                if (ctx.Activity.AsMessageActivity().Text == "test")
+                if ((ctx.Activity as MessageActivity).Text == "test")
                 {
                     var activity = MessageFactory.SuggestedActions(new CardAction[]
                     {
@@ -439,11 +440,12 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
                 }
             }
 
-            void ValidateIMBack(IActivity activity)
+            void ValidateIMBack(Activity activity)
             {
                 Assert.IsTrue(activity.Type == ActivityTypes.Message);
+                Assert.IsInstanceOfType(activity, typeof(MessageActivity));
 
-                var messageActivity = activity.AsMessageActivity();
+                var messageActivity = (MessageActivity)activity;
 
                 Assert.IsTrue(messageActivity.Text == null);
                 Assert.IsTrue(messageActivity.SuggestedActions.Actions.Count == 1, "Incorrect Count");

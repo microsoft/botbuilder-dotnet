@@ -45,19 +45,19 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs.Internals
     /// <summary>
     /// Scorable for Dialog module routing.
     /// </summary>
-    public sealed class DialogRouter : DelegatingScorable<IActivity, double>
+    public sealed class DialogRouter : DelegatingScorable<Activity, double>
     {
-        public static IEnumerable<IScorable<IActivity, double>> EnumerateRelevant(
+        public static IEnumerable<IScorable<Activity, double>> EnumerateRelevant(
             IDialogStack stack,
-            IEnumerable<IScorable<IActivity, double>> fromActivity,
+            IEnumerable<IScorable<Activity, double>> fromActivity,
             IEnumerable<IScorable<IResolver, double>> fromResolver,
-            Func<IActivity, IResolver> makeResolver)
+            Func<Activity, IResolver> makeResolver)
         {
             // first, let's go through stack frames
             var targets = stack.Frames.Select(f => f.Target);
             foreach (var target in targets)
             {
-                var activityScorable = target as IScorable<IActivity, double>;
+                var activityScorable = target as IScorable<Activity, double>;
                 if (activityScorable != null)
                 {
                     yield return activityScorable;
@@ -82,26 +82,26 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs.Internals
             }
         }
 
-        public static IScorable<IActivity, double> MakeDelegate(
+        public static IScorable<Activity, double> MakeDelegate(
             IDialogStack stack,
-            IEnumerable<IScorable<IActivity, double>> fromActivity,
+            IEnumerable<IScorable<Activity, double>> fromActivity,
             IEnumerable<IScorable<IResolver, double>> fromResolver,
-            Func<IActivity, IResolver> makeResolver,
+            Func<Activity, IResolver> makeResolver,
             ITraits<double> traits,
             IComparer<double> comparer)
         {
             // since the stack of scorables changes over time, this should be lazy
             var relevant = EnumerateRelevant(stack, fromActivity, fromResolver, makeResolver);
             var significant = relevant.Select(s => s.WhereScore((_, score) => comparer.Compare(score, traits.Minimum) >= 0));
-            var scorable = new TraitsScorable<IActivity, double>(traits, comparer, significant);
+            var scorable = new TraitsScorable<Activity, double>(traits, comparer, significant);
             return scorable;
         }
 
         public DialogRouter(
             IDialogStack stack,
-            IEnumerable<IScorable<IActivity, double>> fromActivity,
+            IEnumerable<IScorable<Activity, double>> fromActivity,
             IEnumerable<IScorable<IResolver, double>> fromResolver,
-            Func<IActivity, IResolver> makeResolver,
+            Func<Activity, IResolver> makeResolver,
             ITraits<double> traits,
             IComparer<double> comparer)
             : base(MakeDelegate(stack, fromActivity, fromResolver, makeResolver, traits, comparer))

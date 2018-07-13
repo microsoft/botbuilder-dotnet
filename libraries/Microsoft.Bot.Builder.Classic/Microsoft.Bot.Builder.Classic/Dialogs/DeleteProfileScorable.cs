@@ -46,7 +46,7 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Classic.Dialogs
 {
-    public sealed class DeleteProfileScorable : ScorableBase<IActivity, string, double>
+    public sealed class DeleteProfileScorable : ScorableBase<Activity, string, double>
     {
         private readonly IDialogStack stack;
         private readonly IBotData botData;
@@ -61,9 +61,9 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs
             SetField.NotNull(out this.regex, nameof(regex), regex);
         }
 
-        protected override async Task<string> PrepareAsync(IActivity activity, CancellationToken token)
+        protected override async Task<string> PrepareAsync(Activity activity, CancellationToken token)
         {
-            var message = activity as IMessageActivity;
+            var message = activity as MessageActivity;
             if (message != null && message.Text != null)
             {
                 var text = message.Text;
@@ -77,17 +77,17 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs
             return null;
         }
 
-        protected override bool HasScore(IActivity item, string state)
+        protected override bool HasScore(Activity item, string state)
         {
             return state != null;
         }
 
-        protected override double GetScore(IActivity item, string state)
+        protected override double GetScore(Activity item, string state)
         {
             return 1.0;
         }
 
-        protected override async Task PostAsync(IActivity item, string state, CancellationToken token)
+        protected override async Task PostAsync(Activity item, string state, CancellationToken token)
         {
             this.stack.Reset();
             botData.UserData.Clear();
@@ -95,7 +95,7 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs
             await botData.FlushAsync(token);
             await botToUser.PostAsync(Resources.UserProfileDeleted);
         }
-        protected override Task DoneAsync(IActivity item, string state, CancellationToken token)
+        protected override Task DoneAsync(Activity item, string state, CancellationToken token)
         {
             return Task.CompletedTask;
         }

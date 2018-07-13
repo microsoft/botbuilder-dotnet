@@ -161,15 +161,13 @@ namespace Microsoft.Bot.Builder.Adapters
                     activity.Timestamp = DateTime.UtcNow;
                 }
 
-                if (activity.Type == ActivityTypesEx.Delay)
+                if (activity is DelayActivity delayActivity)
                 {
                     // The BotFrameworkAdapter and Console adapter implement this
                     // hack directly in the POST method. Replicating that here
                     // to keep the behavior as close as possible to facillitate
                     // more realistic tests.
-                    var delayMs = (int)activity.Value;
-
-                    await Task.Delay(delayMs).ConfigureAwait(false);
+                    await Task.Delay(delayActivity.Delay).ConfigureAwait(false);
                 }
                 else if (activity.Type == ActivityTypes.Trace)
                 {
@@ -280,8 +278,11 @@ namespace Microsoft.Bot.Builder.Adapters
         public Task CreateConversationAsync(string channelId, Func<ITurnContext, Task> callback, CancellationToken cancellationToken)
         {
             ActiveQueue.Clear();
-            var update = Activity.CreateConversationUpdateActivity();
-            update.Conversation = new ConversationAccount() { Id = Guid.NewGuid().ToString("n") };
+            var update = new ConversationUpdateActivity
+            {
+                Conversation = new ConversationAccount() { Id = Guid.NewGuid().ToString("n") },
+            };
+
             var context = new TurnContext(this, (Activity)update);
             return callback(context);
         }
@@ -291,7 +292,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// </summary>
         /// <returns>The next activity in the queue; or null, if the queue is empty.</returns>
         /// <remarks>A <see cref="TestFlow"/> object calls this to get the next response from the bot.</remarks>
-        public IActivity GetNextReply()
+        public Activity GetNextReply()
         {
             lock (_activeQueueLock)
             {
@@ -311,9 +312,8 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <returns>An appropriate message activity.</returns>
         /// <remarks>A <see cref="TestFlow"/> object calls this to get a message activity
         /// appropriate to the current conversation.</remarks>
-        public Activity MakeActivity(string text = null)
-        {
-            Activity activity = new Activity
+        public MessageActivity MakeActivity(string text = null) =>
+            new MessageActivity
             {
                 Type = ActivityTypes.Message,
                 From = Conversation.User,
@@ -323,9 +323,6 @@ namespace Microsoft.Bot.Builder.Adapters
                 Id = (_nextId++).ToString(),
                 Text = text,
             };
-
-            return activity;
-        }
 
         /// <summary>
         /// Processes a message activity from a user.

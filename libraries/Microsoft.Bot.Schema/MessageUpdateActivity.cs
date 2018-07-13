@@ -6,7 +6,10 @@ namespace Microsoft.Bot.Schema
     /// <summary>
     /// Represents a request to update a previous message activity in a conversation.
     /// </summary>
-    public interface IMessageUpdateActivity : IMessageActivity
+    public class MessageUpdateActivity : MessageActivity
     {
+        public MessageUpdateActivity() : base(ActivityTypes.MessageUpdate)
+        {
+        }
     }
 }

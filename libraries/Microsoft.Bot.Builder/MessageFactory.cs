@@ -53,11 +53,11 @@ namespace Microsoft.Bot.Builder
         /// One of: "acceptingInput", "ignoringInput", or "expectingInput".
         /// Default is "acceptingInput".</param>
         /// <returns>A message activity containing the text.</returns>
-        public static Activity Text(string text, string ssml = null, string inputHint = null)
+        public static MessageActivity Text(string text, string ssml = null, string inputHint = null)
         {
-            var ma = Activity.CreateMessageActivity();
+            var ma = new MessageActivity();
             SetTextAndSpeak(ma, text, ssml, inputHint);
-            return (Activity)ma;
+            return ma;
         }
 
         /// <summary>
@@ -93,7 +93,7 @@ namespace Microsoft.Bot.Builder
         /// <see cref="Microsoft.Bot.Schema.ActionTypes.ImBack"/>.
         /// </remarks>
         /// <seealso cref="SuggestedActions(IEnumerable{CardAction}, string, string, string)"/>
-        public static IMessageActivity SuggestedActions(IEnumerable<string> actions, string text = null, string ssml = null, string inputHint = null)
+        public static MessageActivity SuggestedActions(IEnumerable<string> actions, string text = null, string ssml = null, string inputHint = null)
         {
             if (actions == null)
             {
@@ -148,17 +148,19 @@ namespace Microsoft.Bot.Builder
         /// <exception cref="ArgumentNullException">
         /// <paramref name="cardActions"/> is <c>null</c>.</exception>
         /// <seealso cref="SuggestedActions(IEnumerable{string}, string, string, string)"/>
-        public static IMessageActivity SuggestedActions(IEnumerable<CardAction> cardActions, string text = null, string ssml = null, string inputHint = null)
+        public static MessageActivity SuggestedActions(IEnumerable<CardAction> cardActions, string text = null, string ssml = null, string inputHint = null)
         {
             if (cardActions == null)
             {
                 throw new ArgumentNullException(nameof(cardActions));
             }
 
-            var ma = Activity.CreateMessageActivity();
-            SetTextAndSpeak(ma, text, ssml, inputHint);
+            var ma = new MessageActivity
+            {
+                SuggestedActions = new SuggestedActions { Actions = cardActions.ToList() },
+            };
 
-            ma.SuggestedActions = new SuggestedActions { Actions = cardActions.ToList() };
+            SetTextAndSpeak(ma, text, ssml, inputHint);
 
             return ma;
         }
@@ -179,7 +181,7 @@ namespace Microsoft.Bot.Builder
         /// <paramref name="attachment"/> is <c>null</c>.</exception>
         /// <seealso cref="Attachment(IEnumerable{Attachment}, string, string, string)"/>
         /// <seealso cref="Carousel(IEnumerable{Attachment}, string, string, string)"/>
-        public static IMessageActivity Attachment(Attachment attachment, string text = null, string ssml = null, string inputHint = null)
+        public static MessageActivity Attachment(Attachment attachment, string text = null, string ssml = null, string inputHint = null)
         {
             if (attachment == null)
             {
@@ -205,7 +207,7 @@ namespace Microsoft.Bot.Builder
         /// <paramref name="attachments"/> is <c>null</c>.</exception>
         /// <seealso cref="Carousel(IEnumerable{Attachment}, string, string, string)"/>
         /// <seealso cref="Attachment(Schema.Attachment, string, string, string)"/>
-        public static IMessageActivity Attachment(IEnumerable<Attachment> attachments, string text = null, string ssml = null, string inputHint = null)
+        public static MessageActivity Attachment(IEnumerable<Attachment> attachments, string text = null, string ssml = null, string inputHint = null)
         {
             if (attachments == null)
             {
@@ -266,7 +268,7 @@ namespace Microsoft.Bot.Builder
         /// </code>
         /// </example>
         /// <seealso cref="Attachment(IEnumerable{Attachment}, string, string, string)"/>
-        public static IMessageActivity Carousel(IEnumerable<Attachment> attachments, string text = null, string ssml = null, string inputHint = null)
+        public static MessageActivity Carousel(IEnumerable<Attachment> attachments, string text = null, string ssml = null, string inputHint = null)
         {
             if (attachments == null)
             {
@@ -299,7 +301,7 @@ namespace Microsoft.Bot.Builder
         ///     MessageFactory.ContentUrl("https://{domainName}/cat.jpg", MediaTypeNames.Image.Jpeg, "Cat Picture");
         /// </code>
         /// </example>
-        public static IMessageActivity ContentUrl(string url, string contentType, string name = null, string text = null, string ssml = null, string inputHint = null)
+        public static MessageActivity ContentUrl(string url, string contentType, string name = null, string text = null, string ssml = null, string inputHint = null)
         {
             if (string.IsNullOrWhiteSpace(url))
             {
@@ -321,16 +323,19 @@ namespace Microsoft.Bot.Builder
             return AttachmentActivity(AttachmentLayoutTypes.List, new List<Attachment> { a }, text, ssml, inputHint);
         }
 
-        private static IMessageActivity AttachmentActivity(string attachmentLayout, IEnumerable<Attachment> attachments, string text = null, string ssml = null, string inputHint = null)
+        private static MessageActivity AttachmentActivity(string attachmentLayout, IEnumerable<Attachment> attachments, string text = null, string ssml = null, string inputHint = null)
         {
-            var ma = Activity.CreateMessageActivity();
-            ma.AttachmentLayout = attachmentLayout;
-            ma.Attachments = attachments.ToList();
+            var ma = new MessageActivity
+            {
+                AttachmentLayout = attachmentLayout,
+                Attachments = attachments.ToList(),
+            };
+
             SetTextAndSpeak(ma, text, ssml, inputHint);
             return ma;
         }
 
-        private static void SetTextAndSpeak(IMessageActivity ma, string text = null, string ssml = null, string inputHint = null)
+        private static void SetTextAndSpeak(MessageActivity ma, string text = null, string ssml = null, string inputHint = null)
         {
             // Note: we must put NULL in the fields, as the clients will happily render
             // an empty string, which is not the behavior people expect to see.

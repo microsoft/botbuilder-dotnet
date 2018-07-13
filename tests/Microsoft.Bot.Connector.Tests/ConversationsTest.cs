@@ -13,9 +13,8 @@ namespace Connector.Tests
         [Fact]
         public void CreateConversation()
         {
-            var activity = new Activity()
+            var activity = new MessageActivity
             {
-                Type = ActivityTypes.Message,
                 Recipient = User,
                 From = Bot,
                 Text = "TEST Create Conversation"
@@ -38,9 +37,8 @@ namespace Connector.Tests
         [Fact]
         public void CreateConversationWithInvalidBot()
         {
-            var activity = new Activity()
+            var activity = new MessageActivity
             {
-                Type = ActivityTypes.Message,
                 Recipient = User,
                 From = Bot,
                 Text = "TEST Create Conversation with invalid Bot"
@@ -64,9 +62,8 @@ namespace Connector.Tests
         [Fact]
         public void CreateConversationWithoutMembers()
         {
-            var activity = new Activity()
+            var activity = new MessageActivity
             {
-                Type = ActivityTypes.Message,
                 Recipient = User,
                 From = Bot,
                 Text = "TEST Create Conversation without members"
@@ -90,9 +87,8 @@ namespace Connector.Tests
         [Fact]
         public void CreateConversationWithBotMember()
         {
-            var activity = new Activity()
+            var activity = new MessageActivity
             {
-                Type = ActivityTypes.Message,
                 Recipient = User,
                 From = Bot,
                 Text = "TEST Create Conversation with Bot member"
@@ -181,12 +177,10 @@ namespace Connector.Tests
         [Fact]
         public void SendToConversation()
         {
-            var activity = new Activity()
+            var activity = new MessageActivity
             {
-                Type = ActivityTypes.Message,
                 Recipient = User,
                 From = Bot,
-                Name = "acticity",
                 Text = "TEST Send to Conversation"
             };
 
@@ -210,12 +204,10 @@ namespace Connector.Tests
         public void SendToConversationWithInvalidConversationId()
         {
 
-            var activity = new Activity()
+            var activity = new MessageActivity
             {
-                Type = ActivityTypes.Message,
                 Recipient = User,
                 From = Bot,
-                Name = "acticity",
                 Text = "TEST Send to Conversation with invalid conversation id"
             };
 
@@ -247,12 +239,10 @@ namespace Connector.Tests
             UseClientFor(async client =>
             {
                 var conversation = await client.Conversations.CreateConversationAsync(createMessage);
-                var activity = new Activity()
+                var activity = new MessageActivity
                 {
-                    Type = ActivityTypes.Message,
                     Recipient = User,
                     From = new ChannelAccount() { Id = "B21S8SG7K:T03CWQ0QB" },
-                    Name = "acticity",
                     Text = "TEST Send to Conversation"
                 };
                 var ex = await Assert.ThrowsAsync<ErrorResponseException>(() => client.Conversations.SendToConversationAsync(conversationId: string.Concat(conversation.Id, "M"), activity: activity));
@@ -264,12 +254,10 @@ namespace Connector.Tests
         [Fact]
         public void SendToConversationWithNullConversationId()
         {
-            var activity = new Activity()
+            var activity = new MessageActivity
             {
-                Type = ActivityTypes.Message,
                 Recipient = User,
                 From = Bot,
-                Name = "acticity",
                 Text = "TEST Send to Conversation with null conversation id"
             };
 
@@ -307,12 +295,10 @@ namespace Connector.Tests
         [Fact]
         public void SendCardToConversation()
         {
-            var activity = new Activity()
+            var activity = new MessageActivity
             {
-                Type = ActivityTypes.Message,
                 Recipient = User,
                 From = Bot,
-                Name = "acticity",
                 Text = "TEST Send Card to Conversation",
                 Attachments = new Attachment[]
                 {
@@ -357,9 +343,8 @@ namespace Connector.Tests
         [Fact]
         public void GetActivityMembers()
         {
-            var activity = new Activity()
+            var activity = new MessageActivity
             {
-                Type = ActivityTypes.Message,
                 Recipient = User,
                 From = Bot,
                 Text = "TEST Get Activity Members"
@@ -392,7 +377,7 @@ namespace Connector.Tests
         [Fact]
         public void GetActivityMembersWithInvalidConversationId()
         {
-            var activity = new Activity()
+            var activity = new MessageActivity
             {
                 Type = ActivityTypes.Message,
                 Recipient = User,
@@ -419,9 +404,8 @@ namespace Connector.Tests
         [Fact]
         public void GetActivityMembersWithNullConversationId()
         {
-            var activity = new Activity()
+            var activity = new MessageActivity
             {
-                Type = ActivityTypes.Message,
                 Recipient = User,
                 From = Bot,
                 Text = "TEST Get Activity Members with null conversation id"
@@ -445,9 +429,8 @@ namespace Connector.Tests
         [Fact]
         public void GetActivityMembersWithNullActivityId()
         {
-            var activity = new Activity()
+            var activity = new MessageActivity
             {
-                Type = ActivityTypes.Message,
                 Recipient = User,
                 From = Bot,
                 Text = "TEST Get Activity Members with null activity id"
@@ -471,7 +454,7 @@ namespace Connector.Tests
         [Fact]
         public void ReplyToActivity()
         {
-            var activity = new Activity()
+            var activity = new MessageActivity
             {
                 Type = ActivityTypes.Message,
                 Recipient = User,
@@ -479,9 +462,8 @@ namespace Connector.Tests
                 Text = "TEST Activity gets a reply"
             };
 
-            var reply = new Activity()
+            var reply = new MessageActivity
             {
-                Type = ActivityTypes.Message,
                 Recipient = User,
                 From = Bot,
                 Text = "TEST Reply to Activity"
@@ -507,17 +489,15 @@ namespace Connector.Tests
         public void ReplyToActivityWithInvalidConversationId()
         {
 
-            var activity = new Activity()
+            var activity = new MessageActivity
             {
-                Type = ActivityTypes.Message,
                 Recipient = User,
                 From = Bot,
                 Text = "TEST Reply activity with invalid conversation id"
             };
 
-            var reply = new Activity()
+            var reply = new MessageActivity
             {
-                Type = ActivityTypes.Message,
                 Recipient = User,
                 From = Bot,
                 Text = "TEST Reply mustn't shown"
@@ -543,17 +523,15 @@ namespace Connector.Tests
         public void ReplyToActivityWithNullConversationId()
         {
 
-            var activity = new Activity()
+            var activity = new MessageActivity
             {
-                Type = ActivityTypes.Message,
                 Recipient = User,
                 From = Bot,
                 Text = "TEST Reply activity with null conversation id"
             };
 
-            var reply = new Activity()
+            var reply = new MessageActivity
             {
-                Type = ActivityTypes.Message,
                 Recipient = User,
                 From = Bot,
                 Text = "TEST Reply mustn't shown"
@@ -578,17 +556,15 @@ namespace Connector.Tests
         public void ReplyToActivityWithNullActivityId()
         {
 
-            var activity = new Activity()
+            var activity = new MessageActivity
             {
-                Type = ActivityTypes.Message,
                 Recipient = User,
                 From = Bot,
                 Text = "TEST Reply activity with null activity id"
             };
 
-            var reply = new Activity()
+            var reply = new MessageActivity
             {
-                Type = ActivityTypes.Message,
                 Recipient = User,
                 From = Bot,
                 Text = "TEST Reply mustn't shown"
@@ -613,7 +589,7 @@ namespace Connector.Tests
         public void ReplyToActivityWithNullReply()
         {
 
-            var activity = new Activity()
+            var activity = new MessageActivity()
             {
                 Type = ActivityTypes.Message,
                 Recipient = User,
@@ -639,9 +615,8 @@ namespace Connector.Tests
         [Fact]
         public void DeleteActivity()
         {
-            var activity = new Activity()
+            var activity = new MessageActivity
             {
-                Type = ActivityTypes.Message,
                 Recipient = User,
                 From = Bot,
                 Text = "TEST Activity to be deleted"
@@ -665,9 +640,8 @@ namespace Connector.Tests
         [Fact]
         public void DeleteActivityWithInvalidConversationId()
         {
-            var activity = new Activity()
+            var activity = new MessageActivity
             {
-                Type = ActivityTypes.Message,
                 Recipient = User,
                 From = Bot,
                 Text = "TEST Activity to be deleted with invalid conversation Id"
@@ -692,9 +666,8 @@ namespace Connector.Tests
         [Fact]
         public void DeleteActivityWithNullConversationId()
         {
-            var activity = new Activity()
+            var activity = new MessageActivity
             {
-                Type = ActivityTypes.Message,
                 Recipient = User,
                 From = Bot,
                 Text = "TEST Activity to be deleted with null conversation Id"
@@ -718,9 +691,8 @@ namespace Connector.Tests
         [Fact]
         public void DeleteActivityWithNullActivityId()
         {
-            var activity = new Activity()
+            var activity = new MessageActivity
             {
-                Type = ActivityTypes.Message,
                 Recipient = User,
                 From = Bot,
                 Text = "TEST Activity to be deleted with null activity Id"
@@ -744,9 +716,8 @@ namespace Connector.Tests
         [Fact]
         public void UpdateActivity()
         {
-            var activity = new Activity()
+            var activity = new MessageActivity
             {
-                Type = ActivityTypes.Message,
                 Recipient = User,
                 From = Bot,
                 Text = "TEST Activity to be updated"
@@ -762,10 +733,9 @@ namespace Connector.Tests
             {
                 var conversation = await client.Conversations.CreateConversationAsync(createMessage);
                 var response = await client.Conversations.SendToConversationAsync(conversationId: conversation.Id, activity: activity);
-                var update = new Activity()
+                var update = new MessageActivity
                 {
                     Id = response.Id,
-                    Type = ActivityTypes.Message,
                     Recipient = User,
                     From = Bot,
                     Text = "TEST Successfully activity updated"
@@ -779,9 +749,8 @@ namespace Connector.Tests
         [Fact]
         public void UpdateActivityWithInvalidConversationId()
         {
-            var activity = new Activity()
+            var activity = new MessageActivity
             {
-                Type = ActivityTypes.Message,
                 Recipient = User,
                 From = Bot,
                 Text = "TEST Activity to be updated with invalid conversation Id"
@@ -797,10 +766,9 @@ namespace Connector.Tests
             {
                 var conversation = await client.Conversations.CreateConversationAsync(createMessage);
                 var response = await client.Conversations.SendToConversationAsync(conversationId: conversation.Id, activity: activity);
-                var update = new Activity()
+                var update = new MessageActivity
                 {
                     Id = response.Id,
-                    Type = ActivityTypes.Message,
                     Recipient = User,
                     From = Bot,
                     Text = "TEST Activity mustn't be updated"
@@ -814,9 +782,8 @@ namespace Connector.Tests
         [Fact]
         public void UpdateActivityWithNullConversationId()
         {
-            var activity = new Activity()
+            var activity = new MessageActivity
             {
-                Type = ActivityTypes.Message,
                 Recipient = User,
                 From = Bot,
                 Text = "TEST Activity to be updated with null conversation Id"
@@ -832,10 +799,9 @@ namespace Connector.Tests
             {
                 var conversation = await client.Conversations.CreateConversationAsync(createMessage);
                 var response = await client.Conversations.SendToConversationAsync(conversationId: conversation.Id, activity: activity);
-                var update = new Activity()
+                var update = new MessageActivity
                 {
                     Id = response.Id,
-                    Type = ActivityTypes.Message,
                     Recipient = User,
                     From = Bot,
                     Text = "TEST Activity mustn't be updated"
@@ -848,9 +814,8 @@ namespace Connector.Tests
         [Fact]
         public void UpdateActivityWithNullActivityId()
         {
-            var activity = new Activity()
+            var activity = new MessageActivity
             {
-                Type = ActivityTypes.Message,
                 Recipient = User,
                 From = Bot,
                 Text = "TEST Activity to be updated with null activity Id"
@@ -866,10 +831,9 @@ namespace Connector.Tests
             {
                 var conversation = await client.Conversations.CreateConversationAsync(createMessage);
                 var response = await client.Conversations.SendToConversationAsync(conversationId: conversation.Id, activity: activity);
-                var update = new Activity()
+                var update = new MessageActivity
                 {
                     Id = response.Id,
-                    Type = ActivityTypes.Message,
                     Recipient = User,
                     From = Bot,
                     Text = "TEST Activity mustn't be updated"
@@ -882,9 +846,8 @@ namespace Connector.Tests
         [Fact]
         public void UpdateActivityWithNullActivity()
         {
-            var activity = new Activity()
+            var activity = new MessageActivity
             {
-                Type = ActivityTypes.Message,
                 Recipient = User,
                 From = Bot,
                 Text = "TEST Activity to be updated with null activity"

@@ -108,7 +108,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
             return Begin(dialogId, options);
         }
-        public Task Prompt(string dialogId, Activity prompt, PromptOptions options = null)
+        public Task Prompt(string dialogId, MessageActivity prompt, PromptOptions options = null)
         {
             if (string.IsNullOrEmpty(dialogId))
                 throw new ArgumentNullException(nameof(dialogId));

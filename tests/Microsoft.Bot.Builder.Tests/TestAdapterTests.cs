@@ -16,7 +16,9 @@ namespace Microsoft.Bot.Builder.Tests
     {
         public async Task MyBotLogic(ITurnContext context)
         {
-            switch (context.Activity.AsMessageActivity().Text)
+            var messageText = (context.Activity as MessageActivity).Text;
+
+            switch (messageText)
             {
                 case "count":
                     await context.SendActivityAsync(context.Activity.CreateReply("one"));
@@ -27,7 +29,7 @@ namespace Microsoft.Bot.Builder.Tests
                     break;
                 default:
                     await context.SendActivityAsync( 
-                        context.Activity.CreateReply($"echo:{context.Activity.AsMessageActivity().Text}"));
+                        context.Activity.CreateReply($"echo:{messageText}"));
                     break;
             }
         }
@@ -115,8 +117,8 @@ namespace Microsoft.Bot.Builder.Tests
             var adapter = new TestAdapter();
             await new TestFlow(adapter, MyBotLogic)
                 .Test("foo", "echo:foo", "say with string works")
-                .Test("foo", new Activity(ActivityTypes.Message, text: "echo:foo"), "say with activity works")
-                .Test("foo", (activity) => Assert.AreEqual("echo:foo", activity.AsMessageActivity().Text), "say with validator works")
+                .Test("foo", new MessageActivity { Text = "echo:foo" }, "say with activity works")
+                .Test("foo", (activity) => Assert.AreEqual("echo:foo", (activity as MessageActivity).Text), "say with validator works")
                 .StartTestAsync();
         }
 
@@ -127,8 +129,8 @@ namespace Microsoft.Bot.Builder.Tests
             var adapter = new TestAdapter();
             await new TestFlow(adapter, MyBotLogic)
                 .Send("foo").AssertReply("echo:foo", "send/reply with string works")
-                .Send("foo").AssertReply(new Activity(ActivityTypes.Message, text: "echo:foo"), "send/reply with activity works")
-                .Send("foo").AssertReply((activity) => Assert.AreEqual("echo:foo", activity.AsMessageActivity().Text), "send/reply with validator works")
+                .Send("foo").AssertReply(new MessageActivity { Text = "echo:foo" }, "send/reply with activity works")
+                .Send("foo").AssertReply((activity) => Assert.AreEqual("echo:foo", (activity as MessageActivity).Text), "send/reply with validator works")
                 .StartTestAsync();
         }
 

@@ -139,11 +139,11 @@ namespace Microsoft.Bot.Builder.Classic.ConnectorEx
 #pragma warning restore CS0618
 
         /// <summary>
-        /// Creates a <see cref="ConversationReference"/> from <see cref="IActivity"/>.
+        /// Creates a <see cref="ConversationReference"/> from <see cref="Activity"/>.
         /// </summary>
-        /// <param name="activity"> The <see cref="IActivity"/>  posted to bot.</param>
+        /// <param name="activity"> The <see cref="Activity"/>  posted to bot.</param>
         /// <returns> The <see cref="ConversationReference"/>.</returns>
-        public static ConversationReference ToConversationReference(this IActivity activity)
+        public static ConversationReference ToConversationReference(this Activity activity)
         {
             return new ConversationReference
             {

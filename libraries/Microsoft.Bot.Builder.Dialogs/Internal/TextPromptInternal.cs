@@ -53,8 +53,9 @@ namespace Microsoft.Bot.Builder.Dialogs
             if (context.Activity.Type != ActivityTypes.Message)
                 throw new InvalidOperationException("No Message to Recognize");
 
-            IMessageActivity message = context.Activity.AsMessageActivity();
-            TextResult textResult = new TextResult();
+            var message = context.Activity as MessageActivity;
+            var textResult = new TextResult();
+
             if (message.Text != null)
             {
                 textResult.Status = PromptStatus.Recognized;

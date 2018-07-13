@@ -18,7 +18,7 @@ namespace Microsoft.Bot.Builder
         private static JsonSerializerSettings _jsonSettings = new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore };
         private ITranscriptLogger logger;
 
-        private Queue<IActivity> transcript = new Queue<IActivity>();
+        private Queue<Activity> transcript = new Queue<Activity>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TranscriptLoggerMiddleware"/> class.
@@ -38,7 +38,7 @@ namespace Microsoft.Bot.Builder
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <seealso cref="ITurnContext"/>
-        /// <seealso cref="Bot.Schema.IActivity"/>
+        /// <seealso cref="Bot.Schema.Activity"/>
         public async Task OnTurnAsync(ITurnContext context, NextDelegate nextTurn, CancellationToken cancellationToken)
         {
             // log incoming activity at beginning of turn
@@ -49,7 +49,7 @@ namespace Microsoft.Bot.Builder
                     context.Activity.From.Properties["role"] = "user";
                 }
 
-                LogActivity(CloneActivity(context.Activity));
+                LogActivity(context.Activity);
             }
 
             // hook up onSend pipeline
@@ -60,7 +60,7 @@ namespace Microsoft.Bot.Builder
 
                 foreach (var activity in activities)
                 {
-                    LogActivity(CloneActivity(activity));
+                    LogActivity(activity);
                 }
 
                 return responses;
@@ -73,9 +73,7 @@ namespace Microsoft.Bot.Builder
                 var response = await nextUpdate().ConfigureAwait(false);
 
                 // add Message Update activity
-                var updateActivity = CloneActivity(activity);
-                updateActivity.Type = ActivityTypes.MessageUpdate;
-                LogActivity(updateActivity);
+                LogActivity(activity);
                 return response;
             });
 
@@ -87,13 +85,11 @@ namespace Microsoft.Bot.Builder
 
                 // add MessageDelete activity
                 // log as MessageDelete activity
-                var deleteActivity = new Activity
+                var deleteActivity = new MessageDeleteActivity
                 {
-                    Type = ActivityTypes.MessageDelete,
                     Id = reference.ActivityId,
                 }
-                .ApplyConversationReference(reference, isIncoming: false)
-                .AsMessageDeleteActivity();
+                .ApplyConversationReference(reference, isIncoming: false);
 
                 LogActivity(deleteActivity);
             });
@@ -116,13 +112,7 @@ namespace Microsoft.Bot.Builder
             }
         }
 
-        private static IActivity CloneActivity(IActivity activity)
-        {
-            activity = JsonConvert.DeserializeObject<Activity>(JsonConvert.SerializeObject(activity, _jsonSettings));
-            return activity;
-        }
-
-        private void LogActivity(IActivity activity)
+        private void LogActivity(Activity activity)
         {
             lock (transcript)
             {

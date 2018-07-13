@@ -20,22 +20,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
     {
         private List<string> colorChoices = new List<string> { "red", "green", "blue" };
 
-        private Action<IActivity> StartsWithValidator(string expected)
+        private Action<Activity> StartsWithValidator(string expected)
         {
             return activity =>
             {
-                Assert.IsInstanceOfType(activity, typeof(IMessageActivity));
-                var msg = (IMessageActivity)activity;
+                Assert.IsInstanceOfType(activity, typeof(MessageActivity));
+                var msg = (MessageActivity)activity;
                 Assert.IsTrue(msg.Text.StartsWith(expected));
             };
         }
 
-        private Action<IActivity> SuggestedActionsValidator(string expectedText, SuggestedActions expectedSuggestedActions)
+        private Action<Activity> SuggestedActionsValidator(string expectedText, SuggestedActions expectedSuggestedActions)
         {
             return activity =>
             {
-                Assert.IsInstanceOfType(activity, typeof(IMessageActivity));
-                var msg = (IMessageActivity)activity;
+                Assert.IsInstanceOfType(activity, typeof(MessageActivity));
+                var msg = (MessageActivity)activity;
                 Assert.AreEqual(expectedText, msg.Text);
                 Assert.AreEqual(expectedSuggestedActions.Actions.Count, msg.SuggestedActions.Actions.Count);
                 for (int i = 0; i < expectedSuggestedActions.Actions.Count; i++)
@@ -47,12 +47,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             };
         }
 
-        private Action<IActivity> SpeakValidator(string expectedText, string expectedSpeak)
+        private Action<Activity> SpeakValidator(string expectedText, string expectedSpeak)
         {
             return activity =>
             {
-                Assert.IsInstanceOfType(activity, typeof(IMessageActivity));
-                var msg = (IMessageActivity)activity;
+                Assert.IsInstanceOfType(activity, typeof(MessageActivity));
+                var msg = (MessageActivity)activity;
                 Assert.AreEqual(expectedText, msg.Text);
                 Assert.AreEqual(expectedSpeak, msg.Speak);
             };

@@ -49,14 +49,14 @@ namespace Microsoft.Bot.Builder.Classic.Scorables.Internals
 
         public static readonly IReadOnlyDictionary<string, Type> TypeByName = new Dictionary<string, Type>(StringComparer.OrdinalIgnoreCase)
         {
-            { ActivityTypes.ContactRelationUpdate, typeof(IContactRelationUpdateActivity) },
-            { ActivityTypes.ConversationUpdate, typeof(IConversationUpdateActivity) },
-            { ActivityTypes.DeleteUserData, typeof(IActivity) },
-            { ActivityTypes.Message, typeof(IMessageActivity) },
-            { ActivityTypes.Ping, typeof(IActivity) },
-            { ActivityTypes.Event, typeof(IEventActivity) },
-            { ActivityTypes.Invoke, typeof(IInvokeActivity) },
-            { ActivityTypes.Typing, typeof(ITypingActivity) },
+            { ActivityTypes.ContactRelationUpdate, typeof(ContactRelationUpdateActivity) },
+            { ActivityTypes.ConversationUpdate, typeof(ConversationUpdateActivity) },
+            { ActivityTypes.DeleteUserData, typeof(Activity) },
+            { ActivityTypes.Message, typeof(MessageActivity) },
+            { ActivityTypes.Ping, typeof(Activity) },
+            { ActivityTypes.Event, typeof(EventActivity) },
+            { ActivityTypes.Invoke, typeof(InvokeActivity) },
+            { ActivityTypes.Typing, typeof(TypingActivity) },
         };
 
         public override bool TryResolve(Type type, object tag, out object value)
@@ -64,15 +64,15 @@ namespace Microsoft.Bot.Builder.Classic.Scorables.Internals
             if (tag == null)
             {
                 // if type is Activity, we're not delegating to the inner IResolver.
-                if (typeof(IActivity).IsAssignableFrom(type))
+                if (typeof(Activity).IsAssignableFrom(type))
                 {
-                    // if we have a registered IActivity
-                    IActivity activity;
-                    if (this.inner.TryResolve<IActivity>(tag, out activity))
+                    // if we have a registered Activity
+                    Activity activity;
+                    if (this.inner.TryResolve<Activity>(tag, out activity))
                     {
                         if (activity.Type != null)
                         {
-                            // then make sure the IActivity.Type allows the desired type
+                            // then make sure the Activity.Type allows the desired type
                             Type allowedType;
                             if (TypeByName.TryGetValue(activity.Type, out allowedType))
                             {
@@ -91,7 +91,7 @@ namespace Microsoft.Bot.Builder.Classic.Scorables.Internals
                         }
                     }
 
-                    // otherwise we were asking for IActivity and it wasn't assignable from the IActivity.Type
+                    // otherwise we were asking for Activity and it wasn't assignable from the Activity.Type
                     value = null;
                     return false;
                 }
@@ -132,27 +132,27 @@ namespace Microsoft.Bot.Builder.Classic.Scorables.Internals
         }
     }
 
-    public sealed class EventActivityValueResolver : PropertyResolver<IEventActivity>
+    public sealed class EventActivityValueResolver : PropertyResolver<EventActivity>
     {
         public EventActivityValueResolver(IResolver inner)
             : base(inner)
         {
         }
 
-        protected override object PropertyFrom(IEventActivity item)
+        protected override object PropertyFrom(EventActivity item)
         {
             return item.Value;
         }
     }
 
-    public sealed class InvokeActivityValueResolver : PropertyResolver<IInvokeActivity>
+    public sealed class InvokeActivityValueResolver : PropertyResolver<InvokeActivity>
     {
         public InvokeActivityValueResolver(IResolver inner)
             : base(inner)
         {
         }
 
-        protected override object PropertyFrom(IInvokeActivity item)
+        protected override object PropertyFrom(InvokeActivity item)
         {
             return item.Value;
         }
