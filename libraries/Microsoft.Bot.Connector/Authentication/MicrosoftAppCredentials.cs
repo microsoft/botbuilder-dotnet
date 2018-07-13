@@ -45,7 +45,11 @@ namespace Microsoft.Bot.Connector.Authentication
         {
             { "state.botframework.com", DateTime.MaxValue },
             { "api.botframework.com", DateTime.MaxValue},
-            { "token.botframework.com", DateTime.MaxValue }
+            { "token.botframework.com", DateTime.MaxValue },
+            { "token.scratch.botframework.com", DateTime.MaxValue },
+            { "api.scratch.botframework.com", DateTime.MaxValue },
+            { "localhost", DateTime.MaxValue },
+            { "localhost:8000", DateTime.MaxValue }
         };
 
         private static object _cacheSync = new object();

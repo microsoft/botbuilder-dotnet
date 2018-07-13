@@ -460,7 +460,7 @@ namespace Microsoft.Bot.Builder.Adapters
         }
 
 
-
+        /// <summary>
         /// Attempts to retrieve the token for a user that's in a login flow.
         /// </summary>
         /// <param name="context">Context for the current turn of conversation with the user.</param>
@@ -497,21 +497,62 @@ namespace Microsoft.Bot.Builder.Adapters
         }
 
         /// <summary>
-        /// Signs the user out with the token server.
+        /// Get the raw signin link to be sent to the user for signin for a connection name.
+        /// This sign in link will not send the token to any conversation
         /// </summary>
         /// <param name="context">Context for the current turn of conversation with the user.</param>
         /// <param name="connectionName">Name of the auth connection to use.</param>
+        /// <param name="userId">The user's identifier</param>
         /// <returns></returns>
-        public async Task SignOutUser(ITurnContext context, string connectionName)
+        public async Task<string> GetOauthSignInLink(ITurnContext context, string connectionName, string userId, string finalRedirect = null)
         {
             BotAssert.ContextNotNull(context);
             if (string.IsNullOrWhiteSpace(connectionName))
                 throw new ArgumentNullException(nameof(connectionName));
+            if (string.IsNullOrWhiteSpace(userId))
+                throw new ArgumentNullException(nameof(userId));
 
             var client = this.CreateOAuthApiClient(context);
-            await client.SignOutUserAsync(context.Activity.From.Id, connectionName).ConfigureAwait(false);
+
+            return await client.GetSignInLinkAsync(connectionName, userId, finalRedirect).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Retrieves the token status for each configured connection for the given user
+        /// </summary>
+        /// <param name="context">Context for the current turn of conversation with the user.</param>
+        /// <param name="includeFilter">Optional comma seperated list of connection's to include. Blank will return token status for all configured connections</param>
+        /// <returns>Array of TokenStatuses</returns>
+        public async Task<TokenStatus[]> GetTokenStatus(ITurnContext context, string userId, string includeFilter = null)
+        {
+            BotAssert.ContextNotNull(context);
+            if (string.IsNullOrWhiteSpace(userId))
+                throw new ArgumentNullException(nameof(userId));
+
+            var client = this.CreateOAuthApiClient(context);
+            return await client.GetTokenStatusAsync(userId, includeFilter).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Signs the user out with the token server.
+        /// </summary>
+        /// <param name="context">Context for the current turn of conversation with the user.</param>
+        /// <param name="connectionName">Name of the auth connection to use. Passing in null will sign the user out of all connections</param>
+        /// <param name="userId">Name of the user to sign out. Passing in null will use the user id from the context's Activity</param>
+        /// <returns></returns>
+        public async Task SignOutUser(ITurnContext context, string connectionName = null, string userId = null)
+        {
+            BotAssert.ContextNotNull(context);
+
+            if(string.IsNullOrEmpty(userId))
+            {
+                userId = context.Activity?.From?.Id;
+            }
+            
+            var client = this.CreateOAuthApiClient(context);
+            await client.SignOutUserAsync(userId, connectionName).ConfigureAwait(false);
+        }
+        
         /// <summary>
         /// Creates a conversation on the specified channel.
         /// </summary>

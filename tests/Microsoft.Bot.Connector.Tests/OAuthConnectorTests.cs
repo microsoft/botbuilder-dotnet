@@ -105,7 +105,7 @@ namespace Connector.Tests
         public async Task GetSigninLink_ShouldThrowOnNullActivity()
         {
             var client = new OAuthClient(mockConnectorClient, "https://localhost");
-            await Assert.ThrowsAsync<ArgumentNullException>(() => client.GetSignInLinkAsync(null, "mockConnection"));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => client.GetSignInLinkAsync((IActivity)null, "mockConnection"));
         }
     }
 }
