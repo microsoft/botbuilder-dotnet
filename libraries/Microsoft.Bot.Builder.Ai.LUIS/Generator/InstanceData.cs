@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
-using Newtonsoft.Json;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Ai.Luis
 {
@@ -11,31 +11,31 @@ namespace Microsoft.Bot.Builder.Ai.Luis
     public class InstanceData
     {
         /// <summary>
-        /// 0-based index in the analyzed text for where entity starts.
+        /// Gets or sets 0-based index in the analyzed text for where entity starts.
         /// </summary>
         [JsonProperty("startIndex")]
-        public int StartIndex;
+        public int StartIndex { get; set; }
 
         /// <summary>
-        /// 0-based index of the first character beyond the recognized entity.
+        /// Gets or sets 0-based index of the first character beyond the recognized entity.
         /// </summary>
         [JsonProperty("endIndex")]
-        public int EndIndex;
+        public int EndIndex { get; set; }
 
         /// <summary>
-        /// Word broken and normalized text for the entity.
+        /// Gets or sets word broken and normalized text for the entity.
         /// </summary>
         [JsonProperty("text")]
-        public string Text;
+        public string Text { get; set; }
 
         /// <summary>
-        /// Optional confidence in the recognition.
+        /// Gets or sets optional confidence in the recognition.
         /// </summary>
         [JsonProperty("score")]
-        public double? Score;
+        public double? Score { get; set; }
 
         /// <summary>
-        /// Any extra properties.
+        /// Gets or sets any extra properties.
         /// </summary>
         [JsonExtensionData(ReadData = true, WriteData = true)]
         public IDictionary<string, object> Properties { get; set; }

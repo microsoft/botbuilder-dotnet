@@ -9,6 +9,16 @@ namespace Microsoft.Bot.Builder.Ai.Luis
     public class LuisPredictionOptions
     {
         /// <summary>
+        /// Gets or sets the Bing Spell Check subscription key.
+        /// </summary>
+        public string BingSpellCheckSubscriptionKey { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether or not instance data should be included in response.
+        /// </summary>
+        public bool IncludeInstanceData { get; set; }
+
+        /// <summary>
         /// Gets or sets if logging of queries to LUIS is allowed.
         /// </summary>
         public bool? Log { get; set; }
@@ -32,10 +42,5 @@ namespace Microsoft.Bot.Builder.Ai.Luis
         /// Gets or sets the verbose flag.
         /// </summary>
         public bool? Verbose { get; set; }
-
-        /// <summary>
-        /// Gets or sets the Bing Spell Check subscription key.
-        /// </summary>
-        public string BingSpellCheckSubscriptionKey { get; set; }
     }
 }

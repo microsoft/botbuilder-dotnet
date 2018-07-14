@@ -62,9 +62,6 @@ namespace Microsoft.Bot.Builder.Ai.Luis
         public IReadOnlyList<string> Expressions { get; }
 
         /// <inheritdoc/>
-        public override string ToString()
-        {
-            return $"DateTimeSpec({Type}, [{string.Join(", ", Expressions)}]";
-        }
+        public override string ToString() => $"DateTimeSpec({Type}, [{string.Join(", ", Expressions)}]";
     }
 }

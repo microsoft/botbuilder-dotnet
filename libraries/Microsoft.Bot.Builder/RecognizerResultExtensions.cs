@@ -15,18 +15,22 @@ namespace Microsoft.Bot.Builder
         public static (string intent, double score) GetTopScoringIntent(this RecognizerResult result)
         {
             if (result == null)
+            {
                 throw new ArgumentNullException(nameof(result));
+            }
 
             if (result.Intents == null)
+            {
                 throw new ArgumentNullException(nameof(result.Intents));
+            }
 
             var topIntent = (string.Empty, 0.0d);
             foreach (var intent in result.Intents)
             {
-                var score = (double)intent.Value["score"];
+                var score = intent.Value.Score;
                 if (score > topIntent.Item2)
                 {
-                    topIntent = (intent.Key, score);
+                    topIntent = (intent.Key, score.Value);
                 }
             }
 
