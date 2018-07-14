@@ -226,7 +226,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
 
         public override async Task ActAsync()
         {
-            await new TestAdapter().ProcessActivity((Activity)this.activity, async (context) =>
+            await new TestAdapter().ProcessActivityAsync((Activity)this.activity, async (context) =>
             {
                 using (var scope = DialogModule.BeginLifetimeScope(this.container, context))
                 {

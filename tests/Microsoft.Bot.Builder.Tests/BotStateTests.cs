@@ -10,7 +10,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
 {
     public class TestState : IStoreItem
     {
-        public string eTag { get ; set; }
+        public string ETag { get ; set; }
         public string Value { get; set; }
     }
 
@@ -37,7 +37,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
                    }
                 )
                 .Send("set value")
-                .StartTest();
+                .StartTestAsync();
         }
 
         [TestMethod]
@@ -55,17 +55,17 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
                         {
                             case "set value":
                                 userState.Value = "test";
-                                await context.SendActivity("value saved");
+                                await context.SendActivityAsync("value saved");
                                 break;
                             case "get value":
-                                await context.SendActivity(userState.Value);
+                                await context.SendActivityAsync(userState.Value);
                                 break;
                         }
                     }
                 )
                 .Test("set value", "value saved")
                 .Test("get value", "test")
-                .StartTest();
+                .StartTestAsync();
         }
 
         [TestMethod]
@@ -82,17 +82,17 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
                         {
                             case "set value":
                                 userState.Value = "test";
-                                await context.SendActivity("value saved");
+                                await context.SendActivityAsync("value saved");
                                 break;
                             case "get value":
-                                await context.SendActivity(userState.Value);
+                                await context.SendActivityAsync(userState.Value);
                                 break;
                         }
                     }
                 )
                 .Test("set value", "value saved")
                 .Test("get value", "test")
-                .StartTest();
+                .StartTestAsync();
         }
 
         [TestMethod]
@@ -109,17 +109,17 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
                         {
                             case "set value":
                                 conversationState.Value = "test";
-                                await context.SendActivity("value saved");
+                                await context.SendActivityAsync("value saved");
                                 break;
                             case "get value":
-                                await context.SendActivity(conversationState.Value);
+                                await context.SendActivityAsync(conversationState.Value);
                                 break;
                         }
                     }
                 )
                 .Test("set value", "value saved")
                 .Test("get value", "test")
-                .StartTest();
+                .StartTestAsync();
         }
 
         [TestMethod]
@@ -136,17 +136,17 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
                         {
                             case "set value":
                                 conversationState.Value = "test";
-                                await context.SendActivity("value saved");
+                                await context.SendActivityAsync("value saved");
                                 break;
                             case "get value":
-                                await context.SendActivity(conversationState.Value);
+                                await context.SendActivityAsync(conversationState.Value);
                                 break;
                         }
                     }
                 )
                 .Test("set value", "value saved")
                 .Test("get value", "test")
-                .StartTest();
+                .StartTestAsync();
         }
 
         [TestMethod]
@@ -163,17 +163,17 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
                         {
                             case "set value":
                                 customState.CustomString = testGuid;
-                                await context.SendActivity("value saved");
+                                await context.SendActivityAsync("value saved");
                                 break;
                             case "get value":
-                                await context.SendActivity(customState.CustomString);
+                                await context.SendActivityAsync(customState.CustomString);
                                 break;
                         }
                     }
                 )
                 .Test("set value", "value saved")
                 .Test("get value", testGuid.ToString())
-                .StartTest();
+                .StartTestAsync();
         }
 
         public class TypedObject
@@ -196,17 +196,17 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
                         {
                             case "set value":
                                 conversation.Name = "test";
-                                await context.SendActivity("value saved");
+                                await context.SendActivityAsync("value saved");
                                 break;
                             case "get value":
-                                await context.SendActivity(conversation.GetType().Name);
+                                await context.SendActivityAsync(conversation.GetType().Name);
                                 break;
                         }
                     }
                 )
                 .Test("set value", "value saved")
                 .Test("get value", "TypedObject")
-                .StartTest();
+                .StartTestAsync();
         }
 
         [TestMethod]
@@ -222,30 +222,30 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
                             (ctx) => $"botstate/{ctx.Activity.ChannelId}/{ctx.Activity.Conversation.Id}/{typeof(BotState<CustomState>).Namespace}.{typeof(BotState<CustomState>).Name}");
 
                         // read initial state object
-                        var customState = await botStateManager.Read(context);
+                        var customState = await botStateManager.ReadAsync(context);
 
                         // this should be a 'new CustomState' as nothing is currently stored in storage
                         Assert.Equals(customState, new CustomState());
 
                         // amend property and write to storage
                         customState.CustomString = "test";
-                        await botStateManager.Write(context, customState);
+                        await botStateManager.WriteAsync(context, customState);
 
                         // set customState to null before reading from storage
                         customState = null;
-                        customState = await botStateManager.Read(context);
+                        customState = await botStateManager.ReadAsync(context);
 
                         // check object read from value has the correct value for CustomString
                         Assert.Equals(customState.CustomString, "test");
                     }
                 )
-                .StartTest();
+                .StartTestAsync();
         }
 
         public class CustomState : IStoreItem
         {
             public string CustomString { get; set; }
-            public string eTag { get; set; }
+            public string ETag { get; set; }
         }
 
         public class CustomKeyState : BotState<CustomState>

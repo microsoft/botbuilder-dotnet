@@ -16,12 +16,13 @@ namespace Microsoft.Bot.Builder
         public static readonly string PropertyName = $"UserState:{typeof(UserState<TState>).Namespace}.{typeof(UserState<TState>).Name}";
 
         /// <summary>
-        /// Creates a new <see cref="UserState{TState}"/> object.
+        /// Initializes a new instance of the <see cref="UserState{TState}"/> class.
         /// </summary>
         /// <param name="storage">The storage provider to use.</param>
         /// <param name="settings">The state persistance options to use.</param>
-        public UserState(IStorage storage, StateSettings settings = null) :
-            base(storage,
+        public UserState(IStorage storage, StateSettings settings = null)
+            : base(
+                storage,
                 PropertyName,
                 (context) => $"user/{context.Activity.ChannelId}/{context.Activity.From.Id}",
                 settings)

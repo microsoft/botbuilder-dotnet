@@ -22,20 +22,17 @@ namespace Microsoft.Bot.Builder.Azure
     public class CosmosDbStorage : IStorage
     {
         private static readonly char[] IllegalKeyCharacters = new char[] { '\\', '?', '/', '#', ' ' };
-        private static Lazy<Dictionary<char, string>> IllegalKeyCharacterReplacementMap = new Lazy<Dictionary<char, string>>(() => IllegalKeyCharacters.ToDictionary(c => c, c => '*' + ((int)c).ToString("x2")));
+        private static readonly Lazy<Dictionary<char, string>> IllegalKeyCharacterReplacementMap = new Lazy<Dictionary<char, string>>(() => IllegalKeyCharacters.ToDictionary(c => c, c => '*' + ((int)c).ToString("x2")));
+
+        private static JsonSerializer _jsonSerializer = JsonSerializer.Create(new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All });
 
         private readonly string _databaseId;
         private readonly string _collectionId;
         private readonly DocumentClient _client;
         private string _collectionLink = null;
 
-        private static JsonSerializer _jsonSerializer = JsonSerializer.Create(new JsonSerializerSettings()
-        {
-            TypeNameHandling = TypeNameHandling.All
-        });
-
         /// <summary>
-        /// Creates a new <see cref="CosmosDbStorage"/> object,
+        /// Initializes a new instance of the <see cref="CosmosDbStorage"/> class.
         /// using the provided CosmosDB credentials, database ID, and collection ID.
         /// </summary>
         /// <param name="cosmosDbStorageOptions">Cosmos DB storage configuration options.</param>
@@ -66,10 +63,7 @@ namespace Microsoft.Bot.Builder.Azure
 
             // Inject BotBuilder version to CosmosDB Requests
             var version = GetType().Assembly.GetName().Version;
-            var connectionPolicy = new ConnectionPolicy()
-            {
-                UserAgentSuffix = $"Microsoft-BotFramework {version}"
-            };
+            var connectionPolicy = new ConnectionPolicy { UserAgentSuffix = $"Microsoft-BotFramework {version}" };
 
             // Invoke CollectionPolicy delegate to further customize settings
             cosmosDbStorageOptions.ConnectionPolicyConfigurator?.Invoke(connectionPolicy);
@@ -77,12 +71,67 @@ namespace Microsoft.Bot.Builder.Azure
         }
 
         /// <summary>
-        /// Removes store items from storage.
+        /// Converts the key into a DocumentID that can be used safely with CosmosDB.
+        /// The following characters are restricted and cannot be used in the Id property: '/', '\', '?', '#'
+        /// More information at https://docs.microsoft.com/en-us/dotnet/api/microsoft.azure.documents.resource.id?view=azure-dotnet#remarks.
         /// </summary>
-        /// <param name="keys">Array of item keys to remove from the store.</param>
-        public async Task Delete(string[] keys, CancellationToken cancellationToken)
+        /// <param name="key">The key to sanitize.</param>
+        /// <returns>A sanitized key that can be used safely with CosmosDB.</returns>
+        public static string SanitizeKey(string key)
         {
-            if (keys == null || keys.Length == 0) return;
+            var firstIllegalCharIndex = key.IndexOfAny(IllegalKeyCharacters);
+
+            // If there are no illegal characters return immediately and avoid any further processing/allocations
+            if (firstIllegalCharIndex == -1)
+            {
+                return key;
+            }
+
+            // Allocate a builder that assumes that all remaining characters might be replaced to avoid any extra allocations
+            var sanitizedKeyBuilder = new StringBuilder(key.Length + ((key.Length - firstIllegalCharIndex + 1) * 3));
+
+            // Add all good characters up to the first bad character to the builder first
+            for (var index = 0; index < firstIllegalCharIndex; index++)
+            {
+                sanitizedKeyBuilder.Append(key[index]);
+            }
+
+            var illegalCharacterReplacementMap = IllegalKeyCharacterReplacementMap.Value;
+
+            // Now walk the remaining characters, starting at the first known bad character, replacing any bad ones with their designated replacement value from the map
+            for (var index = firstIllegalCharIndex; index < key.Length; index++)
+            {
+                var ch = key[index];
+
+                // Check if this next character is considered illegal and, if so, append its replacement; otherwise just append the good character as is
+                if (illegalCharacterReplacementMap.TryGetValue(ch, out var replacement))
+                {
+                    sanitizedKeyBuilder.Append(replacement);
+                }
+                else
+                {
+                    sanitizedKeyBuilder.Append(ch);
+                }
+            }
+
+            return sanitizedKeyBuilder.ToString();
+        }
+
+        /// <summary>
+        /// Deletes storage items from storage.
+        /// </summary>
+        /// <param name="keys">keys of the <see cref="IStoreItem"/> objects to remove from the store.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <seealso cref="ReadAsync(string[], CancellationToken)"/>
+        /// <seealso cref="WriteAsync(IDictionary{string, object}, CancellationToken)"/>
+        public async Task DeleteAsync(string[] keys, CancellationToken cancellationToken)
+        {
+            if (keys == null || keys.Length == 0)
+            {
+                return;
+            }
 
             // Ensure collection exists
             var collectionLink = await GetCollectionLink();
@@ -96,10 +145,17 @@ namespace Microsoft.Bot.Builder.Azure
         }
 
         /// <summary>
-        /// Loads store items from storage.
+        /// Reads storage items from storage.
         /// </summary>
-        /// <param name="keys">Array of item keys to read from the store.</param>
-        public async Task<IDictionary<string, object>> Read(string[] keys, CancellationToken cancellationToken)
+        /// <param name="keys">keys of the <see cref="IStoreItem"/> objects to read from the store.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>If the activities are successfully sent, the task result contains
+        /// the items read, indexed by key.</remarks>
+        /// <seealso cref="DeleteAsync(string[], CancellationToken)"/>
+        /// <seealso cref="WriteAsync(IDictionary{string, object}, CancellationToken)"/>
+        public async Task<IDictionary<string, object>> ReadAsync(string[] keys, CancellationToken cancellationToken)
         {
             if (keys == null || keys.Length == 0)
             {
@@ -116,7 +172,7 @@ namespace Microsoft.Bot.Builder.Azure
             var querySpec = new SqlQuerySpec
             {
                 QueryText = $"SELECT c.id, c.realId, c.document, c._etag FROM c WHERE c.id in ({parameterSequence})",
-                Parameters = new SqlParameterCollection(parameterValues)
+                Parameters = new SqlParameterCollection(parameterValues),
             };
 
             var query = _client.CreateDocumentQuery<DocumentStoreItem>(collectionLink, querySpec).AsDocumentQuery();
@@ -127,7 +183,7 @@ namespace Microsoft.Bot.Builder.Azure
                     var item = doc.Document.ToObject(typeof(object), _jsonSerializer);
                     if (item is IStoreItem storeItem)
                     {
-                        storeItem.eTag = doc.ETag;
+                        storeItem.ETag = doc.ETag;
                     }
 
                     // doc.Id cannot be used since it is escaped, read it from RealId property instead
@@ -139,10 +195,15 @@ namespace Microsoft.Bot.Builder.Azure
         }
 
         /// <summary>
-        /// Saves store items to storage.
+        /// Writes storage items to storage.
         /// </summary>
-        /// <param name="changes">Map of items to write to storage.</param>
-        public async Task Write(IDictionary<string, object> changes, CancellationToken cancellationToken)
+        /// <param name="changes">The items to write to storage, indexed by key.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <seealso cref="DeleteAsync(string[], CancellationToken)"/>
+        /// <seealso cref="ReadAsync(string[], CancellationToken)"/>
+        public async Task WriteAsync(IDictionary<string, object> changes, CancellationToken cancellationToken)
         {
             if (changes == null)
             {
@@ -162,20 +223,20 @@ namespace Microsoft.Bot.Builder.Azure
                 {
                     Id = SanitizeKey(change.Key),
                     ReadlId = change.Key,
-                    Document = json
+                    Document = json,
                 };
 
-                string eTag = (change.Value as IStoreItem)?.eTag;
-                if (eTag == null || eTag == "*")
+                var etag = (change.Value as IStoreItem)?.ETag;
+                if (etag == null || etag == "*")
                 {
                     // if new item or * then insert or replace unconditionaly
                     await _client.UpsertDocumentAsync(collectionLink, documentChange, disableAutomaticIdGeneration: true).ConfigureAwait(false);
                 }
-                else if (eTag.Length > 0)
+                else if (etag.Length > 0)
                 {
                     // if we have an etag, do opt. concurrency replace
                     var uri = UriFactory.CreateDocumentUri(_databaseId, _collectionId, documentChange.Id);
-                    var ac = new AccessCondition { Condition = eTag, Type = AccessConditionType.IfMatch };
+                    var ac = new AccessCondition { Condition = etag, Type = AccessConditionType.IfMatch };
                     await _client.ReplaceDocumentAsync(uri, documentChange, new RequestOptions { AccessCondition = ac }).ConfigureAwait(false);
                 }
                 else
@@ -190,7 +251,7 @@ namespace Microsoft.Bot.Builder.Azure
         /// </summary>
         private async ValueTask<string> GetCollectionLink()
         {
-            if(_collectionLink == null)
+            if (_collectionLink == null)
             {
                 await _client.CreateDatabaseIfNotExistsAsync(new Database { Id = _databaseId }).ConfigureAwait(false);
 
@@ -202,72 +263,30 @@ namespace Microsoft.Bot.Builder.Azure
         }
 
         /// <summary>
-        /// Converts the key into a DocumentID that can be used safely with CosmosDB.
-        /// The following characters are restricted and cannot be used in the Id property: '/', '\', '?', '#'
-        /// More information at https://docs.microsoft.com/en-us/dotnet/api/microsoft.azure.documents.resource.id?view=azure-dotnet#remarks
-        /// </summary>
-        public static string SanitizeKey(string key)
-        {
-            var firstIllegalCharIndex = key.IndexOfAny(IllegalKeyCharacters);
-
-            // If there are no illegal characters return immediately and avoid any further processing/allocations
-            if (firstIllegalCharIndex == -1) return key;
-
-            // Allocate a builder that assumes that all remaining characters might be replaced to avoid any extra allocations
-            var sanitizedKeyBuilder = new StringBuilder(key.Length + (key.Length - firstIllegalCharIndex + 1) * 3);
-
-            // Add all good characters up to the first bad character to the builder first
-            for (int index = 0; index < firstIllegalCharIndex; index++)
-            {
-                sanitizedKeyBuilder.Append(key[index]);
-            }
-
-            var illegalCharacterReplacementMap = IllegalKeyCharacterReplacementMap.Value;
-
-            // Now walk the remaining characters, starting at the first known bad character, replacing any bad ones with their designated replacement value from the map
-            for (int index = firstIllegalCharIndex; index < key.Length; index++)
-            {
-                var ch = key[index];
-
-                // Check if this next character is considered illegal and, if so, append its replacement; otherwise just append the good character as is
-                if (illegalCharacterReplacementMap.TryGetValue(ch, out var replacement))
-                {
-                    sanitizedKeyBuilder.Append(replacement);
-                }
-                else
-                {
-                    sanitizedKeyBuilder.Append(ch);
-                }
-            }
-
-            return sanitizedKeyBuilder.ToString();
-        }
-
-        /// <summary>
         /// Internal data structure for storing items in a CosmosDB Collection.
         /// </summary>
         private class DocumentStoreItem
         {
             /// <summary>
-            /// Sanitized Id/Key an used as PrimaryKey.
+            /// Gets or sets the sanitized Id/Key used as PrimaryKey.
             /// </summary>
             [JsonProperty("id")]
             public string Id { get; set; }
 
             /// <summary>
-            /// Un-sanitized Id/Key.
+            /// Gets or sets the un-sanitized Id/Key.
             /// </summary>
             [JsonProperty("realId")]
             public string ReadlId { get; internal set; }
 
             /// <summary>
-            /// The persisted object.
+            /// Gets or sets the persisted object.
             /// </summary>
             [JsonProperty("document")]
             public JObject Document { get; set; }
 
             /// <summary>
-            /// ETag information for handling optimistic concurrency updates.
+            /// Gets or sets the ETag information for handling optimistic concurrency updates.
             /// </summary>
             [JsonProperty("_etag")]
             public string ETag { get; set; }

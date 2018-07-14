@@ -9,22 +9,22 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Microsoft.Bot.Builder.Core.Extensions.Tests
 {
     [TestClass]
-    public class ErrorHandlerTests
+    public class OnTurnErrorTests
     {
         [TestMethod]
         [TestCategory("Middleware")]
-        public async Task ErrorHandler_Test()
+        public async Task OnTurnError_Test()
         {
             TestAdapter adapter = new TestAdapter();
-            adapter.ErrorHandler = async (context, exception) =>
+            adapter.OnTurnError = async (context, exception) =>
             {
                 if (exception is NotImplementedException)
                 {
-                    await context.SendActivity(context.Activity.CreateReply(exception.Message));
+                    await context.SendActivityAsync(context.Activity.CreateReply(exception.Message));
                 }
                 else
                 {
-                    await context.SendActivity("Unexpected exception");
+                    await context.SendActivityAsync("Unexpected exception");
                 }
             };
 
@@ -32,7 +32,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
                 {
                     if (context.Activity.AsMessageActivity().Text == "foo")
                     {
-                        context.SendActivity(context.Activity.AsMessageActivity().Text);
+                        context.SendActivityAsync(context.Activity.AsMessageActivity().Text);
                     }
 
                     if (context.Activity.AsMessageActivity().Text == "NotImplementedException")
@@ -46,7 +46,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
                 .AssertReply("foo", "passthrough")
                 .Send("NotImplementedException")
                 .AssertReply("Test")
-                .StartTest();
+                .StartTestAsync();
         }
     }
 }

@@ -36,7 +36,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Handlers
                 conversationReference = BotMessageHandlerBase.BotMessageSerializer.Deserialize<ConversationReference>(bodyReader);
             }
 
-            await botFrameworkAdapter.ContinueConversation(botAppId, conversationReference, botCallbackHandler, cancellationToken);
+            await botFrameworkAdapter.ContinueConversationAsync(botAppId, conversationReference, botCallbackHandler, cancellationToken);
 
             return null;
         }

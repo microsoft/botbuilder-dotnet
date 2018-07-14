@@ -17,6 +17,22 @@ namespace Microsoft.Bot.Builder.Ai.Luis
     /// </remarks>
     public class DateTimeSpec
     {
+        public DateTimeSpec(string type, IEnumerable<string> expressions)
+        {
+            if (string.IsNullOrWhiteSpace(type))
+            {
+                throw new ArgumentNullException(nameof(type));
+            }
+
+            if (expressions == null)
+            {
+                throw new ArgumentNullException(nameof(expressions));
+            }
+
+            Type = type;
+            Expressions = expressions.ToList();
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="DateTimeSpec"/> class.
         /// </summary>
@@ -52,12 +68,18 @@ namespace Microsoft.Bot.Builder.Ai.Luis
         /// <item>set -- a recurrence like "every monday".</item>
         /// </list>
         /// </remarks>
+        /// <value>
+        /// The type of expression.
+        /// </value>
         [JsonProperty("type")]
         public string Type { get; }
 
         /// <summary>
         /// Gets Timex expressions.
         /// </summary>
+        /// <value>
+        /// Timex expressions.
+        /// </value>
         [JsonProperty("timex")]
         public IReadOnlyList<string> Expressions { get; }
 

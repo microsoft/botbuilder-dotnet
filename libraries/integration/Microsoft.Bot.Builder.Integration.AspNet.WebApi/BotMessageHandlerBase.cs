@@ -84,7 +84,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Handlers
                             throw new InvalidOperationException($"Did not find an {typeof(IBot).Name} service via the dependency resolver. Please make sure you have registered your bot with your dependency injection container.");
                         }
 
-                        return bot.OnTurn(context);
+                        return bot.OnTurnAsync(context);
                     },
                     cancellationToken);
 

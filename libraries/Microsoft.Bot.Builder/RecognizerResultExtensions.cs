@@ -5,6 +5,9 @@ using System;
 
 namespace Microsoft.Bot.Builder
 {
+    /// <summary>
+    /// Contains helper methods for working with <see cref="RecognizerResult"/> objects.
+    /// </summary>
     public static class RecognizerResultExtensions
     {
         /// <summary>

@@ -1,9 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License.
-
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -60,11 +57,11 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
             Translator translator = new Translator(translatorKey);
 
             var sentence = "salut";
-            var detectedLanguage = await translator.Detect(sentence);
+            var detectedLanguage = await translator.DetectAsync(sentence);
             Assert.IsNotNull(detectedLanguage);
             Assert.AreEqual("fr", detectedLanguage, "should detect french language");
 
-            var translatedSentence = await translator.Translate(sentence, detectedLanguage, "en");
+            var translatedSentence = await translator.TranslateAsync(sentence, detectedLanguage, "en");
             Assert.IsNotNull(translatedSentence);
             Assert.AreEqual("Hello", translatedSentence.TargetMessage);
         }
@@ -84,7 +81,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
 
             var sentence = "salut <literal>Jean Bouchier mon ami</literal>";
 
-            var translatedSentence = await translator.TranslateArray(new string[] { sentence }, "fr", "en");
+            var translatedSentence = await translator.TranslateArrayAsync(new string[] { sentence }, "fr", "en");
             Dictionary<string, List<string>> patterns = new Dictionary<string, List<string>>();
             patterns.Add("fr", new List<string>());
             PatternsPostProcessor postProcessor = new PatternsPostProcessor(patterns);
@@ -107,7 +104,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
             Translator translator = new Translator(translatorKey);
 
             var sentence = "salut 20-10";
-            var translatedSentence = await translator.Translate(sentence, "fr", "en");
+            var translatedSentence = await translator.TranslateAsync(sentence, "fr", "en");
             Assert.IsNotNull(translatedSentence);
             Assert.AreEqual("Hi 20-10", translatedSentence.TargetMessage);
         }
@@ -126,7 +123,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
             Translator translator = new Translator(translatorKey);
 
             var sentences = new string[] { "mon nom est", "salut", "au revoir" };
-            var translatedSentences = await translator.TranslateArray(sentences, "fr", "en");
+            var translatedSentences = await translator.TranslateArrayAsync(sentences, "fr", "en");
             Assert.IsNotNull(translatedSentences);
             Assert.AreEqual(3, translatedSentences.Count, "should be 3 sentences");
             Assert.AreEqual("My name is", translatedSentences[0].TargetMessage);
@@ -148,7 +145,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
             Translator translator = new Translator(translatorKey);
 
             var sentence = "hello";
-            var translatedSentence = await translator.Translate(sentence, "en", "fr");
+            var translatedSentence = await translator.TranslateAsync(sentence, "en", "fr");
             Assert.IsNotNull(translatedSentence);
             Assert.AreEqual("Salut", translatedSentence.TargetMessage);
         }
@@ -167,7 +164,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
             Translator translator = new Translator(translatorKey);
 
             var sentences = new string[] { "Hello", "Good bye" };
-            var translatedSentences = await translator.TranslateArray(sentences, "en", "fr");
+            var translatedSentences = await translator.TranslateArrayAsync(sentences, "en", "fr");
             Assert.IsNotNull(translatedSentences);
             Assert.AreEqual(2, translatedSentences.Count, "should be 2 sentences");
             Assert.AreEqual("Salut", translatedSentences[0].TargetMessage);
@@ -189,7 +186,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
 
             var sentence = "Arrange an appointment for tomorrow";
             await Assert.ThrowsExceptionAsync<ArgumentException>(async () =>
-                await translator.Translate(sentence, "na", "de"));
+                await translator.TranslateAsync(sentence, "na", "de"));
         }
 
         [TestMethod]
@@ -207,7 +204,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
 
             var sentence = "Arrange an appointment for tomorrow";
             await Assert.ThrowsExceptionAsync<ArgumentException>(async () =>
-                await translator.Translate(sentence, "en", "na"));
+                await translator.TranslateAsync(sentence, "en", "na"));
         }
 
         private bool EnvironmentVariablesDefined()

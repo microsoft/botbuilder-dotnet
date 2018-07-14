@@ -88,7 +88,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
 
         async Task IBot.PostAsync(Activity activity, CancellationToken token)
         {
-            await this.adapter.ProcessActivity(activity, async (context) =>
+            await this.adapter.ProcessActivityAsync(activity, async (context) =>
             {
                 using (var scope = DialogModule.BeginLifetimeScope(this.Container, context))
                 {
@@ -948,7 +948,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                 var toBot = MakeTestMessage();
                 toBot.Text = "hi";
 
-                await new TestAdapter().ProcessActivity((Activity)toBot, async (context) =>
+                await new TestAdapter().ProcessActivityAsync((Activity)toBot, async (context) =>
                 {
                     using (var scope = DialogModule.BeginLifetimeScope(container, context))
                     {
@@ -981,7 +981,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
             {
                 var toBot = MakeTestMessage();
                 toBot.Text = "hi";
-                await new TestAdapter().ProcessActivity((Activity)toBot, async (context) =>
+                await new TestAdapter().ProcessActivityAsync((Activity)toBot, async (context) =>
                 {
                     using (var scope = DialogModule.BeginLifetimeScope(container, context))
                     {
@@ -1025,7 +1025,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
             {
                 var toBot = MakeTestMessage();
                 toBot.Text = "hi";
-                await new TestAdapter().ProcessActivity((Activity)toBot, async (context) =>
+                await new TestAdapter().ProcessActivityAsync((Activity)toBot, async (context) =>
                 {
                     using (var scope = DialogModule.BeginLifetimeScope(container, context))
                     {
@@ -1070,7 +1070,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
             {
                 var toBot = MakeTestMessage();
                 toBot.Text = "hi";
-                await new TestAdapter().ProcessActivity((Activity)toBot, async (context) =>
+                await new TestAdapter().ProcessActivityAsync((Activity)toBot, async (context) =>
                 {
                     using (var scope = DialogModule.BeginLifetimeScope(container, context))
                     {
@@ -1118,7 +1118,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                 var toBot = MakeTestMessage();
                 toBot.Text = "hi";
 
-                await new TestAdapter().ProcessActivity((Activity)toBot, async (context) =>
+                await new TestAdapter().ProcessActivityAsync((Activity)toBot, async (context) =>
                 {
                     using (var scope = DialogModule.BeginLifetimeScope(container, context))
                     {

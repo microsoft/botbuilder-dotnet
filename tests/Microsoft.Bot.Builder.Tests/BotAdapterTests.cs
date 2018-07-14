@@ -42,7 +42,7 @@ namespace Microsoft.Bot.Builder.Tests
             var activity = TestMessage.Message();
             activity.Id = activityId;
 
-            var resourceResponse = await c.SendActivity(activity);
+            var resourceResponse = await c.SendActivityAsync(activity);
             Assert.IsTrue(resourceResponse.Id == activityId, "Incorrect response Id returned"); 
         }
     }
@@ -50,7 +50,7 @@ namespace Microsoft.Bot.Builder.Tests
     public class CallCountingMiddleware : IMiddleware
     {
         public int Calls { get; set; }
-        public async Task OnTurn(ITurnContext context, NextDelegate next, CancellationToken cancellationToken)
+        public async Task OnTurnAsync(ITurnContext context, NextDelegate next, CancellationToken cancellationToken)
         {
             Calls++;
             await next(cancellationToken);

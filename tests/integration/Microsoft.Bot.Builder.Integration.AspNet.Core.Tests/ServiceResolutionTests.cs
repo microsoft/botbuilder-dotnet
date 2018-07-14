@@ -86,7 +86,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
 
         public sealed class ServiceResolutionTestBot : IBot
         {
-            public Task OnTurn(ITurnContext turnContext)
+            public Task OnTurnAsync(ITurnContext turnContext)
             {
                 throw new NotImplementedException("This test bot has no implementation and is intended only for testing service resolution.");
             }

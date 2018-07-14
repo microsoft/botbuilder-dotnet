@@ -70,7 +70,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
             IPostProcessor patternsPostProcessor = new PatternsPostProcessor(patterns);
             var sentence = "mi perro se llama Enzo";
 
-            var translatedDocuments = await translator.TranslateArray(new string[] { sentence }, "es", "en");
+            var translatedDocuments = await translator.TranslateArrayAsync(new string[] { sentence }, "es", "en");
             Assert.IsNotNull(translatedDocuments);
             string postProcessedMessage = patternsPostProcessor.Process(translatedDocuments[0], "es").PostProcessedMessage;
             Assert.IsNotNull(postProcessedMessage);
@@ -97,7 +97,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
             IPostProcessor patternsPostProcessor = new PatternsPostProcessor(patterns);
 
             var sentence = "mon nom est l'etat";
-            var translatedDocuments = await translator.TranslateArray(new string[] { sentence }, "fr", "en");
+            var translatedDocuments = await translator.TranslateArrayAsync(new string[] { sentence }, "fr", "en");
             Assert.IsNotNull(translatedDocuments);
             string postProcessedMessage = patternsPostProcessor.Process(translatedDocuments[0], "fr").PostProcessedMessage;
             Assert.IsNotNull(postProcessedMessage);
@@ -124,7 +124,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
             IPostProcessor patternsPostProcessor = new PatternsPostProcessor(patterns);
 
             var sentence = "mon     nom     est    l'etat   ";
-            var translatedDocuments = await translator.TranslateArray(new string[] { sentence }, "fr", "en");
+            var translatedDocuments = await translator.TranslateArrayAsync(new string[] { sentence }, "fr", "en");
             Assert.IsNotNull(translatedDocuments);
             string postProcessedMessage = patternsPostProcessor.Process(translatedDocuments[0], "fr").PostProcessedMessage;
             Assert.IsNotNull(postProcessedMessage);
@@ -151,7 +151,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
             IPostProcessor patternsPostProcessor = new PatternsPostProcessor(patterns);
 
             var sentence = "J'ai 25 ans et mon nom est l'etat";
-            var translatedDocuments = await translator.TranslateArray(new string[] { sentence }, "fr", "en");
+            var translatedDocuments = await translator.TranslateArrayAsync(new string[] { sentence }, "fr", "en");
             Assert.IsNotNull(translatedDocuments);
             string postProcessedMessage = patternsPostProcessor.Process(translatedDocuments[0], "fr").PostProcessedMessage;
             Assert.IsNotNull(postProcessedMessage);
@@ -177,7 +177,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
             IPostProcessor patternsPostProcessor = new PatternsPostProcessor(patterns);
             var sentence = "mi perro se llama Enzo";
 
-            var translatedDocuments = await translator.TranslateArray(new string[] { sentence }, "es", "en");
+            var translatedDocuments = await translator.TranslateArrayAsync(new string[] { sentence }, "es", "en");
             Assert.IsNotNull(translatedDocuments);
             string postProcessedMessage = patternsPostProcessor.Process(translatedDocuments[0], "es").PostProcessedMessage;
             Assert.IsNotNull(postProcessedMessage);
@@ -218,7 +218,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
 
             var frenchSentence = "Je veux voir éclair";
 
-            var translatedDocuments = await translator.TranslateArray(new string[] { frenchSentence }, "fr", "en");
+            var translatedDocuments = await translator.TranslateArrayAsync(new string[] { frenchSentence }, "fr", "en");
             Assert.IsNotNull(translatedDocuments);
             Assert.ThrowsException<ArgumentException>(() => customDictionaryPostProcessor.Process(translatedDocuments[0], "fr").PostProcessedMessage);
         }
@@ -246,7 +246,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
 
             var frenchSentence = "Je veux voir éclair";
 
-            var translatedDocuments = await translator.TranslateArray(new string[] { frenchSentence }, "fr", "en");
+            var translatedDocuments = await translator.TranslateArrayAsync(new string[] { frenchSentence }, "fr", "en");
             Assert.IsNotNull(translatedDocuments);
             string postProcessedMessage = customDictionaryPostProcessor.Process(translatedDocuments[0], "fr").PostProcessedMessage;
             Assert.IsNotNull(postProcessedMessage);
@@ -279,7 +279,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
 
             var italianSentence = "Voglio fare una foto nella camera";
 
-            var translatedDocuments = await translator.TranslateArray(new string[] { italianSentence }, "it", "en");
+            var translatedDocuments = await translator.TranslateArrayAsync(new string[] { italianSentence }, "it", "en");
             Assert.IsNotNull(translatedDocuments);
             string postProcessedMessage = customDictionaryPostProcessor.Process(translatedDocuments[0], "it").PostProcessedMessage;
             Assert.IsNotNull(postProcessedMessage);
@@ -324,7 +324,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
             var sentence = "mon nom est etat";
 
             //translating the document
-            var translatedDocuments = await translator.TranslateArray(new string[] { sentence }, "fr", "en");
+            var translatedDocuments = await translator.TranslateArrayAsync(new string[] { sentence }, "fr", "en");
             Assert.IsNotNull(translatedDocuments);
             string postProcessedMessage = null;
 

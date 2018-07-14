@@ -33,7 +33,7 @@ namespace Microsoft.Bot.Builder.Ai.Luis.Tests
             }
 
             var luisRecognizer = this.GetLuisRecognizer(verbose: true);
-            var result = await luisRecognizer.Recognize("My name is Emad", CancellationToken.None);
+            var result = await luisRecognizer.RecognizeAsync("My name is Emad", CancellationToken.None);
             Assert.IsNotNull(result);
             Assert.IsNull(result.AlteredText);
             Assert.AreEqual("My name is Emad", result.Text);
@@ -61,7 +61,7 @@ namespace Microsoft.Bot.Builder.Ai.Luis.Tests
             }
 
             var luisRecognizer = this.GetLuisRecognizer(verbose: true, luisOptions: new LuisPredictionOptions { Verbose = true });
-            var result = await luisRecognizer.Recognize("Please deliver February 2nd 2001", CancellationToken.None);
+            var result = await luisRecognizer.RecognizeAsync("Please deliver February 2nd 2001", CancellationToken.None);
             Assert.IsNotNull(result);
             Assert.AreEqual("Please deliver February 2nd 2001", result.Text);
             Assert.IsNotNull(result.Intents);
@@ -97,7 +97,7 @@ namespace Microsoft.Bot.Builder.Ai.Luis.Tests
             }
 
             var luisRecognizer = this.GetLuisRecognizer(verbose: true, luisOptions: new LuisPredictionOptions { Verbose = true });
-            var result = await luisRecognizer.Recognize("Please deliver February 2nd 2001 in room 201", CancellationToken.None);
+            var result = await luisRecognizer.RecognizeAsync("Please deliver February 2nd 2001 in room 201", CancellationToken.None);
             Assert.IsNotNull(result);
             Assert.IsNotNull(result.Text);
             Assert.AreEqual("Please deliver February 2nd 2001 in room 201", result.Text);
@@ -122,7 +122,7 @@ namespace Microsoft.Bot.Builder.Ai.Luis.Tests
             }
 
             var luisRecognizer = this.GetLuisRecognizer(verbose: true, luisOptions: new LuisPredictionOptions { Verbose = true });
-            var result = await luisRecognizer.Recognize("I want to travel on united", CancellationToken.None);
+            var result = await luisRecognizer.RecognizeAsync("I want to travel on united", CancellationToken.None);
             Assert.IsNotNull(result);
             Assert.IsNotNull(result.Text);
             Assert.AreEqual("I want to travel on united", result.Text);
@@ -148,7 +148,7 @@ namespace Microsoft.Bot.Builder.Ai.Luis.Tests
             }
 
             var luisRecognizer = this.GetLuisRecognizer(verbose: true, luisOptions: new LuisPredictionOptions { Verbose = true });
-            var result = await luisRecognizer.Recognize("I want to travel on DL", CancellationToken.None);
+            var result = await luisRecognizer.RecognizeAsync("I want to travel on DL", CancellationToken.None);
             Assert.IsNotNull(result);
             Assert.IsNotNull(result.Text);
             Assert.AreEqual("I want to travel on DL", result.Text);
@@ -176,7 +176,7 @@ namespace Microsoft.Bot.Builder.Ai.Luis.Tests
             }
 
             var luisRecognizer = this.GetLuisRecognizer(verbose: true, luisOptions: new LuisPredictionOptions { Verbose = true });
-            var result = await luisRecognizer.Recognize("Please deliver it to 98033 WA", CancellationToken.None);
+            var result = await luisRecognizer.RecognizeAsync("Please deliver it to 98033 WA", CancellationToken.None);
             Assert.IsNotNull(result);
             Assert.IsNotNull(result.Text);
             Assert.AreEqual("Please deliver it to 98033 WA", result.Text);
@@ -218,7 +218,7 @@ namespace Microsoft.Bot.Builder.Ai.Luis.Tests
             }
 
             var luisRecognizer = this.GetLuisRecognizer(verbose: true, luisOptions: new LuisPredictionOptions { Verbose = true });
-            var result = await luisRecognizer.Recognize("Book a table on Friday or tomorrow at 5 or tomorrow at 4", CancellationToken.None);
+            var result = await luisRecognizer.RecognizeAsync("Book a table on Friday or tomorrow at 5 or tomorrow at 4", CancellationToken.None);
             Assert.IsNotNull(result.Entities["datetime"]);
             Assert.AreEqual(3, result.Entities["datetime"].Count());
             Assert.AreEqual(1, result.Entities["datetime"][0]["timex"].Count());
@@ -345,6 +345,7 @@ namespace Microsoft.Bot.Builder.Ai.Luis.Tests
 
         private JObject Json<T>(T result)
             => (JObject)JsonConvert.DeserializeObject(JsonConvert.SerializeObject(result, new JsonSerializerSettings { Formatting = Formatting.Indented, NullValueHandling = NullValueHandling.Ignore }));
+            var typedResult = await luisRecognizer.RecognizeAsync<T>(query, CancellationToken.None);
 
         private void AssertScore(JToken scoreToken)
         {

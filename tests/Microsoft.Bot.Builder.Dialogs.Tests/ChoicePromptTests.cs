@@ -82,7 +82,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             })
             .Send("hello")
             .AssertReply(StartsWithValidator("favorite color?"))
-            .StartTest();
+            .StartTestAsync();
         }
 
         [TestMethod]
@@ -110,7 +110,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             })
             .Send("hello")
             .AssertReply("favorite color? (1) red, (2) green, or (3) blue")
-            .StartTest();
+            .StartTestAsync();
         }
 
         [TestMethod]
@@ -138,7 +138,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             })
             .Send("hello")
             .AssertReply("favorite color?\n\n   1. red\n   2. green\n   3. blue")
-            .StartTest();
+            .StartTestAsync();
         }
 
         [TestMethod]
@@ -175,7 +175,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                         new CardAction { Type="imBack", Value="blue", Title="blue" },
                     }
                 }))
-            .StartTest();
+            .StartTestAsync();
         }
 
         [TestMethod]
@@ -203,7 +203,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             })
             .Send("hello")
             .AssertReply("favorite color?")
-            .StartTest();
+            .StartTestAsync();
         }
 
         [TestMethod]
@@ -232,7 +232,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             })
             .Send("hello")
             .AssertReply(SpeakValidator("favorite color?", "spoken prompt"))
-            .StartTest();
+            .StartTestAsync();
         }
 
         [TestMethod]
@@ -260,7 +260,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             })
             .Send("hello")
             .AssertReply("test")
-            .StartTest();
+            .StartTestAsync();
         }
 
         [TestMethod]
@@ -288,7 +288,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             })
             .Send("hello")
             .AssertReply(SpeakValidator("test", "spoken test"))
-            .StartTest();
+            .StartTestAsync();
         }
 
         [TestMethod]
@@ -316,14 +316,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 else if (dialogCompletion.IsCompleted)
                 {
                     var choiceResult = (ChoiceResult)dialogCompletion.Result;
-                    await turnContext.SendActivity($"{choiceResult.Value.Value}");
+                    await turnContext.SendActivityAsync($"{choiceResult.Value.Value}");
                 }
             })
             .Send("hello")
             .AssertReply(StartsWithValidator("favorite color?"))
             .Send("red")
             .AssertReply("red")
-            .StartTest();
+            .StartTestAsync();
         }
 
         [TestMethod]
@@ -353,7 +353,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 {
                     if (dialogCompletion.Result == null)
                     {
-                        await turnContext.SendActivity("NotRecognized");
+                        await turnContext.SendActivityAsync("NotRecognized");
                     }
                 }
             })
@@ -361,7 +361,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .AssertReply(StartsWithValidator("favorite color?"))
             .Send("what was that?")
             .AssertReply("NotRecognized")
-            .StartTest();
+            .StartTestAsync();
         }
 
         [TestMethod]
@@ -398,7 +398,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 {
                     if (dialogCompletion.Result == null)
                     {
-                        await turnContext.SendActivity("validation failed");
+                        await turnContext.SendActivityAsync("validation failed");
                     }
                 }
             })
@@ -406,7 +406,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .AssertReply(StartsWithValidator("favorite color?"))
             .Send("I'll take the red please.")
             .AssertReply("validation failed")
-            .StartTest();
+            .StartTestAsync();
         }
 
         [TestMethod]
@@ -441,7 +441,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 {
                     if (dialogCompletion.Result == null)
                     {
-                        await turnContext.SendActivity("NotRecognized");
+                        await turnContext.SendActivityAsync("NotRecognized");
                     }
                 }
             })
@@ -449,7 +449,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .AssertReply(StartsWithValidator("favorite color?"))
             .Send("value shouldn't have been recognized.")
             .AssertReply("NotRecognized")
-            .StartTest();
+            .StartTestAsync();
         }
     }
 }
