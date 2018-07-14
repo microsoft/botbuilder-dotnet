@@ -252,7 +252,7 @@ namespace Microsoft.Bot.Builder.Ai.Luis.Tests
             var expected = new StreamReader(expectedPath).ReadToEnd();
             dynamic expectedJson = JsonConvert.DeserializeObject(expected);
             var query = (string)expectedJson.text ?? (string)expectedJson.Text;
-            var typedResult = await luisRecognizer.Recognize<T>(query, CancellationToken.None);
+            var typedResult = await luisRecognizer.RecognizeAsync<T>(query, CancellationToken.None);
             var typedJson = this.Json<T>(typedResult);
             if (!this.WithinDelta(expectedJson, typedJson, 0.1))
             {
@@ -345,7 +345,6 @@ namespace Microsoft.Bot.Builder.Ai.Luis.Tests
 
         private JObject Json<T>(T result)
             => (JObject)JsonConvert.DeserializeObject(JsonConvert.SerializeObject(result, new JsonSerializerSettings { Formatting = Formatting.Indented, NullValueHandling = NullValueHandling.Ignore }));
-            var typedResult = await luisRecognizer.RecognizeAsync<T>(query, CancellationToken.None);
 
         private void AssertScore(JToken scoreToken)
         {
