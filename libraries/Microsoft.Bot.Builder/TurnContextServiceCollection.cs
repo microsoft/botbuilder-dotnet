@@ -22,7 +22,9 @@ namespace Microsoft.Bot.Builder
             where TService : class
         {
             if (key == null)
+            {
                 throw new ArgumentNullException(nameof(key));
+            }
 
             if (TryGetValue(key, out var service))
             {
@@ -36,17 +38,24 @@ namespace Microsoft.Bot.Builder
             return null;
         }
 
-        public TService Get<TService>() where TService : class
+        public TService Get<TService>()
+            where TService : class
         {
             return Get<TService>(typeof(TService).FullName);
         }
 
-        public void Add<TService>(string key, TService service) where TService : class
+        public void Add<TService>(string key, TService service)
+            where TService : class
         {
             if (key == null)
+            {
                 throw new ArgumentNullException(nameof(key));
+            }
+
             if (service == null)
+            {
                 throw new ArgumentNullException(nameof(service));
+            }
 
             // note this can throw if teh key is already present
             base.Add(key, service);

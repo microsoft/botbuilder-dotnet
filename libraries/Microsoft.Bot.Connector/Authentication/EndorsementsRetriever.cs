@@ -51,6 +51,16 @@ namespace Microsoft.Bot.Connector.Authentication
         /// </summary>
         public const string JsonWebKeySetUri = "jwks_uri";
 
+        /// <summary>
+        /// Retrieves a populated configuration given an address and a document retriever.
+        /// </summary>
+        /// <param name="address">Address of the discovery document.</param>
+        /// <param name="retriever">The document retriever to use to read the discovery document.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>If the activities are successfully sent, the task result contains
+        /// a populated configuration.</remarks>
         public async Task<IDictionary<string, HashSet<string>>> GetConfigurationAsync(string address, IDocumentRetriever retriever, CancellationToken cancellationToken)
         {
             if (address == null)
@@ -95,6 +105,15 @@ namespace Microsoft.Bot.Connector.Authentication
             return results;
         }
 
+        /// <summary>
+        /// Obtains a document from an address.
+        /// </summary>
+        /// <param name="address">location of document.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>If the activities are successfully sent, the task result contains
+        /// the document as a string.</remarks>
         public async Task<string> GetDocumentAsync(string address, CancellationToken cancellationToken)
         {
             if (address == null)

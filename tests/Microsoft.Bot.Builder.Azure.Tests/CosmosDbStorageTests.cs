@@ -6,7 +6,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Azure.Documents.Client;
-using Microsoft.Bot.Builder.Core.Extensions;
 using Microsoft.Bot.Builder.Core.Extensions.Tests;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -153,7 +152,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             if (CheckEmulator())
             {
-                await Assert.ThrowsExceptionAsync<ArgumentException>(() => _storage.Read(new string[] { }));
+                await Assert.ThrowsExceptionAsync<ArgumentException>(() => _storage.ReadAsync(new string[] { }));
             }
         }
 
@@ -163,7 +162,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             if (CheckEmulator())
             {
-                await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => _storage.Write(null));
+                await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => _storage.WriteAsync(null));
             }
         }
 

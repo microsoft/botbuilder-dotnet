@@ -30,9 +30,9 @@ namespace Microsoft.Bot.Builder.Tests
                         Type = ActivityTypes.Typing,
                         RelatesTo = context.Activity.RelatesTo
                     };
-                    await context.SendActivity(typingActivity);
+                    await context.SendActivityAsync(typingActivity);
                     await Task.Delay(500);
-                    await context.SendActivity("echo:" + context.Activity.Text);
+                    await context.SendActivityAsync("echo:" + context.Activity.Text);
                 })
                 .Send("foo")
                     .AssertReply((activity) => Assert.AreEqual(activity.Type, ActivityTypes.Typing))
@@ -40,9 +40,9 @@ namespace Microsoft.Bot.Builder.Tests
                 .Send("bar")
                     .AssertReply((activity) => Assert.AreEqual(activity.Type, ActivityTypes.Typing))
                     .AssertReply("echo:bar")
-                .StartTest();
+                .StartTestAsync();
 
-            var pagedResult = await transcriptStore.GetTranscriptActivities("test", conversationId);
+            var pagedResult = await transcriptStore.GetTranscriptActivitiesAsync("test", conversationId);
             Assert.AreEqual(6, pagedResult.Items.Length);
             Assert.AreEqual("foo", pagedResult.Items[0].AsMessageActivity().Text);
             Assert.IsNotNull(pagedResult.Items[1].AsTypingActivity());
@@ -72,12 +72,12 @@ namespace Microsoft.Bot.Builder.Tests
                 if (context.Activity.Text == "update")
                 {
                     activityToUpdate.Text = "new response";
-                    await context.UpdateActivity(activityToUpdate);
+                    await context.UpdateActivityAsync(activityToUpdate);
                 }
                 else
                 {
                     var activity = context.Activity.CreateReply("response");
-                    var response = await context.SendActivity(activity);
+                    var response = await context.SendActivityAsync(activity);
                     activity.Id = response.Id;
 
                     // clone the activity, so we can use it to do an update
@@ -87,9 +87,9 @@ namespace Microsoft.Bot.Builder.Tests
                 .Send("foo")
                 .Send("update")
                     .AssertReply("new response")
-                .StartTest();
+                .StartTestAsync();
             await Task.Delay(500);
-            var pagedResult = await transcriptStore.GetTranscriptActivities("test", conversationId);
+            var pagedResult = await transcriptStore.GetTranscriptActivitiesAsync("test", conversationId);
             Assert.AreEqual(4, pagedResult.Items.Length);
             Assert.AreEqual("foo", pagedResult.Items[0].AsMessageActivity().Text);
             Assert.AreEqual("response", pagedResult.Items[1].AsMessageActivity().Text);
@@ -112,21 +112,21 @@ namespace Microsoft.Bot.Builder.Tests
                 conversationId = context.Activity.Conversation.Id;
                 if (context.Activity.Text == "deleteIt")
                 {
-                    await context.DeleteActivity(activityId);
+                    await context.DeleteActivityAsync(activityId);
                 }
                 else
                 {
                     var activity = context.Activity.CreateReply("response");
-                    var response = await context.SendActivity(activity);
+                    var response = await context.SendActivityAsync(activity);
                     activityId = response.Id;
                 }
             })
                 .Send("foo")
                     .AssertReply("response")
                 .Send("deleteIt")
-                .StartTest();
+                .StartTestAsync();
             await Task.Delay(500);
-            var pagedResult = await transcriptStore.GetTranscriptActivities("test", conversationId);
+            var pagedResult = await transcriptStore.GetTranscriptActivitiesAsync("test", conversationId);
             Assert.AreEqual(4, pagedResult.Items.Length);
             Assert.AreEqual("foo", pagedResult.Items[0].AsMessageActivity().Text);
             Assert.AreEqual("response", pagedResult.Items[1].AsMessageActivity().Text);

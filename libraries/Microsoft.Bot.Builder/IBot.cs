@@ -8,14 +8,14 @@ namespace Microsoft.Bot.Builder
     /// <summary>
     /// Represents a bot that can operate on incoming activities.
     /// </summary>
-    /// <remarks>A <see cref="BotAdapter"/> passes incoming activities from the user's 
-    /// channel to the bot's <see cref="OnTurn(ITurnContext)"/> method.</remarks>
+    /// <remarks>A <see cref="BotAdapter"/> passes incoming activities from the user's
+    /// channel to the bot's <see cref="OnTurnAsync(ITurnContext)"/> method.</remarks>
     /// <example>
     /// This defines a bot that responds with "Hello world!" to any incoming message.
     /// <code>
     /// public class EchoBot : IBot
     /// {
-    ///     public async Task OnTurn(ITurnContext context)
+    ///     public async Task OnTurnAsync(ITurnContext context)
     ///     {
     ///         if (context.Activity.Type is ActivityTypes.Message)
     ///         {
@@ -29,14 +29,14 @@ namespace Microsoft.Bot.Builder
     public interface IBot
     {
         /// <summary>
-        /// Handles an incoming activity.
+        /// When implemented in a bot, handles an incoming activity.
         /// </summary>
         /// <param name="turnContext">The context object for this turn.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
-        /// <remarks>The <paramref name="turnContext"/> provides information about the 
+        /// <remarks>The <paramref name="turnContext"/> provides information about the
         /// incoming activity, and other data needed to process the activity.</remarks>
         /// <seealso cref="ITurnContext"/>
         /// <seealso cref="Bot.Schema.IActivity"/>
-        Task OnTurn(ITurnContext turnContext);
+        Task OnTurnAsync(ITurnContext turnContext);
     }
 }

@@ -54,13 +54,19 @@
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug - NuGet Packages|AnyCPU'">
 	  <CodeAnalysisRuleSet>Microsoft.Bot.Builder.Ai.LUIS.ruleset</CodeAnalysisRuleSet>
 	</PropertyGroup>
-	
+
+	<PropertyGroup>
+	  <CodeAnalysisRuleSet>Microsoft.Bot.Builder.Ai.LUIS.ruleset</CodeAnalysisRuleSet>
+	</PropertyGroup>
+
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime" Version="0.9.0-preview" />
+    <PackageReference Include="AsyncUsageAnalyzers" Version="1.0.0-alpha003" PrivateAssets="all" />
     <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(PackageVersion)' != '' " Version="$(PackageVersion)" />
     <PackageReference Include="Microsoft.Rest.ClientRuntime" Version="2.3.11" />
 		<PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
 		<PackageReference Include="StyleCop.Analyzers" Version="1.1.0-beta008" />
+    <PackageReference Include="StyleCop.Analyzers" Version="1.1.0-beta008" PrivateAssets="all" />
 	</ItemGroup>
 
   <ItemGroup>

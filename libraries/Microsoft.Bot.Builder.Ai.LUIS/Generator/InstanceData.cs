@@ -13,30 +13,45 @@ namespace Microsoft.Bot.Builder.Ai.Luis
         /// <summary>
         /// Gets or sets 0-based index in the analyzed text for where entity starts.
         /// </summary>
+        /// <value>
+        /// 0-based index in the analyzed text for where entity starts.
+        /// </value>
         [JsonProperty("startIndex")]
         public int StartIndex { get; set; }
 
         /// <summary>
         /// Gets or sets 0-based index of the first character beyond the recognized entity.
         /// </summary>
+        /// <value>
+        /// 0-based index of the first character beyond the recognized entity.
+        /// </value>
         [JsonProperty("endIndex")]
         public int EndIndex { get; set; }
 
         /// <summary>
         /// Gets or sets word broken and normalized text for the entity.
         /// </summary>
+        /// <value>
+        /// Word broken and normalized text for the entity.
+        /// </value>
         [JsonProperty("text")]
         public string Text { get; set; }
 
         /// <summary>
         /// Gets or sets optional confidence in the recognition.
         /// </summary>
+        /// <value>
+        /// Optional confidence in the recognition.
+        /// </value>
         [JsonProperty("score")]
         public double? Score { get; set; }
 
         /// <summary>
         /// Gets or sets any extra properties.
         /// </summary>
+        /// <value>
+        /// Any extra properties.
+        /// </value>
         [JsonExtensionData(ReadData = true, WriteData = true)]
         public IDictionary<string, object> Properties { get; set; }
     }

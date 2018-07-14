@@ -9,11 +9,6 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder
 {
-    public class StateSettings
-    { 
-        public bool LastWriterWins { get; set; } = true;
-    }
-
     /// <summary>
     /// Base class which manages details of automatic loading and saving of bot state.
     /// </summary>
@@ -27,11 +22,11 @@ namespace Microsoft.Bot.Builder
         private readonly string _propertyName;
 
         /// <summary>
-        /// Creates a new <see cref="BotState{TState}"/> middleware object.
+        /// Initializes a new instance of the <see cref="BotState{TState}"/> class.
         /// </summary>
         /// <param name="storage">The storage provider to use.</param>
         /// <param name="propertyName">The name to use to load or save the state object.</param>
-        /// <param name="keyDelegate"></param>
+        /// <param name="keyDelegate">A function that can provide the key.</param>
         /// <param name="settings">The state persistance options to use.</param>
         public BotState(IStorage storage, string propertyName, Func<ITurnContext, string> keyDelegate, StateSettings settings = null)
         {
@@ -46,31 +41,16 @@ namespace Microsoft.Bot.Builder
         /// </summary>
         /// <param name="context">The context object for this turn.</param>
         /// <param name="next">The delegate to call to continue the bot middleware pipeline.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <remarks>This middleware loads the state object on the leading edge of the middleware pipeline
         /// and persists the state object on the trailing edge.
         /// </remarks>
-        public async Task OnTurn(ITurnContext context, NextDelegate next, CancellationToken cancellationToken)
+        public async Task OnTurnAsync(ITurnContext context, NextDelegate next, CancellationToken cancellationToken)
         {
-            await ReadToContextService(context, cancellationToken).ConfigureAwait(false);
+            await ReadToContextServiceAsync(context, cancellationToken).ConfigureAwait(false);
             await next(cancellationToken).ConfigureAwait(false);
-            await WriteFromContextService(context, cancellationToken).ConfigureAwait(false);
-        }
-
-        protected virtual async Task ReadToContextService(ITurnContext context, CancellationToken cancellationToken)
-        {
-            var key = _keyDelegate(context);
-            var items = await _storage.Read(new[] { key }, cancellationToken);
-            var state = items.Where(entry => entry.Key == key).Select(entry => entry.Value).OfType<TState>().FirstOrDefault();
-            if (state == null)
-                state = new TState();
-            context.Services.Add(_propertyName, state);
-        }
-
-        protected virtual async Task WriteFromContextService(ITurnContext context, CancellationToken cancellationToken)
-        {
-            var state = context.Services.Get<TState>(_propertyName);
-            await Write(context, state, cancellationToken);
+            await WriteFromContextServiceAsync(context, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -80,10 +60,10 @@ namespace Microsoft.Bot.Builder
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <remarks>If successful, the task result contains the state object, read from storage.</remarks>
-        public virtual async Task<TState> Read(ITurnContext context, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual async Task<TState> ReadAsync(ITurnContext context, CancellationToken cancellationToken = default(CancellationToken))
         {
             var key = _keyDelegate(context);
-            var items = await _storage.Read(new[] { key }, cancellationToken).ConfigureAwait(false);
+            var items = await _storage.ReadAsync(new[] { key }, cancellationToken).ConfigureAwait(false);
             var state = items.Where(entry => entry.Key == key).Select(entry => entry.Value).OfType<TState>().FirstOrDefault();
 
             if (state == null)
@@ -99,12 +79,18 @@ namespace Microsoft.Bot.Builder
         /// </summary>
         /// <param name="context">The context object for this turn.</param>
         /// <param name="state">The state object.</param>
-        public virtual async Task Write(ITurnContext context, TState state, CancellationToken cancellationToken = default(CancellationToken))
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        public virtual async Task WriteAsync(ITurnContext context, TState state, CancellationToken cancellationToken = default(CancellationToken))
         {
             var changes = new Dictionary<string, object>();
 
             if (state == null)
+            {
                 state = new TState();
+            }
+
             var key = _keyDelegate(context);
 
             changes.Add(key, state);
@@ -115,12 +101,31 @@ namespace Microsoft.Bot.Builder
                 {
                     if (item.Value is IStoreItem valueStoreItem)
                     {
-                        valueStoreItem.eTag = "*";
+                        valueStoreItem.ETag = "*";
                     }
                 }
             }
 
-            await _storage.Write(changes, cancellationToken).ConfigureAwait(false);
+            await _storage.WriteAsync(changes, cancellationToken).ConfigureAwait(false);
+        }
+
+        protected virtual async Task ReadToContextServiceAsync(ITurnContext context, CancellationToken cancellationToken)
+        {
+            var key = _keyDelegate(context);
+            var items = await _storage.ReadAsync(new[] { key }, cancellationToken).ConfigureAwait(false);
+            var state = items.Where(entry => entry.Key == key).Select(entry => entry.Value).OfType<TState>().FirstOrDefault();
+            if (state == null)
+            {
+                state = new TState();
+            }
+
+            context.Services.Add(_propertyName, state);
+        }
+
+        protected virtual async Task WriteFromContextServiceAsync(ITurnContext context, CancellationToken cancellationToken)
+        {
+            var state = context.Services.Get<TState>(_propertyName);
+            await WriteAsync(context, state, cancellationToken).ConfigureAwait(false);
         }
     }
 }
