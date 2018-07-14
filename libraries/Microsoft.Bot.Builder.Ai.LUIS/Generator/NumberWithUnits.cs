@@ -14,58 +14,26 @@ namespace Microsoft.Bot.Builder.Ai.Luis
     public class NumberWithUnits
     {
         /// <summary>
-        /// Recognized number, or null if unit only.
+        /// Initializes a new instance of the <see cref="NumberWithUnits"/> class.
         /// </summary>
-        [JsonProperty("number")]
-        public readonly double? Number;
-
-        /// <summary>
-        /// Normalized recognized unit.
-        /// </summary>
-        [JsonProperty("units")]
-        public readonly string Units;
-
+        /// <param name="number">Number.</param>
+        /// <param name="units">Units for number.</param>
         public NumberWithUnits(double? number, string units)
         {
             Number = number;
             Units = units;
         }
-    }
 
-    /// <summary>
-    /// Strongly typed LUIS builtin_age.
-    /// </summary>
-    public class Age: NumberWithUnits
-    {
-        public Age(double number, string units) : base(number, units) { }
+        /// <summary>
+        /// Gets or sets recognized number, or null if unit only.
+        /// </summary>
+        [JsonProperty("number")]
+        public double? Number { get; set; }
 
-        public override string ToString() => $"Age({Number} {Units})";
-    }
-
-    /// <summary>
-    /// Strongly typed LUIS builtin_dimension.
-    /// </summary>
-    public class Dimension: NumberWithUnits
-    {
-        public Dimension(double number, string units) : base(number, units) { }
-        public override string ToString() => $"Dimension({Number} {Units})";
-    }
-
-    /// <summary>
-    /// Strongly typed LUIS builtin_money.
-    /// </summary>
-    public class Money : NumberWithUnits
-    {
-        public Money(double number, string units) : base(number, units) { }
-        public override string ToString() => $"Currency({Number} {Units})";
-    }
-
-    /// <summary>
-    /// Strongly typed LUIS builtin_temperature.
-    /// </summary>
-    public class Temperature : NumberWithUnits
-    {
-        public Temperature(double number, string units) : base(number, units) { }
-        public override string ToString() => $"Temperature({Number} {Units})";
+        /// <summary>
+        /// Gets or sets normalized recognized unit.
+        /// </summary>
+        [JsonProperty("units")]
+        public string Units { get; set; }
     }
 }

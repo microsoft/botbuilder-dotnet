@@ -20,28 +20,32 @@ namespace Microsoft.Bot.Builder.Ai.Luis
     public class LuisRecognizer : IRecognizer
     {
         private const string MetadataKey = "$instance";
-        private readonly LuisRuntimeAPI luisService;
-        private readonly LuisPredictionOptions luisOptions;
-        private readonly ILuisRecognizerOptions luisRecognizerOptions;
+        private readonly LuisRuntimeAPI runtime;
+        private readonly LuisApplication application;
+        private readonly LuisPredictionOptions options;
+        private readonly bool includeAPIResults;
 
-        /// <summary> 
-        /// Creates a new <see cref="LuisRecognizer"/> object. 
-        /// </summary> 
-        /// <param name="luisModel">The LUIS model to use to recognize text.</param> 
-        /// <param name="luisRecognizerOptions">The LUIS recognizer options to use.</param> 
-        /// <param name="options">The LUIS request options to use.</param> 
-        public LuisRecognizer(LuisApplication luisModel, ILuisRecognizerOptions luisRecognizerOptions = null, LuisPredictionOptions options = null)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LuisRecognizer"/> class.
+        /// </summary>
+        /// <param name="application">The LUIS model to use to recognize text.</param>
+        /// <param name="predictionOptions">The LUIS prediction options to use.</param>
+        /// <param name="includeInstanceData">TRUE to include $instance meta-data in result.</param>
+        /// <param name="includeAPIResults">TRUE to include raw LUIS API response.</param>
+        public LuisRecognizer(LuisApplication application, LuisPredictionOptions predictionOptions = null, bool includeAPIResults = false)
         {
-            luisService = new LuisRuntimeAPI();
-            luisOptions = options ?? new LuisOptions();
-            this.luisRecognizerOptions = luisRecognizerOptions ?? new LuisRecognizerOptions { Verbose = true };
+            runtime = new LuisRuntimeAPI(new ApiKeyServiceClientCredentials(application.SubscriptionKey))
+            {
+                AzureRegion = (AzureRegions)Enum.Parse(typeof(AzureRegions), application.AzureRegion),
+            };
+            this.application = application;
+            this.options = predictionOptions ?? new LuisPredictionOptions();
+            this.includeAPIResults = includeAPIResults;
         }
 
         /// <inheritdoc />
         public async Task<RecognizerResult> Recognize(string utterance, CancellationToken ct)
-        {
-            return (await RecognizeInternal(utterance, ct).ConfigureAwait(false));
-        }
+            => await RecognizeInternal(utterance, ct).ConfigureAwait(false);
 
         /// <inheritdoc />
         public async Task<T> Recognize<T>(string utterance, CancellationToken ct)
@@ -52,42 +56,22 @@ namespace Microsoft.Bot.Builder.Ai.Luis
             return result;
         }
 
-        private Task<RecognizerResult> RecognizeInternal(string utterance, CancellationToken ct)
-        {
-            if (string.IsNullOrEmpty(utterance))
-                throw new ArgumentNullException(nameof(utterance));
+        private static string NormalizedIntent(string intent) => intent.Replace('.', '_').Replace(' ', '_');
 
-            var luisRequest = new LuisRequest(utterance);
-            luisOptions.Apply(luisRequest);
-            return Recognize(luisRequest, ct, luisRecognizerOptions.Verbose);
-        }
-
-        private async Task<RecognizerResult> Recognize(LuisRequest request, CancellationToken ct, bool verbose)
-        {
-            var luisResult = await luisService.QueryAsync(request, ct).ConfigureAwait(false);
-            var recognizerResult = new RecognizerResult
-            {
-                Text = request.Query,
-                AlteredText = luisResult.AlteredQuery,
-                Intents = GetIntents(luisResult),
-                Entities = ExtractEntitiesAndMetadata(luisResult.Entities, luisResult.CompositeEntities, verbose),
-            };
-            recognizerResult.Properties.Add("luisResult", luisResult);
-            return recognizerResult;
-        }
-
-        private static string NormalizedIntent(string intent)
-        {
-            return intent.Replace('.', '_').Replace(' ', '_');
-        }
-
-        private static JObject GetIntents(LuisResult luisResult)
+        private static IDictionary<string, IntentScore> GetIntents(LuisResult luisResult)
         {
             return luisResult.Intents != null ?
-                JObject.FromObject(luisResult.Intents.ToDictionary(
+                luisResult.Intents.ToDictionary(
                     i => NormalizedIntent(i.Intent),
-                    i => new JObject(new JProperty("score", i.Score ?? 0)))) :
-                new JObject { [NormalizedIntent(luisResult.TopScoringIntent.Intent)] = new JProperty("score", luisResult.TopScoringIntent.Score ?? 0) };
+                    i => new IntentScore { Score = i.Score ?? 0 })
+                    :
+                new Dictionary<string, IntentScore>()
+                {
+                    {
+                        NormalizedIntent(luisResult.TopScoringIntent.Intent),
+                        new IntentScore() { Score = luisResult.TopScoringIntent.Score ?? 0 }
+                    },
+                };
         }
 
         private static JObject ExtractEntitiesAndMetadata(IList<EntityModel> entities, IList<CompositeEntityModel> compositeEntities, bool verbose)
@@ -97,6 +81,7 @@ namespace Microsoft.Bot.Builder.Ai.Luis
             {
                 entitiesAndMetadata[MetadataKey] = new JObject();
             }
+
             var compositeEntityTypes = new HashSet<string>();
 
             // We start by populating composite entities so that entities covered by them are removed from the entities list
@@ -110,7 +95,9 @@ namespace Microsoft.Bot.Builder.Ai.Luis
             {
                 // we'll address composite entities separately
                 if (compositeEntityTypes.Contains(entity.Type))
+                {
                     continue;
+                }
 
                 AddProperty(entitiesAndMetadata, ExtractNormalizedEntityName(entity), ExtractEntityValue(entity));
 
@@ -129,6 +116,7 @@ namespace Microsoft.Bot.Builder.Ai.Luis
             {
                 return null;
             }
+
             return long.TryParse((string)value, out var longVal) ?
                             new JValue(longVal) :
                             new JValue(double.Parse((string)value));
@@ -136,36 +124,41 @@ namespace Microsoft.Bot.Builder.Ai.Luis
 
         private static JToken ExtractEntityValue(EntityModel entity)
         {
-            if (entity.Resolution == null)
+            if (!entity.AdditionalProperties.TryGetValue("resolution", out dynamic resolution))
+            {
                 return entity.Entity;
+            }
 
             if (entity.Type.StartsWith("builtin.datetimeV2."))
             {
-                if (entity.Resolution?.Values == null || entity.Resolution.Values.Count == 0)
-                    return JArray.FromObject(entity.Resolution);
+                if (resolution.Values == null || resolution.Values.Count == 0)
+                {
+                    return JArray.FromObject(resolution);
+                }
 
-                var resolutionValues = (IEnumerable<object>)entity.Resolution["values"];
-                var type = ((IDictionary<string, object>)(resolutionValues.First()))["type"];
+                var resolutionValues = (IEnumerable<object>)resolution.values;
+                var type = ((IDictionary<string, object>)resolutionValues.First())["type"];
                 var timexes = resolutionValues.Select(val => ((IDictionary<string, object>)val)["timex"]);
                 var distinctTimexes = timexes.Distinct();
                 return new JObject(new JProperty("type", type), new JProperty("timex", JArray.FromObject(distinctTimexes)));
             }
             else
             {
-                var resolution = entity.Resolution;
                 switch (entity.Type)
                 {
                     case "builtin.number":
-                    case "builtin.ordinal": return Number(resolution["value"]);
+                    case "builtin.ordinal": return Number(resolution.value);
                     case "builtin.percentage":
                         {
-                            var svalue = (string)resolution["value"];
+                            var svalue = (string)resolution.value;
                             if (svalue.EndsWith("%"))
                             {
                                 svalue = svalue.Substring(0, svalue.Length - 1);
                             }
+
                             return Number(svalue);
                         }
+
                     case "builtin.age":
                     case "builtin.dimension":
                     case "builtin.currency":
@@ -178,15 +171,17 @@ namespace Microsoft.Bot.Builder.Ai.Luis
                             {
                                 obj.Add("number", val);
                             }
+
                             obj.Add("units", units);
                             return obj;
                         }
+
                     default:
-                        return entity.Resolution.Count > 1 ?
-                            JObject.FromObject(entity.Resolution) :
-                            entity.Resolution.ContainsKey("value") ?
-                                (JToken)new JValue(entity.Resolution["value"]) :
-                                JArray.FromObject(entity.Resolution["values"]);
+                        return resolution.Count > 1 ?
+                            JObject.FromObject(resolution) :
+                            resolution.ContainsKey("value")
+                            ? (JToken)new JValue(resolution.value)
+                            : JArray.FromObject(resolution.values);
                 }
             }
         }
@@ -197,12 +192,13 @@ namespace Microsoft.Bot.Builder.Ai.Luis
             {
                 startIndex = entity.StartIndex,
                 endIndex = entity.EndIndex + 1,
-                text = entity.Entity
+                text = entity.Entity,
             });
-            if (entity.Score.HasValue)
+            if (entity.AdditionalProperties.TryGetValue("Score", out var score))
             {
-                obj["score"] = entity.Score;
+                obj["score"] = (double)score;
             }
+
             return obj;
         }
 
@@ -214,18 +210,23 @@ namespace Microsoft.Bot.Builder.Ai.Luis
             {
                 type = "datetime";
             }
+
             if (type.StartsWith("builtin.currency"))
             {
                 type = "money";
             }
+
             if (type.StartsWith("builtin."))
             {
                 type = type.Substring(8);
             }
-            if (!string.IsNullOrWhiteSpace(entity.Role ))
+
+            var role = entity.AdditionalProperties.ContainsKey("Role") ? (string)entity.AdditionalProperties["Role"] : string.Empty;
+            if (!string.IsNullOrWhiteSpace(role))
             {
-                type = entity.Role;
+                type = role;
             }
+
             return type.Replace('.', '_').Replace(' ', '_');
         }
 
@@ -243,7 +244,9 @@ namespace Microsoft.Bot.Builder.Ai.Luis
 
             // This is an error case and should not happen in theory
             if (compositeEntityMetadata == null)
+            {
                 return entities;
+            }
 
             if (verbose)
             {
@@ -258,11 +261,15 @@ namespace Microsoft.Bot.Builder.Ai.Luis
                 {
                     // We already covered this entity
                     if (coveredSet.Contains(entity))
+                    {
                         continue;
+                    }
 
                     // This entity doesn't belong to this composite entity
                     if (child.Type != entity.Type || !CompositeContainsEntity(compositeEntityMetadata, entity))
+                    {
                         continue;
+                    }
 
                     // Add to the set to ensure that we don't consider the same child entity more than once per composite
                     coveredSet.Add(entity);
@@ -286,13 +293,11 @@ namespace Microsoft.Bot.Builder.Ai.Luis
         }
 
         private static bool CompositeContainsEntity(EntityModel compositeEntityMetadata, EntityModel entity)
-        {
-            return entity.StartIndex >= compositeEntityMetadata.StartIndex &&
+            => entity.StartIndex >= compositeEntityMetadata.StartIndex &&
                    entity.EndIndex <= compositeEntityMetadata.EndIndex;
-        }
 
         /// <summary>
-        /// If a property doesn't exist add it to a new array, otherwise append it to the existing array
+        /// If a property doesn't exist add it to a new array, otherwise append it to the existing array.
         /// </summary>
         private static void AddProperty(JObject obj, string key, JToken value)
         {
@@ -304,6 +309,39 @@ namespace Microsoft.Bot.Builder.Ai.Luis
             {
                 obj[key] = new JArray(value);
             }
+        }
+
+        private async Task<RecognizerResult> RecognizeInternal(string utterance, CancellationToken ct)
+        {
+            if (string.IsNullOrEmpty(utterance))
+            {
+                throw new ArgumentNullException(nameof(utterance));
+            }
+
+            var luisResult = await runtime.Prediction.ResolveAsync(
+                application.ApplicationId,
+                utterance,
+                timezoneOffset: options.TimezoneOffset,
+                verbose: options.Verbose,
+                staging: options.Staging,
+                spellCheck: options.SpellCheck,
+                bingSpellCheckSubscriptionKey: options.BingSpellCheckSubscriptionKey,
+                log: options.Log,
+                cancellationToken: ct)
+                .ConfigureAwait(false);
+            var recognizerResult = new RecognizerResult
+            {
+                Text = utterance,
+                AlteredText = luisResult.AlteredQuery,
+                Intents = GetIntents(luisResult),
+                Entities = ExtractEntitiesAndMetadata(luisResult.Entities, luisResult.CompositeEntities, options.IncludeInstanceData),
+            };
+            if (includeAPIResults)
+            {
+                recognizerResult.Properties.Add("luisResult", luisResult);
+            }
+
+            return recognizerResult;
         }
     }
 }

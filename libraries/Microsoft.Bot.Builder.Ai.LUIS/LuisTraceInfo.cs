@@ -8,22 +8,33 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Ai.Luis
 {
-
     /// <summary>
-    /// This class represents all the trace info that we collect from the LUIS Recognizer Middleware
+    /// This class represents all the trace info that we collect from the LUIS Recognizer Middleware.
     /// </summary>
     public class LuisTraceInfo
     {
+        /// <summary>
+        /// Gets or sets raw recognizer result.
+        /// </summary>
         [JsonProperty("recognizerResult")]
-        public RecognizerResult RecognizerResult { set; get; }
+        public RecognizerResult RecognizerResult { get; set; }
 
+        /// <summary>
+        /// Gets or sets processed result.
+        /// </summary>
         [JsonProperty("luisResult")]
-        public LuisResult Result { set; get; }
+        public LuisResult LuisResult { get; set; }
 
-        [JsonProperty("luisModel")]
-        public LuisApplication Application { set; get; }
+        /// <summary>
+        /// Gets or sets the application being called.
+        /// </summary>
+        [JsonProperty("LuisApplication")]
+        public LuisApplication Application { get; set; }
 
+        /// <summary>
+        /// Gets or sets prediction options.
+        /// </summary>
         [JsonProperty("luisOptions")]
-        public ILuisOptions Options { set; get; }
+        public LuisPredictionOptions Options { get; set; }
     }
 }

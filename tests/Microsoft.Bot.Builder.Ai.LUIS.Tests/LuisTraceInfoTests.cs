@@ -17,23 +17,23 @@ namespace Microsoft.Bot.Builder.Ai.Luis.Tests
         {
             var luisTraceInfo = new LuisTraceInfo
             {
-                LuisModel = new LuisApplication(Guid.NewGuid().ToString(), "abc", new Uri("https://luis.ai")),
-                LuisOptions = new LuisRequest {Verbose = true},
-                LuisResult = new LuisResult {Query = "hi"},
-                RecognizerResult = new RecognizerResult {Text = "hi"}
+                Application = new LuisApplication(Guid.NewGuid().ToString(), "abc", "westus"),
+                Options = new LuisPredictionOptions { Verbose = true },
+                LuisResult = new LuisResult { Query = "hi" },
+                RecognizerResult = new RecognizerResult { Text = "hi" },
             };
 
-            var serializerSettings = new JsonSerializerSettings {TypeNameHandling = TypeNameHandling.Auto};
+            var serializerSettings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto };
             var serialized = JsonConvert.SerializeObject(luisTraceInfo, serializerSettings);
             var deserialized = JsonConvert.DeserializeObject<LuisTraceInfo>(serialized, serializerSettings);
 
             Assert.IsNotNull(deserialized);
-            Assert.IsNotNull(deserialized.LuisModel);
-            Assert.IsNotNull(deserialized.LuisOptions);
+            Assert.IsNotNull(deserialized.Application);
+            Assert.IsNotNull(deserialized.Options);
             Assert.IsNotNull(deserialized.LuisResult);
             Assert.IsNotNull(deserialized.RecognizerResult);
-            Assert.AreEqual(luisTraceInfo.LuisModel.SubscriptionKey, deserialized.LuisModel.SubscriptionKey);
-            Assert.AreEqual(luisTraceInfo.LuisOptions.Verbose, deserialized.LuisOptions.Verbose);
+            Assert.AreEqual(luisTraceInfo.Application.SubscriptionKey, deserialized.Application.SubscriptionKey);
+            Assert.AreEqual(luisTraceInfo.Options.Verbose, deserialized.Options.Verbose);
             Assert.AreEqual(luisTraceInfo.LuisResult.Query, deserialized.LuisResult.Query);
             Assert.AreEqual(luisTraceInfo.RecognizerResult.Text, deserialized.RecognizerResult.Text);
         }
