@@ -15,15 +15,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
         ///</summary>
         public int Index { get; set; }
 
-        ///<summary>
+        /// <summary>
         /// The accuracy with which the synonym matched the specified portion of the utterance. A
         /// value of 1.0 would indicate a perfect match.
-        ///</summary>
+        /// </summary>
         public float Score { get; set; }
 
-        ///<summary>
+        /// <summary>
         /// (Optional) The synonym that was matched.
-        ///</summary>
+        /// </summary>
         public string Synonym { get; set; }
     }
 }

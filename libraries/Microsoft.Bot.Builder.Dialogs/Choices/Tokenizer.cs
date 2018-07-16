@@ -6,17 +6,6 @@ using System.Collections.Generic;
 
 namespace Microsoft.Bot.Builder.Dialogs.Choices
 {
-    public class Token
-    {
-        public int Start { get; set; }
-
-        public int End { get; set; }
-
-        public string Text { get; set; }
-
-        public string Normalized { get; set; }
-    }
-
     public delegate List<Token> TokenizerFunction(string text, string locale = null);
 
     public class Tokenizer

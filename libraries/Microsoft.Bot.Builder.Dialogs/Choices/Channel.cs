@@ -5,24 +5,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
 {
     public class Channel
     {
-        public class Channels
-        {
-            public const string Facebook = "facebook";
-            public const string Skype = "skype";
-            public const string Msteams = "msteams";
-            public const string Telegram = "telegram";
-            public const string Kik = "kik";
-            public const string Email = "email";
-            public const string Slack = "slack";
-            public const string Groupme = "groupme";
-            public const string Sms = "sms";
-            public const string Emulator = "emulator";
-            public const string Directline = "directline";
-            public const string Webchat = "webchat";
-            public const string Console = "console";
-            public const string Cortana = "cortana";
-        }
-
         public static bool SupportsSuggestedActions(string channelId, int buttonCnt = 100)
         {
             switch (channelId)
@@ -79,9 +61,25 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
 
         public static int MaxActionTitleLength(string channelId) => 20;
 
-        public static string GetChannelId(ITurnContext context)
+        public static string GetChannelId(ITurnContext context) => string.IsNullOrEmpty(context.Activity.ChannelId)
+            ? string.Empty : context.Activity.ChannelId;
+
+        public class Channels
         {
-            return string.IsNullOrEmpty(context.Activity.ChannelId) ? string.Empty : context.Activity.ChannelId;
+            public const string Facebook = "facebook";
+            public const string Skype = "skype";
+            public const string Msteams = "msteams";
+            public const string Telegram = "telegram";
+            public const string Kik = "kik";
+            public const string Email = "email";
+            public const string Slack = "slack";
+            public const string Groupme = "groupme";
+            public const string Sms = "sms";
+            public const string Emulator = "emulator";
+            public const string Directline = "directline";
+            public const string Webchat = "webchat";
+            public const string Console = "console";
+            public const string Cortana = "cortana";
         }
     }
 }

@@ -13,12 +13,6 @@ namespace Microsoft.Bot.Builder.Dialogs
     {
         private Action<IDictionary<string, object>> _onCompleted;
 
-        public DialogSet Dialogs { get; set; }
-
-        public ITurnContext Context { get; set; }
-
-        public List<DialogInstance> Stack { get; set; }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="DialogContext"/> class.
         /// </summary>
@@ -41,6 +35,12 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             Stack = (List<DialogInstance>)state["dialogStack"];
         }
+
+        public DialogSet Dialogs { get; set; }
+
+        public ITurnContext Context { get; set; }
+
+        public List<DialogInstance> Stack { get; set; }
 
         /// <summary>
         /// Gets the cached instance of the active dialog on the top of the stack or <c>null</c> if the stack is empty.

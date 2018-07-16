@@ -21,6 +21,9 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <summary>
         /// Adds a new dialog to the set and returns the added dialog.
         /// </summary>
+        /// <param name="dialogId">The id of the dialog to add.</param>
+        /// <param name="dialog">The dialog to add.</param>
+        /// <returns>The added dialog.</returns>
         public IDialog Add(string dialogId, IDialog dialog)
         {
             if (string.IsNullOrEmpty(dialogId))
@@ -44,6 +47,9 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <summary>
         /// Adds a new waterfall to the set and returns the added waterfall.
         /// </summary>
+        /// <param name="dialogId">The id of waterfall dialog to add.</param>
+        /// <param name="steps">The steps for the waterfall dialog.</param>
+        /// <returns>A waterfall dialog.</returns>
         public Waterfall Add(string dialogId, WaterfallStep[] steps)
         {
             if (string.IsNullOrEmpty(dialogId))
