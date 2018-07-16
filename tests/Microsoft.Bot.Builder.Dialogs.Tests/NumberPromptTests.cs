@@ -24,10 +24,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 var state = ConversationState<Dictionary<string, object>>.Get(turnContext);
                 var prompt = new NumberPrompt<int>(Culture.English);
 
-                var dialogCompletion = await prompt.Continue(turnContext, state);
+                var dialogCompletion = await prompt.ContinueAsync(turnContext, state);
                 if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
                 {
-                    await prompt.Begin(turnContext, state, new PromptOptions { PromptString = "Enter a number." });
+                    await prompt.BeginAsync(turnContext, state, new PromptOptions { PromptString = "Enter a number." });
                 }
                 else if (dialogCompletion.IsCompleted)
                 {
@@ -53,10 +53,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 var state = ConversationState<Dictionary<string, object>>.Get(turnContext);
                 var prompt = new NumberPrompt<int>(Culture.English);
 
-                var dialogCompletion = await prompt.Continue(turnContext, state);
+                var dialogCompletion = await prompt.ContinueAsync(turnContext, state);
                 if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
                 {
-                    await prompt.Begin(turnContext, state,
+                    await prompt.BeginAsync(turnContext, state,
                         new PromptOptions
                         {
                             PromptString = "Enter a number.",
@@ -98,10 +98,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 var state = ConversationState<Dictionary<string, object>>.Get(turnContext);
                 var prompt = new NumberPrompt<int>(Culture.English, validator);
 
-                var dialogCompletion = await prompt.Continue(turnContext, state);
+                var dialogCompletion = await prompt.ContinueAsync(turnContext, state);
                 if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
                 {
-                    await prompt.Begin(turnContext, state,
+                    await prompt.BeginAsync(turnContext, state,
                         new PromptOptions
                         {
                             PromptString = "Enter a number.",
@@ -134,10 +134,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 var state = ConversationState<Dictionary<string, object>>.Get(turnContext);
                 var prompt = new NumberPrompt<float>(Culture.English);
 
-                var dialogCompletion = await prompt.Continue(turnContext, state);
+                var dialogCompletion = await prompt.ContinueAsync(turnContext, state);
                 if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
                 {
-                    await prompt.Begin(turnContext, state, new PromptOptions { PromptString = "Enter a number." });
+                    await prompt.BeginAsync(turnContext, state, new PromptOptions { PromptString = "Enter a number." });
                 }
                 else if (dialogCompletion.IsCompleted)
                 {
@@ -163,10 +163,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 var state = ConversationState<Dictionary<string, object>>.Get(turnContext);
                 var prompt = new NumberPrompt<long>(Culture.English);
 
-                var dialogCompletion = await prompt.Continue(turnContext, state);
+                var dialogCompletion = await prompt.ContinueAsync(turnContext, state);
                 if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
                 {
-                    await prompt.Begin(turnContext, state, new PromptOptions { PromptString = "Enter a number." });
+                    await prompt.BeginAsync(turnContext, state, new PromptOptions { PromptString = "Enter a number." });
                 }
                 else if (dialogCompletion.IsCompleted)
                 {
@@ -192,10 +192,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 var state = ConversationState<Dictionary<string, object>>.Get(turnContext);
                 var prompt = new NumberPrompt<double>(Culture.English);
 
-                var dialogCompletion = await prompt.Continue(turnContext, state);
+                var dialogCompletion = await prompt.ContinueAsync(turnContext, state);
                 if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
                 {
-                    await prompt.Begin(turnContext, state, new PromptOptions { PromptString = "Enter a number." });
+                    await prompt.BeginAsync(turnContext, state, new PromptOptions { PromptString = "Enter a number." });
                 }
                 else if (dialogCompletion.IsCompleted)
                 {
@@ -221,10 +221,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 var state = ConversationState<Dictionary<string, object>>.Get(turnContext);
                 var prompt = new NumberPrompt<decimal>(Culture.English);
 
-                var dialogCompletion = await prompt.Continue(turnContext, state);
+                var dialogCompletion = await prompt.ContinueAsync(turnContext, state);
                 if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
                 {
-                    await prompt.Begin(turnContext, state, new PromptOptions { PromptString = "Enter a number." });
+                    await prompt.BeginAsync(turnContext, state, new PromptOptions { PromptString = "Enter a number." });
                 }
                 else if (dialogCompletion.IsCompleted)
                 {

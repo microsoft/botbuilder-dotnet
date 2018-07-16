@@ -10,18 +10,20 @@ namespace Microsoft.Bot.Builder.Dialogs
     public class PromptOptions : Dictionary<string, object>
     {
         /// <summary>
-        /// A helper factory method to create a typed PromptOptions type from a dictionary
+        /// A helper factory method to create a typed PromptOptions type from a dictionary.
         /// </summary>
         public static PromptOptions Create(IDictionary<string, object> source)
         {
             if (source == null)
+            {
                 throw new ArgumentNullException(nameof(source));
+            }
 
-            var promptOptions = source as PromptOptions;
-            if (promptOptions != null)
+            if (source is PromptOptions promptOptions)
             {
                 return promptOptions;
             }
+
             promptOptions = new PromptOptions();
             Assign(promptOptions, source, nameof(PromptString), typeof(string));
             Assign(promptOptions, source, nameof(PromptActivity), typeof(Activity));
@@ -41,6 +43,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 {
                     throw new ArgumentException($"{name} must be type {type}");
                 }
+
                 promptOptions[name] = property;
             }
         }
@@ -82,8 +85,11 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// (Optional) Retry prompt to send the user. As Activity.
+        /// Gets or sets the retry prompt to send the user as <seealso cref="Activity"/>Activity.
         /// </summary>
+        /// <value>
+        /// The retry prompt to send the user as <seealso cref="Activity"/>Activity.
+        /// </value>
         public Activity RetryPromptActivity
         {
             get { return GetProperty<Activity>(nameof(RetryPromptActivity)); }
@@ -91,8 +97,11 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// (Optional) Retry SSML to send the user.
+        /// Gets or sets the retry SSML to send the user. This is optional.
         /// </summary>
+        /// <value>
+        /// The retry SSML to send the user.
+        /// </value>
         public string RetrySpeak
         {
             get { return GetProperty<string>(nameof(RetrySpeak)); }
@@ -105,6 +114,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             {
                 return (T)this[propertyName];
             }
+
             return default(T);
         }
     }

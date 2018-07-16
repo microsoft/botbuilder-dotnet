@@ -3,35 +3,35 @@
 
 namespace Microsoft.Bot.Builder.Dialogs.Choices
 {
-    ///<summary>
+    /// <summary>
     /// Controls the way that choices for a `ChoicePrompt` or yes/no options for a `ConfirmPrompt` are
     /// presented to a user.
-    ///</summary>
+    /// </summary>
     public enum ListStyle
     {
-        ///<summary>
+        /// <summary>
         /// Don't include any choices for prompt.
         /// </summary>
         None,
 
-        ///<summary>
+        /// <summary>
         /// Automatically select the appropriate style for the current channel.
         /// </summary>
         Auto,
 
-        ///<summary>
+        /// <summary>
         /// Add choices to prompt as an inline list.
-        ///</summary>
+        /// </summary>
         Inline,
 
-        ///<summary>
+        /// <summary>
         /// Add choices to prompt as a numbered list.
-        ///</summary>
+        /// </summary>
         List,
 
-        ///<summary>
+        /// <summary>
         /// Add choices to prompt as suggested actions.
-        ///</summary>
-        SuggestedAction
-    };
+        /// </summary>
+        SuggestedAction,
+    }
 }

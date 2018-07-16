@@ -24,10 +24,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 var state = ConversationState<Dictionary<string, object>>.Get(turnContext);
                 var prompt = new DateTimePrompt(Culture.English);
 
-                var dialogCompletion = await prompt.Continue(turnContext, state);
+                var dialogCompletion = await prompt.ContinueAsync(turnContext, state);
                 if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
                 {
-                    await prompt.Begin(turnContext, state, new PromptOptions { PromptString = "What date would you like?" });
+                    await prompt.BeginAsync(turnContext, state, new PromptOptions { PromptString = "What date would you like?" });
                 }
                 else if (dialogCompletion.IsCompleted)
                 {
@@ -55,10 +55,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 var state = ConversationState<Dictionary<string, object>>.Get(turnContext);
                 var prompt = new DateTimePrompt(Culture.English);
 
-                var dialogCompletion = await prompt.Continue(turnContext, state);
+                var dialogCompletion = await prompt.ContinueAsync(turnContext, state);
                 if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
                 {
-                    await prompt.Begin(turnContext, state, new PromptOptions { PromptString = "What date would you like?" });
+                    await prompt.BeginAsync(turnContext, state, new PromptOptions { PromptString = "What date would you like?" });
                 }
                 else if (dialogCompletion.IsCompleted)
                 {

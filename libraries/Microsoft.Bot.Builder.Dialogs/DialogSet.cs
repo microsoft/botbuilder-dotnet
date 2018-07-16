@@ -24,14 +24,20 @@ namespace Microsoft.Bot.Builder.Dialogs
         public IDialog Add(string dialogId, IDialog dialog)
         {
             if (string.IsNullOrEmpty(dialogId))
+            {
                 throw new ArgumentNullException(nameof(dialogId));
+            }
+
             if (dialog == null)
+            {
                 throw new ArgumentNullException(nameof(dialog));
+            }
 
             if (_dialogs.ContainsKey(dialogId))
             {
                 throw new Exception($"DialogSet.add(): A dialog with an id of '{dialogId}' already added.");
             }
+
             return _dialogs[dialogId] = dialog;
         }
 
@@ -41,9 +47,14 @@ namespace Microsoft.Bot.Builder.Dialogs
         public Waterfall Add(string dialogId, WaterfallStep[] steps)
         {
             if (string.IsNullOrEmpty(dialogId))
+            {
                 throw new ArgumentNullException(nameof(dialogId));
+            }
+
             if (steps == null)
+            {
                 throw new ArgumentNullException(nameof(steps));
+            }
 
             var waterfall = new Waterfall(steps);
             Add(dialogId, waterfall);
@@ -54,7 +65,9 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             BotAssert.ContextNotNull(context);
             if (state == null)
+            {
                 throw new ArgumentNullException(nameof(state));
+            }
 
             return new DialogContext(this, context, state);
         }
@@ -63,17 +76,19 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// Finds a dialog that was previously added to the set using [add()](#add).
         /// </summary>
         /// <param name="dialogId">ID of the dialog/prompt to lookup.</param>
-        /// <returns>dialog if found otherwise null</returns>
+        /// <returns>dialog if found otherwise null.</returns>
         public IDialog Find(string dialogId)
         {
             if (string.IsNullOrEmpty(dialogId))
+            {
                 throw new ArgumentNullException(nameof(dialogId));
+            }
 
-            IDialog result;
-            if (_dialogs.TryGetValue(dialogId, out result))
+            if (_dialogs.TryGetValue(dialogId, out var result))
             {
                 return result;
             }
+
             return null;
         }
     }

@@ -11,19 +11,24 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// <summary>
     /// Basic configuration options supported by all prompts.
     /// </summary>
-    public abstract class Prompt<T> : Dialog, IDialogContinue where T : PromptResult
+    public abstract class Prompt<T> : Dialog, IDialogContinue
+        where T : PromptResult
     {
-        protected abstract Task OnPrompt(DialogContext dc, PromptOptions options, bool isRetry);
+        protected abstract Task OnPromptAsync(DialogContext dc, PromptOptions options, bool isRetry);
 
-        protected abstract Task<T> OnRecognize(DialogContext dc, PromptOptions options);
+        protected abstract Task<T> OnRecognizeAsync(DialogContext dc, PromptOptions options);
 
-        public async Task DialogBegin(DialogContext dc, IDictionary<string, object> dialogArgs)
+        public async Task DialogBeginAsync(DialogContext dc, IDictionary<string, object> dialogArgs)
         {
             if (dc == null)
+            {
                 throw new ArgumentNullException(nameof(dc));
+            }
 
             if (dialogArgs == null)
+            {
                 throw new ArgumentNullException(nameof(dialogArgs), "Prompt options are required for Prompt dialogs");
+            }
 
             var promptOptions = PromptOptions.Create(dialogArgs);
 
@@ -32,13 +37,15 @@ namespace Microsoft.Bot.Builder.Dialogs
             instance.State = promptOptions;
 
             // Send initial prompt
-            await OnPrompt(dc, promptOptions, false);
+            await OnPromptAsync(dc, promptOptions, false);
         }
 
-        public async Task DialogContinue(DialogContext dc)
+        public async Task DialogContinueAsync(DialogContext dc)
         {
             if (dc == null)
+            {
                 throw new ArgumentNullException(nameof(dc));
+            }
 
             // Don't do anything for non-message activities
             if (dc.Context.Activity.Type != ActivityTypes.Message)
@@ -48,24 +55,24 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             // Recognize value
             var instance = dc.ActiveDialog;
-            var recognized = await OnRecognize(dc, (PromptOptions)instance.State);
+            var recognized = await OnRecognizeAsync(dc, (PromptOptions)instance.State);
 
             // TODO: resolve the inconsistency of approach between the Node SDK and what we have here
             if (!recognized.Succeeded())
             {
-                // TODO: setting this to null is intended to mimicking the behavior of the Node SDK PromptValidator 
+                // TODO: setting this to null is intended to mimicking the behavior of the Node SDK PromptValidator
                 recognized = null;
             }
 
             if (recognized != null)
             {
                 // Return recognized value
-                await dc.End(recognized);
+                await dc.EndAsync(recognized);
             }
             else if (!dc.Context.Responded)
             {
                 // Send retry prompt
-                await OnPrompt(dc, (PromptOptions)instance.State, true);
+                await OnPromptAsync(dc, (PromptOptions)instance.State, true);
             }
         }
     }

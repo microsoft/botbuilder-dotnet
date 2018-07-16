@@ -45,17 +45,23 @@
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
 		<DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Builder.Dialogs.xml</DocumentationFile>
 	</PropertyGroup>
+  
+	<PropertyGroup>
+	  <CodeAnalysisRuleSet>Microsoft.Bot.Builder.Dialogs.ruleset</CodeAnalysisRuleSet>
+	</PropertyGroup>
 
 	<ItemGroup>
 	  <Compile Remove="Prompts\BasicPrompt.cs" />
 	</ItemGroup>
 
 	<ItemGroup>
+    <PackageReference Include="AsyncUsageAnalyzers" Version="1.0.0-alpha003" PrivateAssets="true" />
     <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(PackageVersion)' == '' " Version="4.0.0-local" />
     <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(PackageVersion)' != '' " Version="$(PackageVersion)" />
 		<PackageReference Include="Microsoft.Recognizers.Text.Choice" Version="1.0.6" />
 		<PackageReference Include="Microsoft.Recognizers.Text.DateTime" Version="1.0.6" />
 		<PackageReference Include="SourceLink.Create.CommandLine" Version="2.8.1" />
+		<PackageReference Include="StyleCop.Analyzers" Version="1.1.0-beta008" PrivateAssets="true" />
 	</ItemGroup>
 
 	<ItemGroup>
