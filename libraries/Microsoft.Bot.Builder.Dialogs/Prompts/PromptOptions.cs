@@ -10,47 +10,11 @@ namespace Microsoft.Bot.Builder.Dialogs
     public class PromptOptions : Dictionary<string, object>
     {
         /// <summary>
-        /// A helper factory method to create a typed PromptOptions type from a dictionary.
+        /// Gets or sets the initial prompt to send the user as <seealso cref="string"/>Activity.
         /// </summary>
-        public static PromptOptions Create(IDictionary<string, object> source)
-        {
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
-
-            if (source is PromptOptions promptOptions)
-            {
-                return promptOptions;
-            }
-
-            promptOptions = new PromptOptions();
-            Assign(promptOptions, source, nameof(PromptString), typeof(string));
-            Assign(promptOptions, source, nameof(PromptActivity), typeof(Activity));
-            Assign(promptOptions, source, nameof(Speak), typeof(string));
-            Assign(promptOptions, source, nameof(RetryPromptString), typeof(string));
-            Assign(promptOptions, source, nameof(RetryPromptActivity), typeof(Activity));
-            Assign(promptOptions, source, nameof(RetrySpeak), typeof(string));
-            return promptOptions;
-        }
-
-        private static void Assign(PromptOptions promptOptions, IDictionary<string, object> source, string name, Type type)
-        {
-            if (source.ContainsKey(name))
-            {
-                var property = source[name];
-                if (property.GetType() != type)
-                {
-                    throw new ArgumentException($"{name} must be type {type}");
-                }
-
-                promptOptions[name] = property;
-            }
-        }
-
-        /// <summary>
-        /// (Optional) Initial prompt to send the user. As string.
-        /// </summary>
+        /// <value>
+        /// The initial prompt to send the user as <seealso cref="string"/>Activity.
+        /// </value>
         public string PromptString
         {
             get { return GetProperty<string>(nameof(PromptString)); }
@@ -58,8 +22,11 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// (Optional) Initial prompt to send the user. As Activity.
+        /// Gets or sets the initial prompt to send the user as <seealso cref="Activity"/>Activity.
         /// </summary>
+        /// <value>
+        /// The initial prompt to send the user as <seealso cref="Activity"/>Activity.
+        /// </value>
         public Activity PromptActivity
         {
             get { return GetProperty<Activity>(nameof(PromptActivity)); }
@@ -67,8 +34,11 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// (Optional) Initial SSML to send the user.
+        /// Gets or sets the initial SSML to send the user. This is optional.
         /// </summary>
+        /// <value>
+        /// The initial SSML to send the user.
+        /// </value>
         public string Speak
         {
             get { return GetProperty<string>(nameof(Speak)); }
@@ -76,8 +46,11 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// (Optional) Retry prompt to send the user. As String.
+        /// Gets or sets the retry prompt to send the user as <seealso cref="string"/>Activity.
         /// </summary>
+        /// <value>
+        /// The retry prompt to send the user as <seealso cref="string"/>Activity.
+        /// </value>
         public string RetryPromptString
         {
             get { return GetProperty<string>(nameof(RetryPromptString)); }
@@ -108,6 +81,33 @@ namespace Microsoft.Bot.Builder.Dialogs
             set { this[nameof(RetrySpeak)] = value; }
         }
 
+        /// <summary>
+        /// A helper factory method to create a typed PromptOptions type from a dictionary.
+        /// </summary>
+        /// <param name="source">The dictionary containing the prompt options.</param>
+        /// <returns>The options for the prompt.</returns>
+        public static PromptOptions Create(IDictionary<string, object> source)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+
+            if (source is PromptOptions promptOptions)
+            {
+                return promptOptions;
+            }
+
+            promptOptions = new PromptOptions();
+            Assign(promptOptions, source, nameof(PromptString), typeof(string));
+            Assign(promptOptions, source, nameof(PromptActivity), typeof(Activity));
+            Assign(promptOptions, source, nameof(Speak), typeof(string));
+            Assign(promptOptions, source, nameof(RetryPromptString), typeof(string));
+            Assign(promptOptions, source, nameof(RetryPromptActivity), typeof(Activity));
+            Assign(promptOptions, source, nameof(RetrySpeak), typeof(string));
+            return promptOptions;
+        }
+
         protected T GetProperty<T>(string propertyName)
         {
             if (ContainsKey(propertyName))
@@ -116,6 +116,20 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             return default(T);
+        }
+
+        private static void Assign(PromptOptions promptOptions, IDictionary<string, object> source, string name, Type type)
+        {
+            if (source.ContainsKey(name))
+            {
+                var property = source[name];
+                if (property.GetType() != type)
+                {
+                    throw new ArgumentException($"{name} must be type {type}");
+                }
+
+                promptOptions[name] = property;
+            }
         }
     }
 }

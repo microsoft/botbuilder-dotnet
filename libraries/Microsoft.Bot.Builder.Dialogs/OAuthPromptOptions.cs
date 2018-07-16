@@ -6,15 +6,6 @@ using System;
 namespace Microsoft.Bot.Builder.Dialogs
 {
     /// <summary>
-    /// OAuth Related Prompt Settings Which allows a Timeout parameter to be set.
-    /// The timeout determines the validity of the token.
-    /// </summary>
-    public class OAuthPromptSettingsWithTimeout : OAuthPromptSettings
-    {
-        public int? Timeout { get; set; }
-    }
-
-    /// <summary>
     /// Prompt Options for an OAuth Prompt.
     /// </summary>
     public class OAuthPromptOptions : PromptOptions
@@ -48,8 +39,11 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// The expiry timestamp for the oauth prompt.
+        /// Gets or sets the expire timestamp for the oauth prompt.
         /// </summary>
+        /// <value>
+        /// The expire timestamp for the oauth prompt.
+        /// </value>
         public DateTime Expires { get; set; }
     }
 }

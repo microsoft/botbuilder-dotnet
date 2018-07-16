@@ -19,10 +19,6 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// </summary>
     internal class ConfirmPromptInternal
     {
-        private readonly IModel model;
-
-        private List<Choice> ChoicesList => ChoiceFactory.ToChoicesList(this.Choices);
-
         private static readonly Dictionary<string, Tuple<Choice, Choice>> DefaultConfirmOptions = new Dictionary<string, Tuple<Choice, Choice>>()
         {
             { Spanish, new Tuple<Choice, Choice>(new Choice { Value = "Sí" }, new Choice { Value = "No" }) },
@@ -47,6 +43,20 @@ namespace Microsoft.Bot.Builder.Dialogs
             { Chinese, new ChoiceFactoryOptions { InlineSeparator = "， ", InlineOr = " 要么 ", InlineOrMore = "， 要么 ", IncludeNumbers = true } },
         };
 
+        private readonly IModel model;
+
+        public ConfirmPromptInternal(string culture, PromptValidator<ConfirmResult> validator = null, Dictionary<string, Tuple<Choice, Choice>> confirmOptions = null, Dictionary<string, ChoiceFactoryOptions> inlineChoiceOptions = null, ListStyle listStyle = ListStyle.Auto)
+        {
+            model = new ChoiceRecognizer(culture).GetBooleanModel(culture);
+            Style = listStyle;
+            Validator = validator;
+            Culture = culture;
+            ConfirmOptions = confirmOptions ?? DefaultConfirmOptions;
+            InlineChoiceOptions = inlineChoiceOptions ?? DefaultInlineChoiceOptions;
+            Choices = ConfirmOptions.ContainsKey(culture) ? ConfirmOptions[culture] : ConfirmOptions[English];
+            ChoiceOptions = InlineChoiceOptions.ContainsKey(culture) ? InlineChoiceOptions[culture] : InlineChoiceOptions[English];
+        }
+
         public ListStyle Style { get; set; }
 
         public PromptValidator<ConfirmResult> Validator { get; set; }
@@ -61,61 +71,12 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         public Dictionary<string, ChoiceFactoryOptions> InlineChoiceOptions { get; set; }
 
-        public ConfirmPromptInternal(string culture, PromptValidator<ConfirmResult> validator = null, Dictionary<string, Tuple<Choice, Choice>> confirmOptions = null, Dictionary<string, ChoiceFactoryOptions> inlineChoiceOptions = null, ListStyle listStyle = ListStyle.Auto)
-        {
-            model = new ChoiceRecognizer(culture).GetBooleanModel(culture);
-            Style = listStyle;
-            Validator = validator;
-            Culture = culture;
-            ConfirmOptions = confirmOptions ?? DefaultConfirmOptions;
-            InlineChoiceOptions = inlineChoiceOptions ?? DefaultInlineChoiceOptions;
-            Choices = ConfirmOptions.ContainsKey(culture) ? ConfirmOptions[culture] : ConfirmOptions[English];
-            ChoiceOptions = InlineChoiceOptions.ContainsKey(culture) ? InlineChoiceOptions[culture] : InlineChoiceOptions[English];
-        }
+        private List<Choice> ChoicesList => ChoiceFactory.ToChoicesList(this.Choices);
 
         public Task PromptAsync(ITurnContext context, string prompt = null, string speak = null)
         {
             BotAssert.ContextNotNull(context);
             return PromptAsync(context, ChoicesList, prompt, speak);
-        }
-
-        private async Task PromptAsync(ITurnContext context, List<Choice> choices, string prompt = null, string speak = null)
-        {
-            BotAssert.ContextNotNull(context);
-            if (Choices == null)
-            {
-                throw new ArgumentNullException(nameof(choices));
-            }
-
-            IMessageActivity msg;
-
-            switch (Style)
-            {
-                case ListStyle.Inline:
-                    msg = ChoiceFactory.Inline(ChoicesList, prompt, speak, ChoiceOptions);
-                    break;
-
-                case ListStyle.List:
-                    msg = ChoiceFactory.List(ChoicesList, prompt, speak, ChoiceOptions);
-                    break;
-
-                case ListStyle.SuggestedAction:
-                    msg = ChoiceFactory.SuggestedAction(ChoicesList, prompt, speak);
-                    break;
-
-                case ListStyle.None:
-                    msg = Activity.CreateMessageActivity();
-                    msg.Text = prompt;
-                    msg.Speak = speak;
-                    break;
-
-                default:
-                    msg = ChoiceFactory.ForChannel(context.Activity.ChannelId, ChoicesList, prompt, speak, ChoiceOptions);
-                    break;
-            }
-
-            msg.InputHint = InputHints.ExpectingInput;
-            await context.SendActivityAsync(msg);
         }
 
         public async Task PromptAsync(ITurnContext context, IMessageActivity prompt = null, string speak = null)
@@ -157,6 +118,45 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             return confirmResult;
+        }
+
+        private async Task PromptAsync(ITurnContext context, List<Choice> choices, string prompt = null, string speak = null)
+        {
+            BotAssert.ContextNotNull(context);
+            if (Choices == null)
+            {
+                throw new ArgumentNullException(nameof(choices));
+            }
+
+            IMessageActivity msg;
+
+            switch (Style)
+            {
+                case ListStyle.Inline:
+                    msg = ChoiceFactory.Inline(ChoicesList, prompt, speak, ChoiceOptions);
+                    break;
+
+                case ListStyle.List:
+                    msg = ChoiceFactory.List(ChoicesList, prompt, speak, ChoiceOptions);
+                    break;
+
+                case ListStyle.SuggestedAction:
+                    msg = ChoiceFactory.SuggestedAction(ChoicesList, prompt, speak);
+                    break;
+
+                case ListStyle.None:
+                    msg = Activity.CreateMessageActivity();
+                    msg.Text = prompt;
+                    msg.Speak = speak;
+                    break;
+
+                default:
+                    msg = ChoiceFactory.ForChannel(context.Activity.ChannelId, ChoicesList, prompt, speak, ChoiceOptions);
+                    break;
+            }
+
+            msg.InputHint = InputHints.ExpectingInput;
+            await context.SendActivityAsync(msg);
         }
     }
 }

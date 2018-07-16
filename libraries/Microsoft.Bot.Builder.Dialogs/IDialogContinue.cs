@@ -17,6 +17,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// If this method is NOT implemented then the dialog will automatically be ended when the user replies.
         /// </summary>
         /// <param name="dc">The dialog context for the current turn of conversation.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         Task DialogContinueAsync(DialogContext dc);
     }
 }

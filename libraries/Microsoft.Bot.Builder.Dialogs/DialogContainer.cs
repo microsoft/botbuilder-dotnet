@@ -9,10 +9,6 @@ namespace Microsoft.Bot.Builder.Dialogs
 {
     public class DialogContainer : IDialogContinue
     {
-        protected DialogSet Dialogs { get; set; }
-
-        protected string DialogId { get; set; }
-
         public DialogContainer(string dialogId, DialogSet dialogs = null)
         {
             if (string.IsNullOrEmpty(dialogId))
@@ -23,6 +19,10 @@ namespace Microsoft.Bot.Builder.Dialogs
             Dialogs = dialogs ?? new DialogSet();
             DialogId = dialogId;
         }
+
+        protected DialogSet Dialogs { get; set; }
+
+        protected string DialogId { get; set; }
 
         public async Task DialogBeginAsync(DialogContext dc, IDictionary<string, object> dialogArgs = null)
         {

@@ -70,11 +70,11 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// </summary>
     public class OAuthPrompt : Dialog, IDialogContinue
     {
-        private OAuthPromptInternal _prompt;
-        private OAuthPromptSettingsWithTimeout _settings;
-
         // Default prompt timeout of 15 minutes (in ms)
         private const int DefaultPromptTimeout = 54000000;
+
+        private OAuthPromptInternal _prompt;
+        private OAuthPromptSettingsWithTimeout _settings;
 
         public OAuthPrompt(OAuthPromptSettingsWithTimeout settings, PromptValidator<TokenResult> validator = null)
         {

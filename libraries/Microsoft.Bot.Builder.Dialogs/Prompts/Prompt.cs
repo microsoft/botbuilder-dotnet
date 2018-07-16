@@ -11,13 +11,10 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// <summary>
     /// Basic configuration options supported by all prompts.
     /// </summary>
+    /// <typeparam name="T"></typeparam>
     public abstract class Prompt<T> : Dialog, IDialogContinue
         where T : PromptResult
     {
-        protected abstract Task OnPromptAsync(DialogContext dc, PromptOptions options, bool isRetry);
-
-        protected abstract Task<T> OnRecognizeAsync(DialogContext dc, PromptOptions options);
-
         public async Task DialogBeginAsync(DialogContext dc, IDictionary<string, object> dialogArgs)
         {
             if (dc == null)
@@ -75,5 +72,9 @@ namespace Microsoft.Bot.Builder.Dialogs
                 await OnPromptAsync(dc, (PromptOptions)instance.State, true);
             }
         }
+
+        protected abstract Task OnPromptAsync(DialogContext dc, PromptOptions options, bool isRetry);
+
+        protected abstract Task<T> OnRecognizeAsync(DialogContext dc, PromptOptions options);
     }
 }
