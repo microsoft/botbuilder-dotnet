@@ -20,6 +20,6 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </summary>
         /// <param name="dc">The dialog context for the current turn of conversation.</param>
         /// <param name="result">(Optional) value returned from the dialog that was called. The type of the value returned is dependant on the dialog that was called.</param>
-        Task DialogResume(DialogContext dc, IDictionary<string, object> result);
+        Task DialogResumeAsync(DialogContext dc, IDictionary<string, object> result);
     }
 }

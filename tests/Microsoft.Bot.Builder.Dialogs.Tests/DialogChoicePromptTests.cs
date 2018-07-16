@@ -37,13 +37,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 {
                     async (dc, args, next) =>
                     {
-                        await dc.Prompt("test-prompt", "favorite color?", promptOptions);
+                        await dc.PromptAsync("test-prompt", "favorite color?", promptOptions);
                     },
                     async (dc, args, next) =>
                     {
                         var choiceResult = (ChoiceResult)args;
                         await dc.Context.SendActivityAsync($"Bot received the choice '{choiceResult.Value.Value}'.");
-                        await dc.End();
+                        await dc.EndAsync();
                     }
                 }
             );
@@ -56,11 +56,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 var state = ConversationState<Dictionary<string, object>>.Get(turnContext);
                 var dc = dialogs.CreateContext(turnContext, state);
 
-                await dc.Continue();
+                await dc.ContinueAsync();
 
                 if (!turnContext.Responded)
                 {
-                    await dc.Begin("test");
+                    await dc.BeginAsync("test");
                 }
             })
             .Send("hello")

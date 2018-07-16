@@ -12,7 +12,7 @@ using static Microsoft.Bot.Builder.Dialogs.PromptValidatorEx;
 namespace Microsoft.Bot.Builder.Dialogs
 {
     /// <summary>
-    /// NumberPrompt recognizes floats or ints
+    /// NumberPrompt recognizes floats or ints.
     /// </summary>
     internal class NumberPromptInternal<T> : BasePromptInternal<NumberResult<T>>
     {
@@ -34,68 +34,72 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// Used to validate the incoming text, expected on context.Activity, is
         /// valid according to the rules defined in the validation steps.
         /// </summary>
-        public override async Task<NumberResult<T>> Recognize(ITurnContext context)
+        /// <param name="context">Context for the current turn of the conversation with the user.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        public override async Task<NumberResult<T>> RecognizeAsync(ITurnContext context)
         {
             BotAssert.ContextNotNull(context);
             BotAssert.ActivityNotNull(context.Activity);
             if (context.Activity.Type != ActivityTypes.Message)
+            {
                 throw new InvalidOperationException("No Message to Recognize");
+            }
 
-            NumberResult<T> numberResult = new NumberResult<T>();
+            var numberResult = new NumberResult<T>();
 
-            IMessageActivity message = context.Activity.AsMessageActivity();
+            var message = context.Activity.AsMessageActivity();
             var results = _model.Parse(message.Text);
             if (results.Any())
             {
                 var result = results.First();
                 if (typeof(T) == typeof(float))
                 {
-                    if (float.TryParse(result.Resolution["value"].ToString(), out float value))
+                    if (float.TryParse(result.Resolution["value"].ToString(), out var value))
                     {
                         numberResult.Status = PromptStatus.Recognized;
                         numberResult.Value = (T)(object)value;
                         numberResult.Text = result.Text;
-                        await Validate(context, numberResult);
+                        await ValidateAsync(context, numberResult);
                     }
                 }
                 else if (typeof(T) == typeof(int))
                 {
-                    if (int.TryParse(result.Resolution["value"].ToString(), out int value))
+                    if (int.TryParse(result.Resolution["value"].ToString(), out var value))
                     {
                         numberResult.Status = PromptStatus.Recognized;
                         numberResult.Value = (T)(object)value;
                         numberResult.Text = result.Text;
-                        await Validate(context, numberResult);
+                        await ValidateAsync(context, numberResult);
                     }
                 }
                 else if (typeof(T) == typeof(long))
                 {
-                    if (long.TryParse(result.Resolution["value"].ToString(), out long value))
+                    if (long.TryParse(result.Resolution["value"].ToString(), out var value))
                     {
                         numberResult.Status = PromptStatus.Recognized;
                         numberResult.Value = (T)(object)value;
                         numberResult.Text = result.Text;
-                        await Validate(context, numberResult);
+                        await ValidateAsync(context, numberResult);
                     }
                 }
                 else if (typeof(T) == typeof(double))
                 {
-                    if (double.TryParse(result.Resolution["value"].ToString(), out double value))
+                    if (double.TryParse(result.Resolution["value"].ToString(), out var value))
                     {
                         numberResult.Status = PromptStatus.Recognized;
                         numberResult.Value = (T)(object)value;
                         numberResult.Text = result.Text;
-                        await Validate(context, numberResult);
+                        await ValidateAsync(context, numberResult);
                     }
                 }
                 else if (typeof(T) == typeof(decimal))
                 {
-                    if (decimal.TryParse(result.Resolution["value"].ToString(), out decimal value))
+                    if (decimal.TryParse(result.Resolution["value"].ToString(), out var value))
                     {
                         numberResult.Status = PromptStatus.Recognized;
                         numberResult.Value = (T)(object)value;
                         numberResult.Text = result.Text;
-                        await Validate(context, numberResult);
+                        await ValidateAsync(context, numberResult);
                     }
                 }
                 else
@@ -103,6 +107,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                     throw new NotSupportedException($"type argument T of type 'typeof(T)' is not supported");
                 }
             }
+
             return numberResult;
         }
     }

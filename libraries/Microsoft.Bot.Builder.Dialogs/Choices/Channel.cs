@@ -21,7 +21,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
             public const string Webchat = "webchat";
             public const string Console = "console";
             public const string Cortana = "cortana";
-        };
+        }
 
         public static bool SupportsSuggestedActions(string channelId, int buttonCnt = 100)
         {
@@ -29,15 +29,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
             {
                 case Channels.Facebook:
                 case Channels.Skype:
-                    return (buttonCnt <= 10);
+                    return buttonCnt <= 10;
 
                 case Channels.Kik:
-                    return (buttonCnt <= 20);
+                    return buttonCnt <= 20;
 
                 case Channels.Slack:
                 case Channels.Telegram:
                 case Channels.Emulator:
-                    return (buttonCnt <= 100);
+                    return buttonCnt <= 100;
 
                 default:
                     return false;
@@ -51,14 +51,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
                 case Channels.Facebook:
                 case Channels.Skype:
                 case Channels.Msteams:
-                    return (buttonCnt <= 3);
+                    return buttonCnt <= 3;
 
                 case Channels.Slack:
                 case Channels.Emulator:
                 case Channels.Directline:
                 case Channels.Webchat:
                 case Channels.Cortana:
-                    return (buttonCnt <= 100);
+                    return buttonCnt <= 100;
 
                 default:
                     return false;
@@ -77,10 +77,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
             }
         }
 
-        public static int MaxActionTitleLength(string channelId)
-        {
-            return 20;
-        }
+        public static int MaxActionTitleLength(string channelId) => 20;
 
         public static string GetChannelId(ITurnContext context)
         {

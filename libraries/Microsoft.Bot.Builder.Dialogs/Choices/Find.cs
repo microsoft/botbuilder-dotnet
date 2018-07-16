@@ -12,7 +12,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
         public static List<ModelResult<FoundChoice>> FindChoices(string utterance, List<string> choices, FindChoicesOptions options = null)
         {
             if (choices == null)
+            {
                 throw new ArgumentNullException(nameof(choices));
+            }
 
             return FindChoices(utterance, choices.Select(s => new Choice { Value = s }).ToList(), options);
         }
@@ -20,9 +22,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
         public static List<ModelResult<FoundChoice>> FindChoices(string utterance, List<Choice> choices, FindChoicesOptions options = null)
         {
             if (string.IsNullOrEmpty(utterance))
+            {
                 throw new ArgumentNullException(nameof(utterance));
+            }
+
             if (choices == null)
+            {
                 throw new ArgumentNullException(nameof(choices));
+            }
 
             var opt = options ?? new FindChoicesOptions();
 
@@ -31,7 +38,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
             //   used to map the search results back to their choice.
             var synonyms = new List<SortedValue>();
 
-            for (int index = 0; index < choices.Count; index++)
+            for (var index = 0; index < choices.Count; index++)
             {
                 var choice = choices[index];
 
@@ -39,6 +46,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
                 {
                     synonyms.Add(new SortedValue { Value = choice.Value, Index = index });
                 }
+
                 if (choice.Action != null && choice.Action.Title != null && !opt.NoAction)
                 {
                     synonyms.Add(new SortedValue { Value = choice.Action.Title, Index = index });
@@ -68,8 +76,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
                          Value = choice.Value,
                          Index = v.Resolution.Index,
                          Score = v.Resolution.Score,
-                         Synonym = v.Resolution.Value
-                     }
+                         Synonym = v.Resolution.Value,
+                     },
                  };
              }).ToList();
         }
@@ -90,15 +98,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
             for (var index = 0; index < list.Count; index++)
             {
                 var entry = list[index];
+
                 // Find all matches for a value
                 // - To match "last one" in "the last time I chose the last one" we need
                 //   to re-search the string starting from the end of the previous match.
                 // - The start & end position returned for the match are token positions.
                 var startPos = 0;
-                var vTokens = tokenizer(entry.Value.Trim(), opt.Locale);
+                var searchedTokens = tokenizer(entry.Value.Trim(), opt.Locale);
                 while (startPos < tokens.Count)
                 {
-                    var match = MatchValue(tokens, maxDistance, opt, entry.Index, entry.Value, vTokens, startPos);
+                    var match = MatchValue(tokens, maxDistance, opt, entry.Index, entry.Value, searchedTokens, startPos);
                     if (match != null)
                     {
                         startPos = match.End + 1;
@@ -125,7 +134,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
             foreach (var match in matches)
             {
                 // Apply filters
-                bool add = !foundIndexes.Contains(match.Resolution.Index);
+                var add = !foundIndexes.Contains(match.Resolution.Index);
                 for (var i = match.Start; i <= match.End; i++)
                 {
                     if (usedTokens.Contains(i))
@@ -149,6 +158,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
                     // Translate start & end and populate text field
                     match.Start = tokens[match.Start].Start;
                     match.End = tokens[match.End].End;
+
                     // Note: JavaScript Substring is (start, end) whereas .NET is (start, len)
                     match.Text = utterance.Substring(match.Start, (match.End + 1) - match.Start);
                     results.Add(match);
@@ -169,10 +179,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
                     return i;
                 }
             }
+
             return -1;
         }
 
-        private static ModelResult<FoundValue> MatchValue(List<Token> tokens, int maxDistance, FindValuesOptions options, int index, string value, List<Token> vTokens, int startPos)
+        private static ModelResult<FoundValue> MatchValue(List<Token> sourceTokens, int maxDistance, FindValuesOptions options, int index, string value, List<Token> searchedTokens, int startPos)
         {
             // Match value to utterance and calculate total deviation.
             // - The tokens are matched in order so "second last" will match in
@@ -184,10 +195,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
             var totalDeviation = 0;
             var start = -1;
             var end = -1;
-            foreach (var token in vTokens)
+            foreach (var token in searchedTokens)
             {
                 // Find the position of the token in the utterance.
-                var pos = IndexOfToken(tokens, token, startPos);
+                var pos = IndexOfToken(sourceTokens, token, startPos);
                 if (pos >= 0)
                 {
                     // Calculate the distance between the current tokens position and the previous tokens distance.
@@ -205,6 +216,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
                         {
                             start = pos;
                         }
+
                         end = pos;
                     }
                 }
@@ -214,18 +226,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
             // - The start & end positions and the results text field will be corrected by the caller.
             ModelResult<FoundValue> result = null;
 
-            if (matched > 0 && (matched == vTokens.Count || options.AllowPartialMatches))
+            if (matched > 0 && (matched == searchedTokens.Count || options.AllowPartialMatches))
             {
                 // Percentage of tokens matched. If matching "second last" in
                 // "the second from last one" the completeness would be 1.0 since
                 // all tokens were found.
-                var completeness = matched / vTokens.Count;
+                var completeness = matched / searchedTokens.Count;
 
                 // Accuracy of the match. The accuracy is reduced by additional tokens
                 // occurring in the value that weren't in the utterance. So an utterance
                 // of "second last" matched against a value of "second from last" would
                 // result in an accuracy of 0.5.
-                var accuracy = (matched / (matched + totalDeviation));
+                var accuracy = matched / (matched + totalDeviation);
 
                 // The final score is simply the completeness multiplied by the accuracy.
                 var score = completeness * accuracy;
@@ -240,10 +252,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
                     {
                         Value = value,
                         Index = index,
-                        Score = score
-                    }
+                        Score = score,
+                    },
                 };
             }
+
             return result;
         }
     }

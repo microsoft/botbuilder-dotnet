@@ -23,45 +23,55 @@ namespace Microsoft.Bot.Builder.Dialogs
             set { _prompt.Style = value; }
         }
 
-        protected override async Task OnPrompt(DialogContext dc, PromptOptions options, bool isRetry)
+        protected override async Task OnPromptAsync(DialogContext dc, PromptOptions options, bool isRetry)
         {
             if (dc == null)
+            {
                 throw new ArgumentNullException(nameof(dc));
+            }
+
             if (options == null)
+            {
                 throw new ArgumentNullException(nameof(options));
+            }
 
             if (isRetry)
             {
                 if (options.RetryPromptActivity != null)
                 {
-                    await _prompt.Prompt(dc.Context, options.RetryPromptActivity.AsMessageActivity());
+                    await _prompt.PromptAsync(dc.Context, options.RetryPromptActivity.AsMessageActivity());
                 }
                 else if (options.RetryPromptString != null)
                 {
-                    await _prompt.Prompt(dc.Context, options.RetryPromptString, options.RetrySpeak);
+                    await _prompt.PromptAsync(dc.Context, options.RetryPromptString, options.RetrySpeak);
                 }
             }
             else
             {
                 if (options.PromptActivity != null)
                 {
-                    await _prompt.Prompt(dc.Context, options.PromptActivity);
+                    await _prompt.PromptAsync(dc.Context, options.PromptActivity);
                 }
                 else if (options.PromptString != null)
                 {
-                    await _prompt.Prompt(dc.Context, options.PromptString, options.Speak);
+                    await _prompt.PromptAsync(dc.Context, options.PromptString, options.Speak);
                 }
             }
         }
 
-        protected override async Task<ConfirmResult> OnRecognize(DialogContext dc, PromptOptions options)
+        protected override async Task<ConfirmResult> OnRecognizeAsync(DialogContext dc, PromptOptions options)
         {
             if (dc == null)
+            {
                 throw new ArgumentNullException(nameof(dc));
-            if (options == null)
-                throw new ArgumentNullException(nameof(options));
+            }
 
-            return await _prompt.Recognize(dc.Context);
+            if (options == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
+
+            return await _prompt.RecognizeAsync(dc.Context);
         }
     }
 }

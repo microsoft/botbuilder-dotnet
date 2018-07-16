@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
                 {
                     maxTitleLength = l;
                 }
-            };
+            }
 
             // Determine list style
             var supportsSuggestedActions = Channel.SupportsSuggestedActions(channelId, list.Count);
@@ -62,7 +62,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
                 InlineSeparator = options.InlineSeparator ?? ", ",
                 InlineOr = options.InlineOr ?? " or ",
                 InlineOrMore = options.InlineOrMore ?? ", or ",
-                IncludeNumbers = options.IncludeNumbers ?? true
+                IncludeNumbers = options.IncludeNumbers ?? true,
             };
 
             // Format list of choices
@@ -81,6 +81,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
                 {
                     txt += "(" + (index + 1).ToString() + ") ";
                 }
+
                 txt += $"{title}";
                 if (index == (choices.Count - 2))
                 {
@@ -91,7 +92,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
                     connector = opt.InlineSeparator ?? string.Empty;
                 }
             }
-            txt += "";
+
+            txt += string.Empty;
 
             // Return activity with choices as an inline list.
             return MessageFactory.Text(txt, speak, InputHints.ExpectingInput);
@@ -107,11 +109,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
             choices = choices ?? new List<Choice>();
             options = options ?? new ChoiceFactoryOptions();
 
-            bool includeNumbers = options.IncludeNumbers ?? true;
+            var includeNumbers = options.IncludeNumbers ?? true;
 
             // Format list of choices
             var connector = string.Empty;
-            var txt = (text ?? string.Empty);
+            var txt = text ?? string.Empty;
             txt += "\n\n   ";
 
             for (var index = 0; index < choices.Count; index++)
@@ -129,6 +131,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
                 {
                     txt += "- ";
                 }
+
                 txt += title;
                 connector = "\n   ";
             }
@@ -159,7 +162,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
                     {
                         Type = ActionTypes.ImBack,
                         Value = choice.Value,
-                        Title = choice.Value
+                        Title = choice.Value,
                     };
                 }
             }).ToList();
