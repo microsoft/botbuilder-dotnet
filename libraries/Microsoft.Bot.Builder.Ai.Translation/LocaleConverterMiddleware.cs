@@ -14,28 +14,25 @@ namespace Microsoft.Bot.Builder.Ai.Translation
     /// </summary>
     public class LocaleConverterMiddleware : IMiddleware
     {
-        private readonly ILocaleConverter _localeConverter; 
+        private readonly ILocaleConverter _localeConverter;
         private readonly string _toLocale;
-        private readonly Func<ITurnContext, string> _getUserLocale;
-        private readonly Func<ITurnContext, Task<bool>> _setUserLocale;
+        private readonly IPropertyAccessor<string> _userLocaleProperty;
 
         /// <summary>
         /// Constructor for developer defined detection of user messages
         /// </summary>
-        /// <param name="getUserLocale">Delegate for getting the user locale</param>
-        /// <param name="checkUserLocaleChanged">Delegate that returns true if the locale was changed (implements logic to change locale by intercepting the message)</param>
+        /// <param name="userLocaleProperty">PropertyAccessor for the users preferred locale</param>
         /// <param name="toLocale">Target Locale</param>
         /// <param name="localeConverter">An ILocaleConverter instance</param>
-        public LocaleConverterMiddleware(Func<ITurnContext, string> getUserLocale, Func<ITurnContext, Task<bool>> checkUserLocaleChanged, string toLocale, ILocaleConverter localeConverter)
+        public LocaleConverterMiddleware(IPropertyAccessor<string> userLocaleProperty, string toLocale, ILocaleConverter localeConverter)
         {
             _localeConverter = localeConverter ?? throw new ArgumentNullException(nameof(localeConverter));
             if (string.IsNullOrEmpty(toLocale))
                 throw new ArgumentNullException(nameof(toLocale));
-            else if( !localeConverter.IsLocaleAvailable(toLocale))
-                throw new ArgumentNullException("The locale " +nameof(toLocale)+" is unavailable");
+            else if (!localeConverter.IsLocaleAvailable(toLocale))
+                throw new ArgumentNullException("The locale " + nameof(toLocale) + " is unavailable");
             _toLocale = toLocale;
-            _getUserLocale = getUserLocale ?? throw new ArgumentNullException(nameof(getUserLocale)); 
-            _setUserLocale = checkUserLocaleChanged ?? throw new ArgumentNullException(nameof(checkUserLocaleChanged));
+            _userLocaleProperty = userLocaleProperty ?? throw new ArgumentNullException(nameof(userLocaleProperty));
         }
 
         /// <summary>
@@ -53,24 +50,18 @@ namespace Microsoft.Bot.Builder.Ai.Translation
                 {
                     if (!String.IsNullOrWhiteSpace(message.Text))
                     {
-                        bool localeChanged = await _setUserLocale(context);
-                        if (!localeChanged)
+                        string userLocale = await _userLocaleProperty.GetAsync(context);
+                        if (userLocale != _toLocale)
                         {
-                            string fromLocale = _getUserLocale(context);
-                            ConvertLocaleMessage(context, fromLocale);
+                            ConvertLocaleMessage(context, userLocale);
                         }
-                        else {
-                            // skip routing in case of user changed the locale
-                            return ;
-                        }
-
                     }
                 }
             }
             await next(cancellationToken).ConfigureAwait(false);
         }
 
-        private void ConvertLocaleMessage(ITurnContext context,string fromLocale)
+        private void ConvertLocaleMessage(ITurnContext context, string fromLocale)
         {
             IMessageActivity message = context.Activity.AsMessageActivity();
             if (message != null)

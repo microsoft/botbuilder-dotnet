@@ -189,7 +189,7 @@ namespace Microsoft.Bot.Builder.Adapters
                         }
                         else
                         {
-                            throw new Exception($"{description}: Text should match");
+                            throw new Exception($"{description}:\nExpected:{expected.AsMessageActivity().Text}\nReceived:{reply.AsMessageActivity().Text}");
                         }
                     }
                 },

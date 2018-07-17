@@ -10,7 +10,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
 {
     public class TestState : IStoreItem
     {
-        public string ETag { get ; set; }
+        public string ETag { get; set; }
         public string Value { get; set; }
     }
 
@@ -31,7 +31,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
 
             await new TestFlow(adapter, (context) =>
                    {
-                       var obj = context.GetConversationState<TestPocoState>();
+                       var obj = context.Services.Get<UserState>();
                        Assert.IsNull(obj, "context.state should not exist");
                        return Task.CompletedTask;
                    }
@@ -43,22 +43,24 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
         [TestMethod]
         public async Task State_RememberIStoreItemUserState()
         {
+            var userState = new UserState(new MemoryStorage());
+            var testProperty = userState.CreateProperty<TestPocoState>("test");
             var adapter = new TestAdapter()
-                .Use(new UserState<TestState>(new MemoryStorage()));
+                .Use(userState);
 
             await new TestFlow(adapter,
                     async (context) =>
                     {
-                        var userState = context.GetUserState<TestState>();
-                        Assert.IsNotNull(userState, "user state should exist");
+                        var state = await testProperty.GetAsync(context);
+                        Assert.IsNotNull(state, "user state should exist");
                         switch (context.Activity.Text)
                         {
                             case "set value":
-                                userState.Value = "test";
+                                state.Value = "test";
                                 await context.SendActivityAsync("value saved");
                                 break;
                             case "get value":
-                                await context.SendActivityAsync(userState.Value);
+                                await context.SendActivityAsync(state.Value);
                                 break;
                         }
                     }
@@ -71,21 +73,23 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
         [TestMethod]
         public async Task State_RememberPocoUserState()
         {
+            var userState = new UserState(new MemoryStorage());
+            var testPocoProperty = userState.CreateProperty<TestPocoState>("testPoco");
             var adapter = new TestAdapter()
-                .Use(new UserState<TestPocoState>(new MemoryStorage()));
+                .Use(userState);
             await new TestFlow(adapter,
                     async (context) =>
                     {
-                        var userState = context.GetUserState<TestPocoState>();
+                        var testPocoState = await testPocoProperty.GetAsync(context);
                         Assert.IsNotNull(userState, "user state should exist");
                         switch (context.Activity.AsMessageActivity().Text)
                         {
                             case "set value":
-                                userState.Value = "test";
+                                testPocoState.Value = "test";
                                 await context.SendActivityAsync("value saved");
                                 break;
                             case "get value":
-                                await context.SendActivityAsync(userState.Value);
+                                await context.SendActivityAsync(testPocoState.Value);
                                 break;
                         }
                     }
@@ -98,12 +102,15 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
         [TestMethod]
         public async Task State_RememberIStoreItemConversationState()
         {
-            TestAdapter adapter = new TestAdapter()
-                .Use(new ConversationState<TestState>(new MemoryStorage()));
+            var userState = new UserState(new MemoryStorage());
+            var testProperty = userState.CreateProperty<TestState>("test");
+
+            var adapter = new TestAdapter()
+                .Use(userState);
             await new TestFlow(adapter,
                     async (context) =>
                     {
-                        var conversationState = context.GetConversationState<TestState>();
+                        var conversationState = await testProperty.GetAsync(context);
                         Assert.IsNotNull(conversationState, "state.conversation should exist");
                         switch (context.Activity.AsMessageActivity().Text)
                         {
@@ -125,12 +132,14 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
         [TestMethod]
         public async Task State_RememberPocoConversationState()
         {
-            TestAdapter adapter = new TestAdapter()
-                .Use(new ConversationState<TestPocoState>(new MemoryStorage()));
+            var userState = new UserState(new MemoryStorage());
+            var testPocoProperty = userState.CreateProperty<TestPocoState>("testPoco");
+            var adapter = new TestAdapter()
+                .Use(userState);
             await new TestFlow(adapter,
                     async (context) =>
                     {
-                        var conversationState = context.GetConversationState<TestPocoState>();
+                        var conversationState = await testPocoProperty.GetAsync(context);
                         Assert.IsNotNull(conversationState, "state.conversation should exist");
                         switch (context.Activity.AsMessageActivity().Text)
                         {
@@ -154,19 +163,23 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
         {
 
             string testGuid = Guid.NewGuid().ToString();
+            var customState = new CustomKeyState(new MemoryStorage());
+            var testProperty = customState.CreateProperty<TestPocoState>("test");
+
             TestAdapter adapter = new TestAdapter()
-                .Use(new CustomKeyState(new MemoryStorage()));
+                .Use(customState);
+
             await new TestFlow(adapter, async (context) =>
                     {
-                        var customState = CustomKeyState.Get(context);
+                        var test = await testProperty.GetAsync(context);
                         switch (context.Activity.AsMessageActivity().Text)
                         {
                             case "set value":
-                                customState.CustomString = testGuid;
+                                test.Value = testGuid;
                                 await context.SendActivityAsync("value saved");
                                 break;
                             case "get value":
-                                await context.SendActivityAsync(customState.CustomString);
+                                await context.SendActivityAsync(test.Value);
                                 break;
                         }
                     }
@@ -184,13 +197,15 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
         [TestMethod]
         public async Task State_RoundTripTypedObject()
         {
-            TestAdapter adapter = new TestAdapter()
-                .Use(new ConversationState<TypedObject>(new MemoryStorage()));
-
+            var convoState = new ConversationState(new MemoryStorage());
+            var testProperty = convoState.CreateProperty<TypedObject>("typed");
+            var adapter = new TestAdapter()
+                .Use(convoState);
+            
             await new TestFlow(adapter,
                     async (context) =>
                     {
-                        var conversation = context.GetConversationState<TypedObject>();
+                        var conversation = await testProperty.GetAsync(context);
                         Assert.IsNotNull(conversation, "conversationstate should exist");
                         switch (context.Activity.AsMessageActivity().Text)
                         {
@@ -217,23 +232,30 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
             await new TestFlow(adapter,
                     async (context) =>
                     {
-                        var botStateManager = new BotState<CustomState>(new MemoryStorage(),
-                            $"BotState:{typeof(BotState<CustomState>).Namespace}.{typeof(BotState<CustomState>).Name}",
-                            (ctx) => $"botstate/{ctx.Activity.ChannelId}/{ctx.Activity.Conversation.Id}/{typeof(BotState<CustomState>).Namespace}.{typeof(BotState<CustomState>).Name}");
+                        var botStateManager = new BotState(new MemoryStorage(), 
+                            $"BotState:{typeof(BotState).Namespace}.{typeof(BotState).Name}",
+                            (ctx) => $"botstate/{ctx.Activity.ChannelId}/{ctx.Activity.Conversation.Id}/{typeof(BotState).Namespace}.{typeof(BotState).Name}");
+
+                        var testProperty = botStateManager.CreateProperty<CustomState>("test");
 
                         // read initial state object
-                        var customState = await botStateManager.ReadAsync(context);
+                        await botStateManager.LoadAsync(context);
+
+                        var customState = await testProperty.GetAsync(context);
 
                         // this should be a 'new CustomState' as nothing is currently stored in storage
                         Assert.Equals(customState, new CustomState());
 
                         // amend property and write to storage
                         customState.CustomString = "test";
-                        await botStateManager.WriteAsync(context, customState);
+                        await botStateManager.SaveChangesAsync(context);
 
-                        // set customState to null before reading from storage
-                        customState = null;
-                        customState = await botStateManager.ReadAsync(context);
+                        customState.CustomString = "asdfsadf";
+
+                        // read into context again
+                        await botStateManager.LoadAsync(context);
+
+                        customState = await testProperty.GetAsync(context);
 
                         // check object read from value has the correct value for CustomString
                         Assert.Equals(customState.CustomString, "test");
@@ -248,15 +270,13 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
             public string ETag { get; set; }
         }
 
-        public class CustomKeyState : BotState<CustomState>
+        public class CustomKeyState : BotState
         {
             public CustomKeyState(IStorage storage) : base(storage, PropertyName, (context) => "CustomKey")
             {
             }
 
             public const string PropertyName = "Microsoft.Bot.Builder.Tests.CustomKeyState";
-
-            public static CustomState Get(ITurnContext context) { return context.Services.Get<CustomState>(PropertyName); }
         }
     }
 }
