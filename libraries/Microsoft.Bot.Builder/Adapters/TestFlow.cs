@@ -177,28 +177,37 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <returns>A new <see cref="TestFlow"/> object that appends this assertion to the modeled exchange.</returns>
         /// <remarks>This method does not modify the original <see cref="TestFlow"/> object.</remarks>
         /// <exception cref="Exception">The bot did not respond as expected.</exception>
-        public TestFlow AssertReply(MessageActivity expected, [CallerMemberName] string description = null, uint timeout = 3000)
+        public TestFlow AssertReply(Activity expected, [CallerMemberName] string description = null, uint timeout = 3000)
         {
             return AssertReply(
                 (reply) =>
                 {
-                    if (reply is MessageActivity replyMessageActivity)
+                    if (expected.Type != reply.Type)
                     {
-                        if (expected.Text != replyMessageActivity.Text)
+                        if (description == null)
                         {
-                            if (description == null)
-                            {
-                                throw new Exception($"Expected:{expected.Text}\nReceived:{replyMessageActivity.Text}");
-                            }
-                            else
-                            {
-                                throw new Exception($"{description}: Text should match");
-                            }
+                            throw new Exception($"Expected:{expected.Type}\nReceived:{reply.Type}");
+                        }
+                        else
+                        {
+                            throw new Exception($"{description}: Type should match");
                         }
                     }
-                    else
+
+                    if (expected is MessageActivity expectedMessageActivity
+                            &&
+                        reply is MessageActivity expectedReplyMessageActivity
+                            &&
+                        expectedMessageActivity.Text != expectedReplyMessageActivity.Text)
                     {
-                        throw new Exception($"Expected a {nameof(MessageActivity)}, but got a {reply.GetType().Name}.");
+                        if (description == null)
+                        {
+                            throw new Exception($"Expected:{expectedMessageActivity.Text}\nReceived:{expectedMessageActivity.Text}");
+                        }
+                        else
+                        {
+                            throw new Exception($"{description}: Text should match");
+                        }
                     }
                 },
                 description,

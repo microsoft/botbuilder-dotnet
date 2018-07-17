@@ -7,6 +7,8 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Net.Http;
+using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Serialization;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
@@ -29,13 +31,14 @@ namespace Microsoft.Bot.Builder.Tests
         /// </summary>
         /// <param name="context">Test context</param>
         /// <returns>A list of activities to test</returns>
-        public static IEnumerable<Activity> GetFromTestContext(TestContext context)
+        public static async Task<IEnumerable<Activity>> GetFromTestContextAsync(TestContext context)
         {
             // Use TestContext to find transcripts using the following naming convention:
             // {BOTBUILDER_TRANSCRIPTS_LOCATION}\{TestClassName}\{TestMethodName}.chat
             var testClassName = context.FullyQualifiedTestClassName.Split('.').Last();
-            var relativePath = Path.Combine($"{testClassName}", $"{context.TestName}.transcript");
-            return GetActivities(relativePath);
+            var relativePath = Path.Combine(testClassName, $"{context.TestName}.chat");
+
+            return await GetActivitiesAsync(relativePath);
         }
 
         /// <summary>
@@ -43,7 +46,7 @@ namespace Microsoft.Bot.Builder.Tests
         /// </summary>
         /// <param name="relativePath">Path relative to the BOTBUILDER_TRANSCRIPTS_LOCATION environment variable value.</param>
         /// <returns>A list of activities to test</returns>
-        public static IEnumerable<Activity> GetActivities(string relativePath)
+        public static async Task<IEnumerable<Activity>> GetActivitiesAsync(string relativePath)
         {
             var transcriptsRootFolder = TranscriptUtilities.EnsureTranscriptsDownload();
             var path = Path.Combine(transcriptsRootFolder, relativePath);
@@ -67,7 +70,7 @@ namespace Microsoft.Bot.Builder.Tests
             }
             else
             {
-                content = File.ReadAllText(path);
+                content = await File.ReadAllTextAsync(path);
             }
 
             JToken rootToken = JToken.Parse(content);
@@ -79,10 +82,11 @@ namespace Microsoft.Bot.Builder.Tests
 
             var activities = new List<Activity>();
 
+            var jsonActivitySerializer = new JsonActivitySerializer();
+            
             foreach(var activityObject in rootToken.Children<JObject>())
             {
-                var activityType = ActivityTypes.GetRuntimeType(activityObject["type"]?.Value<string>());
-                var activity = (Activity)activityObject.ToObject(activityType);
+                var activity = await jsonActivitySerializer.DeserializeAsync(activityObject);
 
                 activities.Add(activity);
             }

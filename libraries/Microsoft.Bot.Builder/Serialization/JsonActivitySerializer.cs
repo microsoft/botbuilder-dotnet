@@ -53,10 +53,7 @@ namespace Microsoft.Bot.Builder.Serialization
                 activityJsonToken = await JToken.ReadFromAsync(jsonReader, cancellationToken).ConfigureAwait(false);
             }
 
-            var activityTypeToken = activityJsonToken["type"] ?? throw new ActivitySerializationException("Cannot determine activity type because the required property \"type\" was found on the root JSON object.");
-            var activityRuntimeType = ActivityTypes.GetRuntimeType(activityTypeToken.Value<string>());
-
-            return (Activity)activityJsonToken.ToObject(activityRuntimeType);
+            return await DeserializeAsync((JObject)activityJsonToken, cancellationToken);
         }
 
         /// <inheritdoc />
@@ -78,6 +75,24 @@ namespace Microsoft.Bot.Builder.Serialization
             {
                 await activityJsonObject.WriteToAsync(writer, cancellationToken).ConfigureAwait(false);
             }
+        }
+
+        public async Task<Activity> DeserializeAsync(JObject jsonObject, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (jsonObject == null)
+            {
+                throw new ArgumentNullException(nameof(jsonObject));
+            }
+
+            if (jsonObject.Type != JTokenType.Object)
+            {
+                throw new ActivitySerializationException($"Can't deserialize from the specified JSON token. Was expecting {JTokenType.Object}, but found {jsonObject.Type}.");
+            }
+
+            var activityTypeToken = jsonObject["type"] ?? throw new ActivitySerializationException("Cannot determine activity type because the required property \"type\" was found on the root JSON object.");
+            var activityRuntimeType = ActivityTypeConverter.GetRuntimeType(activityTypeToken.Value<string>());
+
+            return (Activity)jsonObject.ToObject(activityRuntimeType);
         }
     }
 }

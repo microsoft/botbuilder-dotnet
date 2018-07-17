@@ -30,7 +30,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
             var nativeLanguages = new string[] { "en-us" };
             var patterns = new Dictionary<string, List<string>>();
 
-            var activities = TranscriptUtilities.GetFromTestContext(TestContext);
+            var activities = await TranscriptUtilities.GetFromTestContextAsync(TestContext);
 
             var userState = new UserState(new MemoryStorage());
             var userLangProp = userState.CreateProperty<string>("language");
@@ -62,7 +62,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
             var nativeLanguages = new string[] { };
             var patterns = new Dictionary<string, List<string>>();
 
-            var activities = TranscriptUtilities.GetFromTestContext(TestContext);
+            var activities = await TranscriptUtilities.GetFromTestContextAsync(TestContext);
             var userState = new UserState(new MemoryStorage());
             var userLangProp = userState.CreateProperty<string>("language");
 
@@ -86,7 +86,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
         {
             var botLocale = "en-us";
 
-            var activities = TranscriptUtilities.GetFromTestContext(TestContext);
+            var activities = await TranscriptUtilities.GetFromTestContextAsync(TestContext);
 
             var userState = new UserState(new MemoryStorage());
             var userLangProp = userState.CreateProperty<string>("language", () => "en-us");

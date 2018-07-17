@@ -13,7 +13,7 @@ namespace Microsoft.Bot.Schema.Tests
             [TestMethod]
             public void UnknownTypeReturnsBaseActivityType()
             {
-                var activityType = ActivityTypes.GetRuntimeType("!!NOT-A-REAL-TYPE!!");
+                var activityType = ActivityTypeConverter.GetRuntimeType("!!NOT-A-REAL-TYPE!!");
 
                 Assert.AreEqual(typeof(Activity), activityType);
             }
@@ -21,7 +21,7 @@ namespace Microsoft.Bot.Schema.Tests
             [TestMethod]
             public void KnownTypeReturnsExpectedType()
             {
-                var activityType = ActivityTypes.GetRuntimeType(ActivityTypes.Event);
+                var activityType = ActivityTypeConverter.GetRuntimeType(ActivityTypes.Event);
 
                 Assert.AreEqual(typeof(EventActivity), activityType);
             }

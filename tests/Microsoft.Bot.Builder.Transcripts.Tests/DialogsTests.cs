@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
         [TestMethod]
         public async Task AttachmentPrompt()
         {
-            var activities = TranscriptUtilities.GetFromTestContext(TestContext);
+            var activities = await TranscriptUtilities.GetFromTestContextAsync(TestContext);
             var convState = new ConversationState(new MemoryStorage());
             var testProperty = convState.CreateProperty<Dictionary<string, object>>("test", () => new Dictionary<string, object>());
 
@@ -87,7 +87,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
                 }
             );
 
-            var activities = TranscriptUtilities.GetFromTestContext(TestContext);
+            var activities = await TranscriptUtilities.GetFromTestContextAsync(TestContext);
 
             var convState = new ConversationState(new MemoryStorage());
             var testProperty = convState.CreateProperty<Dictionary<string, object>>("test", () => new Dictionary<string, object>());
@@ -117,7 +117,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
         [TestMethod]
         public async Task ConfirmPrompt()
         {
-            var activities = TranscriptUtilities.GetFromTestContext(TestContext);
+            var activities = await TranscriptUtilities.GetFromTestContextAsync(TestContext);
 
             var convState = new ConversationState(new MemoryStorage());
             var testProperty = convState.CreateProperty<Dictionary<string, object>>("test", () => new Dictionary<string, object>());
@@ -162,7 +162,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
         [TestMethod]
         public async Task DateTimePrompt()
         {
-            var activities = TranscriptUtilities.GetFromTestContext(TestContext);
+            var activities = await TranscriptUtilities.GetFromTestContextAsync(TestContext);
 
             var convState = new ConversationState(new MemoryStorage());
             var testProperty = convState.CreateProperty<Dictionary<string, object>>("test", () => new Dictionary<string, object>());
@@ -198,7 +198,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
         [TestMethod]
         public async Task NumberPrompt()
         {
-            var activities = TranscriptUtilities.GetFromTestContext(TestContext);
+            var activities = await TranscriptUtilities.GetFromTestContextAsync(TestContext);
 
 
             PromptValidatorEx.PromptValidator<NumberResult<int>> validator = async (ctx, result) =>
@@ -247,7 +247,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
         [TestMethod]
         public async Task TextPrompt()
         {
-            var activities = TranscriptUtilities.GetFromTestContext(TestContext);
+            var activities = await TranscriptUtilities.GetFromTestContextAsync(TestContext);
 
             PromptValidatorEx.PromptValidator<TextResult> validator = async (ctx, result) =>
             {
@@ -294,7 +294,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
         [TestMethod]
         public async Task Waterfall()
         {
-            var activities = TranscriptUtilities.GetFromTestContext(TestContext);
+            var activities = await TranscriptUtilities.GetFromTestContextAsync(TestContext);
 
             var convState = new ConversationState(new MemoryStorage());
             var testProperty = convState.CreateProperty<Dictionary<string, object>>("test", () => new Dictionary<string, object>());
@@ -331,7 +331,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
         [TestMethod]
         public async Task WaterfallPrompt()
         {
-            var activities = TranscriptUtilities.GetFromTestContext(TestContext);
+            var activities = await TranscriptUtilities.GetFromTestContextAsync(TestContext);
 
             var convState = new ConversationState(new MemoryStorage());
             var testProperty = convState.CreateProperty<Dictionary<string, object>>("test", () => new Dictionary<string, object>());
@@ -401,7 +401,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
         [TestMethod]
         public async Task WaterfallNested()
         {
-            var activities = TranscriptUtilities.GetFromTestContext(TestContext);
+            var activities = await TranscriptUtilities.GetFromTestContextAsync(TestContext);
 
             var convState = new ConversationState(new MemoryStorage());
             var testProperty = convState.CreateProperty<Dictionary<string, object>>("test", () => new Dictionary<string, object>());

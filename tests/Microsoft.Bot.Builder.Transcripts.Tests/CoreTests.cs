@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
         [TestMethod]
         public async Task BotAdapted_Bracketing()
         {
-            var activities = TranscriptUtilities.GetFromTestContext(TestContext);
+            var activities = await TranscriptUtilities.GetFromTestContextAsync(TestContext);
 
             TestAdapter adapter = new TestAdapter()
                 .Use(new BeforeAfterMiddleware());

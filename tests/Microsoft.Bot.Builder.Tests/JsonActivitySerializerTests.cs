@@ -8,6 +8,7 @@ using Microsoft.Bot.Builder.Serialization;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Tests
 {
@@ -59,13 +60,28 @@ namespace Microsoft.Bot.Builder.Tests
             {
                 try
                 {
-                    await _serializer.DeserializeAsync(null);
+                    await _serializer.DeserializeAsync((Stream)null);
 
                     Assert.Fail("Expected an exception.");
                 }
                 catch (ArgumentNullException exception)
                 {
                     Assert.AreEqual("stream", exception.ParamName);
+                }
+            }
+
+            [TestMethod]
+            public async Task NullJObjectParameterThrows()
+            {
+                try
+                {
+                    await _serializer.DeserializeAsync((JObject)null);
+
+                    Assert.Fail("Expected an exception.");
+                }
+                catch (ArgumentNullException exception)
+                {
+                    Assert.AreEqual("jsonObject", exception.ParamName);
                 }
             }
 

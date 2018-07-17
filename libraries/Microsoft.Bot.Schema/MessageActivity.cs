@@ -1,9 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Schema
@@ -79,47 +77,12 @@ namespace Microsoft.Bot.Schema
         /// </summary>
         [JsonProperty(PropertyName = "suggestedActions")]
         public SuggestedActions SuggestedActions { get; set; }
-    }
-
-    public static class MessageActivityExtensions
-    {
-        /// <summary>
-        /// Checks whether this message activity has content.
-        /// </summary>
-        /// <returns>True, if this message activity has any content to send; otherwise, false.</returns>
-        /// <remarks>This method is defined on the <see cref="Activity"/> class, but is only intended
-        /// for use on an activity of <see cref="Activity.Type"/> <see cref="ActivityTypes.Message"/>.</remarks>
-        public static bool HasContent(this MessageActivity messageActivity)
-        {
-            if (!string.IsNullOrWhiteSpace(messageActivity.Text))
-                return true;
-
-            if (!string.IsNullOrWhiteSpace(messageActivity.Summary))
-                return true;
-
-            if (messageActivity.Attachments?.Any() == true)
-                return true;
-
-            if (messageActivity.ChannelData != null)
-                return true;
-
-            return false;
-        }
 
         /// <summary>
-        /// Resolves the mentions from the entities of this (message) activity.
+        /// Gets or sets dateTime to expire the activity as ISO 8601 encoded
+        /// datetime
         /// </summary>
-        /// <returns>The array of mentions; or an empty array, if none are found.</returns>
-        public static IEnumerable<Mention> GetMentions(this MessageActivity messageActivity)
-        {
-            if(messageActivity.Entities == null)
-            {
-                return Enumerable.Empty<Mention>();
-            }
-
-            return messageActivity.Entities
-                .Where(e => e.Type.Equals("mention", StringComparison.OrdinalIgnoreCase))
-                .Select(e => e.Properties.ToObject<Mention>());
-        }
+        [JsonProperty(PropertyName = "expiration")]
+        public System.DateTimeOffset? Expiration { get; set; }
     }
 }

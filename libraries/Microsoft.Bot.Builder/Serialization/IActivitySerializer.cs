@@ -32,5 +32,4 @@ namespace Microsoft.Bot.Builder.Serialization
         /// <exception cref="ActivitySerializationException">Thrown when the serializer is unable to deserialize an <see cref="Activity"/> from the given <paramref name="stream">Stream</paramref>.</exception>
         Task<Activity> DeserializeAsync(Stream stream, CancellationToken cancellationToken = default(CancellationToken));
     }
-
 }

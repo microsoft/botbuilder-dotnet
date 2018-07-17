@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Tests
 {
@@ -85,10 +84,9 @@ namespace Microsoft.Bot.Builder.Tests
                     updateResponseActivity.ApplyConversationReference(activity.GetConversationReference());
                 }
             })
-                .Send("foo")
-                .Send("update")
-                    .AssertReply("new response")
-                .StartTestAsync();
+            .Send("foo")
+            .Send("update")
+            .StartTestAsync();
 
             var pagedResult = await transcriptStore.GetTranscriptActivitiesAsync("test", conversationId);
             Assert.AreEqual(4, pagedResult.Items.Length);
@@ -166,8 +164,10 @@ namespace Microsoft.Bot.Builder.Tests
             var transcriptStore = new MemoryTranscriptStore();
             TestAdapter adapter = new TestAdapter()
                 .Use(new TranscriptLoggerMiddleware(transcriptStore));
+
             string conversationId = null;
             string activityId = null;
+
             await new TestFlow(adapter, async (context) =>
             {
                 conversationId = context.Activity.Conversation.Id;
@@ -182,10 +182,10 @@ namespace Microsoft.Bot.Builder.Tests
                     activityId = response.Id;
                 }
             })
-                .Send("foo")
-                    .AssertReply("response")
-                .Send("deleteIt")
-                .StartTestAsync();
+            .Send("foo")
+                .AssertReply("response")
+            .Send("deleteIt")
+            .StartTestAsync();
 
             var pagedResult = await transcriptStore.GetTranscriptActivitiesAsync("test", conversationId);
             Assert.AreEqual(4, pagedResult.Items.Length);
