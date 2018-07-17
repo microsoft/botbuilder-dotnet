@@ -177,6 +177,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation
                             {
                                 var currentTranslatedDocument = translatedDocuments[sentIndex];
                                 currentTranslatedDocument.RawAlignment = xe.Element(ns + "Alignment").Value;
+                                currentTranslatedDocument.TargetMessage = xe.Element(ns + "TranslatedText").Value;
                                 if (!string.IsNullOrEmpty(currentTranslatedDocument.RawAlignment))
                                 {
                                     var alignments = currentTranslatedDocument.RawAlignment.Trim().Split(' ');
