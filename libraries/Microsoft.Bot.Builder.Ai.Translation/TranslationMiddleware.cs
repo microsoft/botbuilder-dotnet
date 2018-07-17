@@ -106,7 +106,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation
                         var sourceLanguage = "";
                         var targetLanguage = "";
                         if (_languageStateProperty == null)
-                            sourceLanguage = await _translator.Detect(message.Text); //awaiting user language detection using Microsoft Translator API.
+                            sourceLanguage = await _translator.DetectAsync(message.Text); //awaiting user language detection using Microsoft Translator API.
                         else
                         {
                             sourceLanguage = await _languageStateProperty.GetAsync(context) ?? "en";
