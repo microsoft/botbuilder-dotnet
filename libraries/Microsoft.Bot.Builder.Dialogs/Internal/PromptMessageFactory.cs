@@ -39,7 +39,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         private static IMessageActivity CreateActivity(string text, string speak)
         {
-            IMessageActivity activity = Activity.CreateMessageActivity();
+            var activity = Activity.CreateMessageActivity();
             activity.InputHint = InputHints.ExpectingInput;
             activity.Text = !string.IsNullOrWhiteSpace(text) ? text : null;
             activity.Speak = !string.IsNullOrWhiteSpace(speak) ? speak : null;

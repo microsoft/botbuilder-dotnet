@@ -21,8 +21,11 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// The input text recognized; or <c>null</c>, if recognition fails.
+        /// Gets or sets the input text recognized; or <c>null</c>, if recognition fails.
         /// </summary>
+        /// <value>
+        /// The input text recognized; or <c>null</c>, if recognition fails.
+        /// </value>
         public string Text
         {
             get { return GetProperty<string>(nameof(Text)); }
@@ -30,8 +33,11 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// The various resolutions for the recognized value; or and empty list.
+        /// Gets the various resolutions for the recognized value; or and empty list.
         /// </summary>
+        /// <value>
+        /// The various resolutions for the recognized value; or and empty list.
+        /// </value>
         public List<DateTimeResolution> Resolution
         {
             get { return GetProperty<List<DateTimeResolution>>(nameof(Resolution)); }

@@ -6,13 +6,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
     public class FindChoicesOptions : FindValuesOptions
     {
         /// <summary>
-        /// (Optional) If `true`, the choices value will NOT be search over. The default is `false`.
+        /// Gets or sets a value indicating whether the choices value will NOT be search over.
+        /// The default is <c>false</c>. This is optional.
         /// </summary>
+        /// <value>
+        /// A <c>true</c> if the choices value will NOT be search over; otherwise <c>false</c>.
+        /// </value>
         public bool NoValue { get; set; }
 
         /// <summary>
-        /// (Optional) If `true`, the title of the choices action will NOT be searched over.The default is `false`.
+        /// Gets or sets a value indicating whether the title of the choices action will NOT be searched over.
+        /// The default is <c><false</c>. This is optional.
         /// </summary>
+        /// <value>
+        /// A <c>true</c> if the title of the choices action will NOT be searched over; otherwise <c><false</c>.
+        /// </value>
         public bool NoAction { get; set; }
     }
 }

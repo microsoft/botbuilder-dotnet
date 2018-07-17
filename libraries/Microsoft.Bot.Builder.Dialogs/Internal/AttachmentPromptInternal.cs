@@ -27,6 +27,8 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <summary>
         /// Recognizes and validates the user input.
         /// </summary>
+        /// <param name="context">Context for the current turn of the conversation with the user.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public override async Task<AttachmentResult> RecognizeAsync(ITurnContext context)
         {
             BotAssert.ContextNotNull(context);

@@ -147,6 +147,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// its `Dialog.continue()` method. You can check `context.responded` after the call completes
         /// to determine if a dialog was run and a reply was sent to the user.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task ContinueAsync()
         {
             // Check for a dialog on the stack
@@ -218,6 +219,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <summary>
         /// Deletes any existing dialog stack thus cancelling all dialogs on the stack.
         /// </summary>
+        /// <returns>The dialog context.</returns>
         public DialogContext EndAll()
         {
             // Cancel any active dialogs

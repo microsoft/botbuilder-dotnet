@@ -17,8 +17,11 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// The collection of attachments recognized
+        /// Gets or sets the collection of attachments recognized.
         /// </summary>
+        /// <value>
+        /// The collection of attachments recognized.
+        /// </value>
         public List<Attachment> Attachments
         {
             get { return GetProperty<List<Attachment>>(nameof(Attachments)); }
