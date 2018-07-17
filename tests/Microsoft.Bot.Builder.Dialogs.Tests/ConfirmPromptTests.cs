@@ -98,12 +98,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [TestMethod]
         public async Task ConfirmPromptChoiceOptionsNumbers()
         {
+            var convState = new ConversationState(new MemoryStorage());
+            var testProperty = convState.CreateProperty<Dictionary<string, object>>("test");
             TestAdapter adapter = new TestAdapter()
-                .Use(new ConversationState<Dictionary<string, object>>(new MemoryStorage()));
+                .Use(convState);
 
             await new TestFlow(adapter, async (turnContext) =>
             {
-                var state = ConversationState<Dictionary<string, object>>.Get(turnContext);
+                var state = await testProperty.GetAsync(turnContext);
                 var prompt = new ConfirmPrompt(Culture.English);
 
                 // Set options
@@ -144,12 +146,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [TestMethod]
         public async Task ConfirmPromptChoiceOptionsNoNumbers()
         {
+            var convState = new ConversationState(new MemoryStorage());
+            var testProperty = convState.CreateProperty<Dictionary<string, object>>("test");
             TestAdapter adapter = new TestAdapter()
-                .Use(new ConversationState<Dictionary<string, object>>(new MemoryStorage()));
+                .Use(convState);
 
             await new TestFlow(adapter, async (turnContext) =>
             {
-                var state = ConversationState<Dictionary<string, object>>.Get(turnContext);
+                var state = await testProperty.GetAsync(turnContext);
                 var prompt = new ConfirmPrompt(Culture.English);
 
                 // Set options
