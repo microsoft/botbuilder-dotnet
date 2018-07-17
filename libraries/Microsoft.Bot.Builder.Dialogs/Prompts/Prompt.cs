@@ -11,7 +11,7 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// <summary>
     /// Basic configuration options supported by all prompts.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="T">The type of the <see cref="Prompt{T}"/>.</typeparam>
     public abstract class Prompt<T> : Dialog, IDialogContinue
         where T : PromptResult
     {

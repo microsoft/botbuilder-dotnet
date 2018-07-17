@@ -19,6 +19,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </summary>
         /// <param name="dc">The dialog context for the current turn of conversation.</param>
         /// <param name="dialogArgs">(Optional) arguments that were passed to the dialog during `begin()` call that started the instance.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         Task DialogBeginAsync(DialogContext dc, IDictionary<string, object> dialogArgs = null);
     }
 }

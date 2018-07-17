@@ -14,6 +14,7 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// <summary>
     /// NumberPrompt recognizes floats or ints.
     /// </summary>
+    /// <typeparam name="T">The type of the <see cref="NumberPromptInternal{T}"/>.</typeparam>
     internal class NumberPromptInternal<T> : BasePromptInternal<NumberResult<T>>
     {
         private IModel _model;

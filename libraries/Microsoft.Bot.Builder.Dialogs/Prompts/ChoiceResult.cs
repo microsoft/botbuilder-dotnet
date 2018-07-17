@@ -11,8 +11,11 @@ namespace Microsoft.Bot.Builder.Dialogs
     public class ChoiceResult : PromptResult
     {
         /// <summary>
-        /// The value recognized; or <c>null</c>, if recognition fails.
+        /// Gets or sets the value recognized; or <c>null</c>, if recognition fails.
         /// </summary>
+        /// <value>
+        /// The value recognized; or <c>null</c>, if recognition fails.
+        /// </value>
         public FoundChoice Value
         {
             get { return GetProperty<FoundChoice>(nameof(Value)); }

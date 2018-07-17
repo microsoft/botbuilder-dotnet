@@ -19,8 +19,11 @@ namespace Microsoft.Bot.Builder.Dialogs
         public PromptResult() => Status = PromptStatus.NotRecognized;
 
         /// <summary>
-        /// The recognition result status.
+        /// Gets or sets the recognition result status.
         /// </summary>
+        /// <value>
+        /// The recognition result status.
+        /// </value>
         public string Status { get; set; }
 
         /// <summary>
@@ -33,8 +36,8 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// Used by derived classes to implement nullable property access this
         /// mimics the JavaScript implementation's use of undefined in some places.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="propertyName"></param>
+        /// <typeparam name="T">The type of the property.</typeparam>
+        /// <param name="propertyName">The name of the property.</param>
         /// <returns>the property or null.</returns>
         protected T GetProperty<T>(string propertyName)
         {
