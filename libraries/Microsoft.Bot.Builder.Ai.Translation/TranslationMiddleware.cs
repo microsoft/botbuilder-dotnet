@@ -209,7 +209,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation
 
                     var text = message.Text;
                     string[] lines = text.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None);
-                    var translateResult = await this._translator.TranslateArray(lines, sourceLanguage, targetLanguage).ConfigureAwait(false);
+                    var translateResult = await this._translator.TranslateArrayAsync(lines, sourceLanguage, targetLanguage).ConfigureAwait(false);
 
                     // post process all translated documents
                     PostProcesseDocuments(translateResult, sourceLanguage);
