@@ -42,6 +42,12 @@ namespace Microsoft.Bot.Builder.Adapters
             _testTask = _testTask ?? Task.CompletedTask;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TestFlow"/> class from an existing flow.
+        /// </summary>
+        /// <param name="testTask">The exchange to add to the exchanges in the existing flow.</param>
+        /// <param name="flow">The flow to build up from. This provides the test adapter to use,
+        /// the bot turn processing locig to test, and a set of exchanges to model and test.</param>
         public TestFlow(Task testTask, TestFlow flow)
         {
             _testTask = testTask ?? Task.CompletedTask;

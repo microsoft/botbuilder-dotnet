@@ -102,7 +102,7 @@ namespace Microsoft.Bot.Builder.Adapters
                 var id = activity.Id = (_nextId++).ToString();
             }
 
-            if (activity.Timestamp == null || activity.Timestamp == default(DateTime))
+            if (activity.Timestamp == null || activity.Timestamp == default(DateTimeOffset))
             {
                 activity.Timestamp = DateTime.UtcNow;
             }

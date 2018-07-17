@@ -28,6 +28,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         {
             _localeConverter = localeConverter ?? throw new ArgumentNullException(nameof(localeConverter));
             if (string.IsNullOrEmpty(toLocale))
+            {
                 throw new ArgumentNullException(nameof(toLocale));
             else if (!localeConverter.IsLocaleAvailable(toLocale))
                 throw new ArgumentNullException("The locale " + nameof(toLocale) + " is unavailable");

@@ -2,22 +2,20 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Microsoft.Bot.Builder.Ai.Translation.PostProcessor
 {
     /// <summary>
-    /// Custom dictionary post processor is used to forcibly translate certain vocab from a provided user dictinary.
+    /// Custom dictionary post processor is used to forcibly translate certain vocab from a provided user dictionary.
     /// </summary>
     public class CustomDictionaryPostProcessor : IPostProcessor
     {
         private readonly CustomDictionary _userCustomDictionaries;
 
         /// <summary>
-        /// Constructor a new <see cref="CustomDictionaryPostProcessor"/> object.
+        /// Initializes a new instance of the <see cref="CustomDictionaryPostProcessor"/> class.
         /// </summary>
-        /// <param name="userCustomDictionaries">A <see cref="CustomDictionary"/> object that stores all the different languages dictionaries keyed by language id</param>
+        /// <param name="userCustomDictionaries">A <see cref="CustomDictionary"/> object that stores all the different languages dictionaries keyed by language id.</param>
         public CustomDictionaryPostProcessor(CustomDictionary userCustomDictionaries)
         {
             this._userCustomDictionaries = userCustomDictionaries ?? throw new ArgumentNullException(nameof(userCustomDictionaries));
@@ -28,7 +26,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.PostProcessor
         /// </summary>
         /// <param name="translatedDocument">Translated document.</param>
         /// <param name="languageId">Current source language id.</param>
-        /// <returns>A <see cref="PostProcessedDocument"/> stores the original translated document state and the newly post processed message</returns>
+        /// <returns>A <see cref="PostProcessedDocument"/> stores the original translated document state and the newly post processed message.</returns>
         public PostProcessedDocument Process(TranslatedDocument translatedDocument, string languageId)
         {
             // Check if provided custom dictionary for this language is not empty
@@ -36,19 +34,21 @@ namespace Microsoft.Bot.Builder.Ai.Translation.PostProcessor
             {
                 string processedResult;
                 var languageDictionary = _userCustomDictionaries.GetLanguageDictionary(languageId);
+
                 // Loop for all the original message tokens, and check if any of these tokens exists in the user custom dictionary,
                 // to forcibly overwrite this token's translation with the user provided translation
-                for (int i = 0; i < translatedDocument.SourceTokens.Length; i++)
+                for (var i = 0; i < translatedDocument.SourceTokens.Length; i++)
                 {
                     if (languageDictionary.ContainsKey(translatedDocument.SourceTokens[i]))
                     {
-                        // If a token of the original source message/phrase found in the user dictionary , 
+                        // If a token of the original source message/phrase found in the user dictionary,
                         // replace it's equivalent translated token with the user provided translation
                         // the equivalent translated token can be found using the alignment map in the translated document
                         translatedDocument.TranslatedTokens[translatedDocument.IndexedAlignment[i]] = languageDictionary[translatedDocument.SourceTokens[i]];
                     }
                 }
-                // Finally return PostProcessedDocument object that holds the orignal TRanslatedDocument and a string that joins all the translated tokens together 
+
+                // Finally return PostProcessedDocument object that holds the orignal TRanslatedDocument and a string that joins all the translated tokens together
                 processedResult = PostProcessingUtilities.Join(" ", translatedDocument.TranslatedTokens);
                 return new PostProcessedDocument(translatedDocument, processedResult);
             }
