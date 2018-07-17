@@ -86,7 +86,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
         public BotFrameworkConfigurationBuilder EnableProactiveMessages(string proactiveMessagesPath = default(string))
         {
             BotFrameworkOptions.EnableProactiveMessages = true;
-            
+
             if (proactiveMessagesPath != null)
             {
                 BotFrameworkOptions.Paths.ProactiveMessagesPath = proactiveMessagesPath;
@@ -114,7 +114,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
         /// <summary>
         /// Configures the bot with the a single identity that will be used to authenticate requests made to the Bot Framework.
         /// </summary>
-        /// <param name="builder">The <see cref="BotFrameworkConfigurationBuilder"/></param>
+        /// <param name="builder">The <see cref="BotFrameworkConfigurationBuilder"/>.</param>
         /// <param name="applicationId">The application id that should be used to authenticate requests made to the Bot Framework.</param>
         /// <param name="applicationPassword">The application password that should be used to authenticate requests made to the Bot Framework.</param>
         /// <returns>A reference to this instance after the operation has completed.</returns>
@@ -122,6 +122,5 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
         /// <seealso cref="SimpleCredentialProvider"/>
         public static BotFrameworkConfigurationBuilder UseMicrosoftApplicationIdentity(this BotFrameworkConfigurationBuilder builder, string applicationId, string applicationPassword) =>
             builder.UseCredentialProvider(new SimpleCredentialProvider(applicationId, applicationPassword));
-
     }
 }
