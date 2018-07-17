@@ -105,10 +105,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 options.IncludeNumbers = true;
                 prompt.ChoiceOptions = options;
 
-                var dialogCompletion = await prompt.Continue(turnContext, state);
+                var dialogCompletion = await prompt.ContinueAsync(turnContext, state);
                 if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
                 {
-                    await prompt.Begin(turnContext, state,
+                    await prompt.BeginAsync(turnContext, state,
                         new PromptOptions
                         {
                             PromptString = "Please confirm.",
@@ -152,10 +152,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 options.InlineSeparator = "~"; // Doesn't make sense for ConfirmPrompt =
                 prompt.ChoiceOptions = options;
 
-                var dialogCompletion = await prompt.Continue(turnContext, state);
+                var dialogCompletion = await prompt.ContinueAsync(turnContext, state);
                 if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
                 {
-                    await prompt.Begin(turnContext, state,
+                    await prompt.BeginAsync(turnContext, state,
                         new PromptOptions
                         {
                             PromptString = "Please confirm.",
