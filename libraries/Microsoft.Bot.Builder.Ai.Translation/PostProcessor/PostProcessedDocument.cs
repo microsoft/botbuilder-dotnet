@@ -8,20 +8,19 @@ namespace Microsoft.Bot.Builder.Ai.Translation
     /// </summary>
     public class PostProcessedDocument
     {
-        private TranslatedDocument translatedDocument;
-        private string postProcessedMessage;
-
         /// <summary>
-        /// Constructor that initializes a post processed document object using the two states.
+        /// Initializes a new instance of the <see cref="PostProcessedDocument"/> class using the two states.
         /// </summary>
-        /// <param name="translatedDocument">Translated object to be post processed</param>
-        /// <param name="postProcessedMessage">The result message/translation after the post processing</param>
+        /// <param name="translatedDocument">Translated object to be post processed.</param>
+        /// <param name="postProcessedMessage">The result message/translation after the post processing.</param>
         public PostProcessedDocument(TranslatedDocument translatedDocument, string postProcessedMessage)
         {
-            this.translatedDocument = translatedDocument;
-            this.postProcessedMessage = postProcessedMessage;
+            this.TranslatedDocument = translatedDocument;
+            this.PostProcessedMessage = postProcessedMessage;
         }
-        public TranslatedDocument TranslatedDocument { get => translatedDocument; set => translatedDocument = value; }
-        public string PostProcessedMessage { get => postProcessedMessage; set => postProcessedMessage = value; }
+
+        public TranslatedDocument TranslatedDocument { get; set; }
+
+        public string PostProcessedMessage { get; set; }
     }
 }

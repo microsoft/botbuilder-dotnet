@@ -4,7 +4,7 @@
 namespace Microsoft.Bot.Builder.Ai.Translation.PostProcessor
 {
     /// <summary>
-    /// Abstraction for post processor
+    /// Abstraction for post processor.
     /// </summary>
     public interface IPostProcessor
     {
@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.PostProcessor
         /// </summary>
         /// <param name="translatedDocument">Translated document.</param>
         /// <param name="languageId">Current source language id.</param>
-        /// <returns><see cref="PostProcessedDocument"/> that holds the original document and the newly post processed message/phrease</returns>
+        /// <returns><see cref="PostProcessedDocument"/> that holds the original document and the newly post processed message/phrease.</returns>
         PostProcessedDocument Process(TranslatedDocument translatedDocument, string languageId);
     }
 }
