@@ -105,6 +105,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
             bool changeLocale = false;//logic implemented by developper to make a signal for language changing 
             //use a specific message from user to change language
             var messageActivity = context.Activity as MessageActivity;
+
             if (messageActivity.Text.ToLower().StartsWith("set my locale to"))
             {
                 changeLocale = true;

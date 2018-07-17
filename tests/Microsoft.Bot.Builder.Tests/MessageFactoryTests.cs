@@ -404,7 +404,6 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
 
             void ValidateIMBack(Activity activity)
             {
-                Assert.IsTrue(activity.Type == ActivityTypes.Message);
                 Assert.IsInstanceOfType(activity, typeof(MessageActivity));
 
                 var messageActivity = (MessageActivity)activity;
@@ -442,7 +441,6 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
 
             void ValidateIMBack(Activity activity)
             {
-                Assert.IsTrue(activity.Type == ActivityTypes.Message);
                 Assert.IsInstanceOfType(activity, typeof(MessageActivity));
 
                 var messageActivity = (MessageActivity)activity;
