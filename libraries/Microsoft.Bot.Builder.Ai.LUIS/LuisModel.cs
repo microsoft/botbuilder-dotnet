@@ -9,11 +9,15 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
     {
         public LuisModel(string modelId, string subscriptionKey, Uri uriBase, LuisApiVersion apiVersion = LuisApiVersion.V2)
         {
-            if(string.IsNullOrEmpty(modelId))
+            if (string.IsNullOrEmpty(modelId))
+            {
                 throw new ArgumentNullException(nameof(modelId));
+            }
 
             if (string.IsNullOrEmpty(subscriptionKey))
+            {
                 throw new ArgumentNullException(nameof(subscriptionKey));
+            }
 
             ModelID = modelId;
             SubscriptionKey = subscriptionKey;

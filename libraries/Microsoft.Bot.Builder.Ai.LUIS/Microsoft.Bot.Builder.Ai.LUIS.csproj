@@ -44,13 +44,19 @@
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
 		<DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Builder.Ai.LUIS.xml</DocumentationFile>
 	</PropertyGroup>
-	
+
+	<PropertyGroup>
+	  <CodeAnalysisRuleSet>Microsoft.Bot.Builder.Ai.LUIS.ruleset</CodeAnalysisRuleSet>
+	</PropertyGroup>
+
 	<ItemGroup>
+    <PackageReference Include="AsyncUsageAnalyzers" Version="1.0.0-alpha003" PrivateAssets="all" />
     <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(PackageVersion)' == '' " Version="4.0.0-local" />
     <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(PackageVersion)' != '' " Version="$(PackageVersion)" />
     <PackageReference Include="Microsoft.Rest.ClientRuntime" Version="2.3.10" />
 		<PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
 		<PackageReference Include="SourceLink.Create.CommandLine" Version="2.8.1" />
+    <PackageReference Include="StyleCop.Analyzers" Version="1.1.0-beta008" PrivateAssets="all" />
 	</ItemGroup>
 
   <ItemGroup>
