@@ -10,10 +10,10 @@ namespace Microsoft.Bot.Builder.BotFramework
     /// Loads credentials from the <see cref="ConfigurationManager.AppSettings"/>.
     /// </summary>
     /// <remarks>
-    /// This will populate the <see cref="SimpleCredentialProvider.AppId"/> from an app setting entry with the key of <see cref="MicrosoftAppCredentials.MicrosoftAppIdKey"/> 
+    /// This will populate the <see cref="SimpleCredentialProvider.AppId"/> from an app setting entry with the key of <see cref="MicrosoftAppCredentials.MicrosoftAppIdKey"/>
     /// and the <see cref="SimpleCredentialProvider.Password"/> from an app setting with the key of <see cref="MicrosoftAppCredentials.MicrosoftAppPasswordKey"/>.
-    /// 
-    /// NOTE: if the keys are not present, a <code>null</code> value will be used. 
+    ///
+    /// NOTE: if the keys are not present, a <c>null</c> value will be used.
     /// </remarks>
     public sealed class ConfigurationCredentialProvider : SimpleCredentialProvider
     {
