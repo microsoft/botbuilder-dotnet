@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Handlers
             DateTimeZoneHandling = DateTimeZoneHandling.Utc,
             ReferenceLoopHandling = ReferenceLoopHandling.Serialize,
             ContractResolver = new ReadOnlyJsonContractResolver(),
-            Converters = new List<JsonConverter> { new Iso8601TimeSpanConverter() }
+            Converters = new List<JsonConverter> { new Iso8601TimeSpanConverter() },
         });
 
         public BotMessageHandlerBase()
@@ -67,7 +67,6 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Handlers
             try
             {
                 // TODO wire up cancellation
-
                 var invokeResponse = await ProcessMessageRequestAsync(
                     request,
                     botFrameworkAdapter,
