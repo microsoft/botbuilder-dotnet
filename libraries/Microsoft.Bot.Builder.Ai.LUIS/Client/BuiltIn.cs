@@ -9,15 +9,18 @@ using System.Text.RegularExpressions;
 namespace Microsoft.Bot.Builder.Ai.LUIS
 {
     /// <summary>
-    /// This class represents LUIS BuiltIn entities.
+    /// This class represents built-in LUIS entities.
     /// </summary>
     public static partial class BuiltIn
     {
         /// <summary>
-        /// Strongly typed LUIS builtin_datetime.
+        /// Strongly-typed LUIS built-in date-time type.
         /// </summary>
         public static partial class DateTime
         {
+            /// <summary>
+            /// Identifies recognized times of day.
+            /// </summary>
             public enum DayPart
             {
                 /// <summary>
@@ -51,6 +54,9 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
                 NI,
             }
 
+            /// <summary>
+            /// Identifies relationships between times.
+            /// </summary>
             public enum Reference
             {
                 /// <summary>
@@ -72,10 +78,20 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
                 FUTURE_REF,
             }
 
+            /// <summary>
+            /// Represents a LUIS date-time value.
+            /// </summary>
             [Serializable]
             public sealed class DateTimeResolution : Resolution, IEquatable<DateTimeResolution>
             {
+                /// <summary>
+                /// The options LUIS uses when recognizing a date-time.
+                /// </summary>
                 public const RegexOptions Options = RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.IgnorePatternWhitespace;
+
+                /// <summary>
+                /// The pattern LUIS uses to recognize a date.
+                /// </summary>
                 public const string PatternDate =
                @"
                     (?:
@@ -93,6 +109,9 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
                     )
                 ";
 
+                /// <summary>
+                /// The pattern LUIS uses to recognize a time.
+                /// </summary>
                 public const string PatternTime =
                 @"
                     (?:
@@ -113,7 +132,14 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
                     )
                 ";
 
+                /// <summary>
+                /// The pattern LUIS uses to recognize a date-time.
+                /// </summary>
                 public static readonly string Pattern = $"^({PatternDate}{PatternTime} | {PatternDate} | {PatternTime})$";
+
+                /// <summary>
+                /// The expression LUIS uses to recognize a date-time.
+                /// </summary>
                 public static readonly Regex Regex = new Regex(Pattern, Options);
 
                 private static readonly IReadOnlyDictionary<string, Reference> ReferenceByText
@@ -124,6 +150,19 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
                                         { "FUTURE_REF", DateTime.Reference.FUTURE_REF },
                     };
 
+                /// <summary>
+                /// Initializes a new instance of the <see cref="DateTimeResolution"/> class.
+                /// </summary>
+                /// <param name="reference">Relationship to the time at which the result was generated.</param>
+                /// <param name="year">The year.</param>
+                /// <param name="month">The month.</param>
+                /// <param name="day">The day of the month.</param>
+                /// <param name="week">The week of the year.</param>
+                /// <param name="dayOfWeek">The day of the week.</param>
+                /// <param name="dayPart">The time of day.</param>
+                /// <param name="hour">The hour.</param>
+                /// <param name="minute">The minute.</param>
+                /// <param name="second">The second.</param>
                 public DateTimeResolution(
                    Reference? reference = null,
                    int? year = null,
@@ -148,6 +187,10 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
                     this.Second = second;
                 }
 
+                /// <summary>
+                /// Initializes a new instance of the <see cref="DateTimeResolution"/> class.
+                /// </summary>
+                /// <param name="dateTime">The date-time to convert to a <see cref="DateTimeResolution"/>.</param>
                 public DateTimeResolution(System.DateTime dateTime)
                 {
                     this.Year = dateTime.Year;
@@ -158,26 +201,73 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
                     this.Second = dateTime.Second;
                 }
 
+                /// <summary>
+                /// Gets the relationship to the time at which the result was generated.
+                /// </summary>
+                /// <value>The relationship to the time at which the result was generated.</value>
                 public Reference? Reference { get; }
 
+                /// <summary>
+                /// Gets the year.
+                /// </summary>
+                /// <value>The year.</value>
                 public int? Year { get; }
 
+                /// <summary>
+                /// Gets the month.
+                /// </summary>
+                /// <value>The month.</value>
                 public int? Month { get; }
 
+                /// <summary>
+                /// Gets the day of the month.
+                /// </summary>
+                /// <value>The day of the month.</value>
                 public int? Day { get; }
 
+                /// <summary>
+                /// Gets the week of the year.
+                /// </summary>
+                /// <value>The week of the year.</value>
                 public int? Week { get; }
 
+                /// <summary>
+                /// Gets the day of the week.
+                /// </summary>
+                /// <value>The day of the week.</value>
                 public DayOfWeek? DayOfWeek { get; }
 
+                /// <summary>
+                /// Gets the time of day.
+                /// </summary>
+                /// <value>The time of day.</value>
                 public DayPart? DayPart { get; }
 
+                /// <summary>
+                /// Gets the hour.
+                /// </summary>
+                /// <value>The hour.</value>
                 public int? Hour { get; }
 
+                /// <summary>
+                /// Gets the minute.
+                /// </summary>
+                /// <value>The minute.</value>
                 public int? Minute { get; }
 
+                /// <summary>
+                /// Gets the second.
+                /// </summary>
+                /// <value>The second.</value>
                 public int? Second { get; }
 
+                /// <summary>
+                /// Converts a string into a LUIS date-time value.  A return value indicates whether the conversion succeeded.
+                /// </summary>
+                /// <param name="text">The string to parse.</param>
+                /// <param name="resolution">When this method returns, contains the date-time, if the conversion succeeded, or
+                /// null, if the conversion failed.</param>
+                /// <returns>True if the conversion succeeded; otherwise, false.</returns>
                 public static bool TryParse(string text, out DateTimeResolution resolution)
                 {
                     if (ReferenceByText.TryGetValue(text, out var reference))
@@ -211,6 +301,7 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
                     return false;
                 }
 
+                /// <inheritdoc/>
                 public bool Equals(DateTimeResolution other) => other != null
                         && this.Reference == other.Reference
                         && this.Year == other.Year
@@ -223,8 +314,15 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
                         && this.Minute == other.Minute
                         && this.Second == other.Second;
 
+                /// <summary>
+                /// Returns a value indicating whether this instance is equal to a specified object.
+                /// </summary>
+                /// <param name="other">The object to compare.</param>
+                /// <returns>True if <paramref name="other"/> is a <see cref="DateTimeResolution"/> object
+                /// and equals the value of this instance; otherwise, false.</returns>
                 public override bool Equals(object other) => this.Equals(other as DateTimeResolution);
 
+                /// <inheritdoc/>
                 public override int GetHashCode() => throw new NotImplementedException();
             }
 
@@ -259,6 +357,12 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
                 return null;
             }
 
+            /// <summary>
+            /// Converts the results from a single capturing group to an enumeration value.
+            /// </summary>
+            /// <typeparam name="T">The enumeration type.</typeparam>
+            /// <param name="group">The capturing group.</param>
+            /// <returns>The enumeration value, if successful; otherwise, null.</returns>
             private static T? ParseEnumOrNull<T>(Group group)
                 where T : struct
             {
