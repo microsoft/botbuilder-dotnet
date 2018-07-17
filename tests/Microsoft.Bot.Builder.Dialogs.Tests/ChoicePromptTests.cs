@@ -61,12 +61,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [TestMethod]
         public async Task ShouldSendPrompt()
         {
+            ConversationState convoState = new ConversationState(new MemoryStorage());
+            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test");
+
             TestAdapter adapter = new TestAdapter()
-                .Use(new ConversationState<Dictionary<string, object>>(new MemoryStorage()));
+                .Use(convoState);
 
             await new TestFlow(adapter, async (turnContext) =>
             {
-                var state = ConversationState<Dictionary<string, object>>.Get(turnContext);
+                var state = await testProperty.GetAsync(turnContext);
                 var prompt = new ChoicePrompt(Culture.English);
 
                 var dialogCompletion = await prompt.Continue(turnContext, state);
@@ -88,12 +91,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [TestMethod]
         public async Task ShouldSendPromptAsAnInlineList()
         {
+            ConversationState convoState = new ConversationState(new MemoryStorage());
+            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test");
+
             TestAdapter adapter = new TestAdapter()
-                .Use(new ConversationState<Dictionary<string, object>>(new MemoryStorage()));
+                .Use(convoState);
 
             await new TestFlow(adapter, async (turnContext) =>
             {
-                var state = ConversationState<Dictionary<string, object>>.Get(turnContext);
+                var state = await testProperty.GetAsync(turnContext);
                 var prompt = new ChoicePrompt(Culture.English);
                 prompt.Style = ListStyle.Inline;
 
@@ -116,12 +122,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [TestMethod]
         public async Task ShouldSendPromptAsANumberedList()
         {
+            ConversationState convoState = new ConversationState(new MemoryStorage());
+            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test");
+
             TestAdapter adapter = new TestAdapter()
-                .Use(new ConversationState<Dictionary<string, object>>(new MemoryStorage()));
+                .Use(convoState);
 
             await new TestFlow(adapter, async (turnContext) =>
             {
-                var state = ConversationState<Dictionary<string, object>>.Get(turnContext);
+                var state = await testProperty.GetAsync(turnContext);
                 var prompt = new ChoicePrompt(Culture.English);
                 prompt.Style = ListStyle.List;
 
@@ -144,12 +153,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [TestMethod]
         public async Task ShouldSendPromptUsingSuggestedActions()
         {
+            ConversationState convoState = new ConversationState(new MemoryStorage());
+            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test");
+
             TestAdapter adapter = new TestAdapter()
-                .Use(new ConversationState<Dictionary<string, object>>(new MemoryStorage()));
+                .Use(convoState);
 
             await new TestFlow(adapter, async (turnContext) =>
             {
-                var state = ConversationState<Dictionary<string, object>>.Get(turnContext);
+                var state = await testProperty.GetAsync(turnContext);
                 var prompt = new ChoicePrompt(Culture.English);
                 prompt.Style = ListStyle.SuggestedAction;
 
@@ -181,12 +193,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [TestMethod]
         public async Task ShouldSendPromptWithoutAddingAList()
         {
+            ConversationState convoState = new ConversationState(new MemoryStorage());
+            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test");
+
             TestAdapter adapter = new TestAdapter()
-                .Use(new ConversationState<Dictionary<string, object>>(new MemoryStorage()));
+                .Use(convoState);
 
             await new TestFlow(adapter, async (turnContext) =>
             {
-                var state = ConversationState<Dictionary<string, object>>.Get(turnContext);
+                var state = await testProperty.GetAsync(turnContext);
                 var prompt = new ChoicePrompt(Culture.English);
                 prompt.Style = ListStyle.None;
 
@@ -209,12 +224,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [TestMethod]
         public async Task ShouldSendPromptWithoutAddingAListButAddingSsml()
         {
+            ConversationState convoState = new ConversationState(new MemoryStorage());
+            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test");
+
             TestAdapter adapter = new TestAdapter()
-                .Use(new ConversationState<Dictionary<string, object>>(new MemoryStorage()));
+                .Use(convoState);
 
             await new TestFlow(adapter, async (turnContext) =>
             {
-                var state = ConversationState<Dictionary<string, object>>.Get(turnContext);
+                var state = await testProperty.GetAsync(turnContext);
                 var prompt = new ChoicePrompt(Culture.English);
                 prompt.Style = ListStyle.None;
 
@@ -238,12 +256,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [TestMethod]
         public async Task ShouldSendActivityBasedPrompt()
         {
+            ConversationState convoState = new ConversationState(new MemoryStorage());
+            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test");
+
             TestAdapter adapter = new TestAdapter()
-                .Use(new ConversationState<Dictionary<string, object>>(new MemoryStorage()));
+                .Use(convoState);
 
             await new TestFlow(adapter, async (turnContext) =>
             {
-                var state = ConversationState<Dictionary<string, object>>.Get(turnContext);
+                var state = await testProperty.GetAsync(turnContext);
                 var prompt = new ChoicePrompt(Culture.English);
                 prompt.Style = ListStyle.None;
 
@@ -266,12 +287,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [TestMethod]
         public async Task ShouldSendActivityBasedPromptWithSsml()
         {
+            ConversationState convoState = new ConversationState(new MemoryStorage());
+            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test");
+
             TestAdapter adapter = new TestAdapter()
-                .Use(new ConversationState<Dictionary<string, object>>(new MemoryStorage()));
+                .Use(convoState);
 
             await new TestFlow(adapter, async (turnContext) =>
             {
-                var state = ConversationState<Dictionary<string, object>>.Get(turnContext);
+                var state = await testProperty.GetAsync(turnContext);
                 var prompt = new ChoicePrompt(Culture.English);
 
                 var dialogCompletion = await prompt.Continue(turnContext, state);
@@ -294,12 +318,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [TestMethod]
         public async Task ShouldRecognizeAChoice()
         {
+            ConversationState convoState = new ConversationState(new MemoryStorage());
+            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test");
+
             TestAdapter adapter = new TestAdapter()
-                .Use(new ConversationState<Dictionary<string, object>>(new MemoryStorage()));
+                .Use(convoState);
 
             await new TestFlow(adapter, async (turnContext) =>
             {
-                var state = ConversationState<Dictionary<string, object>>.Get(turnContext);
+                var state = await testProperty.GetAsync(turnContext);
                 var prompt = new ChoicePrompt(Culture.English);
                 prompt.Style = ListStyle.None;
 
@@ -329,12 +356,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [TestMethod]
         public async Task ShouldNOTrecognizeOtherText()
         {
+            ConversationState convoState = new ConversationState(new MemoryStorage());
+            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test");
+
             TestAdapter adapter = new TestAdapter()
-                .Use(new ConversationState<Dictionary<string, object>>(new MemoryStorage()));
+                .Use(convoState);
 
             await new TestFlow(adapter, async (turnContext) =>
             {
-                var state = ConversationState<Dictionary<string, object>>.Get(turnContext);
+                var state = await testProperty.GetAsync(turnContext);
                 var prompt = new ChoicePrompt(Culture.English);
                 prompt.Style = ListStyle.None;
 
@@ -367,20 +397,23 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [TestMethod]
         public async Task ShouldCallCustomValidator()
         {
+            ConversationState convoState = new ConversationState(new MemoryStorage());
+            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test");
+
             TestAdapter adapter = new TestAdapter()
-                .Use(new ConversationState<Dictionary<string, object>>(new MemoryStorage()));
+                .Use(convoState);
 
             PromptValidator<ChoiceResult> validator = (ITurnContext context, ChoiceResult result) =>
             {
-                // TODO: the current model has no way for this status to bubble up
-                result.Status = "validation failed";
+                    // TODO: the current model has no way for this status to bubble up
+                    result.Status = "validation failed";
                 result.Value = null;
                 return Task.CompletedTask;
             };
 
             await new TestFlow(adapter, async (turnContext) =>
             {
-                var state = ConversationState<Dictionary<string, object>>.Get(turnContext);
+                var state = await testProperty.GetAsync(turnContext);
                 var prompt = new ChoicePrompt(Culture.English, validator);
                 prompt.Style = ListStyle.None;
 
@@ -412,8 +445,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [TestMethod]
         public async Task ShouldHandleAnUndefinedRequest()
         {
+            ConversationState convoState = new ConversationState(new MemoryStorage());
+            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test");
+
             TestAdapter adapter = new TestAdapter()
-                .Use(new ConversationState<Dictionary<string, object>>(new MemoryStorage()));
+                .Use(convoState);
 
             PromptValidator<ChoiceResult> validator = (ITurnContext context, ChoiceResult result) =>
             {
@@ -423,7 +459,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             await new TestFlow(adapter, async (turnContext) =>
             {
-                var state = ConversationState<Dictionary<string, object>>.Get(turnContext);
+                var state = await testProperty.GetAsync(turnContext); 
                 var prompt = new ChoicePrompt(Culture.English, validator);
                 prompt.Style = ListStyle.None;
 
