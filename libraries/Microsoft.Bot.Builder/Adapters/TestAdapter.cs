@@ -169,7 +169,7 @@ namespace Microsoft.Bot.Builder.Adapters
                     // more realistic tests.
                     await Task.Delay(delayActivity.Delay).ConfigureAwait(false);
                 }
-                else if (activity.Type == ActivityTypes.Trace)
+                else if (activity is TraceActivity)
                 {
                     if (_sendTraceActivity)
                     {

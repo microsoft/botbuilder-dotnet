@@ -273,7 +273,7 @@ namespace Microsoft.Bot.Builder
 
                     activity.Id = responses[index].Id;
 
-                    sentNonTraceActivity |= activity.Type != ActivityTypes.Trace;
+                    sentNonTraceActivity |= !(activity is TraceActivity);
                 }
 
                 if (sentNonTraceActivity)
