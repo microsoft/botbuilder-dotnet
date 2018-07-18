@@ -38,7 +38,7 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
         /// <inheritdoc />
         public async Task<RecognizerResult> RecognizeAsync(string utterance, CancellationToken ct)
         {
-            return await RecognizeInternal(utterance, ct).ConfigureAwait(false);
+            return await RecognizeInternalAsync(utterance, ct).ConfigureAwait(false);
         }
 
         /// <inheritdoc />
@@ -46,7 +46,7 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
             where T : IRecognizerConvert, new()
         {
             var result = new T();
-            result.Convert(await RecognizeInternal(utterance, ct).ConfigureAwait(false));
+            result.Convert(await RecognizeInternalAsync(utterance, ct).ConfigureAwait(false));
             return result;
         }
 
@@ -303,7 +303,7 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
             }
         }
 
-        private Task<RecognizerResult> RecognizeInternal(string utterance, CancellationToken ct)
+        private Task<RecognizerResult> RecognizeInternalAsync(string utterance, CancellationToken ct)
         {
             if (string.IsNullOrEmpty(utterance))
             {
@@ -312,10 +312,10 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
 
             var luisRequest = new LuisRequest(utterance);
             _luisOptions.Apply(luisRequest);
-            return Recognize(luisRequest, ct, _luisRecognizerOptions.Verbose);
+            return RecognizeAsync(luisRequest, ct, _luisRecognizerOptions.Verbose);
         }
 
-        private async Task<RecognizerResult> Recognize(LuisRequest request, CancellationToken ct, bool verbose)
+        private async Task<RecognizerResult> RecognizeAsync(LuisRequest request, CancellationToken ct, bool verbose)
         {
             var luisResult = await _luisService.QueryAsync(request, ct).ConfigureAwait(false);
             var recognizerResult = new RecognizerResult

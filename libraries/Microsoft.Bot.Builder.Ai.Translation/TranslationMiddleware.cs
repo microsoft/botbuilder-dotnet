@@ -26,7 +26,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         private List<IPostProcessor> attachedPostProcessors;
 
         /// <summary>
-        /// Creates a new <see cref="TranslationMiddleware"/> object.
+        /// Initializes a new instance of the <see cref="TranslationMiddleware"/> class.
         /// </summary>
         /// <param name="nativeLanguages">The languages supported by your app.</param>
         /// <param name="translatorKey">Your subscription key for the Microsoft Translator Text API.</param>
@@ -36,40 +36,48 @@ namespace Microsoft.Bot.Builder.Ai.Translation
             AssertValidNativeLanguages(nativeLanguages);
             this._nativeLanguages = nativeLanguages;
             if (string.IsNullOrEmpty(translatorKey))
+            {
                 throw new ArgumentNullException(nameof(translatorKey));
+            }
+
             this._translator = new Translator(translatorKey);
             _patterns = new Dictionary<string, List<string>>();
             _userCustomDictonaries = new CustomDictionary();
             _toUserLanguage = toUserLanguage;
         }
 
-
         /// <summary>
-        /// Creates a new <see cref="TranslationMiddleware"/> object.
+        /// Initializes a new instance of the <see cref="TranslationMiddleware"/> class.
         /// </summary>
         /// <param name="nativeLanguages">The languages supported by your app.</param>
         /// <param name="translatorKey">Your subscription key for the Microsoft Translator Text API.</param>
-        /// <param name="patterns">List of regex patterns, indexed by language identifier, 
+        /// <param name="patterns">List of regex patterns, indexed by language identifier,
         /// that can be used to flag text that should not be translated.</param>
         /// /// <param name="userCustomDictonaries">Custom languages dictionary object, used to store all the different languages dictionaries
         /// configured by the user to overwrite the translator output to certain vocab by the custom dictionary translation.</param>
         /// <param name="toUserLanguage">Indicates whether to translate messages sent from the bot into the user's language.</param>
         /// <remarks>Each pattern the <paramref name="patterns"/> describes an entity that should not be translated.
         /// For example, in French <c>je m’appelle ([a-z]+)</c>, which will avoid translation of anything coming after je m’appelle.</remarks>
-        public TranslationMiddleware(string[] nativeLanguages, string translatorKey, Dictionary<string, List<string>> patterns, CustomDictionary userCustomDictonaries, bool toUserLanguage = false) : this(nativeLanguages, translatorKey, toUserLanguage)
+        public TranslationMiddleware(string[] nativeLanguages, string translatorKey, Dictionary<string, List<string>> patterns, CustomDictionary userCustomDictonaries, bool toUserLanguage = false)
+            : this(nativeLanguages, translatorKey, toUserLanguage)
         {
             if (patterns != null)
+            {
                 this._patterns = patterns;
+            }
+
             if (userCustomDictonaries != null)
+            {
                 this._userCustomDictonaries = userCustomDictonaries;
+            }
         }
 
         /// <summary>
-        /// Creates a new <see cref="TranslationMiddleware"/> object.
+        /// Initializes a new instance of the <see cref="TranslationMiddleware"/> class.
         /// </summary>
         /// <param name="nativeLanguages">List of languages supported by your app</param>
         /// <param name="translatorKey">Your subscription key for the Microsoft Translator Text API.</param>
-        /// <param name="patterns">List of regex patterns, indexed by language identifier, 
+        /// <param name="patterns">List of regex patterns, indexed by language identifier,
         /// that can be used to flag text that should not be translated.</param>
         /// <param name="userCustomDictonaries">Custom languages dictionary object, used to store all the different languages dictionaries
         /// configured by the user to overwrite the translator output to certain vocab by the custom dictionary translation.</param>
@@ -77,7 +85,8 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         /// <param name="toUserLanguage">Indicates whether to translate messages sent from the bot into the user's language.</param>
         /// <remarks>Each pattern the <paramref name="patterns"/> describes an entity that should not be translated.
         /// For example, in French <c>je m’appelle ([a-z]+)</c>, which will avoid translation of anything coming after je m’appelle.</remarks>
-        public TranslationMiddleware(string[] nativeLanguages, string translatorKey, Dictionary<string, List<string>> patterns, CustomDictionary userCustomDictonaries, IPropertyAccessor<string> languageStateProperty, bool toUserLanguage = false) : this(nativeLanguages, translatorKey, patterns, userCustomDictonaries, toUserLanguage)
+        public TranslationMiddleware(string[] nativeLanguages, string translatorKey, Dictionary<string, List<string>> patterns, CustomDictionary userCustomDictonaries, IPropertyAccessor<string> languageStateProperty, bool toUserLanguage = false)
+            : this(nativeLanguages, translatorKey, patterns, userCustomDictonaries, toUserLanguage)
         {
             _languageStateProperty = languageStateProperty ?? throw new ArgumentNullException(nameof(languageStateProperty));
         }
@@ -85,7 +94,9 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         private static void AssertValidNativeLanguages(string[] nativeLanguages)
         {
             if (nativeLanguages == null)
+            {
                 throw new ArgumentNullException(nameof(nativeLanguages));
+            }
         }
 
         /// <summary>
@@ -93,31 +104,35 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         /// </summary>
         /// <param name="context">The context object for this turn.</param>
         /// <param name="next">The delegate to call to continue the bot middleware pipeline.</param>
-        public virtual async Task OnTurnAsync(ITurnContext context, NextDelegate next, CancellationToken cancellationToken)
+        /// <param name="cancellationToken">cancellationToken</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        public virtual async Task OnTurnAsync(ITurnContext context, NextDelegate next, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (context.Activity.Type == ActivityTypes.Message)
             {
                 IMessageActivity message = context.Activity.AsMessageActivity();
                 if (message != null)
                 {
-                    if (!String.IsNullOrWhiteSpace(message.Text))
+                    if (!string.IsNullOrWhiteSpace(message.Text))
                     {
                         // determine the language we are using for this conversation
-                        var sourceLanguage = "";
-                        var targetLanguage = "";
+                        var sourceLanguage = string.Empty;
+                        var targetLanguage = string.Empty;
                         if (_languageStateProperty == null)
-                            sourceLanguage = await _translator.DetectAsync(message.Text); //awaiting user language detection using Microsoft Translator API.
+                        {
+                            sourceLanguage = await _translator.DetectAsync(message.Text).ConfigureAwait(false); // awaiting user language detection using Microsoft Translator API.
+                        }
                         else
                         {
-                            sourceLanguage = await _languageStateProperty.GetAsync(context) ?? "en";
+                            sourceLanguage = await _languageStateProperty.GetAsync(context).ConfigureAwait(false) ?? "en";
                         }
 
-                        targetLanguage = (_nativeLanguages.Contains(sourceLanguage)) ? sourceLanguage : _nativeLanguages.FirstOrDefault() ?? "en";
+                        targetLanguage = _nativeLanguages.Contains(sourceLanguage) ? sourceLanguage : _nativeLanguages.FirstOrDefault() ?? "en";
                         await TranslateMessageAsync(context, message, sourceLanguage, targetLanguage, _nativeLanguages.Contains(sourceLanguage)).ConfigureAwait(false);
 
                         context.OnSendActivities(async (newContext, activities, nextSend) =>
                         {
-                            //Translate messages sent to the user to user language
+                            // Translate messages sent to the user to user language
                             if (_toUserLanguage)
                             {
                                 List<Task> tasks = new List<Task>();
@@ -125,16 +140,19 @@ namespace Microsoft.Bot.Builder.Ai.Translation
                                 {
                                     tasks.Add(TranslateMessageAsync(newContext, currentActivity.AsMessageActivity(), targetLanguage, sourceLanguage, false));
                                 }
+
                                 if (tasks.Any())
+                                {
                                     await Task.WhenAll(tasks).ConfigureAwait(false);
+                                }
                             }
 
-                            return await nextSend();
+                            return await nextSend().ConfigureAwait(false);
                         });
 
                         context.OnUpdateActivity(async (newContext, activity, nextUpdate) =>
                         {
-                            //Translate messages sent to the user to user language
+                            // Translate messages sent to the user to user language
                             if (activity.Type == ActivityTypes.Message)
                             {
                                 if (_toUserLanguage)
@@ -143,11 +161,12 @@ namespace Microsoft.Bot.Builder.Ai.Translation
                                 }
                             }
 
-                            return await nextUpdate();
+                            return await nextUpdate().ConfigureAwait(false);
                         });
                     }
                 }
             }
+
             await next(cancellationToken).ConfigureAwait(false);
         }
 
@@ -161,6 +180,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation
             {
                 attachedPostProcessors.Add(new PatternsPostProcessor(_patterns));
             }
+
             if (_userCustomDictonaries != null && !_userCustomDictonaries.IsEmpty())
             {
                 attachedPostProcessors.Add(new CustomDictionaryPostProcessor(_userCustomDictonaries));
@@ -178,7 +198,8 @@ namespace Microsoft.Bot.Builder.Ai.Translation
             {
                 InitializePostProcessors();
             }
-            foreach (TranslatedDocument translatedDocument in translatedDocuments)
+
+            foreach (var translatedDocument in translatedDocuments)
             {
                 foreach (IPostProcessor postProcessor in attachedPostProcessors)
                 {
@@ -194,18 +215,21 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         /// <param name="message">The activity containing the text to translate.</param>
         /// <param name="sourceLanguage">An identifier for the language to translate from.</param>
         /// <param name="targetLanguage">An identifier for the language to translate to.</param>
+        /// <param name="inNativeLanguages">should only use native langauges</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <remarks>When the task completes successfully, the <see cref="Activity.Text"/> property
         /// of the message contains the translated text.</remarks>
-        private async Task TranslateMessageAsync(ITurnContext context, IMessageActivity message, string sourceLanguage, string targetLanguage, bool InNativeLanguages)
+        private async Task TranslateMessageAsync(ITurnContext context, IMessageActivity message, string sourceLanguage, string targetLanguage, bool inNativeLanguages)
         {
-            if (!InNativeLanguages && sourceLanguage != targetLanguage)
+            if (!inNativeLanguages && sourceLanguage != targetLanguage)
             {
                 // if we have text and a target language
-                if (!String.IsNullOrWhiteSpace(message.Text) && !String.IsNullOrEmpty(targetLanguage))
+                if (!string.IsNullOrWhiteSpace(message.Text) && !string.IsNullOrEmpty(targetLanguage))
                 {
                     if (targetLanguage == sourceLanguage)
+                    {
                         return;
+                    }
 
                     var text = message.Text;
                     string[] lines = text.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None);
@@ -214,7 +238,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation
                     // post process all translated documents
                     PostProcesseDocuments(translateResult, sourceLanguage);
                     text = string.Empty;
-                    foreach (TranslatedDocument translatedDocument in translateResult)
+                    foreach (var translatedDocument in translateResult)
                     {
                         text += string.Join("\n", translatedDocument.TargetMessage);
                     }

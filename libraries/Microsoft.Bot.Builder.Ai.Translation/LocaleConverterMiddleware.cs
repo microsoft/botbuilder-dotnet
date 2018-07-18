@@ -1,11 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-
-using Microsoft.Bot.Schema;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.Ai.Translation
 {
@@ -28,10 +27,14 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         {
             _localeConverter = localeConverter ?? throw new ArgumentNullException(nameof(localeConverter));
             if (string.IsNullOrEmpty(toLocale))
+            {
                 throw new ArgumentNullException(nameof(toLocale));
-
+            }
             else if (!localeConverter.IsLocaleAvailable(toLocale))
+            {
                 throw new ArgumentNullException("The locale " + nameof(toLocale) + " is unavailable");
+            }
+
             _toLocale = toLocale;
             _userLocaleProperty = userLocaleProperty ?? throw new ArgumentNullException(nameof(userLocaleProperty));
         }
@@ -49,9 +52,9 @@ namespace Microsoft.Bot.Builder.Ai.Translation
                 IMessageActivity message = context.Activity.AsMessageActivity();
                 if (message != null)
                 {
-                    if (!String.IsNullOrWhiteSpace(message.Text))
+                    if (!string.IsNullOrWhiteSpace(message.Text))
                     {
-                        string userLocale = await _userLocaleProperty.GetAsync(context);
+                        string userLocale = await _userLocaleProperty.GetAsync(context).ConfigureAwait(false);
                         if (userLocale != _toLocale)
                         {
                             ConvertLocaleMessage(context, userLocale);
@@ -59,6 +62,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation
                     }
                 }
             }
+
             await next(cancellationToken).ConfigureAwait(false);
         }
 

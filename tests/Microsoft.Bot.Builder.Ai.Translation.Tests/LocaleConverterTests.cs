@@ -70,7 +70,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
             Assert.ThrowsException<InvalidOperationException>(() =>
                 localeConverter.Convert("Book me a plane ticket for France on 12/25/2018", "en-us", "fr-"));
             Assert.ThrowsException<ArgumentNullException>(() =>
-                localeConverter.Convert("Book me a plane ticket for France on 12/25/2018", "en-us", String.Empty));
+                localeConverter.Convert("Book me a plane ticket for France on 12/25/2018", "en-us", string.Empty));
             Assert.ThrowsException<ArgumentNullException>(() =>
                 localeConverter.Convert("Book me a plane ticket for France on 12/25/2018", "en-us", null));
         }

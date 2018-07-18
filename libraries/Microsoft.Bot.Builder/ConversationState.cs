@@ -10,12 +10,11 @@ namespace Microsoft.Bot.Builder
     public class ConversationState : BotState
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ConversationState{TState}"/> class.
+        /// Initializes a new instance of the <see cref="ConversationState"/> class.
         /// </summary>
         /// <param name="storage">The storage provider to use.</param>
         public ConversationState(IStorage storage)
-            : base(storage, nameof(ConversationState),
-                (context) => $"conversation/{context.Activity.ChannelId}/{context.Activity.Conversation.Id}")
+            : base(storage, nameof(ConversationState), (context) => $"conversation/{context.Activity.ChannelId}/{context.Activity.Conversation.Id}")
         {
         }
     }
