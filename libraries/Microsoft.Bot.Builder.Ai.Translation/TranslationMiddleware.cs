@@ -21,7 +21,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         private readonly Translator _translator;
         private readonly CustomDictionary _userCustomDictonaries;
         private readonly Dictionary<string, List<string>> _patterns;
-        private readonly IPropertyAccessor<string> _languageStateProperty;
+        private readonly IStatePropertyAccessor<string> _languageStateProperty;
         private readonly bool _toUserLanguage;
         private List<IPostProcessor> attachedPostProcessors;
 
@@ -85,7 +85,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         /// <param name="toUserLanguage">Indicates whether to translate messages sent from the bot into the user's language.</param>
         /// <remarks>Each pattern the <paramref name="patterns"/> describes an entity that should not be translated.
         /// For example, in French <c>je m’appelle ([a-z]+)</c>, which will avoid translation of anything coming after je m’appelle.</remarks>
-        public TranslationMiddleware(string[] nativeLanguages, string translatorKey, Dictionary<string, List<string>> patterns, CustomDictionary userCustomDictonaries, IPropertyAccessor<string> languageStateProperty, bool toUserLanguage = false)
+        public TranslationMiddleware(string[] nativeLanguages, string translatorKey, Dictionary<string, List<string>> patterns, CustomDictionary userCustomDictonaries, IStatePropertyAccessor<string> languageStateProperty, bool toUserLanguage = false)
             : this(nativeLanguages, translatorKey, patterns, userCustomDictonaries, toUserLanguage)
         {
             _languageStateProperty = languageStateProperty ?? throw new ArgumentNullException(nameof(languageStateProperty));

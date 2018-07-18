@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation
     {
         private readonly ILocaleConverter _localeConverter;
         private readonly string _toLocale;
-        private readonly IPropertyAccessor<string> _userLocaleProperty;
+        private readonly IStatePropertyAccessor<string> _userLocaleProperty;
 
         /// <summary>
         /// Constructor for developer defined detection of user messages
@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         /// <param name="userLocaleProperty">PropertyAccessor for the users preferred locale</param>
         /// <param name="toLocale">Target Locale</param>
         /// <param name="localeConverter">An ILocaleConverter instance</param>
-        public LocaleConverterMiddleware(IPropertyAccessor<string> userLocaleProperty, string toLocale, ILocaleConverter localeConverter)
+        public LocaleConverterMiddleware(IStatePropertyAccessor<string> userLocaleProperty, string toLocale, ILocaleConverter localeConverter)
         {
             _localeConverter = localeConverter ?? throw new ArgumentNullException(nameof(localeConverter));
             if (string.IsNullOrEmpty(toLocale))
