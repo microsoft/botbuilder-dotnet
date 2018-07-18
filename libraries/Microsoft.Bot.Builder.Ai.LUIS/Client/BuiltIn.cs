@@ -228,7 +228,9 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
                 public override int GetHashCode() => throw new NotImplementedException();
             }
 
+#pragma warning disable SA1201 // Elements should appear in the correct order
             private static int? ParseIntOrNull(Group group)
+#pragma warning restore SA1201 // Elements should appear in the correct order
             {
                 if (group.Success)
                 {
