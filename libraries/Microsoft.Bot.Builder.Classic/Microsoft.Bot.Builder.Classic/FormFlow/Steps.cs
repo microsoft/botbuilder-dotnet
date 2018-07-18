@@ -302,7 +302,7 @@ namespace Microsoft.Bot.Builder.Classic.FormFlow.Advanced
                     }
                     else
                     {
-                        if (fieldState.Unmatched != "")
+                        if (fieldState.Unmatched != string.Empty)
                         {
                             feedbackPrompt = new Prompter<T>(_field.Template(TemplateUsage.Feedback), _field.Form, null).Prompt(state, _field, fieldState.Unmatched);
                         }
@@ -417,7 +417,7 @@ namespace Microsoft.Bot.Builder.Classic.FormFlow.Advanced
             }
             else if (feedback.Feedback == null)
             {
-                feedback.Feedback = "";
+                feedback.Feedback = string.Empty;
             }
             return feedback;
         }

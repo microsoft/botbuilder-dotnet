@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
@@ -15,19 +15,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [TestMethod]
         public async Task Waterfall()
         {
+            ConversationState convoState = new ConversationState(new MemoryStorage());
+            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test", () => new Dictionary<string, object>());
+
             TestAdapter adapter = new TestAdapter()
-                .Use(new ConversationState<Dictionary<string, object>>(new MemoryStorage()));
+                .Use(convoState);
 
             await new TestFlow(adapter, async (turnContext) =>
             {
+                var state = await testProperty.GetAsync(turnContext);
                 var waterfall = new Waterfall(new WaterfallStep[]
                 {
                     async (dc, args, next) => { await dc.Context.SendActivityAsync("step1"); },
                     async (dc, args, next) => { await dc.Context.SendActivityAsync("step2"); },
                     async (dc, args, next) => { await dc.Context.SendActivityAsync("step3"); },
                 });
-
-                var state = ConversationState<Dictionary<string, object>>.Get(turnContext);
 
                 var dialogCompletion = await waterfall.Continue(turnContext, state);
                 if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
@@ -47,16 +49,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [TestMethod]
         public async Task WaterfallPrompt()
         {
+            ConversationState convoState = new ConversationState(new MemoryStorage());
+            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test", () => new Dictionary<string, object>());
+
             TestAdapter adapter = new TestAdapter()
-                .Use(new ConversationState<Dictionary<string, object>>(new MemoryStorage()));
+                .Use(convoState);
 
             await new TestFlow(adapter, async (turnContext) =>
             {
+                var state = await testProperty.GetAsync(turnContext);
                 var dialogs = new DialogSet();
                 dialogs.Add("test-waterfall", Create_Waterfall2());
                 dialogs.Add("number", new NumberPrompt<int>(Culture.English));
 
-                var state = ConversationState<Dictionary<string, object>>.Get(turnContext);
                 var dc = dialogs.CreateContext(turnContext, state);
 
                 await dc.Continue();
@@ -123,17 +128,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [TestMethod]
         public async Task WaterfallNested()
         {
+            ConversationState convoState = new ConversationState(new MemoryStorage());
+            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test", () => new Dictionary<string, object>());
+
             TestAdapter adapter = new TestAdapter()
-                .Use(new ConversationState<Dictionary<string, object>>(new MemoryStorage()));
+                .Use(convoState);
 
             await new TestFlow(adapter, async (turnContext) =>
             {
+                var state = await testProperty.GetAsync(turnContext);
                 var dialogs = new DialogSet();
                 dialogs.Add("test-waterfall-a", Create_Waterfall3());
                 dialogs.Add("test-waterfall-b", Create_Waterfall4());
                 dialogs.Add("test-waterfall-c", Create_Waterfall5());
 
-                var state = ConversationState<Dictionary<string, object>>.Get(turnContext);
                 var dc = dialogs.CreateContext(turnContext, state);
 
                 await dc.Continue();
