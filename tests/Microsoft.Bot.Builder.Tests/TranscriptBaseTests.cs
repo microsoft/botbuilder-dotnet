@@ -216,7 +216,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
                 if (pageSize == 0)
                     pageSize = pagedResult.Items.Count();
                 else if (pageSize == pagedResult.Items.Count())
-                    Assert.IsTrue(!String.IsNullOrEmpty(pagedResult.ContinuationToken));
+                    Assert.IsTrue(!string.IsNullOrEmpty(pagedResult.ContinuationToken));
 
                 foreach (var item in pagedResult.Items)
                 {
@@ -256,7 +256,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
                 if (pageSize == 0)
                     pageSize = pagedResult.Items.Count();
                 else if (pageSize == pagedResult.Items.Count())
-                    Assert.IsTrue(!String.IsNullOrEmpty(pagedResult.ContinuationToken));
+                    Assert.IsTrue(!string.IsNullOrEmpty(pagedResult.ContinuationToken));
 
                 foreach (var item in pagedResult.Items)
                 {
@@ -305,7 +305,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
                 if (pageSize == 0)
                     pageSize = pagedResult.Items.Count();
                 else if (pageSize == pagedResult.Items.Count())
-                    Assert.IsTrue(!String.IsNullOrEmpty(pagedResult.ContinuationToken));
+                    Assert.IsTrue(!string.IsNullOrEmpty(pagedResult.ContinuationToken));
 
                 foreach (var item in pagedResult.Items)
                 {

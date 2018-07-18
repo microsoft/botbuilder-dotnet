@@ -30,28 +30,23 @@ namespace Microsoft.Bot.Builder.Azure
     /// </remarks>
     public class AzureBlobStorage : IStorage
     {
-        private readonly static JsonSerializer JsonSerializer = JsonSerializer.Create(new JsonSerializerSettings
+        private static readonly JsonSerializer JsonSerializer = JsonSerializer.Create(new JsonSerializerSettings
         {
             // we use All so that we get typed roundtrip out of storage, but we don't use validation because we don't know what types are valid
-            TypeNameHandling = TypeNameHandling.All
+            TypeNameHandling = TypeNameHandling.All,
         });
-        
 
         private readonly CloudStorageAccount _storageAccount;
         private readonly string _containerName;
         private CloudBlobContainer _container;
 
         /// <summary>
-        /// The Azure Storage Blob Container where entities will be stored
-        /// </summary>
-
-        /// <summary>
         /// Creates the AzureBlobStorage instance
         /// </summary>
-        /// <param name="dataConnectionString">Azure Storage connection string</param>
+        /// <param name="dataConnectionstring">Azure Storage connection string</param>
         /// <param name="containerName">Name of the Blob container where entities will be stored</param>
-        public AzureBlobStorage(string dataConnectionString, string containerName)
-            : this(CloudStorageAccount.Parse(dataConnectionString), containerName)
+        public AzureBlobStorage(string dataConnectionstring, string containerName)
+            : this(CloudStorageAccount.Parse(dataConnectionstring), containerName)
         {
         }
 
@@ -64,7 +59,7 @@ namespace Microsoft.Bot.Builder.Azure
         {
             _storageAccount = storageAccount ?? throw new ArgumentNullException(nameof(storageAccount));
             _containerName = containerName ?? throw new ArgumentNullException(nameof(containerName));
-            
+
             // Checks if a container name is valid
             NameValidator.ValidateContainerName(containerName);
         }
@@ -76,7 +71,10 @@ namespace Microsoft.Bot.Builder.Azure
         /// <returns></returns>
         public async Task DeleteAsync(string[] keys, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (keys == null) throw new ArgumentNullException(nameof(keys));
+            if (keys == null)
+            {
+                throw new ArgumentNullException(nameof(keys));
+            }
 
             var blobContainer = await GetBlobContainer().ConfigureAwait(false);
             await Task.WhenAll(
@@ -85,36 +83,39 @@ namespace Microsoft.Bot.Builder.Azure
                     var blobName = GetBlobName(key);
                     var blobReference = blobContainer.GetBlobReference(blobName);
                     return blobReference.DeleteIfExistsAsync();
-                }));
+                })).ConfigureAwait(false);
         }
 
         /// <summary>
         /// Retrieve entities from the configured blob container
         /// </summary>
         /// <param name="keys">An array of entity keys</param>
-        /// <returns></returns>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task<IDictionary<string, object>> ReadAsync(string[] keys, CancellationToken cancelationToken = default(CancellationToken))
         {
-            if (keys == null) throw new ArgumentNullException(nameof(keys));
+            if (keys == null)
+            {
+                throw new ArgumentNullException(nameof(keys));
+            }
 
             var blobContainer = await GetBlobContainer().ConfigureAwait(false);
 
             var readTasks = new List<Task<KeyValuePair<string, object>>>();
 
-            foreach(var key in keys)
+            foreach (var key in keys)
             {
                 readTasks.Add(ReadIndividualKey(key));
             }
 
-            await Task.WhenAll(readTasks);
+            await Task.WhenAll(readTasks).ConfigureAwait(false);
 
             // Project back the entries that were read, filtering out any entries that were not found.
-            // This gives us a Dictionary(key, value) 
+            // This gives us a Dictionary(key, value)
             var items = readTasks.Select(readTask => readTask.Result)
                 .Where(kvp => kvp.Key != null)
                 .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
-          
-            return items; 
+
+            return items;
 
             async Task<KeyValuePair<string, object>> ReadIndividualKey(string key)
             {
@@ -123,7 +124,7 @@ namespace Microsoft.Bot.Builder.Azure
 
                 try
                 {
-                    using (var blobStream = await blobReference.OpenReadAsync())
+                    using (var blobStream = await blobReference.OpenReadAsync().ConfigureAwait(false))
                     using (var jsonReader = new JsonTextReader(new StreamReader(blobStream)))
                     {
                         var obj = JsonSerializer.Deserialize(jsonReader);
@@ -157,7 +158,10 @@ namespace Microsoft.Bot.Builder.Azure
         /// <returns></returns>
         public async Task WriteAsync(IDictionary<string, object> changes, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (changes == null) throw new ArgumentNullException(nameof(changes));
+            if (changes == null)
+            {
+                throw new ArgumentNullException(nameof(changes));
+            }
 
             var blobContainer = await GetBlobContainer().ConfigureAwait(false);
             var blobRequestOptions = new BlobRequestOptions();
@@ -168,6 +172,7 @@ namespace Microsoft.Bot.Builder.Azure
                 {
                     var newValue = keyValuePair.Value;
                     var storeItem = newValue as IStoreItem;
+
                     // "*" eTag in IStoreItem converts to null condition for AccessCondition
                     var accessCondition = storeItem?.ETag == "*"
                         ? AccessCondition.GenerateEmptyCondition()
@@ -184,7 +189,7 @@ namespace Microsoft.Bot.Builder.Azure
                             JsonSerializer.Serialize(streamWriter, newValue);
                             streamWriter.Flush();
                             memoryStream.Seek(0, SeekOrigin.Begin);
-                            await blobReference.UploadFromStreamAsync(memoryStream, accessCondition, blobRequestOptions, operationContext);
+                            await blobReference.UploadFromStreamAsync(memoryStream, accessCondition, blobRequestOptions, operationContext).ConfigureAwait(false);
                         }
                     }
                     catch (StorageException ex)
@@ -195,12 +200,15 @@ namespace Microsoft.Bot.Builder.Azure
                             $"An error ocurred while trying to write an object. The underlying '{BlobErrorCodeStrings.InvalidBlockList}' error is commonly caused due to concurrently uploading an object larger than 128MB in size.",
                             ex);
                     }
-                }));
+                })).ConfigureAwait(false);
         }
 
         private static string GetBlobName(string key)
         {
-            if (string.IsNullOrEmpty(key)) throw new ArgumentNullException(nameof(key));
+            if (string.IsNullOrEmpty(key))
+            {
+                throw new ArgumentNullException(nameof(key));
+            }
 
             var blobName = HttpUtility.UrlEncode(key);
             NameValidator.ValidateBlobName(blobName);
@@ -209,7 +217,7 @@ namespace Microsoft.Bot.Builder.Azure
 
         private ValueTask<CloudBlobContainer> GetBlobContainer()
         {
-            if(_container != null)
+            if (_container != null)
             {
                 return new ValueTask<CloudBlobContainer>(_container);
             }

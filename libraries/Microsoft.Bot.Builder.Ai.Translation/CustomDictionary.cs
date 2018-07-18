@@ -17,7 +17,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation
     ///     "it", ["camera", "bedroom"]
     /// ]
     /// as per the last example, the outer dictionary contains all the user configured custom dictionaries indexed by the language id,
-    /// and each internal dictionary contains the <see cref="KeyValuePair{String, String}"/> of this specific language.
+    /// and each internal dictionary contains the <see cref="KeyValuePair{string, string}"/> of this specific language.
     /// </summary>
     public class CustomDictionary
     {
@@ -35,7 +35,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         /// Adds new custom language dictionary for the set of configured dictionaries.
         /// </summary>
         /// <param name="languageId">The language id to use as the key of the new custom language dictionary.</param>
-        /// <param name="dictionary">The dictionary containing the <see cref="KeyValuePair{String, String}"/> of the specific language.</param>
+        /// <param name="dictionary">The dictionary containing the <see cref="KeyValuePair{string, string}"/> of the specific language.</param>
         public void AddNewLanguageDictionary(string languageId, Dictionary<string, string> dictionary)
         {
             if (string.IsNullOrWhiteSpace(languageId))
@@ -60,7 +60,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         /// Get a specific language dictionary using it's key (language id).
         /// </summary>
         /// <param name="languageId">The id of the language dictionary to get.</param>
-        /// <returns>A <see cref="Dictionary{String, String}"/> that matches the provided language id.</returns>
+        /// <returns>A <see cref="Dictionary{string, string}"/> that matches the provided language id.</returns>
         public Dictionary<string, string> GetLanguageDictionary(string languageId)
         {
             if (string.IsNullOrWhiteSpace(languageId))

@@ -110,7 +110,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
             }
             if (changeLocale)
             {
-                var newLocale = messageActivity.Text.ToLower().Replace("set my locale to", "").Trim(); //extracted by the user using user state 
+                var newLocale = messageActivity.Text.ToLower().Replace("set my locale to", string.Empty).Trim(); //extracted by the user using user state 
                 if (!string.IsNullOrWhiteSpace(newLocale))
                 {
                     await userLocaleProperty.SetAsync(context, newLocale);

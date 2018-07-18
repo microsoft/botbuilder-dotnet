@@ -38,7 +38,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
             string[] tokens = new string[] { };
             var joinedSentence = PostProcessingUtilities.Join(delimeter, tokens);
             Assert.IsNotNull(joinedSentence);
-            Assert.AreEqual("", joinedSentence);
+            Assert.AreEqual(string.Empty, joinedSentence);
 
             //Check the direct joining case
             tokens = new string[] { "My", "name", "is", "Eldad" };

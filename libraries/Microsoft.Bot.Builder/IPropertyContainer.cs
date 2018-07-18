@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Builder
         Task<T> GetPropertyAsync<T>(ITurnContext turnContext, string propertyName);
 
         /// <summary>
-        /// Delete the property 
+        /// Delete the property
         /// </summary>
         /// <param name="turnContext"></param>
         /// <returns></returns>

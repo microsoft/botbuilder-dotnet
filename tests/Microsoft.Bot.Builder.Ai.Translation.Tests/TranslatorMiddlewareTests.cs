@@ -186,7 +186,7 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
 
             if (changeLang)
             {
-                var newLang = messageActivity.Text.ToLower().Replace("set my language to", "").Trim();
+                var newLang = messageActivity.Text.ToLower().Replace("set my language to", string.Empty).Trim();
                 if (!string.IsNullOrWhiteSpace(newLang))
                 {
                     await languageProperty.SetAsync(context, newLang);

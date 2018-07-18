@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder
 {
-
     /// <summary>
     /// This is metadata about the property including policy info
     /// </summary>
@@ -28,7 +27,7 @@ namespace Microsoft.Bot.Builder
         Task<T> GetAsync(ITurnContext turnContext);
 
         /// <summary>
-        /// Delete the property 
+        /// Delete the property
         /// </summary>
         /// <param name="turnContext"></param>
         /// <returns></returns>

@@ -14,8 +14,7 @@ namespace Microsoft.Bot.Builder
         /// </summary>
         /// <param name="storage">The storage provider to use.</param>
         public UserState(IStorage storage)
-            : base(storage, nameof(UserState),
-                (context) => $"user/{context.Activity.ChannelId}/{context.Activity.From.Id}")
+            : base(storage, nameof(UserState), (context) => $"user/{context.Activity.ChannelId}/{context.Activity.From.Id}")
         {
         }
     }

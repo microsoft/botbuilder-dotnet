@@ -38,7 +38,7 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
                     Top = 1
                 });
 
-            var results = await qna.GetAnswers("how do I clean the stove?");
+            var results = await qna.GetAnswersAsync("how do I clean the stove?");
             Assert.IsNotNull(results);
             Assert.AreEqual(results.Length, 1, "should get one result");
             Assert.IsTrue(results[0].Answer.StartsWith("BaseCamp: You can use a damp rag to clean around the Power Pack"));
@@ -68,7 +68,7 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
                     ScoreThreshold = 0.99F
                 });
 
-            var results = await qna.GetAnswers("how do I clean the stove?");
+            var results = await qna.GetAnswersAsync("how do I clean the stove?");
             Assert.IsNotNull(results);
             Assert.AreEqual(results.Length, 0, "should get zero result because threshold");
         }
