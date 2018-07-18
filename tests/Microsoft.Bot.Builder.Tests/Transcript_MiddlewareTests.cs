@@ -53,7 +53,7 @@ namespace Microsoft.Bot.Builder.Tests
             foreach (var activity in pagedResult.Items)
             {
                 Assert.IsTrue(!String.IsNullOrWhiteSpace(activity.Id));
-                Assert.IsTrue(activity.Timestamp > default(DateTime));
+                Assert.IsTrue(activity.Timestamp > default(DateTimeOffset));
             }
         }
 
@@ -96,6 +96,66 @@ namespace Microsoft.Bot.Builder.Tests
             Assert.AreEqual("new response", pagedResult.Items[2].AsMessageUpdateActivity().Text);
             Assert.AreEqual("update", pagedResult.Items[3].AsMessageActivity().Text);
             Assert.AreEqual(pagedResult.Items[1].Id, pagedResult.Items[2].Id);
+        }
+
+        [TestMethod]
+        [TestCategory("Middleware")]
+        public async Task Transcript_TestDateLogUpdateActivities()
+        {
+            var dateTimeStartOffset1 = new DateTimeOffset(DateTime.Now);
+            var dateTimeStartOffset2 = new DateTimeOffset(DateTime.UtcNow);
+            
+
+            var transcriptStore = new MemoryTranscriptStore();
+            TestAdapter adapter = new TestAdapter()
+                .Use(new TranscriptLoggerMiddleware(transcriptStore));
+            string conversationId = null;
+            Activity activityToUpdate = null;
+            await new TestFlow(adapter, async (context) =>
+            {
+                conversationId = context.Activity.Conversation.Id;
+                if (context.Activity.Text == "update")
+                {
+                    activityToUpdate.Text = "new response";
+                    await context.UpdateActivityAsync(activityToUpdate);
+                }
+                else
+                {
+                    var activity = context.Activity.CreateReply("response");
+
+                    var response = await context.SendActivityAsync(activity);
+                    activity.Id = response.Id;
+
+                    // clone the activity, so we can use it to do an update
+                    activityToUpdate = JsonConvert.DeserializeObject<Activity>(JsonConvert.SerializeObject(activity));
+                }
+            })
+                .Send("foo")
+                .Send("update")
+                    .AssertReply("new response")
+                .StartTestAsync();
+            await Task.Delay(500);
+            
+            // Perform some queries
+            var pagedResult = await transcriptStore.GetTranscriptActivitiesAsync("test", conversationId, null, dateTimeStartOffset1.DateTime);
+            Assert.AreEqual(4, pagedResult.Items.Length);
+            Assert.AreEqual("foo", pagedResult.Items[0].AsMessageActivity().Text);
+            Assert.AreEqual("response", pagedResult.Items[1].AsMessageActivity().Text);
+            Assert.AreEqual("new response", pagedResult.Items[2].AsMessageUpdateActivity().Text);
+            Assert.AreEqual("update", pagedResult.Items[3].AsMessageActivity().Text);
+            Assert.AreEqual(pagedResult.Items[1].Id, pagedResult.Items[2].Id);
+            // Perform some queries
+            pagedResult = await transcriptStore.GetTranscriptActivitiesAsync("test", conversationId, null, DateTimeOffset.MinValue);
+            Assert.AreEqual(4, pagedResult.Items.Length);
+            Assert.AreEqual("foo", pagedResult.Items[0].AsMessageActivity().Text);
+            Assert.AreEqual("response", pagedResult.Items[1].AsMessageActivity().Text);
+            Assert.AreEqual("new response", pagedResult.Items[2].AsMessageUpdateActivity().Text);
+            Assert.AreEqual("update", pagedResult.Items[3].AsMessageActivity().Text);
+            Assert.AreEqual(pagedResult.Items[1].Id, pagedResult.Items[2].Id);
+            // Perform some queries
+            pagedResult = await transcriptStore.GetTranscriptActivitiesAsync("test", conversationId, null, DateTimeOffset.MaxValue);
+            Assert.AreEqual(0, pagedResult.Items.Length);
+
         }
 
         [TestMethod]
