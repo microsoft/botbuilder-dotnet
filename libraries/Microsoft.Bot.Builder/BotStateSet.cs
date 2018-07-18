@@ -32,7 +32,11 @@ namespace Microsoft.Bot.Builder
     {
         private List<BotState> botStates = new List<BotState>();
 
-        public BotStateSet(params BotState[] botstates)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BotStateSet"/> class.
+        /// </summary>
+        /// <param name="botStates">initial list of BotState to manage</param>
+        public BotStateSet(params BotState[] botStates)
         {
             this.botStates.AddRange(botStates);
         }
@@ -51,9 +55,9 @@ namespace Microsoft.Bot.Builder
         /// <summary>
         /// Middleware implementation which loads/savesChanges automatically
         /// </summary>
-        /// <param name="context">turn context</param>
-        /// <param name="next">next middlware</param>
-        /// <param name="cancellationToken">cancellationToken</param>
+        /// <param name="context">turn context.</param>
+        /// <param name="next">next middlware.</param>
+        /// <param name="cancellationToken">cancellationToken.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task OnTurnAsync(ITurnContext context, NextDelegate next, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -66,8 +70,8 @@ namespace Microsoft.Bot.Builder
         /// Load all BotState records in parallel.
         /// </summary>
         /// <param name="context">turn context</param>
-        /// <param name="force">should data be forced into cache</param>
-        /// <param name="cancellationToken">Cancelation token</param>
+        /// <param name="force">should data be forced into cache.</param>
+        /// <param name="cancellationToken">Cancelation token.</param>
         /// <returns>task</returns>
         public async Task LoadAsync(ITurnContext context, bool force = false, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -76,10 +80,10 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
-        /// Save All BotState changes in parallelt
+        /// Save All BotState changes in parallel.
         /// </summary>
-        /// <param name="context">turn context</param>
-        /// <param name="force">should data be forced to save even if no change were detected</param>
+        /// <param name="context">turn context.</param>
+        /// <param name="force">should data be forced to save even if no change were detected.</param>
         /// <returns>task</returns>
         public async Task SaveChangesAsync(ITurnContext context, bool force = false, CancellationToken cancellationToken = default(CancellationToken))
         {
