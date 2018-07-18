@@ -28,6 +28,8 @@ git clone https://github.com/Microsoft/botbuilder-dotnet.git
 - Launch Bot Framework Emulator
 - Copy and paste the url that you launched your bot app to and concatenate to it /api/messages
 	- The url should look like http://localhost/[PORT_NUMBER]/api/messages
+- You can trigger the translation by typing in the emulator "set my language to [LANGUAGE_ID]
+- To configure which languages your application can support, edit the TranslatorLocaleHelper.cs class to add or remove more languages
 
 # LUIS
 Language Understanding service (LUIS) allows your application to understand what a person wants in their own words. LUIS uses machine learning to allow developers to build applications that can receive user input in natural language and extract meaning from it.
