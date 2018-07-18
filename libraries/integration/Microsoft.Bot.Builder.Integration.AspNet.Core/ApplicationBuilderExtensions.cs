@@ -42,7 +42,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             }
 
             applicationBuilder.Map(
-                paths.BasePath + paths.MessagesPath, 
+                paths.BasePath + paths.MessagesPath,
                 botActivitiesAppBuilder => botActivitiesAppBuilder.Run(new BotMessageHandler().HandleAsync));
 
             return applicationBuilder;
