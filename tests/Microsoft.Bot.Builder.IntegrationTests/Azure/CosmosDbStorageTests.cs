@@ -6,11 +6,15 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Azure.Documents.Client;
+using Microsoft.Bot.Builder.Azure;
 using Microsoft.Bot.Builder.Tests;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.Bot.Builder.Azure.Tests
+namespace Microsoft.Bot.Builder.IntegrationTests.Azure
 {
+#if !RUNINTEGRATIONTESTS
+    [Ignore("These integration tests run only when RUNINTEGRATIONTESTS is defined")]
+#endif
     [TestClass]
     [TestCategory("Storage")]
     [TestCategory("Storage - CosmosDB")]
@@ -27,7 +31,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         private static Lazy<bool> _hasEmulator = new Lazy<bool>(() =>
         {
             if (File.Exists(_emulatorPath))
-            { 
+            {
                 Process p = new Process();
                 p.StartInfo.UseShellExecute = true;
                 p.StartInfo.FileName = _emulatorPath;

@@ -12,8 +12,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Ai.Tr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Ai.QnA.Tests", "tests\Microsoft.Bot.Builder.Ai.QnA.Tests\Microsoft.Bot.Builder.Ai.QnA.Tests.csproj", "{9BDF7020-A19F-4C6C-B329-E4BFEFF6DE6B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Azure.Tests", "tests\Microsoft.Bot.Builder.Azure.Tests\Microsoft.Bot.Builder.Azure.Tests.csproj", "{E325A0E2-716A-49E0-9767-5087CF05727C}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Connector", "libraries\Microsoft.Bot.Connector\Microsoft.Bot.Connector.csproj", "{6462DA5D-27DC-4CD5-9467-5EFB998FD838}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Schema", "libraries\Microsoft.Bot.Schema\Microsoft.Bot.Schema.csproj", "{C1F54CDC-AD1D-45BB-8F7D-F49E411AFAF1}"
@@ -66,7 +64,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Builder.Integ
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Tests", "tests\Microsoft.Bot.Builder.Tests\Microsoft.Bot.Builder.Tests.csproj", "{35F9B8A8-1974-4795-930B-5E4980EE85E5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Transcripts.Tests", "tests\Microsoft.Bot.Builder.Transcripts.Tests\Microsoft.Bot.Builder.Transcripts.Tests.csproj", "{71698D71-4C6F-40D5-8BDE-2587514CA21C}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "IntegrationTests", "IntegrationTests", "{BB7BC71C-41D6-4E9C-AD8F-F3037E80D5A2}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.IntegrationTests", "tests\Microsoft.Bot.Builder.IntegrationTests\Microsoft.Bot.Builder.IntegrationTests.csproj", "{BC3301D0-CF24-4358-871A-9119F3161BE7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -99,13 +99,6 @@ Global
 		{9BDF7020-A19F-4C6C-B329-E4BFEFF6DE6B}.Documentation|Any CPU.ActiveCfg = Documentation|Any CPU
 		{9BDF7020-A19F-4C6C-B329-E4BFEFF6DE6B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9BDF7020-A19F-4C6C-B329-E4BFEFF6DE6B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E325A0E2-716A-49E0-9767-5087CF05727C}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{E325A0E2-716A-49E0-9767-5087CF05727C}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
-		{E325A0E2-716A-49E0-9767-5087CF05727C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E325A0E2-716A-49E0-9767-5087CF05727C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E325A0E2-716A-49E0-9767-5087CF05727C}.Documentation|Any CPU.ActiveCfg = Documentation|Any CPU
-		{E325A0E2-716A-49E0-9767-5087CF05727C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E325A0E2-716A-49E0-9767-5087CF05727C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6462DA5D-27DC-4CD5-9467-5EFB998FD838}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug - NuGet Packages|Any CPU
 		{6462DA5D-27DC-4CD5-9467-5EFB998FD838}.Debug - NuGet Packages|Any CPU.Build.0 = Debug - NuGet Packages|Any CPU
 		{6462DA5D-27DC-4CD5-9467-5EFB998FD838}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -274,14 +267,14 @@ Global
 		{35F9B8A8-1974-4795-930B-5E4980EE85E5}.Documentation|Any CPU.Build.0 = Debug|Any CPU
 		{35F9B8A8-1974-4795-930B-5E4980EE85E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{35F9B8A8-1974-4795-930B-5E4980EE85E5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{71698D71-4C6F-40D5-8BDE-2587514CA21C}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{71698D71-4C6F-40D5-8BDE-2587514CA21C}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
-		{71698D71-4C6F-40D5-8BDE-2587514CA21C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{71698D71-4C6F-40D5-8BDE-2587514CA21C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{71698D71-4C6F-40D5-8BDE-2587514CA21C}.Documentation|Any CPU.ActiveCfg = Debug|Any CPU
-		{71698D71-4C6F-40D5-8BDE-2587514CA21C}.Documentation|Any CPU.Build.0 = Debug|Any CPU
-		{71698D71-4C6F-40D5-8BDE-2587514CA21C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{71698D71-4C6F-40D5-8BDE-2587514CA21C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BC3301D0-CF24-4358-871A-9119F3161BE7}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
+		{BC3301D0-CF24-4358-871A-9119F3161BE7}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
+		{BC3301D0-CF24-4358-871A-9119F3161BE7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BC3301D0-CF24-4358-871A-9119F3161BE7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BC3301D0-CF24-4358-871A-9119F3161BE7}.Documentation|Any CPU.ActiveCfg = Debug|Any CPU
+		{BC3301D0-CF24-4358-871A-9119F3161BE7}.Documentation|Any CPU.Build.0 = Debug|Any CPU
+		{BC3301D0-CF24-4358-871A-9119F3161BE7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BC3301D0-CF24-4358-871A-9119F3161BE7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -290,7 +283,6 @@ Global
 		{B2C5EED9-21B2-4763-AB92-C1995B76DA3A} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
 		{F31CF172-6FEE-4188-9828-E5FDA531C871} = {763168FA-A590-482C-84D8-2922F7ADB1A2}
 		{9BDF7020-A19F-4C6C-B329-E4BFEFF6DE6B} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
-		{E325A0E2-716A-49E0-9767-5087CF05727C} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 		{6462DA5D-27DC-4CD5-9467-5EFB998FD838} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
 		{C1F54CDC-AD1D-45BB-8F7D-F49E411AFAF1} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
 		{ADA8AB8B-2066-4193-B8F7-985669B23E00} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
@@ -317,7 +309,8 @@ Global
 		{62C4DC83-3B07-45D7-856E-224FFB368E5F} = {0A0E26B0-7A46-4F1A-8BFE-9A763FDF6CF8}
 		{2614D290-1345-4A41-BE90-F85F817CEADE} = {0A0E26B0-7A46-4F1A-8BFE-9A763FDF6CF8}
 		{35F9B8A8-1974-4795-930B-5E4980EE85E5} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
-		{71698D71-4C6F-40D5-8BDE-2587514CA21C} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
+		{BB7BC71C-41D6-4E9C-AD8F-F3037E80D5A2} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
+		{BC3301D0-CF24-4358-871A-9119F3161BE7} = {BB7BC71C-41D6-4E9C-AD8F-F3037E80D5A2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7173C9F3-A7F9-496E-9078-9156E35D6E16}

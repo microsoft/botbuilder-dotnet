@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
@@ -10,8 +9,11 @@ using Microsoft.Bot.Builder.Tests;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.Bot.Builder.Transcripts.Tests
+namespace Microsoft.Bot.Builder.IntegrationTests.Transcripts
 {
+#if !RUNINTEGRATIONTESTS
+    [Ignore("These integration tests run only when RUNINTEGRATIONTESTS is defined")]
+#endif
     [TestClass]
     public class CoreTests
     {

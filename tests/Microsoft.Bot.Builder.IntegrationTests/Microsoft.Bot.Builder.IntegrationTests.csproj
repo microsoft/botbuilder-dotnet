@@ -4,8 +4,10 @@
     <TargetFramework>netcoreapp2.0</TargetFramework>
 
     <IsPackable>false</IsPackable>
+  </PropertyGroup>
 
-    <Configurations>Debug;Release;Documentation</Configurations>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DefineConstants>TRACE;RUNINTEGRATIONTESTS</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
@@ -15,9 +17,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Ai.LUIS\Microsoft.Bot.Builder.Ai.LUIS.csproj" />
+    <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Ai.QnA\Microsoft.Bot.Builder.Ai.QnA.csproj" />
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Ai.Translation\Microsoft.Bot.Builder.Ai.Translation.csproj" />
+    <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Azure\Microsoft.Bot.Builder.Azure.csproj" />
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Dialogs\Microsoft.Bot.Builder.Dialogs.csproj" />
-    <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder\Microsoft.Bot.Builder.csproj" />
+    <ProjectReference Include="..\Microsoft.Bot.Builder.Ai.LUIS.Tests\Microsoft.Bot.Builder.Ai.LUIS.Tests.csproj" />
     <ProjectReference Include="..\Microsoft.Bot.Builder.Tests\Microsoft.Bot.Builder.Tests.csproj" />
   </ItemGroup>
 

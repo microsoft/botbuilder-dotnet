@@ -12,8 +12,11 @@ using Microsoft.Bot.Schema;
 using Microsoft.Recognizers.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.Bot.Builder.Transcripts.Tests
+namespace Microsoft.Bot.Builder.IntegrationTests.Transcripts
 {
+#if !RUNINTEGRATIONTESTS
+    [Ignore("These integration tests run only when RUNINTEGRATIONTESTS is defined")]
+#endif
     [TestClass]
     public class DialogsTests
     {
