@@ -44,7 +44,7 @@ namespace Microsoft.Bot.Builder
     /// ```
     /// </remarks>
     /// <typeparam name="TState">The type of the bot state object.</typeparam>
-    public class BotState : IMiddleware, IPropertyContainer
+    public class BotState : IMiddleware
     {
         private string _contextServiceKey;
         private readonly IStorage _storage;
@@ -78,7 +78,7 @@ namespace Microsoft.Bot.Builder
                 throw new ArgumentNullException(nameof(name));
             }
 
-            var prop = new PropertyContainerAccessor<T>(this, name, defaultValueFactory);
+            var prop = new BotStatePropertyAccessor<T>(this, name, defaultValueFactory);
             this._properties.Add(name, prop);
             return prop;
         }
@@ -162,7 +162,7 @@ namespace Microsoft.Bot.Builder
                 var changes = new Dictionary<string, object>();
                 changes.Add(key, cachedState.State);
                 await this._storage.WriteAsync(changes).ConfigureAwait(false);
-                context.Services[this._contextServiceKey] = new CachedBotState(cachedState.State);
+                context.Services[this._contextServiceKey] = null;
                 return;
             }
         }
@@ -196,7 +196,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="propertyName">name of the property</param>
         /// <param name="cancellationToken">cancellationToken</param>
         /// <returns>T</returns>
-        public async Task<T> GetPropertyAsync<T>(ITurnContext turnContext, string propertyName, CancellationToken cancellationToken = default(CancellationToken))
+        public Task<T> GetPropertyValueAsync<T>(ITurnContext turnContext, string propertyName, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (turnContext == null)
             {
@@ -209,10 +209,10 @@ namespace Microsoft.Bot.Builder
             }
 
             var cachedState = turnContext.Services.Get<CachedBotState>(this._contextServiceKey);
-            
+
             // if there is no value, this will throw, to signal to IPropertyAccesor that a default value should be computed
             // This allows this to work with value types
-            return (T)cachedState.State[propertyName];
+            return Task.FromResult((T)cachedState.State[propertyName]);
         }
 
         /// <summary>
@@ -222,7 +222,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="propertyName">name of the property</param>
         /// <param name="cancellationToken">cancellationToken</param>
         /// <returns>Task</returns>
-        public Task DeletePropertyAsync(ITurnContext turnContext, string propertyName, CancellationToken cancellationToken = default(CancellationToken))
+        public Task DeletePropertyValueAsync(ITurnContext turnContext, string propertyName, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (turnContext == null)
             {
@@ -247,7 +247,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="value">value of the property</param>
         /// <param name="cancellationToken">cancellationToken</param>
         /// <returns>Task</returns>
-        public Task SetPropertyAsync(ITurnContext turnContext, string propertyName, object value, CancellationToken cancellationToken = default(CancellationToken))
+        public Task SetPropertyValueAsync(ITurnContext turnContext, string propertyName, object value, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (turnContext == null)
             {
@@ -294,14 +294,14 @@ namespace Microsoft.Bot.Builder
         /// Implements IPropertyAccessor for an IPropertyContainer.
         /// </summary>
         /// <typeparam name="T">type of value the propertyAccessor accesses.</typeparam>
-        internal class PropertyContainerAccessor<T> : IPropertyAccessor<T>
+        internal class BotStatePropertyAccessor<T> : IPropertyAccessor<T>
         {
-            private IPropertyContainer _propertyContainer;
+            private BotState _botState;
             private Func<T> _defaultValueFactory;
 
-            public PropertyContainerAccessor(IPropertyContainer propertyContainer, string name, Func<T> defaultValueFactory)
+            public BotStatePropertyAccessor(BotState botState, string name, Func<T> defaultValueFactory)
             {
-                this._propertyContainer = propertyContainer;
+                this._botState = botState;
                 this.Name = name;
                 if (defaultValueFactory == null)
                 {
@@ -314,8 +314,11 @@ namespace Microsoft.Bot.Builder
             }
 
             /// <summary>
-            /// name of the property.
+            /// Gets name of the property.
             /// </summary>
+            /// <value>
+            /// name of the property.
+            /// </value>
             public string Name { get; private set; }
 
             /// <summary>
@@ -325,7 +328,7 @@ namespace Microsoft.Bot.Builder
             /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
             public Task DeleteAsync(ITurnContext turnContext)
             {
-                return this._propertyContainer.DeletePropertyAsync(turnContext, this.Name);
+                return this._botState.DeletePropertyValueAsync(turnContext, this.Name);
             }
 
             /// <summary>
@@ -337,7 +340,7 @@ namespace Microsoft.Bot.Builder
             {
                 try
                 {
-                    return await this._propertyContainer.GetPropertyAsync<T>(turnContext, this.Name).ConfigureAwait(false);
+                    return await this._botState.GetPropertyValueAsync<T>(turnContext, this.Name).ConfigureAwait(false);
                 }
                 catch (KeyNotFoundException)
                 {
@@ -358,7 +361,7 @@ namespace Microsoft.Bot.Builder
             /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
             public Task SetAsync(ITurnContext turnContext, T value)
             {
-                return this._propertyContainer.SetPropertyAsync(turnContext, this.Name, value);
+                return this._botState.SetPropertyValueAsync(turnContext, this.Name, value);
             }
         }
     }
