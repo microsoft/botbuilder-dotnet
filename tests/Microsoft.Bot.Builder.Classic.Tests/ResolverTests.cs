@@ -125,7 +125,6 @@ namespace Microsoft.Bot.Builder.Classic.Tests
             var expected = new Activity();
             var resolver = new ActivityResolver(new ArrayResolver(NullResolver.Instance, expected));
 
-            expected.Type = ActivityTypes.Message;
             {
                 Activity actual;
                 Assert.IsTrue(resolver.TryResolve(null, out actual));
@@ -144,8 +143,6 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                 Assert.IsFalse(resolver.TryResolve(Some, out actual));
             }
 
-            expected.Type = ActivityTypes.Typing;
-
             {
                 TypingActivity actual;
                 Assert.IsTrue(resolver.TryResolve(null, out actual));
@@ -156,7 +153,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
         [TestMethod]
         public void Resolver_EventActivityValue()
         {
-            var expected = new Activity() { Type = ActivityTypes.Event };
+            var expected = new EventActivity();
             var resolver = new EventActivityValueResolver(new ActivityResolver(new ArrayResolver(NullResolver.Instance, expected)));
 
             {

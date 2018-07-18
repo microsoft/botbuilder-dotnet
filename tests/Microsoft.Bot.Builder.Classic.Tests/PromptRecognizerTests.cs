@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
     {
         private void PromptRecognizersChoice(string choicesKey, string text, string expected, string locale = null)
         {
-            var activity = new Activity { Text = text, Locale = locale };
+            var activity = new MessageActivity { Text = text, Locale = locale };
             var results = new PromptRecognizer().RecognizeLocalizedChoices(activity, choicesKey, Resources.ResourceManager, null);
             var top = results.MaxBy(x => x.Score);
             Assert.AreEqual(expected, top.Entity);
@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
 
         private void PromptRecognizersOrdinals(string text, long expected, string locale = null)
         {
-            var activity = new Activity { Text = text, Locale = locale };
+            var activity = new MessageActivity { Text = text, Locale = locale };
             var results = new PromptRecognizer().RecognizeOrdinals(activity);
             var top = results.MaxBy(x => x.Score);
             Assert.AreEqual(expected, top.Entity);
@@ -61,7 +61,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
         [TestMethod]
         public void RecognizeNumbers()
         {
-            var activity = new Activity()
+            var activity = new MessageActivity()
             {
                 Text = "the value is -12"
             };
@@ -72,7 +72,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
         [TestMethod]
         public void RecognizeNumbersWithLimits()
         {
-            var activity = new Activity()
+            var activity = new MessageActivity()
             {
                 Text = "the value is 12"
             };
@@ -83,7 +83,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
         [TestMethod]
         public void RecognizeTerm()
         {
-            var activity = new Activity()
+            var activity = new MessageActivity()
             {
                 Text = "the value is twelve."
             };
@@ -94,7 +94,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
         [TestMethod]
         public void RecognizeTerm_Spanish()
         {
-            var activity = new Activity()
+            var activity = new MessageActivity()
             {
                 Text = "El valor es doce.",
                 Locale = "es"
@@ -130,7 +130,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
 
         private void TestRecognizeBooleanValue(string text, bool expectedResult)
         {
-            var activity = new Activity()
+            var activity = new MessageActivity()
             {
                 Text = text
             };
@@ -153,7 +153,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
 
         private void TestRecognizeTimeValue(string text, int hour = 0, int minute = 0, int second = 0, int millisecond = 0)
         {
-            var activity = new Activity()
+            var activity = new MessageActivity()
             {
                 Text = text
             };
@@ -174,7 +174,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
         public void TestRecognizeRegex()
         {
             var expectedValue = "help";
-            var activity = new Activity { Text = expectedValue };
+            var activity = new MessageActivity { Text = expectedValue };
             var result = new PromptRecognizer().RecognizeLocalizedRegExp(activity, "Exp1", TestResources.ResourceManager);
             Assert.AreEqual(result.Count(), 1);
             Assert.AreEqual(result.FirstOrDefault().Entity, expectedValue);
@@ -184,7 +184,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
         public void TestRecognizeRegexEs()
         {
             var expectedValue = "ayuda";
-            var activity = new Activity { Text = expectedValue, Locale = "es-AR" };
+            var activity = new MessageActivity { Text = expectedValue, Locale = "es-AR" };
             var result = new PromptRecognizer().RecognizeLocalizedRegExp(activity, "Exp1", TestResources.ResourceManager);
             Assert.AreEqual(result.Count(), 1);
             Assert.AreEqual(result.FirstOrDefault().Entity, expectedValue);
@@ -194,7 +194,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
         public void TestRecognizeUsingDefaultCulture()
         {
             var expectedValue = "help";
-            var activity = new Activity { Text = expectedValue, Locale = "fr-FR" };
+            var activity = new MessageActivity { Text = expectedValue, Locale = "fr-FR" };
             var result = new PromptRecognizer().RecognizeLocalizedRegExp(activity, "Exp1", TestResources.ResourceManager);
             Assert.AreEqual(result.Count(), 1);
             Assert.AreEqual(result.FirstOrDefault().Entity, expectedValue);
@@ -203,7 +203,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
         [TestMethod]
         public void TestRecognizeUsingDefaultCultureWhenLocaleNotFound()
         {
-            var activity = new Activity { Text = "aider", Locale = "fr-FR" };
+            var activity = new MessageActivity { Text = "aider", Locale = "fr-FR" };
             var result = new PromptRecognizer().RecognizeLocalizedRegExp(activity, "Exp1", TestResources.ResourceManager);
             Assert.AreEqual(result.Count(), 0);
         }
@@ -211,7 +211,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
         [TestMethod]
         public void TestNotRecognizeRegex()
         {
-            var activity = new Activity { Text = "foo" };
+            var activity = new MessageActivity { Text = "foo" };
             var result = new PromptRecognizer().RecognizeLocalizedRegExp(activity, "Exp1", TestResources.ResourceManager);
             Assert.AreEqual(result.Count(), 0);
         }
@@ -220,7 +220,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
         public void TestRecognizeChoice()
         {
             var expectedValue = "a";
-            var activity = new Activity { Text = "a" };
+            var activity = new MessageActivity { Text = "a" };
             var result = new PromptRecognizer().RecognizeLocalizedChoices(activity, "Choices1", TestResources.ResourceManager, null);
             Assert.AreEqual(result.Count(), 1);
             Assert.AreEqual(result.FirstOrDefault().Entity, expectedValue);
@@ -230,7 +230,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
         public void TestRecognizeChoiceSynonym()
         {
             var expectedValue = "b";
-            var activity = new Activity { Text = "b1" };
+            var activity = new MessageActivity { Text = "b1" };
             var result = new PromptRecognizer().RecognizeLocalizedChoices(activity, "Choices1", TestResources.ResourceManager, null);
             Assert.AreEqual(result.Count(), 1);
             Assert.AreEqual(result.FirstOrDefault().Entity, expectedValue);
@@ -240,7 +240,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
         public void TestRecognizeChoiceWithoutSynonym()
         {
             var expectedValue = "c";
-            var activity = new Activity { Text = "c" };
+            var activity = new MessageActivity { Text = "c" };
             var result = new PromptRecognizer().RecognizeLocalizedChoices(activity, "Choices1", TestResources.ResourceManager, null);
             Assert.AreEqual(result.Count(), 1);
             Assert.AreEqual(result.FirstOrDefault().Entity, expectedValue);
@@ -249,7 +249,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
         [TestMethod]
         public void TestNotRecognizeChoiceValueIgnored()
         {
-            var activity = new Activity { Text = "a" };
+            var activity = new MessageActivity { Text = "a" };
             var options = new PromptRecognizeChoicesOptions { ExcludeValue = true };
             var result = new PromptRecognizer().RecognizeLocalizedChoices(activity, "Choices1", TestResources.ResourceManager, options);
             Assert.AreEqual(result.Count(), 0);
@@ -258,7 +258,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
         [TestMethod]
         public void TestRecognizeBooleanTrue()
         {
-            var activity = new Activity { Text = "yes" };
+            var activity = new MessageActivity { Text = "yes" };
             var result = new PromptRecognizer().RecognizeBooleans(activity);
 
             Assert.IsNotNull(result);
@@ -269,7 +269,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
         [TestMethod]
         public void TestRecognizeBooleanFalse()
         {
-            var activity = new Activity { Text = "no" };
+            var activity = new MessageActivity { Text = "no" };
             var result = new PromptRecognizer().RecognizeBooleans(activity);
 
             Assert.IsNotNull(result);
@@ -280,7 +280,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
         [TestMethod]
         public void TestRecognizeMultipleBoolean()
         {
-            var activity = new Activity { Text = "yes and no" };
+            var activity = new MessageActivity { Text = "yes and no" };
             var result = new PromptRecognizer().RecognizeBooleans(activity);
 
             Assert.IsNotNull(result);
@@ -292,7 +292,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
         [TestMethod]
         public void TestRecognizeCardinal()
         {
-            var activity = new Activity { Text = "1.23" };
+            var activity = new MessageActivity { Text = "1.23" };
             var result = new PromptRecognizer().RecognizeNumbers(activity);
 
             Assert.IsNotNull(result);
@@ -303,7 +303,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
         [TestMethod]
         public void TestRecognizeCardinalWords()
         {
-            var activity = new Activity { Text = "seven" };
+            var activity = new MessageActivity { Text = "seven" };
             var result = new PromptRecognizer().RecognizeNumbers(activity);
 
             Assert.IsNotNull(result);
@@ -314,7 +314,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
         [TestMethod]
         public void TestRecognizeNegativeNumber()
         {
-            var activity = new Activity { Text = "-13" };
+            var activity = new MessageActivity { Text = "-13" };
             var result = new PromptRecognizer().RecognizeNumbers(activity);
 
             Assert.IsNotNull(result);
@@ -325,7 +325,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
         [TestMethod]
         public void TestRecognizePositiveNumber()
         {
-            var activity = new Activity { Text = "I will take +12" };
+            var activity = new MessageActivity { Text = "I will take +12" };
             var result = new PromptRecognizer().RecognizeNumbers(activity);
 
             Assert.IsNotNull(result);
@@ -336,7 +336,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
         [TestMethod]
         public void TestRecognizeMultipleNumber()
         {
-            var activity = new Activity { Text = "1.7 and seven" };
+            var activity = new MessageActivity { Text = "1.7 and seven" };
             var result = new PromptRecognizer().RecognizeNumbers(activity);
 
             Assert.IsNotNull(result);
@@ -348,7 +348,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
         [TestMethod]
         public void TestRecognizeMultipleIntegerOnly()
         {
-            var activity = new Activity { Text = "1, 2.3, and seven" };
+            var activity = new MessageActivity { Text = "1, 2.3, and seven" };
             var result = new PromptRecognizer().RecognizeNumbers(activity, new PromptRecognizeNumbersOptions { IntegerOnly = true });
 
             Assert.IsNotNull(result);
@@ -360,7 +360,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
         [TestMethod]
         public void TestRecognizeRangeNumbers()
         {
-            var activity = new Activity { Text = "1, 2.3, and seven" };
+            var activity = new MessageActivity { Text = "1, 2.3, and seven" };
             var result = new PromptRecognizer().RecognizeNumbers(activity, new PromptRecognizeNumbersOptions { MinValue = 2, MaxValue = 5 });
             
             Assert.IsNotNull(result);
@@ -371,7 +371,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
         [TestMethod]
         public void TestRecognizeOrdinal()
         {
-            var activity = new Activity { Text = "i'd like the second one" };
+            var activity = new MessageActivity { Text = "i'd like the second one" };
             var result = new PromptRecognizer().RecognizeOrdinals(activity);
 
             Assert.IsNotNull(result);
@@ -382,7 +382,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
         [TestMethod]
         public void TestRecognizeReverseOrdinal()
         {
-            var activity = new Activity { Text = "i'd like the second to last one" };
+            var activity = new MessageActivity { Text = "i'd like the second to last one" };
             var results = new PromptRecognizer().RecognizeOrdinals(activity);
 
             Assert.IsNotNull(results);

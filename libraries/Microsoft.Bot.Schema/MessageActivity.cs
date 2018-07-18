@@ -11,6 +11,8 @@ namespace Microsoft.Bot.Schema
     /// </summary>
     public class MessageActivity : ActivityWithValue
     {
+        private IList<Attachment> _attachments;
+
         public MessageActivity() : base(ActivityTypes.Message)
         {
         }
@@ -69,7 +71,24 @@ namespace Microsoft.Bot.Schema
         /// Gets or sets attachments
         /// </summary>
         [JsonProperty(PropertyName = "attachments")]
-        public IList<Attachment> Attachments { get; set; }
+        public IList<Attachment> Attachments
+        {
+            get
+            {
+                // Use lazy instantiation to avoid overhead when not used
+                if (_attachments == null)
+                {
+                    _attachments = new List<Attachment>();
+                }
+
+                return _attachments;
+            }
+
+            set
+            {
+                _attachments = value;
+            }
+        }
 
         /// <summary>
         /// Gets or sets suggestedActions are used to provide

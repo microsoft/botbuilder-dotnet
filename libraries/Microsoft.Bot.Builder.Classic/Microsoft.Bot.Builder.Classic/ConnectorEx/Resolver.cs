@@ -51,9 +51,9 @@ namespace Microsoft.Bot.Builder.Classic.Scorables.Internals
         {
             { ActivityTypes.ContactRelationUpdate, typeof(ContactRelationUpdateActivity) },
             { ActivityTypes.ConversationUpdate, typeof(ConversationUpdateActivity) },
-            { ActivityTypes.DeleteUserData, typeof(Activity) },
+            { ActivityTypes.DeleteUserData, typeof(DeleteUserDataActivity) },
             { ActivityTypes.Message, typeof(MessageActivity) },
-            { ActivityTypes.Ping, typeof(Activity) },
+            { ActivityTypes.Ping, typeof(PingActivity) },
             { ActivityTypes.Event, typeof(EventActivity) },
             { ActivityTypes.Invoke, typeof(InvokeActivity) },
             { ActivityTypes.Typing, typeof(TypingActivity) },

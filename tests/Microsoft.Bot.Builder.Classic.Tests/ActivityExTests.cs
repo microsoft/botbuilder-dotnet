@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -44,7 +45,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                 x.GetChannelData<string>();
                 Assert.Fail("Should have thrown exception");
             }
-            catch { }
+            catch (Exception exception) when (!(exception is AssertFailedException)) { }
             Assert.IsNotNull(x.GetChannelData<Mention>());
             Assert.IsFalse(x.TryGetChannelData<string>(out str));
             Assert.IsNull(str);
@@ -59,7 +60,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                 x.GetChannelData<string>();
                 Assert.Fail("Should have thrown exception after deserialized");
             }
-            catch { }
+            catch (Exception exception) when (!(exception is AssertFailedException)) { }
             Assert.IsNotNull(x.GetChannelData<Mention>());
             Assert.IsFalse(x.TryGetChannelData<string>(out str));
             Assert.IsNull(str);

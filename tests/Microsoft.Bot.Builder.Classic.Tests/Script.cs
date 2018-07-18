@@ -38,13 +38,17 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                         while (queue.Count > 0)
                         {
                             var toUser = queue.Dequeue();
-                            if (!string.IsNullOrEmpty(toUser.Text))
+
+                            if (toUser is MessageActivity message)
                             {
-                                stream.WriteLine($"ToUserText:{JsonConvert.SerializeObject(toUser.Text)}");
-                            }
-                            else
-                            {
-                                stream.WriteLine($"ToUserButtons:{JsonConvert.SerializeObject(toUser.Attachments)}");
+                                if (!string.IsNullOrEmpty(message.Text))
+                                {
+                                    stream.WriteLine($"ToUserText:{JsonConvert.SerializeObject(message.Text)}");
+                                }
+                                else
+                                {
+                                    stream.WriteLine($"ToUserButtons:{JsonConvert.SerializeObject(message.Attachments)}");
+                                }
                             }
                         }
                     };
@@ -144,7 +148,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                             Assert.AreEqual(count, queue.Count);
                             for (var i = 0; i < count; ++i)
                             {
-                                var toUser = queue.Dequeue();
+                                var toUser = queue.Dequeue() as MessageActivity;
                                 var expectedOut = ReadLine(stream, out label);
                                 if (label == "ToUserText")
                                 {

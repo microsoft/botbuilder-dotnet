@@ -54,7 +54,7 @@ using Microsoft.Bot.Builder.Adapters;
 namespace Microsoft.Bot.Builder.Classic.Tests
 {
     // temporary home for special-purpose IScorable
-    public sealed class CancelScorable : ScorableBase<IActivity, double?, double>
+    public sealed class CancelScorable : ScorableBase<Activity, double?, double>
     {
         private readonly IDialogStack stack;
         private readonly Regex regex;
@@ -64,9 +64,9 @@ namespace Microsoft.Bot.Builder.Classic.Tests
             SetField.NotNull(out this.regex, nameof(regex), regex);
         }
 
-        protected override async Task<double?> PrepareAsync(IActivity item, CancellationToken token)
+        protected override async Task<double?> PrepareAsync(Activity item, CancellationToken token)
         {
-            var message = item as IMessageActivity;
+            var message = item as MessageActivity;
             if (message != null && message.Text != null)
             {
                 var text = message.Text;
@@ -79,19 +79,19 @@ namespace Microsoft.Bot.Builder.Classic.Tests
 
             return null;
         }
-        protected override bool HasScore(IActivity item, double? state)
+        protected override bool HasScore(Activity item, double? state)
         {
             return state.HasValue;
         }
-        protected override double GetScore(IActivity item, double? state)
+        protected override double GetScore(Activity item, double? state)
         {
             return state.Value;
         }
-        protected override async Task PostAsync(IActivity item, double? state, CancellationToken token)
+        protected override async Task PostAsync(Activity item, double? state, CancellationToken token)
         {
             this.stack.Fail(new OperationCanceledException());
         }
-        protected override Task DoneAsync(IActivity item, double? state, CancellationToken token)
+        protected override Task DoneAsync(Activity item, double? state, CancellationToken token)
         {
             return Task.CompletedTask;
         }
@@ -110,7 +110,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
             using (new FiberTestBase.ResolveMoqAssembly(dialog.Object))
             using (var container = Build(Options.None, dialog.Object))
             using (var containerScope = container.BeginLifetimeScope(
-                builder => builder.Register(c => new CancelScorable(c.Resolve<IDialogStack>(), new Regex("cancel"))).As<IScorable<IActivity, double>>()))
+                builder => builder.Register(c => new CancelScorable(c.Resolve<IDialogStack>(), new Regex("cancel"))).As<IScorable<Activity, double>>()))
             {
                 var toBot = MakeTestMessage();
                 var context = new TurnContext(new TestAdapter(), (Activity)toBot);
@@ -122,7 +122,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                     var task = scope.Resolve<IPostToBot>();
                     await task.PostAsync(toBot, CancellationToken.None);
 
-                    AssertMentions(PromptText, ((TestAdapter)context.Adapter).GetNextReply().AsMessageActivity());
+                    AssertMentions(PromptText, ((TestAdapter)context.Adapter).GetNextReply() as MessageActivity);
                 }
 
                 using (var scope = DialogModule.BeginLifetimeScope(containerScope, context))
@@ -149,7 +149,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
             using (new FiberTestBase.ResolveMoqAssembly(dialog.Object))
             using (var container = Build(Options.None, dialog.Object))
             using (var containerScope = container.BeginLifetimeScope(
-                builder => builder.Register(c => new CancelScorable(c.Resolve<IDialogStack>(), new Regex("cancel"))).As<IScorable<IActivity, double>>()))
+                builder => builder.Register(c => new CancelScorable(c.Resolve<IDialogStack>(), new Regex("cancel"))).As<IScorable<Activity, double>>()))
             {
                 var toBot = MakeTestMessage();
                 var context = new TurnContext(new TestAdapter(), (Activity)toBot);
@@ -161,7 +161,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                     var task = scope.Resolve<IPostToBot>();
                     await task.PostAsync(toBot, CancellationToken.None);
 
-                    AssertMentions(PromptText, ((TestAdapter)context.Adapter).GetNextReply().AsMessageActivity());
+                    AssertMentions(PromptText, ((TestAdapter)context.Adapter).GetNextReply() as MessageActivity);
                 }
 
                 using (var scope = DialogModule.BeginLifetimeScope(containerScope, context))
@@ -209,7 +209,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
             }
         }
 
-        public async Task MessageReceived(IDialogContext context, IAwaitable<IMessageActivity> message)
+        public async Task MessageReceived(IDialogContext context, IAwaitable<MessageActivity> message)
         {
             var toBot = await message;
             var value = Evaluate(toBot.Text);
@@ -219,7 +219,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
     }
 
     // temporary home for special-purpose IScorable
-    public sealed class CalculatorScorable : ScorableBase<IActivity, string, double>
+    public sealed class CalculatorScorable : ScorableBase<Activity, string, double>
     {
         private readonly IDialogStack stack;
         private readonly Regex regex;
@@ -229,9 +229,9 @@ namespace Microsoft.Bot.Builder.Classic.Tests
             SetField.NotNull(out this.regex, nameof(regex), regex);
         }
 
-        protected override async Task<string> PrepareAsync(IActivity item, CancellationToken token)
+        protected override async Task<string> PrepareAsync(Activity item, CancellationToken token)
         {
-            var message = item as IMessageActivity;
+            var message = item as MessageActivity;
             if (message != null && message.Text != null)
             {
                 var text = message.Text;
@@ -244,25 +244,25 @@ namespace Microsoft.Bot.Builder.Classic.Tests
 
             return null;
         }
-        protected override bool HasScore(IActivity item, string state)
+        protected override bool HasScore(Activity item, string state)
         {
             return state != null;
         }
-        protected override double GetScore(IActivity item, string state)
+        protected override double GetScore(Activity item, string state)
         {
             return 1.0;
         }
-        protected override async Task PostAsync(IActivity item, string state, CancellationToken token)
+        protected override async Task PostAsync(Activity item, string state, CancellationToken token)
         {
             var dialog = new CalculatorDialog();
 
             // let's strip off the prefix in favor of the actual arithmetic expression
-            var message = (IMessageActivity)item;
+            var message = (MessageActivity)item;
             message.Text = state;
 
             await this.stack.Forward(dialog.Void(this.stack), null, message, token);
         }
-        protected override Task DoneAsync(IActivity item, string state, CancellationToken token)
+        protected override Task DoneAsync(Activity item, string state, CancellationToken token)
         {
             return Task.CompletedTask;
         }
@@ -321,7 +321,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
         {
             var scorable =
                 Actions
-                .Bind(async (IDialogStack stack, IMessageActivity activity, CancellationToken token) =>
+                .Bind(async (IDialogStack stack, MessageActivity activity, CancellationToken token) =>
                 {
                     var triggered = makeRoot();
                     stack.Reset();
@@ -386,7 +386,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
             var echo = Chain.PostToChain().Select(msg => $"echo: {msg.Text}").PostToUser().Loop();
 
             var scorable = Actions
-                .Bind(async (string expression, IDialogStack stack, IMessageActivity activity, CancellationToken token) =>
+                .Bind(async (string expression, IDialogStack stack, MessageActivity activity, CancellationToken token) =>
                 {
                     var dialog = new CalculatorDialog();
                     activity.Text = expression;
@@ -419,7 +419,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
             var echo = Chain.PostToChain().Select(msg => $"echo: {msg.Text}").PostToUser().Loop();
 
             var scorable = Actions
-                .Bind((string expression, IBotData data, IDialogTask stack, IMessageActivity activity, CancellationToken token) =>
+                .Bind((string expression, IBotData data, IDialogTask stack, MessageActivity activity, CancellationToken token) =>
                 {
                     var dialog = new CalculatorDialog();
                     activity.Text = expression;
@@ -459,7 +459,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                 builder =>
                 {
                     builder.RegisterInstance(echo).As<IDialog<object>>();
-                    builder.Register(c => new CalculatorScorable(c.Resolve<IDialogStack>(), new Regex(@".*calculate\s*(.*)"))).As<IScorable<IActivity, double>>();
+                    builder.Register(c => new CalculatorScorable(c.Resolve<IDialogStack>(), new Regex(@".*calculate\s*(.*)"))).As<IScorable<Activity, double>>();
                 }))
             {
                 await AssertScriptAsync(scope,

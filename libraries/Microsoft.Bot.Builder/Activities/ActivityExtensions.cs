@@ -102,22 +102,19 @@ namespace Microsoft.Bot.Schema
         /// <seealso cref="TryGetChannelData{TypeT}(out TypeT)"/>
         public static T GetChannelData<T>(this Activity activity)
         {
-            if (activity.ChannelData == null)
+            var channelData = activity.ChannelData;
+
+            if (channelData == null)
             {
                 return default(T);
             }
 
-            if (activity.ChannelData is T alreadyTypedChannelData)
+            if (channelData is T alreadyTypedChannelData)
             {
                 return alreadyTypedChannelData;
             }
 
-            if (activity.ChannelData is JObject jsonObjectChannelData)
-            {
-                return jsonObjectChannelData.ToObject<T>();
-            }
-
-            return default(T);
+            return ((JObject)channelData).ToObject<T>();
         }
 
         /// <summary>
