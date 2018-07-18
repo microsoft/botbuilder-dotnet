@@ -29,7 +29,7 @@ namespace Microsoft.Bot.Builder
     public interface IBot
     {
         /// <summary>
-        /// Handles an incoming activity.
+        /// When implemented in a bot, handles an incoming activity.
         /// </summary>
         /// <param name="turnContext">The context object for this turn.</param>
         /// <returns>A task that represents the work queued to execute.</returns>

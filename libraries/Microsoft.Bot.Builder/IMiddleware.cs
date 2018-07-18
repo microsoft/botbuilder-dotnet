@@ -6,6 +6,14 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder
 {
+    /// <summary>
+    /// Encapsulates an asynchronous method that calls the next
+    /// <see cref="IMiddleware"/>.<see cref="IMiddleware.OnTurnAsync(ITurnContext, NextDelegate, CancellationToken)"/>
+    /// or <see cref="IBot"/>.<see cref="IBot.OnTurnAsync(ITurnContext)"/> method in the middleware pipeline.
+    /// </summary>
+    /// <param name="cancellationToken">A cancellation token that can be used by other objects
+    /// or threads to receive notice of cancellation.</param>
+    /// <returns>A task that represents the work queued to execute.</returns>
     public delegate Task NextDelegate(CancellationToken cancellationToken);
 
     /// <summary>
@@ -26,7 +34,7 @@ namespace Microsoft.Bot.Builder
     public interface IMiddleware
     {
         /// <summary>
-        /// Processess an incoming activity.
+        /// When implemented in middleware, processess an incoming activity.
         /// </summary>
         /// <param name="context">The context object for this turn.</param>
         /// <param name="next">The delegate to call to continue the bot middleware pipeline.</param>
