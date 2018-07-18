@@ -215,7 +215,7 @@ namespace Microsoft.Bot.Builder
                     }
                     else
                     {
-                        return (InvokeResponse)invokeResponseActivity.Value;
+                        return invokeResponseActivity.Response;
                     }
                 }
 

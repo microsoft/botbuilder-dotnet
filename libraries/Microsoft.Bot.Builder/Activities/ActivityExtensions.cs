@@ -2,9 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text.RegularExpressions;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Schema
