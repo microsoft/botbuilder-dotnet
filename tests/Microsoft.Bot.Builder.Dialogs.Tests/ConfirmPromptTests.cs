@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         public async Task ConfirmPrompt()
         {
             ConversationState convoState = new ConversationState(new MemoryStorage());
-            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test");
+            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test", () => new Dictionary<string, object>());
 
             TestAdapter adapter = new TestAdapter()
                 .Use(convoState);
@@ -54,7 +54,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         public async Task ConfirmPromptRetry()
         {
             ConversationState convoState = new ConversationState(new MemoryStorage());
-            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test");
+            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test", () => new Dictionary<string, object>());
 
             TestAdapter adapter = new TestAdapter()
                 .Use(convoState);
@@ -99,7 +99,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         public async Task ConfirmPromptChoiceOptionsNumbers()
         {
             var convState = new ConversationState(new MemoryStorage());
-            var testProperty = convState.CreateProperty<Dictionary<string, object>>("test");
+            var testProperty = convState.CreateProperty<Dictionary<string, object>>("test", () => new Dictionary<string, object>());
             TestAdapter adapter = new TestAdapter()
                 .Use(convState);
 
@@ -147,7 +147,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         public async Task ConfirmPromptChoiceOptionsNoNumbers()
         {
             var convState = new ConversationState(new MemoryStorage());
-            var testProperty = convState.CreateProperty<Dictionary<string, object>>("test");
+            var testProperty = convState.CreateProperty<Dictionary<string, object>>("test", () => new Dictionary<string, object>());
             TestAdapter adapter = new TestAdapter()
                 .Use(convState);
 

@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
             var activities = TranscriptUtilities.GetFromTestContext(TestContext);
 
             var userState = new UserState(new MemoryStorage());
-            var testProperty = userState.CreateProperty<UserStateObject>("test", new UserStateObject());
+            var testProperty = userState.CreateProperty<UserStateObject>("test", () => new UserStateObject());
 
             TestAdapter adapter = new TestAdapter()
                 .Use(userState);
@@ -66,7 +66,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
             var storage = new MemoryStorage();
 
             var convoState = new ConversationState(new MemoryStorage());
-            var testProperty = convoState.CreateProperty<ConversationStateObject>("test");
+            var testProperty = convoState.CreateProperty<ConversationStateObject>("test", () => new ConversationStateObject());
 
             TestAdapter adapter = new TestAdapter()
                 .Use(convoState);
@@ -111,7 +111,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
 
             var storage = new MemoryStorage();
             var customState = new CustomState(storage);
-            var testProperty = customState.CreateProperty<CustomStateObject>("Test");
+            var testProperty = customState.CreateProperty<CustomStateObject>("Test", () => new CustomStateObject());
             TestAdapter adapter = new TestAdapter()
                 .Use(customState);
 

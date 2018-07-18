@@ -89,7 +89,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
             var activities = TranscriptUtilities.GetFromTestContext(TestContext);
 
             var userState = new UserState(new MemoryStorage());
-            var userLangProp = userState.CreateProperty<string>("language", "en-us");
+            var userLangProp = userState.CreateProperty<string>("language", () => "en-us");
 
             TestAdapter adapter = new TestAdapter()
                 .Use(userState)
