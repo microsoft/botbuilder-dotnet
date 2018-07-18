@@ -100,7 +100,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
                 .StartTestAsync();
         }
 
-        protected async Task<bool> ChangeLocaleRequest(ITurnContext context, IPropertyAccessor<string> userLocaleProperty)
+        protected async Task<bool> ChangeLocaleRequest(ITurnContext context, IStatePropertyAccessor<string> userLocaleProperty)
         {
             bool changeLocale = false;//logic implemented by developper to make a signal for language changing 
             //use a specific message from user to change language
