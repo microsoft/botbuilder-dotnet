@@ -9,50 +9,50 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
     public interface ILuisOptions
     {
         /// <summary>
-        /// Gets or sets a value indicating whether to logging of queries to LUIS is allowed.
+        /// Gets or sets a value indicating whether to log the query.
         /// </summary>
         /// <value>
-        /// Indicates whether the logging of queries to LUIS is allowed.
+        /// Indicates whether to log the query.
         /// </value>
         bool? Log { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether spell checking is enabled.
+        /// Gets or sets a value indicating whether to enable spell checking.
         /// </summary>
         /// <value>
-        /// Indicates whether spell checking is enabled.
+        /// Indicates whether to enable spell checking.
         /// </value>
         bool? SpellCheck { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the staging endpoint is used.
+        /// Gets or sets a value indicating whether to use the staging endpoint.
         /// </summary>
         /// <value>
-        /// Indicates whether the staging endpoint is used.
+        /// Indicates whether to use the staging endpoint.
         /// </value>
         bool? Staging { get; set; }
 
         /// <summary>
-        /// Gets or sets the time zone offset.
+        /// Gets or sets the timezone offset for the location of the request in minutes.
         /// </summary>
         /// <value>
-        /// The time zone offset.
+        /// The timezone offset for the location of the request in minutes.
         /// </value>
         double? TimezoneOffset { get; set; }
 
         /// <summary>
-        /// Gets or sets the verbose flag.
+        /// Gets or sets whether to return all intents instead of just the topscoring intent.
         /// </summary>
         /// <value>
-        /// The verbose flag.
+        /// Indicates whether to return all intents instead of just the topscoring intent.
         /// </value>
         bool? Verbose { get; set; }
 
         /// <summary>
-        /// Gets or sets the Bing Spell Check subscription key.
+        /// Gets or sets the subscription key to use when enabling bing spell check.
         /// </summary>
         /// <value>
-        /// The Bing Spell Check subscription key.
+        /// The subscription key to use when enabling bing spell check.
         /// </value>
         string BingSpellCheckSubscriptionKey { get; set; }
     }

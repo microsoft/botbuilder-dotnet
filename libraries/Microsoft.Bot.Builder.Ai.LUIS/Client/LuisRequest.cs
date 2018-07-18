@@ -3,12 +3,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Cognitive.LUIS.Models;
 using Microsoft.Rest;
-using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Ai.LUIS
 {
