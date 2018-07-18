@@ -1,0 +1,26 @@
+{
+    "query": "I want to travel on united",
+    "topScoringIntent": {
+        "intent": "Travel",
+        "score": 0.8785189
+    },
+    "intents": [
+        {
+            "intent": "Travel",
+            "score": 0.8785189
+        }
+    ],
+    "entities": [
+        {
+            "entity": "united",
+            "type": "Airline",
+            "startIndex": 20,
+            "endIndex": 25,
+            "resolution": {
+                "values": [
+                    "United"
+                ]
+            }
+        }
+    ]
+}
