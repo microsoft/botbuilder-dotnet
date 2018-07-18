@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.Ai.LUIS
 {
     /// <summary>
-    /// Type for LUIS builtin_datetime.
+    /// Represents the built-in LUIS date-time type.
     /// </summary>
     /// <remarks>
     /// LUIS recognizes time expressions like "next monday" and converts those to a type and set of timex expressions.
@@ -17,6 +17,13 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
     /// </remarks>
     public class DateTimeSpec
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DateTimeSpec"/> class.
+        /// </summary>
+        /// <param name="type">The type of TIMEX expression.</param>
+        /// <param name="expressions">The TIMEX expression.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="type"/> is null or contains only white space,
+        /// or <paramref name="expressions"/> is null.</exception>
         public DateTimeSpec(string type, IEnumerable<string> expressions)
         {
             if (string.IsNullOrWhiteSpace(type))
@@ -62,6 +69,7 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
         [JsonProperty("timex")]
         public IList<string> Expressions { get; }
 
+        /// <inheritdoc/>
         public override string ToString() => $"DateTimeSpec({Type}, [{string.Join(", ", Expressions)}]";
     }
 }
