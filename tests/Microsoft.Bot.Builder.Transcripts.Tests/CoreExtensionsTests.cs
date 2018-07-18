@@ -4,6 +4,7 @@
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Tests;
+using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Bot.Builder.Transcripts.Tests
@@ -18,27 +19,39 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
         {
             var activities = TranscriptUtilities.GetFromTestContext(TestContext);
 
-            var storage = new MemoryStorage();
+            var userState = new UserState(new MemoryStorage());
+            var testProperty = userState.CreateProperty<UserStateObject>("test", () => new UserStateObject());
 
             TestAdapter adapter = new TestAdapter()
-                .Use(new UserState<UserStateObject>(storage));
+                .Use(userState);
 
-            var flow = new TestFlow(adapter, async (context) => {
-                var (command, value) = GetCommandValue(context);
-                switch (command)
+            var flow = new TestFlow(adapter, async (context) =>
+            {
+                if (context.Activity.Type == ActivityTypes.Message)
                 {
-                    case "delete":
-                        context.GetUserState<UserStateObject>().Value = null;
-                        break;
-                    case "set":
-                        context.GetUserState<UserStateObject>().Value = value;
-                        break;
-                    case "read":
-                        await context.SendActivityAsync($"value:{context.GetUserState<UserStateObject>().Value}");
-                        break;
-                    default:
-                        await context.SendActivityAsync("bot message");
-                        break;
+                    var (command, value) = GetCommandValue(context);
+                    switch (command)
+                    {
+                        case "delete":
+                            await testProperty.DeleteAsync(context);
+                            break;
+                        case "set":
+                            {
+                                var data = await testProperty.GetAsync(context);
+                                data.Value = value;
+                                await testProperty.SetAsync(context, data);
+                            }
+                            break;
+                        case "read":
+                            {
+                                var data = await testProperty.GetAsync(context);
+                                await context.SendActivityAsync($"value:{data.Value}");
+                            }
+                            break;
+                        default:
+                            await context.SendActivityAsync("bot message");
+                            break;
+                    }
                 }
             });
 
@@ -52,25 +65,39 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
 
             var storage = new MemoryStorage();
 
-            TestAdapter adapter = new TestAdapter()
-                .Use(new ConversationState<ConversationStateObject>(storage));
+            var convoState = new ConversationState(new MemoryStorage());
+            var testProperty = convoState.CreateProperty<ConversationStateObject>("test", () => new ConversationStateObject());
 
-            var flow = new TestFlow(adapter, async (context) => {
-                var (command, value) = GetCommandValue(context);
-                switch (command)
+            TestAdapter adapter = new TestAdapter()
+                .Use(convoState);
+
+            var flow = new TestFlow(adapter, async (context) =>
+            {
+                if (context.Activity.Type == ActivityTypes.Message)
                 {
-                    case "delete":
-                        context.GetConversationState<ConversationStateObject>().Value = null;
-                        break;
-                    case "set":
-                        context.GetConversationState<ConversationStateObject>().Value = value;
-                        break;
-                    case "read":
-                        await context.SendActivityAsync($"value:{context.GetConversationState<ConversationStateObject>().Value}");
-                        break;
-                    default:
-                        await context.SendActivityAsync("bot message");
-                        break;
+                    var (command, value) = GetCommandValue(context);
+                    switch (command)
+                    {
+                        case "delete":
+                            await testProperty.DeleteAsync(context);
+                            break;
+                        case "set":
+                            {
+                                var data = await testProperty.GetAsync(context);
+                                data.Value = value;
+                                await testProperty.SetAsync(context, data);
+                            }
+                            break;
+                        case "read":
+                            {
+                                var data = await testProperty.GetAsync(context);
+                                await context.SendActivityAsync($"value:{data.Value}");
+                            }
+                            break;
+                        default:
+                            await context.SendActivityAsync("bot message");
+                            break;
+                    }
                 }
             });
 
@@ -83,26 +110,38 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
             var activities = TranscriptUtilities.GetFromTestContext(TestContext);
 
             var storage = new MemoryStorage();
-
+            var customState = new CustomState(storage);
+            var testProperty = customState.CreateProperty<CustomStateObject>("Test", () => new CustomStateObject());
             TestAdapter adapter = new TestAdapter()
-                .Use(new CustomState(storage));
+                .Use(customState);
 
-            var flow = new TestFlow(adapter, async (context) => {
-                var (command, value) = GetCommandValue(context);
-                switch (command)
+            var flow = new TestFlow(adapter, async (context) =>
+            {
+                if (context.Activity.Type == ActivityTypes.Message)
                 {
-                    case "delete":
-                        CustomState.Get(context).Value = null;
-                        break;
-                    case "set":
-                        CustomState.Get(context).Value = value;
-                        break;
-                    case "read":
-                        await context.SendActivityAsync($"value:{CustomState.Get(context).Value}");
-                        break;
-                    default:
-                        await context.SendActivityAsync("bot message");
-                        break;
+                    var (command, value) = GetCommandValue(context);
+                    switch (command)
+                    {
+                        case "delete":
+                            await testProperty.DeleteAsync(context);
+                            break;
+                        case "set":
+                            {
+                                var data = await testProperty.GetAsync(context);
+                                data.Value = value;
+                                await testProperty.SetAsync(context, data);
+                            }
+                            break;
+                        case "read":
+                            {
+                                var data = await testProperty.GetAsync(context);
+                                await context.SendActivityAsync($"value:{data.Value}");
+                            }
+                            break;
+                        default:
+                            await context.SendActivityAsync("bot message");
+                            break;
+                    }
                 }
             });
 
@@ -134,7 +173,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
             public string Value { get; set; }
         }
 
-        internal class CustomState : BotState<CustomStateObject>
+        internal class CustomState : BotState
         {
             public const string PropertyName = "Microsoft.Bot.Builder.Transcripts.Tests.CustomState";
 
@@ -142,7 +181,6 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
             {
             }
 
-            public static CustomStateObject Get(ITurnContext context) => context.Services.Get<CustomStateObject>(PropertyName);
         }
 
     }

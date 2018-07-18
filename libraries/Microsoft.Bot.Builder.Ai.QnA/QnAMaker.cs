@@ -86,7 +86,7 @@ namespace Microsoft.Bot.Builder.Ai.QnA
         /// </summary>
         /// <param name="question">The user question to be queried against your knowledge base.</param>
         /// <returns>A list of answers for the user query, sorted in decreasing order of ranking score.</returns>
-        public async Task<QueryResult[]> GetAnswers(string question)
+        public async Task<QueryResult[]> GetAnswersAsync(string question)
         {
             var requestUrl = $"{_endpoint.Host}/knowledgebases/{_endpoint.KnowledgeBaseId}/generateanswer";
 
