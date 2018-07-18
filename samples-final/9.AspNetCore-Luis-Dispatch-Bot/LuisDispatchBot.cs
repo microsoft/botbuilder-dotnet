@@ -4,7 +4,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Bot;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Ai.LUIS;
 using Microsoft.Bot.Builder.Ai.QnA;
@@ -58,7 +57,7 @@ namespace AspNetCore_Luis_Dispatch_Bot
         // App ID for a LUIS model named "weather"
         private LuisModel luisModelWeather;
 
-        public async Task OnTurn(ITurnContext context)
+        public async Task OnTurnAsync(ITurnContext context)
         {
             if (context.Activity.Type is ActivityTypes.Message)
             {
@@ -68,13 +67,13 @@ namespace AspNetCore_Luis_Dispatch_Bot
 
                 if (topIntent == null)
                 {
-                    await context.SendActivity("Unable to get the top intent.");
+                    await context.SendActivityAsync("Unable to get the top intent.");
                 }
                 else
                 {
                     if (topIntent.Value.score < 0.3)
                     {
-                        await context.SendActivity("I'm not very sure what you want but will try to send your request.");
+                        await context.SendActivityAsync("I'm not very sure what you want but will try to send your request.");
                     }
 
                     await DispatchToTopIntent(context, topIntent);
@@ -108,7 +107,7 @@ namespace AspNetCore_Luis_Dispatch_Bot
                     break;
                 default:
                     // The intent didn't match any case, so just display the recognition results.
-                    await context.SendActivity($"Dispatch intent: {topIntent.Value.intent} ({topIntent.Value.score}).");
+                    await context.SendActivityAsync($"Dispatch intent: {topIntent.Value.intent} ({topIntent.Value.score}).");
 
                     break;
             }
@@ -122,32 +121,32 @@ namespace AspNetCore_Luis_Dispatch_Bot
                 var results = await qnaMaker.GetAnswers(context.Activity.Text.Trim()).ConfigureAwait(false);
                 if (results.Any())
                 {
-                    await context.SendActivity(results.First().Answer);
+                    await context.SendActivityAsync(results.First().Answer);
                 }
                 else
                 {
-                    await context.SendActivity($"Couldn't find an answer in the {appName}.");
+                    await context.SendActivityAsync($"Couldn't find an answer in the {appName}.");
                 }
             }
         }
 
         private static async Task DispatchToLuisModel(ITurnContext context, LuisModel luisModel, string appName)
         {
-            await context.SendActivity($"Sending your request to the {appName} system ...");
+            await context.SendActivityAsync($"Sending your request to the {appName} system ...");
             var (intents, entities) = await RecognizeAsync(luisModel, context.Activity.Text);
 
-            await context.SendActivity($"Intents detected by the {appName} app:\n\n{string.Join("\n\n", intents)}");
+            await context.SendActivityAsync($"Intents detected by the {appName} app:\n\n{string.Join("\n\n", intents)}");
 
             if (entities.Count() > 0)
             {
-                await context.SendActivity($"The following entities were found in the message:\n\n{string.Join("\n\n", entities)}");
+                await context.SendActivityAsync($"The following entities were found in the message:\n\n{string.Join("\n\n", entities)}");
             }
         }
 
         private static async Task<(IEnumerable<string> intents, IEnumerable<string> entities)> RecognizeAsync(LuisModel luisModel, string text)
         {
             var luisRecognizer = new LuisRecognizer(luisModel);
-            var recognizerResult = await luisRecognizer.Recognize(text, System.Threading.CancellationToken.None);
+            var recognizerResult = await luisRecognizer.RecognizeAsync(text, System.Threading.CancellationToken.None);
 
             // list the intents
             var intents = new List<string>();
@@ -175,7 +174,7 @@ namespace AspNetCore_Luis_Dispatch_Bot
             {
                 if (newMember.Id != context.Activity.Recipient.Id)
                 {
-                    await context.SendActivity(welcomeMessage);
+                    await context.SendActivityAsync(welcomeMessage);
                 }
             }
         }
