@@ -13,7 +13,7 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.Ai.LUIS
 {
     /// <summary>
-    /// Object that contains all the possible parameters to build Luis request.
+    /// Represents a LUIS query, including the parameters to use to get predictions from the model.
     /// </summary>
     public sealed class LuisRequest : ILuisOptions
     {
@@ -28,7 +28,7 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
         /// <summary>
         /// Initializes a new instance of the <see cref="LuisRequest"/> class.
         /// </summary>
-        /// <param name="query"> The text query.</param>
+        /// <param name="query">The query text to get predictions for.</param>
         public LuisRequest(string query)
         {
             this.Query = query;
@@ -36,58 +36,58 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
         }
 
         /// <summary>
-        /// Gets or sets the text query.
+        /// Gets or sets the query text to get predictions for.
         /// </summary>
         /// <value>
-        /// The text query.
+        /// The query text to get predictions for.
         /// </value>
         public string Query { get; set; }
 
         /// <summary>
-        /// Gets or sets if logging of queries to LUIS is allowed.
+        /// Gets or sets a value indicating whether to log the query.
         /// </summary>
         /// <value>
-        /// Indicates if logging of queries to LUIS is allowed.
+        /// Indicates whether to log the query. The default is true.
         /// </value>
         public bool? Log { get; set; }
 
         /// <summary>
-        /// Gets or sets if spell checking is enabled.
+        /// Gets or sets a value indicating whether to enable spell checking.
         /// </summary>
         /// <value>
-        /// Indicates if spell checking is enabled.</placeholder>
+        /// Indicates whether to enable spell checking.
         /// </value>
         public bool? SpellCheck { get; set; }
 
         /// <summary>
-        /// Gets or sets if the staging endpoint is used.
+        /// Gets or sets a value indicating whether to use the staging endpoint.
         /// </summary>
         /// <value>
-        /// If the staging endpoint is used.
+        /// Indicates whether to use the staging endpoint.
         /// </value>
         public bool? Staging { get; set; }
 
         /// <summary>
-        /// Gets or sets the time zone offset.
+        /// Gets or sets the timezone offset for the location of the request in minutes.
         /// </summary>
         /// <value>
-        /// The time zone offset.
+        /// The timezone offset for the location of the request in minutes.
         /// </value>
         public double? TimezoneOffset { get; set; }
 
         /// <summary>
-        /// Gets or sets the verbose flag.
+        /// Gets or sets a value indicating whether to return all intents instead of just the topscoring intent.
         /// </summary>
         /// <value>
-        /// The verbose flag.
+        /// Indicates whether to return all intents instead of just the topscoring intent.
         /// </value>
         public bool? Verbose { get; set; }
 
         /// <summary>
-        /// Gets or sets the Bing Spell Check subscription key.
+        /// Gets or sets the subscription key to use when enabling bing spell check.
         /// </summary>
         /// <value>
-        /// The Bing Spell Check subscription key.
+        /// The subscription key to use when enabling bing spell check.
         /// </value>
         public string BingSpellCheckSubscriptionKey { get; set; }
 
@@ -100,10 +100,10 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
         public string ExtraParameters { get; set; }
 
         /// <summary>
-        /// Gets or sets the context id.
+        /// Gets or sets the context ID.
         /// </summary>
         /// <value>
-        /// The context id.
+        /// The context ID.
         /// </value>
         [Obsolete("Action binding in LUIS should be replaced with code.")]
         public string ContextId { get; set; }
@@ -118,7 +118,7 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
         public string ForceSet { get; set; }
 
         /// <summary>
-        /// Build the Uri for issuing the request for the specified Luis model.
+        /// Builds a URI to use to get a prediction from the LUIS model.
         /// </summary>
         /// <param name="model"> The Luis model.</param>
         /// <returns> The request Uri.</returns>

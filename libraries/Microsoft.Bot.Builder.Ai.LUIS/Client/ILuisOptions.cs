@@ -4,31 +4,31 @@
 namespace Microsoft.Bot.Builder.Ai.LUIS
 {
     /// <summary>
-    /// Interface containing optional parameters for a LUIS request.
+    /// Contains optional parameters for a LUIS request.
     /// </summary>
     public interface ILuisOptions
     {
         /// <summary>
-        /// Gets or sets a value indicating whether if logging of queries to LUIS is allowed.
+        /// Gets or sets a value indicating whether to logging of queries to LUIS is allowed.
         /// </summary>
         /// <value>
-        /// Indicates if logging of queries to LUIS is allowed.
+        /// Indicates whether the logging of queries to LUIS is allowed.
         /// </value>
         bool? Log { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether if spell checking is enabled.
+        /// Gets or sets a value indicating whether spell checking is enabled.
         /// </summary>
         /// <value>
-        /// Indicates if spell checking is enabled.</placeholder>
+        /// Indicates whether spell checking is enabled.
         /// </value>
         bool? SpellCheck { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether if the staging endpoint is used..
+        /// Gets or sets a value indicating whether the staging endpoint is used.
         /// </summary>
         /// <value>
-        /// Indicates if the staging endpoint is used.
+        /// Indicates whether the staging endpoint is used.
         /// </value>
         bool? Staging { get; set; }
 
@@ -62,6 +62,14 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
     /// </summary>
     public static partial class Extensions
     {
+        /// <summary>
+        /// Applies optional parameters from an existing <see cref="ILuisOptions"/>
+        /// to another <see cref="ILuisOptions"/>.
+        /// </summary>
+        /// <param name="source">The object containg the options to copy.</param>
+        /// <param name="target">The object to which to apply the options.</param>
+        /// <remarks>For each option has a value in the <paramref name="source"/> object,
+        /// the value overwrites the value in the <paramref name="target"/> object.</remarks>
         public static void Apply(this ILuisOptions source, ILuisOptions target)
         {
             if (source.Log.HasValue)
