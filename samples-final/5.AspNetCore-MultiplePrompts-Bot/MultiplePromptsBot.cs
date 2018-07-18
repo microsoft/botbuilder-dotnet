@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System.Threading.Tasks;
-using Microsoft.Bot;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
@@ -27,7 +26,7 @@ namespace AspNetCore_Multiple_Prompts
             if (result.Value.Length <= 2)
             {
                 result.Status = PromptStatus.NotRecognized;
-                await context.SendActivity("Your name should be at least 2 characters long.");
+                await context.SendActivityAsync("Your name should be at least 2 characters long.");
             }
         }
 
@@ -36,7 +35,7 @@ namespace AspNetCore_Multiple_Prompts
             if (0 > result.Value || result.Value > 122)
             {
                 result.Status = PromptStatus.NotRecognized;
-                await context.SendActivity("Your age should be between 0 and 122.");
+                await context.SendActivityAsync("Your age should be between 0 and 122.");
             }
         }
 
@@ -56,7 +55,7 @@ namespace AspNetCore_Multiple_Prompts
         {
             var state = dialogContext.Context.GetConversationState<MultiplePromptsState>();
             state.Age = (result as NumberResult<int>).Value;
-            await dialogContext.Context.SendActivity($"Your name is {state.Name} and your age is {state.Age}");
+            await dialogContext.Context.SendActivityAsync($"Your name is {state.Name} and your age is {state.Age}");
             await dialogContext.End();
         }
 
@@ -75,7 +74,7 @@ namespace AspNetCore_Multiple_Prompts
                 new WaterfallStep[] { AskNameStep, AskAgeStep, GatherInfoStep });
         }
 
-        public async Task OnTurn(ITurnContext context)
+        public async Task OnTurnAsync(ITurnContext context)
         {
             var state = context.GetConversationState<MultiplePromptsState>();
             var dialogCtx = dialogs.CreateContext(context, state);

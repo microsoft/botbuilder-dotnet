@@ -35,7 +35,7 @@ namespace AspNetCore_RichCards_Bot
             dialogs.Add("cardSelector", new WaterfallStep[] { ChoiceCardStep, ShowCardStep });
         }
 
-        public async Task OnTurn(ITurnContext context)
+        public async Task OnTurnAsync(ITurnContext context)
         {
             var state = context.GetConversationState<Dictionary<string, object>>();
             var dialogContext = dialogs.CreateContext(context, state);
@@ -117,31 +117,31 @@ namespace AspNetCore_RichCards_Bot
             switch (selectedCard)
             {
                 case "Adaptive card":
-                    await dialogContext.Context.SendActivity(CreateResponse(activity, CreateAdaptiveCardAttachment()));
+                    await dialogContext.Context.SendActivityAsync(CreateResponse(activity, CreateAdaptiveCardAttachment()));
                     break;
                 case "Animation card":
-                    await dialogContext.Context.SendActivity(CreateResponse(activity, CreateAnimationCardAttachment()));
+                    await dialogContext.Context.SendActivityAsync(CreateResponse(activity, CreateAnimationCardAttachment()));
                     break;
                 case "Audio card":
-                    await dialogContext.Context.SendActivity(CreateResponse(activity, CreateAudioCardAttachment()));
+                    await dialogContext.Context.SendActivityAsync(CreateResponse(activity, CreateAudioCardAttachment()));
                     break;
                 case "Hero card":
-                    await dialogContext.Context.SendActivity(CreateResponse(activity, CreateHeroCardAttachment()));
+                    await dialogContext.Context.SendActivityAsync(CreateResponse(activity, CreateHeroCardAttachment()));
                     break;
                 case "Receipt card":
-                    await dialogContext.Context.SendActivity(CreateResponse(activity, CreateReceiptCardAttachment()));
+                    await dialogContext.Context.SendActivityAsync(CreateResponse(activity, CreateReceiptCardAttachment()));
                     break;
                 case "Signin card":
-                    await dialogContext.Context.SendActivity(CreateResponse(activity, CreateSignInCardAttachment()));
+                    await dialogContext.Context.SendActivityAsync(CreateResponse(activity, CreateSignInCardAttachment()));
                     break;
                 case "Thumbnail card":
-                    await dialogContext.Context.SendActivity(CreateResponse(activity, CreateThumbnailCardAttachment()));
+                    await dialogContext.Context.SendActivityAsync(CreateResponse(activity, CreateThumbnailCardAttachment()));
                     break;
                 case "Video card":
-                    await dialogContext.Context.SendActivity(CreateResponse(activity, CreateVideoCardAttacment()));
+                    await dialogContext.Context.SendActivityAsync(CreateResponse(activity, CreateVideoCardAttacment()));
                     break;
                 default: // all cards
-                    await dialogContext.Context.SendActivities(new Activity[]
+                    await dialogContext.Context.SendActivitiesAsync(new Activity[]
                     {
                         CreateResponse(activity, CreateAdaptiveCardAttachment()),
                         CreateResponse(activity, CreateAnimationCardAttachment()),

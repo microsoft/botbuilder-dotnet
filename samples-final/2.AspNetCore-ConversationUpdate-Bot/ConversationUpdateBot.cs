@@ -11,7 +11,7 @@ namespace AspNetCore_ConversationUpdate_Bot
 {
     public class ConversationUpdateBot : IBot
     {
-        public Task OnTurn(ITurnContext context)
+        public Task OnTurnAsync(ITurnContext context)
         {
             switch (context.Activity.Type)
             {
@@ -20,12 +20,12 @@ namespace AspNetCore_ConversationUpdate_Bot
                     var newUserName = context.Activity.MembersAdded.FirstOrDefault()?.Name;
                     if (!string.IsNullOrWhiteSpace(newUserName) && newUserName != "Bot")
                     {
-                        return context.SendActivity($"Hello {newUserName}!");
+                        return context.SendActivityAsync($"Hello {newUserName}!");
                     }
 
                     break;
                 case ActivityTypes.Message:
-                    return context.SendActivity("Welcome to the conversationUpdate-bot! " +
+                    return context.SendActivityAsync("Welcome to the conversationUpdate-bot! " +
                         "On a _\"conversationUpdate\"_-type activity, this bot will greet new users.");
             }
             return Task.CompletedTask;

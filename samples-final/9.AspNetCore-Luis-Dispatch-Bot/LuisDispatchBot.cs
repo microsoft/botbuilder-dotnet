@@ -8,7 +8,6 @@ using Microsoft.Bot;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Ai.LUIS;
 using Microsoft.Bot.Builder.Ai.QnA;
-using Microsoft.Bot.Builder.Core.Extensions;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 

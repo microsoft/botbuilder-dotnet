@@ -2,7 +2,7 @@ using System.IO;
 using System.Web;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Bot.Builder.Integration.AspNet.Core;
+using Microsoft.Bot.Builder.Integration;
 using Microsoft.Extensions.Options;
 
 namespace AspNetCore_RichCards_Bot

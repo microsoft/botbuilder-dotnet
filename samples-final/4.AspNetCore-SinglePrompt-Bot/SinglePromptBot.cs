@@ -11,7 +11,7 @@ namespace AspNetCore_Single_Prompt
 {
     public class SinglePromptBot : IBot
     {
-        public async Task OnTurn(ITurnContext context)
+        public async Task OnTurnAsync(ITurnContext context)
         {
             var state = ConversationState<Dictionary<string, object>>.Get(context);
             var prompt = new TextPrompt();
@@ -34,7 +34,7 @@ namespace AspNetCore_Single_Prompt
                     else if (dialogCompletion.IsCompleted)
                     {
                         var textResult = (TextResult)dialogCompletion.Result;
-                        await context.SendActivity($"'{textResult.Value}' is a great name!");
+                        await context.SendActivityAsync($"'{textResult.Value}' is a great name!");
                     }
                     break;
             }

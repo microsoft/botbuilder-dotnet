@@ -10,7 +10,7 @@ namespace AspNetCore_CardActions_Bot
 {
     public class CardActionsBot : IBot
     {
-        public async Task OnTurn(ITurnContext context)
+        public async Task OnTurnAsync(ITurnContext context)
         {
             switch (context.Activity.Type)
             {
@@ -18,17 +18,17 @@ namespace AspNetCore_CardActions_Bot
                     var newUserName = context.Activity.MembersAdded.FirstOrDefault()?.Name;
                     if (!string.IsNullOrWhiteSpace(newUserName) && newUserName != "Bot")
                     {
-                        await context.SendActivity($"Welcome to the CardActions-bot!");
-                        await context.SendActivity(GetSuggestedActions());
+                        await context.SendActivityAsync($"Welcome to the CardActions-bot!");
+                        await context.SendActivityAsync(GetSuggestedActions());
                     }
 
                     break;
                 case ActivityTypes.Message:
                     if (IsBackAction(context))
                     {
-                        await context.SendActivity($"You sent \"_{context.Activity.Text}_\"");
+                        await context.SendActivityAsync($"You sent \"_{context.Activity.Text}_\"");
                     }
-                    await context.SendActivity(GetSuggestedActions());
+                    await context.SendActivityAsync(GetSuggestedActions());
                     break;
             }
         }

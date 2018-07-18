@@ -34,13 +34,13 @@ namespace AspNetCore_LUIS_Bot
             if (string.IsNullOrWhiteSpace(result.Value) || result.Value.Length < 3)
             {
                 result.Status = PromptStatus.NotRecognized;
-                await context.SendActivity("Title should be at least 3 characters long.");
+                await context.SendActivityAsync("Title should be at least 3 characters long.");
             }
         }
 
         private Task DefaultDialog(DialogContext dialogContext, object args, SkipStepFunction next)
         {
-            return dialogContext.Context.SendActivity("Hi! I'm a simple reminder bot. I can add reminders and show them.");
+            return dialogContext.Context.SendActivityAsync("Hi! I'm a simple reminder bot. I can add reminders and show them.");
         }
 
         private async Task AskReminderTitle(DialogContext dialogContext, object args, SkipStepFunction next)
@@ -64,7 +64,7 @@ namespace AspNetCore_LUIS_Bot
             {
                 reminder.Title = textResult.Value;
             }
-            await dialogContext.Context.SendActivity($"Your reminder named '{reminder.Title}' is set.");
+            await dialogContext.Context.SendActivityAsync($"Your reminder named '{reminder.Title}' is set.");
             var userContext = dialogContext.Context.GetUserState<UserState>();
             userContext.Reminders.Add(reminder);
             await dialogContext.End();
@@ -75,7 +75,7 @@ namespace AspNetCore_LUIS_Bot
             var userContext = dialogContext.Context.GetUserState<UserState>();
             if (userContext.Reminders.Count == 0)
             {
-                await dialogContext.Context.SendActivity("No reminders found.");
+                await dialogContext.Context.SendActivityAsync("No reminders found.");
                 await dialogContext.End();
             }
             else
@@ -91,16 +91,16 @@ namespace AspNetCore_LUIS_Bot
             if (args is ChoiceResult choice)
             {
                 var reminder = userContext.Reminders[choice.Value.Index];
-                await dialogContext.Context.SendActivity($"Reminder: {reminder.Title}");
+                await dialogContext.Context.SendActivityAsync($"Reminder: {reminder.Title}");
             }
             await dialogContext.End();
         }
         
-        public async Task OnTurn(ITurnContext context)
+        public async Task OnTurnAsync(ITurnContext context)
         {
             if (context.Activity.Type == ActivityTypes.ConversationUpdate && context.Activity.MembersAdded.FirstOrDefault()?.Id == context.Activity.Recipient.Id)
             {
-                await context.SendActivity("Hi! I'm a simple reminder bot. I can add reminders and show them.");
+                await context.SendActivityAsync("Hi! I'm a simple reminder bot. I can add reminders and show them.");
             }
             else if (context.Activity.Type == ActivityTypes.Message)
             {
@@ -118,12 +118,12 @@ namespace AspNetCore_LUIS_Bot
                 {
                     if (dialogContext.ActiveDialog != null)
                     {
-                        await context.SendActivity("Ok... Cancelled");
+                        await context.SendActivityAsync("Ok... Cancelled");
                         dialogContext.EndAll();
                     }
                     else
                     {
-                        await context.SendActivity("Nothing to cancel.");
+                        await context.SendActivityAsync("Nothing to cancel.");
                     }
                 }
                 
