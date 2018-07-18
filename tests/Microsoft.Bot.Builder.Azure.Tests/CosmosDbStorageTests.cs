@@ -6,7 +6,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Azure.Documents.Client;
-using Microsoft.Bot.Builder.Core.Extensions;
 using Microsoft.Bot.Builder.Core.Extensions.Tests;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -49,7 +48,13 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             if (_hasEmulator.Value)
             {
-                _storage = new CosmosDbStorage(new Uri(CosmosServiceEndpoint), CosmosAuthKey, CosmosDatabaseName, CosmosCollectionName);
+                _storage = new CosmosDbStorage(new CosmosDbStorageOptions
+                {
+                    AuthKey = CosmosAuthKey,
+                    CollectionId = CosmosCollectionName,
+                    CosmosDBEndpoint = new Uri(CosmosServiceEndpoint),
+                    DatabaseId = CosmosDatabaseName,
+                });
             }
         }
 
@@ -127,7 +132,15 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             if (CheckEmulator())
             {
                 ConnectionPolicy policyRef = null;
-                new CosmosDbStorage(new Uri(CosmosServiceEndpoint), CosmosAuthKey, CosmosDatabaseName, CosmosCollectionName, (ConnectionPolicy policy) => policyRef = policy);
+
+                _storage = new CosmosDbStorage(new CosmosDbStorageOptions
+                {
+                    AuthKey = CosmosAuthKey,
+                    CollectionId = CosmosCollectionName,
+                    CosmosDBEndpoint = new Uri(CosmosServiceEndpoint),
+                    DatabaseId = CosmosDatabaseName,
+                    ConnectionPolicyConfigurator = (ConnectionPolicy policy) => policyRef = policy
+                });
 
                 Assert.IsNotNull(policyRef, "ConnectionPolicy configurator was not called.");
             }
@@ -139,7 +152,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             if (CheckEmulator())
             {
-                await Assert.ThrowsExceptionAsync<ArgumentException>(() => _storage.Read());
+                await Assert.ThrowsExceptionAsync<ArgumentException>(() => _storage.ReadAsync(new string[] { }));
             }
         }
 
@@ -149,7 +162,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             if (CheckEmulator())
             {
-                await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => _storage.Write(null));
+                await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => _storage.WriteAsync(null));
             }
         }
 

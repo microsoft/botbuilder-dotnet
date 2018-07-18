@@ -45,23 +45,12 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
-        public void UnableToSetRespondedToFalse()
-        {
-            TurnContext c = new TurnContext(new TestAdapter(), new Activity())
-            {
-                Responded = false // should throw
-            };
-            Assert.Fail("Should have thrown");
-        }
-
-        [TestMethod]
         public async Task CacheValueUsingSetAndGet()
         {
             var adapter = new TestAdapter();
             await new TestFlow(adapter, MyBotLogic)
                     .Send("TestResponded")
-                    .StartTest();
+                    .StartTestAsync();
         }
 
         [TestMethod]
@@ -122,7 +111,7 @@ namespace Microsoft.Bot.Builder.Tests
             var a = new SimpleAdapter();
             var c = new TurnContext(a, new Activity());
             Assert.IsFalse(c.Responded);            
-            var response = await c.SendActivity(TestMessage.Message("testtest"));
+            var response = await c.SendActivityAsync(TestMessage.Message("testtest"));
 
             Assert.IsTrue(c.Responded);
             Assert.IsTrue(response.Id == "testtest");
@@ -138,7 +127,7 @@ namespace Microsoft.Bot.Builder.Tests
             var message1 = TestMessage.Message("message1");
             var message2 = TestMessage.Message("message2");
 
-            var response = await c.SendActivities(new IActivity[] { message1, message2 } );
+            var response = await c.SendActivitiesAsync(new IActivity[] { message1, message2 } );
 
             Assert.IsTrue(c.Responded);
             Assert.IsTrue(response.Length == 2);
@@ -154,7 +143,7 @@ namespace Microsoft.Bot.Builder.Tests
             Assert.IsFalse(c.Responded);
 
             var msg = TestMessage.Message().AsMessageActivity();
-            await c.SendActivity(msg);
+            await c.SendActivityAsync(msg);
             Assert.IsTrue(c.Responded);
         }
 
@@ -167,13 +156,13 @@ namespace Microsoft.Bot.Builder.Tests
 
             // Send a Trace Activity, and make sure responded is NOT set. 
             var trace  = Activity.CreateTraceActivity("trace");            
-            await c.SendActivity(trace);
+            await c.SendActivityAsync(trace);
             Assert.IsFalse(c.Responded);
 
             // Just to sanity check everything, send a Message and verify the 
             // responded flag IS set. 
             var msg = TestMessage.Message().AsMessageActivity();
-            await c.SendActivity(msg);
+            await c.SendActivityAsync(msg);
             Assert.IsTrue(c.Responded);
         }
 
@@ -191,7 +180,7 @@ namespace Microsoft.Bot.Builder.Tests
 
             var a = new SimpleAdapter(ValidateResponses);
             var c = new TurnContext(a, new Activity());            
-            await c.SendActivity(TestMessage.Message());
+            await c.SendActivityAsync(TestMessage.Message());
             Assert.IsTrue(foundActivity);
         }
 
@@ -209,7 +198,7 @@ namespace Microsoft.Bot.Builder.Tests
                return await next(); 
             });
 
-            await c.SendActivity(TestMessage.Message());
+            await c.SendActivityAsync(TestMessage.Message());
 
             Assert.IsTrue(count == 1);
         }
@@ -236,7 +225,7 @@ namespace Microsoft.Bot.Builder.Tests
                 return Task.FromResult<ResourceResponse[]>(null);
             });
 
-            await c.SendActivity(TestMessage.Message());
+            await c.SendActivityAsync(TestMessage.Message());
 
             Assert.IsTrue(count == 1);
             Assert.IsFalse(responsesSent, "Responses made it to the adapter.");
@@ -266,7 +255,7 @@ namespace Microsoft.Bot.Builder.Tests
                 return await next(); 
             });
 
-            await c.SendActivity(TestMessage.Message());
+            await c.SendActivityAsync(TestMessage.Message());
 
             // Intercepted the message, changed it, and sent it on to the Adapter
             Assert.IsTrue(foundIt);            
@@ -288,7 +277,7 @@ namespace Microsoft.Bot.Builder.Tests
             var c = new TurnContext(a, new Activity());
             
             var message = TestMessage.Message("test");            
-            var updateResult = await c.UpdateActivity(message);
+            var updateResult = await c.UpdateActivityAsync(message);
 
             Assert.IsTrue(foundActivity);
             Assert.IsTrue(updateResult.Id == "test");
@@ -316,7 +305,7 @@ namespace Microsoft.Bot.Builder.Tests
                 wasCalled = true;
                 return await next();
             });
-            await c.UpdateActivity(TestMessage.Message());
+            await c.UpdateActivityAsync(TestMessage.Message());
             Assert.IsTrue(wasCalled);            
             Assert.IsTrue(foundActivity);
         }
@@ -343,7 +332,7 @@ namespace Microsoft.Bot.Builder.Tests
                 return Task.FromResult<ResourceResponse>(null);
             });
 
-            await c.UpdateActivity(TestMessage.Message());
+            await c.UpdateActivityAsync(TestMessage.Message());
             Assert.IsTrue(wasCalled); // Interceptor was called
             Assert.IsFalse(adapterCalled); // Adapter was not                        
         }
@@ -369,7 +358,7 @@ namespace Microsoft.Bot.Builder.Tests
                 return await next(); 
             });
 
-            await c.UpdateActivity(TestMessage.Message());
+            await c.UpdateActivityAsync(TestMessage.Message());
             Assert.IsTrue(adapterCalled); // Adapter was not                        
         }
 
@@ -387,7 +376,7 @@ namespace Microsoft.Bot.Builder.Tests
 
             var a = new SimpleAdapter(ValidateDelete);
             var c = new TurnContext(a, TestMessage.Message()); 
-            await c.DeleteActivity("12345"); 
+            await c.DeleteActivityAsync("12345"); 
             Assert.IsTrue(deleteCalled);
         }
 
@@ -408,7 +397,7 @@ namespace Microsoft.Bot.Builder.Tests
 
             var reference = new ConversationReference("12345");
 
-            await c.DeleteActivity(reference);
+            await c.DeleteActivityAsync(reference);
             Assert.IsTrue(deleteCalled);
         }
 
@@ -435,7 +424,7 @@ namespace Microsoft.Bot.Builder.Tests
                 return Task.FromResult<ResourceResponse[]>(null);
             });
 
-            await c.DeleteActivity("1234"); 
+            await c.DeleteActivityAsync("1234"); 
             Assert.IsTrue(wasCalled); // Interceptor was called
             Assert.IsFalse(adapterCalled); // Adapter was not
         }
@@ -462,7 +451,7 @@ namespace Microsoft.Bot.Builder.Tests
                 await next();
             });
 
-            await c.DeleteActivity("1234");
+            await c.DeleteActivityAsync("1234");
             Assert.IsTrue(adapterCalled); // Adapter was called + valided the change
         }
 
@@ -479,7 +468,7 @@ namespace Microsoft.Bot.Builder.Tests
 
             try
             {
-                await c.SendActivity(TestMessage.Message());
+                await c.SendActivityAsync(TestMessage.Message());
                 Assert.Fail("Should not get here");
             }
             catch(Exception ex)
@@ -493,9 +482,9 @@ namespace Microsoft.Bot.Builder.Tests
             switch (context.Activity.AsMessageActivity().Text)
             {
                 case "count":
-                    await context.SendActivity(context.Activity.CreateReply("one"));
-                    await context.SendActivity(context.Activity.CreateReply("two"));
-                    await context.SendActivity(context.Activity.CreateReply("three"));
+                    await context.SendActivityAsync(context.Activity.CreateReply("one"));
+                    await context.SendActivityAsync(context.Activity.CreateReply("two"));
+                    await context.SendActivityAsync(context.Activity.CreateReply("three"));
                     break;
                 case "ignore":
                     break;
@@ -503,13 +492,13 @@ namespace Microsoft.Bot.Builder.Tests
                     if (context.Responded == true)
                         throw new InvalidOperationException("Responded Is True");
 
-                    await context.SendActivity(context.Activity.CreateReply("one"));
+                    await context.SendActivityAsync(context.Activity.CreateReply("one"));
 
                     if (context.Responded == false)
                         throw new InvalidOperationException("Responded Is True");
                     break;
                 default:
-                    await context.SendActivity(
+                    await context.SendActivityAsync(
                         context.Activity.CreateReply($"echo:{context.Activity.Text}"));
                     break;
             }

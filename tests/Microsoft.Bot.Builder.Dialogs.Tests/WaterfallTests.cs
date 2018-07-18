@@ -22,9 +22,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             {
                 var waterfall = new Waterfall(new WaterfallStep[]
                 {
-                    async (dc, args, next) => { await dc.Context.SendActivity("step1"); },
-                    async (dc, args, next) => { await dc.Context.SendActivity("step2"); },
-                    async (dc, args, next) => { await dc.Context.SendActivity("step3"); },
+                    async (dc, args, next) => { await dc.Context.SendActivityAsync("step1"); },
+                    async (dc, args, next) => { await dc.Context.SendActivityAsync("step2"); },
+                    async (dc, args, next) => { await dc.Context.SendActivityAsync("step3"); },
                 });
 
                 var state = ConversationState<Dictionary<string, object>>.Get(turnContext);
@@ -41,7 +41,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .AssertReply("step2")
             .Send("hello")
             .AssertReply("step3")
-            .StartTest();
+            .StartTestAsync();
         }
 
         [TestMethod]
@@ -82,7 +82,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .Send("64")
             .AssertReply("Thanks for '64'")
             .AssertReply("step3")
-            .StartTest();
+            .StartTestAsync();
         }
 
         private static WaterfallStep[] Create_Waterfall2()
@@ -96,7 +96,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
         private static async Task Waterfall2_Step1(DialogContext dc, object args, SkipStepFunction next)
         {
-            await dc.Context.SendActivity("step1");
+            await dc.Context.SendActivityAsync("step1");
             await dc.Prompt("number", "Enter a number.", new PromptOptions { RetryPromptString = "It must be a number" });
         }
         private static async Task Waterfall2_Step2(DialogContext dc, object args, SkipStepFunction next)
@@ -104,9 +104,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             if (args != null)
             {
                 var numberResult = (NumberResult<int>)args;
-                await dc.Context.SendActivity($"Thanks for '{numberResult.Value}'");
+                await dc.Context.SendActivityAsync($"Thanks for '{numberResult.Value}'");
             }
-            await dc.Context.SendActivity("step2");
+            await dc.Context.SendActivityAsync("step2");
             await dc.Prompt("number", "Enter a number.", new PromptOptions { RetryPromptString = "It must be a number" });
         }
         private static async Task Waterfall2_Step3(DialogContext dc, object args, SkipStepFunction next)
@@ -114,9 +114,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             if (args != null)
             {
                 var numberResult = (NumberResult<int>)args;
-                await dc.Context.SendActivity($"Thanks for '{numberResult.Value}'");
+                await dc.Context.SendActivityAsync($"Thanks for '{numberResult.Value}'");
             }
-            await dc.Context.SendActivity("step3");
+            await dc.Context.SendActivityAsync("step3");
             await dc.End(new Dictionary<string, object> { { "Value", "All Done!" } });
         }
 
@@ -153,7 +153,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .AssertReply("step2.1")
             .Send("hello")
             .AssertReply("step2.2")
-            .StartTest();
+            .StartTestAsync();
         }
 
         private static WaterfallStep[] Create_Waterfall3()
@@ -181,31 +181,31 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
         private static async Task Waterfall3_Step1(DialogContext dc, object args, SkipStepFunction next)
         {
-            await dc.Context.SendActivity("step1");
+            await dc.Context.SendActivityAsync("step1");
             await dc.Begin("test-waterfall-b");
         }
         private static async Task Waterfall3_Step2(DialogContext dc, object args, SkipStepFunction next)
         {
-            await dc.Context.SendActivity("step2");
+            await dc.Context.SendActivityAsync("step2");
             await dc.Begin("test-waterfall-c");
         }
 
         private static async Task Waterfall4_Step1(DialogContext dc, object args, SkipStepFunction next)
         {
-            await dc.Context.SendActivity("step1.1");
+            await dc.Context.SendActivityAsync("step1.1");
         }
         private static async Task Waterfall4_Step2(DialogContext dc, object args, SkipStepFunction next)
         {
-            await dc.Context.SendActivity("step1.2");
+            await dc.Context.SendActivityAsync("step1.2");
         }
 
         private static async Task Waterfall5_Step1(DialogContext dc, object args, SkipStepFunction next)
         {
-            await dc.Context.SendActivity("step2.1");
+            await dc.Context.SendActivityAsync("step2.1");
         }
         private static async Task Waterfall5_Step2(DialogContext dc, object args, SkipStepFunction next)
         {
-            await dc.Context.SendActivity("step2.2");
+            await dc.Context.SendActivityAsync("step2.2");
             await dc.End();
         }
     }

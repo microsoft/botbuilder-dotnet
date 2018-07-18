@@ -1,24 +1,47 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Ai.LUIS
 {
     /// <summary>
-    /// Type for LUIS builtin_datetime.
+    /// Represents the built-in LUIS date-time type.
     /// </summary>
     /// <remarks>
     /// LUIS recognizes time expressions like "next monday" and converts those to a type and set of timex expressions.
     /// More information on timex can be found here: http://www.timeml.org/publications/timeMLdocs/timeml_1.2.1.html#timex3
-    /// More information on the library which does the recognition can be found here: https://github.com/Microsoft/Recognizers-Text
+    /// More information on the library which does the recognition can be found here: https://github.com/Microsoft/Recognizers-Text.
     /// </remarks>
     public class DateTimeSpec
     {
         /// <summary>
-        /// Type of expression.
+        /// Initializes a new instance of the <see cref="DateTimeSpec"/> class.
+        /// </summary>
+        /// <param name="type">The type of TIMEX expression.</param>
+        /// <param name="expressions">The TIMEX expression.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="type"/> is null or contains only white space,
+        /// or <paramref name="expressions"/> is null.</exception>
+        public DateTimeSpec(string type, IEnumerable<string> expressions)
+        {
+            if (string.IsNullOrWhiteSpace(type))
+            {
+                throw new ArgumentNullException(nameof(type));
+            }
+
+            if (expressions == null)
+            {
+                throw new ArgumentNullException(nameof(expressions));
+            }
+
+            Type = type;
+            Expressions = expressions.ToList();
+        }
+
+        /// <summary>
+        /// Gets the type of expression.
         /// </summary>
         /// <remarks>Example types include:
         /// <list type="*">
@@ -31,26 +54,22 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
         /// <item>set -- a recurrence like "every monday".</item>
         /// </list>
         /// </remarks>
+        /// <value>
+        /// The type of expression.
+        /// </value>
         [JsonProperty("type")]
-        public readonly string Type;
+        public string Type { get; }
 
         /// <summary>
-        /// Timex expressions.
+        /// Gets timex expressions.
         /// </summary>
+        /// <value>
+        /// Timex expressions.
+        /// </value>
         [JsonProperty("timex")]
-        public readonly IList<string> Expressions;
+        public IList<string> Expressions { get; }
 
-        public DateTimeSpec(string type, IEnumerable<string> expressions)
-        {
-            if (string.IsNullOrWhiteSpace(type)) throw new ArgumentNullException(nameof(type));
-            if (expressions == null) throw new ArgumentNullException(nameof(expressions));
-            Type = type;
-            Expressions = expressions.ToList();
-        }
-
-        public override string ToString()
-        {
-            return $"DateTimeSpec({Type}, [{String.Join(", ", Expressions)}]";
-        }
+        /// <inheritdoc/>
+        public override string ToString() => $"DateTimeSpec({Type}, [{string.Join(", ", Expressions)}]";
     }
 }

@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<Version Condition=" '$(BUILD_BUILDNUMBER)' == '' ">4.0.0-local</Version>
-		<Version Condition=" '$(BUILD_BUILDNUMBER)' != '' ">$(BUILD_BUILDNUMBER)</Version>
+		<Version Condition=" '$(PackageVersion)' == '' ">4.0.0-local</Version>
+		<Version Condition=" '$(PackageVersion)' != '' ">$(PackageVersion)</Version>
 		<PackageVersion Condition=" '$(PackageVersion)' == '' ">4.0.0-local</PackageVersion>
 		<PackageVersion Condition=" '$(PackageVersion)' != '' ">$(PackageVersion)</PackageVersion>
 		<Configurations>Debug;Release;Documentation;Debug - NuGet Packages;</Configurations>
@@ -38,19 +38,25 @@
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Documentation|AnyCPU'">
-		<DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Builder.Ai.Translation.xml</DocumentationFile>
+		<DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Builder.Ai.Translation.xml</DocumentationFile>		
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
 		<DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Builder.Ai.Translation.xml</DocumentationFile>
 	</PropertyGroup>
 
+	<PropertyGroup>
+	  <CodeAnalysisRuleSet>Microsoft.Bot.Builder.Ai.Translation.ruleset</CodeAnalysisRuleSet>
+	</PropertyGroup>
+
 	<ItemGroup>
+		<PackageReference Include="AsyncUsageAnalyzers" Version="1.0.0-alpha003" PrivateAssets="all" />
 		<PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(PackageVersion)' == '' " Version="4.0.0-local" />
 		<PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(PackageVersion)' != '' " Version="$(PackageVersion)" />
 		<PackageReference Include="Microsoft.Recognizers.Text" Version="1.0.5.1" />
 		<PackageReference Include="Microsoft.Recognizers.Text.DateTime" Version="1.0.5.1" />
 		<PackageReference Include="SourceLink.Create.CommandLine" Version="2.8.1" />
+		<PackageReference Include="StyleCop.Analyzers" Version="1.1.0-beta008" PrivateAssets="all" />
 	</ItemGroup>
 
 	<ItemGroup>

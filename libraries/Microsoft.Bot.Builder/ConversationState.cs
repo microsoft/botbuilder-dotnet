@@ -13,15 +13,17 @@ namespace Microsoft.Bot.Builder
         /// <summary>
         /// The key to use to read and write this conversation state object to storage.
         /// </summary>
-        public static string PropertyName = $"ConversationState:{typeof(ConversationState<TState>).Namespace}.{typeof(ConversationState<TState>).Name}";
+        private static string _propertyName = $"ConversationState:{typeof(ConversationState<TState>).Namespace}.{typeof(ConversationState<TState>).Name}";
 
         /// <summary>
-        /// Creates a new <see cref="ConversationState{TState}"/> object.
+        /// Initializes a new instance of the <see cref="ConversationState{TState}"/> class.
         /// </summary>
         /// <param name="storage">The storage provider to use.</param>
         /// <param name="settings">The state persistance options to use.</param>
-        public ConversationState(IStorage storage, StateSettings settings = null) :
-            base(storage, PropertyName,
+        public ConversationState(IStorage storage, StateSettings settings = null)
+            : base(
+                storage,
+                _propertyName,
                 (context) => $"conversation/{context.Activity.ChannelId}/{context.Activity.Conversation.Id}",
                 settings)
         {
@@ -34,7 +36,7 @@ namespace Microsoft.Bot.Builder
         /// <returns>The coversation state object.</returns>
         public static TState Get(ITurnContext context)
         {
-            return context.Services.Get<TState>(PropertyName);
+            return context.Services.Get<TState>(_propertyName);
         }
     }
 }

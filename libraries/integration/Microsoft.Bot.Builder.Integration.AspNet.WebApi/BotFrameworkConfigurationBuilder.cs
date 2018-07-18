@@ -33,12 +33,12 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
         /// <summary>
         /// Adds an Error Handler the bot.
         /// </summary>
-        /// <param name="middleware">An instance of <see cref="IMiddleware">middleware</see> that should be added to the bot's middleware pipeline.</param>
+        /// <param name="errorHandler">An instance of <see cref="IMiddleware">middleware</see> that should be added to the bot's middleware pipeline.</param>
         /// <returns>A reference to this instance after the operation has completed.</returns>
         /// <seealso cref="IMiddleware"/>
         public BotFrameworkConfigurationBuilder UseMiddleware(Func<ITurnContext, Exception, Task> errorHandler)
         {
-            BotFrameworkOptions.ErrorHandler = errorHandler;
+            BotFrameworkOptions.OnTurnError = errorHandler;
             return this;
         }
 
@@ -86,7 +86,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
         public BotFrameworkConfigurationBuilder EnableProactiveMessages(string proactiveMessagesPath = default(string))
         {
             BotFrameworkOptions.EnableProactiveMessages = true;
-            
+
             if (proactiveMessagesPath != null)
             {
                 BotFrameworkOptions.Paths.ProactiveMessagesPath = proactiveMessagesPath;
@@ -107,21 +107,5 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
 
             return this;
         }
-    }
-
-    public static class BotFrameworkConfigurationBuilderExtensions
-    {
-        /// <summary>
-        /// Configures the bot with the a single identity that will be used to authenticate requests made to the Bot Framework.
-        /// </summary>
-        /// <param name="builder">The <see cref="BotFrameworkConfigurationBuilder"/></param>
-        /// <param name="applicationId">The application id that should be used to authenticate requests made to the Bot Framework.</param>
-        /// <param name="applicationPassword">The application password that should be used to authenticate requests made to the Bot Framework.</param>
-        /// <returns>A reference to this instance after the operation has completed.</returns>
-        /// <seealso cref="ICredentialProvider"/>
-        /// <seealso cref="SimpleCredentialProvider"/>
-        public static BotFrameworkConfigurationBuilder UseMicrosoftApplicationIdentity(this BotFrameworkConfigurationBuilder builder, string applicationId, string applicationPassword) =>
-            builder.UseCredentialProvider(new SimpleCredentialProvider(applicationId, applicationPassword));
-
     }
 }

@@ -14,7 +14,8 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Handlers
     {
         public static readonly string RouteName = "BotFramework - Proactive Message Handler";
 
-        public BotProactiveMessageHandler(BotFrameworkAdapter botFrameworkAdapter) : base(botFrameworkAdapter)
+        public BotProactiveMessageHandler(BotFrameworkAdapter botFrameworkAdapter)
+            : base(botFrameworkAdapter)
         {
         }
 
@@ -44,7 +45,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Handlers
 
             var conversationReference = await request.Content.ReadAsAsync<ConversationReference>(BotMessageHandlerBase.BotMessageMediaTypeFormatters, cancellationToken);
 
-            await botFrameworkAdapter.ContinueConversation(botAppId, conversationReference, botCallbackHandler);
+            await botFrameworkAdapter.ContinueConversationAsync(botAppId, conversationReference, botCallbackHandler, cancellationToken);
 
             return null;
         }

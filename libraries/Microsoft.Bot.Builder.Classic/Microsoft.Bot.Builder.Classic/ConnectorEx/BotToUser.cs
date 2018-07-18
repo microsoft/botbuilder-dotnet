@@ -144,7 +144,7 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs.Internals
         Task IBotToUser.PostAsync(IMessageActivity message, CancellationToken cancellationToken)
         {
             // TODO, change this to context.SendActivity with M2 delta
-            return this.context.Adapter.SendActivities(this.context, new Activity[] { (Activity) message });
+            return this.context.Adapter.SendActivitiesAsync(this.context, new Activity[] { (Activity) message }, cancellationToken);
         }
     }
 

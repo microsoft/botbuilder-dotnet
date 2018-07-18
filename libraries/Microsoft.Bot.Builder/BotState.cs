@@ -4,15 +4,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder
 {
-    public class StateSettings
-    { 
-        public bool LastWriterWins { get; set; } = true;
-    }
-
     /// <summary>
     /// Base class which manages details of automatic loading and saving of bot state.
     /// </summary>
@@ -26,12 +22,14 @@ namespace Microsoft.Bot.Builder
         private readonly string _propertyName;
 
         /// <summary>
-        /// Creates a new <see cref="BotState{TState}"/> middleware object.
+        /// Initializes a new instance of the <see cref="BotState{TState}"/> class.
         /// </summary>
         /// <param name="storage">The storage provider to use.</param>
         /// <param name="propertyName">The name to use to load or save the state object.</param>
-        /// <param name="keyDelegate"></param>
+        /// <param name="keyDelegate">A function that can provide the key.</param>
         /// <param name="settings">The state persistance options to use.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="keyDelegate"/>, <paramref name="propertyName"/>,
+        /// or <paramref name="storage"/> is null.</exception>
         public BotState(IStorage storage, string propertyName, Func<ITurnContext, string> keyDelegate, StateSettings settings = null)
         {
             _storage = storage ?? throw new ArgumentNullException(nameof(storage));
@@ -45,46 +43,36 @@ namespace Microsoft.Bot.Builder
         /// </summary>
         /// <param name="context">The context object for this turn.</param>
         /// <param name="next">The delegate to call to continue the bot middleware pipeline.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <remarks>This middleware loads the state object on the leading edge of the middleware pipeline
         /// and persists the state object on the trailing edge.
         /// </remarks>
-        public async Task OnTurn(ITurnContext context, MiddlewareSet.NextDelegate next)
+        public async Task OnTurnAsync(ITurnContext context, NextDelegate next, CancellationToken cancellationToken)
         {
-            await ReadToContextService(context).ConfigureAwait(false);
-            await next().ConfigureAwait(false);
-            await WriteFromContextService(context).ConfigureAwait(false);
-        }
-
-        protected virtual async Task ReadToContextService(ITurnContext context)
-        {
-            var key = _keyDelegate(context);
-            var items = await _storage.Read(new[] { key });
-            var state = items.Where(entry => entry.Key == key).Select(entry => entry.Value).OfType<TState>().FirstOrDefault();
-            if (state == null)
-                state = new TState();
-            context.Services.Add(_propertyName, state);
-        }
-
-        protected virtual async Task WriteFromContextService(ITurnContext context)
-        {
-            var state = context.Services.Get<TState>(_propertyName);
-            await Write(context, state);
+            await ReadToContextServiceAsync(context, cancellationToken).ConfigureAwait(false);
+            await next(cancellationToken).ConfigureAwait(false);
+            await WriteFromContextServiceAsync(context, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
         /// Reads state from storage.
         /// </summary>
         /// <param name="context">The context object for this turn.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <remarks>If successful, the task result contains the state object, read from storage.</remarks>
-        public virtual async Task<TState> Read(ITurnContext context)
+        public virtual async Task<TState> ReadAsync(ITurnContext context, CancellationToken cancellationToken = default(CancellationToken))
         {
             var key = _keyDelegate(context);
-            var items = await _storage.Read(new[] { key });
+            var items = await _storage.ReadAsync(new[] { key }, cancellationToken).ConfigureAwait(false);
             var state = items.Where(entry => entry.Key == key).Select(entry => entry.Value).OfType<TState>().FirstOrDefault();
+
             if (state == null)
+            {
                 state = new TState();
+            }
+
             return state;
         }
 
@@ -93,12 +81,18 @@ namespace Microsoft.Bot.Builder
         /// </summary>
         /// <param name="context">The context object for this turn.</param>
         /// <param name="state">The state object.</param>
-        public virtual async Task Write(ITurnContext context, TState state)
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        public virtual async Task WriteAsync(ITurnContext context, TState state, CancellationToken cancellationToken = default(CancellationToken))
         {
             var changes = new Dictionary<string, object>();
 
             if (state == null)
+            {
                 state = new TState();
+            }
+
             var key = _keyDelegate(context);
 
             changes.Add(key, state);
@@ -109,12 +103,47 @@ namespace Microsoft.Bot.Builder
                 {
                     if (item.Value is IStoreItem valueStoreItem)
                     {
-                        valueStoreItem.eTag = "*";
+                        valueStoreItem.ETag = "*";
                     }
                 }
             }
 
-            await _storage.Write(changes).ConfigureAwait(false);
+            await _storage.WriteAsync(changes, cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Reads the state object from storage and adds it to a turn context's service collection.
+        /// </summary>
+        /// <param name="context">The turn context object.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>If no state object is read from storage, a default object is added to the
+        /// service collection.</remarks>
+        protected virtual async Task ReadToContextServiceAsync(ITurnContext context, CancellationToken cancellationToken)
+        {
+            var key = _keyDelegate(context);
+            var items = await _storage.ReadAsync(new[] { key }, cancellationToken).ConfigureAwait(false);
+            var state = items.Where(entry => entry.Key == key).Select(entry => entry.Value).OfType<TState>().FirstOrDefault();
+            if (state == null)
+            {
+                state = new TState();
+            }
+
+            context.Services.Add(_propertyName, state);
+        }
+
+        /// <summary>
+        /// Writes the state object to storage from a turn context's service collection.
+        /// </summary>
+        /// <param name="context">The turn context object.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        protected virtual async Task WriteFromContextServiceAsync(ITurnContext context, CancellationToken cancellationToken)
+        {
+            var state = context.Services.Get<TState>(_propertyName);
+            await WriteAsync(context, state, cancellationToken).ConfigureAwait(false);
         }
     }
 }

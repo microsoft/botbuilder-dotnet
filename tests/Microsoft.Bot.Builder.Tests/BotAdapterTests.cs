@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -41,7 +42,7 @@ namespace Microsoft.Bot.Builder.Tests
             var activity = TestMessage.Message();
             activity.Id = activityId;
 
-            var resourceResponse = await c.SendActivity(activity);
+            var resourceResponse = await c.SendActivityAsync(activity);
             Assert.IsTrue(resourceResponse.Id == activityId, "Incorrect response Id returned"); 
         }
     }
@@ -49,10 +50,10 @@ namespace Microsoft.Bot.Builder.Tests
     public class CallCountingMiddleware : IMiddleware
     {
         public int Calls { get; set; }
-        public async Task OnTurn(ITurnContext context, MiddlewareSet.NextDelegate next)
+        public async Task OnTurnAsync(ITurnContext context, NextDelegate next, CancellationToken cancellationToken)
         {
             Calls++;
-            await next();
+            await next(cancellationToken);
         }
     }
 }

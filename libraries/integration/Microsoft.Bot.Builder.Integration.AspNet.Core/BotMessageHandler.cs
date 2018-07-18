@@ -4,6 +4,7 @@
 using System;
 using System.IO;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Schema;
@@ -13,7 +14,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Handlers
 {
     public class BotMessageHandler : BotMessageHandlerBase
     {
-        protected override async Task<InvokeResponse> ProcessMessageRequestAsync(HttpRequest request, BotFrameworkAdapter botFrameworkAdapter, Func<ITurnContext, Task> botCallbackHandler)
+        protected override async Task<InvokeResponse> ProcessMessageRequestAsync(HttpRequest request, BotFrameworkAdapter botFrameworkAdapter, Func<ITurnContext, Task> botCallbackHandler, CancellationToken cancellationToken)
         {
             var activity = default(Activity);
 
@@ -22,10 +23,11 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Handlers
                 activity = BotMessageHandlerBase.BotMessageSerializer.Deserialize<Activity>(bodyReader);
             }
 
-            var invokeResponse = await botFrameworkAdapter.ProcessActivity(
+            var invokeResponse = await botFrameworkAdapter.ProcessActivityAsync(
                     request.Headers["Authorization"],
                     activity,
-                    botCallbackHandler);
+                    botCallbackHandler,
+                    cancellationToken);
 
             return invokeResponse;
         }

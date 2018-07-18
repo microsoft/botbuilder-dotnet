@@ -2,6 +2,10 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Reflection;
@@ -27,54 +31,50 @@ namespace Microsoft.Bot.Connector
         {
         }
 
-        private HttpClient _originalHttpClient;
-        protected static Lazy<HttpClient> g_httpClient = new Lazy<HttpClient>(() =>
+        /// <summary>
+        /// Create a new instance of the ConnectorClient class
+        /// </summary>
+        /// <param name="baseUri">Base URI for the Connector service</param>
+        /// <param name="credentials">Credentials for the Connector service</param>
+        /// <param name="addJwtTokenRefresher">(DEPRECATED)</param>
+        /// <param name="handlers">Optional. The delegating handlers to add to the http client pipeline.</param>
+        public ConnectorClient(Uri baseUri, MicrosoftAppCredentials credentials, bool addJwtTokenRefresher = true, params DelegatingHandler[] handlers)
+            : this(baseUri, handlers)
         {
-            var httpClient = new HttpClient();
-            // The Schema version is 3.1, put into the Microsoft-BotFramework header
-            // https://github.com/Microsoft/botbuilder-dotnet/issues/471
-            httpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("Microsoft-BotFramework", "3.1"));
+            this.Credentials = credentials;
+        }
 
-            // The client SDK version is coupled to the version number of the package. 
-            httpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue($"(BotBuilder .Net/{typeof(ConnectorClient).GetTypeInfo().Assembly.GetName().Version})"));
-            httpClient.DefaultRequestHeaders.ExpectContinue = false;
-            return httpClient;
-        });
-
-        public bool UseSharedHttpClient
+        /// <summary>
+        /// Create a new instances of the ConnectorClient.
+        /// </summary>
+        /// <param name="baseUri">Base URI for the Connector service</param>
+        /// <param name="credentials">Credentials for the Connector service</param>
+        /// <param name="httpClientHandler">The httpClientHandler used by http client</param>
+        /// <param name="addJwtTokenRefresher">(DEPRECATED)</param>
+        /// <param name="handlers">Optional. The delegating handlers to add to the http client pipeline.</param>
+        public ConnectorClient(Uri baseUri, MicrosoftAppCredentials credentials, HttpClientHandler httpClientHandler, bool addJwtTokenRefresher = true, params DelegatingHandler[] handlers)
+            : this(baseUri, httpClientHandler, handlers)
         {
-            get { return this._originalHttpClient != null; }
-            set
-            {
-                if (value == false)
-                {
-                    this.HttpClient = this._originalHttpClient;
-                }
-                else
-                {
-                    if (this._originalHttpClient == null)
-                    {
-                        this._originalHttpClient = this.HttpClient;
-                        this.HttpClient = g_httpClient.Value;
-                    }
-                }
-            }
+            this.Credentials = credentials;
         }
 
         partial void CustomInitialize()
         {
-            this.UseSharedHttpClient = true;
+            // The Schema version is 3.1, put into the Microsoft-BotFramework header
+            // https://github.com/Microsoft/botbuilder-dotnet/issues/471
+            this.HttpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("Microsoft-BotFramework", "3.1"));
+
+            // The client SDK version is coupled to the version number of the package. 
+            this.HttpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue($"(BotBuilder .Net/{GetClientVersion(this)})"));
+            this.HttpClient.DefaultRequestHeaders.ExpectContinue = false;
         }
 
-        protected override void Dispose(bool disposing)
+
+        internal static string GetClientVersion<T>(T client) where T : ServiceClient<T>
         {
-            // replace global with original so dispose doesn't dispose the global one
-            if (this._originalHttpClient != null)
-            {
-                this.HttpClient = this._originalHttpClient;
-                this._originalHttpClient = null;
-            }
-            base.Dispose(disposing);
+            var type = client.GetType();
+            var assembly = type.GetTypeInfo().Assembly;
+            return assembly.GetName().Version.ToString();
         }
     }
 }

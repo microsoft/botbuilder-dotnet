@@ -2,9 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.Serialization;
 
 namespace Microsoft.Bot.Builder
 {
@@ -14,127 +12,101 @@ namespace Microsoft.Bot.Builder
     /// <remarks>
     /// TODO: add more details on what kind of services can/should be stored here, by whom and what the lifetime semantics are, etc.
     /// </remarks>
-    public interface ITurnContextServiceCollection : IEnumerable<KeyValuePair<string, object>>
+    public class TurnContextServiceCollection : Dictionary<string, object>, IDisposable
     {
         /// <summary>
-        /// Add a service with a specified key.
+        /// Initializes a new instance of the <see cref="TurnContextServiceCollection"/> class.
         /// </summary>
-        /// <typeparam name="TService">The type of service to be added.</typeparam>
-        /// <param name="key">The key to store the service under.</param>
-        /// <param name="service">The service to add.</param>
-        /// <exception cref="ServiceKeyAlreadyRegisteredException">Thrown when a service is already registered with the specified <paramref name="key"/></exception>
-        void Add<TService>(string key, TService service) where TService : class;
-
-        /// <summary>
-        /// Get a service by its key.
-        /// </summary>
-        /// <typeparam name="TService">The type of service to be retrieved.</typeparam>
-        /// <param name="key">The key of the service to get.</param>
-        /// <returns>The service stored under the specified key.</returns>
-        TService Get<TService>(string key) where TService : class;
-    }
-
-    public sealed class TurnContextServiceCollection : ITurnContextServiceCollection, IDisposable
-    {
-        private readonly Dictionary<string, object> _services = new Dictionary<string, object>();
-
         public TurnContextServiceCollection()
         {
         }
 
-        public TService Get<TService>(string key) where TService : class
+        /// <summary>
+        /// Gets a service by name from the turn's context.
+        /// </summary>
+        /// <typeparam name="TService">The type of the service.</typeparam>
+        /// <param name="key">The name of the service.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="key"/> is null.</exception>
+        /// <returns>The service object; or null if no service is registered by the key, or
+        /// the retrieved object does not match the service type.</returns>
+        public TService Get<TService>(string key)
+            where TService : class
         {
-            if (key == null) throw new ArgumentNullException(nameof(key));
-
-            if(!_services.TryGetValue(key, out var service))
+            if (key == null)
             {
-                // TODO: log that we didn't find the requested service
+                throw new ArgumentNullException(nameof(key));
             }
 
-            return service as TService;
-        }
-
-        public void Add<TService>(string key, TService service) where TService : class
-        {
-            if (key == null) throw new ArgumentNullException(nameof(key));
-            if (service == null) throw new ArgumentNullException(nameof(service));
-
-            try
+            if (TryGetValue(key, out var service))
             {
-                _services.Add(key, service);
-            }
-            catch(ArgumentException)
-            {
-                throw new ServiceKeyAlreadyRegisteredException(key);
-            }
-        }
-        
-        public IEnumerator<KeyValuePair<string, object>> GetEnumerator() => _services.GetEnumerator();
-
-        IEnumerator IEnumerable.GetEnumerator() => _services.GetEnumerator();
-
-        public void Dispose()
-        {
-            foreach(var entry in _services)
-            {
-                if(entry.Value is IDisposable disposableService)
+                if (service is TService result)
                 {
-                    disposableService.Dispose();
+                    return result;
                 }
             }
-        }
-    }
 
-    /// <summary>
-    /// Thrown to indicate a service is already registered in a <see cref="ITurnContextServiceCollection"/> under the specified key.
-    /// </summary>
-    [Serializable]
-    public class ServiceKeyAlreadyRegisteredException : Exception
-    {
-        public ServiceKeyAlreadyRegisteredException(string key) : base($"A services is already registered with the specified key: {key}")
-        {
+            // return null if either the key or type don't match
+            return null;
         }
 
-        protected ServiceKeyAlreadyRegisteredException(SerializationInfo info, StreamingContext context) : base(info, context)
+        /// <summary>
+        /// Gets the default service by type from the turn's context.
+        /// </summary>
+        /// <typeparam name="TService">The type of the service.</typeparam>
+        /// <returns>The service object; or null if no default service of the type is registered.</returns>
+        /// <remarks>The default service key is the <see cref="Type.FullName"/> of the service type.</remarks>
+        public TService Get<TService>()
+            where TService : class
         {
+            return Get<TService>(typeof(TService).FullName);
         }
-    }
-
-    /// <summary>
-    /// Provides a set of convienience methods that extend the behavior of any <see cref="ITurnContextServiceCollection"/>. 
-    /// </summary>
-    public static class TurnContextServiceCollectionExtensions
-    {
-        
-        /// <summary>
-        /// Add a service using its full type name as the key.
-        /// </summary>
-        /// <typeparam name="TService">The type of service to be added.</typeparam>
-        /// <param name="service">The service to add.</param>
-        public static void Add<TService>(this ITurnContextServiceCollection serviceCollection, TService service) where TService : class =>
-            serviceCollection.Add(typeof(TService).FullName, service);
 
         /// <summary>
-        /// Get a service by type using its full type name as the key.
+        /// Adds a service to the turn's context.
         /// </summary>
-        /// <typeparam name="TService">The type of service to be retrieved.</typeparam>
-        /// <returns>The service stored under the specified key.</returns>
-        public static TService Get<TService>(this ITurnContextServiceCollection serviceCollection) where TService : class =>
-            serviceCollection.Get<TService>(typeof(TService).FullName);
-
-        /// <summary>
-        /// Returns all entries in the collection of a specified type.
-        /// </summary>
-        /// <typeparam name="TService">The type of service to be found.</typeparam>
-        /// <param name="serviceCollection">An <see cref="ITurnContextServiceCollection"/> to search for services in.</param>
-        /// <returns>All instances of the requested service currently stored in the collection.</returns>
-        public static IEnumerable<KeyValuePair<string, TService>> GetServices<TService>(this ITurnContextServiceCollection serviceCollection) where TService : class
+        /// <typeparam name="TService">The type of the service.</typeparam>
+        /// <param name="key">The name of the service.</param>
+        /// <param name="service">The service object to add.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="key"/> or <paramref name="service"/>
+        /// is null.</exception>
+        public void Add<TService>(string key, TService service)
+            where TService : class
         {
-            foreach (var entry in serviceCollection)
+            if (key == null)
             {
-                if (entry.Value is TService service)
+                throw new ArgumentNullException(nameof(key));
+            }
+
+            if (service == null)
+            {
+                throw new ArgumentNullException(nameof(service));
+            }
+
+            // note this can throw if teh key is already present
+            base.Add(key, service);
+        }
+
+        /// <summary>
+        /// Adds a service to the turn's context.
+        /// </summary>
+        /// <typeparam name="TService">The type of the service.</typeparam>
+        /// <param name="service">The service object to add.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="service"/> is null.</exception>
+        /// <remarks>The default service key is the <see cref="Type.FullName"/> of the service type.</remarks>
+        public void Add<TService>(TService service)
+            where TService : class
+        {
+            Add(typeof(TService).FullName, service);
+        }
+
+        /// <inheritdoc/>
+        public void Dispose()
+        {
+            foreach (var entry in Values)
+            {
+                if (entry is IDisposable disposableService)
                 {
-                    yield return new KeyValuePair<string, TService>(entry.Key, service);
+                    disposableService.Dispose();
                 }
             }
         }

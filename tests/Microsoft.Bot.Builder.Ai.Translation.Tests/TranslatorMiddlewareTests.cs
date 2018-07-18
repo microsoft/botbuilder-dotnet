@@ -3,6 +3,7 @@
 
 using System.Collections.Generic;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Ai.Translation;
@@ -25,7 +26,7 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
         public SpecializedTranslatorMiddleware(string[] nativeLanguages, string translatorKey) : base(nativeLanguages, translatorKey)
         { }
 
-        public override async Task OnTurn(ITurnContext context, MiddlewareSet.NextDelegate next)
+        public override async Task OnTurnAsync(ITurnContext context, NextDelegate next, CancellationToken cancellationToken)
         {
             // alter the original utterance before translation. 
             if (context.Activity.Text == "mañana")
@@ -33,7 +34,7 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
                 context.Activity.Text = "para mañana";
             }
 
-            await base.OnTurn(context, next);
+            await base.OnTurnAsync(context, next, cancellationToken);
         }
     }
 
@@ -73,7 +74,7 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
                 {
                     if (!context.Responded)
                     {
-                        context.SendActivity(context.Activity.AsMessageActivity().Text);
+                        context.SendActivityAsync(context.Activity.AsMessageActivity().Text);
                     }
 
                     return Task.CompletedTask;
@@ -82,7 +83,7 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
                 .AssertReply("Hello")
                 .Send("mañana")
                 .AssertReply("For tomorrow")
-                .StartTest();
+                .StartTestAsync();
         }
 
         [TestMethod]
@@ -103,7 +104,7 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
                 {
                     if (!context.Responded)
                     {
-                        context.SendActivity(context.Activity.AsMessageActivity().Text);
+                        context.SendActivityAsync(context.Activity.AsMessageActivity().Text);
                     }
 
                     return Task.CompletedTask;
@@ -112,7 +113,7 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
                 .AssertReply("Hello")
                 .Send("salut 10-20")
                 .AssertReply("Hi 10-20")
-                .StartTest();
+                .StartTestAsync();
         }
 
         [TestMethod]
@@ -134,7 +135,7 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
                 {
                     if (!context.Responded)
                     {
-                        context.SendActivity(context.Activity.AsMessageActivity().Text);
+                        context.SendActivityAsync(context.Activity.AsMessageActivity().Text);
                     }
 
                     return Task.CompletedTask;
@@ -143,7 +144,7 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
                 .AssertReply("Changing your language to fr")
                 .Send("salut")
                 .AssertReply("Hello")
-                .StartTest();
+                .StartTestAsync();
         }
 
         [TestMethod]
@@ -165,7 +166,7 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
                 {
                     if (!context.Responded)
                     {
-                        context.SendActivity(context.Activity.AsMessageActivity().Text);
+                        context.SendActivityAsync(context.Activity.AsMessageActivity().Text);
                     }
 
                     return Task.CompletedTask;
@@ -174,7 +175,7 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
                 .AssertReply("Changing your language to fr")
                 .Send("salut")
                 .AssertReply("Salut")
-                .StartTest();
+                .StartTestAsync();
         }
 
         private void SetLanguage(ITurnContext context, string language) => context.GetUserState<LanguageState>().Language = language;
@@ -195,11 +196,11 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
                 if (!string.IsNullOrWhiteSpace(newLang))
                 {
                     SetLanguage(context, newLang);
-                    await context.SendActivity($@"Changing your language to {newLang}");
+                    await context.SendActivityAsync($@"Changing your language to {newLang}");
                 }
                 else
                 {
-                    await context.SendActivity($@"{newLang} is not a supported language.");
+                    await context.SendActivityAsync($@"{newLang} is not a supported language.");
                 }
 
                 //intercepts message

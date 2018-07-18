@@ -22,7 +22,8 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// <param name="services">The <see cref="IServiceCollection"/>.</param>
         /// <param name="configureAction">A callback that can further be used to configure the bot.</param>
         /// <returns>A reference to this instance after the operation has completed.</returns>
-        public static IServiceCollection AddBot<TBot>(this IServiceCollection services, Action<BotFrameworkOptions> configureAction = null) where TBot : class, IBot
+        public static IServiceCollection AddBot<TBot>(this IServiceCollection services, Action<BotFrameworkOptions> configureAction = null)
+            where TBot : class, IBot
         {
             if (services == null)
             {
@@ -34,7 +35,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                 services.Configure(configureAction);
             }
 
-            services.PostConfigure<BotFrameworkOptions>(options => 
+            services.PostConfigure<BotFrameworkOptions>(options =>
             {
                 if (options.CredentialProvider == null)
                 {
@@ -49,7 +50,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                 var options = sp.GetRequiredService<IOptions<BotFrameworkOptions>>().Value;
                 var botFrameworkAdapter = new BotFrameworkAdapter(options.CredentialProvider, options.ConnectorClientRetryPolicy, options.HttpClient);
 
-                botFrameworkAdapter.ErrorHandler = options.ErrorHandler;
+                botFrameworkAdapter.OnTurnError = options.OnTurnError;
 
                 foreach (var middleware in options.Middleware)
                 {

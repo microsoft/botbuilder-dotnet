@@ -1,42 +1,14 @@
-﻿// 
-// Copyright (c) Microsoft. All rights reserved.
+﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license.
-// 
-// Microsoft Bot Framework: http://botframework.com
-// 
-// Bot Builder SDK GitHub:
-// https://github.com/Microsoft/BotBuilder
-// 
-// Copyright (c) Microsoft Corporation
-// All rights reserved.
-// 
-// MIT License:
-// Permission is hereby granted, free of charge, to any person obtaining
-// a copy of this software and associated documentation files (the
-// "Software"), to deal in the Software without restriction, including
-// without limitation the rights to use, copy, modify, merge, publish,
-// distribute, sublicense, and/or sell copies of the Software, and to
-// permit persons to whom the Software is furnished to do so, subject to
-// the following conditions:
-// 
-// The above copyright notice and this permission notice shall be
-// included in all copies or substantial portions of the Software.
-// 
-// THE SOFTWARE IS PROVIDED ""AS IS"", WITHOUT WARRANTY OF ANY KIND,
-// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-// NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
-// LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
-// OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
-// WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-//
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Cognitive.LUIS.Models;
 
-namespace Microsoft.Cognitive.LUIS
+namespace Microsoft.Bot.Builder.Ai.LUIS
 {
     /// <summary>
     /// LUIS extension methods.
@@ -68,8 +40,7 @@ namespace Microsoft.Cognitive.LUIS
             {
                 foreach (var entity in entities)
                 {
-                    Resolution resolution;
-                    if (parser.TryParse(entity.Resolution, out resolution))
+                    if (parser.TryParse(entity.Resolution, out var resolution))
                     {
                         yield return resolution;
                     }
@@ -78,7 +49,7 @@ namespace Microsoft.Cognitive.LUIS
         }
 
         /// <summary>
-        /// Return the next <see cref="BuiltIn.DateTime.DayPart"/>. 
+        /// Return the next <see cref="BuiltIn.DateTime.DayPart"/>.
         /// </summary>
         /// <param name="part">The <see cref="BuiltIn.DateTime.DayPart"/> query.</param>
         /// <returns>The next <see cref="BuiltIn.DateTime.DayPart"/> after the query.</returns>
@@ -95,5 +66,42 @@ namespace Microsoft.Cognitive.LUIS
             }
         }
 
+        /// <summary>
+        /// Query the LUIS service using this text.
+        /// </summary>
+        /// <param name="service">LUIS service.</param>
+        /// <param name="text">The query text.</param>
+        /// <param name="token">The cancellation token.</param>
+        /// <returns>The LUIS result.</returns>
+        public static async Task<LuisResult> QueryAsync(this ILuisService service, string text, CancellationToken token)
+        {
+            var luisRequest = service.ModifyRequest(new LuisRequest(query: text));
+            return await service.QueryAsync(luisRequest, token).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Query the LUIS service using this request.
+        /// </summary>
+        /// <param name="service">LUIS service.</param>
+        /// <param name="request">Query request.</param>
+        /// <param name="token">Cancellation token.</param>
+        /// <returns>LUIS result.</returns>
+        public static async Task<LuisResult> QueryAsync(this ILuisService service, LuisRequest request, CancellationToken token)
+        {
+            service.ModifyRequest(request);
+            var uri = service.BuildUri(request);
+            return await service.QueryAsync(uri, token).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Builds luis uri with text query.
+        /// </summary>
+        /// <param name="service">LUIS service.</param>
+        /// <param name="text">The query text.</param>
+        /// <returns>The LUIS request Uri.</returns>
+        public static Uri BuildUri(this ILuisService service, string text)
+        {
+            return service.BuildUri(service.ModifyRequest(new LuisRequest(query: text)));
+        }
     }
 }

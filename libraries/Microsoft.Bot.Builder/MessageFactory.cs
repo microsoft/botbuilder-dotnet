@@ -14,8 +14,8 @@ namespace Microsoft.Bot.Builder
     /// <example>
     /// <code>
     /// // Create and send a message.
-    /// var message = MessageFactory.Text("Hello World");    
-    /// await context.SendActivity(message);    
+    /// var message = MessageFactory.Text("Hello World");
+    /// await context.SendActivity(message);
     /// </code>
     /// </example>
     /// <remarks>The following apply to message actions in general.
@@ -25,25 +25,24 @@ namespace Microsoft.Bot.Builder
     /// rate, volume, pronunciation, and pitch, specify test to speak in
     /// Speech Synthesis Markup Language (SSML) format.</para>
     /// <para>
-    /// Channels decide how each card action manifests in their user experience. 
-    /// In most cases, the cards are clickable. In others, they may be selected by speech 
-    /// input. In cases where the channel does not offer an interactive activation 
-    /// experience (e.g., when interacting over SMS), the channel may not support 
-    /// activation whatsoever. The decision about how to render actions is controlled by 
-    /// normative requirements elsewhere in this document (e.g. within the card format, 
+    /// Channels decide how each card action manifests in their user experience.
+    /// In most cases, the cards are clickable. In others, they may be selected by speech
+    /// input. In cases where the channel does not offer an interactive activation
+    /// experience (e.g., when interacting over SMS), the channel may not support
+    /// activation whatsoever. The decision about how to render actions is controlled by
+    /// normative requirements elsewhere in this document (e.g. within the card format,
     /// or within the suggested actions definition).</para>
     /// </remarks>
-
     public static class MessageFactory
     {
         /// <summary>
         /// Returns a simple text message.
         /// </summary>
         /// <example>
-        /// <code>    
+        /// <code>
         /// // Create and send a message.
-        /// var message = MessageFactory.Text("Hello World");    
-        /// await context.SendActivity(message);    
+        /// var message = MessageFactory.Text("Hello World");
+        /// await context.SendActivity(message);
         /// </code>
         /// </example>
         /// <param name="text">The text of the message to send.</param>
@@ -70,14 +69,14 @@ namespace Microsoft.Bot.Builder
         /// var activity = MessageFactory.SuggestedActions(
         ///     new string[] { "red", "green", "blue" },
         ///     text: "Choose a color");
-        /// 
+        ///
         /// // Send the activity as a reply to the user.
         /// await context.SendActivity(activity);
         /// </code>
         /// </example>
         /// <param name="actions">
         /// The text of the actions to create.
-        /// </param>        
+        /// </param>
         /// <param name="text">The text of the message to send.</param>
         /// <param name="ssml">Optional, text to be spoken by your bot on a speech-enabled
         /// channel.</param>
@@ -97,7 +96,9 @@ namespace Microsoft.Bot.Builder
         public static IMessageActivity SuggestedActions(IEnumerable<string> actions, string text = null, string ssml = null, string inputHint = null)
         {
             if (actions == null)
+            {
                 throw new ArgumentNullException(nameof(actions));
+            }
 
             var cardActions = new List<CardAction>();
             foreach (string s in actions)
@@ -106,7 +107,7 @@ namespace Microsoft.Bot.Builder
                 {
                     Type = ActionTypes.ImBack,
                     Value = s,
-                    Title = s
+                    Title = s,
                 };
 
                 cardActions.Add(ca);
@@ -119,7 +120,7 @@ namespace Microsoft.Bot.Builder
         /// Returns a message that includes a set of suggested actions and optional text.
         /// </summary>
         /// <example>
-        /// <code>    
+        /// <code>
         /// // Create the activity and add suggested actions.
         /// var activity = MessageFactory.SuggestedActions(
         ///     new CardAction[]
@@ -128,14 +129,14 @@ namespace Microsoft.Bot.Builder
         ///         new CardAction( title: "green", type: ActionTypes.ImBack, value: "green"),
         ///         new CardAction(title: "blue", type: ActionTypes.ImBack, value: "blue")
         ///     }, text: "Choose a color");
-        /// 
+        ///
         /// // Send the activity as a reply to the user.
         /// await context.SendActivity(activity);
         /// </code>
         /// </example>
         /// <param name="cardActions">
         /// The card actions to include.
-        /// </param>        
+        /// </param>
         /// <param name="text">Optional, the text of the message to send.</param>
         /// <param name="ssml">Optional, text to be spoken by your bot on a speech-enabled
         /// channel.</param>
@@ -150,7 +151,9 @@ namespace Microsoft.Bot.Builder
         public static IMessageActivity SuggestedActions(IEnumerable<CardAction> cardActions, string text = null, string ssml = null, string inputHint = null)
         {
             if (cardActions == null)
+            {
                 throw new ArgumentNullException(nameof(cardActions));
+            }
 
             var ma = Activity.CreateMessageActivity();
             SetTextAndSpeak(ma, text, ssml, inputHint);
@@ -179,7 +182,9 @@ namespace Microsoft.Bot.Builder
         public static IMessageActivity Attachment(Attachment attachment, string text = null, string ssml = null, string inputHint = null)
         {
             if (attachment == null)
+            {
                 throw new ArgumentNullException(nameof(attachment));
+            }
 
             return Attachment(new List<Attachment> { attachment }, text, ssml, inputHint);
         }
@@ -203,7 +208,9 @@ namespace Microsoft.Bot.Builder
         public static IMessageActivity Attachment(IEnumerable<Attachment> attachments, string text = null, string ssml = null, string inputHint = null)
         {
             if (attachments == null)
+            {
                 throw new ArgumentNullException(nameof(attachments));
+            }
 
             return AttachmentActivity(AttachmentLayoutTypes.List, attachments, text, ssml, inputHint);
         }
@@ -253,7 +260,7 @@ namespace Microsoft.Bot.Builder
         ///         })
         ///     .ToAttachment()
         /// });
-        /// 
+        ///
         /// // Send the activity as a reply to the user.
         /// await context.SendActivity(activity);
         /// </code>
@@ -262,7 +269,9 @@ namespace Microsoft.Bot.Builder
         public static IMessageActivity Carousel(IEnumerable<Attachment> attachments, string text = null, string ssml = null, string inputHint = null)
         {
             if (attachments == null)
+            {
                 throw new ArgumentNullException(nameof(attachments));
+            }
 
             return AttachmentActivity(AttachmentLayoutTypes.Carousel, attachments, text, ssml, inputHint);
         }
@@ -282,27 +291,31 @@ namespace Microsoft.Bot.Builder
         /// Default is null.</param>
         /// <returns>A message activity containing the attachment.</returns>
         /// <exception cref="ArgumentNullException">
-        /// <paramref name="url"/> or <paramref name="contentType"/> is <c>null</c>, 
+        /// <paramref name="url"/> or <paramref name="contentType"/> is <c>null</c>,
         /// empty, or white space.</exception>
         /// <example>This code creates a message activity that contains an image.
         /// <code>
-        /// IMessageActivity message = 
+        /// IMessageActivity message =
         ///     MessageFactory.ContentUrl("https://{domainName}/cat.jpg", MediaTypeNames.Image.Jpeg, "Cat Picture");
         /// </code>
         /// </example>
         public static IMessageActivity ContentUrl(string url, string contentType, string name = null, string text = null, string ssml = null, string inputHint = null)
         {
             if (string.IsNullOrWhiteSpace(url))
+            {
                 throw new ArgumentNullException(nameof(url));
+            }
 
             if (string.IsNullOrWhiteSpace(contentType))
+            {
                 throw new ArgumentNullException(nameof(contentType));
+            }
 
             var a = new Attachment
             {
                 ContentType = contentType,
                 ContentUrl = url,
-                Name = !string.IsNullOrWhiteSpace(name) ? name : string.Empty
+                Name = !string.IsNullOrWhiteSpace(name) ? name : string.Empty,
             };
 
             return AttachmentActivity(AttachmentLayoutTypes.List, new List<Attachment> { a }, text, ssml, inputHint);
@@ -319,8 +332,8 @@ namespace Microsoft.Bot.Builder
 
         private static void SetTextAndSpeak(IMessageActivity ma, string text = null, string ssml = null, string inputHint = null)
         {
-            // Note: we must put NULL in the fields, as the clients will happily render 
-            // an empty string, which is not the behavior people expect to see. 
+            // Note: we must put NULL in the fields, as the clients will happily render
+            // an empty string, which is not the behavior people expect to see.
             ma.Text = !string.IsNullOrWhiteSpace(text) ? text : null;
             ma.Speak = !string.IsNullOrWhiteSpace(ssml) ? ssml : null;
             ma.InputHint = inputHint ?? InputHints.AcceptingInput;
