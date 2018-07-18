@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Builder
     ///
     /// ```JavaScript
     /// const { BotState, MemoryStorage
-    ///} require('botbuilder');
+    /// } require('botbuilder');
     ///
     /// const storage = new MemoryStorage();
     /// const botState = new BotState(storage, (context) => 'botState');
@@ -65,27 +65,13 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
-        /// Create a property definition and register it with this BotState
-        /// </summary>
-        /// <typeparam name="T">type of property</typeparam>
-        /// <param name="name">name of the property</param>
-        /// <param name="defaultValue">default value</param>
-        /// <returns>returns an IPropertyAccessor</returns>
-        public IPropertyAccessor<T> CreateProperty<T>(string name, T defaultValue = default(T))
-        {
-            var prop = new SimplePropertyAccessor<T>(this, name, defaultValue);
-            this._properties.Add(name, prop);
-            return prop;
-        }
-
-        /// <summary>
-        /// Create a property definition and register it with this BotState
+        /// Create a property definition and register it with this BotState.
         /// </summary>
         /// <typeparam name="T">type of property</typeparam>
         /// <param name="name">name of the property</param>
         /// <param name="defaultValueFactory">default value</param>
         /// <returns>returns an IPropertyAccessor</returns>
-        public IPropertyAccessor<T> CreateProperty<T>(string name, Func<T> defaultValueFactory)
+        public IPropertyAccessor<T> CreateProperty<T>(string name, Func<T> defaultValueFactory = null)
         {
             var prop = new SimplePropertyAccessor<T>(this, name, defaultValueFactory);
             this._properties.Add(name, prop);
@@ -133,7 +119,7 @@ namespace Microsoft.Bot.Builder
         /// Writes the state object cached in the TurnContext if it is changed
         /// </summary>
         /// <param name="context">The context object for this turn.</param>
-        /// <param name="state">The state object.</param>
+        /// <param name="force">force the saving of changes even if there are no changes.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
@@ -152,7 +138,7 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
-        /// Reset the state object to it's default form
+        /// Reset the state object to it's default form.
         /// </summary>
         /// <param name="context"></param>
         /// <param name="cancellationToken"></param>
@@ -169,13 +155,13 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
-        /// IPropertyContainer.GetAsync() method gives IPropertyAccessor ability to get from it's container
+        /// IPropertyContainer.GetPropertyAasync().
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="turnContext"></param>
-        /// <param name="propertyName"></param>
-        /// <returns></returns>
-        public Task<T> GetPropertyAsync<T>(ITurnContext turnContext, string propertyName)
+        /// <param name="turnContext">turn context</param>
+        /// <param name="propertyName">name of the property</param>
+        /// <param name="cancellationToken">cancellationToken</param>
+        /// <returns>T</returns>
+        public Task<T> GetPropertyAsync<T>(ITurnContext turnContext, string propertyName, CancellationToken cancellationToken = default(CancellationToken))
         {
             var cachedState = turnContext.Services.Get<CachedBotState>(this._contextServiceKey);
             if (cachedState.State.TryGetValue(propertyName, out object result))
@@ -187,12 +173,13 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
-        /// IPropertyContainer.DeleteAsync() method gives IPropertyAccessor ability to delete from it's container
+        /// IPropertyContainer.DeleteAsync() method gives IPropertyAccessor ability to delete from it's container.
         /// </summary>
-        /// <param name="turnContext"></param>
-        /// <param name="propertyName"></param>
-        /// <returns></returns>
-        public Task DeletePropertyAsync(ITurnContext turnContext, string propertyName)
+        /// <param name="turnContext">turn context</param>
+        /// <param name="propertyName">name of the property</param>
+        /// <param name="cancellationToken">cancellationToken</param>
+        /// <returns>Task</returns>
+        public Task DeletePropertyAsync(ITurnContext turnContext, string propertyName, CancellationToken cancellationToken = default(CancellationToken))
         {
             var cachedState = turnContext.Services.Get<CachedBotState>(this._contextServiceKey);
             cachedState.State.Remove(propertyName);
@@ -200,13 +187,14 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
-        /// IPropertyContainer.SetAsync() method gives IPropertyAccessor ability to set the value in it's container
+        /// IPropertyContainer.SetAsync() method gives IPropertyAccessor ability to set the value in it's container.
         /// </summary>
-        /// <param name="turnContext"></param>
-        /// <param name="propertyName"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public Task SetPropertyAsync(ITurnContext turnContext, string propertyName, object value)
+        /// <param name="turnContext">turn context</param>
+        /// <param name="propertyName">name of the property</param>
+        /// <param name="value">value of the property</param>
+        /// <param name="cancellationToken">cancellationToken</param>
+        /// <returns>Task</returns>
+        public Task SetPropertyAsync(ITurnContext turnContext, string propertyName, object value, CancellationToken cancellationToken = default(CancellationToken))
         {
             var cachedState = turnContext.Services.Get<CachedBotState>(this._contextServiceKey);
             cachedState.State[propertyName] = value;
@@ -238,6 +226,5 @@ namespace Microsoft.Bot.Builder
                 return JsonConvert.SerializeObject(obj);
             }
         }
-
     }
 }

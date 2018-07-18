@@ -44,7 +44,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
         public async Task State_RememberIStoreItemUserState()
         {
             var userState = new UserState(new MemoryStorage());
-            var testProperty = userState.CreateProperty<TestPocoState>("test");
+            var testProperty = userState.CreateProperty<TestPocoState>("test", () => new TestPocoState());
             var adapter = new TestAdapter()
                 .Use(userState);
 
@@ -74,7 +74,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
         public async Task State_RememberPocoUserState()
         {
             var userState = new UserState(new MemoryStorage());
-            var testPocoProperty = userState.CreateProperty<TestPocoState>("testPoco");
+            var testPocoProperty = userState.CreateProperty<TestPocoState>("testPoco", () => new TestPocoState());
             var adapter = new TestAdapter()
                 .Use(userState);
             await new TestFlow(adapter,
@@ -103,7 +103,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
         public async Task State_RememberIStoreItemConversationState()
         {
             var userState = new UserState(new MemoryStorage());
-            var testProperty = userState.CreateProperty<TestState>("test");
+            var testProperty = userState.CreateProperty<TestState>("test", () => new TestState());
 
             var adapter = new TestAdapter()
                 .Use(userState);
@@ -133,7 +133,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
         public async Task State_RememberPocoConversationState()
         {
             var userState = new UserState(new MemoryStorage());
-            var testPocoProperty = userState.CreateProperty<TestPocoState>("testPoco");
+            var testPocoProperty = userState.CreateProperty<TestPocoState>("testPoco", () => new TestPocoState());
             var adapter = new TestAdapter()
                 .Use(userState);
             await new TestFlow(adapter,
@@ -164,7 +164,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
 
             string testGuid = Guid.NewGuid().ToString();
             var customState = new CustomKeyState(new MemoryStorage());
-            var testProperty = customState.CreateProperty<TestPocoState>("test");
+            var testProperty = customState.CreateProperty<TestPocoState>("test", () => new TestPocoState());
 
             TestAdapter adapter = new TestAdapter()
                 .Use(customState);
@@ -198,10 +198,10 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
         public async Task State_RoundTripTypedObject()
         {
             var convoState = new ConversationState(new MemoryStorage());
-            var testProperty = convoState.CreateProperty<TypedObject>("typed");
+            var testProperty = convoState.CreateProperty<TypedObject>("typed", () => new TypedObject());
             var adapter = new TestAdapter()
                 .Use(convoState);
-            
+
             await new TestFlow(adapter,
                     async (context) =>
                     {
@@ -232,11 +232,11 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
             await new TestFlow(adapter,
                     async (context) =>
                     {
-                        var botStateManager = new BotState(new MemoryStorage(), 
+                        var botStateManager = new BotState(new MemoryStorage(),
                             $"BotState:{typeof(BotState).Namespace}.{typeof(BotState).Name}",
                             (ctx) => $"botstate/{ctx.Activity.ChannelId}/{ctx.Activity.Conversation.Id}/{typeof(BotState).Namespace}.{typeof(BotState).Name}");
 
-                        var testProperty = botStateManager.CreateProperty<CustomState>("test");
+                        var testProperty = botStateManager.CreateProperty<CustomState>("test", () => new CustomState());
 
                         // read initial state object
                         await botStateManager.LoadAsync(context);

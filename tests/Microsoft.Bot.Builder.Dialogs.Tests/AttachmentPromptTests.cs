@@ -17,7 +17,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         public async Task BasicAttachmentPrompt()
         {
             ConversationState convoState = new ConversationState(new MemoryStorage());
-            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test");
+            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test", () => new Dictionary<string, object>());
 
             TestAdapter adapter = new TestAdapter()
                 .Use(convoState);

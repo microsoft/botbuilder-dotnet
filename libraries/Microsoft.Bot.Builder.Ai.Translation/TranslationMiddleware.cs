@@ -91,14 +91,6 @@ namespace Microsoft.Bot.Builder.Ai.Translation
             _languageStateProperty = languageStateProperty ?? throw new ArgumentNullException(nameof(languageStateProperty));
         }
 
-        private static void AssertValidNativeLanguages(string[] nativeLanguages)
-        {
-            if (nativeLanguages == null)
-            {
-                throw new ArgumentNullException(nameof(nativeLanguages));
-            }
-        }
-
         /// <summary>
         /// Processess an incoming activity.
         /// </summary>
@@ -168,6 +160,14 @@ namespace Microsoft.Bot.Builder.Ai.Translation
             }
 
             await next(cancellationToken).ConfigureAwait(false);
+        }
+
+        private static void AssertValidNativeLanguages(string[] nativeLanguages)
+        {
+            if (nativeLanguages == null)
+            {
+                throw new ArgumentNullException(nameof(nativeLanguages));
+            }
         }
 
         /// <summary>
@@ -242,6 +242,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation
                     {
                         text += string.Join("\n", translatedDocument.TargetMessage);
                     }
+
                     message.Text = text;
                 }
             }

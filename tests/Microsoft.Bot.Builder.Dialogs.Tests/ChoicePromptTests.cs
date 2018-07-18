@@ -62,7 +62,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         public async Task ShouldSendPrompt()
         {
             ConversationState convoState = new ConversationState(new MemoryStorage());
-            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test");
+            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test", () => new Dictionary<string, object>());
 
             TestAdapter adapter = new TestAdapter()
                 .Use(convoState);
@@ -92,7 +92,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         public async Task ShouldSendPromptAsAnInlineList()
         {
             ConversationState convoState = new ConversationState(new MemoryStorage());
-            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test");
+            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test", () => new Dictionary<string, object>());
 
             TestAdapter adapter = new TestAdapter()
                 .Use(convoState);
@@ -123,7 +123,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         public async Task ShouldSendPromptAsANumberedList()
         {
             ConversationState convoState = new ConversationState(new MemoryStorage());
-            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test");
+            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test", () => new Dictionary<string, object>());
 
             TestAdapter adapter = new TestAdapter()
                 .Use(convoState);
@@ -154,7 +154,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         public async Task ShouldSendPromptUsingSuggestedActions()
         {
             ConversationState convoState = new ConversationState(new MemoryStorage());
-            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test");
+            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test", () => new Dictionary<string, object>());
 
             TestAdapter adapter = new TestAdapter()
                 .Use(convoState);
@@ -194,7 +194,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         public async Task ShouldSendPromptWithoutAddingAList()
         {
             ConversationState convoState = new ConversationState(new MemoryStorage());
-            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test");
+            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test", () => new Dictionary<string, object>());
 
             TestAdapter adapter = new TestAdapter()
                 .Use(convoState);
@@ -225,7 +225,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         public async Task ShouldSendPromptWithoutAddingAListButAddingSsml()
         {
             ConversationState convoState = new ConversationState(new MemoryStorage());
-            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test");
+            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test", () => new Dictionary<string, object>());
 
             TestAdapter adapter = new TestAdapter()
                 .Use(convoState);
@@ -257,7 +257,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         public async Task ShouldSendActivityBasedPrompt()
         {
             ConversationState convoState = new ConversationState(new MemoryStorage());
-            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test");
+            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test", () => new Dictionary<string, object>());
 
             TestAdapter adapter = new TestAdapter()
                 .Use(convoState);
@@ -288,7 +288,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         public async Task ShouldSendActivityBasedPromptWithSsml()
         {
             ConversationState convoState = new ConversationState(new MemoryStorage());
-            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test");
+            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test", () => new Dictionary<string, object>());
 
             TestAdapter adapter = new TestAdapter()
                 .Use(convoState);
@@ -319,7 +319,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         public async Task ShouldRecognizeAChoice()
         {
             ConversationState convoState = new ConversationState(new MemoryStorage());
-            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test");
+            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test", () => new Dictionary<string, object>());
 
             TestAdapter adapter = new TestAdapter()
                 .Use(convoState);
@@ -357,7 +357,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         public async Task ShouldNOTrecognizeOtherText()
         {
             ConversationState convoState = new ConversationState(new MemoryStorage());
-            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test");
+            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test", () => new Dictionary<string, object>());
 
             TestAdapter adapter = new TestAdapter()
                 .Use(convoState);
@@ -398,7 +398,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         public async Task ShouldCallCustomValidator()
         {
             ConversationState convoState = new ConversationState(new MemoryStorage());
-            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test");
+            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test", () => new Dictionary<string, object>());
 
             TestAdapter adapter = new TestAdapter()
                 .Use(convoState);
@@ -446,7 +446,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         public async Task ShouldHandleAnUndefinedRequest()
         {
             ConversationState convoState = new ConversationState(new MemoryStorage());
-            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test");
+            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test", () => new Dictionary<string, object>());
 
             TestAdapter adapter = new TestAdapter()
                 .Use(convoState);

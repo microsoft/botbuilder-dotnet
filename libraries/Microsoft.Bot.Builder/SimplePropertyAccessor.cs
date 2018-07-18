@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,44 +14,18 @@ namespace Microsoft.Bot.Builder
         private IPropertyContainer _propertyContainer;
         private Func<T> _defaultValueFactory;
 
-        public SimplePropertyAccessor(IPropertyContainer propertyContainer, string name, T defaultValue)
-        {
-            this._propertyContainer = propertyContainer;
-            this.Name = name;
-            this._defaultValueFactory = () =>
-            {
-                // assign default value
-                if (typeof(T).IsValueType)
-                {
-                    return defaultValue;
-                }
-                else if (typeof(T) == typeof(string))
-                {
-                    return defaultValue;
-                }
-                else if (defaultValue != null && defaultValue is ICloneable)
-                {
-                    return (T)((ICloneable)defaultValue).Clone();
-                }
-                else
-                {
-                    try
-                    {
-                        return Activator.CreateInstance<T>();
-                    }
-                    catch
-                    {
-                        return JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(defaultValue));
-                    }
-                }
-            };
-        }
-
         public SimplePropertyAccessor(IPropertyContainer propertyContainer, string name, Func<T> defaultValueFactory)
         {
             this._propertyContainer = propertyContainer;
             this.Name = name;
-            this._defaultValueFactory = defaultValueFactory ?? throw new ArgumentNullException(nameof(defaultValueFactory));
+            if (defaultValueFactory == null)
+            {
+                this._defaultValueFactory = () => default(T);
+            }
+            else
+            {
+                this._defaultValueFactory = defaultValueFactory;
+            }
         }
 
         public string Name { get; private set; }

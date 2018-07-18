@@ -93,7 +93,7 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
             }
 
             var userState = new UserState(new MemoryStorage());
-            var languageStateProperty = userState.CreateProperty<string>("languageState", "en");
+            var languageStateProperty = userState.CreateProperty<string>("languageState", () => "en");
 
             var adapter = new TestAdapter()
                 .Use(new TranslationMiddleware(new[] { "en" }, translatorKey));
@@ -123,7 +123,7 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
                 return;
             }
             var userState = new UserState(new MemoryStorage());
-            var languageStateProperty = userState.CreateProperty<string>("languageState", "en");
+            var languageStateProperty = userState.CreateProperty<string>("languageState", () => "en");
 
             var adapter = new TestAdapter()
                 .Use(userState)
@@ -154,7 +154,7 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
                 return;
             }
             var userState = new UserState(new MemoryStorage());
-            var languageStateProperty = userState.CreateProperty<string>("languageState", "en");
+            var languageStateProperty = userState.CreateProperty<string>("languageState", () => "en");
 
             var adapter = new TestAdapter()
                 .Use(userState)
