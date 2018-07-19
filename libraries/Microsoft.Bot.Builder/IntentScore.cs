@@ -14,6 +14,7 @@ namespace Microsoft.Bot.Builder
         /// <value>
         /// Confidence in an intent.
         /// </value>
+        [JsonProperty("score")]
         public double? Score { get; set; }
 
         /// <summary>

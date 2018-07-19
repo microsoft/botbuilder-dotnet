@@ -17,11 +17,14 @@ namespace Microsoft.Bot.Builder.Ai.Luis.Tests
             var model = this.GetValidModel();
             Assert.IsNotNull(model);
 
-            Assert.ThrowsException<ArgumentNullException>(() => new LuisApplication(null, "abc", "westus"));
-            Assert.ThrowsException<ArgumentNullException>(() => new LuisApplication(string.Empty, "abc", "westus"));
-            Assert.ThrowsException<ArgumentNullException>(() => new LuisApplication(Guid.Empty.ToString(), null, "westus"));
-            Assert.ThrowsException<ArgumentNullException>(() => new LuisApplication(Guid.Empty.ToString(), string.Empty, "westus"));
-            Assert.ThrowsException<ArgumentNullException>(() => new LuisApplication(Guid.Empty.ToString(), "abc", null));
+            Assert.ThrowsException<ArgumentException>(() => new LuisApplication(null, Guid.Empty.ToString(), "Westus"));
+            Assert.ThrowsException<ArgumentException>(() => new LuisApplication(string.Empty, Guid.Empty.ToString(), "Westus"));
+            Assert.ThrowsException<ArgumentException>(() => new LuisApplication("0000", Guid.Empty.ToString(), "Westus"));
+            Assert.ThrowsException<ArgumentException>(() => new LuisApplication(Guid.Empty.ToString(), null, "Westus"));
+            Assert.ThrowsException<ArgumentException>(() => new LuisApplication(Guid.Empty.ToString(), string.Empty, "Westus"));
+            Assert.ThrowsException<ArgumentException>(() => new LuisApplication(Guid.Empty.ToString(), "0000", "Westus"));
+            Assert.ThrowsException<ArgumentException>(() => new LuisApplication(Guid.Empty.ToString(), Guid.Empty.ToString(), null));
+            Assert.ThrowsException<ArgumentException>(() => new LuisApplication(Guid.Empty.ToString(), Guid.Empty.ToString(), "westus55"));
         }
 
         [TestMethod]
@@ -38,8 +41,6 @@ namespace Microsoft.Bot.Builder.Ai.Luis.Tests
         }
 
         private LuisApplication GetValidModel()
-        {
-            return new LuisApplication(Guid.Empty.ToString(), "abc", "westus");
-        }
+            => new LuisApplication(Guid.Empty.ToString(), Guid.Empty.ToString(), "Westus");
     }
 }
