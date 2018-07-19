@@ -17,7 +17,7 @@ namespace Microsoft.Bot.Builder.Ai.Luis.Tests
             var model = GetValidModel();
             Assert.IsNotNull(model);
 
-            Assert.ThrowsException<ArgumentException>(() => new LuisApplication(null, Guid.Empty.ToString(), "Westus"));
+            Assert.ThrowsException<ArgumentException>(() => new LuisApplication(null, Guid.Empty.ToString(), "westus"));
             Assert.ThrowsException<ArgumentException>(() => new LuisApplication(string.Empty, Guid.Empty.ToString(), "Westus"));
             Assert.ThrowsException<ArgumentException>(() => new LuisApplication("0000", Guid.Empty.ToString(), "Westus"));
             Assert.ThrowsException<ArgumentException>(() => new LuisApplication(Guid.Empty.ToString(), null, "Westus"));
