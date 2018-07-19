@@ -101,7 +101,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                 else
                     _result.Response = new HttpResponseMessage { StatusCode = HttpStatusCode.InternalServerError };
                 var ex = new HttpOperationException(e?.Message, e);
-                ex.Request = new HttpRequestMessageWrapper(_result.Request, "");
+                ex.Request = new HttpRequestMessageWrapper(_result.Request, string.Empty);
                 ex.Response = new HttpResponseMessageWrapper(_result.Response, e?.Message);
                 throw ex;
             }

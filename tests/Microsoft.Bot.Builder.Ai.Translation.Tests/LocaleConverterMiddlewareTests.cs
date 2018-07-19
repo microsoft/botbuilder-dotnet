@@ -8,31 +8,35 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Bot.Builder.Ai.Translation.Tests
 {
-    class LocaleState
+    public class LocaleState
     {
         public string Locale { get; set; }
     }
+
     [TestClass]
     public class LocaleConverterMiddlewareTests
     {
+
         [TestMethod]
         [TestCategory("AI")]
         [TestCategory("Locale Converter")]
         public async Task LocaleConverterMiddleware_ConvertFromFrench()
         {
+            var userState = new UserState(new MemoryStorage());
+            var userLocaleProperty = userState.CreateProperty<string>("locale", () => "en-us");
+
             TestAdapter adapter = new TestAdapter()
-             .Use(new UserState<LocaleState>(new MemoryStorage()))
-             .Use(new LocaleConverterMiddleware(GetActiveLocale, SetActiveLocale, "en-us", LocaleConverter.Converter));
+                .Use(userState)
+                .Use(new LocaleConverterMiddleware(userLocaleProperty, "en-us", LocaleConverter.Converter));
 
-
-            await new TestFlow(adapter, (context) =>
-            {
-                if (!context.Responded)
+            await new TestFlow(adapter, async (context) =>
                 {
-                    context.SendActivityAsync(context.Activity.AsMessageActivity().Text);
-                }
-                return Task.CompletedTask;
-            })
+                    if (!await ChangeLocaleRequest(context, userLocaleProperty))
+                    {
+                        await context.SendActivityAsync(context.Activity.AsMessageActivity().Text);
+                    }
+                    return;
+                })
                 .Send("set my locale to fr-fr")
                     .AssertReply("Changing your locale to fr-fr")
                 .Send("Set a meeting on 30/9/2017")
@@ -45,18 +49,21 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
         [TestCategory("Locale Converter")]
         public async Task LocaleConverterMiddleware_ConvertFromSpanishSpain()
         {
+            var userState = new UserState(new MemoryStorage());
+            var userLocaleProperty = userState.CreateProperty<string>("locale", () => "en-us");
+
+
             TestAdapter adapter = new TestAdapter()
-                .Use(new UserState<LocaleState>(new MemoryStorage()))
-                .Use(new LocaleConverterMiddleware(GetActiveLocale, SetActiveLocale, "en-us", LocaleConverter.Converter));
+                .Use(userState)
+                .Use(new LocaleConverterMiddleware(userLocaleProperty, "en-us", LocaleConverter.Converter));
 
-
-            await new TestFlow(adapter, (context) =>
+            await new TestFlow(adapter, async (context) =>
                 {
-                    if (!context.Responded)
+                    if (!await ChangeLocaleRequest(context, userLocaleProperty))
                     {
-                        context.SendActivityAsync(context.Activity.AsMessageActivity().Text);
+                        await context.SendActivityAsync(context.Activity.AsMessageActivity().Text);
                     }
-                    return Task.CompletedTask;
+                    return;
                 })
                 .Send("set my locale to es-es")
                 .AssertReply("Changing your locale to es-es")
@@ -70,18 +77,21 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
         [TestCategory("Locale Converter")]
         public async Task LocaleConverterMiddleware_ConvertToChinese()
         {
+            var userState = new UserState(new MemoryStorage());
+            var userLocaleProperty = userState.CreateProperty<string>("locale", () => "en-us");
+
             TestAdapter adapter = new TestAdapter()
-                .Use(new UserState<LocaleState>(new MemoryStorage()))
-                .Use(new LocaleConverterMiddleware(GetActiveLocale, SetActiveLocale, "zh-cn", LocaleConverter.Converter));
+                .Use(userState)
+                .Use(new LocaleConverterMiddleware(userLocaleProperty, "zh-cn", LocaleConverter.Converter));
 
 
-            await new TestFlow(adapter, (context) =>
+            await new TestFlow(adapter, async (context) =>
             {
-                if (!context.Responded)
+                if (!await ChangeLocaleRequest(context, userLocaleProperty))
                 {
-                    context.SendActivityAsync(context.Activity.AsMessageActivity().Text);
+                    await context.SendActivityAsync(context.Activity.AsMessageActivity().Text);
                 }
-                return Task.CompletedTask;
+                return;
             })
                 .Send("set my locale to en-us")
                     .AssertReply("Changing your locale to en-us")
@@ -90,9 +100,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
                 .StartTestAsync();
         }
 
-        private void SetLocale(ITurnContext context, string locale) => context.GetUserState<LocaleState>().Locale  = locale;
-
-        protected async Task<bool> SetActiveLocale(ITurnContext context)
+        protected async Task<bool> ChangeLocaleRequest(ITurnContext context, IStatePropertyAccessor<string> userLocaleProperty)
         {
             bool changeLocale = false;//logic implemented by developper to make a signal for language changing 
             //use a specific message from user to change language
@@ -103,10 +111,10 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
             }
             if (changeLocale)
             {
-                var newLocale = messageActivity.Text.ToLower().Replace("set my locale to", "").Trim(); //extracted by the user using user state 
+                var newLocale = messageActivity.Text.ToLower().Replace("set my locale to", string.Empty).Trim(); //extracted by the user using user state 
                 if (!string.IsNullOrWhiteSpace(newLocale))
                 {
-                    SetLocale(context, newLocale);
+                    await userLocaleProperty.SetAsync(context, newLocale);
                     await context.SendActivityAsync($@"Changing your locale to {newLocale}");
                 }
                 else
@@ -118,16 +126,6 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
             }
 
             return false;
-        }
-        protected string GetActiveLocale(ITurnContext context)
-        {
-            if (context.Activity.Type == ActivityTypes.Message
-                && !string.IsNullOrEmpty(context.GetUserState<LocaleState>().Locale))
-            {
-                return context.GetUserState<LocaleState>().Locale;
-            }
-
-            return "en-us";
         }
     }
 }

@@ -70,7 +70,7 @@ namespace Microsoft.Bot.Builder.Classic.FormFlow.Advanced
         internal static IField<T> BuildCommandRecognizer<T>(this IForm<T> form) where T : class
         {
             var field = new Field<T>("__commands__", FieldRole.Value);
-            field.SetPrompt(new PromptAttribute(""));
+            field.SetPrompt(new PromptAttribute(string.Empty));
             foreach (var entry in form.Configuration.Commands)
             {
                 field.AddDescription(entry.Key, entry.Value.Description);

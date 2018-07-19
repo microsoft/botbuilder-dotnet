@@ -104,7 +104,7 @@ namespace Microsoft.Bot.Builder.Classic.FormFlowTest
                 Recipient = new ChannelAccount { Id = "FormTest" },
                 ChannelId = "Console",
                 ServiceUrl = "http://localhost:9000/",
-                Text = ""
+                Text = string.Empty
             };
 
             var builder = new ContainerBuilder();
