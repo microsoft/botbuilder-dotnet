@@ -327,6 +327,7 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
             }
 
             private static int? ParseIntOrNull(Group group)
+#pragma warning restore SA1201 // Elements should appear in the correct order
             {
                 if (group.Success)
                 {

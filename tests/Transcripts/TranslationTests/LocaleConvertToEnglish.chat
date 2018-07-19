@@ -1,0 +1,12 @@
+user=User
+bot=Bot
+
+user:set language fr-ca
+user:Set a meeting on 2018-10-04
+bot:message: Set a meeting on 10/4/2018
+user:set language fr-fr
+user:Set a meeting on 26/08/2018
+bot:message: Set a meeting on 8/26/2018
+user:set language en-us
+user:Set a meeting on 05/29/2018
+bot:message: Set a meeting on 05/29/2018

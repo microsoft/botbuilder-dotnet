@@ -1,0 +1,14 @@
+user=User
+bot=Bot
+
+User: hello
+Bot: What date would you like?
+User: cat
+Bot: Sorry, but that is not a date. What date would you like?
+User: 31 February 2018
+Bot: Timex:'2018-02-31' Value:'not resolved'
+
+User: hello
+Bot: What date would you like?
+User: 5th December 2018 at 9am
+Bot: Timex:'2018-12-05T09' Value:'2018-12-05 09:00:00'
