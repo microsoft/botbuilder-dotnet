@@ -27,6 +27,12 @@ namespace Microsoft.Bot.Builder.Ai.Luis
                 throw new ArgumentException($"\"{applicationId}\" is not a valid LUIS subscription key.");
             }
 
+            if (azureRegion != null && azureRegion.Length > 0)
+            {
+                // Enum values are normalized to first char being capital and the rest lower
+                azureRegion = char.ToUpper(azureRegion[0]) + azureRegion.Substring(1).ToLower();
+            }
+
             if (!Enum.TryParse<AzureRegions>(azureRegion, out var region))
             {
                 throw new ArgumentException($"\"{azureRegion}\" is not a valid LUIS region.");
