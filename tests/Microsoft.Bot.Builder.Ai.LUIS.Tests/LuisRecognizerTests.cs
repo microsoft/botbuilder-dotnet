@@ -357,7 +357,7 @@ namespace Microsoft.Bot.Builder.Ai.Luis.Tests
 
         private IRecognizer GetLuisRecognizer(bool verbose = false, LuisPredictionOptions luisOptions = null)
         {
-            var app = new LuisApplication(this.appId, this.subscriptionKey, "westus");
+            var app = new LuisApplication(this.appId, this.subscriptionKey, this.region);
             return new LuisRecognizer(app, luisOptions, verbose);
         }
     }

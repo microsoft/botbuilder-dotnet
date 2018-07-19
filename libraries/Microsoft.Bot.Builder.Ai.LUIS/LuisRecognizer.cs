@@ -30,7 +30,6 @@ namespace Microsoft.Bot.Builder.Ai.Luis
         /// </summary>
         /// <param name="application">The LUIS model to use to recognize text.</param>
         /// <param name="predictionOptions">The LUIS prediction options to use.</param>
-        /// <param name="includeInstanceData">TRUE to include $instance meta-data in result.</param>
         /// <param name="includeAPIResults">TRUE to include raw LUIS API response.</param>
         public LuisRecognizer(LuisApplication application, LuisPredictionOptions predictionOptions = null, bool includeAPIResults = false)
         {
@@ -45,22 +44,21 @@ namespace Microsoft.Bot.Builder.Ai.Luis
 
         /// <inheritdoc />
         public async Task<RecognizerResult> RecognizeAsync(string utterance, CancellationToken ct)
-            => await RecognizeAsync(utterance, ct).ConfigureAwait(false);
+            => await RecognizeInternalAsync(utterance, ct).ConfigureAwait(false);
 
         /// <inheritdoc />
         public async Task<T> RecognizeAsync<T>(string utterance, CancellationToken ct)
             where T : IRecognizerConvert, new()
         {
             var result = new T();
-            result.Convert(await RecognizeAsync(utterance, ct).ConfigureAwait(false));
+            result.Convert(await RecognizeInternalAsync(utterance, ct).ConfigureAwait(false));
             return result;
         }
 
         private static string NormalizedIntent(string intent) => intent.Replace('.', '_').Replace(' ', '_');
 
         private static IDictionary<string, IntentScore> GetIntents(LuisResult luisResult)
-        {
-            return luisResult.Intents != null ?
+            => luisResult.Intents != null ?
                 luisResult.Intents.ToDictionary(
                     i => NormalizedIntent(i.Intent),
                     i => new IntentScore { Score = i.Score ?? 0 })
@@ -72,7 +70,6 @@ namespace Microsoft.Bot.Builder.Ai.Luis
                         new IntentScore() { Score = luisResult.TopScoringIntent.Score ?? 0 }
                     },
                 };
-        }
 
         private static JObject ExtractEntitiesAndMetadata(IList<EntityModel> entities, IList<CompositeEntityModel> compositeEntities, bool verbose)
         {
@@ -124,21 +121,23 @@ namespace Microsoft.Bot.Builder.Ai.Luis
 
         private static JToken ExtractEntityValue(EntityModel entity)
         {
-            if (!entity.AdditionalProperties.TryGetValue("resolution", out dynamic resolution))
+#pragma warning disable IDE0007 // Use implicit type
+            if (entity.AdditionalProperties == null || !entity.AdditionalProperties.TryGetValue("resolution", out dynamic resolution))
+#pragma warning restore IDE0007 // Use implicit type
             {
                 return entity.Entity;
             }
 
             if (entity.Type.StartsWith("builtin.datetimeV2."))
             {
-                if (resolution.Values == null || resolution.Values.Count == 0)
+                if (resolution.values == null || resolution.values.Count == 0)
                 {
                     return JArray.FromObject(resolution);
                 }
 
-                var resolutionValues = (IEnumerable<object>)resolution.values;
-                var type = ((IDictionary<string, object>)resolutionValues.First())["type"];
-                var timexes = resolutionValues.Select(val => ((IDictionary<string, object>)val)["timex"]);
+                var resolutionValues = (IEnumerable<dynamic>)resolution.values;
+                var type = resolution.values[0].type;
+                var timexes = resolutionValues.Select(val => val.timex);
                 var distinctTimexes = timexes.Distinct();
                 return new JObject(new JProperty("type", type), new JProperty("timex", JArray.FromObject(distinctTimexes)));
             }
@@ -164,8 +163,8 @@ namespace Microsoft.Bot.Builder.Ai.Luis
                     case "builtin.currency":
                     case "builtin.temperature":
                         {
-                            var units = (string)resolution["unit"];
-                            var val = Number(resolution["value"]);
+                            var units = (string)resolution.unit;
+                            var val = Number(resolution.value);
                             var obj = new JObject();
                             if (val != null)
                             {
@@ -177,26 +176,22 @@ namespace Microsoft.Bot.Builder.Ai.Luis
                         }
 
                     default:
-                        return resolution.Count > 1 ?
-                            JObject.FromObject(resolution) :
-                            resolution.ContainsKey("value")
-                            ? (JToken)new JValue(resolution.value)
-                            : JArray.FromObject(resolution.values);
+                        return resolution.value ?? JArray.FromObject(resolution.values);
                 }
             }
         }
 
         private static JObject ExtractEntityMetadata(EntityModel entity)
         {
-            var obj = JObject.FromObject(new
+            dynamic obj = JObject.FromObject(new
             {
-                startIndex = entity.StartIndex,
-                endIndex = entity.EndIndex + 1,
+                startIndex = (int)entity.StartIndex,
+                endIndex = (int)entity.EndIndex + 1,
                 text = entity.Entity,
             });
-            if (entity.AdditionalProperties.TryGetValue("Score", out var score))
+            if (entity.AdditionalProperties != null && entity.AdditionalProperties.TryGetValue("score", out var score))
             {
-                obj["score"] = (double)score;
+                obj.score = (double)score;
             }
 
             return obj;
@@ -221,7 +216,7 @@ namespace Microsoft.Bot.Builder.Ai.Luis
                 type = type.Substring(8);
             }
 
-            var role = entity.AdditionalProperties.ContainsKey("Role") ? (string)entity.AdditionalProperties["Role"] : string.Empty;
+            var role = entity.AdditionalProperties != null && entity.AdditionalProperties.ContainsKey("role") ? (string)entity.AdditionalProperties["role"] : string.Empty;
             if (!string.IsNullOrWhiteSpace(role))
             {
                 type = role;
@@ -311,7 +306,17 @@ namespace Microsoft.Bot.Builder.Ai.Luis
             }
         }
 
-        private async Task<RecognizerResult> RecognizeInternal(string utterance, CancellationToken ct)
+        private static void AddProperties(LuisResult luis, RecognizerResult result)
+        {
+            if (luis.SentimentAnalysis != null)
+            {
+                result.Properties.Add("sentiment", new JObject(
+                    new JProperty("label", luis.SentimentAnalysis.Label),
+                    new JProperty("score", luis.SentimentAnalysis.Score)));
+            }
+        }
+
+        private async Task<RecognizerResult> RecognizeInternalAsync(string utterance, CancellationToken ct)
         {
             if (string.IsNullOrEmpty(utterance))
             {
@@ -334,8 +339,9 @@ namespace Microsoft.Bot.Builder.Ai.Luis
                 Text = utterance,
                 AlteredText = luisResult.AlteredQuery,
                 Intents = GetIntents(luisResult),
-                Entities = ExtractEntitiesAndMetadata(luisResult.Entities, luisResult.CompositeEntities, options.IncludeInstanceData),
+                Entities = ExtractEntitiesAndMetadata(luisResult.Entities, luisResult.CompositeEntities, options.IncludeInstanceData ?? true),
             };
+            AddProperties(luisResult, recognizerResult);
             if (includeAPIResults)
             {
                 recognizerResult.Properties.Add("luisResult", luisResult);

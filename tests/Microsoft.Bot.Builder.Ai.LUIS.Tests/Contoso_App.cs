@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Builder.Ai.Luis.Tests
             Travel, 
             Weather_GetForecast
         };
-        public Dictionary<Intent, Microsoft.Bot.Builder.Ai.Luis.IntentData> Intents;
+        public Dictionary<Intent, Microsoft.Bot.Builder.IntentScore> Intents;
 
         public class _Entities
         {
@@ -183,7 +183,7 @@ namespace Microsoft.Bot.Builder.Ai.Luis.Tests
                 if (entry.Value.Score > max)
                 {
                     maxIntent = entry.Key;
-                    max = entry.Value.Score;
+                    max = entry.Value.Score.Value;
                 }
             }
             return (maxIntent, max);

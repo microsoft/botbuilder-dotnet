@@ -17,7 +17,7 @@ namespace Microsoft.Bot.Builder.Ai.Luis.Tests
         {
             var luisTraceInfo = new LuisTraceInfo
             {
-                Application = new LuisApplication(Guid.NewGuid().ToString(), "abc", "westus"),
+                Application = new LuisApplication(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), "Westus"),
                 Options = new LuisPredictionOptions { Verbose = true },
                 LuisResult = new LuisResult { Query = "hi" },
                 RecognizerResult = new RecognizerResult { Text = "hi" },
