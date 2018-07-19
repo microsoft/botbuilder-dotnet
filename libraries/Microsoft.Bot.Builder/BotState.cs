@@ -28,6 +28,8 @@ namespace Microsoft.Bot.Builder
         /// <param name="propertyName">The name to use to load or save the state object.</param>
         /// <param name="keyDelegate">A function that can provide the key.</param>
         /// <param name="settings">The state persistance options to use.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="keyDelegate"/>, <paramref name="propertyName"/>,
+        /// or <paramref name="storage"/> is null.</exception>
         public BotState(IStorage storage, string propertyName, Func<ITurnContext, string> keyDelegate, StateSettings settings = null)
         {
             _storage = storage ?? throw new ArgumentNullException(nameof(storage));
@@ -109,6 +111,15 @@ namespace Microsoft.Bot.Builder
             await _storage.WriteAsync(changes, cancellationToken).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Reads the state object from storage and adds it to a turn context's service collection.
+        /// </summary>
+        /// <param name="context">The turn context object.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>If no state object is read from storage, a default object is added to the
+        /// service collection.</remarks>
         protected virtual async Task ReadToContextServiceAsync(ITurnContext context, CancellationToken cancellationToken)
         {
             var key = _keyDelegate(context);
@@ -122,6 +133,13 @@ namespace Microsoft.Bot.Builder
             context.Services.Add(_propertyName, state);
         }
 
+        /// <summary>
+        /// Writes the state object to storage from a turn context's service collection.
+        /// </summary>
+        /// <param name="context">The turn context object.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
         protected virtual async Task WriteFromContextServiceAsync(ITurnContext context, CancellationToken cancellationToken)
         {
             var state = context.Services.Get<TState>(_propertyName);

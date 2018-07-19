@@ -10,10 +10,10 @@ namespace Microsoft.Bot.Builder.BotFramework
     /// Credential provider which uses <see cref="Microsoft.Extensions.Configuration.IConfiguration"/> to lookup appId and password.
     /// </summary>
     /// <remarks>
-    /// This will populate the <see cref="SimpleCredentialProvider.AppId"/> from an configuration entry with the key of <see cref="MicrosoftAppCredentials.MicrosoftAppIdKey"/> 
+    /// This will populate the <see cref="SimpleCredentialProvider.AppId"/> from an configuration entry with the key of <see cref="MicrosoftAppCredentials.MicrosoftAppIdKey"/>
     /// and the <see cref="SimpleCredentialProvider.Password"/> from a configuration entry with the key of <see cref="MicrosoftAppCredentials.MicrosoftAppPasswordKey"/>.
-    /// 
-    /// NOTE: if the keys are not present, a <code>null</code> value will be used.
+    ///
+    /// NOTE: if the keys are not present, a <c>null</c> value will be used.
     /// </remarks>
     public sealed class ConfigurationCredentialProvider : SimpleCredentialProvider
     {
