@@ -11,6 +11,7 @@ using Microsoft.Bot.Builder.Tests;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using RichardSzalay.MockHttp;
 
 namespace Microsoft.Bot.Builder.Ai.LUIS.Tests
 {
@@ -27,13 +28,11 @@ namespace Microsoft.Bot.Builder.Ai.LUIS.Tests
         [TestMethod]
         public async Task SingleIntent_SimplyEntity()
         {
-            var messageHandler = new MockHttpMessageHandler();
-            messageHandler.AddResponseForRequestUri(
-                GetRequestUri($"subscription-key={_subscriptionKey}&q=My name is Emad&log=True"),
-                GetFilePath("SingleIntent_SimplyEntity.json")
-                );
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(GetRequestUrl($"subscription-key={_subscriptionKey}&q=My name is Emad&log=True"))
+                .Respond("application/json", GetResponse("SingleIntent_SimplyEntity.json"));
 
-            var luisRecognizer = GetLuisRecognizer(messageHandler, true);
+            var luisRecognizer = GetLuisRecognizer(mockHttp, true);
             var result = await luisRecognizer.RecognizeAsync("My name is Emad", CancellationToken.None);
             Assert.IsNotNull(result);
             Assert.IsNull(result.AlteredText);
@@ -55,13 +54,11 @@ namespace Microsoft.Bot.Builder.Ai.LUIS.Tests
         [TestMethod]
         public async Task MultipleIntents_PrebuiltEntity()
         {
-            var messageHandler = new MockHttpMessageHandler();
-            messageHandler.AddResponseForRequestUri(
-                GetRequestUri($"subscription-key={_subscriptionKey}&q=Please deliver February 2nd 2001&log=True&verbose=True"),
-                GetFilePath("MultipleIntents_PrebuiltEntity.json")
-                );
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(GetRequestUrl($"subscription-key={_subscriptionKey}&q=Please deliver February 2nd 2001&log=True&verbose=True"))
+                .Respond("application/json", GetResponse("MultipleIntents_PrebuiltEntity.json"));
 
-            var luisRecognizer = GetLuisRecognizer(messageHandler, verbose: true, luisOptions: new LuisRequest { Verbose = true });
+            var luisRecognizer = GetLuisRecognizer(mockHttp, verbose: true, luisOptions: new LuisRequest { Verbose = true });
             var result = await luisRecognizer.RecognizeAsync("Please deliver February 2nd 2001", CancellationToken.None);
             Assert.IsNotNull(result);
             Assert.AreEqual("Please deliver February 2nd 2001", result.Text);
@@ -91,13 +88,11 @@ namespace Microsoft.Bot.Builder.Ai.LUIS.Tests
         [TestMethod]
         public async Task MultipleIntents_PrebuiltEntitiesWithMultiValues()
         {
-            var messageHandler = new MockHttpMessageHandler();
-            messageHandler.AddResponseForRequestUri(
-                GetRequestUri($"subscription-key={_subscriptionKey}&q=Please deliver February 2nd 2001 in room 201&log=True&verbose=True"),
-                GetFilePath("MultipleIntents_PrebuiltEntitiesWithMultiValues.json")
-                );
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(GetRequestUrl($"subscription-key={_subscriptionKey}&q=Please deliver February 2nd 2001 in room 201&log=True&verbose=True"))
+                .Respond("application/json", GetResponse("MultipleIntents_PrebuiltEntitiesWithMultiValues.json"));
 
-            var luisRecognizer = GetLuisRecognizer(messageHandler, verbose: true, luisOptions: new LuisRequest { Verbose = true });
+            var luisRecognizer = GetLuisRecognizer(mockHttp, verbose: true, luisOptions: new LuisRequest { Verbose = true });
             var result = await luisRecognizer.RecognizeAsync("Please deliver February 2nd 2001 in room 201", CancellationToken.None);
             Assert.IsNotNull(result);
             Assert.IsNotNull(result.Text);
@@ -116,13 +111,11 @@ namespace Microsoft.Bot.Builder.Ai.LUIS.Tests
         [TestMethod]
         public async Task MultipleIntents_ListEntityWithSingleValue()
         {
-            var messageHandler = new MockHttpMessageHandler();
-            messageHandler.AddResponseForRequestUri(
-                GetRequestUri($"subscription-key={_subscriptionKey}&q=I want to travel on united&log=True&verbose=True"),
-                GetFilePath("MultipleIntents_ListEntityWithSingleValue.json")
-                );
-
-            var luisRecognizer = GetLuisRecognizer(messageHandler, verbose: true, luisOptions: new LuisRequest { Verbose = true });
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(GetRequestUrl($"subscription-key={_subscriptionKey}&q=I want to travel on united&log=True&verbose=True"))
+                .Respond("application/json", GetResponse("MultipleIntents_ListEntityWithSingleValue.json"));
+            
+            var luisRecognizer = GetLuisRecognizer(mockHttp, verbose: true, luisOptions: new LuisRequest { Verbose = true });
             var result = await luisRecognizer.RecognizeAsync("I want to travel on united", CancellationToken.None);
             Assert.IsNotNull(result);
             Assert.IsNotNull(result.Text);
@@ -142,13 +135,11 @@ namespace Microsoft.Bot.Builder.Ai.LUIS.Tests
         [TestMethod]
         public async Task MultipleIntents_ListEntityWithMultiValues()
         {
-            var messageHandler = new MockHttpMessageHandler();
-            messageHandler.AddResponseForRequestUri(
-                GetRequestUri($"subscription-key={_subscriptionKey}&q=I want to travel on DL&log=True&verbose=True"),
-                GetFilePath("MultipleIntents_ListEntityWithMultiValues.json")
-                );
-
-            var luisRecognizer = GetLuisRecognizer(messageHandler, verbose: true, luisOptions: new LuisRequest { Verbose = true });
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(GetRequestUrl($"subscription-key={_subscriptionKey}&q=I want to travel on DL&log=True&verbose=True"))
+                .Respond("application/json", GetResponse("MultipleIntents_ListEntityWithMultiValues.json"));
+            
+            var luisRecognizer = GetLuisRecognizer(mockHttp, verbose: true, luisOptions: new LuisRequest { Verbose = true });
             var result = await luisRecognizer.RecognizeAsync("I want to travel on DL", CancellationToken.None);
             Assert.IsNotNull(result);
             Assert.IsNotNull(result.Text);
@@ -170,13 +161,11 @@ namespace Microsoft.Bot.Builder.Ai.LUIS.Tests
         [TestMethod]
         public async Task MultipleIntens_CompositeEntity()
         {
-            var messageHandler = new MockHttpMessageHandler();
-            messageHandler.AddResponseForRequestUri(
-                GetRequestUri($"subscription-key={_subscriptionKey}&q=Please deliver it to 98033 WA&log=True&verbose=True"),
-                GetFilePath("MultipleIntens_CompositeEntity.json")
-                );
-
-            var luisRecognizer = GetLuisRecognizer(messageHandler, verbose: true, luisOptions: new LuisRequest { Verbose = true });
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(GetRequestUrl($"subscription-key={_subscriptionKey}&q=Please deliver it to 98033 WA&log=True&verbose=True"))
+                .Respond("application/json", GetResponse("MultipleIntens_CompositeEntity.json"));
+            
+            var luisRecognizer = GetLuisRecognizer(mockHttp, verbose: true, luisOptions: new LuisRequest { Verbose = true });
             var result = await luisRecognizer.RecognizeAsync("Please deliver it to 98033 WA", CancellationToken.None);
             Assert.IsNotNull(result);
             Assert.IsNotNull(result.Text);
@@ -212,13 +201,11 @@ namespace Microsoft.Bot.Builder.Ai.LUIS.Tests
         [TestMethod]
         public async Task MultipleDateTimeEntities()
         {
-            var messageHandler = new MockHttpMessageHandler();
-            messageHandler.AddResponseForRequestUri(
-                GetRequestUri($"subscription-key={_subscriptionKey}&q=Book a table on Friday or tomorrow at 5 or tomorrow at 4&log=True&verbose=True"),
-                GetFilePath("MultipleDateTimeEntities.json")
-                );
-
-            var luisRecognizer = GetLuisRecognizer(messageHandler, verbose: true, luisOptions: new LuisRequest { Verbose = true });
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(GetRequestUrl($"subscription-key={_subscriptionKey}&q=Book a table on Friday or tomorrow at 5 or tomorrow at 4&log=True&verbose=True"))
+                .Respond("application/json", GetResponse("MultipleDateTimeEntities.json"));
+            
+            var luisRecognizer = GetLuisRecognizer(mockHttp, verbose: true, luisOptions: new LuisRequest { Verbose = true });
             var result = await luisRecognizer.RecognizeAsync("Book a table on Friday or tomorrow at 5 or tomorrow at 4", CancellationToken.None);
             Assert.IsNotNull(result.Entities["datetime"]);
             Assert.AreEqual(3, result.Entities["datetime"].Count());
@@ -307,13 +294,11 @@ namespace Microsoft.Bot.Builder.Ai.LUIS.Tests
             dynamic expectedJson = JsonConvert.DeserializeObject(expected);
             var query = (string)expectedJson.text ?? (string)expectedJson.Text;
 
-            var messageHandler = new MockHttpMessageHandler();
-            messageHandler.AddResponseForRequestUri(
-                GetRequestUri($"subscription-key={_subscriptionKey}&q={Uri.EscapeDataString(query)}&log=True&verbose=True"),
-                GetFilePath(mockPath)
-                );
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(GetRequestUrl($"subscription-key={_subscriptionKey}&q={Uri.EscapeDataString(query)}&log=True&verbose=True"))
+                .Respond("application/json", GetResponse(mockPath));
             
-            var luisRecognizer = GetLuisRecognizer(messageHandler, verbose: true, luisOptions: new LuisRequest { Verbose = true });
+            var luisRecognizer = GetLuisRecognizer(mockHttp, verbose: true, luisOptions: new LuisRequest { Verbose = true });
             var typedResult = await luisRecognizer.RecognizeAsync<T>(query, CancellationToken.None);
             var typedJson = Json<T>(typedResult);
             if (!WithinDelta(expectedJson, typedJson, 0.1))
@@ -399,11 +384,15 @@ namespace Microsoft.Bot.Builder.Ai.LUIS.Tests
             return GetLuisRecognizer(verbose, luisOptions, messageHandler);
         }
 
-        private Uri GetRequestUri(string query)
+        private string GetRequestUrl(string query)
         {
-            var uriString = $"{_luisUriBase}{_luisAppId}?{query}";
-            var uri = new Uri(uriString);
-            return uri;
+            return $"{_luisUriBase}{_luisAppId}?{query}";
+        }
+
+        private Stream GetResponse(string fileName)
+        {
+            var path = Path.Combine(Environment.CurrentDirectory, "TestData", fileName);
+            return File.OpenRead(path);
         }
 
         private string GetFilePath(string fileName)
