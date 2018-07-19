@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Builder.Ai.Luis.Tests
         [TestMethod]
         public void LuisApplication_Construction()
         {
-            var model = this.GetValidModel();
+            var model = GetValidModel();
             Assert.IsNotNull(model);
 
             Assert.ThrowsException<ArgumentException>(() => new LuisApplication(null, Guid.Empty.ToString(), "Westus"));
@@ -30,7 +30,7 @@ namespace Microsoft.Bot.Builder.Ai.Luis.Tests
         [TestMethod]
         public void LuisApplication_Serialization()
         {
-            var model = this.GetValidModel();
+            var model = GetValidModel();
             var serialized = JsonConvert.SerializeObject(model);
             var deserialized = JsonConvert.DeserializeObject<LuisApplication>(serialized);
 

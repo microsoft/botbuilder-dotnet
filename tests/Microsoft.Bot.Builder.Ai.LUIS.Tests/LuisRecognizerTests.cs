@@ -26,13 +26,13 @@ namespace Microsoft.Bot.Builder.Ai.Luis.Tests
         [TestMethod]
         public async Task SingleIntent_SimplyEntity()
         {
-            if (!this.EnvironmentVariablesDefined())
+            if (!EnvironmentVariablesDefined())
             {
                 Assert.Inconclusive("Missing Luis Environment variables - Skipping test");
                 return;
             }
 
-            var luisRecognizer = this.GetLuisRecognizer(verbose: true);
+            var luisRecognizer = GetLuisRecognizer(verbose: true);
             var result = await luisRecognizer.RecognizeAsync("My name is Emad", CancellationToken.None);
             Assert.IsNotNull(result);
             Assert.IsNull(result.AlteredText);
@@ -48,19 +48,19 @@ namespace Microsoft.Bot.Builder.Ai.Luis.Tests
             Assert.IsNotNull(result.Entities["$instance"]["Name"]);
             Assert.AreEqual(11, (int)result.Entities["$instance"]["Name"].First["startIndex"]);
             Assert.AreEqual(15, (int)result.Entities["$instance"]["Name"].First["endIndex"]);
-            this.AssertScore(result.Entities["$instance"]["Name"].First["score"]);
+            AssertScore(result.Entities["$instance"]["Name"].First["score"]);
         }
 
         [TestMethod]
         public async Task MultipleIntents_PrebuiltEntity()
         {
-            if (!this.EnvironmentVariablesDefined())
+            if (!EnvironmentVariablesDefined())
             {
                 Assert.Inconclusive("Missing Luis Environment variables - Skipping test");
                 return;
             }
 
-            var luisRecognizer = this.GetLuisRecognizer(verbose: true, luisOptions: new LuisPredictionOptions { Verbose = true });
+            var luisRecognizer = GetLuisRecognizer(verbose: true, luisOptions: new LuisPredictionOptions { Verbose = true });
             var result = await luisRecognizer.RecognizeAsync("Please deliver February 2nd 2001", CancellationToken.None);
             Assert.IsNotNull(result);
             Assert.AreEqual("Please deliver February 2nd 2001", result.Text);
@@ -90,13 +90,13 @@ namespace Microsoft.Bot.Builder.Ai.Luis.Tests
         [TestMethod]
         public async Task MultipleIntents_PrebuiltEntitiesWithMultiValues()
         {
-            if (!this.EnvironmentVariablesDefined())
+            if (!EnvironmentVariablesDefined())
             {
                 Assert.Inconclusive("Missing Luis Environment variables - Skipping test");
                 return;
             }
 
-            var luisRecognizer = this.GetLuisRecognizer(verbose: true, luisOptions: new LuisPredictionOptions { Verbose = true });
+            var luisRecognizer = GetLuisRecognizer(verbose: true, luisOptions: new LuisPredictionOptions { Verbose = true });
             var result = await luisRecognizer.RecognizeAsync("Please deliver February 2nd 2001 in room 201", CancellationToken.None);
             Assert.IsNotNull(result);
             Assert.IsNotNull(result.Text);
@@ -115,13 +115,13 @@ namespace Microsoft.Bot.Builder.Ai.Luis.Tests
         [TestMethod]
         public async Task MultipleIntents_ListEntityWithSingleValue()
         {
-            if (!this.EnvironmentVariablesDefined())
+            if (!EnvironmentVariablesDefined())
             {
                 Assert.Inconclusive("Missing Luis Environment variables - Skipping test");
                 return;
             }
 
-            var luisRecognizer = this.GetLuisRecognizer(verbose: true, luisOptions: new LuisPredictionOptions { Verbose = true });
+            var luisRecognizer = GetLuisRecognizer(verbose: true, luisOptions: new LuisPredictionOptions { Verbose = true });
             var result = await luisRecognizer.RecognizeAsync("I want to travel on united", CancellationToken.None);
             Assert.IsNotNull(result);
             Assert.IsNotNull(result.Text);
@@ -141,13 +141,13 @@ namespace Microsoft.Bot.Builder.Ai.Luis.Tests
         [TestMethod]
         public async Task MultipleIntents_ListEntityWithMultiValues()
         {
-            if (!this.EnvironmentVariablesDefined())
+            if (!EnvironmentVariablesDefined())
             {
                 Assert.Inconclusive("Missing Luis Environment variables - Skipping test");
                 return;
             }
 
-            var luisRecognizer = this.GetLuisRecognizer(verbose: true, luisOptions: new LuisPredictionOptions { Verbose = true });
+            var luisRecognizer = GetLuisRecognizer(verbose: true, luisOptions: new LuisPredictionOptions { Verbose = true });
             var result = await luisRecognizer.RecognizeAsync("I want to travel on DL", CancellationToken.None);
             Assert.IsNotNull(result);
             Assert.IsNotNull(result.Text);
@@ -169,13 +169,13 @@ namespace Microsoft.Bot.Builder.Ai.Luis.Tests
         [TestMethod]
         public async Task MultipleIntents_CompositeEntityModel()
         {
-            if (!this.EnvironmentVariablesDefined())
+            if (!EnvironmentVariablesDefined())
             {
                 Assert.Inconclusive("Missing Luis Environment variables - Skipping test");
                 return;
             }
 
-            var luisRecognizer = this.GetLuisRecognizer(verbose: true, luisOptions: new LuisPredictionOptions { Verbose = true });
+            var luisRecognizer = GetLuisRecognizer(verbose: true, luisOptions: new LuisPredictionOptions { Verbose = true });
             var result = await luisRecognizer.RecognizeAsync("Please deliver it to 98033 WA", CancellationToken.None);
             Assert.IsNotNull(result);
             Assert.IsNotNull(result.Text);
@@ -194,7 +194,7 @@ namespace Microsoft.Bot.Builder.Ai.Luis.Tests
             Assert.IsNotNull(result.Entities["$instance"]["Address"]);
             Assert.AreEqual(21, result.Entities["$instance"]["Address"][0]["startIndex"]);
             Assert.AreEqual(29, result.Entities["$instance"]["Address"][0]["endIndex"]);
-            this.AssertScore(result.Entities["$instance"]["Address"][0]["score"]);
+            AssertScore(result.Entities["$instance"]["Address"][0]["score"]);
             Assert.IsNotNull(result.Entities["Address"][0]["$instance"]);
             Assert.IsNotNull(result.Entities["Address"][0]["$instance"]["number"]);
             Assert.AreEqual(21, result.Entities["Address"][0]["$instance"]["number"][0]["startIndex"]);
@@ -205,19 +205,19 @@ namespace Microsoft.Bot.Builder.Ai.Luis.Tests
             Assert.AreEqual(29, result.Entities["Address"][0]["$instance"]["State"][0]["endIndex"]);
             Assert.AreEqual("wa", result.Entities["Address"][0]["$instance"]["State"][0]["text"]);
             Assert.AreEqual("WA", result.Text.Substring(27, 29 - 27));
-            this.AssertScore(result.Entities["Address"][0]["$instance"]["State"][0]["score"]);
+            AssertScore(result.Entities["Address"][0]["$instance"]["State"][0]["score"]);
         }
 
         [TestMethod]
         public async Task MultipleDateTimeEntities()
         {
-            if (!this.EnvironmentVariablesDefined())
+            if (!EnvironmentVariablesDefined())
             {
                 Assert.Inconclusive("Missing Luis Environment variables - Skipping test");
                 return;
             }
 
-            var luisRecognizer = this.GetLuisRecognizer(verbose: true, luisOptions: new LuisPredictionOptions { Verbose = true });
+            var luisRecognizer = GetLuisRecognizer(verbose: true, luisOptions: new LuisPredictionOptions { Verbose = true });
             var result = await luisRecognizer.RecognizeAsync("Book a table on Friday or tomorrow at 5 or tomorrow at 4", CancellationToken.None);
             Assert.IsNotNull(result.Entities["datetime"]);
             Assert.AreEqual(3, result.Entities["datetime"].Count());
@@ -240,7 +240,7 @@ namespace Microsoft.Bot.Builder.Ai.Luis.Tests
         public async Task TestJson<T>(string file)
             where T : IRecognizerConvert, new()
         {
-            if (!this.EnvironmentVariablesDefined())
+            if (!EnvironmentVariablesDefined())
             {
                 Assert.Inconclusive("Missing Luis Environment variables - Skipping test");
                 return;
@@ -248,13 +248,13 @@ namespace Microsoft.Bot.Builder.Ai.Luis.Tests
 
             var expectedPath = Path.Combine(@"..\..\..\TestData\", file);
             var newPath = expectedPath + ".new";
-            var luisRecognizer = this.GetLuisRecognizer(true, luisOptions: new LuisPredictionOptions { Verbose = true });
+            var luisRecognizer = GetLuisRecognizer(true, luisOptions: new LuisPredictionOptions { Verbose = true });
             var expected = new StreamReader(expectedPath).ReadToEnd();
             dynamic expectedJson = JsonConvert.DeserializeObject(expected);
             var query = (string)expectedJson.text ?? (string)expectedJson.Text;
             var typedResult = await luisRecognizer.RecognizeAsync<T>(query, CancellationToken.None);
-            var typedJson = this.Json<T>(typedResult);
-            if (!this.WithinDelta(expectedJson, typedJson, 0.1))
+            var typedJson = Json<T>(typedResult);
+            if (!WithinDelta(expectedJson, typedJson, 0.1))
             {
                 using (var writer = new StreamWriter(newPath))
                 {
@@ -270,22 +270,22 @@ namespace Microsoft.Bot.Builder.Ai.Luis.Tests
         }
 
         [TestMethod]
-        public async Task Composite1() => await this.TestJson<RecognizerResult>("Composite1.json");
+        public async Task Composite1() => await TestJson<RecognizerResult>("Composite1.json");
 
         [TestMethod]
-        public async Task Composite2() => await this.TestJson<RecognizerResult>("Composite2.json");
+        public async Task Composite2() => await TestJson<RecognizerResult>("Composite2.json");
 
         [TestMethod]
-        public async Task PrebuiltDomains() => await this.TestJson<RecognizerResult>("Prebuilt.json");
+        public async Task PrebuiltDomains() => await TestJson<RecognizerResult>("Prebuilt.json");
 
         [TestMethod]
-        public async Task Patterns() => await this.TestJson<RecognizerResult>("Patterns.json");
+        public async Task Patterns() => await TestJson<RecognizerResult>("Patterns.json");
 
         [TestMethod]
-        public async Task TypedEntities() => await this.TestJson<Contoso_App>("Typed.json");
+        public async Task TypedEntities() => await TestJson<Contoso_App>("Typed.json");
 
         [TestMethod]
-        public async Task TypedPrebuiltDomains() => await this.TestJson<Contoso_App>("TypedPrebuilt.json");
+        public async Task TypedPrebuiltDomains() => await TestJson<Contoso_App>("TypedPrebuilt.json");
 
         // Compare two JSON structures and ensure entity and intent scores are within delta
         private bool WithinDelta(JToken token1, JToken token2, double delta, bool compare = false)
@@ -303,7 +303,7 @@ namespace Microsoft.Bot.Builder.Ai.Luis.Tests
                         break;
                     }
 
-                    withinDelta = obj2.TryGetValue(property.Key, out var val2) && this.WithinDelta(property.Value, val2, delta, compare || property.Key == "score" || property.Key == "intents");
+                    withinDelta = obj2.TryGetValue(property.Key, out var val2) && WithinDelta(property.Value, val2, delta, compare || property.Key == "score" || property.Key == "intents");
                 }
             }
             else if (token1.Type == JTokenType.Array && token2.Type == JTokenType.Array)
@@ -313,7 +313,7 @@ namespace Microsoft.Bot.Builder.Ai.Luis.Tests
                 withinDelta = arr1.Count() == arr2.Count();
                 for (var i = 0; withinDelta && i < arr1.Count(); ++i)
                 {
-                    withinDelta = this.WithinDelta(arr1[i], arr2[i], delta);
+                    withinDelta = WithinDelta(arr1[i], arr2[i], delta);
                     if (!withinDelta)
                     {
                         break;
@@ -353,11 +353,11 @@ namespace Microsoft.Bot.Builder.Ai.Luis.Tests
             Assert.IsTrue(score <= 1);
         }
 
-        private bool EnvironmentVariablesDefined() => this.appId != null && this.subscriptionKey != null && this.region != null;
+        private bool EnvironmentVariablesDefined() => appId != null && subscriptionKey != null && region != null;
 
         private IRecognizer GetLuisRecognizer(bool verbose = false, LuisPredictionOptions luisOptions = null)
         {
-            var app = new LuisApplication(this.appId, this.subscriptionKey, this.region);
+            var app = new LuisApplication(appId, subscriptionKey, region);
             return new LuisRecognizer(app, luisOptions, verbose);
         }
     }
