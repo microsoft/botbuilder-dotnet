@@ -13,16 +13,16 @@ namespace Microsoft.Bot.Builder.Ai.Luis
         /// Initializes a new instance of the <see cref="LuisApplication"/> class.
         /// </summary>
         /// <param name="applicationId">LUIS application ID.</param>
-        /// <param name="subscriptionKey">LUIS subscription or endpoint key.</param>
+        /// <param name="endpointKey">LUIS subscription or endpoint key.</param>
         /// <param name="azureRegion">Azure region with endpoint.</param>
-        public LuisApplication(string applicationId, string subscriptionKey, string azureRegion)
+        public LuisApplication(string applicationId, string endpointKey, string azureRegion)
         {
             if (!Guid.TryParse(applicationId, out var appGuid))
             {
                 throw new ArgumentException($"\"{applicationId}\" is not a valid LUIS application id.");
             }
 
-            if (!Guid.TryParse(subscriptionKey, out var subscriptionGuid))
+            if (!Guid.TryParse(endpointKey, out var subscriptionGuid))
             {
                 throw new ArgumentException($"\"{applicationId}\" is not a valid LUIS subscription key.");
             }
@@ -39,7 +39,7 @@ namespace Microsoft.Bot.Builder.Ai.Luis
             }
 
             ApplicationId = applicationId;
-            SubscriptionKey = subscriptionKey;
+            SubscriptionKey = endpointKey;
             AzureRegion = azureRegion;
         }
 

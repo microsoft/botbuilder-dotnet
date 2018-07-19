@@ -37,7 +37,7 @@ namespace Microsoft.Bot.Builder.Ai.Luis
         /// <value>
         /// The application being called.
         /// </value>
-        [JsonProperty("LuisApplication")]
+        [JsonProperty("luisApplication")]
         public LuisApplication Application { get; set; }
 
         /// <summary>
