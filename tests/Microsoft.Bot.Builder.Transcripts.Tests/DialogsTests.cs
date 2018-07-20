@@ -8,6 +8,7 @@ using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Builder.Tests;
+using Microsoft.Bot.Schema;
 using Microsoft.Recognizers.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -22,25 +23,30 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
         public async Task AttachmentPrompt()
         {
             var activities = TranscriptUtilities.GetFromTestContext(TestContext);
+            var convState = new ConversationState(new MemoryStorage());
+            var testProperty = convState.CreateProperty<Dictionary<string, object>>("test", () => new Dictionary<string, object>());
 
             TestAdapter adapter = new TestAdapter()
-                .Use(new ConversationState<Dictionary<string, object>>(new MemoryStorage()));
+                .Use(convState);
 
             await new TestFlow(adapter, async (turnContext) =>
             {
-                var state = ConversationState<Dictionary<string, object>>.Get(turnContext);
-                var prompt = new AttachmentPrompt();
+                if (turnContext.Activity.Type == ActivityTypes.Message)
+                {
+                    var state = await testProperty.GetAsync(turnContext);
+                    var prompt = new AttachmentPrompt();
 
-                var dialogCompletion = await prompt.ContinueAsync(turnContext, state);
-                if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
-                {
-                    await prompt.BeginAsync(turnContext, state, new PromptOptions { PromptString = "please add an attachment." });
-                }
-                else if (dialogCompletion.IsCompleted)
-                {
-                    var attachmentResult = (AttachmentResult)dialogCompletion.Result;
-                    var reply = (string)attachmentResult.Attachments.First().Content;
-                    await turnContext.SendActivityAsync(reply);
+                    var dialogCompletion = await prompt.ContinueAsync(turnContext, state);
+                    if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
+                    {
+                        await prompt.BeginAsync(turnContext, state, new PromptOptions { PromptString = "please add an attachment." });
+                    }
+                    else if (dialogCompletion.IsCompleted)
+                    {
+                        var attachmentResult = (AttachmentResult)dialogCompletion.Result;
+                        var reply = (string)attachmentResult.Attachments.First().Content;
+                        await turnContext.SendActivityAsync(reply);
+                    }
                 }
             })
             .Test(activities)
@@ -83,19 +89,25 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
 
             var activities = TranscriptUtilities.GetFromTestContext(TestContext);
 
+            var convState = new ConversationState(new MemoryStorage());
+            var testProperty = convState.CreateProperty<Dictionary<string, object>>("test", () => new Dictionary<string, object>());
+
             TestAdapter adapter = new TestAdapter()
-                .Use(new ConversationState<Dictionary<string, object>>(new MemoryStorage()));
+                .Use(convState);
 
             await new TestFlow(adapter, async (turnContext) =>
             {
-                var state = ConversationState<Dictionary<string, object>>.Get(turnContext);
-                var dc = dialogs.CreateContext(turnContext, state);
+                if (turnContext.Activity.Type == ActivityTypes.Message)
+                {
+                    var state = await testProperty.GetAsync(turnContext);
+                    var dc = dialogs.CreateContext(turnContext, state);
 
                 await dc.ContinueAsync();
 
-                if (!turnContext.Responded)
-                {
+                    if (!turnContext.Responded)
+                    {
                     await dc.BeginAsync("test");
+                    }
                 }
             })
             .Test(activities)
@@ -107,33 +119,39 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
         {
             var activities = TranscriptUtilities.GetFromTestContext(TestContext);
 
+            var convState = new ConversationState(new MemoryStorage());
+            var testProperty = convState.CreateProperty<Dictionary<string, object>>("test", () => new Dictionary<string, object>());
+
             TestAdapter adapter = new TestAdapter()
-                .Use(new ConversationState<Dictionary<string, object>>(new MemoryStorage()));
+                .Use(convState);
 
             await new TestFlow(adapter, async (turnContext) =>
             {
-                var state = ConversationState<Dictionary<string, object>>.Get(turnContext);
-                var prompt = new ConfirmPrompt(Culture.English) { Style = ListStyle.None };
+                if (turnContext.Activity.Type == ActivityTypes.Message)
+                {
+                    var state = await testProperty.GetAsync(turnContext);
+                    var prompt = new ConfirmPrompt(Culture.English) { Style = ListStyle.None };
 
                 var dialogCompletion = await prompt.ContinueAsync(turnContext, state);
-                if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
-                {
+                    if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
+                    {
                     await prompt.BeginAsync(turnContext, state,
-                        new PromptOptions
-                        {
-                            PromptString = "Please confirm.",
-                            RetryPromptString = "Please confirm, say 'yes' or 'no' or something like that."
-                        });
-                }
-                else if (dialogCompletion.IsCompleted)
-                {
-                    if (((ConfirmResult)dialogCompletion.Result).Confirmation)
-                    {
-                        await turnContext.SendActivityAsync("Confirmed.");
+                            new PromptOptions
+                            {
+                                PromptString = "Please confirm.",
+                                RetryPromptString = "Please confirm, say 'yes' or 'no' or something like that."
+                            });
                     }
-                    else
+                    else if (dialogCompletion.IsCompleted)
                     {
-                        await turnContext.SendActivityAsync("Not confirmed.");
+                        if (((ConfirmResult)dialogCompletion.Result).Confirmation)
+                        {
+                            await turnContext.SendActivityAsync("Confirmed.");
+                        }
+                        else
+                        {
+                            await turnContext.SendActivityAsync("Not confirmed.");
+                        }
                     }
                 }
             })
@@ -146,25 +164,31 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
         {
             var activities = TranscriptUtilities.GetFromTestContext(TestContext);
 
+            var convState = new ConversationState(new MemoryStorage());
+            var testProperty = convState.CreateProperty<Dictionary<string, object>>("test", () => new Dictionary<string, object>());
+
             TestAdapter adapter = new TestAdapter()
-                .Use(new ConversationState<Dictionary<string, object>>(new MemoryStorage()));
+                .Use(convState);
 
             await new TestFlow(adapter, async (turnContext) =>
             {
-                var state = ConversationState<Dictionary<string, object>>.Get(turnContext);
-                var prompt = new DateTimePrompt(Culture.English);
+                if (turnContext.Activity.Type == ActivityTypes.Message)
+                {
+                    var state = await testProperty.GetAsync(turnContext);
+                    var prompt = new DateTimePrompt(Culture.English);
 
                 var dialogCompletion = await prompt.ContinueAsync(turnContext, state);
-                if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
-                {
+                    if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
+                    {
                     await prompt.BeginAsync(turnContext, state, new PromptOptions { PromptString = "What date would you like?", RetryPromptString = "Sorry, but that is not a date. What date would you like?" });
-                }
-                else if (dialogCompletion.IsCompleted)
-                {
-                    var dateTimeResult = (DateTimeResult)dialogCompletion.Result;
-                    var resolution = dateTimeResult.Resolution.First();
-                    var reply = $"Timex:'{resolution.Timex}' Value:'{resolution.Value}'";
-                    await turnContext.SendActivityAsync(reply);
+                    }
+                    else if (dialogCompletion.IsCompleted)
+                    {
+                        var dateTimeResult = (DateTimeResult)dialogCompletion.Result;
+                        var resolution = dateTimeResult.Resolution.First();
+                        var reply = $"Timex:'{resolution.Timex}' Value:'{resolution.Value}'";
+                        await turnContext.SendActivityAsync(reply);
+                    }
                 }
             })
             .Test(activities)
@@ -176,8 +200,6 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
         {
             var activities = TranscriptUtilities.GetFromTestContext(TestContext);
 
-            TestAdapter adapter = new TestAdapter()
-                .Use(new ConversationState<Dictionary<string, object>>(new MemoryStorage()));
 
             PromptValidatorEx.PromptValidator<NumberResult<int>> validator = async (ctx, result) =>
             {
@@ -188,25 +210,34 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
                 await Task.CompletedTask;
             };
 
+            var convState = new ConversationState(new MemoryStorage());
+            var testProperty = convState.CreateProperty<Dictionary<string, object>>("test", () => new Dictionary<string, object>());
+
+            TestAdapter adapter = new TestAdapter()
+                .Use(convState);
+
             await new TestFlow(adapter, async (turnContext) =>
             {
-                var state = ConversationState<Dictionary<string, object>>.Get(turnContext);
-                var prompt = new NumberPrompt<int>(Culture.English, validator);
+                if (turnContext.Activity.Type == ActivityTypes.Message)
+                {
+                    var state = await testProperty.GetAsync(turnContext);
+                    var prompt = new NumberPrompt<int>(Culture.English, validator);
 
                 var dialogCompletion = await prompt.ContinueAsync(turnContext, state);
-                if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
-                {
+                    if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
+                    {
                     await prompt.BeginAsync(turnContext, state,
-                        new PromptOptions
-                        {
-                            PromptString = "Enter a number.",
-                            RetryPromptString = "You must enter a valid positive number less than 100."
-                        });
-                }
-                else if (dialogCompletion.IsCompleted)
-                {
-                    var numberResult = (NumberResult<int>)dialogCompletion.Result;
-                    await turnContext.SendActivityAsync($"Bot received the number '{numberResult.Value}'.");
+                            new PromptOptions
+                            {
+                                PromptString = "Enter a number.",
+                                RetryPromptString = "You must enter a valid positive number less than 100."
+                            });
+                    }
+                    else if (dialogCompletion.IsCompleted)
+                    {
+                        var numberResult = (NumberResult<int>)dialogCompletion.Result;
+                        await turnContext.SendActivityAsync($"Bot received the number '{numberResult.Value}'.");
+                    }
                 }
             })
             .Test(activities)
@@ -218,9 +249,6 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
         {
             var activities = TranscriptUtilities.GetFromTestContext(TestContext);
 
-            TestAdapter adapter = new TestAdapter()
-                .Use(new ConversationState<Dictionary<string, object>>(new MemoryStorage()));
-
             PromptValidatorEx.PromptValidator<TextResult> validator = async (ctx, result) =>
             {
                 if (result.Value.Length <= 3)
@@ -228,25 +256,35 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
                 await Task.CompletedTask;
             };
 
+            var convState = new ConversationState(new MemoryStorage());
+            var testProperty = convState.CreateProperty<Dictionary<string, object>>("test", () => new Dictionary<string, object>());
+
+            TestAdapter adapter = new TestAdapter()
+                .Use(convState);
+
             await new TestFlow(adapter, async (turnContext) =>
             {
-                var state = ConversationState<Dictionary<string, object>>.Get(turnContext);
-                var prompt = new TextPrompt(validator);
+                if (turnContext.Activity.Type == ActivityTypes.Message)
+                {
+
+                    var state = await testProperty.GetAsync(turnContext);
+                    var prompt = new TextPrompt(validator);
 
                 var dialogCompletion = await prompt.ContinueAsync(turnContext, state);
-                if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
-                {
+                    if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
+                    {
                     await prompt.BeginAsync(turnContext, state,
-                        new PromptOptions
-                        {
-                            PromptString = "Enter some text.",
-                            RetryPromptString = "Make sure the text is greater than three characters."
-                        });
-                }
-                else if (dialogCompletion.IsCompleted)
-                {
-                    var textResult = (TextResult)dialogCompletion.Result;
-                    await turnContext.SendActivityAsync($"Bot received the text '{textResult.Value}'.");
+                            new PromptOptions
+                            {
+                                PromptString = "Enter some text.",
+                                RetryPromptString = "Make sure the text is greater than three characters."
+                            });
+                    }
+                    else if (dialogCompletion.IsCompleted)
+                    {
+                        var textResult = (TextResult)dialogCompletion.Result;
+                        await turnContext.SendActivityAsync($"Bot received the text '{textResult.Value}'.");
+                    }
                 }
             })
             .Test(activities)
@@ -258,24 +296,32 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
         {
             var activities = TranscriptUtilities.GetFromTestContext(TestContext);
 
+            var convState = new ConversationState(new MemoryStorage());
+            var testProperty = convState.CreateProperty<Dictionary<string, object>>("test", () => new Dictionary<string, object>());
+
             TestAdapter adapter = new TestAdapter()
-                .Use(new ConversationState<Dictionary<string, object>>(new MemoryStorage()));
+                .Use(convState);
 
             await new TestFlow(adapter, async (turnContext) =>
             {
-                var waterfall = new Waterfall(new WaterfallStep[]
+                if (turnContext.Activity.Type == ActivityTypes.Message)
                 {
+
+                    var state = await testProperty.GetAsync(turnContext);
+
+                    var waterfall = new Waterfall(new WaterfallStep[]
+                    {
                     async (dc, args, next) => { await dc.Context.SendActivityAsync("step1"); },
                     async (dc, args, next) => { await dc.Context.SendActivityAsync("step2"); },
                     async (dc, args, next) => { await dc.Context.SendActivityAsync("step3"); },
-                });
+                    });
 
-                var state = ConversationState<Dictionary<string, object>>.Get(turnContext);
 
                 var dialogCompletion = await waterfall.ContinueAsync(turnContext, state);
-                if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
-                {
+                    if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
+                    {
                     await waterfall.BeginAsync(turnContext, state);
+                    }
                 }
             })
             .Test(activities)
@@ -287,23 +333,30 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
         {
             var activities = TranscriptUtilities.GetFromTestContext(TestContext);
 
+            var convState = new ConversationState(new MemoryStorage());
+            var testProperty = convState.CreateProperty<Dictionary<string, object>>("test", () => new Dictionary<string, object>());
+
             TestAdapter adapter = new TestAdapter()
-                .Use(new ConversationState<Dictionary<string, object>>(new MemoryStorage()));
+                .Use(convState);
 
             await new TestFlow(adapter, async (turnContext) =>
             {
-                var dialogs = new DialogSet();
-                dialogs.Add("test-waterfall", Create_Waterfall2());
-                dialogs.Add("number", new NumberPrompt<int>(Culture.English));
+                if (turnContext.Activity.Type == ActivityTypes.Message)
+                {
+                    var state = await testProperty.GetAsync(turnContext);
 
-                var state = ConversationState<Dictionary<string, object>>.Get(turnContext);
-                var dc = dialogs.CreateContext(turnContext, state);
+                    var dialogs = new DialogSet();
+                    dialogs.Add("test-waterfall", Create_Waterfall2());
+                    dialogs.Add("number", new NumberPrompt<int>(Culture.English));
+
+                    var dc = dialogs.CreateContext(turnContext, state);
 
                 await dc.ContinueAsync();
 
-                if (!turnContext.Responded)
-                {
+                    if (!turnContext.Responded)
+                    {
                     await dc.BeginAsync("test-waterfall");
+                    }
                 }
             })
             .Test(activities)
@@ -350,24 +403,30 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
         {
             var activities = TranscriptUtilities.GetFromTestContext(TestContext);
 
+            var convState = new ConversationState(new MemoryStorage());
+            var testProperty = convState.CreateProperty<Dictionary<string, object>>("test", () => new Dictionary<string, object>());
+
             TestAdapter adapter = new TestAdapter()
-                .Use(new ConversationState<Dictionary<string, object>>(new MemoryStorage()));
+                .Use(convState);
 
             await new TestFlow(adapter, async (turnContext) =>
             {
-                var dialogs = new DialogSet();
-                dialogs.Add("test-waterfall-a", Create_Waterfall3());
-                dialogs.Add("test-waterfall-b", Create_Waterfall4());
-                dialogs.Add("test-waterfall-c", Create_Waterfall5());
+                if (turnContext.Activity.Type == ActivityTypes.Message)
+                {
+                    var state = await testProperty.GetAsync(turnContext);
+                    var dialogs = new DialogSet();
+                    dialogs.Add("test-waterfall-a", Create_Waterfall3());
+                    dialogs.Add("test-waterfall-b", Create_Waterfall4());
+                    dialogs.Add("test-waterfall-c", Create_Waterfall5());
 
-                var state = ConversationState<Dictionary<string, object>>.Get(turnContext);
-                var dc = dialogs.CreateContext(turnContext, state);
+                    var dc = dialogs.CreateContext(turnContext, state);
 
                 await dc.ContinueAsync();
 
-                if (!turnContext.Responded)
-                {
+                    if (!turnContext.Responded)
+                    {
                     await dc.BeginAsync("test-waterfall-a");
+                    }
                 }
             })
             .Test(activities)

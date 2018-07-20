@@ -33,7 +33,7 @@ namespace Microsoft.Bot.Builder.Tests
             // Use TestContext to find transcripts using the following naming convention:
             // {BOTBUILDER_TRANSCRIPTS_LOCATION}\{TestClassName}\{TestMethodName}.chat
             var testClassName = context.FullyQualifiedTestClassName.Split('.').Last();
-            var relativePath = Path.Combine(testClassName, $"{context.TestName}.chat");
+            var relativePath = Path.Combine($"{testClassName}", $"{context.TestName}.transcript");
             return GetActivities(relativePath);
         }
 
@@ -51,7 +51,7 @@ namespace Microsoft.Bot.Builder.Tests
             // If .chat file does not exists, try .transcript instead. Throw an exception if neither .chat nor .transcript file is found.
             if (!File.Exists(path))
             {
-                path = Path.Combine(transcriptsRootFolder, relativePath.Replace(".chat", ".transcript", StringComparison.InvariantCultureIgnoreCase));
+                path = Path.Combine(transcriptsRootFolder, relativePath.Replace(".transcript", ".chat", StringComparison.InvariantCultureIgnoreCase));
             }
 
             if (!File.Exists(path))
@@ -81,7 +81,7 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         private static readonly object _syncRoot = new object();
-        private static string TranscriptsLocalPath { get; set; }
+        private static string TranscriptsLocalPath { get; set; } = @"..\..\..\..\..\tests\Transcripts\";
 
         public static string EnsureTranscriptsDownload()
         {

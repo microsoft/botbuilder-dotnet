@@ -6,24 +6,24 @@ using System;
 namespace Microsoft.Bot.Builder.Ai.LUIS
 {
     /// <summary>
-    /// Luis api version.
+    /// Specifies the LUIS API versions.
     /// </summary>
     public enum LuisApiVersion
     {
         /// <summary>
-        /// Represents the version 1 of the LUIS API.
+        /// Version 1 of the LUIS API.
         /// </summary>
         [Obsolete]
         V1,
 
         /// <summary>
-        /// Represents the version 2 of the LUIS API.
+        /// Version 2 of the LUIS API.
         /// </summary>
         V2,
     }
 
     /// <summary>
-    /// The LUIS model information.
+    /// Specifies the usage of a LUIS model, including the parameters to use to get predictions from the model.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface | AttributeTargets.Method, AllowMultiple = true)]
     [Serializable]
@@ -38,8 +38,8 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
         /// <param name="modelID">The LUIS model ID.</param>
         /// <param name="subscriptionKey">The LUIS subscription key.</param>
         /// <param name="apiVersion">The LUIS API version.</param>
-        /// <param name="domain">Domain where LUIS model is located.</param>
-        /// <param name="threshold">Threshold for the top scoring intent.</param>
+        /// <param name="domain">The URL domain for the model.</param>
+        /// <param name="threshold">The threshold for the top scoring intent.</param>
         public LuisModelAttribute(
             string modelID,
             string subscriptionKey,
@@ -58,28 +58,29 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
         }
 
         /// <summary>
-        /// Gets the GUID for the LUIS model.
+        /// Gets the LUIS model's application ID.
         /// </summary>
         /// <value>
-        /// The GUID for the LUIS model.
+        /// The LUIS model's application ID.
         /// </value>
         public string ModelID => modelID;
 
         /// <summary>
-        /// Gets the subscription key for LUIS.
+        /// Gets the subscription key under which the model was published.
         /// </summary>
         /// <value>
-        /// The subscription key for LUIS.
+        /// The subscription key under which the model was published, also known as the authoring key.
         /// </value>
         public string SubscriptionKey => subscriptionKey;
 
         /// <summary>
-        /// Gets domain where LUIS application is located.
+        /// Gets the URL domain for the model.
         /// </summary>
-        /// <remarks>Null means default which is api.projectoxford.ai for V1 API and westus.api.cognitive.microsoft.com for V2 api.</remarks>
         /// <value>
-        /// Domain where LUIS application is located.
+        /// The URL domain for the model.
         /// </value>
+        /// <remarks><code>null</code> signifies the default domain, which is api.projectoxford.ai for version 1 of the API
+        /// and westus.api.cognitive.microsoft.com for version 2.</remarks>
         public string Domain { get; }
 
         /// <summary>
@@ -91,26 +92,26 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
         public Uri UriBase { get; }
 
         /// <summary>
-        /// Gets version of the LUIS API to call.
+        /// Gets the version of the LUIS API to call.
         /// </summary>
         /// <value>
-        /// Version of the LUIS API to call.
+        /// The version of the LUIS API to call.
         /// </value>
         public LuisApiVersion ApiVersion { get; }
 
         /// <summary>
-        /// Gets threshold for top scoring intent.
+        /// Gets the threshold for top scoring intent.
         /// </summary>
         /// <value>
-        /// Threshold for top scoring intent.
+        /// The threshold for top scoring intent.
         /// </value>
         public double Threshold { get; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether if logging of queries to LUIS is allowed.
+        /// Gets or sets a value indicating whether to log the query.
         /// </summary>
         /// <value>
-        /// Indicates if logging of queries to LUIS is allowed.
+        /// Indicates whether to log the query. The default is true.
         /// </value>
         public bool Log
         {
@@ -119,10 +120,10 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether if spell checking is enabled.
+        /// Gets or sets a value indicating whether to enable spell checking.
         /// </summary>
         /// <value>
-        /// Indicates if spell checking is enabled.</placeholder>
+        /// Indicates whether to enable spell checking.
         /// </value>
         public bool SpellCheck
         {
@@ -131,10 +132,10 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether if the staging endpoint is used..
+        /// Gets or sets a value indicating whether to use the staging endpoint.
         /// </summary>
         /// <value>
-        /// Indicates if the staging endpoint is used.
+        /// Indicates whether to use the staging endpoint.
         /// </value>
         public bool Staging
         {
@@ -143,10 +144,10 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
         }
 
         /// <summary>
-        /// Gets or sets the time zone offset.
+        /// Gets or sets the timezone offset for the location of the request in minutes.
         /// </summary>
         /// <value>
-        /// The time zone offset.
+        /// The timezone offset for the location of the request in minutes.
         /// </value>
         public double TimezoneOffset
         {
@@ -155,10 +156,10 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the verbose flag is used.
+        /// Gets or sets a value indicating whether to return all intents instead of just the topscoring intent.
         /// </summary>
         /// <value>
-        /// Indicates if the verbose flag is used.
+        /// Indicates whether to return all intents instead of just the topscoring intent.
         /// </value>
         public bool Verbose
         {
@@ -167,10 +168,10 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
         }
 
         /// <summary>
-        /// Gets or sets the Bing Spell Check subscription key.
+        /// Gets or sets the subscription key to use when enabling bing spell check.
         /// </summary>
         /// <value>
-        /// The Bing Spell Check subscription key.
+        /// The subscription key to use when enabling bing spell check.
         /// </value>
         public string BingSpellCheckSubscriptionKey
         {
@@ -192,6 +193,12 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
 
         private ILuisOptions Options => this;
 
+        /// <summary>
+        /// Gets the base URI for a version of the LUIS API and a URL domain.
+        /// </summary>
+        /// <param name="apiVersion">The LUIS API version.</param>
+        /// <param name="domain">The URL domain for the model.</param>
+        /// <returns>The base URI.</returns>
         public static Uri UriFor(LuisApiVersion apiVersion, string domain = null)
         {
             if (domain == null)
@@ -202,19 +209,27 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
             return new Uri(apiVersion == LuisApiVersion.V2 ? $"https://{domain}/luis/v2.0/apps/" : $"https://api.projectoxford.ai/luis/v1/application");
         }
 
+        /// <inheritdoc/>
         public bool Equals(ILuisModel other) => other != null
                 && object.Equals(this.ModelID, other.ModelID)
                 && object.Equals(this.SubscriptionKey, other.SubscriptionKey)
                 && object.Equals(this.ApiVersion, other.ApiVersion)
                 && object.Equals(this.UriBase, other.UriBase);
 
+        /// <inheritdoc/>
         public override bool Equals(object other) => this.Equals(other as ILuisModel);
 
+        /// <inheritdoc/>
         public override int GetHashCode() => ModelID.GetHashCode()
                 ^ SubscriptionKey.GetHashCode()
                 ^ UriBase.GetHashCode()
                 ^ ApiVersion.GetHashCode();
 
+        /// <summary>
+        /// Applies the optional parameters from this object to a LUIS request.
+        /// </summary>
+        /// <param name="request">The LUIS request to modify.</param>
+        /// <returns>The modified request.</returns>
         public LuisRequest ModifyRequest(LuisRequest request)
         {
             Options.Apply(request);

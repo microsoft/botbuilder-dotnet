@@ -5,8 +5,12 @@ using System.Text;
 
 namespace Microsoft.Bot.Builder.Ai.LUIS
 {
+    /// <summary>
+    /// Provides information about a LUIS recognition result.
+    /// </summary>
     public abstract class Resolution
     {
+        /// <inheritdoc/>
         public override string ToString()
         {
             var builder = new StringBuilder();
