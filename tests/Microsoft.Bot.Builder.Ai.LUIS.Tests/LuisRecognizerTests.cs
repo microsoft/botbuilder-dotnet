@@ -365,6 +365,11 @@ namespace Microsoft.Bot.Builder.Ai.LUIS.Tests
                 && TestUtilities.GetKey("LUISURIBASE") != null;
         }
 
+        private IRecognizer GetLuisRecognizer(HttpMessageHandler messageHandler, bool verbose = false, ILuisOptions luisOptions = null)
+        {
+            return GetLuisRecognizer(verbose, luisOptions, messageHandler);
+        }
+
         private IRecognizer GetLuisRecognizer(bool verbose = false, ILuisOptions luisOptions = null, HttpMessageHandler messageHandler = null)
         {
             HttpClient client = null;
@@ -377,11 +382,6 @@ namespace Microsoft.Bot.Builder.Ai.LUIS.Tests
             var luisModel = new LuisModel(_luisAppId, _subscriptionKey, new Uri(_luisUriBase), LuisApiVersion.V2);
             
             return new LuisRecognizer(luisModel, luisRecognizerOptions, luisOptions, client);
-        }
-
-        private IRecognizer GetLuisRecognizer(HttpMessageHandler messageHandler, bool verbose = false, ILuisOptions luisOptions = null)
-        {
-            return GetLuisRecognizer(verbose, luisOptions, messageHandler);
         }
 
         private string GetRequestUrl(string query)
