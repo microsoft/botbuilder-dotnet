@@ -93,7 +93,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
                 .Respond("application/xml", GetResponse("TranslatorMiddleware_DetectAndTranslateToEnglish_Hi.xml"));
 
             var adapter = new TestAdapter()
-                .Use(new TranslationMiddleware(new[] {"en-us"}, translatorKey, customHttpClient: mockHttp.ToHttpClient()));
+                .Use(new TranslationMiddleware(new[] {"en-us"}, translatorKey, httpClient: mockHttp.ToHttpClient()));
 
             await new TestFlow(adapter, context =>
                 {
@@ -127,7 +127,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
 
             var adapter = new TestAdapter()
                 .Use(new UserState<LanguageState>(new MemoryStorage()))
-                .Use(new TranslationMiddleware(new[] {"en-us"}, translatorKey, new Dictionary<string, List<string>>(), new CustomDictionary(), GetActiveLanguage, SetActiveLanguage, customHttpClient: mockHttp.ToHttpClient()));
+                .Use(new TranslationMiddleware(new[] {"en-us"}, translatorKey, new Dictionary<string, List<string>>(), new CustomDictionary(), GetActiveLanguage, SetActiveLanguage, httpClient: mockHttp.ToHttpClient()));
 
             await new TestFlow(adapter, context =>
                 {
@@ -166,7 +166,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
 
             var adapter = new TestAdapter()
                 .Use(new UserState<LanguageState>(new MemoryStorage()))
-                .Use(new TranslationMiddleware(new[] {"en-us"}, translatorKey, new Dictionary<string, List<string>>(), new CustomDictionary(), GetActiveLanguage, SetActiveLanguage, true, customHttpClient: mockHttp.ToHttpClient()));
+                .Use(new TranslationMiddleware(new[] {"en-us"}, translatorKey, new Dictionary<string, List<string>>(), new CustomDictionary(), GetActiveLanguage, SetActiveLanguage, true, mockHttp.ToHttpClient()));
 
             await new TestFlow(adapter, context =>
                 {
@@ -259,7 +259,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
     /// </summary>
     class SpecializedTranslatorMiddleware : TranslationMiddleware
     {
-        public SpecializedTranslatorMiddleware(string[] nativeLanguages, string translatorKey, HttpClient client) : base(nativeLanguages, translatorKey, customHttpClient: client)
+        public SpecializedTranslatorMiddleware(string[] nativeLanguages, string translatorKey, HttpClient client) : base(nativeLanguages, translatorKey, httpClient: client)
         { }
 
         public override async Task OnTurnAsync(ITurnContext context, NextDelegate next, CancellationToken cancellationToken)

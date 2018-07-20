@@ -37,10 +37,10 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         /// Initializes a new instance of the <see cref="AzureAuthToken"/> class.
         /// </summary>
         /// <param name="key">Subscription key to use to get an authentication token.</param>
-        /// <param name="client">An alternate HTTP client to use.</param>
-        internal AzureAuthToken(string key, HttpClient client = null)
+        /// <param name="httpClient">An alternate HTTP client to use.</param>
+        internal AzureAuthToken(string key, HttpClient httpClient = null)
         {
-            _httpClient = client ?? DefaultHttpClient;
+            _httpClient = httpClient ?? DefaultHttpClient;
             if (string.IsNullOrEmpty(key))
             {
                 throw new ArgumentNullException(nameof(key), "A subscription key is required");
