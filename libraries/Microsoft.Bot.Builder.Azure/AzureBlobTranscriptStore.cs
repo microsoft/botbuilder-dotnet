@@ -110,7 +110,7 @@ namespace Microsoft.Bot.Builder.Azure
         /// <param name="continuationToken">Continuatuation token to page through results.</param>
         /// <param name="startDate">Earliest time to include.</param>
         /// <returns>PagedResult of activities</returns>
-        public async Task<PagedResult<IActivity>> GetTranscriptActivitiesAsync(string channelId, string conversationId, string continuationToken = null, DateTime startDate = default(DateTime))
+        public async Task<PagedResult<IActivity>> GetTranscriptActivitiesAsync(string channelId, string conversationId, string continuationToken = null, DateTimeOffset startDate = default(DateTimeOffset))
         {
             if (string.IsNullOrEmpty(channelId))
             {
