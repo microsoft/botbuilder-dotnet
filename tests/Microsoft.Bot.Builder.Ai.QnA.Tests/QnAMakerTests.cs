@@ -19,34 +19,6 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
         public readonly string endpointKey = TestUtilities.GetKey("QNAENDPOINTKEY") ?? "dummy-key";
         public readonly string hostname = TestUtilities.GetKey("QNAHOSTNAME") ?? "https://dummy-hostname.azurewebsites.net/qnamaker";
 
-
-        private string GetRequestUrl()
-        {
-            return $"{hostname}/knowledgebases/{knowlegeBaseId}/generateanswer";
-        }
-
-        private Stream GetResponse(string fileName)
-        {
-            var path = Path.Combine(Environment.CurrentDirectory, "TestData", fileName);
-            return File.OpenRead(path);
-        }
-
-        private string GetFilePath(string fileName)
-        {
-            var path = Path.Combine(Environment.CurrentDirectory, "TestData", fileName);
-            return path;
-        }
-
-        private QnAMaker GetQnAMaker(HttpMessageHandler messageHandler, QnAMakerEndpoint endpoint, QnAMakerOptions options = null)
-        {
-            HttpClient client = null;
-            if (!EnvironmentVariablesDefined())
-            {
-                client = new HttpClient(messageHandler);
-            }
-            return new QnAMaker(endpoint, options, client);
-        }
-
         [TestMethod]
         [TestCategory("AI")]
         [TestCategory("QnAMaker")]
@@ -146,6 +118,27 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
             return TestUtilities.GetKey("QNAKNOWLEDGEBASEID") != null
                 && TestUtilities.GetKey("QNAENDPOINTKEY") != null
                 && TestUtilities.GetKey("QNAHOSTNAME") != null;
+        }
+
+        private string GetRequestUrl()
+        {
+            return $"{hostname}/knowledgebases/{knowlegeBaseId}/generateanswer";
+        }
+
+        private Stream GetResponse(string fileName)
+        {
+            var path = Path.Combine(Environment.CurrentDirectory, "TestData", fileName);
+            return File.OpenRead(path);
+        }
+
+        private QnAMaker GetQnAMaker(HttpMessageHandler messageHandler, QnAMakerEndpoint endpoint, QnAMakerOptions options = null)
+        {
+            HttpClient client = null;
+            if (!EnvironmentVariablesDefined())
+            {
+                client = new HttpClient(messageHandler);
+            }
+            return new QnAMaker(endpoint, options, client);
         }
     }
 }
