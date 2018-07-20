@@ -9,7 +9,6 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RichardSzalay.MockHttp;
 
@@ -54,7 +53,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
                 .Respond("application/xml", GetResponse("SpecializedTranslator_Tomorrow.xml"));
 
             var adapter = new TestAdapter(sendTraceActivity: true)
-                .Use(new SpecializedTranslatorMiddleware(new[] {"en-us"}, _translatorKey, mockHttp.ToHttpClient()));
+                .Use(new SpecializedTranslatorMiddleware(new[] { "en" }, _translatorKey, mockHttp.ToHttpClient()));
 
             await new TestFlow(adapter, context =>
                 {
@@ -91,17 +90,18 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
                 .WithPartialContent("salut 10-20</string>")
                 .Respond("application/xml", GetResponse("TranslatorMiddleware_DetectAndTranslateToEnglish_Hi.xml"));
 
+            var userState = new UserState(new MemoryStorage());
+            var languageStateProperty = userState.CreateProperty<string>("languageState", () => "en");
+
             var adapter = new TestAdapter()
-                .Use(new TranslationMiddleware(new[] {"en-us"}, _translatorKey, httpClient: mockHttp.ToHttpClient()));
+                .Use(new TranslationMiddleware(new[] { "en" }, _translatorKey, httpClient: mockHttp.ToHttpClient()));
 
-            await new TestFlow(adapter, context =>
+            await new TestFlow(adapter, async context =>
                 {
-                    if (!context.Responded)
+                    if (!await HandleChangeLanguageRequest(context, languageStateProperty))
                     {
-                        context.SendActivityAsync(context.Activity.AsMessageActivity().Text);
+                        await context.SendActivityAsync(context.Activity.AsMessageActivity().Text);
                     }
-
-                    return Task.CompletedTask;
                 })
                 .Send("salut")
                 .AssertReply("Hello")
@@ -123,19 +123,20 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
             mockHttp.When(HttpMethod.Post, @"https://api.microsofttranslator.com/v2/Http.svc/TranslateArray2")
                 .WithPartialContent("salut</string>")
                 .Respond("application/xml", GetResponse("TranslatorMiddleware_TranslateFrenchToEnglish.xml"));
+            var userState = new UserState(new MemoryStorage());
+            var languageStateProperty = userState.CreateProperty<string>("languageState", () => "en");
+
 
             var adapter = new TestAdapter()
-                .Use(new UserState<LanguageState>(new MemoryStorage()))
-                .Use(new TranslationMiddleware(new[] {"en-us"}, _translatorKey, new Dictionary<string, List<string>>(), new CustomDictionary(), GetActiveLanguage, SetActiveLanguage, httpClient: mockHttp.ToHttpClient()));
+                .Use(userState)
+                .Use(new TranslationMiddleware(new[] { "en" }, _translatorKey, new Dictionary<string, List<string>>(), new CustomDictionary(), languageStateProperty, httpClient: mockHttp.ToHttpClient()));
 
-            await new TestFlow(adapter, context =>
+            await new TestFlow(adapter, async context =>
                 {
-                    if (!context.Responded)
+                    if (!await HandleChangeLanguageRequest(context, languageStateProperty))
                     {
-                        context.SendActivityAsync(context.Activity.AsMessageActivity().Text);
+                        await context.SendActivityAsync(context.Activity.AsMessageActivity().Text);
                     }
-
-                    return Task.CompletedTask;
                 })
                 .Send("set my language to fr")
                 .AssertReply("Changing your language to fr")
@@ -163,18 +164,19 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
                 .WithPartialContent("Hello</string>")
                 .Respond("application/xml", GetResponse("TranslatorMiddleware_TranslateFrenchToEnglishToUserLanguage_Hello.xml"));
 
+            var userState = new UserState(new MemoryStorage());
+            var languageStateProperty = userState.CreateProperty<string>("languageState", () => "en");
+            
             var adapter = new TestAdapter()
-                .Use(new UserState<LanguageState>(new MemoryStorage()))
-                .Use(new TranslationMiddleware(new[] {"en-us"}, _translatorKey, new Dictionary<string, List<string>>(), new CustomDictionary(), GetActiveLanguage, SetActiveLanguage, true, mockHttp.ToHttpClient()));
+                .Use(userState)
+                .Use(new TranslationMiddleware(new[] { "en" }, _translatorKey, new Dictionary<string, List<string>>(), new CustomDictionary(), languageStateProperty, true, mockHttp.ToHttpClient()));
 
-            await new TestFlow(adapter, context =>
+            await new TestFlow(adapter, async context =>
                 {
-                    if (!context.Responded)
+                    if (!await HandleChangeLanguageRequest(context, languageStateProperty))
                     {
-                        context.SendActivityAsync(context.Activity.AsMessageActivity().Text);
+                        await context.SendActivityAsync(context.Activity.AsMessageActivity().Text);
                     }
-
-                    return Task.CompletedTask;
                 })
                 .Send("set my language to fr")
                 .AssertReply("Changing your language to fr")
@@ -199,9 +201,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
             return File.OpenRead(path);
         }
 
-        private void SetLanguage(ITurnContext context, string language) => context.GetUserState<LanguageState>().Language = language;
-
-        protected async Task<bool> SetActiveLanguage(ITurnContext context)
+        protected async Task<bool> HandleChangeLanguageRequest(ITurnContext context, IStatePropertyAccessor<string> languageProperty)
         {
             var changeLang = false; //logic implemented by developper to make a signal for language changing 
             //use a specific message from user to change language 
@@ -213,10 +213,10 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
 
             if (changeLang)
             {
-                var newLang = messageActivity.Text.ToLower().Replace("set my language to", "").Trim();
+                var newLang = messageActivity.Text.ToLower().Replace("set my language to", string.Empty).Trim();
                 if (!string.IsNullOrWhiteSpace(newLang))
                 {
-                    SetLanguage(context, newLang);
+                    await languageProperty.SetAsync(context, newLang);
                     await context.SendActivityAsync($@"Changing your language to {newLang}");
                 }
                 else
@@ -231,18 +231,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
             return false;
         }
 
-        protected string GetActiveLanguage(ITurnContext context)
-        {
-            if (context.Activity.Type == ActivityTypes.Message
-                && !string.IsNullOrEmpty(context.GetUserState<LanguageState>().Language))
-            {
-                return context.GetUserState<LanguageState>().Language;
-            }
-
-            return "en";
-        }
     }
-
     class LanguageState
     {
         public string Language { get; set; }

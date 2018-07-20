@@ -57,9 +57,9 @@ namespace Microsoft.Bot.Builder.Ai.Translation
                 var accessToken = await _authToken.GetAccessTokenAsync().ConfigureAwait(false);
                 request.Headers.Add("Authorization", accessToken);
                 request.RequestUri = new Uri(url + query);
-                using (var response = await _httpClient.SendAsync(request))
+                using (var response = await _httpClient.SendAsync(request).ConfigureAwait(false))
                 {
-                    var result = await response.Content.ReadAsStringAsync();
+                    var result = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
                     if (!response.IsSuccessStatusCode)
                     {
@@ -96,9 +96,9 @@ namespace Microsoft.Bot.Builder.Ai.Translation
                 var accessToken = await _authToken.GetAccessTokenAsync().ConfigureAwait(false);
                 request.Headers.Add("Authorization", accessToken);
                 request.RequestUri = new Uri(url + query);
-                using (var response = await _httpClient.SendAsync(request))
+                using (var response = await _httpClient.SendAsync(request).ConfigureAwait(false))
                 {
-                    var result = await response.Content.ReadAsStringAsync();
+                    var result = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
                     if (!response.IsSuccessStatusCode)
                     {
@@ -162,9 +162,9 @@ namespace Microsoft.Bot.Builder.Ai.Translation
                 request.Content = new StringContent(body, Encoding.UTF8, "text/xml");
                 request.Headers.Add("Authorization", accessToken);
 
-                using (var response = await _httpClient.SendAsync(request))
+                using (var response = await _httpClient.SendAsync(request).ConfigureAwait(false))
                 {
-                    var responseBody = await response.Content.ReadAsStringAsync();
+                    var responseBody = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                     switch (response.StatusCode)
                     {
                         case HttpStatusCode.OK:
@@ -177,6 +177,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation
                             {
                                 var currentTranslatedDocument = translatedDocuments[sentIndex];
                                 currentTranslatedDocument.RawAlignment = xe.Element(ns + "Alignment").Value;
+                                currentTranslatedDocument.TargetMessage = xe.Element(ns + "TranslatedText").Value;
                                 if (!string.IsNullOrEmpty(currentTranslatedDocument.RawAlignment))
                                 {
                                     var alignments = currentTranslatedDocument.RawAlignment.Trim().Split(' ');

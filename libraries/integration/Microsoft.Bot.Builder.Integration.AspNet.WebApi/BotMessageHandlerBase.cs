@@ -15,7 +15,8 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Handlers
 {
     public abstract class BotMessageHandlerBase : HttpMessageHandler
     {
-        public static readonly MediaTypeFormatter[] BotMessageMediaTypeFormatters = new[] {
+        public static readonly MediaTypeFormatter[] BotMessageMediaTypeFormatters = new[]
+        {
             new JsonMediaTypeFormatter
             {
                 SerializerSettings =
@@ -26,9 +27,9 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Handlers
                     DateTimeZoneHandling = DateTimeZoneHandling.Utc,
                     ReferenceLoopHandling = ReferenceLoopHandling.Serialize,
                     ContractResolver = new ReadOnlyJsonContractResolver(),
-                    Converters = new List<JsonConverter> { new Iso8601TimeSpanConverter() }
-                }
-            }
+                    Converters = new List<JsonConverter> { new Iso8601TimeSpanConverter() },
+                },
+            },
         };
 
         private readonly BotFrameworkAdapter _botFrameworkAdapter;
@@ -74,7 +75,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Handlers
                         {
                             bot = (IBot)request.GetDependencyScope()?.GetService(typeof(IBot));
                         }
-                        catch(Exception exception)
+                        catch (Exception exception)
                         {
                             throw new Exception($"An exception occurred attempting to resolve an {typeof(IBot).Name} service via the dependency resolver. Please check the inner exception for more details.", exception);
                         }

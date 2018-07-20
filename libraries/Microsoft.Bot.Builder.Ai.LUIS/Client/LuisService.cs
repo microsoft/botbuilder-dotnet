@@ -33,6 +33,11 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
             SetField.NotNull(out this.model, nameof(model), model);
         }
 
+        /// <summary>
+        /// Updates the <see cref="LuisResult.Intents"/> to be backward compatible with
+        /// previous versions.
+        /// </summary>
+        /// <param name="result">The LUIS result to update.</param>
         public static void Fix(LuisResult result)
         {
             // fix up Luis result for backward compatibility
@@ -48,10 +53,21 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
             }
         }
 
+        /// <summary>
+        /// Using this service's <see cref="ILuisModel"/>, modifies a LUIS request to specify
+        /// query parameters like spelling or logging.
+        /// </summary>
+        /// <param name="request">The request to modify.</param>
+        /// <returns>The modified request.</returns>
         public LuisRequest ModifyRequest(LuisRequest request) => model.ModifyRequest(request);
 
         Uri ILuisService.BuildUri(LuisRequest luisRequest) => luisRequest.BuildUri(this.model);
 
+        /// <summary>
+        /// Using this service's <see cref="ILuisModel"/>.<see cref="ILuisModel.Threshold"/>,
+        /// updates a result's <see cref="LuisResult.TopScoringIntent"/>.
+        /// </summary>
+        /// <param name="result">The LUIS result to update.</param>
         public void ApplyThreshold(LuisResult result)
         {
             if (result.TopScoringIntent.Score > model.Threshold)
