@@ -4,6 +4,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -221,6 +222,118 @@ namespace Microsoft.Bot.Builder.Ai.LUIS.Tests
             Assert.AreEqual(3, result.Entities["$instance"]["datetime"].Count());
         }
 
+        [TestMethod]
+        public async Task Composite1()
+        {
+            await TestJson<RecognizerResult>("Composite1.json");
+        }
+
+        [TestMethod]
+        public async Task Composite2()
+        {
+            await TestJson<RecognizerResult>("Composite2.json");
+        }
+
+        [TestMethod]
+        public async Task PrebuiltDomains()
+        {
+            await TestJson<RecognizerResult>("Prebuilt.json");
+        }
+
+        [TestMethod]
+        public async Task Patterns()
+        {
+            await TestJson<RecognizerResult>("Patterns.json");
+        }
+
+        [TestMethod]
+        public async Task TypedEntities()
+        {
+            await TestJson<Contoso_App>("Typed.json");
+        }
+
+        [TestMethod]
+        public async Task TypedPrebuiltDomains()
+        {
+            await TestJson<Contoso_App>("TypedPrebuilt.json");
+        }
+
+        [TestMethod]
+        public async Task UnavailableService()
+        {
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When("*").Respond(HttpStatusCode.BadRequest);
+
+            var luisRecognizer = GetLuisRecognizer(mockHttp);
+            var ex = await Assert.ThrowsExceptionAsync<HttpRequestException>(() => luisRecognizer.RecognizeAsync("test", CancellationToken.None));
+            Assert.AreEqual("Response status code does not indicate success: 400 (Bad Request).", ex.Message);
+        }
+
+        [TestMethod]
+        public async Task ErrorService()
+        {
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When("*").Respond(HttpStatusCode.InternalServerError);
+
+            var luisRecognizer = GetLuisRecognizer(mockHttp);
+            var ex = await Assert.ThrowsExceptionAsync<HttpRequestException>(() => luisRecognizer.RecognizeAsync("test", CancellationToken.None));
+            Assert.AreEqual("Response status code does not indicate success: 500 (Internal Server Error).", ex.Message);
+        }
+
+        [TestMethod]
+        public async Task JsonErrorService()
+        {
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When("*").Respond("application/json", "error message");
+
+            var luisRecognizer = GetLuisRecognizer(mockHttp);
+            var ex = await Assert.ThrowsExceptionAsync<ArgumentException>(() => luisRecognizer.RecognizeAsync("test", CancellationToken.None));
+            Assert.AreEqual("Unable to deserialize the LUIS response.", ex.Message);
+        }
+
+        // To create a file to test:
+        // 1) Create a <name>.json file with an object { Text:<query> } in it.
+        // 2) Run this test which will fail and generate a <name>.json.new file.
+        // 3) Check the .new file and if correct, replace the original .json file with it.
+        public async Task TestJson<T>(string file) where T : IRecognizerConvert, new()
+        {
+            var expectedPath = GetFilePath(file);
+            var mockPath = GetFilePath("Mock_" + file);
+            var newPath = expectedPath + ".new";
+
+            using (var expectedJsonReader = new JsonTextReader(new StreamReader(expectedPath)))
+            {
+                var expectedJson = await JToken.ReadFromAsync(expectedJsonReader);
+                var text = expectedJson["text"] ?? expectedJson["Text"];
+                var query = text.ToString();
+
+                var mockHttp = new MockHttpMessageHandler();
+                mockHttp.When(GetRequestUrl($"subscription-key={_subscriptionKey}&q={Uri.EscapeDataString(query)}&log=True&verbose=True"))
+                    .Respond("application/json", GetResponse(mockPath));
+
+                var luisRecognizer = GetLuisRecognizer(mockHttp, verbose: true, luisOptions: new LuisRequest { Verbose = true });
+                var typedResult = await luisRecognizer.RecognizeAsync<T>(query, CancellationToken.None);
+                var typedJson = Json(typedResult);
+                if (!WithinDelta(expectedJson, typedJson, 0.1))
+                {
+                    using (var writer = new StreamWriter(newPath))
+                    {
+                        writer.Write(typedJson);
+                    }
+                    Assert.Fail($"Returned JSON in {newPath} != expected JSON in {expectedPath}");
+                }
+                else
+                {
+                    File.Delete(expectedPath + ".new");
+                }
+            }
+        }
+
+        private JObject Json<T>(T result)
+        {
+            return (JObject)JsonConvert.DeserializeObject(JsonConvert.SerializeObject(result, new JsonSerializerSettings { Formatting = Formatting.Indented, NullValueHandling = NullValueHandling.Ignore }));
+        }
+
         // Compare two JSON structures and ensure entity and intent scores are within delta
         private bool WithinDelta(JToken token1, JToken token2, double delta, bool compare = false)
         {
@@ -273,82 +386,6 @@ namespace Microsoft.Bot.Builder.Ai.LUIS.Tests
                 }
             }
             return withinDelta;
-        }
-
-        private JObject Json<T>(T result)
-        {
-            return (JObject)JsonConvert.DeserializeObject(JsonConvert.SerializeObject(result, new JsonSerializerSettings { Formatting = Formatting.Indented, NullValueHandling = NullValueHandling.Ignore }));
-        }
-
-        // To create a file to test:
-        // 1) Create a <name>.json file with an object { Text:<query> } in it.
-        // 2) Run this test which will fail and generate a <name>.json.new file.
-        // 3) Check the .new file and if correct, replace the original .json file with it.
-        public async Task TestJson<T>(string file) where T : IRecognizerConvert, new()
-        {
-            var expectedPath = GetFilePath(file);
-            var mockPath = GetFilePath("Mock_" + file);
-            var newPath = expectedPath + ".new";
-
-            var expected = new StreamReader(expectedPath).ReadToEnd();
-            dynamic expectedJson = JsonConvert.DeserializeObject(expected);
-            var query = (string)expectedJson.text ?? (string)expectedJson.Text;
-
-            var mockHttp = new MockHttpMessageHandler();
-            mockHttp.When(GetRequestUrl($"subscription-key={_subscriptionKey}&q={Uri.EscapeDataString(query)}&log=True&verbose=True"))
-                .Respond("application/json", GetResponse(mockPath));
-            
-            var luisRecognizer = GetLuisRecognizer(mockHttp, verbose: true, luisOptions: new LuisRequest { Verbose = true });
-            var typedResult = await luisRecognizer.RecognizeAsync<T>(query, CancellationToken.None);
-            var typedJson = Json<T>(typedResult);
-            if (!WithinDelta(expectedJson, typedJson, 0.1))
-            {
-                using (var writer = new StreamWriter(newPath))
-                {
-                    writer.Write(typedJson);
-                }
-                Assert.Fail($"Returned JSON in {newPath} != expected JSON in {expectedPath}");
-            }
-            else
-            {
-                File.Delete(expectedPath + ".new");
-            }
-        }
-
-        [TestMethod]
-        public async Task Composite1()
-        {
-            await TestJson<RecognizerResult>("Composite1.json");
-        }
-
-        [TestMethod]
-        public async Task Composite2()
-        {
-            await TestJson<RecognizerResult>("Composite2.json");
-        }
-
-        [TestMethod]
-        public async Task PrebuiltDomains()
-        {
-            await TestJson<RecognizerResult>("Prebuilt.json");
-        }
-
-        [TestMethod]
-        public async Task Patterns()
-        {
-            await TestJson<RecognizerResult>("Patterns.json");
-        }
-
-        [TestMethod]
-        public async Task TypedEntities()
-        {
-            await TestJson<Contoso_App>("Typed.json");
-        }
-
-        [TestMethod]
-        public async Task TypedPrebuiltDomains()
-        {
-            await TestJson<Contoso_App>("TypedPrebuilt.json");
         }
 
         private void AssertScore(JToken scoreToken)
