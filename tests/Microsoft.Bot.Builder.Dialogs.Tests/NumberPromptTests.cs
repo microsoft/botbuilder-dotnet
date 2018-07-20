@@ -16,12 +16,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [TestMethod]
         public async Task NumberPrompt()
         {
+            ConversationState convoState = new ConversationState(new MemoryStorage());
+            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test", () => new Dictionary<string, object>());
+
             TestAdapter adapter = new TestAdapter()
-                .Use(new ConversationState<Dictionary<string, object>>(new MemoryStorage()));
+                .Use(convoState);
 
             await new TestFlow(adapter, async (turnContext) =>
             {
-                var state = ConversationState<Dictionary<string, object>>.Get(turnContext);
+                var state = await testProperty.GetAsync(turnContext);
                 var prompt = new NumberPrompt<int>(Culture.English);
 
                 var dialogCompletion = await prompt.Continue(turnContext, state);
@@ -45,12 +48,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [TestMethod]
         public async Task NumberPromptRetry()
         {
+            ConversationState convoState = new ConversationState(new MemoryStorage());
+            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test", () => new Dictionary<string, object>());
+
             TestAdapter adapter = new TestAdapter()
-                .Use(new ConversationState<Dictionary<string, object>>(new MemoryStorage()));
+                .Use(convoState);
 
             await new TestFlow(adapter, async (turnContext) =>
             {
-                var state = ConversationState<Dictionary<string, object>>.Get(turnContext);
+                var state = await testProperty.GetAsync(turnContext);
                 var prompt = new NumberPrompt<int>(Culture.English);
 
                 var dialogCompletion = await prompt.Continue(turnContext, state);
@@ -81,10 +87,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [TestMethod]
         public async Task NumberPromptValidator()
         {
-            TestAdapter adapter = new TestAdapter()
-                .Use(new ConversationState<Dictionary<string, object>>(new MemoryStorage()));
+            ConversationState convoState = new ConversationState(new MemoryStorage());
+            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test", () => new Dictionary<string, object>());
 
-            PromptValidator<NumberResult<int>> validator = async (ctx, result) =>
+            TestAdapter adapter = new TestAdapter()
+                .Use(convoState);
+
+
+                PromptValidator<NumberResult<int>> validator = async (ctx, result) =>
             {
                 if (result.Value < 0)
                     result.Status = PromptStatus.TooSmall;
@@ -95,7 +105,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             await new TestFlow(adapter, async (turnContext) =>
             {
-                var state = ConversationState<Dictionary<string, object>>.Get(turnContext);
+                var state = await testProperty.GetAsync(turnContext);
                 var prompt = new NumberPrompt<int>(Culture.English, validator);
 
                 var dialogCompletion = await prompt.Continue(turnContext, state);
@@ -126,12 +136,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [TestMethod]
         public async Task FloatNumberPrompt()
         {
+            ConversationState convoState = new ConversationState(new MemoryStorage());
+            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test", () => new Dictionary<string, object>());
+
             TestAdapter adapter = new TestAdapter()
-                .Use(new ConversationState<Dictionary<string, object>>(new MemoryStorage()));
+                .Use(convoState);
 
             await new TestFlow(adapter, async (turnContext) =>
             {
-                var state = ConversationState<Dictionary<string, object>>.Get(turnContext);
+                var state = await testProperty.GetAsync(turnContext);
                 var prompt = new NumberPrompt<float>(Culture.English);
 
                 var dialogCompletion = await prompt.Continue(turnContext, state);
@@ -155,12 +168,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [TestMethod]
         public async Task LongNumberPrompt()
         {
+            ConversationState convoState = new ConversationState(new MemoryStorage());
+            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test", () => new Dictionary<string, object>());
+
             TestAdapter adapter = new TestAdapter()
-                .Use(new ConversationState<Dictionary<string, object>>(new MemoryStorage()));
+                .Use(convoState);
 
             await new TestFlow(adapter, async (turnContext) =>
             {
-                var state = ConversationState<Dictionary<string, object>>.Get(turnContext);
+                var state = await testProperty.GetAsync(turnContext);
                 var prompt = new NumberPrompt<long>(Culture.English);
 
                 var dialogCompletion = await prompt.Continue(turnContext, state);
@@ -184,12 +200,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [TestMethod]
         public async Task DoubleNumberPrompt()
         {
+            ConversationState convoState = new ConversationState(new MemoryStorage());
+            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test", () => new Dictionary<string, object>());
+
             TestAdapter adapter = new TestAdapter()
-                .Use(new ConversationState<Dictionary<string, object>>(new MemoryStorage()));
+                .Use(convoState);
 
             await new TestFlow(adapter, async (turnContext) =>
             {
-                var state = ConversationState<Dictionary<string, object>>.Get(turnContext);
+                var state = await testProperty.GetAsync(turnContext);
                 var prompt = new NumberPrompt<double>(Culture.English);
 
                 var dialogCompletion = await prompt.Continue(turnContext, state);
@@ -213,12 +232,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [TestMethod]
         public async Task DecimalNumberPrompt()
         {
+            ConversationState convoState = new ConversationState(new MemoryStorage());
+            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test", () => new Dictionary<string, object>());
+
             TestAdapter adapter = new TestAdapter()
-                .Use(new ConversationState<Dictionary<string, object>>(new MemoryStorage()));
+                .Use(convoState);
 
             await new TestFlow(adapter, async (turnContext) =>
             {
-                var state = ConversationState<Dictionary<string, object>>.Get(turnContext);
+                var state = await testProperty.GetAsync(turnContext);
                 var prompt = new NumberPrompt<decimal>(Culture.English);
 
                 var dialogCompletion = await prompt.Continue(turnContext, state);

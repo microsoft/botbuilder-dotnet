@@ -39,7 +39,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
                 Assert.Inconclusive("Missing Translator Environment variables - Skipping test");
                 return;
             }
-            string translatorKey = "";
+            string translatorKey = string.Empty;
             Assert.ThrowsException<ArgumentNullException>(() => new Translator(translatorKey));
         }
 

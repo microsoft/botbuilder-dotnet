@@ -2,10 +2,12 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Tests;
+using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Bot.Builder.Transcripts.Tests
@@ -21,19 +23,34 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
             var activities = TranscriptUtilities.GetFromTestContext(TestContext);
 
             TestAdapter adapter = new TestAdapter()
-                .Use(new BeforeAfterMiddleware())
-                .Use(new CatchExceptionMiddleware());
+                .Use(new BeforeAfterMiddleware());
+            adapter.OnTurnError = async (context, exception) =>
+            {
+                await context.SendActivityAsync($"Caught: {exception.Message}");
+                return;
+            };
 
-            var flow = new TestFlow(adapter, async (context) => {
-                var userMessage = context.Activity.AsMessageActivity()?.Text;
-                switch (userMessage)
+            var flow = new TestFlow(adapter, async (context) =>
+            {
+                switch (context.Activity.Type)
                 {
-                    case "use middleware":
-                        await context.SendActivityAsync("using middleware");
+                    case ActivityTypes.Message:
+                        {
+                            var userMessage = context.Activity.AsMessageActivity()?.Text;
+                            switch (userMessage)
+                            {
+                                case "use middleware":
+                                    await context.SendActivityAsync("using middleware");
+                                    break;
+                                case "catch exception":
+                                    await context.SendActivityAsync("generating exception");
+                                    throw new Exception("exception to catch");
+                            }
+                        }
                         break;
-                    case "catch exception":
-                        await context.SendActivityAsync("generating exception");
-                        throw new Exception("exception to catch");
+                    default:
+                        await context.SendActivityAsync(context.Activity.Type);
+                        break;
                 }
             });
 
@@ -47,21 +64,6 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
                 await context.SendActivityAsync("before message");
                 await next(cancellationToken);
                 await context.SendActivityAsync("after message");
-            }
-        }
-
-        public class CatchExceptionMiddleware : IMiddleware
-        {
-            public async Task OnTurnAsync(ITurnContext context, NextDelegate next, CancellationToken cancellationToken = default(CancellationToken))
-            {
-                try
-                {
-                    await next(cancellationToken);
-                }
-                catch (Exception ex)
-                {
-                    await context.SendActivityAsync($"Caught: {ex.Message}");
-                }
             }
         }
     }

@@ -236,7 +236,7 @@ namespace Microsoft.Bot.Builder.Classic.FormFlow
                 var annotation = step.Annotation;
                 if (annotation != null)
                 {
-                    var name = step.Type == StepType.Field ? step.Name : "";
+                    var name = step.Type == StepType.Field ? step.Name : string.Empty;
                     foreach (var pattern in annotation.Patterns)
                     {
                         ValidatePattern(pattern, _form.Fields.Field(name), 5);
@@ -404,7 +404,7 @@ namespace Microsoft.Bot.Builder.Classic.FormFlow
             if (!_form._steps.Any((step) => step.Type == StepType.Field))
             {
                 var paths = new List<string>();
-                FieldPaths(typeof(T), "", paths);
+                FieldPaths(typeof(T), string.Empty, paths);
                 foreach (var path in paths)
                 {
                     Field(new FieldReflector<T>(path, _ignoreAnnotations));
@@ -440,7 +440,7 @@ namespace Microsoft.Bot.Builder.Classic.FormFlow
         {
             var exclusions = (exclude == null ? Array.Empty<string>() : exclude.ToArray());
             var paths = new List<string>();
-            FieldPaths(typeof(T), "", paths);
+            FieldPaths(typeof(T), string.Empty, paths);
             foreach (var path in paths)
             {
                 if (!exclusions.Contains(path) && !HasField(path))
@@ -453,7 +453,7 @@ namespace Microsoft.Bot.Builder.Classic.FormFlow
 
         private void FieldPaths(Type type, string path, List<string> paths)
         {
-            var newPath = (path == "" ? path : path + ".");
+            var newPath = (path == string.Empty ? path : path + ".");
             foreach (var field in type.GetFields(BindingFlags.Public | BindingFlags.Instance).Where(f => !f.IsDefined(typeof(IgnoreFieldAttribute))))
             {
                 TypePaths(field.FieldType, newPath + field.Name, paths);
