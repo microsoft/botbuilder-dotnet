@@ -8,7 +8,6 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Ai.Translation.PostProcessor;
-using Microsoft.Bot.Builder.Tests;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RichardSzalay.MockHttp;
 
@@ -17,7 +16,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
     [TestClass]
     public class TranslatorTests
     {
-        public string translatorKey = TestUtilities.GetKey("TRANSLATORKEY") ?? "dummy-key";
+        private const string _translatorKey = "dummy-key";
 
         [TestMethod]
         [TestCategory("AI")]
@@ -50,7 +49,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
             mockHttp.When(HttpMethod.Get, GetRequestTranslate("salut", "fr", "en"))
                 .Respond("application/xml", GetResponseTranslate("Hello"));
 
-            var translator = new Translator(translatorKey, mockHttp.ToHttpClient());
+            var translator = new Translator(_translatorKey, mockHttp.ToHttpClient());
 
             var sentence = "salut";
             var detectedLanguage = await translator.DetectAsync(sentence);
@@ -73,7 +72,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
             mockHttp.When(HttpMethod.Post, @"https://api.microsofttranslator.com/v2/Http.svc/TranslateArray2")
                 .Respond("application/xml", GetResponse("Translator_LiteralTagTest.xml"));
 
-            var translator = new Translator(translatorKey, mockHttp.ToHttpClient());
+            var translator = new Translator(_translatorKey, mockHttp.ToHttpClient());
 
             var sentence = "salut <literal>Jean Bouchier mon ami</literal>";
 
@@ -97,7 +96,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
             mockHttp.When(HttpMethod.Get, GetRequestTranslate("salut 20-10", "fr", "en"))
                 .Respond("application/xml", GetResponseTranslate("Hi 20-10"));
 
-            var translator = new Translator(translatorKey, mockHttp.ToHttpClient());
+            var translator = new Translator(_translatorKey, mockHttp.ToHttpClient());
 
             var sentence = "salut 20-10";
             var translatedSentence = await translator.TranslateAsync(sentence, "fr", "en");
@@ -116,7 +115,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
             mockHttp.When(HttpMethod.Post, @"https://api.microsofttranslator.com/v2/Http.svc/TranslateArray2")
                 .Respond("application/xml", GetResponse("Translator_TranslateFrenchToEnglishArray.xml"));
 
-            var translator = new Translator(translatorKey, mockHttp.ToHttpClient());
+            var translator = new Translator(_translatorKey, mockHttp.ToHttpClient());
 
             var sentences = new string[] { "mon nom est", "salut", "au revoir" };
             var translatedSentences = await translator.TranslateArrayAsync(sentences, "fr", "en");
@@ -138,7 +137,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
             mockHttp.When(HttpMethod.Get, GetRequestTranslate("hello", "en", "fr"))
                 .Respond("application/xml", GetResponseTranslate("Salut"));
 
-            var translator = new Translator(translatorKey, mockHttp.ToHttpClient());
+            var translator = new Translator(_translatorKey, mockHttp.ToHttpClient());
 
             var sentence = "hello";
             var translatedSentence = await translator.TranslateAsync(sentence, "en", "fr");
@@ -157,7 +156,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
             mockHttp.When(HttpMethod.Post, @"https://api.microsofttranslator.com/v2/Http.svc/TranslateArray2")
                 .Respond("application/xml", GetResponse("Translator_TranslateEnglishToFrenchArray.xml"));
 
-            var translator = new Translator(translatorKey, mockHttp.ToHttpClient());
+            var translator = new Translator(_translatorKey, mockHttp.ToHttpClient());
 
             var sentences = new string[] { "Hello", "Good bye" };
             var translatedSentences = await translator.TranslateArrayAsync(sentences, "en", "fr");
@@ -178,7 +177,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
             mockHttp.When(HttpMethod.Get, GetRequestTranslate("Arrange an appointment for tomorrow", "na", "de"))
                 .Respond(HttpStatusCode.BadRequest, "application/xml", GetResponse("Translator_InvalidSourceLanguage.xml"));
 
-            Translator translator = new Translator(translatorKey, mockHttp.ToHttpClient());
+            Translator translator = new Translator(_translatorKey, mockHttp.ToHttpClient());
 
             var sentence = "Arrange an appointment for tomorrow";
             await Assert.ThrowsExceptionAsync<ArgumentException>(async () =>
@@ -196,7 +195,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
             mockHttp.When(HttpMethod.Get, GetRequestTranslate("Arrange an appointment for tomorrow", "en", "na"))
                 .Respond(HttpStatusCode.BadRequest, "application/xml", GetResponse("Translator_InvalidTargetLanguage.xml"));
 
-            Translator translator = new Translator(translatorKey, mockHttp.ToHttpClient());
+            Translator translator = new Translator(_translatorKey, mockHttp.ToHttpClient());
 
             var sentence = "Arrange an appointment for tomorrow";
             await Assert.ThrowsExceptionAsync<ArgumentException>(async () =>

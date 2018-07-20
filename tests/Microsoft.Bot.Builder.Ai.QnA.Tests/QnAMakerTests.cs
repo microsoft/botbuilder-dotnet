@@ -4,9 +4,7 @@
 using System;
 using System.IO;
 using System.Net.Http;
-using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Tests;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RichardSzalay.MockHttp;
 
@@ -15,9 +13,9 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
     [TestClass]
     public class QnAMakerTests
     {
-        public readonly string knowlegeBaseId = TestUtilities.GetKey("QNAKNOWLEDGEBASEID") ?? "dummy-id";
-        public readonly string endpointKey = TestUtilities.GetKey("QNAENDPOINTKEY") ?? "dummy-key";
-        public readonly string hostname = TestUtilities.GetKey("QNAHOSTNAME") ?? "https://dummy-hostname.azurewebsites.net/qnamaker";
+        private const string _knowlegeBaseId = "dummy-id";
+        private const string _endpointKey = "dummy-key";
+        private const string _hostname = "https://dummy-hostname.azurewebsites.net/qnamaker";
 
         [TestMethod]
         [TestCategory("AI")]
@@ -31,9 +29,9 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
             var qna = GetQnAMaker(mockHttp,
                 new QnAMakerEndpoint
                 {
-                    KnowledgeBaseId = knowlegeBaseId,
-                    EndpointKey = endpointKey,
-                    Host = hostname
+                    KnowledgeBaseId = _knowlegeBaseId,
+                    EndpointKey = _endpointKey,
+                    Host = _hostname
                 },
                 new QnAMakerOptions
                 {
@@ -58,9 +56,9 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
             var qna = GetQnAMaker(mockHttp,
                 new QnAMakerEndpoint
                 {
-                    KnowledgeBaseId = knowlegeBaseId,
-                    EndpointKey = endpointKey,
-                    Host = hostname
+                    KnowledgeBaseId = _knowlegeBaseId,
+                    EndpointKey = _endpointKey,
+                    Host = _hostname
                 },
                 new QnAMakerOptions
                 {
@@ -82,9 +80,9 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
             var qna = new QnAMaker(
                 new QnAMakerEndpoint
                 {
-                    KnowledgeBaseId = knowlegeBaseId,
-                    EndpointKey = endpointKey,
-                    Host = hostname
+                    KnowledgeBaseId = _knowlegeBaseId,
+                    EndpointKey = _endpointKey,
+                    Host = _hostname
                 },
                 new QnAMakerOptions
                 {
@@ -102,9 +100,9 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
             var qna = new QnAMaker(
                 new QnAMakerEndpoint
                 {
-                    KnowledgeBaseId = knowlegeBaseId,
-                    EndpointKey = endpointKey,
-                    Host = hostname
+                    KnowledgeBaseId = _knowlegeBaseId,
+                    EndpointKey = _endpointKey,
+                    Host = _hostname
                 },
                 new QnAMakerOptions
                 {
@@ -112,17 +110,10 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
                     ScoreThreshold = 0.5F
                 });
         }
-
-        private bool EnvironmentVariablesDefined()
-        {
-            return TestUtilities.GetKey("QNAKNOWLEDGEBASEID") != null
-                && TestUtilities.GetKey("QNAENDPOINTKEY") != null
-                && TestUtilities.GetKey("QNAHOSTNAME") != null;
-        }
-
+        
         private string GetRequestUrl()
         {
-            return $"{hostname}/knowledgebases/{knowlegeBaseId}/generateanswer";
+            return $"{_hostname}/knowledgebases/{_knowlegeBaseId}/generateanswer";
         }
 
         private Stream GetResponse(string fileName)
@@ -133,11 +124,7 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
 
         private QnAMaker GetQnAMaker(HttpMessageHandler messageHandler, QnAMakerEndpoint endpoint, QnAMakerOptions options = null)
         {
-            HttpClient client = null;
-            if (!EnvironmentVariablesDefined())
-            {
-                client = new HttpClient(messageHandler);
-            }
+            var client = new HttpClient(messageHandler);
             return new QnAMaker(endpoint, options, client);
         }
     }

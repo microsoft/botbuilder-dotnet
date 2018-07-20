@@ -8,7 +8,6 @@ using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Tests;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -22,9 +21,9 @@ namespace Microsoft.Bot.Builder.Ai.LUIS.Tests
     //
     public class LuisRecognizerTests
     {
-        private readonly string _luisAppId = TestUtilities.GetKey("LUISAPPID") ?? "dummy-app-id";
-        private readonly string _subscriptionKey = TestUtilities.GetKey("LUISAPPKEY") ?? "dummy-subscription-key";
-        private readonly string _luisUriBase = TestUtilities.GetKey("LUISURIBASE") ?? "https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/";
+        private const string _luisAppId = "dummy-app-id";
+        private const string _subscriptionKey = "dummy-subscription-key";
+        private const string _luisUriBase = "https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/";
 
         [TestMethod]
         public async Task SingleIntent_SimplyEntity()
@@ -394,33 +393,16 @@ namespace Microsoft.Bot.Builder.Ai.LUIS.Tests
             Assert.IsTrue(score >= 0);
             Assert.IsTrue(score <= 1);
         }
-
-        private bool EnvironmentVariablesDefined()
-        {
-            return TestUtilities.GetKey("LUISAPPID") != null
-                && TestUtilities.GetKey("LUISAPPKEY") != null
-                && TestUtilities.GetKey("LUISURIBASE") != null;
-        }
-
+        
         private IRecognizer GetLuisRecognizer(HttpMessageHandler messageHandler, bool verbose = false, ILuisOptions luisOptions = null)
         {
-            return GetLuisRecognizer(verbose, luisOptions, messageHandler);
-        }
-
-        private IRecognizer GetLuisRecognizer(bool verbose = false, ILuisOptions luisOptions = null, HttpMessageHandler messageHandler = null)
-        {
-            HttpClient client = null;
-            if (!EnvironmentVariablesDefined())
-            {
-                client = new HttpClient(messageHandler);
-            }
-
+            var client = new HttpClient(messageHandler);
             var luisRecognizerOptions = new LuisRecognizerOptions { Verbose = verbose };
             var luisModel = new LuisModel(_luisAppId, _subscriptionKey, new Uri(_luisUriBase), LuisApiVersion.V2);
-            
+
             return new LuisRecognizer(luisModel, luisRecognizerOptions, luisOptions, client);
         }
-
+        
         private string GetRequestUrl(string query)
         {
             return $"{_luisUriBase}{_luisAppId}?{query}";
