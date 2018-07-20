@@ -8,7 +8,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime;
 using Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime.Models;
-using Microsoft.Bot.Builder;
+using Microsoft.Bot.Builder.TraceExtensions;
+using Microsoft.Bot.Schema;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Ai.Luis
@@ -20,38 +21,48 @@ namespace Microsoft.Bot.Builder.Ai.Luis
     public class LuisRecognizer : IRecognizer
     {
         private const string MetadataKey = "$instance";
-        private readonly LuisRuntimeAPI runtime;
-        private readonly LuisApplication application;
-        private readonly LuisPredictionOptions options;
-        private readonly bool includeAPIResults;
+        private readonly LuisRuntimeAPI _runtime;
+        private readonly LuisApplication _application;
+        private readonly LuisPredictionOptions _options;
+        private readonly bool _includeApiResults;
+
+        /// <summary>
+        /// The value type for a LUIS trace activity.
+        /// </summary>
+        public const string LuisTraceType = "https://www.luis.ai/schemas/trace";
+
+        /// <summary>
+        /// The context label for a LUIS trace activity.
+        /// </summary>
+        public const string LuisTraceLabel = "Luis Trace";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LuisRecognizer"/> class.
         /// </summary>
         /// <param name="application">The LUIS application to use to recognize text.</param>
         /// <param name="predictionOptions">The LUIS prediction options to use.</param>
-        /// <param name="includeAPIResults">TRUE to include raw LUIS API response.</param>
-        public LuisRecognizer(LuisApplication application, LuisPredictionOptions predictionOptions = null, bool includeAPIResults = false)
+        /// <param name="includeApiResults">TRUE to include raw LUIS API response.</param>
+        public LuisRecognizer(LuisApplication application, LuisPredictionOptions predictionOptions = null, bool includeApiResults = false)
         {
-            runtime = new LuisRuntimeAPI(new ApiKeyServiceClientCredentials(application.SubscriptionKey))
+            _runtime = new LuisRuntimeAPI(new ApiKeyServiceClientCredentials(application.SubscriptionKey))
             {
                 AzureRegion = (AzureRegions)Enum.Parse(typeof(AzureRegions), application.AzureRegion),
             };
-            this.application = application;
-            this.options = predictionOptions ?? new LuisPredictionOptions();
-            this.includeAPIResults = includeAPIResults;
+            _application = application;
+            _options = predictionOptions ?? new LuisPredictionOptions();
+            _includeApiResults = includeApiResults;
         }
 
         /// <inheritdoc />
-        public async Task<RecognizerResult> RecognizeAsync(string utterance, CancellationToken ct)
-            => await RecognizeInternalAsync(utterance, ct).ConfigureAwait(false);
+        public async Task<RecognizerResult> RecognizeAsync(TurnContext context, CancellationToken ct)
+            => await RecognizeInternalAsync(context, ct).ConfigureAwait(false);
 
         /// <inheritdoc />
-        public async Task<T> RecognizeAsync<T>(string utterance, CancellationToken ct)
+        public async Task<T> RecognizeAsync<T>(TurnContext context, CancellationToken ct)
             where T : IRecognizerConvert, new()
         {
             var result = new T();
-            result.Convert(await RecognizeInternalAsync(utterance, ct).ConfigureAwait(false));
+            result.Convert(await RecognizeInternalAsync(context, ct).ConfigureAwait(false));
             return result;
         }
 
@@ -316,22 +327,31 @@ namespace Microsoft.Bot.Builder.Ai.Luis
             }
         }
 
-        private async Task<RecognizerResult> RecognizeInternalAsync(string utterance, CancellationToken ct)
+        private async Task<RecognizerResult> RecognizeInternalAsync(TurnContext context, CancellationToken ct)
         {
-            if (string.IsNullOrEmpty(utterance))
+            BotAssert.ContextNotNull(context);
+
+            if (context.Activity.Type != ActivityTypes.Message)
+            {
+                return null;
+            }
+
+            var utterance = context.Activity?.AsMessageActivity()?.Text;
+
+            if (string.IsNullOrWhiteSpace(utterance))
             {
                 throw new ArgumentNullException(nameof(utterance));
             }
 
-            var luisResult = await runtime.Prediction.ResolveAsync(
-                application.ApplicationId,
+            var luisResult = await _runtime.Prediction.ResolveAsync(
+                _application.ApplicationId,
                 utterance,
-                timezoneOffset: options.TimezoneOffset,
-                verbose: options.Verbose,
-                staging: options.Staging,
-                spellCheck: options.SpellCheck,
-                bingSpellCheckSubscriptionKey: options.BingSpellCheckSubscriptionKey,
-                log: options.Log,
+                timezoneOffset: _options.TimezoneOffset,
+                verbose: _options.Verbose,
+                staging: _options.Staging,
+                spellCheck: _options.SpellCheck,
+                bingSpellCheckSubscriptionKey: _options.BingSpellCheckSubscriptionKey,
+                log: _options.Log,
                 cancellationToken: ct)
                 .ConfigureAwait(false);
             var recognizerResult = new RecognizerResult
@@ -339,14 +359,23 @@ namespace Microsoft.Bot.Builder.Ai.Luis
                 Text = utterance,
                 AlteredText = luisResult.AlteredQuery,
                 Intents = GetIntents(luisResult),
-                Entities = ExtractEntitiesAndMetadata(luisResult.Entities, luisResult.CompositeEntities, options.IncludeInstanceData ?? true),
+                Entities = ExtractEntitiesAndMetadata(luisResult.Entities, luisResult.CompositeEntities, _options.IncludeInstanceData ?? true),
             };
             AddProperties(luisResult, recognizerResult);
-            if (includeAPIResults)
+            if (_includeApiResults)
             {
                 recognizerResult.Properties.Add("luisResult", luisResult);
             }
 
+            var traceInfo = new LuisTraceInfo
+            {
+                RecognizerResult = recognizerResult,
+                Application = _application,
+                LuisResult = luisResult,
+                Options = _options,
+            };
+
+            await context.TraceActivityAsync("LuisRecognizerMiddleware", traceInfo, LuisTraceType, LuisTraceLabel, ct).ConfigureAwait(false);
             return recognizerResult;
         }
     }
