@@ -6,7 +6,6 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Tests;
 using Microsoft.Bot.Schema;
@@ -307,17 +306,19 @@ namespace Microsoft.Bot.Builder.Ai.Luis.Tests
                     Assert.AreEqual(LuisRecognizer.LuisTraceType, traceActivity.ValueType);
                     Assert.AreEqual(LuisRecognizer.LuisTraceLabel, traceActivity.Label);
 
-                    var luisTraceInfo = traceActivity.Value as LuisTraceInfo;
+                    var luisTraceInfo = JObject.FromObject(traceActivity.Value);
                     Assert.IsNotNull(luisTraceInfo);
-                    Assert.IsNotNull(luisTraceInfo.RecognizerResult);
-                    Assert.IsNotNull(luisTraceInfo.LuisResult);
-                    Assert.IsNotNull(luisTraceInfo.Options);
-                    Assert.IsNotNull(luisTraceInfo.Application);
+                    Assert.IsNotNull(luisTraceInfo["recognizerResult"]);
+                    Assert.IsNotNull(luisTraceInfo["luisResult"]);
+                    Assert.IsNotNull(luisTraceInfo["luisOptions"]);
+                    Assert.IsNotNull(luisTraceInfo["luisModel"]);
 
-                    Assert.AreEqual(luisTraceInfo.RecognizerResult.Text, utterance);
-                    Assert.IsNotNull(luisTraceInfo.RecognizerResult.Intents["SpecifyName"]);
-                    Assert.AreEqual(luisTraceInfo.LuisResult.Query, utterance);
-                    Assert.AreEqual(luisTraceInfo.Application.ApplicationId, appId);
+                    var recognizerResult = luisTraceInfo["recognizerResult"].ToObject<RecognizerResult>();
+                    Assert.AreEqual(recognizerResult.Text, utterance);
+                    Assert.IsNotNull(recognizerResult.Intents["SpecifyName"]);
+                    Assert.AreEqual(luisTraceInfo["luisResult"]["query"], utterance);
+                    Assert.AreEqual(luisTraceInfo["luisModel"]["ModelID"], appId);
+                    Assert.AreEqual(luisTraceInfo["luisOptions"]["Staging"], default(bool?));
 
                 }, "luisTraceInfo")
                 .Send(utterance)
