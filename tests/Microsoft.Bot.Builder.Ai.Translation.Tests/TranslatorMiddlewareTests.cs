@@ -9,7 +9,6 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Builder.Tests;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RichardSzalay.MockHttp;
@@ -19,7 +18,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
     [TestClass]
     public class TranslatorMiddlewareTests
     {
-        public string translatorKey = TestUtilities.GetKey("TRANSLATORKEY") ?? "dummy-key";
+        private const string _translatorKey = "dummy-key";
 
         [TestMethod]
         [TestCategory("AI")]
@@ -55,7 +54,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
                 .Respond("application/xml", GetResponse("SpecializedTranslator_Tomorrow.xml"));
 
             var adapter = new TestAdapter(sendTraceActivity: true)
-                .Use(new SpecializedTranslatorMiddleware(new[] {"en-us"}, translatorKey, mockHttp.ToHttpClient()));
+                .Use(new SpecializedTranslatorMiddleware(new[] {"en-us"}, _translatorKey, mockHttp.ToHttpClient()));
 
             await new TestFlow(adapter, context =>
                 {
@@ -93,7 +92,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
                 .Respond("application/xml", GetResponse("TranslatorMiddleware_DetectAndTranslateToEnglish_Hi.xml"));
 
             var adapter = new TestAdapter()
-                .Use(new TranslationMiddleware(new[] {"en-us"}, translatorKey, httpClient: mockHttp.ToHttpClient()));
+                .Use(new TranslationMiddleware(new[] {"en-us"}, _translatorKey, httpClient: mockHttp.ToHttpClient()));
 
             await new TestFlow(adapter, context =>
                 {
@@ -127,7 +126,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
 
             var adapter = new TestAdapter()
                 .Use(new UserState<LanguageState>(new MemoryStorage()))
-                .Use(new TranslationMiddleware(new[] {"en-us"}, translatorKey, new Dictionary<string, List<string>>(), new CustomDictionary(), GetActiveLanguage, SetActiveLanguage, httpClient: mockHttp.ToHttpClient()));
+                .Use(new TranslationMiddleware(new[] {"en-us"}, _translatorKey, new Dictionary<string, List<string>>(), new CustomDictionary(), GetActiveLanguage, SetActiveLanguage, httpClient: mockHttp.ToHttpClient()));
 
             await new TestFlow(adapter, context =>
                 {
@@ -166,7 +165,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
 
             var adapter = new TestAdapter()
                 .Use(new UserState<LanguageState>(new MemoryStorage()))
-                .Use(new TranslationMiddleware(new[] {"en-us"}, translatorKey, new Dictionary<string, List<string>>(), new CustomDictionary(), GetActiveLanguage, SetActiveLanguage, true, mockHttp.ToHttpClient()));
+                .Use(new TranslationMiddleware(new[] {"en-us"}, _translatorKey, new Dictionary<string, List<string>>(), new CustomDictionary(), GetActiveLanguage, SetActiveLanguage, true, mockHttp.ToHttpClient()));
 
             await new TestFlow(adapter, context =>
                 {
@@ -241,11 +240,6 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
             }
 
             return "en";
-        }
-
-        private bool EnvironmentVariablesDefined()
-        {
-            return translatorKey != null;
         }
     }
 

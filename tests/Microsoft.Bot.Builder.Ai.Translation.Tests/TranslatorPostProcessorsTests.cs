@@ -7,7 +7,6 @@ using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Ai.Translation.PostProcessor;
-using Microsoft.Bot.Builder.Tests;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RichardSzalay.MockHttp;
 
@@ -16,7 +15,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
     [TestClass]
     public class TranslatorPostProcessorsTests
     {
-        public string translatorKey = TestUtilities.GetKey("TRANSLATORKEY") ?? "dummy-key";
+        private const string _translatorKey = "dummy-key";
 
         [TestMethod]
         [TestCategory("AI")]
@@ -51,7 +50,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
             mockHttp.When(HttpMethod.Post, @"https://api.microsofttranslator.com/v2/Http.svc/TranslateArray2")
                 .Respond("application/xml", GetResponse("Translator_PatternsTest_EmptyLanguagePatternsData.xml"));
 
-            var translator = new Translator(translatorKey, mockHttp.ToHttpClient());
+            var translator = new Translator(_translatorKey, mockHttp.ToHttpClient());
             //using an empty language list won't throw an exception, but it won't affect the post processing for this language
             var patterns = new Dictionary<string, List<string>>();
             var spanishPatterns = new List<string>();
@@ -80,7 +79,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
             mockHttp.When(HttpMethod.Post, @"https://api.microsofttranslator.com/v2/Http.svc/TranslateArray2")
                 .Respond("application/xml", GetResponse("Translator_PatternsTest_FrenchPatterns.xml"));
 
-            var translator = new Translator(translatorKey, mockHttp.ToHttpClient());
+            var translator = new Translator(_translatorKey, mockHttp.ToHttpClient());
             var patterns = new Dictionary<string, List<string>>();
             var frenchPatterns = new List<string> { "mon nom est (.+)" };
             patterns.Add("fr", frenchPatterns);
@@ -108,7 +107,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
             mockHttp.When(HttpMethod.Post, @"https://api.microsofttranslator.com/v2/Http.svc/TranslateArray2")
                 .Respond("application/xml", GetResponse("Translator_PatternsTest_FrenchPatternsWithMultipleSpaces.xml"));
 
-            var translator = new Translator(translatorKey, mockHttp.ToHttpClient());
+            var translator = new Translator(_translatorKey, mockHttp.ToHttpClient());
             var patterns = new Dictionary<string, List<string>>();
             var frenchPatterns = new List<string> { "mon nom est (.+)" };
             patterns.Add("fr", frenchPatterns);
@@ -137,7 +136,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
             mockHttp.When(HttpMethod.Post, @"https://api.microsofttranslator.com/v2/Http.svc/TranslateArray2")
                 .Respond("application/xml", GetResponse("Translator_PatternsTest_FrenchPatternsWithNumbers.xml"));
 
-            var translator = new Translator(translatorKey, mockHttp.ToHttpClient());
+            var translator = new Translator(_translatorKey, mockHttp.ToHttpClient());
             var patterns = new Dictionary<string, List<string>>();
             var frenchPatterns = new List<string> { "mon nom est (.+)" };
             patterns.Add("fr", frenchPatterns);
@@ -166,7 +165,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
             mockHttp.When(HttpMethod.Post, @"https://api.microsofttranslator.com/v2/Http.svc/TranslateArray2")
                 .Respond("application/xml", GetResponse("Translator_PatternsTest_SpanishPatterns.xml"));
 
-            Translator translator = new Translator(translatorKey, mockHttp.ToHttpClient());
+            Translator translator = new Translator(_translatorKey, mockHttp.ToHttpClient());
             Dictionary<string, List<string>> patterns = new Dictionary<string, List<string>>();
             List<string> spanishPatterns = new List<string> { "perr[oa]" };
             patterns.Add("es", spanishPatterns);
@@ -203,7 +202,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
             mockHttp.When(HttpMethod.Post, @"https://api.microsofttranslator.com/v2/Http.svc/TranslateArray2")
                 .Respond("application/xml", GetResponse("Translator_PatternsTest_EmptyCustomLanguageDictionaryData.xml"));
 
-            var translator = new Translator(translatorKey, mockHttp.ToHttpClient());
+            var translator = new Translator(_translatorKey, mockHttp.ToHttpClient());
             var userCustomDictonaries = new CustomDictionary();
             IPostProcessor customDictionaryPostProcessor = new CustomDictionaryPostProcessor(userCustomDictonaries);
 
@@ -227,7 +226,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
             mockHttp.When(HttpMethod.Post, @"https://api.microsofttranslator.com/v2/Http.svc/TranslateArray2")
                 .Respond("application/xml", GetResponse("Translator_DictionaryTest_FrenchDictionary.xml"));
 
-            Translator translator = new Translator(translatorKey, mockHttp.ToHttpClient());
+            Translator translator = new Translator(_translatorKey, mockHttp.ToHttpClient());
 
             CustomDictionary userCustomDictonary = new CustomDictionary();
             Dictionary<string, string> frenctDictionary = new Dictionary<string, string>
@@ -259,7 +258,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
             mockHttp.When(HttpMethod.Post, @"https://api.microsofttranslator.com/v2/Http.svc/TranslateArray2")
                 .Respond("application/xml", GetResponse("Translator_DictionaryTest_ItalianDictionary.xml"));
 
-            var translator = new Translator(translatorKey, mockHttp.ToHttpClient());
+            var translator = new Translator(_translatorKey, mockHttp.ToHttpClient());
 
             var userCustomDictonary = new CustomDictionary();
 
@@ -294,7 +293,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
             mockHttp.When(HttpMethod.Post, @"https://api.microsofttranslator.com/v2/Http.svc/TranslateArray2")
                 .Respond("application/xml", GetResponse("Translator_PatternsAndDictionaryTest.xml"));
 
-            var translator = new Translator(translatorKey, mockHttp.ToHttpClient());
+            var translator = new Translator(_translatorKey, mockHttp.ToHttpClient());
             
             //creating the patterns post processor
             var attachedPostProcessors = new List<IPostProcessor>();
