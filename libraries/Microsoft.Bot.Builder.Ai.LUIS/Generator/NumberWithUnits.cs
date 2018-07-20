@@ -27,12 +27,18 @@ namespace Microsoft.Bot.Builder.Ai.Luis
         /// <summary>
         /// Gets or sets recognized number, or null if unit only.
         /// </summary>
+        /// <value>
+        /// Recognized number, or null if unit only.
+        /// </value>
         [JsonProperty("number")]
         public double? Number { get; set; }
 
         /// <summary>
         /// Gets or sets normalized recognized unit.
         /// </summary>
+        /// <value>
+        /// Normalized recognized unit.
+        /// </value>
         [JsonProperty("units")]
         public string Units { get; set; }
     }
