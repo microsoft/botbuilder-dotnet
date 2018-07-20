@@ -352,8 +352,8 @@ namespace Microsoft.Bot.Builder.Ai.Luis
                 spellCheck: options.SpellCheck,
                 bingSpellCheckSubscriptionKey: options.BingSpellCheckSubscriptionKey,
                 log: options.Log,
-                cancellationToken: ct)
-                .ConfigureAwait(false);
+                cancellationToken: ct).ConfigureAwait(false);
+
             var recognizerResult = new RecognizerResult
             {
                 Text = utterance,
@@ -367,13 +367,17 @@ namespace Microsoft.Bot.Builder.Ai.Luis
                 recognizerResult.Properties.Add("luisResult", luisResult);
             }
 
-            var traceInfo = new LuisTraceInfo
-            {
-                RecognizerResult = recognizerResult,
-                Application = application,
-                LuisResult = luisResult,
-                Options = options,
-            };
+            var traceInfo = JObject.FromObject(
+                new
+                {
+                    recognizerResult,
+                    luisModel = new
+                    {
+                        ModelID = application.ApplicationId,
+                    },
+                    luisOptions = options,
+                    luisResult,
+                });
 
             await context.TraceActivityAsync("LuisRecognizer", traceInfo, LuisTraceType, LuisTraceLabel, ct).ConfigureAwait(false);
             return recognizerResult;
