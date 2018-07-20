@@ -29,10 +29,10 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
         /// <param name="luisModel">The LUIS model to use to recognize text.</param>
         /// <param name="luisRecognizerOptions">The LUIS recognizer options to use.</param>
         /// <param name="options">The LUIS request options to use.</param>
-        /// <param name="customHttpClient">an optional alternate HttpClient.</param>
-        public LuisRecognizer(ILuisModel luisModel, ILuisRecognizerOptions luisRecognizerOptions = null, ILuisOptions options = null, HttpClient customHttpClient = null)
+        /// <param name="httpClient">an optional alternate HttpClient.</param>
+        public LuisRecognizer(ILuisModel luisModel, ILuisRecognizerOptions luisRecognizerOptions = null, ILuisOptions options = null, HttpClient httpClient = null)
         {
-            _luisService = new LuisService(luisModel, customHttpClient);
+            _luisService = new LuisService(luisModel, httpClient);
             _luisOptions = options ?? new LuisRequest();
             _luisRecognizerOptions = luisRecognizerOptions ?? new LuisRecognizerOptions { Verbose = true };
         }
