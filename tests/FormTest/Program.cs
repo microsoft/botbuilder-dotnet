@@ -97,7 +97,7 @@ namespace Microsoft.Bot.Builder.Classic.FormFlowTest
             // But you don't have to reboot.
             // If you don't want the multi-lingual support just comment this out
             Console.OutputEncoding = Encoding.GetEncoding(65001);
-            var message = new Activity()
+            var message = new MessageActivity
             {
                 From = new ChannelAccount { Id = "ConsoleUser" },
                 Conversation = new ConversationAccount { Id = Guid.NewGuid().ToString() },

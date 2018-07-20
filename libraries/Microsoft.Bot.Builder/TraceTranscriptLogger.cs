@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Builder
         /// </summary>
         /// <param name="activity">The activity to transcribe.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
-        public Task LogActivityAsync(IActivity activity)
+        public Task LogActivityAsync(Activity activity)
         {
             BotAssert.ActivityNotNull(activity);
             Trace.TraceInformation(JsonConvert.SerializeObject(activity, serializationSettings));

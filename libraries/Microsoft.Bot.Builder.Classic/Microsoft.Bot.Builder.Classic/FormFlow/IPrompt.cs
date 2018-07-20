@@ -245,7 +245,7 @@ namespace Microsoft.Bot.Builder.Classic.FormFlow.Advanced
         /// <param name="preamble">Simple text message with all except last line of prompt to allow markdown in prompts.</param>
         /// <param name="promptMessage">Message with prompt definition including cards.</param>
         /// <returns>True if preamble should be sent.</returns>
-        public static bool GenerateMessages(this FormPrompt prompt, IMessageActivity preamble, IMessageActivity promptMessage)
+        public static bool GenerateMessages(this FormPrompt prompt, MessageActivity preamble, MessageActivity promptMessage)
         {
             var promptCopy = (FormPrompt) prompt.Clone();
             bool hasPreamble = false;

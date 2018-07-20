@@ -224,7 +224,7 @@ namespace Microsoft.Bot.Builder.Classic.Scorables.Internals
                     return true;
                 }
 
-                // i.e. for IActivity
+                // i.e. for Activity
                 return base.TryResolve(type, tag, out value);
             }
         }
@@ -242,7 +242,7 @@ namespace Microsoft.Bot.Builder.Classic.Scorables.Internals
 
         protected override async Task<Scope> PrepareAsync(IResolver resolver, CancellationToken token)
         {
-            IMessageActivity message;
+            MessageActivity message;
             if (!resolver.TryResolve(null, out message))
             {
                 return null;

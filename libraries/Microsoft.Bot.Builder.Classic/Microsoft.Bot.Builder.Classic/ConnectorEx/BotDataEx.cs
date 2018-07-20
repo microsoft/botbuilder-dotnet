@@ -396,10 +396,10 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs.Internals
         private readonly IBotData inner;
         private readonly IDialogTaskManager dialogTaskManager;
         private readonly ILocaleFinder localeFinder;
-        private readonly IActivity activity;
+        private readonly Activity activity;
 
 
-        public DialogTaskManagerBotDataLoader(IBotData inner, IDialogTaskManager dialogTaskManager, IActivity activity, ILocaleFinder localeFinder)
+        public DialogTaskManagerBotDataLoader(IBotData inner, IDialogTaskManager dialogTaskManager, Activity activity, ILocaleFinder localeFinder)
         {
             SetField.NotNull(out this.inner, nameof(inner), inner);
             SetField.NotNull(out this.dialogTaskManager, nameof(dialogTaskManager), dialogTaskManager);

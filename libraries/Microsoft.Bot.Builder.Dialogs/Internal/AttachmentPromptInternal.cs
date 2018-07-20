@@ -33,13 +33,12 @@ namespace Microsoft.Bot.Builder.Dialogs
             BotAssert.ActivityNotNull(context.Activity);
 
             var attachmentResult = new AttachmentResult();
-            if (context.Activity.Type == ActivityTypes.Message)
+            if (context.Activity is MessageActivity messageActivity)
             {
-                IMessageActivity message = context.Activity.AsMessageActivity();
-                if (message.Attachments != null)
+                if (messageActivity.Attachments != null)
                 {
                     attachmentResult.Status = PromptStatus.Recognized;
-                    attachmentResult.Attachments.AddRange(message.Attachments);
+                    attachmentResult.Attachments.AddRange(messageActivity.Attachments);
                     await Validate(context, attachmentResult);
                 }
             }

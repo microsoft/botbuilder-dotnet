@@ -203,6 +203,6 @@ namespace Microsoft.Bot.Builder.Classic.FormFlow.Advanced
         /// <param name="input">The input activity being matched.</param>
         /// <param name="defaultValue">The default value or null if none.</param>
         /// <returns>Match records.</returns>
-        IEnumerable<TermMatch> Matches(IMessageActivity input, object defaultValue = null);
+        IEnumerable<TermMatch> Matches(MessageActivity input, object defaultValue = null);
     }
 }

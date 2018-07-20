@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Serialization;
 using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Handlers
@@ -14,12 +15,12 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Handlers
     {
         public static readonly string RouteName = "BotFramework - Proactive Message Handler";
 
-        public BotProactiveMessageHandler(BotFrameworkAdapter botFrameworkAdapter)
-            : base(botFrameworkAdapter)
+        public BotProactiveMessageHandler(BotFrameworkAdapter botFrameworkAdapter, IActivitySerializer activitySerializer) 
+            : base(botFrameworkAdapter, activitySerializer)
         {
         }
 
-        protected override async Task<InvokeResponse> ProcessMessageRequestAsync(HttpRequestMessage request, BotFrameworkAdapter botFrameworkAdapter, Func<ITurnContext, Task> botCallbackHandler, CancellationToken cancellationToken)
+        protected override async Task<InvokeResponse> ProcessMessageRequestAsync(HttpRequestMessage request, Func<ITurnContext, Task> botCallbackHandler, CancellationToken cancellationToken)
         {
             const string BotAppIdHttpHeaderName = "MS-BotFramework-BotAppId";
             const string BotAppIdQueryStringParameterName = "BotAppId";
@@ -43,9 +44,9 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Handlers
                 throw new InvalidOperationException($"Expected a Bot App ID in a header named \"{BotAppIdHttpHeaderName}\" or in a querystring parameter named \"{BotAppIdQueryStringParameterName}\".");
             }
 
-            var conversationReference = await request.Content.ReadAsAsync<ConversationReference>(BotMessageHandlerBase.BotMessageMediaTypeFormatters, cancellationToken);
+            var conversationReference = await request.Content.ReadAsAsync<ConversationReference>(BotMessageMediaTypeFormatters, cancellationToken);
 
-            await botFrameworkAdapter.ContinueConversationAsync(botAppId, conversationReference, botCallbackHandler, cancellationToken);
+            await BotFrameworkAdapter.ContinueConversationAsync(botAppId, conversationReference, botCallbackHandler, cancellationToken);
 
             return null;
         }

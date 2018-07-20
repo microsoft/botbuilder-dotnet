@@ -47,9 +47,9 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs.Internals
         private readonly IBotData botData;
         private readonly IDialogStack stack;
         private readonly CancellationToken token;
-        private readonly IActivity activity;
+        private readonly Activity activity;
 
-        public DialogContext(IBotToUser botToUser, IBotData botData, IDialogStack stack, IActivity activity, CancellationToken token)
+        public DialogContext(IBotToUser botToUser, IBotData botData, IDialogStack stack, Activity activity, CancellationToken token)
         {
             SetField.NotNull(out this.botToUser, nameof(botToUser), botToUser);
             SetField.NotNull(out this.botData, nameof(botData), botData);
@@ -82,12 +82,12 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs.Internals
             }
         }
 
-        async Task IBotToUser.PostAsync(IMessageActivity message, CancellationToken cancellationToken)
+        async Task IBotToUser.PostAsync(MessageActivity message, CancellationToken cancellationToken)
         {
             await this.botToUser.PostAsync(message, cancellationToken);
         }
 
-        IMessageActivity IBotToUser.MakeMessage()
+        MessageActivity IBotToUser.MakeMessage()
         {
             return this.botToUser.MakeMessage();
         }
@@ -147,6 +147,6 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs.Internals
 
         CancellationToken IBotContext.CancellationToken => this.token;
 
-        IActivity IBotContext.Activity => this.activity;
+        Activity IBotContext.Activity => this.activity;
     }
 }

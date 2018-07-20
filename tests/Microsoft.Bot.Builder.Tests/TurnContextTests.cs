@@ -127,7 +127,7 @@ namespace Microsoft.Bot.Builder.Tests
             var message1 = TestMessage.Message("message1");
             var message2 = TestMessage.Message("message2");
 
-            var response = await c.SendActivitiesAsync(new IActivity[] { message1, message2 } );
+            var response = await c.SendActivitiesAsync(new Activity[] { message1, message2 } );
 
             Assert.IsTrue(c.Responded);
             Assert.IsTrue(response.Length == 2);
@@ -142,7 +142,7 @@ namespace Microsoft.Bot.Builder.Tests
             var c = new TurnContext(a, new Activity());
             Assert.IsFalse(c.Responded);
 
-            var msg = TestMessage.Message().AsMessageActivity();
+            var msg = TestMessage.Message();
             await c.SendActivityAsync(msg);
             Assert.IsTrue(c.Responded);
         }
@@ -155,13 +155,13 @@ namespace Microsoft.Bot.Builder.Tests
             Assert.IsFalse(c.Responded);
 
             // Send a Trace Activity, and make sure responded is NOT set. 
-            var trace  = Activity.CreateTraceActivity("trace");            
+            var trace  = new TraceActivity { Name = "trace" };            
             await c.SendActivityAsync(trace);
             Assert.IsFalse(c.Responded);
 
             // Just to sanity check everything, send a Message and verify the 
             // responded flag IS set. 
-            var msg = TestMessage.Message().AsMessageActivity();
+            var msg = TestMessage.Message();
             await c.SendActivityAsync(msg);
             Assert.IsTrue(c.Responded);
         }
@@ -479,12 +479,14 @@ namespace Microsoft.Bot.Builder.Tests
 
         public async Task MyBotLogic(ITurnContext context)
         {
-            switch (context.Activity.AsMessageActivity().Text)
+            var messageActivity = context.Activity as MessageActivity;
+
+            switch (messageActivity.Text)
             {
                 case "count":
-                    await context.SendActivityAsync(context.Activity.CreateReply("one"));
-                    await context.SendActivityAsync(context.Activity.CreateReply("two"));
-                    await context.SendActivityAsync(context.Activity.CreateReply("three"));
+                    await context.SendActivityAsync(messageActivity.CreateReply("one"));
+                    await context.SendActivityAsync(messageActivity.CreateReply("two"));
+                    await context.SendActivityAsync(messageActivity.CreateReply("three"));
                     break;
                 case "ignore":
                     break;
@@ -492,14 +494,14 @@ namespace Microsoft.Bot.Builder.Tests
                     if (context.Responded == true)
                         throw new InvalidOperationException("Responded Is True");
 
-                    await context.SendActivityAsync(context.Activity.CreateReply("one"));
+                    await context.SendActivityAsync(messageActivity.CreateReply("one"));
 
                     if (context.Responded == false)
                         throw new InvalidOperationException("Responded Is True");
                     break;
                 default:
                     await context.SendActivityAsync(
-                        context.Activity.CreateReply($"echo:{context.Activity.Text}"));
+                        context.Activity.CreateReply($"echo:{messageActivity.Text}"));
                     break;
             }
         }

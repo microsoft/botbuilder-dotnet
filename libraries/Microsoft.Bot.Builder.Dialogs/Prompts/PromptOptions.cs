@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
             promptOptions = new PromptOptions();
             Assign(promptOptions, source, nameof(PromptString), typeof(string));
-            Assign(promptOptions, source, nameof(PromptActivity), typeof(Activity));
+            Assign(promptOptions, source, nameof(PromptActivity), typeof(MessageActivity));
             Assign(promptOptions, source, nameof(Speak), typeof(string));
             Assign(promptOptions, source, nameof(RetryPromptString), typeof(string));
             Assign(promptOptions, source, nameof(RetryPromptActivity), typeof(Activity));
@@ -55,11 +55,11 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// (Optional) Initial prompt to send the user. As Activity.
+        /// (Optional) Initial prompt to send the user. As MessageActivity.
         /// </summary>
-        public Activity PromptActivity
+        public MessageActivity PromptActivity
         {
-            get { return GetProperty<Activity>(nameof(PromptActivity)); }
+            get { return GetProperty<MessageActivity>(nameof(PromptActivity)); }
             set { this[nameof(PromptActivity)] = value; }
         }
 
@@ -82,11 +82,11 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// (Optional) Retry prompt to send the user. As Activity.
+        /// (Optional) Retry prompt to send the user. As MessageActivity.
         /// </summary>
-        public Activity RetryPromptActivity
+        public MessageActivity RetryPromptActivity
         {
-            get { return GetProperty<Activity>(nameof(RetryPromptActivity)); }
+            get { return GetProperty<MessageActivity>(nameof(RetryPromptActivity)); }
             set { this[nameof(RetryPromptActivity)] = value; }
         }
 

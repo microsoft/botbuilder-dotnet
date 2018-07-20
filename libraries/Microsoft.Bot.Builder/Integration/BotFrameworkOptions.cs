@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Serialization;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Rest.TransientFaultHandling;
 
@@ -69,5 +70,14 @@ namespace Microsoft.Bot.Builder.Integration
         /// <value>The path strings.</value>
         /// <seealso cref="BotFrameworkPaths"/>
         public BotFrameworkPaths Paths { get; set; } = new BotFrameworkPaths();
+
+
+        /// <summary>
+        /// Gets or sets an <see cref="IActivitySerializer">activity serializer implementation</see> that should be used to serialize <see cref="Activity"/>
+        /// that are sent to or received from the bot.
+        /// </summary>
+        /// <value>An <see cref="IActivitySerializer"/> that will be used for serialization.</value>
+        /// <seealso cref="JsonActivitySerializer"/>
+        public IActivitySerializer ActivitySerializer { get; set; }
     }
 }

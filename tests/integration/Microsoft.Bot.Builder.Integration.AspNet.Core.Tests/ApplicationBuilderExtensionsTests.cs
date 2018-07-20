@@ -1,10 +1,11 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
 using System;
 using FluentAssertions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Bot.Builder.Serialization;
 using Microsoft.Extensions.Options;
 using Moq;
 using Xunit;
@@ -36,6 +37,9 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
                 serviceProviderMock.Setup(sp => sp.GetService(typeof(IOptions<BotFrameworkOptions>)))
                     .Returns(botFrameworkOptionsMock.Object);
 
+                serviceProviderMock.Setup(sp => sp.GetService(typeof(IActivitySerializer)))
+                    .Returns(Mock.Of<IActivitySerializer>());
+
                 var applicationBuilderMock = new Mock<IApplicationBuilder>();
                 applicationBuilderMock.Setup(ab => ab.ApplicationServices)
                     .Returns(serviceProviderMock.Object);
@@ -65,6 +69,9 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
                 var serviceProviderMock = new Mock<IServiceProvider>();
                 serviceProviderMock.Setup(sp => sp.GetService(typeof(IOptions<BotFrameworkOptions>)))
                     .Returns(botFrameworkOptionsMock.Object);
+
+                serviceProviderMock.Setup(sp => sp.GetService(typeof(IActivitySerializer)))
+                    .Returns(Mock.Of<IActivitySerializer>());
 
                 var applicationBuilderMock = new Mock<IApplicationBuilder>();
                 applicationBuilderMock.Setup(ab => ab.ApplicationServices)

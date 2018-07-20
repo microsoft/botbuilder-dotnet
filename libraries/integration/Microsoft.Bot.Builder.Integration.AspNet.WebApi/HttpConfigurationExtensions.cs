@@ -5,6 +5,7 @@ using System;
 using System.Configuration;
 using System.Web.Http;
 using Microsoft.Bot.Builder.Integration.AspNet.WebApi.Handlers;
+using Microsoft.Bot.Builder.Serialization;
 using Microsoft.Bot.Connector.Authentication;
 
 namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
@@ -56,6 +57,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
         {
             var routes = httpConfiguration.Routes;
             var baseUrl = options.Paths.BasePath;
+            var activitySerializer = options.ActivitySerializer ?? new JsonActivitySerializer();
 
             if (options.EnableProactiveMessages)
             {
@@ -64,7 +66,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
                     baseUrl.Trim('/') + "/" + options.Paths.ProactiveMessagesPath.Trim('/'),
                     defaults: null,
                     constraints: null,
-                    handler: new BotProactiveMessageHandler(adapter));
+                    handler: new BotProactiveMessageHandler(adapter, activitySerializer));
             }
 
             routes.MapHttpRoute(
@@ -72,7 +74,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
                     baseUrl.Trim('/') + "/" + options.Paths.MessagesPath.Trim('/'),
                     defaults: null,
                     constraints: null,
-                    handler: new BotMessageHandler(adapter));
+                    handler: new BotMessageHandler(adapter, activitySerializer));
         }
 
         private static ICredentialProvider ResolveCredentialProvider(BotFrameworkOptions options)

@@ -105,9 +105,8 @@ namespace Microsoft.Bot.Builder.Classic.Tests
         /// <summary>
         /// Make a trigger activity based on the same conversation referenced by another activity.
         /// </summary>
-        public static Activity MakeTrigger(this IActivity activity, object value)
-        {
-            var trigger = new Activity(ActivityTypes.Event)
+        public static EventActivity MakeTrigger(this Activity activity, object value) =>
+            new EventActivity
             {
                 ChannelId = activity.ChannelId,
                 Conversation = activity.Conversation,
@@ -117,9 +116,6 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                 ServiceUrl = activity.ServiceUrl,
                 Value = value,
             };
-
-            return trigger;
-        }
 
         /// <summary>
         /// Exception used to signal resetting a dialog.
@@ -237,11 +233,6 @@ namespace Microsoft.Bot.Builder.Classic.Tests
             return dialog.WithScorable(scorable);
         }
 
-        public static IEventActivity MakeEvent(object @event)
-        {
-            return new Activity(ActivityTypes.Event) { Value = @event };
-        }
-
         /// <summary>
         /// Interrupt a dialog stack with a new dialog, following rules for sending interrupt and resume events.
         /// </summary>
@@ -253,7 +244,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
             }
 
             // send the interruption event
-            system.Post(MakeEvent(new InterruptDialogEvent()));
+            system.Post(new EventActivity { Value = new InterruptDialogEvent() });
             await system.PollAsync(token);
 
             var interrupter =
@@ -360,15 +351,15 @@ namespace Microsoft.Bot.Builder.Classic.Tests
 
         public interface IDataService<T>
         {
-            bool TryParse(IActivity activity, out T parsed);
+            bool TryParse(Activity activity, out T parsed);
         }
 
         public sealed class DataService : IDataService<string>
         {
             private int count;
-            bool IDataService<string>.TryParse(IActivity activity, out string parsed)
+            bool IDataService<string>.TryParse(Activity activity, out string parsed)
             {
-                var message = activity as IMessageActivity;
+                var message = activity as MessageActivity;
                 string text = message != null ? message.Text : activity.Type;
                 bool success = !string.IsNullOrWhiteSpace(text);
                 if (success)
@@ -386,7 +377,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
 
         public sealed class BotActivityLogger : IActivityLogger
         {
-            async Task IActivityLogger.LogAsync(IActivity activity)
+            async Task IActivityLogger.LogAsync(Activity activity)
             {
                 Diag.Trace.TraceInformation($"{activity.Type}: {activity.From.Id} -> {activity.Recipient.Id}");
             }
@@ -446,7 +437,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                 await context.PostAsync("Please enter an item.");
                 context.Wait(ActivityReceivedAsync);
             }
-            private async Task ActivityReceivedAsync(IDialogContext context, IAwaitable<IActivity> item)
+            private async Task ActivityReceivedAsync(IDialogContext context, IAwaitable<Activity> item)
             {
                 var activity = await item;
                 T parsed;
@@ -555,7 +546,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                 // start a modal chit chat dialog
 
                 Actions
-                .Bind(async (IBotToUser toUser, IDialogSystem system, IActivity activity, CancellationToken token) =>
+                .Bind(async (IBotToUser toUser, IDialogSystem system, Activity activity, CancellationToken token) =>
                 {
                     var dialog = new ChitChatDialog().WithCancelOnInterrupt();
 
@@ -576,7 +567,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                 // start a modal list building dialog
 
                 Actions
-                .Bind(async (IBotToUser toUser, IDialogSystem system, System.Text.RegularExpressions.Capture forward, IMessageActivity activity, IDataService<string> service, CancellationToken token) =>
+                .Bind(async (IBotToUser toUser, IDialogSystem system, System.Text.RegularExpressions.Capture forward, MessageActivity activity, IDataService<string> service, CancellationToken token) =>
                 {
                     var task = system.DialogTasks[0];
                     if (task.Frames.Any(f => f.Target is ListBuilderDialog<string>))
@@ -617,7 +608,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                 // use a trigger activity to "poke the bot" with a proactive event after some time has passed
 
                 Actions
-                .Bind(async (IBotToUser toUser, IBot bot, IMessageActivity activity, CancellationToken token) =>
+                .Bind(async (IBotToUser toUser, IBot bot, MessageActivity activity, CancellationToken token) =>
                 {
                     // make a trigger activity with the same address information
                     var @event = new TimerTriggerEvent(activity.Text);
@@ -640,7 +631,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                 // received the proactive "poke the bot" trigger activity
 
                 Actions
-                .Bind(async (IBotToUser toUser, IEventActivity trigger, TimerTriggerEvent evt, CancellationToken token) =>
+                .Bind(async (IBotToUser toUser, EventActivity trigger, TimerTriggerEvent evt, CancellationToken token) =>
                 {
                     await toUser.PostAsync($"Received a {trigger.Type} activity initiated after timer from text '{evt.Text}'.");
                 })
@@ -649,7 +640,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                 // handle a top-level conversation update activity
 
                 Actions
-                .Bind(async (IBotToUser toUser, IConversationUpdateActivity update, CancellationToken token) =>
+                .Bind(async (IBotToUser toUser, ConversationUpdateActivity update, CancellationToken token) =>
                 {
                     if (update.MembersAdded != null)
                     {
@@ -746,7 +737,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
 
                 return ordinal;
             }
-            async Task IActivityLogger.LogAsync(IActivity activity)
+            async Task IActivityLogger.LogAsync(Activity activity)
             {
                 var clone = JsonConvert.DeserializeObject<Activity>(JsonConvert.SerializeObject(activity));
                 clone.Timestamp = null;
@@ -822,7 +813,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
 
             using (var writer = File.CreateText(pathNew))
             {
-                var message = (Activity)MakeTestMessage();
+                var message = MakeTestMessage();
 
                 var bot = ExampleBot.MakeBot(MakeMockedLuisService);
                 // TODO: Microsoft.Extensions.DependencyInjection
@@ -958,7 +949,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
 
                         await task.PostAsync(toBot, CancellationToken.None);
 
-                        await AssertOutgoingActivity(scope, (toUser) =>
+                        await AssertOutgoingMessageActivity(scope, (toUser) =>
                         {
                             Assert.AreEqual("some text", toUser.Text);
                             Assert.IsNull(toUser.Speak);
@@ -991,7 +982,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
 
                         await task.PostAsync(toBot, CancellationToken.None);
 
-                        await AssertOutgoingActivity(scope, (toUser) =>
+                        await AssertOutgoingMessageActivity(scope, (toUser) =>
                         {
                             Assert.AreEqual("some text", toUser.Text);
                             Assert.AreEqual("some ssml", toUser.Speak);
@@ -1035,7 +1026,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
 
                         await task.PostAsync(toBot, CancellationToken.None);
 
-                        await AssertOutgoingActivity(scope, (toUser) =>
+                        await AssertOutgoingMessageActivity(scope, (toUser) =>
                         {
                             Assert.AreEqual("some text", toUser.Text);
                             Assert.IsNull(toUser.Speak);
@@ -1079,7 +1070,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                         var task = scope.Resolve<IPostToBot>();
                         await task.PostAsync(toBot, CancellationToken.None);
 
-                        await AssertOutgoingActivity(scope, (toUser) =>
+                        await AssertOutgoingMessageActivity(scope, (toUser) =>
                         {
                             Assert.AreEqual("some text", toUser.Text);
                             Assert.AreEqual("some ssml", toUser.Speak);
@@ -1128,7 +1119,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
 
                         await task.PostAsync(toBot, CancellationToken.None);
 
-                        await AssertOutgoingActivity(scope, (toUser) =>
+                        await AssertOutgoingMessageActivity(scope, (toUser) =>
                         {
                             Assert.AreEqual("some text", toUser.Text);
                             Assert.AreEqual(0, toUser.Attachments.Count());

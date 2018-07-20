@@ -59,7 +59,7 @@ namespace Microsoft.Bot.Builder
             try
             {
                 // If the incoming activity is a MessageActivity, start a timer to periodically send the typing activity
-                if (context.Activity.Type == ActivityTypes.Message)
+                if (context.Activity is MessageActivity)
                 {
                     cts = new CancellationTokenSource();
                     cancellationToken.Register(() => cts.Cancel());
@@ -102,15 +102,7 @@ namespace Microsoft.Bot.Builder
             }
         }
 
-        private static async Task SendTypingActivityAsync(ITurnContext context, CancellationToken cancellationToken)
-        {
-            // create a TypingActivity, associate it with the conversation and send immediately
-            var typingActivity = new Activity
-            {
-                Type = ActivityTypes.Typing,
-                RelatesTo = context.Activity.RelatesTo,
-            };
-            await context.SendActivityAsync(typingActivity, cancellationToken).ConfigureAwait(false);
-        }
+        private static Task SendTypingActivityAsync(ITurnContext context, CancellationToken cancellationToken) => 
+            context.SendActivityAsync(TypingActivity.Default, cancellationToken);
     }
 }

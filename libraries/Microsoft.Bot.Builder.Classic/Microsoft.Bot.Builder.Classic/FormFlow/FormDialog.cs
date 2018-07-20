@@ -43,6 +43,7 @@ using Microsoft.Bot.Builder.Classic.Dialogs;
 using Microsoft.Bot.Builder.Classic.FormFlow.Advanced;
 using Microsoft.Bot.Builder.Classic.Internals.Fibers;
 using Microsoft.Bot.Builder.Classic.Luis.Models;
+using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.Classic.FormFlow
 {
@@ -265,7 +266,7 @@ namespace Microsoft.Bot.Builder.Classic.FormFlow
             }
         }
 
-        public async Task MessageReceived(IDialogContext context, IAwaitable<Schema.IMessageActivity> toBot)
+        public async Task MessageReceived(IDialogContext context, IAwaitable<Schema.MessageActivity> toBot)
         {
             try
             {
@@ -362,7 +363,10 @@ namespace Microsoft.Bot.Builder.Classic.FormFlow
                                 }
                                 else if (_formState.ProcessInputs)
                                 {
-                                    message = MessageActivityHelper.BuildMessageWithText(_formState.FieldInputs.Last().Item2);
+                                    message = new MessageActivity
+                                    {
+                                        Text = _formState.FieldInputs.Last().Item2,
+                                    };
                                     lastPrompt = step.Start(context, _state, _formState);
                                 }
                                 else

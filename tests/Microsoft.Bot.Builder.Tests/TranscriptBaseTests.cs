@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
 using System;
@@ -24,9 +24,8 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
             List<Activity> activities = new List<Activity>();
             for (int i = 1; i <= count; i++)
             {
-                var activity = new Activity()
+                var activity = new MessageActivity
                 {
-                    Type = ActivityTypes.Message,
                     Timestamp = ts,
                     Id = Guid.NewGuid().ToString(),
                     Text = i.ToString(),
@@ -39,9 +38,8 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
                 activities.Add(activity);
                 ts += TimeSpan.FromMinutes(1);
 
-                activity = new Activity()
+                activity = new MessageActivity()
                 {
-                    Type = ActivityTypes.Message,
                     Timestamp = ts,
                     Id = Guid.NewGuid().ToString(),
                     Text = i.ToString(),
@@ -147,19 +145,19 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
             Assert.IsNull(pagedResult.ContinuationToken);
             Assert.AreEqual(activities.Count, pagedResult.Items.Length);
 
-            int iActivity = 0;
+            int Activity = 0;
             foreach (var result in pagedResult.Items.OrderBy(result => result.Timestamp))
             {
-                Assert.AreEqual(JsonConvert.SerializeObject(activities[iActivity++]), JsonConvert.SerializeObject(result));
+                Assert.AreEqual(JsonConvert.SerializeObject(activities[Activity++]), JsonConvert.SerializeObject(result));
             }
 
             pagedResult = await store.GetTranscriptActivitiesAsync("test", conversationId, startDate: start + TimeSpan.FromMinutes(5));
             Assert.AreEqual(activities.Count / 2, pagedResult.Items.Length);
 
-            iActivity = 5;
+            Activity = 5;
             foreach (var result in pagedResult.Items.OrderBy(result => result.Timestamp))
             {
-                Assert.AreEqual(JsonConvert.SerializeObject(activities[iActivity++]), JsonConvert.SerializeObject(result));
+                Assert.AreEqual(JsonConvert.SerializeObject(activities[Activity++]), JsonConvert.SerializeObject(result));
             }
         }
 
@@ -204,7 +202,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
                 await Task.WhenAll(group.Select(a => store.LogActivityAsync(a)));
 
             HashSet<string> seen = new HashSet<string>();
-            PagedResult<IActivity> pagedResult = null;
+            PagedResult<Activity> pagedResult = null;
             var pageSize = 0;
             do
             {
@@ -244,7 +242,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
 
             HashSet<string> seen = new HashSet<string>();
             DateTime startDate = start + TimeSpan.FromMinutes(50);
-            PagedResult<IActivity> pagedResult = null;
+            PagedResult<Activity> pagedResult = null;
             var pageSize = 0;
             do
             {

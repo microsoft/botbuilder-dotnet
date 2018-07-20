@@ -33,7 +33,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
                 {
                     if (!await ChangeLocaleRequest(context, userLocaleProperty))
                     {
-                        await context.SendActivityAsync(context.Activity.AsMessageActivity().Text);
+                        await context.SendActivityAsync((context.Activity as MessageActivity).Text);
                     }
                     return;
                 })
@@ -61,7 +61,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
                 {
                     if (!await ChangeLocaleRequest(context, userLocaleProperty))
                     {
-                        await context.SendActivityAsync(context.Activity.AsMessageActivity().Text);
+                        context.SendActivityAsync((context.Activity as MessageActivity).Text);
                     }
                     return;
                 })
@@ -89,7 +89,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
             {
                 if (!await ChangeLocaleRequest(context, userLocaleProperty))
                 {
-                    await context.SendActivityAsync(context.Activity.AsMessageActivity().Text);
+                    context.SendActivityAsync((context.Activity as MessageActivity).Text);
                 }
                 return;
             })
@@ -104,7 +104,8 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
         {
             bool changeLocale = false;//logic implemented by developper to make a signal for language changing 
             //use a specific message from user to change language
-            var messageActivity = context.Activity.AsMessageActivity();
+            var messageActivity = context.Activity as MessageActivity;
+
             if (messageActivity.Text.ToLower().StartsWith("set my locale to"))
             {
                 changeLocale = true;

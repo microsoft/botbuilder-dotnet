@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
@@ -30,7 +31,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
             var nativeLanguages = new string[] { "en-us" };
             var patterns = new Dictionary<string, List<string>>();
 
-            var activities = TranscriptUtilities.GetFromTestContext(TestContext);
+            var activities = await TranscriptUtilities.GetFromTestContextAsync(TestContext);
 
             var userState = new UserState(new MemoryStorage());
             var userLangProp = userState.CreateProperty<string>("language");
@@ -43,7 +44,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
             {
                 if (!context.Responded)
                 {
-                    await context.SendActivityAsync($"message: {context.Activity.Text}");
+                    await context.SendActivityAsync($"message: {(context.Activity as MessageActivity).Text}");
                 }
             });
 
@@ -62,7 +63,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
             var nativeLanguages = new string[] { };
             var patterns = new Dictionary<string, List<string>>();
 
-            var activities = TranscriptUtilities.GetFromTestContext(TestContext);
+            var activities = await TranscriptUtilities.GetFromTestContextAsync(TestContext);
             var userState = new UserState(new MemoryStorage());
             var userLangProp = userState.CreateProperty<string>("language");
 
@@ -74,7 +75,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
             {
                 if (!context.Responded)
                 {
-                    await context.SendActivityAsync($"message: {context.Activity.Text}");
+                    await context.SendActivityAsync($"message: {(context.Activity as MessageActivity).Text}");
                 }
             });
 
@@ -86,7 +87,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
         {
             var botLocale = "en-us";
 
-            var activities = TranscriptUtilities.GetFromTestContext(TestContext);
+            var activities = await TranscriptUtilities.GetFromTestContextAsync(TestContext);
 
             var userState = new UserState(new MemoryStorage());
             var userLangProp = userState.CreateProperty<string>("language", () => "en-us");
@@ -97,23 +98,23 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
 
             var flow = new TestFlow(adapter, async (context) =>
             {
-                if (context.Activity.Type == ActivityTypes.Message)
+                if (context.Activity is MessageActivity userMessage)
                 {
-                    var userMessage = context.Activity.Text.ToLowerInvariant();
-                    if (userMessage.StartsWith("set language "))
+                    var userMessageText = userMessage.Text;
+                    if (userMessageText.StartsWith("set language ", StringComparison.OrdinalIgnoreCase))
                     {
-                        await userLangProp.SetAsync(context, userMessage.Substring(13, 5));
+                        await userLangProp.SetAsync(context, userMessageText.Substring(13, 5));
                     }
                     else
                     {
-                        await context.SendActivityAsync($"message: {context.Activity.Text}");
+                        await context.SendActivityAsync($"message: {userMessageText}");
                     }
                 }
             });
 
             await flow.Test(activities, (expected, actual) =>
             {
-                Assert.AreEqual(expected.AsMessageActivity().Text, actual.AsMessageActivity().Text);
+                Assert.AreEqual((expected as MessageActivity).Text, (actual as MessageActivity).Text);
             }).StartTestAsync();
         }
 

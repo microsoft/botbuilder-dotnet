@@ -375,7 +375,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                         Assert.IsTrue(queue.Count > 0);
                         while (queue.Count > 0)
                         {
-                            var toUser = queue.Dequeue();
+                            var toUser = queue.Dequeue() as MessageActivity;
                             if (queue.Count > 0)
                             {
                                 Assert.IsTrue(toUser.InputHint == InputHints.IgnoringInput);
@@ -399,7 +399,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
 
                         var queue = ((TestAdapter)context.Adapter).ActiveQueue;
                         Assert.IsTrue(queue.Count == 2);
-                        var toUser = queue.Dequeue();
+                        var toUser = queue.Dequeue() as MessageActivity;
                         Assert.AreEqual("reply", toUser.Text);
                         Assert.IsTrue(toUser.InputHint == InputHints.ExpectingInput);
                     }
@@ -415,7 +415,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
 
                         var queue = ((TestAdapter)context.Adapter).ActiveQueue;
                         Assert.IsTrue(queue.Count == 1);
-                        var toUser = queue.Dequeue();
+                        var toUser = queue.Dequeue() as MessageActivity;
                         Assert.IsTrue(toUser.InputHint == InputHints.ExpectingInput);
                         Assert.IsNotNull(toUser.LocalTimestamp);
                     }
@@ -464,10 +464,10 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                         Func<IDialog<object>> MakeRoot = () => { throw new InvalidOperationException(); };
                         scope.Resolve<Func<IDialog<object>>>(TypedParameter.From(MakeRoot));
 
-                        await scope.Resolve<IPostToBot>().PostAsync(new Activity { Text = "resume" }, CancellationToken.None);
+                        await scope.Resolve<IPostToBot>().PostAsync(new MessageActivity { Text = "resume" }, CancellationToken.None);
 
                         var queue = ((TestAdapter)context.Adapter).ActiveQueue;
-                        var reply = queue.Dequeue();
+                        var reply = queue.Dequeue() as MessageActivity;
                         Assert.AreEqual("resumed!", reply.Text);
 
                         var botData = scope.Resolve<IBotData>();

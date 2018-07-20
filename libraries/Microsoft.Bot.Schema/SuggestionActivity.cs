@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Schema
 {
@@ -12,11 +13,12 @@ namespace Microsoft.Bot.Schema
     /// The activity's <see cref="Activity.ReplyToId"/> property identifies the activity being referenced.
     /// The activity's <see cref="Activity.Recipient"/> property indicates which user the suggestion is for.
     /// </remarks>
-    public interface ISuggestionActivity : IMessageActivity
+    public class SuggestionActivity : MessageActivity
     {
         /// <summary>
-        /// Indicates the sections of text in the referenced message to highlight.
+        /// Gets or sets the sections of text in the referenced message to highlight.
         /// </summary>
-        IList<TextHighlight> TextHighlights { get; set; }
+        [JsonProperty(PropertyName = "textHighlights")]
+        public IList<TextHighlight> TextHighlights { get; set; }
     }
 }

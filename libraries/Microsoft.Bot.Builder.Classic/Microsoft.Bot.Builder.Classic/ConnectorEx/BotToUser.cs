@@ -56,30 +56,30 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs.Internals
         /// <param name="message">The message for the user.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A task that represents the post operation.</returns>
-        Task PostAsync(IMessageActivity message, CancellationToken cancellationToken = default(CancellationToken));
+        Task PostAsync(MessageActivity message, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// Make a message.
         /// </summary>
         /// <returns>The new message.</returns>
-        IMessageActivity MakeMessage();
+        MessageActivity MakeMessage();
     }
 
     public sealed class NullBotToUser : IBotToUser
     {
-        private readonly IMessageActivity toBot;
-        public NullBotToUser(IMessageActivity toBot)
+        private readonly MessageActivity toBot;
+        public NullBotToUser(MessageActivity toBot)
         {
             SetField.NotNull(out this.toBot, nameof(toBot), toBot);
         }
 
-        IMessageActivity IBotToUser.MakeMessage()
+        MessageActivity IBotToUser.MakeMessage()
         {
             var toBotActivity = (Activity)this.toBot;
             return toBotActivity.CreateReply();
         }
 
-        Task IBotToUser.PostAsync(IMessageActivity message, CancellationToken cancellationToken)
+        Task IBotToUser.PostAsync(MessageActivity message, CancellationToken cancellationToken)
         {
             return Task.CompletedTask;
         }
@@ -93,12 +93,12 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs.Internals
             SetField.NotNull(out this.inner, nameof(inner), inner);
         }
 
-        IMessageActivity IBotToUser.MakeMessage()
+        MessageActivity IBotToUser.MakeMessage()
         {
             return this.inner.MakeMessage();
         }
 
-        async Task IBotToUser.PostAsync(IMessageActivity message, CancellationToken cancellationToken)
+        async Task IBotToUser.PostAsync(MessageActivity message, CancellationToken cancellationToken)
         {
             await this.inner.PostAsync(message, cancellationToken);
         }
@@ -106,21 +106,21 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs.Internals
 
     public sealed class AlwaysSendDirect_BotToUser : IBotToUser
     {
-        private readonly IMessageActivity toBot;
+        private readonly MessageActivity toBot;
         private readonly IConnectorClient client;
-        public AlwaysSendDirect_BotToUser(IMessageActivity toBot, IConnectorClient client)
+        public AlwaysSendDirect_BotToUser(MessageActivity toBot, IConnectorClient client)
         {
             SetField.NotNull(out this.toBot, nameof(toBot), toBot);
             SetField.NotNull(out this.client, nameof(client), client);
         }
 
-        IMessageActivity IBotToUser.MakeMessage()
+        MessageActivity IBotToUser.MakeMessage()
         {
             var toBotActivity = (Activity)this.toBot;
             return toBotActivity.CreateReply();
         }
 
-        async Task IBotToUser.PostAsync(IMessageActivity message, CancellationToken cancellationToken)
+        async Task IBotToUser.PostAsync(MessageActivity message, CancellationToken cancellationToken)
         {
             await this.client.Conversations.ReplyToActivityAsync((Activity)message, cancellationToken);
         }
@@ -135,13 +135,13 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs.Internals
             SetField.NotNull(out this.context, nameof(context), context);
         }
 
-        IMessageActivity IBotToUser.MakeMessage()
+        MessageActivity IBotToUser.MakeMessage()
         {
             var toBotActivity = (Activity)this.context.Activity;
             return toBotActivity.CreateReply();
         }
 
-        Task IBotToUser.PostAsync(IMessageActivity message, CancellationToken cancellationToken)
+        Task IBotToUser.PostAsync(MessageActivity message, CancellationToken cancellationToken)
         {
             // TODO, change this to context.SendActivity with M2 delta
             return this.context.Adapter.SendActivitiesAsync(this.context, new Activity[] { (Activity) message }, cancellationToken);
@@ -150,7 +150,7 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs.Internals
 
     public interface IMessageQueue
     {
-        Task QueueMessageAsync(IBotToUser botToUser, IMessageActivity message, CancellationToken token);
+        Task QueueMessageAsync(IBotToUser botToUser, MessageActivity message, CancellationToken token);
         Task DrainQueueAsync(IBotToUser botToUser, CancellationToken token);
     }
 
@@ -165,12 +165,12 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs.Internals
             SetField.NotNull(out this.inner, nameof(inner), inner);
         }
 
-        async Task IBotToUser.PostAsync(IMessageActivity message, CancellationToken cancellationToken)
+        async Task IBotToUser.PostAsync(MessageActivity message, CancellationToken cancellationToken)
         {
             await this.queue.QueueMessageAsync(inner, message, cancellationToken);
         }
 
-        IMessageActivity IBotToUser.MakeMessage()
+        MessageActivity IBotToUser.MakeMessage()
         {
             return inner.MakeMessage();
         }
@@ -178,7 +178,7 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs.Internals
 
     public sealed class InputHintQueue : IMessageQueue
     {
-        private readonly Queue<IMessageActivity> queue = new Queue<IMessageActivity>();
+        private readonly Queue<MessageActivity> queue = new Queue<MessageActivity>();
         private readonly IChannelCapability channelCapability;
         private readonly Func<IDialogStack> makeStack;
 
@@ -188,7 +188,7 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs.Internals
             SetField.NotNull(out this.makeStack, nameof(makeStack), makeStack);
         }
 
-        async Task IMessageQueue.QueueMessageAsync(IBotToUser botToUser, IMessageActivity message, CancellationToken token)
+        async Task IMessageQueue.QueueMessageAsync(IBotToUser botToUser, MessageActivity message, CancellationToken token)
         {
             // This assumes that if InputHint is set on message, it is the right value that channel expects
             // and will NOT queue the message
@@ -249,13 +249,13 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs.Internals
 
     public interface IMessageActivityMapper
     {
-        IMessageActivity Map(IMessageActivity message);
+        MessageActivity Map(MessageActivity message);
     }
 
 #pragma warning disable CS0618
     public sealed class KeyboardCardMapper : IMessageActivityMapper
     {
-        public IMessageActivity Map(IMessageActivity message)
+        public MessageActivity Map(MessageActivity message)
         {
             if (message.Attachments.Any())
             {
@@ -289,7 +289,7 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs.Internals
 
     public sealed class SetLocalTimestampMapper : IMessageActivityMapper
     {
-        public IMessageActivity Map(IMessageActivity message)
+        public MessageActivity Map(MessageActivity message)
         {
             if (message.LocalTimestamp == null)
             {
@@ -310,7 +310,7 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs.Internals
             SetField.NotNull(out this.mappers, nameof(mappers), mappers);
         }
 
-        public async Task PostAsync(IMessageActivity message, CancellationToken cancellationToken = new CancellationToken())
+        public async Task PostAsync(MessageActivity message, CancellationToken cancellationToken = new CancellationToken())
         {
             foreach (var mapper in mappers)
             {
@@ -319,7 +319,7 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs.Internals
             await this.inner.PostAsync(message, cancellationToken);
         }
 
-        public IMessageActivity MakeMessage()
+        public MessageActivity MakeMessage()
         {
             return this.inner.MakeMessage();
         }
@@ -336,12 +336,12 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs.Internals
             SetField.NotNull(out this.writer, nameof(writer), writer);
         }
 
-        IMessageActivity IBotToUser.MakeMessage()
+        MessageActivity IBotToUser.MakeMessage()
         {
             return this.inner.MakeMessage();
         }
 
-        async Task IBotToUser.PostAsync(IMessageActivity message, CancellationToken cancellationToken)
+        async Task IBotToUser.PostAsync(MessageActivity message, CancellationToken cancellationToken)
         {
             await this.inner.PostAsync(message, cancellationToken);
             await this.writer.WriteLineAsync($"{message.Text}{ButtonsToText(message.Attachments)}");

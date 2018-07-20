@@ -11,20 +11,19 @@ namespace Microsoft.Bot.Schema
     public partial class ConversationReference 
     {
         /// <summary>
-        /// Creates <see cref="Activity"/> from conversation reference as it is posted to bot.
+        /// Creates an <see cref="EventActivity"/> from conversation reference as it is posted to bot.
         /// </summary>
-        public Activity GetContinuationActivity()
-        {
-            var activity = Activity.CreateEventActivity();
-            activity.Name = "ContinueConversation";
-            activity.Id = Guid.NewGuid().ToString();
-            activity.ChannelId = this.ChannelId;
-            activity.ServiceUrl = this.ServiceUrl;
-            activity.Conversation = this.Conversation;
-            activity.Recipient = this.Bot;
-            activity.From = this.User;
-            activity.RelatesTo = this;
-            return (Activity)activity;
-        }
+        public EventActivity GetContinuationActivity() =>
+            new EventActivity
+            {
+                Name = "ContinueConversation",
+                Id = Guid.NewGuid().ToString(),
+                ChannelId = this.ChannelId,
+                ServiceUrl = this.ServiceUrl,
+                Conversation = this.Conversation,
+                Recipient = this.Bot,
+                From = this.User,
+                RelatesTo = this,
+            };
     }
 }

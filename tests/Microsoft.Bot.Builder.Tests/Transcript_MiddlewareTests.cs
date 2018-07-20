@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Tests
 {
@@ -25,14 +24,9 @@ namespace Microsoft.Bot.Builder.Tests
             await new TestFlow(adapter, async (context) =>
                 {
                     conversationId = context.Activity.Conversation.Id;
-                    var typingActivity = new Activity
-                    {
-                        Type = ActivityTypes.Typing,
-                        RelatesTo = context.Activity.RelatesTo
-                    };
-                    await context.SendActivityAsync(typingActivity);
-                    await Task.Delay(500);
-                    await context.SendActivityAsync("echo:" + context.Activity.Text);
+
+                    await context.SendActivityAsync(TypingActivity.Default);
+                    await context.SendActivityAsync("echo:" + (context.Activity as MessageActivity).Text);
                 })
                 .Send("foo")
                     .AssertReply((activity) => Assert.AreEqual(activity.Type, ActivityTypes.Typing))
@@ -44,12 +38,12 @@ namespace Microsoft.Bot.Builder.Tests
 
             var pagedResult = await transcriptStore.GetTranscriptActivitiesAsync("test", conversationId);
             Assert.AreEqual(6, pagedResult.Items.Length);
-            Assert.AreEqual("foo", pagedResult.Items[0].AsMessageActivity().Text);
-            Assert.IsNotNull(pagedResult.Items[1].AsTypingActivity());
-            Assert.AreEqual("echo:foo", pagedResult.Items[2].AsMessageActivity().Text);
-            Assert.AreEqual("bar", pagedResult.Items[3].AsMessageActivity().Text);
-            Assert.IsNotNull(pagedResult.Items[4].AsTypingActivity());
-            Assert.AreEqual("echo:bar", pagedResult.Items[5].AsMessageActivity().Text);
+            Assert.AreEqual("foo", (pagedResult.Items[0] as MessageActivity).Text);
+            Assert.IsNotNull(pagedResult.Items[1] as TypingActivity);
+            Assert.AreEqual("echo:foo", (pagedResult.Items[2] as MessageActivity).Text);
+            Assert.AreEqual("bar", (pagedResult.Items[3] as MessageActivity).Text);
+            Assert.IsNotNull(pagedResult.Items[4] as TypingActivity);
+            Assert.AreEqual("echo:bar", (pagedResult.Items[5] as MessageActivity).Text);
             foreach (var activity in pagedResult.Items)
             {
                 Assert.IsTrue(!string.IsNullOrWhiteSpace(activity.Id));
@@ -65,37 +59,38 @@ namespace Microsoft.Bot.Builder.Tests
             TestAdapter adapter = new TestAdapter()
                 .Use(new TranscriptLoggerMiddleware(transcriptStore));
             string conversationId = null;
-            Activity activityToUpdate = null;
+            var updateResponseActivity = new MessageUpdateActivity
+            {
+                Text = "new response"
+            };
+
             await new TestFlow(adapter, async (context) =>
             {
                 conversationId = context.Activity.Conversation.Id;
-                if (context.Activity.Text == "update")
+                if ((context.Activity as MessageActivity)?.Text == "update")
                 {
-                    activityToUpdate.Text = "new response";
-                    await context.UpdateActivityAsync(activityToUpdate);
+                    await context.UpdateActivityAsync(updateResponseActivity);
                 }
                 else
                 {
                     var activity = context.Activity.CreateReply("response");
                     var response = await context.SendActivityAsync(activity);
-                    activity.Id = response.Id;
 
-                    // clone the activity, so we can use it to do an update
-                    activityToUpdate = JsonConvert.DeserializeObject<Activity>(JsonConvert.SerializeObject(activity));
+                    updateResponseActivity.Id = response.Id;
+                    updateResponseActivity.ApplyConversationReference(activity.GetConversationReference());
                 }
             })
-                .Send("foo")
-                .Send("update")
-                    .AssertReply("new response")
-                .StartTestAsync();
-            await Task.Delay(500);
+            .Send("foo")
+            .Send("update")
+            .StartTestAsync();
+
             var pagedResult = await transcriptStore.GetTranscriptActivitiesAsync("test", conversationId);
             Assert.AreEqual(4, pagedResult.Items.Length);
-            Assert.AreEqual("foo", pagedResult.Items[0].AsMessageActivity().Text);
-            Assert.AreEqual("response", pagedResult.Items[1].AsMessageActivity().Text);
-            Assert.AreEqual("new response", pagedResult.Items[2].AsMessageUpdateActivity().Text);
-            Assert.AreEqual("update", pagedResult.Items[3].AsMessageActivity().Text);
-            Assert.AreEqual(pagedResult.Items[1].Id, pagedResult.Items[2].Id);
+            Assert.AreEqual("foo", (pagedResult.Items[0] as MessageActivity).Text);
+            Assert.AreEqual("response", (pagedResult.Items[1] as MessageActivity).Text);
+            Assert.AreEqual("update", (pagedResult.Items[2] as MessageActivity).Text);
+            Assert.AreEqual("new response", (pagedResult.Items[3] as MessageUpdateActivity).Text);
+            Assert.AreEqual(pagedResult.Items[1].Id, pagedResult.Items[3].Id);
         }
 
         [TestMethod]
@@ -110,11 +105,11 @@ namespace Microsoft.Bot.Builder.Tests
             TestAdapter adapter = new TestAdapter()
                 .Use(new TranscriptLoggerMiddleware(transcriptStore));
             string conversationId = null;
-            Activity activityToUpdate = null;
+            MessageUpdateActivity activityToUpdate = new MessageUpdateActivity();
             await new TestFlow(adapter, async (context) =>
             {
                 conversationId = context.Activity.Conversation.Id;
-                if (context.Activity.Text == "update")
+                if ((context.Activity as MessageActivity).Text == "update")
                 {
                     activityToUpdate.Text = "new response";
                     await context.UpdateActivityAsync(activityToUpdate);
@@ -127,31 +122,31 @@ namespace Microsoft.Bot.Builder.Tests
                     activity.Id = response.Id;
 
                     // clone the activity, so we can use it to do an update
-                    activityToUpdate = JsonConvert.DeserializeObject<Activity>(JsonConvert.SerializeObject(activity));
+                    activityToUpdate.Id = activity.Id;
+                    activityToUpdate.ApplyConversationReference(activity.GetConversationReference());
                 }
             })
                 .Send("foo")
                 .Send("update")
-                    .AssertReply("new response")
+                    .AssertReply(activityToUpdate)
                 .StartTestAsync();
-            await Task.Delay(500);
             
             // Perform some queries
             var pagedResult = await transcriptStore.GetTranscriptActivitiesAsync("test", conversationId, null, dateTimeStartOffset1.DateTime);
             Assert.AreEqual(4, pagedResult.Items.Length);
-            Assert.AreEqual("foo", pagedResult.Items[0].AsMessageActivity().Text);
-            Assert.AreEqual("response", pagedResult.Items[1].AsMessageActivity().Text);
-            Assert.AreEqual("new response", pagedResult.Items[2].AsMessageUpdateActivity().Text);
-            Assert.AreEqual("update", pagedResult.Items[3].AsMessageActivity().Text);
-            Assert.AreEqual(pagedResult.Items[1].Id, pagedResult.Items[2].Id);
+            Assert.AreEqual("foo", (pagedResult.Items[0] as MessageActivity).Text);
+            Assert.AreEqual("response", (pagedResult.Items[1] as MessageActivity).Text);
+            Assert.AreEqual("update", (pagedResult.Items[2] as MessageActivity).Text);
+            Assert.AreEqual("new response", (pagedResult.Items[3] as MessageUpdateActivity).Text);
+            Assert.AreEqual(pagedResult.Items[1].Id, pagedResult.Items[3].Id);
             // Perform some queries
             pagedResult = await transcriptStore.GetTranscriptActivitiesAsync("test", conversationId, null, DateTimeOffset.MinValue);
             Assert.AreEqual(4, pagedResult.Items.Length);
-            Assert.AreEqual("foo", pagedResult.Items[0].AsMessageActivity().Text);
-            Assert.AreEqual("response", pagedResult.Items[1].AsMessageActivity().Text);
-            Assert.AreEqual("new response", pagedResult.Items[2].AsMessageUpdateActivity().Text);
-            Assert.AreEqual("update", pagedResult.Items[3].AsMessageActivity().Text);
-            Assert.AreEqual(pagedResult.Items[1].Id, pagedResult.Items[2].Id);
+            Assert.AreEqual("foo", (pagedResult.Items[0] as MessageActivity).Text);
+            Assert.AreEqual("response", (pagedResult.Items[1] as MessageActivity).Text);
+            Assert.AreEqual("update", (pagedResult.Items[2] as MessageActivity).Text);
+            Assert.AreEqual("new response", (pagedResult.Items[3] as MessageUpdateActivity).Text);
+            Assert.AreEqual(pagedResult.Items[1].Id, pagedResult.Items[3].Id);
             // Perform some queries
             pagedResult = await transcriptStore.GetTranscriptActivitiesAsync("test", conversationId, null, DateTimeOffset.MaxValue);
             Assert.AreEqual(0, pagedResult.Items.Length);
@@ -165,12 +160,14 @@ namespace Microsoft.Bot.Builder.Tests
             var transcriptStore = new MemoryTranscriptStore();
             TestAdapter adapter = new TestAdapter()
                 .Use(new TranscriptLoggerMiddleware(transcriptStore));
+
             string conversationId = null;
             string activityId = null;
+
             await new TestFlow(adapter, async (context) =>
             {
                 conversationId = context.Activity.Conversation.Id;
-                if (context.Activity.Text == "deleteIt")
+                if ((context.Activity as MessageActivity).Text == "deleteIt")
                 {
                     await context.DeleteActivityAsync(activityId);
                 }
@@ -181,16 +178,16 @@ namespace Microsoft.Bot.Builder.Tests
                     activityId = response.Id;
                 }
             })
-                .Send("foo")
-                    .AssertReply("response")
-                .Send("deleteIt")
-                .StartTestAsync();
-            await Task.Delay(500);
+            .Send("foo")
+                .AssertReply("response")
+            .Send("deleteIt")
+            .StartTestAsync();
+
             var pagedResult = await transcriptStore.GetTranscriptActivitiesAsync("test", conversationId);
             Assert.AreEqual(4, pagedResult.Items.Length);
-            Assert.AreEqual("foo", pagedResult.Items[0].AsMessageActivity().Text);
-            Assert.AreEqual("response", pagedResult.Items[1].AsMessageActivity().Text);
-            Assert.AreEqual("deleteIt", pagedResult.Items[2].AsMessageActivity().Text);
+            Assert.AreEqual("foo", (pagedResult.Items[0] as MessageActivity).Text);
+            Assert.AreEqual("response", (pagedResult.Items[1] as MessageActivity).Text);
+            Assert.AreEqual("deleteIt", (pagedResult.Items[2] as MessageActivity).Text);
             Assert.AreEqual(ActivityTypes.MessageDelete, pagedResult.Items[3].Type);
             Assert.AreEqual(pagedResult.Items[1].Id, pagedResult.Items[3].Id);
         }

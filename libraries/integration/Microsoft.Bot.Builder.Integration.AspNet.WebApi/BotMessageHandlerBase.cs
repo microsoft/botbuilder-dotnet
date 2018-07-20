@@ -8,6 +8,7 @@ using System.Net.Http;
 using System.Net.Http.Formatting;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Serialization;
 using Microsoft.Rest.Serialization;
 using Newtonsoft.Json;
 
@@ -32,14 +33,15 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Handlers
             },
         };
 
-        private readonly BotFrameworkAdapter _botFrameworkAdapter;
-
-        public BotMessageHandlerBase(BotFrameworkAdapter botFrameworkAdapter)
+        public BotMessageHandlerBase(BotFrameworkAdapter botFrameworkAdapter, IActivitySerializer activitySerializer)
         {
-            _botFrameworkAdapter = botFrameworkAdapter ?? throw new ArgumentNullException(nameof(botFrameworkAdapter));
+            BotFrameworkAdapter = botFrameworkAdapter ?? throw new ArgumentNullException(nameof(botFrameworkAdapter));
+            ActivitySerializer = activitySerializer ?? throw new ArgumentNullException(nameof(activitySerializer));
         }
 
-        internal BotFrameworkAdapter BotFrameworkAdapter => _botFrameworkAdapter;
+        internal BotFrameworkAdapter BotFrameworkAdapter { get; }
+
+        internal IActivitySerializer ActivitySerializer { get; }
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
@@ -55,16 +57,10 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Handlers
                 return request.CreateErrorResponse(HttpStatusCode.BadRequest, "Request body should not be empty.");
             }
 
-            if (!BotMessageMediaTypeFormatters[0].SupportedMediaTypes.Contains(requestContentHeaders.ContentType))
-            {
-                return request.CreateErrorResponse(HttpStatusCode.NotAcceptable, $"Expecting Content-Type of \"{BotMessageMediaTypeFormatters[0].SupportedMediaTypes[0].MediaType}\".");
-            }
-
             try
             {
                 var invokeResponse = await ProcessMessageRequestAsync(
                     request,
-                    _botFrameworkAdapter,
                     context =>
                     {
                         cancellationToken.ThrowIfCancellationRequested();
@@ -114,6 +110,6 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Handlers
             }
         }
 
-        protected abstract Task<InvokeResponse> ProcessMessageRequestAsync(HttpRequestMessage request, BotFrameworkAdapter botFrameworkAdapter, Func<ITurnContext, Task> botCallbackHandler, CancellationToken cancellationToken);
+        protected abstract Task<InvokeResponse> ProcessMessageRequestAsync(HttpRequestMessage request, Func<ITurnContext, Task> botCallbackHandler, CancellationToken cancellationToken);
     }
 }

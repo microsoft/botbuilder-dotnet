@@ -125,29 +125,26 @@ namespace Microsoft.Bot.Builder.Classic.Tests
             var expected = new Activity();
             var resolver = new ActivityResolver(new ArrayResolver(NullResolver.Instance, expected));
 
-            expected.Type = ActivityTypes.Message;
             {
-                IActivity actual;
+                Activity actual;
                 Assert.IsTrue(resolver.TryResolve(null, out actual));
                 Assert.IsFalse(resolver.TryResolve(Some, out actual));
             }
 
             {
-                IMessageActivity actual;
+                MessageActivity actual;
                 Assert.IsTrue(resolver.TryResolve(null, out actual));
                 Assert.IsFalse(resolver.TryResolve(Some, out actual));
             }
 
             {
-                ITypingActivity actual;
+                TypingActivity actual;
                 Assert.IsFalse(resolver.TryResolve(null, out actual));
                 Assert.IsFalse(resolver.TryResolve(Some, out actual));
             }
 
-            expected.Type = ActivityTypes.Typing;
-
             {
-                ITypingActivity actual;
+                TypingActivity actual;
                 Assert.IsTrue(resolver.TryResolve(null, out actual));
                 Assert.IsFalse(resolver.TryResolve(Some, out actual));
             }
@@ -156,7 +153,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
         [TestMethod]
         public void Resolver_EventActivityValue()
         {
-            var expected = new Activity() { Type = ActivityTypes.Event };
+            var expected = new EventActivity();
             var resolver = new EventActivityValueResolver(new ActivityResolver(new ArrayResolver(NullResolver.Instance, expected)));
 
             {
@@ -177,7 +174,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
         [TestMethod]
         public void Resolver_InvokeActivityValue()
         {
-            var expected = new Activity() { Type = ActivityTypes.Invoke };
+            var expected = new InvokeActivity();
             var resolver = new InvokeActivityValueResolver(new ActivityResolver(new ArrayResolver(NullResolver.Instance, expected)));
 
             {

@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using Microsoft.Bot.Builder.Serialization;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -44,6 +45,13 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             });
 
             services.AddTransient<IBot, TBot>();
+
+            services.AddSingleton(sp =>
+            {
+                var options = sp.GetRequiredService<IOptions<BotFrameworkOptions>>().Value;
+
+                return options.ActivitySerializer ?? new JsonActivitySerializer();
+            });
 
             services.AddSingleton(sp =>
             {

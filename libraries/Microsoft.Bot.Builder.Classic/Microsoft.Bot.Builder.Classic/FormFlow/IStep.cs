@@ -81,11 +81,11 @@ namespace Microsoft.Bot.Builder.Classic.FormFlow.Advanced
 
         bool InClarify(FormState form);
 
-        IEnumerable<TermMatch> Match(IDialogContext context, T state, FormState form, IMessageActivity input);
+        IEnumerable<TermMatch> Match(IDialogContext context, T state, FormState form, MessageActivity input);
 
-        Task<StepResult> ProcessAsync(IDialogContext context, T state, FormState form, IMessageActivity input, IEnumerable<TermMatch> matches);
+        Task<StepResult> ProcessAsync(IDialogContext context, T state, FormState form, MessageActivity input, IEnumerable<TermMatch> matches);
 
-        FormPrompt NotUnderstood(IDialogContext context, T state, FormState form, IMessageActivity input);
+        FormPrompt NotUnderstood(IDialogContext context, T state, FormState form, MessageActivity input);
 
         FormPrompt Help(T state, FormState form, string commandHelp);
 

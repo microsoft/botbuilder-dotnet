@@ -136,7 +136,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             var tokenResult = await _prompt.Recognize(dc.Context).ConfigureAwait(false);
             //Check for timeout
             var state = dc.ActiveDialog.State as OAuthPromptOptions;
-            var isMessage = dc.Context.Activity.Type == ActivityTypes.Message;
+            var isMessage = dc.Context.Activity is MessageActivity;
             var hasTimedOut = isMessage && (DateTime.Compare(DateTime.Now, state.Expires) > 0);
 
             if (hasTimedOut)

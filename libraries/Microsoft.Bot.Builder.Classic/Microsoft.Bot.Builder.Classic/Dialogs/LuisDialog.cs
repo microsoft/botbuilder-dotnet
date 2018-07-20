@@ -91,7 +91,7 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs
     /// <param name="message">The dialog message.</param>
     /// <param name="luisResult">The LUIS result.</param>
     /// <returns>A task representing the completion of the intent processing.</returns>
-    public delegate Task IntentActivityHandler(IDialogContext context, IAwaitable<IMessageActivity> message, LuisResult luisResult);
+    public delegate Task IntentActivityHandler(IDialogContext context, IAwaitable<MessageActivity> message, LuisResult luisResult);
 
     /// <summary>
     /// An exception for invalid intent handlers.
@@ -204,7 +204,7 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs
             return request;
         }
 
-        protected virtual async Task MessageReceived(IDialogContext context, IAwaitable<IMessageActivity> item)
+        protected virtual async Task MessageReceived(IDialogContext context, IAwaitable<MessageActivity> item)
         {
             var message = await item;
             var messageText = await GetLuisQueryTextAsync(context, message);
@@ -250,7 +250,7 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs
         }
 
         protected virtual async Task DispatchToIntentHandler(IDialogContext context,
-                                                            IAwaitable<IMessageActivity> item,
+                                                            IAwaitable<MessageActivity> item,
                                                             IntentRecommendation bestIntent,
                                                             LuisResult result)
         {
@@ -276,7 +276,7 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs
             }
         }
 
-        protected virtual Task<string> GetLuisQueryTextAsync(IDialogContext context, IMessageActivity message)
+        protected virtual Task<string> GetLuisQueryTextAsync(IDialogContext context, MessageActivity message)
         {
             return Task.FromResult(message.Text);
         }
@@ -297,7 +297,7 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs
         protected virtual async Task LuisActionDialogFinished(IDialogContext context, IAwaitable<LuisResult> item)
         {
             var result = await item;
-            var messageActivity = (IMessageActivity)context.Activity;
+            var messageActivity = (MessageActivity)context.Activity;
             await DispatchToIntentHandler(context, Awaitable.FromItem(messageActivity), BestIntentFrom(result), result);
         }
     }
@@ -333,7 +333,7 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs
             context.Wait(MessageReceivedAsync);
         }
 
-        protected virtual async Task MessageReceivedAsync(IDialogContext context, IAwaitable<IMessageActivity> item)
+        protected virtual async Task MessageReceivedAsync(IDialogContext context, IAwaitable<MessageActivity> item)
         {
             var message = await item;
             var luisRequest = new LuisRequest(query: message.Text) { ContextId = this.contextId };

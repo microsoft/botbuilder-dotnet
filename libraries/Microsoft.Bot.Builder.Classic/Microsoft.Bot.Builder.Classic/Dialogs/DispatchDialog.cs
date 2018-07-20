@@ -61,7 +61,7 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs
             return this.services;
         }
 
-        protected virtual async Task ActivityReceivedAsync(IDialogContext context, IAwaitable<IActivity> item)
+        protected virtual async Task ActivityReceivedAsync(IDialogContext context, IAwaitable<Activity> item)
         {
             var activity = await item;
             this.services = new object[] { this, context, activity };

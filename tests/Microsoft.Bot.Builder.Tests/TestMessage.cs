@@ -7,11 +7,9 @@ namespace Microsoft.Bot.Builder.Tests
 {
     public static class TestMessage
     {
-        public static Activity Message(string id = "1234")
-        {
-            Activity a = new Activity
+        public static MessageActivity Message(string id = "1234") =>
+            new MessageActivity
             {
-                Type = ActivityTypes.Message,
                 Id = id,
                 Text = "test",
                 From = new ChannelAccount()
@@ -32,8 +30,6 @@ namespace Microsoft.Bot.Builder.Tests
                 ChannelId = "UnitTest",
                 ServiceUrl = "https://example.org"
             };
-            return a;
-        }
 
     }
 }

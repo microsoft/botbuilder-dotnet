@@ -102,7 +102,7 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs.Internals
         void Reset();
     }
 
-    public interface IDialogTask : IDialogStack, IEventLoop, IEventProducer<IActivity>
+    public interface IDialogTask : IDialogStack, IEventLoop, IEventProducer<Activity>
     {
     }
 

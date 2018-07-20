@@ -70,9 +70,9 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs
         /// </summary>
         /// <remarks> This is the incoming activity in reactive cases.
         /// for proactive case, i.e. Conversation.ResumeAsync code path,
-        /// it will be the <see cref="IMessageActivity"/> returned by <see cref="ConversationReference.GetContinuationActivity"/>.
+        /// it will be the <see cref="MessageActivity"/> returned by <see cref="ConversationReference.GetContinuationActivity"/>.
         /// </remarks>
-        IActivity Activity { get; }
+        Activity Activity { get; }
     }
 
     /// <summary>
@@ -193,9 +193,9 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs
         /// </summary>
         /// <param name="stack">The dialog stack.</param>
         /// <param name="resume">The method to resume when the message has been received.</param>
-        public static void Wait(this IDialogStack stack, ResumeAfter<IMessageActivity> resume)
+        public static void Wait(this IDialogStack stack, ResumeAfter<MessageActivity> resume)
         {
-            stack.Wait<IMessageActivity>(resume);
+            stack.Wait<MessageActivity>(resume);
         }
 
         /// <summary>
@@ -208,9 +208,9 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs
         /// <param name="message">The message that will be posted to child dialog.</param>
         /// <param name="token">A cancellation token.</param>
         /// <returns>A task representing the Forward operation.</returns>
-        public static async Task Forward<R>(this IDialogStack stack, IDialog<R> child, ResumeAfter<R> resume, IMessageActivity message, CancellationToken token = default(CancellationToken))
+        public static async Task Forward<R>(this IDialogStack stack, IDialog<R> child, ResumeAfter<R> resume, MessageActivity message, CancellationToken token = default(CancellationToken))
         {
-            await stack.Forward<R, IMessageActivity>(child, resume, message, token);
+            await stack.Forward<R, MessageActivity>(child, resume, message, token);
         }
     }
 }

@@ -26,7 +26,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
         {
             [RegexPattern("hello")]
             [ScorableGroup(1)]
-            public async Task MatchedLessGroupOne(IDialogContext context, IMessageActivity message)
+            public async Task MatchedLessGroupOne(IDialogContext context, MessageActivity message)
             {
                 if (message.Text.Contains("skip"))
                 {
@@ -40,7 +40,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
 
             [RegexPattern("hello world")]
             [ScorableGroup(1)]
-            public async Task MatchedMoreGroupOne(IDialogContext context, IMessageActivity message)
+            public async Task MatchedMoreGroupOne(IDialogContext context, MessageActivity message)
             {
                 if (message.Text.Contains("skip"))
                 {
@@ -54,21 +54,21 @@ namespace Microsoft.Bot.Builder.Classic.Tests
 
             [RegexPattern("hello")]
             [ScorableGroup(2)]
-            public async Task MatchedLessGroupTwo(IDialogContext context, IMessageActivity message)
+            public async Task MatchedLessGroupTwo(IDialogContext context, MessageActivity message)
             {
                 await context.PostAsync("matched less, group two");
             }
 
             [RegexPattern("hello world")]
             [ScorableGroup(2)]
-            public async Task MatchedMoreGroupTwo(IDialogContext context, IMessageActivity message)
+            public async Task MatchedMoreGroupTwo(IDialogContext context, MessageActivity message)
             {
                 await context.PostAsync("matched more, group two");
             }
 
             [MethodBind]
             [ScorableGroup(3)]
-            public async Task MatchDefault(IDialogContext context, IMessageActivity message)
+            public async Task MatchDefault(IDialogContext context, MessageActivity message)
             {
                 await context.PostAsync($"echo: {message.Text}");
             }
@@ -120,17 +120,17 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                 return MakeLuisService(model);
             }
 
-            public Task Activity(IActivity activity)
+            public Task Activity(Activity activity)
             {
                 return methods.Activity(activity);
             }
 
-            public Task Activity(ITypingActivity activity)
+            public Task Activity(TypingActivity activity)
             {
                 return methods.Activity(activity);
             }
 
-            public Task Activity(IMessageActivity activity)
+            public Task Activity(MessageActivity activity)
             {
                 return methods.Activity(activity);
             }

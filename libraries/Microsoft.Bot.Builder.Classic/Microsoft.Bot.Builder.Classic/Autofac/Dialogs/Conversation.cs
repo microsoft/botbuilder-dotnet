@@ -88,13 +88,13 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs
         /// <remarks>
         /// This method:
         /// 1. Instantiates and composes the required components.
-        /// 2. Deserializes the dialog state (the dialog stack and each dialog's state) from the <paramref name="v4Context"/> <see cref="IMessageActivity"/>.
-        /// 3. Resumes the conversation processes where the dialog suspended to wait for a <see cref="IMessageActivity"/>.
-        /// 4. Queues <see cref="IMessageActivity"/>s to be sent to the user.
+        /// 2. Deserializes the dialog state (the dialog stack and each dialog's state) from the <paramref name="v4Context"/> <see cref="MessageActivity"/>.
+        /// 3. Resumes the conversation processes where the dialog suspended to wait for a <see cref="MessageActivity"/>.
+        /// 4. Queues <see cref="MessageActivity"/>s to be sent to the user.
         /// 5. Serializes the updated dialog state in the messages to be sent to the user.
         /// 
         /// The <paramref name="MakeRoot"/> factory method is invoked for new conversations only,
-        /// because existing conversations have the dialog stack and state serialized in the <see cref="IMessageActivity"/> data.
+        /// because existing conversations have the dialog stack and state serialized in the <see cref="MessageActivity"/> data.
         /// </remarks>
         /// <param name="v4Context">The turn context containing the message sent to the bot.</param>
         /// <param name="MakeRoot">The factory method to make the root dialog.</param>
@@ -178,7 +178,7 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs
         public static async Task SendAsync(ILifetimeScope scope, Microsoft.Bot.Builder.ITurnContext v4Context, CancellationToken token = default(CancellationToken))
         {
             var task = scope.Resolve<IPostToBot>();
-            await task.PostAsync(v4Context.Activity.AsMessageActivity(), token);
+            await task.PostAsync(v4Context.Activity as MessageActivity, token);
         }
     }
 }

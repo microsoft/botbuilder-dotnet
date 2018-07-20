@@ -45,7 +45,7 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs.Internals
 {
     /// <summary>
     /// A dialog task is a
-    /// 1. single <see cref="IDialogStack"/> stack of <see cref="IDialog"/> frames, waiting on the next <see cref="IActivity"/>
+    /// 1. single <see cref="IDialogStack"/> stack of <see cref="IDialog"/> frames, waiting on the next <see cref="Activity"/>
     /// 2. the <see cref="IEventProducer{Activity}"/> queue of activity events necessary to satisfy those waits
     /// 2. the <see cref="IEventLoop"/> loop to execute that dialog code once the waits are satisfied
     /// </summary>
@@ -53,10 +53,10 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs.Internals
     {
         private readonly Func<CancellationToken, IDialogContext> makeContext;
         private readonly IStore<IFiberLoop<DialogTask>> store;
-        private readonly IEventProducer<IActivity> queue;
+        private readonly IEventProducer<Activity> queue;
         private readonly IFiberLoop<DialogTask> fiber;
         private readonly Frames frames;
-        public DialogTask(Func<CancellationToken, IDialogContext> makeContext, IStore<IFiberLoop<DialogTask>> store, IEventProducer<IActivity> queue)
+        public DialogTask(Func<CancellationToken, IDialogContext> makeContext, IStore<IFiberLoop<DialogTask>> store, IEventProducer<Activity> queue)
         {
             SetField.NotNull(out this.makeContext, nameof(makeContext), makeContext);
             SetField.NotNull(out this.store, nameof(store), store);
@@ -294,7 +294,10 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs.Internals
             };
 
             // post the activity to the queue
-            var activity = new Activity(ActivityTypes.Event) { Value = @event };
+            var activity = new EventActivity
+            {
+                Value = @event
+            };
             this.queue.Post(activity, onPull);
         }
 
@@ -327,7 +330,7 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs.Internals
             }
         }
 
-        void IEventProducer<IActivity>.Post(IActivity item, Action onPull)
+        void IEventProducer<Activity>.Post(Activity item, Action onPull)
         {
             this.fiber.Post(item);
             onPull?.Invoke();
@@ -344,9 +347,9 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs.Internals
 
     /// <summary>
     /// A reactive dialog task (in contrast to a proactive dialog task) is a dialog task that
-    /// starts some root dialog when it receives the first <see cref="IActivity"/> activity. 
+    /// starts some root dialog when it receives the first <see cref="Activity"/> activity. 
     /// </summary>
-    public sealed class ReactiveDialogTask : IEventLoop, IEventProducer<IActivity>
+    public sealed class ReactiveDialogTask : IEventLoop, IEventProducer<Activity>
     {
         private readonly IDialogTask dialogTask;
         private readonly Func<IDialog<object>> makeRoot;
@@ -377,7 +380,7 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs.Internals
             }
         }
 
-        void IEventProducer<IActivity>.Post(IActivity item, Action onPull)
+        void IEventProducer<Activity>.Post(Activity item, Action onPull)
         {
             this.dialogTask.Post(item, onPull);
         }
@@ -396,7 +399,7 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs.Internals
             SetField.NotNull(out this.inner, nameof(inner), inner);
         }
 
-        async Task IPostToBot.PostAsync(IActivity activity, CancellationToken token)
+        async Task IPostToBot.PostAsync(Activity activity, CancellationToken token)
         {
             try
             {
@@ -420,15 +423,15 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs.Internals
     public sealed class EventLoopDialogTask : IPostToBot
     {
         private readonly Lazy<IEventLoop> inner;
-        private readonly IEventProducer<IActivity> queue;
-        public EventLoopDialogTask(Func<IEventLoop> makeInner, IEventProducer<IActivity> queue, IBotData botData)
+        private readonly IEventProducer<Activity> queue;
+        public EventLoopDialogTask(Func<IEventLoop> makeInner, IEventProducer<Activity> queue, IBotData botData)
         {
             SetField.NotNull(out this.queue, nameof(queue), queue);
             SetField.CheckNull(nameof(makeInner), makeInner);
             this.inner = new Lazy<IEventLoop>(() => makeInner());
         }
 
-        async Task IPostToBot.PostAsync(IActivity activity, CancellationToken token)
+        async Task IPostToBot.PostAsync(Activity activity, CancellationToken token)
         {
             this.queue.Post(activity);
             var loop = this.inner.Value;
@@ -450,7 +453,7 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs.Internals
             SetField.NotNull(out this.messageQueue, nameof(messageQueue), messageQueue);
         }
 
-        async Task IPostToBot.PostAsync(IActivity activity, CancellationToken token)
+        async Task IPostToBot.PostAsync(Activity activity, CancellationToken token)
         {
             await this.inner.PostAsync(activity, token);
             await this.messageQueue.DrainQueueAsync(this.botToUser, token);
@@ -473,7 +476,7 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs.Internals
             SetField.NotNull(out this.botData, nameof(botData), botData);
         }
 
-        async Task IPostToBot.PostAsync(IActivity activity, CancellationToken token)
+        async Task IPostToBot.PostAsync(Activity activity, CancellationToken token)
         {
             await botData.LoadAsync(token);
             try

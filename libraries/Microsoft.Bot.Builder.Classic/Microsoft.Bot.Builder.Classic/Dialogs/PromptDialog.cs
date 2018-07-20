@@ -427,7 +427,7 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs
         }
 
         /// <summary>
-        /// <see cref="PromptStyler.Apply(ref IMessageActivity, string, string)"/>.
+        /// <see cref="PromptStyler.Apply(ref MessageActivity, string, string)"/>.
         /// </summary>
         /// <typeparam name="T"> The type of the options.</typeparam>
         /// <param name="message"> The message.</param>
@@ -436,19 +436,19 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs
         /// <param name="promptStyle"> The prompt style.</param>
         /// <param name="descriptions">Descriptions for each option.</param>
         /// <param name="speak"> The speak.</param>
-        public static void Apply<T>(ref IMessageActivity message, string prompt, IReadOnlyList<T> options, PromptStyle promptStyle, IReadOnlyList<string> descriptions = null, string speak = null)
+        public static void Apply<T>(ref MessageActivity message, string prompt, IReadOnlyList<T> options, PromptStyle promptStyle, IReadOnlyList<string> descriptions = null, string speak = null)
         {
             var styler = new PromptStyler(promptStyle);
             styler.Apply(ref message, prompt, options, descriptions, speak);
         }
 
         /// <summary>
-        /// Style a prompt and populate the <see cref="IMessageActivity.Text"/>.
+        /// Style a prompt and populate the <see cref="MessageActivity.Text"/>.
         /// </summary>
         /// <param name="message"> The message that will contain the prompt.</param>
         /// <param name="prompt"> The prompt.</param>
         /// <param name="speak"> The speak.</param>
-        public virtual void Apply(ref IMessageActivity message, string prompt, string speak = null)
+        public virtual void Apply(ref MessageActivity message, string prompt, string speak = null)
         {
             SetField.CheckNull(nameof(prompt), prompt);
             message.Text = prompt;
@@ -468,7 +468,7 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs
         /// <remarks>
         /// <typeparamref name="T"/> should implement <see cref="object.ToString"/> unless descriptions are supplied.
         /// </remarks>
-        public virtual void Apply<T>(ref IMessageActivity message, string prompt, IReadOnlyList<T> options, IReadOnlyList<string> descriptions = null, string speak = null)
+        public virtual void Apply<T>(ref MessageActivity message, string prompt, IReadOnlyList<T> options, IReadOnlyList<string> descriptions = null, string speak = null)
         {
             SetField.CheckNull(nameof(prompt), prompt);
             SetField.CheckNull(nameof(options), options);
@@ -675,7 +675,7 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs
                 this.promptOptions.DefaultRetry = this.DefaultRetry;
             }
 
-            protected internal override bool TryParse(IMessageActivity message, out string result)
+            protected internal override bool TryParse(MessageActivity message, out string result)
             {
                 if (!string.IsNullOrWhiteSpace(message.Text))
                 {
@@ -783,7 +783,7 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs
                 this.innerPromptChoice = new PromptChoice<string>(promptChoiceOptions, recognizeNumbers: false, recognizeOrdinals: false);
             }
 
-            protected internal override bool TryParse(IMessageActivity message, out bool result)
+            protected internal override bool TryParse(MessageActivity message, out bool result)
             {
                 string entity = string.Empty;
 
@@ -838,7 +838,7 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs
                 this.Max = max;
             }
 
-            protected internal override bool TryParse(IMessageActivity message, out Int64 result)
+            protected internal override bool TryParse(MessageActivity message, out Int64 result)
             {
                 var matches = this.promptOptions.Recognizer.RecognizeIntegerInRange(message, this.Min, this.Max);
                 var topMatch = matches?.MaxBy(x => x.Score);
@@ -888,7 +888,7 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs
                 this.Max = max;
             }
 
-            protected internal override bool TryParse(IMessageActivity message, out double result)
+            protected internal override bool TryParse(MessageActivity message, out double result)
             {
                 var matches = this.promptOptions.Recognizer.RecognizeDoubleInRange(message, this.Min, this.Max);
                 var topMatch = matches?.MaxBy(x => x.Score);
@@ -962,7 +962,7 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs
                 this.minScore = minScore;
             }
 
-            protected internal override bool TryParse(IMessageActivity message, out T result)
+            protected internal override bool TryParse(MessageActivity message, out T result)
             {
                 if (!string.IsNullOrWhiteSpace(message.Text))
                 {
@@ -1038,7 +1038,7 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs
                 this.ContentTypes = contentTypes ?? new List<string>();
             }
 
-            protected internal override bool TryParse(IMessageActivity message, out IEnumerable<Attachment> result)
+            protected internal override bool TryParse(MessageActivity message, out IEnumerable<Attachment> result)
             {
                 if (message.Attachments != null && message.Attachments.Any())
                 {
@@ -1070,7 +1070,7 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs
         /// <param name="text"> The text in the <see cref="HeroCard"/>.</param>
         /// <param name="options"> The options that cause generation of buttons.</param>
         /// <param name="descriptions">Descriptions for each option.</param>
-        public static void AddHeroCard<T>(this IMessageActivity message, string text, IEnumerable<T> options, IEnumerable<string> descriptions = null)
+        public static void AddHeroCard<T>(this MessageActivity message, string text, IEnumerable<T> options, IEnumerable<string> descriptions = null)
         {
             message.AttachmentLayout = AttachmentLayoutTypes.List;
             message.Attachments = options.GenerateHeroCard(text, descriptions);
@@ -1087,7 +1087,7 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs
         /// <param name="text"> The text in the <see cref="HeroCard"/>.</param>
         /// <param name="options"> The options that cause generation of buttons.</param>
         /// <param name="descriptions">Descriptions for each option.</param>
-        public static void AddKeyboardCard<T>(this IMessageActivity message, string text, IEnumerable<T> options,
+        public static void AddKeyboardCard<T>(this MessageActivity message, string text, IEnumerable<T> options,
             IEnumerable<string> descriptions = null)
         {
             message.AttachmentLayout = AttachmentLayoutTypes.List;
@@ -1157,7 +1157,7 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs.Internals
             context.Wait(MessageReceivedAsync);
         }
 
-        protected virtual async Task MessageReceivedAsync(IDialogContext context, IAwaitable<IMessageActivity> message)
+        protected virtual async Task MessageReceivedAsync(IDialogContext context, IAwaitable<MessageActivity> message)
         {
             T result;
             if (this.TryParse(await message, out result))
@@ -1181,9 +1181,9 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs.Internals
             }
         }
 
-        protected internal abstract bool TryParse(IMessageActivity message, out T result);
+        protected internal abstract bool TryParse(MessageActivity message, out T result);
 
-        protected virtual IMessageActivity MakePrompt(IDialogContext context, string prompt, IReadOnlyList<U> options = null, IReadOnlyList<string> descriptions = null, string speak = null)
+        protected virtual MessageActivity MakePrompt(IDialogContext context, string prompt, IReadOnlyList<U> options = null, IReadOnlyList<string> descriptions = null, string speak = null)
         {
             var msg = context.MakeMessage();
             if (options != null && options.Count > 0)

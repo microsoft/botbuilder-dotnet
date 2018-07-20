@@ -17,14 +17,14 @@ namespace Microsoft.Bot.Builder
     /// </remarks>
     public class MemoryTranscriptStore : ITranscriptStore
     {
-        private Dictionary<string, Dictionary<string, List<IActivity>>> _channels = new Dictionary<string, Dictionary<string, List<IActivity>>>();
+        private Dictionary<string, Dictionary<string, List<Activity>>> _channels = new Dictionary<string, Dictionary<string, List<Activity>>>();
 
         /// <summary>
         /// Logs an activity to the transcript.
         /// </summary>
         /// <param name="activity">The activity to log.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
-        public Task LogActivityAsync(IActivity activity)
+        public Task LogActivityAsync(Activity activity)
         {
             if (activity == null)
             {
@@ -35,13 +35,13 @@ namespace Microsoft.Bot.Builder
             {
                 if (!_channels.TryGetValue(activity.ChannelId, out var channel))
                 {
-                    channel = new Dictionary<string, List<IActivity>>();
+                    channel = new Dictionary<string, List<Activity>>();
                     _channels[activity.ChannelId] = channel;
                 }
 
                 if (!channel.TryGetValue(activity.Conversation.Id, out var transcript))
                 {
-                    transcript = new List<IActivity>();
+                    transcript = new List<Activity>();
                     channel[activity.Conversation.Id] = transcript;
                 }
 
@@ -60,7 +60,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="startDate">A cutoff date. Activities older than this date are not included.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <remarks>If the task completes successfully, the result contains the matching activities.</remarks>
-        public Task<PagedResult<IActivity>> GetTranscriptActivitiesAsync(string channelId, string conversationId, string continuationToken = null, DateTimeOffset startDate = default(DateTimeOffset))
+        public Task<PagedResult<Activity>> GetTranscriptActivitiesAsync(string channelId, string conversationId, string continuationToken = null, DateTimeOffset startDate = default(DateTimeOffset))
         {
             if (channelId == null)
             {
@@ -72,26 +72,25 @@ namespace Microsoft.Bot.Builder
                 throw new ArgumentNullException($"missing {nameof(conversationId)}");
             }
 
-            var pagedResult = new PagedResult<IActivity>();
+            var pagedResult = new PagedResult<Activity>();
             lock (_channels)
             {
-                Dictionary<string, List<IActivity>> channel;
+                Dictionary<string, List<Activity>> channel;
                 if (_channels.TryGetValue(channelId, out channel))
                 {
-                    List<IActivity> transcript;
+                    List<Activity> transcript;
                     if (channel.TryGetValue(conversationId, out transcript))
                     {
                         if (continuationToken != null)
                         {
                             pagedResult.Items = transcript
-                                .OrderBy(a => a.Timestamp)
                                 .Where(a => a.Timestamp >= startDate)
                                 .SkipWhile(a => a.Id != continuationToken)
                                 .Skip(1)
                                 .Take(20)
                                 .ToArray();
 
-                            if (pagedResult.Items.Count() == 20)
+                            if (pagedResult.Items.Length == 20)
                             {
                                 pagedResult.ContinuationToken = pagedResult.Items.Last().Id;
                             }
@@ -99,12 +98,11 @@ namespace Microsoft.Bot.Builder
                         else
                         {
                             pagedResult.Items = transcript
-                                .OrderBy(a => a.Timestamp)
                                 .Where(a => a.Timestamp >= startDate)
                                 .Take(20)
                                 .ToArray();
 
-                            if (pagedResult.Items.Count() == 20)
+                            if (pagedResult.Items.Length == 20)
                             {
                                 pagedResult.ContinuationToken = pagedResult.Items.Last().Id;
                             }

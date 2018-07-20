@@ -141,7 +141,7 @@ namespace Microsoft.Bot.Builder.Classic.FormFlow.Advanced
             return new Prompter<T>(_helpFormat, _form, this).Prompt(state, null, args.ToArray()).Prompt;
         }
 
-        public IEnumerable<TermMatch> Matches(IMessageActivity input, object defaultValue)
+        public IEnumerable<TermMatch> Matches(MessageActivity input, object defaultValue)
         {
             var inputText = MessageActivityHelper.GetSanitizedTextInput(input);
 
@@ -381,7 +381,7 @@ namespace Microsoft.Bot.Builder.Classic.FormFlow.Advanced
         /// <returns>TermMatch if input is a match.</returns>
         public abstract TermMatch Parse(string input);
 
-        public virtual IEnumerable<TermMatch> Matches(IMessageActivity input, object defaultValue = null)
+        public virtual IEnumerable<TermMatch> Matches(MessageActivity input, object defaultValue = null)
         {
             var inputText = MessageActivityHelper.GetSanitizedTextInput(input);
 

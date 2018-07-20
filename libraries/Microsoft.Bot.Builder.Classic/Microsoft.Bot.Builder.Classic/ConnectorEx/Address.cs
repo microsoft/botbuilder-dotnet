@@ -57,7 +57,7 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs
     [Serializable]
     public sealed class Address : IAddress, IEquatable<IAddress>
     {
-        public static Address FromActivity(IActivity activity)
+        public static Address FromActivity(Activity activity)
         {
             return new Address
                 (

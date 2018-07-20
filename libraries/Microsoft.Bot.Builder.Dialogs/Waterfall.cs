@@ -36,10 +36,10 @@ namespace Microsoft.Bot.Builder.Dialogs
             if (dc == null)
                 throw new ArgumentNullException(nameof(dc));
 
-            if (dc.Context.Activity.Type == ActivityTypes.Message)
+            if (dc.Context.Activity is MessageActivity messageActivity)
             {
                 dc.ActiveDialog.Step++;
-                await RunStep(dc, new Dictionary<string, object> { { "Activity", dc.Context.Activity } });
+                await RunStep(dc, new Dictionary<string, object> { { "Activity", messageActivity } });
             }
         }
 

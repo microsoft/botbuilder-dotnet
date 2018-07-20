@@ -55,12 +55,12 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs.Internals
         /// <param name="activity">The item for the bot.</param>
         /// <param name="token">The cancellation token.</param>
         /// <returns>A task that represents the post operation.</returns>
-        Task PostAsync(IActivity activity, CancellationToken token);
+        Task PostAsync(Activity activity, CancellationToken token);
     }
 
     public sealed class NullPostToBot : IPostToBot
     {
-        Task IPostToBot.PostAsync(IActivity activity, CancellationToken token)
+        Task IPostToBot.PostAsync(Activity activity, CancellationToken token)
         {
             return Task.CompletedTask;
         }
@@ -75,14 +75,14 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs.Internals
             SetField.NotNull(out this.inner, nameof(inner), inner);
         }
 
-        async Task IPostToBot.PostAsync(IActivity activity, CancellationToken token)
+        async Task IPostToBot.PostAsync(Activity activity, CancellationToken token)
         {
             await this.inner.PostAsync(activity, token);
         }
     }
 
     /// <summary>
-    /// This IPostToBot service sets the ambient thread culture based on the <see cref="IMessageActivity.Locale"/>.
+    /// This IPostToBot service sets the ambient thread culture based on the <see cref="MessageActivity.Locale"/>.
     /// </summary>
     public sealed class SetAmbientThreadCulture : IPostToBot
     {
@@ -95,7 +95,7 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs.Internals
             SetField.NotNull(out this.localeFinder, nameof(localeFinder), localeFinder);
         }
 
-        async Task IPostToBot.PostAsync(IActivity activity, CancellationToken token)
+        async Task IPostToBot.PostAsync(Activity activity, CancellationToken token)
         {
             var locale = await this.localeFinder.FindLocale(activity, token);
             using (var localeScope = new LocalizedScope(locale))
@@ -122,7 +122,7 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs.Internals
             SetField.NotNull(out this.scopeForCookie, nameof(scopeForCookie), scopeForCookie);
         }
 
-        async Task IPostToBot.PostAsync(IActivity activity, CancellationToken token)
+        async Task IPostToBot.PostAsync(Activity activity, CancellationToken token)
         {
             using (await this.scopeForCookie.WithScopeAsync(this.address, token))
             {
@@ -149,7 +149,7 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs.Internals
             SetField.NotNull(out this.trace, nameof(trace), trace);
         }
 
-        async Task IPostToBot.PostAsync(IActivity activity, CancellationToken token)
+        async Task IPostToBot.PostAsync(Activity activity, CancellationToken token)
         {
             try
             {

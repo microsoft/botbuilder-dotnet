@@ -55,7 +55,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
     {
         public interface ILocalizedDialog : IDialog<CultureInfo>
         {
-            Task FirstMessage(IDialogContext context, IAwaitable<IMessageActivity> message);
+            Task FirstMessage(IDialogContext context, IAwaitable<MessageActivity> message);
         }
 
         public static CultureInfo CurrentCulture
@@ -75,8 +75,8 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                 .Setup(d => d.StartAsync(It.IsAny<IDialogContext>()))
                 .Returns<IDialogContext>(async c => { c.Wait(dialog.Object.FirstMessage); });
             dialog
-                .Setup(d => d.FirstMessage(It.IsAny<IDialogContext>(), It.IsAny<IAwaitable<IMessageActivity>>()))
-                .Returns<IDialogContext, IAwaitable<IMessageActivity>>(async (c, m) =>
+                .Setup(d => d.FirstMessage(It.IsAny<IDialogContext>(), It.IsAny<IAwaitable<MessageActivity>>()))
+                .Returns<IDialogContext, IAwaitable<MessageActivity>>(async (c, m) =>
                 {
                     actual = CurrentCulture;
                     c.Wait(dialog.Object.FirstMessage);

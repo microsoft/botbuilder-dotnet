@@ -74,9 +74,14 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs
                     data.ConversationData.Clear();
                     data.PrivateConversationData.Clear();
 
-                    var end = botToUser.MakeMessage();
-                    end.Type = ActivityTypes.EndOfConversation;
-                    end.AsEndOfConversationActivity().Code = e.Code;
+                    var message = botToUser.MakeMessage();
+
+                    var end = new EndOfConversationActivity
+                    {
+                        Code = e.Code,
+                        Text = message.Text
+                        
+                    };
 
                     await botToUser.PostAsync(end, token);
                 })
@@ -88,7 +93,7 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs
 
     public static partial class Extensions
     {
-        private static readonly ResumeAfter<IEventActivity> AfterReset = (context, result) => Task.CompletedTask;
+        private static readonly ResumeAfter<EventActivity> AfterReset = (context, result) => Task.CompletedTask;
 
         /// <summary>
         /// Initiate an <see cref="EndConversationEvent"/> to reset the conversation's state and stack and send an
@@ -96,7 +101,11 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs
         /// </summary>
         public static void EndConversation(this IDialogContext context, string code)
         {
-            var activity = new Activity(ActivityTypes.Event) { Value = new EndConversationEvent(code) };
+            var activity = new EventActivity
+            {
+                Value = new EndConversationEvent(code),
+            };
+
             context.Post(activity, AfterReset);
         }
     }

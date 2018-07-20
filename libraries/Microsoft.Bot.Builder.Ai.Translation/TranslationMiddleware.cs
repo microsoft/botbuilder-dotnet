@@ -100,62 +100,58 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public virtual async Task OnTurnAsync(ITurnContext context, NextDelegate next, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (context.Activity.Type == ActivityTypes.Message)
+            if (context.Activity is MessageActivity message)
             {
-                IMessageActivity message = context.Activity.AsMessageActivity();
-                if (message != null)
+                if (!string.IsNullOrWhiteSpace(message.Text))
                 {
-                    if (!string.IsNullOrWhiteSpace(message.Text))
+                    // determine the language we are using for this conversation
+                    var sourceLanguage = string.Empty;
+                    var targetLanguage = string.Empty;
+                    if (_languageStateProperty == null)
                     {
-                        // determine the language we are using for this conversation
-                        var sourceLanguage = string.Empty;
-                        var targetLanguage = string.Empty;
-                        if (_languageStateProperty == null)
+                        sourceLanguage = await _translator.DetectAsync(message.Text).ConfigureAwait(false); // awaiting user language detection using Microsoft Translator API.
+                    }
+                    else
+                    {
+                        sourceLanguage = await _languageStateProperty.GetAsync(context).ConfigureAwait(false) ?? "en";
+                    }
+
+                    targetLanguage = _nativeLanguages.Contains(sourceLanguage) ? sourceLanguage : _nativeLanguages.FirstOrDefault() ?? "en";
+                    await TranslateMessageAsync(context, message, sourceLanguage, targetLanguage, _nativeLanguages.Contains(sourceLanguage)).ConfigureAwait(false);
+
+                    context.OnSendActivities(async (newContext, activities, nextSend) =>
+                    {
+                        // Translate messages sent to the user to user language
+                        if (_toUserLanguage)
                         {
-                            sourceLanguage = await _translator.DetectAsync(message.Text).ConfigureAwait(false); // awaiting user language detection using Microsoft Translator API.
-                        }
-                        else
-                        {
-                            sourceLanguage = await _languageStateProperty.GetAsync(context).ConfigureAwait(false) ?? "en";
+                            List<Task> tasks = new List<Task>();
+                            foreach (var currentActivity in activities.OfType<MessageActivity>())
+                            {
+                                tasks.Add(TranslateMessageAsync(newContext, currentActivity, targetLanguage, sourceLanguage, false));
+                            }
+
+                            if (tasks.Count > 0)
+                            {
+                                await Task.WhenAll(tasks).ConfigureAwait(false);
+                            }
                         }
 
-                        targetLanguage = _nativeLanguages.Contains(sourceLanguage) ? sourceLanguage : _nativeLanguages.FirstOrDefault() ?? "en";
-                        await TranslateMessageAsync(context, message, sourceLanguage, targetLanguage, _nativeLanguages.Contains(sourceLanguage)).ConfigureAwait(false);
+                        return await nextSend().ConfigureAwait(false);
+                    });
 
-                        context.OnSendActivities(async (newContext, activities, nextSend) =>
+                    context.OnUpdateActivity(async (newContext, activity, nextUpdate) =>
+                    {
+                        // Translate messages sent to the user to user language
+                        if (activity is MessageUpdateActivity messageUpdate)
                         {
-                            // Translate messages sent to the user to user language
                             if (_toUserLanguage)
                             {
-                                List<Task> tasks = new List<Task>();
-                                foreach (Activity currentActivity in activities.Where(a => a.Type == ActivityTypes.Message))
-                                {
-                                    tasks.Add(TranslateMessageAsync(newContext, currentActivity.AsMessageActivity(), targetLanguage, sourceLanguage, false));
-                                }
-
-                                if (tasks.Any())
-                                {
-                                    await Task.WhenAll(tasks).ConfigureAwait(false);
-                                }
+                                await TranslateMessageAsync(newContext, messageUpdate, targetLanguage, sourceLanguage, false).ConfigureAwait(false);
                             }
+                        }
 
-                            return await nextSend().ConfigureAwait(false);
-                        });
-
-                        context.OnUpdateActivity(async (newContext, activity, nextUpdate) =>
-                        {
-                            // Translate messages sent to the user to user language
-                            if (activity.Type == ActivityTypes.Message)
-                            {
-                                if (_toUserLanguage)
-                                {
-                                    await TranslateMessageAsync(newContext, activity.AsMessageActivity(), targetLanguage, sourceLanguage, false).ConfigureAwait(false);
-                                }
-                            }
-
-                            return await nextUpdate().ConfigureAwait(false);
-                        });
-                    }
+                        return await nextUpdate().ConfigureAwait(false);
+                    });
                 }
             }
 
@@ -219,7 +215,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <remarks>When the task completes successfully, the <see cref="Activity.Text"/> property
         /// of the message contains the translated text.</remarks>
-        private async Task TranslateMessageAsync(ITurnContext context, IMessageActivity message, string sourceLanguage, string targetLanguage, bool inNativeLanguages)
+        private async Task TranslateMessageAsync(ITurnContext context, MessageActivity message, string sourceLanguage, string targetLanguage, bool inNativeLanguages)
         {
             if (!inNativeLanguages && sourceLanguage != targetLanguage)
             {

@@ -73,7 +73,7 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs
             /// <summary>   Gets or sets the command handler. </summary>
             /// <value> The command handler. </value>
             #endregion
-            public ResumeAfter<IMessageActivity> CommandHandler { set; get; }
+            public ResumeAfter<MessageActivity> CommandHandler { set; get; }
         }
 
         private Command defaultCommand;
@@ -85,7 +85,7 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs
             context.Wait(MessageReceived);
         }
 
-        public virtual async Task MessageReceived(IDialogContext context, IAwaitable<IMessageActivity> message)
+        public virtual async Task MessageReceived(IDialogContext context, IAwaitable<MessageActivity> message)
         {
             var text = (await message).Text;
             Command matched = null;
@@ -148,7 +148,7 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs
         /// <param name="resultHandler"> Optional result handler to be called if handler is creating a chaild dialog. </param>
         /// <returns> A commandDialog. </returns>
         #endregion
-        public CommandDialog<T> On<U>(Regex expression, ResumeAfter<IMessageActivity> handler, ResumeAfter<U> resultHandler = null)
+        public CommandDialog<T> On<U>(Regex expression, ResumeAfter<MessageActivity> handler, ResumeAfter<U> resultHandler = null)
         {
             var command = new Command
             {
@@ -169,7 +169,7 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs
         /// <param name="resultHandler"> Optional result handler to be called if handler is creating a chaild dialog. </param>
         /// <returns> A CommandDialog. </returns>
         #endregion
-        public CommandDialog<T> OnDefault<U>(ResumeAfter<IMessageActivity> handler, ResumeAfter<U> resultHandler = null)
+        public CommandDialog<T> OnDefault<U>(ResumeAfter<MessageActivity> handler, ResumeAfter<U> resultHandler = null)
         {
             var command = new Command { CommandId = "defaultResultHandler", CommandHandler = handler };
             this.defaultCommand = command;

@@ -65,13 +65,13 @@ namespace Microsoft.Bot.Builder.Classic.Tests
 
             [MethodBind]
             [ScorableGroup(2)]
-            Task Activity(IMessageActivity activity);
+            Task Activity(MessageActivity activity);
             [MethodBind]
             [ScorableGroup(2)]
-            Task Activity(ITypingActivity activity);
+            Task Activity(TypingActivity activity);
             [MethodBind]
             [ScorableGroup(2)]
-            Task Activity(IActivity activity);
+            Task Activity(Activity activity);
 
 
             [LuisIntent(IntentAll)]
@@ -138,7 +138,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
         protected readonly Mock<IMethods> methods = new Mock<IMethods>(MockBehavior.Strict);
         protected readonly Mock<ILuisService> luisOne = new Mock<ILuisService>(MockBehavior.Strict);
         protected readonly Mock<ILuisService> luisTwo = new Mock<ILuisService>(MockBehavior.Strict);
-        protected readonly Activity activity = (Activity)DialogTestBase.MakeTestMessage();
+        protected readonly MessageActivity activity = DialogTestBase.MakeTestMessage();
 
         protected readonly Dictionary<string, LuisResult> luisOneByText = new Dictionary<string, LuisResult>();
         protected readonly Dictionary<string, LuisResult> luisTwoByText = new Dictionary<string, LuisResult>();
@@ -220,7 +220,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
             luisOneByText[activity.Text] = Result(null, null, null, null);
             luisTwoByText[activity.Text] = Result(null, null, null, null);
             methods
-                .Setup(m => m.Activity((IMessageActivity) this.activity))
+                .Setup(m => m.Activity((MessageActivity) this.activity))
                 .Returns(Task.CompletedTask);
 
             // act
@@ -233,14 +233,13 @@ namespace Microsoft.Bot.Builder.Classic.Tests
         [TestMethod]
         public async Task Dispatch_Activity_Typing()
         {
-            // arrange
-            activity.Type = ActivityTypes.Typing;
             activity.Text = "blah";
 
+            // arrange
             luisOneByText[activity.Text] = Result(1.0, 0.9, 0.8, 0.7);
             luisTwoByText[activity.Text] = Result(0.7, 0.8, 0.9, 1.0);
             methods
-                .Setup(m => m.Activity((ITypingActivity)this.activity))
+                .Setup(m => m.Activity(TypingActivity.Default))
                 .Returns(Task.CompletedTask);
 
             // act
@@ -260,7 +259,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
             luisOneByText[activity.Text] = Result(1.0, 0.9, 0.8, 0.7);
             luisTwoByText[activity.Text] = Result(0.7, 0.8, 0.9, 1.0);
             methods
-                .Setup(m => m.Activity((IActivity)this.activity))
+                .Setup(m => m.Activity((Activity)this.activity))
                 .Returns(Task.CompletedTask);
 
             // act

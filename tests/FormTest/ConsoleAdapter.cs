@@ -30,7 +30,7 @@ namespace Microsoft.Bot.Builder.Classic.FormFlowTest
                 if (msg == null)
                     break;
 
-                var activity = new Activity()
+                var activity = new MessageActivity
                 {
                     Text = msg,
                     ChannelId = "console",
@@ -38,8 +38,7 @@ namespace Microsoft.Bot.Builder.Classic.FormFlowTest
                     Recipient = new ChannelAccount(id: "bot", name: "Bot"),
                     Conversation = new ConversationAccount(id: "Convo1"),
                     Timestamp = DateTime.UtcNow,
-                    Id = Guid.NewGuid().ToString(),
-                    Type = ActivityTypes.Message
+                    Id = Guid.NewGuid().ToString()
                 };
 
                 using (var context = new TurnContext(this, activity))
@@ -72,34 +71,33 @@ namespace Microsoft.Bot.Builder.Classic.FormFlowTest
             {
                 var activity = activities[index];
 
-                switch (activity.Type)
+                switch (activity)
                 {
-                    case ActivityTypes.Message:
+                    case MessageActivity messageActivity:
                         {                            
 
-                            IMessageActivity message = activity.AsMessageActivity();
-                            if (message.Attachments != null && message.Attachments.Any())
+                            if (messageActivity.Attachments != null && messageActivity.Attachments.Any())
                             {
-                                var attachment = message.Attachments.Count == 1 ? "1 attachment" : $"{message.Attachments.Count()} attachments";
-                                Console.WriteLine($"{message.Text} with {attachment} ");
+                                var attachment = messageActivity.Attachments.Count == 1 ? "1 attachment" : $"{messageActivity.Attachments.Count} attachments";
+                                Console.WriteLine($"{messageActivity.Text} with {attachment} ");
                             }
                             else
                             {
-                                Console.WriteLine($"{message.Text}");
+                                Console.WriteLine($"{messageActivity.Text}");
                             }
                         }
                         break;
-                    case ActivityTypesEx.Delay:
+                    case DelayActivity delayActivity:
                         {
                             // The Activity Schema doesn't have a delay type build in, so it's simulated
                             // here in the Bot. This matches the behavior in the Node connector. 
-                            int delayMs = (int)((Activity)activity).Value;
-                            await Task.Delay(delayMs).ConfigureAwait(false);
+                            await Task.Delay(delayActivity.Delay).ConfigureAwait(false);
                         }
                         break;
-                    case ActivityTypes.Trace:
+                    case TraceActivity traceActivity:
                         // don't send trace activities unless you know that the client needs them.  For example: BF protocol only sends Trace Activity when talking to emulator channel
                         break;
+
                     default:
                         Console.WriteLine("Bot: activity type: {0}", activity.Type);
                         break;

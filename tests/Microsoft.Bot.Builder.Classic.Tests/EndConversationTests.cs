@@ -69,7 +69,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                 return value;
             }
 
-            public async Task MessageReceivedAsync(IDialogContext context, IAwaitable<IMessageActivity> item)
+            public async Task MessageReceivedAsync(IDialogContext context, IAwaitable<MessageActivity> item)
             {
                 var message = await item;
                 if (message.Text == "reset")

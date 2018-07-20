@@ -5,6 +5,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Bot.Builder.Tests
@@ -36,7 +37,7 @@ namespace Microsoft.Bot.Builder.Tests
 
             async Task Echo(ITurnContext ctx)
             {
-                string toEcho = "ECHO:" + ctx.Activity.AsMessageActivity().Text;
+                string toEcho = "ECHO:" + (ctx.Activity as MessageActivity).Text;
                 await ctx.SendActivityAsync(ctx.Activity.CreateReply(toEcho)); 
             }
 
@@ -64,7 +65,7 @@ namespace Microsoft.Bot.Builder.Tests
 
             async Task EchoWithException(ITurnContext ctx)
             {
-                string toEcho = "ECHO:" + ctx.Activity.AsMessageActivity().Text;
+                string toEcho = "ECHO:" + (ctx.Activity as MessageActivity).Text;
                 await ctx.SendActivityAsync(ctx.Activity.CreateReply(toEcho));
                 throw new Exception(uniqueId);
             }

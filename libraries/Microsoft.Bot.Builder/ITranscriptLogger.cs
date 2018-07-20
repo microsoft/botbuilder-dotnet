@@ -16,6 +16,6 @@ namespace Microsoft.Bot.Builder
         /// </summary>
         /// <param name="activity">The activity to transcribe.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
-        Task LogActivityAsync(IActivity activity);
+        Task LogActivityAsync(Activity activity);
     }
 }

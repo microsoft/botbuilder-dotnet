@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
 
         private void PromptRecognizersChoice(string choicesKey, string text, string expected, string locale = null)
         {
-            var activity = new Activity { Text = text, Locale = locale };
+            var activity = new MessageActivity { Text = text, Locale = locale };
             var results = new PromptRecognizer().RecognizeLocalizedChoices(activity, choicesKey, Resources.ResourceManager, null);
             var top = results.MaxBy(x => x.Score);
             Assert.AreEqual(expected, top.Entity);

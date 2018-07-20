@@ -119,7 +119,7 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs
 
     public static class ChannelCapabilityEx
     {
-        public static bool ShouldSetInputHint(this IChannelCapability channelCapability, IMessageActivity activity)
+        public static bool ShouldSetInputHint(this IChannelCapability channelCapability, MessageActivity activity)
         {
             return channelCapability.NeedsInputHint()
                 && activity.Type == ActivityTypes.Message

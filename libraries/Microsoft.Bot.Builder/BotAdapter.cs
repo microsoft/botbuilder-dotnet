@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Builder
     /// logic runs.</para>
     /// </remarks>
     /// <seealso cref="ITurnContext"/>
-    /// <seealso cref="IActivity"/>
+    /// <seealso cref="Activity"/>
     /// <seealso cref="IBot"/>
     /// <seealso cref="IMiddleware"/>
     public abstract class BotAdapter

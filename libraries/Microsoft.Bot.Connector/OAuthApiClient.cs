@@ -229,7 +229,7 @@ namespace Microsoft.Bot.Connector
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <remarks>If the task completes successfully and the call to the OAuth client is successful,
         /// the result contains the signin link.</remarks>
-        public async Task<string> GetSignInLinkAsync(IActivity activity, string connectionName, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<string> GetSignInLinkAsync(Activity activity, string connectionName, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (string.IsNullOrEmpty(connectionName))
             {

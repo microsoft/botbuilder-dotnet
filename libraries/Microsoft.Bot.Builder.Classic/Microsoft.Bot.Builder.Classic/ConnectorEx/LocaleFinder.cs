@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Builder.Classic.ConnectorEx
         /// <param name="activity"> The activity.</param>
         /// <param name="token">The cancellation token.</param>
         /// <returns></returns>
-        Task<string> FindLocale(IActivity activity, CancellationToken token);
+        Task<string> FindLocale(Activity activity, CancellationToken token);
     }
 
     /// <summary>
@@ -38,7 +38,7 @@ namespace Microsoft.Bot.Builder.Classic.ConnectorEx
             SetField.NotNull(out this.resumptionContext, nameof(resumptionContext), resumptionContext);
         }
 
-        public async Task<string> FindLocale(IActivity activity, CancellationToken token)
+        public async Task<string> FindLocale(Activity activity, CancellationToken token)
         {
             if (string.IsNullOrEmpty(this.locale))
             {
@@ -49,7 +49,7 @@ namespace Microsoft.Bot.Builder.Classic.ConnectorEx
                     MicrosoftAppCredentials.TrustServiceUrl(this.conversationReference.ServiceUrl);
                 }
 
-                this.locale = (activity as IMessageActivity)?.Locale;
+                this.locale = (activity as MessageActivity)?.Locale;
 
                 // if locale is null or whitespace in the incoming request,
                 // try to set it from the ResumptionContext

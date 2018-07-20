@@ -8,6 +8,7 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Bot.Builder.Serialization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Net.Http.Headers;
 using Microsoft.Rest.Serialization;
@@ -17,7 +18,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Handlers
 {
     public abstract class BotMessageHandlerBase
     {
-        public static readonly JsonSerializer BotMessageSerializer = JsonSerializer.Create(new JsonSerializerSettings
+        public static readonly JsonSerializer BotMessageJsonSerializer = JsonSerializer.Create(new JsonSerializerSettings
         {
             NullValueHandling = NullValueHandling.Ignore,
             Formatting = Formatting.Indented,
@@ -28,9 +29,12 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Handlers
             Converters = new List<JsonConverter> { new Iso8601TimeSpanConverter() },
         });
 
-        public BotMessageHandlerBase()
+        public BotMessageHandlerBase(IActivitySerializer activitySerializer)
         {
+            ActivitySerializer = activitySerializer ?? throw new ArgumentNullException(nameof(activitySerializer));
         }
+
+        protected IActivitySerializer ActivitySerializer { get; }
 
         public async Task HandleAsync(HttpContext httpContext)
         {
@@ -86,7 +90,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Handlers
                     {
                         using (var jsonWriter = new JsonTextWriter(writer))
                         {
-                            BotMessageSerializer.Serialize(jsonWriter, invokeResponse.Body);
+                            BotMessageJsonSerializer.Serialize(jsonWriter, invokeResponse.Body);
                         }
                     }
                 }

@@ -4,6 +4,7 @@
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Serialization;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Rest.TransientFaultHandling;
 
@@ -104,6 +105,23 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
         public BotFrameworkConfigurationBuilder UsePaths(Action<BotFrameworkPaths> configurePaths)
         {
             configurePaths(BotFrameworkOptions.Paths);
+
+            return this;
+        }
+
+        /// <summary>
+        /// Configures an <see cref="IActivitySerializer">activity serializer implementation</see> that should be used to serialize <see cref="Activity"/>
+        /// that are sent to or received from the bot.
+        /// </summary>
+        /// <remarks>
+        /// If no activity serializer is explicitly configured an instance of <see cref="JsonActivitySerializer"/> will be used by default.
+        /// </remarks>
+        /// <param name="activitySerializer">An <see cref="IActivitySerializer"/> that will be used for serialization.</param>
+        /// <returns>A reference to this instance after the operation has completed.</returns>
+        /// <seealso cref="JsonActivitySerializer"/>
+        public BotFrameworkConfigurationBuilder UseActivitySerializer(IActivitySerializer activitySerializer)
+        {
+            BotFrameworkOptions.ActivitySerializer = activitySerializer;
 
             return this;
         }
