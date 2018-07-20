@@ -36,7 +36,7 @@ namespace Microsoft.Bot.Builder.Ai.Luis.Tests
 
             Assert.IsNotNull(deserialized);
             Assert.AreEqual(model.ApplicationId, deserialized.ApplicationId);
-            Assert.AreEqual(model.SubscriptionKey, deserialized.SubscriptionKey);
+            Assert.AreEqual(model.EndpointKey, deserialized.EndpointKey);
             Assert.AreEqual(model.AzureRegion, deserialized.AzureRegion);
         }
 

@@ -32,7 +32,7 @@ namespace Microsoft.Bot.Builder.Ai.Luis.Tests
             Assert.IsNotNull(deserialized.Options);
             Assert.IsNotNull(deserialized.LuisResult);
             Assert.IsNotNull(deserialized.RecognizerResult);
-            Assert.AreEqual(luisTraceInfo.Application.SubscriptionKey, deserialized.Application.SubscriptionKey);
+            Assert.AreEqual(luisTraceInfo.Application.EndpointKey, deserialized.Application.EndpointKey);
             Assert.AreEqual(luisTraceInfo.Options.Verbose, deserialized.Options.Verbose);
             Assert.AreEqual(luisTraceInfo.LuisResult.Query, deserialized.LuisResult.Query);
             Assert.AreEqual(luisTraceInfo.RecognizerResult.Text, deserialized.RecognizerResult.Text);
