@@ -296,7 +296,7 @@ namespace Microsoft.Bot.Builder.Ai.Luis.Tests
                     if (context.Activity.Text == utterance)
                     {
                         var luisRecognizer = GetLuisRecognizer(verbose: true);
-                        await luisRecognizer.RecognizeAsync(context as TurnContext, CancellationToken.None).ConfigureAwait(false);
+                        await luisRecognizer.RecognizeAsync(context, CancellationToken.None).ConfigureAwait(false);
                         await context.SendActivityAsync(botResponse);
                     }
                 })

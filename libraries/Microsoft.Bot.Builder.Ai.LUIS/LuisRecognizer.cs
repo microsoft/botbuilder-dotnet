@@ -20,12 +20,6 @@ namespace Microsoft.Bot.Builder.Ai.Luis
     /// </summary>
     public class LuisRecognizer : IRecognizer
     {
-        private const string MetadataKey = "$instance";
-        private readonly LuisRuntimeAPI _runtime;
-        private readonly LuisApplication _application;
-        private readonly LuisPredictionOptions _options;
-        private readonly bool _includeApiResults;
-
         /// <summary>
         /// The value type for a LUIS trace activity.
         /// </summary>
@@ -35,6 +29,12 @@ namespace Microsoft.Bot.Builder.Ai.Luis
         /// The context label for a LUIS trace activity.
         /// </summary>
         public const string LuisTraceLabel = "Luis Trace";
+
+        private const string MetadataKey = "$instance";
+        private readonly LuisRuntimeAPI _runtime;
+        private readonly LuisApplication _application;
+        private readonly LuisPredictionOptions _options;
+        private readonly bool _includeApiResults;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LuisRecognizer"/> class.
@@ -54,11 +54,11 @@ namespace Microsoft.Bot.Builder.Ai.Luis
         }
 
         /// <inheritdoc />
-        public async Task<RecognizerResult> RecognizeAsync(TurnContext context, CancellationToken ct)
+        public async Task<RecognizerResult> RecognizeAsync(ITurnContext context, CancellationToken ct)
             => await RecognizeInternalAsync(context, ct).ConfigureAwait(false);
 
         /// <inheritdoc />
-        public async Task<T> RecognizeAsync<T>(TurnContext context, CancellationToken ct)
+        public async Task<T> RecognizeAsync<T>(ITurnContext context, CancellationToken ct)
             where T : IRecognizerConvert, new()
         {
             var result = new T();
@@ -327,7 +327,7 @@ namespace Microsoft.Bot.Builder.Ai.Luis
             }
         }
 
-        private async Task<RecognizerResult> RecognizeInternalAsync(TurnContext context, CancellationToken ct)
+        private async Task<RecognizerResult> RecognizeInternalAsync(ITurnContext context, CancellationToken ct)
         {
             BotAssert.ContextNotNull(context);
 
@@ -375,7 +375,7 @@ namespace Microsoft.Bot.Builder.Ai.Luis
                 Options = _options,
             };
 
-            await context.TraceActivityAsync("LuisRecognizerMiddleware", traceInfo, LuisTraceType, LuisTraceLabel, ct).ConfigureAwait(false);
+            await context.TraceActivityAsync("LuisRecognizer", traceInfo, LuisTraceType, LuisTraceLabel, ct).ConfigureAwait(false);
             return recognizerResult;
         }
     }
