@@ -16,15 +16,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [TestMethod]
         public async Task BasicAttachmentPrompt()
         {
+            ConversationState convoState = new ConversationState(new MemoryStorage());
+            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test", () => new Dictionary<string, object>());
+
             TestAdapter adapter = new TestAdapter()
-                .Use(new ConversationState<Dictionary<string, object>>(new MemoryStorage()));
+                .Use(convoState);
 
             var attachment = new Attachment { Content = "some content", ContentType = "text/plain" };
             var activityWithAttachment = MessageFactory.Attachment(attachment);
 
             await new TestFlow(adapter, async (turnContext) =>
             {
-                var state = ConversationState<Dictionary<string, object>>.Get(turnContext);
+                var state = await testProperty.GetAsync(turnContext);
                 var prompt = new AttachmentPrompt();
 
                 var dialogCompletion = await prompt.ContinueAsync(turnContext, state);

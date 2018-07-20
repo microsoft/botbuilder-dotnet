@@ -13,11 +13,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Bot.Builder.Ai.QnA.Tests
 {
-    class LanguageState
-    {
-        public string Language { get; set; }
-    }
-
     /// <summary>
     /// A specialized translator that can handle specific scenarios.
     /// </summary>
@@ -68,7 +63,7 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
             }
 
             var adapter = new TestAdapter()
-                .Use(new SpecializedTranslatorMiddleware(new[] {"en-us"}, translatorKey));
+                .Use(new SpecializedTranslatorMiddleware(new[] { "en" }, translatorKey));
 
             await new TestFlow(adapter, context =>
                 {
@@ -97,17 +92,18 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
                 return;
             }
 
+            var userState = new UserState(new MemoryStorage());
+            var languageStateProperty = userState.CreateProperty<string>("languageState", () => "en");
+
             var adapter = new TestAdapter()
-                .Use(new TranslationMiddleware(new[] {"en-us"}, translatorKey));
+                .Use(new TranslationMiddleware(new[] { "en" }, translatorKey));
 
-            await new TestFlow(adapter, context =>
+            await new TestFlow(adapter, async context =>
                 {
-                    if (!context.Responded)
+                    if (!await HandleChangeLanguageRequest(context, languageStateProperty))
                     {
-                        context.SendActivityAsync(context.Activity.AsMessageActivity().Text);
+                        await context.SendActivityAsync(context.Activity.AsMessageActivity().Text);
                     }
-
-                    return Task.CompletedTask;
                 })
                 .Send("salut")
                 .AssertReply("Hello")
@@ -126,19 +122,19 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
                 Assert.Inconclusive("Missing Translator Environment variables - Skipping test");
                 return;
             }
+            var userState = new UserState(new MemoryStorage());
+            var languageStateProperty = userState.CreateProperty<string>("languageState", () => "en");
 
             var adapter = new TestAdapter()
-                .Use(new UserState<LanguageState>(new MemoryStorage()))
-                .Use(new TranslationMiddleware(new[] {"en-us"}, translatorKey, new Dictionary<string, List<string>>(), new CustomDictionary(), GetActiveLanguage, SetActiveLanguage));
+                .Use(userState)
+                .Use(new TranslationMiddleware(new[] { "en" }, translatorKey, new Dictionary<string, List<string>>(), new CustomDictionary(), languageStateProperty));
 
-            await new TestFlow(adapter, context =>
+            await new TestFlow(adapter, async context =>
                 {
-                    if (!context.Responded)
+                    if (!await HandleChangeLanguageRequest(context, languageStateProperty))
                     {
-                        context.SendActivityAsync(context.Activity.AsMessageActivity().Text);
+                        await context.SendActivityAsync(context.Activity.AsMessageActivity().Text);
                     }
-
-                    return Task.CompletedTask;
                 })
                 .Send("set my language to fr")
                 .AssertReply("Changing your language to fr")
@@ -157,19 +153,19 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
                 Assert.Inconclusive("Missing Translator Environment variables - Skipping test");
                 return;
             }
+            var userState = new UserState(new MemoryStorage());
+            var languageStateProperty = userState.CreateProperty<string>("languageState", () => "en");
 
             var adapter = new TestAdapter()
-                .Use(new UserState<LanguageState>(new MemoryStorage()))
-                .Use(new TranslationMiddleware(new[] {"en-us"}, translatorKey, new Dictionary<string, List<string>>(), new CustomDictionary(), GetActiveLanguage, SetActiveLanguage, true));
+                .Use(userState)
+                .Use(new TranslationMiddleware(new[] { "en" }, translatorKey, new Dictionary<string, List<string>>(), new CustomDictionary(), languageStateProperty, true));
 
-            await new TestFlow(adapter, context =>
+            await new TestFlow(adapter, async context =>
                 {
-                    if (!context.Responded)
+                    if (!await HandleChangeLanguageRequest(context, languageStateProperty))
                     {
-                        context.SendActivityAsync(context.Activity.AsMessageActivity().Text);
+                        await context.SendActivityAsync(context.Activity.AsMessageActivity().Text);
                     }
-
-                    return Task.CompletedTask;
                 })
                 .Send("set my language to fr")
                 .AssertReply("Changing your language to fr")
@@ -178,9 +174,7 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
                 .StartTestAsync();
         }
 
-        private void SetLanguage(ITurnContext context, string language) => context.GetUserState<LanguageState>().Language = language;
-
-        protected async Task<bool> SetActiveLanguage(ITurnContext context)
+        protected async Task<bool> HandleChangeLanguageRequest(ITurnContext context, IStatePropertyAccessor<string> languageProperty)
         {
             var changeLang = false; //logic implemented by developper to make a signal for language changing 
             //use a specific message from user to change language 
@@ -192,10 +186,10 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
 
             if (changeLang)
             {
-                var newLang = messageActivity.Text.ToLower().Replace("set my language to", "").Trim();
+                var newLang = messageActivity.Text.ToLower().Replace("set my language to", string.Empty).Trim();
                 if (!string.IsNullOrWhiteSpace(newLang))
                 {
-                    SetLanguage(context, newLang);
+                    await languageProperty.SetAsync(context, newLang);
                     await context.SendActivityAsync($@"Changing your language to {newLang}");
                 }
                 else
@@ -208,17 +202,6 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
             }
 
             return false;
-        }
-
-        protected string GetActiveLanguage(ITurnContext context)
-        {
-            if (context.Activity.Type == ActivityTypes.Message
-                && !string.IsNullOrEmpty(context.GetUserState<LanguageState>().Language))
-            {
-                return context.GetUserState<LanguageState>().Language;
-            }
-
-            return "en";
         }
 
         private bool EnvironmentVariablesDefined()

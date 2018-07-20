@@ -52,7 +52,7 @@ namespace Microsoft.Bot.Builder.Tests
             Assert.AreEqual("echo:bar", pagedResult.Items[5].AsMessageActivity().Text);
             foreach (var activity in pagedResult.Items)
             {
-                Assert.IsTrue(!String.IsNullOrWhiteSpace(activity.Id));
+                Assert.IsTrue(!string.IsNullOrWhiteSpace(activity.Id));
                 Assert.IsTrue(activity.Timestamp > default(DateTime));
             }
         }

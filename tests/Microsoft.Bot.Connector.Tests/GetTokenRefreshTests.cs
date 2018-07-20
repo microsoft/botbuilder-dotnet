@@ -83,7 +83,7 @@ namespace Microsoft.Bot.Builder.Tests
                         results.Add(result);
                     }
                     else
-                        Assert.True(results.Contains(result));
+                        Assert.Contains(result, results);
                 }
             }
 

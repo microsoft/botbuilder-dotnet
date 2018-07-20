@@ -61,7 +61,7 @@ namespace Microsoft.Bot.Schema
                 ServiceUrl = this.ServiceUrl,
                 ChannelId = this.ChannelId,
                 Conversation = new ConversationAccount(isGroup: this.Conversation.IsGroup, id: this.Conversation.Id, name: this.Conversation.Name),
-                Text = text ?? String.Empty,
+                Text = text ?? string.Empty,
                 Locale = locale ?? this.Locale,
                 Attachments = new List<Attachment>(),
                 Entities = new List<Entity>(),
@@ -303,10 +303,10 @@ namespace Microsoft.Bot.Schema
         /// for use on an activity of <see cref="Activity.Type"/> <see cref="ActivityTypes.Message"/>.</remarks>
         public bool HasContent()
         {
-            if (!String.IsNullOrWhiteSpace(this.Text))
+            if (!string.IsNullOrWhiteSpace(this.Text))
                 return true;
 
-            if (!String.IsNullOrWhiteSpace(this.Summary))
+            if (!string.IsNullOrWhiteSpace(this.Summary))
                 return true;
 
             if (this.Attachments != null && this.Attachments.Any())
@@ -324,7 +324,7 @@ namespace Microsoft.Bot.Schema
         /// <returns>The array of mentions; or an empty array, if none are found.</returns>
         public Mention[] GetMentions()
         {
-            return this.Entities?.Where(entity => String.Compare(entity.Type, "mention", ignoreCase: true) == 0)
+            return this.Entities?.Where(entity => string.Compare(entity.Type, "mention", ignoreCase: true) == 0)
                 .Select(e => e.Properties.ToObject<Mention>()).ToArray() ?? new Mention[0];
         }
 

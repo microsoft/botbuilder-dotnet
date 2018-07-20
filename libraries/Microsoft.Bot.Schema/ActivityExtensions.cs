@@ -53,7 +53,7 @@ namespace Microsoft.Bot.Schema
         {
             foreach (var mention in activity.GetMentions().Where(mention => mention.Mentioned.Id == id))
             {
-                activity.Text = Regex.Replace(activity.Text, mention.Text, "", RegexOptions.IgnoreCase);
+                activity.Text = Regex.Replace(activity.Text, mention.Text, string.Empty, RegexOptions.IgnoreCase);
             }
             return activity.Text;
         }
