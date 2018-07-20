@@ -20,7 +20,6 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
         [TestMethod]
         [TestCategory("AI")]
         [TestCategory("QnAMaker")]
-        [Ignore]
         public async Task QnaMaker_ReturnsAnswer()
         {
             var mockHttp = new MockHttpMessageHandler();
@@ -48,7 +47,6 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
         [TestMethod]
         [TestCategory("AI")]
         [TestCategory("QnAMaker")]
-        [Ignore]
         public async Task QnaMaker_TestThreshold()
         {
             var mockHttp = new MockHttpMessageHandler();
@@ -77,7 +75,6 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
         [TestCategory("AI")]
         [TestCategory("QnAMaker")]
         [ExpectedException(typeof(ArgumentOutOfRangeException))]
-        [Ignore]
         public void QnaMaker_Test_ScoreThreshold_OutOfRange()
         {
             var qna = new QnAMaker(
@@ -98,7 +95,6 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
         [TestCategory("AI")]
         [TestCategory("QnAMaker")]
         [ExpectedException(typeof(ArgumentOutOfRangeException))]
-        [Ignore]
         public void QnaMaker_Test_Top_OutOfRange()
         {
             var qna = new QnAMaker(
