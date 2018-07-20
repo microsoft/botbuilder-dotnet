@@ -5,7 +5,6 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Ai.LUIS
 {
-
     /// <summary>
     /// Strongly typed LUIS builtin_temperature.
     /// </summary>

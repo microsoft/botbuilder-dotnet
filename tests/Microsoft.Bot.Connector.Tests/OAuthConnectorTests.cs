@@ -30,14 +30,14 @@ namespace Connector.Tests
         public async Task GetUserToken_ShouldThrowOnEmptyUserId()
         {
             var client = new OAuthClient(mockConnectorClient, "https://localhost");
-            await Assert.ThrowsAsync<ArgumentNullException>(() => client.GetUserTokenAsync("", "mockConnection", ""));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => client.GetUserTokenAsync(string.Empty, "mockConnection", string.Empty));
         }
 
         [Fact]
         public async Task GetUserToken_ShouldThrowOnEmptyConnectionName()
         {
             var client = new OAuthClient(mockConnectorClient, "https://localhost");
-            await Assert.ThrowsAsync<ArgumentNullException>(() => client.GetUserTokenAsync("userid", "", ""));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => client.GetUserTokenAsync("userid", string.Empty, string.Empty));
         }
 
         [Fact]
@@ -45,18 +45,18 @@ namespace Connector.Tests
         {
             await UseOAuthClientFor(async client =>
              {
-                 var token = await client.GetUserTokenAsync("default-user", "mygithubconnection", "");
+                 var token = await client.GetUserTokenAsync("default-user", "mygithubconnection", string.Empty);
                  Assert.NotNull(token);
                  Assert.False(string.IsNullOrEmpty(token.Token));
              });
         }
 
         [Fact]
-        public async Task GetUserToken_ShouldReturnNullOnInvalidConnectionString()
+        public async Task GetUserToken_ShouldReturnNullOnInvalidConnectionstring()
         {
             await UseOAuthClientFor(async client =>
              {
-                 var token = await client.GetUserTokenAsync("default-user", "mygithubconnection1", "");
+                 var token = await client.GetUserTokenAsync("default-user", "mygithubconnection1", string.Empty);
                  Assert.Null(token);
              });
         }
@@ -83,14 +83,14 @@ namespace Connector.Tests
         public async Task SignOutUser_ShouldThrowOnEmptyUserId()
         {
             var client = new OAuthClient(mockConnectorClient, "https://localhost");
-            await Assert.ThrowsAsync<ArgumentNullException>(() => client.SignOutUserAsync("", "mockConnection"));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => client.SignOutUserAsync(string.Empty, "mockConnection"));
         }
 
         [Fact]
         public async Task SignOutUser_ShouldThrowOnEmptyConnectionName()
         {
             var client = new OAuthClient(mockConnectorClient, "https://localhost");
-            await Assert.ThrowsAsync<ArgumentNullException>(() => client.SignOutUserAsync("userid", ""));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => client.SignOutUserAsync("userid", string.Empty));
         }
 
         [Fact]
@@ -98,7 +98,7 @@ namespace Connector.Tests
         {
             var activity = new Activity();
             var client = new OAuthClient(mockConnectorClient, "https://localhost");
-            await Assert.ThrowsAsync<ArgumentNullException>(() => client.GetSignInLinkAsync(activity, ""));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => client.GetSignInLinkAsync(activity, string.Empty));
         }
 
         [Fact]

@@ -86,11 +86,11 @@ namespace Microsoft.Bot.Builder.Ai.Translation
                 request.RequestUri = ServiceUrl;
                 request.Content = new StringContent(string.Empty);
                 request.Headers.TryAddWithoutValidation(OcpApimSubscriptionKeyHeader, this.SubscriptionKey);
-                using (var response = await _httpClient.SendAsync(request))
+                using (var response = await _httpClient.SendAsync(request).ConfigureAwait(false))
                 {
                     this.RequestStatusCode = response.StatusCode;
                     response.EnsureSuccessStatusCode();
-                    var token = await response.Content.ReadAsStringAsync();
+                    var token = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                     _storedTokenTime = DateTime.Now;
                     _storedTokenValue = "Bearer " + token;
                     return _storedTokenValue;

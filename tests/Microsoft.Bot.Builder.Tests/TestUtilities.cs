@@ -43,7 +43,7 @@ namespace Microsoft.Bot.Builder.Tests
             {
                 return File.ReadAllLines(@"\\fusebox\private\sdk\UnitTestKeys.cmd")
                     .Where(l => l.StartsWith("@set", StringComparison.OrdinalIgnoreCase))
-                    .Select(l => l.Replace("@set ", "", StringComparison.OrdinalIgnoreCase).Split('='))
+                    .Select(l => l.Replace("@set ", string.Empty, StringComparison.OrdinalIgnoreCase).Split('='))
                     .ToDictionary(pairs => pairs[0], pairs => pairs[1]);
             }
             catch (Exception err)
@@ -59,7 +59,7 @@ namespace Microsoft.Bot.Builder.Tests
             {
                 // fallback to environment variables
                 value = Environment.GetEnvironmentVariable(key);
-                if (String.IsNullOrWhiteSpace(value))
+                if (string.IsNullOrWhiteSpace(value))
                     value = null;
             }
             return value;

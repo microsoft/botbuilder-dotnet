@@ -53,7 +53,7 @@ namespace Connector.Tests
             User = new ChannelAccount() { Id = userId };
         }
 
-        public async void UseClientFor(Func<IConnectorClient, Task> doTest, string className = null, [CallerMemberName] string methodName = "")
+        public async void UseClientFor(Func<IConnectorClient, Task> doTest, string className = null, [CallerMemberName] string methodName = null)
         {
             using (MockContext context = MockContext.Start(className ?? ClassName, methodName))
             {
@@ -68,7 +68,7 @@ namespace Connector.Tests
             }
         }
 
-        public async Task UseOAuthClientFor(Func<OAuthClient, Task> doTest, string className = null, [CallerMemberName] string methodName = "")
+        public async Task UseOAuthClientFor(Func<OAuthClient, Task> doTest, string className = null, [CallerMemberName] string methodName = null)
         {
             using (MockContext context = MockContext.Start(className ?? ClassName, methodName))
             {

@@ -91,7 +91,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
                     connector = opt.InlineSeparator ?? string.Empty;
                 }
             }
-            txt += "";
+            txt += string.Empty;
 
             // Return activity with choices as an inline list.
             return MessageFactory.Text(txt, speak, InputHints.ExpectingInput);
