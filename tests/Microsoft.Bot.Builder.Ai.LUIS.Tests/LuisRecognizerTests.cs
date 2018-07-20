@@ -7,7 +7,9 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime;
+using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Tests;
+using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -21,7 +23,7 @@ namespace Microsoft.Bot.Builder.Ai.Luis.Tests
     {
         private readonly string appId = TestUtilities.GetKey("LUISAPPID");
         private readonly string subscriptionKey = TestUtilities.GetKey("LUISAPPKEY");
-        private readonly string region = TestUtilities.GetKey("LUISREGION");
+        private readonly string region = "Westus";
 
         [TestMethod]
         public async Task SingleIntent_SimplyEntity()
@@ -33,7 +35,8 @@ namespace Microsoft.Bot.Builder.Ai.Luis.Tests
             }
 
             var luisRecognizer = GetLuisRecognizer(verbose: true);
-            var result = await luisRecognizer.RecognizeAsync("My name is Emad", CancellationToken.None);
+            var context = GetContext("My name is Emad");
+            var result = await luisRecognizer.RecognizeAsync(context, CancellationToken.None);
             Assert.IsNotNull(result);
             Assert.IsNull(result.AlteredText);
             Assert.AreEqual("My name is Emad", result.Text);
@@ -61,7 +64,8 @@ namespace Microsoft.Bot.Builder.Ai.Luis.Tests
             }
 
             var luisRecognizer = GetLuisRecognizer(verbose: true, luisOptions: new LuisPredictionOptions { Verbose = true });
-            var result = await luisRecognizer.RecognizeAsync("Please deliver February 2nd 2001", CancellationToken.None);
+            var context = GetContext("Please deliver February 2nd 2001");
+            var result = await luisRecognizer.RecognizeAsync(context, CancellationToken.None);
             Assert.IsNotNull(result);
             Assert.AreEqual("Please deliver February 2nd 2001", result.Text);
             Assert.IsNotNull(result.Intents);
@@ -97,7 +101,8 @@ namespace Microsoft.Bot.Builder.Ai.Luis.Tests
             }
 
             var luisRecognizer = GetLuisRecognizer(verbose: true, luisOptions: new LuisPredictionOptions { Verbose = true });
-            var result = await luisRecognizer.RecognizeAsync("Please deliver February 2nd 2001 in room 201", CancellationToken.None);
+            var context = GetContext("Please deliver February 2nd 2001 in room 201");
+            var result = await luisRecognizer.RecognizeAsync(context, CancellationToken.None);
             Assert.IsNotNull(result);
             Assert.IsNotNull(result.Text);
             Assert.AreEqual("Please deliver February 2nd 2001 in room 201", result.Text);
@@ -122,7 +127,8 @@ namespace Microsoft.Bot.Builder.Ai.Luis.Tests
             }
 
             var luisRecognizer = GetLuisRecognizer(verbose: true, luisOptions: new LuisPredictionOptions { Verbose = true });
-            var result = await luisRecognizer.RecognizeAsync("I want to travel on united", CancellationToken.None);
+            var context = GetContext("I want to travel on united");
+            var result = await luisRecognizer.RecognizeAsync(context, CancellationToken.None);
             Assert.IsNotNull(result);
             Assert.IsNotNull(result.Text);
             Assert.AreEqual("I want to travel on united", result.Text);
@@ -148,7 +154,8 @@ namespace Microsoft.Bot.Builder.Ai.Luis.Tests
             }
 
             var luisRecognizer = GetLuisRecognizer(verbose: true, luisOptions: new LuisPredictionOptions { Verbose = true });
-            var result = await luisRecognizer.RecognizeAsync("I want to travel on DL", CancellationToken.None);
+            var context = GetContext("I want to travel on DL");
+            var result = await luisRecognizer.RecognizeAsync(context, CancellationToken.None);
             Assert.IsNotNull(result);
             Assert.IsNotNull(result.Text);
             Assert.AreEqual("I want to travel on DL", result.Text);
@@ -176,7 +183,8 @@ namespace Microsoft.Bot.Builder.Ai.Luis.Tests
             }
 
             var luisRecognizer = GetLuisRecognizer(verbose: true, luisOptions: new LuisPredictionOptions { Verbose = true });
-            var result = await luisRecognizer.RecognizeAsync("Please deliver it to 98033 WA", CancellationToken.None);
+            var context = GetContext("Please deliver it to 98033 WA");
+            var result = await luisRecognizer.RecognizeAsync(context, CancellationToken.None);
             Assert.IsNotNull(result);
             Assert.IsNotNull(result.Text);
             Assert.AreEqual("Please deliver it to 98033 WA", result.Text);
@@ -218,7 +226,8 @@ namespace Microsoft.Bot.Builder.Ai.Luis.Tests
             }
 
             var luisRecognizer = GetLuisRecognizer(verbose: true, luisOptions: new LuisPredictionOptions { Verbose = true });
-            var result = await luisRecognizer.RecognizeAsync("Book a table on Friday or tomorrow at 5 or tomorrow at 4", CancellationToken.None);
+            var context = GetContext("Book a table on Friday or tomorrow at 5 or tomorrow at 4");
+            var result = await luisRecognizer.RecognizeAsync(context, CancellationToken.None);
             Assert.IsNotNull(result.Entities["datetime"]);
             Assert.AreEqual(3, result.Entities["datetime"].Count());
             Assert.AreEqual(1, result.Entities["datetime"][0]["timex"].Count());
@@ -252,7 +261,8 @@ namespace Microsoft.Bot.Builder.Ai.Luis.Tests
             var expected = new StreamReader(expectedPath).ReadToEnd();
             dynamic expectedJson = JsonConvert.DeserializeObject(expected);
             var query = (string)expectedJson.text ?? (string)expectedJson.Text;
-            var typedResult = await luisRecognizer.RecognizeAsync<T>(query, CancellationToken.None);
+            var context = GetContext(query);
+            var typedResult = await luisRecognizer.RecognizeAsync<T>(context, CancellationToken.None);
             var typedJson = Json<T>(typedResult);
             if (!WithinDelta(expectedJson, typedJson, 0.1))
             {
@@ -267,6 +277,52 @@ namespace Microsoft.Bot.Builder.Ai.Luis.Tests
             {
                 File.Delete(expectedPath + ".new");
             }
+        }
+
+        [TestMethod]
+        public async Task TraceActivity()
+        {
+            if (!EnvironmentVariablesDefined())
+            {
+                Assert.Inconclusive("Missing Luis Environment variables - Skipping test");
+                return;
+            }
+            
+            var adapter = new TestAdapter(null, true);
+            const string utterance = @"My name is Emad";
+            const string botResponse = @"Hi Emad";
+            await new TestFlow(adapter, async context =>
+                {
+                    if (context.Activity.Text == utterance)
+                    {
+                        var luisRecognizer = GetLuisRecognizer(verbose: true);
+                        await luisRecognizer.RecognizeAsync(context, CancellationToken.None).ConfigureAwait(false);
+                        await context.SendActivityAsync(botResponse);
+                    }
+                })
+                .Test(utterance, activity =>
+                {
+                    var traceActivity = activity as ITraceActivity;
+                    Assert.IsNotNull(traceActivity);
+                    Assert.AreEqual(LuisRecognizer.LuisTraceType, traceActivity.ValueType);
+                    Assert.AreEqual(LuisRecognizer.LuisTraceLabel, traceActivity.Label);
+
+                    var luisTraceInfo = traceActivity.Value as LuisTraceInfo;
+                    Assert.IsNotNull(luisTraceInfo);
+                    Assert.IsNotNull(luisTraceInfo.RecognizerResult);
+                    Assert.IsNotNull(luisTraceInfo.LuisResult);
+                    Assert.IsNotNull(luisTraceInfo.Options);
+                    Assert.IsNotNull(luisTraceInfo.Application);
+
+                    Assert.AreEqual(luisTraceInfo.RecognizerResult.Text, utterance);
+                    Assert.IsNotNull(luisTraceInfo.RecognizerResult.Intents["SpecifyName"]);
+                    Assert.AreEqual(luisTraceInfo.LuisResult.Query, utterance);
+                    Assert.AreEqual(luisTraceInfo.Application.ApplicationId, appId);
+
+                }, "luisTraceInfo")
+                .Send(utterance)
+                .AssertReply(botResponse, "passthrough")
+                .StartTestAsync();
         }
 
         [TestMethod]
@@ -359,6 +415,20 @@ namespace Microsoft.Bot.Builder.Ai.Luis.Tests
         {
             var app = new LuisApplication(appId, subscriptionKey, region);
             return new LuisRecognizer(app, luisOptions, verbose);
+        }
+
+        private static TurnContext GetContext(string utterance)
+        {
+            var b = new TestAdapter();
+            var a = new Activity
+            {
+                Type = ActivityTypes.Message,
+                Text = utterance,
+                Conversation = new ConversationAccount(),
+                Recipient = new ChannelAccount(),
+                From = new ChannelAccount()
+            };
+            return new TurnContext(b, a);
         }
     }
 }
