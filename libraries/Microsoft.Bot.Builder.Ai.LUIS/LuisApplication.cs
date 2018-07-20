@@ -39,7 +39,7 @@ namespace Microsoft.Bot.Builder.Ai.Luis
             }
 
             ApplicationId = applicationId;
-            SubscriptionKey = endpointKey;
+            EndpointKey = endpointKey;
             AzureRegion = azureRegion;
         }
 
@@ -57,7 +57,7 @@ namespace Microsoft.Bot.Builder.Ai.Luis
         /// <value>
         /// LUIS subscription or endpoint key.
         /// </value>
-        public string SubscriptionKey { get; set; }
+        public string EndpointKey { get; set; }
 
         /// <summary>
         /// Gets or sets Azure Region where endpoint is located.

@@ -44,7 +44,7 @@ namespace Microsoft.Bot.Builder.Ai.Luis
         /// <param name="includeApiResults">TRUE to include raw LUIS API response.</param>
         public LuisRecognizer(LuisApplication application, LuisPredictionOptions predictionOptions = null, bool includeApiResults = false)
         {
-            runtime = new LuisRuntimeAPI(new ApiKeyServiceClientCredentials(application.SubscriptionKey))
+            runtime = new LuisRuntimeAPI(new ApiKeyServiceClientCredentials(application.EndpointKey))
             {
                 AzureRegion = (AzureRegions)Enum.Parse(typeof(AzureRegions), application.AzureRegion),
             };
