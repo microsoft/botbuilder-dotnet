@@ -1,0 +1,11 @@
+<html>
+    <body>
+        <h1>Argument Exception</h1>
+        <p>Method: Translate()</p>
+        <p>Parameter: to</p>
+        <p>Message: 'to' must be a valid language&#xD;
+Parameter name: to</p>
+        <code></code>
+        <p>message id=1230.V2_Rest.Translate.357A9272</p>
+    </body>
+</html>

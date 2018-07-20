@@ -12,6 +12,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
     {
         public string Locale { get; set; }
     }
+
     [TestClass]
     public class LocaleConverterMiddlewareTests
     {
