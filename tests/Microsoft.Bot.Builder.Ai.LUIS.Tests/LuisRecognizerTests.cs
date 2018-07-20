@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Builder.Ai.Luis.Tests
     {
         private readonly string appId = TestUtilities.GetKey("LUISAPPID");
         private readonly string subscriptionKey = TestUtilities.GetKey("LUISAPPKEY");
-        private readonly string region = TestUtilities.GetKey("LUISREGION");
+        private readonly string region = "Westus";
 
         [TestMethod]
         public async Task SingleIntent_SimplyEntity()
@@ -423,7 +423,10 @@ namespace Microsoft.Bot.Builder.Ai.Luis.Tests
             var a = new Activity
             {
                 Type = ActivityTypes.Message,
-                Text = utterance
+                Text = utterance,
+                Conversation = new ConversationAccount(),
+                Recipient = new ChannelAccount(),
+                From = new ChannelAccount()
             };
             return new TurnContext(b, a);
         }

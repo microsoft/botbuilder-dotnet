@@ -31,10 +31,10 @@ namespace Microsoft.Bot.Builder.Ai.Luis
         public const string LuisTraceLabel = "Luis Trace";
 
         private const string MetadataKey = "$instance";
-        private readonly LuisRuntimeAPI _runtime;
-        private readonly LuisApplication _application;
-        private readonly LuisPredictionOptions _options;
-        private readonly bool _includeApiResults;
+        private readonly LuisRuntimeAPI runtime;
+        private readonly LuisApplication application;
+        private readonly LuisPredictionOptions options;
+        private readonly bool includeApiResults;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LuisRecognizer"/> class.
@@ -44,13 +44,13 @@ namespace Microsoft.Bot.Builder.Ai.Luis
         /// <param name="includeApiResults">TRUE to include raw LUIS API response.</param>
         public LuisRecognizer(LuisApplication application, LuisPredictionOptions predictionOptions = null, bool includeApiResults = false)
         {
-            _runtime = new LuisRuntimeAPI(new ApiKeyServiceClientCredentials(application.SubscriptionKey))
+            runtime = new LuisRuntimeAPI(new ApiKeyServiceClientCredentials(application.SubscriptionKey))
             {
                 AzureRegion = (AzureRegions)Enum.Parse(typeof(AzureRegions), application.AzureRegion),
             };
-            _application = application;
-            _options = predictionOptions ?? new LuisPredictionOptions();
-            _includeApiResults = includeApiResults;
+            this.application = application;
+            this.options = predictionOptions ?? new LuisPredictionOptions();
+            this.includeApiResults = includeApiResults;
         }
 
         /// <inheritdoc />
@@ -343,15 +343,15 @@ namespace Microsoft.Bot.Builder.Ai.Luis
                 throw new ArgumentNullException(nameof(utterance));
             }
 
-            var luisResult = await _runtime.Prediction.ResolveAsync(
-                _application.ApplicationId,
+            var luisResult = await runtime.Prediction.ResolveAsync(
+                application.ApplicationId,
                 utterance,
-                timezoneOffset: _options.TimezoneOffset,
-                verbose: _options.Verbose,
-                staging: _options.Staging,
-                spellCheck: _options.SpellCheck,
-                bingSpellCheckSubscriptionKey: _options.BingSpellCheckSubscriptionKey,
-                log: _options.Log,
+                timezoneOffset: options.TimezoneOffset,
+                verbose: options.Verbose,
+                staging: options.Staging,
+                spellCheck: options.SpellCheck,
+                bingSpellCheckSubscriptionKey: options.BingSpellCheckSubscriptionKey,
+                log: options.Log,
                 cancellationToken: ct)
                 .ConfigureAwait(false);
             var recognizerResult = new RecognizerResult
@@ -359,10 +359,10 @@ namespace Microsoft.Bot.Builder.Ai.Luis
                 Text = utterance,
                 AlteredText = luisResult.AlteredQuery,
                 Intents = GetIntents(luisResult),
-                Entities = ExtractEntitiesAndMetadata(luisResult.Entities, luisResult.CompositeEntities, _options.IncludeInstanceData ?? true),
+                Entities = ExtractEntitiesAndMetadata(luisResult.Entities, luisResult.CompositeEntities, options.IncludeInstanceData ?? true),
             };
             AddProperties(luisResult, recognizerResult);
-            if (_includeApiResults)
+            if (includeApiResults)
             {
                 recognizerResult.Properties.Add("luisResult", luisResult);
             }
@@ -370,9 +370,9 @@ namespace Microsoft.Bot.Builder.Ai.Luis
             var traceInfo = new LuisTraceInfo
             {
                 RecognizerResult = recognizerResult,
-                Application = _application,
+                Application = application,
                 LuisResult = luisResult,
-                Options = _options,
+                Options = options,
             };
 
             await context.TraceActivityAsync("LuisRecognizer", traceInfo, LuisTraceType, LuisTraceLabel, ct).ConfigureAwait(false);
