@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
@@ -99,8 +100,8 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
             {
                 if (context.Activity is MessageActivity userMessage)
                 {
-                    var userMessageText = userMessage.Text.ToLowerInvariant();
-                    if (userMessageText.StartsWith("set language "))
+                    var userMessageText = userMessage.Text;
+                    if (userMessageText.StartsWith("set language ", StringComparison.OrdinalIgnoreCase))
                     {
                         await userLangProp.SetAsync(context, userMessageText.Substring(13, 5));
                     }

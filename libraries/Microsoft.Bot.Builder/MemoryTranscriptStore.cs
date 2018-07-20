@@ -84,7 +84,6 @@ namespace Microsoft.Bot.Builder
                         if (continuationToken != null)
                         {
                             pagedResult.Items = transcript
-                                .OrderBy(a => a.Timestamp)
                                 .Where(a => a.Timestamp >= startDate)
                                 .SkipWhile(a => a.Id != continuationToken)
                                 .Skip(1)
@@ -99,7 +98,6 @@ namespace Microsoft.Bot.Builder
                         else
                         {
                             pagedResult.Items = transcript
-                                .OrderBy(a => a.Timestamp)
                                 .Where(a => a.Timestamp >= startDate)
                                 .Take(20)
                                 .ToArray();
