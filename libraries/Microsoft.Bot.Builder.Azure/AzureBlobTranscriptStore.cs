@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Serialization;
 using Microsoft.Bot.Schema;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
@@ -21,11 +22,11 @@ namespace Microsoft.Bot.Builder.Azure
     /// </remarks>
     public class AzureBlobTranscriptStore : ITranscriptStore
     {
-        private static readonly JsonSerializer _jsonSerializer = JsonSerializer.Create(new JsonSerializerSettings()
+        private static readonly JsonActivitySerializer _jsonActivitySerializer = new JsonActivitySerializer(/*new JsonSerializerSettings()
         {
             NullValueHandling = NullValueHandling.Ignore,
             Formatting = Formatting.Indented,
-        });
+        }*/);
 
         private static HashSet<string> _checkedContainers = new HashSet<string>();
 
@@ -93,10 +94,7 @@ namespace Microsoft.Bot.Builder.Azure
             blobReference.Metadata["Timestamp"] = activity.Timestamp.Value.ToString("O");
             using (var blobStream = await blobReference.OpenWriteAsync().ConfigureAwait(false))
             {
-                using (var jsonWriter = new JsonTextWriter(new StreamWriter(blobStream)))
-                {
-                    _jsonSerializer.Serialize(jsonWriter, activity);
-                }
+                await _jsonActivitySerializer.SerializeAsync(activity, blobStream).ConfigureAwait(false);
             }
 
             await blobReference.SetMetadataAsync().ConfigureAwait(false);
@@ -166,8 +164,10 @@ namespace Microsoft.Bot.Builder.Azure
             pagedResult.Items = blobs
                 .Select(async bl =>
                 {
-                    var json = await bl.DownloadTextAsync().ConfigureAwait(false);
-                    return JsonConvert.DeserializeObject<Activity>(json);
+                    using (var blobStream = await bl.OpenReadAsync().ConfigureAwait(false))
+                    {
+                        return await _jsonActivitySerializer.DeserializeAsync(blobStream).ConfigureAwait(false);
+                    }
                 })
                 .Select(t => t.Result)
                 .ToArray();
