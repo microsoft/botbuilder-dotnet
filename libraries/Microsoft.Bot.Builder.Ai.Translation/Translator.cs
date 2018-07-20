@@ -38,7 +38,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation
                 throw new ArgumentNullException(nameof(apiKey));
             }
 
-            _authToken = new AzureAuthToken(apiKey);
+            _authToken = new AzureAuthToken(apiKey, customHttpClient);
         }
 
         /// <summary>
@@ -183,6 +183,15 @@ namespace Microsoft.Bot.Builder.Ai.Translation
                                     currentTranslatedDocument.SourceTokens = PostProcessingUtilities.SplitSentence(currentTranslatedDocument.SourceMessage, alignments);
                                     currentTranslatedDocument.TranslatedTokens = PostProcessingUtilities.SplitSentence(xe.Element(ns + "TranslatedText").Value, alignments, false);
                                     currentTranslatedDocument.IndexedAlignment = PostProcessingUtilities.WordAlignmentParse(alignments, currentTranslatedDocument.SourceTokens, currentTranslatedDocument.TranslatedTokens);
+                                    currentTranslatedDocument.TargetMessage = PostProcessingUtilities.Join(" ", currentTranslatedDocument.TranslatedTokens);
+                                }
+                                else
+                                {
+                                    var translatedText = xe.Element(ns + "TranslatedText").Value;
+                                    currentTranslatedDocument.TargetMessage = translatedText;
+                                    currentTranslatedDocument.SourceTokens = new string[] { currentTranslatedDocument.SourceMessage };
+                                    currentTranslatedDocument.TranslatedTokens = new string[] { currentTranslatedDocument.TargetMessage };
+                                    currentTranslatedDocument.IndexedAlignment = new Dictionary<int, int>();
                                 }
 
                                 sentIndex += 1;

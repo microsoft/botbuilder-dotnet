@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Ai.Translation.PostProcessor;
@@ -32,7 +33,8 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         /// <param name="nativeLanguages">The languages supported by your app.</param>
         /// <param name="translatorKey">Your subscription key for the Microsoft Translator Text API.</param>
         /// <param name="toUserLanguage">Indicates whether to translate messages sent from the bot into the user's language.</param>
-        public TranslationMiddleware(string[] nativeLanguages, string translatorKey, bool toUserLanguage = false)
+        /// <param name="customHttpClient">An alternate HTTP client to use.</param>
+        public TranslationMiddleware(string[] nativeLanguages, string translatorKey, bool toUserLanguage = false, HttpClient customHttpClient = null)
         {
             AssertValidNativeLanguages(nativeLanguages);
             this._nativeLanguages = nativeLanguages;
@@ -41,7 +43,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation
                 throw new ArgumentNullException(nameof(translatorKey));
             }
 
-            this._translator = new Translator(translatorKey);
+            this._translator = new Translator(translatorKey, customHttpClient);
             _patterns = new Dictionary<string, List<string>>();
             _userCustomDictonaries = new CustomDictionary();
             _toUserLanguage = toUserLanguage;
@@ -59,8 +61,9 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         /// <param name="toUserLanguage">Indicates whether to translate messages sent from the bot into the user's language.</param>
         /// <remarks>Each pattern the <paramref name="patterns"/> describes an entity that should not be translated.
         /// For example, in French <c>je m’appelle ([a-z]+)</c>, which will avoid translation of anything coming after je m’appelle.</remarks>
-        public TranslationMiddleware(string[] nativeLanguages, string translatorKey, Dictionary<string, List<string>> patterns, CustomDictionary userCustomDictonaries, bool toUserLanguage = false)
-            : this(nativeLanguages, translatorKey, toUserLanguage)
+        /// <param name="customHttpClient">An alternate HTTP client to use.</param>
+        public TranslationMiddleware(string[] nativeLanguages, string translatorKey, Dictionary<string, List<string>> patterns, CustomDictionary userCustomDictonaries, bool toUserLanguage = false, HttpClient customHttpClient = null)
+            : this(nativeLanguages, translatorKey, toUserLanguage, customHttpClient)
         {
             if (patterns != null)
             {
@@ -88,8 +91,9 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         /// <param name="toUserLanguage">Indicates whether to translate messages sent from the bot into the user's language.</param>
         /// <remarks>Each pattern the <paramref name="patterns"/> describes an entity that should not be translated.
         /// For example, in French <c>je m’appelle ([a-z]+)</c>, which will avoid translation of anything coming after je m’appelle.</remarks>
-        public TranslationMiddleware(string[] nativeLanguages, string translatorKey, Dictionary<string, List<string>> patterns, CustomDictionary userCustomDictonaries, Func<ITurnContext, string> getUserLanguage, Func<ITurnContext, Task<bool>> isUserLanguageChanged, bool toUserLanguage = false)
-            : this(nativeLanguages, translatorKey, patterns, userCustomDictonaries, toUserLanguage)
+        /// <param name="customHttpClient">An alternate HTTP client to use.</param>
+        public TranslationMiddleware(string[] nativeLanguages, string translatorKey, Dictionary<string, List<string>> patterns, CustomDictionary userCustomDictonaries, Func<ITurnContext, string> getUserLanguage, Func<ITurnContext, Task<bool>> isUserLanguageChanged, bool toUserLanguage = false, HttpClient customHttpClient = null)
+            : this(nativeLanguages, translatorKey, patterns, userCustomDictonaries, toUserLanguage, customHttpClient)
         {
             _getUserLanguage = getUserLanguage ?? throw new ArgumentNullException(nameof(getUserLanguage));
             _isUserLanguageChanged = isUserLanguageChanged ?? throw new ArgumentNullException(nameof(isUserLanguageChanged));
