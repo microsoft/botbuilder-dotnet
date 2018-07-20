@@ -6,6 +6,9 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder
 {
+    /// <summary>
+    /// Score plus any extra information about an intent.
+    /// </summary>
     public class IntentScore
     {
         /// <summary>
