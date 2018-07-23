@@ -72,10 +72,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 var state = await testProperty.GetAsync(turnContext);
                 var prompt = new ChoicePrompt(Culture.English);
 
-                var dialogCompletion = await prompt.Continue(turnContext, state);
+                var dialogCompletion = await prompt.ContinueAsync(turnContext, state);
                 if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
                 {
-                    await prompt.Begin(turnContext, state,
+                    await prompt.BeginAsync(turnContext, state,
                         new ChoicePromptOptions
                         {
                             PromptString = "favorite color?",
@@ -103,10 +103,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 var prompt = new ChoicePrompt(Culture.English);
                 prompt.Style = ListStyle.Inline;
 
-                var dialogCompletion = await prompt.Continue(turnContext, state);
+                var dialogCompletion = await prompt.ContinueAsync(turnContext, state);
                 if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
                 {
-                    await prompt.Begin(turnContext, state,
+                    await prompt.BeginAsync(turnContext, state,
                         new ChoicePromptOptions
                         {
                             PromptString = "favorite color?",
@@ -134,10 +134,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 var prompt = new ChoicePrompt(Culture.English);
                 prompt.Style = ListStyle.List;
 
-                var dialogCompletion = await prompt.Continue(turnContext, state);
+                var dialogCompletion = await prompt.ContinueAsync(turnContext, state);
                 if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
                 {
-                    await prompt.Begin(turnContext, state,
+                    await prompt.BeginAsync(turnContext, state,
                         new ChoicePromptOptions
                         {
                             PromptString = "favorite color?",
@@ -165,10 +165,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 var prompt = new ChoicePrompt(Culture.English);
                 prompt.Style = ListStyle.SuggestedAction;
 
-                var dialogCompletion = await prompt.Continue(turnContext, state);
+                var dialogCompletion = await prompt.ContinueAsync(turnContext, state);
                 if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
                 {
-                    await prompt.Begin(turnContext, state,
+                    await prompt.BeginAsync(turnContext, state,
                         new ChoicePromptOptions
                         {
                             PromptString = "favorite color?",
@@ -205,10 +205,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 var prompt = new ChoicePrompt(Culture.English);
                 prompt.Style = ListStyle.None;
 
-                var dialogCompletion = await prompt.Continue(turnContext, state);
+                var dialogCompletion = await prompt.ContinueAsync(turnContext, state);
                 if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
                 {
-                    await prompt.Begin(turnContext, state,
+                    await prompt.BeginAsync(turnContext, state,
                         new ChoicePromptOptions
                         {
                             PromptString = "favorite color?",
@@ -236,10 +236,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 var prompt = new ChoicePrompt(Culture.English);
                 prompt.Style = ListStyle.None;
 
-                var dialogCompletion = await prompt.Continue(turnContext, state);
+                var dialogCompletion = await prompt.ContinueAsync(turnContext, state);
                 if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
                 {
-                    await prompt.Begin(turnContext, state,
+                    await prompt.BeginAsync(turnContext, state,
                         new ChoicePromptOptions
                         {
                             PromptString = "favorite color?",
@@ -268,10 +268,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 var prompt = new ChoicePrompt(Culture.English);
                 prompt.Style = ListStyle.None;
 
-                var dialogCompletion = await prompt.Continue(turnContext, state);
+                var dialogCompletion = await prompt.ContinueAsync(turnContext, state);
                 if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
                 {
-                    await prompt.Begin(turnContext, state,
+                    await prompt.BeginAsync(turnContext, state,
                         new ChoicePromptOptions
                         {
                             PromptActivity = MessageFactory.Text("test"),
@@ -298,10 +298,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 var state = await testProperty.GetAsync(turnContext);
                 var prompt = new ChoicePrompt(Culture.English);
 
-                var dialogCompletion = await prompt.Continue(turnContext, state);
+                var dialogCompletion = await prompt.ContinueAsync(turnContext, state);
                 if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
                 {
-                    await prompt.Begin(turnContext, state,
+                    await prompt.BeginAsync(turnContext, state,
                         new ChoicePromptOptions
                         {
                             // TODO: the current model adds the Speak to the activity - that seem surprising (and unnecessary) 
@@ -330,10 +330,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 var prompt = new ChoicePrompt(Culture.English);
                 prompt.Style = ListStyle.None;
 
-                var dialogCompletion = await prompt.Continue(turnContext, state);
+                var dialogCompletion = await prompt.ContinueAsync(turnContext, state);
                 if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
                 {
-                    await prompt.Begin(turnContext, state,
+                    await prompt.BeginAsync(turnContext, state,
                         new ChoicePromptOptions
                         {
                             PromptString = "favorite color?",
@@ -368,10 +368,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 var prompt = new ChoicePrompt(Culture.English);
                 prompt.Style = ListStyle.None;
 
-                var dialogCompletion = await prompt.Continue(turnContext, state);
+                var dialogCompletion = await prompt.ContinueAsync(turnContext, state);
                 if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
                 {
-                    await prompt.Begin(turnContext, state,
+                    await prompt.BeginAsync(turnContext, state,
                         new ChoicePromptOptions
                         {
                             PromptString = "favorite color?",
@@ -417,10 +417,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 var prompt = new ChoicePrompt(Culture.English, validator);
                 prompt.Style = ListStyle.None;
 
-                var dialogCompletion = await prompt.Continue(turnContext, state);
+                var dialogCompletion = await prompt.ContinueAsync(turnContext, state);
                 if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
                 {
-                    await prompt.Begin(turnContext, state,
+                    await prompt.BeginAsync(turnContext, state,
                         new ChoicePromptOptions
                         {
                             PromptString = "favorite color?",
@@ -463,10 +463,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 var prompt = new ChoicePrompt(Culture.English, validator);
                 prompt.Style = ListStyle.None;
 
-                var dialogCompletion = await prompt.Continue(turnContext, state);
+                var dialogCompletion = await prompt.ContinueAsync(turnContext, state);
                 if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
                 {
-                    await prompt.Begin(turnContext, state,
+                    await prompt.BeginAsync(turnContext, state,
                         new ChoicePromptOptions
                         {
                             PromptString = "favorite color?",

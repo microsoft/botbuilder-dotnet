@@ -11,7 +11,7 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// For example:
     /// - a specific date and time like "5th December 2018 at 9am" results in a single resolution
     /// - a date with some ambiguity like "4th October" results in a single TIMEX but still 2 example values and so 2 resolutions
-    /// - a date and time with ambiguity like Octerber 4 4 Oclock" results in two TIMXE and 4 example values so 4 resolutions
+    /// - a date and time with ambiguity like Octerber 4 4 Oclock" results in two TIMXE and 4 example values so 4 resolutions.
     /// </summary>
     public class DateTimeResult : PromptResult
     {
@@ -21,8 +21,11 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// The input text recognized; or <c>null</c>, if recognition fails.
+        /// Gets or sets the input text recognized; or <c>null</c>, if recognition fails.
         /// </summary>
+        /// <value>
+        /// The input text recognized; or <c>null</c>, if recognition fails.
+        /// </value>
         public string Text
         {
             get { return GetProperty<string>(nameof(Text)); }
@@ -30,8 +33,11 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// The various resolutions for the recognized value; or and empty list.
+        /// Gets the various resolutions for the recognized value; or and empty list.
         /// </summary>
+        /// <value>
+        /// The various resolutions for the recognized value; or and empty list.
+        /// </value>
         public List<DateTimeResolution> Resolution
         {
             get { return GetProperty<List<DateTimeResolution>>(nameof(Resolution)); }
@@ -41,8 +47,11 @@ namespace Microsoft.Bot.Builder.Dialogs
         public class DateTimeResolution
         {
             public string Value { get; set; }
+
             public string Start { get; set; }
+
             public string End { get; set; }
+
             public string Timex { get; set; }
         }
     }

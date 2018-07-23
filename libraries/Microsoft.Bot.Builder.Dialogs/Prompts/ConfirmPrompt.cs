@@ -10,7 +10,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 {
     /// <summary>
     /// Prompts a user to confirm something with a yes/no response.
-    /// 
+    ///
     /// <remarks>By default the prompt will return to the calling dialog a `boolean` representing the users
     /// selection.
     /// When used with your bots 'DialogSet' you can simply add a new instance of the prompt as a named
@@ -25,19 +25,19 @@ namespace Microsoft.Bot.Builder.Dialogs
         private ConfirmPromptInternal _prompt;
 
         /// <summary>
-        /// Creates a new ConfirmPrompt instance
+        /// Initializes a new instance of the <see cref="ConfirmPrompt"/> class.
         /// </summary>
-        /// <param name="culture">Culture to use if <code>DialogContext.Context.Activity.Locale</code> property not specified. Defaults to a value of <code>CultureInfo.CurrentCulture</code>.</param>
+        /// <param name="culture">Culture to use if <c>DialogContext.Context.Activity.Locale</c> property not specified. Defaults to a value of. <code>CultureInfo.CurrentCulture</code>.</param>
         /// <param name="validator">Validator that will be called each time the user responds to the prompt.  If the validator replies with a message no additional retry prompt will be sent.</param>
-        public ConfirmPrompt(string culture, PromptValidator<ConfirmResult> validator = null)
-        {
-            _prompt = new ConfirmPromptInternal(culture, validator);
-        }
+        public ConfirmPrompt(string culture, PromptValidator<ConfirmResult> validator = null) => _prompt = new ConfirmPromptInternal(culture, validator);
 
         /// <summary>
-        /// The style of the yes/no choices rendered to the user when prompting.
+        /// Gets or sets the style of the yes/no choices rendered to the user when prompting.
         /// <seealso cref="Choices.ListStyle"/>
         /// </summary>
+        /// <value>
+        /// The style of the yes/no choices rendered to the user when prompting.
+        /// </value>
         public ListStyle Style
         {
             get { return _prompt.Style; }
@@ -45,55 +45,68 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// Additional options passed to the 'ChoiceFactory' and used to tweak the style of choices
-        /// rendered to the user.
-        /// <seealso cref="Choices.ChoiceFactoryOptions"/>
+        /// Gets or sets additional options passed to the <seealso cref="ChoiceFactory"/>
+        /// and used to tweak the style of choices rendered to the user.
         /// </summary>
+        /// <value>
+        /// Additional options passed to the <seealso cref="ChoiceFactory"/>
+        /// and used to tweak the style of choices rendered to the user.
+        /// </value>
         public ChoiceFactoryOptions ChoiceOptions
         {
             get { return _prompt.ChoiceOptions;  }
             set { _prompt.ChoiceOptions = value;  }
         }
 
-        protected override async Task OnPrompt(DialogContext dc, PromptOptions options, bool isRetry)
+        protected override async Task OnPromptAsync(DialogContext dc, PromptOptions options, bool isRetry)
         {
             if (dc == null)
+            {
                 throw new ArgumentNullException(nameof(dc));
+            }
+
             if (options == null)
+            {
                 throw new ArgumentNullException(nameof(options));
+            }
 
             if (isRetry)
             {
                 if (options.RetryPromptActivity != null)
                 {
-                    await _prompt.Prompt(dc.Context, options.RetryPromptActivity.AsMessageActivity());
+                    await _prompt.PromptAsync(dc.Context, options.RetryPromptActivity.AsMessageActivity());
                 }
                 else if (options.RetryPromptString != null)
                 {
-                    await _prompt.Prompt(dc.Context, options.RetryPromptString, options.RetrySpeak);
+                    await _prompt.PromptAsync(dc.Context, options.RetryPromptString, options.RetrySpeak);
                 }
             }
             else
             {
                 if (options.PromptActivity != null)
                 {
-                    await _prompt.Prompt(dc.Context, options.PromptActivity);
+                    await _prompt.PromptAsync(dc.Context, options.PromptActivity);
                 }
                 else if (options.PromptString != null)
                 {
-                    await _prompt.Prompt(dc.Context, options.PromptString, options.Speak);
+                    await _prompt.PromptAsync(dc.Context, options.PromptString, options.Speak);
                 }
             }
         }
 
-        protected override async Task<ConfirmResult> OnRecognize(DialogContext dc, PromptOptions options)
+        protected override async Task<ConfirmResult> OnRecognizeAsync(DialogContext dc, PromptOptions options)
         {
             if (dc == null)
+            {
                 throw new ArgumentNullException(nameof(dc));
-            if (options == null)
-                throw new ArgumentNullException(nameof(options));
+            }
 
-            return await _prompt.Recognize(dc.Context);
+            if (options == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
+
+            return await _prompt.RecognizeAsync(dc.Context);
         }
     }
 }

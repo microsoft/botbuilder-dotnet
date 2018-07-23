@@ -11,22 +11,22 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// <summary>
     /// Represents a user prompt class for text input.
     /// </summary>
-    /// <remarks>The <see cref="Recognize(ITurnContext)"/> method passes any
+    /// <remarks>The <see cref="RecognizeAsync(ITurnContext)"/> method passes any
     /// non-whitespace string to the custom validator, if one was provided.
     /// To change this behavior, derive from this class and add your own custom
     /// validation behavior.
-    /// <para>For simple validation changes, specify a <see cref="PromptValidator{InT}"/>
+    /// <para>For simple validation changes, specify a <see cref="PromptValidator{T}"/>
     /// in the constructor. If the standard validation passes, the custom
     /// validator is called on the recognized value.</para>
     /// </remarks>
     internal class TextPromptInternal : BasePromptInternal<TextResult>
     {
         /// <summary>
-        /// Creates a <see cref="TextPromptInternal"/> object.
+        /// Initializes a new instance of the <see cref="TextPromptInternal"/> class.
         /// </summary>
         /// <param name="validator">The input validator for the prompt object.</param>
         /// <remarks><paramref name="validator"/> is called only if the
-        /// <see cref="Recognize(ITurnContext)"/> method recognizes a value.
+        /// <see cref="RecognizeAsync(ITurnContext)"/> method recognizes a value.
         /// </remarks>
         public TextPromptInternal(PromptValidator<TextResult> validator = null)
             : base(validator)
@@ -46,22 +46,25 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// its <see cref="PromptStatus"/> set to <see cref="PromptStatus.NotRecognized"/> and
         /// its <see cref="TextResult.Value"/> set to <c>null</c>.</para>
         /// </remarks>
-        public override async Task<TextResult> Recognize(ITurnContext context)
+        public override async Task<TextResult> RecognizeAsync(ITurnContext context)
         {
             BotAssert.ContextNotNull(context);
             BotAssert.ActivityNotNull(context.Activity);
             if (context.Activity.Type != ActivityTypes.Message)
+            {
                 throw new InvalidOperationException("No Message to Recognize");
+            }
 
-            IMessageActivity message = context.Activity.AsMessageActivity();
-            TextResult textResult = new TextResult();
+            var message = context.Activity.AsMessageActivity();
+            var textResult = new TextResult();
             if (message.Text != null)
             {
                 textResult.Status = PromptStatus.Recognized;
                 textResult.Value = message.Text;
                 textResult.Text = message.Text;
-                await Validate(context, textResult);
+                await ValidateAsync(context, textResult);
             }
+
             return textResult;
         }
     }

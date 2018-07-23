@@ -5,28 +5,40 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
 {
     public class FindValuesOptions
     {
-        ///<summary>
-        /// (Optional) if true, then only some of the tokens in a value need to exist to be considered
-        /// a match. The default value is "false".
-        ///</summary>
+        /// <summary>
+        /// Gets or sets a value indicating whether only some of the tokens in a value need to exist to be considered
+        /// a match. The default value is "false". This is optional.
+        /// </summary>
+        /// <value>
+        /// A <c>true</c> if only some of the tokens in a value need to exist to be considered; otherwise <c>false</c>.
+        /// </value>
         public bool AllowPartialMatches { get; set; }
 
-        ///<summary>
-        /// (Optional) locale/culture code of the utterance. The default is `en-US`.
-        ///</summary>
+        /// <summary>
+        /// Gets or sets the locale/culture code of the utterance. The default is `en-US`. This is optional.
+        /// </summary>
+        /// <value>
+        /// The locale/culture code of the utterance.
+        /// </value>
         public string Locale { get; set; }
 
-        ///<summary>
-        /// (Optional) maximum tokens allowed between two matched tokens in the utterance. So with
+        /// <summary>
+        /// Gets or sets the maximum tokens allowed between two matched tokens in the utterance. So with
         /// a max distance of 2 the value "second last" would match the utterance "second from the last"
         /// but it wouldn't match "Wait a second. That's not the last one is it?".
         /// The default value is "2".
-        ///</summary>
+        /// </summary>
+        /// <value>
+        /// The maximum tokens allowed between two matched tokens in the utterance.
+        /// </value>
         public int? MaxTokenDistance { get; set; }
 
-        ///<summary>
-        /// (Optional) tokenizer to use when parsing the utterance and values being recognized.
-        ///</summary>
+        /// <summary>
+        /// Gets or sets the tokenizer to use when parsing the utterance and values being recognized.
+        /// </summary>
+        /// <value>
+        /// The tokenizer to use when parsing the utterance and values being recognized.
+        /// </value>
         public TokenizerFunction Tokenizer { get; set; }
     }
 }

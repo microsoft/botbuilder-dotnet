@@ -10,50 +10,50 @@ using static Microsoft.Bot.Builder.Dialogs.PromptValidatorEx;
 namespace Microsoft.Bot.Builder.Dialogs
 {
     /// <summary>
-    /// Creates a new prompt that asks the user to sign in using the Bot Frameworks Single Sign On (SSO) 
-    /// service. 
-    /// 
+    /// Creates a new prompt that asks the user to sign in using the Bot Frameworks Single Sign On (SSO)
+    /// service.
+    ///
     /// @remarks
-    /// The prompt will attempt to retrieve the users current token and if the user isn't signed in, it 
-    /// will send them an `OAuthCard` containing a button they can press to signin. Depending on the 
+    /// The prompt will attempt to retrieve the users current token and if the user isn't signed in, it
+    /// will send them an `OAuthCard` containing a button they can press to signin. Depending on the
     /// channel, the user will be sent through one of two possible signin flows:
-    /// 
-    /// - The automatic signin flow where once the user signs in and the SSO service will forward the bot 
+    ///
+    /// - The automatic signin flow where once the user signs in and the SSO service will forward the bot
     /// the users access token using either an `event` or `invoke` activity.
-    /// - The "magic code" flow where where once the user signs in they will be prompted by the SSO 
-    /// service to send the bot a six digit code confirming their identity. This code will be sent as a 
+    /// - The "magic code" flow where where once the user signs in they will be prompted by the SSO
+    /// service to send the bot a six digit code confirming their identity. This code will be sent as a
     /// standard `message` activity.
-    /// 
-    /// Both flows are automatically supported by the `OAuthPrompt` and the only thing you need to be 
+    ///
+    /// Both flows are automatically supported by the `OAuthPrompt` and the only thing you need to be
     /// careful of is that you don't block the `event` and `invoke` activities that the prompt might
     /// be waiting on.
-    /// 
+    ///
     /// > [!NOTE]
-    /// > You should avoid persisting the access token with your bots other state. The Bot Frameworks 
+    /// > You should avoid persisting the access token with your bots other state. The Bot Frameworks
     /// > SSO service will securely store the token on your behalf. If you store it in your bots state
-    /// > it could expire or be revoked in between turns. 
+    /// > it could expire or be revoked in between turns.
     /// >
     /// > When calling the prompt from within a waterfall step you should use the token within the step
     /// > following the prompt and then let the token go out of scope at the end of your function.
-    /// 
+    ///
     /// #### Prompt Usage
-    /// 
+    ///
     /// When used with your bots `DialogSet` you can simply add a new instance of the prompt as a named
     /// dialog using `DialogSet.add()`. You can then start the prompt from a waterfall step using either
-    /// `DialogContext.begin()` or `DialogContext.prompt()`. The user will be prompted to signin as 
-    /// needed and their access token will be passed as an argument to the callers next waterfall step: 
-    /// 
+    /// `DialogContext.begin()` or `DialogContext.prompt()`. The user will be prompted to signin as
+    /// needed and their access token will be passed as an argument to the callers next waterfall step:
+    ///
     /// ```JavaScript
     /// const { DialogSet, OAuthPrompt } = require('botbuilder-dialogs');
-    /// 
+    ///
     /// const dialogs = new DialogSet();
-    /// 
+    ///
     /// dialogs.add('loginPrompt', new OAuthPrompt({
     ///    connectionName: 'GitConnection',
     ///    title: 'Login To GitHub',
     ///    timeout: 300000   // User has 5 minutes to login
     /// }));
-    /// 
+    ///
     /// dialogs.add('taskNeedingLogin', [
     ///      async function (dc) {
     ///          await dc.begin('loginPrompt');
@@ -66,15 +66,15 @@ namespace Microsoft.Bot.Builder.Dialogs
     ///              await dc.end();
     ///          }
     ///      }
-    ///
+    /// .
     /// </summary>
     public class OAuthPrompt : Dialog, IDialogContinue
     {
-        private OAuthPromptInternal _prompt;
-        private OAuthPromptSettingsWithTimeout _settings;
-
         // Default prompt timeout of 15 minutes (in ms)
         private const int DefaultPromptTimeout = 54000000;
+
+        private OAuthPromptInternal _prompt;
+        private OAuthPromptSettingsWithTimeout _settings;
 
         public OAuthPrompt(OAuthPromptSettingsWithTimeout settings, PromptValidator<TokenResult> validator = null)
         {
@@ -82,59 +82,69 @@ namespace Microsoft.Bot.Builder.Dialogs
             _prompt = new OAuthPromptInternal(settings, validator);
         }
 
-        public async Task DialogBegin(DialogContext dc, IDictionary<string, object> dialogArgs = null)
+        public async Task DialogBeginAsync(DialogContext dc, IDictionary<string, object> dialogArgs = null)
         {
             if (dc == null)
+            {
                 throw new ArgumentNullException(nameof(dc));
+            }
 
             PromptOptions promptOptions = null;
             if (dialogArgs != null)
             {
                 if (dialogArgs is PromptOptions)
+                {
                     promptOptions = dialogArgs as PromptOptions;
+                }
                 else
+                {
                     throw new ArgumentException(nameof(dialogArgs));
+                }
             }
 
-            //persist options and state
-            var timeout = _settings.Timeout.HasValue ? _settings.Timeout.Value : DefaultPromptTimeout;
+            // persist options and state
+            var timeout = _settings.Timeout ?? DefaultPromptTimeout;
             var instance = dc.ActiveDialog;
             instance.State = new OAuthPromptOptions(promptOptions);
 
-            var tokenResult = await _prompt.GetUserToken(dc.Context).ConfigureAwait(false);
+            var tokenResult = await _prompt.GetUserTokenAsync(dc.Context).ConfigureAwait(false);
 
             if (tokenResult != null && tokenResult.TokenResponse != null)
             {
                 // end the prompt, since a token is available.
-                await dc.End(tokenResult).ConfigureAwait(false);
+                await dc.EndAsync(tokenResult).ConfigureAwait(false);
             }
             else if (!string.IsNullOrEmpty(promptOptions?.PromptString))
             {
-                //send supplied prompt and then OAuthCard
+                // send supplied prompt and then OAuthCard
                 await dc.Context.SendActivityAsync(promptOptions.PromptString, promptOptions.Speak).ConfigureAwait(false);
-                await _prompt.Prompt(dc.Context);
+                await _prompt.PromptAsync(dc.Context);
             }
             else
             {
                 // if the bot developer has supplied an activity to show the user for signin, use that.
                 if (promptOptions == null)
                 {
-                    await _prompt.Prompt(dc.Context).ConfigureAwait(false);
+                    await _prompt.PromptAsync(dc.Context).ConfigureAwait(false);
                 }
                 else
                 {
-                    await _prompt.Prompt(dc.Context, promptOptions.PromptActivity);
+                    await _prompt.PromptAsync(dc.Context, promptOptions.PromptActivity);
                 }
             }
         }
 
-        public async Task DialogContinue(DialogContext dc)
+        public async Task DialogContinueAsync(DialogContext dc)
         {
             if (dc == null)
+            {
                 throw new ArgumentNullException(nameof(dc));
-            //Recognize token
-            var tokenResult = await _prompt.Recognize(dc.Context).ConfigureAwait(false);
-            //Check for timeout
+            }
+
+            // Recognize token
+            var tokenResult = await _prompt.RecognizeAsync(dc.Context).ConfigureAwait(false);
+
+            // Check for timeout
             var state = dc.ActiveDialog.State as OAuthPromptOptions;
             var isMessage = dc.Context.Activity.Type == ActivityTypes.Message;
             var hasTimedOut = isMessage && (DateTime.Compare(DateTime.Now, state.Expires) > 0);
@@ -142,12 +152,12 @@ namespace Microsoft.Bot.Builder.Dialogs
             if (hasTimedOut)
             {
                 // if the token fetch request timesout, complete the prompt with no result.
-                await dc.End(null).ConfigureAwait(false);
+                await dc.EndAsync(null).ConfigureAwait(false);
             }
             else if (tokenResult != null)
             {
                 // if the token fetch was successful and it hasn't timed out (as verified in the above if)
-                await dc.End(tokenResult).ConfigureAwait(false);
+                await dc.EndAsync(tokenResult).ConfigureAwait(false);
             }
             else if (isMessage && !string.IsNullOrEmpty(state.RetryPromptString))
             {
