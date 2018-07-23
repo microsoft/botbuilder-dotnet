@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Cognitive.LUIS.Models;
@@ -28,9 +29,10 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
         /// <param name="luisModel">The LUIS model to use to recognize text.</param>
         /// <param name="luisRecognizerOptions">The LUIS recognizer options to use.</param>
         /// <param name="options">The LUIS request options to use.</param>
-        public LuisRecognizer(ILuisModel luisModel, ILuisRecognizerOptions luisRecognizerOptions = null, ILuisOptions options = null)
+        /// <param name="httpClient">an optional alternate HttpClient.</param>
+        public LuisRecognizer(ILuisModel luisModel, ILuisRecognizerOptions luisRecognizerOptions = null, ILuisOptions options = null, HttpClient httpClient = null)
         {
-            _luisService = new LuisService(luisModel);
+            _luisService = new LuisService(luisModel, httpClient);
             _luisOptions = options ?? new LuisRequest();
             _luisRecognizerOptions = luisRecognizerOptions ?? new LuisRecognizerOptions { Verbose = true };
         }

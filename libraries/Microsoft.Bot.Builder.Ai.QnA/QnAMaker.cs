@@ -25,11 +25,11 @@ namespace Microsoft.Bot.Builder.Ai.QnA
         /// </summary>
         /// <param name="endpoint">The endpoint of the knowledge base to query.</param>
         /// <param name="options">The options for the QnA Maker knowledge base.</param>
-        /// <param name="customHttpClient">An alternate client with which to talk to QnAMaker.
+        /// <param name="httpClient">An alternate client with which to talk to QnAMaker.
         /// If null, a default client is used for this instance.</param>
-        public QnAMaker(QnAMakerEndpoint endpoint, QnAMakerOptions options = null, HttpClient customHttpClient = null)
+        public QnAMaker(QnAMakerEndpoint endpoint, QnAMakerOptions options = null, HttpClient httpClient = null)
         {
-            _httpClient = customHttpClient ?? DefaultHttpClient;
+            _httpClient = httpClient ?? DefaultHttpClient;
 
             _endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
 

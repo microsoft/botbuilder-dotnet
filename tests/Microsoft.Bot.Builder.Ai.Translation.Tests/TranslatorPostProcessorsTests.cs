@@ -3,31 +3,25 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Ai.Translation.PostProcessor;
-using Microsoft.Bot.Builder.Tests;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using RichardSzalay.MockHttp;
 
 namespace Microsoft.Bot.Builder.Ai.Translation.Tests
 {
     [TestClass]
     public class TranslatorPostProcessorsTests
     {
-        public string translatorKey = TestUtilities.GetKey("TRANSLATORKEY");
-
+        private const string _translatorKey = "dummy-key";
 
         [TestMethod]
         [TestCategory("AI")]
         [TestCategory("Translator")]
         public void Translator_PatternsTest_InvalidArguments()
         {
-            if (!EnvironmentVariablesDefined())
-            {
-                Assert.Inconclusive("Missing Translator Environment variables - Skipping test");
-                return;
-            }
-
-            Translator translator = new Translator(translatorKey);
             Dictionary<string, List<string>> patterns = null;
 
             Assert.ThrowsException<ArgumentNullException>(() => new PatternsPostProcessor(patterns));
@@ -38,14 +32,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
         [TestCategory("Translator")]
         public void Translator_PatternsTest_EmptyPatternsDictionary()
         {
-            if (!EnvironmentVariablesDefined())
-            {
-                Assert.Inconclusive("Missing Translator Environment variables - Skipping test");
-                return;
-            }
-
-            Translator translator = new Translator(translatorKey);
-            Dictionary<string, List<string>> patterns = new Dictionary<string, List<string>>();
+            var patterns = new Dictionary<string, List<string>>();
 
             Assert.ThrowsException<ArgumentException>(() => new PatternsPostProcessor(patterns));
         }
@@ -55,16 +42,18 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
         [TestCategory("Translator")]
         public async Task Translator_PatternsTest_EmptyLanguagePatternsData()
         {
-            if (!EnvironmentVariablesDefined())
-            {
-                Assert.Inconclusive("Missing Translator Environment variables - Skipping test");
-                return;
-            }
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(HttpMethod.Post, "https://api.cognitive.microsoft.com/sts/v1.0/issueToken")
+                .Respond("application/jwt", "<--valid-bearer-token-->");
+            mockHttp.When(HttpMethod.Get, GetRequestDetect("mi perro se llama Enzo"))
+                .Respond("application/xml", GetResponseDetect("es"));
+            mockHttp.When(HttpMethod.Post, @"https://api.microsofttranslator.com/v2/Http.svc/TranslateArray2")
+                .Respond("application/xml", GetResponse("Translator_PatternsTest_EmptyLanguagePatternsData.xml"));
 
-            Translator translator = new Translator(translatorKey);
+            var translator = new Translator(_translatorKey, mockHttp.ToHttpClient());
             //using an empty language list won't throw an exception, but it won't affect the post processing for this language
-            Dictionary<string, List<string>> patterns = new Dictionary<string, List<string>>();
-            List<string> spanishPatterns = new List<string>();
+            var patterns = new Dictionary<string, List<string>>();
+            var spanishPatterns = new List<string>();
             patterns.Add("es", spanishPatterns);
 
             IPostProcessor patternsPostProcessor = new PatternsPostProcessor(patterns);
@@ -72,7 +61,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
 
             var translatedDocuments = await translator.TranslateArrayAsync(new string[] { sentence }, "es", "en");
             Assert.IsNotNull(translatedDocuments);
-            string postProcessedMessage = patternsPostProcessor.Process(translatedDocuments[0], "es").PostProcessedMessage;
+            var postProcessedMessage = patternsPostProcessor.Process(translatedDocuments[0], "es").PostProcessedMessage;
             Assert.IsNotNull(postProcessedMessage);
             Assert.AreEqual("My dog's name is Enzo", postProcessedMessage);
         }
@@ -82,24 +71,25 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
         [TestCategory("Translator")]
         public async Task Translator_PatternsTest_FrenchPatterns()
         {
-            if (!EnvironmentVariablesDefined())
-            {
-                Assert.Inconclusive("Missing Translator Environment variables - Skipping test");
-                return;
-            }
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(HttpMethod.Post, "https://api.cognitive.microsoft.com/sts/v1.0/issueToken")
+                .Respond("application/jwt", "<--valid-bearer-token-->");
+            mockHttp.When(HttpMethod.Get, GetRequestDetect("mon nom est l'etat"))
+                .Respond("application/xml", GetResponseDetect("fr"));
+            mockHttp.When(HttpMethod.Post, @"https://api.microsofttranslator.com/v2/Http.svc/TranslateArray2")
+                .Respond("application/xml", GetResponse("Translator_PatternsTest_FrenchPatterns.xml"));
 
-            Translator translator = new Translator(translatorKey);
-            Dictionary<string, List<string>> patterns = new Dictionary<string, List<string>>();
-            List<string> frenchPatterns = new List<string> { "mon nom est (.+)" };
+            var translator = new Translator(_translatorKey, mockHttp.ToHttpClient());
+            var patterns = new Dictionary<string, List<string>>();
+            var frenchPatterns = new List<string> { "mon nom est (.+)" };
             patterns.Add("fr", frenchPatterns);
-
-
+            
             IPostProcessor patternsPostProcessor = new PatternsPostProcessor(patterns);
 
             var sentence = "mon nom est l'etat";
             var translatedDocuments = await translator.TranslateArrayAsync(new string[] { sentence }, "fr", "en");
             Assert.IsNotNull(translatedDocuments);
-            string postProcessedMessage = patternsPostProcessor.Process(translatedDocuments[0], "fr").PostProcessedMessage;
+            var postProcessedMessage = patternsPostProcessor.Process(translatedDocuments[0], "fr").PostProcessedMessage;
             Assert.IsNotNull(postProcessedMessage);
             Assert.AreEqual("My name is l'etat", postProcessedMessage);
         }
@@ -109,15 +99,17 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
         [TestCategory("Translator")]
         public async Task Translator_PatternsTest_FrenchPatternsWithMultipleSpaces()
         {
-            if (!EnvironmentVariablesDefined())
-            {
-                Assert.Inconclusive("Missing Translator Environment variables - Skipping test");
-                return;
-            }
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(HttpMethod.Post, "https://api.cognitive.microsoft.com/sts/v1.0/issueToken")
+                .Respond("application/jwt", "<--valid-bearer-token-->");
+            mockHttp.When(HttpMethod.Get, GetRequestDetect("mon     nom     est    l'etat   "))
+                .Respond("application/xml", GetResponseDetect("fr"));
+            mockHttp.When(HttpMethod.Post, @"https://api.microsofttranslator.com/v2/Http.svc/TranslateArray2")
+                .Respond("application/xml", GetResponse("Translator_PatternsTest_FrenchPatternsWithMultipleSpaces.xml"));
 
-            Translator translator = new Translator(translatorKey);
-            Dictionary<string, List<string>> patterns = new Dictionary<string, List<string>>();
-            List<string> frenchPatterns = new List<string> { "mon nom est (.+)" };
+            var translator = new Translator(_translatorKey, mockHttp.ToHttpClient());
+            var patterns = new Dictionary<string, List<string>>();
+            var frenchPatterns = new List<string> { "mon nom est (.+)" };
             patterns.Add("fr", frenchPatterns);
 
 
@@ -126,7 +118,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
             var sentence = "mon     nom     est    l'etat   ";
             var translatedDocuments = await translator.TranslateArrayAsync(new string[] { sentence }, "fr", "en");
             Assert.IsNotNull(translatedDocuments);
-            string postProcessedMessage = patternsPostProcessor.Process(translatedDocuments[0], "fr").PostProcessedMessage;
+            var postProcessedMessage = patternsPostProcessor.Process(translatedDocuments[0], "fr").PostProcessedMessage;
             Assert.IsNotNull(postProcessedMessage);
             Assert.AreEqual("My name is l'etat", postProcessedMessage);
         }
@@ -136,15 +128,17 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
         [TestCategory("Translator")]
         public async Task Translator_PatternsTest_FrenchPatternsWithNumbers()
         {
-            if (!EnvironmentVariablesDefined())
-            {
-                Assert.Inconclusive("Missing Translator Environment variables - Skipping test");
-                return;
-            }
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(HttpMethod.Post, "https://api.cognitive.microsoft.com/sts/v1.0/issueToken")
+                .Respond("application/jwt", "<--valid-bearer-token-->");
+            mockHttp.When(HttpMethod.Get, GetRequestDetect("J'ai 25 ans et mon nom est l'etat"))
+                .Respond("application/xml", GetResponseDetect("fr"));
+            mockHttp.When(HttpMethod.Post, @"https://api.microsofttranslator.com/v2/Http.svc/TranslateArray2")
+                .Respond("application/xml", GetResponse("Translator_PatternsTest_FrenchPatternsWithNumbers.xml"));
 
-            Translator translator = new Translator(translatorKey);
-            Dictionary<string, List<string>> patterns = new Dictionary<string, List<string>>();
-            List<string> frenchPatterns = new List<string> { "mon nom est (.+)" };
+            var translator = new Translator(_translatorKey, mockHttp.ToHttpClient());
+            var patterns = new Dictionary<string, List<string>>();
+            var frenchPatterns = new List<string> { "mon nom est (.+)" };
             patterns.Add("fr", frenchPatterns);
 
 
@@ -153,7 +147,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
             var sentence = "J'ai 25 ans et mon nom est l'etat";
             var translatedDocuments = await translator.TranslateArrayAsync(new string[] { sentence }, "fr", "en");
             Assert.IsNotNull(translatedDocuments);
-            string postProcessedMessage = patternsPostProcessor.Process(translatedDocuments[0], "fr").PostProcessedMessage;
+            var postProcessedMessage = patternsPostProcessor.Process(translatedDocuments[0], "fr").PostProcessedMessage;
             Assert.IsNotNull(postProcessedMessage);
             Assert.AreEqual("I am 25 years old and my name is l'etat", postProcessedMessage);
         }
@@ -163,13 +157,15 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
         [TestCategory("Translator")]
         public async Task Translator_PatternsTest_SpanishPatterns()
         {
-            if (!EnvironmentVariablesDefined())
-            {
-                Assert.Inconclusive("Missing Translator Environment variables - Skipping test");
-                return;
-            }
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(HttpMethod.Post, "https://api.cognitive.microsoft.com/sts/v1.0/issueToken")
+                .Respond("application/jwt", "<--valid-bearer-token-->");
+            mockHttp.When(HttpMethod.Get, GetRequestDetect("mi perro se llama Enzo"))
+                .Respond("application/xml", GetResponseDetect("es"));
+            mockHttp.When(HttpMethod.Post, @"https://api.microsofttranslator.com/v2/Http.svc/TranslateArray2")
+                .Respond("application/xml", GetResponse("Translator_PatternsTest_SpanishPatterns.xml"));
 
-            Translator translator = new Translator(translatorKey);
+            Translator translator = new Translator(_translatorKey, mockHttp.ToHttpClient());
             Dictionary<string, List<string>> patterns = new Dictionary<string, List<string>>();
             List<string> spanishPatterns = new List<string> { "perr[oa]" };
             patterns.Add("es", spanishPatterns);
@@ -189,16 +185,8 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
         [TestCategory("Translator")]
         public void Translator_DictionaryTest_InvalidArguments()
         {
-            if (!EnvironmentVariablesDefined())
-            {
-                Assert.Inconclusive("Missing Translator Environment variables - Skipping test");
-                return;
-            }
-
-            Translator translator = new Translator(translatorKey);
             CustomDictionary userCustomDictonaries = null;
             Assert.ThrowsException<ArgumentNullException>(() => new CustomDictionaryPostProcessor(userCustomDictonaries));
-
         }
 
         [TestMethod]
@@ -206,14 +194,16 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
         [TestCategory("Translator")]
         public async Task Translator_PatternsTest_EmptyCustomLanguageDictionaryData()
         {
-            if (!EnvironmentVariablesDefined())
-            {
-                Assert.Inconclusive("Missing Translator Environment variables - Skipping test");
-                return;
-            }
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(HttpMethod.Post, "https://api.cognitive.microsoft.com/sts/v1.0/issueToken")
+                .Respond("application/jwt", "<--valid-bearer-token-->");
+            mockHttp.When(HttpMethod.Get, GetRequestDetect("Je veux voir éclair"))
+                .Respond("application/xml", GetResponseDetect("fr"));
+            mockHttp.When(HttpMethod.Post, @"https://api.microsofttranslator.com/v2/Http.svc/TranslateArray2")
+                .Respond("application/xml", GetResponse("Translator_PatternsTest_EmptyCustomLanguageDictionaryData.xml"));
 
-            Translator translator = new Translator(translatorKey);
-            CustomDictionary userCustomDictonaries = new CustomDictionary();
+            var translator = new Translator(_translatorKey, mockHttp.ToHttpClient());
+            var userCustomDictonaries = new CustomDictionary();
             IPostProcessor customDictionaryPostProcessor = new CustomDictionaryPostProcessor(userCustomDictonaries);
 
             var frenchSentence = "Je veux voir éclair";
@@ -228,13 +218,15 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
         [TestCategory("Translator")]
         public async Task Translator_DictionaryTest_FrenchDictionary()
         {
-            if (!EnvironmentVariablesDefined())
-            {
-                Assert.Inconclusive("Missing Translator Environment variables - Skipping test");
-                return;
-            }
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(HttpMethod.Post, "https://api.cognitive.microsoft.com/sts/v1.0/issueToken")
+                .Respond("application/jwt", "<--valid-bearer-token-->");
+            mockHttp.When(HttpMethod.Get, GetRequestDetect("Je veux voir éclair"))
+                .Respond("application/xml", GetResponseDetect("fr"));
+            mockHttp.When(HttpMethod.Post, @"https://api.microsofttranslator.com/v2/Http.svc/TranslateArray2")
+                .Respond("application/xml", GetResponse("Translator_DictionaryTest_FrenchDictionary.xml"));
 
-            Translator translator = new Translator(translatorKey);
+            Translator translator = new Translator(_translatorKey, mockHttp.ToHttpClient());
 
             CustomDictionary userCustomDictonary = new CustomDictionary();
             Dictionary<string, string> frenctDictionary = new Dictionary<string, string>
@@ -258,17 +250,19 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
         [TestCategory("Translator")]
         public async Task Translator_DictionaryTest_ItalianDictionary()
         {
-            if (!EnvironmentVariablesDefined())
-            {
-                Assert.Inconclusive("Missing Translator Environment variables - Skipping test");
-                return;
-            }
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(HttpMethod.Post, "https://api.cognitive.microsoft.com/sts/v1.0/issueToken")
+                .Respond("application/jwt", "<--valid-bearer-token-->");
+            mockHttp.When(HttpMethod.Get, GetRequestDetect("Voglio fare una foto nella camera"))
+                .Respond("application/xml", GetResponseDetect("it"));
+            mockHttp.When(HttpMethod.Post, @"https://api.microsofttranslator.com/v2/Http.svc/TranslateArray2")
+                .Respond("application/xml", GetResponse("Translator_DictionaryTest_ItalianDictionary.xml"));
 
-            Translator translator = new Translator(translatorKey);
+            var translator = new Translator(_translatorKey, mockHttp.ToHttpClient());
 
-            CustomDictionary userCustomDictonary = new CustomDictionary();
+            var userCustomDictonary = new CustomDictionary();
 
-            Dictionary<string, string> italianDictionary = new Dictionary<string, string>
+            var italianDictionary = new Dictionary<string, string>
             {
                 { "camera", "bedroom" },
                 { "foto", "personal photo" }
@@ -281,7 +275,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
 
             var translatedDocuments = await translator.TranslateArrayAsync(new string[] { italianSentence }, "it", "en");
             Assert.IsNotNull(translatedDocuments);
-            string postProcessedMessage = customDictionaryPostProcessor.Process(translatedDocuments[0], "it").PostProcessedMessage;
+            var postProcessedMessage = customDictionaryPostProcessor.Process(translatedDocuments[0], "it").PostProcessedMessage;
             Assert.IsNotNull(postProcessedMessage);
             Assert.AreEqual("I want to take a personal photo in the bedroom", postProcessedMessage);
         }
@@ -291,17 +285,20 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
         [TestCategory("Translator")]
         public async Task Translator_PatternsAndDictionaryTest()
         {
-            if (!EnvironmentVariablesDefined())
-            {
-                Assert.Inconclusive("Missing Translator Environment variables - Skipping test");
-                return;
-            }
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(HttpMethod.Post, "https://api.cognitive.microsoft.com/sts/v1.0/issueToken")
+                .Respond("application/jwt", "<--valid-bearer-token-->");
+            mockHttp.When(HttpMethod.Get, GetRequestDetect("mon nom est eta"))
+                .Respond("application/xml", GetResponseDetect("fr"));
+            mockHttp.When(HttpMethod.Post, @"https://api.microsofttranslator.com/v2/Http.svc/TranslateArray2")
+                .Respond("application/xml", GetResponse("Translator_PatternsAndDictionaryTest.xml"));
 
+            var translator = new Translator(_translatorKey, mockHttp.ToHttpClient());
+            
             //creating the patterns post processor
-            List<IPostProcessor> attachedPostProcessors = new List<IPostProcessor>();
-            Translator translator = new Translator(translatorKey);
-            Dictionary<string, List<string>> patterns = new Dictionary<string, List<string>>();
-            List<string> frenchPatterns = new List<string> { "mon nom est (.+)" };
+            var attachedPostProcessors = new List<IPostProcessor>();
+            var patterns = new Dictionary<string, List<string>>();
+            var frenchPatterns = new List<string> { "mon nom est (.+)" };
 
             patterns.Add("fr", frenchPatterns);
             IPostProcessor patternsPostProcessor = new PatternsPostProcessor(patterns);
@@ -310,8 +307,8 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
             attachedPostProcessors.Add(patternsPostProcessor);
 
             //creating user custom dictionary post processor
-            CustomDictionary userCustomDictonaries = new CustomDictionary();
-            Dictionary<string, string> frenctDictionary = new Dictionary<string, string>
+            var userCustomDictonaries = new CustomDictionary();
+            var frenctDictionary = new Dictionary<string, string>
             {
                 { "etat", "Eldad" }
             };
@@ -329,7 +326,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
             string postProcessedMessage = null;
 
             //test the actual use case of the compined post processors together
-            foreach (IPostProcessor postProcessor in attachedPostProcessors)
+            foreach (var postProcessor in attachedPostProcessors)
             {
                 postProcessedMessage = postProcessor.Process(translatedDocuments[0], "fr").PostProcessedMessage;
             }
@@ -338,9 +335,20 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
             Assert.AreEqual("My name is Eldad", postProcessedMessage);
         }
 
-        private bool EnvironmentVariablesDefined()
+        private string GetRequestDetect(string text)
         {
-            return translatorKey != null;
+            return "http://api.microsofttranslator.com/v2/Http.svc/Detect?text=" + text;
+        }
+
+        private string GetResponseDetect(string text)
+        {
+            return $"<string xmlns=\"http://schemas.microsoft.com/2003/10/Serialization/\">{text}</string>";
+        }
+
+        private Stream GetResponse(string fileName)
+        {
+            var path = Path.Combine(Environment.CurrentDirectory, "TestData", fileName);
+            return File.OpenRead(path);
         }
     }
 }
