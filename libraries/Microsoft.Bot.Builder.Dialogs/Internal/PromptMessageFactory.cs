@@ -16,17 +16,19 @@ namespace Microsoft.Bot.Builder.Dialogs
                 {
                     return CreateActivity(options.RetryPromptActivity);
                 }
+
                 if (options.RetryPromptString != null)
                 {
                     return CreateActivity(options.RetryPromptString, options.RetrySpeak);
                 }
             }
-            // else fall through and use non-retry prompt option
 
+            // else fall through and use non-retry prompt option
             if (options.PromptActivity != null)
             {
                 return CreateActivity(options.PromptActivity);
             }
+
             if (options.PromptString != null)
             {
                 return CreateActivity(options.PromptString, options.Speak);
@@ -37,7 +39,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         private static IMessageActivity CreateActivity(string text, string speak)
         {
-            IMessageActivity activity = Activity.CreateMessageActivity();
+            var activity = Activity.CreateMessageActivity();
             activity.InputHint = InputHints.ExpectingInput;
             activity.Text = !string.IsNullOrWhiteSpace(text) ? text : null;
             activity.Speak = !string.IsNullOrWhiteSpace(speak) ? speak : null;
@@ -50,6 +52,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             {
                 throw new ArgumentException("Provided Activity must be a Message Activity");
             }
+
             return activity.AsMessageActivity();
         }
     }

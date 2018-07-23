@@ -26,7 +26,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 var state = await testProperty.GetAsync(turnContext);
                 var prompt = new TextPrompt();
 
-                var dialogCompletion = await prompt.Continue(turnContext, state);
+                var dialogCompletion = await prompt.ContinueAsync(turnContext, state);
                 if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
                 {
                     var options = new Dictionary<string, object>
@@ -34,7 +34,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                         { nameof(PromptOptions.PromptActivity), MessageFactory.Text("Enter some text.") }
                     };
 
-                    await prompt.Begin(turnContext, state, options);
+                    await prompt.BeginAsync(turnContext, state, options);
                 }
                 else if (dialogCompletion.IsCompleted)
                 {
@@ -63,10 +63,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 var state = await testProperty.GetAsync(turnContext);
                 var prompt = new TextPrompt();
 
-                var dialogCompletion = await prompt.Continue(turnContext, state);
+                var dialogCompletion = await prompt.ContinueAsync(turnContext, state);
                 if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
                 {
-                    await prompt.Begin(turnContext, state, new PromptOptions { PromptString = "Enter some text." });
+                    await prompt.BeginAsync(turnContext, state, new PromptOptions { PromptString = "Enter some text." });
                 }
                 else if (dialogCompletion.IsCompleted)
                 {
@@ -103,10 +103,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 var state = await testProperty.GetAsync(turnContext);
                 var prompt = new TextPrompt(validator);
 
-                var dialogCompletion = await prompt.Continue(turnContext, state);
+                var dialogCompletion = await prompt.ContinueAsync(turnContext, state);
                 if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
                 {
-                    await prompt.Begin(turnContext, state,
+                    await prompt.BeginAsync(turnContext, state,
                         new PromptOptions
                         {
                             PromptString = "Enter some text.",

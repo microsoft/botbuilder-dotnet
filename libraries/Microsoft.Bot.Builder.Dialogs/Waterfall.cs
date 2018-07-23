@@ -22,48 +22,57 @@ namespace Microsoft.Bot.Builder.Dialogs
             _steps = steps;
         }
 
-        public Task DialogBegin(DialogContext dc, IDictionary<string, object> dialogArgs = null)
+        public Task DialogBeginAsync(DialogContext dc, IDictionary<string, object> dialogArgs = null)
         {
             if (dc == null)
+            {
                 throw new ArgumentNullException(nameof(dc));
+            }
 
             dc.ActiveDialog.Step = 0;
-            return RunStep(dc, dialogArgs);
+            return RunStepAsync(dc, dialogArgs);
         }
 
-        public async Task DialogContinue(DialogContext dc)
+        public async Task DialogContinueAsync(DialogContext dc)
         {
             if (dc == null)
+            {
                 throw new ArgumentNullException(nameof(dc));
+            }
 
             if (dc.Context.Activity.Type == ActivityTypes.Message)
             {
                 dc.ActiveDialog.Step++;
-                await RunStep(dc, new Dictionary<string, object> { { "Activity", dc.Context.Activity } });
+                await RunStepAsync(dc, new Dictionary<string, object> { { "Activity", dc.Context.Activity } });
             }
         }
 
-        public Task DialogResume(DialogContext dc, IDictionary<string, object> result)
+        public Task DialogResumeAsync(DialogContext dc, IDictionary<string, object> result)
         {
             if (dc == null)
+            {
                 throw new ArgumentNullException(nameof(dc));
+            }
 
             dc.ActiveDialog.Step++;
-            return RunStep(dc, result);
+            return RunStepAsync(dc, result);
         }
 
-        private async Task RunStep(DialogContext dc, IDictionary<string, object> result = null)
+        private async Task RunStepAsync(DialogContext dc, IDictionary<string, object> result = null)
         {
             if (dc == null)
+            {
                 throw new ArgumentNullException(nameof(dc));
+            }
 
             var step = dc.ActiveDialog.Step;
             if (step >= 0 && step < _steps.Length)
             {
-                SkipStepFunction next = (r) => {
+                SkipStepFunction next = (r) =>
+                {
                     // Skip to next step
                     dc.ActiveDialog.Step++;
-                    return RunStep(dc, r);
+                    return RunStepAsync(dc, r);
                 };
 
                 // Execute step
@@ -72,7 +81,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             else
             {
                 // End of waterfall so just return to parent
-                await dc.End(result);
+                await dc.EndAsync(result);
             }
         }
     }
