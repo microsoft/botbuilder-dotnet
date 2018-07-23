@@ -1,0 +1,54 @@
+{
+    "query": "Please deliver it to 98033 WA",
+    "topScoringIntent": {
+        "intent": "Delivery",
+        "score": 0.8785189
+    },
+    "intents": [
+        {
+            "intent": "Delivery",
+            "score": 0.8785189
+        }
+    ],
+    "entities": [
+        {
+            "entity": "98033 wa",
+            "type": "Address",
+            "startIndex": 21,
+            "endIndex": 28,
+            "score": 0.864295959
+        },
+        {
+            "entity": "98033",
+            "type": "builtin.number",
+            "startIndex": 21,
+            "endIndex": 25,
+            "resolution": {
+                "value": "98033"
+            }
+        },
+        {
+            "entity": "wa",
+            "type": "State",
+            "startIndex": 27,
+            "endIndex": 28,
+            "score": 0.8981885
+        }
+    ],
+    "compositeEntities": [
+        {
+            "parentType": "Address",
+            "value": "98033 wa",
+            "children": [
+                {
+                    "type": "builtin.number",
+                    "value": "98033"
+                },
+                {
+                    "type": "State",
+                    "value": "wa"
+                }
+            ]
+        }
+    ]
+}

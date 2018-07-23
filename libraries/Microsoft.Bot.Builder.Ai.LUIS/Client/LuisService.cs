@@ -26,10 +26,10 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
         /// Initializes a new instance of the <see cref="LuisService"/> class using the model information.
         /// </summary>
         /// <param name="model">The LUIS model information.</param>
-        /// <param name="customHttpClient">an optional alternate HttpClient.</param>
-        public LuisService(ILuisModel model, HttpClient customHttpClient = null)
+        /// <param name="httpClient">an optional alternate HttpClient.</param>
+        public LuisService(ILuisModel model, HttpClient httpClient = null)
         {
-            _httpClient = customHttpClient ?? DefaultHttpClient;
+            _httpClient = httpClient ?? DefaultHttpClient;
             SetField.NotNull(out this.model, nameof(model), model);
         }
 

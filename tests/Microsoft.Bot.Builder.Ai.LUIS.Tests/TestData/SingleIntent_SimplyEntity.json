@@ -1,0 +1,22 @@
+{
+    "query": "my name is Emad",
+    "topScoringIntent": {
+        "intent": "SpecifyName",
+        "score": 0.8785189
+    },
+    "intents": [
+        {
+            "intent": "SpecifyName",
+            "score": 0.8785189
+        }
+    ],
+    "entities": [
+        {
+            "entity": "emad",
+            "type": "Name",
+            "startIndex": 11,
+            "endIndex": 14,
+            "score": 0.8446753
+        }
+    ]
+}

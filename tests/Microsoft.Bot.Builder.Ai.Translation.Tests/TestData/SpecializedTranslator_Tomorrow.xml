@@ -1,0 +1,14 @@
+<ArrayOfTranslateArray2Response xmlns="http://schemas.datacontract.org/2004/07/Microsoft.MT.Web.Service.V2" xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+    <TranslateArray2Response>
+        <Alignment />
+        <From>es</From>
+        <OriginalTextSentenceLengths xmlns:a="http://schemas.microsoft.com/2003/10/Serialization/Arrays">
+            <a:int>11</a:int>
+        </OriginalTextSentenceLengths>
+        <State/>
+        <TranslatedText>For tomorrow</TranslatedText>
+        <TranslatedTextSentenceLengths xmlns:a="http://schemas.microsoft.com/2003/10/Serialization/Arrays">
+            <a:int>12</a:int>
+        </TranslatedTextSentenceLengths>
+    </TranslateArray2Response>
+</ArrayOfTranslateArray2Response>

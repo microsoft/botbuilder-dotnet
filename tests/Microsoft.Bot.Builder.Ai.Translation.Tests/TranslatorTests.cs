@@ -3,28 +3,26 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Ai.Translation.PostProcessor;
-using Microsoft.Bot.Builder.Tests;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using RichardSzalay.MockHttp;
 
 namespace Microsoft.Bot.Builder.Ai.Translation.Tests
 {
     [TestClass]
     public class TranslatorTests
     {
-        public string translatorKey = TestUtilities.GetKey("TRANSLATORKEY");
+        private const string _translatorKey = "dummy-key";
 
         [TestMethod]
         [TestCategory("AI")]
         [TestCategory("Translator")]
         public void Translator_InvalidArguments_NullTranslatorKey()
         {
-            if (!EnvironmentVariablesDefined())
-            {
-                Assert.Inconclusive("Missing Translator Environment variables - Skipping test");
-                return;
-            }
             string translatorKey = null;
             Assert.ThrowsException<ArgumentNullException>(() => new Translator(translatorKey));
         }
@@ -34,12 +32,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
         [TestCategory("Translator")]
         public void Translator_InvalidArguments_EmptyTranslatorKey()
         {
-            if (!EnvironmentVariablesDefined())
-            {
-                Assert.Inconclusive("Missing Translator Environment variables - Skipping test");
-                return;
-            }
-            string translatorKey = string.Empty;
+            var translatorKey = "";
             Assert.ThrowsException<ArgumentNullException>(() => new Translator(translatorKey));
         }
 
@@ -48,13 +41,15 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
         [TestCategory("Translator")]
         public async Task Translator_DetectAndTranslateToEnglish()
         {
-            if (!EnvironmentVariablesDefined())
-            {
-                Assert.Inconclusive("Missing Translator Environment variables - Skipping test");
-                return;
-            }
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(HttpMethod.Post, "https://api.cognitive.microsoft.com/sts/v1.0/issueToken")
+                .Respond("application/jwt", "<--valid-bearer-token-->");
+            mockHttp.When(HttpMethod.Get, GetRequestDetect("salut"))
+                .Respond("application/xml", GetResponseDetect("fr"));
+            mockHttp.When(HttpMethod.Get, GetRequestTranslate("salut", "fr", "en"))
+                .Respond("application/xml", GetResponseTranslate("Hello"));
 
-            Translator translator = new Translator(translatorKey);
+            var translator = new Translator(_translatorKey, mockHttp.ToHttpClient());
 
             var sentence = "salut";
             var detectedLanguage = await translator.DetectAsync(sentence);
@@ -71,21 +66,21 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
         [TestCategory("Translator")]
         public async Task Translator_LiteralTagTest()
         {
-            if (!EnvironmentVariablesDefined())
-            {
-                Assert.Inconclusive("Missing Translator Environment variables - Skipping test");
-                return;
-            }
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(HttpMethod.Post, "https://api.cognitive.microsoft.com/sts/v1.0/issueToken")
+                .Respond("application/jwt", "<--valid-bearer-token-->");
+            mockHttp.When(HttpMethod.Post, @"https://api.microsofttranslator.com/v2/Http.svc/TranslateArray2")
+                .Respond("application/xml", GetResponse("Translator_LiteralTagTest.xml"));
 
-            Translator translator = new Translator(translatorKey);
+            var translator = new Translator(_translatorKey, mockHttp.ToHttpClient());
 
             var sentence = "salut <literal>Jean Bouchier mon ami</literal>";
 
             var translatedSentence = await translator.TranslateArrayAsync(new string[] { sentence }, "fr", "en");
-            Dictionary<string, List<string>> patterns = new Dictionary<string, List<string>>();
+            var patterns = new Dictionary<string, List<string>>();
             patterns.Add("fr", new List<string>());
-            PatternsPostProcessor postProcessor = new PatternsPostProcessor(patterns);
-            PostProcessedDocument postProcessedDocument = postProcessor.Process(translatedSentence[0], "fr");
+            var postProcessor = new PatternsPostProcessor(patterns);
+            var postProcessedDocument = postProcessor.Process(translatedSentence[0], "fr");
             Assert.IsNotNull(translatedSentence);
             Assert.AreEqual("Hi Jean Bouchier mon ami", postProcessedDocument.PostProcessedMessage);
         }
@@ -95,13 +90,13 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
         [TestCategory("Translator")]
         public async Task Translator_TranslateFrenchToEnglish()
         {
-            if (!EnvironmentVariablesDefined())
-            {
-                Assert.Inconclusive("Missing Translator Environment variables - Skipping test");
-                return;
-            }
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(HttpMethod.Post, "https://api.cognitive.microsoft.com/sts/v1.0/issueToken")
+                .Respond("application/jwt", "<--valid-bearer-token-->");
+            mockHttp.When(HttpMethod.Get, GetRequestTranslate("salut 20-10", "fr", "en"))
+                .Respond("application/xml", GetResponseTranslate("Hi 20-10"));
 
-            Translator translator = new Translator(translatorKey);
+            var translator = new Translator(_translatorKey, mockHttp.ToHttpClient());
 
             var sentence = "salut 20-10";
             var translatedSentence = await translator.TranslateAsync(sentence, "fr", "en");
@@ -114,13 +109,13 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
         [TestCategory("Translator")]
         public async Task Translator_TranslateFrenchToEnglishArray()
         {
-            if (!EnvironmentVariablesDefined())
-            {
-                Assert.Inconclusive("Missing Translator Environment variables - Skipping test");
-                return;
-            }
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(HttpMethod.Post, "https://api.cognitive.microsoft.com/sts/v1.0/issueToken")
+                .Respond("application/jwt", "<--valid-bearer-token-->");
+            mockHttp.When(HttpMethod.Post, @"https://api.microsofttranslator.com/v2/Http.svc/TranslateArray2")
+                .Respond("application/xml", GetResponse("Translator_TranslateFrenchToEnglishArray.xml"));
 
-            Translator translator = new Translator(translatorKey);
+            var translator = new Translator(_translatorKey, mockHttp.ToHttpClient());
 
             var sentences = new string[] { "mon nom est", "salut", "au revoir" };
             var translatedSentences = await translator.TranslateArrayAsync(sentences, "fr", "en");
@@ -136,13 +131,13 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
         [TestCategory("Translator")]
         public async Task Translator_TranslateEnglishToFrench()
         {
-            if (!EnvironmentVariablesDefined())
-            {
-                Assert.Inconclusive("Missing Translator Environment variables - Skipping test");
-                return;
-            }
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(HttpMethod.Post, "https://api.cognitive.microsoft.com/sts/v1.0/issueToken")
+                .Respond("application/jwt", "<--valid-bearer-token-->");
+            mockHttp.When(HttpMethod.Get, GetRequestTranslate("hello", "en", "fr"))
+                .Respond("application/xml", GetResponseTranslate("Salut"));
 
-            Translator translator = new Translator(translatorKey);
+            var translator = new Translator(_translatorKey, mockHttp.ToHttpClient());
 
             var sentence = "hello";
             var translatedSentence = await translator.TranslateAsync(sentence, "en", "fr");
@@ -155,13 +150,13 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
         [TestCategory("Translator")]
         public async Task Translator_TranslateEnglishToFrenchArray()
         {
-            if (!EnvironmentVariablesDefined())
-            {
-                Assert.Inconclusive("Missing Translator Environment variables - Skipping test");
-                return;
-            }
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(HttpMethod.Post, "https://api.cognitive.microsoft.com/sts/v1.0/issueToken")
+                .Respond("application/jwt", "<--valid-bearer-token-->");
+            mockHttp.When(HttpMethod.Post, @"https://api.microsofttranslator.com/v2/Http.svc/TranslateArray2")
+                .Respond("application/xml", GetResponse("Translator_TranslateEnglishToFrenchArray.xml"));
 
-            Translator translator = new Translator(translatorKey);
+            var translator = new Translator(_translatorKey, mockHttp.ToHttpClient());
 
             var sentences = new string[] { "Hello", "Good bye" };
             var translatedSentences = await translator.TranslateArrayAsync(sentences, "en", "fr");
@@ -176,13 +171,13 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
         [TestCategory("Translator")]
         public async Task Translator_InvalidSourceLanguage()
         {
-            if (!EnvironmentVariablesDefined())
-            {
-                Assert.Inconclusive("Missing Translator Environment variables - Skipping test");
-                return;
-            }
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(HttpMethod.Post, "https://api.cognitive.microsoft.com/sts/v1.0/issueToken")
+                .Respond("application/jwt", "<--valid-bearer-token-->");
+            mockHttp.When(HttpMethod.Get, GetRequestTranslate("Arrange an appointment for tomorrow", "na", "de"))
+                .Respond(HttpStatusCode.BadRequest, "application/xml", GetResponse("Translator_InvalidSourceLanguage.xml"));
 
-            Translator translator = new Translator(translatorKey);
+            Translator translator = new Translator(_translatorKey, mockHttp.ToHttpClient());
 
             var sentence = "Arrange an appointment for tomorrow";
             await Assert.ThrowsExceptionAsync<ArgumentException>(async () =>
@@ -194,22 +189,43 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
         [TestCategory("Translator")]
         public async Task Translator_InvalidTargetLanguage()
         {
-            if (!EnvironmentVariablesDefined())
-            {
-                Assert.Inconclusive("Missing Translator Environment variables - Skipping test");
-                return;
-            }
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(HttpMethod.Post, "https://api.cognitive.microsoft.com/sts/v1.0/issueToken")
+                .Respond("application/jwt", "<--valid-bearer-token-->");
+            mockHttp.When(HttpMethod.Get, GetRequestTranslate("Arrange an appointment for tomorrow", "en", "na"))
+                .Respond(HttpStatusCode.BadRequest, "application/xml", GetResponse("Translator_InvalidTargetLanguage.xml"));
 
-            Translator translator = new Translator(translatorKey);
+            Translator translator = new Translator(_translatorKey, mockHttp.ToHttpClient());
 
             var sentence = "Arrange an appointment for tomorrow";
             await Assert.ThrowsExceptionAsync<ArgumentException>(async () =>
                 await translator.TranslateAsync(sentence, "en", "na"));
         }
 
-        private bool EnvironmentVariablesDefined()
+        private string GetRequestDetect(string text)
         {
-            return translatorKey != null;
+            return "http://api.microsofttranslator.com/v2/Http.svc/Detect?text=" + text;
+        }
+
+        private string GetRequestTranslate(string text, string from, string to)
+        {
+            return "http://api.microsofttranslator.com/v2/Http.svc/Translate?text=" + text + "&from=" + from + "&to=" + to;
+        }
+
+        private string GetResponseDetect(string text)
+        {
+            return $"<string xmlns=\"http://schemas.microsoft.com/2003/10/Serialization/\">{text}</string>";
+        }
+
+        private string GetResponseTranslate(string text)
+        {
+            return $"<string xmlns=\"http://schemas.microsoft.com/2003/10/Serialization/\">{text}</string>";
+        }
+
+        private Stream GetResponse(string fileName)
+        {
+            var path = Path.Combine(Environment.CurrentDirectory, "TestData", fileName);
+            return File.OpenRead(path);
         }
     }
 }

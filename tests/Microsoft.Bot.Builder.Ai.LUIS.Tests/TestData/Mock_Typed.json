@@ -1,0 +1,124 @@
+{
+  "query": "fly from seattle to dallas at 3pm on delta",
+  "topScoringIntent": {
+    "intent": "Travel",
+    "score": 0.141035929,
+    "actions": null
+  },
+  "intents": [
+    {
+      "intent": "Travel",
+      "score": 0.141035929,
+      "actions": null
+    },
+    {
+      "intent": "EntityTests",
+      "score": 0.07253119,
+      "actions": null
+    },
+    {
+      "intent": "search",
+      "score": 0.0253965259,
+      "actions": null
+    },
+    {
+      "intent": "Weather.GetForecast",
+      "score": 0.02482934,
+      "actions": null
+    },
+    {
+      "intent": "None",
+      "score": 0.01891793,
+      "actions": null
+    },
+    {
+      "intent": "SpecifyName",
+      "score": 0.005820451,
+      "actions": null
+    },
+    {
+      "intent": "Delivery",
+      "score": 0.005534173,
+      "actions": null
+    },
+    {
+      "intent": "Cancel",
+      "score": 0.00509996526,
+      "actions": null
+    },
+    {
+      "intent": "Help",
+      "score": 0.003480897,
+      "actions": null
+    },
+    {
+      "intent": "Greeting",
+      "score": 0.001150199,
+      "actions": null
+    }
+  ],
+  "entities": [
+    {
+      "role": null,
+      "entity": "delta",
+      "type": "Airline",
+      "startIndex": 37,
+      "endIndex": 41,
+      "score": null,
+      "resolution": {
+        "values": [
+          "Delta"
+        ]
+      }
+    },
+    {
+      "role": null,
+      "entity": "dallas",
+      "type": "City::To",
+      "startIndex": 20,
+      "endIndex": 25,
+      "score": 0.926704347,
+      "resolution": null
+    },
+    {
+      "role": null,
+      "entity": "seattle",
+      "type": "City::From",
+      "startIndex": 9,
+      "endIndex": 15,
+      "score": 0.990908,
+      "resolution": null
+    },
+    {
+      "role": null,
+      "entity": "3pm",
+      "type": "builtin.datetimeV2.time",
+      "startIndex": 30,
+      "endIndex": 32,
+      "score": null,
+      "resolution": {
+        "values": [
+          {
+            "timex": "T15",
+            "type": "time",
+            "value": "15:00:00"
+          }
+        ]
+      }
+    },
+    {
+      "role": null,
+      "entity": "3pm",
+      "type": "builtin.dimension",
+      "startIndex": 30,
+      "endIndex": 32,
+      "score": null,
+      "resolution": {
+        "unit": "Picometer",
+        "value": "3"
+      }
+    }
+  ],
+  "compositeEntities": [],
+  "alteredQuery": null
+}
