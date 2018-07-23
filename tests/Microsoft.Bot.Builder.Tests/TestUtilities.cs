@@ -14,16 +14,22 @@ namespace Microsoft.Bot.Builder.Tests
     {
         public static TurnContext CreateEmptyContext()
         {
-            TestAdapter b = new TestAdapter();
-            Activity a = new Activity
+            var b = new TestAdapter();
+            var a = new Activity
             {
-                Type = ActivityTypes.Message
+                Type = ActivityTypes.Message,
+                ChannelId = "EmptyContext",
+                From = new ChannelAccount
+                {
+                    Id = "empty@empty.context.org",
+                }
             };
-            TurnContext bc = new TurnContext(b, a);
+            var bc = new TurnContext(b, a);
 
             return bc;
         }
 
+        /*
         public static T CreateEmptyContext<T>() where T:ITurnContext
         {
             TestAdapter b = new TestAdapter();
@@ -36,6 +42,7 @@ namespace Microsoft.Bot.Builder.Tests
             else
                 throw new ArgumentException($"Unknown Type {typeof(T).Name}");            
         }
+        */
 
         static Lazy<Dictionary<string, string>> environmentKeys = new Lazy<Dictionary<string, string>>(()=>
         {
