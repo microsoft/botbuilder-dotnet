@@ -48,7 +48,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             services.AddSingleton(sp =>
             {
                 var options = sp.GetRequiredService<IOptions<BotFrameworkOptions>>().Value;
-                var botFrameworkAdapter = new BotFrameworkAdapter(options.CredentialProvider, options.ConnectorClientRetryPolicy, options.HttpClient);
+                var botFrameworkAdapter = new BotFrameworkAdapter(options.CredentialProvider, options.ChannelProvider, options.ConnectorClientRetryPolicy, options.HttpClient);
 
                 botFrameworkAdapter.OnTurnError = options.OnTurnError;
 

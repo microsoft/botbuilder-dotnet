@@ -29,7 +29,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <remarks>If the task completes successfully, the result contains the claims-based
         /// identity for the request</remarks>
-        public static async Task<ClaimsIdentity> AuthenticateRequest(IActivity activity, string authHeader, ICredentialProvider credentials, HttpClient httpClient = null)
+        public static async Task<ClaimsIdentity> AuthenticateRequest(IActivity activity, string authHeader, ICredentialProvider credentials, IChannelProvider provider, HttpClient httpClient = null)
         {
             if (string.IsNullOrWhiteSpace(authHeader))
             {
@@ -46,7 +46,7 @@ namespace Microsoft.Bot.Connector.Authentication
                 throw new UnauthorizedAccessException();
             }
 
-            var claimsIdentity = await ValidateAuthHeader(authHeader, credentials, activity.ChannelId, activity.ServiceUrl, httpClient ?? _httpClient);
+            var claimsIdentity = await ValidateAuthHeader(authHeader, credentials, provider, activity.ChannelId, activity.ServiceUrl, httpClient ?? _httpClient);
 
             MicrosoftAppCredentials.TrustServiceUrl(activity.ServiceUrl);
 
@@ -64,7 +64,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <remarks>If the task completes successfully, the result contains the claims-based
         /// identity for the request</remarks>
-        public static async Task<ClaimsIdentity> ValidateAuthHeader(string authHeader, ICredentialProvider credentials, string channelId, string serviceUrl = null, HttpClient httpClient = null)
+        public static async Task<ClaimsIdentity> ValidateAuthHeader(string authHeader, ICredentialProvider credentials, IChannelProvider channelProvider, string channelId, string serviceUrl = null, HttpClient httpClient = null)
         {
             if (string.IsNullOrEmpty(authHeader))
                 throw new ArgumentNullException(nameof(authHeader));
@@ -74,6 +74,10 @@ namespace Microsoft.Bot.Connector.Authentication
             if (usingEmulator)
             {
                 return await EmulatorValidation.AuthenticateEmulatorToken(authHeader, credentials, httpClient ?? _httpClient, channelId);
+            }
+            else if(channelProvider != null && await channelProvider.IsTokenFromChannel(authHeader).ConfigureAwait(false))
+            {
+                return await EnterpriseChannelValidation.AuthenticateChannelToken(authHeader, credentials, channelProvider, serviceUrl, httpClient ?? _httpClient, channelId);
             }
             else
             {
