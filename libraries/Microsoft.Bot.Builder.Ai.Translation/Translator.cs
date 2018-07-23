@@ -21,6 +21,10 @@ namespace Microsoft.Bot.Builder.Ai.Translation
     /// </summary>
     public class Translator
     {
+        private const string DetectUrl = "http://api.microsofttranslator.com/v2/Http.svc/Detect";
+        private const string TranslateUrl = "http://api.microsofttranslator.com/v2/Http.svc/Translate";
+        private const string TranslateArrayUrl = "https://api.microsofttranslator.com/v2/Http.svc/TranslateArray2";
+
         private static readonly HttpClient DefaultHttpClient = new HttpClient() { Timeout = TimeSpan.FromSeconds(20) };
         private readonly AzureAuthToken _authToken;
         private HttpClient _httpClient = null;
@@ -49,14 +53,13 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         public async Task<string> DetectAsync(string textToDetect)
         {
             textToDetect = PreprocessMessage(textToDetect);
-            var url = "http://api.microsofttranslator.com/v2/Http.svc/Detect";
             var query = $"?text={System.Net.WebUtility.UrlEncode(textToDetect)}";
 
             using (var request = new HttpRequestMessage())
             {
                 var accessToken = await _authToken.GetAccessTokenAsync().ConfigureAwait(false);
                 request.Headers.Add("Authorization", accessToken);
-                request.RequestUri = new Uri(url + query);
+                request.RequestUri = new Uri(DetectUrl + query);
                 using (var response = await _httpClient.SendAsync(request).ConfigureAwait(false))
                 {
                     var result = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
@@ -86,7 +89,6 @@ namespace Microsoft.Bot.Builder.Ai.Translation
             currentTranslatedDocument.SourceMessage = processedText;
             currentTranslatedDocument.LiteranlNoTranslatePhrases = literanlNoTranslateList;
 
-            var url = "http://api.microsofttranslator.com/v2/Http.svc/Translate";
             var query = $"?text={System.Net.WebUtility.UrlEncode(textToTranslate)}" +
                                  $"&from={from}" +
                                  $"&to={to}";
@@ -95,7 +97,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation
             {
                 var accessToken = await _authToken.GetAccessTokenAsync().ConfigureAwait(false);
                 request.Headers.Add("Authorization", accessToken);
-                request.RequestUri = new Uri(url + query);
+                request.RequestUri = new Uri(TranslateUrl + query);
                 using (var response = await _httpClient.SendAsync(request).ConfigureAwait(false))
                 {
                     var result = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
@@ -123,7 +125,6 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         public async Task<List<TranslatedDocument>> TranslateArrayAsync(string[] translateArraySourceTexts, string from, string to)
         {
             var translatedDocuments = new List<TranslatedDocument>();
-            var uri = "https://api.microsofttranslator.com/v2/Http.svc/TranslateArray2";
             for (var srcTxtIndx = 0; srcTxtIndx < translateArraySourceTexts.Length; srcTxtIndx++)
             {
                 // Check for literal tag in input user message
@@ -158,7 +159,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation
             using (var request = new HttpRequestMessage())
             {
                 request.Method = HttpMethod.Post;
-                request.RequestUri = new Uri(uri);
+                request.RequestUri = new Uri(TranslateArrayUrl);
                 request.Content = new StringContent(body, Encoding.UTF8, "text/xml");
                 request.Headers.Add("Authorization", accessToken);
 
