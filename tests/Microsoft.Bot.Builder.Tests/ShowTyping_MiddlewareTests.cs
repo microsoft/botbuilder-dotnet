@@ -7,7 +7,7 @@ using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.Bot.Builder.Core.Extensions.Tests
+namespace Microsoft.Bot.Builder.Tests
 {
     [TestClass]
     public class ShowTyping_MiddlewareTests
