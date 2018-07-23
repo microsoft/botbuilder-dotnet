@@ -30,10 +30,10 @@ namespace Microsoft.Bot.Builder
             var topIntent = (string.Empty, 0.0d);
             foreach (var intent in result.Intents)
             {
-                var score = (double)intent.Value["score"];
+                var score = intent.Value.Score;
                 if (score > topIntent.Item2)
                 {
-                    topIntent = (intent.Key, score);
+                    topIntent = (intent.Key, score.Value);
                 }
             }
 

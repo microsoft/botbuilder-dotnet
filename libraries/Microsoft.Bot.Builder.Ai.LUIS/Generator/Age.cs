@@ -3,18 +3,24 @@
 
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.Ai.LUIS
+namespace Microsoft.Bot.Builder.Ai.Luis
 {
     /// <summary>
     /// Strongly typed LUIS builtin_age.
     /// </summary>
     public class Age : NumberWithUnits
     {
-        public Age(double number, string units)
-            : base(number, units)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Age"/> class.
+        /// </summary>
+        /// <param name="age">Age.</param>
+        /// <param name="units">Units for age.</param>
+        public Age(double age, string units)
+            : base(age, units)
         {
         }
 
+        /// <inheritdoc/>
         public override string ToString() => $"Age({Number} {Units})";
     }
 }

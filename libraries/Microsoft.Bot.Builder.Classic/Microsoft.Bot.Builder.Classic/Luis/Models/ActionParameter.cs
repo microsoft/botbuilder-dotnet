@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for
 // license information.
 // 
@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Builder.Classic.Luis.Models
         /// <summary>
         /// Initializes a new instance of the ActionParameter class.
         /// </summary>
-        public ActionParameter(string name = default(string), bool? required = default(bool?), IList<EntityRecommendation> value = default(IList<EntityRecommendation>))
+        public ActionParameter(string name = default(string), bool? required = default(bool?), IList<EntityModel> value = default(IList<EntityModel>))
         {
             Name = name;
             Required = required;
@@ -48,7 +48,7 @@ namespace Microsoft.Bot.Builder.Classic.Luis.Models
         /// Value of extracted entities for this parameter.
         /// </summary>
         [JsonProperty(PropertyName = "value")]
-        public IList<EntityRecommendation> Value { get; set; }
+        public IList<EntityModel> Value { get; set; }
 
     }
 }
