@@ -11,7 +11,9 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using Microsoft.Bot.Builder.Ai.Translation.Model;
 using Microsoft.Bot.Builder.Ai.Translation.PostProcessor;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Ai.Translation
 {
@@ -21,12 +23,13 @@ namespace Microsoft.Bot.Builder.Ai.Translation
     /// </summary>
     public class Translator
     {
-        private const string DetectUrl = "http://api.microsofttranslator.com/v2/Http.svc/Detect";
+        private const string DetectUrl = "https://api.cognitive.microsofttranslator.com/detect?api-version=3.0";
         private const string TranslateUrl = "http://api.microsofttranslator.com/v2/Http.svc/Translate";
         private const string TranslateArrayUrl = "https://api.microsofttranslator.com/v2/Http.svc/TranslateArray2";
 
         private static readonly HttpClient DefaultHttpClient = new HttpClient() { Timeout = TimeSpan.FromSeconds(20) };
         private readonly AzureAuthToken _authToken;
+        private readonly string _apiKey;
         private HttpClient _httpClient = null;
 
         /// <summary>
@@ -43,6 +46,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation
             }
 
             _authToken = new AzureAuthToken(apiKey, httpClient);
+            _apiKey = apiKey;
         }
 
         /// <summary>
@@ -53,13 +57,13 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         public async Task<string> DetectAsync(string textToDetect)
         {
             textToDetect = PreprocessMessage(textToDetect);
-            var query = $"?text={System.Net.WebUtility.UrlEncode(textToDetect)}";
 
-            using (var request = new HttpRequestMessage())
+            using (var request = GetAuhenticatedRequestMessage(DetectUrl))
             {
-                var accessToken = await _authToken.GetAccessTokenAsync().ConfigureAwait(false);
-                request.Headers.Add("Authorization", accessToken);
-                request.RequestUri = new Uri(DetectUrl + query);
+                var requestModel = JsonConvert.SerializeObject(
+                    new TranslatorRequestModel[] { new TranslatorRequestModel { Text = textToDetect } });
+                request.Content = new StringContent(requestModel, Encoding.UTF8, "application/json");
+
                 using (var response = await _httpClient.SendAsync(request).ConfigureAwait(false))
                 {
                     var result = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
@@ -69,7 +73,8 @@ namespace Microsoft.Bot.Builder.Ai.Translation
                         return "ERROR: " + result;
                     }
 
-                    var detectedLang = XElement.Parse(result).Value;
+                    var detectedLanguages = JsonConvert.DeserializeObject<IEnumerable<DetectedLanguageModel>>(result);
+                    var detectedLang = detectedLanguages.First().Language;
                     return detectedLang;
                 }
             }
@@ -234,6 +239,13 @@ namespace Microsoft.Bot.Builder.Ai.Translation
 
             textToTranslate = Regex.Replace(textToTranslate, @"\s+", " ");
             processedTextToTranslate = textToTranslate;
+        }
+
+        private HttpRequestMessage GetAuhenticatedRequestMessage(string operationUrl)
+        {
+            var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, new Uri(operationUrl));
+            httpRequestMessage.Headers.Add("Ocp-Apim-Subscription-Key", _apiKey);
+            return httpRequestMessage;
         }
 
         /// <summary>
