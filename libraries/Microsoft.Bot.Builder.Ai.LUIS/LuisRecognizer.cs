@@ -6,10 +6,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Cognitive.LUIS.Models;
+using Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime;
+using Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime.Models;
+using Microsoft.Bot.Builder.TraceExtensions;
+using Microsoft.Bot.Schema;
 using Newtonsoft.Json.Linq;
 
-namespace Microsoft.Bot.Builder.Ai.LUIS
+namespace Microsoft.Bot.Builder.Ai.Luis
 {
     /// <inheritdoc />
     /// <summary>
@@ -17,59 +20,74 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
     /// </summary>
     public class LuisRecognizer : IRecognizer
     {
-        private const string MetadataKey = "$instance";
-        private readonly LuisService _luisService;
-        private readonly ILuisOptions _luisOptions;
-        private readonly ILuisRecognizerOptions _luisRecognizerOptions;
+        /// <summary>
+        /// The value type for a LUIS trace activity.
+        /// </summary>
+        public const string LuisTraceType = "https://www.luis.ai/schemas/trace";
+
+        /// <summary>
+        /// The context label for a LUIS trace activity.
+        /// </summary>
+        public const string LuisTraceLabel = "Luis Trace";
+
+        private const string _metadataKey = "$instance";
+        private readonly LuisRuntimeAPI _runtime;
+        private readonly LuisApplication _application;
+        private readonly LuisPredictionOptions _options;
+        private readonly bool _includeApiResults;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LuisRecognizer"/> class.
         /// </summary>
-        /// <param name="luisModel">The LUIS model to use to recognize text.</param>
-        /// <param name="luisRecognizerOptions">The LUIS recognizer options to use.</param>
-        /// <param name="options">The LUIS request options to use.</param>
-        public LuisRecognizer(ILuisModel luisModel, ILuisRecognizerOptions luisRecognizerOptions = null, ILuisOptions options = null)
+        /// <param name="application">The LUIS _application to use to recognize text.</param>
+        /// <param name="predictionOptions">The LUIS prediction options to use.</param>
+        /// <param name="includeApiResults">TRUE to include raw LUIS API response.</param>
+        public LuisRecognizer(LuisApplication application, LuisPredictionOptions predictionOptions = null, bool includeApiResults = false)
         {
-            _luisService = new LuisService(luisModel);
-            _luisOptions = options ?? new LuisRequest();
-            _luisRecognizerOptions = luisRecognizerOptions ?? new LuisRecognizerOptions { Verbose = true };
+            _runtime = new LuisRuntimeAPI(new ApiKeyServiceClientCredentials(application.EndpointKey))
+            {
+                AzureRegion = (AzureRegions)Enum.Parse(typeof(AzureRegions), application.AzureRegion),
+            };
+            _application = application;
+            _options = predictionOptions ?? new LuisPredictionOptions();
+            _includeApiResults = includeApiResults;
         }
 
         /// <inheritdoc />
-        public async Task<RecognizerResult> RecognizeAsync(string utterance, CancellationToken ct)
-        {
-            return await RecognizeInternalAsync(utterance, ct).ConfigureAwait(false);
-        }
+        public async Task<RecognizerResult> RecognizeAsync(ITurnContext context, CancellationToken ct)
+            => await RecognizeInternalAsync(context, ct).ConfigureAwait(false);
 
         /// <inheritdoc />
-        public async Task<T> RecognizeAsync<T>(string utterance, CancellationToken ct)
+        public async Task<T> RecognizeAsync<T>(ITurnContext context, CancellationToken ct)
             where T : IRecognizerConvert, new()
         {
             var result = new T();
-            result.Convert(await RecognizeInternalAsync(utterance, ct).ConfigureAwait(false));
+            result.Convert(await RecognizeInternalAsync(context, ct).ConfigureAwait(false));
             return result;
         }
 
-        private static string NormalizedIntent(string intent)
-        {
-            return intent.Replace('.', '_').Replace(' ', '_');
-        }
+        private static string NormalizedIntent(string intent) => intent.Replace('.', '_').Replace(' ', '_');
 
-        private static JObject GetIntents(LuisResult luisResult)
-        {
-            return luisResult.Intents != null ?
-                JObject.FromObject(luisResult.Intents.ToDictionary(
+        private static IDictionary<string, IntentScore> GetIntents(LuisResult luisResult)
+            => luisResult.Intents != null ?
+                luisResult.Intents.ToDictionary(
                     i => NormalizedIntent(i.Intent),
-                    i => new JObject(new JProperty("score", i.Score ?? 0)))) :
-                new JObject { [NormalizedIntent(luisResult.TopScoringIntent.Intent)] = new JProperty("score", luisResult.TopScoringIntent.Score ?? 0) };
-        }
+                    i => new IntentScore { Score = i.Score ?? 0 })
+                    :
+                new Dictionary<string, IntentScore>()
+                {
+                    {
+                        NormalizedIntent(luisResult.TopScoringIntent.Intent),
+                        new IntentScore() { Score = luisResult.TopScoringIntent.Score ?? 0 }
+                    },
+                };
 
-        private static JObject ExtractEntitiesAndMetadata(IList<EntityRecommendation> entities, IList<CompositeEntity> compositeEntities, bool verbose)
+        private static JObject ExtractEntitiesAndMetadata(IList<EntityModel> entities, IList<CompositeEntityModel> compositeEntities, bool verbose)
         {
             var entitiesAndMetadata = new JObject();
             if (verbose)
             {
-                entitiesAndMetadata[MetadataKey] = new JObject();
+                entitiesAndMetadata[_metadataKey] = new JObject();
             }
 
             var compositeEntityTypes = new HashSet<string>();
@@ -78,7 +96,7 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
             if (compositeEntities != null && compositeEntities.Any())
             {
                 compositeEntityTypes = new HashSet<string>(compositeEntities.Select(ce => ce.ParentType));
-                entities = compositeEntities.Aggregate(entities, (current, compositeEntity) => PopulateCompositeEntity(compositeEntity, current, entitiesAndMetadata, verbose));
+                entities = compositeEntities.Aggregate(entities, (current, compositeEntity) => PopulateCompositeEntityModel(compositeEntity, current, entitiesAndMetadata, verbose));
             }
 
             foreach (var entity in entities)
@@ -93,7 +111,7 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
 
                 if (verbose)
                 {
-                    AddProperty((JObject)entitiesAndMetadata[MetadataKey], ExtractNormalizedEntityName(entity), ExtractEntityMetadata(entity));
+                    AddProperty((JObject)entitiesAndMetadata[_metadataKey], ExtractNormalizedEntityName(entity), ExtractEntityMetadata(entity));
                 }
             }
 
@@ -112,36 +130,37 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
                             new JValue(double.Parse((string)value));
         }
 
-        private static JToken ExtractEntityValue(EntityRecommendation entity)
+        private static JToken ExtractEntityValue(EntityModel entity)
         {
-            if (entity.Resolution == null)
+#pragma warning disable IDE0007 // Use implicit type
+            if (entity.AdditionalProperties == null || !entity.AdditionalProperties.TryGetValue("resolution", out dynamic resolution))
+#pragma warning restore IDE0007 // Use implicit type
             {
                 return entity.Entity;
             }
 
             if (entity.Type.StartsWith("builtin.datetimeV2."))
             {
-                if (entity.Resolution?.Values == null || entity.Resolution.Values.Count == 0)
+                if (resolution.values == null || resolution.values.Count == 0)
                 {
-                    return JArray.FromObject(entity.Resolution);
+                    return JArray.FromObject(resolution);
                 }
 
-                var resolutionValues = (IEnumerable<object>)entity.Resolution["values"];
-                var type = ((IDictionary<string, object>)resolutionValues.First())["type"];
-                var timexes = resolutionValues.Select(val => ((IDictionary<string, object>)val)["timex"]);
+                var resolutionValues = (IEnumerable<dynamic>)resolution.values;
+                var type = resolution.values[0].type;
+                var timexes = resolutionValues.Select(val => val.timex);
                 var distinctTimexes = timexes.Distinct();
                 return new JObject(new JProperty("type", type), new JProperty("timex", JArray.FromObject(distinctTimexes)));
             }
             else
             {
-                var resolution = entity.Resolution;
                 switch (entity.Type)
                 {
                     case "builtin.number":
-                    case "builtin.ordinal": return Number(resolution["value"]);
+                    case "builtin.ordinal": return Number(resolution.value);
                     case "builtin.percentage":
                         {
-                            var svalue = (string)resolution["value"];
+                            var svalue = (string)resolution.value;
                             if (svalue.EndsWith("%"))
                             {
                                 svalue = svalue.Substring(0, svalue.Length - 1);
@@ -155,8 +174,8 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
                     case "builtin.currency":
                     case "builtin.temperature":
                         {
-                            var units = (string)resolution["unit"];
-                            var val = Number(resolution["value"]);
+                            var units = (string)resolution.unit;
+                            var val = Number(resolution.value);
                             var obj = new JObject();
                             if (val != null)
                             {
@@ -168,32 +187,28 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
                         }
 
                     default:
-                        return entity.Resolution.Count > 1 ?
-                            JObject.FromObject(entity.Resolution) :
-                            entity.Resolution.ContainsKey("value") ?
-                                (JToken)new JValue(entity.Resolution["value"]) :
-                                JArray.FromObject(entity.Resolution["values"]);
+                        return resolution.value ?? JArray.FromObject(resolution.values);
                 }
             }
         }
 
-        private static JObject ExtractEntityMetadata(EntityRecommendation entity)
+        private static JObject ExtractEntityMetadata(EntityModel entity)
         {
-            var obj = JObject.FromObject(new
+            dynamic obj = JObject.FromObject(new
             {
-                startIndex = entity.StartIndex,
-                endIndex = entity.EndIndex + 1,
+                startIndex = (int)entity.StartIndex,
+                endIndex = (int)entity.EndIndex + 1,
                 text = entity.Entity,
             });
-            if (entity.Score.HasValue)
+            if (entity.AdditionalProperties != null && entity.AdditionalProperties.TryGetValue("score", out var score))
             {
-                obj["score"] = entity.Score;
+                obj.score = (double)score;
             }
 
             return obj;
         }
 
-        private static string ExtractNormalizedEntityName(EntityRecommendation entity)
+        private static string ExtractNormalizedEntityName(EntityModel entity)
         {
             // Type::Role -> Role
             var type = entity.Type.Split(':').Last();
@@ -212,21 +227,22 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
                 type = type.Substring(8);
             }
 
-            if (!string.IsNullOrWhiteSpace(entity.Role))
+            var role = entity.AdditionalProperties != null && entity.AdditionalProperties.ContainsKey("role") ? (string)entity.AdditionalProperties["role"] : string.Empty;
+            if (!string.IsNullOrWhiteSpace(role))
             {
-                type = entity.Role;
+                type = role;
             }
 
             return type.Replace('.', '_').Replace(' ', '_');
         }
 
-        private static IList<EntityRecommendation> PopulateCompositeEntity(CompositeEntity compositeEntity, IList<EntityRecommendation> entities, JObject entitiesAndMetadata, bool verbose)
+        private static IList<EntityModel> PopulateCompositeEntityModel(CompositeEntityModel compositeEntity, IList<EntityModel> entities, JObject entitiesAndMetadata, bool verbose)
         {
             var childrenEntites = new JObject();
             var childrenEntitiesMetadata = new JObject();
             if (verbose)
             {
-                childrenEntites[MetadataKey] = new JObject();
+                childrenEntites[_metadataKey] = new JObject();
             }
 
             // This is now implemented as O(n^2) search and can be reduced to O(2n) using a map as an optimization if n grows
@@ -241,10 +257,10 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
             if (verbose)
             {
                 childrenEntitiesMetadata = ExtractEntityMetadata(compositeEntityMetadata);
-                childrenEntites[MetadataKey] = new JObject();
+                childrenEntites[_metadataKey] = new JObject();
             }
 
-            var coveredSet = new HashSet<EntityRecommendation>();
+            var coveredSet = new HashSet<EntityModel>();
             foreach (var child in compositeEntity.Children)
             {
                 foreach (var entity in entities)
@@ -267,7 +283,7 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
 
                     if (verbose)
                     {
-                        AddProperty((JObject)childrenEntites[MetadataKey], ExtractNormalizedEntityName(entity), ExtractEntityMetadata(entity));
+                        AddProperty((JObject)childrenEntites[_metadataKey], ExtractNormalizedEntityName(entity), ExtractEntityMetadata(entity));
                     }
                 }
             }
@@ -275,18 +291,16 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
             AddProperty(entitiesAndMetadata, compositeEntity.ParentType, childrenEntites);
             if (verbose)
             {
-                AddProperty((JObject)entitiesAndMetadata[MetadataKey], compositeEntity.ParentType, childrenEntitiesMetadata);
+                AddProperty((JObject)entitiesAndMetadata[_metadataKey], compositeEntity.ParentType, childrenEntitiesMetadata);
             }
 
             // filter entities that were covered by this composite entity
             return entities.Except(coveredSet).ToList();
         }
 
-        private static bool CompositeContainsEntity(EntityRecommendation compositeEntityMetadata, EntityRecommendation entity)
-        {
-            return entity.StartIndex >= compositeEntityMetadata.StartIndex &&
+        private static bool CompositeContainsEntity(EntityModel compositeEntityMetadata, EntityModel entity)
+            => entity.StartIndex >= compositeEntityMetadata.StartIndex &&
                    entity.EndIndex <= compositeEntityMetadata.EndIndex;
-        }
 
         /// <summary>
         /// If a property doesn't exist add it to a new array, otherwise append it to the existing array.
@@ -303,29 +317,69 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
             }
         }
 
-        private Task<RecognizerResult> RecognizeInternalAsync(string utterance, CancellationToken ct)
+        private static void AddProperties(LuisResult luis, RecognizerResult result)
         {
-            if (string.IsNullOrEmpty(utterance))
+            if (luis.SentimentAnalysis != null)
+            {
+                result.Properties.Add("sentiment", new JObject(
+                    new JProperty("label", luis.SentimentAnalysis.Label),
+                    new JProperty("score", luis.SentimentAnalysis.Score)));
+            }
+        }
+
+        private async Task<RecognizerResult> RecognizeInternalAsync(ITurnContext context, CancellationToken ct)
+        {
+            BotAssert.ContextNotNull(context);
+
+            if (context.Activity.Type != ActivityTypes.Message)
+            {
+                return null;
+            }
+
+            var utterance = context.Activity?.AsMessageActivity()?.Text;
+
+            if (string.IsNullOrWhiteSpace(utterance))
             {
                 throw new ArgumentNullException(nameof(utterance));
             }
 
-            var luisRequest = new LuisRequest(utterance);
-            _luisOptions.Apply(luisRequest);
-            return RecognizeAsync(luisRequest, ct, _luisRecognizerOptions.Verbose);
-        }
+            var luisResult = await _runtime.Prediction.ResolveAsync(
+                _application.ApplicationId,
+                utterance,
+                timezoneOffset: _options.TimezoneOffset,
+                verbose: _options.Verbose,
+                staging: _options.Staging,
+                spellCheck: _options.SpellCheck,
+                bingSpellCheckSubscriptionKey: _options.BingSpellCheckSubscriptionKey,
+                log: _options.Log,
+                cancellationToken: ct).ConfigureAwait(false);
 
-        private async Task<RecognizerResult> RecognizeAsync(LuisRequest request, CancellationToken ct, bool verbose)
-        {
-            var luisResult = await _luisService.QueryAsync(request, ct).ConfigureAwait(false);
             var recognizerResult = new RecognizerResult
             {
-                Text = request.Query,
+                Text = utterance,
                 AlteredText = luisResult.AlteredQuery,
                 Intents = GetIntents(luisResult),
-                Entities = ExtractEntitiesAndMetadata(luisResult.Entities, luisResult.CompositeEntities, verbose),
+                Entities = ExtractEntitiesAndMetadata(luisResult.Entities, luisResult.CompositeEntities, _options.IncludeInstanceData ?? true),
             };
-            recognizerResult.Properties.Add("luisResult", luisResult);
+            AddProperties(luisResult, recognizerResult);
+            if (_includeApiResults)
+            {
+                recognizerResult.Properties.Add("luisResult", luisResult);
+            }
+
+            var traceInfo = JObject.FromObject(
+                new
+                {
+                    recognizerResult,
+                    luisModel = new
+                    {
+                        ModelID = _application.ApplicationId,
+                    },
+                    luisOptions = _options,
+                    luisResult,
+                });
+
+            await context.TraceActivityAsync("LuisRecognizer", traceInfo, LuisTraceType, LuisTraceLabel, ct).ConfigureAwait(false);
             return recognizerResult;
         }
     }

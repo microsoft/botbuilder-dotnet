@@ -5,14 +5,14 @@ using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.Ai.LUIS
+namespace Microsoft.Bot.Builder.Ai.Luis
 {
     /// <summary>
     /// Represents the built-in LUIS date-time type.
     /// </summary>
     /// <remarks>
     /// LUIS recognizes time expressions like "next monday" and converts those to a type and set of timex expressions.
-    /// More information on timex can be found here: http://www.timeml.org/publications/timeMLdocs/timeml_1.2.1.html#timex3
+    /// More information on timex can be found here: http://www.timeml.org/publications/timeMLdocs/timeml_1.2.1.html#timex3.
     /// More information on the library which does the recognition can be found here: https://github.com/Microsoft/Recognizers-Text.
     /// </remarks>
     public class DateTimeSpec
@@ -41,7 +41,7 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
         }
 
         /// <summary>
-        /// Gets the type of expression.
+        /// Gets type of expression.
         /// </summary>
         /// <remarks>Example types include:
         /// <list type="*">
@@ -61,13 +61,13 @@ namespace Microsoft.Bot.Builder.Ai.LUIS
         public string Type { get; }
 
         /// <summary>
-        /// Gets timex expressions.
+        /// Gets Timex expressions.
         /// </summary>
         /// <value>
         /// Timex expressions.
         /// </value>
         [JsonProperty("timex")]
-        public IList<string> Expressions { get; }
+        public IReadOnlyList<string> Expressions { get; }
 
         /// <inheritdoc/>
         public override string ToString() => $"DateTimeSpec({Type}, [{string.Join(", ", Expressions)}]";
