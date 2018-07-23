@@ -1,18 +1,21 @@
-﻿using System;
-using Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime;
+﻿// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license.
+
+
+using System;
 using Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime.Models;
 
 namespace Microsoft.Bot.Builder.Ai.Luis
 {
     /// <summary>
-    /// Data describing a LUIS application.
+    /// Data describing a LUIS _application.
     /// </summary>
     public class LuisApplication
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="LuisApplication"/> class.
         /// </summary>
-        /// <param name="applicationId">LUIS application ID.</param>
+        /// <param name="applicationId">LUIS _application ID.</param>
         /// <param name="endpointKey">LUIS subscription or endpoint key.</param>
         /// <param name="azureRegion">Azure region with endpoint.</param>
         public LuisApplication(string applicationId, string endpointKey, string azureRegion)
@@ -44,10 +47,10 @@ namespace Microsoft.Bot.Builder.Ai.Luis
         }
 
         /// <summary>
-        /// Gets or sets LUIS application ID.
+        /// Gets or sets LUIS _application ID.
         /// </summary>
         /// <value>
-        /// LUIS application ID.
+        /// LUIS _application ID.
         /// </value>
         public string ApplicationId { get; set; }
 

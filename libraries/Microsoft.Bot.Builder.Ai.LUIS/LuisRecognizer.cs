@@ -30,27 +30,27 @@ namespace Microsoft.Bot.Builder.Ai.Luis
         /// </summary>
         public const string LuisTraceLabel = "Luis Trace";
 
-        private const string MetadataKey = "$instance";
-        private readonly LuisRuntimeAPI runtime;
-        private readonly LuisApplication application;
-        private readonly LuisPredictionOptions options;
-        private readonly bool includeApiResults;
+        private const string _metadataKey = "$instance";
+        private readonly LuisRuntimeAPI _runtime;
+        private readonly LuisApplication _application;
+        private readonly LuisPredictionOptions _options;
+        private readonly bool _includeApiResults;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LuisRecognizer"/> class.
         /// </summary>
-        /// <param name="application">The LUIS application to use to recognize text.</param>
+        /// <param name="application">The LUIS _application to use to recognize text.</param>
         /// <param name="predictionOptions">The LUIS prediction options to use.</param>
         /// <param name="includeApiResults">TRUE to include raw LUIS API response.</param>
         public LuisRecognizer(LuisApplication application, LuisPredictionOptions predictionOptions = null, bool includeApiResults = false)
         {
-            runtime = new LuisRuntimeAPI(new ApiKeyServiceClientCredentials(application.EndpointKey))
+            _runtime = new LuisRuntimeAPI(new ApiKeyServiceClientCredentials(application.EndpointKey))
             {
                 AzureRegion = (AzureRegions)Enum.Parse(typeof(AzureRegions), application.AzureRegion),
             };
-            this.application = application;
-            this.options = predictionOptions ?? new LuisPredictionOptions();
-            this.includeApiResults = includeApiResults;
+            _application = application;
+            _options = predictionOptions ?? new LuisPredictionOptions();
+            _includeApiResults = includeApiResults;
         }
 
         /// <inheritdoc />
@@ -87,7 +87,7 @@ namespace Microsoft.Bot.Builder.Ai.Luis
             var entitiesAndMetadata = new JObject();
             if (verbose)
             {
-                entitiesAndMetadata[MetadataKey] = new JObject();
+                entitiesAndMetadata[_metadataKey] = new JObject();
             }
 
             var compositeEntityTypes = new HashSet<string>();
@@ -111,7 +111,7 @@ namespace Microsoft.Bot.Builder.Ai.Luis
 
                 if (verbose)
                 {
-                    AddProperty((JObject)entitiesAndMetadata[MetadataKey], ExtractNormalizedEntityName(entity), ExtractEntityMetadata(entity));
+                    AddProperty((JObject)entitiesAndMetadata[_metadataKey], ExtractNormalizedEntityName(entity), ExtractEntityMetadata(entity));
                 }
             }
 
@@ -242,7 +242,7 @@ namespace Microsoft.Bot.Builder.Ai.Luis
             var childrenEntitiesMetadata = new JObject();
             if (verbose)
             {
-                childrenEntites[MetadataKey] = new JObject();
+                childrenEntites[_metadataKey] = new JObject();
             }
 
             // This is now implemented as O(n^2) search and can be reduced to O(2n) using a map as an optimization if n grows
@@ -257,7 +257,7 @@ namespace Microsoft.Bot.Builder.Ai.Luis
             if (verbose)
             {
                 childrenEntitiesMetadata = ExtractEntityMetadata(compositeEntityMetadata);
-                childrenEntites[MetadataKey] = new JObject();
+                childrenEntites[_metadataKey] = new JObject();
             }
 
             var coveredSet = new HashSet<EntityModel>();
@@ -283,7 +283,7 @@ namespace Microsoft.Bot.Builder.Ai.Luis
 
                     if (verbose)
                     {
-                        AddProperty((JObject)childrenEntites[MetadataKey], ExtractNormalizedEntityName(entity), ExtractEntityMetadata(entity));
+                        AddProperty((JObject)childrenEntites[_metadataKey], ExtractNormalizedEntityName(entity), ExtractEntityMetadata(entity));
                     }
                 }
             }
@@ -291,7 +291,7 @@ namespace Microsoft.Bot.Builder.Ai.Luis
             AddProperty(entitiesAndMetadata, compositeEntity.ParentType, childrenEntites);
             if (verbose)
             {
-                AddProperty((JObject)entitiesAndMetadata[MetadataKey], compositeEntity.ParentType, childrenEntitiesMetadata);
+                AddProperty((JObject)entitiesAndMetadata[_metadataKey], compositeEntity.ParentType, childrenEntitiesMetadata);
             }
 
             // filter entities that were covered by this composite entity
@@ -343,15 +343,15 @@ namespace Microsoft.Bot.Builder.Ai.Luis
                 throw new ArgumentNullException(nameof(utterance));
             }
 
-            var luisResult = await runtime.Prediction.ResolveAsync(
-                application.ApplicationId,
+            var luisResult = await _runtime.Prediction.ResolveAsync(
+                _application.ApplicationId,
                 utterance,
-                timezoneOffset: options.TimezoneOffset,
-                verbose: options.Verbose,
-                staging: options.Staging,
-                spellCheck: options.SpellCheck,
-                bingSpellCheckSubscriptionKey: options.BingSpellCheckSubscriptionKey,
-                log: options.Log,
+                timezoneOffset: _options.TimezoneOffset,
+                verbose: _options.Verbose,
+                staging: _options.Staging,
+                spellCheck: _options.SpellCheck,
+                bingSpellCheckSubscriptionKey: _options.BingSpellCheckSubscriptionKey,
+                log: _options.Log,
                 cancellationToken: ct).ConfigureAwait(false);
 
             var recognizerResult = new RecognizerResult
@@ -359,10 +359,10 @@ namespace Microsoft.Bot.Builder.Ai.Luis
                 Text = utterance,
                 AlteredText = luisResult.AlteredQuery,
                 Intents = GetIntents(luisResult),
-                Entities = ExtractEntitiesAndMetadata(luisResult.Entities, luisResult.CompositeEntities, options.IncludeInstanceData ?? true),
+                Entities = ExtractEntitiesAndMetadata(luisResult.Entities, luisResult.CompositeEntities, _options.IncludeInstanceData ?? true),
             };
             AddProperties(luisResult, recognizerResult);
-            if (includeApiResults)
+            if (_includeApiResults)
             {
                 recognizerResult.Properties.Add("luisResult", luisResult);
             }
@@ -373,9 +373,9 @@ namespace Microsoft.Bot.Builder.Ai.Luis
                     recognizerResult,
                     luisModel = new
                     {
-                        ModelID = application.ApplicationId,
+                        ModelID = _application.ApplicationId,
                     },
-                    luisOptions = options,
+                    luisOptions = _options,
                     luisResult,
                 });
 
