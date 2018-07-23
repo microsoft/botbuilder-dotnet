@@ -31,6 +31,13 @@ namespace Microsoft.Bot.Builder.Integration
         public ICredentialProvider CredentialProvider { get; set; }
 
         /// <summary>
+        /// Gets or sets an <see cref="IChannelProvider"/> that should be used to provide configuration for
+        /// how to validate authentication tokens received from the Bot Framework Service.
+        /// </summary>
+        /// <value>The credential provider.</value>
+        public IChannelProvider ChannelProvider { get; set; }
+
+        /// <summary>
         /// Gets or sets an error handler to use to catche exceptions in the middleware or application.
         /// </summary>
         /// <value>The error handler.</value>

@@ -35,7 +35,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
                 var credentialProvider = ResolveCredentialProvider(options);
 
                 // TODO: fix up constructor to take options
-                botFrameworkAdapter = new BotFrameworkAdapter(credentialProvider, options.ConnectorClientRetryPolicy, options.HttpClient);
+                botFrameworkAdapter = new BotFrameworkAdapter(credentialProvider, options.ChannelProvider, options.ConnectorClientRetryPolicy, options.HttpClient);
             }
 
             // error handler
