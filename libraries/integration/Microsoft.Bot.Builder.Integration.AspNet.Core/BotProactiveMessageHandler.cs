@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Handlers
 {
     public class BotProactiveMessageHandler : BotMessageHandlerBase
     {
-        protected override async Task<InvokeResponse> ProcessMessageRequestAsync(HttpRequest request, BotFrameworkAdapter botFrameworkAdapter, Func<ITurnContext, Task> botCallbackHandler, CancellationToken cancellationToken)
+        protected override async Task<InvokeResponse> ProcessMessageRequestAsync(HttpRequest request, BotFrameworkAdapter botFrameworkAdapter, BotCallbackHandler botCallbackHandler, CancellationToken cancellationToken)
         {
             const string BotAppIdHttpHeaderName = "MS-BotFramework-BotAppId";
             const string BotIdQueryStringParameterName = "BotAppId";
@@ -36,7 +36,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Handlers
                 conversationReference = BotMessageHandlerBase.BotMessageSerializer.Deserialize<ConversationReference>(bodyReader);
             }
 
-            await botFrameworkAdapter.ContinueConversationAsync(botAppId, conversationReference, botCallbackHandler, cancellationToken);
+            await botFrameworkAdapter.ContinueConversationAsync(botAppId, conversationReference, botCallbackHandler, cancellationToken).ConfigureAwait(false);
 
             return null;
         }

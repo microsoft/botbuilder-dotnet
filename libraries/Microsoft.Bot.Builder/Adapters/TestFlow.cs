@@ -28,14 +28,14 @@ namespace Microsoft.Bot.Builder.Adapters
     {
         private readonly TestAdapter _adapter;
         private readonly Task _testTask;
-        private Func<ITurnContext, Task> _callback;
+        private BotCallbackHandler _callback;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TestFlow"/> class.
         /// </summary>
         /// <param name="adapter">The test adapter to use.</param>
         /// <param name="callback">The bot turn processing logic to test.</param>
-        public TestFlow(TestAdapter adapter, Func<ITurnContext, Task> callback = null)
+        public TestFlow(TestAdapter adapter, BotCallbackHandler callback = null)
         {
             _adapter = adapter;
             _callback = callback;
@@ -61,7 +61,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <param name="adapter">The test adapter to use.</param>
         /// <param name="bot">The bot containing the turn processing logic to test.</param>
         public TestFlow(TestAdapter adapter, IBot bot)
-            : this(adapter, (ctx) => bot.OnTurnAsync(ctx))
+            : this(adapter, (ctx, cancellationToken) => bot.OnTurnAsync(ctx, cancellationToken))
         {
         }
 

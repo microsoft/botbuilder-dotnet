@@ -39,7 +39,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
                 .Use(userState)
                 .Use(new TranslationMiddleware(nativeLanguages, translatorKey, patterns, new CustomDictionary(), userLangProp, false));
 
-            var flow = new TestFlow(adapter, async (context) =>
+            var flow = new TestFlow(adapter, async (context, cancellationToken) =>
             {
                 if (!context.Responded)
                 {
@@ -70,7 +70,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
                 .Use(userState)
                 .Use(new TranslationMiddleware(nativeLanguages, translatorKey, patterns, new CustomDictionary(), userLangProp, true));
 
-            var flow = new TestFlow(adapter, async (context) =>
+            var flow = new TestFlow(adapter, async (context, cancellationToken) =>
             {
                 if (!context.Responded)
                 {
@@ -95,7 +95,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
                 .Use(userState)
                 .Use(new LocaleConverterMiddleware(userLangProp, botLocale, LocaleConverter.Converter));
 
-            var flow = new TestFlow(adapter, async (context) =>
+            var flow = new TestFlow(adapter, async (context, cancellationToken) =>
             {
                 if (context.Activity.Type == ActivityTypes.Message)
                 {

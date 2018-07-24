@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var attachment = new Attachment { Content = "some content", ContentType = "text/plain" };
             var activityWithAttachment = MessageFactory.Attachment(attachment);
 
-            await new TestFlow(adapter, async (turnContext) =>
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
                 var state = await testProperty.GetAsync(turnContext);
                 var prompt = new AttachmentPrompt();

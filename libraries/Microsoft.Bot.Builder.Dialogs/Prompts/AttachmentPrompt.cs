@@ -42,7 +42,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 throw new ArgumentNullException(nameof(options));
             }
 
-            return await _prompt.RecognizeAsync(dc.Context);
+            return await _prompt.RecognizeAsync(dc.Context).ConfigureAwait(false);
         }
     }
 }

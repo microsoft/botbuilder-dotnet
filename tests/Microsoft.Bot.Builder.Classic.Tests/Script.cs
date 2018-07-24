@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
             var toBot = MakeTestMessage();
 
             var adapter = new TestAdapter();
-            await adapter.ProcessActivityAsync((Activity)toBot, async (ctx) =>
+            await adapter.ProcessActivityAsync((Activity)toBot, async (ctx, cancellationToken) =>
             {
                 using (var containerScope = DialogModule.BeginLifetimeScope(container, ctx))
                 {
@@ -131,7 +131,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
             while ((input = ReadLine(stream, out label)) != null)
             {
                 var adapter = new TestAdapter();
-                await adapter.ProcessActivityAsync((Activity)toBot, async (ctx) =>
+                await adapter.ProcessActivityAsync((Activity)toBot, async (ctx, cancellationToken) =>
                 {
                     using (var scope = DialogModule.BeginLifetimeScope(container, ctx))
                     {

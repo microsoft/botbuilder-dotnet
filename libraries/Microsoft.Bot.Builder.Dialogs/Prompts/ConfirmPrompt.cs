@@ -74,22 +74,22 @@ namespace Microsoft.Bot.Builder.Dialogs
             {
                 if (options.RetryPromptActivity != null)
                 {
-                    await _prompt.PromptAsync(dc.Context, options.RetryPromptActivity.AsMessageActivity());
+                    await _prompt.PromptAsync(dc.Context, options.RetryPromptActivity.AsMessageActivity()).ConfigureAwait(false);
                 }
                 else if (options.RetryPromptString != null)
                 {
-                    await _prompt.PromptAsync(dc.Context, options.RetryPromptString, options.RetrySpeak);
+                    await _prompt.PromptAsync(dc.Context, options.RetryPromptString, options.RetrySpeak).ConfigureAwait(false);
                 }
             }
             else
             {
                 if (options.PromptActivity != null)
                 {
-                    await _prompt.PromptAsync(dc.Context, options.PromptActivity);
+                    await _prompt.PromptAsync(dc.Context, options.PromptActivity).ConfigureAwait(false);
                 }
                 else if (options.PromptString != null)
                 {
-                    await _prompt.PromptAsync(dc.Context, options.PromptString, options.Speak);
+                    await _prompt.PromptAsync(dc.Context, options.PromptString, options.Speak).ConfigureAwait(false);
                 }
             }
         }
@@ -106,7 +106,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 throw new ArgumentNullException(nameof(options));
             }
 
-            return await _prompt.RecognizeAsync(dc.Context);
+            return await _prompt.RecognizeAsync(dc.Context).ConfigureAwait(false);
         }
     }
 }

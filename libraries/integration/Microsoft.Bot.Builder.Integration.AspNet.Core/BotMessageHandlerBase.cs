@@ -71,7 +71,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Handlers
                     request,
                     botFrameworkAdapter,
                     bot.OnTurnAsync,
-                    default(CancellationToken));
+                    default(CancellationToken)).ConfigureAwait(false);
 
                 if (invokeResponse == null)
                 {
@@ -97,6 +97,6 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Handlers
             }
         }
 
-        protected abstract Task<InvokeResponse> ProcessMessageRequestAsync(HttpRequest request, BotFrameworkAdapter botFrameworkAdapter, Func<ITurnContext, Task> botCallbackHandler, CancellationToken cancellationToken);
+        protected abstract Task<InvokeResponse> ProcessMessageRequestAsync(HttpRequest request, BotFrameworkAdapter botFrameworkAdapter, BotCallbackHandler botCallbackHandler, CancellationToken cancellationToken);
     }
 }

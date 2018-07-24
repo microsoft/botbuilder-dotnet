@@ -91,7 +91,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             Stack.Insert(0, instance);
 
             // Call dialogs begin() method.
-            await dialog.DialogBeginAsync(this, dialogArgs);
+            await dialog.DialogBeginAsync(this, dialogArgs).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -164,7 +164,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 if (dialog is IDialogContinue)
                 {
                         // Continue execution of dialog
-                        await ((IDialogContinue)dialog).DialogContinueAsync(this);
+                        await ((IDialogContinue)dialog).DialogContinueAsync(this).ConfigureAwait(false);
                 }
             }
         }
@@ -202,12 +202,12 @@ namespace Microsoft.Bot.Builder.Dialogs
                 if (dialog is IDialogResume)
                 {
                     // Return result to previous dialog
-                    await ((IDialogResume)dialog).DialogResumeAsync(this, result);
+                    await ((IDialogResume)dialog).DialogResumeAsync(this, result).ConfigureAwait(false);
                 }
                 else
                 {
                     // Just end the dialog and pass result to parent dialog
-                    await EndAsync(result);
+                    await EndAsync(result).ConfigureAwait(false);
                 }
             }
             else
@@ -243,7 +243,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             // Start replacement dialog
-            await BeginAsync(dialogId, dialogArgs);
+            await BeginAsync(dialogId, dialogArgs).ConfigureAwait(false);
         }
     }
 }
