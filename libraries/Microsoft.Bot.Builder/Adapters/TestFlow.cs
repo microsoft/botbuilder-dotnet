@@ -61,7 +61,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <param name="adapter">The test adapter to use.</param>
         /// <param name="bot">The bot containing the turn processing logic to test.</param>
         public TestFlow(TestAdapter adapter, IBot bot)
-            : this(adapter, (ctx, cancellationToken) => bot.OnTurnAsync(ctx, cancellationToken))
+            : this(adapter, bot.OnTurnAsync)
         {
         }
 
@@ -72,10 +72,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <remarks>This methods sends the activities from the user to the bot and
         /// checks the responses from the bot based on the activiies described in the
         /// current test flow.</remarks>
-        public Task StartTestAsync()
-        {
-            return _testTask;
-        }
+        public Task StartTestAsync() => _testTask;
 
         /// <summary>
         /// Adds a message activity from the user to the bot.

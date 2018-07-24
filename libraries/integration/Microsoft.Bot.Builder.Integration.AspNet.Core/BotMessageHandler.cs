@@ -22,11 +22,13 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Handlers
                 activity = BotMessageHandlerBase.BotMessageSerializer.Deserialize<Activity>(bodyReader);
             }
 
+#pragma warning disable UseConfigureAwait // Use ConfigureAwait
             var invokeResponse = await botFrameworkAdapter.ProcessActivityAsync(
                     request.Headers["Authorization"],
                     activity,
                     botCallbackHandler,
-                    cancellationToken).ConfigureAwait(false);
+                    cancellationToken);
+#pragma warning restore UseConfigureAwait // Use ConfigureAwait
 
             return invokeResponse;
         }

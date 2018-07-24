@@ -62,6 +62,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Handlers
 
             try
             {
+#pragma warning disable UseConfigureAwait // Use ConfigureAwait
                 var invokeResponse = await ProcessMessageRequestAsync(
                     request,
                     _botFrameworkAdapter,
@@ -87,7 +88,8 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Handlers
 
                         return bot.OnTurnAsync(context);
                     },
-                    cancellationToken).ConfigureAwait(false);
+                    cancellationToken);
+#pragma warning restore UseConfigureAwait // Use ConfigureAwait
 
                 if (invokeResponse == null)
                 {

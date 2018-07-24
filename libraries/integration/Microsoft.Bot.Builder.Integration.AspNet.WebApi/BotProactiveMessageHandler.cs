@@ -43,7 +43,9 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Handlers
                 throw new InvalidOperationException($"Expected a Bot App ID in a header named \"{BotAppIdHttpHeaderName}\" or in a querystring parameter named \"{BotAppIdQueryStringParameterName}\".");
             }
 
-            var conversationReference = await request.Content.ReadAsAsync<ConversationReference>(BotMessageHandlerBase.BotMessageMediaTypeFormatters, cancellationToken).ConfigureAwait(false);
+#pragma warning disable UseConfigureAwait // Use ConfigureAwait
+            var conversationReference = await request.Content.ReadAsAsync<ConversationReference>(BotMessageHandlerBase.BotMessageMediaTypeFormatters, cancellationToken);
+#pragma warning restore UseConfigureAwait // Use ConfigureAwait
 
             await botFrameworkAdapter.ContinueConversationAsync(botAppId, conversationReference, botCallbackHandler, cancellationToken).ConfigureAwait(false);
 
