@@ -8,10 +8,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Bot.Builder.Ai.Translation.Tests
 {
-    public class LocaleState
-    {
-        public string Locale { get; set; }
-    }
 
     [TestClass]
     public class LocaleConverterMiddlewareTests
@@ -127,5 +123,10 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
 
             return false;
         }
+    }
+
+    class LocaleState
+    {
+        public string Locale { get; set; }
     }
 }

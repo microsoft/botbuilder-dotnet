@@ -1,10 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Microsoft.Recognizers.Text.Number;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Recognizers.Text.Number;
 
 namespace Microsoft.Bot.Builder.Dialogs.Choices
 {
@@ -21,7 +21,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
             // - We only want to use a single strategy for returning results to avoid issues where utterances
             //   like the "the third one" or "the red one" or "the first division book" would miss-recognize as
             //   a numerical index or ordinal as well.
-
             var locale = options?.Locale ?? Recognizers.Text.Culture.English;
             var matched = Find.FindChoices(utterance, list, options);
             if (matched.Count == 0)
@@ -51,6 +50,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
                 //   for ordinal & numerical lookups.
                 matched.Sort((a, b) => a.Start - b.Start);
             }
+
             return matched;
         }
 
@@ -72,12 +72,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
                         {
                             Value = choice.Value,
                             Index = index,
-                            Score = 1.0f
-                        }
+                            Score = 1.0f,
+                        },
                     });
                 }
             }
-            catch (Exception) { }
+            catch (Exception)
+            {
+            }
         }
 
         private static List<ModelResult<FoundChoice>> RecognizeOrdinal(string utterance, string culture)
@@ -92,8 +94,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
                     Text = r.Text,
                     Resolution = new FoundChoice
                     {
-                        Value = r.Resolution["value"].ToString()
-                    }
+                        Value = r.Resolution["value"].ToString(),
+                    },
                 }).ToList();
         }
 
@@ -109,8 +111,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
                     Text = r.Text,
                     Resolution = new FoundChoice
                     {
-                        Value = r.Resolution["value"].ToString()
-                    }
+                        Value = r.Resolution["value"].ToString(),
+                    },
                 }).ToList();
         }
     }

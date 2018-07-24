@@ -9,8 +9,11 @@ namespace Microsoft.Bot.Builder.Dialogs
     public class TextResult : PromptResult
     {
         /// <summary>
-        /// The value recognized; or <c>null</c>, if recognition fails.
+        /// Gets or sets the value recognized; or <c>null</c>, if recognition fails.
         /// </summary>
+        /// <value>
+        /// The value recognized; or <c>null</c>, if recognition fails.
+        /// </value>
         public string Value
         {
             get { return GetProperty<string>(nameof(Value)); }
@@ -18,8 +21,11 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// The input text recognized; or <c>null</c>, if recognition fails.
+        /// Gets or sets the input text recognized; or <c>null</c>, if recognition fails.
         /// </summary>
+        /// <value>
+        /// The input text recognized; or <c>null</c>, if recognition fails.
+        /// </value>
         public string Text
         {
             get { return GetProperty<string>(nameof(Text)); }

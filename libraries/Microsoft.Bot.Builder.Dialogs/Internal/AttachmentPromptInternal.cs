@@ -13,11 +13,11 @@ namespace Microsoft.Bot.Builder.Dialogs
     internal class AttachmentPromptInternal : BasePromptInternal<AttachmentResult>
     {
         /// <summary>
-        /// Creates a <see cref="AttachmentPromptInternal"/> object.
+        /// Initializes a new instance of the <see cref="AttachmentPromptInternal"/> class.
         /// </summary>
         /// <param name="validator">The input validator for the prompt object.</param>
         /// <remarks><paramref name="validator"/> is called only if the
-        /// <see cref="Recognize(ITurnContext)"/> method recognizes a value.
+        /// <see cref="RecognizeAsync(ITurnContext)"/> method recognizes a value.
         /// </remarks>
         public AttachmentPromptInternal(PromptValidator<AttachmentResult> validator = null)
             : base(validator)
@@ -27,7 +27,9 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <summary>
         /// Recognizes and validates the user input.
         /// </summary>
-        public override async Task<AttachmentResult> Recognize(ITurnContext context)
+        /// <param name="context">Context for the current turn of the conversation with the user.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        public override async Task<AttachmentResult> RecognizeAsync(ITurnContext context)
         {
             BotAssert.ContextNotNull(context);
             BotAssert.ActivityNotNull(context.Activity);
@@ -35,14 +37,15 @@ namespace Microsoft.Bot.Builder.Dialogs
             var attachmentResult = new AttachmentResult();
             if (context.Activity.Type == ActivityTypes.Message)
             {
-                IMessageActivity message = context.Activity.AsMessageActivity();
+                var message = context.Activity.AsMessageActivity();
                 if (message.Attachments != null)
                 {
                     attachmentResult.Status = PromptStatus.Recognized;
                     attachmentResult.Attachments.AddRange(message.Attachments);
-                    await Validate(context, attachmentResult);
+                    await ValidateAsync(context, attachmentResult);
                 }
             }
+
             return attachmentResult;
         }
     }

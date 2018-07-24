@@ -177,11 +177,11 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
         {
             public const string PropertyName = "Microsoft.Bot.Builder.Transcripts.Tests.CustomState";
 
-            public CustomState(IStorage storage) : base(storage, PropertyName, (context) => "CustomKey")
+            public CustomState(IStorage storage) : base(storage, PropertyName)
             {
             }
 
+            protected override string GetStorageKey(ITurnContext context) => "CustomKey";
         }
-
     }
 }

@@ -6,32 +6,26 @@ using System;
 namespace Microsoft.Bot.Builder.Dialogs
 {
     /// <summary>
-    /// OAuth Related Prompt Settings Which allows a Timeout parameter to be set.
-    /// The timeout determines the validity of the token.
-    /// </summary>
-    public class OAuthPromptSettingsWithTimeout : OAuthPromptSettings
-    {
-        public int? Timeout { get; set; }
-    }
-
-    /// <summary>
     /// Prompt Options for an OAuth Prompt.
     /// </summary>
     public class OAuthPromptOptions : PromptOptions
     {
         /// <summary>
-        /// Default Constructor for serialization/deserialization
+        /// Initializes a new instance of the <see cref="OAuthPromptOptions"/> class.
+        /// Default Constructor for serialization/deserialization.
         /// </summary>
-        public OAuthPromptOptions() : base()
+        public OAuthPromptOptions()
+            : base()
         {
         }
 
         /// <summary>
-        /// Constuct a OAuth prompt options from a base prompt options object.
+        /// Initializes a new instance of the <see cref="OAuthPromptOptions"/> class from a base prompt options object.
         /// If null is passed as default, then fallback to just default options for the base class.
         /// </summary>
-        /// <param name="defaultPromptOptions"></param>
-        public OAuthPromptOptions(PromptOptions defaultPromptOptions) : base()
+        /// <param name="defaultPromptOptions">The defualt options for the prompt.</param>
+        public OAuthPromptOptions(PromptOptions defaultPromptOptions)
+            : base()
         {
             if (defaultPromptOptions != null)
             {
@@ -45,8 +39,11 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// The expiry timestamp for the oauth prompt
+        /// Gets or sets the expire timestamp for the oauth prompt.
         /// </summary>
+        /// <value>
+        /// The expire timestamp for the oauth prompt.
+        /// </value>
         public DateTime Expires { get; set; }
     }
 }

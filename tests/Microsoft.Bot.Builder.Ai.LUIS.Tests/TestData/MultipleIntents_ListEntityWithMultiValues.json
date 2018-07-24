@@ -1,0 +1,27 @@
+{
+    "query": "I want to travel on DL",
+    "topScoringIntent": {
+        "intent": "Travel",
+        "score": 0.8785189
+    },
+    "intents": [
+        {
+            "intent": "Travel",
+            "score": 0.8785189
+        }
+    ],
+    "entities": [
+        {
+            "entity": "dl",
+            "type": "Airline",
+            "startIndex": 20,
+            "endIndex": 21,
+            "resolution": {
+                "values": [
+                    "Virgin",
+                    "Delta"
+                ]
+            }
+        }
+    ]
+}

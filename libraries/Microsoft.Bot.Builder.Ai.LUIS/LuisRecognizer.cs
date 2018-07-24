@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime;
@@ -29,7 +30,6 @@ namespace Microsoft.Bot.Builder.Ai.Luis
         /// The context label for a LUIS trace activity.
         /// </summary>
         public const string LuisTraceLabel = "Luis Trace";
-
         private const string _metadataKey = "$instance";
         private readonly LuisRuntimeAPI _runtime;
         private readonly LuisApplication _application;

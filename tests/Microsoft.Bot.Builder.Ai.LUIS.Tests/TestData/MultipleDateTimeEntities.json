@@ -1,0 +1,93 @@
+{
+    "query": "Book a table on Friday or tomorrow at 5 or tomorrow at 4",
+    "topScoringIntent": {
+        "intent": "None",
+        "score": 0.8785189
+    },
+    "intents": [
+        {
+            "intent": "None",
+            "score": 0.8785189
+        }
+    ],
+    "entities": [
+        {
+            "entity": "friday",
+            "type": "builtin.datetimeV2.date",
+            "startIndex": 16,
+            "endIndex": 21,
+            "resolution": {
+                "values": [
+                    {
+                        "timex": "XXXX-WXX-5",
+                        "type": "date",
+                        "value": "2018-07-13"
+                    },
+                    {
+                        "timex": "XXXX-WXX-5",
+                        "type": "date",
+                        "value": "2018-07-20"
+                    }
+                ]
+            }
+        },
+        {
+            "entity": "tomorrow at 5",
+            "type": "builtin.datetimeV2.datetime",
+            "startIndex": 26,
+            "endIndex": 38,
+            "resolution": {
+                "values": [
+                    {
+                        "timex": "2018-07-19T05",
+                        "type": "datetime",
+                        "value": "2018-07-19 05:00:00"
+                    },
+                    {
+                        "timex": "2018-07-19T17",
+                        "type": "datetime",
+                        "value": "2018-07-19 17:00:00"
+                    }
+                ]
+            }
+        },
+        {
+            "entity": "tomorrow at 4",
+            "type": "builtin.datetimeV2.datetime",
+            "startIndex": 43,
+            "endIndex": 55,
+            "resolution": {
+                "values": [
+                    {
+                        "timex": "2018-07-19T04",
+                        "type": "datetime",
+                        "value": "2018-07-19 04:00:00"
+                    },
+                    {
+                        "timex": "2018-07-19T16",
+                        "type": "datetime",
+                        "value": "2018-07-19 16:00:00"
+                    }
+                ]
+            }
+        },
+        {
+            "entity": "5",
+            "type": "builtin.number",
+            "startIndex": 38,
+            "endIndex": 38,
+            "resolution": {
+                "value": "5"
+            }
+        },
+        {
+            "entity": "4",
+            "type": "builtin.number",
+            "startIndex": 55,
+            "endIndex": 55,
+            "resolution": {
+                "value": "4"
+            }
+        }
+    ]
+}

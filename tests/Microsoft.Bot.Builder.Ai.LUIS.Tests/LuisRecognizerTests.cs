@@ -286,19 +286,19 @@ namespace Microsoft.Bot.Builder.Ai.Luis.Tests
                 Assert.Inconclusive("Missing Luis Environment variables - Skipping test");
                 return;
             }
-            
+
             var adapter = new TestAdapter(null, true);
             const string utterance = @"My name is Emad";
             const string botResponse = @"Hi Emad";
             await new TestFlow(adapter, async context =>
+            {
+                if (context.Activity.Text == utterance)
                 {
-                    if (context.Activity.Text == utterance)
-                    {
-                        var luisRecognizer = GetLuisRecognizer(verbose: true);
-                        await luisRecognizer.RecognizeAsync(context, CancellationToken.None).ConfigureAwait(false);
-                        await context.SendActivityAsync(botResponse);
-                    }
-                })
+                    var luisRecognizer = GetLuisRecognizer(verbose: true);
+                    await luisRecognizer.RecognizeAsync(context, CancellationToken.None).ConfigureAwait(false);
+                    await context.SendActivityAsync(botResponse);
+                }
+            })
                 .Test(utterance, activity =>
                 {
                     var traceActivity = activity as ITraceActivity;
