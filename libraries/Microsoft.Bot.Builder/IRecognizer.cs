@@ -14,19 +14,19 @@ namespace Microsoft.Bot.Builder
         /// <summary>
         /// Runs an utterance through a recognizer and returns a generic recognizer result.
         /// </summary>
-        /// <param name="utterance">Utterance to analyze.</param>
+        /// <param name="context">Turn context.</param>
         /// <param name="ct">Cancellation token.</param>
         /// <returns>Analysis of utterance.</returns>
-        Task<RecognizerResult> RecognizeAsync(string utterance, CancellationToken ct);
+        Task<RecognizerResult> RecognizeAsync(ITurnContext context, CancellationToken ct);
 
         /// <summary>
         /// Runs an utterance through a recognizer and returns a strongly-typed recognizer result.
         /// </summary>
         /// <typeparam name="T">The recognition result type.</typeparam>
-        /// <param name="utterance">Utterance to analyze.</param>
+        /// <param name="context">Turn context.</param>
         /// <param name="ct">Cancellation token.</param>
         /// <returns>Analysis of utterance.</returns>
-        Task<T> RecognizeAsync<T>(string utterance, CancellationToken ct)
+        Task<T> RecognizeAsync<T>(ITurnContext context, CancellationToken ct)
             where T : IRecognizerConvert, new();
     }
 }

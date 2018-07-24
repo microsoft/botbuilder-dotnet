@@ -3,18 +3,24 @@
 
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.Ai.LUIS
+namespace Microsoft.Bot.Builder.Ai.Luis
 {
     /// <summary>
     /// Strongly typed LUIS builtin_temperature.
     /// </summary>
     public class Temperature : NumberWithUnits
     {
-        public Temperature(double number, string units)
-            : base(number, units)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Temperature"/> class.
+        /// </summary>
+        /// <param name="temperature">Temperature.</param>
+        /// <param name="units">Units.</param>
+        public Temperature(double temperature, string units)
+            : base(temperature, units)
         {
         }
 
+        /// <inheritdoc/>
         public override string ToString() => $"Temperature({Number} {Units})";
     }
 }
