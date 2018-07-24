@@ -5,6 +5,8 @@ using System;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.TraceExtensions;
+using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Ai.QnA
@@ -14,6 +16,10 @@ namespace Microsoft.Bot.Builder.Ai.QnA
     /// </summary>
     public class QnAMaker
     {
+        public const string QnAMakerMiddlewareName = "QnAMakerMiddleware";
+        public const string QnAMakerTraceType = "https://www.qnamaker.ai/schemas/trace";
+        public const string QnAMakerTraceLabel = "QnAMaker Trace";
+
         private static readonly HttpClient DefaultHttpClient = new HttpClient();
         private readonly HttpClient _httpClient;
 
@@ -84,18 +90,19 @@ namespace Microsoft.Bot.Builder.Ai.QnA
         /// <summary>
         /// Generates an answer from the knowledge base.
         /// </summary>
-        /// <param name="question">The user question to be queried against your knowledge base.</param>
+        /// <param name="context">The Turn Context that contains the user question to be queried against your knowledge base.</param>
         /// <returns>A list of answers for the user query, sorted in decreasing order of ranking score.</returns>
-        public async Task<QueryResult[]> GetAnswersAsync(string question)
+        public async Task<QueryResult[]> GetAnswersAsync(ITurnContext context)
         {
             var requestUrl = $"{_endpoint.Host}/knowledgebases/{_endpoint.KnowledgeBaseId}/generateanswer";
 
             var request = new HttpRequestMessage(HttpMethod.Post, requestUrl);
+            var messageActivity = context?.Activity?.AsMessageActivity();
 
             var jsonRequest = JsonConvert.SerializeObject(
                 new
                 {
-                    question,
+                    messageActivity?.Text,
                     top = _options.Top,
                     strictFilters = _options.StrictFilters,
                     metadataBoost = _options.MetadataBoost,
@@ -129,7 +136,22 @@ namespace Microsoft.Bot.Builder.Ai.QnA
                     answer.Score = answer.Score / 100;
                 }
 
-                return results.Answers.Where(answer => answer.Score > _options.ScoreThreshold).ToArray();
+                var result = results.Answers.Where(answer => answer.Score > _options.ScoreThreshold).ToArray();
+
+                var traceInfo = new QnAMakerTraceInfo
+                {
+                    Message = (Activity) messageActivity,
+                    QueryResults = result,
+                    KnowledgeBaseId = _endpoint.KnowledgeBaseId,
+                    ScoreThreshold = _options.ScoreThreshold,
+                    Top = _options.Top,
+                    StrictFilters = _options.StrictFilters,
+                    MetadataBoost = _options.MetadataBoost,
+                };
+                var traceActivity = Activity.CreateTraceActivity(QnAMakerMiddlewareName, QnAMakerTraceType, traceInfo, QnAMakerTraceLabel);
+                await context.SendActivityAsync(traceActivity).ConfigureAwait(false);
+
+                return result;
             }
 
             return null;
