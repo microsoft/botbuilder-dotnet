@@ -67,11 +67,13 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Handlers
             try
             {
                 // TODO wire up cancellation
+#pragma warning disable UseConfigureAwait // Use ConfigureAwait
                 var invokeResponse = await ProcessMessageRequestAsync(
                     request,
                     botFrameworkAdapter,
                     bot.OnTurnAsync,
-                    default(CancellationToken)).ConfigureAwait(false);
+                    default(CancellationToken));
+#pragma warning restore UseConfigureAwait // Use ConfigureAwait
 
                 if (invokeResponse == null)
                 {
