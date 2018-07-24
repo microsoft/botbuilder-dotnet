@@ -1,0 +1,79 @@
+{
+  "query": "email about something wicked this way comes from bart simpson and also kb435",
+  "topScoringIntent": {
+    "intent": "search",
+    "score": 0.9999993
+  },
+  "intents": [
+    {
+      "intent": "search",
+      "score": 0.9999993
+    },
+    {
+      "intent": "None",
+      "score": 1.20633467E-05
+    },
+    {
+      "intent": "EntityTests",
+      "score": 9.122724E-06
+    },
+    {
+      "intent": "Weather.GetForecast",
+      "score": 3.749986E-06
+    },
+    {
+      "intent": "Travel",
+      "score": 3.53740256E-06
+    },
+    {
+      "intent": "SpecifyName",
+      "score": 1.75083869E-06
+    },
+    {
+      "intent": "Delivery",
+      "score": 1.13355657E-06
+    },
+    {
+      "intent": "Greeting",
+      "score": 5.875E-10
+    },
+    {
+      "intent": "Cancel",
+      "score": 5.47058843E-10
+    },
+    {
+      "intent": "Help",
+      "score": 5.47058843E-10
+    }
+  ],
+  "entities": [
+    {
+      "entity": "kb435",
+      "type": "Part",
+      "startIndex": 71,
+      "endIndex": 75
+    },
+    {
+      "role": "",
+      "entity": "something wicked this way comes",
+      "type": "subject",
+      "startIndex": 12,
+      "endIndex": 42
+    },
+    {
+      "role": "",
+      "entity": "bart simpson",
+      "type": "person",
+      "startIndex": 49,
+      "endIndex": 60
+    },
+    {
+      "role": "extra",
+      "entity": "kb435",
+      "type": "subject",
+      "startIndex": 71,
+      "endIndex": 75
+    }
+  ],
+  "compositeEntities": []
+}

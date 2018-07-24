@@ -1,0 +1,106 @@
+{
+  "query": "http://foo.com is where you can get a weather forecast for seattle",
+  "topScoringIntent": {
+    "intent": "Weather.GetForecast",
+    "score": 0.8924456,
+    "actions": null
+  },
+  "intents": [
+    {
+      "intent": "Weather.GetForecast",
+      "score": 0.8924456,
+      "actions": null
+    },
+    {
+      "intent": "EntityTests",
+      "score": 0.635434449,
+      "actions": null
+    },
+    {
+      "intent": "None",
+      "score": 0.04799512,
+      "actions": null
+    },
+    {
+      "intent": "search",
+      "score": 0.0217808,
+      "actions": null
+    },
+    {
+      "intent": "Travel",
+      "score": 0.005861538,
+      "actions": null
+    },
+    {
+      "intent": "SpecifyName",
+      "score": 0.005182907,
+      "actions": null
+    },
+    {
+      "intent": "Delivery",
+      "score": 0.00352461357,
+      "actions": null
+    },
+    {
+      "intent": "Help",
+      "score": 0.00179672148,
+      "actions": null
+    },
+    {
+      "intent": "Cancel",
+      "score": 0.0006153381,
+      "actions": null
+    },
+    {
+      "intent": "Greeting",
+      "score": 0.000140723525,
+      "actions": null
+    }
+  ],
+  "entities": [
+    {
+      "role": null,
+      "entity": "http : / / foo . com is where you can get a weather forecast for seattle",
+      "type": "Composite2",
+      "startIndex": 0,
+      "endIndex": 65,
+      "score": 0.6157282,
+      "resolution": null
+    },
+    {
+      "role": null,
+      "entity": "http://foo.com",
+      "type": "builtin.url",
+      "startIndex": 0,
+      "endIndex": 13,
+      "score": null,
+      "resolution": null
+    },
+    {
+      "role": null,
+      "entity": "seattle",
+      "type": "Weather.Location",
+      "startIndex": 59,
+      "endIndex": 65,
+      "score": 0.8966654,
+      "resolution": null
+    }
+  ],
+  "compositeEntities": [
+    {
+      "parentType": "Composite2",
+      "value": "http : / / foo . com is where you can get a weather forecast for seattle",
+      "children": [
+        {
+          "type": "builtin.url",
+          "value": "http://foo.com"
+        },
+        {
+          "type": "Weather.Location",
+          "value": "seattle"
+        }
+      ]
+    }
+  ],
+  "alteredQuery": null
+}

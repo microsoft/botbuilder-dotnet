@@ -29,16 +29,16 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         /// Initializes a new instance of the <see cref="Translator"/> class.
         /// </summary>
         /// <param name="apiKey">Your subscription key for the Microsoft Translator Text API.</param>
-        /// <param name="customHttpClient">An alternate HTTP client to use.</param>
-        public Translator(string apiKey, HttpClient customHttpClient = null)
+        /// <param name="httpClient">An alternate HTTP client to use.</param>
+        public Translator(string apiKey, HttpClient httpClient = null)
         {
-            _httpClient = customHttpClient ?? DefaultHttpClient;
+            _httpClient = httpClient ?? DefaultHttpClient;
             if (string.IsNullOrWhiteSpace(apiKey))
             {
                 throw new ArgumentNullException(nameof(apiKey));
             }
 
-            _authToken = new AzureAuthToken(apiKey);
+            _authToken = new AzureAuthToken(apiKey, httpClient);
         }
 
         /// <summary>
@@ -184,6 +184,15 @@ namespace Microsoft.Bot.Builder.Ai.Translation
                                     currentTranslatedDocument.SourceTokens = PostProcessingUtilities.SplitSentence(currentTranslatedDocument.SourceMessage, alignments);
                                     currentTranslatedDocument.TranslatedTokens = PostProcessingUtilities.SplitSentence(xe.Element(ns + "TranslatedText").Value, alignments, false);
                                     currentTranslatedDocument.IndexedAlignment = PostProcessingUtilities.WordAlignmentParse(alignments, currentTranslatedDocument.SourceTokens, currentTranslatedDocument.TranslatedTokens);
+                                    currentTranslatedDocument.TargetMessage = PostProcessingUtilities.Join(" ", currentTranslatedDocument.TranslatedTokens);
+                                }
+                                else
+                                {
+                                    var translatedText = xe.Element(ns + "TranslatedText").Value;
+                                    currentTranslatedDocument.TargetMessage = translatedText;
+                                    currentTranslatedDocument.SourceTokens = new string[] { currentTranslatedDocument.SourceMessage };
+                                    currentTranslatedDocument.TranslatedTokens = new string[] { currentTranslatedDocument.TargetMessage };
+                                    currentTranslatedDocument.IndexedAlignment = new Dictionary<int, int>();
                                 }
 
                                 sentIndex += 1;

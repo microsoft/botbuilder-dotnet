@@ -2,37 +2,36 @@
 // Licensed under the MIT License.
 
 using System;
+using System.IO;
+using System.Net.Http;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Tests;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using RichardSzalay.MockHttp;
 
 namespace Microsoft.Bot.Builder.Ai.QnA.Tests
 {
     [TestClass]
     public class QnAMakerTests
     {
-        public readonly string knowlegeBaseId = TestUtilities.GetKey("QNAKNOWLEDGEBASEID");
-        public readonly string endpointKey = TestUtilities.GetKey("QNAENDPOINTKEY");
-        public readonly string hostname = TestUtilities.GetKey("QNAHOSTNAME");
+        private const string _knowlegeBaseId = "dummy-id";
+        private const string _endpointKey = "dummy-key";
+        private const string _hostname = "https://dummy-hostname.azurewebsites.net/qnamaker";
 
         [TestMethod]
         [TestCategory("AI")]
         [TestCategory("QnAMaker")]
-        [Ignore]
         public async Task QnaMaker_ReturnsAnswer()
         {
-            if (!EnvironmentVariablesDefined())
-            {
-                Assert.Inconclusive("Missing QnaMaker Environment variables - Skipping test");
-                return;
-            }
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(HttpMethod.Post, GetRequestUrl())
+                .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswer.json"));
 
-            var qna = new QnAMaker(
+            var qna = GetQnAMaker(mockHttp,
                 new QnAMakerEndpoint
                 {
-                    KnowledgeBaseId = knowlegeBaseId,
-                    EndpointKey = endpointKey,
-                    Host = hostname
+                    KnowledgeBaseId = _knowlegeBaseId,
+                    EndpointKey = _endpointKey,
+                    Host = _hostname
                 },
                 new QnAMakerOptions
                 {
@@ -42,27 +41,24 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
             var results = await qna.GetAnswersAsync("how do I clean the stove?");
             Assert.IsNotNull(results);
             Assert.AreEqual(results.Length, 1, "should get one result");
-            Assert.IsTrue(results[0].Answer.StartsWith("BaseCamp: You can use a damp rag to clean around the Power Pack"));
+            StringAssert.StartsWith(results[0].Answer, "BaseCamp: You can use a damp rag to clean around the Power Pack");
         }
 
         [TestMethod]
         [TestCategory("AI")]
         [TestCategory("QnAMaker")]
-        [Ignore]
         public async Task QnaMaker_TestThreshold()
         {
-            if (!EnvironmentVariablesDefined())
-            {
-                Assert.Inconclusive("Missing QnaMaker Environment variables - Skipping test");
-                return;
-            }
-
-            var qna = new QnAMaker(
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(HttpMethod.Post, GetRequestUrl())
+                .Respond("application/json", GetResponse("QnaMaker_TestThreshold.json"));
+            
+            var qna = GetQnAMaker(mockHttp,
                 new QnAMakerEndpoint
                 {
-                    KnowledgeBaseId = knowlegeBaseId,
-                    EndpointKey = endpointKey,
-                    Host = hostname
+                    KnowledgeBaseId = _knowlegeBaseId,
+                    EndpointKey = _endpointKey,
+                    Host = _hostname
                 },
                 new QnAMakerOptions
                 {
@@ -79,21 +75,14 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
         [TestCategory("AI")]
         [TestCategory("QnAMaker")]
         [ExpectedException(typeof(ArgumentOutOfRangeException))]
-        [Ignore]
         public void QnaMaker_Test_ScoreThreshold_OutOfRange()
         {
-            if (!EnvironmentVariablesDefined())
-            {
-                Assert.Inconclusive("Missing QnaMaker Environment variables - Skipping test");
-                return;
-            }
-
             var qna = new QnAMaker(
                 new QnAMakerEndpoint
                 {
-                    KnowledgeBaseId = knowlegeBaseId,
-                    EndpointKey = endpointKey,
-                    Host = hostname
+                    KnowledgeBaseId = _knowlegeBaseId,
+                    EndpointKey = _endpointKey,
+                    Host = _hostname
                 },
                 new QnAMakerOptions
                 {
@@ -106,21 +95,14 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
         [TestCategory("AI")]
         [TestCategory("QnAMaker")]
         [ExpectedException(typeof(ArgumentOutOfRangeException))]
-        [Ignore]
         public void QnaMaker_Test_Top_OutOfRange()
         {
-            if (!EnvironmentVariablesDefined())
-            {
-                Assert.Inconclusive("Missing QnaMaker Environment variables - Skipping test");
-                return;
-            }
-
             var qna = new QnAMaker(
                 new QnAMakerEndpoint
                 {
-                    KnowledgeBaseId = knowlegeBaseId,
-                    EndpointKey = endpointKey,
-                    Host = hostname
+                    KnowledgeBaseId = _knowlegeBaseId,
+                    EndpointKey = _endpointKey,
+                    Host = _hostname
                 },
                 new QnAMakerOptions
                 {
@@ -128,10 +110,22 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
                     ScoreThreshold = 0.5F
                 });
         }
-
-        private bool EnvironmentVariablesDefined()
+        
+        private string GetRequestUrl()
         {
-            return knowlegeBaseId != null && endpointKey != null && hostname != null;
+            return $"{_hostname}/knowledgebases/{_knowlegeBaseId}/generateanswer";
+        }
+
+        private Stream GetResponse(string fileName)
+        {
+            var path = Path.Combine(Environment.CurrentDirectory, "TestData", fileName);
+            return File.OpenRead(path);
+        }
+
+        private QnAMaker GetQnAMaker(HttpMessageHandler messageHandler, QnAMakerEndpoint endpoint, QnAMakerOptions options = null)
+        {
+            var client = new HttpClient(messageHandler);
+            return new QnAMaker(endpoint, options, client);
         }
     }
 }

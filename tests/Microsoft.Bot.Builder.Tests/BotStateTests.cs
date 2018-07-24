@@ -2,11 +2,13 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json.Linq;
 
-namespace Microsoft.Bot.Builder.Core.Extensions.Tests
+namespace Microsoft.Bot.Builder.Tests
 {
     public class TestState : IStoreItem
     {
@@ -23,6 +25,112 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
     [TestCategory("State Management")]
     public class BotStateTests
     {
+        [TestMethod]
+        public async Task LoadSetSave()
+        {
+            // Arrange
+            var dictionary = new Dictionary<string, JObject>();
+            var userState = new UserState(new MemoryStorage(dictionary));
+            var context = TestUtilities.CreateEmptyContext();
+
+            // Act
+            var propertyA = userState.CreateProperty<string>("property-a");
+            var propertyB = userState.CreateProperty<string>("property-b");
+
+            await userState.LoadAsync(context);
+            await propertyA.SetAsync(context, "hello");
+            await propertyB.SetAsync(context, "world");
+            await userState.SaveChangesAsync(context);
+
+            // Assert
+            var obj = dictionary["user/EmptyContext/empty@empty.context.org"];
+            Assert.AreEqual("hello", obj["property-a"]);
+            Assert.AreEqual("world", obj["property-b"]);
+        }
+
+        [TestMethod]
+        public async Task LoadSetSaveTwice()
+        {
+            // Arrange
+            var dictionary = new Dictionary<string, JObject>();
+            var context = TestUtilities.CreateEmptyContext();
+
+            // Act
+            var userState = new UserState(new MemoryStorage(dictionary));
+
+            var propertyA = userState.CreateProperty<string>("property-a");
+            var propertyB = userState.CreateProperty<string>("property-b");
+            var propertyC = userState.CreateProperty<string>("property-c");
+
+            await userState.LoadAsync(context);
+            await propertyA.SetAsync(context, "hello");
+            await propertyB.SetAsync(context, "world");
+            await propertyC.SetAsync(context, "test");
+            await userState.SaveChangesAsync(context);
+
+            // Assert
+            var obj = dictionary["user/EmptyContext/empty@empty.context.org"];
+            Assert.AreEqual("hello", obj["property-a"]);
+            Assert.AreEqual("world", obj["property-b"]);
+
+            // Act 2
+            var userState2 = new UserState(new MemoryStorage(dictionary));
+
+            var propertyA2 = userState2.CreateProperty<string>("property-a");
+            var propertyB2 = userState2.CreateProperty<string>("property-b");
+
+            await userState2.LoadAsync(context);
+            await propertyA.SetAsync(context, "hello-2");
+            await propertyB.SetAsync(context, "world-2");
+            await userState2.SaveChangesAsync(context);
+
+            // Assert 2
+            var obj2 = dictionary["user/EmptyContext/empty@empty.context.org"];
+            Assert.AreEqual("hello-2", obj2["property-a"]);
+            Assert.AreEqual("world-2", obj2["property-b"]);
+            Assert.AreEqual("test", obj2["property-c"]);
+        }
+
+        [TestMethod]
+        public async Task LoadSaveDelete()
+        {
+            // Arrange
+            var dictionary = new Dictionary<string, JObject>();
+            var context = TestUtilities.CreateEmptyContext();
+
+            // Act
+            var userState = new UserState(new MemoryStorage(dictionary));
+
+            var propertyA = userState.CreateProperty<string>("property-a");
+            var propertyB = userState.CreateProperty<string>("property-b");
+
+            await userState.LoadAsync(context);
+            await propertyA.SetAsync(context, "hello");
+            await propertyB.SetAsync(context, "world");
+            await userState.SaveChangesAsync(context);
+
+            // Assert
+            var obj = dictionary["user/EmptyContext/empty@empty.context.org"];
+            Assert.AreEqual("hello", obj["property-a"]);
+            Assert.AreEqual("world", obj["property-b"]);
+
+            // Act 2
+            var userState2 = new UserState(new MemoryStorage(dictionary));
+
+            var propertyA2 = userState2.CreateProperty<string>("property-a");
+            var propertyB2 = userState2.CreateProperty<string>("property-b");
+
+            await userState2.LoadAsync(context);
+            await propertyA.SetAsync(context, "hello-2");
+            await propertyB.DeleteAsync(context);
+            await userState2.SaveChangesAsync(context);
+
+            // Assert 2
+            var obj2 = dictionary["user/EmptyContext/empty@empty.context.org"];
+            Assert.AreEqual("hello-2", obj2["property-a"]);
+            Assert.IsNull(obj2["property-b"]);
+        }
+
         [TestMethod]
         public async Task State_DoNOTRememberContextState()
         {
@@ -44,7 +152,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
         public async Task State_RememberIStoreItemUserState()
         {
             var userState = new UserState(new MemoryStorage());
-            var testProperty = userState.CreateProperty<TestPocoState>("test", () => new TestPocoState());
+            var testProperty = userState.CreateProperty("test", () => new TestPocoState());
             var adapter = new TestAdapter()
                 .Use(userState);
 
@@ -74,7 +182,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
         public async Task State_RememberPocoUserState()
         {
             var userState = new UserState(new MemoryStorage());
-            var testPocoProperty = userState.CreateProperty<TestPocoState>("testPoco", () => new TestPocoState());
+            var testPocoProperty = userState.CreateProperty("testPoco", () => new TestPocoState());
             var adapter = new TestAdapter()
                 .Use(userState);
             await new TestFlow(adapter,
@@ -103,7 +211,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
         public async Task State_RememberIStoreItemConversationState()
         {
             var userState = new UserState(new MemoryStorage());
-            var testProperty = userState.CreateProperty<TestState>("test", () => new TestState());
+            var testProperty = userState.CreateProperty("test", () => new TestState());
 
             var adapter = new TestAdapter()
                 .Use(userState);
@@ -133,7 +241,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
         public async Task State_RememberPocoConversationState()
         {
             var userState = new UserState(new MemoryStorage());
-            var testPocoProperty = userState.CreateProperty<TestPocoState>("testPoco", () => new TestPocoState());
+            var testPocoProperty = userState.CreateProperty("testPoco", () => new TestPocoState());
             var adapter = new TestAdapter()
                 .Use(userState);
             await new TestFlow(adapter,
@@ -164,7 +272,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
 
             string testGuid = Guid.NewGuid().ToString();
             var customState = new CustomKeyState(new MemoryStorage());
-            var testProperty = customState.CreateProperty<TestPocoState>("test", () => new TestPocoState());
+            var testProperty = customState.CreateProperty("test", () => new TestPocoState());
 
             TestAdapter adapter = new TestAdapter()
                 .Use(customState);
@@ -198,7 +306,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
         public async Task State_RoundTripTypedObject()
         {
             var convoState = new ConversationState(new MemoryStorage());
-            var testProperty = convoState.CreateProperty<TypedObject>("typed", () => new TypedObject());
+            var testProperty = convoState.CreateProperty("typed", () => new TypedObject());
             var adapter = new TestAdapter()
                 .Use(convoState);
 
@@ -232,11 +340,9 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
             await new TestFlow(adapter,
                     async (context) =>
                     {
-                        var botStateManager = new BotState(new MemoryStorage(),
-                            $"BotState:{typeof(BotState).Namespace}.{typeof(BotState).Name}",
-                            (ctx) => $"botstate/{ctx.Activity.ChannelId}/{ctx.Activity.Conversation.Id}/{typeof(BotState).Namespace}.{typeof(BotState).Name}");
+                    var botStateManager = new TestBotState(new MemoryStorage());
 
-                        var testProperty = botStateManager.CreateProperty<CustomState>("test", () => new CustomState());
+                        var testProperty = botStateManager.CreateProperty("test", () => new CustomState());
 
                         // read initial state object
                         await botStateManager.LoadAsync(context);
@@ -264,6 +370,16 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
                 .StartTestAsync();
         }
 
+        public class TestBotState : BotState
+        {
+            public TestBotState(IStorage storage)
+                : base(storage, $"BotState:{typeof(BotState).Namespace}.{typeof(BotState).Name}")
+            {
+            }
+
+            protected override string GetStorageKey(ITurnContext context) => $"botstate/{context.Activity.ChannelId}/{context.Activity.Conversation.Id}/{typeof(BotState).Namespace}.{typeof(BotState).Name}";
+        }
+
         public class CustomState : IStoreItem
         {
             public string CustomString { get; set; }
@@ -272,11 +388,13 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
 
         public class CustomKeyState : BotState
         {
-            public CustomKeyState(IStorage storage) : base(storage, PropertyName, (context) => "CustomKey")
+            public CustomKeyState(IStorage storage) : base(storage, PropertyName)
             {
             }
 
             public const string PropertyName = "Microsoft.Bot.Builder.Tests.CustomKeyState";
+
+            protected override string GetStorageKey(ITurnContext context) => "CustomKey";
         }
     }
 }

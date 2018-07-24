@@ -16,24 +16,34 @@ namespace Microsoft.Bot.Builder.Dialogs
             _prompt = new TextPromptInternal(validator);
         }
 
-        protected override Task OnPrompt(DialogContext dc, PromptOptions options, bool isRetry)
+        protected override Task OnPromptAsync(DialogContext dc, PromptOptions options, bool isRetry)
         {
             if (dc == null)
+            {
                 throw new ArgumentNullException(nameof(dc));
+            }
+
             if (options == null)
+            {
                 throw new ArgumentNullException(nameof(options));
+            }
 
             return dc.Context.SendActivityAsync(PromptMessageFactory.CreateActivity(options, isRetry));
         }
 
-        protected override async Task<TextResult> OnRecognize(DialogContext dc, PromptOptions options)
+        protected override async Task<TextResult> OnRecognizeAsync(DialogContext dc, PromptOptions options)
         {
             if (dc == null)
+            {
                 throw new ArgumentNullException(nameof(dc));
-            if (options == null)
-                throw new ArgumentNullException(nameof(options));
+            }
 
-            return await _prompt.Recognize(dc.Context);
+            if (options == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
+
+            return await _prompt.RecognizeAsync(dc.Context);
         }
     }
 }

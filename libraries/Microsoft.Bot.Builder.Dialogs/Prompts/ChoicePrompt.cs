@@ -9,15 +9,6 @@ using static Microsoft.Bot.Builder.Dialogs.PromptValidatorEx;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
-    public class ChoicePromptOptions : PromptOptions
-    {
-        public List<Choice> Choices
-        {
-            get { return GetProperty<List<Choice>>(nameof(Choices)); }
-            set { this[nameof(Choices)] = value; }
-        }
-    }
-
     public class ChoicePrompt : Prompt<ChoiceResult>
     {
         private ChoicePromptInternal _prompt;
@@ -51,12 +42,17 @@ namespace Microsoft.Bot.Builder.Dialogs
             set { _prompt.RecognizerOptions = value; }
         }
 
-        protected override async Task OnPrompt(DialogContext dc, PromptOptions options, bool isRetry)
+        protected override async Task OnPromptAsync(DialogContext dc, PromptOptions options, bool isRetry)
         {
             if (dc == null)
+            {
                 throw new ArgumentNullException(nameof(dc));
+            }
+
             if (options == null)
+            {
                 throw new ArgumentNullException(nameof(options));
+            }
 
             var choices = (options as ChoicePromptOptions)?.Choices ?? new List<Choice>();
 
@@ -64,36 +60,41 @@ namespace Microsoft.Bot.Builder.Dialogs
             {
                 if (options.RetryPromptActivity != null)
                 {
-                    await _prompt.Prompt(dc.Context, options.RetryPromptActivity.AsMessageActivity(), options.Speak);
+                    await _prompt.PromptAsync(dc.Context, options.RetryPromptActivity.AsMessageActivity(), options.Speak);
                 }
                 else if (options.RetryPromptString != null)
                 {
-                    await _prompt.Prompt(dc.Context, choices, options.RetryPromptString, options.RetrySpeak);
+                    await _prompt.PromptAsync(dc.Context, choices, options.RetryPromptString, options.RetrySpeak);
                 }
             }
             else
             {
                 if (options.PromptActivity != null)
                 {
-                    await _prompt.Prompt(dc.Context, options.PromptActivity, options.Speak);
+                    await _prompt.PromptAsync(dc.Context, options.PromptActivity, options.Speak);
                 }
                 else if (options.PromptString != null)
                 {
-                    await _prompt.Prompt(dc.Context, choices, options.PromptString, options.Speak);
+                    await _prompt.PromptAsync(dc.Context, choices, options.PromptString, options.Speak);
                 }
             }
         }
 
-        protected override async Task<ChoiceResult> OnRecognize(DialogContext dc, PromptOptions options)
+        protected override async Task<ChoiceResult> OnRecognizeAsync(DialogContext dc, PromptOptions options)
         {
             if (dc == null)
+            {
                 throw new ArgumentNullException(nameof(dc));
+            }
+
             if (options == null)
+            {
                 throw new ArgumentNullException(nameof(options));
+            }
 
             var choices = (options as ChoicePromptOptions)?.Choices ?? new List<Choice>();
 
-            return await _prompt.Recognize(dc.Context, choices);
+            return await _prompt.RecognizeAsync(dc.Context, choices);
         }
     }
 }

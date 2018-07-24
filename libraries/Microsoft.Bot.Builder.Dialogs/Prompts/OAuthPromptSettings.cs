@@ -6,7 +6,9 @@ namespace Microsoft.Bot.Builder.Dialogs
     public class OAuthPromptSettings
     {
         public string ConnectionName { get; set; }
+
         public string Title { get; set; }
+
         public string Text { get; set; }
     }
 }

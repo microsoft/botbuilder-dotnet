@@ -11,18 +11,27 @@ namespace Microsoft.Bot.Builder.Dialogs
     public class DialogInstance
     {
         /// <summary>
-        /// ID of the dialog this instance is for.
+        /// Gets or sets the ID of the dialog this instance is for.
         /// </summary>
+        /// <value>
+        /// ID of the dialog this instance is for.
+        /// </value>
         public string Id { get; set; }
 
         /// <summary>
-        /// The instances persisted state.
+        /// Gets or sets the instances persisted state.
         /// </summary>
+        /// <value>
+        /// The instances persisted state.
+        /// </value>
         public IDictionary<string, object> State { get; set; }
 
         /// <summary>
-        /// Used when the instance is a Waterfall.
+        /// Gets or sets the step used when the instance is a Waterfall.
         /// </summary>
+        /// <value>
+        /// The step used when the instance is a Waterfall.
+        /// </value>
         public int Step { get; set; }
     }
 }

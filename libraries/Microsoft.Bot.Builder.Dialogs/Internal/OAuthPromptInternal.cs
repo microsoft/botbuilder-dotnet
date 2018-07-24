@@ -29,41 +29,47 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <summary>
         /// Prompt the User to signin if not already signed in for the given connection name.
         /// </summary>
-        /// <param name="context"></param>
-        /// <param name="activity"></param>
-        /// <returns></returns>
-        public async Task Prompt(ITurnContext context, IMessageActivity activity)
+        /// <param name="context">Context for the current turn of the conversation with the user.</param>
+        /// <param name="activity">A message in the conversation.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        public async Task PromptAsync(ITurnContext context, IMessageActivity activity)
         {
             BotAssert.ContextNotNull(context);
             BotAssert.ActivityNotNull(activity);
 
-            var adapter = context.Adapter as BotFrameworkAdapter;
-            if (adapter == null)
+            if (!(context.Adapter is BotFrameworkAdapter adapter))
+            {
                 throw new InvalidOperationException("OAuthPrompt.Prompt(): not supported by the current adapter");
+            }
 
             if (activity.Attachments == null || activity.Attachments.Count == 0)
+            {
                 throw new InvalidOperationException("OAuthPrompt.Prompt(): length of attachments cannot be null");
+            }
 
             var cards = activity.Attachments.Where(a => a.Content is OAuthCard);
             if (cards.Count() == 0)
+            {
                 throw new InvalidOperationException("OAuthPrompt.Prompt(): at least one of the cards should be an oauth card");
+            }
 
-            var replyActivity = MessageFactory.Attachment(cards.First());//todo:send an oauth or signin card based on channel id
+            var replyActivity = MessageFactory.Attachment(cards.First()); // todo:send an oauth or signin card based on channel id
             await context.SendActivityAsync(replyActivity).ConfigureAwait(false);
         }
 
         /// <summary>
         /// Prompt the User to signin if not already signed in for the given connection name.
         /// </summary>
-        /// <param name="context">The current turn context.</param>
-        /// <returns></returns>
-        public async Task Prompt(ITurnContext context)
+        /// <param name="context">Context for the current turn of the conversation with the user.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        public async Task PromptAsync(ITurnContext context)
         {
             BotAssert.ContextNotNull(context);
 
-            var adapter = context.Adapter as BotFrameworkAdapter;
-            if (adapter == null)
+            if (!(context.Adapter is BotFrameworkAdapter adapter))
+            {
                 throw new InvalidOperationException("OAuthPrompt.Prompt(): not supported by the current adapter");
+            }
 
             Attachment cardAttachment = null;
 
@@ -76,16 +82,16 @@ namespace Microsoft.Bot.Builder.Dialogs
                     Content = new SigninCard
                     {
                         Text = _settings.Text,
-                        Buttons = new []
+                        Buttons = new[]
                         {
                             new CardAction
                             {
                                 Title = _settings.Title,
                                 Value = link,
-                                Type = ActionTypes.Signin
-                            }
-                        }
-                    }
+                                Type = ActionTypes.Signin,
+                            },
+                        },
+                    },
                 };
             }
             else
@@ -97,18 +103,19 @@ namespace Microsoft.Bot.Builder.Dialogs
                     {
                         Text = _settings.Text,
                         ConnectionName = _settings.ConnectionName,
-                        Buttons = new []
+                        Buttons = new[]
                         {
                             new CardAction
                             {
                                 Title = _settings.Title,
                                 Text = _settings.Text,
-                                Type = ActionTypes.Signin
-                            }
-                        }
-                    }
+                                Type = ActionTypes.Signin,
+                            },
+                        },
+                    },
                 };
             }
+
             var replyActivity = MessageFactory.Attachment(cardAttachment);
             await context.SendActivityAsync(replyActivity).ConfigureAwait(false);
         }
@@ -116,9 +123,9 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <summary>
         /// If user is signed in get token, and optionally run validations on the Token.
         /// </summary>
-        /// <param name="context"></param>
-        /// <returns></returns>
-        public async Task<TokenResult> Recognize(ITurnContext context)
+        /// <param name="context">Context for the current turn of the conversation with the user.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        public async Task<TokenResult> RecognizeAsync(ITurnContext context)
         {
             if (IsTokenResponseEvent(context))
             {
@@ -127,7 +134,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 return new TokenResult
                 {
                     Status = PromptStatus.Recognized,
-                    TokenResponse = tokenResponse
+                    TokenResponse = tokenResponse,
                 };
             }
             else if (context.Activity.Type == ActivityTypes.Message)
@@ -135,15 +142,16 @@ namespace Microsoft.Bot.Builder.Dialogs
                 var matched = magicCodeRegex.Match(context.Activity.Text);
                 if (matched.Success)
                 {
-                    var adapter = context.Adapter as BotFrameworkAdapter;
-                    if (adapter == null)
+                    if (!(context.Adapter is BotFrameworkAdapter adapter))
+                    {
                         throw new InvalidOperationException("OAuthPrompt.Recognize(): not supported by the current adapter");
+                    }
 
                     var token = await adapter.GetUserTokenAsync(context, _settings.ConnectionName, matched.Value, default(CancellationToken)).ConfigureAwait(false);
                     var tokenResult = new TokenResult
                     {
                         Status = PromptStatus.Recognized,
-                        TokenResponse = token
+                        TokenResponse = token,
                     };
 
                     if (_promptValidator != null)
@@ -154,19 +162,21 @@ namespace Microsoft.Bot.Builder.Dialogs
                     return tokenResult;
                 }
             }
+
             return new TokenResult { Status = PromptStatus.NotRecognized };
         }
 
         /// <summary>
         /// Get a token for a user signed in.
         /// </summary>
-        /// <param name="context"></param>
-        /// <returns></returns>
-        public async Task<TokenResult> GetUserToken(ITurnContext context)
+        /// <param name="context">Context for the current turn of the conversation with the user.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        public async Task<TokenResult> GetUserTokenAsync(ITurnContext context)
         {
-            var adapter = context.Adapter as BotFrameworkAdapter;
-            if (adapter == null)
+            if (!(context.Adapter is BotFrameworkAdapter adapter))
+            {
                 throw new InvalidOperationException("OAuthPrompt.GetUserToken(): not supported by the current adapter");
+            }
 
             var token = await adapter.GetUserTokenAsync(context, _settings.ConnectionName, null, default(CancellationToken)).ConfigureAwait(false);
             TokenResult tokenResult = null;
@@ -174,7 +184,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             {
                 tokenResult = new TokenResult
                 {
-                    Status = PromptStatus.NotRecognized
+                    Status = PromptStatus.NotRecognized,
                 };
             }
             else
@@ -182,7 +192,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 tokenResult = new TokenResult
                 {
                     Status = PromptStatus.Recognized,
-                    TokenResponse = token
+                    TokenResponse = token,
                 };
             }
 
@@ -197,13 +207,14 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <summary>
         /// Sign Out the User.
         /// </summary>
-        /// <param name="context"></param>
-        /// <returns></returns>
-        public async Task SignOutUser(ITurnContext context)
+        /// <param name="context">Context for the current turn of the conversation with the user.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        public async Task SignOutUserAsync(ITurnContext context)
         {
-            var adapter = context.Adapter as BotFrameworkAdapter;
-            if (adapter == null)
+            if (!(context.Adapter is BotFrameworkAdapter adapter))
+            {
                 throw new InvalidOperationException("OAuthPrompt.SignOutUser(): not supported by the current adapter");
+            }
 
             // Sign out user
             await adapter.SignOutUserAsync(context, _settings.ConnectionName, default(CancellationToken)).ConfigureAwait(false);
@@ -212,7 +223,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         private bool IsTokenResponseEvent(ITurnContext context)
         {
             var activity = context.Activity;
-            return (activity.Type == ActivityTypes.Event && activity.Name == "tokens/response");
+            return activity.Type == ActivityTypes.Event && activity.Name == "tokens/response";
         }
 
         private bool ChannelSupportsOAuthCard(string channelId)

@@ -30,10 +30,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 var state = await testProperty.GetAsync(turnContext);
                 var prompt = new AttachmentPrompt();
 
-                var dialogCompletion = await prompt.Continue(turnContext, state);
+                var dialogCompletion = await prompt.ContinueAsync(turnContext, state);
                 if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
                 {
-                    await prompt.Begin(turnContext, state, new PromptOptions { PromptString = "please add an attachment." });
+                    await prompt.BeginAsync(turnContext, state, new PromptOptions { PromptString = "please add an attachment." });
                 }
                 else if (dialogCompletion.IsCompleted)
                 {

@@ -13,38 +13,39 @@ namespace Microsoft.Bot.Builder.Dialogs
     public class PromptResult : Dictionary<string, object>
     {
         /// <summary>
-        /// Creates a <see cref="PromptResult"/> object with a default
-        /// <see cref="Status"/> of <see cref="PromptStatus.NotRecognized"/>.
+        /// Initializes a new instance of the <see cref="PromptResult"/> class.
+        /// with a default <see cref="Status"/> of <see cref="PromptStatus.NotRecognized"/>.
         /// </summary>
-        public PromptResult()
-        {
-            Status = PromptStatus.NotRecognized;
-        }
+        public PromptResult() => Status = PromptStatus.NotRecognized;
 
         /// <summary>
-        /// The recognition result status.
+        /// Gets or sets the recognition result status.
         /// </summary>
+        /// <value>
+        /// The recognition result status.
+        /// </value>
         public string Status { get; set; }
 
         /// <summary>
         /// Indicates whether the input was recognized and validated.
         /// </summary>
         /// <returns>True if the input was recognized and validated.</returns>
-        public bool Succeeded() { return Status == PromptStatus.Recognized; }
+        public bool Succeeded() => Status == PromptStatus.Recognized;
 
         /// <summary>
         /// Used by derived classes to implement nullable property access this
-        /// mimics the JavaScript implementation's use of undefined in some places
+        /// mimics the JavaScript implementation's use of undefined in some places.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="propertyName"></param>
-        /// <returns>the property or null</returns>
+        /// <typeparam name="T">The type of the property.</typeparam>
+        /// <param name="propertyName">The name of the property.</param>
+        /// <returns>the property or null.</returns>
         protected T GetProperty<T>(string propertyName)
         {
             if (ContainsKey(propertyName))
             {
                 return (T)this[propertyName];
             }
+
             return default(T);
         }
     }
