@@ -60,7 +60,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                         numberResult.Status = PromptStatus.Recognized;
                         numberResult.Value = (T)(object)value;
                         numberResult.Text = result.Text;
-                        await ValidateAsync(context, numberResult);
+                        await ValidateAsync(context, numberResult).ConfigureAwait(false);
                     }
                 }
                 else if (typeof(T) == typeof(int))
@@ -70,7 +70,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                         numberResult.Status = PromptStatus.Recognized;
                         numberResult.Value = (T)(object)value;
                         numberResult.Text = result.Text;
-                        await ValidateAsync(context, numberResult);
+                        await ValidateAsync(context, numberResult).ConfigureAwait(false);
                     }
                 }
                 else if (typeof(T) == typeof(long))
@@ -80,7 +80,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                         numberResult.Status = PromptStatus.Recognized;
                         numberResult.Value = (T)(object)value;
                         numberResult.Text = result.Text;
-                        await ValidateAsync(context, numberResult);
+                        await ValidateAsync(context, numberResult).ConfigureAwait(false);
                     }
                 }
                 else if (typeof(T) == typeof(double))
@@ -90,7 +90,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                         numberResult.Status = PromptStatus.Recognized;
                         numberResult.Value = (T)(object)value;
                         numberResult.Text = result.Text;
-                        await ValidateAsync(context, numberResult);
+                        await ValidateAsync(context, numberResult).ConfigureAwait(false);
                     }
                 }
                 else if (typeof(T) == typeof(decimal))
@@ -100,7 +100,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                         numberResult.Status = PromptStatus.Recognized;
                         numberResult.Value = (T)(object)value;
                         numberResult.Text = result.Text;
-                        await ValidateAsync(context, numberResult);
+                        await ValidateAsync(context, numberResult).ConfigureAwait(false);
                     }
                 }
                 else

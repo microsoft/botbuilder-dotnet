@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
 using System.IO;
 using System.Text;
 using System.Threading;
@@ -14,7 +13,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Handlers
 {
     public class BotMessageHandler : BotMessageHandlerBase
     {
-        protected override async Task<InvokeResponse> ProcessMessageRequestAsync(HttpRequest request, BotFrameworkAdapter botFrameworkAdapter, Func<ITurnContext, Task> botCallbackHandler, CancellationToken cancellationToken)
+        protected override async Task<InvokeResponse> ProcessMessageRequestAsync(HttpRequest request, BotFrameworkAdapter botFrameworkAdapter, BotCallbackHandler botCallbackHandler, CancellationToken cancellationToken)
         {
             var activity = default(Activity);
 
@@ -27,7 +26,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Handlers
                     request.Headers["Authorization"],
                     activity,
                     botCallbackHandler,
-                    cancellationToken);
+                    cancellationToken).ConfigureAwait(false);
 
             return invokeResponse;
         }

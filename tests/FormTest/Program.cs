@@ -113,7 +113,7 @@ namespace Microsoft.Bot.Builder.Classic.FormFlowTest
             using (var container = builder.Build())
             {
                 var adapter = new ConsoleAdapter();
-                adapter.ProcessActivity(async (context) =>
+                adapter.ProcessActivity(async (context, cancellationToken) =>
                 {
                     using (var scope = DialogModule.BeginLifetimeScope(container, context))
                     {

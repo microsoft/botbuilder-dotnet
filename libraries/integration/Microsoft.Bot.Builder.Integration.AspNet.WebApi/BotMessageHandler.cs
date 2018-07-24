@@ -18,15 +18,15 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Handlers
         {
         }
 
-        protected override async Task<InvokeResponse> ProcessMessageRequestAsync(HttpRequestMessage request, BotFrameworkAdapter botFrameworkAdapter, Func<ITurnContext, Task> botCallbackHandler, CancellationToken cancellationToken)
+        protected override async Task<InvokeResponse> ProcessMessageRequestAsync(HttpRequestMessage request, BotFrameworkAdapter botFrameworkAdapter, BotCallbackHandler botCallbackHandler, CancellationToken cancellationToken)
         {
-            var activity = await request.Content.ReadAsAsync<Activity>(BotMessageHandlerBase.BotMessageMediaTypeFormatters, cancellationToken);
+            var activity = await request.Content.ReadAsAsync<Activity>(BotMessageHandlerBase.BotMessageMediaTypeFormatters, cancellationToken).ConfigureAwait(false);
 
             var invokeResponse = await botFrameworkAdapter.ProcessActivityAsync(
                 request.Headers.Authorization?.ToString(),
                 activity,
                 botCallbackHandler,
-                cancellationToken);
+                cancellationToken).ConfigureAwait(false);
 
             return invokeResponse;
         }

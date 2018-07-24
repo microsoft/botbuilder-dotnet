@@ -137,7 +137,7 @@ namespace Microsoft.Bot.Builder.Tests
 
             TestAdapter adapter = new TestAdapter();
 
-            await new TestFlow(adapter, (context) =>
+            await new TestFlow(adapter, (context, cancellationToken) =>
                    {
                        var obj = context.Services.Get<UserState>();
                        Assert.IsNull(obj, "context.state should not exist");
@@ -157,7 +157,7 @@ namespace Microsoft.Bot.Builder.Tests
                 .Use(userState);
 
             await new TestFlow(adapter,
-                    async (context) =>
+                    async (context, cancellationToken) =>
                     {
                         var state = await testProperty.GetAsync(context);
                         Assert.IsNotNull(state, "user state should exist");
@@ -186,7 +186,7 @@ namespace Microsoft.Bot.Builder.Tests
             var adapter = new TestAdapter()
                 .Use(userState);
             await new TestFlow(adapter,
-                    async (context) =>
+                    async (context, cancellationToken) =>
                     {
                         var testPocoState = await testPocoProperty.GetAsync(context);
                         Assert.IsNotNull(userState, "user state should exist");
@@ -216,7 +216,7 @@ namespace Microsoft.Bot.Builder.Tests
             var adapter = new TestAdapter()
                 .Use(userState);
             await new TestFlow(adapter,
-                    async (context) =>
+                    async (context, cancellationToken) =>
                     {
                         var conversationState = await testProperty.GetAsync(context);
                         Assert.IsNotNull(conversationState, "state.conversation should exist");
@@ -245,7 +245,7 @@ namespace Microsoft.Bot.Builder.Tests
             var adapter = new TestAdapter()
                 .Use(userState);
             await new TestFlow(adapter,
-                    async (context) =>
+                    async (context, cancellationToken) =>
                     {
                         var conversationState = await testPocoProperty.GetAsync(context);
                         Assert.IsNotNull(conversationState, "state.conversation should exist");
@@ -277,7 +277,7 @@ namespace Microsoft.Bot.Builder.Tests
             TestAdapter adapter = new TestAdapter()
                 .Use(customState);
 
-            await new TestFlow(adapter, async (context) =>
+            await new TestFlow(adapter, async (context, cancellationToken) =>
                     {
                         var test = await testProperty.GetAsync(context);
                         switch (context.Activity.AsMessageActivity().Text)
@@ -311,7 +311,7 @@ namespace Microsoft.Bot.Builder.Tests
                 .Use(convoState);
 
             await new TestFlow(adapter,
-                    async (context) =>
+                    async (context, cancellationToken) =>
                     {
                         var conversation = await testProperty.GetAsync(context);
                         Assert.IsNotNull(conversation, "conversationstate should exist");
@@ -338,7 +338,7 @@ namespace Microsoft.Bot.Builder.Tests
             var adapter = new TestAdapter();
 
             await new TestFlow(adapter,
-                    async (context) =>
+                    async (context, cancellationToken) =>
                     {
                     var botStateManager = new TestBotState(new MemoryStorage());
 

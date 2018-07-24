@@ -65,7 +65,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Handlers
                 var invokeResponse = await ProcessMessageRequestAsync(
                     request,
                     _botFrameworkAdapter,
-                    context =>
+                    (context, ct) =>
                     {
                         cancellationToken.ThrowIfCancellationRequested();
 
@@ -87,7 +87,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Handlers
 
                         return bot.OnTurnAsync(context);
                     },
-                    cancellationToken);
+                    cancellationToken).ConfigureAwait(false);
 
                 if (invokeResponse == null)
                 {
@@ -114,6 +114,6 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Handlers
             }
         }
 
-        protected abstract Task<InvokeResponse> ProcessMessageRequestAsync(HttpRequestMessage request, BotFrameworkAdapter botFrameworkAdapter, Func<ITurnContext, Task> botCallbackHandler, CancellationToken cancellationToken);
+        protected abstract Task<InvokeResponse> ProcessMessageRequestAsync(HttpRequestMessage request, BotFrameworkAdapter botFrameworkAdapter, BotCallbackHandler botCallbackHandler, CancellationToken cancellationToken);
     }
 }
