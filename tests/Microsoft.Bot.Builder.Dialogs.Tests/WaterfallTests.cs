@@ -164,6 +164,51 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .StartTestAsync();
         }
 
+        [TestMethod]
+        public async Task WaterfallDateTimePromptFirstInvalidThenValidInput()
+        {
+            var convoState = new ConversationState(new MemoryStorage());
+            var testProperty = convoState.CreateProperty("test", () => new Dictionary<string, object>());
+
+            var dialogs = new DialogSet();
+            dialogs.Add("dateTimePrompt", new DateTimePrompt(Culture.English));
+            dialogs.Add("test-dateTimePrompt", new WaterfallStep[]
+            {
+                async (dc, args, next) =>
+                {
+                    await dc.PromptAsync("dateTimePrompt", "Provide a date");
+                },
+                async (dc, args, next) =>
+                {
+                    Assert.IsNotNull(args);
+                    await dc.EndAsync();
+                }
+            });
+
+            var adapter = new TestAdapter()
+                .Use(convoState);
+
+            await new TestFlow(adapter, async (turnContext) =>
+            {
+                var state = await testProperty.GetAsync(turnContext);
+
+                var dc = dialogs.CreateContext(turnContext, state);
+
+                await dc.ContinueAsync();
+
+                if (!turnContext.Responded)
+                {
+                    await dc.BeginAsync("test-dateTimePrompt");
+                }
+            })
+            .Send("hello")
+            .AssertReply("Provide a date")
+            .Send("hello again")
+            .AssertReply("Provide a date")
+            .Send("Wednesday 4 oclock")
+            .StartTestAsync();
+        }
+
         private static WaterfallStep[] Create_Waterfall3()
         {
             return new WaterfallStep[] {
