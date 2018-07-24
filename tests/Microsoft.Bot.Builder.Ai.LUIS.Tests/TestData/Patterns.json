@@ -76,6 +76,10 @@
       "kb435"
     ]
   },
+  "sentiment": {
+    "label": "negative",
+    "score": 0.210341513
+  },
   "luisResult": {
     "query": "email about something wicked this way comes from bart simpson and also kb435",
     "topScoringIntent": {
@@ -128,31 +132,34 @@
       {
         "entity": "kb435",
         "type": "Part",
-        "startIndex": 71,
-        "endIndex": 75
+        "startIndex": 71.0,
+        "endIndex": 75.0
       },
       {
-        "role": "",
         "entity": "something wicked this way comes",
         "type": "subject",
-        "startIndex": 12,
-        "endIndex": 42
+        "startIndex": 12.0,
+        "endIndex": 42.0,
+        "role": ""
       },
       {
-        "role": "",
         "entity": "bart simpson",
         "type": "person",
-        "startIndex": 49,
-        "endIndex": 60
+        "startIndex": 49.0,
+        "endIndex": 60.0,
+        "role": ""
       },
       {
-        "role": "extra",
         "entity": "kb435",
         "type": "subject",
-        "startIndex": 71,
-        "endIndex": 75
+        "startIndex": 71.0,
+        "endIndex": 75.0,
+        "role": "extra"
       }
     ],
-    "compositeEntities": []
+    "sentimentAnalysis": {
+      "label": "negative",
+      "score": 0.210341513
+    }
   }
 }
