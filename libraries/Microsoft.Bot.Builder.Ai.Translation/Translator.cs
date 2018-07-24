@@ -60,14 +60,17 @@ namespace Microsoft.Bot.Builder.Ai.Translation
                 {
                     var result = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-                    if (!response.IsSuccessStatusCode)
+                    if (response.IsSuccessStatusCode)
                     {
-                        return "ERROR: " + result;
+                        var detectedLanguages = JsonConvert.DeserializeObject<IEnumerable<DetectedLanguageModel>>(result);
+                        var detectedLang = detectedLanguages.First().Language;
+                        return detectedLang;
                     }
-
-                    var detectedLanguages = JsonConvert.DeserializeObject<IEnumerable<DetectedLanguageModel>>(result);
-                    var detectedLang = detectedLanguages.First().Language;
-                    return detectedLang;
+                    else
+                    {
+                        var errorResult = JsonConvert.DeserializeObject<ErrorModel>(result);
+                        throw new ArgumentException(errorResult.Error.Message);
+                    }
                 }
             }
         }

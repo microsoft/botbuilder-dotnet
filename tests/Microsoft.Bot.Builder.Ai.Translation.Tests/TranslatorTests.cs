@@ -42,12 +42,10 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
         public async Task Translator_DetectAndTranslateToEnglish()
         {
             var mockHttp = new MockHttpMessageHandler();
-            mockHttp.When(HttpMethod.Post, "https://api.cognitive.microsoft.com/sts/v1.0/issueToken")
-                .Respond("application/jwt", "<--valid-bearer-token-->");
-            mockHttp.When(HttpMethod.Get, GetRequestDetect("salut"))
-                .Respond("application/xml", GetResponseDetect("fr"));
-            mockHttp.When(HttpMethod.Get, GetRequestTranslate("salut", "fr", "en"))
-                .Respond("application/xml", GetResponseTranslate("Hello"));
+            mockHttp.When(HttpMethod.Post, GetDetectUri())
+                .Respond("application/json", GetResponse("Translator_DetectAndTranslateToEnglish_Detect.json"));
+            mockHttp.When(HttpMethod.Post, GetTranslateUri("fr", "en"))
+                .Respond("application/json", GetResponse("Translator_DetectAndTranslateToEnglish_Translate.json"));
 
             var translator = new Translator(_translatorKey, mockHttp.ToHttpClient());
 
@@ -67,10 +65,8 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
         public async Task Translator_LiteralTagTest()
         {
             var mockHttp = new MockHttpMessageHandler();
-            mockHttp.When(HttpMethod.Post, "https://api.cognitive.microsoft.com/sts/v1.0/issueToken")
-                .Respond("application/jwt", "<--valid-bearer-token-->");
-            mockHttp.When(HttpMethod.Post, @"https://api.microsofttranslator.com/v2/Http.svc/TranslateArray2")
-                .Respond("application/xml", GetResponse("Translator_LiteralTagTest.xml"));
+            mockHttp.When(HttpMethod.Post, GetTranslateUri("fr", "en"))
+                .Respond("application/json", GetResponse("Translator_LiteralTagTest.json"));
 
             var translator = new Translator(_translatorKey, mockHttp.ToHttpClient());
 
@@ -91,10 +87,8 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
         public async Task Translator_TranslateFrenchToEnglish()
         {
             var mockHttp = new MockHttpMessageHandler();
-            mockHttp.When(HttpMethod.Post, "https://api.cognitive.microsoft.com/sts/v1.0/issueToken")
-                .Respond("application/jwt", "<--valid-bearer-token-->");
-            mockHttp.When(HttpMethod.Get, GetRequestTranslate("salut 20-10", "fr", "en"))
-                .Respond("application/xml", GetResponseTranslate("Hi 20-10"));
+            mockHttp.When(HttpMethod.Post, GetTranslateUri("fr", "en"))
+                .Respond("application/json", GetResponse("Translator_TranslateFrenchToEnglish.json"));
 
             var translator = new Translator(_translatorKey, mockHttp.ToHttpClient());
 
@@ -110,10 +104,8 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
         public async Task Translator_TranslateFrenchToEnglishArray()
         {
             var mockHttp = new MockHttpMessageHandler();
-            mockHttp.When(HttpMethod.Post, "https://api.cognitive.microsoft.com/sts/v1.0/issueToken")
-                .Respond("application/jwt", "<--valid-bearer-token-->");
-            mockHttp.When(HttpMethod.Post, @"https://api.microsofttranslator.com/v2/Http.svc/TranslateArray2")
-                .Respond("application/xml", GetResponse("Translator_TranslateFrenchToEnglishArray.xml"));
+            mockHttp.When(HttpMethod.Post, GetTranslateUri("fr", "en"))
+                .Respond("application/json", GetResponse("Translator_TranslateFrenchToEnglishArray.json"));
 
             var translator = new Translator(_translatorKey, mockHttp.ToHttpClient());
 
@@ -132,10 +124,8 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
         public async Task Translator_TranslateEnglishToFrench()
         {
             var mockHttp = new MockHttpMessageHandler();
-            mockHttp.When(HttpMethod.Post, "https://api.cognitive.microsoft.com/sts/v1.0/issueToken")
-                .Respond("application/jwt", "<--valid-bearer-token-->");
-            mockHttp.When(HttpMethod.Get, GetRequestTranslate("hello", "en", "fr"))
-                .Respond("application/xml", GetResponseTranslate("Salut"));
+            mockHttp.When(HttpMethod.Post, GetTranslateUri("en", "fr"))
+                .Respond("application/json", GetResponse("Translator_TranslateEnglishToFrench.json"));
 
             var translator = new Translator(_translatorKey, mockHttp.ToHttpClient());
 
@@ -151,10 +141,8 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
         public async Task Translator_TranslateEnglishToFrenchArray()
         {
             var mockHttp = new MockHttpMessageHandler();
-            mockHttp.When(HttpMethod.Post, "https://api.cognitive.microsoft.com/sts/v1.0/issueToken")
-                .Respond("application/jwt", "<--valid-bearer-token-->");
-            mockHttp.When(HttpMethod.Post, @"https://api.microsofttranslator.com/v2/Http.svc/TranslateArray2")
-                .Respond("application/xml", GetResponse("Translator_TranslateEnglishToFrenchArray.xml"));
+            mockHttp.When(HttpMethod.Post, GetTranslateUri("en", "fr"))
+                .Respond("application/json", GetResponse("Translator_TranslateEnglishToFrenchArray.json"));
 
             var translator = new Translator(_translatorKey, mockHttp.ToHttpClient());
 
@@ -172,12 +160,10 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
         public async Task Translator_InvalidSourceLanguage()
         {
             var mockHttp = new MockHttpMessageHandler();
-            mockHttp.When(HttpMethod.Post, "https://api.cognitive.microsoft.com/sts/v1.0/issueToken")
-                .Respond("application/jwt", "<--valid-bearer-token-->");
-            mockHttp.When(HttpMethod.Get, GetRequestTranslate("Arrange an appointment for tomorrow", "na", "de"))
-                .Respond(HttpStatusCode.BadRequest, "application/xml", GetResponse("Translator_InvalidSourceLanguage.xml"));
+            mockHttp.When(HttpMethod.Post, GetTranslateUri("na", "de"))
+                .Respond(HttpStatusCode.BadRequest, "application/json", GetResponse("Translator_InvalidSourceLanguage.json"));
 
-            Translator translator = new Translator(_translatorKey, mockHttp.ToHttpClient());
+            var translator = new Translator(_translatorKey, mockHttp.ToHttpClient());
 
             var sentence = "Arrange an appointment for tomorrow";
             await Assert.ThrowsExceptionAsync<ArgumentException>(async () =>
@@ -190,38 +176,26 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
         public async Task Translator_InvalidTargetLanguage()
         {
             var mockHttp = new MockHttpMessageHandler();
-            mockHttp.When(HttpMethod.Post, "https://api.cognitive.microsoft.com/sts/v1.0/issueToken")
-                .Respond("application/jwt", "<--valid-bearer-token-->");
-            mockHttp.When(HttpMethod.Get, GetRequestTranslate("Arrange an appointment for tomorrow", "en", "na"))
-                .Respond(HttpStatusCode.BadRequest, "application/xml", GetResponse("Translator_InvalidTargetLanguage.xml"));
+            mockHttp.When(HttpMethod.Post, GetTranslateUri("en", "na"))
+                .Respond(HttpStatusCode.BadRequest, "application/json", GetResponse("Translator_InvalidTargetLanguage.json"));
 
-            Translator translator = new Translator(_translatorKey, mockHttp.ToHttpClient());
+            var translator = new Translator(_translatorKey, mockHttp.ToHttpClient());
 
             var sentence = "Arrange an appointment for tomorrow";
             await Assert.ThrowsExceptionAsync<ArgumentException>(async () =>
                 await translator.TranslateAsync(sentence, "en", "na"));
         }
 
-        private string GetRequestDetect(string text)
+        private string GetDetectUri()
         {
-            return "http://api.microsofttranslator.com/v2/Http.svc/Detect?text=" + text;
+            return $"https://api.cognitive.microsofttranslator.com/detect?api-version=3.0";
         }
 
-        private string GetRequestTranslate(string text, string from, string to)
+        private string GetTranslateUri(string from, string to)
         {
-            return "http://api.microsofttranslator.com/v2/Http.svc/Translate?text=" + text + "&from=" + from + "&to=" + to;
+            return $"https://api.cognitive.microsofttranslator.com/translate?api-version=3.0&includeAlignment=true&includeSentenceLength=true&from={from}&to={to}";
         }
-
-        private string GetResponseDetect(string text)
-        {
-            return $"<string xmlns=\"http://schemas.microsoft.com/2003/10/Serialization/\">{text}</string>";
-        }
-
-        private string GetResponseTranslate(string text)
-        {
-            return $"<string xmlns=\"http://schemas.microsoft.com/2003/10/Serialization/\">{text}</string>";
-        }
-
+        
         private Stream GetResponse(string fileName)
         {
             var path = Path.Combine(Environment.CurrentDirectory, "TestData", fileName);
