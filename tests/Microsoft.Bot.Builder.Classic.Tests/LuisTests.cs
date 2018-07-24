@@ -63,12 +63,12 @@ namespace Microsoft.Bot.Builder.Classic.Tests
             return intents;
         }
 
-        public static EntityRecommendation EntityFor(string type, string entity, IDictionary<string, object> resolution = null)
+        public static EntityModel EntityFor(string type, string entity, IDictionary<string, object> resolution = null)
         {
-            return new EntityRecommendation(type: type) { Entity = entity, Resolution = resolution };
+            return new EntityModel(type: type) { Entity = entity, Resolution = resolution };
         }
 
-        public static EntityRecommendation EntityForDate(string type, DateTime date)
+        public static EntityModel EntityForDate(string type, DateTime date)
         {
             return EntityFor(type,
                 date.ToString("d", DateTimeFormatInfo.InvariantInfo),
@@ -79,7 +79,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                 });
         }
 
-        public static EntityRecommendation EntityForTime(string type, DateTime time)
+        public static EntityModel EntityForTime(string type, DateTime time)
         {
             return EntityFor(type,
                 time.ToString("t", DateTimeFormatInfo.InvariantInfo),
@@ -94,7 +94,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
             Mock<ILuisService> luis,
             Expression<Func<D, Task>> expression,
             double? score,
-            params EntityRecommendation[] entities
+            params EntityModel[] entities
             )
         {
             luis
@@ -111,7 +111,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
             string utterance,
             Expression<Func<D, Task>> expression,
             double? score,
-            params EntityRecommendation[] entities
+            params EntityModel[] entities
             )
         {
             var uri = new UriBuilder() { Query = utterance }.Uri;
@@ -285,13 +285,13 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                 const string EntityOne = "one";
                 const string EntityTwo = "two";
 
-                SetupLuis<MultiServiceLuisDialog>(service1, d => d.ServiceOne(null, null), 1.0, new EntityRecommendation(type: EntityOne));
-                SetupLuis<MultiServiceLuisDialog>(service2, d => d.ServiceTwo(null, null), 0.0, new EntityRecommendation(type: EntityTwo));
+                SetupLuis<MultiServiceLuisDialog>(service1, d => d.ServiceOne(null, null), 1.0, new EntityModel(type: EntityOne));
+                SetupLuis<MultiServiceLuisDialog>(service2, d => d.ServiceTwo(null, null), 0.0, new EntityModel(type: EntityTwo));
 
                 await AssertScriptAsync(scope, "hello", EntityOne);
 
-                SetupLuis<MultiServiceLuisDialog>(service1, d => d.ServiceOne(null, null), 0.0, new EntityRecommendation(type: EntityOne));
-                SetupLuis<MultiServiceLuisDialog>(service2, d => d.ServiceTwo(null, null), 1.0, new EntityRecommendation(type: EntityTwo));
+                SetupLuis<MultiServiceLuisDialog>(service1, d => d.ServiceOne(null, null), 0.0, new EntityModel(type: EntityOne));
+                SetupLuis<MultiServiceLuisDialog>(service2, d => d.ServiceTwo(null, null), 1.0, new EntityModel(type: EntityTwo));
 
                 await AssertScriptAsync(scope, "hello", EntityTwo);
             }
@@ -385,9 +385,9 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                                         {
                                             Name = "ParamOne",
                                             Required = true,
-                                            Value = new List<EntityRecommendation>()
+                                            Value = new List<EntityModel>()
                                             {
-                                                new EntityRecommendation
+                                                new EntityModel
                                                 {
                                                     Type = "EntityOne",
                                                     Score = 1.0
@@ -399,9 +399,9 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                             }
                         }
                     },
-                    Entities = new List<EntityRecommendation>()
+                    Entities = new List<EntityModel>()
                     {
-                        new EntityRecommendation
+                        new EntityModel
                         {
                             Type = "EntityOne",
                             Score = 1.0

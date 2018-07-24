@@ -3,18 +3,24 @@
 
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.Ai.LUIS
+namespace Microsoft.Bot.Builder.Ai.Luis
 {
     /// <summary>
     /// Strongly typed LUIS builtin_money.
     /// </summary>
     public class Money : NumberWithUnits
     {
-        public Money(double number, string units)
-            : base(number, units)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Money"/> class.
+        /// </summary>
+        /// <param name="money">Money amount.</param>
+        /// <param name="units">Currency units.</param>
+        public Money(double money, string units)
+            : base(money, units)
         {
         }
 
+        /// <inheritdoc/>
         public override string ToString() => $"Currency({Number} {Units})";
     }
 }
