@@ -4,6 +4,7 @@
 using System;
 using System.IO;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Schema;
@@ -96,6 +97,110 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
                 Assert.IsTrue(activity.Timestamp > default(DateTimeOffset));
             }
 
+        }
+
+        [TestMethod]
+        [TestCategory("AI")]
+        [TestCategory("QnAMaker")]
+        [ExpectedException(typeof(ArgumentException))]
+        public async Task QnaMaker_TraceActivity_EmptyText()
+        {
+            // Get basic Qna
+            var qna = QnaReturnsAnswer();
+
+            // No text
+            var adapter = new TestAdapter();
+            var activity = new Activity
+            {
+                Type = ActivityTypes.Message,
+                Text = "",
+                Conversation = new ConversationAccount(),
+                Recipient = new ChannelAccount(),
+                From = new ChannelAccount()
+            };
+            var context = new TurnContext(adapter, activity);
+
+
+            var results = await qna.GetAnswersAsync(context);
+        }
+
+        [TestMethod]
+        [TestCategory("AI")]
+        [TestCategory("QnAMaker")]
+        [ExpectedException(typeof(ArgumentException))]
+        public async Task QnaMaker_TraceActivity_NullText()
+        {
+            // Get basic Qna
+            var qna = QnaReturnsAnswer();
+
+            // No text
+            var adapter = new TestAdapter();
+            var activity = new Activity
+            {
+                Type = ActivityTypes.Message,
+                Text = null,
+                Conversation = new ConversationAccount(),
+                Recipient = new ChannelAccount(),
+                From = new ChannelAccount()
+            };
+            var context = new TurnContext(adapter, activity);
+
+
+            var results = await qna.GetAnswersAsync(context);
+        }
+
+        [TestMethod]
+        [TestCategory("AI")]
+        [TestCategory("QnAMaker")]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public async Task QnaMaker_TraceActivity_NullContext()
+        {
+            // Get basic Qna
+            var qna = QnaReturnsAnswer();
+
+            var results = await qna.GetAnswersAsync(null);
+        }
+
+        [TestMethod]
+        [TestCategory("AI")]
+        [TestCategory("QnAMaker")]
+        [ExpectedException(typeof(ArgumentException))]
+        public async Task QnaMaker_TraceActivity_BadMessage()
+        {
+            // Get basic Qna
+            var qna = QnaReturnsAnswer();
+
+            // No text
+            var adapter = new TestAdapter();
+            var activity = new Activity
+            {
+                Type = ActivityTypes.Trace,
+                Text = "My Text",
+                Conversation = new ConversationAccount(),
+                Recipient = new ChannelAccount(),
+                From = new ChannelAccount()
+            };
+            var context = new TurnContext(adapter, activity);
+
+
+            var results = await qna.GetAnswersAsync(context);
+        }
+
+        [TestMethod]
+        [TestCategory("AI")]
+        [TestCategory("QnAMaker")]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public async Task QnaMaker_TraceActivity_NullActivity()
+        {
+            // Get basic Qna
+            var qna = QnaReturnsAnswer();
+
+            // No text
+            var adapter = new TestAdapter();
+            var context = new MyTurnContext(adapter, null);
+
+
+            var results = await qna.GetAnswersAsync(context);
         }
 
 
@@ -205,6 +310,33 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
             return File.OpenRead(path);
         }
 
+        /// <summary>
+        /// Return a stock Mocked Qna thats loaded with QnaMaker_ReturnsAnswer.json
+        /// 
+        /// Used for tests that just require any old qna instance
+        /// </summary>
+        /// <returns></returns>
+        private QnAMaker QnaReturnsAnswer()
+        {
+            // Mock Qna
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(HttpMethod.Post, GetRequestUrl())
+                    .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswer.json"));
+            var qna = GetQnAMaker(mockHttp,
+                new QnAMakerEndpoint
+                {
+                    KnowledgeBaseId = _knowlegeBaseId,
+                    EndpointKey = _endpointKey,
+                    Host = _hostname
+                },
+                new QnAMakerOptions
+                {
+                    Top = 1
+                });
+            return qna;
+        }
+
+
         private QnAMaker GetQnAMaker(HttpMessageHandler messageHandler, QnAMakerEndpoint endpoint, QnAMakerOptions options = null)
         {
             var client = new HttpClient(messageHandler);
@@ -225,4 +357,71 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
 
         }
     }
+
+    class MyTurnContext : ITurnContext
+    {
+        private Activity _activity;
+        private BotAdapter _botadapter;
+        
+
+        public MyTurnContext(BotAdapter adapter, Activity activity)
+        {
+            Activity = activity;
+            Adapter = adapter;
+        }
+        public BotAdapter Adapter { get; }
+
+        public TurnContextServiceCollection Services => throw new NotImplementedException();
+
+        public Activity Activity { get; }
+
+        public bool Responded => throw new NotImplementedException();
+
+        public Task DeleteActivityAsync(string activityId, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task DeleteActivityAsync(ConversationReference conversationReference, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            throw new NotImplementedException();
+        }
+
+        public ITurnContext OnDeleteActivity(DeleteActivityHandler handler)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ITurnContext OnSendActivities(SendActivitiesHandler handler)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ITurnContext OnUpdateActivity(UpdateActivityHandler handler)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<ResourceResponse[]> SendActivitiesAsync(IActivity[] activities, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<ResourceResponse> SendActivityAsync(string textReplyToSend, string speak = null, string inputHint = "acceptingInput", CancellationToken cancellationToken = default(CancellationToken))
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<ResourceResponse> SendActivityAsync(IActivity activity, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<ResourceResponse> UpdateActivityAsync(IActivity activity, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+
 }
