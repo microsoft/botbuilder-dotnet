@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.Channel;
@@ -11,8 +12,9 @@ using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
 
-namespace Microsoft.Bot.Builder.Tests
+namespace Microsoft.Bot.Builder.Azure.Tests
 {
     [TestClass]
     public class AppInsight_MiddlewareTests
@@ -24,11 +26,24 @@ namespace Microsoft.Bot.Builder.Tests
         {
             _configuration = new TelemetryConfiguration();
             _sendItems = new List<ITelemetry>();
-            _configuration.TelemetryChannel = new StubTelemetryChannel { OnSend = item => _sendItems.Add(item) };
+            // Mock TelemetryChannel
+            var mock = new Mock<ITelemetryChannel>();
+            mock.Setup(channel => channel.Send(It.IsAny<ITelemetry>()))
+                .Callback<ITelemetry>(item => _sendItems.Add(item));
+            _configuration.TelemetryChannel = mock.Object;
             _configuration.InstrumentationKey = Guid.NewGuid().ToString();
             _configuration.TelemetryInitializers.Add(new OperationCorrelationTelemetryInitializer());
             
         }
+
+        [TestMethod]
+        [TestCategory("Middleware")]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void AppInsight_BadInstrumentation()
+        {
+            new AppInsightsLoggerMiddleware(null);
+        }
+
 
         [TestMethod]
         [TestCategory("Middleware")]
@@ -40,7 +55,7 @@ namespace Microsoft.Bot.Builder.Tests
             //string instrumentationKey, bool logUserName = false, bool logOriginalMessage = false)
             string conversationId = null;
 
-            await new TestFlow(adapter, async (context) =>
+            await new TestFlow(adapter, async (context, ct) =>
             {
                 conversationId = context.Activity.Conversation.Id;
                 var typingActivity = new Activity
@@ -49,7 +64,6 @@ namespace Microsoft.Bot.Builder.Tests
                     RelatesTo = context.Activity.RelatesTo
                 };
                 await context.SendActivityAsync(typingActivity);
-                await Task.Delay(500);
                 await context.SendActivityAsync("echo:" + context.Activity.Text);
             })
                 .Send("foo")
@@ -61,13 +75,13 @@ namespace Microsoft.Bot.Builder.Tests
                 .StartTestAsync();
 
             Assert.AreEqual(2, _sendItems.Count);
-            Assert.IsFalse(_sendItems[0].Context.Properties.ContainsKey(AppInsightsLoggerMiddleware.TextProperty));
-            Assert.IsFalse(_sendItems[1].Context.Properties.ContainsKey(AppInsightsLoggerMiddleware.TextProperty));
-            Assert.IsTrue(_sendItems[0].Context.Properties.ContainsKey(AppInsightsLoggerMiddleware.FromIdProperty));
-            Assert.IsTrue(_sendItems[0].Context.Properties.ContainsKey(AppInsightsLoggerMiddleware.ChannelProperty));
-            Assert.IsTrue(_sendItems[0].Context.Properties.ContainsKey(AppInsightsLoggerMiddleware.ConversationIdProperty));
-            Assert.IsFalse(_sendItems[0].Context.Properties.ContainsKey(AppInsightsLoggerMiddleware.FromNameProperty));
-            Assert.IsFalse(_sendItems[1].Context.Properties.ContainsKey(AppInsightsLoggerMiddleware.FromNameProperty));
+            Assert.IsFalse(_sendItems[0].Context.Properties.ContainsKey(AppInsightsLoggerMiddleware.AppInsightsConstants.TextProperty));
+            Assert.IsFalse(_sendItems[1].Context.Properties.ContainsKey(AppInsightsLoggerMiddleware.AppInsightsConstants.TextProperty));
+            Assert.IsTrue(_sendItems[0].Context.Properties.ContainsKey(AppInsightsLoggerMiddleware.AppInsightsConstants.FromIdProperty));
+            Assert.IsTrue(_sendItems[0].Context.Properties.ContainsKey(AppInsightsLoggerMiddleware.AppInsightsConstants.ChannelProperty));
+            Assert.IsTrue(_sendItems[0].Context.Properties.ContainsKey(AppInsightsLoggerMiddleware.AppInsightsConstants.ConversationIdProperty));
+            Assert.IsFalse(_sendItems[0].Context.Properties.ContainsKey(AppInsightsLoggerMiddleware.AppInsightsConstants.FromNameProperty));
+            Assert.IsFalse(_sendItems[1].Context.Properties.ContainsKey(AppInsightsLoggerMiddleware.AppInsightsConstants.FromNameProperty));
         }
 
         [TestMethod]
@@ -80,7 +94,7 @@ namespace Microsoft.Bot.Builder.Tests
             //string instrumentationKey, bool logUserName = false, bool logOriginalMessage = false)
             string conversationId = null;
 
-            await new TestFlow(adapter, async (context) =>
+            await new TestFlow(adapter, async (context, ct) =>
             {
                 conversationId = context.Activity.Conversation.Id;
                 var typingActivity = new Activity
@@ -89,7 +103,6 @@ namespace Microsoft.Bot.Builder.Tests
                     RelatesTo = context.Activity.RelatesTo
                 };
                 await context.SendActivityAsync(typingActivity);
-                await Task.Delay(500);
                 await context.SendActivityAsync("echo:" + context.Activity.Text);
             })
                 .Send("foo")
@@ -101,12 +114,11 @@ namespace Microsoft.Bot.Builder.Tests
                 .StartTestAsync();
 
             Assert.AreEqual(2, _sendItems.Count);
-            Assert.IsFalse(_sendItems[0].Context.Properties.ContainsKey(AppInsightsLoggerMiddleware.TextProperty));
-            Assert.IsFalse(_sendItems[1].Context.Properties.ContainsKey(AppInsightsLoggerMiddleware.TextProperty));
-            Assert.IsTrue(_sendItems[0].Context.Properties.ContainsKey(AppInsightsLoggerMiddleware.FromNameProperty));
-            Assert.IsTrue(_sendItems[1].Context.Properties.ContainsKey(AppInsightsLoggerMiddleware.FromNameProperty));
+            Assert.IsFalse(_sendItems[0].Context.Properties.ContainsKey(AppInsightsLoggerMiddleware.AppInsightsConstants.TextProperty));
+            Assert.IsFalse(_sendItems[1].Context.Properties.ContainsKey(AppInsightsLoggerMiddleware.AppInsightsConstants.TextProperty));
+            Assert.IsTrue(_sendItems[0].Context.Properties.ContainsKey(AppInsightsLoggerMiddleware.AppInsightsConstants.FromNameProperty));
+            Assert.IsTrue(_sendItems[1].Context.Properties.ContainsKey(AppInsightsLoggerMiddleware.AppInsightsConstants.FromNameProperty));
         }
-
         [TestMethod]
         [TestCategory("Middleware")]
         public async Task AppInsight_LogText()
@@ -116,7 +128,7 @@ namespace Microsoft.Bot.Builder.Tests
                 .Use(new AppInsightsLoggerMiddleware(Guid.NewGuid().ToString(), false, true, _configuration));
             string conversationId = null;
 
-            await new TestFlow(adapter, async (context) =>
+            await new TestFlow(adapter, async (context, ct) =>
             {
                 conversationId = context.Activity.Conversation.Id;
                 var typingActivity = new Activity
@@ -125,7 +137,6 @@ namespace Microsoft.Bot.Builder.Tests
                     RelatesTo = context.Activity.RelatesTo
                 };
                 await context.SendActivityAsync(typingActivity);
-                await Task.Delay(500);
                 await context.SendActivityAsync("echo:" + context.Activity.Text);
             })
                 .Send("foo")
@@ -137,12 +148,13 @@ namespace Microsoft.Bot.Builder.Tests
                 .StartTestAsync();
 
             Assert.AreEqual(2, _sendItems.Count);
-            Assert.IsTrue(_sendItems[0].Context.Properties.ContainsKey(AppInsightsLoggerMiddleware.TextProperty));
-            Assert.AreEqual<string>(_sendItems[0].Context.Properties[AppInsightsLoggerMiddleware.TextProperty], "foo");
-            Assert.IsTrue(_sendItems[1].Context.Properties.ContainsKey(AppInsightsLoggerMiddleware.TextProperty));
-            Assert.AreEqual<string>(_sendItems[1].Context.Properties[AppInsightsLoggerMiddleware.TextProperty], "bar");
-            Assert.IsFalse(_sendItems[0].Context.Properties.ContainsKey(AppInsightsLoggerMiddleware.FromNameProperty));
-            Assert.IsFalse(_sendItems[1].Context.Properties.ContainsKey(AppInsightsLoggerMiddleware.FromNameProperty));
+            Assert.IsTrue(_sendItems[0].Context.Properties.ContainsKey(AppInsightsLoggerMiddleware.AppInsightsConstants.TextProperty));
+            Assert.IsTrue(_sendItems[0].Context.Properties.ContainsKey(AppInsightsLoggerMiddleware.AppInsightsConstants.TextProperty));
+            Assert.AreEqual<string>(_sendItems[0].Context.Properties[AppInsightsLoggerMiddleware.AppInsightsConstants.TextProperty], "foo");
+            Assert.IsTrue(_sendItems[1].Context.Properties.ContainsKey(AppInsightsLoggerMiddleware.AppInsightsConstants.TextProperty));
+            Assert.AreEqual<string>(_sendItems[1].Context.Properties[AppInsightsLoggerMiddleware.AppInsightsConstants.TextProperty], "bar");
+            Assert.IsFalse(_sendItems[0].Context.Properties.ContainsKey(AppInsightsLoggerMiddleware.AppInsightsConstants.FromNameProperty));
+            Assert.IsFalse(_sendItems[1].Context.Properties.ContainsKey(AppInsightsLoggerMiddleware.AppInsightsConstants.FromNameProperty));
         }
 
         [TestMethod]
@@ -154,7 +166,7 @@ namespace Microsoft.Bot.Builder.Tests
                 .Use(new AppInsightsLoggerMiddleware(Guid.NewGuid().ToString(), false, false, _configuration));
             string conversationId = null;
 
-            await new TestFlow(adapter, async (context) =>
+            await new TestFlow(adapter, async (context, ct) =>
             {
                 conversationId = context.Activity.Conversation.Id;
                 var typingActivity = new Activity
@@ -162,13 +174,12 @@ namespace Microsoft.Bot.Builder.Tests
                     Type = ActivityTypes.Typing,
                     RelatesTo = context.Activity.RelatesTo
                 };
-                var telemetry = context.Services.Get<TelemetryClient>(AppInsightsLoggerMiddleware.AppInsightServiceKey);
+                var telemetry = context.Services.Get<TelemetryClient>(AppInsightsLoggerMiddleware.AppInsightsServiceKey);
                 var ex = new Exception("Test123");
                 telemetry.TrackException(ex);
                 telemetry.TrackTrace("Testing123");
 
                 await context.SendActivityAsync(typingActivity);
-                await Task.Delay(500);
                 await context.SendActivityAsync("echo:" + context.Activity.Text);
             })
                 .Send("foo")
@@ -200,7 +211,7 @@ namespace Microsoft.Bot.Builder.Tests
                 .Use(new AppInsightsLoggerMiddleware(Guid.NewGuid().ToString(), false, false, _configuration));
             string conversationId = null;
 
-            await new TestFlow(adapter, async (context) =>
+            await new TestFlow(adapter, async (context, ct) =>
             {
                 conversationId = context.Activity.Conversation.Id;
                 var typingActivity = new Activity
@@ -208,7 +219,7 @@ namespace Microsoft.Bot.Builder.Tests
                     Type = ActivityTypes.Typing,
                     RelatesTo = context.Activity.RelatesTo
                 };
-                var telemetry = context.Services.Get<TelemetryClient>(AppInsightsLoggerMiddleware.AppInsightServiceKey);
+                var telemetry = context.Services.Get<TelemetryClient>(AppInsightsLoggerMiddleware.AppInsightsServiceKey);
                 Dictionary<string, string> properties = new Dictionary<string, string>()
                 {
                     {"Question", "My Question"},
@@ -223,7 +234,6 @@ namespace Microsoft.Bot.Builder.Tests
                 telemetry.TrackEvent("Intent.MyIntent", properties, metrics);
 
                 await context.SendActivityAsync(typingActivity);
-                await Task.Delay(500);
                 await context.SendActivityAsync("echo:" + context.Activity.Text);
             })
                 .Send("foo")
@@ -252,7 +262,7 @@ namespace Microsoft.Bot.Builder.Tests
                 .Use(new AppInsightsLoggerMiddleware(Guid.NewGuid().ToString(), false, false, _configuration));
             string conversationId = null;
 
-            await new TestFlow(adapter, async (context) =>
+            await new TestFlow(adapter, async (context, ct) =>
             {
                 conversationId = context.Activity.Conversation.Id;
                 var typingActivity = new Activity
@@ -260,7 +270,7 @@ namespace Microsoft.Bot.Builder.Tests
                     Type = ActivityTypes.Typing,
                     RelatesTo = context.Activity.RelatesTo
                 };
-                var telemetry = context.Services.Get<TelemetryClient>(AppInsightsLoggerMiddleware.AppInsightServiceKey);
+                var telemetry = context.Services.Get<TelemetryClient>(AppInsightsLoggerMiddleware.AppInsightsServiceKey);
                 telemetry.TrackDependency(
                                         "Luis",                           // Dependency Type 
                                         "Recognize",                            // Operation
@@ -272,7 +282,6 @@ namespace Microsoft.Bot.Builder.Tests
                                         true);                                  // Success?
 
                 await context.SendActivityAsync(typingActivity);
-                await Task.Delay(500);
                 await context.SendActivityAsync("echo:" + context.Activity.Text);
             })
                 .Send("foo")
@@ -288,6 +297,9 @@ namespace Microsoft.Bot.Builder.Tests
             Assert.AreEqual("Book me a reservation", ((DependencyTelemetry)_sendItems[1]).Data);
             Assert.AreEqual("Recognize", ((DependencyTelemetry)_sendItems[1]).Target);
         }
+
+
+
 
     }
 }
