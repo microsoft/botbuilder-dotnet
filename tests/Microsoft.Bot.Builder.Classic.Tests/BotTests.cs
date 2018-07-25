@@ -88,7 +88,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
 
         async Task IBot.PostAsync(Activity activity, CancellationToken token)
         {
-            await this.adapter.ProcessActivityAsync(activity, async (context) =>
+            await this.adapter.ProcessActivityAsync(activity, async (context, cancellationToken) =>
             {
                 using (var scope = DialogModule.BeginLifetimeScope(this.Container, context))
                 {
@@ -797,7 +797,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                             Score = 1.0
                         }
                     },
-                    Entities = Array.Empty<EntityRecommendation>(),
+                    Entities = Array.Empty<EntityModel>(),
                 });
 
             mock
@@ -805,7 +805,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                 .ReturnsAsync(new LuisResult()
                 {
                     Intents = Array.Empty<IntentRecommendation>(),
-                    Entities = Array.Empty<EntityRecommendation>(),
+                    Entities = Array.Empty<EntityModel>(),
                 });
 
             return mock.Object;
@@ -948,7 +948,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                 var toBot = MakeTestMessage();
                 toBot.Text = "hi";
 
-                await new TestAdapter().ProcessActivityAsync((Activity)toBot, async (context) =>
+                await new TestAdapter().ProcessActivityAsync((Activity)toBot, async (context, cancellationToken) =>
                 {
                     using (var scope = DialogModule.BeginLifetimeScope(container, context))
                     {
@@ -981,7 +981,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
             {
                 var toBot = MakeTestMessage();
                 toBot.Text = "hi";
-                await new TestAdapter().ProcessActivityAsync((Activity)toBot, async (context) =>
+                await new TestAdapter().ProcessActivityAsync((Activity)toBot, async (context, cancellationToken) =>
                 {
                     using (var scope = DialogModule.BeginLifetimeScope(container, context))
                     {
@@ -1025,7 +1025,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
             {
                 var toBot = MakeTestMessage();
                 toBot.Text = "hi";
-                await new TestAdapter().ProcessActivityAsync((Activity)toBot, async (context) =>
+                await new TestAdapter().ProcessActivityAsync((Activity)toBot, async (context, cancellationToken) =>
                 {
                     using (var scope = DialogModule.BeginLifetimeScope(container, context))
                     {
@@ -1070,7 +1070,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
             {
                 var toBot = MakeTestMessage();
                 toBot.Text = "hi";
-                await new TestAdapter().ProcessActivityAsync((Activity)toBot, async (context) =>
+                await new TestAdapter().ProcessActivityAsync((Activity)toBot, async (context, cancellationToken) =>
                 {
                     using (var scope = DialogModule.BeginLifetimeScope(container, context))
                     {
@@ -1118,7 +1118,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                 var toBot = MakeTestMessage();
                 toBot.Text = "hi";
 
-                await new TestAdapter().ProcessActivityAsync((Activity)toBot, async (context) =>
+                await new TestAdapter().ProcessActivityAsync((Activity)toBot, async (context, cancellationToken) =>
                 {
                     using (var scope = DialogModule.BeginLifetimeScope(container, context))
                     {

@@ -59,7 +59,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                         dateTimeResult.Resolution.Add(ReadResolution(value));
                     }
 
-                    await ValidateAsync(context, dateTimeResult);
+                    await ValidateAsync(context, dateTimeResult).ConfigureAwait(false);
                     return dateTimeResult;
                 }
             }

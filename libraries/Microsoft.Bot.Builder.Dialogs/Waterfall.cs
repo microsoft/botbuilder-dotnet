@@ -43,7 +43,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             if (dc.Context.Activity.Type == ActivityTypes.Message)
             {
                 dc.ActiveDialog.Step++;
-                await RunStepAsync(dc, new Dictionary<string, object> { { "Activity", dc.Context.Activity } });
+                await RunStepAsync(dc, new Dictionary<string, object> { { "Activity", dc.Context.Activity } }).ConfigureAwait(false);
             }
         }
 
@@ -76,12 +76,12 @@ namespace Microsoft.Bot.Builder.Dialogs
                 };
 
                 // Execute step
-                await _steps[step](dc, result, next);
+                await _steps[step](dc, result, next).ConfigureAwait(false);
             }
             else
             {
                 // End of waterfall so just return to parent
-                await dc.EndAsync(result);
+                await dc.EndAsync(result).ConfigureAwait(false);
             }
         }
     }

@@ -3,7 +3,7 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.Ai.LUIS
+namespace Microsoft.Bot.Builder.Ai.Luis
 {
     /// <summary>
     /// Strongly typed information corresponding to LUIS $instance value.

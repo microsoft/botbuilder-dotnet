@@ -42,27 +42,27 @@ using static Microsoft.Bot.Builder.Classic.Luis.BuiltIn.DateTime;
 namespace Microsoft.Bot.Builder.Classic.Luis
 {
     /// <summary>
-    /// An abtraction to map from a LUIS <see cref="EntityRecommendation"/> to specific CLR types. 
+    /// An abtraction to map from a LUIS <see cref="EntityModel"/> to specific CLR types. 
     /// </summary>
     public interface IEntityToType
     {
         /// <summary>
-        /// Try to map LUIS <see cref="EntityRecommendation"/> instances to a <see cref="TimeSpan"/>, relative to now.
+        /// Try to map LUIS <see cref="EntityModel"/> instances to a <see cref="TimeSpan"/>, relative to now.
         /// </summary>
         /// <param name="now">The now reference <see cref="DateTime"/>.</param>
-        /// <param name="entities">A list of possibly-relevant <see cref="EntityRecommendation"/> instances.</param>
+        /// <param name="entities">A list of possibly-relevant <see cref="EntityModel"/> instances.</param>
         /// <param name="span">The output <see cref="TimeSpan"/>.</param>
         /// <returns>True if the mapping may have been successful, false otherwise.</returns>
-        bool TryMapToTimeSpan(DateTime now, IEnumerable<EntityRecommendation> entities, out TimeSpan span);
+        bool TryMapToTimeSpan(DateTime now, IEnumerable<EntityModel> entities, out TimeSpan span);
 
         /// <summary>
-        /// Try to map LUIS <see cref="EntityRecommendation"/> instances to a list of <see cref="DateTime"/> ranges, relative to now.
+        /// Try to map LUIS <see cref="EntityModel"/> instances to a list of <see cref="DateTime"/> ranges, relative to now.
         /// </summary>
         /// <param name="now">The now reference <see cref="DateTime"/>.</param>
-        /// <param name="entities">A list of possibly-relevant <see cref="EntityRecommendation"/> instances.</param>
+        /// <param name="entities">A list of possibly-relevant <see cref="EntityModel"/> instances.</param>
         /// <param name="ranges">The output <see cref="DateTime"/> ranges.</param>
         /// <returns>True if the mapping may have been successful, false otherwise.</returns>
-        bool TryMapToDateRanges(DateTime now, IEnumerable<EntityRecommendation> entities, out IEnumerable<Range<DateTime>> ranges);
+        bool TryMapToDateRanges(DateTime now, IEnumerable<EntityModel> entities, out IEnumerable<Range<DateTime>> ranges);
     }
 
     public sealed class StrictEntityToType : IEntityToType
@@ -76,7 +76,7 @@ namespace Microsoft.Bot.Builder.Classic.Luis
             SetField.NotNull(out this.calendar, nameof(calendar), calendar);
         }
 
-        bool IEntityToType.TryMapToDateRanges(DateTime now, IEnumerable<EntityRecommendation> entities, out IEnumerable<Range<DateTime>> ranges)
+        bool IEntityToType.TryMapToDateRanges(DateTime now, IEnumerable<EntityModel> entities, out IEnumerable<Range<DateTime>> ranges)
         {
             var resolutions = this.parser.ParseResolutions(entities);
             var dateTimes = resolutions.OfType<DateTimeResolution>().ToArray();
@@ -98,7 +98,7 @@ namespace Microsoft.Bot.Builder.Classic.Luis
             }
         }
 
-        bool IEntityToType.TryMapToTimeSpan(DateTime now, IEnumerable<EntityRecommendation> entities, out TimeSpan span)
+        bool IEntityToType.TryMapToTimeSpan(DateTime now, IEnumerable<EntityModel> entities, out TimeSpan span)
         {
             span = default(TimeSpan);
             return false;

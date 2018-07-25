@@ -118,7 +118,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             {
                 // send supplied prompt and then OAuthCard
                 await dc.Context.SendActivityAsync(promptOptions.PromptString, promptOptions.Speak).ConfigureAwait(false);
-                await _prompt.PromptAsync(dc.Context);
+                await _prompt.PromptAsync(dc.Context).ConfigureAwait(false);
             }
             else
             {
@@ -129,7 +129,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 }
                 else
                 {
-                    await _prompt.PromptAsync(dc.Context, promptOptions.PromptActivity);
+                    await _prompt.PromptAsync(dc.Context, promptOptions.PromptActivity).ConfigureAwait(false);
                 }
             }
         }

@@ -42,7 +42,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 {
                     attachmentResult.Status = PromptStatus.Recognized;
                     attachmentResult.Attachments.AddRange(message.Attachments);
-                    await ValidateAsync(context, attachmentResult);
+                    await ValidateAsync(context, attachmentResult).ConfigureAwait(false);
                 }
             }
 

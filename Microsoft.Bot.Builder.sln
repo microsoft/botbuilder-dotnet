@@ -24,9 +24,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Connector.Tes
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Integration", "Integration", "{276EBE79-A13A-46BD-A566-B01DC0477A9B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Ai.LUIS", "libraries\Microsoft.Bot.Builder.Ai.LUIS\Microsoft.Bot.Builder.Ai.LUIS.csproj", "{67AA3C00-E2C5-4D13-BA5E-72EB0E5B8DAA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Ai.Luis", "libraries\Microsoft.Bot.Builder.Ai.LUIS\Microsoft.Bot.Builder.Ai.Luis.csproj", "{67AA3C00-E2C5-4D13-BA5E-72EB0E5B8DAA}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Ai.LUIS.Tests", "tests\Microsoft.Bot.Builder.Ai.LUIS.Tests\Microsoft.Bot.Builder.Ai.LUIS.Tests.csproj", "{7BCEBDC1-D57F-4717-9B15-4FACD5473489}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Ai.Luis.Tests", "tests\Microsoft.Bot.Builder.Ai.LUIS.Tests\Microsoft.Bot.Builder.Ai.Luis.Tests.csproj", "{7BCEBDC1-D57F-4717-9B15-4FACD5473489}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Integration.AspNet.WebApi", "libraries\integration\Microsoft.Bot.Builder.Integration.AspNet.WebApi\Microsoft.Bot.Builder.Integration.AspNet.WebApi.csproj", "{BD0B82EF-1601-4E87-B78A-B43DE7EB36B0}"
 EndProject
@@ -66,7 +66,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Builder.Integ
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Tests", "tests\Microsoft.Bot.Builder.Tests\Microsoft.Bot.Builder.Tests.csproj", "{35F9B8A8-1974-4795-930B-5E4980EE85E5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Builder.Transcripts.Tests", "tests\Microsoft.Bot.Builder.Transcripts.Tests\Microsoft.Bot.Builder.Transcripts.Tests.csproj", "{71698D71-4C6F-40D5-8BDE-2587514CA21C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Transcripts.Tests", "tests\Microsoft.Bot.Builder.Transcripts.Tests\Microsoft.Bot.Builder.Transcripts.Tests.csproj", "{71698D71-4C6F-40D5-8BDE-2587514CA21C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
