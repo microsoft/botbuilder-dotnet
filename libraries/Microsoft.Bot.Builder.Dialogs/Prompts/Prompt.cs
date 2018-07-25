@@ -34,7 +34,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             instance.State = promptOptions;
 
             // Send initial prompt
-            await OnPromptAsync(dc, promptOptions, false);
+            await OnPromptAsync(dc, promptOptions, false).ConfigureAwait(false);
         }
 
         public async Task DialogContinueAsync(DialogContext dc)
@@ -52,7 +52,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             // Recognize value
             var instance = dc.ActiveDialog;
-            var recognized = await OnRecognizeAsync(dc, (PromptOptions)instance.State);
+            var recognized = await OnRecognizeAsync(dc, (PromptOptions)instance.State).ConfigureAwait(false);
 
             // TODO: resolve the inconsistency of approach between the Node SDK and what we have here
             if (!recognized.Succeeded())
@@ -64,12 +64,12 @@ namespace Microsoft.Bot.Builder.Dialogs
             if (recognized != null)
             {
                 // Return recognized value
-                await dc.EndAsync(recognized);
+                await dc.EndAsync(recognized).ConfigureAwait(false);
             }
             else if (!dc.Context.Responded)
             {
                 // Send retry prompt
-                await OnPromptAsync(dc, (PromptOptions)instance.State, true);
+                await OnPromptAsync(dc, (PromptOptions)instance.State, true).ConfigureAwait(false);
             }
         }
 

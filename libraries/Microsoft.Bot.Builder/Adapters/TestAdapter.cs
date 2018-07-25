@@ -83,7 +83,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
-        public async Task ProcessActivityAsync(Activity activity, Func<ITurnContext, Task> callback, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task ProcessActivityAsync(Activity activity, BotCallbackHandler callback, CancellationToken cancellationToken = default(CancellationToken))
         {
             lock (_conversationLock)
             {
@@ -277,13 +277,13 @@ namespace Microsoft.Bot.Builder.Adapters
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <remarks>This resets the <see cref="ActiveQueue"/>, and does not maintain multiple converstion queues.</remarks>
-        public Task CreateConversationAsync(string channelId, Func<ITurnContext, Task> callback, CancellationToken cancellationToken)
+        public Task CreateConversationAsync(string channelId, BotCallbackHandler callback, CancellationToken cancellationToken)
         {
             ActiveQueue.Clear();
             var update = Activity.CreateConversationUpdateActivity();
             update.Conversation = new ConversationAccount() { Id = Guid.NewGuid().ToString("n") };
             var context = new TurnContext(this, (Activity)update);
-            return callback(context);
+            return callback(context, cancellationToken);
         }
 
         /// <summary>
@@ -335,7 +335,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <seealso cref="TestFlow.Send(string)"/>
-        public Task SendTextToBotAsync(string userSays, Func<ITurnContext, Task> callback, CancellationToken cancellationToken)
+        public Task SendTextToBotAsync(string userSays, BotCallbackHandler callback, CancellationToken cancellationToken)
         {
             return ProcessActivityAsync(MakeActivity(userSays), callback, cancellationToken);
         }

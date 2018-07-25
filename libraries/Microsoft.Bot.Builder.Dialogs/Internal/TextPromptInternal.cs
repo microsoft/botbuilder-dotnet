@@ -62,7 +62,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 textResult.Status = PromptStatus.Recognized;
                 textResult.Value = message.Text;
                 textResult.Text = message.Text;
-                await ValidateAsync(context, textResult);
+                await ValidateAsync(context, textResult).ConfigureAwait(false);
             }
 
             return textResult;

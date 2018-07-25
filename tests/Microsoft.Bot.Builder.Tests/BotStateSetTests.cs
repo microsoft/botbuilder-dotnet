@@ -29,7 +29,7 @@ namespace Microsoft.Bot.Builder.Tests
             var adapter = new TestAdapter()
                 .Use(new BotStateSet(userState, convState));
 
-            Func<ITurnContext, Task> botLogic = async (context) =>
+            BotCallbackHandler botLogic = async (context, cancellationToken) =>
             {
                 // get userCount and convCount from botStateSet
                 var userCount = await userProperty.GetAsync(context).ConfigureAwait(false);

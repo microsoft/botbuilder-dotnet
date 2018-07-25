@@ -86,7 +86,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             if (prompt != null)
             {
                 prompt.Speak = speak ?? prompt.Speak;
-                await context.SendActivityAsync(prompt);
+                await context.SendActivityAsync(prompt).ConfigureAwait(false);
             }
         }
 
@@ -112,7 +112,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                     confirmResult.Text = result.Text;
                     if (Validator != null)
                     {
-                        await Validator(context, confirmResult);
+                        await Validator(context, confirmResult).ConfigureAwait(false);
                     }
                 }
             }
@@ -156,7 +156,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             msg.InputHint = InputHints.ExpectingInput;
-            await context.SendActivityAsync(msg);
+            await context.SendActivityAsync(msg).ConfigureAwait(false);
         }
     }
 }

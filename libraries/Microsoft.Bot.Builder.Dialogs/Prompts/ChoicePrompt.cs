@@ -60,22 +60,22 @@ namespace Microsoft.Bot.Builder.Dialogs
             {
                 if (options.RetryPromptActivity != null)
                 {
-                    await _prompt.PromptAsync(dc.Context, options.RetryPromptActivity.AsMessageActivity(), options.Speak);
+                    await _prompt.PromptAsync(dc.Context, options.RetryPromptActivity.AsMessageActivity(), options.Speak).ConfigureAwait(false);
                 }
                 else if (options.RetryPromptString != null)
                 {
-                    await _prompt.PromptAsync(dc.Context, choices, options.RetryPromptString, options.RetrySpeak);
+                    await _prompt.PromptAsync(dc.Context, choices, options.RetryPromptString, options.RetrySpeak).ConfigureAwait(false);
                 }
             }
             else
             {
                 if (options.PromptActivity != null)
                 {
-                    await _prompt.PromptAsync(dc.Context, options.PromptActivity, options.Speak);
+                    await _prompt.PromptAsync(dc.Context, options.PromptActivity, options.Speak).ConfigureAwait(false);
                 }
                 else if (options.PromptString != null)
                 {
-                    await _prompt.PromptAsync(dc.Context, choices, options.PromptString, options.Speak);
+                    await _prompt.PromptAsync(dc.Context, choices, options.PromptString, options.Speak).ConfigureAwait(false);
                 }
             }
         }
@@ -94,7 +94,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             var choices = (options as ChoicePromptOptions)?.Choices ?? new List<Choice>();
 
-            return await _prompt.RecognizeAsync(dc.Context, choices);
+            return await _prompt.RecognizeAsync(dc.Context, choices).ConfigureAwait(false);
         }
     }
 }
