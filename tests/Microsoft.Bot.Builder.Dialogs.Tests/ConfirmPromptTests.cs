@@ -21,7 +21,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             TestAdapter adapter = new TestAdapter()
                 .Use(convoState);
 
-            await new TestFlow(adapter, async (turnContext) =>
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
                 var state = await testProperty.GetAsync(turnContext);
                 var prompt = new ConfirmPrompt(Culture.English);
@@ -59,7 +59,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             TestAdapter adapter = new TestAdapter()
                 .Use(convoState);
 
-            await new TestFlow(adapter, async (turnContext) =>
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
                 var state = await testProperty.GetAsync(turnContext);
                 var prompt = new ConfirmPrompt(Culture.English);
@@ -103,7 +103,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             TestAdapter adapter = new TestAdapter()
                 .Use(convState);
 
-            await new TestFlow(adapter, async (turnContext) =>
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
                 var state = await testProperty.GetAsync(turnContext);
                 var prompt = new ConfirmPrompt(Culture.English);
@@ -147,11 +147,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         public async Task ConfirmPromptChoiceOptionsNoNumbers()
         {
             var convState = new ConversationState(new MemoryStorage());
-            var testProperty = convState.CreateProperty<Dictionary<string, object>>("test", () => new Dictionary<string, object>());
+            var testProperty = convState.CreateProperty("test", () => new Dictionary<string, object>());
             TestAdapter adapter = new TestAdapter()
                 .Use(convState);
 
-            await new TestFlow(adapter, async (turnContext) =>
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
                 var state = await testProperty.GetAsync(turnContext);
                 var prompt = new ConfirmPrompt(Culture.English);

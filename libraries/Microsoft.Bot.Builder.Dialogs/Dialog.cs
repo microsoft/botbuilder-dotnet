@@ -37,7 +37,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             IDictionary<string, object> result = null;
             var dc = new DialogContext(dialogs, context, state, (r) => { result = r; });
 
-            await dc.BeginAsync("dialog", options);
+            await dc.BeginAsync("dialog", options).ConfigureAwait(false);
             return dc.ActiveDialog != null
                     ?
                 new DialogCompletion { IsActive = true, IsCompleted = false }
@@ -71,7 +71,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             var dc = new DialogContext(dialogs, context, state, (r) => { result = r; });
             if (dc.ActiveDialog != null)
             {
-                await dc.ContinueAsync();
+                await dc.ContinueAsync().ConfigureAwait(false);
                 return dc.ActiveDialog != null
                         ?
                     new DialogCompletion { IsActive = true, IsCompleted = false }

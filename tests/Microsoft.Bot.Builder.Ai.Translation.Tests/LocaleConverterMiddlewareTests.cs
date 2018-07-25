@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
                 .Use(userState)
                 .Use(new LocaleConverterMiddleware(userLocaleProperty, "en-us", LocaleConverter.Converter));
 
-            await new TestFlow(adapter, async (context) =>
+            await new TestFlow(adapter, async (context, cancellationToken) =>
                 {
                     if (!await ChangeLocaleRequest(context, userLocaleProperty))
                     {
@@ -53,7 +53,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
                 .Use(userState)
                 .Use(new LocaleConverterMiddleware(userLocaleProperty, "en-us", LocaleConverter.Converter));
 
-            await new TestFlow(adapter, async (context) =>
+            await new TestFlow(adapter, async (context, cancellationToken) =>
                 {
                     if (!await ChangeLocaleRequest(context, userLocaleProperty))
                     {
@@ -81,7 +81,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
                 .Use(new LocaleConverterMiddleware(userLocaleProperty, "zh-cn", LocaleConverter.Converter));
 
 
-            await new TestFlow(adapter, async (context) =>
+            await new TestFlow(adapter, async (context, cancellationToken) =>
             {
                 if (!await ChangeLocaleRequest(context, userLocaleProperty))
                 {

@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Builder.Tests
             TestAdapter adapter = new TestAdapter()
                 .Use(new ShowTypingMiddleware(100, 1000));
             
-            await new TestFlow(adapter, async (context) =>
+            await new TestFlow(adapter, async (context, cancellationToken) =>
                 {
                     await Task.Delay(TimeSpan.FromMilliseconds(2500));
                     await context.SendActivityAsync("Message sent after delay");
@@ -40,7 +40,7 @@ namespace Microsoft.Bot.Builder.Tests
             TestAdapter adapter = new TestAdapter()
                 .Use(new ShowTypingMiddleware(100, 5000));
 
-            await new TestFlow(adapter, async (context) =>
+            await new TestFlow(adapter, async (context, cancellationToken) =>
                 {
                     await Task.Delay(TimeSpan.FromMilliseconds(2000));
                     await context.SendActivityAsync("Message sent after delay");
@@ -59,7 +59,7 @@ namespace Microsoft.Bot.Builder.Tests
             TestAdapter adapter = new TestAdapter()
                 .Use(new ShowTypingMiddleware(2000, 5000));
 
-            await new TestFlow(adapter, async (context) =>
+            await new TestFlow(adapter, async (context, cancellationToken) =>
                 {
                     await context.SendActivityAsync("Message sent after delay");
                     await Task.CompletedTask;

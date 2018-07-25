@@ -90,7 +90,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             msg.InputHint = InputHints.ExpectingInput;
-            await context.SendActivityAsync(msg);
+            await context.SendActivityAsync(msg).ConfigureAwait(false);
         }
 
         public async Task PromptAsync(ITurnContext context, IMessageActivity prompt = null, string speak = null)
@@ -100,7 +100,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             if (prompt != null)
             {
                 prompt.Speak = speak ?? prompt.Speak;
-                await context.SendActivityAsync(prompt);
+                await context.SendActivityAsync(prompt).ConfigureAwait(false);
             }
         }
 
@@ -129,7 +129,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 var result = new ChoiceResult { Status = PromptStatus.Recognized, Value = value };
                 if (Validator != null)
                 {
-                    await Validator(context, result);
+                    await Validator(context, result).ConfigureAwait(false);
                 }
 
                 return result;

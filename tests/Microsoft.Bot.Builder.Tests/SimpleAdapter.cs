@@ -51,7 +51,7 @@ namespace Microsoft.Bot.Builder.Tests
             return Task.FromResult(new ResourceResponse(activity.Id)); // echo back the Id
         }
 
-        public async Task ProcessRequest(Activity activty, Func<ITurnContext, Task> callback, CancellationToken cancellationToken)
+        public async Task ProcessRequest(Activity activty, BotCallbackHandler callback, CancellationToken cancellationToken)
         {
             using (var ctx = new TurnContext(this, activty))
             {

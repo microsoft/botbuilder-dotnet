@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mime;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Schema;
@@ -389,7 +390,7 @@ namespace Microsoft.Bot.Builder.Tests
         {
             TestAdapter adapter = new TestAdapter();                 
 
-            async Task ReplyWithimBackBack(ITurnContext ctx)
+            async Task ReplyWithimBackBack(ITurnContext ctx, CancellationToken cancellationToken)
             {
                 if (ctx.Activity.AsMessageActivity().Text == "test")
                 {
@@ -426,7 +427,7 @@ namespace Microsoft.Bot.Builder.Tests
         {
             TestAdapter adapter = new TestAdapter();
 
-            async Task ReplyWithimBackBack(ITurnContext ctx)
+            async Task ReplyWithimBackBack(ITurnContext ctx, CancellationToken cancellationToken)
             {
                 if (ctx.Activity.AsMessageActivity().Text == "test")
                 {

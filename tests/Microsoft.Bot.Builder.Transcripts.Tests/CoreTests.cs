@@ -30,7 +30,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
                 return;
             };
 
-            var flow = new TestFlow(adapter, async (context) =>
+            var flow = new TestFlow(adapter, async (context, cancellationToken) =>
             {
                 switch (context.Activity.Type)
                 {

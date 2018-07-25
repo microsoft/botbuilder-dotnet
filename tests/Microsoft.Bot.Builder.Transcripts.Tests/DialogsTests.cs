@@ -24,12 +24,12 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
         {
             var activities = TranscriptUtilities.GetFromTestContext(TestContext);
             var convState = new ConversationState(new MemoryStorage());
-            var testProperty = convState.CreateProperty<Dictionary<string, object>>("test", () => new Dictionary<string, object>());
+            var testProperty = convState.CreateProperty("test", () => new Dictionary<string, object>());
 
             TestAdapter adapter = new TestAdapter()
                 .Use(convState);
 
-            await new TestFlow(adapter, async (turnContext) =>
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
                 if (turnContext.Activity.Type == ActivityTypes.Message)
                 {
@@ -95,7 +95,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
             TestAdapter adapter = new TestAdapter()
                 .Use(convState);
 
-            await new TestFlow(adapter, async (turnContext) =>
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
                 if (turnContext.Activity.Type == ActivityTypes.Message)
                 {
@@ -125,7 +125,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
             TestAdapter adapter = new TestAdapter()
                 .Use(convState);
 
-            await new TestFlow(adapter, async (turnContext) =>
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
                 if (turnContext.Activity.Type == ActivityTypes.Message)
                 {
@@ -170,7 +170,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
             TestAdapter adapter = new TestAdapter()
                 .Use(convState);
 
-            await new TestFlow(adapter, async (turnContext) =>
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
                 if (turnContext.Activity.Type == ActivityTypes.Message)
                 {
@@ -216,7 +216,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
             TestAdapter adapter = new TestAdapter()
                 .Use(convState);
 
-            await new TestFlow(adapter, async (turnContext) =>
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
                 if (turnContext.Activity.Type == ActivityTypes.Message)
                 {
@@ -262,7 +262,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
             TestAdapter adapter = new TestAdapter()
                 .Use(convState);
 
-            await new TestFlow(adapter, async (turnContext) =>
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
                 if (turnContext.Activity.Type == ActivityTypes.Message)
                 {
@@ -302,7 +302,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
             TestAdapter adapter = new TestAdapter()
                 .Use(convState);
 
-            await new TestFlow(adapter, async (turnContext) =>
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
                 if (turnContext.Activity.Type == ActivityTypes.Message)
                 {
@@ -339,7 +339,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
             TestAdapter adapter = new TestAdapter()
                 .Use(convState);
 
-            await new TestFlow(adapter, async (turnContext) =>
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
                 if (turnContext.Activity.Type == ActivityTypes.Message)
                 {
@@ -404,12 +404,12 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
             var activities = TranscriptUtilities.GetFromTestContext(TestContext);
 
             var convState = new ConversationState(new MemoryStorage());
-            var testProperty = convState.CreateProperty<Dictionary<string, object>>("test", () => new Dictionary<string, object>());
+            var testProperty = convState.CreateProperty("test", () => new Dictionary<string, object>());
 
             TestAdapter adapter = new TestAdapter()
                 .Use(convState);
 
-            await new TestFlow(adapter, async (turnContext) =>
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
                 if (turnContext.Activity.Type == ActivityTypes.Message)
                 {

@@ -34,12 +34,12 @@ namespace Microsoft.Bot.Builder.Dialogs
             // Start the controls entry point dialog.
             IDictionary<string, object> result = null;
             var cdc = new DialogContext(this.Dialogs, dc.Context, dc.ActiveDialog.State, (r) => { result = r; });
-            await cdc.BeginAsync(DialogId, dialogArgs);
+            await cdc.BeginAsync(DialogId, dialogArgs).ConfigureAwait(false);
 
             // End if the controls dialog ends.
             if (cdc.ActiveDialog == null)
             {
-                await dc.EndAsync(result);
+                await dc.EndAsync(result).ConfigureAwait(false);
             }
         }
 
@@ -53,12 +53,12 @@ namespace Microsoft.Bot.Builder.Dialogs
             // Continue controls dialog stack.
             IDictionary<string, object> result = null;
             var cdc = new DialogContext(this.Dialogs, dc.Context, dc.ActiveDialog.State, (r) => { result = r; });
-            await cdc.ContinueAsync();
+            await cdc.ContinueAsync().ConfigureAwait(false);
 
             // End if the controls dialog ends.
             if (cdc.ActiveDialog == null)
             {
-                await dc.EndAsync(result);
+                await dc.EndAsync(result).ConfigureAwait(false);
             }
         }
     }
