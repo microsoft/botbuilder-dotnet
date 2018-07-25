@@ -1,9 +1,12 @@
-﻿using System.Collections.Generic;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System.Collections.Generic;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Ai.Translation.Model
 {
-    public class SentencesLenght
+    public class SentencesLength
     {
         [JsonProperty("srcSentLen")]
         public IEnumerable<int> Source { get; set; }
