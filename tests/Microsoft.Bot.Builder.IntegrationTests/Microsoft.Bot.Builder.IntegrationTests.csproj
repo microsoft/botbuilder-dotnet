@@ -10,6 +10,70 @@
     <DefineConstants>TRACE;RUNINTEGRATIONTESTS</DefineConstants>
   </PropertyGroup>
 
+
+  <ItemGroup>
+    <Content Include="..\Microsoft.Bot.Builder.Ai.LUIS.Tests\TestData\Composite1.json" Link="TestData\Composite1.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\Microsoft.Bot.Builder.Ai.LUIS.Tests\TestData\Composite2.json" Link="TestData\Composite2.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\Microsoft.Bot.Builder.Ai.LUIS.Tests\TestData\Mock_Composite1.json" Link="TestData\Mock_Composite1.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\Microsoft.Bot.Builder.Ai.LUIS.Tests\TestData\Mock_Composite2.json" Link="TestData\Mock_Composite2.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\Microsoft.Bot.Builder.Ai.LUIS.Tests\TestData\Mock_Patterns.json" Link="TestData\Mock_Patterns.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\Microsoft.Bot.Builder.Ai.LUIS.Tests\TestData\Mock_Prebuilt.json" Link="TestData\Mock_Prebuilt.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\Microsoft.Bot.Builder.Ai.LUIS.Tests\TestData\Mock_Typed.json" Link="TestData\Mock_Typed.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\Microsoft.Bot.Builder.Ai.LUIS.Tests\TestData\Mock_TypedPrebuilt.json" Link="TestData\Mock_TypedPrebuilt.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\Microsoft.Bot.Builder.Ai.LUIS.Tests\TestData\MultipleDateTimeEntities.json" Link="TestData\MultipleDateTimeEntities.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\Microsoft.Bot.Builder.Ai.LUIS.Tests\TestData\MultipleIntens_CompositeEntity.json" Link="TestData\MultipleIntens_CompositeEntity.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\Microsoft.Bot.Builder.Ai.LUIS.Tests\TestData\MultipleIntents_ListEntityWithMultiValues.json" Link="TestData\MultipleIntents_ListEntityWithMultiValues.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\Microsoft.Bot.Builder.Ai.LUIS.Tests\TestData\MultipleIntents_ListEntityWithSingleValue.json" Link="TestData\MultipleIntents_ListEntityWithSingleValue.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\Microsoft.Bot.Builder.Ai.LUIS.Tests\TestData\MultipleIntents_PrebuiltEntitiesWithMultiValues.json" Link="TestData\MultipleIntents_PrebuiltEntitiesWithMultiValues.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\Microsoft.Bot.Builder.Ai.LUIS.Tests\TestData\MultipleIntents_PrebuiltEntity.json" Link="TestData\MultipleIntents_PrebuiltEntity.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\Microsoft.Bot.Builder.Ai.LUIS.Tests\TestData\Patterns.json" Link="TestData\Patterns.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\Microsoft.Bot.Builder.Ai.LUIS.Tests\TestData\Prebuilt.json" Link="TestData\Prebuilt.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\Microsoft.Bot.Builder.Ai.LUIS.Tests\TestData\SingleIntent_SimplyEntity.json" Link="TestData\SingleIntent_SimplyEntity.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\Microsoft.Bot.Builder.Ai.LUIS.Tests\TestData\TestLuisApp.json" Link="TestData\TestLuisApp.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\Microsoft.Bot.Builder.Ai.LUIS.Tests\TestData\Typed.json" Link="TestData\Typed.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\Microsoft.Bot.Builder.Ai.LUIS.Tests\TestData\TypedPrebuilt.json" Link="TestData\TypedPrebuilt.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.7.0" />
     <PackageReference Include="MSTest.TestAdapter" Version="1.2.1" />
@@ -17,13 +81,17 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Ai.LUIS\Microsoft.Bot.Builder.Ai.LUIS.csproj" />
+    <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Ai.LUIS\Microsoft.Bot.Builder.Ai.Luis.csproj" />
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Ai.QnA\Microsoft.Bot.Builder.Ai.QnA.csproj" />
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Ai.Translation\Microsoft.Bot.Builder.Ai.Translation.csproj" />
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Azure\Microsoft.Bot.Builder.Azure.csproj" />
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Dialogs\Microsoft.Bot.Builder.Dialogs.csproj" />
-    <ProjectReference Include="..\Microsoft.Bot.Builder.Ai.LUIS.Tests\Microsoft.Bot.Builder.Ai.LUIS.Tests.csproj" />
+    <ProjectReference Include="..\Microsoft.Bot.Builder.Ai.LUIS.Tests\Microsoft.Bot.Builder.Ai.Luis.Tests.csproj" />
     <ProjectReference Include="..\Microsoft.Bot.Builder.Tests\Microsoft.Bot.Builder.Tests.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="TestData\" />
   </ItemGroup>
 
 </Project>

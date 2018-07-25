@@ -1,0 +1,59 @@
+{
+  "text": "http://foo.com is where you can get a weather forecast for seattle",
+  "intents": {
+    "None": {
+      "score": 0.08658369
+    },
+    "HomeAutomation_TurnOn": {
+      "score": 0.0147781251
+    },
+    "HomeAutomation_TurnOff": {
+      "score": 0.0145006124
+    }
+  },
+  "entities": {
+    "$instance": {
+      "HomeAutomation_Device": [
+        {
+          "startIndex": 38,
+          "endIndex": 54,
+          "text": "weather forecast",
+          "score": 0.557412
+        }
+      ]
+    },
+    "HomeAutomation_Device": [
+      "weather forecast"
+    ]
+  },
+  "luisResult": {
+    "query": "http://foo.com is where you can get a weather forecast for seattle",
+    "topScoringIntent": {
+      "intent": "None",
+      "score": 0.08658369
+    },
+    "intents": [
+      {
+        "intent": "None",
+        "score": 0.08658369
+      },
+      {
+        "intent": "HomeAutomation.TurnOn",
+        "score": 0.0147781251
+      },
+      {
+        "intent": "HomeAutomation.TurnOff",
+        "score": 0.0145006124
+      }
+    ],
+    "entities": [
+      {
+        "entity": "weather forecast",
+        "type": "HomeAutomation.Device",
+        "startIndex": 38.0,
+        "endIndex": 53.0,
+        "score": 0.557412
+      }
+    ]
+  }
+}

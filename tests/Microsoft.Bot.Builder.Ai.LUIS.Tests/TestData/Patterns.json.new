@@ -1,0 +1,39 @@
+{
+  "text": "email about something wicked this way comes from bart simpson and also kb435",
+  "intents": {
+    "HomeAutomation_TurnOn": {
+      "score": 0.5559703
+    },
+    "None": {
+      "score": 0.101414621
+    },
+    "HomeAutomation_TurnOff": {
+      "score": 0.0158973243
+    }
+  },
+  "entities": {
+    "$instance": {}
+  },
+  "luisResult": {
+    "query": "email about something wicked this way comes from bart simpson and also kb435",
+    "topScoringIntent": {
+      "intent": "HomeAutomation.TurnOn",
+      "score": 0.5559703
+    },
+    "intents": [
+      {
+        "intent": "HomeAutomation.TurnOn",
+        "score": 0.5559703
+      },
+      {
+        "intent": "None",
+        "score": 0.101414621
+      },
+      {
+        "intent": "HomeAutomation.TurnOff",
+        "score": 0.0158973243
+      }
+    ],
+    "entities": []
+  }
+}

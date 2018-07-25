@@ -3,8 +3,10 @@
 
 using System;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Ai.QnA;
 using Microsoft.Bot.Builder.Tests;
+using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Bot.Builder.IntegrationTests.Ai.QnA
@@ -43,7 +45,7 @@ namespace Microsoft.Bot.Builder.IntegrationTests.Ai.QnA
                     Top = 1
                 });
 
-            var results = await qna.GetAnswersAsync("how do I clean the stove?");
+            var results = await qna.GetAnswersAsync(GetContext("how do I clean the stove?"));
             Assert.IsNotNull(results);
             Assert.AreEqual(results.Length, 1, "should get one result");
             Assert.IsTrue(results[0].Answer.StartsWith("BaseCamp: You can use a damp rag to clean around the Power Pack"));
@@ -74,7 +76,7 @@ namespace Microsoft.Bot.Builder.IntegrationTests.Ai.QnA
                     ScoreThreshold = 0.99F
                 });
 
-            var results = await qna.GetAnswersAsync("how do I clean the stove?");
+            var results = await qna.GetAnswersAsync(GetContext("how do I clean the stove?"));
             Assert.IsNotNull(results);
             Assert.AreEqual(results.Length, 0, "should get zero result because threshold");
         }
@@ -131,6 +133,21 @@ namespace Microsoft.Bot.Builder.IntegrationTests.Ai.QnA
                     Top = -1,
                     ScoreThreshold = 0.5F
                 });
+        }
+
+        private static TurnContext GetContext(string utterance)
+        {
+            var b = new TestAdapter();
+            var a = new Activity
+            {
+                Type = ActivityTypes.Message,
+                Text = utterance,
+                Conversation = new ConversationAccount(),
+                Recipient = new ChannelAccount(),
+                From = new ChannelAccount()
+            };
+
+            return new TurnContext(b, a);
         }
 
         private bool EnvironmentVariablesDefined()

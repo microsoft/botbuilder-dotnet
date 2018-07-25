@@ -123,7 +123,7 @@ namespace Microsoft.Bot.Builder.IntegrationTests.Connector
                 credentials,
                 emptyClient));
 
-            Assert.IsTrue(MicrosoftAppCredentials.IsTrustedServiceUrl("https://webchat.botframework.com/"));
+            Assert.IsFalse(MicrosoftAppCredentials.IsTrustedServiceUrl("https://webchat.botframework.com/"));
         }
 
         /// <summary>

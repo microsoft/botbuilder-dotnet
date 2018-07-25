@@ -6,9 +6,11 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Ai.LUIS;
-using Microsoft.Bot.Builder.Ai.LUIS.Tests;
+using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.Ai.Luis;
+using Microsoft.Bot.Builder.Ai.Luis.Tests;
 using Microsoft.Bot.Builder.Tests;
+using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -27,7 +29,7 @@ namespace Microsoft.Bot.Builder.IntegrationTests.Ai.LUIS
 
         private readonly string _luisAppId = TestUtilities.GetKey("LUISAPPID");
         private readonly string _subscriptionKey = TestUtilities.GetKey("LUISAPPKEY");
-        private readonly string _luisUriBase = TestUtilities.GetKey("LUISURIBASE");
+        private readonly string _region = "Westus";
 
 
         [TestMethod]
@@ -40,13 +42,15 @@ namespace Microsoft.Bot.Builder.IntegrationTests.Ai.LUIS
             }
 
             var luisRecognizer = GetLuisRecognizer(verbose: true);
-            var result = await luisRecognizer.RecognizeAsync("My name is Emad", CancellationToken.None);
+            var context = GetContext("My name is Emad");
+            var result = await luisRecognizer.RecognizeAsync(context, CancellationToken.None);
             Assert.IsNotNull(result);
             Assert.IsNull(result.AlteredText);
             Assert.AreEqual("My name is Emad", result.Text);Assert.IsNotNull(result.Intents);
+            Assert.IsNotNull(result.Intents);
             Assert.AreEqual(1, result.Intents.Count);
             Assert.IsNotNull(result.Intents["SpecifyName"]);
-            Assert.IsTrue((double)result.Intents["SpecifyName"]["score"] > 0 && (double)result.Intents["SpecifyName"]["score"] <= 1);
+            Assert.IsTrue(result.Intents["SpecifyName"].Score > 0 && result.Intents["SpecifyName"].Score <= 1);
             Assert.IsNotNull(result.Entities);
             Assert.IsNotNull(result.Entities["Name"]);
             Assert.AreEqual("emad", (string)result.Entities["Name"].First);
@@ -66,14 +70,15 @@ namespace Microsoft.Bot.Builder.IntegrationTests.Ai.LUIS
                 return;
             }
 
-            var luisRecognizer = GetLuisRecognizer(verbose: true, luisOptions: new LuisRequest { Verbose = true });
-            var result = await luisRecognizer.RecognizeAsync("Please deliver February 2nd 2001", CancellationToken.None);
+            var luisRecognizer = GetLuisRecognizer(verbose: true, luisOptions: new LuisPredictionOptions { Verbose = true });
+            var context = GetContext("Please deliver February 2nd 2001");
+            var result = await luisRecognizer.RecognizeAsync(context, CancellationToken.None);
             Assert.IsNotNull(result);
             Assert.AreEqual("Please deliver February 2nd 2001", result.Text);
             Assert.IsNotNull(result.Intents);
             Assert.IsTrue(result.Intents.Count > 1);
             Assert.IsNotNull(result.Intents["Delivery"]);
-            Assert.IsTrue((double)result.Intents["Delivery"]["score"] > 0 && (double)result.Intents["Delivery"]["score"] <= 1);
+            Assert.IsTrue(result.Intents["Delivery"].Score > 0 && result.Intents["Delivery"].Score <= 1);
             Assert.AreEqual("Delivery", result.GetTopScoringIntent().intent);
             Assert.IsTrue(result.GetTopScoringIntent().score > 0);
             Assert.IsNotNull(result.Entities);
@@ -102,8 +107,9 @@ namespace Microsoft.Bot.Builder.IntegrationTests.Ai.LUIS
                 return;
             }
 
-            var luisRecognizer = GetLuisRecognizer(verbose: true, luisOptions: new LuisRequest { Verbose = true });
-            var result = await luisRecognizer.RecognizeAsync("Please deliver February 2nd 2001 in room 201", CancellationToken.None);
+            var luisRecognizer = GetLuisRecognizer(verbose: true, luisOptions: new LuisPredictionOptions { Verbose = true });
+            var context = GetContext("Please deliver February 2nd 2001 in room 201");
+            var result = await luisRecognizer.RecognizeAsync(context, CancellationToken.None);
             Assert.IsNotNull(result);
             Assert.IsNotNull(result.Text);
             Assert.AreEqual("Please deliver February 2nd 2001 in room 201", result.Text);
@@ -127,8 +133,9 @@ namespace Microsoft.Bot.Builder.IntegrationTests.Ai.LUIS
                 return;
             }
 
-            var luisRecognizer = GetLuisRecognizer(verbose: true, luisOptions: new LuisRequest { Verbose = true });
-            var result = await luisRecognizer.RecognizeAsync("I want to travel on united", CancellationToken.None);
+            var luisRecognizer = GetLuisRecognizer(verbose: true, luisOptions: new LuisPredictionOptions { Verbose = true });
+            var context = GetContext("I want to travel on united");
+            var result = await luisRecognizer.RecognizeAsync(context, CancellationToken.None);
             Assert.IsNotNull(result);
             Assert.IsNotNull(result.Text);
             Assert.AreEqual("I want to travel on united", result.Text);
@@ -153,8 +160,9 @@ namespace Microsoft.Bot.Builder.IntegrationTests.Ai.LUIS
                 return;
             }
 
-            var luisRecognizer = GetLuisRecognizer(verbose: true, luisOptions: new LuisRequest { Verbose = true });
-            var result = await luisRecognizer.RecognizeAsync("I want to travel on DL", CancellationToken.None);
+            var luisRecognizer = GetLuisRecognizer(verbose: true, luisOptions: new LuisPredictionOptions { Verbose = true });
+            var context = GetContext("I want to travel on DL");
+            var result = await luisRecognizer.RecognizeAsync(context, CancellationToken.None);
             Assert.IsNotNull(result);
             Assert.IsNotNull(result.Text);
             Assert.AreEqual("I want to travel on DL", result.Text);
@@ -181,8 +189,9 @@ namespace Microsoft.Bot.Builder.IntegrationTests.Ai.LUIS
                 return;
             }
 
-            var luisRecognizer = GetLuisRecognizer(verbose: true, luisOptions: new LuisRequest { Verbose = true });
-            var result = await luisRecognizer.RecognizeAsync("Please deliver it to 98033 WA", CancellationToken.None);
+            var luisRecognizer = GetLuisRecognizer(verbose: true, luisOptions: new LuisPredictionOptions { Verbose = true });
+            var context = GetContext("Please deliver it to 98033 WA");
+            var result = await luisRecognizer.RecognizeAsync(context, CancellationToken.None);
             Assert.IsNotNull(result);
             Assert.IsNotNull(result.Text);
             Assert.AreEqual("Please deliver it to 98033 WA", result.Text);
@@ -223,8 +232,9 @@ namespace Microsoft.Bot.Builder.IntegrationTests.Ai.LUIS
                 return;
             }
 
-            var luisRecognizer = GetLuisRecognizer(verbose: true, luisOptions: new LuisRequest { Verbose = true });
-            var result = await luisRecognizer.RecognizeAsync("Book a table on Friday or tomorrow at 5 or tomorrow at 4", CancellationToken.None);
+            var luisRecognizer = GetLuisRecognizer(verbose: true, luisOptions: new LuisPredictionOptions { Verbose = true });
+            var context = GetContext("Book a table on Friday or tomorrow at 5 or tomorrow at 4");
+            var result = await luisRecognizer.RecognizeAsync(context, CancellationToken.None);
             Assert.IsNotNull(result.Entities["datetime"]);
             Assert.AreEqual(3, result.Entities["datetime"].Count());
             Assert.AreEqual(1, result.Entities["datetime"][0]["timex"].Count());
@@ -239,10 +249,113 @@ namespace Microsoft.Bot.Builder.IntegrationTests.Ai.LUIS
             Assert.AreEqual(3, result.Entities["$instance"]["datetime"].Count());
         }
 
+        // To create a file to test:
+        // 1) Create a <name>.json file with an object { Text:<query> } in it.
+        // 2) Run this test which will fail and generate a <name>.json.new file.
+        // 3) Check the .new file and if correct, replace the original .json file with it.
+        public async Task TestJson<T>(string file)
+            where T : IRecognizerConvert, new()
+        {
+            if (!EnvironmentVariablesDefined())
+            {
+                Assert.Inconclusive("Missing Luis Environment variables - Skipping test");
+                return;
+            }
+
+            var expectedPath = Path.Combine(@"..\..\..\TestData\", file);
+            var newPath = expectedPath + ".new";
+            var luisRecognizer = GetLuisRecognizer(true, luisOptions: new LuisPredictionOptions { Verbose = true });
+            var expected = new StreamReader(expectedPath).ReadToEnd();
+            dynamic expectedJson = JsonConvert.DeserializeObject(expected);
+            var query = (string)expectedJson.text ?? (string)expectedJson.Text;
+            var context = GetContext(query);
+            var typedResult = await luisRecognizer.RecognizeAsync<T>(context, CancellationToken.None);
+            var typedJson = Json<T>(typedResult);
+            if (!WithinDelta(expectedJson, typedJson, 0.1))
+            {
+                using (var writer = new StreamWriter(newPath))
+                {
+                    writer.Write(typedJson);
+                }
+
+                Assert.Fail($"Returned JSON in {newPath} != expected JSON in {expectedPath}");
+            }
+            else
+            {
+                File.Delete(expectedPath + ".new");
+            }
+        }
+
+        [TestMethod]
+        public async Task TraceActivity()
+        {
+            if (!EnvironmentVariablesDefined())
+            {
+                Assert.Inconclusive("Missing Luis Environment variables - Skipping test");
+                return;
+            }
+
+            var adapter = new TestAdapter(null, true);
+            const string utterance = @"My name is Emad";
+            const string botResponse = @"Hi Emad";
+            await new TestFlow(adapter, async (context, cancellationToken) =>
+            {
+                if (context.Activity.Text == utterance)
+                {
+                    var luisRecognizer = GetLuisRecognizer(verbose: true);
+                    await luisRecognizer.RecognizeAsync(context, CancellationToken.None).ConfigureAwait(false);
+                    await context.SendActivityAsync(botResponse);
+                }
+            })
+                .Test(utterance, activity =>
+                {
+                    var traceActivity = activity as ITraceActivity;
+                    Assert.IsNotNull(traceActivity);
+                    Assert.AreEqual(LuisRecognizer.LuisTraceType, traceActivity.ValueType);
+                    Assert.AreEqual(LuisRecognizer.LuisTraceLabel, traceActivity.Label);
+
+                    var luisTraceInfo = JObject.FromObject(traceActivity.Value);
+                    Assert.IsNotNull(luisTraceInfo);
+                    Assert.IsNotNull(luisTraceInfo["recognizerResult"]);
+                    Assert.IsNotNull(luisTraceInfo["luisResult"]);
+                    Assert.IsNotNull(luisTraceInfo["luisOptions"]);
+                    Assert.IsNotNull(luisTraceInfo["luisModel"]);
+
+                    var recognizerResult = luisTraceInfo["recognizerResult"].ToObject<RecognizerResult>();
+                    Assert.AreEqual(recognizerResult.Text, utterance);
+                    Assert.IsNotNull(recognizerResult.Intents["SpecifyName"]);
+                    Assert.AreEqual(luisTraceInfo["luisResult"]["query"], utterance);
+                    Assert.AreEqual(luisTraceInfo["luisModel"]["ModelID"], _luisAppId);
+                    Assert.AreEqual(luisTraceInfo["luisOptions"]["Staging"], default(bool?));
+
+                }, "luisTraceInfo")
+                .Send(utterance)
+                .AssertReply(botResponse, "passthrough")
+                .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task Composite1() => await TestJson<RecognizerResult>("Composite1.json");
+
+        [TestMethod]
+        public async Task Composite2() => await TestJson<RecognizerResult>("Composite2.json");
+
+        [TestMethod]
+        public async Task PrebuiltDomains() => await TestJson<RecognizerResult>("Prebuilt.json");
+
+        [TestMethod]
+        public async Task Patterns() => await TestJson<RecognizerResult>("Patterns.json");
+
+        [TestMethod]
+        public async Task TypedEntities() => await TestJson<Contoso_App>("Typed.json");
+
+        [TestMethod]
+        public async Task TypedPrebuiltDomains() => await TestJson<Contoso_App>("TypedPrebuilt.json");
+
         // Compare two JSON structures and ensure entity and intent scores are within delta
         private bool WithinDelta(JToken token1, JToken token2, double delta, bool compare = false)
         {
-            bool withinDelta = true;
+            var withinDelta = true;
             if (token1.Type == JTokenType.Object && token2.Type == JTokenType.Object)
             {
                 var obj1 = (JObject)token1;
@@ -254,7 +367,8 @@ namespace Microsoft.Bot.Builder.IntegrationTests.Ai.LUIS
                     {
                         break;
                     }
-                    withinDelta = obj2.TryGetValue(property.Key, out JToken val2) && WithinDelta(property.Value, val2, delta, compare || property.Key == "score" || property.Key == "intents");
+
+                    withinDelta = obj2.TryGetValue(property.Key, out var val2) && WithinDelta(property.Value, val2, delta, compare || property.Key == "score" || property.Key == "intents");
                 }
             }
             else if (token1.Type == JTokenType.Array && token2.Type == JTokenType.Array)
@@ -279,8 +393,8 @@ namespace Microsoft.Bot.Builder.IntegrationTests.Ai.LUIS
                     var val2 = (JValue)token2;
                     withinDelta = false;
                     if (compare &&
-                        double.TryParse((string)val1, out double num1)
-                                && double.TryParse((string)val2, out double num2))
+                        double.TryParse((string)val1, out var num1)
+                                && double.TryParse((string)val2, out var num2))
                     {
                         withinDelta = Math.Abs(num1 - num2) < delta;
                     }
@@ -290,84 +404,12 @@ namespace Microsoft.Bot.Builder.IntegrationTests.Ai.LUIS
                     withinDelta = false;
                 }
             }
+
             return withinDelta;
         }
 
         private JObject Json<T>(T result)
-        {
-            return (JObject)JsonConvert.DeserializeObject(JsonConvert.SerializeObject(result, new JsonSerializerSettings { Formatting = Formatting.Indented, NullValueHandling = NullValueHandling.Ignore }));
-        }
-
-        // To create a file to test:
-        // 1) Create a <name>.json file with an object { Text:<query> } in it.
-        // 2) Run this test which will fail and generate a <name>.json.new file.
-        // 3) Check the .new file and if correct, replace the original .json file with it.
-        public async Task TestJson<T>(string file)
-            where T : IRecognizerConvert, new()
-        {
-            if (!EnvironmentVariablesDefined())
-            {
-                Assert.Inconclusive("Missing Luis Environment variables - Skipping test");
-                return;
-            }
-
-            var expectedPath = Path.Combine(@"..\..\..\TestData\", file);
-            var newPath = expectedPath + ".new";
-            var luisRecognizer = GetLuisRecognizer(verbose: true, luisOptions: new LuisRequest { Verbose = true });
-            var expected = new StreamReader(expectedPath).ReadToEnd();
-            dynamic expectedJson = JsonConvert.DeserializeObject(expected);
-            var query = (string)expectedJson.text ?? (string)expectedJson.Text;
-            var typedResult = await luisRecognizer.RecognizeAsync<T>(query, CancellationToken.None);
-            var typedJson = Json<T>(typedResult);
-            if (!WithinDelta(expectedJson, typedJson, 0.1))
-            {
-                using (var writer = new StreamWriter(newPath))
-                {
-                    writer.Write(typedJson);
-                }
-                Assert.Fail($"Returned JSON in {newPath} != expected JSON in {expectedPath}");
-            }
-            else
-            {
-                File.Delete(expectedPath + ".new");
-            }
-        }
-
-        [TestMethod]
-        public async Task Composite1()
-        {
-            await TestJson<RecognizerResult>("Composite1.json");
-        }
-
-        [TestMethod]
-        public async Task Composite2()
-        {
-            await TestJson<RecognizerResult>("Composite2.json");
-        }
-
-        [TestMethod]
-        public async Task PrebuiltDomains()
-        {
-            await TestJson<RecognizerResult>("Prebuilt.json");
-        }
-
-        [TestMethod]
-        public async Task Patterns()
-        {
-            await TestJson<RecognizerResult>("Patterns.json");
-        }
-
-        [TestMethod]
-        public async Task TypedEntities()
-        {
-            await TestJson<Contoso_App>("Typed.json");
-        }
-
-        [TestMethod]
-        public async Task TypedPrebuiltDomains()
-        {
-            await TestJson<Contoso_App>("TypedPrebuilt.json");
-        }
+            => (JObject)JsonConvert.DeserializeObject(JsonConvert.SerializeObject(result, new JsonSerializerSettings { Formatting = Formatting.Indented, NullValueHandling = NullValueHandling.Ignore }));
 
         private void AssertScore(JToken scoreToken)
         {
@@ -376,16 +418,26 @@ namespace Microsoft.Bot.Builder.IntegrationTests.Ai.LUIS
             Assert.IsTrue(score <= 1);
         }
 
-        private bool EnvironmentVariablesDefined()
+        private bool EnvironmentVariablesDefined() => _luisAppId != null && _subscriptionKey != null && _region != null;
+
+        private IRecognizer GetLuisRecognizer(bool verbose = false, LuisPredictionOptions luisOptions = null)
         {
-            return _luisAppId != null && _subscriptionKey != null && _luisUriBase != null;
+            var app = new LuisApplication(_luisAppId, _subscriptionKey, _region);
+            return new LuisRecognizer(app, luisOptions, verbose);
         }
 
-        private IRecognizer GetLuisRecognizer(bool verbose = false, ILuisOptions luisOptions = null)
+        private static TurnContext GetContext(string utterance)
         {
-            var luisRecognizerOptions = new LuisRecognizerOptions { Verbose = verbose };
-            var luisModel = new LuisModel(_luisAppId, _subscriptionKey, new Uri(_luisUriBase), LuisApiVersion.V2);
-            return new LuisRecognizer(luisModel, luisRecognizerOptions, luisOptions);
+            var b = new TestAdapter();
+            var a = new Activity
+            {
+                Type = ActivityTypes.Message,
+                Text = utterance,
+                Conversation = new ConversationAccount(),
+                Recipient = new ChannelAccount(),
+                From = new ChannelAccount()
+            };
+            return new TurnContext(b, a);
         }
     }
 }

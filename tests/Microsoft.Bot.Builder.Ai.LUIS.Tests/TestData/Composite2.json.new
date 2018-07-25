@@ -1,0 +1,39 @@
+{
+  "text": "http://foo.com is where you can fly from seattle to dallas via denver",
+  "intents": {
+    "None": {
+      "score": 0.08068056
+    },
+    "HomeAutomation_TurnOn": {
+      "score": 0.01577249
+    },
+    "HomeAutomation_TurnOff": {
+      "score": 0.013184173
+    }
+  },
+  "entities": {
+    "$instance": {}
+  },
+  "luisResult": {
+    "query": "http://foo.com is where you can fly from seattle to dallas via denver",
+    "topScoringIntent": {
+      "intent": "None",
+      "score": 0.08068056
+    },
+    "intents": [
+      {
+        "intent": "None",
+        "score": 0.08068056
+      },
+      {
+        "intent": "HomeAutomation.TurnOn",
+        "score": 0.01577249
+      },
+      {
+        "intent": "HomeAutomation.TurnOff",
+        "score": 0.013184173
+      }
+    ],
+    "entities": []
+  }
+}
