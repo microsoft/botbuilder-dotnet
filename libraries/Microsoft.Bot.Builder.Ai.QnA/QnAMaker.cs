@@ -94,15 +94,36 @@ namespace Microsoft.Bot.Builder.Ai.QnA
         /// <returns>A list of answers for the user query, sorted in decreasing order of ranking score.</returns>
         public async Task<QueryResult[]> GetAnswersAsync(ITurnContext context)
         {
+            if (context == null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
+            if (context.Activity == null)
+            {
+                throw new ArgumentNullException(nameof(context.Activity));
+            }
+
+            var messageActivity = context.Activity.AsMessageActivity();
+            if (messageActivity == null)
+            {
+                throw new ArgumentException("Activity type is not a message");
+            }
+
+            if (string.IsNullOrEmpty(context.Activity.Text))
+            {
+                throw new ArgumentException("Null or empty text");
+            }
+
+
             var requestUrl = $"{_endpoint.Host}/knowledgebases/{_endpoint.KnowledgeBaseId}/generateanswer";
 
             var request = new HttpRequestMessage(HttpMethod.Post, requestUrl);
-            var messageActivity = context?.Activity?.AsMessageActivity();
 
             var jsonRequest = JsonConvert.SerializeObject(
                 new
                 {
-                    messageActivity?.Text,
+                    messageActivity.Text,
                     top = _options.Top,
                     strictFilters = _options.StrictFilters,
                     metadataBoost = _options.MetadataBoost,
@@ -122,39 +143,39 @@ namespace Microsoft.Bot.Builder.Ai.QnA
             }
 
             var response = await _httpClient.SendAsync(request).ConfigureAwait(false);
-            if (response.IsSuccessStatusCode)
+            if (!response.IsSuccessStatusCode)
             {
-                var jsonResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-
-                var results = isLegacyProtocol ?
-                    ConvertLegacyResults(JsonConvert.DeserializeObject<InternalQueryResults>(jsonResponse))
-                        :
-                    JsonConvert.DeserializeObject<QueryResults>(jsonResponse);
-
-                foreach (var answer in results.Answers)
-                {
-                    answer.Score = answer.Score / 100;
-                }
-
-                var result = results.Answers.Where(answer => answer.Score > _options.ScoreThreshold).ToArray();
-
-                var traceInfo = new QnAMakerTraceInfo
-                {
-                    Message = (Activity) messageActivity,
-                    QueryResults = result,
-                    KnowledgeBaseId = _endpoint.KnowledgeBaseId,
-                    ScoreThreshold = _options.ScoreThreshold,
-                    Top = _options.Top,
-                    StrictFilters = _options.StrictFilters,
-                    MetadataBoost = _options.MetadataBoost,
-                };
-                var traceActivity = Activity.CreateTraceActivity(QnAMakerMiddlewareName, QnAMakerTraceType, traceInfo, QnAMakerTraceLabel);
-                await context.SendActivityAsync(traceActivity).ConfigureAwait(false);
-
-                return result;
+                return null;
             }
 
-            return null;
+            var jsonResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+
+            var results = isLegacyProtocol ?
+                ConvertLegacyResults(JsonConvert.DeserializeObject<InternalQueryResults>(jsonResponse))
+                    :
+                JsonConvert.DeserializeObject<QueryResults>(jsonResponse);
+
+            foreach (var answer in results.Answers)
+            {
+                answer.Score = answer.Score / 100;
+            }
+
+            var result = results.Answers.Where(answer => answer.Score > _options.ScoreThreshold).ToArray();
+
+            var traceInfo = new QnAMakerTraceInfo
+            {
+                Message = (Activity) messageActivity,
+                QueryResults = result,
+                KnowledgeBaseId = _endpoint.KnowledgeBaseId,
+                ScoreThreshold = _options.ScoreThreshold,
+                Top = _options.Top,
+                StrictFilters = _options.StrictFilters,
+                MetadataBoost = _options.MetadataBoost,
+            };
+            var traceActivity = Activity.CreateTraceActivity(QnAMakerMiddlewareName, QnAMakerTraceType, traceInfo, QnAMakerTraceLabel);
+            await context.SendActivityAsync(traceActivity).ConfigureAwait(false);
+
+            return result;
         }
 
         // The old version of the protocol returns the id in a field called qnaId the
