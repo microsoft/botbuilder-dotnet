@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             TestAdapter adapter = new TestAdapter()
                 .Use(convoState);
 
-            await new TestFlow(adapter, async (turnContext) =>
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
                 var state = await testProperty.GetAsync(turnContext);
                 var prompt = new NumberPrompt<int>(Culture.English);
@@ -54,7 +54,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             TestAdapter adapter = new TestAdapter()
                 .Use(convoState);
 
-            await new TestFlow(adapter, async (turnContext) =>
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
                 var state = await testProperty.GetAsync(turnContext);
                 var prompt = new NumberPrompt<int>(Culture.English);
@@ -103,7 +103,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 await Task.CompletedTask;
             };
 
-            await new TestFlow(adapter, async (turnContext) =>
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
                 var state = await testProperty.GetAsync(turnContext);
                 var prompt = new NumberPrompt<int>(Culture.English, validator);
@@ -142,7 +142,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             TestAdapter adapter = new TestAdapter()
                 .Use(convoState);
 
-            await new TestFlow(adapter, async (turnContext) =>
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
                 var state = await testProperty.GetAsync(turnContext);
                 var prompt = new NumberPrompt<float>(Culture.English);
@@ -174,7 +174,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             TestAdapter adapter = new TestAdapter()
                 .Use(convoState);
 
-            await new TestFlow(adapter, async (turnContext) =>
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
                 var state = await testProperty.GetAsync(turnContext);
                 var prompt = new NumberPrompt<long>(Culture.English);
@@ -206,7 +206,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             TestAdapter adapter = new TestAdapter()
                 .Use(convoState);
 
-            await new TestFlow(adapter, async (turnContext) =>
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
                 var state = await testProperty.GetAsync(turnContext);
                 var prompt = new NumberPrompt<double>(Culture.English);
@@ -233,12 +233,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         public async Task DecimalNumberPrompt()
         {
             ConversationState convoState = new ConversationState(new MemoryStorage());
-            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test", () => new Dictionary<string, object>());
+            var testProperty = convoState.CreateProperty("test", () => new Dictionary<string, object>());
 
             TestAdapter adapter = new TestAdapter()
                 .Use(convoState);
 
-            await new TestFlow(adapter, async (turnContext) =>
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
                 var state = await testProperty.GetAsync(turnContext);
                 var prompt = new NumberPrompt<decimal>(Culture.English);

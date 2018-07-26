@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
             TestAdapter adapter = new TestAdapter()
                 .Use(userState);
 
-            var flow = new TestFlow(adapter, async (context) =>
+            var flow = new TestFlow(adapter, async (context, cancellationToken) =>
             {
                 if (context.Activity.Type == ActivityTypes.Message)
                 {
@@ -71,7 +71,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
             TestAdapter adapter = new TestAdapter()
                 .Use(convoState);
 
-            var flow = new TestFlow(adapter, async (context) =>
+            var flow = new TestFlow(adapter, async (context, cancellationToken) =>
             {
                 if (context.Activity.Type == ActivityTypes.Message)
                 {
@@ -115,7 +115,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
             TestAdapter adapter = new TestAdapter()
                 .Use(customState);
 
-            var flow = new TestFlow(adapter, async (context) =>
+            var flow = new TestFlow(adapter, async (context, cancellationToken) =>
             {
                 if (context.Activity.Type == ActivityTypes.Message)
                 {

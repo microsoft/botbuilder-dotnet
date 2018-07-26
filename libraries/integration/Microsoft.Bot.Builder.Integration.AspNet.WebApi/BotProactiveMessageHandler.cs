@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Handlers
         {
         }
 
-        protected override async Task<InvokeResponse> ProcessMessageRequestAsync(HttpRequestMessage request, BotFrameworkAdapter botFrameworkAdapter, Func<ITurnContext, Task> botCallbackHandler, CancellationToken cancellationToken)
+        protected override async Task<InvokeResponse> ProcessMessageRequestAsync(HttpRequestMessage request, BotFrameworkAdapter botFrameworkAdapter, BotCallbackHandler botCallbackHandler, CancellationToken cancellationToken)
         {
             const string BotAppIdHttpHeaderName = "MS-BotFramework-BotAppId";
             const string BotAppIdQueryStringParameterName = "BotAppId";
@@ -43,9 +43,11 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Handlers
                 throw new InvalidOperationException($"Expected a Bot App ID in a header named \"{BotAppIdHttpHeaderName}\" or in a querystring parameter named \"{BotAppIdQueryStringParameterName}\".");
             }
 
+#pragma warning disable UseConfigureAwait // Use ConfigureAwait
             var conversationReference = await request.Content.ReadAsAsync<ConversationReference>(BotMessageHandlerBase.BotMessageMediaTypeFormatters, cancellationToken);
+#pragma warning restore UseConfigureAwait // Use ConfigureAwait
 
-            await botFrameworkAdapter.ContinueConversationAsync(botAppId, conversationReference, botCallbackHandler, cancellationToken);
+            await botFrameworkAdapter.ContinueConversationAsync(botAppId, conversationReference, botCallbackHandler, cancellationToken).ConfigureAwait(false);
 
             return null;
         }

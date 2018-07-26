@@ -28,7 +28,7 @@ namespace Microsoft.Bot.Builder.Tests
                 }
             };
 
-            await new TestFlow(adapter, (context) =>
+            await new TestFlow(adapter, (context, cancellationToken) =>
                 {
                     if (context.Activity.AsMessageActivity().Text == "foo")
                     {
