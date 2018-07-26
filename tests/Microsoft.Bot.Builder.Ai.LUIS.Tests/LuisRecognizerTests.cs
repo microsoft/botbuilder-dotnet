@@ -327,6 +327,7 @@ namespace Microsoft.Bot.Builder.Ai.Luis.Tests
         }
 
         [TestMethod]
+        [Ignore]
         public async Task Composite1() => await TestJson<RecognizerResult>("Composite1.json");
 
         [TestMethod]
