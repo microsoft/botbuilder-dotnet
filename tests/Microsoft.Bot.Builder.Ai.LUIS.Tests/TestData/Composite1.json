@@ -562,6 +562,7 @@
         "startIndex": 0.0,
         "endIndex": 1.0,
         "resolution": {
+          "subtype": "integer",
           "value": "12"
         }
       },
@@ -571,6 +572,7 @@
         "startIndex": 17.0,
         "endIndex": 17.0,
         "resolution": {
+          "subtype": "integer",
           "value": "3"
         }
       },
@@ -580,6 +582,7 @@
         "startIndex": 85.0,
         "endIndex": 85.0,
         "resolution": {
+          "subtype": "integer",
           "value": "5"
         }
       },
@@ -589,6 +592,7 @@
         "startIndex": 96.0,
         "endIndex": 96.0,
         "resolution": {
+          "subtype": "integer",
           "value": "4"
         }
       },
@@ -598,6 +602,7 @@
         "startIndex": 108.0,
         "endIndex": 108.0,
         "resolution": {
+          "subtype": "integer",
           "value": "4"
         }
       },
@@ -607,6 +612,7 @@
         "startIndex": 150.0,
         "endIndex": 150.0,
         "resolution": {
+          "subtype": "integer",
           "value": "4"
         }
       },
@@ -616,6 +622,7 @@
         "startIndex": 157.0,
         "endIndex": 160.0,
         "resolution": {
+          "subtype": "decimal",
           "value": "4.25"
         }
       },
@@ -625,6 +632,7 @@
         "startIndex": 171.0,
         "endIndex": 172.0,
         "resolution": {
+          "subtype": "integer",
           "value": "32"
         }
       },
@@ -634,6 +642,7 @@
         "startIndex": 178.0,
         "endIndex": 182.0,
         "resolution": {
+          "subtype": "decimal",
           "value": "210.4"
         }
       },
@@ -643,6 +652,7 @@
         "startIndex": 198.0,
         "endIndex": 199.0,
         "resolution": {
+          "subtype": "integer",
           "value": "10"
         }
       },
@@ -652,6 +662,7 @@
         "startIndex": 206.0,
         "endIndex": 209.0,
         "resolution": {
+          "subtype": "decimal",
           "value": "10.5"
         }
       },
@@ -661,6 +672,7 @@
         "startIndex": 216.0,
         "endIndex": 218.0,
         "resolution": {
+          "subtype": "integer",
           "value": "425"
         }
       },
@@ -670,6 +682,7 @@
         "startIndex": 220.0,
         "endIndex": 222.0,
         "resolution": {
+          "subtype": "integer",
           "value": "555"
         }
       },
@@ -679,6 +692,7 @@
         "startIndex": 224.0,
         "endIndex": 227.0,
         "resolution": {
+          "subtype": "integer",
           "value": "1234"
         }
       },
@@ -688,6 +702,7 @@
         "startIndex": 233.0,
         "endIndex": 233.0,
         "resolution": {
+          "subtype": "integer",
           "value": "3"
         }
       },
@@ -697,6 +712,7 @@
         "startIndex": 247.0,
         "endIndex": 251.0,
         "resolution": {
+          "subtype": "decimal",
           "value": "-27.5"
         }
       },
