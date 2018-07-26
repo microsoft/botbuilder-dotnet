@@ -115,7 +115,6 @@ namespace Microsoft.Bot.Builder.Ai.QnA
                 throw new ArgumentException("Null or empty text");
             }
 
-
             var requestUrl = $"{_endpoint.Host}/knowledgebases/{_endpoint.KnowledgeBaseId}/generateanswer";
 
             var request = new HttpRequestMessage(HttpMethod.Post, requestUrl);
@@ -164,7 +163,7 @@ namespace Microsoft.Bot.Builder.Ai.QnA
 
             var traceInfo = new QnAMakerTraceInfo
             {
-                Message = (Activity) messageActivity,
+                Message = (Activity)messageActivity,
                 QueryResults = result,
                 KnowledgeBaseId = _endpoint.KnowledgeBaseId,
                 ScoreThreshold = _options.ScoreThreshold,
