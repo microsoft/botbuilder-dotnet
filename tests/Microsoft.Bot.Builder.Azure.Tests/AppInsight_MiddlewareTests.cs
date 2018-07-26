@@ -44,6 +44,45 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             new AppInsightsLoggerMiddleware(null);
         }
 
+        [TestMethod]
+        [TestCategory("Middleware")]
+        public async Task AppInsight_CheckProperties1()
+        {
+
+
+            var mw = new AppInsightsLoggerMiddleware(Guid.NewGuid().ToString(), false, false, _configuration);
+
+
+            Assert.IsFalse(mw.LogOriginalMessage);
+            Assert.IsFalse(mw.LogUserName);
+        }
+
+        [TestMethod]
+        [TestCategory("Middleware")]
+        public async Task AppInsight_CheckProperties2()
+        {
+
+
+            var mw = new AppInsightsLoggerMiddleware(Guid.NewGuid().ToString(), true, false, _configuration);
+
+
+            Assert.IsFalse(mw.LogOriginalMessage);
+            Assert.IsTrue(mw.LogUserName);
+        }
+
+        [TestMethod]
+        [TestCategory("Middleware")]
+        public async Task AppInsight_CheckProperties3()
+        {
+
+
+            var mw = new AppInsightsLoggerMiddleware(Guid.NewGuid().ToString(), false, true, _configuration);
+
+
+            Assert.IsTrue(mw.LogOriginalMessage);
+            Assert.IsFalse(mw.LogUserName);
+        }
+
 
         [TestMethod]
         [TestCategory("Middleware")]
