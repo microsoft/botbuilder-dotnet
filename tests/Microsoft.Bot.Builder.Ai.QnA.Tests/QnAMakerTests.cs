@@ -50,7 +50,7 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
                 .Use(new TranscriptLoggerMiddleware(transcriptStore));
             string conversationId = null;
 
-            await new TestFlow(adapter, async (context) =>
+            await new TestFlow(adapter, async (context, ct) =>
             {
                 // Simulate Qna Lookup
                 if (context?.Activity?.Text.CompareTo("how do I clean the stove?") == 0)
@@ -360,9 +360,6 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
 
     class MyTurnContext : ITurnContext
     {
-        private Activity _activity;
-        private BotAdapter _botadapter;
-        
 
         public MyTurnContext(BotAdapter adapter, Activity activity)
         {
