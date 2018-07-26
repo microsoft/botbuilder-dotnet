@@ -10,8 +10,6 @@ using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Bot.Schema;
 
-[assembly: InternalsVisibleTo("Microsoft.Bot.Builder.Azure.Tests")]
-
 namespace Microsoft.Bot.Builder.Azure
 {
     /// <summary>
@@ -24,9 +22,7 @@ namespace Microsoft.Bot.Builder.Azure
     {
         public static readonly string AppInsightsServiceKey = "${nameof(AppInsightsLoggerMiddleware).AppInsightsContext}";
         public static readonly string BotMsgEvent = "BotMessageReceived";
-        private static TelemetryClient _telemetryClient;
-        private static bool _logUserName;
-        private static bool _logOriginalMessage;
+        private TelemetryClient _telemetryClient;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AppInsightsLoggerMiddleware"/> class.
@@ -44,9 +40,25 @@ namespace Microsoft.Bot.Builder.Azure
 
             var telemetryConfiguration = config ?? new TelemetryConfiguration(instrumentationKey);
             _telemetryClient = new TelemetryClient(telemetryConfiguration);
-            _logUserName = logUserName;
-            _logOriginalMessage = logOriginalMessage;
+            LogUserName = logUserName;
+            LogOriginalMessage = logOriginalMessage;
         }
+
+        /// <summary>
+        /// Gets a value indicating whether indicates whether to log the user name into the BotMessageReceived event.
+        /// </summary>
+        /// <value>
+        /// A value indicating whether indicates whether to log the user name into the BotMessageReceived event.
+        /// </value>
+        public bool LogUserName { get; }
+
+        /// <summary>
+        /// Gets a value indicating whether indicates whether to log the original message into the BotMessageReceived event.
+        /// </summary>
+        /// <value>
+        /// Indicates whether to log the original message into the BotMessageReceived event.
+        /// </value>
+        public bool LogOriginalMessage { get; }
 
         /// <summary>
         /// Records incoming and outgoing activities to the Application Insights store.
@@ -94,7 +106,7 @@ namespace Microsoft.Bot.Builder.Azure
             }
         }
 
-        private static Dictionary<string, string> FillEventProperties(ITurnContext context)
+        private Dictionary<string, string> FillEventProperties(ITurnContext context)
         {
             Activity activity = context.Activity;
 
@@ -108,13 +120,13 @@ namespace Microsoft.Bot.Builder.Azure
                 };
 
             // For some customers, logging user name within Application Insights might be an issue so have provided a config setting to disable this feature
-            if (_logUserName && !string.IsNullOrEmpty(activity.From.Name))
+            if (LogUserName && !string.IsNullOrEmpty(activity.From.Name))
             {
                 properties.Add(AppInsightsConstants.FromNameProperty, activity.From.Name);
             }
 
             // For some customers, logging the utterances within Application Insights might be an so have provided a config setting to disable this feature
-            if (_logOriginalMessage && !string.IsNullOrEmpty(activity.Text))
+            if (LogOriginalMessage && !string.IsNullOrEmpty(activity.Text))
             {
                 properties.Add(AppInsightsConstants.TextProperty, activity.Text);
             }
@@ -122,15 +134,15 @@ namespace Microsoft.Bot.Builder.Azure
             return properties;
         }
 
-        internal static class AppInsightsConstants
+        public static class AppInsightsConstants
         {
-            internal const string ChannelProperty = "Channel";
-            internal const string FromIdProperty = "FromId";
-            internal const string FromNameProperty = "FromName";
-            internal const string ConversationIdProperty = "ConversationId";
-            internal const string ConversationNameProperty = "ConversationName";
-            internal const string TextProperty = "Text";
-            internal const string LocaleProperty = "Locale";
+            public const string ChannelProperty = "Channel";
+            public const string FromIdProperty = "FromId";
+            public const string FromNameProperty = "FromName";
+            public const string ConversationIdProperty = "ConversationId";
+            public const string ConversationNameProperty = "ConversationName";
+            public const string TextProperty = "Text";
+            public const string LocaleProperty = "Locale";
         }
     }
 
