@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Builder.Tests
                 .Use(new TranscriptLoggerMiddleware(transcriptStore));
             string conversationId = null;
 
-            await new TestFlow(adapter, async (context) =>
+            await new TestFlow(adapter, async (context, cancellationToken) =>
                 {
                     conversationId = context.Activity.Conversation.Id;
                     var typingActivity = new Activity
@@ -66,7 +66,7 @@ namespace Microsoft.Bot.Builder.Tests
                 .Use(new TranscriptLoggerMiddleware(transcriptStore));
             string conversationId = null;
             Activity activityToUpdate = null;
-            await new TestFlow(adapter, async (context) =>
+            await new TestFlow(adapter, async (context, cancellationToken) =>
             {
                 conversationId = context.Activity.Conversation.Id;
                 if (context.Activity.Text == "update")
@@ -111,7 +111,7 @@ namespace Microsoft.Bot.Builder.Tests
                 .Use(new TranscriptLoggerMiddleware(transcriptStore));
             string conversationId = null;
             Activity activityToUpdate = null;
-            await new TestFlow(adapter, async (context) =>
+            await new TestFlow(adapter, async (context, cancellationToken) =>
             {
                 conversationId = context.Activity.Conversation.Id;
                 if (context.Activity.Text == "update")
@@ -167,7 +167,7 @@ namespace Microsoft.Bot.Builder.Tests
                 .Use(new TranscriptLoggerMiddleware(transcriptStore));
             string conversationId = null;
             string activityId = null;
-            await new TestFlow(adapter, async (context) =>
+            await new TestFlow(adapter, async (context, cancellationToken) =>
             {
                 conversationId = context.Activity.Conversation.Id;
                 if (context.Activity.Text == "deleteIt")

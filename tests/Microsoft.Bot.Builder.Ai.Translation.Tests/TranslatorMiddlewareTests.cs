@@ -55,7 +55,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
             var adapter = new TestAdapter(sendTraceActivity: true)
                 .Use(new SpecializedTranslatorMiddleware(new[] { "en" }, _translatorKey, mockHttp.ToHttpClient()));
 
-            await new TestFlow(adapter, context =>
+            await new TestFlow(adapter, (context, cancellationToken) =>
                 {
                     if (!context.Responded)
                     {
@@ -96,7 +96,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
             var adapter = new TestAdapter()
                 .Use(new TranslationMiddleware(new[] { "en" }, _translatorKey, httpClient: mockHttp.ToHttpClient()));
 
-            await new TestFlow(adapter, async context =>
+            await new TestFlow(adapter, async (context, cancellationToken) =>
                 {
                     if (!await HandleChangeLanguageRequest(context, languageStateProperty))
                     {
@@ -131,7 +131,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
                 .Use(userState)
                 .Use(new TranslationMiddleware(new[] { "en" }, _translatorKey, new Dictionary<string, List<string>>(), new CustomDictionary(), languageStateProperty, httpClient: mockHttp.ToHttpClient()));
 
-            await new TestFlow(adapter, async context =>
+            await new TestFlow(adapter, async (context, cancellationToken) =>
                 {
                     if (!await HandleChangeLanguageRequest(context, languageStateProperty))
                     {
@@ -165,13 +165,13 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
                 .Respond("application/xml", GetResponse("TranslatorMiddleware_TranslateFrenchToEnglishToUserLanguage_Hello.xml"));
 
             var userState = new UserState(new MemoryStorage());
-            var languageStateProperty = userState.CreateProperty<string>("languageState", () => "en");
+            var languageStateProperty = userState.CreateProperty("languageState", () => "en");
             
             var adapter = new TestAdapter()
                 .Use(userState)
                 .Use(new TranslationMiddleware(new[] { "en" }, _translatorKey, new Dictionary<string, List<string>>(), new CustomDictionary(), languageStateProperty, true, mockHttp.ToHttpClient()));
 
-            await new TestFlow(adapter, async context =>
+            await new TestFlow(adapter, async (context, cancellationToken) =>
                 {
                     if (!await HandleChangeLanguageRequest(context, languageStateProperty))
                     {

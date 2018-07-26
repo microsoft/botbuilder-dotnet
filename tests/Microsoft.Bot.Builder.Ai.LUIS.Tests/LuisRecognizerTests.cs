@@ -290,7 +290,7 @@ namespace Microsoft.Bot.Builder.Ai.Luis.Tests
             var adapter = new TestAdapter(null, true);
             const string utterance = @"My name is Emad";
             const string botResponse = @"Hi Emad";
-            await new TestFlow(adapter, async context =>
+            await new TestFlow(adapter, async (context, cancellationToken) =>
             {
                 if (context.Activity.Text == utterance)
                 {

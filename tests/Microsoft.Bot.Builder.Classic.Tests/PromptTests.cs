@@ -115,7 +115,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
             using (var container = Build(Options.ScopedQueue, dialogRoot.Object))
             {
                 var adapter = new TestAdapter();
-                await adapter.ProcessActivityAsync((Activity)toBot, async (context) =>
+                await adapter.ProcessActivityAsync((Activity)toBot, async (context, cancellationToken) =>
                 {
                     using (var scope = DialogModule.BeginLifetimeScope(container, context))
                     {
@@ -126,7 +126,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                     }
                 });
 
-                await adapter.ProcessActivityAsync((Activity)toBot, async (context) =>
+                await adapter.ProcessActivityAsync((Activity)toBot, async (context, cancellationToken) =>
                 {
                     using (var scope = DialogModule.BeginLifetimeScope(container, context))
                     {
@@ -369,7 +369,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
             using (var container = Build(Options.ScopedQueue, dialogRoot.Object))
             {
                 var adapter = new TestAdapter();
-                await adapter.ProcessActivityAsync((Activity)toBot, async (context) =>
+                await adapter.ProcessActivityAsync((Activity)toBot, async (context, cancellationToken) =>
                 {
                     using (var scope = DialogModule.BeginLifetimeScope(container, context))
                     {
@@ -382,7 +382,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                     }
                 });
 
-                await adapter.ProcessActivityAsync((Activity)toBot, async (context) =>
+                await adapter.ProcessActivityAsync((Activity)toBot, async (context, cancellationToken) =>
                 {
                     using (var scope = DialogModule.BeginLifetimeScope(container, context))
                     {
@@ -395,7 +395,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                     }
                 });
 
-                await adapter.ProcessActivityAsync((Activity)toBot, async (context) =>
+                await adapter.ProcessActivityAsync((Activity)toBot, async (context, cancellationToken) =>
                 {
                     using (var scope = DialogModule.BeginLifetimeScope(container, context))
                     {
