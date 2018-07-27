@@ -55,26 +55,6 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Tests
                 var botMessageHandlerRoute = routes[BotMessageHandler.RouteName];
                 botMessageHandlerRoute.Handler.Should().BeOfType<BotMessageHandler>();
             }
-
-            [Fact]
-            public void EnableProactiveShouldMapMultipleHandlers()
-            {
-                var httpConfiguration = new HttpConfiguration();
-
-                httpConfiguration.MapBotFramework(config =>
-                {
-                    config.EnableProactiveMessages();
-                });
-
-                var routes = httpConfiguration.Routes;
-                routes.Count.Should().Be(2);
-
-                var botMessageHandlerRoute = routes[BotMessageHandler.RouteName];
-                botMessageHandlerRoute.Handler.Should().BeOfType<BotMessageHandler>();
-
-                var botProactiveMessageHandlerRoute = routes[BotProactiveMessageHandler.RouteName];
-                botProactiveMessageHandlerRoute.Handler.Should().BeOfType<BotProactiveMessageHandler>();
-            }
         }
     }
 }

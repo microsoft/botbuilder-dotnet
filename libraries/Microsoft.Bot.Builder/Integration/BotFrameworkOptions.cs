@@ -44,14 +44,6 @@ namespace Microsoft.Bot.Builder.Integration
         public IList<IMiddleware> Middleware { get; } = new List<IMiddleware>();
 
         /// <summary>
-        /// Gets or sets a value indicating whether gets or sets whether a proactive messaging endpoint should be exposed for the bot.
-        /// </summary>
-        /// <value>
-        /// True if the proactive messaging endpoint should be enabled, otherwise false.
-        /// </value>
-        public bool EnableProactiveMessages { get; set; }
-
-        /// <summary>
         /// Gets or sets the retry policy to use in case of errors from Bot Framework Service.
         /// </summary>
         /// <value>The retry policy.</value>
