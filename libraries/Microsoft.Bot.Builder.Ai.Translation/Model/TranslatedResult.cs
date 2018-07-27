@@ -6,7 +6,10 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Ai.Translation.Model
 {
-    public class TranslatedResult
+    /// <summary>
+    /// Array of translated results from Translator API v3.
+    /// </summary>
+    internal class TranslatedResult
     {
         [JsonProperty("translations")]
         public IEnumerable<TranslationModel> Translations { get; set; }

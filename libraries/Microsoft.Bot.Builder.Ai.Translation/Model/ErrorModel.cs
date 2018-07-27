@@ -5,7 +5,10 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Ai.Translation.Model
 {
-    public class ErrorModel
+    /// <summary>
+    /// Standard error from Translator API v3.
+    /// </summary>
+    internal class ErrorModel
     {
         [JsonProperty("error")]
         public ErrorMessage Error { get; set; }

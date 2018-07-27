@@ -6,7 +6,10 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Ai.Translation.Model
 {
-    public class SentencesLength
+    /// <summary>
+    /// Represents the sentence boundaries in the input and output texts.
+    /// </summary>
+    internal class SentencesLength
     {
         [JsonProperty("srcSentLen")]
         public IEnumerable<int> Source { get; set; }

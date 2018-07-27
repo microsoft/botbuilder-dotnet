@@ -5,7 +5,10 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Ai.Translation.Model
 {
-    public class DetectedLanguageModel
+    /// <summary>
+    /// Detected language with Translator API v3.
+    /// </summary>
+    internal class DetectedLanguageModel
     {
         [JsonProperty("language")]
         public string Language { get; set; }
