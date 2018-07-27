@@ -3,7 +3,10 @@
 
 namespace Microsoft.Bot.Builder.Ai.Translation.Model
 {
-    public class TranslatorRequestModel
+    /// <summary>
+    /// Model for translator request to Translator API v3.
+    /// </summary>
+    internal class TranslatorRequestModel
     {
         public string Text { get; set; }
     }

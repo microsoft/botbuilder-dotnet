@@ -109,7 +109,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation
                 currentTranslatedDocument.LiteranlNoTranslatePhrases = literanlNoTranslateList;
             }
 
-            // body of http request
+            // list of translation request for the service
             var payload = translateArraySourceTexts.Select(s => new TranslatorRequestModel { Text = s });
 
             using (var request = GetTranslateRequestMessage(from, to, payload))
