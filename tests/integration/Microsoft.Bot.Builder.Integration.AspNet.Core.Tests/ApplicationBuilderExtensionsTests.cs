@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
 using System;
@@ -50,45 +50,6 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
                 applicationBuilderMock.Verify(ab => ab.New(), Times.Once());
                 mappedApplicationBuilderMock.Verify(mab => mab.Build(), Times.Once());
                 mappedApplicationBuilderMock.Verify(ab => ab.Use(It.IsAny<Func<RequestDelegate, RequestDelegate>>()), Times.Once());
-            }
-
-            [Fact]
-            public void WhenEnableProactiveTrueShouldMapMultipleHandlers()
-            {
-                var botFrameworkOptionsMock = new Mock<IOptions<BotFrameworkOptions>>();
-                botFrameworkOptionsMock.Setup(o => o.Value)
-                    .Returns(new BotFrameworkOptions
-                    {
-                        EnableProactiveMessages = true
-                    });
-
-                var serviceProviderMock = new Mock<IServiceProvider>();
-                serviceProviderMock.Setup(sp => sp.GetService(typeof(IOptions<BotFrameworkOptions>)))
-                    .Returns(botFrameworkOptionsMock.Object);
-
-                var applicationBuilderMock = new Mock<IApplicationBuilder>();
-                applicationBuilderMock.Setup(ab => ab.ApplicationServices)
-                    .Returns(serviceProviderMock.Object);
-
-                var mappedApplicationBlocks = new[]
-                {
-                    new Mock<IApplicationBuilder>(),
-                    new Mock<IApplicationBuilder>()
-                };
-
-                var rootApplicationBuilderNewCallCount = 0;
-                applicationBuilderMock.Setup(ab => ab.New())
-                    .Returns(() => mappedApplicationBlocks[rootApplicationBuilderNewCallCount++].Object);
-
-                applicationBuilderMock.Object.UseBotFramework();
-
-                applicationBuilderMock.Verify(ab => ab.New(), Times.Exactly(2));
-
-                foreach (var mappedApplicationBlock in mappedApplicationBlocks)
-                {
-                    mappedApplicationBlock.Verify(mab => mab.Build(), Times.Once());
-                    mappedApplicationBlock.Verify(mab => mab.Use(It.IsAny<Func<RequestDelegate, RequestDelegate>>()), Times.Once());
-                }
             }
         }
     }
