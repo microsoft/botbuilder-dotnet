@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Builder.Azure
     /// </summary>
     public class AppInsightsLoggerMiddleware : IMiddleware
     {
-        public static readonly string AppInsightsServiceKey = "${nameof(AppInsightsLoggerMiddleware).AppInsightsContext}";
+        public static readonly string AppInsightsServiceKey = $"{nameof(AppInsightsLoggerMiddleware)}.AppInsightsContext";
         public static readonly string BotMsgEvent = "BotMessageReceived";
         private TelemetryClient _telemetryClient;
 
