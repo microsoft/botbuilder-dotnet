@@ -78,7 +78,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         /// <summary>
         /// Initializes a new instance of the <see cref="TranslationMiddleware"/> class.
         /// </summary>
-        /// <param name="nativeLanguages">List of languages supported by your app</param>
+        /// <param name="nativeLanguages">List of languages supported by your app.</param>
         /// <param name="translatorKey">Your subscription key for the Microsoft Translator Text API.</param>
         /// <param name="patterns">List of regex patterns, indexed by language identifier,
         /// that can be used to flag text that should not be translated.</param>
@@ -100,7 +100,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         /// </summary>
         /// <param name="context">The context object for this turn.</param>
         /// <param name="next">The delegate to call to continue the bot middleware pipeline.</param>
-        /// <param name="cancellationToken">cancellationToken</param>
+        /// <param name="cancellationToken">cancellationToken.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public virtual async Task OnTurnAsync(ITurnContext context, NextDelegate next, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -194,8 +194,8 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         /// <summary>
         /// Applies all the attached post processors to the translated messages.
         /// </summary>
-        /// <param name="translatedDocuments">List of <see cref="TranslatedDocument"/> represent the output of the translator module</param>
-        /// <param name="languageId">Current language id</param>
+        /// <param name="translatedDocuments">List of <see cref="TranslatedDocument"/> represent the output of the translator module.</param>
+        /// <param name="languageId">Current language id.</param>
         private void PostProcesseDocuments(List<TranslatedDocument> translatedDocuments, string languageId)
         {
             if (attachedPostProcessors == null)
@@ -219,7 +219,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         /// <param name="message">The activity containing the text to translate.</param>
         /// <param name="sourceLanguage">An identifier for the language to translate from.</param>
         /// <param name="targetLanguage">An identifier for the language to translate to.</param>
-        /// <param name="inNativeLanguages">should only use native langauges</param>
+        /// <param name="inNativeLanguages">should only use native langauges.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <remarks>When the task completes successfully, the <see cref="Activity.Text"/> property
         /// of the message contains the translated text.</remarks>

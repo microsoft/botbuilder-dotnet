@@ -43,12 +43,8 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
         public async Task Translator_PatternsTest_EmptyLanguagePatternsData()
         {
             var mockHttp = new MockHttpMessageHandler();
-            mockHttp.When(HttpMethod.Post, "https://api.cognitive.microsoft.com/sts/v1.0/issueToken")
-                .Respond("application/jwt", "<--valid-bearer-token-->");
-            mockHttp.When(HttpMethod.Get, GetRequestDetect("mi perro se llama Enzo"))
-                .Respond("application/xml", GetResponseDetect("es"));
-            mockHttp.When(HttpMethod.Post, @"https://api.microsofttranslator.com/v2/Http.svc/TranslateArray2")
-                .Respond("application/xml", GetResponse("Translator_PatternsTest_EmptyLanguagePatternsData.xml"));
+            mockHttp.When(HttpMethod.Post, GetTranslateUri("es", "en"))
+                .Respond("application/json", GetResponse("Translator_PatternsTest_EmptyLanguagePatternsData.json"));
 
             var translator = new Translator(_translatorKey, mockHttp.ToHttpClient());
             //using an empty language list won't throw an exception, but it won't affect the post processing for this language
@@ -72,12 +68,8 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
         public async Task Translator_PatternsTest_FrenchPatterns()
         {
             var mockHttp = new MockHttpMessageHandler();
-            mockHttp.When(HttpMethod.Post, "https://api.cognitive.microsoft.com/sts/v1.0/issueToken")
-                .Respond("application/jwt", "<--valid-bearer-token-->");
-            mockHttp.When(HttpMethod.Get, GetRequestDetect("mon nom est l'etat"))
-                .Respond("application/xml", GetResponseDetect("fr"));
-            mockHttp.When(HttpMethod.Post, @"https://api.microsofttranslator.com/v2/Http.svc/TranslateArray2")
-                .Respond("application/xml", GetResponse("Translator_PatternsTest_FrenchPatterns.xml"));
+            mockHttp.When(HttpMethod.Post, GetTranslateUri("fr", "en"))
+                .Respond("application/json", GetResponse("Translator_PatternsTest_FrenchPatterns.json"));
 
             var translator = new Translator(_translatorKey, mockHttp.ToHttpClient());
             var patterns = new Dictionary<string, List<string>>();
@@ -100,19 +92,14 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
         public async Task Translator_PatternsTest_FrenchPatternsWithMultipleSpaces()
         {
             var mockHttp = new MockHttpMessageHandler();
-            mockHttp.When(HttpMethod.Post, "https://api.cognitive.microsoft.com/sts/v1.0/issueToken")
-                .Respond("application/jwt", "<--valid-bearer-token-->");
-            mockHttp.When(HttpMethod.Get, GetRequestDetect("mon     nom     est    l'etat   "))
-                .Respond("application/xml", GetResponseDetect("fr"));
-            mockHttp.When(HttpMethod.Post, @"https://api.microsofttranslator.com/v2/Http.svc/TranslateArray2")
-                .Respond("application/xml", GetResponse("Translator_PatternsTest_FrenchPatternsWithMultipleSpaces.xml"));
+            mockHttp.When(HttpMethod.Post, GetTranslateUri("fr", "en"))
+                .Respond("application/json", GetResponse("Translator_PatternsTest_FrenchPatternsWithMultipleSpaces.json"));
 
             var translator = new Translator(_translatorKey, mockHttp.ToHttpClient());
             var patterns = new Dictionary<string, List<string>>();
             var frenchPatterns = new List<string> { "mon nom est (.+)" };
             patterns.Add("fr", frenchPatterns);
-
-
+            
             IPostProcessor patternsPostProcessor = new PatternsPostProcessor(patterns);
 
             var sentence = "mon     nom     est    l'etat   ";
@@ -129,19 +116,14 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
         public async Task Translator_PatternsTest_FrenchPatternsWithNumbers()
         {
             var mockHttp = new MockHttpMessageHandler();
-            mockHttp.When(HttpMethod.Post, "https://api.cognitive.microsoft.com/sts/v1.0/issueToken")
-                .Respond("application/jwt", "<--valid-bearer-token-->");
-            mockHttp.When(HttpMethod.Get, GetRequestDetect("J'ai 25 ans et mon nom est l'etat"))
-                .Respond("application/xml", GetResponseDetect("fr"));
-            mockHttp.When(HttpMethod.Post, @"https://api.microsofttranslator.com/v2/Http.svc/TranslateArray2")
-                .Respond("application/xml", GetResponse("Translator_PatternsTest_FrenchPatternsWithNumbers.xml"));
+            mockHttp.When(HttpMethod.Post, GetTranslateUri("fr", "en"))
+                .Respond("application/json", GetResponse("Translator_PatternsTest_FrenchPatternsWithNumbers.json"));
 
             var translator = new Translator(_translatorKey, mockHttp.ToHttpClient());
             var patterns = new Dictionary<string, List<string>>();
             var frenchPatterns = new List<string> { "mon nom est (.+)" };
             patterns.Add("fr", frenchPatterns);
-
-
+            
             IPostProcessor patternsPostProcessor = new PatternsPostProcessor(patterns);
 
             var sentence = "J'ai 25 ans et mon nom est l'etat";
@@ -158,16 +140,12 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
         public async Task Translator_PatternsTest_SpanishPatterns()
         {
             var mockHttp = new MockHttpMessageHandler();
-            mockHttp.When(HttpMethod.Post, "https://api.cognitive.microsoft.com/sts/v1.0/issueToken")
-                .Respond("application/jwt", "<--valid-bearer-token-->");
-            mockHttp.When(HttpMethod.Get, GetRequestDetect("mi perro se llama Enzo"))
-                .Respond("application/xml", GetResponseDetect("es"));
-            mockHttp.When(HttpMethod.Post, @"https://api.microsofttranslator.com/v2/Http.svc/TranslateArray2")
-                .Respond("application/xml", GetResponse("Translator_PatternsTest_SpanishPatterns.xml"));
+            mockHttp.When(HttpMethod.Post, GetTranslateUri("es", "en"))
+                .Respond("application/json", GetResponse("Translator_PatternsTest_SpanishPatterns.json"));
 
-            Translator translator = new Translator(_translatorKey, mockHttp.ToHttpClient());
-            Dictionary<string, List<string>> patterns = new Dictionary<string, List<string>>();
-            List<string> spanishPatterns = new List<string> { "perr[oa]" };
+            var translator = new Translator(_translatorKey, mockHttp.ToHttpClient());
+            var patterns = new Dictionary<string, List<string>>();
+            var spanishPatterns = new List<string> { "perr[oa]" };
             patterns.Add("es", spanishPatterns);
 
             IPostProcessor patternsPostProcessor = new PatternsPostProcessor(patterns);
@@ -175,7 +153,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
 
             var translatedDocuments = await translator.TranslateArrayAsync(new string[] { sentence }, "es", "en");
             Assert.IsNotNull(translatedDocuments);
-            string postProcessedMessage = patternsPostProcessor.Process(translatedDocuments[0], "es").PostProcessedMessage;
+            var postProcessedMessage = patternsPostProcessor.Process(translatedDocuments[0], "es").PostProcessedMessage;
             Assert.IsNotNull(postProcessedMessage);
             Assert.AreEqual("My perro's name is Enzo", postProcessedMessage);
         }
@@ -195,12 +173,8 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
         public async Task Translator_PatternsTest_EmptyCustomLanguageDictionaryData()
         {
             var mockHttp = new MockHttpMessageHandler();
-            mockHttp.When(HttpMethod.Post, "https://api.cognitive.microsoft.com/sts/v1.0/issueToken")
-                .Respond("application/jwt", "<--valid-bearer-token-->");
-            mockHttp.When(HttpMethod.Get, GetRequestDetect("Je veux voir éclair"))
-                .Respond("application/xml", GetResponseDetect("fr"));
-            mockHttp.When(HttpMethod.Post, @"https://api.microsofttranslator.com/v2/Http.svc/TranslateArray2")
-                .Respond("application/xml", GetResponse("Translator_PatternsTest_EmptyCustomLanguageDictionaryData.xml"));
+            mockHttp.When(HttpMethod.Post, GetTranslateUri("fr", "en"))
+                .Respond("application/json", GetResponse("Translator_PatternsTest_EmptyCustomLanguageDictionaryData.json"));
 
             var translator = new Translator(_translatorKey, mockHttp.ToHttpClient());
             var userCustomDictonaries = new CustomDictionary();
@@ -219,20 +193,17 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
         public async Task Translator_DictionaryTest_FrenchDictionary()
         {
             var mockHttp = new MockHttpMessageHandler();
-            mockHttp.When(HttpMethod.Post, "https://api.cognitive.microsoft.com/sts/v1.0/issueToken")
-                .Respond("application/jwt", "<--valid-bearer-token-->");
-            mockHttp.When(HttpMethod.Get, GetRequestDetect("Je veux voir éclair"))
-                .Respond("application/xml", GetResponseDetect("fr"));
-            mockHttp.When(HttpMethod.Post, @"https://api.microsofttranslator.com/v2/Http.svc/TranslateArray2")
-                .Respond("application/xml", GetResponse("Translator_DictionaryTest_FrenchDictionary.xml"));
+            mockHttp.When(HttpMethod.Post, GetTranslateUri("fr", "en"))
+                .Respond("application/json", GetResponse("Translator_DictionaryTest_FrenchDictionary.json"));
 
-            Translator translator = new Translator(_translatorKey, mockHttp.ToHttpClient());
+            var translator = new Translator(_translatorKey, mockHttp.ToHttpClient());
 
-            CustomDictionary userCustomDictonary = new CustomDictionary();
-            Dictionary<string, string> frenctDictionary = new Dictionary<string, string>
+            var userCustomDictonary = new CustomDictionary();
+            var frenctDictionary = new Dictionary<string, string>
             {
                 { "éclair", "eclairs tart" }
             };
+
             userCustomDictonary.AddNewLanguageDictionary("fr", frenctDictionary);
             IPostProcessor customDictionaryPostProcessor = new CustomDictionaryPostProcessor(userCustomDictonary);
 
@@ -240,7 +211,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
 
             var translatedDocuments = await translator.TranslateArrayAsync(new string[] { frenchSentence }, "fr", "en");
             Assert.IsNotNull(translatedDocuments);
-            string postProcessedMessage = customDictionaryPostProcessor.Process(translatedDocuments[0], "fr").PostProcessedMessage;
+            var postProcessedMessage = customDictionaryPostProcessor.Process(translatedDocuments[0], "fr").PostProcessedMessage;
             Assert.IsNotNull(postProcessedMessage);
             Assert.AreEqual("I want to see eclairs tart", postProcessedMessage);
         }
@@ -251,12 +222,8 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
         public async Task Translator_DictionaryTest_ItalianDictionary()
         {
             var mockHttp = new MockHttpMessageHandler();
-            mockHttp.When(HttpMethod.Post, "https://api.cognitive.microsoft.com/sts/v1.0/issueToken")
-                .Respond("application/jwt", "<--valid-bearer-token-->");
-            mockHttp.When(HttpMethod.Get, GetRequestDetect("Voglio fare una foto nella camera"))
-                .Respond("application/xml", GetResponseDetect("it"));
-            mockHttp.When(HttpMethod.Post, @"https://api.microsofttranslator.com/v2/Http.svc/TranslateArray2")
-                .Respond("application/xml", GetResponse("Translator_DictionaryTest_ItalianDictionary.xml"));
+            mockHttp.When(HttpMethod.Post, GetTranslateUri("it", "en"))
+                .Respond("application/json", GetResponse("Translator_DictionaryTest_ItalianDictionary.json"));
 
             var translator = new Translator(_translatorKey, mockHttp.ToHttpClient());
 
@@ -286,12 +253,8 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
         public async Task Translator_PatternsAndDictionaryTest()
         {
             var mockHttp = new MockHttpMessageHandler();
-            mockHttp.When(HttpMethod.Post, "https://api.cognitive.microsoft.com/sts/v1.0/issueToken")
-                .Respond("application/jwt", "<--valid-bearer-token-->");
-            mockHttp.When(HttpMethod.Get, GetRequestDetect("mon nom est eta"))
-                .Respond("application/xml", GetResponseDetect("fr"));
-            mockHttp.When(HttpMethod.Post, @"https://api.microsofttranslator.com/v2/Http.svc/TranslateArray2")
-                .Respond("application/xml", GetResponse("Translator_PatternsAndDictionaryTest.xml"));
+            mockHttp.When(HttpMethod.Post, GetTranslateUri("fr", "en"))
+                .Respond("application/json", GetResponse("Translator_PatternsAndDictionaryTest.json"));
 
             var translator = new Translator(_translatorKey, mockHttp.ToHttpClient());
             
@@ -312,6 +275,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
             {
                 { "etat", "Eldad" }
             };
+
             userCustomDictonaries.AddNewLanguageDictionary("fr", frenctDictionary);
             IPostProcessor customDictionaryPostProcessor = new CustomDictionaryPostProcessor(userCustomDictonaries);
 
@@ -334,17 +298,12 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
             Assert.IsNotNull(postProcessedMessage);
             Assert.AreEqual("My name is Eldad", postProcessedMessage);
         }
-
-        private string GetRequestDetect(string text)
+        
+        private string GetTranslateUri(string from, string to)
         {
-            return "http://api.microsofttranslator.com/v2/Http.svc/Detect?text=" + text;
+            return $"https://api.cognitive.microsofttranslator.com/translate?api-version=3.0&includeAlignment=true&includeSentenceLength=true&from={from}&to={to}";
         }
-
-        private string GetResponseDetect(string text)
-        {
-            return $"<string xmlns=\"http://schemas.microsoft.com/2003/10/Serialization/\">{text}</string>";
-        }
-
+        
         private Stream GetResponse(string fileName)
         {
             var path = Path.Combine(Environment.CurrentDirectory, "TestData", fileName);
