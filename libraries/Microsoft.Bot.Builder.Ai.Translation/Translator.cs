@@ -4,14 +4,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
-using System.Security;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using System.Xml.Linq;
+using Microsoft.Bot.Builder.Ai.Translation.Model;
 using Microsoft.Bot.Builder.Ai.Translation.PostProcessor;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Ai.Translation
 {
@@ -21,8 +20,11 @@ namespace Microsoft.Bot.Builder.Ai.Translation
     /// </summary>
     public class Translator
     {
+        private const string DetectUrl = "https://api.cognitive.microsofttranslator.com/detect?api-version=3.0";
+        private const string TranslateUrl = "https://api.cognitive.microsofttranslator.com/translate?api-version=3.0&includeAlignment=true&includeSentenceLength=true";
+
         private static readonly HttpClient DefaultHttpClient = new HttpClient() { Timeout = TimeSpan.FromSeconds(20) };
-        private readonly AzureAuthToken _authToken;
+        private readonly string _apiKey;
         private HttpClient _httpClient = null;
 
         /// <summary>
@@ -38,7 +40,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation
                 throw new ArgumentNullException(nameof(apiKey));
             }
 
-            _authToken = new AzureAuthToken(apiKey, httpClient);
+            _apiKey = apiKey;
         }
 
         /// <summary>
@@ -49,25 +51,26 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         public async Task<string> DetectAsync(string textToDetect)
         {
             textToDetect = PreprocessMessage(textToDetect);
-            var url = "http://api.microsofttranslator.com/v2/Http.svc/Detect";
-            var query = $"?text={System.Net.WebUtility.UrlEncode(textToDetect)}";
 
-            using (var request = new HttpRequestMessage())
+            var payload = new TranslatorRequestModel[] { new TranslatorRequestModel { Text = textToDetect } };
+
+            using (var request = GetDetectRequestMessage(payload))
             {
-                var accessToken = await _authToken.GetAccessTokenAsync().ConfigureAwait(false);
-                request.Headers.Add("Authorization", accessToken);
-                request.RequestUri = new Uri(url + query);
                 using (var response = await _httpClient.SendAsync(request).ConfigureAwait(false))
                 {
                     var result = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-                    if (!response.IsSuccessStatusCode)
+                    if (response.IsSuccessStatusCode)
                     {
-                        return "ERROR: " + result;
+                        var detectedLanguages = JsonConvert.DeserializeObject<IEnumerable<DetectedLanguageModel>>(result);
+                        var detectedLang = detectedLanguages.First().Language;
+                        return detectedLang;
                     }
-
-                    var detectedLang = XElement.Parse(result).Value;
-                    return detectedLang;
+                    else
+                    {
+                        var errorResult = JsonConvert.DeserializeObject<ErrorModel>(result);
+                        throw new ArgumentException(errorResult.Error.Message);
+                    }
                 }
             }
         }
@@ -81,36 +84,8 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         /// <returns>The translated document.</returns>
         public async Task<TranslatedDocument> TranslateAsync(string textToTranslate, string from, string to)
         {
-            var currentTranslatedDocument = new TranslatedDocument(textToTranslate);
-            PreprocessMessage(currentTranslatedDocument.SourceMessage, out var processedText, out var literanlNoTranslateList);
-            currentTranslatedDocument.SourceMessage = processedText;
-            currentTranslatedDocument.LiteranlNoTranslatePhrases = literanlNoTranslateList;
-
-            var url = "http://api.microsofttranslator.com/v2/Http.svc/Translate";
-            var query = $"?text={System.Net.WebUtility.UrlEncode(textToTranslate)}" +
-                                 $"&from={from}" +
-                                 $"&to={to}";
-
-            using (var request = new HttpRequestMessage())
-            {
-                var accessToken = await _authToken.GetAccessTokenAsync().ConfigureAwait(false);
-                request.Headers.Add("Authorization", accessToken);
-                request.RequestUri = new Uri(url + query);
-                using (var response = await _httpClient.SendAsync(request).ConfigureAwait(false))
-                {
-                    var result = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-
-                    if (!response.IsSuccessStatusCode)
-                    {
-                        throw new ArgumentException(result);
-                    }
-
-                    var translatedText = XElement.Parse(result).Value.Trim();
-
-                    currentTranslatedDocument.TargetMessage = translatedText;
-                    return currentTranslatedDocument;
-                }
-            }
+            var results = await TranslateArrayAsync(new string[] { textToTranslate }, from, to).ConfigureAwait(false);
+            return results.First();
         }
 
         /// <summary>
@@ -123,7 +98,6 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         public async Task<List<TranslatedDocument>> TranslateArrayAsync(string[] translateArraySourceTexts, string from, string to)
         {
             var translatedDocuments = new List<TranslatedDocument>();
-            var uri = "https://api.microsofttranslator.com/v2/Http.svc/TranslateArray2";
             for (var srcTxtIndx = 0; srcTxtIndx < translateArraySourceTexts.Length; srcTxtIndx++)
             {
                 // Check for literal tag in input user message
@@ -135,72 +109,53 @@ namespace Microsoft.Bot.Builder.Ai.Translation
                 currentTranslatedDocument.LiteranlNoTranslatePhrases = literanlNoTranslateList;
             }
 
-            // body of http request
-            var body = $"<TranslateArrayRequest>" +
-                           "<AppId />" +
-                           $"<From>{from}</From>" +
-                           "<Options>" +
-                           " <Category xmlns=\"http://schemas.datacontract.org/2004/07/Microsoft.MT.Web.Service.V2\" >generalnn</Category>" +
-                               "<ContentType xmlns=\"http://schemas.datacontract.org/2004/07/Microsoft.MT.Web.Service.V2\">text/plain</ContentType>" +
-                               "<ReservedFlags xmlns=\"http://schemas.datacontract.org/2004/07/Microsoft.MT.Web.Service.V2\" />" +
-                               "<State xmlns=\"http://schemas.datacontract.org/2004/07/Microsoft.MT.Web.Service.V2\" />" +
-                               "<Uri xmlns=\"http://schemas.datacontract.org/2004/07/Microsoft.MT.Web.Service.V2\" />" +
-                               "<User xmlns=\"http://schemas.datacontract.org/2004/07/Microsoft.MT.Web.Service.V2\" />" +
-                           "</Options>" +
-                           "<Texts>" +
-                                   string.Join(string.Empty, translateArraySourceTexts.Select(s => $"<string xmlns=\"http://schemas.microsoft.com/2003/10/Serialization/Arrays\">{SecurityElement.Escape(s)}</string>\n"))
-                           + "</Texts>" +
-                           $"<To>{to}</To>" +
-                       "</TranslateArrayRequest>";
+            // list of translation request for the service
+            var payload = translateArraySourceTexts.Select(s => new TranslatorRequestModel { Text = s });
 
-            var accessToken = await _authToken.GetAccessTokenAsync().ConfigureAwait(false);
-
-            using (var request = new HttpRequestMessage())
+            using (var request = GetTranslateRequestMessage(from, to, payload))
             {
-                request.Method = HttpMethod.Post;
-                request.RequestUri = new Uri(uri);
-                request.Content = new StringContent(body, Encoding.UTF8, "text/xml");
-                request.Headers.Add("Authorization", accessToken);
-
                 using (var response = await _httpClient.SendAsync(request).ConfigureAwait(false))
                 {
-                    var responseBody = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    switch (response.StatusCode)
+                    if (response.IsSuccessStatusCode)
                     {
-                        case HttpStatusCode.OK:
-                            Console.WriteLine("Request status is OK. Result of translate array method is:");
-                            var doc = XDocument.Parse(responseBody);
-                            var ns = XNamespace.Get("http://schemas.datacontract.org/2004/07/Microsoft.MT.Web.Service.V2");
-                            var results = new List<string>();
-                            var sentIndex = 0;
-                            foreach (var xe in doc.Descendants(ns + "TranslateArray2Response"))
-                            {
-                                var currentTranslatedDocument = translatedDocuments[sentIndex];
-                                currentTranslatedDocument.RawAlignment = xe.Element(ns + "Alignment").Value;
-                                currentTranslatedDocument.TargetMessage = xe.Element(ns + "TranslatedText").Value;
-                                if (!string.IsNullOrEmpty(currentTranslatedDocument.RawAlignment))
-                                {
-                                    var alignments = currentTranslatedDocument.RawAlignment.Trim().Split(' ');
-                                    currentTranslatedDocument.SourceTokens = PostProcessingUtilities.SplitSentence(currentTranslatedDocument.SourceMessage, alignments);
-                                    currentTranslatedDocument.TranslatedTokens = PostProcessingUtilities.SplitSentence(xe.Element(ns + "TranslatedText").Value, alignments, false);
-                                    currentTranslatedDocument.IndexedAlignment = PostProcessingUtilities.WordAlignmentParse(alignments, currentTranslatedDocument.SourceTokens, currentTranslatedDocument.TranslatedTokens);
-                                    currentTranslatedDocument.TargetMessage = PostProcessingUtilities.Join(" ", currentTranslatedDocument.TranslatedTokens);
-                                }
-                                else
-                                {
-                                    var translatedText = xe.Element(ns + "TranslatedText").Value;
-                                    currentTranslatedDocument.TargetMessage = translatedText;
-                                    currentTranslatedDocument.SourceTokens = new string[] { currentTranslatedDocument.SourceMessage };
-                                    currentTranslatedDocument.TranslatedTokens = new string[] { currentTranslatedDocument.TargetMessage };
-                                    currentTranslatedDocument.IndexedAlignment = new Dictionary<int, int>();
-                                }
+                        var responseBody = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                        var translatedResults = JsonConvert.DeserializeObject<IEnumerable<TranslatedResult>>(responseBody);
 
-                                sentIndex += 1;
+                        var sentIndex = 0;
+                        foreach (var translatedValue in translatedResults)
+                        {
+                            var translation = translatedValue.Translations.First();
+                            var currentTranslatedDocument = translatedDocuments[sentIndex];
+                            currentTranslatedDocument.RawAlignment = translation.Alignment?.Projection ?? null;
+                            currentTranslatedDocument.TargetMessage = translation.Text;
+
+                            if (!string.IsNullOrEmpty(currentTranslatedDocument.RawAlignment))
+                            {
+                                var alignments = currentTranslatedDocument.RawAlignment.Trim().Split(' ');
+                                currentTranslatedDocument.SourceTokens = PostProcessingUtilities.SplitSentence(currentTranslatedDocument.SourceMessage, alignments);
+                                currentTranslatedDocument.TranslatedTokens = PostProcessingUtilities.SplitSentence(translation.Text, alignments, false);
+                                currentTranslatedDocument.IndexedAlignment = PostProcessingUtilities.WordAlignmentParse(alignments, currentTranslatedDocument.SourceTokens, currentTranslatedDocument.TranslatedTokens);
+                                currentTranslatedDocument.TargetMessage = PostProcessingUtilities.Join(" ", currentTranslatedDocument.TranslatedTokens);
+                            }
+                            else
+                            {
+                                var translatedText = translation.Text;
+                                currentTranslatedDocument.TargetMessage = translatedText;
+                                currentTranslatedDocument.SourceTokens = new string[] { currentTranslatedDocument.SourceMessage };
+                                currentTranslatedDocument.TranslatedTokens = new string[] { currentTranslatedDocument.TargetMessage };
+                                currentTranslatedDocument.IndexedAlignment = new Dictionary<int, int>();
                             }
 
-                            return translatedDocuments;
-                        default:
-                            throw new Exception(response.ReasonPhrase);
+                            sentIndex++;
+                        }
+
+                        return translatedDocuments;
+                    }
+                    else
+                    {
+                        var responseBody = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                        var errorResult = JsonConvert.DeserializeObject<ErrorModel>(responseBody);
+                        throw new ArgumentException(errorResult.Error.Message);
                     }
                 }
             }
@@ -250,6 +205,27 @@ namespace Microsoft.Bot.Builder.Ai.Translation
             }
 
             return Regex.Replace(textToTranslate, @"\s+", " ");
+        }
+
+        private HttpRequestMessage GetTranslateRequestMessage(string from, string to, IEnumerable<TranslatorRequestModel> translatorRequests)
+        {
+            var query = $"&from={from}&to={to}";
+            var requestUri = new Uri(TranslateUrl + query);
+            return GetRequestMessage(requestUri, translatorRequests);
+        }
+
+        private HttpRequestMessage GetDetectRequestMessage(IEnumerable<TranslatorRequestModel> translatorRequests)
+        {
+            var requestUri = new Uri(DetectUrl);
+            return GetRequestMessage(requestUri, translatorRequests);
+        }
+
+        private HttpRequestMessage GetRequestMessage(Uri requestUri, IEnumerable<TranslatorRequestModel> translatorRequests)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Post, requestUri);
+            request.Headers.Add("Ocp-Apim-Subscription-Key", _apiKey);
+            request.Content = new StringContent(JsonConvert.SerializeObject(translatorRequests), Encoding.UTF8, "application/json");
+            return request;
         }
     }
 }
