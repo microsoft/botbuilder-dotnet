@@ -80,6 +80,10 @@ namespace AspNetCore_LUIS_Bot
             services.AddSingleton<LuisBotStateAccessors>(sp =>
             {
                 var options = sp.GetRequiredService<IOptions<BotFrameworkOptions>>().Value;
+                if (options == null)
+                {
+                    throw new InvalidOperationException("BotFrameworkOptions must be configured prior to setting up the State Accessors");
+                }
 
                 var accessors = new LuisBotStateAccessors
                 {

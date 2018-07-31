@@ -20,13 +20,11 @@ namespace AspNetCore_LUIS_Bot
     {
         private const double LUIS_INTENT_THRESHOLD = 0.2d;
 
-        private readonly DialogSet _dialogs;
-        private readonly BotFrameworkOptions _options;
+        private readonly DialogSet _dialogs;        
         private readonly LuisBotStateAccessors _stateAccessors;
 
-        public LuisBot(IOptions<BotFrameworkOptions> options, LuisBotStateAccessors accessors)
-        {
-            _options = options.Value;
+        public LuisBot(LuisBotStateAccessors accessors)
+        {            
             _stateAccessors = accessors ?? throw new ArgumentNullException(nameof(accessors)); 
 
             _dialogs = new DialogSet();
