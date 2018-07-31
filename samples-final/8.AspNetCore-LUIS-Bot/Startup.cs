@@ -16,7 +16,6 @@ namespace AspNetCore_LUIS_Bot
 {
     public class Startup
     {
-        public static readonly Dictionary<string, object> BotState = new Dictionary<string, object>();
         public static LuisRecognizer LuisRecognizer= null;
 
 
@@ -64,11 +63,6 @@ namespace AspNetCore_LUIS_Bot
                 // *NEW* CREATE NEW CONVERSATION STATE
                 
                 var userState = new UserState(dataStore);
-                var reminderTitles = userState.CreateProperty<List<string>>(UserStateProperty.ReminderTitles, () => new List<string>());
-                BotState.Add(UserStateProperty.ReminderTitles, reminderTitles);
-
-                var dialogState = userState.CreateProperty<Dictionary<string, object>>(UserStateProperty.DialogState, () => new Dictionary<string, object>());
-                BotState.Add(UserStateProperty.DialogState, dialogState);
                 var stateSet = new BotStateSet(userState);
 
                 // Forces storage to auto-load on a new message, and auto-save when complete.  

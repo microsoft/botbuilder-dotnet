@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Builder
             BotStates.AddRange(botStates);
         }
 
-        public List<BotState> BotStates { get; }
+        public List<BotState> BotStates { get; } = new List<BotState>();
 
         /// <summary>
         /// Add a BotState to the list of sources to load.
