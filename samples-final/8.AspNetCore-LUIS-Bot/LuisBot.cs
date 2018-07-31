@@ -18,7 +18,7 @@ using Microsoft.Bot.Builder.Integration;
 
 namespace AspNetCore_LUIS_Bot
 {
-    public class LuisBot : BotBase, IBot
+    public class LuisBot :  IBot
     {
         private const double LUIS_INTENT_THRESHOLD = 0.2d;
 
@@ -28,6 +28,9 @@ namespace AspNetCore_LUIS_Bot
         // Property Accessors
         private readonly IStatePropertyAccessor<Dictionary<string, object>> _userDialogState;
         private readonly IStatePropertyAccessor<List<string>> _reminderTitles;
+        public LuisBot()
+        {
+        }
 
         public LuisBot(BotFrameworkOptions options)
         {
@@ -68,8 +71,7 @@ namespace AspNetCore_LUIS_Bot
 
         private async Task AskReminderTitle(DialogContext dialogContext, object args, SkipStepFunction next)
         {
-            var dialog_accessor = (IStatePropertyAccessor<Dictionary<string, object>>)Startup.BotState[UserStateProperty.DialogState];
-            var dialogState = await dialog_accessor.GetAsync(dialogContext.Context);
+            var dialogState = await dialogContext.Context.GetStateAsync<Dictionary<string, object>>(_userDialogState);
             if (dialogState.ContainsKey("Title"))
             {
                 await dialogContext.ContinueAsync();
@@ -89,10 +91,11 @@ namespace AspNetCore_LUIS_Bot
             }
 
             // Update existing property
-            var titles_accessor = (IStatePropertyAccessor<List<string>>)Startup.BotState[UserStateProperty.ReminderTitles];
-            var titles = await titles_accessor.GetAsync(dialogContext.Context);
+
+            var titles = await dialogContext.Context.GetStateAsync<List<string>>(_reminderTitles);
             titles.Add(title);
-            await titles_accessor.SetAsync(dialogContext.Context, titles);
+            await dialogContext.Context.SetStateAsync<List<string>>(_reminderTitles, titles);
+            
 
             await dialogContext.Context.SendActivityAsync($"Your reminder named '{title}' is set.");
             await dialogContext.EndAsync();
@@ -100,9 +103,7 @@ namespace AspNetCore_LUIS_Bot
 
         private async Task ShowReminders(DialogContext dialogContext, object args, SkipStepFunction next)
         {
-            var titles_accessor = (IStatePropertyAccessor<List<string>>)Startup.BotState[UserStateProperty.ReminderTitles];
-            var titles = await titles_accessor.GetAsync(dialogContext.Context);
-
+            var titles = await dialogContext.Context.GetStateAsync<List<string>>(_reminderTitles);
 
             var choices = titles.Select(x => new Choice() { Value = x.Length < 15 ? x : x.Substring(0, 15) + "..." }).ToList();
             await dialogContext.PromptAsync("ShowReminderPrompt", "Select the reminder to show: ", new ChoicePromptOptions() { Choices = choices });
@@ -113,8 +114,7 @@ namespace AspNetCore_LUIS_Bot
             
             if (args is ChoiceResult choice)
             {
-                var titles_accessor = (IStatePropertyAccessor<List<string>>)Startup.BotState[UserStateProperty.ReminderTitles];
-                var reminders = await titles_accessor.GetAsync(dialogContext.Context);
+                var reminders = await dialogContext.Context.GetStateAsync<List<string>>(_reminderTitles);
                 string reminder = ((List<string>) reminders)[choice.Value.Index];
 
                 
@@ -136,8 +136,7 @@ namespace AspNetCore_LUIS_Bot
             }
             else if (turnContext.Activity.Type == ActivityTypes.Message)
             {
-                var dialog_accessor = context.GetUserState<Dictionary<string, object>(DialogState);
-                var dialogState = await dialog_accessor.GetAsync(turnContext);
+                var dialogState = await turnContext.GetStateAsync<Dictionary<string, object>>(_userDialogState);
 
                 var dialogContext = _dialogs.CreateContext(turnContext,  dialogState);
 

@@ -349,7 +349,10 @@ namespace Microsoft.Bot.Builder
         {
             return await accessor.GetAsync(context).ConfigureAwait(false);
         }
-
+        public static async Task SetStateAsync<TState>(this ITurnContext context, IStatePropertyAccessor<TState> accessor, TState value)
+        {
+            await accessor.SetAsync(context, value).ConfigureAwait(false);
+        }
     }
 
 }
