@@ -44,6 +44,13 @@ namespace Microsoft.Bot.Builder.Integration
         public IList<IMiddleware> Middleware { get; } = new List<IMiddleware>();
 
         /// <summary>
+        /// Gets a list of the <see cref="IMiddleware"/> to use on each incoming activity.
+        /// </summary>
+        /// <value>The middleware list.</value>
+        /// <seealso cref="BotAdapter.Use(IMiddleware)"/>
+        public IList<BotState> State { get; } = new List<BotState>();
+
+        /// <summary>
         /// Gets or sets a value indicating whether gets or sets whether a proactive messaging endpoint should be exposed for the bot.
         /// </summary>
         /// <value>

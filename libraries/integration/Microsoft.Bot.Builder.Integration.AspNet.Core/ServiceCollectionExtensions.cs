@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// <param name="configureAction">A callback that can further be used to configure the bot.</param>
         /// <returns>A reference to this instance after the operation has completed.</returns>
         public static IServiceCollection AddBot<TBot>(this IServiceCollection services, Action<BotFrameworkOptions> configureAction = null)
-            where TBot : class, IBot
+            where TBot : BotBase, IBot, new()
         {
             if (services == null)
             {
@@ -43,7 +43,12 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                 }
             });
 
-            services.AddTransient<IBot, TBot>();
+            services.AddTransient<IBot, TBot>((ctx) =>
+            {
+                var options = ctx.GetRequiredService<IOptions<BotFrameworkOptions>>().Value;
+                var instance = Activator.CreateInstance(typeof(TBot), new object[] { options });
+                return (TBot)instance;
+            });
 
             services.AddSingleton(sp =>
             {
