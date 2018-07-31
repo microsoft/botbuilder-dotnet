@@ -7,14 +7,6 @@ using System.Runtime.CompilerServices;
 
 namespace AspNetCore_LUIS_Bot
 {
-
-    internal static class UserStateProperty
-    {
-        internal static string ReminderTitles = $"UserStateProperty.Reminder.Titles";
-        internal static string DialogState  = $"{nameof(UserStateProperty)}.DialogState";
-        internal static string Reminder = $"{nameof(UserStateProperty)}.ReminderState";
-    }
-
     internal static class ConversationStateProperty
     {
         internal static string DialogState = $"{nameof(ConversationStateProperty)}.DialogState";
@@ -45,19 +37,11 @@ namespace AspNetCore_LUIS_Bot
     //    }
     //}
 
-    //public class Reminder : BaseState
-    //{
-    //    public Reminder() : base(null) { }
-
-    //    public Reminder(IDictionary<string, object> source = null) : base(source) { }
-
-    //    public string Title
-    //    {
-    //        get { return GetProperty<string>(); }
-    //        set { SetProperty(value); }
-    //    }
-    //}
-
+    public class Reminder
+    {               
+        public string Title { get; set; }
+    }
+    
     //public class UserState : BaseState
     //{
     //    public UserState() : base(null) { }

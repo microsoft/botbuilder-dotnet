@@ -12,6 +12,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Builder.BotFramework;
 using System.Linq;
+using Microsoft.Bot.Builder.Integration;
+using Microsoft.Extensions.Options;
 
 namespace AspNetCore_LUIS_Bot
 {
@@ -37,7 +39,7 @@ namespace AspNetCore_LUIS_Bot
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
-        {            
+        {
             services.AddBot<LuisBot>(options =>
             {
                 options.CredentialProvider = new ConfigurationCredentialProvider(Configuration);
@@ -66,11 +68,26 @@ namespace AspNetCore_LUIS_Bot
                 // Put at the beginning of the pipeline.
                 var stateSet = new BotStateSet(options.State.ToArray());
                 options.Middleware.Add(stateSet);
-
+                                
                 // *NEW* ONE TIME INIT OF LUIS 
                 var (modelId, subscriptionKey, url) = GetLuisConfiguration(Configuration);
                 var app = new LuisApplication(modelId, subscriptionKey, "Westus");
-                LuisRecognizer = new LuisRecognizer(app);
+                LuisRecognizer = new LuisRecognizer(app);             
+            });
+
+            // Now that the bot is registered, create and register any state accesssors. 
+            // These accessors are passed into the Bot on every turn. 
+            services.AddSingleton<LuisBotStateAccessors>(sp =>
+            {
+                var options = sp.GetRequiredService<IOptions<BotFrameworkOptions>>().Value;
+
+                var accessors = new LuisBotStateAccessors
+                {
+                    Reminders = options.UserState.CreateProperty<List<Reminder>>(LuisBotStateAccessors.RemindersName, () => new List<Reminder>()),
+                    UserDialogState = options.UserState.CreateProperty<Dictionary<string, object>>(LuisBotStateAccessors.DialogStateName, () => new Dictionary<string, object>())
+                };
+
+                return accessors;
             });
         }
 
