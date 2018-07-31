@@ -34,15 +34,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             {
                 services.Configure(configureAction);
             }
-
-            services.PostConfigure<BotFrameworkOptions>(options =>
-            {
-                if (options.CredentialProvider == null)
-                {
-                    options.CredentialProvider = new SimpleCredentialProvider();
-                }
-            });
-
+           
             services.AddTransient<IBot, TBot>();
 
             services.AddSingleton(sp =>

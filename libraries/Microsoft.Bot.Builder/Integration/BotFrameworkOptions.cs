@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Bot.Connector.Authentication;
@@ -28,7 +29,7 @@ namespace Microsoft.Bot.Builder.Integration
         /// credentials used during authentication with the Bot Framework Service.
         /// </summary>
         /// <value>The credential provider.</value>
-        public ICredentialProvider CredentialProvider { get; set; }
+        public ICredentialProvider CredentialProvider { get; set; } = new SimpleCredentialProvider();
 
         /// <summary>
         /// Gets or sets an error handler to use to catche exceptions in the middleware or application.
@@ -49,6 +50,10 @@ namespace Microsoft.Bot.Builder.Integration
         /// <value>The middleware list.</value>
         /// <seealso cref="BotAdapter.Use(IMiddleware)"/>
         public IList<BotState> State { get; } = new List<BotState>();
+
+        public UserState UserState => this.State.OfType<UserState>().First();
+
+        public ConversationState ConversationState => this.State.OfType<ConversationState>().First();
 
         /// <summary>
         /// Gets or sets a value indicating whether gets or sets whether a proactive messaging endpoint should be exposed for the bot.

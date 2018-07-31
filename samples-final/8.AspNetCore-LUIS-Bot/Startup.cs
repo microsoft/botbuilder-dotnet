@@ -11,12 +11,13 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Builder.BotFramework;
+using System.Linq;
 
 namespace AspNetCore_LUIS_Bot
 {
     public class Startup
     {
-        public static LuisRecognizer LuisRecognizer= null;
+        public static LuisRecognizer LuisRecognizer = null;
 
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -36,15 +37,12 @@ namespace AspNetCore_LUIS_Bot
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
-        {
+        {            
             services.AddBot<LuisBot>(options =>
             {
                 options.CredentialProvider = new ConfigurationCredentialProvider(Configuration);
-
-
                 // The Memory Storage used here is for local bot debugging only. When the bot
                 // is restarted, anything stored in memory will be gone. 
-
 
                 // The File data store, shown here, is suitable for bots that run on 
                 // a single machine and need durable state across application restarts.                 
@@ -60,21 +58,19 @@ namespace AspNetCore_LUIS_Bot
                 //IStorage dataStore = new Microsoft.Bot.Builder.Azure.AzureBlobStorage("AzureBlobConnectionString", "containerName");
                 IStorage dataStore = new MemoryStorage();
 
-                // *NEW* CREATE NEW CONVERSATION STATE
-                
+                // *NEW* CREATE NEW CONVERSATION STATE                
                 var userState = new UserState(dataStore);
-                var stateSet = new BotStateSet(userState);
+                options.State.Add(userState);
 
                 // Forces storage to auto-load on a new message, and auto-save when complete.  
                 // Put at the beginning of the pipeline.
+                var stateSet = new BotStateSet(options.State.ToArray());
                 options.Middleware.Add(stateSet);
-
 
                 // *NEW* ONE TIME INIT OF LUIS 
                 var (modelId, subscriptionKey, url) = GetLuisConfiguration(Configuration);
                 var app = new LuisApplication(modelId, subscriptionKey, "Westus");
                 LuisRecognizer = new LuisRecognizer(app);
-
             });
         }
 
