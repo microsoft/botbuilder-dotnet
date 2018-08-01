@@ -13,25 +13,48 @@ using Microsoft.Bot.Schema;
 
 namespace AspNetCore_LUIS_Bot
 {
+    /// <summary>
+    /// MyLuisBot handles the processing of Bot messages (Activity).  This example uses
+    /// the Language Understanding service (LUIS) to assist in analyzing the text received
+    /// and idenfitying intent.  
+    /// 
+    /// A new instance of MyLuisBot is created whenever a new message is received.
+    /// 
+    /// </summary>
     public class MyLuisBot : IBot
     {
+        // Defines the threshold of the LUIS results score should be accepted.
         private const double LUIS_INTENT_THRESHOLD = 0.2d;
 
         private readonly MyBotAccessors _stateAccessors;
         private readonly LuisRecognizer _luisRecognizer;        
         private readonly DialogSet _dialogSet;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="accessors">The set of Property State Accessors used in the Bot.  
+        /// This class is created in Startup.cs and injected during creation of this bot by asp.net core.</param>
+        /// <param name="recognizer">The Luis recognizer is create in Startup.cs and injected during 
+        /// creation of this bot by asp.net core.</param>
         public MyLuisBot(MyBotAccessors accessors, LuisRecognizer recognizer)
         {
             _stateAccessors = accessors ?? throw new ArgumentNullException(nameof(accessors));
             _luisRecognizer = recognizer ?? throw new ArgumentNullException(nameof(recognizer));
 
+            // TODO: Move this to Singleton and inject
             _dialogSet = new DialogSet();
 
             var reminderDialog = new ReminderDialog(_stateAccessors);            
             _dialogSet.Add("ReminderDialog", reminderDialog); 
         }
 
+        /// <summary>
+        /// OnTurnAsync gets called for each new message.
+        /// </summary>
+        /// <param name="turnContext">Transient context which contains the message (Activity) and other services useful in processing the message.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>Task.</returns>
         public async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (turnContext == null)
