@@ -370,6 +370,105 @@ namespace Microsoft.Bot.Builder.Tests
                 .StartTestAsync();
         }
 
+        [TestMethod]
+        [ExpectedException(typeof(NullReferenceException), "Accessing unset property throws exception")]
+        public async Task State_AccessUnset()
+        {
+            // Arrange
+            var dictionary = new Dictionary<string, JObject>();
+            var userState = new UserState(new MemoryStorage(dictionary));
+            var context = TestUtilities.CreateEmptyContext();
+
+            var propertyA = userState.CreateProperty<string>("property-a");
+            var valueA = await propertyA.GetAsync(context);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(NullReferenceException), "Accessing unset property throws exception")]
+        public async Task State_AccessUnsetExtension()
+        {
+            // Arrange
+            var dictionary = new Dictionary<string, JObject>();
+            var userState = new UserState(new MemoryStorage(dictionary));
+            var context = TestUtilities.CreateEmptyContext();
+
+            var propertyA = userState.CreateProperty<string>("property-a");
+            var valueA = await context.GetStateAsync<string>(propertyA);
+        }
+
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException), "Extension Null accessor should be handled")]
+        public async Task State_GetExtensionNullAccessor()
+        {
+            // Arrange
+            var dictionary = new Dictionary<string, JObject>();
+            var userState = new UserState(new MemoryStorage(dictionary));
+            var context = TestUtilities.CreateEmptyContext();
+
+            var valueA = await context.GetStateAsync<string>(null);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException), "Extension Null accessor should be handled")]
+        public async Task State_SetExtensionNullAccessor()
+        {
+            // Arrange
+            var dictionary = new Dictionary<string, JObject>();
+            var userState = new UserState(new MemoryStorage(dictionary));
+            var context = TestUtilities.CreateEmptyContext();
+
+            await context.SetStateAsync(null, "value");
+        }
+
+        [TestMethod]
+        public async Task State_ExtensionGet()
+        {
+            // Arrange
+            var dictionary = new Dictionary<string, JObject>();
+            var userState = new UserState(new MemoryStorage(dictionary));
+            var context = TestUtilities.CreateEmptyContext();
+
+            // Act
+            var propertyA = userState.CreateProperty<string>("property-a");
+            var propertyB = userState.CreateProperty<string>("property-b");
+
+            await userState.LoadAsync(context);
+            await propertyA.SetAsync(context, "hello");
+            await propertyB.SetAsync(context, "world");
+            await userState.SaveChangesAsync(context);
+
+            // **Determine if this is proper behavior (explicit load before read).
+            await userState.LoadAsync(context);
+            // Assert
+            Assert.AreEqual("hello", await context.GetStateAsync<string>(propertyA));
+            Assert.AreEqual("world", await context.GetStateAsync<string>(propertyB));
+        }
+        [TestMethod]
+        public async Task State_ExtensionGetSet()
+        {
+            // Arrange
+            var dictionary = new Dictionary<string, JObject>();
+            var userState = new UserState(new MemoryStorage(dictionary));
+            var context = TestUtilities.CreateEmptyContext();
+
+            // Act
+            var propertyA = userState.CreateProperty<string>("property-a");
+            var propertyB = userState.CreateProperty<string>("property-b");
+
+            await userState.LoadAsync(context);
+            await context.SetStateAsync<string>(propertyA, "hello");
+            await context.SetStateAsync<string>(propertyB, "world");
+            await userState.SaveChangesAsync(context);
+
+            // **Determine if this is proper behavior (explicit load before read).
+            await userState.LoadAsync(context);
+            // Assert
+            Assert.AreEqual("hello", await context.GetStateAsync<string>(propertyA));
+            Assert.AreEqual("world", await context.GetStateAsync<string>(propertyB));
+        }
+
+
         public class TestBotState : BotState
         {
             public TestBotState(IStorage storage)

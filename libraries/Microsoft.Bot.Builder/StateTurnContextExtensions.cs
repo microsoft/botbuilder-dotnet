@@ -19,7 +19,6 @@ namespace Microsoft.Bot.Builder
         /// <param name="accessor">The state accessor object for this property.</param>
         /// <returns>The state object.</returns>
         public static async Task<TState> GetStateAsync<TState>(this ITurnContext context, IStatePropertyAccessor<TState> accessor)
-            where TState : class, new()
         {
             if (accessor == null)
             {
