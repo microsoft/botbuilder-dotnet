@@ -46,7 +46,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 
         [TestMethod]
         [TestCategory("Middleware")]
-        public async Task AppInsight_CheckProperties1()
+        public void AppInsight_CheckProperties1()
         {
 
 
@@ -59,7 +59,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 
         [TestMethod]
         [TestCategory("Middleware")]
-        public async Task AppInsight_CheckProperties2()
+        public void AppInsight_CheckProperties2()
         {
 
 
@@ -72,7 +72,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 
         [TestMethod]
         [TestCategory("Middleware")]
-        public async Task AppInsight_CheckProperties3()
+        public void AppInsight_CheckProperties3()
         {
 
 

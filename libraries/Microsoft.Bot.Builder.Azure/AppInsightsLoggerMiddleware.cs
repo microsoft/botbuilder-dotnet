@@ -33,7 +33,7 @@ namespace Microsoft.Bot.Builder.Azure
         /// <param name="config"> (Optional) TelemetryConfiguration to use for Application Insights.</param>
         public AppInsightsLoggerMiddleware(string instrumentationKey, bool logUserName = false, bool logOriginalMessage = false, TelemetryConfiguration config = null)
         {
-            if (string.IsNullOrEmpty(instrumentationKey))
+            if (string.IsNullOrWhiteSpace(instrumentationKey))
             {
                 throw new ArgumentNullException(nameof(instrumentationKey));
             }
@@ -80,11 +80,6 @@ namespace Microsoft.Bot.Builder.Azure
             if (context.Activity != null)
             {
                 Activity activity = context.Activity;
-                if (string.IsNullOrEmpty((string)activity.From.Properties["role"]))
-                {
-                    activity.From.Properties["role"] = "user";
-                }
-
                 // Context properties for App Insights
                 if (!string.IsNullOrEmpty(activity.Conversation.Id))
                 {
@@ -112,6 +107,7 @@ namespace Microsoft.Bot.Builder.Azure
 
             var properties = new Dictionary<string, string>()
                 {
+                    { AppInsightsConstants.ActivityIDProperty, activity.Id },
                     { AppInsightsConstants.ChannelProperty, activity.ChannelId },
                     { AppInsightsConstants.FromIdProperty, activity.From.Id },
                     { AppInsightsConstants.ConversationIdProperty, activity.Conversation.Id },
@@ -120,13 +116,13 @@ namespace Microsoft.Bot.Builder.Azure
                 };
 
             // For some customers, logging user name within Application Insights might be an issue so have provided a config setting to disable this feature
-            if (LogUserName && !string.IsNullOrEmpty(activity.From.Name))
+            if (LogUserName && !string.IsNullOrWhiteSpace(activity.From.Name))
             {
                 properties.Add(AppInsightsConstants.FromNameProperty, activity.From.Name);
             }
 
             // For some customers, logging the utterances within Application Insights might be an so have provided a config setting to disable this feature
-            if (LogOriginalMessage && !string.IsNullOrEmpty(activity.Text))
+            if (LogOriginalMessage && !string.IsNullOrWhiteSpace(activity.Text))
             {
                 properties.Add(AppInsightsConstants.TextProperty, activity.Text);
             }
@@ -136,6 +132,7 @@ namespace Microsoft.Bot.Builder.Azure
 
         public static class AppInsightsConstants
         {
+            public const string ActivityIDProperty = "ActivityId";
             public const string ChannelProperty = "Channel";
             public const string FromIdProperty = "FromId";
             public const string FromNameProperty = "FromName";
