@@ -29,7 +29,7 @@ namespace AspNetCore_LUIS_Bot
             _dialogSet = new DialogSet();
 
             var reminderDialog = new ReminderDialog(_stateAccessors);            
-            _dialogSet.Add("AlarmDialog", reminderDialog); 
+            _dialogSet.Add("ReminderDialog", reminderDialog); 
         }
 
         public async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
@@ -74,7 +74,7 @@ namespace AspNetCore_LUIS_Bot
                         var luisResult = await _luisRecognizer.RecognizeAsync(turnContext, CancellationToken.None);
                         var (intent, score) = luisResult.GetTopScoringIntent();
                         var intentResult = score > LUIS_INTENT_THRESHOLD ? intent : "None";
-                        await dialogContext.BeginAsync("AlarmDialog");
+                        await dialogContext.BeginAsync("ReminderDialog");
                     }
                 }
             }

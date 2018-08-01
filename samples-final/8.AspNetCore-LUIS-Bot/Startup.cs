@@ -114,17 +114,17 @@ namespace AspNetCore_LUIS_Bot
 
                 if (string.IsNullOrWhiteSpace(applicationId))
                 {
-                    throw new InvalidOperationException("The Luis ApplicationId ('Luis-ApplicationId') is required to run this sample.");
+                    throw new InvalidOperationException("The Luis ApplicationId ('Luis-ApplicationId') is required to run this sample.  Please update your appsettings.json");
                 }
 
                 if (string.IsNullOrWhiteSpace(endpointKey))
                 {
-                    throw new InvalidOperationException("The Luis endpoint key ('Luis-EndpointKey') is required to run this sample.");
+                    throw new InvalidOperationException("The Luis endpoint key ('Luis-EndpointKey') is required to run this sample.  Please update your appsettings.json");
                 }
 
                 if (string.IsNullOrWhiteSpace(azureRegion))
                 {
-                    throw new InvalidOperationException("The Luis Azure Region ('Luis-AzureRegion') is required to run this sample.");
+                    throw new InvalidOperationException("The Luis Azure Region ('Luis-AzureRegion') is required to run this sample.  Please update your appsettings.json");
                 }
 
                 var app = new LuisApplication(applicationId, endpointKey, azureRegion);
