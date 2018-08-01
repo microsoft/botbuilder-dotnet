@@ -40,35 +40,44 @@ namespace AspNetCore_LUIS_Bot
             services.AddBot<MyLuisBot>(options =>
             {
                 options.CredentialProvider = new ConfigurationCredentialProvider(Configuration);
+
                 // The Memory Storage used here is for local bot debugging only. When the bot
                 // is restarted, anything stored in memory will be gone. 
-
-                // The File data store, shown here, is suitable for bots that run on 
-                // a single machine and need durable state across application restarts.                 
-                // IStorage dataStore = new FileStorage(System.IO.Path.GetTempPath());
-
-                // For production bots use the Azure Table Store, Azure Blob, or 
-                // Azure CosmosDB storage provides, as seen below. To include any of 
-                // the Azure based storage providers, add the Microsoft.Bot.Builder.Azure 
-                // Nuget package to your solution. That package is found at:
-                //      https://www.nuget.org/packages/Microsoft.Bot.Builder.Azure/
-
-                // IStorage dataStore = new Microsoft.Bot.Builder.Azure.AzureTableStorage("AzureTablesConnectionString", "TableName");
-                //IStorage dataStore = new Microsoft.Bot.Builder.Azure.AzureBlobStorage("AzureBlobConnectionString", "containerName");
                 IStorage dataStore = new MemoryStorage();
+                // For production Azure CosmosDB or Azure Blob storage provides storage as seen below. 
+                // To include add the Microsoft.Bot.Builder.Azure Nuget package to your solution. That package is found at:
+                //      https://www.nuget.org/packages/Microsoft.Bot.Builder.Azure/
+                // IStorage dataStore = new Microsoft.Bot.Builder.Azure.CosmosDbStorage("AzureTablesConnectionString", "TableName");
+                // IStorage dataStore = new Microsoft.Bot.Builder.Azure.AzureBlobStorage("AzureBlobConnectionString", "containerName");
 
-                // *NEW* CREATE NEW CONVERSATION STATE                
+                // Create User State object.
+                // The User State object is where we persist anything at the user-scope (note: the definition of a user
+                // is channel specific).
+                // The User and Conversation state objects are very commonly used.  Custom state objects can also be 
+                // created.
+                //
+                // NOTE: State Property Accessors that are required for Middleware components *could* be built here
+                // for passing into Middleware construction below.
+                // In this particular sample, there are no components that are passed state property accessors in the 
+                // Startup.ConfigureServices() method.  
+                // However, all state property accessors are built and passed to the IBot-derived class via Asp.net Direct
+                // Injection via the Singleton defined below (MyBotAccessor).
                 var userState = new UserState(dataStore);
+
+                // Add to State Object to options State collection.
+                // Generally, all BotState-derived providers should be registered here when creating Accessor's.
+                // This is for creating state property accessors (see MyBotAccessor Singleton below).
                 options.State.Add(userState);
 
-                // Forces storage to auto-load on a new message, and auto-save when complete.  
-                // Put at the beginning of the pipeline.
+                // Add all State provers to BotStateSet Middleware
+                // The BotStateSet Middleware forces state storage to auto-save when the Bot is complete processing the message.
+                // Note: Developers may choose not to add all the State providers to this Middleware if save is not required.
                 var stateSet = new BotStateSet(options.State.ToArray());
                 options.Middleware.Add(stateSet);                                                     
             });
 
             // Now that the bot is registered, create and register any state accesssors. 
-            // These accessors are passed into the Bot on every turn. 
+            // These accessors are passed into the IBot-derived class (MyLuisBot) on every turn. 
             services.AddSingleton<MyBotAccessors>(sp =>
             {
                 var options = sp.GetRequiredService<IOptions<BotFrameworkOptions>>().Value;
@@ -83,6 +92,9 @@ namespace AspNetCore_LUIS_Bot
                     throw new InvalidOperationException("UserState must be defined and added before adding user-scoped state accessors.");
                 }
 
+                // Create Custom State Property Accessors
+                // State Property Accessors enable components to read and write individual properties, without having to 
+                // pass the entire State object.
                 var accessors = new MyBotAccessors
                 {
                     Reminders = userState.CreateProperty<List<Reminder>>(MyBotAccessors.RemindersName, () => new List<Reminder>()),
@@ -93,7 +105,7 @@ namespace AspNetCore_LUIS_Bot
             });
 
             // Create a LUIS Recognizer that is initialized and suitable for passing
-            // into the Bot on each turn. 
+            // into the IBot-derived class (MyLuisBot) on each turn. 
             services.AddSingleton<LuisRecognizer>(sp =>
             {
                 var applicationId = Configuration.GetSection("Luis-ApplicationId")?.Value;
