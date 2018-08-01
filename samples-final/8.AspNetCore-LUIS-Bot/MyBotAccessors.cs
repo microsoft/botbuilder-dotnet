@@ -10,10 +10,10 @@ namespace AspNetCore_LUIS_Bot
     /// Creates the State Accessors used by the LuisBot. In general usage, this class
     /// is created as a Singleton and passed into the LuisBot constructor
     /// </summary>
-    public class LuisBotStateAccessors
+    public class MyBotAccessors
     {        
-        public static string DialogStateName = $"{nameof(LuisBotStateAccessors)}.DialogState";
-        public static string RemindersName = $"{nameof(LuisBotStateAccessors)}.RemindersState";
+        public static string DialogStateName = $"{nameof(MyBotAccessors)}.DialogState";
+        public static string RemindersName = $"{nameof(MyBotAccessors)}.RemindersState";
 
         public IStatePropertyAccessor<List<Reminder>> Reminders { get; set; }
 

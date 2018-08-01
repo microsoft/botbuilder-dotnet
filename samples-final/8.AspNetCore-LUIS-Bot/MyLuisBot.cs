@@ -7,25 +7,25 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
+using Microsoft.Bot.Builder.Ai.Luis;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Choices;
-using Microsoft.Bot.Builder.Integration;
 using Microsoft.Bot.Schema;
-using Microsoft.Extensions.Options;
-// using Microsoft.Recognizers.Text;
 
 namespace AspNetCore_LUIS_Bot
 {
-    public class LuisBot : IBot
+    public class MyLuisBot : IBot
     {
         private const double LUIS_INTENT_THRESHOLD = 0.2d;
 
         private readonly DialogSet _dialogs;        
-        private readonly LuisBotStateAccessors _stateAccessors;
+        private readonly MyBotAccessors _stateAccessors;
+        private readonly LuisRecognizer _luisRecognizer;
 
-        public LuisBot(LuisBotStateAccessors accessors)
+        public MyLuisBot(MyBotAccessors accessors, LuisRecognizer recognizer)
         {            
-            _stateAccessors = accessors ?? throw new ArgumentNullException(nameof(accessors)); 
+            _stateAccessors = accessors ?? throw new ArgumentNullException(nameof(accessors));
+            _luisRecognizer = recognizer ?? throw new ArgumentNullException(nameof(recognizer));
 
             _dialogs = new DialogSet();
             _dialogs.Add("None", new WaterfallStep[] { DefaultDialog });
@@ -140,7 +140,7 @@ namespace AspNetCore_LUIS_Bot
 
                     if (!turnContext.Responded)
                     {
-                        var luisResult = await Startup.LuisRecognizer.RecognizeAsync(turnContext, CancellationToken.None);
+                        var luisResult = await _luisRecognizer.RecognizeAsync(turnContext, CancellationToken.None);
                         var (intent, score) = luisResult.GetTopScoringIntent();
                         var intentResult = score > LUIS_INTENT_THRESHOLD ? intent : "None";
                         await dialogContext.BeginAsync(intent);

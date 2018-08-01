@@ -18,10 +18,7 @@ using Microsoft.Extensions.Options;
 namespace AspNetCore_LUIS_Bot
 {
     public class Startup
-    {
-        public static LuisRecognizer LuisRecognizer = null;
-
-
+    {        
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public Startup(IHostingEnvironment env)
@@ -40,7 +37,7 @@ namespace AspNetCore_LUIS_Bot
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddBot<LuisBot>(options =>
+            services.AddBot<MyLuisBot>(options =>
             {
                 options.CredentialProvider = new ConfigurationCredentialProvider(Configuration);
                 // The Memory Storage used here is for local bot debugging only. When the bot
@@ -67,17 +64,12 @@ namespace AspNetCore_LUIS_Bot
                 // Forces storage to auto-load on a new message, and auto-save when complete.  
                 // Put at the beginning of the pipeline.
                 var stateSet = new BotStateSet(options.State.ToArray());
-                options.Middleware.Add(stateSet);
-                                
-                // *NEW* ONE TIME INIT OF LUIS 
-                var (modelId, subscriptionKey, url) = GetLuisConfiguration(Configuration);
-                var app = new LuisApplication(modelId, subscriptionKey, "Westus");
-                LuisRecognizer = new LuisRecognizer(app);             
+                options.Middleware.Add(stateSet);                                                     
             });
 
             // Now that the bot is registered, create and register any state accesssors. 
             // These accessors are passed into the Bot on every turn. 
-            services.AddSingleton<LuisBotStateAccessors>(sp =>
+            services.AddSingleton<MyBotAccessors>(sp =>
             {
                 var options = sp.GetRequiredService<IOptions<BotFrameworkOptions>>().Value;
                 if (options == null)
@@ -85,13 +77,42 @@ namespace AspNetCore_LUIS_Bot
                     throw new InvalidOperationException("BotFrameworkOptions must be configured prior to setting up the State Accessors");
                 }
 
-                var accessors = new LuisBotStateAccessors
+                var accessors = new MyBotAccessors
                 {
-                    Reminders = options.UserState.CreateProperty<List<Reminder>>(LuisBotStateAccessors.RemindersName, () => new List<Reminder>()),
-                    UserDialogState = options.UserState.CreateProperty<Dictionary<string, object>>(LuisBotStateAccessors.DialogStateName, () => new Dictionary<string, object>())
+                    Reminders = options.UserState.CreateProperty<List<Reminder>>(MyBotAccessors.RemindersName, () => new List<Reminder>()),
+                    UserDialogState = options.UserState.CreateProperty<Dictionary<string, object>>(MyBotAccessors.DialogStateName, () => new Dictionary<string, object>())
                 };
 
                 return accessors;
+            });
+
+            // Create a LUIS Recognizer that is initialized and suitable for passing
+            // into the Bot on each turn. 
+            services.AddSingleton<LuisRecognizer>(sp =>
+            {
+                var applicationId = Configuration.GetSection("Luis-ApplicationId")?.Value;
+                var endpointKey = Configuration.GetSection("Luis-EndpointKey")?.Value;
+                var azureRegion = Configuration.GetSection("Luis-AzureRegion")?.Value;
+
+                if (string.IsNullOrWhiteSpace(applicationId))
+                {
+                    throw new InvalidOperationException("The Luis ApplicationId ('Luis-ApplicationId') is required to run this sample.");
+                }
+
+                if (string.IsNullOrWhiteSpace(endpointKey))
+                {
+                    throw new InvalidOperationException("The Luis endpoint key ('Luis-EndpointKey') is required to run this sample.");
+                }
+
+                if (string.IsNullOrWhiteSpace(azureRegion))
+                {
+                    throw new InvalidOperationException("The Luis Azure Region ('Luis-AzureRegion') is required to run this sample.");
+                }
+
+                var app = new LuisApplication(applicationId, endpointKey, azureRegion);
+                var recognizer = new LuisRecognizer(app);
+
+                return recognizer;
             });
         }
 
@@ -106,15 +127,6 @@ namespace AspNetCore_LUIS_Bot
             app.UseDefaultFiles()
                 .UseStaticFiles()
                 .UseBotFramework();
-        }
-        private (string modelId, string subscriptionKey, Uri url) GetLuisConfiguration(IConfiguration configuration)
-        {
-            var modelId = configuration.GetSection("Luis-ModelId")?.Value;
-            var subscriptionKey = configuration.GetSection("Luis-SubscriptionId")?.Value;
-            var url = configuration.GetSection("Luis-Url")?.Value;
-            return (modelId, subscriptionKey, new Uri(url));
-        }
-
-
+        }        
     }
 }
