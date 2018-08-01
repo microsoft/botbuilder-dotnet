@@ -37,7 +37,7 @@ namespace Microsoft.Bot.Builder
         /// <returns>returns an IPropertyAccessor</returns>
         public IStatePropertyAccessor<T> CreateProperty<T>(string name, Func<T> defaultValueFactory = null)
         {
-            if (name == null)
+            if (string.IsNullOrWhiteSpace(name))
             {
                 throw new ArgumentNullException(nameof(name));
             }
@@ -347,10 +347,21 @@ namespace Microsoft.Bot.Builder
         public static async Task<TState> GetStateAsync<TState>(this ITurnContext context, IStatePropertyAccessor<TState> accessor)
             where TState : class, new()
         {
+            if (accessor == null)
+            {
+                throw new ArgumentNullException(nameof(accessor));
+            }
+
             return await accessor.GetAsync(context).ConfigureAwait(false);
         }
+
         public static async Task SetStateAsync<TState>(this ITurnContext context, IStatePropertyAccessor<TState> accessor, TState value)
         {
+            if (accessor == null)
+            {
+                throw new ArgumentNullException(nameof(accessor));
+            }
+
             await accessor.SetAsync(context, value).ConfigureAwait(false);
         }
     }

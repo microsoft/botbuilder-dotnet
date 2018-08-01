@@ -18,13 +18,5 @@ namespace Microsoft.Bot.Builder
         }
 
         protected override string GetStorageKey(ITurnContext context) => $"conversation/{context.Activity.ChannelId}/{context.Activity.Conversation.Id}";
-
-        ///// <summary>
-        ///// Gets the conversation state property from turn context.
-        ///// </summary>
-        ///// <param name="context">The context object for this turn.</param>
-        ///// <returns>The coversation state object.</returns>
-        //public static TState Get(ITurnContext context) { return context.Services.Get<TState>(PropertyName); }
-
     }
 }

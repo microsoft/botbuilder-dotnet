@@ -77,10 +77,16 @@ namespace AspNetCore_LUIS_Bot
                     throw new InvalidOperationException("BotFrameworkOptions must be configured prior to setting up the State Accessors");
                 }
 
+                var userState = options.State.OfType<UserState>().FirstOrDefault();
+                if (userState == null)
+                {
+                    throw new InvalidOperationException("UserState must be defined and added before adding user-scoped state accessors.");
+                }
+
                 var accessors = new MyBotAccessors
                 {
-                    Reminders = options.UserState.CreateProperty<List<Reminder>>(MyBotAccessors.RemindersName, () => new List<Reminder>()),
-                    UserDialogState = options.UserState.CreateProperty<Dictionary<string, object>>(MyBotAccessors.DialogStateName, () => new Dictionary<string, object>())
+                    Reminders = userState.CreateProperty<List<Reminder>>(MyBotAccessors.RemindersName, () => new List<Reminder>()),
+                    UserDialogState = userState.CreateProperty<Dictionary<string, object>>(MyBotAccessors.DialogStateName, () => new Dictionary<string, object>())
                 };
 
                 return accessors;

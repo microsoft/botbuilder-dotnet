@@ -13,9 +13,7 @@ namespace Microsoft.Bot.Builder
     ///  instances.
     /// </summary>
     public class BotStateSet : IMiddleware
-    {
-        //private readonly List<BotState> _botStates = new List<BotState>();
-
+    {        
         /// <summary>
         /// Initializes a new instance of the <see cref="BotStateSet"/> class.
         /// </summary>
