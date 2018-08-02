@@ -25,6 +25,31 @@ namespace Microsoft.Bot.Builder.Tests
     [TestCategory("State Management")]
     public class BotStateTests
     {
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException), "Cannot have empty/null property name")]
+        public async Task State_EmptyName()
+        {
+            // Arrange
+            var dictionary = new Dictionary<string, JObject>();
+            var userState = new UserState(new MemoryStorage(dictionary));
+
+            // Act
+            var propertyA = userState.CreateProperty<string>("");
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException), "Cannot have empty/null property name")]
+        public async Task State_NullName()
+        {
+            // Arrange
+            var dictionary = new Dictionary<string, JObject>();
+            var userState = new UserState(new MemoryStorage(dictionary));
+
+            // Act
+            var propertyA = userState.CreateProperty<string>(null);
+        }
+
         [TestMethod]
         public async Task LoadSetSave()
         {

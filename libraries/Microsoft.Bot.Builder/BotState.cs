@@ -37,7 +37,7 @@ namespace Microsoft.Bot.Builder
         /// <returns>returns an IPropertyAccessor</returns>
         public IStatePropertyAccessor<T> CreateProperty<T>(string name, Func<T> defaultValueFactory = null)
         {
-            if (name == null)
+            if (string.IsNullOrWhiteSpace(name))
             {
                 throw new ArgumentNullException(nameof(name));
             }
@@ -331,4 +331,5 @@ namespace Microsoft.Bot.Builder
             }
         }
     }
+
 }
