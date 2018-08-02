@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Schema;
@@ -85,6 +86,27 @@ namespace Microsoft.Bot.Builder.Tests
                 .Send("get convCount")
                     .AssertReply("11", "conversationCount for conversation2 should be reset")
                 .StartTestAsync();
+        }
+
+
+        [TestMethod]
+        public void BotStateSet_Properties()
+        {
+            var storage = new MemoryStorage();
+
+            // setup userstate
+            var userState = new UserState(storage);
+            var userProperty = userState.CreateProperty("userCount", () => 100);
+
+            // setup convState
+            var convState = new ConversationState(storage);
+            var convProperty = convState.CreateProperty("convCount", () => 10);
+
+            var stateSet = new BotStateSet(userState, convState);
+
+            Assert.AreEqual(stateSet.BotStates.Count, 2);
+            Assert.IsNotNull(stateSet.BotStates.OfType<UserState>().First());
+            Assert.IsNotNull(stateSet.BotStates.OfType<ConversationState>().First());
         }
 
     }
