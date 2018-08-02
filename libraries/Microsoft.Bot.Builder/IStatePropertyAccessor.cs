@@ -13,6 +13,7 @@ namespace Microsoft.Bot.Builder
     {
         /// <summary>
         /// Get the property value from the source.
+        /// If the property is not set, and no default value was defined, a <see cref="MissingMemberException"/> is thrown.
         /// </summary>
         /// <param name="turnContext">Turn Context.</param>
         /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>

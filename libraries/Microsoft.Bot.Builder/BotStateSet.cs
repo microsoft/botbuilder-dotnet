@@ -13,7 +13,7 @@ namespace Microsoft.Bot.Builder
     ///  instances.
     /// </summary>
     public class BotStateSet : IMiddleware
-    {        
+    {
         /// <summary>
         /// Initializes a new instance of the <see cref="BotStateSet"/> class.
         /// </summary>
@@ -45,7 +45,6 @@ namespace Microsoft.Bot.Builder
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task OnTurnAsync(ITurnContext context, NextDelegate next, CancellationToken cancellationToken = default(CancellationToken))
         {
-            await LoadAsync(context, true, cancellationToken).ConfigureAwait(false);
             await next(cancellationToken).ConfigureAwait(false);
             await SaveChangesAsync(context, false, cancellationToken).ConfigureAwait(false);
         }

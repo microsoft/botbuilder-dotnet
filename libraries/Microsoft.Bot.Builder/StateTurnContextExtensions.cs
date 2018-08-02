@@ -38,5 +38,4 @@ namespace Microsoft.Bot.Builder
             await accessor.SetAsync(context, value).ConfigureAwait(false);
         }
     }
-
 }
