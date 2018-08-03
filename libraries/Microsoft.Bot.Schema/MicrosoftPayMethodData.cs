@@ -31,14 +31,14 @@ namespace Microsoft.Bot.Schema
         /// <summary>
         /// Initializes a new instance of the MicrosoftPayMethodData class.
         /// </summary>
-        /// <param name="mechantId">Microsoft Pay Merchant ID</param>
+        /// <param name="merchantId">Microsoft Pay Merchant ID</param>
         /// <param name="supportedNetworks">Supported payment networks (e.g.,
         /// "visa" and "mastercard")</param>
         /// <param name="supportedTypes">Supported payment types (e.g.,
         /// "credit")</param>
-        public MicrosoftPayMethodData(string mechantId = default(string), IList<string> supportedNetworks = default(IList<string>), IList<string> supportedTypes = default(IList<string>))
+        public MicrosoftPayMethodData(string merchantId = default(string), IList<string> supportedNetworks = default(IList<string>), IList<string> supportedTypes = default(IList<string>))
         {
-            MechantId = mechantId;
+            MerchantId = merchantId;
             SupportedNetworks = supportedNetworks;
             SupportedTypes = supportedTypes;
             CustomInit();
@@ -52,8 +52,8 @@ namespace Microsoft.Bot.Schema
         /// <summary>
         /// Gets or sets microsoft Pay Merchant ID
         /// </summary>
-        [JsonProperty(PropertyName = "mechantId")]
-        public string MechantId { get; set; }
+        [JsonProperty(PropertyName = "merchantId")]
+        public string MerchantId { get; set; }
 
         /// <summary>
         /// Gets or sets supported payment networks (e.g., "visa" and
