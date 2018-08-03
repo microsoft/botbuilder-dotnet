@@ -78,17 +78,17 @@ namespace Microsoft.Bot.Connector
         }
 
 
-        internal static string GetOsVersion()
+        public static string GetOsVersion()
         {
             return System.Runtime.InteropServices.RuntimeInformation.OSDescription;
         }
 
-        internal static string GetArchitecture()
+        public static string GetArchitecture()
         {
             return System.Runtime.InteropServices.RuntimeInformation.OSArchitecture.ToString();
         }
 
-        internal static string GetASPNetVersion()
+        public static string GetASPNetVersion()
         {
             return Assembly
                     .GetEntryAssembly()?
@@ -96,7 +96,7 @@ namespace Microsoft.Bot.Connector
                     .FrameworkName;
         }
 
-        internal static string GetClientVersion<T>(T client) where T : ServiceClient<T>
+        public static string GetClientVersion<T>(T client) where T : ServiceClient<T>
         {
             var type = client.GetType();
             var assembly = type.GetTypeInfo().Assembly;
