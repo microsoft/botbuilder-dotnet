@@ -9,6 +9,7 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Reflection;
+using System.Runtime.Versioning;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Rest;
 
@@ -64,11 +65,36 @@ namespace Microsoft.Bot.Connector
             // https://github.com/Microsoft/botbuilder-dotnet/issues/471
             this.HttpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("Microsoft-BotFramework", "3.1"));
 
-            // The client SDK version is coupled to the version number of the package. 
-            this.HttpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue($"(BotBuilder .Net/{GetClientVersion(this)})"));
+            // The Client SDK Version 
+            //  https://github.com/Microsoft/botbuilder-dotnet/blob/d342cd66d159a023ac435aec0fdf791f93118f5f/doc/UserAgents.md
+            this.HttpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("BotBuilder", GetClientVersion(this)));
+
+            // Additional Info. 
+            // https://github.com/Microsoft/botbuilder-dotnet/blob/d342cd66d159a023ac435aec0fdf791f93118f5f/doc/UserAgents.md
+            var userAgent = $"({GetASPNetVersion()}; {GetOsVersion()}; {GetArchitecture()})";
+            this.HttpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(userAgent));
+
             this.HttpClient.DefaultRequestHeaders.ExpectContinue = false;
         }
 
+
+        internal static string GetOsVersion()
+        {
+            return System.Runtime.InteropServices.RuntimeInformation.OSDescription;
+        }
+
+        internal static string GetArchitecture()
+        {
+            return System.Runtime.InteropServices.RuntimeInformation.OSArchitecture.ToString();
+        }
+
+        internal static string GetASPNetVersion()
+        {
+            return Assembly
+                    .GetEntryAssembly()?
+                    .GetCustomAttribute<TargetFrameworkAttribute>()?
+                    .FrameworkName;
+        }
 
         internal static string GetClientVersion<T>(T client) where T : ServiceClient<T>
         {
