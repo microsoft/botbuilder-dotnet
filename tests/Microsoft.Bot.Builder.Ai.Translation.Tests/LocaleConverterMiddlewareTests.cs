@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
         public async Task LocaleConverterMiddleware_ConvertFromFrench()
         {
             var userState = new UserState(new MemoryStorage());
-            var userLocaleProperty = userState.CreateProperty<string>("locale", () => "en-us");
+            var userLocaleProperty = userState.CreateProperty<string>("locale");
 
             TestAdapter adapter = new TestAdapter()
                 .Use(userState)
@@ -46,7 +46,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
         public async Task LocaleConverterMiddleware_ConvertFromSpanishSpain()
         {
             var userState = new UserState(new MemoryStorage());
-            var userLocaleProperty = userState.CreateProperty<string>("locale", () => "en-us");
+            var userLocaleProperty = userState.CreateProperty<string>("locale");
 
 
             TestAdapter adapter = new TestAdapter()
@@ -74,7 +74,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
         public async Task LocaleConverterMiddleware_ConvertToChinese()
         {
             var userState = new UserState(new MemoryStorage());
-            var userLocaleProperty = userState.CreateProperty<string>("locale", () => "en-us");
+            var userLocaleProperty = userState.CreateProperty<string>("locale");
 
             TestAdapter adapter = new TestAdapter()
                 .Use(userState)

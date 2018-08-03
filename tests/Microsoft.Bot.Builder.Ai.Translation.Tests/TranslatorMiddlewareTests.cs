@@ -79,7 +79,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
                 .Respond("application/json", GetResponse("TranslatorMiddleware_DetectAndTranslateToEnglish_Hello.json"));
 
             var userState = new UserState(new MemoryStorage());
-            var languageStateProperty = userState.CreateProperty<string>("languageState", () => "en");
+            var languageStateProperty = userState.CreateProperty<string>("languageState");
 
             var adapter = new TestAdapter()
                 .Use(new TranslationMiddleware(new[] { "en" }, _translatorKey, httpClient: mockHttp.ToHttpClient()));
@@ -101,6 +101,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
         [TestMethod]
         [TestCategory("AI")]
         [TestCategory("Translator")]
+        
         public async Task TranslatorMiddleware_TranslateFrenchToEnglish()
         {
             var mockHttp = new MockHttpMessageHandler();
@@ -110,7 +111,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
                 .Respond("application/json", GetResponse("TranslatorMiddleware_TranslateFrenchToEnglish_Translate.json"));
 
             var userState = new UserState(new MemoryStorage());
-            var languageStateProperty = userState.CreateProperty("languageState", () => "en");
+            var languageStateProperty = userState.CreateProperty<string>("languageState");
             
             var adapter = new TestAdapter()
                 .Use(userState)
@@ -144,7 +145,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
                 .Respond("application/json", GetResponse("TranslatorMiddleware_TranslateFrenchToEnglishToUserLanguage_Hello.json"));
 
             var userState = new UserState(new MemoryStorage());
-            var languageStateProperty = userState.CreateProperty("languageState", () => "en");
+            var languageStateProperty = userState.CreateProperty<string>("languageState");
             
             var adapter = new TestAdapter()
                 .Use(userState)
