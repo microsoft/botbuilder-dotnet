@@ -21,11 +21,11 @@ namespace Microsoft.Bot.Builder.Tests
 
             // setup userstate
             var userState = new UserState(storage);
-            var userProperty = userState.CreateProperty("userCount", () => 100);
+            var userProperty = userState.CreateProperty<int>("userCount");
 
             // setup convState
             var convState = new ConversationState(storage);
-            var convProperty = convState.CreateProperty("convCount", () => 10);
+            var convProperty = convState.CreateProperty<int>("convCount");
 
             var adapter = new TestAdapter()
                 .Use(new BotStateSet(userState, convState));
@@ -33,8 +33,8 @@ namespace Microsoft.Bot.Builder.Tests
             BotCallbackHandler botLogic = async (context, cancellationToken) =>
             {
                 // get userCount and convCount from botStateSet
-                var userCount = await userProperty.GetAsync(context).ConfigureAwait(false);
-                var convCount = await convProperty.GetAsync(context).ConfigureAwait(false);
+                var userCount = await userProperty.GetAsync(context, () => 100).ConfigureAwait(false);
+                var convCount = await convProperty.GetAsync(context, () => 10).ConfigureAwait(false);
                             
                 // System.Diagnostics.Debug.WriteLine($"{context.Activity.Id} UserCount({context.Activity.From.Id}):{userCount} convCount({context.Activity.Conversation.Id}):{convCount}");
 
@@ -96,11 +96,11 @@ namespace Microsoft.Bot.Builder.Tests
 
             // setup userstate
             var userState = new UserState(storage);
-            var userProperty = userState.CreateProperty("userCount", () => 100);
+            var userProperty = userState.CreateProperty<int>("userCount");
 
             // setup convState
             var convState = new ConversationState(storage);
-            var convProperty = convState.CreateProperty("convCount", () => 10);
+            var convProperty = convState.CreateProperty<int>("convCount");
 
             var stateSet = new BotStateSet(userState, convState);
 

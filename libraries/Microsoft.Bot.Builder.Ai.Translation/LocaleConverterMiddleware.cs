@@ -54,7 +54,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation
                 {
                     if (!string.IsNullOrWhiteSpace(message.Text))
                     {
-                        string userLocale = await _userLocaleProperty.GetAsync(context).ConfigureAwait(false);
+                        string userLocale = await _userLocaleProperty.GetAsync(context, () => "en-us").ConfigureAwait(false);
                         if (userLocale != _toLocale)
                         {
                             ConvertLocaleMessage(context, userLocale);

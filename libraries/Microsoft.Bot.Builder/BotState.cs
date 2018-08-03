@@ -33,16 +33,15 @@ namespace Microsoft.Bot.Builder
         /// </summary>
         /// <typeparam name="T">type of property.</typeparam>
         /// <param name="name">name of the property.</param>
-        /// <param name="defaultValueFactory">default value.</param>
         /// <returns>returns an IPropertyAccessor</returns>
-        public IStatePropertyAccessor<T> CreateProperty<T>(string name, Func<T> defaultValueFactory = null)
+        public IStatePropertyAccessor<T> CreateProperty<T>(string name)
         {
             if (string.IsNullOrWhiteSpace(name))
             {
                 throw new ArgumentNullException(nameof(name));
             }
 
-            return new BotStatePropertyAccessor<T>(this, name, defaultValueFactory);
+            return new BotStatePropertyAccessor<T>(this, name);
         }
 
         /// <summary>
@@ -264,13 +263,11 @@ namespace Microsoft.Bot.Builder
         private class BotStatePropertyAccessor<T> : IStatePropertyAccessor<T>
         {
             private BotState _botState;
-            private Func<T> _defaultValueFactory;
 
-            public BotStatePropertyAccessor(BotState botState, string name, Func<T> defaultValueFactory)
+            public BotStatePropertyAccessor(BotState botState, string name)
             {
                 _botState = botState;
                 Name = name;
-                _defaultValueFactory = defaultValueFactory;
             }
 
             /// <summary>
@@ -296,7 +293,7 @@ namespace Microsoft.Bot.Builder
             /// </summary>
             /// <param name="turnContext">turn context</param>
             /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-            public async Task<T> GetAsync(ITurnContext turnContext)
+            public async Task<T> GetAsync(ITurnContext turnContext, Func<T> defaultValueFactory = null)
             {
                 await _botState.LoadAsync(turnContext).ConfigureAwait(false);
                 try
@@ -306,12 +303,12 @@ namespace Microsoft.Bot.Builder
                 catch (KeyNotFoundException)
                 {
                     // ask for default value from factory
-                    if (_defaultValueFactory == null)
+                    if (defaultValueFactory == null)
                     {
                         throw new MissingMemberException("Property not set and no default provided.");
                     }
 
-                    var result = _defaultValueFactory();
+                    var result = defaultValueFactory();
 
                     // save default value for any further calls
                     await SetAsync(turnContext, result).ConfigureAwait(false);

@@ -120,7 +120,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation
                         }
                         else
                         {
-                            sourceLanguage = await _languageStateProperty.GetAsync(context).ConfigureAwait(false) ?? "en";
+                            sourceLanguage = await _languageStateProperty.GetAsync(context, () => "en").ConfigureAwait(false) ?? "en";
                         }
 
                         targetLanguage = _nativeLanguages.Contains(sourceLanguage) ? sourceLanguage : _nativeLanguages.FirstOrDefault() ?? "en";
