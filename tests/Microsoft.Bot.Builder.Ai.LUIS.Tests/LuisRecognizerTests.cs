@@ -16,7 +16,7 @@ using Newtonsoft.Json.Linq;
 namespace Microsoft.Bot.Builder.Ai.Luis.Tests
 {
     [TestClass]
-
+    [Ignore]
     // The LUIS application used in these unit tests is in TestData/TestLuistApp
     public class LuisRecognizerTests
     {
@@ -327,7 +327,6 @@ namespace Microsoft.Bot.Builder.Ai.Luis.Tests
         }
 
         [TestMethod]
-        [Ignore]
         public async Task Composite1() => await TestJson<RecognizerResult>("Composite1.json");
 
         [TestMethod]
