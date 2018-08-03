@@ -46,9 +46,10 @@ namespace Microsoft.Bot.Builder.Integration
 
         /// <summary>
         /// Gets a list of the <see cref="BotState"/> providers to use on each incoming activity.
-        /// Objects in the State list enables other components to perform things like creating state property accessors
-        /// during the start up process.
-        /// Note: The providers in this list are not associated with the BotStateSet Middleware component.  State providers
+        /// Objects in the State list enable other components to get access to the state providers
+        /// during the start up process.  For example, creating state property accessors within a ASP.net Core Singleton
+        /// that could be passed to your IBot-derived class.
+        /// The providers in this list are not associated with the BotStateSet Middleware component. To clarify, state providers
         /// in this list are not automatically loaded or saved during the turn process.
         /// </summary>
         /// <value>The list of property state providers.</value>
