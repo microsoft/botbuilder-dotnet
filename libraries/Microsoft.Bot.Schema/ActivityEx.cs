@@ -31,7 +31,8 @@ namespace Microsoft.Bot.Schema
         IEndOfConversationActivity,
         IEventActivity,
         IInvokeActivity,
-        ITraceActivity
+        ITraceActivity,
+        IHandoffActivity
     {
         /// <summary>
         /// Content-type for an <see cref="Activity"/>.
@@ -143,9 +144,9 @@ namespace Microsoft.Bot.Schema
         public static ITypingActivity CreateTypingActivity() { return new Activity(ActivityTypes.Typing); }
 
         /// <summary>
-        /// Create a ping activity.
+        /// Create a Handoff activity.
         /// </summary>
-        public static IActivity CreatePingActivity() { return new Activity(ActivityTypes.Ping); }
+        public static IHandoffActivity CreateHandoffActivity() { return new Activity(ActivityTypes.Handoff); }
 
         /// <summary>
         /// Creates an end of conversation activity.
@@ -294,6 +295,12 @@ namespace Microsoft.Bot.Schema
         /// </summary>
         /// <returns></returns>
         public ITraceActivity AsTraceActivity() { return IsActivity(ActivityTypes.Trace) ? this : null; }
+
+        /// <summary>
+        /// Returns this activity as a handoff activty type; or null, if this is not that type of activity.
+        /// </summary>
+        public IHandoffActivity AsHandoffActivity() { return IsActivity(ActivityTypes.Handoff) ? this : null; }
+
 
         /// <summary>
         /// Checks whether this message activity has content.

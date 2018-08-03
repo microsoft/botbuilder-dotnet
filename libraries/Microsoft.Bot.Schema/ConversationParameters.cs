@@ -37,7 +37,8 @@ namespace Microsoft.Bot.Schema
         /// <param name="topicName">(Optional) Topic of the conversation (if
         /// supported by the channel)</param>
         /// <param name="activity">(Optional) When creating a new conversation,
-        /// use this activity as the intial message to the conversation</param>
+        /// use this activity as the initial message to the
+        /// conversation</param>
         /// <param name="channelData">Channel specific payload for creating the
         /// conversation</param>
         public ConversationParameters(bool? isGroup = default(bool?), ChannelAccount bot = default(ChannelAccount), IList<ChannelAccount> members = default(IList<ChannelAccount>), string topicName = default(string), Activity activity = default(Activity), object channelData = default(object))
@@ -83,7 +84,7 @@ namespace Microsoft.Bot.Schema
 
         /// <summary>
         /// Gets or sets (Optional) When creating a new conversation, use this
-        /// activity as the intial message to the conversation
+        /// activity as the initial message to the conversation
         /// </summary>
         [JsonProperty(PropertyName = "activity")]
         public Activity Activity { get; set; }

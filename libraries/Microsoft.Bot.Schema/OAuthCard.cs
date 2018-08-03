@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Schema
     using System.Linq;
 
     /// <summary>
-    /// A card representing a request to peform a sign in via OAuth
+    /// A card representing a request to perform a sign in via OAuth
     /// </summary>
     public partial class OAuthCard
     {
