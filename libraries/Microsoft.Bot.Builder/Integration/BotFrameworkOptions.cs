@@ -46,9 +46,12 @@ namespace Microsoft.Bot.Builder.Integration
 
         /// <summary>
         /// Gets a list of the <see cref="BotState"/> providers to use on each incoming activity.
+        /// Objects in the State list enables other components to perform things like creating state property accessors
+        /// during the start up process.
+        /// Note: The providers in this list are not associated with the BotStateSet Middleware component.  State providers
+        /// in this list are not automatically loaded or saved during the turn process.
         /// </summary>
-        /// <value>The middleware list.</value>
-        /// <seealso cref="BotAdapter.Use(IMiddleware)"/>
+        /// <value>The list of property state providers.</value>
         public IList<BotState> State { get; } = new List<BotState>();
 
         /// <summary>
