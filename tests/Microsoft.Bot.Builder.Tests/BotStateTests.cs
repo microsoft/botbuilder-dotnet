@@ -175,9 +175,8 @@ namespace Microsoft.Bot.Builder.Tests
             var testProperty = userState.CreateProperty<TestPocoState>("test");
 
             var value = await testProperty.GetAsync(context);
-            Assert.IsNull(value);
-
         }
+
 
         [TestMethod,
          Description("Cannot get a bool with no default set")]

@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Schema;
@@ -12,6 +13,42 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
     [TestClass]
     public class LocaleConverterMiddlewareTests
     {
+
+        [TestMethod]
+        [TestCategory("AI")]
+        [TestCategory("Locale Converter")]
+        public void LocaleConverterMiddleware_LocaleConstructor()
+        {
+            var userState = new UserState(new MemoryStorage());
+            var userLocaleProperty = userState.CreateProperty<string>("locale");
+            var lcm = new LocaleConverterMiddleware(userLocaleProperty, toLocale:"en-us", localeConverter:LocaleConverter.Converter, defaultLocale:"en-us");
+        }
+
+        [TestMethod]
+        [TestCategory("AI")]
+        [TestCategory("Locale Converter")]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void LocaleConverterMiddleware_NullDefaultLocale()
+        {
+            var userState = new UserState(new MemoryStorage());
+            var userLocaleProperty = userState.CreateProperty<string>("locale");
+            var lcm = new LocaleConverterMiddleware(userLocaleProperty, toLocale: "en-us", localeConverter: LocaleConverter.Converter, defaultLocale: null);
+        }
+
+        [TestMethod]
+        [TestCategory("AI")]
+        [TestCategory("Locale Converter")]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void LocaleConverterMiddleware_EmptyDefaultLocale()
+        {
+            var userState = new UserState(new MemoryStorage());
+            var userLocaleProperty = userState.CreateProperty<string>("locale");
+            var lcm = new LocaleConverterMiddleware(userLocaleProperty, toLocale: "en-us", localeConverter: LocaleConverter.Converter, defaultLocale: " ");
+        }
+
+
+
+
 
         [TestMethod]
         [TestCategory("AI")]
