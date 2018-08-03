@@ -33,8 +33,14 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         /// <param name="translatorKey">Your subscription key for the Microsoft Translator Text API.</param>
         /// <param name="toUserLanguage">Indicates whether to translate messages sent from the bot into the user's language.</param>
         /// <param name="httpClient">An alternate HTTP client to use.</param>
-        public TranslationMiddleware(string[] nativeLanguages, string translatorKey, bool toUserLanguage = false, HttpClient httpClient = null)
+        /// <param name="defaultLocale">Default locale to use when underlying user locale is undefined.</param>
+        public TranslationMiddleware(string[] nativeLanguages, string translatorKey, bool toUserLanguage = false, HttpClient httpClient = null, string defaultLocale = "en")
         {
+            if (string.IsNullOrWhiteSpace(defaultLocale))
+            {
+                throw new ArgumentNullException(nameof(defaultLocale));
+            }
+
             AssertValidNativeLanguages(nativeLanguages);
             this._nativeLanguages = nativeLanguages;
             if (string.IsNullOrEmpty(translatorKey))
@@ -46,6 +52,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation
             _patterns = new Dictionary<string, List<string>>();
             _userCustomDictonaries = new CustomDictionary();
             _toUserLanguage = toUserLanguage;
+            DefaultLocale = defaultLocale;
         }
 
         /// <summary>
@@ -58,11 +65,12 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         /// /// <param name="userCustomDictonaries">Custom languages dictionary object, used to store all the different languages dictionaries
         /// configured by the user to overwrite the translator output to certain vocab by the custom dictionary translation.</param>
         /// <param name="toUserLanguage">Indicates whether to translate messages sent from the bot into the user's language.</param>
+        /// <param name="defaultLocale">Default locale to use when underlying user locale is undefined.</param>
         /// <remarks>Each pattern the <paramref name="patterns"/> describes an entity that should not be translated.
         /// For example, in French <c>je m’appelle ([a-z]+)</c>, which will avoid translation of anything coming after je m’appelle.</remarks>
         /// <param name="httpClient">An alternate HTTP client to use.</param>
-        public TranslationMiddleware(string[] nativeLanguages, string translatorKey, Dictionary<string, List<string>> patterns, CustomDictionary userCustomDictonaries, bool toUserLanguage = false, HttpClient httpClient = null)
-            : this(nativeLanguages, translatorKey, toUserLanguage, httpClient)
+        public TranslationMiddleware(string[] nativeLanguages, string translatorKey, Dictionary<string, List<string>> patterns, CustomDictionary userCustomDictonaries, bool toUserLanguage = false, HttpClient httpClient = null, string defaultLocale = "en")
+            : this(nativeLanguages, translatorKey, toUserLanguage, httpClient, defaultLocale)
         {
             if (patterns != null)
             {
@@ -86,21 +94,28 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         /// configured by the user to overwrite the translator output to certain vocab by the custom dictionary translation.</param>
         /// <param name="languageStateProperty">A Property Accessor for for getting the users active language.</param>
         /// <param name="toUserLanguage">Indicates whether to translate messages sent from the bot into the user's language.</param>
+        /// <param name="defaultLocale">Default locale to use when underlying user locale is undefined.</param>
         /// <remarks>Each pattern the <paramref name="patterns"/> describes an entity that should not be translated.
         /// For example, in French <c>je m’appelle ([a-z]+)</c>, which will avoid translation of anything coming after je m’appelle.</remarks>
         /// <param name="httpClient">An alternate HTTP client to use.</param>
-        public TranslationMiddleware(string[] nativeLanguages, string translatorKey, Dictionary<string, List<string>> patterns, CustomDictionary userCustomDictonaries, IStatePropertyAccessor<string> languageStateProperty, bool toUserLanguage = false, HttpClient httpClient = null)
-            : this(nativeLanguages, translatorKey, patterns, userCustomDictonaries, toUserLanguage, httpClient)
+        public TranslationMiddleware(string[] nativeLanguages, string translatorKey, Dictionary<string, List<string>> patterns, CustomDictionary userCustomDictonaries, IStatePropertyAccessor<string> languageStateProperty, bool toUserLanguage = false, HttpClient httpClient = null, string defaultLocale = "en")
+            : this(nativeLanguages, translatorKey, patterns, userCustomDictonaries, toUserLanguage, httpClient, defaultLocale)
         {
             _languageStateProperty = languageStateProperty ?? throw new ArgumentNullException(nameof(languageStateProperty));
         }
 
         /// <summary>
+        /// Gets the default locale to use when underlying user locale is undefined.
+        /// </summary>
+        /// <value>The default locale that will be used when the underlying user locale is undefined.</value>
+        public virtual string DefaultLocale { get; }
+
+        /// <summary>
         /// Processess an incoming activity.
         /// </summary>
-        /// <param name="context">The context object for this turn.</param>
+        /// <param name="context">Context object containing information for a single turn of conversation with a user.</param>
         /// <param name="next">The delegate to call to continue the bot middleware pipeline.</param>
-        /// <param name="cancellationToken">cancellationToken.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public virtual async Task OnTurnAsync(ITurnContext context, NextDelegate next, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -120,7 +135,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation
                         }
                         else
                         {
-                            sourceLanguage = await _languageStateProperty.GetAsync(context, () => "en").ConfigureAwait(false) ?? "en";
+                            sourceLanguage = await _languageStateProperty.GetAsync(context, () => DefaultLocale).ConfigureAwait(false) ?? "en";
                         }
 
                         targetLanguage = _nativeLanguages.Contains(sourceLanguage) ? sourceLanguage : _nativeLanguages.FirstOrDefault() ?? "en";

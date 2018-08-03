@@ -291,7 +291,8 @@ namespace Microsoft.Bot.Builder
             /// <summary>
             /// Get the property value.
             /// </summary>
-            /// <param name="turnContext">turn context</param>
+            /// <param name="turnContext">The context object for this turn.</param>
+            /// <param name="defaultValueFactory">Defines the default value. Invoked when no value been set for the requested state property.  If defaultValueFactory is defined as null, the MissingMemberException will be thrown if the underlying property is not set.</param>
             /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
             public async Task<T> GetAsync(ITurnContext turnContext, Func<T> defaultValueFactory = null)
             {

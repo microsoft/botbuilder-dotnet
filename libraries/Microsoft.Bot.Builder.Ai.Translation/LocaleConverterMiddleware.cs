@@ -9,7 +9,7 @@ using Microsoft.Bot.Schema;
 namespace Microsoft.Bot.Builder.Ai.Translation
 {
     /// <summary>
-    /// Middleware to convert messages between different locales specified
+    /// Middleware to convert messages between different locales specified.
     /// </summary>
     public class LocaleConverterMiddleware : IMiddleware
     {
@@ -18,13 +18,19 @@ namespace Microsoft.Bot.Builder.Ai.Translation
         private readonly IStatePropertyAccessor<string> _userLocaleProperty;
 
         /// <summary>
-        /// Constructor for developer defined detection of user messages
+        /// Initializes a new instance of the <see cref="LocaleConverterMiddleware"/> class.
         /// </summary>
         /// <param name="userLocaleProperty">PropertyAccessor for the users preferred locale</param>
         /// <param name="toLocale">Target Locale</param>
-        /// <param name="localeConverter">An ILocaleConverter instance</param>
-        public LocaleConverterMiddleware(IStatePropertyAccessor<string> userLocaleProperty, string toLocale, ILocaleConverter localeConverter)
+        /// <param name="localeConverter">An ILocaleConverter instance </param>
+        /// <param name="defaultLocale">Default locale to use when underlying user locale is undefined.</param>
+        public LocaleConverterMiddleware(IStatePropertyAccessor<string> userLocaleProperty, string toLocale, ILocaleConverter localeConverter, string defaultLocale = "en-us")
         {
+            if (string.IsNullOrWhiteSpace(defaultLocale))
+            {
+                throw new ArgumentNullException(nameof(defaultLocale));
+            }
+
             _localeConverter = localeConverter ?? throw new ArgumentNullException(nameof(localeConverter));
             if (string.IsNullOrEmpty(toLocale))
             {
@@ -35,16 +41,25 @@ namespace Microsoft.Bot.Builder.Ai.Translation
                 throw new ArgumentNullException("The locale " + nameof(toLocale) + " is unavailable");
             }
 
+            DefaultLocale = defaultLocale;
+
             _toLocale = toLocale;
             _userLocaleProperty = userLocaleProperty ?? throw new ArgumentNullException(nameof(userLocaleProperty));
         }
 
         /// <summary>
-        /// Incoming activity
+        /// Gets the default locale to use when underlying user locale is undefined.
         /// </summary>
-        /// <param name="context"></param>
-        /// <param name="next"></param>
-        /// <returns></returns>
+        /// <value>The default locale that will be used when the underlying user locale is undefined.</value>
+        public string DefaultLocale { get; }
+
+        /// <summary>
+        /// Invoked on an incoming activity from the user in the context of the Bot Middleware pipeline.
+        /// </summary>
+        /// <param name="context">Context object containing information for a single turn of conversation with a user.</param>
+        /// <param name="next">Used to invoke the next stage of the Middleware pipeline.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
         public async Task OnTurnAsync(ITurnContext context, NextDelegate next, CancellationToken cancellationToken)
         {
             if (context.Activity.Type == ActivityTypes.Message)
@@ -54,7 +69,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation
                 {
                     if (!string.IsNullOrWhiteSpace(message.Text))
                     {
-                        string userLocale = await _userLocaleProperty.GetAsync(context, () => "en-us").ConfigureAwait(false);
+                        string userLocale = await _userLocaleProperty.GetAsync(context, () => DefaultLocale).ConfigureAwait(false);
                         if (userLocale != _toLocale)
                         {
                             ConvertLocaleMessage(context, userLocale);
