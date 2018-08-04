@@ -17,14 +17,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         public async Task BasicDateTimePrompt()
         {
             ConversationState convoState = new ConversationState(new MemoryStorage());
-            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test", () => new Dictionary<string, object>());
+            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test");
 
             TestAdapter adapter = new TestAdapter()
                 .Use(convoState);
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                var state = await testProperty.GetAsync(turnContext);
+                var state = await testProperty.GetAsync(turnContext, () => new Dictionary<string, object>());
                 var prompt = new DateTimePrompt(Culture.English);
 
                 var dialogCompletion = await prompt.ContinueAsync(turnContext, state);
@@ -51,14 +51,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         public async Task MultipleResolutionsDateTimePrompt()
         {
             ConversationState convoState = new ConversationState(new MemoryStorage());
-            var testProperty = convoState.CreateProperty("test", () => new Dictionary<string, object>());
+            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test");
 
             TestAdapter adapter = new TestAdapter()
                 .Use(convoState);
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                var state = await testProperty.GetAsync(turnContext);
+                var state = await testProperty.GetAsync(turnContext, () => new Dictionary<string, object>());
                 var prompt = new DateTimePrompt(Culture.English);
 
                 var dialogCompletion = await prompt.ContinueAsync(turnContext, state);
