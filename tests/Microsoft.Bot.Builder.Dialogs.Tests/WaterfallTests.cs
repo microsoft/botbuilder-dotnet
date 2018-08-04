@@ -16,14 +16,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         public async Task Waterfall()
         {
             ConversationState convoState = new ConversationState(new MemoryStorage());
-            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test", () => new Dictionary<string, object>());
+            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test");
 
             TestAdapter adapter = new TestAdapter()
                 .Use(convoState);
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                var state = await testProperty.GetAsync(turnContext);
+                var state = await testProperty.GetAsync(turnContext, () => new Dictionary<string, object>());
                 var waterfall = new Waterfall(new WaterfallStep[]
                 {
                     async (dc, args, next) => { await dc.Context.SendActivityAsync("step1"); },
@@ -50,14 +50,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         public async Task WaterfallPrompt()
         {
             ConversationState convoState = new ConversationState(new MemoryStorage());
-            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test", () => new Dictionary<string, object>());
+            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test");
 
             TestAdapter adapter = new TestAdapter()
                 .Use(convoState);
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                var state = await testProperty.GetAsync(turnContext);
+                var state = await testProperty.GetAsync(turnContext, () => new Dictionary<string, object>());
                 var dialogs = new DialogSet();
                 dialogs.Add("test-waterfall", Create_Waterfall2());
                 dialogs.Add("number", new NumberPrompt<int>(Culture.English));
@@ -129,14 +129,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         public async Task WaterfallNested()
         {
             ConversationState convoState = new ConversationState(new MemoryStorage());
-            var testProperty = convoState.CreateProperty("test", () => new Dictionary<string, object>());
+            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test");
 
             TestAdapter adapter = new TestAdapter()
                 .Use(convoState);
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                var state = await testProperty.GetAsync(turnContext);
+                var state = await testProperty.GetAsync(turnContext, () => new Dictionary<string, object>());
                 var dialogs = new DialogSet();
                 dialogs.Add("test-waterfall-a", Create_Waterfall3());
                 dialogs.Add("test-waterfall-b", Create_Waterfall4());
@@ -168,7 +168,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         public async Task WaterfallDateTimePromptFirstInvalidThenValidInput()
         {
             var convoState = new ConversationState(new MemoryStorage());
-            var testProperty = convoState.CreateProperty("test", () => new Dictionary<string, object>());
+            var testProperty = convoState.CreateProperty <Dictionary<string, object>>("test");
 
             var dialogs = new DialogSet();
             dialogs.Add("dateTimePrompt", new DateTimePrompt(Culture.English));
@@ -190,7 +190,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                var state = await testProperty.GetAsync(turnContext);
+                var state = await testProperty.GetAsync(turnContext, () => new Dictionary<string, object>());
 
                 var dc = dialogs.CreateContext(turnContext, state);
 
