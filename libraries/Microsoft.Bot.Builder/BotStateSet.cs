@@ -14,16 +14,16 @@ namespace Microsoft.Bot.Builder
     /// </summary>
     public class BotStateSet : IMiddleware
     {
-        private readonly List<BotState> _botStates = new List<BotState>();
-
         /// <summary>
         /// Initializes a new instance of the <see cref="BotStateSet"/> class.
         /// </summary>
         /// <param name="botStates">initial list of BotState to manage.</param>
         public BotStateSet(params BotState[] botStates)
         {
-            _botStates.AddRange(botStates);
+            BotStates.AddRange(botStates);
         }
+
+        public List<BotState> BotStates { get; } = new List<BotState>();
 
         /// <summary>
         /// Add a BotState to the list of sources to load.
@@ -32,7 +32,7 @@ namespace Microsoft.Bot.Builder
         /// <returns>botstateset for chaining more .Use().</returns>
         public BotStateSet Use(BotState botState)
         {
-            _botStates.Add(botState);
+            BotStates.Add(botState);
             return this;
         }
 
@@ -45,7 +45,6 @@ namespace Microsoft.Bot.Builder
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task OnTurnAsync(ITurnContext context, NextDelegate next, CancellationToken cancellationToken = default(CancellationToken))
         {
-            await LoadAsync(context, true, cancellationToken).ConfigureAwait(false);
             await next(cancellationToken).ConfigureAwait(false);
             await SaveChangesAsync(context, false, cancellationToken).ConfigureAwait(false);
         }
@@ -59,7 +58,7 @@ namespace Microsoft.Bot.Builder
         /// <returns>task</returns>
         public async Task LoadAsync(ITurnContext context, bool force = false, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var tasks = _botStates.Select(bs => bs.LoadAsync(context, force, cancellationToken)).ToList();
+            var tasks = BotStates.Select(bs => bs.LoadAsync(context, force, cancellationToken)).ToList();
             await Task.WhenAll(tasks).ConfigureAwait(false);
         }
 
@@ -72,7 +71,7 @@ namespace Microsoft.Bot.Builder
         /// <returns>task</returns>
         public async Task SaveChangesAsync(ITurnContext context, bool force = false, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var tasks = _botStates.Select(bs => bs.SaveChangesAsync(context, force, cancellationToken)).ToList();
+            var tasks = BotStates.Select(bs => bs.SaveChangesAsync(context, force, cancellationToken)).ToList();
             await Task.WhenAll(tasks).ConfigureAwait(false);
         }
     }

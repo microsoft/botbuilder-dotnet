@@ -16,14 +16,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         public async Task ConfirmPrompt()
         {
             ConversationState convoState = new ConversationState(new MemoryStorage());
-            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test", () => new Dictionary<string, object>());
+            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test");
 
             TestAdapter adapter = new TestAdapter()
                 .Use(convoState);
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                var state = await testProperty.GetAsync(turnContext);
+                var state = await testProperty.GetAsync(turnContext, () => new Dictionary<string, object>());
                 var prompt = new ConfirmPrompt(Culture.English);
 
                 var dialogCompletion = await prompt.ContinueAsync(turnContext, state);
@@ -54,14 +54,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         public async Task ConfirmPromptRetry()
         {
             ConversationState convoState = new ConversationState(new MemoryStorage());
-            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test", () => new Dictionary<string, object>());
+            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test");
 
             TestAdapter adapter = new TestAdapter()
                 .Use(convoState);
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                var state = await testProperty.GetAsync(turnContext);
+                var state = await testProperty.GetAsync(turnContext, () => new Dictionary<string, object>());
                 var prompt = new ConfirmPrompt(Culture.English);
 
                 var dialogCompletion = await prompt.ContinueAsync(turnContext, state);
@@ -99,13 +99,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         public async Task ConfirmPromptChoiceOptionsNumbers()
         {
             var convState = new ConversationState(new MemoryStorage());
-            var testProperty = convState.CreateProperty<Dictionary<string, object>>("test", () => new Dictionary<string, object>());
+            var testProperty = convState.CreateProperty<Dictionary<string, object>>("test");
             TestAdapter adapter = new TestAdapter()
                 .Use(convState);
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                var state = await testProperty.GetAsync(turnContext);
+                var state = await testProperty.GetAsync(turnContext, () => new Dictionary<string, object>());
                 var prompt = new ConfirmPrompt(Culture.English);
 
                 // Set options
@@ -147,13 +147,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         public async Task ConfirmPromptChoiceOptionsNoNumbers()
         {
             var convState = new ConversationState(new MemoryStorage());
-            var testProperty = convState.CreateProperty("test", () => new Dictionary<string, object>());
+            var testProperty = convState.CreateProperty<Dictionary<string, object>>("test");
             TestAdapter adapter = new TestAdapter()
                 .Use(convState);
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                var state = await testProperty.GetAsync(turnContext);
+                var state = await testProperty.GetAsync(turnContext, () => new Dictionary<string, object>());
                 var prompt = new ConfirmPrompt(Culture.English);
 
                 // Set options
