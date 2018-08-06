@@ -2,25 +2,24 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
-using static Microsoft.Bot.Builder.Dialogs.PromptValidatorEx;
+using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
-    public class TextPrompt : Prompt<TextResult>
+    public class TextPrompt : Prompt<string>
     {
-        private TextPromptInternal _prompt;
-
-        public TextPrompt(PromptValidator<TextResult> validator = null)
+        public TextPrompt(string dialogId, PromptValidator<string> validator = null)
+            : base(dialogId, validator)
         {
-            _prompt = new TextPromptInternal(validator);
         }
 
-        protected override Task OnPromptAsync(DialogContext dc, PromptOptions options, bool isRetry)
+        protected override async Task OnPromptAsync(ITurnContext context, IDictionary<string, object> state, PromptOptions options, bool isRetry)
         {
-            if (dc == null)
+            if (context == null)
             {
-                throw new ArgumentNullException(nameof(dc));
+                throw new ArgumentNullException(nameof(context));
             }
 
             if (options == null)
@@ -28,22 +27,35 @@ namespace Microsoft.Bot.Builder.Dialogs
                 throw new ArgumentNullException(nameof(options));
             }
 
-            return dc.Context.SendActivityAsync(PromptMessageFactory.CreateActivity(options, isRetry));
+            if (isRetry && options.RetryPrompt != null)
+            {
+                await context.SendActivityAsync(options.RetryPrompt).ConfigureAwait(false);
+            }
+            else if (options.Prompt != null)
+            {
+                await context.SendActivityAsync(options.Prompt).ConfigureAwait(false);
+            }
         }
 
-        protected override async Task<TextResult> OnRecognizeAsync(DialogContext dc, PromptOptions options)
+        protected override async Task<PromptRecognizerResult<string>> OnRecognizeAsync(ITurnContext context, IDictionary<string, object> state, PromptOptions options)
         {
-            if (dc == null)
+            if (context == null)
             {
-                throw new ArgumentNullException(nameof(dc));
+                throw new ArgumentNullException(nameof(context));
             }
 
-            if (options == null)
+            var result = new PromptRecognizerResult<string>();
+            if (context.Activity.Type == ActivityTypes.Message)
             {
-                throw new ArgumentNullException(nameof(options));
+                var message = context.Activity.AsMessageActivity();
+                if (message.Text != null)
+                {
+                    result.Succeeded = true;
+                    result.Value = message.Text;
+                }
             }
 
-            return await _prompt.RecognizeAsync(dc.Context).ConfigureAwait(false);
+            return result;
         }
     }
 }

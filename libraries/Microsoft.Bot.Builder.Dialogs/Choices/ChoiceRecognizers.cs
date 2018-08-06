@@ -10,12 +10,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
 {
     public class ChoiceRecognizers
     {
-        public static List<ModelResult<FoundChoice>> RecognizeChoices(string utterance, List<string> choices, FindChoicesOptions options = null)
+        public static List<ModelResult<FoundChoice>> RecognizeChoices(string utterance, IList<string> choices, FindChoicesOptions options = null)
         {
             return RecognizeChoices(utterance, choices.Select(s => new Choice { Value = s }).ToList(), options);
         }
 
-        public static List<ModelResult<FoundChoice>> RecognizeChoices(string utterance, List<Choice> list, FindChoicesOptions options = null)
+        public static List<ModelResult<FoundChoice>> RecognizeChoices(string utterance, IList<Choice> list, FindChoicesOptions options = null)
         {
             // Try finding choices by text search first
             // - We only want to use a single strategy for returning results to avoid issues where utterances
@@ -54,7 +54,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
             return matched;
         }
 
-        private static void MatchChoiceByIndex(List<Choice> list, List<ModelResult<FoundChoice>> matched, ModelResult<FoundChoice> match)
+        private static void MatchChoiceByIndex(IList<Choice> list, List<ModelResult<FoundChoice>> matched, ModelResult<FoundChoice> match)
         {
             try
             {

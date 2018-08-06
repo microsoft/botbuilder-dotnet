@@ -9,7 +9,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
 {
     public static class Find
     {
-        public static List<ModelResult<FoundChoice>> FindChoices(string utterance, List<string> choices, FindChoicesOptions options = null)
+        public static List<ModelResult<FoundChoice>> FindChoices(string utterance, IList<string> choices, FindChoicesOptions options = null)
         {
             if (choices == null)
             {
@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
             return FindChoices(utterance, choices.Select(s => new Choice { Value = s }).ToList(), options);
         }
 
-        public static List<ModelResult<FoundChoice>> FindChoices(string utterance, List<Choice> choices, FindChoicesOptions options = null)
+        public static List<ModelResult<FoundChoice>> FindChoices(string utterance, IList<Choice> choices, FindChoicesOptions options = null)
         {
             if (string.IsNullOrEmpty(utterance))
             {
@@ -170,7 +170,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
             return results;
         }
 
-        private static int IndexOfToken(List<Token> tokens, Token token, int startPos)
+        private static int IndexOfToken(IList<Token> tokens, Token token, int startPos)
         {
             for (var i = startPos; i < tokens.Count; i++)
             {
@@ -183,7 +183,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
             return -1;
         }
 
-        private static ModelResult<FoundValue> MatchValue(List<Token> sourceTokens, int maxDistance, FindValuesOptions options, int index, string value, List<Token> searchedTokens, int startPos)
+        private static ModelResult<FoundValue> MatchValue(IList<Token> sourceTokens, int maxDistance, FindValuesOptions options, int index, string value, List<Token> searchedTokens, int startPos)
         {
             // Match value to utterance and calculate total deviation.
             // - The tokens are matched in order so "second last" will match in
