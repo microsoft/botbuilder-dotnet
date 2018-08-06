@@ -12,7 +12,7 @@ namespace AspNetCore_EchoBot_With_AppInsights.AppInsights
     ///      do some stuff
     ///   }
     /// </summary>
-    public class MyStopwatch : IDisposable
+    public class MyStopwatchDependency : IDisposable
     {
         /// <summary>
         /// Creates a sample helper class which can calculate duration of a dependency call.  
@@ -20,7 +20,7 @@ namespace AspNetCore_EchoBot_With_AppInsights.AppInsights
         /// <param name="telemetryClient">The Application Insights client in which to log the event.</param>
         /// <param name="appInsightDependencyName">Dependency name that will be logged into Application Insights dependency event.</param>
         /// <param name="command">Command used to invoke this dependency.</param>
-        public MyStopwatch(TelemetryClient telemetryClient, string appInsightDependencyName, string command)
+        public MyStopwatchDependency(TelemetryClient telemetryClient, string appInsightDependencyName, string command)
         {
             _telemetryClient = telemetryClient;
             _appInsightDependencyName = appInsightDependencyName;
@@ -42,8 +42,6 @@ namespace AspNetCore_EchoBot_With_AppInsights.AppInsights
         private readonly string _command;
         private readonly DateTimeOffset _startTime;
         
-
-
         public void Dispose()
         {
             _timer.Stop();

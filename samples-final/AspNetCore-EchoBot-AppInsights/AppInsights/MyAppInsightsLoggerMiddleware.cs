@@ -25,7 +25,7 @@ namespace AspNetCore_EchoBot_With_AppInsights.AppInsights
         // Application Insights Custom Event name, logged when new message is received from the user
         public static readonly string BotMsgReceiveEvent = "BotMessageReceived";    
         // Application Insights Custom Event name, logged when a message is sent out from the bot
-        public static readonly string BotMsgSendEvent = "BotMessageReceived";
+        public static readonly string BotMsgSendEvent = "BotMessageSend";
         // Application Insights Custom Event name, logged when a message is updated by the bot (rare case)
         public static readonly string BotMsgUpdateEvent = "BotMessageUpdate";
         // Application Insights Custom Event name, logged when a message is deleted by the bot (rare case)
@@ -135,8 +135,6 @@ namespace AspNetCore_EchoBot_With_AppInsights.AppInsights
                 // run full pipeline
                 await nextDelete().ConfigureAwait(false);
 
-                // add MessageDelete activity
-                // log as MessageDelete activity
                 var deleteActivity = new Activity
                 {
                     Type = ActivityTypes.MessageDelete,
@@ -145,7 +143,7 @@ namespace AspNetCore_EchoBot_With_AppInsights.AppInsights
                 .ApplyConversationReference(reference, isIncoming: false)
                 .AsMessageDeleteActivity();
 
-                _telemetryClient.TrackEvent(BotMsgUpdateEvent, FillDeleteEventProperties(deleteActivity));
+                _telemetryClient.TrackEvent(BotMsgDeleteEvent, FillDeleteEventProperties(deleteActivity));
             });
 
 
