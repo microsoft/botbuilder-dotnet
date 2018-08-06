@@ -25,13 +25,5 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// The instances persisted state.
         /// </value>
         public IDictionary<string, object> State { get; set; }
-
-        /// <summary>
-        /// Gets or sets the step used when the instance is a Waterfall.
-        /// </summary>
-        /// <value>
-        /// The step used when the instance is a Waterfall.
-        /// </value>
-        public int Step { get; set; }
     }
 }
