@@ -38,7 +38,7 @@ namespace Microsoft.Bot.Builder.Tests
             var a = new SimpleAdapter(ValidateResponses);
             var c = new TurnContext(a, new Activity());
 
-            string activityId = Guid.NewGuid().ToString();
+            var activityId = Guid.NewGuid().ToString();
             var activity = TestMessage.Message();
             activity.Id = activityId;
 

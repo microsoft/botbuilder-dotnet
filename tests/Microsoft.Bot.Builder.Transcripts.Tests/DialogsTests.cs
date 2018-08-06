@@ -24,16 +24,16 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
         {
             var activities = TranscriptUtilities.GetFromTestContext(TestContext);
             var convState = new ConversationState(new MemoryStorage());
-            var testProperty = convState.CreateProperty("test", () => new Dictionary<string, object>());
+            var testProperty = convState.CreateProperty<Dictionary<string, object>>("test");
 
-            TestAdapter adapter = new TestAdapter()
+            var adapter = new TestAdapter()
                 .Use(convState);
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
                 if (turnContext.Activity.Type == ActivityTypes.Message)
                 {
-                    var state = await testProperty.GetAsync(turnContext);
+                    var state = await testProperty.GetAsync(turnContext, () => new Dictionary<string, object>());
                     var prompt = new AttachmentPrompt();
 
                     var dialogCompletion = await prompt.ContinueAsync(turnContext, state);
@@ -90,16 +90,16 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
             var activities = TranscriptUtilities.GetFromTestContext(TestContext);
 
             var convState = new ConversationState(new MemoryStorage());
-            var testProperty = convState.CreateProperty<Dictionary<string, object>>("test", () => new Dictionary<string, object>());
+            var testProperty = convState.CreateProperty<Dictionary<string, object>>("test");
 
-            TestAdapter adapter = new TestAdapter()
+            var adapter = new TestAdapter()
                 .Use(convState);
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
                 if (turnContext.Activity.Type == ActivityTypes.Message)
                 {
-                    var state = await testProperty.GetAsync(turnContext);
+                    var state = await testProperty.GetAsync(turnContext, () => new Dictionary<string, object>());
                     var dc = dialogs.CreateContext(turnContext, state);
 
                 await dc.ContinueAsync();
@@ -120,16 +120,16 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
             var activities = TranscriptUtilities.GetFromTestContext(TestContext);
 
             var convState = new ConversationState(new MemoryStorage());
-            var testProperty = convState.CreateProperty<Dictionary<string, object>>("test", () => new Dictionary<string, object>());
+            var testProperty = convState.CreateProperty<Dictionary<string, object>>("test");
 
-            TestAdapter adapter = new TestAdapter()
+            var adapter = new TestAdapter()
                 .Use(convState);
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
                 if (turnContext.Activity.Type == ActivityTypes.Message)
                 {
-                    var state = await testProperty.GetAsync(turnContext);
+                    var state = await testProperty.GetAsync(turnContext, () => new Dictionary<string, object>());
                     var prompt = new ConfirmPrompt(Culture.English) { Style = ListStyle.None };
 
                 var dialogCompletion = await prompt.ContinueAsync(turnContext, state);
@@ -165,16 +165,16 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
             var activities = TranscriptUtilities.GetFromTestContext(TestContext);
 
             var convState = new ConversationState(new MemoryStorage());
-            var testProperty = convState.CreateProperty<Dictionary<string, object>>("test", () => new Dictionary<string, object>());
+            var testProperty = convState.CreateProperty<Dictionary<string, object>>("test");
 
-            TestAdapter adapter = new TestAdapter()
+            var adapter = new TestAdapter()
                 .Use(convState);
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
                 if (turnContext.Activity.Type == ActivityTypes.Message)
                 {
-                    var state = await testProperty.GetAsync(turnContext);
+                    var state = await testProperty.GetAsync(turnContext, () => new Dictionary<string, object>());
                     var prompt = new DateTimePrompt(Culture.English);
 
                 var dialogCompletion = await prompt.ContinueAsync(turnContext, state);
@@ -211,16 +211,16 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
             };
 
             var convState = new ConversationState(new MemoryStorage());
-            var testProperty = convState.CreateProperty<Dictionary<string, object>>("test", () => new Dictionary<string, object>());
+            var testProperty = convState.CreateProperty<Dictionary<string, object>>("test");
 
-            TestAdapter adapter = new TestAdapter()
+            var adapter = new TestAdapter()
                 .Use(convState);
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
                 if (turnContext.Activity.Type == ActivityTypes.Message)
                 {
-                    var state = await testProperty.GetAsync(turnContext);
+                    var state = await testProperty.GetAsync(turnContext, () => new Dictionary<string, object>());
                     var prompt = new NumberPrompt<int>(Culture.English, validator);
 
                 var dialogCompletion = await prompt.ContinueAsync(turnContext, state);
@@ -257,9 +257,9 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
             };
 
             var convState = new ConversationState(new MemoryStorage());
-            var testProperty = convState.CreateProperty<Dictionary<string, object>>("test", () => new Dictionary<string, object>());
+            var testProperty = convState.CreateProperty<Dictionary<string, object>>("test");
 
-            TestAdapter adapter = new TestAdapter()
+            var adapter = new TestAdapter()
                 .Use(convState);
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
@@ -267,7 +267,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
                 if (turnContext.Activity.Type == ActivityTypes.Message)
                 {
 
-                    var state = await testProperty.GetAsync(turnContext);
+                    var state = await testProperty.GetAsync(turnContext, () => new Dictionary<string, object>());
                     var prompt = new TextPrompt(validator);
 
                 var dialogCompletion = await prompt.ContinueAsync(turnContext, state);
@@ -297,9 +297,9 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
             var activities = TranscriptUtilities.GetFromTestContext(TestContext);
 
             var convState = new ConversationState(new MemoryStorage());
-            var testProperty = convState.CreateProperty<Dictionary<string, object>>("test", () => new Dictionary<string, object>());
+            var testProperty = convState.CreateProperty<Dictionary<string, object>>("test");
 
-            TestAdapter adapter = new TestAdapter()
+            var adapter = new TestAdapter()
                 .Use(convState);
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
@@ -307,7 +307,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
                 if (turnContext.Activity.Type == ActivityTypes.Message)
                 {
 
-                    var state = await testProperty.GetAsync(turnContext);
+                    var state = await testProperty.GetAsync(turnContext, () => new Dictionary<string, object>());
 
                     var waterfall = new Waterfall(new WaterfallStep[]
                     {
@@ -334,16 +334,16 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
             var activities = TranscriptUtilities.GetFromTestContext(TestContext);
 
             var convState = new ConversationState(new MemoryStorage());
-            var testProperty = convState.CreateProperty<Dictionary<string, object>>("test", () => new Dictionary<string, object>());
+            var testProperty = convState.CreateProperty<Dictionary<string, object>>("test");
 
-            TestAdapter adapter = new TestAdapter()
+            var adapter = new TestAdapter()
                 .Use(convState);
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
                 if (turnContext.Activity.Type == ActivityTypes.Message)
                 {
-                    var state = await testProperty.GetAsync(turnContext);
+                    var state = await testProperty.GetAsync(turnContext, ()=>new Dictionary<string, object>());
 
                     var dialogs = new DialogSet();
                     dialogs.Add("test-waterfall", Create_Waterfall2());
@@ -404,16 +404,16 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
             var activities = TranscriptUtilities.GetFromTestContext(TestContext);
 
             var convState = new ConversationState(new MemoryStorage());
-            var testProperty = convState.CreateProperty("test", () => new Dictionary<string, object>());
+            var testProperty = convState.CreateProperty<Dictionary<string, object>>("test");
 
-            TestAdapter adapter = new TestAdapter()
+            var adapter = new TestAdapter()
                 .Use(convState);
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
                 if (turnContext.Activity.Type == ActivityTypes.Message)
                 {
-                    var state = await testProperty.GetAsync(turnContext);
+                    var state = await testProperty.GetAsync(turnContext, () => new Dictionary<string, object>());
                     var dialogs = new DialogSet();
                     dialogs.Add("test-waterfall-a", Create_Waterfall3());
                     dialogs.Add("test-waterfall-b", Create_Waterfall4());
