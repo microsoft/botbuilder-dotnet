@@ -35,22 +35,15 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                 services.Configure(configureAction);
             }
 
-            services.PostConfigure<BotFrameworkOptions>(options =>
-            {
-                if (options.CredentialProvider == null)
-                {
-                    options.CredentialProvider = new SimpleCredentialProvider();
-                }
-            });
-
             services.AddTransient<IBot, TBot>();
 
             services.AddSingleton(sp =>
             {
                 var options = sp.GetRequiredService<IOptions<BotFrameworkOptions>>().Value;
-                var botFrameworkAdapter = new BotFrameworkAdapter(options.CredentialProvider, options.ConnectorClientRetryPolicy, options.HttpClient);
-
-                botFrameworkAdapter.OnTurnError = options.OnTurnError;
+                var botFrameworkAdapter = new BotFrameworkAdapter(options.CredentialProvider, options.ConnectorClientRetryPolicy, options.HttpClient)
+                {
+                    OnTurnError = options.OnTurnError,
+                };
 
                 foreach (var middleware in options.Middleware)
                 {
