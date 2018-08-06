@@ -66,16 +66,19 @@ namespace AspNetCore_EchoBot_With_AppInsights.AppInsights
             var conversationId = context.Activity.Conversation.Id;
 
             // Find the Telemetry Client
-            if (context.Services.TryGetValue("AppInsightsLoggerMiddleware.AppInsightsContext", out var telemetryClient) && recognizerResult != null)
+            if (context.Services.TryGetValue(MyAppInsightsLoggerMiddleware.AppInsightsServiceKey, out var telemetryClient) && recognizerResult != null)
             {
                 var topLuisIntent = recognizerResult.GetTopScoringIntent();
                 var intentScore = topLuisIntent.score.ToString("N2");
-                
+
                 // Add the intent score and conversation id properties
-                Dictionary<string, string> telemetryProperties = new Dictionary<string, string>();
-                telemetryProperties.Add(MyLuisConstants.ActivityIdProperty, context.Activity.Id);
-                telemetryProperties.Add(MyLuisConstants.IntentProperty, topLuisIntent.intent);
-                telemetryProperties.Add(MyLuisConstants.IntentScoreProperty, intentScore);
+                var telemetryProperties = new Dictionary<string, string>()
+                {
+                    {  MyLuisConstants.ActivityIdProperty, context.Activity.Id },
+                    {  MyLuisConstants.IntentProperty, topLuisIntent.intent },
+                    {  MyLuisConstants.IntentScoreProperty, intentScore },
+                };
+
                 if (recognizerResult.Properties.TryGetValue("sentiment", out var sentiment) && sentiment is JObject)
                 {
                     if (((JObject)sentiment).TryGetValue("label", out var label))

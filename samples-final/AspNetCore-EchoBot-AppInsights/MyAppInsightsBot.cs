@@ -55,7 +55,7 @@ namespace AspNetCore_EchoBot_With_AppInsights
                 }
 
                 // Try QNA
-                QueryResult[] qnaResults = await _qnaMaker.GetAnswersAsync(turnContext);
+                var qnaResults = await _qnaMaker.GetAnswersAsync(turnContext);
                 if (qnaResults != null && qnaResults.Length > 0)
                 {
                     responseMessage += $"==>Qna Top Answer: {qnaResults[0].Answer}, Score: {qnaResults[0].Score}, Question: {string.Join(",", qnaResults[0]?.Questions)}\n";

@@ -47,7 +47,12 @@ namespace AspNetCore_EchoBot_With_AppInsights
             services.AddBot<MyAppInsightsBot>(options =>
             {
                 // Add MyAppInsightsLoggerMiddleware (logs activity messages into Application Insights)
-                var instrumentationKey = Configuration.GetSection("AppInsights-InstrumentationKey")?.Value;
+                var instrumentationKey = Configuration.GetSection("ApplicationInsights")?.GetSection("InstrumentationKey").Value;
+                if (null == instrumentationKey)
+                {
+                    throw new InvalidOperationException("Application Insights instrumentation key must be configured in the appsettings.json file.");
+                }
+
                 var appInsightsLogger = new MyAppInsightsLoggerMiddleware(instrumentationKey, logUserName: true, logOriginalMessage: true);
                 options.Middleware.Add(appInsightsLogger);
 
@@ -88,6 +93,14 @@ namespace AspNetCore_EchoBot_With_AppInsights
                 // Note: Developers may choose not to add all the State providers to this Middleware if save is not required.
                 var stateSet = new BotStateSet(options.State.ToArray());
                 options.Middleware.Add(stateSet);
+
+
+
+                // Add a custom middlware component which demonstrates how a custom Middleware component can log 
+                // and Application Insight Dependency and Custom Event.
+                var myMiddleware = new MyMiddlewareDependencyAndEvent();
+                options.Middleware.Add(myMiddleware);
+
             });
 
             // Now that the bot is registered, create and register any state accesssors. 

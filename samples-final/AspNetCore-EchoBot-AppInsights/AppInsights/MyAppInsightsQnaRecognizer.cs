@@ -43,10 +43,10 @@ namespace AspNetCore_EchoBot_With_AppInsights.AppInsights
             var queryResults = await base.GetAnswersAsync(context);
 
             // Find the Application Insights Telemetry Client
-            if (queryResults != null && context.Services.TryGetValue("AppInsightsLoggerMiddleware.AppInsightsContext", out var telemetryClient))
+            if (queryResults != null && context.Services.TryGetValue(MyAppInsightsLoggerMiddleware.AppInsightsServiceKey, out var telemetryClient))
             {
-                Dictionary<string, string> telemetryProperties = new Dictionary<string, string>();
-                Dictionary<string, double> telemetryMetrics = new Dictionary<string, double>();
+                var telemetryProperties = new Dictionary<string, string>();
+                var telemetryMetrics = new Dictionary<string, double>();
 
                 // Make it so we can correlate our reports with Activity or Conversation
                 telemetryProperties.Add(MyQnaConstants.ActivityIdProperty, context.Activity.Id);
