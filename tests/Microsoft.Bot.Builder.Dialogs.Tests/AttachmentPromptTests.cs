@@ -17,7 +17,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         public async Task BasicAttachmentPrompt()
         {
             ConversationState convoState = new ConversationState(new MemoryStorage());
-            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test", () => new Dictionary<string, object>());
+            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test");
 
             TestAdapter adapter = new TestAdapter()
                 .Use(convoState);
@@ -27,7 +27,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                var state = await testProperty.GetAsync(turnContext);
+                var state = await testProperty.GetAsync(turnContext, () => new Dictionary<string, object>());
                 var prompt = new AttachmentPrompt();
 
                 var dialogCompletion = await prompt.ContinueAsync(turnContext, state);

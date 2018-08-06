@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Bot.Connector.Authentication;
@@ -28,7 +29,7 @@ namespace Microsoft.Bot.Builder.Integration
         /// credentials used during authentication with the Bot Framework Service.
         /// </summary>
         /// <value>The credential provider.</value>
-        public ICredentialProvider CredentialProvider { get; set; }
+        public ICredentialProvider CredentialProvider { get; set; } = new SimpleCredentialProvider();
 
         /// <summary>
         /// Gets or sets an error handler to use to catche exceptions in the middleware or application.
@@ -42,6 +43,17 @@ namespace Microsoft.Bot.Builder.Integration
         /// <value>The middleware list.</value>
         /// <seealso cref="BotAdapter.Use(IMiddleware)"/>
         public IList<IMiddleware> Middleware { get; } = new List<IMiddleware>();
+
+        /// <summary>
+        /// Gets a list of the <see cref="BotState"/> providers to use on each incoming activity.
+        /// Objects in the State list enable other components to get access to the state providers
+        /// during the start up process.  For example, creating state property accessors within a ASP.net Core Singleton
+        /// that could be passed to your IBot-derived class.
+        /// The providers in this list are not associated with the BotStateSet Middleware component. To clarify, state providers
+        /// in this list are not automatically loaded or saved during the turn process.
+        /// </summary>
+        /// <value>The list of property state providers.</value>
+        public IList<BotState> State { get; } = new List<BotState>();
 
         /// <summary>
         /// Gets or sets the retry policy to use in case of errors from Bot Framework Service.
