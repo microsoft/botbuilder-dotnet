@@ -122,7 +122,7 @@ namespace Microsoft.Bot.Builder.Ai.QnA
             var jsonRequest = JsonConvert.SerializeObject(
                 new
                 {
-                    messageActivity.Text,
+                    question = messageActivity.Text,
                     top = _options.Top,
                     strictFilters = _options.StrictFilters,
                     metadataBoost = _options.MetadataBoost,

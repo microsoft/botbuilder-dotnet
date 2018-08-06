@@ -15,6 +15,10 @@ namespace AspNetCore_EchoBot_With_AppInsights.AppInsights
     /// Logs the Top Intent, Sentiment (label/score), (Optionally) Original Text
     /// 
     /// Along with Conversation and ActivityID.
+    /// 
+    /// The Custom Event name this logs is MyLuisConstants.IntentPrefix + "." + 'found intent name'
+    /// For example, if intent name was "add_calender":
+    ///    LuisIntent.add_calendar
     /// See <seealso cref="LuisRecognizer"/> for additional information.
     /// </summary>
     public class MyAppInsightLuisRecognizer : LuisRecognizer
@@ -25,11 +29,23 @@ namespace AspNetCore_EchoBot_With_AppInsights.AppInsights
         /// <param name="application">The LUIS _application to use to recognize text.</param>
         /// <param name="predictionOptions">The LUIS prediction options to use.</param>
         /// <param name="includeApiResults">TRUE to include raw LUIS API response.</param>
-        public MyAppInsightLuisRecognizer(LuisApplication application, LuisPredictionOptions predictionOptions = null, bool includeApiResults = false)
+        public MyAppInsightLuisRecognizer(LuisApplication application, LuisPredictionOptions predictionOptions = null, bool includeApiResults = false, bool logOriginalMessage = false, bool logUserName = false)
             : base(application, predictionOptions, includeApiResults)
         {
+            LogOriginalMessage = logOriginalMessage;
+            LogUsername = logUserName;
         }
 
+        /// <summary>
+        /// Determines whether to log the Activity message text that came from the user.
+        /// </summary>
+        /// <value>If true, will log the Activity Message text into the AppInsight Custome Event for Luis intents.</value>
+        public bool LogOriginalMessage { get; }
+        /// <summary>
+        /// Determines whether to log the User name.
+        /// </summary>
+        /// <value>If true, will log the user name into the AppInsight Custom Event for Luis intents.</value>
+        public bool LogUsername { get; }
 
         /// <summary>
         /// Analyze the current message text and return results of the analysis (Suggested actions and intents).
@@ -47,7 +63,6 @@ namespace AspNetCore_EchoBot_With_AppInsights.AppInsights
             // Call Luis Recognizer
             var recognizerResult = await base.RecognizeAsync(context, ct);
 
-            // Log into Application Insights a portion of the Luis Results
             var conversationId = context.Activity.Conversation.Id;
 
             // Find the Telemetry Client
@@ -56,28 +71,27 @@ namespace AspNetCore_EchoBot_With_AppInsights.AppInsights
                 var topLuisIntent = recognizerResult.GetTopScoringIntent();
                 var intentScore = topLuisIntent.score.ToString("N2");
                 
-
                 // Add the intent score and conversation id properties
                 Dictionary<string, string> telemetryProperties = new Dictionary<string, string>();
-                telemetryProperties.Add(MyAppInsightsConstants.ActivityIdProperty, context.Activity.Id);
-                telemetryProperties.Add(MyAppInsightsConstants.IntentProperty, topLuisIntent.intent);
-                telemetryProperties.Add(MyAppInsightsConstants.IntentScoreProperty, intentScore);
+                telemetryProperties.Add(MyLuisConstants.ActivityIdProperty, context.Activity.Id);
+                telemetryProperties.Add(MyLuisConstants.IntentProperty, topLuisIntent.intent);
+                telemetryProperties.Add(MyLuisConstants.IntentScoreProperty, intentScore);
                 if (recognizerResult.Properties.TryGetValue("sentiment", out var sentiment) && sentiment is JObject)
                 {
                     if (((JObject)sentiment).TryGetValue("label", out var label))
                     {
-                        telemetryProperties.Add(MyAppInsightsConstants.SentimentLabelProperty, label.Value<string>());
+                        telemetryProperties.Add(MyLuisConstants.SentimentLabelProperty, label.Value<string>());
                     }
                     if (((JObject)sentiment).TryGetValue("score", out var score))
                     {
-                        telemetryProperties.Add(MyAppInsightsConstants.SentimentScoreProperty, score.Value<string>());
+                        telemetryProperties.Add(MyLuisConstants.SentimentScoreProperty, score.Value<string>());
                     }
                 }
                 
 
                 if (!string.IsNullOrEmpty(conversationId))
                 {
-                    telemetryProperties.Add(MyAppInsightsConstants.ConversationIdProperty, conversationId);
+                    telemetryProperties.Add(MyLuisConstants.ConversationIdProperty, conversationId);
                 }
                 
 
@@ -94,11 +108,11 @@ namespace AspNetCore_EchoBot_With_AppInsights.AppInsights
                 // For some customers, logging user name within Application Insights might be an issue so have provided a config setting to disable this feature     
                 if (logOriginalMessage && !string.IsNullOrEmpty(context.Activity.Text))
                 {
-                    telemetryProperties.Add(MyAppInsightsConstants.QuestionProperty, context.Activity.Text);
+                    telemetryProperties.Add(MyLuisConstants.QuestionProperty, context.Activity.Text);
                 }
 
                 // Track the event
-                ((TelemetryClient)telemetryClient).TrackEvent($"{MyAppInsightsConstants.IntentPrefix}.{topLuisIntent.intent}", telemetryProperties);
+                ((TelemetryClient)telemetryClient).TrackEvent($"{MyLuisConstants.IntentPrefix}.{topLuisIntent.intent}", telemetryProperties);
             }
 
             return recognizerResult;
@@ -107,9 +121,8 @@ namespace AspNetCore_EchoBot_With_AppInsights.AppInsights
 
     /// <summary>
     /// The Application Insights property names that we're logging.
-    /// In this example, we're not logging any metrics.
     /// </summary>
-    public static class MyAppInsightsConstants
+    public static class MyLuisConstants
     {
         public const string IntentPrefix = "LuisIntent";  // Application Insights Custom Event name (with Intent)
         public const string IntentProperty = "Intent";

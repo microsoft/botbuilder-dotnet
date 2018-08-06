@@ -4,7 +4,9 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using AspNetCore_EchoBot_With_AppInsights.AppInsights;
 using Microsoft.Bot.Builder;
+using Microsoft.Bot.Builder.Ai.QnA;
 using Microsoft.Bot.Schema;
 
 namespace AspNetCore_EchoBot_With_AppInsights
@@ -12,10 +14,14 @@ namespace AspNetCore_EchoBot_With_AppInsights
     public class MyAppInsightsBot : IBot
     {
         private readonly MyAppInsightsBotAccessors _stateAccessors;
+        private readonly MyAppInsightLuisRecognizer _luisRecognizer;
+        private readonly MyAppInsightsQnaMaker _qnaMaker;
 
-        public MyAppInsightsBot(MyAppInsightsBotAccessors accessors)
+        public MyAppInsightsBot(MyAppInsightsBotAccessors accessors, MyAppInsightLuisRecognizer luisRecognizer, MyAppInsightsQnaMaker qnaMaker)
         {
             _stateAccessors = accessors ?? throw new ArgumentNullException(nameof(accessors));
+            _luisRecognizer = luisRecognizer ?? throw new ArgumentNullException(nameof(luisRecognizer));
+            _qnaMaker = qnaMaker;
         }
         /// <summary>
         /// Every Conversation turn for our EchoBot will call this method. In here
@@ -37,7 +43,29 @@ namespace AspNetCore_EchoBot_With_AppInsights
                 state.TurnCount++;
 
                 // Echo back to the user whatever they typed.
-                await turnContext.SendActivityAsync($"Turn {state.TurnCount}: You sent '{turnContext.Activity.Text}'");
+                var responseMessage = $"Turn {state.TurnCount}: You sent '{turnContext.Activity.Text}'\n";
+
+
+                // Try LUIS
+                var recognizerResult = await _luisRecognizer.RecognizeAsync(turnContext, cancellationToken);
+                var topIntent = recognizerResult?.GetTopScoringIntent();
+                if (topIntent != null)
+                {
+                    responseMessage += $"==>Luis Top Scoring Intent: {topIntent.Value.intent}, Score: {topIntent.Value.score}\n";
+                }
+
+                // Try QNA
+                QueryResult[] qnaResults = await _qnaMaker.GetAnswersAsync(turnContext);
+                if (qnaResults != null && qnaResults.Length > 0)
+                {
+                    responseMessage += $"==>Qna Top Answer: {qnaResults[0].Answer}, Score: {qnaResults[0].Score}, Question: {string.Join(",", qnaResults[0]?.Questions)}\n";
+                }
+                else
+                {
+                    responseMessage += "==>No Matching Qna\n";
+                }
+
+                await turnContext.SendActivityAsync(responseMessage);
             }
         }
     }

@@ -15,6 +15,7 @@ using Microsoft.Bot.Builder.Integration;
 using System.Collections.Generic;
 using AspNetCore_EchoBot_With_AppInsights.AppInsights;
 using Microsoft.Bot.Builder.Ai.Luis;
+using Microsoft.Bot.Builder.Ai.QnA;
 
 namespace AspNetCore_EchoBot_With_AppInsights
 {
@@ -102,7 +103,7 @@ namespace AspNetCore_EchoBot_With_AppInsights
                 var conversationState = options.State.OfType<ConversationState>().FirstOrDefault();
                 if (conversationState == null)
                 {
-                    throw new InvalidOperationException("UserState must be defined and added before adding user-scoped state accessors.");
+                    throw new InvalidOperationException("ConversationState must be defined and added before adding conversation-scoped state accessors.");
                 }
 
                 // Create Custom State Property Accessors
@@ -147,8 +148,47 @@ namespace AspNetCore_EchoBot_With_AppInsights
                 return recognizer;
             });
 
-        }
+            // Create a QNA Maker that is initialized and suitable for passing
+            // into the IBot-derived class (MyAppInsightsBot) on each turn. 
+            // This custom class also logs results to Application Insights.
+            services.AddSingleton<MyAppInsightsQnaMaker>(sp =>
+            {
+                var knowledgeBaseId = Configuration.GetSection("QnaMaker-KnowledgeBaseId")?.Value;
+                var endpointKey = Configuration.GetSection("QnaMaker-EndpointKey")?.Value;
+                var host = Configuration.GetSection("QnaMaker-Host")?.Value;
 
+                if (string.IsNullOrWhiteSpace(knowledgeBaseId))
+                {
+                    throw new InvalidOperationException("The Qna KnowledgeBaseId ('QnaMaker-KnowledgeBaseId') is required to run this sample.  Please update your appsettings.json for more details.");
+                }
+
+                if (string.IsNullOrWhiteSpace(endpointKey))
+                {
+                    throw new InvalidOperationException("The Qna EndpointKey ('QnaMaker-EndpointKey') is required to run this sample.  Please update your appsettings.json for more details.");
+                }
+
+                if (string.IsNullOrWhiteSpace(host))
+                {
+                    throw new InvalidOperationException("The Qna Host ('QnaMaker-Host') is required to run this sample.  Please update your appsettings.json for more details.");
+                }
+
+                var qnaEndpoint = new QnAMakerEndpoint()
+                {
+                    KnowledgeBaseId = knowledgeBaseId,
+                    EndpointKey = endpointKey,
+                    Host = host
+                };
+
+                var qnaOptions = new QnAMakerOptions()
+                {
+                    ScoreThreshold = 0.3f
+                };
+                var myQnaRecognizer = new MyAppInsightsQnaMaker(qnaEndpoint, qnaOptions, logUserName: true, logOriginalMessage: true);
+                return myQnaRecognizer;
+            });
+
+        }
+                    
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
