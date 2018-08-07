@@ -12,10 +12,12 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// </summary>
     public class DialogSet
     {
+        private IStatePropertyAccessor<object> _dialogState;
         private IDictionary<string, Dialog> _dialogs;
 
-        public DialogSet()
+        public DialogSet(IStatePropertyAccessor<object> dialogState)
         {
+            _dialogState = dialogState;
             _dialogs = new Dictionary<string, Dialog>();
         }
 
@@ -40,14 +42,24 @@ namespace Microsoft.Bot.Builder.Dialogs
             return _dialogs[dialog.Id] = dialog;
         }
 
-        public async Task<DialogContext> CreateContextAsync(ITurnContext context, IDictionary<string, object> state)
+        public async Task<DialogContext> CreateContextAsync(ITurnContext context)
         {
             BotAssert.ContextNotNull(context);
-            if (state == null)
+
+            if (_dialogState == null)
             {
-                throw new ArgumentNullException(nameof(state));
+                throw new Exception($"DialogSet.CreateContextAsync(): DialogSet created with a null IStatePropertyAccessor. Must manually factory DialogContext instances in this scenario.");
             }
 
+            // Load/initialize dialog state
+            var state = (IDictionary<string, object>)(await _dialogState.GetAsync(context).ConfigureAwait(false));
+            if (state == null)
+            {
+                state = new Dictionary<string, object>();
+                await _dialogState.SetAsync(context, state).ConfigureAwait(false);
+            }
+
+            // Create and return context
             return new DialogContext(this, context, state);
         }
 

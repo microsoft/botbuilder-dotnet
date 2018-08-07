@@ -25,10 +25,12 @@ namespace Microsoft.Bot.Builder.Dialogs
         private const string TitlePrompt = "titlePrompt";
         private const string TimePrompt = "timePrompt";
 
-        public AlarmPrompt(string dialogId) : base(dialogId)
+        public AlarmPrompt(string dialogId) 
+            : base(dialogId)
         {
             // Add control flow dialogs to components dialog set
-            base.AddDialog(new WaterfallDialog(InitialDialog, new WaterfallStep[] {
+            AddDialog(new WaterfallDialog(InitialDialog, new WaterfallStep[]
+            {
                 InitializeValuesStepAsync,
                 AskTitleStepAsync,
                 AskTimeStepAsync,
@@ -36,8 +38,23 @@ namespace Microsoft.Bot.Builder.Dialogs
             }));
 
             // Add dialogs for prompts
-            base.AddDialog(new TextPrompt(TitlePrompt));
-            base.AddDialog(new DateTimePrompt(TimePrompt));
+            AddDialog(new TextPrompt(TitlePrompt, ValidateTitleAsync));
+            AddDialog(new DateTimePrompt(TimePrompt));
+        }
+
+        private async Task ValidateTitleAsync(ITurnContext context, PromptValidatorContext<string> prompt)
+        {
+            var value = (prompt.Recognized.Value ?? string.Empty).Trim();
+            if (value.Length < 3)
+            {
+                // Send error message to user
+                await context.SendActivityAsync("The title must be at least 3 characters long.").ConfigureAwait(false);
+            }
+            else
+            {
+                // Return value to caller
+                prompt.End(value);
+            }
         }
 
         private async Task<DialogTurnResult> InitializeValuesStepAsync(DialogContext dc, WaterfallStepContext step)

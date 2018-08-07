@@ -51,7 +51,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             // Don't do anything for non-message activities.
-            if (dc.Context.Activity.Type == ActivityTypes.Message)
+            if (dc.Context.Activity.Type != ActivityTypes.Message)
             {
                 return Dialog.EndOfTurn;
             }
