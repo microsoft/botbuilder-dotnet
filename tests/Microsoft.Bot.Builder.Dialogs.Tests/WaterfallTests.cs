@@ -16,25 +16,26 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         public async Task Waterfall()
         {
             ConversationState convoState = new ConversationState(new MemoryStorage());
-            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test");
 
             TestAdapter adapter = new TestAdapter()
                 .Use(convoState);
 
+            var dialogState = convoState.CreateProperty<object>("dialogState");
+            DialogSet dialogs = new DialogSet(dialogState);
+            dialogs.Add(new WaterfallDialog("test", new WaterfallStep[]
+            {
+                async (dc, step) => { await dc.Context.SendActivityAsync("step1"); return Dialog.EndOfTurn; },
+                async (dc, step) => { await dc.Context.SendActivityAsync("step2"); return Dialog.EndOfTurn; },
+                async (dc, step) => { await dc.Context.SendActivityAsync("step3"); return Dialog.EndOfTurn; },
+            }));
+
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                var state = await testProperty.GetAsync(turnContext, () => new Dictionary<string, object>());
-                var waterfall = new Waterfall(new WaterfallStep[]
+                var dc = await dialogs.CreateContextAsync(turnContext);
+                await dc.ContinueAsync();
+                if (!turnContext.Responded)
                 {
-                    async (dc, args, next) => { await dc.Context.SendActivityAsync("step1"); },
-                    async (dc, args, next) => { await dc.Context.SendActivityAsync("step2"); },
-                    async (dc, args, next) => { await dc.Context.SendActivityAsync("step3"); },
-                });
-
-                var dialogCompletion = await waterfall.ContinueAsync(turnContext, state);
-                if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
-                {
-                    await waterfall.BeginAsync(turnContext, state);
+                    await dc.BeginAsync("test");
                 }
             })
             .Send("hello")
@@ -46,6 +47,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .StartTestAsync();
         }
 
+        /*
         [TestMethod]
         public async Task WaterfallPrompt()
         {
@@ -261,5 +263,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             await dc.Context.SendActivityAsync("step2.2");
             await dc.EndAsync();
         }
+        */
     }
 }
