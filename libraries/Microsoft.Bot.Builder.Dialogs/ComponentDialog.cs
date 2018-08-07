@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 throw new ArgumentNullException(nameof(dialogId));
             }
 
-            _dialogs = new DialogSet();
+            _dialogs = new DialogSet(null);
         }
 
         public override async Task<DialogTurnResult> DialogBeginAsync(DialogContext dc, DialogOptions options = null)
