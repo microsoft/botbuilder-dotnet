@@ -12,10 +12,10 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// </summary>
     public class DialogSet
     {
-        private IStatePropertyAccessor<object> _dialogState;
+        private IStatePropertyAccessor<Dictionary<string, object>> _dialogState;
         private IDictionary<string, Dialog> _dialogs;
 
-        public DialogSet(IStatePropertyAccessor<object> dialogState)
+        public DialogSet(IStatePropertyAccessor<Dictionary<string, object>> dialogState)
         {
             _dialogState = dialogState;
             _dialogs = new Dictionary<string, Dialog>();
@@ -24,7 +24,6 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <summary>
         /// Adds a new dialog to the set and returns the added dialog.
         /// </summary>
-        /// <param name="dialogId">The id of the dialog to add.</param>
         /// <param name="dialog">The dialog to add.</param>
         /// <returns>The added dialog.</returns>
         public Dialog Add(Dialog dialog)
@@ -52,12 +51,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             // Load/initialize dialog state
-            var state = (IDictionary<string, object>)(await _dialogState.GetAsync(context).ConfigureAwait(false));
-            if (state == null)
-            {
-                state = new Dictionary<string, object>();
-                await _dialogState.SetAsync(context, state).ConfigureAwait(false);
-            }
+            var state = await _dialogState.GetAsync(context, () => { return new Dictionary<string, object>(); }).ConfigureAwait(false);
 
             // Create and return context
             return new DialogContext(this, context, state);

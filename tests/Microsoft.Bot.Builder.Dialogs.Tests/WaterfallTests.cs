@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             TestAdapter adapter = new TestAdapter()
                 .Use(convoState);
 
-            var dialogState = convoState.CreateProperty<object>("dialogState");
+            var dialogState = convoState.CreateProperty<Dictionary<string, object>>("dialogState");
             DialogSet dialogs = new DialogSet(dialogState);
             dialogs.Add(new WaterfallDialog("test", new WaterfallStep[]
             {

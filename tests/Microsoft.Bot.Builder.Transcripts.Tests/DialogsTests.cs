@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System.Collections.Generic;
+/*using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
@@ -102,11 +102,11 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
                     var state = await testProperty.GetAsync(turnContext, () => new Dictionary<string, object>());
                     var dc = dialogs.CreateContext(turnContext, state);
 
-                await dc.ContinueAsync();
+                    await dc.ContinueAsync();
 
                     if (!turnContext.Responded)
                     {
-                    await dc.BeginAsync("test");
+                        await dc.BeginAsync("test");
                     }
                 }
             })
@@ -132,15 +132,15 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
                     var state = await testProperty.GetAsync(turnContext, () => new Dictionary<string, object>());
                     var prompt = new ConfirmPrompt(Culture.English) { Style = ListStyle.None };
 
-                var dialogCompletion = await prompt.ContinueAsync(turnContext, state);
+                    var dialogCompletion = await prompt.ContinueAsync(turnContext, state);
                     if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
                     {
-                    await prompt.BeginAsync(turnContext, state,
-                            new PromptOptions
-                            {
-                                PromptString = "Please confirm.",
-                                RetryPromptString = "Please confirm, say 'yes' or 'no' or something like that."
-                            });
+                        await prompt.BeginAsync(turnContext, state,
+                                new PromptOptions
+                                {
+                                    PromptString = "Please confirm.",
+                                    RetryPromptString = "Please confirm, say 'yes' or 'no' or something like that."
+                                });
                     }
                     else if (dialogCompletion.IsCompleted)
                     {
@@ -177,10 +177,10 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
                     var state = await testProperty.GetAsync(turnContext, () => new Dictionary<string, object>());
                     var prompt = new DateTimePrompt(Culture.English);
 
-                var dialogCompletion = await prompt.ContinueAsync(turnContext, state);
+                    var dialogCompletion = await prompt.ContinueAsync(turnContext, state);
                     if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
                     {
-                    await prompt.BeginAsync(turnContext, state, new PromptOptions { PromptString = "What date would you like?", RetryPromptString = "Sorry, but that is not a date. What date would you like?" });
+                        await prompt.BeginAsync(turnContext, state, new PromptOptions { PromptString = "What date would you like?", RetryPromptString = "Sorry, but that is not a date. What date would you like?" });
                     }
                     else if (dialogCompletion.IsCompleted)
                     {
@@ -223,15 +223,15 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
                     var state = await testProperty.GetAsync(turnContext, () => new Dictionary<string, object>());
                     var prompt = new NumberPrompt<int>(Culture.English, validator);
 
-                var dialogCompletion = await prompt.ContinueAsync(turnContext, state);
+                    var dialogCompletion = await prompt.ContinueAsync(turnContext, state);
                     if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
                     {
-                    await prompt.BeginAsync(turnContext, state,
-                            new PromptOptions
-                            {
-                                PromptString = "Enter a number.",
-                                RetryPromptString = "You must enter a valid positive number less than 100."
-                            });
+                        await prompt.BeginAsync(turnContext, state,
+                                new PromptOptions
+                                {
+                                    PromptString = "Enter a number.",
+                                    RetryPromptString = "You must enter a valid positive number less than 100."
+                                });
                     }
                     else if (dialogCompletion.IsCompleted)
                     {
@@ -270,15 +270,15 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
                     var state = await testProperty.GetAsync(turnContext, () => new Dictionary<string, object>());
                     var prompt = new TextPrompt(validator);
 
-                var dialogCompletion = await prompt.ContinueAsync(turnContext, state);
+                    var dialogCompletion = await prompt.ContinueAsync(turnContext, state);
                     if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
                     {
-                    await prompt.BeginAsync(turnContext, state,
-                            new PromptOptions
-                            {
-                                PromptString = "Enter some text.",
-                                RetryPromptString = "Make sure the text is greater than three characters."
-                            });
+                        await prompt.BeginAsync(turnContext, state,
+                                new PromptOptions
+                                {
+                                    PromptString = "Enter some text.",
+                                    RetryPromptString = "Make sure the text is greater than three characters."
+                                });
                     }
                     else if (dialogCompletion.IsCompleted)
                     {
@@ -317,10 +317,10 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
                     });
 
 
-                var dialogCompletion = await waterfall.ContinueAsync(turnContext, state);
+                    var dialogCompletion = await waterfall.ContinueAsync(turnContext, state);
                     if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
                     {
-                    await waterfall.BeginAsync(turnContext, state);
+                        await waterfall.BeginAsync(turnContext, state);
                     }
                 }
             })
@@ -343,7 +343,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
             {
                 if (turnContext.Activity.Type == ActivityTypes.Message)
                 {
-                    var state = await testProperty.GetAsync(turnContext, ()=>new Dictionary<string, object>());
+                    var state = await testProperty.GetAsync(turnContext, () => new Dictionary<string, object>());
 
                     var dialogs = new DialogSet();
                     dialogs.Add("test-waterfall", Create_Waterfall2());
@@ -351,11 +351,11 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
 
                     var dc = dialogs.CreateContext(turnContext, state);
 
-                await dc.ContinueAsync();
+                    await dc.ContinueAsync();
 
                     if (!turnContext.Responded)
                     {
-                    await dc.BeginAsync("test-waterfall");
+                        await dc.BeginAsync("test-waterfall");
                     }
                 }
             })
@@ -421,11 +421,11 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
 
                     var dc = dialogs.CreateContext(turnContext, state);
 
-                await dc.ContinueAsync();
+                    await dc.ContinueAsync();
 
                     if (!turnContext.Responded)
                     {
-                    await dc.BeginAsync("test-waterfall-a");
+                        await dc.BeginAsync("test-waterfall-a");
                     }
                 }
             })
@@ -486,4 +486,4 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
             await dc.EndAsync();
         }
     }
-}
+}*/

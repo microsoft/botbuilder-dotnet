@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
+/*using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
@@ -9,7 +9,7 @@ using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Schema;
 using Microsoft.Recognizers.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using static Microsoft.Bot.Builder.Dialogs.PromptValidatorEx;
+using Microsoft.Bot.Builder.Dialogs;
 
 namespace Microsoft.Bot.Builder.Dialogs.Tests
 {
@@ -405,8 +405,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             PromptValidator<ChoiceResult> validator = (ITurnContext context, ChoiceResult result) =>
             {
-                    // TODO: the current model has no way for this status to bubble up
-                    result.Status = "validation failed";
+                // TODO: the current model has no way for this status to bubble up
+                result.Status = "validation failed";
                 result.Value = null;
                 return Task.CompletedTask;
             };
@@ -459,7 +459,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                var state = await testProperty.GetAsync(turnContext, () => new Dictionary<string, object>()); 
+                var state = await testProperty.GetAsync(turnContext, () => new Dictionary<string, object>());
                 var prompt = new ChoicePrompt(Culture.English, validator);
                 prompt.Style = ListStyle.None;
 
@@ -488,4 +488,4 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .StartTestAsync();
         }
     }
-}
+}*/
