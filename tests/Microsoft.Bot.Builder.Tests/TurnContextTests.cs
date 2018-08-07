@@ -137,6 +137,39 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [TestMethod]
+        public async Task SendandGetActivities()
+        {
+            var a = new SimpleAdapter(); 
+            var c = new TurnContext(a, new Activity());
+            Assert.IsFalse(c.Responded);
+
+
+            var message1 = new Activity()
+            {
+                Type = ActivityTypes.Typing,
+                Text = "message1",
+                Id = "message1id",
+            };
+            var message2 = new Activity()
+            {
+                Type = ActivityTypes.Message,
+                Text = "message2",
+                Id = "message2id",
+            };
+
+            var response = await c.SendActivitiesAsync(new IActivity[] { message1, message2 });
+
+            Assert.IsTrue(c.Responded);
+            Assert.IsTrue(c.Responses.Count == 2);
+            Assert.IsTrue(c.Responses.Where(resp => resp.Type == ActivityTypes.Typing).Any());
+            Assert.IsTrue(c.Responses.Where(resp => resp.Type == ActivityTypes.Message).Any());
+            Assert.IsFalse(c.Responses.Where(resp => resp.Type == ActivityTypes.EndOfConversation).Any());
+            Assert.IsTrue(c.Responses.Count == 2);
+            Assert.IsTrue(response[0].Id == "message1id");
+            Assert.IsTrue(response[1].Id == "message2id");
+        }
+
+        [TestMethod]
         public async Task SendAndSetRespondedUsingIMessageActivity()
         {
             var a = new SimpleAdapter();

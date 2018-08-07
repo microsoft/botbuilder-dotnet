@@ -108,6 +108,11 @@ namespace Microsoft.Bot.Builder
         bool Responded { get; }
 
         /// <summary>
+        /// Gets a list of activities that have been sent as responses.
+        /// </summary>
+        List<IActivity> Responses { get; }
+
+        /// <summary>
         /// Sends a message activity to the sender of the incoming activity.
         /// </summary>
         /// <param name="textReplyToSend">The text of the message to send.</param>

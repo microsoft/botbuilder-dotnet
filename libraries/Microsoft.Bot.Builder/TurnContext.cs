@@ -37,6 +37,7 @@ namespace Microsoft.Bot.Builder
         {
             Adapter = adapter ?? throw new ArgumentNullException(nameof(adapter));
             Activity = activity ?? throw new ArgumentNullException(nameof(activity));
+            Responses = new List<IActivity>();
         }
 
         /// <summary>
@@ -64,6 +65,12 @@ namespace Microsoft.Bot.Builder
         /// <value><c>true</c> if at least one response was sent for the current turn.</value>
         /// <remarks><see cref="ITraceActivity"/> activities on their own do not set this flag.</remarks>
         public bool Responded
+        {
+            get;
+            private set;
+        }
+
+        public List<IActivity> Responses
         {
             get;
             private set;
@@ -280,6 +287,8 @@ namespace Microsoft.Bot.Builder
                 {
                     Responded = true;
                 }
+
+                Responses.AddRange(bufferedActivities);
 
                 return responses;
             }

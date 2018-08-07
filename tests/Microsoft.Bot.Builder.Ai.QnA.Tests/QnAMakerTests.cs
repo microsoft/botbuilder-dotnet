@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Threading;
@@ -373,6 +374,8 @@ namespace Microsoft.Bot.Builder.Ai.QnA.Tests
         public Activity Activity { get; }
 
         public bool Responded => throw new NotImplementedException();
+
+        List<IActivity> ITurnContext.Responses => throw new NotImplementedException();
 
         public Task DeleteActivityAsync(string activityId, CancellationToken cancellationToken = default(CancellationToken))
         {
