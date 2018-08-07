@@ -33,16 +33,15 @@ namespace Microsoft.Bot.Builder
         /// </summary>
         /// <typeparam name="T">type of property.</typeparam>
         /// <param name="name">name of the property.</param>
-        /// <param name="defaultValueFactory">default value.</param>
         /// <returns>returns an IPropertyAccessor</returns>
-        public IStatePropertyAccessor<T> CreateProperty<T>(string name, Func<T> defaultValueFactory = null)
+        public IStatePropertyAccessor<T> CreateProperty<T>(string name)
         {
-            if (name == null)
+            if (string.IsNullOrWhiteSpace(name))
             {
                 throw new ArgumentNullException(nameof(name));
             }
 
-            return new BotStatePropertyAccessor<T>(this, name, defaultValueFactory);
+            return new BotStatePropertyAccessor<T>(this, name);
         }
 
         /// <summary>
@@ -53,7 +52,8 @@ namespace Microsoft.Bot.Builder
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <remarks>This middleware loads the state object on the leading edge of the middleware pipeline
-        /// and persists the state object on the trailing edge.
+        /// and persists the state object on the trailing edge. Note this is different than BotStateSet,
+        /// which does not pre-load the set on entry into the pipeline.
         /// </remarks>
         public async Task OnTurnAsync(ITurnContext context, NextDelegate next, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -126,7 +126,7 @@ namespace Microsoft.Bot.Builder
                     { key, cachedState.State },
                 };
                 await _storage.WriteAsync(changes).ConfigureAwait(false);
-                context.Services[_contextServiceKey] = null;
+                cachedState.Hash = cachedState.ComputeHash(cachedState.State);
                 return;
             }
         }
@@ -250,7 +250,7 @@ namespace Microsoft.Bot.Builder
                 return Hash != ComputeHash(State);
             }
 
-            private string ComputeHash(object obj)
+            internal string ComputeHash(object obj)
             {
                 return JsonConvert.SerializeObject(obj);
             }
@@ -263,20 +263,11 @@ namespace Microsoft.Bot.Builder
         private class BotStatePropertyAccessor<T> : IStatePropertyAccessor<T>
         {
             private BotState _botState;
-            private Func<T> _defaultValueFactory;
 
-            public BotStatePropertyAccessor(BotState botState, string name, Func<T> defaultValueFactory)
+            public BotStatePropertyAccessor(BotState botState, string name)
             {
                 _botState = botState;
                 Name = name;
-                if (defaultValueFactory == null)
-                {
-                    _defaultValueFactory = () => default(T);
-                }
-                else
-                {
-                    _defaultValueFactory = defaultValueFactory;
-                }
             }
 
             /// <summary>
@@ -300,10 +291,12 @@ namespace Microsoft.Bot.Builder
             /// <summary>
             /// Get the property value.
             /// </summary>
-            /// <param name="turnContext">turn context</param>
+            /// <param name="turnContext">The context object for this turn.</param>
+            /// <param name="defaultValueFactory">Defines the default value. Invoked when no value been set for the requested state property.  If defaultValueFactory is defined as null, the MissingMemberException will be thrown if the underlying property is not set.</param>
             /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-            public async Task<T> GetAsync(ITurnContext turnContext)
+            public async Task<T> GetAsync(ITurnContext turnContext, Func<T> defaultValueFactory = null)
             {
+                await _botState.LoadAsync(turnContext).ConfigureAwait(false);
                 try
                 {
                     return await _botState.GetPropertyValueAsync<T>(turnContext, Name).ConfigureAwait(false);
@@ -311,7 +304,12 @@ namespace Microsoft.Bot.Builder
                 catch (KeyNotFoundException)
                 {
                     // ask for default value from factory
-                    var result = _defaultValueFactory();
+                    if (defaultValueFactory == null)
+                    {
+                        throw new MissingMemberException("Property not set and no default provided.");
+                    }
+
+                    var result = defaultValueFactory();
 
                     // save default value for any further calls
                     await SetAsync(turnContext, result).ConfigureAwait(false);
@@ -325,9 +323,10 @@ namespace Microsoft.Bot.Builder
             /// <param name="turnContext">turn context.</param>
             /// <param name="value">value.</param>
             /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-            public Task SetAsync(ITurnContext turnContext, T value)
+            public async Task SetAsync(ITurnContext turnContext, T value)
             {
-                return _botState.SetPropertyValueAsync(turnContext, Name, value);
+                await _botState.LoadAsync(turnContext).ConfigureAwait(false);
+                await _botState.SetPropertyValueAsync(turnContext, Name, value).ConfigureAwait(false);
             }
         }
     }
