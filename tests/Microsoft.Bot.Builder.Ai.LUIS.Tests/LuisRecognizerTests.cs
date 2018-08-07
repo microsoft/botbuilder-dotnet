@@ -27,16 +27,19 @@ namespace Microsoft.Bot.Builder.Ai.Luis.Tests
         [TestMethod]
         public async Task SingleIntent_SimplyEntity()
         {
+            const string utterance = "My name is Emad";
+
             var mockHttp = new MockHttpMessageHandler();
-            mockHttp.When(GetRequestUrl()).WithPartialContent("My name is Emad")
+            mockHttp.When(GetRequestUrl()).WithPartialContent(utterance)
                 .Respond("application/json", GetResponse("SingleIntent_SimplyEntity.json"));
 
             var luisRecognizer = GetLuisRecognizer(mockHttp, verbose: true);
-            var context = GetContext("My name is Emad");
+            var context = GetContext(utterance);
             var result = await luisRecognizer.RecognizeAsync(context, CancellationToken.None);
+
             Assert.IsNotNull(result);
             Assert.IsNull(result.AlteredText);
-            Assert.AreEqual("My name is Emad", result.Text);
+            Assert.AreEqual(utterance, result.Text);
             Assert.IsNotNull(result.Intents);
             Assert.AreEqual(1, result.Intents.Count);
             Assert.IsNotNull(result.Intents["SpecifyName"]);
@@ -54,15 +57,18 @@ namespace Microsoft.Bot.Builder.Ai.Luis.Tests
         [TestMethod]
         public async Task MultipleIntents_PrebuiltEntity()
         {
+            const string utterance = "Please deliver February 2nd 2001";
+
             var mockHttp = new MockHttpMessageHandler();
-            mockHttp.When(GetRequestUrl()).WithPartialContent("Please deliver February 2nd 2001")
+            mockHttp.When(GetRequestUrl()).WithPartialContent(utterance)
                 .Respond("application/json", GetResponse("MultipleIntents_PrebuiltEntity.json"));
 
             var luisRecognizer = GetLuisRecognizer(mockHttp, true, new LuisPredictionOptions { Verbose = true });
-            var context = GetContext("Please deliver February 2nd 2001");
+            var context = GetContext(utterance);
             var result = await luisRecognizer.RecognizeAsync(context, CancellationToken.None);
+
             Assert.IsNotNull(result);
-            Assert.AreEqual("Please deliver February 2nd 2001", result.Text);
+            Assert.AreEqual(utterance, result.Text);
             Assert.IsNotNull(result.Intents);
             Assert.IsTrue(result.Intents.Count > 1);
             Assert.IsNotNull(result.Intents["Delivery"]);
@@ -89,16 +95,19 @@ namespace Microsoft.Bot.Builder.Ai.Luis.Tests
         [TestMethod]
         public async Task MultipleIntents_PrebuiltEntitiesWithMultiValues()
         {
+            const string utterance = "Please deliver February 2nd 2001 in room 201";
+
             var mockHttp = new MockHttpMessageHandler();
-            mockHttp.When(GetRequestUrl()).WithPartialContent("Please deliver February 2nd 2001 in room 201")
+            mockHttp.When(GetRequestUrl()).WithPartialContent(utterance)
                 .Respond("application/json", GetResponse("MultipleIntents_PrebuiltEntitiesWithMultiValues.json"));
 
             var luisRecognizer = GetLuisRecognizer(mockHttp, true, new LuisPredictionOptions { Verbose = true });
-            var context = GetContext("Please deliver February 2nd 2001 in room 201");
+            var context = GetContext(utterance);
             var result = await luisRecognizer.RecognizeAsync(context, CancellationToken.None);
+
             Assert.IsNotNull(result);
             Assert.IsNotNull(result.Text);
-            Assert.AreEqual("Please deliver February 2nd 2001 in room 201", result.Text);
+            Assert.AreEqual(utterance, result.Text);
             Assert.IsNotNull(result.Intents);
             Assert.IsNotNull(result.Intents["Delivery"]);
             Assert.IsNotNull(result.Entities);
@@ -113,16 +122,19 @@ namespace Microsoft.Bot.Builder.Ai.Luis.Tests
         [TestMethod]
         public async Task MultipleIntents_ListEntityWithSingleValue()
         {
+            const string utterance = "I want to travel on united";
+
             var mockHttp = new MockHttpMessageHandler();
-            mockHttp.When(GetRequestUrl()).WithPartialContent("I want to travel on united")
+            mockHttp.When(GetRequestUrl()).WithPartialContent(utterance)
                 .Respond("application/json", GetResponse("MultipleIntents_ListEntityWithSingleValue.json"));
 
             var luisRecognizer = GetLuisRecognizer(mockHttp, true, new LuisPredictionOptions { Verbose = true });
-            var context = GetContext("I want to travel on united");
+            var context = GetContext(utterance);
             var result = await luisRecognizer.RecognizeAsync(context, CancellationToken.None);
+
             Assert.IsNotNull(result);
             Assert.IsNotNull(result.Text);
-            Assert.AreEqual("I want to travel on united", result.Text);
+            Assert.AreEqual(utterance, result.Text);
             Assert.IsNotNull(result.Intents);
             Assert.IsNotNull(result.Intents["Travel"]);
             Assert.IsNotNull(result.Entities);
@@ -138,16 +150,19 @@ namespace Microsoft.Bot.Builder.Ai.Luis.Tests
         [TestMethod]
         public async Task MultipleIntents_ListEntityWithMultiValues()
         {
+            const string utterance = "I want to travel on DL";
+
             var mockHttp = new MockHttpMessageHandler();
-            mockHttp.When(GetRequestUrl()).WithPartialContent("I want to travel on DL")
+            mockHttp.When(GetRequestUrl()).WithPartialContent(utterance)
                 .Respond("application/json", GetResponse("MultipleIntents_ListEntityWithMultiValues.json"));
 
             var luisRecognizer = GetLuisRecognizer(mockHttp, true, new LuisPredictionOptions { Verbose = true });
-            var context = GetContext("I want to travel on DL");
+            var context = GetContext(utterance);
             var result = await luisRecognizer.RecognizeAsync(context, CancellationToken.None);
+
             Assert.IsNotNull(result);
             Assert.IsNotNull(result.Text);
-            Assert.AreEqual("I want to travel on DL", result.Text);
+            Assert.AreEqual(utterance, result.Text);
             Assert.IsNotNull(result.Intents);
             Assert.IsNotNull(result.Intents["Travel"]);
             Assert.IsNotNull(result.Entities);
@@ -165,16 +180,19 @@ namespace Microsoft.Bot.Builder.Ai.Luis.Tests
         [TestMethod]
         public async Task MultipleIntents_CompositeEntityModel()
         {
+            const string utterance = "Please deliver it to 98033 WA";
+
             var mockHttp = new MockHttpMessageHandler();
-            mockHttp.When(GetRequestUrl()).WithPartialContent("Please deliver it to 98033 WA")
-                .Respond("application/json", GetResponse("MultipleIntens_CompositeEntity.json"));
+            mockHttp.When(GetRequestUrl()).WithPartialContent(utterance)
+                .Respond("application/json", GetResponse("MultipleIntents_CompositeEntityModel.json"));
 
             var luisRecognizer = GetLuisRecognizer(mockHttp, true, new LuisPredictionOptions { Verbose = true });
-            var context = GetContext("Please deliver it to 98033 WA");
+            var context = GetContext(utterance);
             var result = await luisRecognizer.RecognizeAsync(context, CancellationToken.None);
+
             Assert.IsNotNull(result);
             Assert.IsNotNull(result.Text);
-            Assert.AreEqual("Please deliver it to 98033 WA", result.Text);
+            Assert.AreEqual(utterance, result.Text);
             Assert.IsNotNull(result.Intents);
             Assert.IsNotNull(result.Intents["Delivery"]);
             Assert.IsNotNull(result.Entities);
@@ -206,13 +224,16 @@ namespace Microsoft.Bot.Builder.Ai.Luis.Tests
         [TestMethod]
         public async Task MultipleDateTimeEntities()
         {
+            const string utterance = "Book a table on Friday or tomorrow at 5 or tomorrow at 4";
+
             var mockHttp = new MockHttpMessageHandler();
-            mockHttp.When(GetRequestUrl()).WithPartialContent("Book a table on Friday or tomorrow at 5 or tomorrow at 4")
+            mockHttp.When(GetRequestUrl()).WithPartialContent(utterance)
                 .Respond("application/json", GetResponse("MultipleDateTimeEntities.json"));
 
             var luisRecognizer = GetLuisRecognizer(mockHttp, true, new LuisPredictionOptions { Verbose = true });
-            var context = GetContext("Book a table on Friday or tomorrow at 5 or tomorrow at 4");
+            var context = GetContext(utterance);
             var result = await luisRecognizer.RecognizeAsync(context, CancellationToken.None);
+
             Assert.IsNotNull(result.Entities["datetime"]);
             Assert.AreEqual(3, result.Entities["datetime"].Count());
             Assert.AreEqual(1, result.Entities["datetime"][0]["timex"].Count());
@@ -251,6 +272,7 @@ namespace Microsoft.Bot.Builder.Ai.Luis.Tests
                 var luisRecognizer = GetLuisRecognizer(mockHttp, true, new LuisPredictionOptions { Verbose = true });
                 var typedResult = await luisRecognizer.RecognizeAsync<T>(context, CancellationToken.None);
                 var typedJson = Json(typedResult);
+
                 if (!WithinDelta(expectedJson, typedJson, 0.1))
                 {
                     using (var writer = new StreamWriter(newPath))
@@ -270,13 +292,14 @@ namespace Microsoft.Bot.Builder.Ai.Luis.Tests
         [TestMethod]
         public async Task TraceActivity()
         {
+            const string utterance = @"My name is Emad";
+            const string botResponse = @"Hi Emad";
+
             var mockHttp = new MockHttpMessageHandler();
-            mockHttp.When(GetRequestUrl()).WithPartialContent("My name is Emad")
+            mockHttp.When(GetRequestUrl()).WithPartialContent(utterance)
                 .Respond("application/json", GetResponse("TraceActivity.json"));
 
             var adapter = new TestAdapter(null, true);
-            const string utterance = @"My name is Emad";
-            const string botResponse = @"Hi Emad";
             await new TestFlow(adapter, async (context, cancellationToken) =>
             {
                 if (context.Activity.Text == utterance)
