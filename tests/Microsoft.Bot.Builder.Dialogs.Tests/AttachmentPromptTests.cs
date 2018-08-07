@@ -13,36 +13,107 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
     [TestClass]
     public class AttachmentPromptTests
     {
+
         [TestMethod]
         public async Task BasicAttachmentPrompt()
         {
             ConversationState convoState = new ConversationState(new MemoryStorage());
-            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test");
+            var dialogState = convoState.CreateProperty<Dictionary<string, object>>("dialogState");
 
             TestAdapter adapter = new TestAdapter()
                 .Use(convoState);
 
+            // Create new DialogSet.
+            DialogSet dialogs = new DialogSet(dialogState);
+
+            // Add attachment prompt to DialogSet.
+            dialogs.Add(new AttachmentPrompt("AttachmentPrompt"));
+
+            // Add AttachmentDialog to prompt for an attachment.
+            dialogs.Add(new WaterfallDialog("AttachmentDialog", new WaterfallStep[]
+                    {
+                        async (dc, step) =>
+                        {
+                            return await dc.PromptAsync("AttachmentPrompt", "please add an attachment.");
+                        },
+                        async (dc, step) =>
+                        {
+                            var results = step.Result as List<Attachment>;
+                            var reply = (string)results.First().Content;
+                            await dc.Context.SendActivityAsync(reply);
+                            return await dc.EndAsync();
+                        }
+                    }
+                ));
+            // Create mock attachment for testing.
             var attachment = new Attachment { Content = "some content", ContentType = "text/plain" };
+
+            // Create incoming activity with attachment.
             var activityWithAttachment = MessageFactory.Attachment(attachment);
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                var state = await testProperty.GetAsync(turnContext, () => new Dictionary<string, object>());
-                var prompt = new AttachmentPrompt();
-
-                var dialogCompletion = await prompt.ContinueAsync(turnContext, state);
-                if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
+                var dc = await dialogs.CreateContextAsync(turnContext);
+                await dc.ContinueAsync();
+                if (!turnContext.Responded)
                 {
-                    await prompt.BeginAsync(turnContext, state, new PromptOptions { PromptString = "please add an attachment." });
-                }
-                else if (dialogCompletion.IsCompleted)
-                {
-                    var attachmentResult = (AttachmentResult)dialogCompletion.Result;
-                    var reply = (string)attachmentResult.Attachments.First().Content;
-                    await turnContext.SendActivityAsync(reply);
+                    await dc.BeginAsync("AttachmentDialog");
                 }
             })
             .Send("hello")
+            .AssertReply("please add an attachment.")
+            .Send(activityWithAttachment)
+            .AssertReply("some content")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task RetryAttachmentPrompt()
+        {
+            ConversationState convoState = new ConversationState(new MemoryStorage());
+            var dialogState = convoState.CreateProperty<Dictionary<string, object>>("dialogState");
+
+            TestAdapter adapter = new TestAdapter()
+                .Use(convoState);
+
+            // Create new DialogSet.
+            DialogSet dialogs = new DialogSet(dialogState);
+
+            dialogs.Add(new AttachmentPrompt("AttachmentPrompt"));
+
+            dialogs.Add(new WaterfallDialog("AttachmentDialog", new WaterfallStep[]
+                    {
+                        async (dc, step) =>
+                        {
+                            return await dc.PromptAsync("AttachmentPrompt", "please add an attachment.");
+                        },
+                        async (dc, step) =>
+                        {
+                            var results = step.Result as List<Attachment>;
+                            var reply = (string)results.First().Content;
+                            await dc.Context.SendActivityAsync(reply);
+                            return await dc.EndAsync();
+                        }
+                    }
+                ));
+            // Create mock attachment for testing.
+            var attachment = new Attachment { Content = "some content", ContentType = "text/plain" };
+
+            // Create incoming activity with attachment.
+            var activityWithAttachment = MessageFactory.Attachment(attachment);
+
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            {
+                var dc = await dialogs.CreateContextAsync(turnContext);
+                await dc.ContinueAsync();
+                if (!turnContext.Responded)
+                {
+                    await dc.BeginAsync("AttachmentDialog");
+                }
+            })
+            .Send("hello")
+            .AssertReply("please add an attachment.")
+            .Send("hello again")
             .AssertReply("please add an attachment.")
             .Send(activityWithAttachment)
             .AssertReply("some content")

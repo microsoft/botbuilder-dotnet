@@ -1,12 +1,12 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Microsoft.Bot.Builder.Adapters;
+/*using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Recognizers.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using static Microsoft.Bot.Builder.Dialogs.PromptValidatorEx;
+using Microsoft.Bot.Builder.Dialogs;
 
 namespace Microsoft.Bot.Builder.Dialogs.Tests
 {
@@ -94,14 +94,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 .Use(convoState);
 
 
-                PromptValidator<NumberResult<int>> validator = async (ctx, result) =>
-            {
-                if (result.Value < 0)
-                    result.Status = PromptStatus.TooSmall;
-                if (result.Value > 100)
-                    result.Status = PromptStatus.TooBig;
-                await Task.CompletedTask;
-            };
+            PromptValidator<NumberResult<int>> validator = async (ctx, result) =>
+        {
+            if (result.Value < 0)
+                result.Status = PromptStatus.TooSmall;
+            if (result.Value > 100)
+                result.Status = PromptStatus.TooBig;
+            await Task.CompletedTask;
+        };
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
@@ -261,4 +261,4 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .StartTestAsync();
         }
     }
-}
+}*/
