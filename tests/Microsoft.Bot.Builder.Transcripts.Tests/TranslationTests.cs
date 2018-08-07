@@ -35,7 +35,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
             var userState = new UserState(new MemoryStorage());
             var userLangProp = userState.CreateProperty<string>("language");
 
-            TestAdapter adapter = new TestAdapter()
+            var adapter = new TestAdapter()
                 .Use(userState)
                 .Use(new TranslationMiddleware(nativeLanguages, translatorKey, patterns, new CustomDictionary(), userLangProp, false));
 
@@ -66,7 +66,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
             var userState = new UserState(new MemoryStorage());
             var userLangProp = userState.CreateProperty<string>("language");
 
-            TestAdapter adapter = new TestAdapter()
+            var adapter = new TestAdapter()
                 .Use(userState)
                 .Use(new TranslationMiddleware(nativeLanguages, translatorKey, patterns, new CustomDictionary(), userLangProp, true));
 
@@ -89,9 +89,9 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
             var activities = TranscriptUtilities.GetFromTestContext(TestContext);
 
             var userState = new UserState(new MemoryStorage());
-            var userLangProp = userState.CreateProperty<string>("language", () => "en-us");
+            var userLangProp = userState.CreateProperty<string>("language");
 
-            TestAdapter adapter = new TestAdapter()
+            var adapter = new TestAdapter()
                 .Use(userState)
                 .Use(new LocaleConverterMiddleware(userLangProp, botLocale, LocaleConverter.Converter));
 

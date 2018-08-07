@@ -20,9 +20,9 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
             var activities = TranscriptUtilities.GetFromTestContext(TestContext);
 
             var userState = new UserState(new MemoryStorage());
-            var testProperty = userState.CreateProperty<UserStateObject>("test", () => new UserStateObject());
+            var testProperty = userState.CreateProperty<UserStateObject>("test");
 
-            TestAdapter adapter = new TestAdapter()
+            var adapter = new TestAdapter()
                 .Use(userState);
 
             var flow = new TestFlow(adapter, async (context, cancellationToken) =>
@@ -37,14 +37,14 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
                             break;
                         case "set":
                             {
-                                var data = await testProperty.GetAsync(context);
+                                var data = await testProperty.GetAsync(context, () => new UserStateObject());
                                 data.Value = value;
                                 await testProperty.SetAsync(context, data);
                             }
                             break;
                         case "read":
                             {
-                                var data = await testProperty.GetAsync(context);
+                                var data = await testProperty.GetAsync(context, () => new UserStateObject());
                                 await context.SendActivityAsync($"value:{data.Value}");
                             }
                             break;
@@ -66,9 +66,9 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
             var storage = new MemoryStorage();
 
             var convoState = new ConversationState(new MemoryStorage());
-            var testProperty = convoState.CreateProperty<ConversationStateObject>("test", () => new ConversationStateObject());
+            var testProperty = convoState.CreateProperty<ConversationStateObject>("test");
 
-            TestAdapter adapter = new TestAdapter()
+            var adapter = new TestAdapter()
                 .Use(convoState);
 
             var flow = new TestFlow(adapter, async (context, cancellationToken) =>
@@ -83,14 +83,14 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
                             break;
                         case "set":
                             {
-                                var data = await testProperty.GetAsync(context);
+                                var data = await testProperty.GetAsync(context, () => new ConversationStateObject());
                                 data.Value = value;
                                 await testProperty.SetAsync(context, data);
                             }
                             break;
                         case "read":
                             {
-                                var data = await testProperty.GetAsync(context);
+                                var data = await testProperty.GetAsync(context, () => new ConversationStateObject());
                                 await context.SendActivityAsync($"value:{data.Value}");
                             }
                             break;
@@ -111,8 +111,8 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
 
             var storage = new MemoryStorage();
             var customState = new CustomState(storage);
-            var testProperty = customState.CreateProperty<CustomStateObject>("Test", () => new CustomStateObject());
-            TestAdapter adapter = new TestAdapter()
+            var testProperty = customState.CreateProperty<CustomStateObject>("Test");
+            var adapter = new TestAdapter()
                 .Use(customState);
 
             var flow = new TestFlow(adapter, async (context, cancellationToken) =>
@@ -127,14 +127,14 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
                             break;
                         case "set":
                             {
-                                var data = await testProperty.GetAsync(context);
+                                var data = await testProperty.GetAsync(context, () => new CustomStateObject());
                                 data.Value = value;
                                 await testProperty.SetAsync(context, data);
                             }
                             break;
                         case "read":
                             {
-                                var data = await testProperty.GetAsync(context);
+                                var data = await testProperty.GetAsync(context, () => new CustomStateObject());
                                 await context.SendActivityAsync($"value:{data.Value}");
                             }
                             break;

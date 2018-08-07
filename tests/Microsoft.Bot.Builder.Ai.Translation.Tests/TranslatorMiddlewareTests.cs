@@ -22,12 +22,52 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
         [TestMethod]
         [TestCategory("AI")]
         [TestCategory("Translator")]
-        public void MethodsAreVirual()
+        public void TranslatorMiddleware_Construct()
+        {
+            var mockHttp = new MockHttpMessageHandler();
+            var tm = new TranslationMiddleware(new[] { "en" }, _translatorKey, httpClient: mockHttp.ToHttpClient(), defaultLocale: "en");
+        }
+
+        [TestMethod]
+        [TestCategory("AI")]
+        [TestCategory("Translator")]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void TranslatorMiddleware_ConstructNullLocale()
+        {
+            var mockHttp = new MockHttpMessageHandler();
+            var tm = new TranslationMiddleware(new[] { "en" }, _translatorKey, httpClient: mockHttp.ToHttpClient(), defaultLocale: null);
+        }
+
+        [TestMethod]
+        [TestCategory("AI")]
+        [TestCategory("Translator")]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void TranslatorMiddleware_ConstructWSLocale()
+        {
+            var mockHttp = new MockHttpMessageHandler();
+            var tm = new TranslationMiddleware(new[] { "en" }, _translatorKey, httpClient: mockHttp.ToHttpClient(), defaultLocale: "   ");
+        }
+
+        [TestMethod]
+        [TestCategory("AI")]
+        [TestCategory("Translator")]
+        public void TranslatorMiddleware_PropertyLocale()
+        {
+            var mockHttp = new MockHttpMessageHandler();
+            var tm = new TranslationMiddleware(new[] { "en" }, _translatorKey, httpClient: mockHttp.ToHttpClient());
+            Assert.AreEqual("en", tm.DefaultLocale);
+        }
+
+
+        [TestMethod]
+        [TestCategory("AI")]
+        [TestCategory("Translator")]
+        public void MethodsAreVirtual()
         {
             var type = typeof(TranslationMiddleware);
             foreach (var methodInfo in type.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly))
             {
-                // Check that the methos is overridable (Virtual and Not Final).
+                // Check that the methods are overridable (Virtual and Not Final).
                 // See https://docs.microsoft.com/en-us/dotnet/api/system.reflection.methodbase.isvirtual?f1url=https%3A%2F%2Fmsdn.microsoft.com%2Fquery%2Fdev15.query%3FappId%3DDev15IDEF1%26l%3DEN-US%26k%3Dk(System.Reflection.MethodBase.IsVirtual);k(SolutionItemsProject);k(DevLang-csharp)%26rd%3Dtrue&view=netframework-4.7.2
                 Assert.IsTrue(methodInfo.IsVirtual && !methodInfo.IsFinal, $"{methodInfo.Name} should be virtual");
             }
@@ -79,7 +119,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
                 .Respond("application/json", GetResponse("TranslatorMiddleware_DetectAndTranslateToEnglish_Hello.json"));
 
             var userState = new UserState(new MemoryStorage());
-            var languageStateProperty = userState.CreateProperty<string>("languageState", () => "en");
+            var languageStateProperty = userState.CreateProperty<string>("languageState");
 
             var adapter = new TestAdapter()
                 .Use(new TranslationMiddleware(new[] { "en" }, _translatorKey, httpClient: mockHttp.ToHttpClient()));
@@ -110,7 +150,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
                 .Respond("application/json", GetResponse("TranslatorMiddleware_TranslateFrenchToEnglish_Translate.json"));
 
             var userState = new UserState(new MemoryStorage());
-            var languageStateProperty = userState.CreateProperty("languageState", () => "en");
+            var languageStateProperty = userState.CreateProperty<string>("languageState");
             
             var adapter = new TestAdapter()
                 .Use(userState)
@@ -144,7 +184,7 @@ namespace Microsoft.Bot.Builder.Ai.Translation.Tests
                 .Respond("application/json", GetResponse("TranslatorMiddleware_TranslateFrenchToEnglishToUserLanguage_Hello.json"));
 
             var userState = new UserState(new MemoryStorage());
-            var languageStateProperty = userState.CreateProperty("languageState", () => "en");
+            var languageStateProperty = userState.CreateProperty<string>("languageState");
             
             var adapter = new TestAdapter()
                 .Use(userState)

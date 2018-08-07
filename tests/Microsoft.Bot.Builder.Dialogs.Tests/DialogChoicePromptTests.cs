@@ -49,14 +49,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             );
 
             ConversationState convoState = new ConversationState(new MemoryStorage());
-            var testProperty = convoState.CreateProperty("test", () => new Dictionary<string, object>());
+            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test");
 
             TestAdapter adapter = new TestAdapter()
                 .Use(convoState);
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                var state = await testProperty.GetAsync(turnContext);
+                var state = await testProperty.GetAsync(turnContext, () => new Dictionary<string, object>());
                 var dc = dialogs.CreateContext(turnContext, state);
 
                 await dc.ContinueAsync();
