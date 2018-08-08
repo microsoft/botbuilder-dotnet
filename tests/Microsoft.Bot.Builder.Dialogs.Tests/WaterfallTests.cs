@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             TestAdapter adapter = new TestAdapter()
                 .Use(convoState);
 
-            var dialogState = convoState.CreateProperty<Dictionary<string, object>>("dialogState");
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
             DialogSet dialogs = new DialogSet(dialogState);
             dialogs.Add(new WaterfallDialog("test", new WaterfallStep[]
             {
@@ -52,14 +52,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         public async Task WaterfallPrompt()
         {
             ConversationState convoState = new ConversationState(new MemoryStorage());
-            var dialogState = convoState.CreateProperty<Dictionary<string, object>>("dialogState");
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
             TestAdapter adapter = new TestAdapter()
                 .Use(convoState);
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                var state = await dialogState.GetAsync(turnContext, () => new Dictionary<string, object>());
+                var state = await dialogState.GetAsync(turnContext, () => new DialogState());
                 var dialogs = new DialogSet(dialogState);
                 dialogs.Add(Create_Waterfall2());
                 var numberPrompt = new NumberPrompt<int>("number", defaultLocale: Culture.English);
@@ -145,7 +145,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                var dialogState = convoState.CreateProperty<Dictionary<string, object>>("dialogState");
+                var dialogState = convoState.CreateProperty<DialogState>("dialogState");
                 var dialogs = new DialogSet(dialogState);
                 dialogs.Add(Create_Waterfall3());
                 dialogs.Add(Create_Waterfall4());
@@ -177,7 +177,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         public async Task WaterfallDateTimePromptFirstInvalidThenValidInput()
         {
             var convoState = new ConversationState(new MemoryStorage());
-            var dialogState = convoState.CreateProperty<Dictionary<string, object>>("dialogState");
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
             var dialogs = new DialogSet(dialogState);
             dialogs.Add(new DateTimePrompt("dateTimePrompt", defaultLocale: Culture.English));
@@ -199,7 +199,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                var state = await dialogState.GetAsync(turnContext, () => new Dictionary<string, object>());
+                var state = await dialogState.GetAsync(turnContext, () => new DialogState());
 
                 var dc = await dialogs.CreateContextAsync(turnContext);
 

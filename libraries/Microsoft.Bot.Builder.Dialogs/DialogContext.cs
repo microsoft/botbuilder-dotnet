@@ -20,18 +20,12 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="state">Current dialog state.</param>
         /// <param name="onCompleted">An action to perform when the dialog completes, that is,
         /// when <see cref="EndAsync(IDictionary{string, object})"/> is called on the current context.</param>
-        internal DialogContext(DialogSet dialogs, ITurnContext context, IDictionary<string, object> state)
+        internal DialogContext(DialogSet dialogs, ITurnContext context, DialogState state)
         {
             Dialogs = dialogs ?? throw new ArgumentNullException(nameof(dialogs));
             Context = context ?? throw new ArgumentNullException(nameof(context));
 
-            if (!state.TryGetValue("dialogStack", out var value))
-            {
-                value = new List<DialogInstance>();
-                state["dialogStack"] = value;
-            }
-
-            Stack = (List<DialogInstance>)state["dialogStack"];
+            Stack = state.DialogStack;
         }
 
         public DialogSet Dialogs { get; private set; }

@@ -9,6 +9,8 @@ namespace Microsoft.Bot.Builder.Dialogs
 {
     public class ComponentDialog : Dialog
     {
+        private const string PersistedDialogState = "dialogs";
+
         private DialogSet _dialogs;
 
         public ComponentDialog(string dialogId)
@@ -30,7 +32,9 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             // Start the inner dialog.
-            var cdc = new DialogContext(_dialogs, dc.Context, dc.ActiveDialog.State);
+            var dialogState = new DialogState();
+            dc.ActiveDialog.State[PersistedDialogState] = dialogState;
+            var cdc = new DialogContext(_dialogs, dc.Context, dialogState);
             var turnResult = await OnDialogBeginAsync(cdc, options).ConfigureAwait(false);
 
             // Check for end of inner dialog 
@@ -54,7 +58,8 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             // Continue execution of inner dialog.
-            var cdc = new DialogContext(_dialogs, dc.Context, dc.ActiveDialog.State);
+            var dialogState = (DialogState)dc.ActiveDialog.State[PersistedDialogState];
+            var cdc = new DialogContext(_dialogs, dc.Context, dialogState);
             var turnResult = await OnDialogContinueAsync(cdc).ConfigureAwait(false);
 
             // Check for end of inner dialog 
@@ -84,14 +89,16 @@ namespace Microsoft.Bot.Builder.Dialogs
         public override async Task DialogRepromptAsync(ITurnContext context, DialogInstance instance)
         {
             // Delegate to inner dialog.
-            var cdc = new DialogContext(_dialogs, context, instance.State);
+            var dialogState = (DialogState)instance.State[PersistedDialogState];
+            var cdc = new DialogContext(_dialogs, context, dialogState);
             await OnDialogRepromptAsync(cdc).ConfigureAwait(false);
         }
 
         public override async Task DialogEndAsync(ITurnContext context, DialogInstance instance, DialogReason reason)
         {
             // Notify inner dialog
-            var cdc = new DialogContext(_dialogs, context, instance.State);
+            var dialogState = (DialogState)instance.State[PersistedDialogState];
+            var cdc = new DialogContext(_dialogs, context, dialogState);
             await OnDialogEndAsync(cdc, reason).ConfigureAwait(false);
         }
 
