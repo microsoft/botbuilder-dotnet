@@ -42,7 +42,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
         }
 
-        protected override async Task<PromptRecognizerResult<IList<DateTimeResolution>>> OnRecognizeAsync(ITurnContext context, IDictionary<string, object> state, PromptOptions options)
+        protected override Task<PromptRecognizerResult<IList<DateTimeResolution>>> OnRecognizeAsync(ITurnContext context, IDictionary<string, object> state, PromptOptions options)
         {
             if (context == null)
             {
@@ -68,7 +68,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 }
             }
 
-            return result;
+            return Task.FromResult(result);
         }
 
         private DateTimeResolution ReadResolution(IDictionary<string, string> resolution)

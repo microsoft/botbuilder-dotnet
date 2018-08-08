@@ -24,6 +24,8 @@ namespace Microsoft.Bot.Builder.Dialogs
             _dialogs = new DialogSet(null);
         }
 
+        protected string InitialDialogId { get; set; }
+
         public override async Task<DialogTurnResult> DialogBeginAsync(DialogContext dc, DialogOptions options = null)
         {
             if (dc == null)
@@ -37,7 +39,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             var cdc = new DialogContext(_dialogs, dc.Context, dialogState);
             var turnResult = await OnDialogBeginAsync(cdc, options).ConfigureAwait(false);
 
-            // Check for end of inner dialog 
+            // Check for end of inner dialog
             if (turnResult.HasResult)
             {
                 // Return result to calling dialog
@@ -50,7 +52,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
         }
 
-        public async Task<DialogTurnResult> DialogContinueAsync(DialogContext dc)
+        public new async Task<DialogTurnResult> DialogContinueAsync(DialogContext dc)
         {
             if (dc == null)
             {
@@ -62,7 +64,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             var cdc = new DialogContext(_dialogs, dc.Context, dialogState);
             var turnResult = await OnDialogContinueAsync(cdc).ConfigureAwait(false);
 
-            // Check for end of inner dialog 
+            // Check for end of inner dialog
             if (turnResult.HasResult)
             {
                 // Return result to calling dialog
@@ -79,8 +81,8 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             // Containers are typically leaf nodes on the stack but the dev is free to push other dialogs
             // on top of the stack which will result in the container receiving an unexpected call to
-            // dialogResume() when the pushed on dialog ends. 
-            // To avoid the container prematurely ending we need to implement this method and simply 
+            // dialogResume() when the pushed on dialog ends.
+            // To avoid the container prematurely ending we need to implement this method and simply
             // ask our inner dialog stack to re-prompt.
             await DialogRepromptAsync(dc.Context, dc.ActiveDialog).ConfigureAwait(false);
             return Dialog.EndOfTurn;
@@ -102,8 +104,6 @@ namespace Microsoft.Bot.Builder.Dialogs
             await OnDialogEndAsync(cdc, reason).ConfigureAwait(false);
         }
 
-        protected string InitialDialogId { get; set; }
-
         protected Dialog AddDialog(Dialog dialog)
         {
             _dialogs.Add(dialog);
@@ -111,9 +111,9 @@ namespace Microsoft.Bot.Builder.Dialogs
             {
                 InitialDialogId = dialog.Id;
             }
+
             return dialog;
         }
-
 
         protected async Task<DialogTurnResult> OnDialogBeginAsync(DialogContext dc, DialogOptions options)
         {
@@ -122,7 +122,8 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         protected async Task OnDialogEndAsync(DialogContext dc, DialogReason reason)
         {
-            if (reason == DialogReason.CancelCalled) {
+            if (reason == DialogReason.CancelCalled)
+            {
                 await dc.CancelAllAsync().ConfigureAwait(false);
             }
         }

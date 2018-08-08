@@ -14,13 +14,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [TestMethod]
         public async Task PromptValidatorContextEnd()
         {
-            ConversationState convoState = new ConversationState(new MemoryStorage());
+            var convoState = new ConversationState(new MemoryStorage());
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
-            TestAdapter adapter = new TestAdapter()
+            var adapter = new TestAdapter()
                 .Use(convoState);
 
-            DialogSet dialogs = new DialogSet(dialogState);
+            var dialogs = new DialogSet(dialogState);
 
             dialogs.Add(new TextPrompt("namePrompt", async (context, promptContext) =>
             {
@@ -65,7 +65,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [TestMethod]
         public async Task PromptValidatorContextRetryEnd()
         {
-            ConversationState convoState = new ConversationState(new MemoryStorage());
+            var convoState = new ConversationState(new MemoryStorage());
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
             TestAdapter adapter = new TestAdapter()

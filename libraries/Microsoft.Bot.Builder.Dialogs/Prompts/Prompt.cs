@@ -115,8 +115,8 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             // Prompts are typically leaf nodes on the stack but the dev is free to push other dialogs
             // on top of the stack which will result in the prompt receiving an unexpected call to
-            // dialogResume() when the pushed on dialog ends. 
-            // To avoid the prompt prematurely ending we need to implement this method and 
+            // dialogResume() when the pushed on dialog ends.
+            // To avoid the prompt prematurely ending we need to implement this method and
             // simply re-prompt the user.
             await DialogRepromptAsync(dc.Context, dc.ActiveDialog).ConfigureAwait(false);
             return Dialog.EndOfTurn;
@@ -136,7 +136,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         protected IMessageActivity AppendChoices(IMessageActivity prompt, string channelId, IList<Choice> choices, ListStyle style, ChoiceFactoryOptions options = null)
         {
             // Get base prompt text (if any)
-            string text = prompt != null && !string.IsNullOrEmpty(prompt.Text) ? prompt.Text : string.Empty;
+            var text = prompt != null && !string.IsNullOrEmpty(prompt.Text) ? prompt.Text : string.Empty;
 
             // Create temporary msg
             IMessageActivity msg;

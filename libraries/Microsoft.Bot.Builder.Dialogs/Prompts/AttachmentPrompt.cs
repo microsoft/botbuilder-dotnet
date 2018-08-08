@@ -27,7 +27,6 @@ namespace Microsoft.Bot.Builder.Dialogs
                 throw new ArgumentNullException(nameof(options));
             }
 
-
             if (isRetry && options.RetryPrompt != null)
             {
                 await context.SendActivityAsync(options.RetryPrompt).ConfigureAwait(false);
@@ -38,7 +37,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
         }
 
-        protected override async Task<PromptRecognizerResult<IList<Attachment>>> OnRecognizeAsync(ITurnContext context, IDictionary<string, object> state, PromptOptions options)
+        protected override Task<PromptRecognizerResult<IList<Attachment>>> OnRecognizeAsync(ITurnContext context, IDictionary<string, object> state, PromptOptions options)
         {
             if (context == null)
             {
@@ -56,7 +55,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 }
             }
 
-            return result;
+            return Task.FromResult(result);
         }
     }
 }
