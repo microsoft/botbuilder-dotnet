@@ -1,124 +1,92 @@
 {
-  "query": "fly from seattle to dallas at 3pm on delta",
+  "query": "http://foo.com is where you can get a weather forecast for seattle",
+  "alteredQuery": null,
   "topScoringIntent": {
-    "intent": "Travel",
-    "score": 0.141035929,
-    "actions": null
+    "intent": "Weather.GetForecast",
+    "score": 0.8924456
   },
   "intents": [
     {
-      "intent": "Travel",
-      "score": 0.141035929,
-      "actions": null
+      "intent": "Weather.GetForecast",
+      "score": 0.8924456
     },
     {
       "intent": "EntityTests",
-      "score": 0.07253119,
-      "actions": null
-    },
-    {
-      "intent": "search",
-      "score": 0.0253965259,
-      "actions": null
-    },
-    {
-      "intent": "Weather.GetForecast",
-      "score": 0.02482934,
-      "actions": null
+      "score": 0.635434449
     },
     {
       "intent": "None",
-      "score": 0.01891793,
-      "actions": null
+      "score": 0.04799512
+    },
+    {
+      "intent": "search",
+      "score": 0.0217808
+    },
+    {
+      "intent": "Travel",
+      "score": 0.005861538
     },
     {
       "intent": "SpecifyName",
-      "score": 0.005820451,
-      "actions": null
+      "score": 0.005182907
     },
     {
       "intent": "Delivery",
-      "score": 0.005534173,
-      "actions": null
-    },
-    {
-      "intent": "Cancel",
-      "score": 0.00509996526,
-      "actions": null
+      "score": 0.00352461357
     },
     {
       "intent": "Help",
-      "score": 0.003480897,
-      "actions": null
+      "score": 0.00179672148
+    },
+    {
+      "intent": "Cancel",
+      "score": 0.0006153381
     },
     {
       "intent": "Greeting",
-      "score": 0.001150199,
-      "actions": null
+      "score": 0.000140723525
     }
   ],
   "entities": [
     {
-      "role": null,
-      "entity": "delta",
-      "type": "Airline",
-      "startIndex": 37,
-      "endIndex": 41,
-      "score": null,
-      "resolution": {
-        "values": [
-          "Delta"
-        ]
-      }
+      "entity": "http : / / foo . com is where you can get a weather forecast for seattle",
+      "type": "Composite2",
+      "startIndex": 0.0,
+      "endIndex": 65.0,
+      "score": 0.6157282
     },
     {
-      "role": null,
-      "entity": "dallas",
-      "type": "City::To",
-      "startIndex": 20,
-      "endIndex": 25,
-      "score": 0.926704347,
-      "resolution": null
+      "entity": "http://foo.com",
+      "type": "builtin.url",
+      "startIndex": 0.0,
+      "endIndex": 13.0
     },
     {
-      "role": null,
       "entity": "seattle",
-      "type": "City::From",
-      "startIndex": 9,
-      "endIndex": 15,
-      "score": 0.990908,
-      "resolution": null
-    },
-    {
-      "role": null,
-      "entity": "3pm",
-      "type": "builtin.datetimeV2.time",
-      "startIndex": 30,
-      "endIndex": 32,
-      "score": null,
-      "resolution": {
-        "values": [
-          {
-            "timex": "T15",
-            "type": "time",
-            "value": "15:00:00"
-          }
-        ]
-      }
-    },
-    {
-      "role": null,
-      "entity": "3pm",
-      "type": "builtin.dimension",
-      "startIndex": 30,
-      "endIndex": 32,
-      "score": null,
-      "resolution": {
-        "unit": "Picometer",
-        "value": "3"
-      }
+      "type": "Weather.Location",
+      "startIndex": 59.0,
+      "endIndex": 65.0,
+      "score": 0.8966654
     }
   ],
-  "compositeEntities": [],
-  "alteredQuery": null
+  "compositeEntities": [
+    {
+      "parentType": "Composite2",
+      "value": "http : / / foo . com is where you can get a weather forecast for seattle",
+      "children": [
+        {
+          "type": "builtin.url",
+          "value": "http://foo.com"
+        },
+        {
+          "type": "Weather.Location",
+          "value": "seattle"
+        }
+      ]
+    }
+  ],
+  "sentimentAnalysis": {
+    "label": "neutral",
+    "score": 0.5
+  }
 }

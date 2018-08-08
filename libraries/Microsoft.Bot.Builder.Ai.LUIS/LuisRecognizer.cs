@@ -42,9 +42,10 @@ namespace Microsoft.Bot.Builder.Ai.Luis
         /// <param name="application">The LUIS _application to use to recognize text.</param>
         /// <param name="predictionOptions">The LUIS prediction options to use.</param>
         /// <param name="includeApiResults">TRUE to include raw LUIS API response.</param>
-        public LuisRecognizer(LuisApplication application, LuisPredictionOptions predictionOptions = null, bool includeApiResults = false)
+        /// <param name="clientHandler">Custom handler for LUIS API calls.</param>
+        public LuisRecognizer(LuisApplication application, LuisPredictionOptions predictionOptions = null, bool includeApiResults = false, HttpClientHandler clientHandler = null)
         {
-            _runtime = new LuisRuntimeAPI(new ApiKeyServiceClientCredentials(application.EndpointKey))
+            _runtime = new LuisRuntimeAPI(new ApiKeyServiceClientCredentials(application.EndpointKey), clientHandler)
             {
                 AzureRegion = (AzureRegions)Enum.Parse(typeof(AzureRegions), application.AzureRegion),
             };
