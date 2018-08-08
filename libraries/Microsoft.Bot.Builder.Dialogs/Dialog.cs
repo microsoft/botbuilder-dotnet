@@ -12,8 +12,6 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// </summary>
     public abstract class Dialog
     {
-        private string _id;
-
         public static readonly DialogTurnResult EndOfTurn = new DialogTurnResult
         {
             HasActive = true,
@@ -22,16 +20,10 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         public Dialog(string dialogId)
         {
-            this._id = dialogId;
+            Id = dialogId;
         }
 
-        public string Id
-        {
-            get
-            {
-                return _id;
-            }
-        }
+        public string Id { get; }
 
         /// <summary>
         /// Method called when a new dialog has been pushed onto the stack and is being activated.
@@ -49,7 +41,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </summary>
         /// <param name="dc">The dialog context for the current turn of conversation.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public async virtual Task<DialogTurnResult> DialogContinueAsync(DialogContext dc)
+        public virtual async Task<DialogTurnResult> DialogContinueAsync(DialogContext dc)
         {
             // By default just end the current dialog.
             return await dc.EndAsync().ConfigureAwait(false);
@@ -63,9 +55,10 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// to the current dialogs parent.
         /// </summary>
         /// <param name="dc">The dialog context for the current turn of conversation.</param>
+        /// <param name="reason">Reason why the dialog resumed.</param>
         /// <param name="result">(Optional) value returned from the dialog that was called. The type of the value returned is dependant on the dialog that was called.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public async virtual Task<DialogTurnResult> DialogResumeAsync(DialogContext dc, DialogReason reason, object result)
+        public virtual async Task<DialogTurnResult> DialogResumeAsync(DialogContext dc, DialogReason reason, object result = null)
         {
             // By default just end the current dialog and return result to parent.
             return await dc.EndAsync(result).ConfigureAwait(false);

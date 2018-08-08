@@ -64,7 +64,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <returns>dialog if found otherwise null.</returns>
         public Dialog Find(string dialogId)
         {
-            if (string.IsNullOrEmpty(dialogId))
+            if (string.IsNullOrWhiteSpace(dialogId))
             {
                 throw new ArgumentNullException(nameof(dialogId));
             }

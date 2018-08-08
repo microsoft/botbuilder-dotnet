@@ -140,8 +140,8 @@ namespace Microsoft.Bot.Builder.Dialogs
             else
             {
                 // Prompt user to login
-                await SendOAuthCardAsync(dc.Context, opt != null ? opt.Prompt : null).ConfigureAwait(false);
-                return Dialog.EndOfTurn; 
+                await SendOAuthCardAsync(dc.Context, opt?.Prompt).ConfigureAwait(false);
+                return Dialog.EndOfTurn;
             }
         }
 

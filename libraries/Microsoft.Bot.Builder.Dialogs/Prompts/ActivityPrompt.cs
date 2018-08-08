@@ -22,12 +22,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         public ActivityPrompt(string dialogId, PromptValidator<Activity> validator)
             : base(dialogId)
         {
-            if (validator == null)
-            {
-                throw new ArgumentNullException(nameof(validator));
-            }
-
-            _validator = validator;
+            _validator = validator ?? throw new ArgumentNullException(nameof(validator));
         }
 
         public override async Task<DialogTurnResult> DialogBeginAsync(DialogContext dc, DialogOptions options)
@@ -96,8 +91,8 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             // Prompts are typically leaf nodes on the stack but the dev is free to push other dialogs
             // on top of the stack which will result in the prompt receiving an unexpected call to
-            // dialogResume() when the pushed on dialog ends. 
-            // To avoid the prompt prematurely ending we need to implement this method and 
+            // dialogResume() when the pushed on dialog ends.
+            // To avoid the prompt prematurely ending we need to implement this method and
             // simply re-prompt the user.
             await DialogRepromptAsync(dc.Context, dc.ActiveDialog).ConfigureAwait(false);
             return Dialog.EndOfTurn;
@@ -128,13 +123,13 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
         }
 
-        protected virtual async Task<PromptRecognizerResult<Activity>> OnRecognizeAsync(ITurnContext context, IDictionary<string, object> state, PromptOptions options)
+        protected virtual Task<PromptRecognizerResult<Activity>> OnRecognizeAsync(ITurnContext context, IDictionary<string, object> state, PromptOptions options)
         {
-            return new PromptRecognizerResult<Activity>
+            return Task.FromResult(new PromptRecognizerResult<Activity>
             {
                 Succeeded = true,
                 Value = context.Activity,
-            };
+            });
         }
     }
 }

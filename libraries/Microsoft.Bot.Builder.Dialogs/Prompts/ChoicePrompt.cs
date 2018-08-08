@@ -76,7 +76,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             await context.SendActivityAsync(prompt).ConfigureAwait(false);
         }
 
-        protected override async Task<PromptRecognizerResult<FoundChoice>> OnRecognizeAsync(ITurnContext context, IDictionary<string, object> state, PromptOptions options)
+        protected override Task<PromptRecognizerResult<FoundChoice>> OnRecognizeAsync(ITurnContext context, IDictionary<string, object> state, PromptOptions options)
         {
             if (context == null)
             {
@@ -100,7 +100,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 }
             }
 
-            return result;
+            return Task.FromResult(result);
         }
     }
 }

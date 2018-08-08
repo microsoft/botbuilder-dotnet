@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Builder.Dialogs
     public class Alarm
     {
         public string Title { get; set; }
-        
+
         public DateTime Time { get; set; }
     }
 
@@ -25,17 +25,18 @@ namespace Microsoft.Bot.Builder.Dialogs
         private const string TitlePrompt = "titlePrompt";
         private const string TimePrompt = "timePrompt";
 
-        public AlarmPrompt(string dialogId) 
+        public AlarmPrompt(string dialogId)
             : base(dialogId)
         {
             // Add control flow dialogs to components dialog set
-            AddDialog(new WaterfallDialog(InitialDialog, new WaterfallStep[]
+            var ws = new WaterfallStep[]
             {
                 InitializeValuesStepAsync,
                 AskTitleStepAsync,
                 AskTimeStepAsync,
                 ReturnAlarmStepAsync,
-            }));
+            };
+            AddDialog(new WaterfallDialog(InitialDialog, ws));
 
             // Add dialogs for prompts
             AddDialog(new TextPrompt(TitlePrompt, ValidateTitleAsync));
@@ -60,9 +61,8 @@ namespace Microsoft.Bot.Builder.Dialogs
         private async Task<DialogTurnResult> InitializeValuesStepAsync(DialogContext dc, WaterfallStepContext step)
         {
             // Populate Values dictionary with any initial values.
-            if (step.Options is AlarmPromptOptions)
+            if (step.Options is AlarmPromptOptions options)
             {
-                var options = (AlarmPromptOptions)step.Options;
                 if (options.InitialAlarm != null)
                 {
                     if (!string.IsNullOrEmpty(options.InitialAlarm.Title))
