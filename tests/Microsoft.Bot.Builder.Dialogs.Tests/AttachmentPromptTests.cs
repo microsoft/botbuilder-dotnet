@@ -18,7 +18,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         public async Task BasicAttachmentPrompt()
         {
             ConversationState convoState = new ConversationState(new MemoryStorage());
-            var dialogState = convoState.CreateProperty<Dictionary<string, object>>("dialogState");
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
             TestAdapter adapter = new TestAdapter()
                 .Use(convoState);
@@ -71,7 +71,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         public async Task RetryAttachmentPrompt()
         {
             ConversationState convoState = new ConversationState(new MemoryStorage());
-            var dialogState = convoState.CreateProperty<Dictionary<string, object>>("dialogState");
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
             TestAdapter adapter = new TestAdapter()
                 .Use(convoState);
