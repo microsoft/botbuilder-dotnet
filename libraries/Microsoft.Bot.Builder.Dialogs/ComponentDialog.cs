@@ -52,7 +52,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
         }
 
-        public new async Task<DialogTurnResult> DialogContinueAsync(DialogContext dc)
+        public override async Task<DialogTurnResult> DialogContinueAsync(DialogContext dc)
         {
             if (dc == null)
             {
@@ -115,12 +115,12 @@ namespace Microsoft.Bot.Builder.Dialogs
             return dialog;
         }
 
-        protected async Task<DialogTurnResult> OnDialogBeginAsync(DialogContext dc, DialogOptions options)
+        protected virtual async Task<DialogTurnResult> OnDialogBeginAsync(DialogContext dc, DialogOptions options)
         {
             return await dc.BeginAsync(InitialDialogId, options).ConfigureAwait(false);
         }
 
-        protected async Task OnDialogEndAsync(DialogContext dc, DialogReason reason)
+        protected virtual async Task OnDialogEndAsync(DialogContext dc, DialogReason reason)
         {
             if (reason == DialogReason.CancelCalled)
             {
@@ -128,12 +128,12 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
         }
 
-        protected async Task<DialogTurnResult> OnDialogContinueAsync(DialogContext dc)
+        protected virtual async Task<DialogTurnResult> OnDialogContinueAsync(DialogContext dc)
         {
             return await dc.ContinueAsync().ConfigureAwait(false);
         }
 
-        protected async Task OnDialogRepromptAsync(DialogContext dc)
+        protected virtual async Task OnDialogRepromptAsync(DialogContext dc)
         {
             await dc.RepromptAsync().ConfigureAwait(false);
         }
