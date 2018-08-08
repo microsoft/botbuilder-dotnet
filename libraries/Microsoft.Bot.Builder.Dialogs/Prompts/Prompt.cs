@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         private readonly PromptValidator<T> _validator;
 
-        public Prompt(string dialogId, PromptValidator<T> validator)
+        public Prompt(string dialogId, PromptValidator<T> validator = null)
             : base(dialogId)
         {
             _validator = validator;
@@ -126,7 +126,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             var state = (IDictionary<string, object>)instance.State[PersistedState];
             var options = (PromptOptions)instance.State[PersistedOptions];
-            await OnPromptAsync(context, state, options, true).ConfigureAwait(false);
+            await OnPromptAsync(context, state, options, false).ConfigureAwait(false);
         }
 
         protected abstract Task OnPromptAsync(ITurnContext context, IDictionary<string, object> state, PromptOptions options, bool isRetry);
