@@ -74,34 +74,27 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             dialogs.Add(new AttachmentPrompt("AttachmentPrompt"));
 
-            dialogs.Add(new WaterfallDialog("AttachmentDialog", new WaterfallStep[]
-                    {
-                        async (dc, step) =>
-                        {
-                            return await dc.PromptAsync("AttachmentPrompt", "please add an attachment.");
-                        },
-                        async (dc, step) =>
-                        {
-                            var results = step.Result as List<Attachment>;
-                            var reply = (string)results[0].Content;
-                            await dc.Context.SendActivityAsync(reply);
-                            return await dc.EndAsync();
-                        }
-                    }
-                ));
             // Create mock attachment for testing.
             var attachment = new Attachment { Content = "some content", ContentType = "text/plain" };
 
             // Create incoming activity with attachment.
-            var activityWithAttachment = MessageFactory.Attachment(attachment);
+            var activityWithAttachment = new Activity { Type = ActivityTypes.Message, Attachments = new List<Attachment> { attachment } };
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
                 var dc = await dialogs.CreateContextAsync(turnContext);
-                await dc.ContinueAsync();
-                if (!turnContext.Responded)
+                var results = await dc.ContinueAsync();
+                if (!turnContext.Responded && !results.HasActive && !results.HasResult)
                 {
-                    await dc.BeginAsync("AttachmentDialog");
+                    var options = new PromptOptions { Prompt = new Activity { Type = ActivityTypes.Message, Text = "please add an attachment." } };
+                    await dc.PromptAsync("AttachmentPrompt", options);
+                }
+                else if (!results.HasActive && results.HasResult)
+                {
+                    var attachments = results.Result as List<Attachment>;
+                    var content = (string)attachments[0].Content;
+                    await turnContext.SendActivityAsync(content);
+
                 }
             })
             .Send("hello")
