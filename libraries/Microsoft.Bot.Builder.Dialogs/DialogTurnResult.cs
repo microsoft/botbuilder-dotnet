@@ -39,6 +39,6 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <value>
         /// The result returned by a dialog that was just ended.
         /// </value>
-        public IDictionary<string, object> Result { get; set; }
+        public object Result { get; set; }
     }
 }

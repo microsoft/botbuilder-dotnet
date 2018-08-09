@@ -79,7 +79,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 Id = dialogId,
                 State = new Dictionary<string, object>(),
             };
-
+            
             Stack.Insert(0, instance);
 
             // Call dialogs BeginAsync() method.
@@ -95,7 +95,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="prompt">Initial prompt to send the user.</param>
         /// <param name="choices">(Optional) array of choices to prompt the user for or additional prompt options.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public Task<DialogTurnResult> PromptAsync(string dialogId, string prompt, IList<Choice> choices = null)
+        public async Task<DialogTurnResult> PromptAsync(string dialogId, string prompt, IList<Choice> choices = null)
         {
             if (string.IsNullOrEmpty(dialogId))
             {
@@ -108,10 +108,10 @@ namespace Microsoft.Bot.Builder.Dialogs
                 options.Choices = choices;
             }
 
-            return BeginAsync(dialogId, options);
+            return await BeginAsync(dialogId, options).ConfigureAwait(false);
         }
 
-        public Task<DialogTurnResult> PromptAsync(string dialogId, PromptOptions options)
+        public async Task<DialogTurnResult> PromptAsync(string dialogId, PromptOptions options)
         {
             if (string.IsNullOrEmpty(dialogId))
             {
@@ -123,7 +123,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 throw new ArgumentNullException(nameof(options));
             }
 
-            return BeginAsync(dialogId, options);
+            return await BeginAsync(dialogId, options).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -196,7 +196,8 @@ namespace Microsoft.Bot.Builder.Dialogs
                 return new DialogTurnResult
                 {
                     HasActive = false,
-                    HasResult = false,
+                    HasResult = result != null,
+                    Result = result,
                 };
             }
         }

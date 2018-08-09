@@ -33,16 +33,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var attachment = new Attachment { Content = "some content", ContentType = "text/plain" };
 
             // Create incoming activity with attachment.
-            var activityWithAttachment = MessageFactory.Attachment(attachment);
+            var activityWithAttachment = new Activity { Type = ActivityTypes.Message, Attachments = new List<Attachment> { attachment } };
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
                 var dc = await dialogs.CreateContextAsync(turnContext);
-                var options = new PromptOptions { Prompt = new Activity { Type = ActivityTypes.Message, Text = "please add an attachment." } };
 
                 var results = await dc.ContinueAsync();
                 if (!turnContext.Responded && !results.HasActive && !results.HasResult)
                 {
+                    var options = new PromptOptions { Prompt = new Activity { Type = ActivityTypes.Message, Text = "please add an attachment." } };
                     await dc.PromptAsync("AttachmentPrompt", options);
                 }
                 else if (!results.HasActive && results.HasResult)
