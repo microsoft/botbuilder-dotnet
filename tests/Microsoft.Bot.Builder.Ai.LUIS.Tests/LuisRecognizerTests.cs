@@ -17,12 +17,15 @@ using RichardSzalay.MockHttp;
 namespace Microsoft.Bot.Builder.Ai.Luis.Tests
 {
     [TestClass]
-    // The LUIS application used in these unit tests is in TestData/TestLuistApp
+    // The LUIS application used in these unit tests is in TestData/TestLuistApp.json
     public class LuisRecognizerTests
     {
-        private const string _luisAppId = "ab48996d-abe2-4785-8eff-f18d15fc3560";
-        private const string _subscriptionKey = "cc7bbcc0-3715-44f0-b7c9-d8fee333dce1";
-        private const string _region = "westus";
+        private string _luisAppId = TestUtilities.GetKey("LUISAPPID", "ab48996d-abe2-4785-8eff-f18d15fc3560");
+        private string _subscriptionKey = TestUtilities.GetKey("LUISAPPKEY", "cc7bbcc0-3715-44f0-b7c9-d8fee333dce1");
+        private string _region = TestUtilities.GetKey("LUISREGION", "westus");
+        // Changing this to false will cause running against the actual LUIS service.
+        // This is useful in order to see if the oracles for mocking or testing have changed.
+        private bool _mock = true;
 
         [TestMethod]
         public async Task SingleIntent_SimplyEntity()
@@ -437,7 +440,7 @@ namespace Microsoft.Bot.Builder.Ai.Luis.Tests
         private IRecognizer GetLuisRecognizer(MockHttpMessageHandler messageHandler, bool verbose = false, LuisPredictionOptions options = null)
         {
             var luisApp = new LuisApplication(_luisAppId, _subscriptionKey, _region);
-            return new LuisRecognizer(luisApp, options, verbose, new MockedHttpClientHandler(messageHandler.ToHttpClient()));
+            return new LuisRecognizer(luisApp, options, verbose, _mock ? new MockedHttpClientHandler(messageHandler.ToHttpClient()) : null);
         }
 
         private string GetRequestUrl()
