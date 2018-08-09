@@ -46,7 +46,8 @@
             {
               "startIndex": 0,
               "endIndex": 14,
-              "text": "http://foo.com"
+              "text": "http://foo.com",
+              "type": "builtin.url"
             }
           ],
           "Weather_Location": [
@@ -54,7 +55,8 @@
               "startIndex": 59,
               "endIndex": 66,
               "text": "seattle",
-              "score": 0.8966654
+              "score": 0.8966654,
+              "type": "Weather.Location"
             }
           ]
         }
@@ -66,7 +68,8 @@
           "startIndex": 0,
           "endIndex": 66,
           "text": "http : / / foo . com is where you can get a weather forecast for seattle",
-          "score": 0.6157282
+          "score": 0.6157282,
+          "type": "Composite2"
         }
       ]
     }
