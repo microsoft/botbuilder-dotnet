@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Builder.Ai.Luis.Tests
 {
     public class TestUtilities
     {
-        static Lazy<Dictionary<string, string>> environmentKeys = new Lazy<Dictionary<string, string>>(() =>
+        private static Lazy<Dictionary<string, string>> environmentKeys = new Lazy<Dictionary<string, string>>(() =>
         {
             try
             {
@@ -26,7 +26,7 @@ namespace Microsoft.Bot.Builder.Ai.Luis.Tests
 
         public static string GetKey(string key, string defaultValue)
         {
-            if (!environmentKeys.Value.TryGetValue(key, out string value))
+            if (!environmentKeys.Value.TryGetValue(key, out var value))
             {
                 // fallback to environment variables
                 value = Environment.GetEnvironmentVariable(key);

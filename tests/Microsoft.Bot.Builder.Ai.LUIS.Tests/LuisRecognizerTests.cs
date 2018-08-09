@@ -258,7 +258,6 @@ namespace Microsoft.Bot.Builder.Ai.Luis.Tests
         public async Task TestJson<T>(string file) where T : IRecognizerConvert, new()
         {
             var expectedPath = GetFilePath(file);
-            var mockPath = GetFilePath("Mock_" + file);
             var newPath = expectedPath + ".new";
 
             using (var expectedJsonReader = new JsonTextReader(new StreamReader(expectedPath)))
@@ -270,7 +269,7 @@ namespace Microsoft.Bot.Builder.Ai.Luis.Tests
 
                 var mockHttp = new MockHttpMessageHandler();
                 mockHttp.When(GetRequestUrl()).WithPartialContent(query)
-                    .Respond("application/json", GetResponse(mockPath));
+                    .Respond("application/json", GetResponse("Mock_" + file));
 
                 var luisRecognizer = GetLuisRecognizer(mockHttp, true, new LuisPredictionOptions { Verbose = true });
                 var typedResult = await luisRecognizer.RecognizeAsync<T>(context, CancellationToken.None);
@@ -443,20 +442,20 @@ namespace Microsoft.Bot.Builder.Ai.Luis.Tests
             return new LuisRecognizer(luisApp, options, verbose, _mock ? new MockedHttpClientHandler(messageHandler.ToHttpClient()) : null);
         }
 
-        private string GetRequestUrl()
-        {
-            return $"https://{_region}.api.cognitive.microsoft.com/luis/v2.0/apps/{_luisAppId}";
-        }
+        private string GetRequestUrl() => $"https://{_region}.api.cognitive.microsoft.com/luis/v2.0/apps/{_luisAppId}";
+
+        // Access the checked-in oracles so that if they are changed you can compare the changes and easily modify them.
+        private const string _testData = @"..\..\..\TestData\";
 
         private Stream GetResponse(string fileName)
         {
-            var path = Path.Combine(Environment.CurrentDirectory, "TestData", fileName);
+            var path = Path.Combine(_testData, fileName);
             return File.OpenRead(path);
         }
 
         private string GetFilePath(string fileName)
         {
-            var path = Path.Combine(Environment.CurrentDirectory, "TestData", fileName);
+            var path = Path.Combine(_testData, fileName);
             return path;
         }
     }
