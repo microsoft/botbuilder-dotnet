@@ -47,6 +47,24 @@ namespace Microsoft.Bot.Builder.Ai.Luis
         public double? Score { get; set; }
 
         /// <summary>
+        /// Gets or sets optional type for the entity.
+        /// </summary>
+        /// <value>
+        /// Optional entity type.
+        /// </value>
+        [JsonProperty("type")]
+        public string Type { get; set; }
+
+        /// <summary>
+        /// Gets or sets optional subtype for the entity.
+        /// </summary>
+        /// <value>
+        /// Optional entity subtype.
+        /// </value>
+        [JsonProperty("subtype")]
+        public string Subtype { get; set; }
+
+        /// <summary>
         /// Gets or sets any extra properties.
         /// </summary>
         /// <value>
