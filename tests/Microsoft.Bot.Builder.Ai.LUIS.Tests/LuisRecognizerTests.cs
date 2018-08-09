@@ -5,6 +5,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
@@ -263,30 +264,33 @@ namespace Microsoft.Bot.Builder.Ai.Luis.Tests
             using (var expectedJsonReader = new JsonTextReader(new StreamReader(expectedPath)))
             {
                 var expectedJson = await JToken.ReadFromAsync(expectedJsonReader);
-                var text = expectedJson["text"] ?? expectedJson["Text"];
-                var query = text.ToString();
-                var context = GetContext(query);
-
-                var mockHttp = new MockHttpMessageHandler();
-                mockHttp.When(GetRequestUrl()).WithPartialContent(query)
-                    .Respond("application/json", GetResponse("Mock_" + file));
-
-                var luisRecognizer = GetLuisRecognizer(mockHttp, true, new LuisPredictionOptions { Verbose = true });
-                var typedResult = await luisRecognizer.RecognizeAsync<T>(context, CancellationToken.None);
-                var typedJson = Json(typedResult);
-
-                if (!WithinDelta(expectedJson, typedJson, 0.1))
+                using (var mockResponse = new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(expectedJson["luisResult"]))))
                 {
-                    using (var writer = new StreamWriter(newPath))
+                    var text = expectedJson["text"] ?? expectedJson["Text"];
+                    var query = text.ToString();
+                    var context = GetContext(query);
+
+                    var mockHttp = new MockHttpMessageHandler();
+                    mockHttp.When(GetRequestUrl()).WithPartialContent(query)
+                        .Respond("application/json", mockResponse);
+
+                    var luisRecognizer = GetLuisRecognizer(mockHttp, true, new LuisPredictionOptions { Verbose = true });
+                    var typedResult = await luisRecognizer.RecognizeAsync<T>(context, CancellationToken.None);
+                    var typedJson = Json(typedResult);
+
+                    if (!WithinDelta(expectedJson, typedJson, 0.1))
                     {
-                        writer.Write(typedJson);
-                    }
+                        using (var writer = new StreamWriter(newPath))
+                        {
+                            writer.Write(typedJson);
+                        }
 
-                    Assert.Fail($"Returned JSON in {newPath} != expected JSON in {expectedPath}");
-                }
-                else
-                {
-                    File.Delete(expectedPath + ".new");
+                        Assert.Fail($"Returned JSON in {newPath} != expected JSON in {expectedPath}");
+                    }
+                    else
+                    {
+                        File.Delete(expectedPath + ".new");
+                    }
                 }
             }
         }
