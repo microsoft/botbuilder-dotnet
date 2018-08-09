@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Schema;
@@ -26,25 +25,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             // Create new DialogSet.
             DialogSet dialogs = new DialogSet(dialogState);
 
-            // Add attachment prompt to DialogSet.
-            dialogs.Add(new AttachmentPrompt("AttachmentPrompt"));
+            // Create and add attachment prompt to DialogSet.
+            var attachmentPrompt = new AttachmentPrompt("AttachmentPrompt");
+            dialogs.Add(attachmentPrompt);
 
-            // Add AttachmentDialog to prompt for an attachment.
-            dialogs.Add(new WaterfallDialog("AttachmentDialog", new WaterfallStep[]
-                    {
-                        async (dc, step) =>
-                        {
-                            return await dc.PromptAsync("AttachmentPrompt", "please add an attachment.");
-                        },
-                        async (dc, step) =>
-                        {
-                            var results = step.Result as List<Attachment>;
-                            var reply = (string)results.First().Content;
-                            await dc.Context.SendActivityAsync(reply);
-                            return await dc.EndAsync();
-                        }
-                    }
-                ));
             // Create mock attachment for testing.
             var attachment = new Attachment { Content = "some content", ContentType = "text/plain" };
 
@@ -54,10 +38,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
                 var dc = await dialogs.CreateContextAsync(turnContext);
-                await dc.ContinueAsync();
-                if (!turnContext.Responded)
+                var options = new PromptOptions { Prompt = new Activity { Type = ActivityTypes.Message, Text = "please add an attachment." } };
+
+                var results = await dc.ContinueAsync();
+                if (!turnContext.Responded && !results.HasActive && !results.HasResult)
                 {
-                    await dc.BeginAsync("AttachmentDialog");
+                    await dc.PromptAsync("AttachmentPrompt", options);
+                }
+                else if (!results.HasActive && results.HasResult)
+                {
+                    var attachments = results.Result as List<Attachment>;
+                    var content = (string)attachments[0].Content;
+                    await turnContext.SendActivityAsync(content);
+
                 }
             })
             .Send("hello")
@@ -90,7 +83,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                         async (dc, step) =>
                         {
                             var results = step.Result as List<Attachment>;
-                            var reply = (string)results.First().Content;
+                            var reply = (string)results[0].Content;
                             await dc.Context.SendActivityAsync(reply);
                             return await dc.EndAsync();
                         }
