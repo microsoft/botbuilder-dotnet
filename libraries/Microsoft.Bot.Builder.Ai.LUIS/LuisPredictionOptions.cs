@@ -17,6 +17,14 @@ namespace Microsoft.Bot.Builder.Ai.Luis
         public string BingSpellCheckSubscriptionKey { get; set; }
 
         /// <summary>
+        /// Gets or sets whether all intents come back or only the top one.
+        /// </summary>
+        /// <value>
+        /// True for returning all intents.
+        /// </value>
+        public bool? IncludeAllIntents { get; set; }
+
+        /// <summary>
         /// Gets or sets a value indicating whether or not instance data should be included in response.
         /// </summary>
         /// <value>
@@ -55,13 +63,5 @@ namespace Microsoft.Bot.Builder.Ai.Luis
         /// The time zone offset.
         /// </value>
         public double? TimezoneOffset { get; set; }
-
-        /// <summary>
-        /// Gets or sets the verbose flag which controls if all intents come back or only the top one.
-        /// </summary>
-        /// <value>
-        /// The verbose flag.
-        /// </value>
-        public bool? Verbose { get; set; }
     }
 }
