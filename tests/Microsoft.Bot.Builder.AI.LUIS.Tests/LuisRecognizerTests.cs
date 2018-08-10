@@ -5,6 +5,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
@@ -17,12 +18,15 @@ using RichardSzalay.MockHttp;
 namespace Microsoft.Bot.Builder.AI.Luis.Tests
 {
     [TestClass]
-    // The LUIS application used in these unit tests is in TestData/TestLuistApp
+    // The LUIS application used in these unit tests is in TestData/TestLuistApp.json
     public class LuisRecognizerTests
     {
-        private const string _luisAppId = "ab48996d-abe2-4785-8eff-f18d15fc3560";
-        private const string _subscriptionKey = "cc7bbcc0-3715-44f0-b7c9-d8fee333dce1";
-        private const string _region = "westus";
+        private readonly string _luisAppId = TestUtilities.GetKey("LUISAPPID", "ab48996d-abe2-4785-8eff-f18d15fc3560");
+        private readonly string _subscriptionKey = TestUtilities.GetKey("LUISAPPKEY", "cc7bbcc0-3715-44f0-b7c9-d8fee333dce1");
+        private readonly string _region = TestUtilities.GetKey("LUISREGION", "westus");
+        // Changing this to false will cause running against the actual LUIS service.
+        // This is useful in order to see if the oracles for mocking or testing have changed.
+        private readonly bool _mock = true;
 
         [TestMethod]
         public async Task SingleIntent_SimplyEntity()
@@ -255,36 +259,38 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
         public async Task TestJson<T>(string file) where T : IRecognizerConvert, new()
         {
             var expectedPath = GetFilePath(file);
-            var mockPath = GetFilePath("Mock_" + file);
             var newPath = expectedPath + ".new";
 
             using (var expectedJsonReader = new JsonTextReader(new StreamReader(expectedPath)))
             {
                 var expectedJson = await JToken.ReadFromAsync(expectedJsonReader);
-                var text = expectedJson["text"] ?? expectedJson["Text"];
-                var query = text.ToString();
-                var context = GetContext(query);
-
-                var mockHttp = new MockHttpMessageHandler();
-                mockHttp.When(GetRequestUrl()).WithPartialContent(query)
-                    .Respond("application/json", GetResponse(mockPath));
-
-                var luisRecognizer = GetLuisRecognizer(mockHttp, true, new LuisPredictionOptions { Verbose = true });
-                var typedResult = await luisRecognizer.RecognizeAsync<T>(context, CancellationToken.None);
-                var typedJson = Json(typedResult);
-
-                if (!WithinDelta(expectedJson, typedJson, 0.1))
+                using (var mockResponse = new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(expectedJson["luisResult"]))))
                 {
-                    using (var writer = new StreamWriter(newPath))
+                    var text = expectedJson["text"] ?? expectedJson["Text"];
+                    var query = text.ToString();
+                    var context = GetContext(query);
+
+                    var mockHttp = new MockHttpMessageHandler();
+                    mockHttp.When(GetRequestUrl()).WithPartialContent(query)
+                        .Respond("application/json", mockResponse);
+
+                    var luisRecognizer = GetLuisRecognizer(mockHttp, true, new LuisPredictionOptions { Verbose = true });
+                    var typedResult = await luisRecognizer.RecognizeAsync<T>(context, CancellationToken.None);
+                    var typedJson = Json(typedResult);
+
+                    if (!WithinDelta(expectedJson, typedJson, 0.1))
                     {
-                        writer.Write(typedJson);
-                    }
+                        using (var writer = new StreamWriter(newPath))
+                        {
+                            writer.Write(typedJson);
+                        }
 
-                    Assert.Fail($"Returned JSON in {newPath} != expected JSON in {expectedPath}");
-                }
-                else
-                {
-                    File.Delete(expectedPath + ".new");
+                        Assert.Fail($"Returned JSON in {newPath} != expected JSON in {expectedPath}");
+                    }
+                    else
+                    {
+                        File.Delete(expectedPath + ".new");
+                    }
                 }
             }
         }
@@ -437,23 +443,23 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
         private IRecognizer GetLuisRecognizer(MockHttpMessageHandler messageHandler, bool verbose = false, LuisPredictionOptions options = null)
         {
             var luisApp = new LuisApplication(_luisAppId, _subscriptionKey, _region);
-            return new LuisRecognizer(luisApp, options, verbose, new MockedHttpClientHandler(messageHandler.ToHttpClient()));
+            return new LuisRecognizer(luisApp, options, verbose, _mock ? new MockedHttpClientHandler(messageHandler.ToHttpClient()) : null);
         }
 
-        private string GetRequestUrl()
-        {
-            return $"https://{_region}.api.cognitive.microsoft.com/luis/v2.0/apps/{_luisAppId}";
-        }
+        private string GetRequestUrl() => $"https://{_region}.api.cognitive.microsoft.com/luis/v2.0/apps/{_luisAppId}";
+
+        // Access the checked-in oracles so that if they are changed you can compare the changes and easily modify them.
+        private const string _testData = @"..\..\..\TestData\";
 
         private Stream GetResponse(string fileName)
         {
-            var path = Path.Combine(Environment.CurrentDirectory, "TestData", fileName);
+            var path = Path.Combine(_testData, fileName);
             return File.OpenRead(path);
         }
 
         private string GetFilePath(string fileName)
         {
-            var path = Path.Combine(Environment.CurrentDirectory, "TestData", fileName);
+            var path = Path.Combine(_testData, fileName);
             return path;
         }
     }
