@@ -13,7 +13,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RichardSzalay.MockHttp;
 
-namespace Microsoft.Bot.Builder.Ai.QnA.Tests
+namespace Microsoft.Bot.Builder.AI.QnA.Tests
 {
     [TestClass]
     public class QnAMakerTests

@@ -3,7 +3,7 @@
 
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.Ai.Translation.Model
+namespace Microsoft.Bot.Builder.AI.Translation.Model
 {
     /// <summary>
     /// An object with a single string property named proj, which maps input text to translated text.

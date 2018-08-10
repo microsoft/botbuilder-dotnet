@@ -5,7 +5,7 @@ using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.Ai.Luis.Tests
+namespace Microsoft.Bot.Builder.AI.Luis.Tests
 {
     [TestClass]
     public class LuisApplicationTests

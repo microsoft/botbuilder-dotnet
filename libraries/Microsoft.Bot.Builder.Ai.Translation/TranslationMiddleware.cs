@@ -7,10 +7,10 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Ai.Translation.PostProcessor;
+using Microsoft.Bot.Builder.AI.Translation.PostProcessor;
 using Microsoft.Bot.Schema;
 
-namespace Microsoft.Bot.Builder.Ai.Translation
+namespace Microsoft.Bot.Builder.AI.Translation
 {
     /// <summary>
     /// Middleware for translating text between the user and bot.

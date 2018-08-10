@@ -8,11 +8,11 @@ using System.Net.Http;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Ai.Translation.Model;
-using Microsoft.Bot.Builder.Ai.Translation.PostProcessor;
+using Microsoft.Bot.Builder.AI.Translation.Model;
+using Microsoft.Bot.Builder.AI.Translation.PostProcessor;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.Ai.Translation
+namespace Microsoft.Bot.Builder.AI.Translation
 {
     /// <summary>
     /// Provides access to the Microsoft Translator Text API.

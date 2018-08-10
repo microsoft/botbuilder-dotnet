@@ -3,7 +3,7 @@
 
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.Ai.Luis
+namespace Microsoft.Bot.Builder.AI.Luis
 {
     /// <summary>
     /// Strongly typed LUIS builtin_dimension.

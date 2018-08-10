@@ -12,7 +12,7 @@ using Microsoft.Bot.Builder.Adapters;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RichardSzalay.MockHttp;
 
-namespace Microsoft.Bot.Builder.Ai.Translation.Tests
+namespace Microsoft.Bot.Builder.AI.Translation.Tests
 {
     [TestClass]
     public class TranslatorMiddlewareTests

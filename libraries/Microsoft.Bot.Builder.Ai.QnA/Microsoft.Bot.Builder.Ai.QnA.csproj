@@ -16,7 +16,7 @@
 
 	<PropertyGroup>
 		<TargetFramework>netstandard2.0</TargetFramework>
-		<PackageId>Microsoft.Bot.Builder.Ai.QnA</PackageId>
+		<PackageId>Microsoft.Bot.Builder.AI.QnA</PackageId>
 		<Description>Classes for using QnA Maker Cognitive Service on the Microsoft Bot Builder SDK</Description>
 		<Summary>This library implements C# classes for building bots using Microsoft Cognitive services.</Summary>
 	</PropertyGroup>
@@ -38,15 +38,15 @@
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Documentation|AnyCPU'">
-		<DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Builder.Ai.QnA.xml</DocumentationFile>
+		<DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Builder.AI.QnA.xml</DocumentationFile>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-		<DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Builder.Ai.QnA.xml</DocumentationFile>
+		<DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Builder.AI.QnA.xml</DocumentationFile>
 	</PropertyGroup>
 
 	<PropertyGroup>
-	  <CodeAnalysisRuleSet>Microsoft.Bot.Builder.Ai.QnA.ruleset</CodeAnalysisRuleSet>
+	  <CodeAnalysisRuleSet>Microsoft.Bot.Builder.AI.QnA.ruleset</CodeAnalysisRuleSet>
 	</PropertyGroup>
 
 	<ItemGroup>

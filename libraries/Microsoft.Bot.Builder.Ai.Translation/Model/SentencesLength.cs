@@ -4,7 +4,7 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.Ai.Translation.Model
+namespace Microsoft.Bot.Builder.AI.Translation.Model
 {
     /// <summary>
     /// Represents the sentence boundaries in the input and output texts.

@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
-namespace Microsoft.Bot.Builder.Ai.Translation.PostProcessor
+namespace Microsoft.Bot.Builder.AI.Translation.PostProcessor
 {
     /// <summary>
     /// PatternsPostProcessor  is used to handle translation errors while translating numbers

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.Ai.Luis
+namespace Microsoft.Bot.Builder.AI.Luis
 {
     /// <summary>
     /// Represents the built-in LUIS date-time type.

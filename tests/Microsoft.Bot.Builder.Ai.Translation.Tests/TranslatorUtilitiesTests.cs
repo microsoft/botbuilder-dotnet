@@ -3,10 +3,10 @@
 
 using System;
 using System.Collections.Generic;
-using Microsoft.Bot.Builder.Ai.Translation.PostProcessor;
+using Microsoft.Bot.Builder.AI.Translation.PostProcessor;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.Bot.Builder.Ai.Translation.Tests
+namespace Microsoft.Bot.Builder.AI.Translation.Tests
 {
     [TestClass]
     public class TranslatorUtilitiesTests

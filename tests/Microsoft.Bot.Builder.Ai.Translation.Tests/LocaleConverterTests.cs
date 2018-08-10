@@ -4,7 +4,7 @@
 using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.Bot.Builder.Ai.Translation.Tests
+namespace Microsoft.Bot.Builder.AI.Translation.Tests
 {
     [TestClass]
     public class LocaleConverterTests

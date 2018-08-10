@@ -3,7 +3,7 @@
 
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.Ai.Translation.Model
+namespace Microsoft.Bot.Builder.AI.Translation.Model
 {
     /// <summary>
     /// Translation result from Translator API v3.

@@ -6,7 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 
-namespace Microsoft.Bot.Builder.Ai.Translation
+namespace Microsoft.Bot.Builder.AI.Translation
 {
     /// <summary>
     /// Middleware to convert messages between different locales specified.
