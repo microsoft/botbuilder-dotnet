@@ -4,7 +4,7 @@
 using System;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.Ai.QnA
+namespace Microsoft.Bot.Builder.AI.QnA
 {
     [Serializable]
     public class Metadata

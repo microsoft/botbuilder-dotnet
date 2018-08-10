@@ -3,7 +3,7 @@
 
 using System;
 
-namespace Microsoft.Bot.Builder.Ai.Translation
+namespace Microsoft.Bot.Builder.AI.Translation
 {
     /// <summary>
     /// TextAndDateTime Class used to store  text and date time object

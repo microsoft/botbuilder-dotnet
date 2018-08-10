@@ -5,7 +5,7 @@ using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.Ai.QnA.Tests
+namespace Microsoft.Bot.Builder.AI.QnA.Tests
 {
     [TestClass]
     public class QnAMakerTraceInfoTests

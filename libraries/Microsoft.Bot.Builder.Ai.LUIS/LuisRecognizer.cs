@@ -13,7 +13,7 @@ using Microsoft.Bot.Builder.TraceExtensions;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json.Linq;
 
-namespace Microsoft.Bot.Builder.Ai.Luis
+namespace Microsoft.Bot.Builder.AI.Luis
 {
     /// <inheritdoc />
     /// <summary>

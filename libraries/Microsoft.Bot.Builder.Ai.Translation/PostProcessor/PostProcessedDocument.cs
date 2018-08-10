@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-namespace Microsoft.Bot.Builder.Ai.Translation
+namespace Microsoft.Bot.Builder.AI.Translation
 {
     /// <summary>
     /// A class to store the state of the translated document before and after the post processing.

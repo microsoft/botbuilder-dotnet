@@ -10,7 +10,7 @@ using System.Text.RegularExpressions;
 using Microsoft.Recognizers.Text;
 using Microsoft.Recognizers.Text.DateTime;
 
-namespace Microsoft.Bot.Builder.Ai.Translation
+namespace Microsoft.Bot.Builder.AI.Translation
 {
     /// <summary>
     /// Locale Converter Class Converts dates and times

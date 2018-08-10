@@ -6,7 +6,7 @@
 // </auto-generated>
 using Newtonsoft.Json;
 using System.Collections.Generic;
-namespace Microsoft.Bot.Builder.Ai.Luis.Tests
+namespace Microsoft.Bot.Builder.AI.Luis.Tests
 {
     public class Contoso_App: Microsoft.Bot.Builder.IRecognizerConvert
     {
@@ -37,16 +37,16 @@ namespace Microsoft.Bot.Builder.Ai.Luis.Tests
             public string[] From;
 
             // Built-in entities
-            public Microsoft.Bot.Builder.Ai.Luis.Age[] age;
-            public Microsoft.Bot.Builder.Ai.Luis.DateTimeSpec[] datetime;
-            public Microsoft.Bot.Builder.Ai.Luis.Dimension[] dimension;
+            public Microsoft.Bot.Builder.AI.Luis.Age[] age;
+            public Microsoft.Bot.Builder.AI.Luis.DateTimeSpec[] datetime;
+            public Microsoft.Bot.Builder.AI.Luis.Dimension[] dimension;
             public string[] email;
-            public Microsoft.Bot.Builder.Ai.Luis.Money[] money;
+            public Microsoft.Bot.Builder.AI.Luis.Money[] money;
             public double[] number;
             public double[] ordinal;
             public double[] percentage;
             public string[] phonenumber;
-            public Microsoft.Bot.Builder.Ai.Luis.Temperature[] temperature;
+            public Microsoft.Bot.Builder.AI.Luis.Temperature[] temperature;
             public string[] url;
 
             // Lists
@@ -63,8 +63,8 @@ namespace Microsoft.Bot.Builder.Ai.Luis.Tests
             // Composites
             public class _InstanceAddress
             {
-                public Microsoft.Bot.Builder.Ai.Luis.InstanceData[] number;
-                public Microsoft.Bot.Builder.Ai.Luis.InstanceData[] State;
+                public Microsoft.Bot.Builder.AI.Luis.InstanceData[] number;
+                public Microsoft.Bot.Builder.AI.Luis.InstanceData[] State;
             }
             public class AddressClass
             {
@@ -77,29 +77,29 @@ namespace Microsoft.Bot.Builder.Ai.Luis.Tests
 
             public class _InstanceComposite1
             {
-                public Microsoft.Bot.Builder.Ai.Luis.InstanceData[] age;
-                public Microsoft.Bot.Builder.Ai.Luis.InstanceData[] datetime;
-                public Microsoft.Bot.Builder.Ai.Luis.InstanceData[] dimension;
-                public Microsoft.Bot.Builder.Ai.Luis.InstanceData[] email;
-                public Microsoft.Bot.Builder.Ai.Luis.InstanceData[] money;
-                public Microsoft.Bot.Builder.Ai.Luis.InstanceData[] number;
-                public Microsoft.Bot.Builder.Ai.Luis.InstanceData[] ordinal;
-                public Microsoft.Bot.Builder.Ai.Luis.InstanceData[] percentage;
-                public Microsoft.Bot.Builder.Ai.Luis.InstanceData[] phonenumber;
-                public Microsoft.Bot.Builder.Ai.Luis.InstanceData[] temperature;
+                public Microsoft.Bot.Builder.AI.Luis.InstanceData[] age;
+                public Microsoft.Bot.Builder.AI.Luis.InstanceData[] datetime;
+                public Microsoft.Bot.Builder.AI.Luis.InstanceData[] dimension;
+                public Microsoft.Bot.Builder.AI.Luis.InstanceData[] email;
+                public Microsoft.Bot.Builder.AI.Luis.InstanceData[] money;
+                public Microsoft.Bot.Builder.AI.Luis.InstanceData[] number;
+                public Microsoft.Bot.Builder.AI.Luis.InstanceData[] ordinal;
+                public Microsoft.Bot.Builder.AI.Luis.InstanceData[] percentage;
+                public Microsoft.Bot.Builder.AI.Luis.InstanceData[] phonenumber;
+                public Microsoft.Bot.Builder.AI.Luis.InstanceData[] temperature;
             }
             public class Composite1Class
             {
-                public Microsoft.Bot.Builder.Ai.Luis.Age[] age;
-                public Microsoft.Bot.Builder.Ai.Luis.DateTimeSpec[] datetime;
-                public Microsoft.Bot.Builder.Ai.Luis.Dimension[] dimension;
+                public Microsoft.Bot.Builder.AI.Luis.Age[] age;
+                public Microsoft.Bot.Builder.AI.Luis.DateTimeSpec[] datetime;
+                public Microsoft.Bot.Builder.AI.Luis.Dimension[] dimension;
                 public string[] email;
-                public Microsoft.Bot.Builder.Ai.Luis.Money[] money;
+                public Microsoft.Bot.Builder.AI.Luis.Money[] money;
                 public double[] number;
                 public double[] ordinal;
                 public double[] percentage;
                 public string[] phonenumber;
-                public Microsoft.Bot.Builder.Ai.Luis.Temperature[] temperature;
+                public Microsoft.Bot.Builder.AI.Luis.Temperature[] temperature;
                 [JsonProperty("$instance")]
                 public _InstanceComposite1 _instance;
             }
@@ -107,12 +107,12 @@ namespace Microsoft.Bot.Builder.Ai.Luis.Tests
 
             public class _InstanceComposite2
             {
-                public Microsoft.Bot.Builder.Ai.Luis.InstanceData[] Airline;
-                public Microsoft.Bot.Builder.Ai.Luis.InstanceData[] City;
-                public Microsoft.Bot.Builder.Ai.Luis.InstanceData[] url;
-                public Microsoft.Bot.Builder.Ai.Luis.InstanceData[] From;
-                public Microsoft.Bot.Builder.Ai.Luis.InstanceData[] To;
-                public Microsoft.Bot.Builder.Ai.Luis.InstanceData[] Weather_Location;
+                public Microsoft.Bot.Builder.AI.Luis.InstanceData[] Airline;
+                public Microsoft.Bot.Builder.AI.Luis.InstanceData[] City;
+                public Microsoft.Bot.Builder.AI.Luis.InstanceData[] url;
+                public Microsoft.Bot.Builder.AI.Luis.InstanceData[] From;
+                public Microsoft.Bot.Builder.AI.Luis.InstanceData[] To;
+                public Microsoft.Bot.Builder.AI.Luis.InstanceData[] Weather_Location;
             }
             public class Composite2Class
             {
@@ -130,31 +130,31 @@ namespace Microsoft.Bot.Builder.Ai.Luis.Tests
             // Instance
             public class _Instance
             {
-                public Microsoft.Bot.Builder.Ai.Luis.InstanceData[] Name;
-                public Microsoft.Bot.Builder.Ai.Luis.InstanceData[] State;
-                public Microsoft.Bot.Builder.Ai.Luis.InstanceData[] Weather_Location;
-                public Microsoft.Bot.Builder.Ai.Luis.InstanceData[] City;
-                public Microsoft.Bot.Builder.Ai.Luis.InstanceData[] To;
-                public Microsoft.Bot.Builder.Ai.Luis.InstanceData[] From;
-                public Microsoft.Bot.Builder.Ai.Luis.InstanceData[] age;
-                public Microsoft.Bot.Builder.Ai.Luis.InstanceData[] datetime;
-                public Microsoft.Bot.Builder.Ai.Luis.InstanceData[] dimension;
-                public Microsoft.Bot.Builder.Ai.Luis.InstanceData[] email;
-                public Microsoft.Bot.Builder.Ai.Luis.InstanceData[] money;
-                public Microsoft.Bot.Builder.Ai.Luis.InstanceData[] number;
-                public Microsoft.Bot.Builder.Ai.Luis.InstanceData[] ordinal;
-                public Microsoft.Bot.Builder.Ai.Luis.InstanceData[] percentage;
-                public Microsoft.Bot.Builder.Ai.Luis.InstanceData[] phonenumber;
-                public Microsoft.Bot.Builder.Ai.Luis.InstanceData[] temperature;
-                public Microsoft.Bot.Builder.Ai.Luis.InstanceData[] url;
-                public Microsoft.Bot.Builder.Ai.Luis.InstanceData[] Airline;
-                public Microsoft.Bot.Builder.Ai.Luis.InstanceData[] Part;
-                public Microsoft.Bot.Builder.Ai.Luis.InstanceData[] person;
-                public Microsoft.Bot.Builder.Ai.Luis.InstanceData[] subject;
-                public Microsoft.Bot.Builder.Ai.Luis.InstanceData[] extra;
-                public Microsoft.Bot.Builder.Ai.Luis.InstanceData[] Address;
-                public Microsoft.Bot.Builder.Ai.Luis.InstanceData[] Composite1;
-                public Microsoft.Bot.Builder.Ai.Luis.InstanceData[] Composite2;
+                public Microsoft.Bot.Builder.AI.Luis.InstanceData[] Name;
+                public Microsoft.Bot.Builder.AI.Luis.InstanceData[] State;
+                public Microsoft.Bot.Builder.AI.Luis.InstanceData[] Weather_Location;
+                public Microsoft.Bot.Builder.AI.Luis.InstanceData[] City;
+                public Microsoft.Bot.Builder.AI.Luis.InstanceData[] To;
+                public Microsoft.Bot.Builder.AI.Luis.InstanceData[] From;
+                public Microsoft.Bot.Builder.AI.Luis.InstanceData[] age;
+                public Microsoft.Bot.Builder.AI.Luis.InstanceData[] datetime;
+                public Microsoft.Bot.Builder.AI.Luis.InstanceData[] dimension;
+                public Microsoft.Bot.Builder.AI.Luis.InstanceData[] email;
+                public Microsoft.Bot.Builder.AI.Luis.InstanceData[] money;
+                public Microsoft.Bot.Builder.AI.Luis.InstanceData[] number;
+                public Microsoft.Bot.Builder.AI.Luis.InstanceData[] ordinal;
+                public Microsoft.Bot.Builder.AI.Luis.InstanceData[] percentage;
+                public Microsoft.Bot.Builder.AI.Luis.InstanceData[] phonenumber;
+                public Microsoft.Bot.Builder.AI.Luis.InstanceData[] temperature;
+                public Microsoft.Bot.Builder.AI.Luis.InstanceData[] url;
+                public Microsoft.Bot.Builder.AI.Luis.InstanceData[] Airline;
+                public Microsoft.Bot.Builder.AI.Luis.InstanceData[] Part;
+                public Microsoft.Bot.Builder.AI.Luis.InstanceData[] person;
+                public Microsoft.Bot.Builder.AI.Luis.InstanceData[] subject;
+                public Microsoft.Bot.Builder.AI.Luis.InstanceData[] extra;
+                public Microsoft.Bot.Builder.AI.Luis.InstanceData[] Address;
+                public Microsoft.Bot.Builder.AI.Luis.InstanceData[] Composite1;
+                public Microsoft.Bot.Builder.AI.Luis.InstanceData[] Composite2;
             }
             [JsonProperty("$instance")]
             public _Instance _instance;

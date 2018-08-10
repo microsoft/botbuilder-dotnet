@@ -9,7 +9,7 @@ using Microsoft.Bot.Builder.TraceExtensions;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.Ai.QnA
+namespace Microsoft.Bot.Builder.AI.QnA
 {
     /// <summary>
     /// Provides access to a QnA Maker knowledge base.

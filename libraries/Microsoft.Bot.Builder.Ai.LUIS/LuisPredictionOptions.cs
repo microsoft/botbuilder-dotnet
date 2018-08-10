@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license.
 
-namespace Microsoft.Bot.Builder.Ai.Luis
+namespace Microsoft.Bot.Builder.AI.Luis
 {
     /// <summary>
     /// Optional parameters for a LUIS prediction request.

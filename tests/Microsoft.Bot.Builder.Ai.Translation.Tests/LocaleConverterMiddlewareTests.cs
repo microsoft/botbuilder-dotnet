@@ -7,7 +7,7 @@ using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.Bot.Builder.Ai.Translation.Tests
+namespace Microsoft.Bot.Builder.AI.Translation.Tests
 {
 
     [TestClass]

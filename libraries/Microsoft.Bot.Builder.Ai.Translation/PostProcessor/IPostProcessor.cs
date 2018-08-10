@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-namespace Microsoft.Bot.Builder.Ai.Translation.PostProcessor
+namespace Microsoft.Bot.Builder.AI.Translation.PostProcessor
 {
     /// <summary>
     /// Abstraction for post processor.

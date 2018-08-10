@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace Microsoft.Bot.Builder.Ai.Translation.PostProcessor
+namespace Microsoft.Bot.Builder.AI.Translation.PostProcessor
 {
     public class PostProcessingUtilities
     {

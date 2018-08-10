@@ -3,7 +3,7 @@
 
 using System;
 
-namespace Microsoft.Bot.Builder.Ai.Translation.PostProcessor
+namespace Microsoft.Bot.Builder.AI.Translation.PostProcessor
 {
     /// <summary>
     /// Custom dictionary post processor is used to forcibly translate certain vocab from a provided user dictionary.

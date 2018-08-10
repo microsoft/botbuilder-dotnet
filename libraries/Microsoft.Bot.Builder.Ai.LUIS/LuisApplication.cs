@@ -3,7 +3,7 @@
 using System;
 using Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime.Models;
 
-namespace Microsoft.Bot.Builder.Ai.Luis
+namespace Microsoft.Bot.Builder.AI.Luis
 {
     /// <summary>
     /// Data describing a LUIS _application.

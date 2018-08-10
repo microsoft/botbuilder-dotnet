@@ -7,11 +7,11 @@ using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Ai.Translation.PostProcessor;
+using Microsoft.Bot.Builder.AI.Translation.PostProcessor;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RichardSzalay.MockHttp;
 
-namespace Microsoft.Bot.Builder.Ai.Translation.Tests
+namespace Microsoft.Bot.Builder.AI.Translation.Tests
 {
     [TestClass]
     public class TranslatorTests

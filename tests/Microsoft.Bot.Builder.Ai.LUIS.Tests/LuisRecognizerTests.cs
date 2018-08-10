@@ -14,7 +14,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RichardSzalay.MockHttp;
 
-namespace Microsoft.Bot.Builder.Ai.Luis.Tests
+namespace Microsoft.Bot.Builder.AI.Luis.Tests
 {
     [TestClass]
     // The LUIS application used in these unit tests is in TestData/TestLuistApp
