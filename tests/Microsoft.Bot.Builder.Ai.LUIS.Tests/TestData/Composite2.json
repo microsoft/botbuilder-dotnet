@@ -39,6 +39,7 @@
           "startIndex": 0,
           "endIndex": 69,
           "text": "http : / / foo . com is where you can fly from seattle to dallas via denver",
+          "type": "Composite2",
           "score": 0.894454658
         }
       ]
@@ -51,6 +52,7 @@
               "startIndex": 63,
               "endIndex": 69,
               "text": "denver",
+              "type": "City",
               "score": 0.845599949
             }
           ],
@@ -58,7 +60,8 @@
             {
               "startIndex": 0,
               "endIndex": 14,
-              "text": "http://foo.com"
+              "text": "http://foo.com",
+              "type": "builtin.url"
             }
           ],
           "From": [
@@ -66,6 +69,7 @@
               "startIndex": 41,
               "endIndex": 48,
               "text": "seattle",
+              "type": "City::From",
               "score": 0.995215535
             }
           ],
@@ -74,6 +78,7 @@
               "startIndex": 52,
               "endIndex": 58,
               "text": "dallas",
+              "type": "City::To",
               "score": 0.99256295
             }
           ]
