@@ -359,7 +359,7 @@ namespace Microsoft.Bot.Builder.Ai.Luis
                 _application.ApplicationId,
                 utterance,
                 timezoneOffset: _options.TimezoneOffset,
-                verbose: _options.IncludeAllIntents,
+                verbose: _options.Verbose,
                 staging: _options.Staging,
                 spellCheck: _options.SpellCheck,
                 bingSpellCheckSubscriptionKey: _options.BingSpellCheckSubscriptionKey,
