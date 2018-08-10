@@ -200,10 +200,21 @@ namespace Microsoft.Bot.Builder.AI.Luis
                 startIndex = (int)entity.StartIndex,
                 endIndex = (int)entity.EndIndex + 1,
                 text = entity.Entity,
+                type = entity.Type,
             });
-            if (entity.AdditionalProperties != null && entity.AdditionalProperties.TryGetValue("score", out var score))
+            if (entity.AdditionalProperties != null)
             {
-                obj.score = (double)score;
+                if (entity.AdditionalProperties.TryGetValue("score", out var score))
+                {
+                    obj.score = (double)score;
+                }
+
+#pragma warning disable IDE0007 // Use implicit type
+                if (entity.AdditionalProperties.TryGetValue("resolution", out dynamic resolution) && resolution.subtype != null)
+#pragma warning restore IDE0007 // Use implicit type
+                {
+                    obj.subtype = resolution.subtype;
+                }
             }
 
             return obj;
