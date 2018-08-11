@@ -134,15 +134,9 @@ namespace Microsoft.Bot.Builder.Dialogs
             var result = new PromptRecognizerResult<bool>();
             if (context.Activity.Type == ActivityTypes.Message)
             {
-                // Determine culture
-                var culture = context.Activity.Locale ?? DefaultLocale;
-                if (string.IsNullOrEmpty(culture) || !DefaultChoiceOptions.ContainsKey(culture))
-                {
-                    culture = English;
-                }
-
                 // Recognize utterance
                 var message = context.Activity.AsMessageActivity();
+                var culture = context.Activity.Locale ?? DefaultLocale ?? English;
                 var results = ChoiceRecognizer.RecognizeBoolean(message.Text, culture);
                 if (results.Count > 0)
                 {
