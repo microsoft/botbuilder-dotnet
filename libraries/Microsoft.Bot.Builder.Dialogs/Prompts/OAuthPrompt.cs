@@ -258,7 +258,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             // Append appropriate card if missing
             if (!ChannelSupportsOAuthCard(context.Activity.ChannelId))
             {
-                if (prompt.Attachments.Where(a => a.Content is SigninCard).Count() == 0)
+                if (!prompt.Attachments.Any(a => a.Content is SigninCard))
                 {
                     var link = await adapter.GetOauthSignInLinkAsync(context, _settings.ConnectionName, default(CancellationToken)).ConfigureAwait(false);
                     prompt.Attachments.Add(new Attachment
@@ -280,7 +280,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                     });
                 }
             }
-            else if (prompt.Attachments.Where(a => a.Content is OAuthCard).Count() == 0)
+            else if (!prompt.Attachments.Any(a => a.Content is OAuthCard))
             {
                 prompt.Attachments.Add(new Attachment
                 {
