@@ -88,7 +88,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 .Use(convoState);
 
             // Create new DialogSet.
-            DialogSet dialogs = new DialogSet(dialogState);
+            var dialogs = new DialogSet(dialogState);
             dialogs.Add(new ChoicePrompt("ChoicePrompt", defaultLocale: Culture.English));
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
@@ -120,7 +120,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var adapter = new TestAdapter()
                 .Use(convoState);
 
-            DialogSet dialogs = new DialogSet(dialogState);
+            var dialogs = new DialogSet(dialogState);
             dialogs.Add(new ChoicePrompt("ChoicePrompt", defaultLocale: Culture.English));
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
@@ -152,7 +152,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var adapter = new TestAdapter()
                 .Use(convoState);
 
-            DialogSet dialogs = new DialogSet(dialogState);
+            var dialogs = new DialogSet(dialogState);
 
             // Create ChoicePrompt and change style to ListStyle.List which affects how choices are presented.
             var listPrompt = new ChoicePrompt("ChoicePrompt", defaultLocale: Culture.English);
@@ -188,7 +188,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var adapter = new TestAdapter()
                 .Use(convoState);
 
-            DialogSet dialogs = new DialogSet(dialogState);
+            var dialogs = new DialogSet(dialogState);
             var listPrompt = new ChoicePrompt("ChoicePrompt", defaultLocale: Culture.English);
             listPrompt.Style = ListStyle.SuggestedAction;
             dialogs.Add(listPrompt);
@@ -231,7 +231,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var adapter = new TestAdapter()
                 .Use(convoState);
 
-            DialogSet dialogs = new DialogSet(dialogState);
+            var dialogs = new DialogSet(dialogState);
 
             var listPrompt = new ChoicePrompt("ChoicePrompt", defaultLocale: Culture.English);
             listPrompt.Style = ListStyle.None;
@@ -263,10 +263,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var convoState = new ConversationState(new MemoryStorage());
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
-            TestAdapter adapter = new TestAdapter()
+            var adapter = new TestAdapter()
                 .Use(convoState);
 
-            DialogSet dialogs = new DialogSet(dialogState);
+            var dialogs = new DialogSet(dialogState);
 
             var listPrompt = new ChoicePrompt("ChoicePrompt", defaultLocale: Culture.English);
             listPrompt.Style = ListStyle.None;
@@ -302,10 +302,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var convoState = new ConversationState(new MemoryStorage());
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
-            TestAdapter adapter = new TestAdapter()
+            var adapter = new TestAdapter()
                 .Use(convoState);
 
-            DialogSet dialogs = new DialogSet(dialogState);
+            var dialogs = new DialogSet(dialogState);
 
             var listPrompt = new ChoicePrompt("ChoicePrompt", defaultLocale: Culture.English);
             listPrompt.Style = ListStyle.None;
@@ -344,10 +344,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var convoState = new ConversationState(new MemoryStorage());
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
-            TestAdapter adapter = new TestAdapter()
+            var adapter = new TestAdapter()
                 .Use(convoState);
 
-            DialogSet dialogs = new DialogSet(dialogState);
+            var dialogs = new DialogSet(dialogState);
             var listPrompt = new ChoicePrompt("ChoicePrompt", defaultLocale: Culture.English);
             listPrompt.Style = ListStyle.None;
             dialogs.Add(listPrompt);
@@ -378,13 +378,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [TestMethod]
         public async Task ShouldCallCustomValidator()
         {
-            ConversationState convoState = new ConversationState(new MemoryStorage());
+            var convoState = new ConversationState(new MemoryStorage());
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
-            TestAdapter adapter = new TestAdapter()
+            var adapter = new TestAdapter()
                 .Use(convoState);
 
-            DialogSet dialogs = new DialogSet(dialogState);
+            var dialogs = new DialogSet(dialogState);
 
             PromptValidator<FoundChoice> validator = async (context, promptContext) =>
             {
@@ -420,10 +420,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         /*[TestMethod]
         public async Task ShouldHandleAnUndefinedRequest()
         {
-            ConversationState convoState = new ConversationState(new MemoryStorage());
+            var convoState = new ConversationState(new MemoryStorage());
             var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test");
 
-            TestAdapter adapter = new TestAdapter()
+            var adapter = new TestAdapter()
                 .Use(convoState);
 
             PromptValidator<ChoiceResult> validator = (ITurnContext context, ChoiceResult result) =>

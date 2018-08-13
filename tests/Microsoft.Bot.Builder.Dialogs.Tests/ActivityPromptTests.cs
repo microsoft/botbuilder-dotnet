@@ -57,14 +57,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [TestMethod]
         public async Task BasicActivityPrompt()
         {
-            ConversationState convoState = new ConversationState(new MemoryStorage());
+            var convoState = new ConversationState(new MemoryStorage());
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
-            TestAdapter adapter = new TestAdapter()
+            var adapter = new TestAdapter()
                 .Use(convoState);
 
             // Create new DialogSet.
-            DialogSet dialogs = new DialogSet(dialogState);
+            var dialogs = new DialogSet(dialogState);
 
             // Create and add custom activity prompt to DialogSet.
             var eventPrompt = new EventActivityPrompt("EventActivityPrompt", _validator);
@@ -99,13 +99,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [TestMethod]
         public async Task RetryAttachmentPrompt()
         {
-            ConversationState convoState = new ConversationState(new MemoryStorage());
+            var convoState = new ConversationState(new MemoryStorage());
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
-            TestAdapter adapter = new TestAdapter()
+            var adapter = new TestAdapter()
                 .Use(convoState);
 
-            DialogSet dialogs = new DialogSet(dialogState);
+            var dialogs = new DialogSet(dialogState);
 
             var eventPrompt = new EventActivityPrompt("EventActivityPrompt", _validator);
             dialogs.Add(eventPrompt);

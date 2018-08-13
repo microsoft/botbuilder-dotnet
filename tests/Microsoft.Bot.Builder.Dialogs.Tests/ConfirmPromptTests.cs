@@ -32,14 +32,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [TestMethod]
         public async Task ConfirmPrompt()
         {
-            ConversationState convoState = new ConversationState(new MemoryStorage());
+            var convoState = new ConversationState(new MemoryStorage());
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
-            TestAdapter adapter = new TestAdapter()
+            var adapter = new TestAdapter()
                 .Use(convoState);
 
             // Create new DialogSet.
-            DialogSet dialogs = new DialogSet(dialogState);
+            var dialogs = new DialogSet(dialogState);
             dialogs.Add(new ConfirmPrompt("ConfirmPrompt", defaultLocale: Culture.English));
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
@@ -73,13 +73,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [TestMethod]
         public async Task ConfirmPromptRetry()
         {
-            ConversationState convoState = new ConversationState(new MemoryStorage());
+            var convoState = new ConversationState(new MemoryStorage());
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
-            TestAdapter adapter = new TestAdapter()
+            var adapter = new TestAdapter()
                 .Use(convoState);
 
-            DialogSet dialogs = new DialogSet(dialogState);
+            var dialogs = new DialogSet(dialogState);
             dialogs.Add(new ConfirmPrompt("ConfirmPrompt", defaultLocale: Culture.English));
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
@@ -128,13 +128,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [TestMethod]
         public async Task ConfirmPromptChoiceOptionsNumbers()
         {
-            ConversationState convoState = new ConversationState(new MemoryStorage());
+            var convoState = new ConversationState(new MemoryStorage());
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
-            TestAdapter adapter = new TestAdapter()
+            var adapter = new TestAdapter()
                 .Use(convoState);
 
-            DialogSet dialogs = new DialogSet(dialogState);
+            var dialogs = new DialogSet(dialogState);
             var prompt = new ConfirmPrompt("ConfirmPrompt", defaultLocale: Culture.English);
             // Set options
             prompt.ChoiceOptions = new Choices.ChoiceFactoryOptions { IncludeNumbers = true };
@@ -186,13 +186,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [TestMethod]
         public async Task ConfirmPromptChoiceOptionsNoNumbers()
         {
-            ConversationState convoState = new ConversationState(new MemoryStorage());
+            var convoState = new ConversationState(new MemoryStorage());
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
-            TestAdapter adapter = new TestAdapter()
+            var adapter = new TestAdapter()
                 .Use(convoState);
 
-            DialogSet dialogs = new DialogSet(dialogState);
+            var dialogs = new DialogSet(dialogState);
             var prompt = new ConfirmPrompt("ConfirmPrompt", defaultLocale: Culture.English);
             // Set options
             prompt.ChoiceOptions = new Choices.ChoiceFactoryOptions { IncludeNumbers = false, InlineSeparator = "~" };
