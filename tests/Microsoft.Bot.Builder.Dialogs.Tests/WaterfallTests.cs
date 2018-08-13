@@ -15,13 +15,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [TestMethod]
         public async Task Waterfall()
         {
-            ConversationState convoState = new ConversationState(new MemoryStorage());
+            var convoState = new ConversationState(new MemoryStorage());
 
-            TestAdapter adapter = new TestAdapter()
+            var adapter = new TestAdapter()
                 .Use(convoState);
 
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
-            DialogSet dialogs = new DialogSet(dialogState);
+            var dialogs = new DialogSet(dialogState);
             dialogs.Add(new WaterfallDialog("test", new WaterfallStep[]
             {
                 async (dc, step) => { await dc.Context.SendActivityAsync("step1"); return Dialog.EndOfTurn; },
@@ -51,10 +51,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [TestMethod]
         public async Task WaterfallPrompt()
         {
-            ConversationState convoState = new ConversationState(new MemoryStorage());
+            var convoState = new ConversationState(new MemoryStorage());
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
-            TestAdapter adapter = new TestAdapter()
+            var adapter = new TestAdapter()
                 .Use(convoState);
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
@@ -138,9 +138,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [TestMethod]
         public async Task WaterfallNested()
         {
-            ConversationState convoState = new ConversationState(new MemoryStorage());
+            var convoState = new ConversationState(new MemoryStorage());
 
-            TestAdapter adapter = new TestAdapter()
+            var adapter = new TestAdapter()
                 .Use(convoState);
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
