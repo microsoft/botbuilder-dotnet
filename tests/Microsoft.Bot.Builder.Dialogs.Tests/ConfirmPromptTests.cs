@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System.Collections.Generic;
+using System;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Schema;
@@ -13,6 +13,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
     [TestClass]
     public class ConfirmPromptTests
     {
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void ConfirmPromptWithEmptyIdShouldFail()
+        {
+            var emptyId = "";
+            var confirmPrompt = new ConfirmPrompt(emptyId);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void ConfirmPromptWithNullIdShouldFail()
+        {
+            var nullId = "";
+            nullId = null;
+            var confirmPrompt = new ConfirmPrompt(nullId);
+        }
         [TestMethod]
         public async Task ConfirmPrompt()
         {

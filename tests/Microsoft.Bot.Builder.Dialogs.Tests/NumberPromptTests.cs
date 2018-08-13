@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Schema;
@@ -12,6 +13,23 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
     [TestClass]
     public class NumberPromptTests
     {
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void NumberPromptWithEmptyIdShouldFail()
+        {
+            var emptyId = "";
+            var numberPrompt = new NumberPrompt<int>(emptyId);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void NumberPromptWithNullIdShouldFail()
+        {
+            var nullId = "";
+            nullId = null;
+            var numberPrompt = new NumberPrompt<int>(nullId);
+        }
+
         [TestMethod]
         public async Task NumberPrompt()
         {
