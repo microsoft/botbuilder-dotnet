@@ -20,6 +20,11 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         public Dialog(string dialogId)
         {
+            if (string.IsNullOrWhiteSpace(dialogId))
+            {
+                throw new ArgumentNullException(nameof(dialogId));
+            }
+
             Id = dialogId;
         }
 

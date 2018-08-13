@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
@@ -12,6 +13,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
     [TestClass]
     public class AttachmentPromptTests
     {
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void AttachmentPromptWithEmptyIdShouldFail()
+        {
+            var emptyId = "";
+            var attachmentPrompt = new AttachmentPrompt(emptyId);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void AttachmentPromptWithNullIdShouldFail()
+        {
+            var nullId = "";
+            nullId = null;
+            var attachmentPrompt = new AttachmentPrompt(nullId);
+        }
 
         [TestMethod]
         public async Task BasicAttachmentPrompt()

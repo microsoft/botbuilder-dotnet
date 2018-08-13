@@ -62,6 +62,23 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         }
 
         [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void ChoicePromptWithEmptyIdShouldFail()
+        {
+            var emptyId = "";
+            var choicePrompt = new ChoicePrompt(emptyId);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void ChoicePromptWithNullIdShouldFail()
+        {
+            var nullId = "";
+            nullId = null;
+            var choicePrompt = new ChoicePrompt(nullId);
+        }
+
+        [TestMethod]
         public async Task ShouldSendPrompt()
         {
             var convoState = new ConversationState(new MemoryStorage());
