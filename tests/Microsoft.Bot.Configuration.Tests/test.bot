@@ -1,0 +1,58 @@
+{
+  "name": "test",
+  "description": "test description",
+  "secretKey": "",
+  "services": [
+    {
+      "appId": "testtest-test-test-test-testtesttest",
+      "authoringKey": "testtesttesttesttesttesttesttest",
+      "subscriptionKey": "testtesttesttesttesttesttesttest",
+      "version": "test",
+      "type": "luis",
+      "name": "one",
+      "id": "1"
+    },
+    {
+      "tenantId": "test.test.com",
+      "subscriptionId": "testtest-test-test-test-testtesttest",
+      "resourceGroup": "TomDemoBot",
+      "type": "abs",
+      "name": "two",
+      "id": "2"
+    },
+    {
+      "appId": "testtest-test-test-test-testtesttest",
+      "appPassword": "testpassword",
+      "endpoint": "https://testtesttest.azurewebsites.net/api/messages",
+      "type": "endpoint",
+      "name": "three",
+      "id": "3"
+    },
+    {
+      "kbId": "testtest-test-test-test-testtesttest",
+      "subscriptionKey": "testtesttesttesttesttesttesttest",
+      "hostname": "https://qnatomlm.azurewebsites.net/qnamaker",
+      "endpointKey": "testtest-test-test-test-testtesttest",
+      "type": "qna",
+      "name": "four",
+      "id": "4"
+    },
+    {
+      "appId": "testtest-test-test-test-testtesttest",
+      "appPassword": "testpassword",
+      "endpoint": "https://testtesttest.azurewebsites.net",
+      "type": "endpoint",
+      "name": "five",
+      "id": "5"
+    },
+    {
+      "kbId": "testtest-test-test-test-testtesttest",
+      "subscriptionKey": "testtesttesttesttesttesttesttest",
+      "hostname": "https://testtesttest.azurewebsites.net/qnamaker",
+      "endpointKey": "testtest-test-test-test-testtesttest",
+      "type": "qna",
+      "name": "six",
+      "id": "6"
+    }
+  ]
+}
