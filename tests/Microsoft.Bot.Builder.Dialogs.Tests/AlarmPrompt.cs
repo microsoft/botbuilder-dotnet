@@ -44,7 +44,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             AddDialog(new DateTimePrompt(TimePrompt));
         }
 
-        private async Task ValidateTitleAsync(ITurnContext context, PromptValidatorContext<string> prompt)
+        private static async Task ValidateTitleAsync(ITurnContext context, PromptValidatorContext<string> prompt)
         {
             var value = (prompt.Recognized.Value ?? string.Empty).Trim();
             if (value.Length < 3)
@@ -59,7 +59,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
         }
 
-        private async Task<DialogTurnResult> InitializeValuesStepAsync(DialogContext dc, WaterfallStepContext step)
+        private static async Task<DialogTurnResult> InitializeValuesStepAsync(DialogContext dc, WaterfallStepContext step)
         {
             // Populate Values dictionary with any initial values.
             if (step.Options is AlarmPromptOptions options)
@@ -82,7 +82,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             return await step.NextAsync().ConfigureAwait(false);
         }
 
-        private async Task<DialogTurnResult> AskTitleStepAsync(DialogContext dc, WaterfallStepContext step)
+        private static async Task<DialogTurnResult> AskTitleStepAsync(DialogContext dc, WaterfallStepContext step)
         {
             // Prompt for title if missing
             if (!step.Values.ContainsKey(AlarmTitle))
@@ -95,7 +95,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
         }
 
-        private async Task<DialogTurnResult> AskTimeStepAsync(DialogContext dc, WaterfallStepContext step)
+        private static async Task<DialogTurnResult> AskTimeStepAsync(DialogContext dc, WaterfallStepContext step)
         {
             // Save title if prompted for.
             if (step.Result != null)
@@ -114,7 +114,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
         }
 
-        private async Task<DialogTurnResult> ReturnAlarmStepAsync(DialogContext dc, WaterfallStepContext step)
+        private static async Task<DialogTurnResult> ReturnAlarmStepAsync(DialogContext dc, WaterfallStepContext step)
         {
             // Save time if prompted for.
             if (step.Result != null)
