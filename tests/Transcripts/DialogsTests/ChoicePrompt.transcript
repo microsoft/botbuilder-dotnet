@@ -1,0 +1,299 @@
+[
+  {
+    "conversation": {
+      "id": "xf3sVIHOqpBjMQKM6T7VRkDTPqI="
+    },
+    "id": "1",
+    "timestamp": "2018-07-18T00:52:37.000Z",
+    "type": "conversationUpdate",
+    "channelId": "chatdown",
+    "membersAdded": [
+      {
+        "id": "xx5yYdN6T2rkz7DL15CBMQojfmc=",
+        "name": "bot",
+        "role": "bot"
+      }
+    ],
+    "membersRemoved": []
+  },
+  {
+    "conversation": {
+      "id": "xf3sVIHOqpBjMQKM6T7VRkDTPqI="
+    },
+    "id": "2",
+    "recipient": {
+      "id": "xx5yYdN6T2rkz7DL15CBMQojfmc=",
+      "name": "bot",
+      "role": "bot"
+    },
+    "from": {
+      "id": "Et6pb+wgWTVmq3VpLJlJWWgzrck=",
+      "name": "user",
+      "role": "user"
+    },
+    "text": "Hello!",
+    "timestamp": "2018-07-18T00:52:39.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "xf3sVIHOqpBjMQKM6T7VRkDTPqI="
+    },
+    "id": "3",
+    "recipient": {
+      "id": "Et6pb+wgWTVmq3VpLJlJWWgzrck=",
+      "name": "user",
+      "role": "user"
+    },
+    "from": {
+      "id": "xx5yYdN6T2rkz7DL15CBMQojfmc=",
+      "name": "bot",
+      "role": "bot"
+    },
+    "text": "favorite color? (1) red, (2) green, or (3) blue",
+    "timestamp": "2018-07-18T00:52:41.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "xf3sVIHOqpBjMQKM6T7VRkDTPqI="
+    },
+    "id": "4",
+    "recipient": {
+      "id": "xx5yYdN6T2rkz7DL15CBMQojfmc=",
+      "name": "bot",
+      "role": "bot"
+    },
+    "from": {
+      "id": "Et6pb+wgWTVmq3VpLJlJWWgzrck=",
+      "name": "user",
+      "role": "user"
+    },
+    "text": "red",
+    "timestamp": "2018-07-18T00:52:43.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "xf3sVIHOqpBjMQKM6T7VRkDTPqI="
+    },
+    "id": "5",
+    "recipient": {
+      "id": "Et6pb+wgWTVmq3VpLJlJWWgzrck=",
+      "name": "user",
+      "role": "user"
+    },
+    "from": {
+      "id": "xx5yYdN6T2rkz7DL15CBMQojfmc=",
+      "name": "bot",
+      "role": "bot"
+    },
+    "text": "Bot received the choice 'red'.",
+    "timestamp": "2018-07-18T00:52:45.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "xf3sVIHOqpBjMQKM6T7VRkDTPqI="
+    },
+    "id": "6",
+    "recipient": {
+      "id": "xx5yYdN6T2rkz7DL15CBMQojfmc=",
+      "name": "bot",
+      "role": "bot"
+    },
+    "from": {
+      "id": "Et6pb+wgWTVmq3VpLJlJWWgzrck=",
+      "name": "user",
+      "role": "user"
+    },
+    "text": "Hello!",
+    "timestamp": "2018-07-18T00:52:47.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "xf3sVIHOqpBjMQKM6T7VRkDTPqI="
+    },
+    "id": "7",
+    "recipient": {
+      "id": "Et6pb+wgWTVmq3VpLJlJWWgzrck=",
+      "name": "user",
+      "role": "user"
+    },
+    "from": {
+      "id": "xx5yYdN6T2rkz7DL15CBMQojfmc=",
+      "name": "bot",
+      "role": "bot"
+    },
+    "text": "favorite color? (1) red, (2) green, or (3) blue",
+    "timestamp": "2018-07-18T00:52:49.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "xf3sVIHOqpBjMQKM6T7VRkDTPqI="
+    },
+    "id": "8",
+    "recipient": {
+      "id": "xx5yYdN6T2rkz7DL15CBMQojfmc=",
+      "name": "bot",
+      "role": "bot"
+    },
+    "from": {
+      "id": "Et6pb+wgWTVmq3VpLJlJWWgzrck=",
+      "name": "user",
+      "role": "user"
+    },
+    "text": "3",
+    "timestamp": "2018-07-18T00:52:51.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "xf3sVIHOqpBjMQKM6T7VRkDTPqI="
+    },
+    "id": "9",
+    "recipient": {
+      "id": "Et6pb+wgWTVmq3VpLJlJWWgzrck=",
+      "name": "user",
+      "role": "user"
+    },
+    "from": {
+      "id": "xx5yYdN6T2rkz7DL15CBMQojfmc=",
+      "name": "bot",
+      "role": "bot"
+    },
+    "text": "Bot received the choice 'blue'.",
+    "timestamp": "2018-07-18T00:52:53.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "xf3sVIHOqpBjMQKM6T7VRkDTPqI="
+    },
+    "id": "10",
+    "recipient": {
+      "id": "xx5yYdN6T2rkz7DL15CBMQojfmc=",
+      "name": "bot",
+      "role": "bot"
+    },
+    "from": {
+      "id": "Et6pb+wgWTVmq3VpLJlJWWgzrck=",
+      "name": "user",
+      "role": "user"
+    },
+    "text": "Hello!",
+    "timestamp": "2018-07-18T00:52:55.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "xf3sVIHOqpBjMQKM6T7VRkDTPqI="
+    },
+    "id": "11",
+    "recipient": {
+      "id": "Et6pb+wgWTVmq3VpLJlJWWgzrck=",
+      "name": "user",
+      "role": "user"
+    },
+    "from": {
+      "id": "xx5yYdN6T2rkz7DL15CBMQojfmc=",
+      "name": "bot",
+      "role": "bot"
+    },
+    "text": "favorite color? (1) red, (2) green, or (3) blue",
+    "timestamp": "2018-07-18T00:52:57.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "xf3sVIHOqpBjMQKM6T7VRkDTPqI="
+    },
+    "id": "12",
+    "recipient": {
+      "id": "xx5yYdN6T2rkz7DL15CBMQojfmc=",
+      "name": "bot",
+      "role": "bot"
+    },
+    "from": {
+      "id": "Et6pb+wgWTVmq3VpLJlJWWgzrck=",
+      "name": "user",
+      "role": "user"
+    },
+    "text": "cat",
+    "timestamp": "2018-07-18T00:52:59.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "xf3sVIHOqpBjMQKM6T7VRkDTPqI="
+    },
+    "id": "13",
+    "recipient": {
+      "id": "Et6pb+wgWTVmq3VpLJlJWWgzrck=",
+      "name": "user",
+      "role": "user"
+    },
+    "from": {
+      "id": "xx5yYdN6T2rkz7DL15CBMQojfmc=",
+      "name": "bot",
+      "role": "bot"
+    },
+    "text": "I didn't catch that. Select a color from the list. (1) red, (2) green, or (3) blue",
+    "timestamp": "2018-07-18T00:53:01.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "xf3sVIHOqpBjMQKM6T7VRkDTPqI="
+    },
+    "id": "14",
+    "recipient": {
+      "id": "xx5yYdN6T2rkz7DL15CBMQojfmc=",
+      "name": "bot",
+      "role": "bot"
+    },
+    "from": {
+      "id": "Et6pb+wgWTVmq3VpLJlJWWgzrck=",
+      "name": "user",
+      "role": "user"
+    },
+    "text": "green",
+    "timestamp": "2018-07-18T00:53:03.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "xf3sVIHOqpBjMQKM6T7VRkDTPqI="
+    },
+    "id": "15",
+    "recipient": {
+      "id": "Et6pb+wgWTVmq3VpLJlJWWgzrck=",
+      "name": "user",
+      "role": "user"
+    },
+    "from": {
+      "id": "xx5yYdN6T2rkz7DL15CBMQojfmc=",
+      "name": "bot",
+      "role": "bot"
+    },
+    "text": "Bot received the choice 'green'.",
+    "timestamp": "2018-07-18T00:53:05.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  }
+]

@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Builder.Classic.FormFlowTest
             return this;
         }
 
-        public async Task ProcessActivity(Func<ITurnContext, Task> callback = null)
+        public async Task ProcessActivity(BotCallbackHandler callback = null)
         {
             while (true)
             {

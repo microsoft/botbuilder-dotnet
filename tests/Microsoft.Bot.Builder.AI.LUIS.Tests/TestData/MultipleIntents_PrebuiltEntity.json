@@ -1,0 +1,46 @@
+{
+    "query": "Please deliver February 2nd 2001",
+    "topScoringIntent": {
+        "intent": "Delivery",
+        "score": 0.8785189
+    },
+    "intents": [
+        {
+            "intent": "Delivery",
+            "score": 0.8785189
+        },
+        {
+            "intent": "SpecifyName",
+            "score": 0.0085189
+        }
+    ],
+    "entities": [
+        {
+            "entity": 2001,
+            "type": "number",
+            "startIndex": 28,
+            "endIndex": 31
+        },
+        {
+            "entity": 2,
+            "type": "ordinal",
+            "startIndex": 24,
+            "endIndex": 26
+        },
+        {
+            "entity": "february 2nd 2001",
+            "type": "builtin.datetimeV2.date",
+            "startIndex": 15,
+            "endIndex": 31,
+            "resolution": {
+                "values": [
+                    {
+                        "timex": "2001-02-02",
+                        "type": "date",
+                        "value": "2001-02-02"
+                    }
+                ]
+            }
+        }
+    ]
+}

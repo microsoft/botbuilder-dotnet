@@ -1,0 +1,105 @@
+[
+  {
+    "conversation": {
+      "id": "tUK2ISw7Cu4rvNV70/4qRFLlT8M="
+    },
+    "id": "1",
+    "timestamp": "2018-07-18T00:52:36.000Z",
+    "type": "conversationUpdate",
+    "channelId": "chatdown",
+    "membersAdded": [
+      {
+        "id": "OjGS4nkcV4YYDQImS16TRUBa+n0=",
+        "name": "Bot",
+        "role": "bot"
+      }
+    ],
+    "membersRemoved": []
+  },
+  {
+    "conversation": {
+      "id": "tUK2ISw7Cu4rvNV70/4qRFLlT8M="
+    },
+    "id": "2",
+    "recipient": {
+      "id": "OjGS4nkcV4YYDQImS16TRUBa+n0=",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "from": {
+      "id": "n4ojiaIMoHUqqelQk1FVF+kOGUw=",
+      "name": "User",
+      "role": "user"
+    },
+    "text": "hello",
+    "timestamp": "2018-07-18T00:52:38.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "tUK2ISw7Cu4rvNV70/4qRFLlT8M="
+    },
+    "id": "3",
+    "recipient": {
+      "id": "n4ojiaIMoHUqqelQk1FVF+kOGUw=",
+      "name": "User",
+      "role": "user"
+    },
+    "from": {
+      "id": "OjGS4nkcV4YYDQImS16TRUBa+n0=",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "text": "please add an attachment.",
+    "timestamp": "2018-07-18T00:52:40.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "attachments": [
+      {
+        "contentType": "application/json",
+        "content": "some content"
+      }
+    ],
+    "conversation": {
+      "id": "tUK2ISw7Cu4rvNV70/4qRFLlT8M="
+    },
+    "id": "4",
+    "recipient": {
+      "id": "OjGS4nkcV4YYDQImS16TRUBa+n0=",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "from": {
+      "id": "n4ojiaIMoHUqqelQk1FVF+kOGUw=",
+      "name": "User",
+      "role": "user"
+    },
+    "text": "",
+    "timestamp": "2018-07-18T00:52:42.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "tUK2ISw7Cu4rvNV70/4qRFLlT8M="
+    },
+    "id": "5",
+    "recipient": {
+      "id": "n4ojiaIMoHUqqelQk1FVF+kOGUw=",
+      "name": "User",
+      "role": "user"
+    },
+    "from": {
+      "id": "OjGS4nkcV4YYDQImS16TRUBa+n0=",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "text": "some content",
+    "timestamp": "2018-07-18T00:52:44.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  }
+]

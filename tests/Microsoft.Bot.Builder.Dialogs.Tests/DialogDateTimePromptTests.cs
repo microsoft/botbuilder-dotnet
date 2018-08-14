@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System.Collections.Generic;
+/*using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
@@ -16,18 +16,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [TestMethod]
         public async Task BasicDateTimePrompt()
         {
-            TestAdapter adapter = new TestAdapter()
-                .Use(new ConversationState<Dictionary<string, object>>(new MemoryStorage()));
+            ConversationState convoState = new ConversationState(new MemoryStorage());
+            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test");
 
-            await new TestFlow(adapter, async (turnContext) =>
+            TestAdapter adapter = new TestAdapter()
+                .Use(convoState);
+
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                var state = ConversationState<Dictionary<string, object>>.Get(turnContext);
+                var state = await testProperty.GetAsync(turnContext, () => new Dictionary<string, object>());
                 var prompt = new DateTimePrompt(Culture.English);
 
-                var dialogCompletion = await prompt.Continue(turnContext, state);
+                var dialogCompletion = await prompt.ContinueAsync(turnContext, state);
                 if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
                 {
-                    await prompt.Begin(turnContext, state, new PromptOptions { PromptString = "What date would you like?" });
+                    await prompt.BeginAsync(turnContext, state, new PromptOptions { PromptString = "What date would you like?" });
                 }
                 else if (dialogCompletion.IsCompleted)
                 {
@@ -47,18 +50,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [TestMethod]
         public async Task MultipleResolutionsDateTimePrompt()
         {
-            TestAdapter adapter = new TestAdapter()
-                .Use(new ConversationState<Dictionary<string, object>>(new MemoryStorage()));
+            ConversationState convoState = new ConversationState(new MemoryStorage());
+            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test");
 
-            await new TestFlow(adapter, async (turnContext) =>
+            TestAdapter adapter = new TestAdapter()
+                .Use(convoState);
+
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                var state = ConversationState<Dictionary<string, object>>.Get(turnContext);
+                var state = await testProperty.GetAsync(turnContext, () => new Dictionary<string, object>());
                 var prompt = new DateTimePrompt(Culture.English);
 
-                var dialogCompletion = await prompt.Continue(turnContext, state);
+                var dialogCompletion = await prompt.ContinueAsync(turnContext, state);
                 if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
                 {
-                    await prompt.Begin(turnContext, state, new PromptOptions { PromptString = "What date would you like?" });
+                    await prompt.BeginAsync(turnContext, state, new PromptOptions { PromptString = "What date would you like?" });
                 }
                 else if (dialogCompletion.IsCompleted)
                 {
@@ -75,4 +81,4 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .StartTestAsync();
         }
     }
-}
+}*/

@@ -3,39 +3,45 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder
 {
     /// <summary>
-    /// Base class which manages details of automatic loading and saving of bot state.
+    /// Reads and writes state for your bot to storage.
     /// </summary>
-    /// <typeparam name="TState">The type of the bot state object.</typeparam>
-    public class BotState<TState> : IMiddleware
-        where TState : class, new()
+    public abstract class BotState : IMiddleware
     {
-        private readonly StateSettings _settings;
+        private readonly string _contextServiceKey;
         private readonly IStorage _storage;
-        private readonly Func<ITurnContext, string> _keyDelegate;
-        private readonly string _propertyName;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="BotState{TState}"/> class.
+        /// Initializes a new instance of the <see cref="BotState"/> class.
         /// </summary>
         /// <param name="storage">The storage provider to use.</param>
-        /// <param name="propertyName">The name to use to load or save the state object.</param>
-        /// <param name="keyDelegate">A function that can provide the key.</param>
-        /// <param name="settings">The state persistance options to use.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="keyDelegate"/>, <paramref name="propertyName"/>,
-        /// or <paramref name="storage"/> is null.</exception>
-        public BotState(IStorage storage, string propertyName, Func<ITurnContext, string> keyDelegate, StateSettings settings = null)
+        /// <param name="contextServiceKey">the key for caching on the context services dictionary.</param>
+        public BotState(IStorage storage, string contextServiceKey)
         {
             _storage = storage ?? throw new ArgumentNullException(nameof(storage));
-            _propertyName = propertyName ?? throw new ArgumentNullException(nameof(propertyName));
-            _keyDelegate = keyDelegate ?? throw new ArgumentNullException(nameof(keyDelegate));
-            _settings = settings ?? new StateSettings();
+            _contextServiceKey = contextServiceKey ?? throw new ArgumentNullException(nameof(contextServiceKey));
+        }
+
+        /// <summary>
+        /// Create a property definition and register it with this BotState.
+        /// </summary>
+        /// <typeparam name="T">type of property.</typeparam>
+        /// <param name="name">name of the property.</param>
+        /// <returns>returns an IPropertyAccessor</returns>
+        public IStatePropertyAccessor<T> CreateProperty<T>(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
+
+            return new BotStatePropertyAccessor<T>(this, name);
         }
 
         /// <summary>
@@ -46,104 +52,282 @@ namespace Microsoft.Bot.Builder
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <remarks>This middleware loads the state object on the leading edge of the middleware pipeline
-        /// and persists the state object on the trailing edge.
+        /// and persists the state object on the trailing edge. Note this is different than BotStateSet,
+        /// which does not pre-load the set on entry into the pipeline.
         /// </remarks>
-        public async Task OnTurnAsync(ITurnContext context, NextDelegate next, CancellationToken cancellationToken)
+        public async Task OnTurnAsync(ITurnContext context, NextDelegate next, CancellationToken cancellationToken = default(CancellationToken))
         {
-            await ReadToContextServiceAsync(context, cancellationToken).ConfigureAwait(false);
+            if (context == null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
+            if (next == null)
+            {
+                throw new ArgumentNullException(nameof(next));
+            }
+
+            // Load state
+            await LoadAsync(context, true, cancellationToken).ConfigureAwait(false);
+
+            // process activity
             await next(cancellationToken).ConfigureAwait(false);
-            await WriteFromContextServiceAsync(context, cancellationToken).ConfigureAwait(false);
+
+            // Save changes
+            await SaveChangesAsync(context, false, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
-        /// Reads state from storage.
+        /// Reads in and caches the current state object in the TurnContext
         /// </summary>
         /// <param name="context">The context object for this turn.</param>
+        /// <param name="force">(optional) if true the cache will be bypassed </param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <remarks>If successful, the task result contains the state object, read from storage.</remarks>
-        public virtual async Task<TState> ReadAsync(ITurnContext context, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task LoadAsync(ITurnContext context, bool force = false, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var key = _keyDelegate(context);
-            var items = await _storage.ReadAsync(new[] { key }, cancellationToken).ConfigureAwait(false);
-            var state = items.Where(entry => entry.Key == key).Select(entry => entry.Value).OfType<TState>().FirstOrDefault();
-
-            if (state == null)
+            if (context == null)
             {
-                state = new TState();
+                throw new ArgumentNullException(nameof(context));
             }
 
-            return state;
+            var cachedState = context.Services.Get<CachedBotState>(_contextServiceKey);
+            var storageKey = GetStorageKey(context);
+            if (force || cachedState == null || cachedState.State == null)
+            {
+                var items = await _storage.ReadAsync(new[] { storageKey }, cancellationToken).ConfigureAwait(false);
+                items.TryGetValue(storageKey, out object val);
+                context.Services[_contextServiceKey] = new CachedBotState((IDictionary<string, object>)val ?? new Dictionary<string, object>());
+            }
         }
 
         /// <summary>
-        /// Writes state to storage.
+        /// Writes the state object cached in the TurnContext if it is changed.
         /// </summary>
         /// <param name="context">The context object for this turn.</param>
-        /// <param name="state">The state object.</param>
+        /// <param name="force">force the saving of changes even if there are no changes.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
-        public virtual async Task WriteAsync(ITurnContext context, TState state, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task SaveChangesAsync(ITurnContext context, bool force = false, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var changes = new Dictionary<string, object>();
-
-            if (state == null)
+            if (context == null)
             {
-                state = new TState();
+                throw new ArgumentNullException(nameof(context));
             }
 
-            var key = _keyDelegate(context);
-
-            changes.Add(key, state);
-
-            if (_settings.LastWriterWins)
+            var cachedState = context.Services.Get<CachedBotState>(_contextServiceKey);
+            if (force || (cachedState != null && cachedState.IsChanged()))
             {
-                foreach (var item in changes)
+                var key = GetStorageKey(context);
+                var changes = new Dictionary<string, object>
                 {
-                    if (item.Value is IStoreItem valueStoreItem)
+                    { key, cachedState.State },
+                };
+                await _storage.WriteAsync(changes).ConfigureAwait(false);
+                cachedState.Hash = cachedState.ComputeHash(cachedState.State);
+                return;
+            }
+        }
+
+        /// <summary>
+        /// Reset the state object to it's default form.
+        /// </summary>
+        /// <param name="context">turn context.</param>
+        /// <param name="cancellationToken">cancellation token.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        public Task ClearStateAsync(ITurnContext context, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (context == null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
+            var cachedState = context.Services.Get<CachedBotState>(_contextServiceKey);
+            if (cachedState != null)
+            {
+                context.Services[_contextServiceKey] = new CachedBotState();
+            }
+
+            return Task.CompletedTask;
+        }
+
+        protected abstract string GetStorageKey(ITurnContext context);
+
+        /// <summary>
+        /// gives IPropertyAccessor ability to get property Value from container.
+        /// </summary>
+        /// <param name="turnContext">turn context.</param>
+        /// <param name="propertyName">name of the property.</param>
+        /// <param name="cancellationToken">cancellationToken.</param>
+        /// <returns>T</returns>
+        protected Task<T> GetPropertyValueAsync<T>(ITurnContext turnContext, string propertyName, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (turnContext == null)
+            {
+                throw new ArgumentNullException(nameof(turnContext));
+            }
+
+            if (propertyName == null)
+            {
+                throw new ArgumentNullException(nameof(propertyName));
+            }
+
+            var cachedState = turnContext.Services.Get<CachedBotState>(_contextServiceKey);
+
+            // if there is no value, this will throw, to signal to IPropertyAccesor that a default value should be computed
+            // This allows this to work with value types
+            return Task.FromResult((T)cachedState.State[propertyName]);
+        }
+
+        /// <summary>
+        /// gives IPropertyAccessor ability to delete from it's container.
+        /// </summary>
+        /// <param name="turnContext">turn context.</param>
+        /// <param name="propertyName">name of the property.</param>
+        /// <param name="cancellationToken">cancellationToken.</param>
+        /// <returns>Task</returns>
+        protected Task DeletePropertyValueAsync(ITurnContext turnContext, string propertyName, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (turnContext == null)
+            {
+                throw new ArgumentNullException(nameof(turnContext));
+            }
+
+            if (propertyName == null)
+            {
+                throw new ArgumentNullException(nameof(propertyName));
+            }
+
+            var cachedState = turnContext.Services.Get<CachedBotState>(_contextServiceKey);
+            cachedState.State.Remove(propertyName);
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// gives IPropertyAccessor ability to set the value in it's container.
+        /// </summary>
+        /// <param name="turnContext">turn context.</param>
+        /// <param name="propertyName">name of the property.</param>
+        /// <param name="value">value of the property.</param>
+        /// <param name="cancellationToken">cancellationToken.</param>
+        /// <returns>Task</returns>
+        protected Task SetPropertyValueAsync(ITurnContext turnContext, string propertyName, object value, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (turnContext == null)
+            {
+                throw new ArgumentNullException(nameof(turnContext));
+            }
+
+            if (propertyName == null)
+            {
+                throw new ArgumentNullException(nameof(propertyName));
+            }
+
+            var cachedState = turnContext.Services.Get<CachedBotState>(_contextServiceKey);
+            cachedState.State[propertyName] = value;
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Internal cached bot state.
+        /// </summary>
+        private class CachedBotState
+        {
+            public CachedBotState(IDictionary<string, object> state = null)
+            {
+                State = state ?? new Dictionary<string, object>();
+                Hash = ComputeHash(State);
+            }
+
+            public IDictionary<string, object> State { get; set; }
+
+            public string Hash { get; set; }
+
+            public bool IsChanged()
+            {
+                return Hash != ComputeHash(State);
+            }
+
+            internal string ComputeHash(object obj)
+            {
+                return JsonConvert.SerializeObject(obj);
+            }
+        }
+
+        /// <summary>
+        /// Implements IPropertyAccessor for an IPropertyContainer.
+        /// </summary>
+        /// <typeparam name="T">type of value the propertyAccessor accesses.</typeparam>
+        private class BotStatePropertyAccessor<T> : IStatePropertyAccessor<T>
+        {
+            private BotState _botState;
+
+            public BotStatePropertyAccessor(BotState botState, string name)
+            {
+                _botState = botState;
+                Name = name;
+            }
+
+            /// <summary>
+            /// Gets name of the property.
+            /// </summary>
+            /// <value>
+            /// name of the property.
+            /// </value>
+            public string Name { get; private set; }
+
+            /// <summary>
+            /// Delete the property.
+            /// </summary>
+            /// <param name="turnContext">turn context</param>
+            /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+            public Task DeleteAsync(ITurnContext turnContext)
+            {
+                return _botState.DeletePropertyValueAsync(turnContext, Name);
+            }
+
+            /// <summary>
+            /// Get the property value.
+            /// </summary>
+            /// <param name="turnContext">The context object for this turn.</param>
+            /// <param name="defaultValueFactory">Defines the default value. Invoked when no value been set for the requested state property.  If defaultValueFactory is defined as null, the MissingMemberException will be thrown if the underlying property is not set.</param>
+            /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+            public async Task<T> GetAsync(ITurnContext turnContext, Func<T> defaultValueFactory = null)
+            {
+                await _botState.LoadAsync(turnContext).ConfigureAwait(false);
+                try
+                {
+                    return await _botState.GetPropertyValueAsync<T>(turnContext, Name).ConfigureAwait(false);
+                }
+                catch (KeyNotFoundException)
+                {
+                    // ask for default value from factory
+                    if (defaultValueFactory == null)
                     {
-                        valueStoreItem.ETag = "*";
+                        throw new MissingMemberException("Property not set and no default provided.");
                     }
+
+                    var result = defaultValueFactory();
+
+                    // save default value for any further calls
+                    await SetAsync(turnContext, result).ConfigureAwait(false);
+                    return result;
                 }
             }
 
-            await _storage.WriteAsync(changes, cancellationToken).ConfigureAwait(false);
-        }
-
-        /// <summary>
-        /// Reads the state object from storage and adds it to a turn context's service collection.
-        /// </summary>
-        /// <param name="context">The turn context object.</param>
-        /// <param name="cancellationToken">A cancellation token that can be used by other objects
-        /// or threads to receive notice of cancellation.</param>
-        /// <returns>A task that represents the work queued to execute.</returns>
-        /// <remarks>If no state object is read from storage, a default object is added to the
-        /// service collection.</remarks>
-        protected virtual async Task ReadToContextServiceAsync(ITurnContext context, CancellationToken cancellationToken)
-        {
-            var key = _keyDelegate(context);
-            var items = await _storage.ReadAsync(new[] { key }, cancellationToken).ConfigureAwait(false);
-            var state = items.Where(entry => entry.Key == key).Select(entry => entry.Value).OfType<TState>().FirstOrDefault();
-            if (state == null)
+            /// <summary>
+            /// Set the property value.
+            /// </summary>
+            /// <param name="turnContext">turn context.</param>
+            /// <param name="value">value.</param>
+            /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+            public async Task SetAsync(ITurnContext turnContext, T value)
             {
-                state = new TState();
+                await _botState.LoadAsync(turnContext).ConfigureAwait(false);
+                await _botState.SetPropertyValueAsync(turnContext, Name, value).ConfigureAwait(false);
             }
-
-            context.Services.Add(_propertyName, state);
-        }
-
-        /// <summary>
-        /// Writes the state object to storage from a turn context's service collection.
-        /// </summary>
-        /// <param name="context">The turn context object.</param>
-        /// <param name="cancellationToken">A cancellation token that can be used by other objects
-        /// or threads to receive notice of cancellation.</param>
-        /// <returns>A task that represents the work queued to execute.</returns>
-        protected virtual async Task WriteFromContextServiceAsync(ITurnContext context, CancellationToken cancellationToken)
-        {
-            var state = context.Services.Get<TState>(_propertyName);
-            await WriteAsync(context, state, cancellationToken).ConfigureAwait(false);
         }
     }
 }

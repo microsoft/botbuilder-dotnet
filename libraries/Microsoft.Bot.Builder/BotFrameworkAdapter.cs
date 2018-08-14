@@ -99,7 +99,7 @@ namespace Microsoft.Bot.Builder
         /// </remarks>
         /// <seealso cref="ProcessActivityAsync(string, Activity, Func{ITurnContext, Task}, CancellationToken)"/>
         /// <seealso cref="BotAdapter.RunPipelineAsync(ITurnContext, Func{ITurnContext, Task}, CancellationToken)"/>
-        public override async Task ContinueConversationAsync(string botAppId, ConversationReference reference, Func<ITurnContext, Task> callback, CancellationToken cancellationToken)
+        public override async Task ContinueConversationAsync(string botAppId, ConversationReference reference, BotCallbackHandler callback, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(botAppId))
             {
@@ -170,9 +170,9 @@ namespace Microsoft.Bot.Builder
         /// <item><see cref="IConnectorClient"/>, the channel connector client to use this turn.</item>
         /// </list></para>
         /// </remarks>
-        /// <seealso cref="ContinueConversationAsync(string, ConversationReference, Func{ITurnContext, Task}, CancellationToken)"/>
-        /// <seealso cref="BotAdapter.RunPipelineAsync(ITurnContext, Func{ITurnContext, Task}, CancellationToken)"/>
-        public async Task<InvokeResponse> ProcessActivityAsync(string authHeader, Activity activity, Func<ITurnContext, Task> callback, CancellationToken cancellationToken)
+        /// <seealso cref="ContinueConversationAsync(string, ConversationReference, BotCallbackHandler, CancellationToken)"/>
+        /// <seealso cref="BotAdapter.RunPipelineAsync(ITurnContext, BotCallbackHandler, CancellationToken)"/>
+        public async Task<InvokeResponse> ProcessActivityAsync(string authHeader, Activity activity, BotCallbackHandler callback, CancellationToken cancellationToken)
         {
             BotAssert.ActivityNotNull(activity);
 
@@ -189,7 +189,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
-        public async Task<InvokeResponse> ProcessActivityAsync(ClaimsIdentity identity, Activity activity, Func<ITurnContext, Task> callback, CancellationToken cancellationToken)
+        public async Task<InvokeResponse> ProcessActivityAsync(ClaimsIdentity identity, Activity activity, BotCallbackHandler callback, CancellationToken cancellationToken)
         {
             BotAssert.ActivityNotNull(activity);
 
@@ -576,7 +576,7 @@ namespace Microsoft.Bot.Builder
         /// specified users, the ID of the activity's <see cref="IActivity.Conversation"/>
         /// will contain the ID of the new conversation.</para>
         /// </remarks>
-        public virtual async Task CreateConversationAsync(string channelId, string serviceUrl, MicrosoftAppCredentials credentials, ConversationParameters conversationParameters, Func<ITurnContext, Task> callback, CancellationToken cancellationToken)
+        public virtual async Task CreateConversationAsync(string channelId, string serviceUrl, MicrosoftAppCredentials credentials, ConversationParameters conversationParameters, BotCallbackHandler callback, CancellationToken cancellationToken)
         {
             var connectorClient = CreateConnectorClient(serviceUrl, credentials);
 

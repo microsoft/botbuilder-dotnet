@@ -250,7 +250,7 @@ namespace Microsoft.Bot.Builder.Classic.FormFlow.Advanced
                 foreach (var term in orderedTerms)
                 {
                     var nterm = term.Trim().Replace(" ", @"\s+");
-                    if (nterm != "")
+                    if (nterm != string.Empty)
                     {
                         if (first)
                         {
@@ -390,7 +390,7 @@ namespace Microsoft.Bot.Builder.Classic.FormFlow.Advanced
             {
                 yield return new TermMatch(0, inputText.Length, 1.0, null);
             }
-            else if ((defaultValue != null || _noPreference != null) && (matchValue == "" || _currentChoices.Contains(matchValue)))
+            else if ((defaultValue != null || _noPreference != null) && (matchValue == string.Empty || _currentChoices.Contains(matchValue)))
             {
                 yield return new TermMatch(0, inputText.Length, 1.0, defaultValue);
             }
@@ -533,7 +533,7 @@ namespace Microsoft.Bot.Builder.Classic.FormFlow.Advanced
         /// <summary>
         /// Construct a string recognizer for a field.
         /// </summary>
-        /// <param name="field">String field.</param>
+        /// <param name="field">string field.</param>
         public RecognizeString(IField<T> field)
             : base(field)
         {

@@ -51,7 +51,7 @@ namespace Microsoft.Bot.Builder.Classic.Luis
         /// <param name="type">The entity type.</param>
         /// <param name="entity">The found entity.</param>
         /// <returns>True if the entity was found, false otherwise.</returns>
-        public static bool TryFindEntity(this LuisResult result, string type, out EntityRecommendation entity)
+        public static bool TryFindEntity(this LuisResult result, string type, out EntityModel entity)
         {
             entity = result.Entities?.FirstOrDefault(e => e.Type == type);
             return entity != null;
@@ -63,7 +63,7 @@ namespace Microsoft.Bot.Builder.Classic.Luis
         /// <param name="parser">The resolution parser.</param>
         /// <param name="entities">The LUIS entities.</param>
         /// <returns>The parsed resolutions.</returns>
-        public static IEnumerable<Resolution> ParseResolutions(this IResolutionParser parser, IEnumerable<EntityRecommendation> entities)
+        public static IEnumerable<Resolution> ParseResolutions(this IResolutionParser parser, IEnumerable<EntityModel> entities)
         {
             if (entities != null)
             {

@@ -62,12 +62,12 @@ namespace Microsoft.Bot.Builder
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
-        public async Task ReceiveActivityWithStatusAsync(ITurnContext context, Func<ITurnContext, Task> callback, CancellationToken cancellationToken)
+        public async Task ReceiveActivityWithStatusAsync(ITurnContext context, BotCallbackHandler callback, CancellationToken cancellationToken)
         {
             await ReceiveActivityInternalAsync(context, callback, 0, cancellationToken).ConfigureAwait(false);
         }
 
-        private Task ReceiveActivityInternalAsync(ITurnContext context, Func<ITurnContext, Task> callback, int nextMiddlewareIndex, CancellationToken cancellationToken)
+        private Task ReceiveActivityInternalAsync(ITurnContext context, BotCallbackHandler callback, int nextMiddlewareIndex, CancellationToken cancellationToken)
         {
             // Check if we're at the end of the middleware list yet
             if (nextMiddlewareIndex == _middleware.Count)
@@ -82,7 +82,7 @@ namespace Microsoft.Bot.Builder
                 // to run as expected.
 
                 // If a callback was provided invoke it now and return its task, otherwise just return the completed task
-                return callback?.Invoke(context) ?? Task.CompletedTask;
+                return callback?.Invoke(context, cancellationToken) ?? Task.CompletedTask;
             }
 
             // Get the next piece of middleware

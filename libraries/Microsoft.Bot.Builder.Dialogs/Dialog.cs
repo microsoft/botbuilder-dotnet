@@ -2,82 +2,82 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
     /// <summary>
-    /// Base class for controls
+    /// Base class for all dialogs.
     /// </summary>
     public abstract class Dialog
     {
-        /// <summary>
-        /// Starts the dialog. Depending on the dialog, its possible for the dialog to finish 
-        /// immediately so it's advised to check the completion object returned by `begin()` and ensure 
-        /// that the dialog is still active before continuing.
-        /// </summary>
-        /// <param name="context">Context for the current turn of the conversation with the user.</param>
-        /// <param name="state">A state object that the dialog will use to persist its current state. This should be an empty object which the dialog will populate. The bot should persist this with its other conversation state for as long as the dialog is still active.</param>
-        /// <param name="options">(Optional) additional options supported by the dialog.</param>
-        /// <returns>DialogCompletion result</returns>
-        public async Task<DialogCompletion> Begin(ITurnContext context, IDictionary<string, object> state, IDictionary<string, object> options = null)
+        public static readonly DialogTurnResult EndOfTurn = new DialogTurnResult
         {
-            BotAssert.ContextNotNull(context);
-            if (state == null)
-                throw new ArgumentNullException(nameof(state));
+            HasActive = true,
+            HasResult = false,
+        };
 
-            // Create empty dialog set and ourselves to it
-            var dialogs = new DialogSet();
-            dialogs.Add("dialog", (IDialog)this);
+        public Dialog(string dialogId)
+        {
+            if (string.IsNullOrWhiteSpace(dialogId))
+            {
+                throw new ArgumentNullException(nameof(dialogId));
+            }
 
-            // Start the control
-            IDictionary<string, object> result = null;
-            var dc = new DialogContext(dialogs, context, state, (r) => { result = r; });
+            Id = dialogId;
+        }
 
-            await dc.Begin("dialog", options);
-            return dc.ActiveDialog != null
-                    ?
-                new DialogCompletion { IsActive = true, IsCompleted = false }
-                    :
-                new DialogCompletion { IsActive = false, IsCompleted = true, Result = result };
+        public string Id { get; }
+
+        /// <summary>
+        /// Method called when a new dialog has been pushed onto the stack and is being activated.
+        /// </summary>
+        /// <param name="dc">The dialog context for the current turn of conversation.</param>
+        /// <param name="options">(Optional) arguments that were passed to the dialog during `begin()` call that started the instance.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        public abstract Task<DialogTurnResult> DialogBeginAsync(DialogContext dc, DialogOptions options = null);
+
+        /// <summary>
+        /// Method called when an instance of the dialog is the "current" dialog and the
+        /// user replies with a new activity. The dialog will generally continue to receive the users
+        /// replies until it calls either `DialogSet.end()` or `DialogSet.begin()`.
+        /// If this method is NOT implemented then the dialog will automatically be ended when the user replies.
+        /// </summary>
+        /// <param name="dc">The dialog context for the current turn of conversation.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        public virtual async Task<DialogTurnResult> DialogContinueAsync(DialogContext dc)
+        {
+            // By default just end the current dialog.
+            return await dc.EndAsync().ConfigureAwait(false);
         }
 
         /// <summary>
-        /// Passes a users reply to the dialog for further processing.The bot should keep calling 
-        /// 'continue()' for future turns until the dialog returns a completion object with 
-        /// 'isCompleted == true'. To cancel or interrupt the prompt simply delete the `state` object
-        /// being persisted.     
+        /// Method called when an instance of the dialog is being returned to from another
+        /// dialog that was started by the current instance using `DialogSet.begin()`.
+        /// If this method is NOT implemented then the dialog will be automatically ended with a call
+        /// to `DialogSet.endDialogWithResult()`. Any result passed from the called dialog will be passed
+        /// to the current dialogs parent.
         /// </summary>
-        /// <param name="context">Context for the current turn of the conversation with the user.</param>
-        /// <param name="state">A state object that was previously initialized by a call to [begin()](#begin).</param>
-        /// <returns>DialogCompletion result</returns>
-        public async Task<DialogCompletion> Continue(ITurnContext context, IDictionary<string, object> state)
+        /// <param name="dc">The dialog context for the current turn of conversation.</param>
+        /// <param name="reason">Reason why the dialog resumed.</param>
+        /// <param name="result">(Optional) value returned from the dialog that was called. The type of the value returned is dependant on the dialog that was called.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        public virtual async Task<DialogTurnResult> DialogResumeAsync(DialogContext dc, DialogReason reason, object result = null)
         {
-            BotAssert.ContextNotNull(context);
-            if (state == null)
-                throw new ArgumentNullException(nameof(state));
+            // By default just end the current dialog and return result to parent.
+            return await dc.EndAsync(result).ConfigureAwait(false);
+        }
 
-            // Create empty dialog set and ourselves to it
-            var dialogs = new DialogSet();
-            dialogs.Add("dialog", (IDialog)this);
+        public virtual Task DialogRepromptAsync(ITurnContext context, DialogInstance instance)
+        {
+            // No-op by default
+            return Task.CompletedTask;
+        }
 
-            // Continue the dialog
-            IDictionary<string, object> result = null;
-            var dc = new DialogContext(dialogs, context, state, (r) => { result = r; });
-            if (dc.ActiveDialog != null)
-            {
-                await dc.Continue();
-                return dc.ActiveDialog != null
-                        ?
-                    new DialogCompletion { IsActive = true, IsCompleted = false }
-                        :
-                    new DialogCompletion { IsActive = false, IsCompleted = true, Result = result };
-            }
-            else
-            {
-                return new DialogCompletion { IsActive = false, IsCompleted = false };
-            }
+        public virtual Task DialogEndAsync(ITurnContext context, DialogInstance instance, DialogReason reason)
+        {
+            // No-op by default
+            return Task.CompletedTask;
         }
     }
 }

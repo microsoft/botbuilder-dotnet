@@ -34,10 +34,10 @@ namespace Microsoft.Bot.Builder.Tests
             TestAdapter adapter = new TestAdapter()
                 .Use(new BeforeAFterMiddlware());
 
-            async Task Echo(ITurnContext ctx)
+            async Task Echo(ITurnContext ctx, CancellationToken cancellationToken)
             {
                 string toEcho = "ECHO:" + ctx.Activity.AsMessageActivity().Text;
-                await ctx.SendActivityAsync(ctx.Activity.CreateReply(toEcho)); 
+                await ctx.SendActivityAsync(ctx.Activity.CreateReply(toEcho), cancellationToken); 
             }
 
             await new TestFlow(adapter, Echo)
@@ -62,7 +62,7 @@ namespace Microsoft.Bot.Builder.Tests
             TestAdapter adapter = new TestAdapter()
                 .Use(new CatchExceptionMiddleware());
 
-            async Task EchoWithException(ITurnContext ctx)
+            async Task EchoWithException(ITurnContext ctx, CancellationToken cancellationToken)
             {
                 string toEcho = "ECHO:" + ctx.Activity.AsMessageActivity().Text;
                 await ctx.SendActivityAsync(ctx.Activity.CreateReply(toEcho));

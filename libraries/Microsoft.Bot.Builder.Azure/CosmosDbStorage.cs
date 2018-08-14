@@ -178,7 +178,7 @@ namespace Microsoft.Bot.Builder.Azure
             var query = _client.CreateDocumentQuery<DocumentStoreItem>(collectionLink, querySpec).AsDocumentQuery();
             while (query.HasMoreResults)
             {
-                foreach (var doc in await query.ExecuteNextAsync<DocumentStoreItem>())
+                foreach (var doc in await query.ExecuteNextAsync<DocumentStoreItem>().ConfigureAwait(false))
                 {
                     var item = doc.Document.ToObject(typeof(object), _jsonSerializer);
                     if (item is IStoreItem storeItem)

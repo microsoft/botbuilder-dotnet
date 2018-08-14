@@ -67,11 +67,13 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Handlers
             try
             {
                 // TODO wire up cancellation
+#pragma warning disable UseConfigureAwait // Use ConfigureAwait
                 var invokeResponse = await ProcessMessageRequestAsync(
                     request,
                     botFrameworkAdapter,
                     bot.OnTurnAsync,
                     default(CancellationToken));
+#pragma warning restore UseConfigureAwait // Use ConfigureAwait
 
                 if (invokeResponse == null)
                 {
@@ -97,6 +99,6 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Handlers
             }
         }
 
-        protected abstract Task<InvokeResponse> ProcessMessageRequestAsync(HttpRequest request, BotFrameworkAdapter botFrameworkAdapter, Func<ITurnContext, Task> botCallbackHandler, CancellationToken cancellationToken);
+        protected abstract Task<InvokeResponse> ProcessMessageRequestAsync(HttpRequest request, BotFrameworkAdapter botFrameworkAdapter, BotCallbackHandler botCallbackHandler, CancellationToken cancellationToken);
     }
 }

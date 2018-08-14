@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Builder.Classic.FormFlow.Advanced
         {
             var text = (activity != null ? activity.Text : null);
 
-            var result = text == null ? "" : text.Trim();
+            var result = text == null ? string.Empty : text.Trim();
             if (result.StartsWith("\""))
             {
                 result = result.Substring(1);

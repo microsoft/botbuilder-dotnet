@@ -263,7 +263,7 @@ namespace Microsoft.Bot.Builder.Classic.FormFlow
         /// When you specify a <see cref="PromptAttribute"/> or <see cref="TemplateAttribute"/>, any format 
         /// value you do not specify will come from this default.
         /// </remarks>
-        public PromptAttribute DefaultPrompt = new PromptAttribute("")
+        public PromptAttribute DefaultPrompt = new PromptAttribute(string.Empty)
         {
             AllowDefault = BoolDefault.True,
             ChoiceCase = CaseNormalization.None,
@@ -306,12 +306,12 @@ namespace Microsoft.Bot.Builder.Classic.FormFlow
         public string[] No = Resources.MatchNo.SplitList();
 
         /// <summary>
-        /// String for naming the "navigation" field.
+        /// string for naming the "navigation" field.
         /// </summary>
         public string Navigation = Resources.Navigation;
 
         /// <summary>
-        /// String for naming "Confirmation" fields.
+        /// string for naming "Confirmation" fields.
         /// </summary>
         public string Confirmation = Resources.Confirmation;
 

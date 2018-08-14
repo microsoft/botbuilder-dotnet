@@ -6,25 +6,20 @@ using System.Collections.Generic;
 
 namespace Microsoft.Bot.Builder.Dialogs.Choices
 {
-    public class Token
-    {
-        public int Start { get; set; }
-        public int End { get; set; }
-        public string Text { get; set; }
-        public string Normalized { get; set; }
-    }
-
     public delegate List<Token> TokenizerFunction(string text, string locale = null);
 
     public class Tokenizer
     {
-        public static TokenizerFunction DefaultTokenizer = DefaultTokenizerImpl;
+        public static TokenizerFunction DefaultTokenizer => DefaultTokenizerImpl;
 
-        ///<summary>
+        /// <summary>
         /// Simple tokenizer that breaks on spaces and punctuation. The only normalization done is to lowercase.
         /// This is an exact port of the JavaScript implementation of the algorithm except that here
         /// the .NET library functions are used in place of the JavaScript string code point functions.
-        ///</summary>
+        /// </summary>
+        /// <param name="text">The text being tokenized.</param>
+        /// <param name="locale">The locale of the text.</param>
+        /// <returns>A list of tokens.</returns>
         public static List<Token> DefaultTokenizerImpl(string text, string locale = null)
         {
             var tokens = new List<Token>();
@@ -38,8 +33,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
             {
                 // Get both the UNICODE value of the current character and the complete character itself
                 // which can potentially be multiple segments.
-
-                int codePoint = char.IsSurrogatePair(text, i)
+                var codePoint = char.IsSurrogatePair(text, i)
                         ?
                     char.ConvertToUtf32(text, i)
                         :
@@ -65,7 +59,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
                         Start = i,
                         End = i + (chr.Length - 1),
                         Text = chr,
-                        Normalized = chr
+                        Normalized = chr,
                     });
                 }
                 else if (token == null)
@@ -74,7 +68,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
                     token = new Token
                     {
                         Start = i,
-                        Text = chr
+                        Text = chr,
                     };
                 }
                 else
@@ -82,8 +76,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
                     // Add on to current token
                     token.Text += chr;
                 }
+
                 i += chr.Length;
             }
+
             AppendToken(tokens, token, length - 1);
             return tokens;
         }
@@ -98,20 +94,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
             }
         }
 
-        private static bool IsBreakingChar(int codePoint)
-        {
-            return (IsBetween(codePoint, 0x0000, 0x002F) ||
+        private static bool IsBreakingChar(int codePoint) => IsBetween(codePoint, 0x0000, 0x002F) ||
                     IsBetween(codePoint, 0x003A, 0x0040) ||
                     IsBetween(codePoint, 0x005B, 0x0060) ||
                     IsBetween(codePoint, 0x007B, 0x00BF) ||
                     IsBetween(codePoint, 0x02B9, 0x036F) ||
                     IsBetween(codePoint, 0x2000, 0x2BFF) ||
-                    IsBetween(codePoint, 0x2E00, 0x2E7F));
-        }
+                    IsBetween(codePoint, 0x2E00, 0x2E7F);
 
-        private static bool IsBetween(int value, int from, int to)
-        {
-            return (value >= from && value <= to);
-        }
+        private static bool IsBetween(int value, int from, int to) => value >= from && value <= to;
     }
 }

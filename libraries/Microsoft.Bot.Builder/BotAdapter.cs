@@ -123,7 +123,7 @@ namespace Microsoft.Bot.Builder
         /// Most _channels require a user to initiate a conversation with a bot
         /// before the bot can send activities to the user.</remarks>
         /// <seealso cref="RunPipelineAsync(ITurnContext, Func{ITurnContext, Task}, CancellationToken)"/>
-        public virtual Task ContinueConversationAsync(string botId, ConversationReference reference, Func<ITurnContext, Task> callback, CancellationToken cancellationToken)
+        public virtual Task ContinueConversationAsync(string botId, ConversationReference reference, BotCallbackHandler callback, CancellationToken cancellationToken)
         {
             using (var context = new TurnContext(this, reference.GetContinuationActivity()))
             {
@@ -155,7 +155,7 @@ namespace Microsoft.Bot.Builder
         /// initiated by a call to <see cref="ContinueConversationAsync(string, ConversationReference, Func{ITurnContext, Task}, CancellationToken)"/>
         /// (proactive messaging), the callback method is the callback method that was provided in the call.</para>
         /// </remarks>
-        protected async Task RunPipelineAsync(ITurnContext context, Func<ITurnContext, Task> callback, CancellationToken cancellationToken)
+        protected async Task RunPipelineAsync(ITurnContext context, BotCallbackHandler callback, CancellationToken cancellationToken)
         {
             BotAssert.ContextNotNull(context);
 
@@ -183,7 +183,7 @@ namespace Microsoft.Bot.Builder
                 // call back to caller on proactive case
                 if (callback != null)
                 {
-                    await callback(context).ConfigureAwait(false);
+                    await callback(context, cancellationToken).ConfigureAwait(false);
                 }
             }
         }

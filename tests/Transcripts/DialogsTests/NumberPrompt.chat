@@ -1,0 +1,16 @@
+user=User
+bot=Bot
+
+User: hello
+Bot: Enter a number.
+User: hello
+Bot: You must enter a valid positive number less than 100.
+User: 150
+Bot: You must enter a valid positive number less than 100.
+User: 64
+Bot: Bot received the number '64'.
+
+User: hello
+Bot: Enter a number.
+User: One
+Bot: Bot received the number '1'.

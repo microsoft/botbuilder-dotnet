@@ -7,7 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.Bot.Builder.Core.Extensions.Tests
+namespace Microsoft.Bot.Builder.Tests
 {
     public class StorageBaseTests
     {
@@ -162,7 +162,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
             {
                 var reloadedStoreItem4 = (await storage.ReadAsync(new [] { "pocoStoreItem" })).OfType<PocoStoreItem>().First();
 
-                reloadedStoreItem4.ETag = "";
+                reloadedStoreItem4.ETag = string.Empty;
                 var dict2 = new Dictionary<string, object>()
                 {                
                     { "pocoStoreItem", reloadedStoreItem4 }

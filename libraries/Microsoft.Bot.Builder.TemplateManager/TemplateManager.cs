@@ -86,7 +86,7 @@ namespace Microsoft.Bot.Builder.TemplateManager
         {
             List<string> fallbackLocales = new List<string>(this._languageFallback);
 
-            if (!String.IsNullOrEmpty(language))
+            if (!string.IsNullOrEmpty(language))
             {
                 fallbackLocales.Add(language);
             }

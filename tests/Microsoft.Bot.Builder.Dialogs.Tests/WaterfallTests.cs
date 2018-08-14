@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
@@ -15,24 +15,27 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [TestMethod]
         public async Task Waterfall()
         {
-            TestAdapter adapter = new TestAdapter()
-                .Use(new ConversationState<Dictionary<string, object>>(new MemoryStorage()));
+            var convoState = new ConversationState(new MemoryStorage());
 
-            await new TestFlow(adapter, async (turnContext) =>
+            var adapter = new TestAdapter()
+                .Use(convoState);
+
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
+            var dialogs = new DialogSet(dialogState);
+            dialogs.Add(new WaterfallDialog("test", new WaterfallStep[]
             {
-                var waterfall = new Waterfall(new WaterfallStep[]
-                {
-                    async (dc, args, next) => { await dc.Context.SendActivityAsync("step1"); },
-                    async (dc, args, next) => { await dc.Context.SendActivityAsync("step2"); },
-                    async (dc, args, next) => { await dc.Context.SendActivityAsync("step3"); },
-                });
+                async (dc, step) => { await dc.Context.SendActivityAsync("step1"); return Dialog.EndOfTurn; },
+                async (dc, step) => { await dc.Context.SendActivityAsync("step2"); return Dialog.EndOfTurn; },
+                async (dc, step) => { await dc.Context.SendActivityAsync("step3"); return Dialog.EndOfTurn; },
+            }));
 
-                var state = ConversationState<Dictionary<string, object>>.Get(turnContext);
-
-                var dialogCompletion = await waterfall.Continue(turnContext, state);
-                if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            {
+                var dc = await dialogs.CreateContextAsync(turnContext);
+                await dc.ContinueAsync();
+                if (!turnContext.Responded)
                 {
-                    await waterfall.Begin(turnContext, state);
+                    await dc.BeginAsync("test");
                 }
             })
             .Send("hello")
@@ -44,26 +47,31 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .StartTestAsync();
         }
 
+        
         [TestMethod]
         public async Task WaterfallPrompt()
         {
-            TestAdapter adapter = new TestAdapter()
-                .Use(new ConversationState<Dictionary<string, object>>(new MemoryStorage()));
+            var convoState = new ConversationState(new MemoryStorage());
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
-            await new TestFlow(adapter, async (turnContext) =>
+            var adapter = new TestAdapter()
+                .Use(convoState);
+
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                var dialogs = new DialogSet();
-                dialogs.Add("test-waterfall", Create_Waterfall2());
-                dialogs.Add("number", new NumberPrompt<int>(Culture.English));
+                var state = await dialogState.GetAsync(turnContext, () => new DialogState());
+                var dialogs = new DialogSet(dialogState);
+                dialogs.Add(Create_Waterfall2());
+                var numberPrompt = new NumberPrompt<int>("number", defaultLocale: Culture.English);
+                dialogs.Add(numberPrompt);
 
-                var state = ConversationState<Dictionary<string, object>>.Get(turnContext);
-                var dc = dialogs.CreateContext(turnContext, state);
+                var dc = await dialogs.CreateContextAsync(turnContext);
 
-                await dc.Continue();
+                await dc.ContinueAsync();
 
                 if (!turnContext.Responded)
                 {
-                    await dc.Begin("test-waterfall");
+                    await dc.BeginAsync("test-waterfall");
                 }
             })
             .Send("hello")
@@ -85,62 +93,71 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .StartTestAsync();
         }
 
-        private static WaterfallStep[] Create_Waterfall2()
+        private static WaterfallDialog Create_Waterfall2()
         {
-            return new WaterfallStep[] {
+            return new WaterfallDialog("test-waterfall", new WaterfallStep[] {
                 Waterfall2_Step1,
                 Waterfall2_Step2,
                 Waterfall2_Step3
-            };
+            });
         }
 
-        private static async Task Waterfall2_Step1(DialogContext dc, object args, SkipStepFunction next)
+        private static async Task<DialogTurnResult> Waterfall2_Step1(DialogContext dc, WaterfallStepContext stepContext)
         {
             await dc.Context.SendActivityAsync("step1");
-            await dc.Prompt("number", "Enter a number.", new PromptOptions { RetryPromptString = "It must be a number" });
+            return await dc.PromptAsync("number", new PromptOptions {
+                Prompt = MessageFactory.Text("Enter a number."),
+                RetryPrompt = MessageFactory.Text("It must be a number")
+            });
         }
-        private static async Task Waterfall2_Step2(DialogContext dc, object args, SkipStepFunction next)
+        private static async Task<DialogTurnResult> Waterfall2_Step2(DialogContext dc, WaterfallStepContext stepContext)
         {
-            if (args != null)
+            if (stepContext.Values != null)
             {
-                var numberResult = (NumberResult<int>)args;
-                await dc.Context.SendActivityAsync($"Thanks for '{numberResult.Value}'");
+                var numberResult = (int)stepContext.Result;
+                await dc.Context.SendActivityAsync($"Thanks for '{numberResult}'");
             }
             await dc.Context.SendActivityAsync("step2");
-            await dc.Prompt("number", "Enter a number.", new PromptOptions { RetryPromptString = "It must be a number" });
+            return await dc.PromptAsync("number",
+                new PromptOptions {
+                    Prompt = MessageFactory.Text("Enter a number."),
+                    RetryPrompt = MessageFactory.Text("It must be a number")
+                });
         }
-        private static async Task Waterfall2_Step3(DialogContext dc, object args, SkipStepFunction next)
+        private static async Task<DialogTurnResult> Waterfall2_Step3(DialogContext dc, WaterfallStepContext stepContext)
         {
-            if (args != null)
+            if (stepContext.Values != null)
             {
-                var numberResult = (NumberResult<int>)args;
-                await dc.Context.SendActivityAsync($"Thanks for '{numberResult.Value}'");
+                var numberResult = (int)stepContext.Result;
+                await dc.Context.SendActivityAsync($"Thanks for '{numberResult}'");
             }
             await dc.Context.SendActivityAsync("step3");
-            await dc.End(new Dictionary<string, object> { { "Value", "All Done!" } });
+            return await dc.EndAsync(new Dictionary<string, object> { { "Value", "All Done!" } });
         }
 
         [TestMethod]
         public async Task WaterfallNested()
         {
-            TestAdapter adapter = new TestAdapter()
-                .Use(new ConversationState<Dictionary<string, object>>(new MemoryStorage()));
+            var convoState = new ConversationState(new MemoryStorage());
 
-            await new TestFlow(adapter, async (turnContext) =>
+            var adapter = new TestAdapter()
+                .Use(convoState);
+
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                var dialogs = new DialogSet();
-                dialogs.Add("test-waterfall-a", Create_Waterfall3());
-                dialogs.Add("test-waterfall-b", Create_Waterfall4());
-                dialogs.Add("test-waterfall-c", Create_Waterfall5());
+                var dialogState = convoState.CreateProperty<DialogState>("dialogState");
+                var dialogs = new DialogSet(dialogState);
+                dialogs.Add(Create_Waterfall3());
+                dialogs.Add(Create_Waterfall4());
+                dialogs.Add(Create_Waterfall5());
 
-                var state = ConversationState<Dictionary<string, object>>.Get(turnContext);
-                var dc = dialogs.CreateContext(turnContext, state);
+                var dc = await dialogs.CreateContextAsync(turnContext);
 
-                await dc.Continue();
+                await dc.ContinueAsync();
 
                 if (!turnContext.Responded)
                 {
-                    await dc.Begin("test-waterfall-a");
+                    await dc.BeginAsync("test-waterfall-a");
                 }
             })
             .Send("hello")
@@ -156,57 +173,106 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .StartTestAsync();
         }
 
-        private static WaterfallStep[] Create_Waterfall3()
+        [TestMethod]
+        public async Task WaterfallDateTimePromptFirstInvalidThenValidInput()
         {
-            return new WaterfallStep[] {
+            var convoState = new ConversationState(new MemoryStorage());
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
+
+            var dialogs = new DialogSet(dialogState);
+            dialogs.Add(new DateTimePrompt("dateTimePrompt", defaultLocale: Culture.English));
+            dialogs.Add(new WaterfallDialog("test-dateTimePrompt", new WaterfallStep[]
+            {
+                async (dc, args) =>
+                {
+                    return await dc.PromptAsync("dateTimePrompt", "Provide a date");
+                },
+                async (dc, args) =>
+                {
+                    Assert.IsNotNull(args);
+                    return await dc.EndAsync();
+                }
+            }));
+
+            var adapter = new TestAdapter()
+                .Use(convoState);
+
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            {
+                var state = await dialogState.GetAsync(turnContext, () => new DialogState());
+
+                var dc = await dialogs.CreateContextAsync(turnContext);
+
+                await dc.ContinueAsync();
+
+                if (!turnContext.Responded)
+                {
+                    await dc.BeginAsync("test-dateTimePrompt");
+                }
+            })
+            .Send("hello")
+            .AssertReply("Provide a date")
+            .Send("hello again")
+            .AssertReply("Provide a date")
+            .Send("Wednesday 4 oclock")
+            .StartTestAsync();
+        }
+
+        private static WaterfallDialog Create_Waterfall3()
+        {
+            return new WaterfallDialog("test-waterfall-a", new WaterfallStep[] {
                 Waterfall3_Step1,
                 Waterfall3_Step2
-            };
+            });
         }
-        private static WaterfallStep[] Create_Waterfall4()
+        private static WaterfallDialog Create_Waterfall4()
         {
-            return new WaterfallStep[] {
+            return new WaterfallDialog("test-waterfall-b", new WaterfallStep[] {
                 Waterfall4_Step1,
                 Waterfall4_Step2
-            };
+            });
         }
 
-        private static WaterfallStep[] Create_Waterfall5()
+        private static WaterfallDialog Create_Waterfall5()
         {
-            return new WaterfallStep[] {
+            return new WaterfallDialog("test-waterfall-c", new WaterfallStep[] {
                 Waterfall5_Step1,
                 Waterfall5_Step2
-            };
+            });
         }
 
-        private static async Task Waterfall3_Step1(DialogContext dc, object args, SkipStepFunction next)
+        private static async Task<DialogTurnResult> Waterfall3_Step1(DialogContext dc, WaterfallStepContext stepContext)
         {
             await dc.Context.SendActivityAsync("step1");
-            await dc.Begin("test-waterfall-b");
+            return await dc.BeginAsync("test-waterfall-b");
         }
-        private static async Task Waterfall3_Step2(DialogContext dc, object args, SkipStepFunction next)
+        private static async Task<DialogTurnResult> Waterfall3_Step2(DialogContext dc, WaterfallStepContext stepContext)
         {
             await dc.Context.SendActivityAsync("step2");
-            await dc.Begin("test-waterfall-c");
+            return await dc.BeginAsync("test-waterfall-c");
         }
 
-        private static async Task Waterfall4_Step1(DialogContext dc, object args, SkipStepFunction next)
+        private static async Task<DialogTurnResult> Waterfall4_Step1(DialogContext dc, WaterfallStepContext stepContext)
         {
             await dc.Context.SendActivityAsync("step1.1");
+            return Dialog.EndOfTurn;
         }
-        private static async Task Waterfall4_Step2(DialogContext dc, object args, SkipStepFunction next)
+        private static async Task<DialogTurnResult> Waterfall4_Step2(DialogContext dc, WaterfallStepContext stepContext)
         {
             await dc.Context.SendActivityAsync("step1.2");
+            return Dialog.EndOfTurn;
         }
 
-        private static async Task Waterfall5_Step1(DialogContext dc, object args, SkipStepFunction next)
+        private static async Task<DialogTurnResult> Waterfall5_Step1(DialogContext dc, WaterfallStepContext stepContext)
         {
             await dc.Context.SendActivityAsync("step2.1");
+            return Dialog.EndOfTurn;
         }
-        private static async Task Waterfall5_Step2(DialogContext dc, object args, SkipStepFunction next)
+        private static async Task<DialogTurnResult> Waterfall5_Step2(DialogContext dc, WaterfallStepContext stepContext)
         {
             await dc.Context.SendActivityAsync("step2.2");
-            await dc.End();
+            return await dc.EndAsync();
         }
+
     }
 }

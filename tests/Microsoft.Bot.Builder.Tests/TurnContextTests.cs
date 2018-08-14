@@ -3,6 +3,7 @@
 
 using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Schema;
@@ -477,7 +478,7 @@ namespace Microsoft.Bot.Builder.Tests
             }            
         }        
 
-        public async Task MyBotLogic(ITurnContext context)
+        public async Task MyBotLogic(ITurnContext context, CancellationToken cancellationToken)
         {
             switch (context.Activity.AsMessageActivity().Text)
             {
