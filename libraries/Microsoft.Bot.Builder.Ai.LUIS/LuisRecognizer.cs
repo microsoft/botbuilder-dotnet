@@ -363,7 +363,7 @@ namespace Microsoft.Bot.Builder.Ai.Luis
                 staging: _options.Staging,
                 spellCheck: _options.SpellCheck,
                 bingSpellCheckSubscriptionKey: _options.BingSpellCheckSubscriptionKey,
-                log: _options.Log,
+                log: _options.Log ?? true,
                 cancellationToken: ct).ConfigureAwait(false);
 
             var recognizerResult = new RecognizerResult
