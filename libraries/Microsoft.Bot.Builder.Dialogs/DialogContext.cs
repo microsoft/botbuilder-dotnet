@@ -78,7 +78,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 Id = dialogId,
                 State = new Dictionary<string, object>(),
             };
-            
+
             Stack.Insert(0, instance);
 
             // Call dialogs BeginAsync() method.
