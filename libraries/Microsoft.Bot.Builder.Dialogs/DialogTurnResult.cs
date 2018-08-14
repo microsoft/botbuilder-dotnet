@@ -9,7 +9,7 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// Result returned to the caller of one of the various stack manipulation methods and used to
     /// return the result from a final call to `DialogContext.end()` to the bots logic.
     /// </summary>
-    public class DialogCompletion
+    public class DialogTurnResult
     {
         /// <summary>
         /// Gets or sets a value indicating whether the dialog is still active.
@@ -17,15 +17,15 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <value>
         /// <c>true</c> the dialog is still active; otherwise <c>false</c>.
         /// </value>
-        public bool IsActive { get; set; }
+        public bool HasActive { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the dialog just completed and the final [result](#result) can be retrieved.
+        /// Gets or sets a value indicating whether the dialog completed and its final [result](#result) can be retrieved.
         /// </summary>
         /// <value>
         /// <c>true</c> if the dialog just completed and the final [result](#result) can be retrieved; otherwise <c>false</c>.
         /// </value>
-        public bool IsCompleted { get; set; }
+        public bool HasResult { get; set; }
 
         /// <summary>
         /// Gets or sets the result returned by a dialog that was just ended.
@@ -39,6 +39,6 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <value>
         /// The result returned by a dialog that was just ended.
         /// </value>
-        public IDictionary<string, object> Result { get; set; }
+        public object Result { get; set; }
     }
 }

@@ -5,48 +5,45 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Choices;
-using static Microsoft.Bot.Builder.Dialogs.PromptValidatorEx;
+using Microsoft.Bot.Schema;
+using static Microsoft.Recognizers.Text.Culture;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
-    public class ChoicePrompt : Prompt<ChoiceResult>
+    public class ChoicePrompt : Prompt<FoundChoice>
     {
-        private ChoicePromptInternal _prompt;
-
-        public ChoicePrompt(string culture, PromptValidator<ChoiceResult> validator = null)
+        private static readonly Dictionary<string, ChoiceFactoryOptions> DefaultChoiceOptions = new Dictionary<string, ChoiceFactoryOptions>()
         {
-            _prompt = new ChoicePromptInternal(culture, validator);
+            { Spanish, new ChoiceFactoryOptions { InlineSeparator = ", ", InlineOr = " o ", InlineOrMore = ", o ", IncludeNumbers = true } },
+            { Dutch, new ChoiceFactoryOptions { InlineSeparator = ", ", InlineOr = " of ", InlineOrMore = ", of ", IncludeNumbers = true } },
+            { English, new ChoiceFactoryOptions { InlineSeparator = ", ", InlineOr = " or ", InlineOrMore = ", or ", IncludeNumbers = true } },
+            { French, new ChoiceFactoryOptions { InlineSeparator = ", ", InlineOr = " ou ", InlineOrMore = ", ou ", IncludeNumbers = true } },
+            { German, new ChoiceFactoryOptions { InlineSeparator = ", ", InlineOr = " oder ", InlineOrMore = ", oder ", IncludeNumbers = true } },
+            { Japanese, new ChoiceFactoryOptions { InlineSeparator = "、 ", InlineOr = " または ", InlineOrMore = "、 または ", IncludeNumbers = true } },
+            { Portuguese, new ChoiceFactoryOptions { InlineSeparator = ", ", InlineOr = " ou ", InlineOrMore = ", ou ", IncludeNumbers = true } },
+            { Chinese, new ChoiceFactoryOptions { InlineSeparator = "， ", InlineOr = " 要么 ", InlineOrMore = "， 要么 ", IncludeNumbers = true } },
+        };
+
+        public ChoicePrompt(string dialogId, PromptValidator<FoundChoice> validator = null, string defaultLocale = null)
+            : base(dialogId, validator)
+        {
+            Style = ListStyle.Auto;
+            DefaultLocale = defaultLocale;
         }
 
-        public ListStyle Style
-        {
-            get { return _prompt.Style; }
-            set { _prompt.Style = value; }
-        }
+        public ListStyle Style { get; set; }
 
-        public string Culture
-        {
-            get { return _prompt.Culture; }
-            set { _prompt.Culture = value; }
-        }
+        public string DefaultLocale { get; set; }
 
-        public ChoiceFactoryOptions ChoiceOptions
-        {
-            get { return _prompt.ChoiceOptions; }
-            set { _prompt.ChoiceOptions = value; }
-        }
+        public ChoiceFactoryOptions ChoiceOptions { get; set; }
 
-        public FindChoicesOptions RecognizerOptions
-        {
-            get { return _prompt.RecognizerOptions; }
-            set { _prompt.RecognizerOptions = value; }
-        }
+        public FindChoicesOptions RecognizerOptions { get; set; }
 
-        protected override async Task OnPromptAsync(DialogContext dc, PromptOptions options, bool isRetry)
+        protected override async Task OnPromptAsync(ITurnContext context, IDictionary<string, object> state, PromptOptions options, bool isRetry)
         {
-            if (dc == null)
+            if (context == null)
             {
-                throw new ArgumentNullException(nameof(dc));
+                throw new ArgumentNullException(nameof(context));
             }
 
             if (options == null)
@@ -54,47 +51,56 @@ namespace Microsoft.Bot.Builder.Dialogs
                 throw new ArgumentNullException(nameof(options));
             }
 
-            var choices = (options as ChoicePromptOptions)?.Choices ?? new List<Choice>();
-
-            if (isRetry)
+            // Determine culture
+            var culture = context.Activity.Locale ?? DefaultLocale;
+            if (string.IsNullOrEmpty(culture) || !DefaultChoiceOptions.ContainsKey(culture))
             {
-                if (options.RetryPromptActivity != null)
-                {
-                    await _prompt.PromptAsync(dc.Context, options.RetryPromptActivity.AsMessageActivity(), options.Speak).ConfigureAwait(false);
-                }
-                else if (options.RetryPromptString != null)
-                {
-                    await _prompt.PromptAsync(dc.Context, choices, options.RetryPromptString, options.RetrySpeak).ConfigureAwait(false);
-                }
+                culture = English;
+            }
+
+            // Format prompt to send
+            IMessageActivity prompt;
+            var choices = options.Choices ?? new List<Choice>();
+            var channelId = context.Activity.ChannelId;
+            var choiceOptions = ChoiceOptions ?? DefaultChoiceOptions[culture];
+            if (isRetry && options.RetryPrompt != null)
+            {
+                prompt = AppendChoices(options.RetryPrompt, channelId, choices, Style, choiceOptions);
             }
             else
             {
-                if (options.PromptActivity != null)
-                {
-                    await _prompt.PromptAsync(dc.Context, options.PromptActivity, options.Speak).ConfigureAwait(false);
-                }
-                else if (options.PromptString != null)
-                {
-                    await _prompt.PromptAsync(dc.Context, choices, options.PromptString, options.Speak).ConfigureAwait(false);
-                }
+                prompt = AppendChoices(options.Prompt, channelId, choices, Style, choiceOptions);
             }
+
+            // Send prompt
+            await context.SendActivityAsync(prompt).ConfigureAwait(false);
         }
 
-        protected override async Task<ChoiceResult> OnRecognizeAsync(DialogContext dc, PromptOptions options)
+        protected override Task<PromptRecognizerResult<FoundChoice>> OnRecognizeAsync(ITurnContext context, IDictionary<string, object> state, PromptOptions options)
         {
-            if (dc == null)
+            if (context == null)
             {
-                throw new ArgumentNullException(nameof(dc));
+                throw new ArgumentNullException(nameof(context));
             }
 
-            if (options == null)
+            var choices = options.Choices ?? new List<Choice>();
+
+            var result = new PromptRecognizerResult<FoundChoice>();
+            if (context.Activity.Type == ActivityTypes.Message)
             {
-                throw new ArgumentNullException(nameof(options));
+                var activity = context.Activity;
+                var utterance = activity.Text;
+                var opt = RecognizerOptions ?? new FindChoicesOptions();
+                opt.Locale = activity.Locale ?? opt.Locale ?? DefaultLocale ?? English;
+                var results = ChoiceRecognizers.RecognizeChoices(utterance, choices, opt);
+                if (results != null && results.Count > 0)
+                {
+                    result.Succeeded = true;
+                    result.Value = results[0].Resolution;
+                }
             }
 
-            var choices = (options as ChoicePromptOptions)?.Choices ?? new List<Choice>();
-
-            return await _prompt.RecognizeAsync(dc.Context, choices).ConfigureAwait(false);
+            return Task.FromResult(result);
         }
     }
 }
