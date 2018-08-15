@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
-using System.Linq;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 

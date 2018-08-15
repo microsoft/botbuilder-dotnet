@@ -2,25 +2,29 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
-using static Microsoft.Bot.Builder.Dialogs.PromptValidatorEx;
+using Microsoft.Bot.Schema;
+using Microsoft.Recognizers.Text.Number;
+using static Microsoft.Recognizers.Text.Culture;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
-    public class NumberPrompt<T> : Prompt<NumberResult<T>>
+    public class NumberPrompt<T> : Prompt<T>
     {
-        private NumberPromptInternal<T> _prompt;
-
-        public NumberPrompt(string culture, PromptValidator<NumberResult<T>> validator = null)
+        public NumberPrompt(string dialogId, PromptValidator<T> validator = null, string defaultLocale = null)
+            : base(dialogId, validator)
         {
-            _prompt = new NumberPromptInternal<T>(culture, validator);
+            DefaultLocale = defaultLocale;
         }
 
-        protected override Task OnPromptAsync(DialogContext dc, PromptOptions options, bool isRetry)
+        public string DefaultLocale { get; set; }
+
+        protected override async Task OnPromptAsync(ITurnContext context, IDictionary<string, object> state, PromptOptions options, bool isRetry)
         {
-            if (dc == null)
+            if (context == null)
             {
-                throw new ArgumentNullException(nameof(dc));
+                throw new ArgumentNullException(nameof(context));
             }
 
             if (options == null)
@@ -28,22 +32,81 @@ namespace Microsoft.Bot.Builder.Dialogs
                 throw new ArgumentNullException(nameof(options));
             }
 
-            return dc.Context.SendActivityAsync(PromptMessageFactory.CreateActivity(options, isRetry));
+            if (isRetry && options.RetryPrompt != null)
+            {
+                await context.SendActivityAsync(options.RetryPrompt).ConfigureAwait(false);
+            }
+            else if (options.Prompt != null)
+            {
+                await context.SendActivityAsync(options.Prompt).ConfigureAwait(false);
+            }
         }
 
-        protected override async Task<NumberResult<T>> OnRecognizeAsync(DialogContext dc, PromptOptions options)
+        protected override Task<PromptRecognizerResult<T>> OnRecognizeAsync(ITurnContext context, IDictionary<string, object> state, PromptOptions options)
         {
-            if (dc == null)
+            if (context == null)
             {
-                throw new ArgumentNullException(nameof(dc));
+                throw new ArgumentNullException(nameof(context));
             }
 
-            if (options == null)
+            var result = new PromptRecognizerResult<T>();
+            if (context.Activity.Type == ActivityTypes.Message)
             {
-                throw new ArgumentNullException(nameof(options));
+                var message = context.Activity.AsMessageActivity();
+                var culture = context.Activity.Locale ?? DefaultLocale ?? English;
+                var results = NumberRecognizer.RecognizeNumber(message.Text, culture);
+                if (results.Count > 0)
+                {
+                    // Try to parse value based on type
+                    var text = results[0].Resolution["value"].ToString();
+                    if (typeof(T) == typeof(float))
+                    {
+                        if (float.TryParse(text, out var value))
+                        {
+                            result.Succeeded = true;
+                            result.Value = (T)(object)value;
+                        }
+                    }
+                    else if (typeof(T) == typeof(int))
+                    {
+                        if (int.TryParse(text, out var value))
+                        {
+                            result.Succeeded = true;
+                            result.Value = (T)(object)value;
+                        }
+                    }
+                    else if (typeof(T) == typeof(long))
+                    {
+                        if (long.TryParse(text, out var value))
+                        {
+                            result.Succeeded = true;
+                            result.Value = (T)(object)value;
+                        }
+                    }
+                    else if (typeof(T) == typeof(double))
+                    {
+                        if (double.TryParse(text, out var value))
+                        {
+                            result.Succeeded = true;
+                            result.Value = (T)(object)value;
+                        }
+                    }
+                    else if (typeof(T) == typeof(decimal))
+                    {
+                        if (decimal.TryParse(text, out var value))
+                        {
+                            result.Succeeded = true;
+                            result.Value = (T)(object)value;
+                        }
+                    }
+                    else
+                    {
+                        throw new NotSupportedException($"NumberPrompt: type argument T of type 'typeof(T)' is not supported");
+                    }
+                }
             }
 
-            return await _prompt.RecognizeAsync(dc.Context).ConfigureAwait(false);
+            return Task.FromResult(result);
         }
     }
 }
