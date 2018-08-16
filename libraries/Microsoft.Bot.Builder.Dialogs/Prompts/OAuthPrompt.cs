@@ -44,32 +44,7 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// When used with your bots `DialogSet` you can simply add a new instance of the prompt as a named
     /// dialog using `DialogSet.add()`. You can then start the prompt from a waterfall step using either
     /// `DialogContext.begin()` or `DialogContext.prompt()`. The user will be prompted to signin as
-    /// needed and their access token will be passed as an argument to the callers next waterfall step:
-    ///
-    /// ```JavaScript
-    /// const { DialogSet, OAuthPrompt } = require('botbuilder-dialogs');
-    ///
-    /// const dialogs = new DialogSet();
-    ///
-    /// dialogs.add('loginPrompt', new OAuthPrompt({
-    ///    connectionName: 'GitConnection',
-    ///    title: 'Login To GitHub',
-    ///    timeout: 300000   // User has 5 minutes to login
-    /// }));
-    ///
-    /// dialogs.add('taskNeedingLogin', [
-    ///      async function (dc) {
-    ///          await dc.begin('loginPrompt');
-    ///      },
-    ///      async function (dc, token) {
-    ///          if (token) {
-    ///              // Continue with task needing access token
-    ///          } else {
-    ///              await dc.context.sendActivity(`Sorry... We couldn't log you in. Try again later.`);
-    ///              await dc.end();
-    ///          }
-    ///      }
-    /// .
+    /// needed and their access token will be passed as an argument to the callers next waterfall step.
     /// </summary>
     public class OAuthPrompt : Dialog
     {
@@ -211,12 +186,18 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task<TokenResponse> GetUserTokenAsync(ITurnContext context)
         {
+            string magicCode = null;
             if (!(context.Adapter is BotFrameworkAdapter adapter))
             {
                 throw new InvalidOperationException("OAuthPrompt.GetUserToken(): not supported by the current adapter");
             }
 
-            return await adapter.GetUserTokenAsync(context, _settings.ConnectionName, null, default(CancellationToken)).ConfigureAwait(false);
+            if (magicCodeRegex.IsMatch(context.Activity.Text))
+            {
+                magicCode = context.Activity.Text;
+            }
+
+            return await adapter.GetUserTokenAsync(context, _settings.ConnectionName, magicCode, default(CancellationToken)).ConfigureAwait(false);
         }
 
         /// <summary>
