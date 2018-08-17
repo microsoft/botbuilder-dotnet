@@ -4,6 +4,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Schema;
 using Microsoft.Recognizers.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -185,7 +186,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             {
                 async (dc, args) =>
                 {
-                    return await dc.PromptAsync("dateTimePrompt", "Provide a date");
+                    return await dc.PromptAsync("dateTimePrompt", new PromptOptions{ Prompt = new Activity { Text = "Provide a date" }});
                 },
                 async (dc, args) =>
                 {
