@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Microsoft.Bot.Configuration.Encryption;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 
@@ -9,13 +10,45 @@ namespace Microsoft.Bot.Configuration.Tests
     public class ConfingurationLoadAndSaveTests
     {
         [TestMethod]
-        public async Task SerializeBotFile()
+        public async Task BasicLoad()
         {
             var config = await BotConfiguration.LoadAsync(@"..\..\test.bot");
             Assert.AreEqual("test", config.Name);
             Assert.AreEqual("test description", config.Description);
             Assert.AreEqual("", config.SecretKey);
             Assert.AreEqual(7, config.Services.Count);
+            foreach(var service in config.Services)
+            {
+                switch(service.Type)
+                {
+                    case ServiceTypes.AppInsights:
+                        Assert.AreEqual(typeof(AppInsightsService), service.GetType());
+                        break;
+                    case ServiceTypes.AzureBot:
+                        Assert.AreEqual(typeof(AzureBotService), service.GetType());
+                        break;
+                    case ServiceTypes.AzureStorage:
+                        Assert.AreEqual(typeof(AzureStorageService), service.GetType());
+                        break;
+                    case ServiceTypes.Dispatch:
+                        Assert.AreEqual(typeof(DispatchService), service.GetType());
+                        break;
+                    case ServiceTypes.Endpoint:
+                        Assert.AreEqual(typeof(EndpointService), service.GetType());
+                        break;
+                    case ServiceTypes.File:
+                        Assert.AreEqual(typeof(FileService), service.GetType());
+                        break;
+                    case ServiceTypes.Luis:
+                        Assert.AreEqual(typeof(LuisService), service.GetType());
+                        break;
+                    case ServiceTypes.QnA:
+                        Assert.AreEqual(typeof(QnAMakerService), service.GetType());
+                        break;
+                    default:
+                        throw new Exception("Unknown service type!");
+                }
+            }
         }
 
 
@@ -23,16 +56,50 @@ namespace Microsoft.Bot.Configuration.Tests
         public async Task LoadAndSaveUnencryptedBotFile()
         {
             var config = await BotConfiguration.LoadAsync(@"..\..\test.bot");
-            await config.SaveAsync("test.bot");
+            await config.SaveAsync("save.bot");
 
             var config2 = await BotConfiguration.LoadAsync(@"..\..\test.bot");
             Assert.AreEqual(JsonConvert.SerializeObject(config2), JsonConvert.SerializeObject(config), "saved should be the same");
         }
 
         [TestMethod]
+        public async Task CantLoadWithoutSecret()
+        {
+            string secret = BotConfiguration.GenerateKey();
+            var config = await BotConfiguration.LoadAsync(@"..\..\test.bot");
+            await config.SaveAsync("save.bot", secret);
+
+            try
+            {
+                await BotConfiguration.LoadAsync(@"save.bot");
+                Assert.Fail("Load should have thrown due to no secret");
+            }
+            catch { }
+        }
+
+        [TestMethod]
+        public async Task CantSaveWithoutSecret()
+        {
+            string secret = BotConfiguration.GenerateKey();
+            var config = await BotConfiguration.LoadAsync(@"..\..\test.bot");
+            await config.SaveAsync("save.bot", secret);
+
+            var config2 = await BotConfiguration.LoadAsync(@"save.bot", secret);
+            try
+            {
+                await config2.SaveAsync("save.bot");
+                Assert.Fail("Save() should have thrown due to no secret");
+            }
+            catch { }
+            config2.ClearSecret();
+            await config2.SaveAsync("save.bot", secret);
+        }
+
+
+        [TestMethod]
         public async Task LoadAndSaveEncrypted()
         {
-            string secret = "test";
+            string secret = BotConfiguration.GenerateKey();
             var config = await BotConfiguration.LoadAsync(@"..\..\test.bot");
             Assert.AreEqual("", config.SecretKey, "There should be no secretKey");
 
@@ -57,7 +124,7 @@ namespace Microsoft.Bot.Configuration.Tests
 
                     case ServiceTypes.AppInsights:
                         {
-                            var appInsights= (AppInsightsService)config2.Services[i];
+                            var appInsights = (AppInsightsService)config2.Services[i];
                             Assert.IsTrue(appInsights.InstrumentationKey.Contains("0000"), "failed to decrypt instrumentationKey");
                         }
                         break;
