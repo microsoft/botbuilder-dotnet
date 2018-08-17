@@ -8,11 +8,6 @@ namespace Microsoft.Bot.Builder.Ai.LanguageGeneration.Engine
 {
     internal class ResolverPipeline : IResolverPipeline
     {
-        private readonly IList<IResolverPipelineWorker> _workers;
-        public ResolverPipeline(IList<IResolverPipelineWorker> workers)
-        {
-            _workers = workers ?? throw new ArgumentNullException(nameof(workers));
-        }
         public async Task ExecuteAsync(Activity activity, IDictionary<string, object> entities)
         {
             if (activity == null)
@@ -25,10 +20,7 @@ namespace Microsoft.Bot.Builder.Ai.LanguageGeneration.Engine
                 throw new ArgumentNullException(nameof(entities));
             }
 
-            foreach (var worker in _workers)
-            {
-                await worker.ExecuteAsync().ConfigureAwait(false);
-            }
+            
         }
     }
 }
