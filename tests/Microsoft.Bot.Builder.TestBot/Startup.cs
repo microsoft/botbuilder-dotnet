@@ -1,11 +1,16 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
+using System.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Bot.Builder.Integration;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace Microsoft.Bot.Builder.TestBot
 {
@@ -30,7 +35,30 @@ namespace Microsoft.Bot.Builder.TestBot
             services.AddBot<TestBot>(options =>
             {
                 IStorage dataStore = new MemoryStorage();
-                options.Middleware.Add(new ConversationState(dataStore));
+                options.State.Add(new ConversationState(dataStore));
+                options.Middleware.Add(new BotStateSet(options.State.ToArray()));
+            });
+
+            services.AddSingleton(sp =>
+            {
+                var options = sp.GetRequiredService<IOptions<BotFrameworkOptions>>().Value;
+                if (options == null)
+                {
+                    throw new InvalidOperationException("BotFrameworkOptions must be configured prior to setting up the State Accessors");
+                }
+
+                var conversationState = options.State.OfType<ConversationState>().FirstOrDefault();
+                if (conversationState == null)
+                {
+                    throw new InvalidOperationException("ConversationState must be defined and added before adding conversation-scoped state accessors.");
+                }
+
+                var accessors = new TestBotAccessors
+                {
+                    ConversationDialogState = conversationState.CreateProperty<DialogState>("DialogState")
+                };
+
+                return accessors;
             });
         }
 
