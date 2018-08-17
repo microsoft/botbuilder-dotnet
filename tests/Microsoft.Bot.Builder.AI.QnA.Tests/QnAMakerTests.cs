@@ -368,7 +368,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
         }
         public BotAdapter Adapter { get; }
 
-        public TurnContextServiceCollection Services => throw new NotImplementedException();
+        public TurnContextStateCollection TurnState => throw new NotImplementedException();
 
         public Activity Activity { get; }
 

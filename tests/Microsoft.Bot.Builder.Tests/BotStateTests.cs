@@ -372,7 +372,7 @@ namespace Microsoft.Bot.Builder.Tests
 
             await new TestFlow(adapter, (context, cancellationToken) =>
                    {
-                       var obj = context.Services.Get<UserState>();
+                       var obj = context.TurnState.Get<UserState>();
                        Assert.IsNull(obj, "context.state should not exist");
                        return Task.CompletedTask;
                    }
