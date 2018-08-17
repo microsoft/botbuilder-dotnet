@@ -1,7 +1,6 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.Bot.Configuration;
 using System.Threading.Tasks;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Configuration.Tests
@@ -16,7 +15,7 @@ namespace Microsoft.Bot.Configuration.Tests
             Assert.AreEqual("test", config.Name);
             Assert.AreEqual("test description", config.Description);
             Assert.AreEqual("", config.SecretKey);
-            Assert.AreEqual(6, config.Services.Count);
+            Assert.AreEqual(7, config.Services.Count);
         }
 
 
@@ -26,7 +25,7 @@ namespace Microsoft.Bot.Configuration.Tests
             var config = await BotConfiguration.LoadAsync(@"..\..\test.bot");
             await config.SaveAsync("test.bot");
 
-            var config2 = await BotConfiguration.LoadAsync("test.bot");
+            var config2 = await BotConfiguration.LoadAsync(@"..\..\test.bot");
             Assert.AreEqual(JsonConvert.SerializeObject(config2), JsonConvert.SerializeObject(config), "saved should be the same");
         }
 
@@ -53,21 +52,35 @@ namespace Microsoft.Bot.Configuration.Tests
 
                 switch (config.Services[i].Type)
                 {
-                    case ServiceTypes.AzureBotService:
+                    case ServiceTypes.AzureBot:
+                        break;
+
+                    case ServiceTypes.AppInsights:
+                        {
+                            var appInsights= (AppInsightsService)config2.Services[i];
+                            Assert.IsTrue(appInsights.InstrumentationKey.Contains("0000"), "failed to decrypt instrumentationKey");
+                        }
+                        break;
+
+                    case ServiceTypes.AzureStorage:
+                        {
+                            var azureStorage = (AzureStorageService)config2.Services[i];
+                            Assert.AreEqual("UseDevelopmentStorage=true;", azureStorage.ConnectionString, "failed to decrypt connectionString");
+                        }
                         break;
 
                     case ServiceTypes.Dispatch:
                         {
                             var dispatch = (DispatchService)config2.Services[i];
-                            Assert.IsTrue(dispatch.AuthoringKey.Contains("test"), "failed to decrypt authoringkey");
-                            Assert.IsTrue(dispatch.SubscriptionKey.Contains("test"), "failed to decrypt subscriptionKey");
+                            Assert.IsTrue(dispatch.AuthoringKey.Contains("0000"), "failed to decrypt authoringkey");
+                            Assert.IsTrue(dispatch.SubscriptionKey.Contains("0000"), "failed to decrypt subscriptionKey");
                         }
                         break;
 
                     case ServiceTypes.Endpoint:
                         {
                             var endpoint = (EndpointService)config2.Services[i];
-                            Assert.IsTrue(endpoint.AppPassword.Contains("test"), "failed to decrypt appPassword");
+                            Assert.AreEqual("testpassword", endpoint.AppPassword, "failed to decrypt appPassword");
                         }
                         break;
 
@@ -77,19 +90,20 @@ namespace Microsoft.Bot.Configuration.Tests
                     case ServiceTypes.Luis:
                         {
                             var luis = (LuisService)config2.Services[i];
-                            Assert.IsTrue(luis.AuthoringKey.Contains("test"), "failed to encrypt authoringkey");
-                            Assert.IsTrue(luis.SubscriptionKey.Contains("test"), "failed to encrypt subscriptionKey");
+                            Assert.IsTrue(luis.AuthoringKey.Contains("0000"), "failed to encrypt authoringkey");
+                            Assert.IsTrue(luis.SubscriptionKey.Contains("0000"), "failed to encrypt subscriptionKey");
                         }
                         break;
 
                     case ServiceTypes.QnA:
                         {
                             var qna = (QnAMakerService)config2.Services[i];
-                            Assert.IsTrue(qna.KbId.Contains("test"), "kbId should not be changed");
-                            Assert.IsTrue(qna.EndpointKey.Contains("test"), "failed to decrypt EndpointKey");
-                            Assert.IsTrue(qna.SubscriptionKey.Contains("test"), "failed to decrypt SubscriptionKey");
+                            Assert.IsTrue(qna.KbId.Contains("0000"), "kbId should not be changed");
+                            Assert.IsTrue(qna.EndpointKey.Contains("0000"), "failed to decrypt EndpointKey");
+                            Assert.IsTrue(qna.SubscriptionKey.Contains("0000"), "failed to decrypt SubscriptionKey");
                         }
                         break;
+
                     default:
                         throw new ArgumentException($"Unknown service type {config.Services[i].Type}");
                 }
@@ -103,7 +117,21 @@ namespace Microsoft.Bot.Configuration.Tests
             {
                 switch (config.Services[i].Type)
                 {
-                    case ServiceTypes.AzureBotService:
+                    case ServiceTypes.AppInsights:
+                        {
+                            var appInsights = (AppInsightsService)config2.Services[i];
+                            Assert.IsFalse(appInsights.InstrumentationKey.Contains("0000"), "failed to encrypt instrumentationKey");
+                        }
+                        break;
+
+                    case ServiceTypes.AzureStorage:
+                        {
+                            var azureStorage = (AzureStorageService)config2.Services[i];
+                            Assert.AreNotEqual("UseDevelopmentStorage=true;", azureStorage.ConnectionString, "failed to encrypt connectionString");
+                        }
+                        break;
+
+                    case ServiceTypes.AzureBot:
                         Assert.AreEqual(JsonConvert.SerializeObject(config.Services[i]), JsonConvert.SerializeObject(config2.Services[i]));
                         break;
 
@@ -111,8 +139,8 @@ namespace Microsoft.Bot.Configuration.Tests
                         {
                             Assert.AreNotEqual(JsonConvert.SerializeObject(config.Services[i]), JsonConvert.SerializeObject(config2.Services[i]));
                             var dispatch = (DispatchService)config2.Services[i];
-                            Assert.IsFalse(dispatch.AuthoringKey.Contains("test"), "failed to encrypt authoringkey");
-                            Assert.IsFalse(dispatch.SubscriptionKey.Contains("test"), "failed to encrypt subscriptionKey");
+                            Assert.IsFalse(dispatch.AuthoringKey.Contains("0000"), "failed to encrypt authoringkey");
+                            Assert.IsFalse(dispatch.SubscriptionKey.Contains("0000"), "failed to encrypt subscriptionKey");
                         }
                         break;
 
@@ -120,8 +148,8 @@ namespace Microsoft.Bot.Configuration.Tests
                         {
                             Assert.AreNotEqual(JsonConvert.SerializeObject(config.Services[i]), JsonConvert.SerializeObject(config2.Services[i]));
                             var endpoint = (EndpointService)config2.Services[i];
-                            Assert.IsTrue(endpoint.AppId.Contains("test"), "appId should not be changed");
-                            Assert.IsFalse(endpoint.AppPassword.Contains("test"), "failed to encrypt appPassword");
+                            Assert.IsTrue(endpoint.AppId.Contains("0000"), "appId should not be changed");
+                            Assert.IsFalse(endpoint.AppPassword.Contains("testpassword"), "failed to encrypt appPassword");
                         }
                         break;
 
@@ -133,8 +161,8 @@ namespace Microsoft.Bot.Configuration.Tests
                         {
                             Assert.AreNotEqual(JsonConvert.SerializeObject(config.Services[i]), JsonConvert.SerializeObject(config2.Services[i]));
                             var luis = (LuisService)config2.Services[i];
-                            Assert.IsFalse(luis.AuthoringKey.Contains("test"), "failed to encrypt authoringkey");
-                            Assert.IsFalse(luis.SubscriptionKey.Contains("test"), "failed to encrypt subscriptionKey");
+                            Assert.IsFalse(luis.AuthoringKey.Contains("0000"), "failed to encrypt authoringkey");
+                            Assert.IsFalse(luis.SubscriptionKey.Contains("0000"), "failed to encrypt subscriptionKey");
                         }
                         break;
 
@@ -142,9 +170,9 @@ namespace Microsoft.Bot.Configuration.Tests
                         {
                             Assert.AreNotEqual(JsonConvert.SerializeObject(config.Services[i]), JsonConvert.SerializeObject(config2.Services[i]));
                             var qna = (QnAMakerService)config2.Services[i];
-                            Assert.IsTrue(qna.KbId.Contains("test"), "kbId should not be changed");
-                            Assert.IsFalse(qna.EndpointKey.Contains("test"), "failed to encrypt EndpointKey");
-                            Assert.IsFalse(qna.SubscriptionKey.Contains("test"), "failed to encrypt SubscriptionKey");
+                            Assert.IsTrue(qna.KbId.Contains("0000"), "kbId should not be changed");
+                            Assert.IsFalse(qna.EndpointKey.Contains("0000"), "failed to encrypt EndpointKey");
+                            Assert.IsFalse(qna.SubscriptionKey.Contains("0000"), "failed to encrypt SubscriptionKey");
                         }
                         break;
 

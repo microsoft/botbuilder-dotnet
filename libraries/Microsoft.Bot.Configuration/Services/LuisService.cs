@@ -43,6 +43,12 @@ namespace Microsoft.Bot.Configuration
         [JsonProperty("version")]
         public string Version { get; set; }
 
+        /// <summary>
+        /// Gets or sets region.
+        /// </summary>
+        [JsonProperty("region")]
+        public string Region { get; set; }
+
         /// <inheritdoc/>
         public override void Encrypt(string secret)
         {

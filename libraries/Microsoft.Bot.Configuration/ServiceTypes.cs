@@ -9,11 +9,13 @@ namespace Microsoft.Bot.Configuration
 
     public class ServiceTypes
     {
+        public const string AppInsights = "appInsights";
+        public const string AzureStorage = "azureStorage";
+        public const string AzureBot = "abs";
+        public const string Dispatch = "dispatch";
         public const string Endpoint = "endpoint";
-        public const string AzureBotService = "abs";
+        public const string File = "file";
         public const string Luis = "luis";
         public const string QnA = "qna";
-        public const string Dispatch = "dispatch";
-        public const string File = "file";
     }
 }
