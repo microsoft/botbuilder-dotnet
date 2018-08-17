@@ -92,13 +92,13 @@ namespace Microsoft.Bot.Builder
                 throw new ArgumentNullException(nameof(context));
             }
 
-            var cachedState = context.Services.Get<CachedBotState>(_contextServiceKey);
+            var cachedState = context.TurnState.Get<CachedBotState>(_contextServiceKey);
             var storageKey = GetStorageKey(context);
             if (force || cachedState == null || cachedState.State == null)
             {
                 var items = await _storage.ReadAsync(new[] { storageKey }, cancellationToken).ConfigureAwait(false);
                 items.TryGetValue(storageKey, out object val);
-                context.Services[_contextServiceKey] = new CachedBotState((IDictionary<string, object>)val ?? new Dictionary<string, object>());
+                context.TurnState[_contextServiceKey] = new CachedBotState((IDictionary<string, object>)val ?? new Dictionary<string, object>());
             }
         }
 
@@ -117,7 +117,7 @@ namespace Microsoft.Bot.Builder
                 throw new ArgumentNullException(nameof(context));
             }
 
-            var cachedState = context.Services.Get<CachedBotState>(_contextServiceKey);
+            var cachedState = context.TurnState.Get<CachedBotState>(_contextServiceKey);
             if (force || (cachedState != null && cachedState.IsChanged()))
             {
                 var key = GetStorageKey(context);
@@ -144,10 +144,10 @@ namespace Microsoft.Bot.Builder
                 throw new ArgumentNullException(nameof(context));
             }
 
-            var cachedState = context.Services.Get<CachedBotState>(_contextServiceKey);
+            var cachedState = context.TurnState.Get<CachedBotState>(_contextServiceKey);
             if (cachedState != null)
             {
-                context.Services[_contextServiceKey] = new CachedBotState();
+                context.TurnState[_contextServiceKey] = new CachedBotState();
             }
 
             return Task.CompletedTask;
@@ -174,7 +174,7 @@ namespace Microsoft.Bot.Builder
                 throw new ArgumentNullException(nameof(propertyName));
             }
 
-            var cachedState = turnContext.Services.Get<CachedBotState>(_contextServiceKey);
+            var cachedState = turnContext.TurnState.Get<CachedBotState>(_contextServiceKey);
 
             // if there is no value, this will throw, to signal to IPropertyAccesor that a default value should be computed
             // This allows this to work with value types
@@ -200,7 +200,7 @@ namespace Microsoft.Bot.Builder
                 throw new ArgumentNullException(nameof(propertyName));
             }
 
-            var cachedState = turnContext.Services.Get<CachedBotState>(_contextServiceKey);
+            var cachedState = turnContext.TurnState.Get<CachedBotState>(_contextServiceKey);
             cachedState.State.Remove(propertyName);
             return Task.CompletedTask;
         }
@@ -225,7 +225,7 @@ namespace Microsoft.Bot.Builder
                 throw new ArgumentNullException(nameof(propertyName));
             }
 
-            var cachedState = turnContext.Services.Get<CachedBotState>(_contextServiceKey);
+            var cachedState = turnContext.TurnState.Get<CachedBotState>(_contextServiceKey);
             cachedState.State[propertyName] = value;
             return Task.CompletedTask;
         }

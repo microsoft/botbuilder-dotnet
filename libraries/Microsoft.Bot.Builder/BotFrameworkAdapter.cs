@@ -126,9 +126,9 @@ namespace Microsoft.Bot.Builder
                     new Claim(AuthenticationConstants.AppIdClaim, botAppId),
                 });
 
-                context.Services.Add<IIdentity>(BotIdentityKey, claimsIdentity);
+                context.TurnState.Add<IIdentity>(BotIdentityKey, claimsIdentity);
                 var connectorClient = await CreateConnectorClientAsync(reference.ServiceUrl, claimsIdentity, cancellationToken).ConfigureAwait(false);
-                context.Services.Add(connectorClient);
+                context.TurnState.Add(connectorClient);
                 await RunPipelineAsync(context, callback, cancellationToken).ConfigureAwait(false);
             }
         }
@@ -195,10 +195,10 @@ namespace Microsoft.Bot.Builder
 
             using (var context = new TurnContext(this, activity))
             {
-                context.Services.Add<IIdentity>(BotIdentityKey, identity);
+                context.TurnState.Add<IIdentity>(BotIdentityKey, identity);
 
                 var connectorClient = await CreateConnectorClientAsync(activity.ServiceUrl, identity, cancellationToken).ConfigureAwait(false);
-                context.Services.Add(connectorClient);
+                context.TurnState.Add(connectorClient);
 
                 await RunPipelineAsync(context, callback, cancellationToken).ConfigureAwait(false);
 
@@ -206,7 +206,7 @@ namespace Microsoft.Bot.Builder
                 // the Bot will return a specific body and return code.
                 if (activity.Type == ActivityTypes.Invoke)
                 {
-                    Activity invokeResponse = context.Services.Get<Activity>(InvokeReponseKey);
+                    Activity invokeResponse = context.TurnState.Get<Activity>(InvokeReponseKey);
                     if (invokeResponse == null)
                     {
                         // ToDo: Trace Here
@@ -275,7 +275,7 @@ namespace Microsoft.Bot.Builder
                 }
                 else if (activity.Type == ActivityTypesEx.InvokeResponse)
                 {
-                    context.Services.Add(InvokeReponseKey, activity);
+                    context.TurnState.Add(InvokeReponseKey, activity);
 
                     // No need to create a response. One will be created below.
                 }
@@ -285,12 +285,12 @@ namespace Microsoft.Bot.Builder
                 }
                 else if (!string.IsNullOrWhiteSpace(activity.ReplyToId))
                 {
-                    var connectorClient = context.Services.Get<IConnectorClient>();
+                    var connectorClient = context.TurnState.Get<IConnectorClient>();
                     response = await connectorClient.Conversations.ReplyToActivityAsync(activity, cancellationToken).ConfigureAwait(false);
                 }
                 else
                 {
-                    var connectorClient = context.Services.Get<IConnectorClient>();
+                    var connectorClient = context.TurnState.Get<IConnectorClient>();
                     response = await connectorClient.Conversations.SendToConversationAsync(activity, cancellationToken).ConfigureAwait(false);
                 }
 
@@ -329,7 +329,7 @@ namespace Microsoft.Bot.Builder
         /// <seealso cref="ITurnContext.OnUpdateActivity(UpdateActivityHandler)"/>
         public override async Task<ResourceResponse> UpdateActivityAsync(ITurnContext context, Activity activity, CancellationToken cancellationToken)
         {
-            var connectorClient = context.Services.Get<IConnectorClient>();
+            var connectorClient = context.TurnState.Get<IConnectorClient>();
             return await connectorClient.Conversations.UpdateActivityAsync(activity, cancellationToken).ConfigureAwait(false);
         }
 
@@ -345,7 +345,7 @@ namespace Microsoft.Bot.Builder
         /// <seealso cref="ITurnContext.OnDeleteActivity(DeleteActivityHandler)"/>
         public override async Task DeleteActivityAsync(ITurnContext context, ConversationReference reference, CancellationToken cancellationToken)
         {
-            var connectorClient = context.Services.Get<IConnectorClient>();
+            var connectorClient = context.TurnState.Get<IConnectorClient>();
             await connectorClient.Conversations.DeleteActivityAsync(reference.Conversation.Id, reference.ActivityId, cancellationToken).ConfigureAwait(false);
         }
 
@@ -369,7 +369,7 @@ namespace Microsoft.Bot.Builder
                 throw new ArgumentNullException("BotFrameworkAdapter.deleteConversationMember(): missing conversation.id");
             }
 
-            var connectorClient = context.Services.Get<IConnectorClient>();
+            var connectorClient = context.TurnState.Get<IConnectorClient>();
 
             string conversationId = context.Activity.Conversation.Id;
 
@@ -401,7 +401,7 @@ namespace Microsoft.Bot.Builder
                 throw new ArgumentNullException("BotFrameworkAdapter.GetActivityMembers(): missing conversation.id");
             }
 
-            var connectorClient = context.Services.Get<IConnectorClient>();
+            var connectorClient = context.TurnState.Get<IConnectorClient>();
             var conversationId = context.Activity.Conversation.Id;
 
             IList<ChannelAccount> accounts = await connectorClient.Conversations.GetActivityMembersAsync(conversationId, activityId, cancellationToken).ConfigureAwait(false);
@@ -427,7 +427,7 @@ namespace Microsoft.Bot.Builder
                 throw new ArgumentNullException("BotFrameworkAdapter.GetActivityMembers(): missing conversation.id");
             }
 
-            var connectorClient = context.Services.Get<IConnectorClient>();
+            var connectorClient = context.TurnState.Get<IConnectorClient>();
             var conversationId = context.Activity.Conversation.Id;
 
             IList<ChannelAccount> accounts = await connectorClient.Conversations.GetConversationMembersAsync(conversationId, cancellationToken).ConfigureAwait(false);
@@ -484,7 +484,7 @@ namespace Microsoft.Bot.Builder
         /// </remarks>
         public async Task<ConversationsResult> GetConversationsAsync(ITurnContext context, string continuationToken, CancellationToken cancellationToken)
         {
-            var connectorClient = context.Services.Get<IConnectorClient>();
+            var connectorClient = context.TurnState.Get<IConnectorClient>();
             var results = await connectorClient.Conversations.GetConversationsAsync(continuationToken, cancellationToken).ConfigureAwait(false);
             return results;
         }
@@ -598,8 +598,8 @@ namespace Microsoft.Bot.Builder
                 claimsIdentity.AddClaim(new Claim(AuthenticationConstants.AppIdClaim, credentials.MicrosoftAppId));
                 claimsIdentity.AddClaim(new Claim(AuthenticationConstants.ServiceUrlClaim, serviceUrl));
 
-                context.Services.Add<IIdentity>(BotIdentityKey, claimsIdentity);
-                context.Services.Add(connectorClient);
+                context.TurnState.Add<IIdentity>(BotIdentityKey, claimsIdentity);
+                context.TurnState.Add(connectorClient);
                 await RunPipelineAsync(context, callback, cancellationToken).ConfigureAwait(false);
             }
         }
@@ -632,7 +632,7 @@ namespace Microsoft.Bot.Builder
         /// <returns>An OAuth client for the bot.</returns>
         protected OAuthClient CreateOAuthApiClient(ITurnContext context)
         {
-            var client = context.Services.Get<IConnectorClient>() as ConnectorClient;
+            var client = context.TurnState.Get<IConnectorClient>() as ConnectorClient;
             if (client == null)
             {
                 throw new ArgumentNullException("CreateOAuthApiClient: OAuth requires a valid ConnectorClient instance");
