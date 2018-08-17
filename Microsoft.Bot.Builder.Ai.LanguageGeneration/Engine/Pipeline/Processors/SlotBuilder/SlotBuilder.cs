@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Microsoft.Bot.Builder.Ai.LanguageGeneration.Helpers
+namespace Microsoft.Bot.Builder.Ai.LanguageGeneration.Engine
 {
     internal class SlotBuilder
     {
