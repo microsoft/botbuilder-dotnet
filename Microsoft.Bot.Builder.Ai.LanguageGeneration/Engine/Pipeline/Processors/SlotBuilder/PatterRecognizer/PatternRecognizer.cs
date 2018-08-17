@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Builder.Ai.LanguageGeneration.Helpers
             //        return pattern.Key;
             //    }
             //}
-            //return PatternEnum.Undefined;
+            return PatternEnum.Undefined;
         }
     }
 }

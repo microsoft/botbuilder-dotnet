@@ -5,6 +5,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using DialogFoundation.Backend.LG;
 using LanguageGeneration.V2;
+using Microsoft.Bot.Builder.Ai.LanguageGeneration.Engine;
 using Microsoft.Bot.Builder.Ai.LanguageGeneration.Helpers;
 using Microsoft.Bot.Schema;
 
@@ -37,7 +38,7 @@ namespace Microsoft.Bot.Builder.Ai.LanguageGeneration.Resolver
                 throw new ArgumentNullException(nameof(entities));
             }
 
-            await _resolverPipeline.ExecuteAsync(ref activity, entities).ConfigureAwait(false);
+            await _resolverPipeline.ExecuteAsync(activity, entities).ConfigureAwait(false);
         }
     }
 }

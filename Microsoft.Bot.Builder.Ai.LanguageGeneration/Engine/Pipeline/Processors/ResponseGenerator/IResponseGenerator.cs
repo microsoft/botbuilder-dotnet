@@ -7,6 +7,6 @@ namespace Microsoft.Bot.Builder.Ai.LanguageGeneration.Engine
 {
     internal interface IResponseGenerator
     {
-        Task<ICompositeRespose> GenerateResponseAsync(ICompositeRequest request);
+        Task<ICompositeResponse> GenerateResponseAsync(ICompositeRequest request);
     }
 }

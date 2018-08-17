@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Ai.LanguageGeneration.Engine
 {
-    internal interface IResolverPipelineWorker
+    internal interface ICompositeResponse
     {
-        Task ExecuteAsync();
     }
 }

@@ -7,6 +7,6 @@ namespace Microsoft.Bot.Builder.Ai.LanguageGeneration.Engine.Pipeline
 {
     internal interface IActivityModifier
     {
-        Task ModifyActivityAsync(ICompositeRespose response);
+        Task ModifyActivityAsync(ICompositeResponse response);
     }
 }
