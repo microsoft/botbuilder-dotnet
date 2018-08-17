@@ -124,7 +124,7 @@ namespace Microsoft.Bot.Configuration
             }
 
             // save it to disk
-            using (var file = File.OpenWrite(path ?? this.location))
+            using (var file = File.Open(path ?? this.location, FileMode.Create))
             {
                 using (TextWriter writer = new StreamWriter(file))
                 {
@@ -298,8 +298,12 @@ namespace Microsoft.Bot.Configuration
 
                 switch ((string)jObject["type"])
                 {
-                    case ServiceTypes.AzureBotService:
+                    case ServiceTypes.AzureBot:
                         return jObject.ToObject<AzureBotService>();
+                    case ServiceTypes.AppInsights:
+                        return jObject.ToObject<AppInsightsService>();
+                    case ServiceTypes.AzureStorage:
+                        return jObject.ToObject<AzureStorageService>();
                     case ServiceTypes.Dispatch:
                         return jObject.ToObject<DispatchService>();
                     case ServiceTypes.Endpoint:

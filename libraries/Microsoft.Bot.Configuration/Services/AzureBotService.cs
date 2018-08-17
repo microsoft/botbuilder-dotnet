@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Configuration
         /// Initializes a new instance of the <see cref="AzureBotService"/> class.
         /// </summary>
         public AzureBotService()
-            : base(ServiceTypes.AzureBotService)
+            : base(ServiceTypes.AzureBot)
         {
         }
 
