@@ -52,6 +52,15 @@ namespace Microsoft.Bot.Configuration
         public List<ConnectedService> Services { get; set; } = new List<ConnectedService>();
 
         /// <summary>
+        /// Generate a new key suitable for encrypting
+        /// </summary>
+        /// <returns>key to use with .Encrypt() method</returns>
+        public static string GenerateKey()
+        {
+            return EncryptUtilities.GenerateKey();
+        }
+
+        /// <summary>
         /// Load the bot configuration by looking in a folder and finding the first .bot file in the folder.
         /// </summary>
         /// <param name="folder">folder to look for bot files</param>

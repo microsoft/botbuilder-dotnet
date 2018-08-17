@@ -6,91 +6,112 @@ namespace Microsoft.Bot.Configuration.Encryption
     using System;
     using System.IO;
     using System.Security.Cryptography;
-    using System.Text;
 
     public static class EncryptUtilities
     {
         /// <summary>
+        /// Generate key to use for encryption.
+        /// </summary>
+        /// <returns>base64 encoded cryptokey</returns>
+        public static string GenerateKey()
+        {
+            using (var aes = AesManaged.Create())
+            {
+                return Convert.ToBase64String(aes.Key);
+            }
+        }
+
+        /// <summary>
         /// Encrypt a string
         /// </summary>
-        /// <param name="plainText"></param>
-        /// <param name="secret">secret to use as the key (uses SHA256 hash to generate key)</param>
-        /// <param name="iv">optional IV to salt value, first 16 chars will be used padded with spaces</param>
+        /// <param name="plainText">test to encrypt</param>
+        /// <param name="key">key to encrypt with</param>
         /// <returns>encrypted value as Base64 string</returns>
-        public static string Encrypt(this string plainText, string secret, string iv = null)
+        public static string Encrypt(this string plainText, string key)
         {
             if (plainText == null)
             {
                 throw new ArgumentNullException("Missing plainText");
             }
 
-            if (secret == null)
+            if (key == null)
             {
-                throw new ArgumentNullException("Missing secret");
+                throw new ArgumentNullException("Missing key");
             }
 
-            using (Aes myAes = AesManaged.Create())
-            {
-                if (iv == null)
-                {
-                    iv = string.Empty.PadRight(16);
-                }
-                else
-                {
-                    iv = iv.PadRight(16).Substring(0, 16);
-                }
+            // Encrypt the string to an array of bytes.
+            var encrypted = EncryptUtilities.EncryptStringToBytes_Aes(plainText, key: Convert.FromBase64String(key));
 
-                myAes.IV = Encoding.UTF8.GetBytes(iv);
-                myAes.Key = SHA256Managed.Create().ComputeHash(Encoding.UTF8.GetBytes(secret));
-
-                // Encrypt the string to an array of bytes.
-                byte[] encrypted = EncryptUtilities.EncryptStringToBytes_Aes(plainText, myAes.Key, myAes.IV);
-                return Convert.ToBase64String(encrypted);
-            }
+            // encode iv and encrypted string as [iv]![encrypted]
+            return $"{Convert.ToBase64String(encrypted.Item1)}!{Convert.ToBase64String(encrypted.Item2)}";
         }
 
         /// <summary>
-        /// Decrypt a string
+        /// Decrypt a string.
         /// </summary>
         /// <param name="encryptedText">encrypted text</param>
-        /// <param name="secret">secret to use as the key (uses SHA256 hash to generate key)</param>
-        /// <param name="iv">optional IV to salt value, first 16 chars will be used padded with spaces</param>
+        /// <param name="key">key to use to decrypt the text</param>
         /// <returns>original unecrypted value</returns>
-        public static string Decrypt(this string encryptedText, string secret, string iv = null)
+        public static string Decrypt(this string encryptedText, string key)
         {
             if (encryptedText == null)
             {
                 throw new ArgumentNullException("Missing encryptedText");
             }
 
-            if (secret == null)
+            if (key == null)
             {
-                throw new ArgumentNullException("Missing secret");
+                throw new ArgumentNullException("Missing key");
             }
 
-            using (Aes aes = AesManaged.Create())
+            var parts = encryptedText.Split('!');
+            if (parts.Length != 2)
             {
-                if (iv == null)
-                {
-                    iv = String.Empty.PadRight(16);
-                }
-                else
-                {
-                    iv = iv.PadRight(16).Substring(0, 16);
-                }
-
-                aes.IV = Encoding.UTF8.GetBytes(iv);
-                aes.Key = SHA256Managed.Create().ComputeHash(Encoding.UTF8.GetBytes(secret));
-                var encrypted = Convert.FromBase64String(encryptedText);
-                return EncryptUtilities.DecryptStringFromBytes_Aes(encrypted, aes.Key, aes.IV);
+                throw new ArgumentException("EncryptedText is not properly formatted");
             }
+
+            byte[] rgIv;
+            try
+            {
+                rgIv = Convert.FromBase64String(parts[0]);
+            }
+            catch (FormatException)
+            {
+                throw new ArgumentException("EncryptedText[0] is not properly formatted");
+            }
+
+            byte[] cipherText;
+            try
+            {
+                cipherText = Convert.FromBase64String(parts[1]);
+            }
+            catch (FormatException)
+            {
+                throw new ArgumentException("EncryptedText[1] is not properly formatted");
+            }
+
+            byte[] rgKey;
+            try
+            {
+                rgKey = Convert.FromBase64String(key);
+            }
+            catch (FormatException)
+            {
+                throw new ArgumentException("Key is not properly formatted");
+            }
+
+            // parts[0] == base64 iv parts[1] == base64 encoded encrypted bytes
+            return EncryptUtilities.DecryptStringFromBytes_Aes(cipherText: cipherText, key: rgKey, iv: rgIv);
         }
 
         /// <summary>
-        /// Stock MSDN crypto function that every single blog post on the planet uses
+        /// Stock MSDN crypto function that every single blog post on the planet uses.
         /// </summary>
-        /// <returns></returns>
-        public static byte[] EncryptStringToBytes_Aes(string plainText, byte[] key, byte[] iv)
+        /// <param name="plainText">text to encrypt</param>
+        /// <param name="key">32 byte encryption key to use</param>
+        /// <param name="iv"> 16 byte iv to use</param>
+        /// <returns>Tuple[IV,EncryptedBytes]</returns>
+        public static Tuple<byte[], byte[]> EncryptStringToBytes_Aes(string plainText, byte[] key, byte[] iv = null)
         {
             // Check arguments.
             if (plainText == null || plainText.Length <= 0)
@@ -103,19 +124,18 @@ namespace Microsoft.Bot.Configuration.Encryption
                 throw new ArgumentNullException(nameof(key));
             }
 
-            if (iv == null || iv.Length <= 0)
-            {
-                throw new ArgumentNullException(nameof(iv));
-            }
-
             byte[] encrypted;
 
             // Create an Aes object
             // with the specified key and IV.
-            using (Aes aes = Aes.Create())
+            using (var aes = AesManaged.Create())
             {
                 aes.Key = key;
-                aes.IV = iv;
+                if (iv != null)
+                {
+                    // if custom iv use that
+                    aes.IV = iv;
+                }
 
                 // Create an encryptor to perform the stream transform.
                 ICryptoTransform encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
@@ -134,15 +154,18 @@ namespace Microsoft.Bot.Configuration.Encryption
                         encrypted = msEncrypt.ToArray();
                     }
                 }
-            }
 
-            // Return the encrypted bytes from the memory stream.
-            return encrypted;
+                // Return the encrypted bytes from the memory stream.
+                return new Tuple<byte[], byte[]>(aes.IV, encrypted);
+            }
         }
 
         /// <summary>
         /// Stock MSDN crypto function that every single blog post on the planet uses
         /// </summary>
+        /// <param name="cipherText">encrypted byte array to decrypt</param>
+        /// <param name="key">key to use</param>
+        /// <param name="iv">iv to use</param>
         /// <returns>decrypted string</returns>
         public static string DecryptStringFromBytes_Aes(byte[] cipherText, byte[] key, byte[] iv)
         {
@@ -168,13 +191,13 @@ namespace Microsoft.Bot.Configuration.Encryption
 
             // Create an Aes object
             // with the specified key and IV.
-            using (Aes aesAlg = Aes.Create())
+            using (var aes = AesManaged.Create())
             {
-                aesAlg.Key = key;
-                aesAlg.IV = iv;
+                aes.Key = key;
+                aes.IV = iv;
 
                 // Create a decryptor to perform the stream transform.
-                ICryptoTransform decryptor = aesAlg.CreateDecryptor(aesAlg.Key, aesAlg.IV);
+                ICryptoTransform decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
 
                 // Create the streams used for decryption.
                 using (MemoryStream msDecrypt = new MemoryStream(cipherText))
