@@ -220,7 +220,7 @@ namespace Microsoft.Bot.Builder.AI.Translation
 
             foreach (var translatedDocument in translatedDocuments)
             {
-                foreach (IPostProcessor postProcessor in attachedPostProcessors)
+                foreach (var postProcessor in attachedPostProcessors)
                 {
                     translatedDocument.TargetMessage = postProcessor.Process(translatedDocument, languageId).PostProcessedMessage;
                 }
