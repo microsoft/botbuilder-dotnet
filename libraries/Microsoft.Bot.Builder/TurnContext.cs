@@ -49,7 +49,7 @@ namespace Microsoft.Bot.Builder
         /// Gets the services registered on this context object.
         /// </summary>
         /// <value>The services registered on this context object.</value>
-        public TurnContextServiceCollection Services { get; } = new TurnContextServiceCollection();
+        public TurnContextStateCollection TurnState { get; } = new TurnContextStateCollection();
 
         /// <summary>
         /// Gets the activity associated with this turn; or <c>null</c> when processing
@@ -368,7 +368,7 @@ namespace Microsoft.Bot.Builder
         /// </summary>
         public void Dispose()
         {
-            Services.Dispose();
+            TurnState.Dispose();
         }
 
         private async Task<ResourceResponse> UpdateActivityInternalAsync(

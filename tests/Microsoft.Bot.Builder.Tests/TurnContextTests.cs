@@ -59,14 +59,14 @@ namespace Microsoft.Bot.Builder.Tests
         public void GetThrowsOnNullKey()
         {
             var c = new TurnContext(new SimpleAdapter(), new Activity());
-            c.Services.Get<object>(null);
+            c.TurnState.Get<object>(null);
         }
 
         [TestMethod]
         public void GetReturnsNullOnEmptyKey()
         {
             var c = new TurnContext(new SimpleAdapter(), new Activity());
-            var service = c.Services.Get<object>(string.Empty); // empty key
+            var service = c.TurnState.Get<object>(string.Empty); // empty key
             Assert.IsNull(service, "Should not have found a service under an empty key");
         }
 
@@ -74,7 +74,7 @@ namespace Microsoft.Bot.Builder.Tests
         public void GetReturnsNullWithUnknownKey()
         {
             var c = new TurnContext(new SimpleAdapter(), new Activity());
-            var o = c.Services.Get<object>("test");
+            var o = c.TurnState.Get<object>("test");
             Assert.IsNull(o);
         }
 
@@ -83,8 +83,8 @@ namespace Microsoft.Bot.Builder.Tests
         {
             var c = new TurnContext(new SimpleAdapter(), new Activity());
 
-            c.Services.Add("bar", "foo");
-            var result = c.Services.Get<string>("bar");
+            c.TurnState.Add("bar", "foo");
+            var result = c.TurnState.Get<string>("bar");
 
             Assert.AreEqual("foo", result);
         }
@@ -93,8 +93,8 @@ namespace Microsoft.Bot.Builder.Tests
         {
             var c = new TurnContext(new SimpleAdapter(), new Activity());
 
-            c.Services.Add<string>("foo");
-            string result = c.Services.Get<string>();
+            c.TurnState.Add<string>("foo");
+            string result = c.TurnState.Get<string>();
 
             Assert.AreEqual("foo", result);
         }

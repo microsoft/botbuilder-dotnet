@@ -7,30 +7,30 @@ using System.Collections.Generic;
 namespace Microsoft.Bot.Builder
 {
     /// <summary>
-    /// Represents a set of collection of services associated with the <see cref="ITurnContext"/>.
+    /// Values persisted for the lifetime of the turn as part of the <see cref="ITurnContext"/>.
     /// </summary>
     /// <remarks>
-    /// TODO: add more details on what kind of services can/should be stored here, by whom and what the lifetime semantics are, etc.
+    /// TODO: add more details on what kind of values can/should be stored here, by whom and what the lifetime semantics are, etc.
     /// </remarks>
-    public class TurnContextServiceCollection : Dictionary<string, object>, IDisposable
+    public class TurnContextStateCollection : Dictionary<string, object>, IDisposable
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="TurnContextServiceCollection"/> class.
+        /// Initializes a new instance of the <see cref="TurnContextStateCollection"/> class.
         /// </summary>
-        public TurnContextServiceCollection()
+        public TurnContextStateCollection()
         {
         }
 
         /// <summary>
-        /// Gets a service by name from the turn's context.
+        /// Gets a cached value by name from the turn's context.
         /// </summary>
-        /// <typeparam name="TService">The type of the service.</typeparam>
+        /// <typeparam name="T">The type of the service.</typeparam>
         /// <param name="key">The name of the service.</param>
         /// <exception cref="ArgumentNullException"><paramref name="key"/> is null.</exception>
         /// <returns>The service object; or null if no service is registered by the key, or
         /// the retrieved object does not match the service type.</returns>
-        public TService Get<TService>(string key)
-            where TService : class
+        public T Get<T>(string key)
+            where T : class
         {
             if (key == null)
             {
@@ -39,7 +39,7 @@ namespace Microsoft.Bot.Builder
 
             if (TryGetValue(key, out var service))
             {
-                if (service is TService result)
+                if (service is T result)
                 {
                     return result;
                 }
@@ -50,53 +50,53 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
-        /// Gets the default service by type from the turn's context.
+        /// Gets the default value by type from the turn's context.
         /// </summary>
-        /// <typeparam name="TService">The type of the service.</typeparam>
+        /// <typeparam name="T">The type of the service.</typeparam>
         /// <returns>The service object; or null if no default service of the type is registered.</returns>
         /// <remarks>The default service key is the <see cref="Type.FullName"/> of the service type.</remarks>
-        public TService Get<TService>()
-            where TService : class
+        public T Get<T>()
+            where T : class
         {
-            return Get<TService>(typeof(TService).FullName);
+            return Get<T>(typeof(T).FullName);
         }
 
         /// <summary>
-        /// Adds a service to the turn's context.
+        /// Adds a value to the turn's context.
         /// </summary>
-        /// <typeparam name="TService">The type of the service.</typeparam>
+        /// <typeparam name="T">The type of the service.</typeparam>
         /// <param name="key">The name of the service.</param>
-        /// <param name="service">The service object to add.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="key"/> or <paramref name="service"/>
+        /// <param name="value">The value to add.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="key"/> or <paramref name="value"/>
         /// is null.</exception>
-        public void Add<TService>(string key, TService service)
-            where TService : class
+        public void Add<T>(string key, T value)
+            where T : class
         {
             if (key == null)
             {
                 throw new ArgumentNullException(nameof(key));
             }
 
-            if (service == null)
+            if (value == null)
             {
-                throw new ArgumentNullException(nameof(service));
+                throw new ArgumentNullException(nameof(value));
             }
 
             // note this can throw if teh key is already present
-            base.Add(key, service);
+            base.Add(key, value);
         }
 
         /// <summary>
-        /// Adds a service to the turn's context.
+        /// Adds a value to the turn's context.
         /// </summary>
-        /// <typeparam name="TService">The type of the service.</typeparam>
-        /// <param name="service">The service object to add.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="service"/> is null.</exception>
+        /// <typeparam name="T">The type of the service.</typeparam>
+        /// <param name="value">The service object to add.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="value"/> is null.</exception>
         /// <remarks>The default service key is the <see cref="Type.FullName"/> of the service type.</remarks>
-        public void Add<TService>(TService service)
-            where TService : class
+        public void Add<T>(T value)
+            where T : class
         {
-            Add(typeof(TService).FullName, service);
+            Add(typeof(T).FullName, value);
         }
 
         /// <inheritdoc/>
