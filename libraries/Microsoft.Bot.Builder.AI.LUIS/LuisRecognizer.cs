@@ -359,11 +359,11 @@ namespace Microsoft.Bot.Builder.AI.Luis
                 _application.ApplicationId,
                 utterance,
                 timezoneOffset: _options.TimezoneOffset,
-                verbose: _options.Verbose,
+                verbose: _options.IncludeAllIntents,
                 staging: _options.Staging,
                 spellCheck: _options.SpellCheck,
                 bingSpellCheckSubscriptionKey: _options.BingSpellCheckSubscriptionKey,
-                log: _options.Log,
+                log: _options.Log ?? true,
                 cancellationToken: ct).ConfigureAwait(false);
 
             var recognizerResult = new RecognizerResult
