@@ -122,7 +122,7 @@ namespace Microsoft.Bot.Builder
         /// <remarks>Call this method to proactively send a message to a conversation.
         /// Most _channels require a user to initiate a conversation with a bot
         /// before the bot can send activities to the user.</remarks>
-        /// <seealso cref="RunPipelineAsync(ITurnContext, Func{ITurnContext, Task}, CancellationToken)"/>
+        /// <seealso cref="RunPipelineAsync(ITurnContext, BotCallbackHandler, CancellationToken)"/>
         public virtual Task ContinueConversationAsync(string botId, ConversationReference reference, BotCallbackHandler callback, CancellationToken cancellationToken)
         {
             using (var context = new TurnContext(this, reference.GetContinuationActivity()))
@@ -151,8 +151,8 @@ namespace Microsoft.Bot.Builder
         /// methods or the callback method, and the pipeline short circuits.
         /// <para>When the turn is initiated by a user activity (reactive messaging), the
         /// callback method will be a reference to the bot's
-        /// <see cref="IBot.OnTurnAsync(ITurnContext)"/> method. When the turn is
-        /// initiated by a call to <see cref="ContinueConversationAsync(string, ConversationReference, Func{ITurnContext, Task}, CancellationToken)"/>
+        /// <see cref="IBot.OnTurnAsync(ITurnContext, CancellationToken)"/> method. When the turn is
+        /// initiated by a call to <see cref="ContinueConversationAsync(string, ConversationReference, BotCallbackHandler, CancellationToken)"/>
         /// (proactive messaging), the callback method is the callback method that was provided in the call.</para>
         /// </remarks>
         protected async Task RunPipelineAsync(ITurnContext context, BotCallbackHandler callback, CancellationToken cancellationToken)
