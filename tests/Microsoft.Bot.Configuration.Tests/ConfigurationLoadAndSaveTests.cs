@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Microsoft.Bot.Configuration.Encryption;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 
@@ -10,25 +9,33 @@ namespace Microsoft.Bot.Configuration.Tests
     public class ConfingurationLoadAndSaveTests
     {
         [TestMethod]
-        public async Task BasicLoad()
+        public async Task DeserializeBotFile()
         {
             var config = await BotConfiguration.LoadAsync(@"..\..\test.bot");
             Assert.AreEqual("test", config.Name);
             Assert.AreEqual("test description", config.Description);
             Assert.AreEqual("", config.SecretKey);
-            Assert.AreEqual(7, config.Services.Count);
-            foreach(var service in config.Services)
+            Assert.AreEqual(9, config.Services.Count);
+
+            // verify types are right
+            foreach (var service in config.Services)
             {
-                switch(service.Type)
+                switch (service.Type)
                 {
                     case ServiceTypes.AppInsights:
                         Assert.AreEqual(typeof(AppInsightsService), service.GetType());
                         break;
-                    case ServiceTypes.AzureBot:
-                        Assert.AreEqual(typeof(AzureBotService), service.GetType());
+                    case ServiceTypes.Bot:
+                        Assert.AreEqual(typeof(BotService), service.GetType());
                         break;
-                    case ServiceTypes.AzureStorage:
-                        Assert.AreEqual(typeof(AzureStorageService), service.GetType());
+                    case ServiceTypes.BlobStorage:
+                        Assert.AreEqual(typeof(BlobStorageService), service.GetType());
+                        break;
+                    case ServiceTypes.CosmosDB:
+                        Assert.AreEqual(typeof(CosmosDbService), service.GetType());
+                        break;
+                    case ServiceTypes.Generic:
+                        Assert.AreEqual(typeof(GenericService), service.GetType());
                         break;
                     case ServiceTypes.Dispatch:
                         Assert.AreEqual(typeof(DispatchService), service.GetType());
@@ -119,20 +126,34 @@ namespace Microsoft.Bot.Configuration.Tests
 
                 switch (config.Services[i].Type)
                 {
-                    case ServiceTypes.AzureBot:
+                    case ServiceTypes.Bot:
                         break;
 
                     case ServiceTypes.AppInsights:
                         {
                             var appInsights = (AppInsightsService)config2.Services[i];
                             Assert.IsTrue(appInsights.InstrumentationKey.Contains("0000"), "failed to decrypt instrumentationKey");
+                            Assert.AreEqual(appInsights.ApplicationId, "00000000-0000-0000-0000-000000000007", "failed to decrypt applicationId");
+                            Assert.AreEqual(appInsights.ApiKeys["key1"], "testKey1", "failed to decrypt key1");
+                            Assert.AreEqual(appInsights.ApiKeys["key2"], "testKey2", "failed to decrypt key2");
                         }
                         break;
 
-                    case ServiceTypes.AzureStorage:
+                    case ServiceTypes.BlobStorage:
                         {
-                            var azureStorage = (AzureStorageService)config2.Services[i];
-                            Assert.AreEqual("UseDevelopmentStorage=true;", azureStorage.ConnectionString, "failed to decrypt connectionString");
+                            var blobStorage = (BlobStorageService)config2.Services[i];
+                            Assert.AreEqual("UseDevelopmentStorage=true;", blobStorage.ConnectionString, "failed to decrypt connectionString");
+                            Assert.AreEqual("testContainer", blobStorage.Container, "failed to decrypt Container");
+                        }
+                        break;
+
+                    case ServiceTypes.CosmosDB:
+                        {
+                            var cosmosDb = (CosmosDbService)config2.Services[i];
+                            Assert.AreEqual("UseDevelopmentStorage=true;", cosmosDb.ConnectionString, "failed to decrypt connectionString");
+                            Assert.AreEqual("testDatabase", cosmosDb.Database, "failed to decrypt database");
+                            Assert.AreEqual("testCollection", cosmosDb.Collection, "failed to decrypt collection");
+
                         }
                         break;
 
@@ -157,8 +178,8 @@ namespace Microsoft.Bot.Configuration.Tests
                     case ServiceTypes.Luis:
                         {
                             var luis = (LuisService)config2.Services[i];
-                            Assert.IsTrue(luis.AuthoringKey.Contains("0000"), "failed to encrypt authoringkey");
-                            Assert.IsTrue(luis.SubscriptionKey.Contains("0000"), "failed to encrypt subscriptionKey");
+                            Assert.IsTrue(luis.AuthoringKey.Contains("0000"), "failed to decrypt authoringkey");
+                            Assert.IsTrue(luis.SubscriptionKey.Contains("0000"), "failed to decrypt subscriptionKey");
                         }
                         break;
 
@@ -171,6 +192,14 @@ namespace Microsoft.Bot.Configuration.Tests
                         }
                         break;
 
+                    case ServiceTypes.Generic:
+                        {
+                            var generic = (GenericService)config2.Services[i];
+                            Assert.AreEqual(generic.Url, "https://bing.com", "url should not change");
+                            Assert.AreEqual(generic.Configuration["key1"], "testKey1", "failed to decrypt key1");
+                            Assert.AreEqual(generic.Configuration["key2"], "testKey2", "failed to decrypt key2");
+                        }
+                        break;
                     default:
                         throw new ArgumentException($"Unknown service type {config.Services[i].Type}");
                 }
@@ -188,17 +217,30 @@ namespace Microsoft.Bot.Configuration.Tests
                         {
                             var appInsights = (AppInsightsService)config2.Services[i];
                             Assert.IsFalse(appInsights.InstrumentationKey.Contains("0000"), "failed to encrypt instrumentationKey");
+                            Assert.AreEqual(appInsights.ApplicationId, "00000000-0000-0000-0000-000000000007", "should not encrypt applicationId");
+                            Assert.AreNotEqual(appInsights.ApiKeys["key1"], "testKey1", "failed to encrypt key1");
+                            Assert.AreNotEqual(appInsights.ApiKeys["key2"], "testKey2", "failed to encrypt key2");
                         }
                         break;
 
-                    case ServiceTypes.AzureStorage:
+                    case ServiceTypes.BlobStorage:
                         {
-                            var azureStorage = (AzureStorageService)config2.Services[i];
+                            var azureStorage = (BlobStorageService)config2.Services[i];
                             Assert.AreNotEqual("UseDevelopmentStorage=true;", azureStorage.ConnectionString, "failed to encrypt connectionString");
+                            Assert.AreEqual("testContainer", azureStorage.Container, "should not change container");
                         }
                         break;
 
-                    case ServiceTypes.AzureBot:
+                    case ServiceTypes.CosmosDB:
+                        {
+                            var cosmosdb = (CosmosDbService)config2.Services[i];
+                            Assert.AreNotEqual("UseDevelopmentStorage=true;", cosmosdb.ConnectionString, "failed to encrypt connectionString");
+                            Assert.AreEqual("testDatabase", cosmosdb.Database, "should not change database");
+                            Assert.AreEqual("testCollection", cosmosdb.Collection, "should not change collection");
+                        }
+                        break;
+
+                    case ServiceTypes.Bot:
                         Assert.AreEqual(JsonConvert.SerializeObject(config.Services[i]), JsonConvert.SerializeObject(config2.Services[i]));
                         break;
 
@@ -242,7 +284,14 @@ namespace Microsoft.Bot.Configuration.Tests
                             Assert.IsFalse(qna.SubscriptionKey.Contains("0000"), "failed to encrypt SubscriptionKey");
                         }
                         break;
-
+                    case ServiceTypes.Generic:
+                        {
+                            var generic = (GenericService)config2.Services[i];
+                            Assert.AreEqual(generic.Url, "https://bing.com", "url should not change");
+                            Assert.AreNotEqual(generic.Configuration["key1"], "testKey1", "failed to encrypt key1");
+                            Assert.AreNotEqual(generic.Configuration["key2"], "testKey2", "failed to encrypt key2");
+                        }
+                        break;
                     default:
                         throw new ArgumentException($"Unknown service type {config.Services[i].Type}");
                 }

@@ -8,13 +8,13 @@ namespace Microsoft.Bot.Configuration
     using System.Text;
     using Newtonsoft.Json;
 
-    public class AzureBotService : ConnectedService
+    public class AzureService : ConnectedService
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="AzureBotService"/> class.
+        /// Initializes a new instance of the <see cref="AzureService"/> class.
         /// </summary>
-        public AzureBotService()
-            : base(ServiceTypes.AzureBot)
+        public AzureService(string type)
+            : base(type)
         {
         }
 
@@ -25,15 +25,21 @@ namespace Microsoft.Bot.Configuration
         public string TenantId { get; set; }
 
         /// <summary>
-        /// Gets or sets subscriptionId for the bot.
+        /// Gets or sets subscriptionId.
         /// </summary>
         [JsonProperty("subscriptionId")]
         public string SubscriptionId { get; set; }
 
         /// <summary>
-        /// Gets or sets resource group the bot is in.
+        /// Gets or sets resource group.
         /// </summary>
         [JsonProperty("resourceGroup")]
         public string ResourceGroup { get; set; }
+
+        /// <summary>
+        /// Gets or sets ServiceName.
+        /// </summary>
+        [JsonProperty("serviceName")]
+        public string ServiceName { get; set; }
     }
 }
