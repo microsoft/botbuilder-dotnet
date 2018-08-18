@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Builder.Ai.LanguageGeneration.Resolver
             _lgEndpoint = lgEndpoint ?? throw new ArgumentNullException(nameof(lgEndpoint));
             _lgOptions = lgOptions ?? throw new ArgumentNullException(nameof(lgOptions));
             _resolverPipelineFactory = new ResolverPipelineFactory();
-            _resolverPipeline = _resolverPipelineFactory.CreateResolverPipeline();
+            _resolverPipeline = _resolverPipelineFactory.CreateResolverPipeline(_lgEndpoint.EndpointURI);
         }
 
         public async Task ResolveAsync(Activity activity, IDictionary<string, object> entities)

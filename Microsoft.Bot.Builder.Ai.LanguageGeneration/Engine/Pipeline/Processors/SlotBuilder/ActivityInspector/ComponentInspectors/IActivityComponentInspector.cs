@@ -6,7 +6,7 @@ using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.Ai.LanguageGeneration.Engine
 {
-    internal interface IActivityInspector
+    internal interface IActivityComponentInspector
     {
         Task<IList<string>> InspectAsync(Activity activity);
     }

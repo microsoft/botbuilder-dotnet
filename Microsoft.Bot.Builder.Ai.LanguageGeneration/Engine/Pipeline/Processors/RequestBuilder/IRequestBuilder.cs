@@ -7,6 +7,6 @@ namespace Microsoft.Bot.Builder.Ai.LanguageGeneration.Engine
 {
     internal interface IRequestBuilder
     {
-        Task<ICompositeRequest> BuildRequestAsync(IDictionary<string, object> slots);
+        Task<ICompositeRequest> BuildRequestAsync(IList<Slot> slots);
     }
 }

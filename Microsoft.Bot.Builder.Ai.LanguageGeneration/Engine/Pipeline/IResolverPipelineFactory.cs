@@ -6,6 +6,6 @@ namespace Microsoft.Bot.Builder.Ai.LanguageGeneration.Engine
 {
     internal interface IResolverPipelineFactory
     {
-        IResolverPipeline CreateResolverPipeline();
+        IResolverPipeline CreateResolverPipeline(string endpointURI);
     }
 }

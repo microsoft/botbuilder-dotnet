@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Ai.LanguageGeneration.API;
 using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.Ai.LanguageGeneration.Engine
@@ -12,14 +13,17 @@ namespace Microsoft.Bot.Builder.Ai.LanguageGeneration.Engine
         private readonly IRequestBuilder _requestBuilder;
         private readonly IResponseGenerator _responseGenerator;
         private readonly IActivityModifier _activityModifier;
+        private readonly ServiceAgent _serviceAgent;
 
-        public ResolverPipeline(ISlotBuilder slotBuilder, IRequestBuilder requestBuilder, IResponseGenerator responseGenerator, IActivityModifier activityModifier)
+        public ResolverPipeline(ISlotBuilder slotBuilder, IRequestBuilder requestBuilder, IResponseGenerator responseGenerator, IActivityModifier activityModifier, ServiceAgent serviceAgent)
         {
             _slotuilder = slotBuilder ?? throw new ArgumentNullException(nameof(slotBuilder));
             _requestBuilder = requestBuilder ?? throw new ArgumentNullException(nameof(requestBuilder));
             _responseGenerator = responseGenerator ?? throw new ArgumentNullException(nameof(responseGenerator));
             _activityModifier = activityModifier ?? throw new ArgumentNullException(nameof(activityModifier));
+            _serviceAgent = serviceAgent ?? throw new ArgumentNullException(nameof(serviceAgent));
         }
+
         public async Task ExecuteAsync(Activity activity, IDictionary<string, object> entities)
         {
             if (activity == null)
@@ -34,9 +38,8 @@ namespace Microsoft.Bot.Builder.Ai.LanguageGeneration.Engine
 
             var slots = await _slotuilder.BuildSlotsAsync(activity, entities).ConfigureAwait(false);
             var request = await _requestBuilder.BuildRequestAsync(slots).ConfigureAwait(false);
-            var response = await _responseGenerator.GenerateResponseAsync(request).ConfigureAwait(false);
-
-            await _activityModifier.ModifyActivityAsync(response).ConfigureAwait(false);
+            var response = await _responseGenerator.GenerateResponseAsync(request, _serviceAgent).ConfigureAwait(false);
+            await _activityModifier.ModifyActivityAsync(activity, response).ConfigureAwait(false);
         }
     }
 }

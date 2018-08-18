@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
+using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.Ai.LanguageGeneration.Engine
 {
-    internal class ResolverPipelineFactory : IResolverPipelineFactory
+    internal class ActivityTextModifier : IActivityComponentModifier
     {
-        public IResolverPipeline CreateResolverPipeline(string endpointURI)
+        public Task ModifyAsync(Activity activity, ICompositeResponse response)
         {
             throw new NotImplementedException();
         }

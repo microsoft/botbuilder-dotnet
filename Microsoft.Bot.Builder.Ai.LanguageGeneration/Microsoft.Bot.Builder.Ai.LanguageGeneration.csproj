@@ -15,10 +15,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="API\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\libraries\Microsoft.Bot.Schema\Microsoft.Bot.Schema.csproj" />
   </ItemGroup>
 

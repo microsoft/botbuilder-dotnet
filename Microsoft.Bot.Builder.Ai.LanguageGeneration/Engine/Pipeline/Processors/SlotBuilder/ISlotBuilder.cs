@@ -8,6 +8,6 @@ namespace Microsoft.Bot.Builder.Ai.LanguageGeneration.Engine
 {
     internal interface ISlotBuilder
     {
-        Task<IDictionary<string, object>> BuildSlotsAsync(Activity activity, IDictionary<string, object> entities);
+        Task<IList<Slot>> BuildSlotsAsync(Activity activity, IDictionary<string, object> entities);
     }
 }
