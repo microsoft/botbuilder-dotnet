@@ -9,39 +9,27 @@ namespace Microsoft.Bot.Configuration
     using Microsoft.Bot.Configuration.Encryption;
     using Newtonsoft.Json;
 
-    public class AzureStorageService : ConnectedService
+    public class BlobStorageService : AzureService
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="AzureStorageService"/> class.
+        /// Initializes a new instance of the <see cref="BlobStorageService"/> class.
         /// </summary>
-        public AzureStorageService()
-            : base(ServiceTypes.AzureStorage)
+        public BlobStorageService()
+            : base(ServiceTypes.BlobStorage)
         {
         }
-
-        /// <summary>
-        /// Gets or sets tenantId for the service (contoso.onmicrosoft.com).
-        /// </summary>
-        [JsonProperty("tenantId")]
-        public string TenantId { get; set; }
-
-        /// <summary>
-        /// Gets or sets subscriptionId for the service.
-        /// </summary>
-        [JsonProperty("subscriptionId")]
-        public string SubscriptionId { get; set; }
-
-        /// <summary>
-        /// Gets or sets resource group for the service.
-        /// </summary>
-        [JsonProperty("resourceGroup")]
-        public string ResourceGroup { get; set; }
 
         /// <summary>
         /// Gets or sets connection string.
         /// </summary>
         [JsonProperty("connectionString")]
         public string ConnectionString { get; set; }
+
+        /// <summary>
+        /// Gets or sets container.
+        /// </summary>
+        [JsonProperty("container")]
+        public string Container { get; set; }
 
         /// <inheritdoc/>
         public override void Encrypt(string secret)

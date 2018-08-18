@@ -7,8 +7,6 @@ namespace Microsoft.Bot.Configuration
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
-    using System.Security.Cryptography;
-    using System.Text;
     using System.Threading.Tasks;
     using Microsoft.Bot.Configuration.Encryption;
     using Newtonsoft.Json;
@@ -25,6 +23,7 @@ namespace Microsoft.Bot.Configuration
 
         public BotConfiguration()
         {
+            Version = "2.0";
         }
 
         /// <summary>
@@ -44,6 +43,12 @@ namespace Microsoft.Bot.Configuration
         /// </summary>
         [JsonProperty("secretKey")]
         public string SecretKey { get; set; }
+
+        /// <summary>
+        /// Gets the version .
+        /// </summary>
+        [JsonProperty("version")]
+        public string Version { get; set; }
 
         /// <summary>
         /// Gets or sets connected services.
@@ -113,27 +118,27 @@ namespace Microsoft.Bot.Configuration
         {
             if (!string.IsNullOrEmpty(secret))
             {
-                this.ValidateSecretKey(secret);
+                ValidateSecretKey(secret);
             }
 
-            var hasSecret = this.SecretKey?.Length > 0;
+            var hasSecret = SecretKey?.Length > 0;
 
             // make sure that all dispatch serviceIds still match services that are in the bot
-            foreach (var dispatchService in this.Services.Where(s => s.Type == ServiceTypes.Dispatch).Cast<DispatchService>())
+            foreach (var dispatchService in Services.Where(s => s.Type == ServiceTypes.Dispatch).Cast<DispatchService>())
             {
                 dispatchService.ServiceIds = dispatchService.ServiceIds
-                        .Where(serviceId => this.Services.Any(s => s.Id == serviceId))
+                        .Where(serviceId => Services.Any(s => s.Id == serviceId))
                         .ToList();
             }
 
             if (hasSecret)
             {
                 // make sure fields are encrypted before serialization
-                this.Encrypt(secret);
+                Encrypt(secret);
             }
 
             // save it to disk
-            using (var file = File.Open(path ?? this.location, FileMode.Create))
+            using (var file = File.Open(path ?? location, FileMode.Create))
             {
                 using (TextWriter writer = new StreamWriter(file))
                 {
@@ -144,13 +149,13 @@ namespace Microsoft.Bot.Configuration
             if (hasSecret)
             {
                 // make sure all in memory fields are decrypted again for continued operations
-                this.Decrypt(secret);
+                Decrypt(secret);
             }
         }
 
         public void ClearSecret()
         {
-            this.SecretKey = string.Empty;
+            SecretKey = string.Empty;
         }
 
         /// <summary>
@@ -165,26 +170,12 @@ namespace Microsoft.Bot.Configuration
             }
             else
             {
-                // give unique name
-                var nameCount = 1;
-                var name = newService.Name;
-
-                while (true)
+                // assign a unique random id between 0-255 (255 services seems like a LOT of services
+                Random rnd = new Random();
+                do
                 {
-                    if (nameCount > 1)
-                    {
-                        name = $"{newService.Name} ({nameCount})";
-                    }
-
-                    if (!this.Services.Where(s => s.Name == name).Any())
-                    {
-                        break;
-                    }
-
-                    nameCount++;
-                }
-
-                newService.Name = name;
+                    newService.Id = rnd.Next(byte.MaxValue).ToString("x");
+                } while (this.Services.Where(s => s.Id == newService.Id).Any());
 
                 this.Services.Add(newService);
             }
@@ -193,11 +184,12 @@ namespace Microsoft.Bot.Configuration
         /// <summary>
         /// encrypt all values in the in memory config
         /// </summary>
+        /// <param name="secret">secret to encrypt</param>
         public void Encrypt(string secret)
         {
-            this.ValidateSecretKey(secret);
+            ValidateSecretKey(secret);
 
-            foreach (var service in this.Services)
+            foreach (var service in Services)
             {
                 service.Encrypt(secret);
             }
@@ -206,24 +198,67 @@ namespace Microsoft.Bot.Configuration
         /// <summary>
         /// decrypt all values in the in memory config.
         /// </summary>
+        /// <param name="secret">secret to encrypt</param>
         public void Decrypt(string secret)
         {
-            this.ValidateSecretKey(secret);
+            ValidateSecretKey(secret);
 
-            foreach (var service in this.Services)
+            foreach (var service in Services)
             {
                 service.Decrypt(secret);
             }
         }
 
         /// <summary>
-        /// remove service by name or id
+        /// find service by name or id.
         /// </summary>
-        /// <param name="nameOrId"></param>
-        /// <returns></returns>
+        /// <param name="nameOrId">name or service id</param>
+        /// <returns>found service</returns>
+        public ConnectedService FindServiceByNameOrId(string nameOrId)
+        {
+            var svs = new List<ConnectedService>(Services);
+
+            for (var i = 0; i < svs.Count(); i++)
+            {
+                var service = svs.ElementAt(i);
+                if (service.Id == nameOrId || service.Name == nameOrId)
+                {
+                    return service;
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// find a service by id.
+        /// </summary>
+        /// <param name="id">id of the service</param>
+        /// <returns>service</returns>
+        public ConnectedService FindService(string id)
+        {
+            var svs = new List<ConnectedService>(Services);
+
+            for (var i = 0; i < svs.Count(); i++)
+            {
+                var service = svs.ElementAt(i);
+                if (service.Id == id)
+                {
+                    return service;
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// remove service by name or id.
+        /// </summary>
+        /// <param name="nameOrId">name or service id</param>
+        /// <returns>found service</returns>
         public ConnectedService DisconnectServiceByNameOrId(string nameOrId)
         {
-            var svs = new List<ConnectedService>(this.Services);
+            var svs = new List<ConnectedService>(Services);
 
             for (var i = 0; i < svs.Count(); i++)
             {
@@ -231,7 +266,7 @@ namespace Microsoft.Bot.Configuration
                 if (service.Id == nameOrId || service.Name == nameOrId)
                 {
                     svs.RemoveAt(i);
-                    this.Services = svs.ToList();
+                    Services = svs.ToList();
                     return service;
                 }
             }
@@ -240,21 +275,20 @@ namespace Microsoft.Bot.Configuration
         }
 
         /// <summary>
-        /// remove a service by type and id
+        /// remove a service by id.
         /// </summary>
-        /// <param name="type"></param>
-        /// <param name="id"></param>
-        public void DisconnectService(string type, string id)
+        /// <param name="id">id of the service</param>
+        public void DisconnectService(string id)
         {
-            var svs = new List<ConnectedService>(this.Services);
+            var svs = new List<ConnectedService>(Services);
 
             for (var i = 0; i < svs.Count(); i++)
             {
                 var service = svs.ElementAt(i);
-                if (service.Type == type && service.Id == id)
+                if (service.Id == id)
                 {
                     svs.RemoveAt(i);
-                    this.Services = svs.ToList();
+                    Services = svs.ToList();
                     return;
                 }
             }
@@ -263,7 +297,7 @@ namespace Microsoft.Bot.Configuration
         /// <summary>
         ///  make sure secret is correct by decrypting the secretKey with it
         /// </summary>
-        /// <param name="secret"></param>
+        /// <param name="secret">secret to use</param>
         protected void ValidateSecretKey(string secret)
         {
             if (secret?.Length == null)
@@ -273,15 +307,15 @@ namespace Microsoft.Bot.Configuration
 
             try
             {
-                if (this.SecretKey?.Length == 0)
+                if (SecretKey?.Length == 0)
                 {
                     // if no key, create a guid and enrypt that to use as secret validator
-                    this.SecretKey = Guid.NewGuid().ToString("n").Encrypt(secret);
+                    SecretKey = Guid.NewGuid().ToString("n").Encrypt(secret);
                 }
                 else
                 {
                     // this will throw exception if invalid secret
-                    this.SecretKey.Decrypt(secret);
+                    SecretKey.Decrypt(secret);
                 }
             }
             catch
@@ -291,7 +325,7 @@ namespace Microsoft.Bot.Configuration
         }
 
         /// <summary>
-        /// return strong typed connected service objects
+        /// return strong typed connected service objects.
         /// </summary>
         internal class BotConfigConverter : JsonConverter
         {
@@ -300,6 +334,7 @@ namespace Microsoft.Bot.Configuration
                 return typeof(ConnectedService).IsAssignableFrom(objectType);
             }
 
+            /// <inheritdoc/>
             public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
             {
                 // Load JObject from stream
@@ -307,12 +342,14 @@ namespace Microsoft.Bot.Configuration
 
                 switch ((string)jObject["type"])
                 {
-                    case ServiceTypes.AzureBot:
-                        return jObject.ToObject<AzureBotService>();
+                    case ServiceTypes.Bot:
+                        return jObject.ToObject<BotService>();
                     case ServiceTypes.AppInsights:
                         return jObject.ToObject<AppInsightsService>();
-                    case ServiceTypes.AzureStorage:
-                        return jObject.ToObject<AzureStorageService>();
+                    case ServiceTypes.BlobStorage:
+                        return jObject.ToObject<BlobStorageService>();
+                    case ServiceTypes.CosmosDB:
+                        return jObject.ToObject<CosmosDbService>();
                     case ServiceTypes.Dispatch:
                         return jObject.ToObject<DispatchService>();
                     case ServiceTypes.Endpoint:
@@ -323,6 +360,8 @@ namespace Microsoft.Bot.Configuration
                         return jObject.ToObject<LuisService>();
                     case ServiceTypes.QnA:
                         return jObject.ToObject<QnAMakerService>();
+                    case ServiceTypes.Generic:
+                        return jObject.ToObject<GenericService>();
                     default:
                         throw new Exception($"Unknown service type {(string)jObject["type"]}");
                 }

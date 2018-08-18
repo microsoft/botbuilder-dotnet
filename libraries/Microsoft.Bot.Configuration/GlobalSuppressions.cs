@@ -10,3 +10,7 @@
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.ReadabilityRules", "SA1121:Use built-in type alias", Justification = "annoying", Scope = "member", Target = "~M:Microsoft.Bot.Configuration.Encryption.EncryptUtilities.Decrypt(System.String,System.String,System.String)~System.String")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1633:File should have header", Justification = "annoying", Scope = "namespace", Target = "~N:Microsoft.Bot.Configuration")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1633:File should have header", Justification = "annoying", Scope = "namespace", Target = "~N:Microsoft.Bot.Configuration.Encryption")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0003:Remove qualification", Justification = "annoying", Scope = "member", Target = "~M:Microsoft.Bot.Configuration.AppInsightsService.Decrypt(System.String)")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0003:Remove qualification", Justification = "annoying", Scope = "member", Target = "~M:Microsoft.Bot.Configuration.AppInsightsService.Encrypt(System.String)")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0003:Remove qualification", Justification = "annoying", Scope = "member", Target = "~M:Microsoft.Bot.Configuration.BotConfiguration.ConnectService(Microsoft.Bot.Configuration.ConnectedService)")]
+
