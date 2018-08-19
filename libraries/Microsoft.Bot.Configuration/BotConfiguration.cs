@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Configuration
 
         public BotConfiguration()
         {
-            Version = "2.0";
+            this.Version = "2.0";
         }
 
         /// <summary>
@@ -110,35 +110,45 @@ namespace Microsoft.Bot.Configuration
         }
 
         /// <summary>
+        /// Save the file with secret
+        /// </summary>
+        /// <param name="secret">secret for encryption</param>
+        /// <returns>task</returns>
+        public Task SaveAsync(string secret = null)
+        {
+            return this.SaveAsAsync(this.location, secret);
+        }
+
+        /// <summary>
         /// Save the configuration to a .bot file.
         /// </summary>
         /// <param name="path">path to bot file</param>
         /// <param name="secret">secret for encrypting the file keys.</param>
-        public async Task SaveAsync(string path = null, string secret = null)
+        public async Task SaveAsAsync(string path, string secret = null)
         {
             if (!string.IsNullOrEmpty(secret))
             {
-                ValidateSecretKey(secret);
+                this.ValidateSecretKey(secret);
             }
 
-            var hasSecret = SecretKey?.Length > 0;
+            var hasSecret = this.SecretKey?.Length > 0;
 
             // make sure that all dispatch serviceIds still match services that are in the bot
-            foreach (var dispatchService in Services.Where(s => s.Type == ServiceTypes.Dispatch).Cast<DispatchService>())
+            foreach (var dispatchService in this.Services.Where(s => s.Type == ServiceTypes.Dispatch).Cast<DispatchService>())
             {
                 dispatchService.ServiceIds = dispatchService.ServiceIds
-                        .Where(serviceId => Services.Any(s => s.Id == serviceId))
+                        .Where(serviceId => this.Services.Any(s => s.Id == serviceId))
                         .ToList();
             }
 
             if (hasSecret)
             {
                 // make sure fields are encrypted before serialization
-                Encrypt(secret);
+                this.Encrypt(secret);
             }
 
             // save it to disk
-            using (var file = File.Open(path ?? location, FileMode.Create))
+            using (var file = File.Open(path ?? this.location, FileMode.Create))
             {
                 using (TextWriter writer = new StreamWriter(file))
                 {
@@ -149,13 +159,13 @@ namespace Microsoft.Bot.Configuration
             if (hasSecret)
             {
                 // make sure all in memory fields are decrypted again for continued operations
-                Decrypt(secret);
+                this.Decrypt(secret);
             }
         }
 
         public void ClearSecret()
         {
-            SecretKey = string.Empty;
+            this.SecretKey = string.Empty;
         }
 
         /// <summary>
@@ -174,8 +184,9 @@ namespace Microsoft.Bot.Configuration
                 Random rnd = new Random();
                 do
                 {
-                    newService.Id = rnd.Next(byte.MaxValue).ToString("x");
-                } while (this.Services.Where(s => s.Id == newService.Id).Any());
+                    newService.Id = rnd.Next(byte.MaxValue).ToString();
+                }
+                while (this.Services.Where(s => s.Id == newService.Id).Any());
 
                 this.Services.Add(newService);
             }
@@ -187,9 +198,9 @@ namespace Microsoft.Bot.Configuration
         /// <param name="secret">secret to encrypt</param>
         public void Encrypt(string secret)
         {
-            ValidateSecretKey(secret);
+            this.ValidateSecretKey(secret);
 
-            foreach (var service in Services)
+            foreach (var service in this.Services)
             {
                 service.Encrypt(secret);
             }
@@ -201,9 +212,9 @@ namespace Microsoft.Bot.Configuration
         /// <param name="secret">secret to encrypt</param>
         public void Decrypt(string secret)
         {
-            ValidateSecretKey(secret);
+            this.ValidateSecretKey(secret);
 
-            foreach (var service in Services)
+            foreach (var service in this.Services)
             {
                 service.Decrypt(secret);
             }
@@ -216,7 +227,7 @@ namespace Microsoft.Bot.Configuration
         /// <returns>found service</returns>
         public ConnectedService FindServiceByNameOrId(string nameOrId)
         {
-            var svs = new List<ConnectedService>(Services);
+            var svs = new List<ConnectedService>(this.Services);
 
             for (var i = 0; i < svs.Count(); i++)
             {
@@ -237,7 +248,7 @@ namespace Microsoft.Bot.Configuration
         /// <returns>service</returns>
         public ConnectedService FindService(string id)
         {
-            var svs = new List<ConnectedService>(Services);
+            var svs = new List<ConnectedService>(this.Services);
 
             for (var i = 0; i < svs.Count(); i++)
             {
@@ -258,7 +269,7 @@ namespace Microsoft.Bot.Configuration
         /// <returns>found service</returns>
         public ConnectedService DisconnectServiceByNameOrId(string nameOrId)
         {
-            var svs = new List<ConnectedService>(Services);
+            var svs = new List<ConnectedService>(this.Services);
 
             for (var i = 0; i < svs.Count(); i++)
             {
@@ -266,7 +277,7 @@ namespace Microsoft.Bot.Configuration
                 if (service.Id == nameOrId || service.Name == nameOrId)
                 {
                     svs.RemoveAt(i);
-                    Services = svs.ToList();
+                    this.Services = svs.ToList();
                     return service;
                 }
             }
@@ -280,7 +291,7 @@ namespace Microsoft.Bot.Configuration
         /// <param name="id">id of the service</param>
         public void DisconnectService(string id)
         {
-            var svs = new List<ConnectedService>(Services);
+            var svs = new List<ConnectedService>(this.Services);
 
             for (var i = 0; i < svs.Count(); i++)
             {
@@ -288,7 +299,7 @@ namespace Microsoft.Bot.Configuration
                 if (service.Id == id)
                 {
                     svs.RemoveAt(i);
-                    Services = svs.ToList();
+                    this.Services = svs.ToList();
                     return;
                 }
             }
@@ -307,15 +318,15 @@ namespace Microsoft.Bot.Configuration
 
             try
             {
-                if (SecretKey?.Length == 0)
+                if (this.SecretKey?.Length == 0)
                 {
                     // if no key, create a guid and enrypt that to use as secret validator
-                    SecretKey = Guid.NewGuid().ToString("n").Encrypt(secret);
+                    this.SecretKey = Guid.NewGuid().ToString("n").Encrypt(secret);
                 }
                 else
                 {
                     // this will throw exception if invalid secret
-                    SecretKey.Decrypt(secret);
+                    this.SecretKey.Decrypt(secret);
                 }
             }
             catch

@@ -63,7 +63,7 @@ namespace Microsoft.Bot.Configuration.Tests
         public async Task LoadAndSaveUnencryptedBotFile()
         {
             var config = await BotConfiguration.LoadAsync(@"..\..\test.bot");
-            await config.SaveAsync("save.bot");
+            await config.SaveAsAsync("save.bot");
 
             var config2 = await BotConfiguration.LoadAsync(@"..\..\test.bot");
             Assert.AreEqual(JsonConvert.SerializeObject(config2), JsonConvert.SerializeObject(config), "saved should be the same");
@@ -74,7 +74,7 @@ namespace Microsoft.Bot.Configuration.Tests
         {
             string secret = BotConfiguration.GenerateKey();
             var config = await BotConfiguration.LoadAsync(@"..\..\test.bot");
-            await config.SaveAsync("save.bot", secret);
+            await config.SaveAsAsync("save.bot", secret);
 
             try
             {
@@ -89,17 +89,17 @@ namespace Microsoft.Bot.Configuration.Tests
         {
             string secret = BotConfiguration.GenerateKey();
             var config = await BotConfiguration.LoadAsync(@"..\..\test.bot");
-            await config.SaveAsync("save.bot", secret);
+            await config.SaveAsAsync("save.bot", secret);
 
             var config2 = await BotConfiguration.LoadAsync(@"save.bot", secret);
             try
             {
-                await config2.SaveAsync("save.bot");
+                await config2.SaveAsAsync("save.bot");
                 Assert.Fail("Save() should have thrown due to no secret");
             }
             catch { }
             config2.ClearSecret();
-            await config2.SaveAsync("save.bot", secret);
+            await config2.SaveAsAsync("save.bot", secret);
         }
 
 
@@ -111,7 +111,7 @@ namespace Microsoft.Bot.Configuration.Tests
             Assert.AreEqual("", config.SecretKey, "There should be no secretKey");
 
             // save with secret
-            await config.SaveAsync("savesecret.bot", secret);
+            await config.SaveAsAsync("savesecret.bot", secret);
             Assert.IsTrue(config.SecretKey?.Length > 0, "There should be a secretKey");
 
             // load with secret
