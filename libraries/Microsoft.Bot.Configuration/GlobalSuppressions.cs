@@ -13,4 +13,3 @@
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0003:Remove qualification", Justification = "annoying", Scope = "member", Target = "~M:Microsoft.Bot.Configuration.AppInsightsService.Decrypt(System.String)")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0003:Remove qualification", Justification = "annoying", Scope = "member", Target = "~M:Microsoft.Bot.Configuration.AppInsightsService.Encrypt(System.String)")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0003:Remove qualification", Justification = "annoying", Scope = "member", Target = "~M:Microsoft.Bot.Configuration.BotConfiguration.ConnectService(Microsoft.Bot.Configuration.ConnectedService)")]
-
