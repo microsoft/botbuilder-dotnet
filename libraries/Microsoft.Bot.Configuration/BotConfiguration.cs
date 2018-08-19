@@ -66,7 +66,7 @@ namespace Microsoft.Bot.Configuration
         }
 
         /// <summary>
-        /// Load the bot configuration by looking in a folder and finding the first .bot file in the folder.
+        /// Load the bot configuration by looking in a folder and ing the first .bot file in the folder.
         /// </summary>
         /// <param name="folder">folder to look for bot files</param>
         /// <param name="secret">secret to use to encrypt keys</param>
@@ -150,9 +150,9 @@ namespace Microsoft.Bot.Configuration
             // save it to disk
             using (var file = File.Open(path ?? this.location, FileMode.Create))
             {
-                using (TextWriter writer = new StreamWriter(file))
+                using (var textWriter = new StreamWriter(file))
                 {
-                    await writer.WriteLineAsync(JsonConvert.SerializeObject(this, Formatting.Indented)).ConfigureAwait(false);
+                    await textWriter.WriteLineAsync(JsonConvert.SerializeObject(this, Formatting.Indented)).ConfigureAwait(false);
                 }
             }
 
@@ -181,7 +181,7 @@ namespace Microsoft.Bot.Configuration
             else
             {
                 // assign a unique random id between 0-255 (255 services seems like a LOT of services
-                Random rnd = new Random();
+                var rnd = new Random();
                 do
                 {
                     newService.Id = rnd.Next(byte.MaxValue).ToString();
@@ -227,18 +227,7 @@ namespace Microsoft.Bot.Configuration
         /// <returns>found service</returns>
         public ConnectedService FindServiceByNameOrId(string nameOrId)
         {
-            var svs = new List<ConnectedService>(this.Services);
-
-            for (var i = 0; i < svs.Count(); i++)
-            {
-                var service = svs.ElementAt(i);
-                if (service.Id == nameOrId || service.Name == nameOrId)
-                {
-                    return service;
-                }
-            }
-
-            return null;
+            return this.Services.FirstOrDefault(s => s.Id == nameOrId || s.Name == nameOrId);
         }
 
         /// <summary>
@@ -248,18 +237,7 @@ namespace Microsoft.Bot.Configuration
         /// <returns>service</returns>
         public ConnectedService FindService(string id)
         {
-            var svs = new List<ConnectedService>(this.Services);
-
-            for (var i = 0; i < svs.Count(); i++)
-            {
-                var service = svs.ElementAt(i);
-                if (service.Id == id)
-                {
-                    return service;
-                }
-            }
-
-            return null;
+            return this.Services.FirstOrDefault(s => s.Id == id);
         }
 
         /// <summary>
@@ -269,20 +247,14 @@ namespace Microsoft.Bot.Configuration
         /// <returns>found service</returns>
         public ConnectedService DisconnectServiceByNameOrId(string nameOrId)
         {
-            var svs = new List<ConnectedService>(this.Services);
-
-            for (var i = 0; i < svs.Count(); i++)
+            var service = this.FindServiceByNameOrId(nameOrId);
+            if (service == null)
             {
-                var service = svs.ElementAt(i);
-                if (service.Id == nameOrId || service.Name == nameOrId)
-                {
-                    svs.RemoveAt(i);
-                    this.Services = svs.ToList();
-                    return service;
-                }
+                throw new Exception($"a service with id or name of[{nameOrId}] was not found");
             }
 
-            throw new Exception($"a service with id or name of[{nameOrId}] was not found");
+            this.Services.Remove(service);
+            return service;
         }
 
         /// <summary>
@@ -291,17 +263,10 @@ namespace Microsoft.Bot.Configuration
         /// <param name="id">id of the service</param>
         public void DisconnectService(string id)
         {
-            var svs = new List<ConnectedService>(this.Services);
-
-            for (var i = 0; i < svs.Count(); i++)
+            var service = this.FindService(id);
+            if (service != null)
             {
-                var service = svs.ElementAt(i);
-                if (service.Id == id)
-                {
-                    svs.RemoveAt(i);
-                    this.Services = svs.ToList();
-                    return;
-                }
+                this.Services.Remove(service);
             }
         }
 
@@ -349,7 +314,7 @@ namespace Microsoft.Bot.Configuration
             public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
             {
                 // Load JObject from stream
-                JObject jObject = JObject.Load(reader);
+                var jObject = JObject.Load(reader);
 
                 switch ((string)jObject["type"])
                 {
