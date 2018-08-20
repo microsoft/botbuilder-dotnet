@@ -22,20 +22,31 @@ namespace Microsoft.Bot.Builder.TestBot
         {
             if (turnContext.Activity.Type == ActivityTypes.Message)
             {
-                // create the DialogSet 
+                // using store accessors to get dialog state
                 await _accessors.ConversationDialogState.GetAsync(turnContext, () => new DialogState());
+
+                // create the DialogSet from current dialog state
                 var dialogs = new DialogSet(_accessors.ConversationDialogState);
 
+                // each OnTurn potantially represent a new instanse of the bot, thus we need to recreate the set
+                // deifne dialogs and related 
                 dialogs.Add(CreateWaterfall());
                 dialogs.Add(new NumberPrompt<int>("number", defaultLocale: Culture.English));
 
-                // run the DialogSet
+                // run the DialogSet - let the framework identify the current state of the dialog from 
+                // the dialog stack and figure out what (if any) is the active dialog
                 var dc = await dialogs.CreateContextAsync(turnContext);
-
                 var results = await dc.ContinueAsync();
-                if (!turnContext.Responded && !results.HasActive && !results.HasResult)
+
+                // HasActive = true if there is an active dialog on the dialogstack
+                // HasResults = true if the dialog just completed and the final  result can be retrived
+                // if both are false this indicates a new dialog needs to start
+                if( !results.HasActive && !results.HasResult)
                 {
                     await dc.BeginAsync("test-waterfall");
+
+                    // DO NOT start another dialog 
+                    //await dc.BeginAsync("test-waterfall1");
                 }
                 else if (!results.HasActive && results.HasResult)
                 {
@@ -53,12 +64,15 @@ namespace Microsoft.Bot.Builder.TestBot
             });
         }
 
+
         private static async Task<DialogTurnResult> WaterfallStep1(DialogContext dc, WaterfallStepContext stepContext)
         {
+            // this prompt will not continue until we receive a number
             return await dc.PromptAsync("number", new PromptOptions { Prompt = MessageFactory.Text("Enter a number.") });
         }
         private static async Task<DialogTurnResult> WaterfallStep2(DialogContext dc, WaterfallStepContext stepContext)
         {
+            // step context represents values from previous (waterfall) step - in this case the first number
             if (stepContext.Values != null)
             {
                 var numberResult = (int)stepContext.Result;
