@@ -11,39 +11,33 @@ namespace Microsoft.Bot.Builder.TestBot
 {
     public class TestBot : IBot
     {
-        private TestBotAccessors _accessors;
+        private DialogSet _dialogs;
 
         public TestBot(TestBotAccessors accessors)
         {
-            _accessors = accessors;
+            // create the DialogSet from accessor
+            _dialogs = new DialogSet(accessors.ConversationDialogState);
+
+            // add the various named dialogs that can be used
+            _dialogs.Add(CreateWaterfall());
+            _dialogs.Add(new NumberPrompt<int>("number", defaultLocale: Culture.English));
         }
 
         public async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (turnContext.Activity.Type == ActivityTypes.Message)
             {
-                // using store accessors to get dialog state
-                await _accessors.ConversationDialogState.GetAsync(turnContext, () => new DialogState());
-
-                // create the DialogSet from current dialog state
-                var dialogs = new DialogSet(_accessors.ConversationDialogState);
-
-                // each OnTurn potantially represent a new instanse of the bot, thus we need to recreate the set
-                // deifne dialogs and related 
-                dialogs.Add(CreateWaterfall());
-                dialogs.Add(new NumberPrompt<int>("number", defaultLocale: Culture.English));
-
                 // run the DialogSet - let the framework identify the current state of the dialog from 
                 // the dialog stack and figure out what (if any) is the active dialog
-                var dc = await dialogs.CreateContextAsync(turnContext);
-                var results = await dc.ContinueAsync();
+                var dialogContext = await _dialogs.CreateContextAsync(turnContext);
+                var results = await dialogContext.ContinueAsync();
 
                 // HasActive = true if there is an active dialog on the dialogstack
                 // HasResults = true if the dialog just completed and the final  result can be retrived
                 // if both are false this indicates a new dialog needs to start
-                if( !results.HasActive && !results.HasResult)
+                if(!turnContext.Responded && !results.HasActive && !results.HasResult)
                 {
-                    await dc.BeginAsync("test-waterfall");
+                    await dialogContext.BeginAsync("test-waterfall");
 
                     // DO NOT start another dialog 
                     //await dc.BeginAsync("test-waterfall1");
