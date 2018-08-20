@@ -7,8 +7,6 @@ namespace Microsoft.Bot.Configuration
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
-    using System.Security.Cryptography;
-    using System.Text;
     using System.Threading.Tasks;
     using Microsoft.Bot.Configuration.Encryption;
     using Newtonsoft.Json;
@@ -25,6 +23,7 @@ namespace Microsoft.Bot.Configuration
 
         public BotConfiguration()
         {
+            this.Version = "2.0";
         }
 
         /// <summary>
@@ -46,6 +45,12 @@ namespace Microsoft.Bot.Configuration
         public string SecretKey { get; set; }
 
         /// <summary>
+        /// Gets the version .
+        /// </summary>
+        [JsonProperty("version")]
+        public string Version { get; set; }
+
+        /// <summary>
         /// Gets or sets connected services.
         /// </summary>
         [JsonProperty("services")]
@@ -61,7 +66,7 @@ namespace Microsoft.Bot.Configuration
         }
 
         /// <summary>
-        /// Load the bot configuration by looking in a folder and finding the first .bot file in the folder.
+        /// Load the bot configuration by looking in a folder and ing the first .bot file in the folder.
         /// </summary>
         /// <param name="folder">folder to look for bot files</param>
         /// <param name="secret">secret to use to encrypt keys</param>
@@ -105,11 +110,21 @@ namespace Microsoft.Bot.Configuration
         }
 
         /// <summary>
+        /// Save the file with secret
+        /// </summary>
+        /// <param name="secret">secret for encryption</param>
+        /// <returns>task</returns>
+        public Task SaveAsync(string secret = null)
+        {
+            return this.SaveAsAsync(this.location, secret);
+        }
+
+        /// <summary>
         /// Save the configuration to a .bot file.
         /// </summary>
         /// <param name="path">path to bot file</param>
         /// <param name="secret">secret for encrypting the file keys.</param>
-        public async Task SaveAsync(string path = null, string secret = null)
+        public async Task SaveAsAsync(string path, string secret = null)
         {
             if (!string.IsNullOrEmpty(secret))
             {
@@ -135,9 +150,9 @@ namespace Microsoft.Bot.Configuration
             // save it to disk
             using (var file = File.Open(path ?? this.location, FileMode.Create))
             {
-                using (TextWriter writer = new StreamWriter(file))
+                using (var textWriter = new StreamWriter(file))
                 {
-                    await writer.WriteLineAsync(JsonConvert.SerializeObject(this, Formatting.Indented)).ConfigureAwait(false);
+                    await textWriter.WriteLineAsync(JsonConvert.SerializeObject(this, Formatting.Indented)).ConfigureAwait(false);
                 }
             }
 
@@ -165,26 +180,13 @@ namespace Microsoft.Bot.Configuration
             }
             else
             {
-                // give unique name
-                var nameCount = 1;
-                var name = newService.Name;
-
-                while (true)
+                // assign a unique random id between 0-255 (255 services seems like a LOT of services
+                var rnd = new Random();
+                do
                 {
-                    if (nameCount > 1)
-                    {
-                        name = $"{newService.Name} ({nameCount})";
-                    }
-
-                    if (!this.Services.Where(s => s.Name == name).Any())
-                    {
-                        break;
-                    }
-
-                    nameCount++;
+                    newService.Id = rnd.Next(byte.MaxValue).ToString();
                 }
-
-                newService.Name = name;
+                while (this.Services.Where(s => s.Id == newService.Id).Any());
 
                 this.Services.Add(newService);
             }
@@ -193,6 +195,7 @@ namespace Microsoft.Bot.Configuration
         /// <summary>
         /// encrypt all values in the in memory config
         /// </summary>
+        /// <param name="secret">secret to encrypt</param>
         public void Encrypt(string secret)
         {
             this.ValidateSecretKey(secret);
@@ -206,6 +209,7 @@ namespace Microsoft.Bot.Configuration
         /// <summary>
         /// decrypt all values in the in memory config.
         /// </summary>
+        /// <param name="secret">secret to encrypt</param>
         public void Decrypt(string secret)
         {
             this.ValidateSecretKey(secret);
@@ -217,53 +221,59 @@ namespace Microsoft.Bot.Configuration
         }
 
         /// <summary>
-        /// remove service by name or id
+        /// find service by name or id.
         /// </summary>
-        /// <param name="nameOrId"></param>
-        /// <returns></returns>
-        public ConnectedService DisconnectServiceByNameOrId(string nameOrId)
+        /// <param name="nameOrId">name or service id</param>
+        /// <returns>found service</returns>
+        public ConnectedService FindServiceByNameOrId(string nameOrId)
         {
-            var svs = new List<ConnectedService>(this.Services);
-
-            for (var i = 0; i < svs.Count(); i++)
-            {
-                var service = svs.ElementAt(i);
-                if (service.Id == nameOrId || service.Name == nameOrId)
-                {
-                    svs.RemoveAt(i);
-                    this.Services = svs.ToList();
-                    return service;
-                }
-            }
-
-            throw new Exception($"a service with id or name of[{nameOrId}] was not found");
+            return this.Services.FirstOrDefault(s => s.Id == nameOrId || s.Name == nameOrId);
         }
 
         /// <summary>
-        /// remove a service by type and id
+        /// find a service by id.
         /// </summary>
-        /// <param name="type"></param>
-        /// <param name="id"></param>
-        public void DisconnectService(string type, string id)
+        /// <param name="id">id of the service</param>
+        /// <returns>service</returns>
+        public ConnectedService FindService(string id)
         {
-            var svs = new List<ConnectedService>(this.Services);
+            return this.Services.FirstOrDefault(s => s.Id == id);
+        }
 
-            for (var i = 0; i < svs.Count(); i++)
+        /// <summary>
+        /// remove service by name or id.
+        /// </summary>
+        /// <param name="nameOrId">name or service id</param>
+        /// <returns>found service</returns>
+        public ConnectedService DisconnectServiceByNameOrId(string nameOrId)
+        {
+            var service = this.FindServiceByNameOrId(nameOrId);
+            if (service == null)
             {
-                var service = svs.ElementAt(i);
-                if (service.Type == type && service.Id == id)
-                {
-                    svs.RemoveAt(i);
-                    this.Services = svs.ToList();
-                    return;
-                }
+                throw new Exception($"a service with id or name of[{nameOrId}] was not found");
+            }
+
+            this.Services.Remove(service);
+            return service;
+        }
+
+        /// <summary>
+        /// remove a service by id.
+        /// </summary>
+        /// <param name="id">id of the service</param>
+        public void DisconnectService(string id)
+        {
+            var service = this.FindService(id);
+            if (service != null)
+            {
+                this.Services.Remove(service);
             }
         }
 
         /// <summary>
         ///  make sure secret is correct by decrypting the secretKey with it
         /// </summary>
-        /// <param name="secret"></param>
+        /// <param name="secret">secret to use</param>
         protected void ValidateSecretKey(string secret)
         {
             if (secret?.Length == null)
@@ -291,7 +301,7 @@ namespace Microsoft.Bot.Configuration
         }
 
         /// <summary>
-        /// return strong typed connected service objects
+        /// return strong typed connected service objects.
         /// </summary>
         internal class BotConfigConverter : JsonConverter
         {
@@ -300,19 +310,22 @@ namespace Microsoft.Bot.Configuration
                 return typeof(ConnectedService).IsAssignableFrom(objectType);
             }
 
+            /// <inheritdoc/>
             public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
             {
                 // Load JObject from stream
-                JObject jObject = JObject.Load(reader);
+                var jObject = JObject.Load(reader);
 
                 switch ((string)jObject["type"])
                 {
-                    case ServiceTypes.AzureBot:
-                        return jObject.ToObject<AzureBotService>();
+                    case ServiceTypes.Bot:
+                        return jObject.ToObject<BotService>();
                     case ServiceTypes.AppInsights:
                         return jObject.ToObject<AppInsightsService>();
-                    case ServiceTypes.AzureStorage:
-                        return jObject.ToObject<AzureStorageService>();
+                    case ServiceTypes.BlobStorage:
+                        return jObject.ToObject<BlobStorageService>();
+                    case ServiceTypes.CosmosDB:
+                        return jObject.ToObject<CosmosDbService>();
                     case ServiceTypes.Dispatch:
                         return jObject.ToObject<DispatchService>();
                     case ServiceTypes.Endpoint:
@@ -323,6 +336,8 @@ namespace Microsoft.Bot.Configuration
                         return jObject.ToObject<LuisService>();
                     case ServiceTypes.QnA:
                         return jObject.ToObject<QnAMakerService>();
+                    case ServiceTypes.Generic:
+                        return jObject.ToObject<GenericService>();
                     default:
                         throw new Exception($"Unknown service type {(string)jObject["type"]}");
                 }
