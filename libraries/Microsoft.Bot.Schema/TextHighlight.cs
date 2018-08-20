@@ -13,6 +13,9 @@ namespace Microsoft.Bot.Schema
     using Newtonsoft.Json;
     using System.Linq;
 
+    /// <summary>
+    /// Refers to a substring of content within another field
+    /// </summary>
     public partial class TextHighlight
     {
         /// <summary>
@@ -26,13 +29,13 @@ namespace Microsoft.Bot.Schema
         /// <summary>
         /// Initializes a new instance of the TextHighlight class.
         /// </summary>
-        /// <param name="text">plain text fragment to highlight</param>
-        /// <param name="occurence">index of occurence of the Text (Starting at
-        /// 1)</param>
-        public TextHighlight(string text = default(string), int? occurence = default(int?))
+        /// <param name="text">Defines the snippet of text to highlight</param>
+        /// <param name="occurrence">Occurrence of the text field within the
+        /// referenced text, if multiple exist.</param>
+        public TextHighlight(string text = default(string), int? occurrence = default(int?))
         {
             Text = text;
-            Occurence = occurence;
+            Occurrence = occurrence;
             CustomInit();
         }
 
@@ -42,16 +45,17 @@ namespace Microsoft.Bot.Schema
         partial void CustomInit();
 
         /// <summary>
-        /// Gets or sets plain text fragment to highlight
+        /// Gets or sets defines the snippet of text to highlight
         /// </summary>
         [JsonProperty(PropertyName = "text")]
         public string Text { get; set; }
 
         /// <summary>
-        /// Gets or sets index of occurence of the Text (Starting at 1)
+        /// Gets or sets occurrence of the text field within the referenced
+        /// text, if multiple exist.
         /// </summary>
-        [JsonProperty(PropertyName = "occurence")]
-        public int? Occurence { get; set; }
+        [JsonProperty(PropertyName = "occurrence")]
+        public int? Occurrence { get; set; }
 
     }
 }
