@@ -1,9 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Bot.Builder.Dialogs.Tests
@@ -31,7 +31,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                     {
                         async (dc, step) =>
                         {
-                            return await dc.PromptAsync("namePrompt", "Please type your name.");
+                            return await dc.PromptAsync("namePrompt", new PromptOptions { Prompt = new Activity { Text = "Please type your name.", Type = ActivityTypes.Message } });
                         },
                         async (dc, step) =>
                         {
@@ -91,7 +91,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                     {
                         async (dc, step) =>
                         {
-                            return await dc.PromptAsync("namePrompt", "Please type your name.");
+                            return await dc.PromptAsync("namePrompt", new PromptOptions { Prompt = new Activity { Text = "Please type your name.", Type = ActivityTypes.Message } });
                         },
                         async (dc, step) =>
                         {
