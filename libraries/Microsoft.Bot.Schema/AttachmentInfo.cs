@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Schema
     using System.Linq;
 
     /// <summary>
-    /// Metdata for an attachment
+    /// Metadata for an attachment
     /// </summary>
     public partial class AttachmentInfo
     {
