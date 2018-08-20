@@ -31,7 +31,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                     {
                         async (dc, step) =>
                         {
-                            return await dc.PromptAsync("namePrompt", new PromptOptions { Prompt = new Activity { Text = "Please type your name." } });
+                            return await dc.PromptAsync("namePrompt", new PromptOptions { Prompt = new Activity { Text = "Please type your name.", Type = ActivityTypes.Message } });
                         },
                         async (dc, step) =>
                         {
@@ -91,7 +91,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                     {
                         async (dc, step) =>
                         {
-                            return await dc.PromptAsync("namePrompt", new PromptOptions { Prompt = new Activity { Text = "Please type your name." } });
+                            return await dc.PromptAsync("namePrompt", new PromptOptions { Prompt = new Activity { Text = "Please type your name.", Type = ActivityTypes.Message } });
                         },
                         async (dc, step) =>
                         {

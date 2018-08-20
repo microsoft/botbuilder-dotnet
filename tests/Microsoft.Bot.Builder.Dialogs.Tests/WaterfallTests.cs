@@ -186,7 +186,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             {
                 async (dc, args) =>
                 {
-                    return await dc.PromptAsync("dateTimePrompt", new PromptOptions{ Prompt = new Activity { Text = "Provide a date" }});
+                    return await dc.PromptAsync("dateTimePrompt", new PromptOptions{ Prompt = new Activity { Text = "Provide a date", Type = ActivityTypes.Message }});
                 },
                 async (dc, args) =>
                 {
