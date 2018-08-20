@@ -97,8 +97,8 @@ namespace Microsoft.Bot.Builder
         /// isn't something supported by Node.
         /// </para>
         /// </remarks>
-        /// <seealso cref="ProcessActivityAsync(string, Activity, Func{ITurnContext, Task}, CancellationToken)"/>
-        /// <seealso cref="BotAdapter.RunPipelineAsync(ITurnContext, Func{ITurnContext, Task}, CancellationToken)"/>
+        /// <seealso cref="ProcessActivityAsync(string, Activity, BotCallbackHandler, CancellationToken)"/>
+        /// <seealso cref="BotAdapter.RunPipelineAsync(ITurnContext, BotCallbackHandler, CancellationToken)"/>
         public override async Task ContinueConversationAsync(string botAppId, ConversationReference reference, BotCallbackHandler callback, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(botAppId))
