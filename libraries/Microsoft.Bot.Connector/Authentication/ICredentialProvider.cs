@@ -18,35 +18,41 @@ namespace Microsoft.Bot.Connector.Authentication
     public interface ICredentialProvider
     {
         /// <summary>
-        /// Validate AppId.
+        /// Validates an app ID.
         /// </summary>
-        /// <remarks>
+        /// <param name="appId">The app ID to validate.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>If the task is successful, the result is true if <paramref name="appId"/>
+        /// is valid for the controller; otherwise, false.
+        /// <para>
         /// This method is async to enable custom implementations
         /// that may need to call out to serviced to validate the appId / password pair.
-        /// </remarks>
-        /// <param name="appId"></param>
-        /// <returns>true if it is a valid AppId for the controller</returns>
+        /// </para></remarks>
         Task<bool> IsValidAppIdAsync(string appId);
 
         /// <summary>
-        /// Get the app password for a given bot appId, if it is not a valid appId, return Null
+        /// Gets the app password for a given bot app ID.
         /// </summary>
-        /// <remarks>
+        /// <param name="appId">The ID of the app to get the password for.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>If the task is successful and the app ID is valid, the result
+        /// contains the password; otherwise, null.
+        /// <para>
         /// This method is async to enable custom implementations
         /// that may need to call out to serviced to validate the appId / password pair.
-        /// </remarks>
-        /// <param name="appId">bot appid</param>
-        /// <returns>password or null for invalid appid</returns>
+        /// </para></remarks>
         Task<string> GetAppPasswordAsync(string appId);
 
         /// <summary>
-        /// Checks if bot authentication is disabled.
+        /// Checks whether bot authentication is disabled.
         /// </summary>
-        /// <returns>true if bot authentication is disabled.</returns>
-        /// <remarks>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>If the task is successful and bot authentication is disabled, the result
+        /// is true; otherwise, false.
+        /// <para>
         /// This method is async to enable custom implementations
         /// that may need to call out to serviced to validate the appId / password pair.
-        /// </remarks>
+        /// </para></remarks>
         Task<bool> IsAuthenticationDisabledAsync();
     }
 }
