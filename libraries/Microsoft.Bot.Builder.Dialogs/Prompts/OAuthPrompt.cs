@@ -192,7 +192,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 throw new InvalidOperationException("OAuthPrompt.GetUserToken(): not supported by the current adapter");
             }
 
-            if (magicCodeRegex.IsMatch(context.Activity.Text))
+            if (context.Activity.Type == ActivityTypes.Message && magicCodeRegex.IsMatch(context.Activity.Text))
             {
                 magicCode = context.Activity.Text;
             }
@@ -304,7 +304,20 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
             else if (IsTeamsVerificationInvoke(context))
             {
-                // TODO: add missing code
+                var magicCodeObject = context.Activity.Value as JObject;
+                var magicCode = magicCodeObject.GetValue("state").ToString();
+
+                if (!(context.Adapter is BotFrameworkAdapter adapter))
+                {
+                    throw new InvalidOperationException("OAuthPrompt.Recognize(): not supported by the current adapter");
+                }
+
+                var token = await adapter.GetUserTokenAsync(context, _settings.ConnectionName, magicCode, default(CancellationToken)).ConfigureAwait(false);
+                if (token != null)
+                {
+                    result.Succeeded = true;
+                    result.Value = token;
+                }
             }
             else if (context.Activity.Type == ActivityTypes.Message)
             {
