@@ -56,7 +56,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         private const int DefaultPromptTimeout = 54000000;
 
         // regex to check if code supplied is a 6 digit numerical code (hence, a magic code).
-        private readonly Regex magicCodeRegex = new Regex(@"(\d{6})");
+        private readonly Regex _magicCodeRegex = new Regex(@"(\d{6})");
 
         private OAuthPromptSettings _settings;
         private PromptValidator<TokenResponse> _validator;
@@ -194,11 +194,11 @@ namespace Microsoft.Bot.Builder.Dialogs
             
             if (IsTeamsVerificationInvoke(context))
             {
-                JObject value = context.Activity.Value as JObject;
+                var value = context.Activity.Value as JObject;
                 magicCode = value.GetValue("state").ToString();
             }
             
-            if (context.Activity.Type == ActivityTypes.Message && magicCodeRegex.IsMatch(context.Activity.Text))
+            if (context.Activity.Type == ActivityTypes.Message && _magicCodeRegex.IsMatch(context.Activity.Text))
             {
                 magicCode = context.Activity.Text;
             }
@@ -327,7 +327,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
             else if (context.Activity.Type == ActivityTypes.Message)
             {
-                var matched = magicCodeRegex.Match(context.Activity.Text);
+                var matched = _magicCodeRegex.Match(context.Activity.Text);
                 if (matched.Success)
                 {
                     if (!(context.Adapter is BotFrameworkAdapter adapter))
