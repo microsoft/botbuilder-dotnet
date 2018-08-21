@@ -195,7 +195,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             if (IsTeamsVerificationInvoke(context))
             {
                 var value = context.Activity.Value as JObject;
-                magicCode = value.GetValue("state").ToString();
+                magicCode = value.GetValue("state")?.ToString();
             }
             
             if (context.Activity.Type == ActivityTypes.Message && _magicCodeRegex.IsMatch(context.Activity.Text))
@@ -311,7 +311,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             else if (IsTeamsVerificationInvoke(context))
             {
                 var magicCodeObject = context.Activity.Value as JObject;
-                var magicCode = magicCodeObject.GetValue("state").ToString();
+                var magicCode = magicCodeObject.GetValue("state")?.ToString();
 
                 if (!(context.Adapter is BotFrameworkAdapter adapter))
                 {
