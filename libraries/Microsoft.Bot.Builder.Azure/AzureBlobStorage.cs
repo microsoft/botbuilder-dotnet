@@ -68,8 +68,9 @@ namespace Microsoft.Bot.Builder.Azure
         /// Deletes entity blobs from the configured container.
         /// </summary>
         /// <param name="keys">An array of entity keys.</param>
-        /// <param name="cancellationToken">The Cancellation token.</param>
-        /// <returns><see cref="Task"/> Representing the asynchronous operation.</returns>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns><see cref="Task"/>A task that represents the work queued to execute.</returns>
         public async Task DeleteAsync(string[] keys, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (keys == null)
@@ -93,7 +94,7 @@ namespace Microsoft.Bot.Builder.Azure
         /// <param name="keys">An array of entity keys.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
-        /// <returns>A <see cref="Task"/>Representing the asynchronous operation.</returns>
+        /// <returns>A <see cref="Task"/>A task that represents the work queued to execute.</returns>
         public async Task<IDictionary<string, object>> ReadAsync(string[] keys, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (keys == null)
@@ -160,7 +161,7 @@ namespace Microsoft.Bot.Builder.Azure
         /// <param name="changes">The Dictionary of changes that are to be made.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
-        /// <returns>A <see cref="Task"/>Representing the asynchronous operation.</returns>
+        /// <returns>A <see cref="Task"/>A task that represents the work queued to execute.</returns>
         public async Task WriteAsync(IDictionary<string, object> changes, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (changes == null)
