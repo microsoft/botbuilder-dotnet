@@ -8,8 +8,8 @@ namespace Microsoft.Bot.Builder
 {
     /// <summary>
     /// Encapsulates an asynchronous method that calls the next
-    /// <see cref="IMiddleware"/>.<see cref="IMiddleware.OnTurnAsync(ITurnContext, NextDelegate, CancellationToken)"/>
-    /// or <see cref="IBot"/>.<see cref="IBot.OnTurnAsync(ITurnContext)"/> method in the middleware pipeline.
+    /// <see cref="IMiddleware"/>.<see cref="IMiddleware.OnTurnAsync"/>
+    /// or <see cref="IBot"/>.<see cref="IBot.OnTurnAsync"/> method in the middleware pipeline.
     /// </summary>
     /// <param name="cancellationToken">A cancellation token that can be used by other objects
     /// or threads to receive notice of cancellation.</param>
