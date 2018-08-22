@@ -80,7 +80,7 @@ namespace Microsoft.Bot.Builder.Azure
         /// Log an activity to the transcript.
         /// </summary>
         /// <param name="activity">Activity being logged.</param>
-        /// <returns>A <see cref="Task"/>Propagates notification that operations should be canceled.</returns>
+        /// <returns>A <see cref="Task"/>Representing the asynchronous operation.</returns>
         public async Task LogActivityAsync(IActivity activity)
         {
             BotAssert.ActivityNotNull(activity);
@@ -185,7 +185,7 @@ namespace Microsoft.Bot.Builder.Azure
         /// </summary>
         /// <param name="channelId">Channel Id.</param>
         /// <param name="continuationToken">Continuatuation token to page through results.</param>
-        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        /// <returns>A <see cref="Task"/> Representing the asynchronous operation.</returns>
         public async Task<PagedResult<Transcript>> ListTranscriptsAsync(string channelId, string continuationToken = null)
         {
             if (string.IsNullOrEmpty(channelId))
@@ -248,7 +248,7 @@ namespace Microsoft.Bot.Builder.Azure
         /// </summary>
         /// <param name="channelId">Channel Id where conversation took place.</param>
         /// <param name="conversationId">Id of the conversation to delete.</param>
-        /// <returns>A <see cref="Task"/>Propagates notification that operations should be canceled.</returns>
+        /// <returns>A <see cref="Task"/>Representing the asynchronous operation.</returns>
         public async Task DeleteTranscriptAsync(string channelId, string conversationId)
         {
             if (string.IsNullOrEmpty(channelId))
