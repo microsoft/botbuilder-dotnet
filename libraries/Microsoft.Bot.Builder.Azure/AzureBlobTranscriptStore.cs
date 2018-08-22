@@ -17,7 +17,7 @@ namespace Microsoft.Bot.Builder.Azure
     /// </summary>
     /// <remarks>
     /// Each activity is stored as json blob in structure of
-    /// container/{channelId]/{conversationId}/{Timestamp.ticks}-{activity.id}.json
+    /// container/{channelId]/{conversationId}/{Timestamp.ticks}-{activity.id}.json.
     /// </remarks>
     public class AzureBlobTranscriptStore : ITranscriptStore
     {
@@ -31,10 +31,10 @@ namespace Microsoft.Bot.Builder.Azure
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AzureBlobTranscriptStore"/> class.
-        /// Creates an instance of AzureBlobTranscriptStore
+        /// Creates an instance of AzureBlobTranscriptStore.
         /// </summary>
-        /// <param name="dataConnectionstring">Connection string to connect to Azure Blob Storage</param>
-        /// <param name="containerName">Name of the continer where transcript blobs will be stored</param>
+        /// <param name="dataConnectionstring">Connection string to connect to Azure Blob Storage.</param>
+        /// <param name="containerName">Name of the continer where transcript blobs will be stored.</param>
         public AzureBlobTranscriptStore(string dataConnectionstring, string containerName)
             : this(CloudStorageAccount.Parse(dataConnectionstring), containerName)
         {
@@ -43,8 +43,8 @@ namespace Microsoft.Bot.Builder.Azure
         /// <summary>
         /// Initializes a new instance of the <see cref="AzureBlobTranscriptStore"/> class.
         /// </summary>
-        /// <param name="storageAccount">Azure Storage Account to store transcripts</param>
-        /// <param name="containerName">Name of the continer where transcript blobs will be stored</param>
+        /// <param name="storageAccount">Azure Storage Account to store transcripts.</param>
+        /// <param name="containerName">Name of the continer where transcript blobs will be stored.</param>
         public AzureBlobTranscriptStore(CloudStorageAccount storageAccount, string containerName)
         {
             if (storageAccount == null)
@@ -80,7 +80,7 @@ namespace Microsoft.Bot.Builder.Azure
         /// Log an activity to the transcript.
         /// </summary>
         /// <param name="activity">Activity being logged.</param>
-        /// <returns></returns>
+        /// <returns>A <see cref="Task"/>Propagates notification that operations should be canceled.</returns>
         public async Task LogActivityAsync(IActivity activity)
         {
             BotAssert.ActivityNotNull(activity);
@@ -103,13 +103,13 @@ namespace Microsoft.Bot.Builder.Azure
         }
 
         /// <summary>
-        /// Get activities for a conversation (Aka the transcript)
+        /// Get activities for a conversation (Aka the transcript).
         /// </summary>
         /// <param name="channelId">Channel Id.</param>
         /// <param name="conversationId">Conversation Id.</param>
         /// <param name="continuationToken">Continuatuation token to page through results.</param>
         /// <param name="startDate">Earliest time to include.</param>
-        /// <returns>PagedResult of activities</returns>
+        /// <returns>PagedResult of activities.</returns>
         public async Task<PagedResult<IActivity>> GetTranscriptActivitiesAsync(string channelId, string conversationId, string continuationToken = null, DateTimeOffset startDate = default(DateTimeOffset))
         {
             if (string.IsNullOrEmpty(channelId))
@@ -248,7 +248,7 @@ namespace Microsoft.Bot.Builder.Azure
         /// </summary>
         /// <param name="channelId">Channel Id where conversation took place.</param>
         /// <param name="conversationId">Id of the conversation to delete.</param>
-        /// <returns></returns>
+        /// <returns>A <see cref="Task"/>Propagates notification that operations should be canceled.</returns>
         public async Task DeleteTranscriptAsync(string channelId, string conversationId)
         {
             if (string.IsNullOrEmpty(channelId))

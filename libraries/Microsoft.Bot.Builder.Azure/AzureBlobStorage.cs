@@ -18,7 +18,7 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.Azure
 {
     /// <summary>
-    /// Models IStorage using Azure Storge Blobs
+    /// Models IStorage using Azure Storge Blobs.
     /// </summary>
     /// <remarks>
     /// The AzureBlobStorage implements State's IStorage using a single Azure Storage Blob Container.
@@ -41,20 +41,20 @@ namespace Microsoft.Bot.Builder.Azure
         private CloudBlobContainer _container;
 
         /// <summary>
-        /// Creates the AzureBlobStorage instance
+        /// Initializes a new instance of the <see cref="AzureBlobStorage"/> class.
         /// </summary>
-        /// <param name="dataConnectionstring">Azure Storage connection string</param>
-        /// <param name="containerName">Name of the Blob container where entities will be stored</param>
+        /// <param name="dataConnectionstring">Azure Storage connection string.</param>
+        /// <param name="containerName">Name of the Blob container where entities will be stored.</param>
         public AzureBlobStorage(string dataConnectionstring, string containerName)
             : this(CloudStorageAccount.Parse(dataConnectionstring), containerName)
         {
         }
 
         /// <summary>
-        /// Creates the AzureBlobStorage instance
+        /// Initializes a new instance of the <see cref="AzureBlobStorage"/> class.
         /// </summary>
-        /// <param name="storageAccount">Azure CloudStorageAccount instance</param>
-        /// <param name="containerName">Name of the Blob container where entities will be stored</param>
+        /// <param name="storageAccount">Azure CloudStorageAccount instance.</param>
+        /// <param name="containerName">Name of the Blob container where entities will be stored.</param>
         public AzureBlobStorage(CloudStorageAccount storageAccount, string containerName)
         {
             _storageAccount = storageAccount ?? throw new ArgumentNullException(nameof(storageAccount));
@@ -65,10 +65,11 @@ namespace Microsoft.Bot.Builder.Azure
         }
 
         /// <summary>
-        /// Deletes entity blobs from the configured container
+        /// Deletes entity blobs from the configured container.
         /// </summary>
-        /// <param name="keys">An array of entity keys</param>
-        /// <returns></returns>
+        /// <param name="keys">An array of entity keys.</param>
+        /// <param name="cancellationToken">The Cancellation token.</param>
+        /// <returns><see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task DeleteAsync(string[] keys, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (keys == null)
@@ -87,11 +88,12 @@ namespace Microsoft.Bot.Builder.Azure
         }
 
         /// <summary>
-        /// Retrieve entities from the configured blob container
+        /// Retrieve entities from the configured blob container.
         /// </summary>
-        /// <param name="keys">An array of entity keys</param>
-        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public async Task<IDictionary<string, object>> ReadAsync(string[] keys, CancellationToken cancelationToken = default(CancellationToken))
+        /// <param name="keys">An array of entity keys.</param>
+        /// <param name="cancellationToken">Propagates notification that operations should be canceled.</param>
+        /// <returns>A <see cref="Task"/>Propagates notification that operations should be canceled.</returns>
+        public async Task<IDictionary<string, object>> ReadAsync(string[] keys, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (keys == null)
             {
@@ -152,10 +154,11 @@ namespace Microsoft.Bot.Builder.Azure
         }
 
         /// <summary>
-        /// Stores a new entity in the configured blob container
+        /// Stores a new entity in the configured blob container.
         /// </summary>
-        /// <param name="changes"></param>
-        /// <returns></returns>
+        /// <param name="changes">The Dictionary of changes that are to be made.</param>
+        /// <param name="cancellationToken">Propagates notification that operations should be canceled.</param>
+        /// <returns>A <see cref="Task"/>Propagates notification that operations should be canceled.</returns>
         public async Task WriteAsync(IDictionary<string, object> changes, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (changes == null)
