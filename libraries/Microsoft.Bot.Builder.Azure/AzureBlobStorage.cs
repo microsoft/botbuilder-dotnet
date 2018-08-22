@@ -69,7 +69,7 @@ namespace Microsoft.Bot.Builder.Azure
         /// </summary>
         /// <param name="keys">An array of entity keys.</param>
         /// <param name="cancellationToken">The Cancellation token.</param>
-        /// <returns><see cref="Task"/> representing the asynchronous operation.</returns>
+        /// <returns><see cref="Task"/> Representing the asynchronous operation.</returns>
         public async Task DeleteAsync(string[] keys, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (keys == null)
@@ -91,8 +91,9 @@ namespace Microsoft.Bot.Builder.Azure
         /// Retrieve entities from the configured blob container.
         /// </summary>
         /// <param name="keys">An array of entity keys.</param>
-        /// <param name="cancellationToken">Propagates notification that operations should be canceled.</param>
-        /// <returns>A <see cref="Task"/>Propagates notification that operations should be canceled.</returns>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A <see cref="Task"/>Representing the asynchronous operation.</returns>
         public async Task<IDictionary<string, object>> ReadAsync(string[] keys, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (keys == null)
@@ -157,8 +158,9 @@ namespace Microsoft.Bot.Builder.Azure
         /// Stores a new entity in the configured blob container.
         /// </summary>
         /// <param name="changes">The Dictionary of changes that are to be made.</param>
-        /// <param name="cancellationToken">Propagates notification that operations should be canceled.</param>
-        /// <returns>A <see cref="Task"/>Propagates notification that operations should be canceled.</returns>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A <see cref="Task"/>Representing the asynchronous operation.</returns>
         public async Task WriteAsync(IDictionary<string, object> changes, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (changes == null)
