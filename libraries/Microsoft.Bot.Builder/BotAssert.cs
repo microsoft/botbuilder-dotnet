@@ -29,14 +29,14 @@ namespace Microsoft.Bot.Builder
         /// <summary>
         /// Checks that a context object is not <c>null</c>.
         /// </summary>
-        /// <param name="context">The context object.</param>
+        /// <param name="turnContext">The context object.</param>
         /// <exception cref="ArgumentNullException">
         /// <paramref name="context"/> is <c>null</c>.</exception>
-        public static void ContextNotNull(ITurnContext context)
+        public static void ContextNotNull(ITurnContext turnContext)
         {
-            if (context == null)
+            if (turnContext == null)
             {
-                throw new ArgumentNullException(nameof(context));
+                throw new ArgumentNullException(nameof(turnContext));
             }
         }
 

@@ -135,7 +135,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .StartTestAsync();
         }
 
-        private Task CustomValidator(ITurnContext context, PromptValidatorContext<IList<DateTimeResolution>> prompt)
+        private Task CustomValidator(ITurnContext turnContext, PromptValidatorContext<IList<DateTimeResolution>> prompt)
         {
             if (prompt.Recognized.Succeeded)
             {

@@ -97,18 +97,18 @@ namespace Microsoft.Bot.Builder.Dialogs
             return Dialog.EndOfTurn;
         }
 
-        public override async Task DialogRepromptAsync(ITurnContext context, DialogInstance instance)
+        public override async Task DialogRepromptAsync(ITurnContext turnContext, DialogInstance instance)
         {
             var state = (IDictionary<string, object>)instance.State[PersistedState];
             var options = (PromptOptions)instance.State[PersistedOptions];
-            await OnPromptAsync(context, state, options).ConfigureAwait(false);
+            await OnPromptAsync(turnContext, state, options).ConfigureAwait(false);
         }
 
-        protected virtual async Task OnPromptAsync(ITurnContext context, IDictionary<string, object> state, PromptOptions options)
+        protected virtual async Task OnPromptAsync(ITurnContext turnContext, IDictionary<string, object> state, PromptOptions options)
         {
-            if (context == null)
+            if (turnContext == null)
             {
-                throw new ArgumentNullException(nameof(context));
+                throw new ArgumentNullException(nameof(turnContext));
             }
 
             if (options == null)
@@ -118,16 +118,16 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             if (options.Prompt != null)
             {
-                await context.SendActivityAsync(options.Prompt).ConfigureAwait(false);
+                await turnContext.SendActivityAsync(options.Prompt).ConfigureAwait(false);
             }
         }
 
-        protected virtual Task<PromptRecognizerResult<Activity>> OnRecognizeAsync(ITurnContext context, IDictionary<string, object> state, PromptOptions options)
+        protected virtual Task<PromptRecognizerResult<Activity>> OnRecognizeAsync(ITurnContext turnContext, IDictionary<string, object> state, PromptOptions options)
         {
             return Task.FromResult(new PromptRecognizerResult<Activity>
             {
                 Succeeded = true,
-                Value = context.Activity,
+                Value = turnContext.Activity,
             });
         }
     }

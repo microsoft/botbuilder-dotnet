@@ -40,7 +40,7 @@ namespace Microsoft.Bot.Builder.TemplateManager
             this.languages = templates;
         }
 
-        public Task<object> RenderTemplate(ITurnContext context, string language, string templateId, object data)
+        public Task<object> RenderTemplate(ITurnContext turnContext, string language, string templateId, object data)
         {
             if (this.languages.TryGetValue(language, out var templates))
             {

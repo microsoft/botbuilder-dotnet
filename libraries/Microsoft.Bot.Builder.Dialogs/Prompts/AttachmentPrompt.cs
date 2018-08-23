@@ -15,11 +15,11 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
         }
 
-        protected override async Task OnPromptAsync(ITurnContext context, IDictionary<string, object> state, PromptOptions options, bool isRetry)
+        protected override async Task OnPromptAsync(ITurnContext turnContext, IDictionary<string, object> state, PromptOptions options, bool isRetry)
         {
-            if (context == null)
+            if (turnContext == null)
             {
-                throw new ArgumentNullException(nameof(context));
+                throw new ArgumentNullException(nameof(turnContext));
             }
 
             if (options == null)
@@ -29,25 +29,25 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             if (isRetry && options.RetryPrompt != null)
             {
-                await context.SendActivityAsync(options.RetryPrompt).ConfigureAwait(false);
+                await turnContext.SendActivityAsync(options.RetryPrompt).ConfigureAwait(false);
             }
             else if (options.Prompt != null)
             {
-                await context.SendActivityAsync(options.Prompt).ConfigureAwait(false);
+                await turnContext.SendActivityAsync(options.Prompt).ConfigureAwait(false);
             }
         }
 
-        protected override Task<PromptRecognizerResult<IList<Attachment>>> OnRecognizeAsync(ITurnContext context, IDictionary<string, object> state, PromptOptions options)
+        protected override Task<PromptRecognizerResult<IList<Attachment>>> OnRecognizeAsync(ITurnContext turnContext, IDictionary<string, object> state, PromptOptions options)
         {
-            if (context == null)
+            if (turnContext == null)
             {
-                throw new ArgumentNullException(nameof(context));
+                throw new ArgumentNullException(nameof(turnContext));
             }
 
             var result = new PromptRecognizerResult<IList<Attachment>>();
-            if (context.Activity.Type == ActivityTypes.Message)
+            if (turnContext.Activity.Type == ActivityTypes.Message)
             {
-                var message = context.Activity.AsMessageActivity();
+                var message = turnContext.Activity.AsMessageActivity();
                 if (message.Attachments != null && message.Attachments.Count > 0)
                 {
                     result.Succeeded = true;

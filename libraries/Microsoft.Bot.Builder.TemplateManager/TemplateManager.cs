@@ -59,7 +59,7 @@ namespace Microsoft.Bot.Builder.TemplateManager
         /// <param name="templateId"></param>
         /// <param name="data"></param>
         /// <returns></returns>
-        public async Task ReplyWith(ITurnContext context, string templateId, object data = null)
+        public async Task ReplyWith(ITurnContext turnContext, string templateId, object data = null)
         {
             BotAssert.ContextNotNull(context);
 
@@ -82,7 +82,7 @@ namespace Microsoft.Bot.Builder.TemplateManager
         /// <param name="templateId"></param>
         /// <param name="data"></param>
         /// <returns></returns>
-        public async Task<Activity> RenderTemplate(ITurnContext context, string language, string templateId, object data = null)
+        public async Task<Activity> RenderTemplate(ITurnContext turnContext, string language, string templateId, object data = null)
         {
             List<string> fallbackLocales = new List<string>(this._languageFallback);
 

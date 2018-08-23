@@ -128,23 +128,23 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs.Internals
 
     public sealed class V4Bridge_BotToUser : IBotToUser
     {
-        private readonly Microsoft.Bot.Builder.ITurnContext context;
+        private readonly Microsoft.Bot.Builder.ITurnContext turnContext;
 
-        public V4Bridge_BotToUser(Microsoft.Bot.Builder.ITurnContext context)
+        public V4Bridge_BotToUser(Microsoft.Bot.Builder.ITurnContext turnContext)
         {
-            SetField.NotNull(out this.context, nameof(context), context);
+            SetField.NotNull(out this.turnContext, nameof(turnContext), turnContext);
         }
 
         IMessageActivity IBotToUser.MakeMessage()
         {
-            var toBotActivity = (Activity)this.context.Activity;
+            var toBotActivity = (Activity)this.turnContext.Activity;
             return toBotActivity.CreateReply();
         }
 
         Task IBotToUser.PostAsync(IMessageActivity message, CancellationToken cancellationToken)
         {
             // TODO, change this to context.SendActivity with M2 delta
-            return this.context.Adapter.SendActivitiesAsync(this.context, new Activity[] { (Activity) message }, cancellationToken);
+            return this.turnContext.Adapter.SendActivitiesAsync(this.turnContext, new Activity[] { (Activity) message }, cancellationToken);
         }
     }
 

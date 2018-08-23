@@ -12,5 +12,5 @@ namespace Microsoft.Bot.Builder
     /// <param name="context">The turn context.</param>
     /// <param name="cancellationToken">The task cancellation token.</param>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    public delegate Task BotCallbackHandler(ITurnContext context, CancellationToken cancellationToken);
+    public delegate Task BotCallbackHandler(ITurnContext turnContext, CancellationToken cancellationToken);
 }
