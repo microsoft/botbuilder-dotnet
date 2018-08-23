@@ -86,11 +86,11 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         public Tuple<Choice, Choice> ConfirmChoices { get; set; }
 
-        protected override async Task OnPromptAsync(ITurnContext context, IDictionary<string, object> state, PromptOptions options, bool isRetry)
+        protected override async Task OnPromptAsync(ITurnContext turnContext, IDictionary<string, object> state, PromptOptions options, bool isRetry)
         {
-            if (context == null)
+            if (turnContext == null)
             {
-                throw new ArgumentNullException(nameof(context));
+                throw new ArgumentNullException(nameof(turnContext));
             }
 
             if (options == null)
@@ -99,7 +99,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             // Determine culture
-            var culture = context.Activity.Locale ?? DefaultLocale;
+            var culture = turnContext.Activity.Locale ?? DefaultLocale;
             if (string.IsNullOrEmpty(culture) || !DefaultChoiceOptions.ContainsKey(culture))
             {
                 culture = English;
@@ -107,7 +107,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             // Format prompt to send
             IMessageActivity prompt;
-            var channelId = context.Activity.ChannelId;
+            var channelId = turnContext.Activity.ChannelId;
             var choiceOptions = ChoiceOptions ?? DefaultChoiceOptions[culture];
             var confirmChoices = ConfirmChoices ?? DefaultConfirmChoices[culture];
             var choices = new List<Choice> { confirmChoices.Item1, confirmChoices.Item2 };
@@ -121,22 +121,22 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             // Send prompt
-            await context.SendActivityAsync(prompt).ConfigureAwait(false);
+            await turnContext.SendActivityAsync(prompt).ConfigureAwait(false);
         }
 
-        protected override Task<PromptRecognizerResult<bool>> OnRecognizeAsync(ITurnContext context, IDictionary<string, object> state, PromptOptions options)
+        protected override Task<PromptRecognizerResult<bool>> OnRecognizeAsync(ITurnContext turnContext, IDictionary<string, object> state, PromptOptions options)
         {
-            if (context == null)
+            if (turnContext == null)
             {
-                throw new ArgumentNullException(nameof(context));
+                throw new ArgumentNullException(nameof(turnContext));
             }
 
             var result = new PromptRecognizerResult<bool>();
-            if (context.Activity.Type == ActivityTypes.Message)
+            if (turnContext.Activity.Type == ActivityTypes.Message)
             {
                 // Recognize utterance
-                var message = context.Activity.AsMessageActivity();
-                var culture = context.Activity.Locale ?? DefaultLocale ?? English;
+                var message = turnContext.Activity.AsMessageActivity();
+                var culture = turnContext.Activity.Locale ?? DefaultLocale ?? English;
                 var results = ChoiceRecognizer.RecognizeBoolean(message.Text, culture);
                 if (results.Count > 0)
                 {

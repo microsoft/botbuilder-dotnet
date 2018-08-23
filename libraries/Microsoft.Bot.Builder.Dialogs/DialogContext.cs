@@ -15,14 +15,14 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// Initializes a new instance of the <see cref="DialogContext"/> class.
         /// </summary>
         /// <param name="dialogs">Parent dialog set.</param>
-        /// <param name="context">Context for the current turn of conversation with the user.</param>
+        /// <param name="turnContext">Context for the current turn of conversation with the user.</param>
         /// <param name="state">Current dialog state.</param>
         /// <param name="onCompleted">An action to perform when the dialog completes, that is,
         /// when <see cref="EndAsync(IDictionary{string, object})"/> is called on the current context.</param>
-        internal DialogContext(DialogSet dialogs, ITurnContext context, DialogState state)
+        internal DialogContext(DialogSet dialogs, ITurnContext turnContext, DialogState state)
         {
             Dialogs = dialogs ?? throw new ArgumentNullException(nameof(dialogs));
-            Context = context ?? throw new ArgumentNullException(nameof(context));
+            Context = turnContext ?? throw new ArgumentNullException(nameof(turnContext));
 
             Stack = state.DialogStack;
         }

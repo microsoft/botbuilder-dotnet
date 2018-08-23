@@ -5,5 +5,5 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
-    public delegate Task PromptValidator<T>(ITurnContext context, PromptValidatorContext<T> prompt);
+    public delegate Task PromptValidator<T>(ITurnContext turnContext, PromptValidatorContext<T> prompt);
 }

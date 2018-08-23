@@ -50,7 +50,7 @@ namespace Microsoft.Bot.Builder.Tests
     public class CallCountingMiddleware : IMiddleware
     {
         public int Calls { get; set; }
-        public async Task OnTurnAsync(ITurnContext context, NextDelegate next, CancellationToken cancellationToken)
+        public async Task OnTurnAsync(ITurnContext turnContext, NextDelegate next, CancellationToken cancellationToken)
         {
             Calls++;
             await next(cancellationToken);

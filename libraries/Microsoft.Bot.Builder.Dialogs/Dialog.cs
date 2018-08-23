@@ -68,13 +68,13 @@ namespace Microsoft.Bot.Builder.Dialogs
             return await dc.EndAsync(result).ConfigureAwait(false);
         }
 
-        public virtual Task DialogRepromptAsync(ITurnContext context, DialogInstance instance)
+        public virtual Task DialogRepromptAsync(ITurnContext turnContext, DialogInstance instance)
         {
             // No-op by default
             return Task.CompletedTask;
         }
 
-        public virtual Task DialogEndAsync(ITurnContext context, DialogInstance instance, DialogReason reason)
+        public virtual Task DialogEndAsync(ITurnContext turnContext, DialogInstance instance, DialogReason reason)
         {
             // No-op by default
             return Task.CompletedTask;

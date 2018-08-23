@@ -426,7 +426,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var adapter = new TestAdapter()
                 .Use(convoState);
 
-            PromptValidator<ChoiceResult> validator = (ITurnContext context, ChoiceResult result) =>
+            PromptValidator<ChoiceResult> validator = (ITurnContext turnContext, ChoiceResult result) =>
             {
                 Assert.IsTrue(false);
                 return Task.CompletedTask;
