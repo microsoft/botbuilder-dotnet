@@ -478,7 +478,7 @@ namespace Microsoft.Bot.Builder.Tests
             }            
         }        
 
-        public async Task MyBotLogic(ITurnContext context, CancellationToken cancellationToken)
+        public async Task MyBotLogic(ITurnContext turnContext, CancellationToken cancellationToken)
         {
             switch (context.Activity.AsMessageActivity().Text)
             {

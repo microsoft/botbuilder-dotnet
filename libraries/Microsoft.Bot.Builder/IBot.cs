@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Builder
     /// <code>
     /// public class EchoBot : IBot
     /// {
-    ///     public async Task OnTurnAsync(ITurnContext context)
+    ///     public async Task OnTurnAsync(ITurnContext turnContext)
     ///     {
     ///         if (context.Activity.Type is ActivityTypes.Message)
     ///         {

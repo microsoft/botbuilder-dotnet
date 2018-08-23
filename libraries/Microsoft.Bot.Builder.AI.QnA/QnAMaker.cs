@@ -90,27 +90,27 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <summary>
         /// Generates an answer from the knowledge base.
         /// </summary>
-        /// <param name="context">The Turn Context that contains the user question to be queried against your knowledge base.</param>
+        /// <param name="turnContext">The Turn Context that contains the user question to be queried against your knowledge base.</param>
         /// <returns>A list of answers for the user query, sorted in decreasing order of ranking score.</returns>
-        public async Task<QueryResult[]> GetAnswersAsync(ITurnContext context)
+        public async Task<QueryResult[]> GetAnswersAsync(ITurnContext turnContext)
         {
-            if (context == null)
+            if (turnContext == null)
             {
-                throw new ArgumentNullException(nameof(context));
+                throw new ArgumentNullException(nameof(turnContext));
             }
 
-            if (context.Activity == null)
+            if (turnContext.Activity == null)
             {
-                throw new ArgumentNullException(nameof(context.Activity));
+                throw new ArgumentNullException(nameof(turnContext.Activity));
             }
 
-            var messageActivity = context.Activity.AsMessageActivity();
+            var messageActivity = turnContext.Activity.AsMessageActivity();
             if (messageActivity == null)
             {
                 throw new ArgumentException("Activity type is not a message");
             }
 
-            if (string.IsNullOrEmpty(context.Activity.Text))
+            if (string.IsNullOrEmpty(turnContext.Activity.Text))
             {
                 throw new ArgumentException("Null or empty text");
             }
@@ -172,7 +172,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 MetadataBoost = _options.MetadataBoost,
             };
             var traceActivity = Activity.CreateTraceActivity(QnAMakerMiddlewareName, QnAMakerTraceType, traceInfo, QnAMakerTraceLabel);
-            await context.SendActivityAsync(traceActivity).ConfigureAwait(false);
+            await turnContext.SendActivityAsync(traceActivity).ConfigureAwait(false);
 
             return result;
         }

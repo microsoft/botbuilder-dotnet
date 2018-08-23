@@ -41,9 +41,9 @@ namespace Microsoft.Bot.Builder.Dialogs
             return _dialogs[dialog.Id] = dialog;
         }
 
-        public async Task<DialogContext> CreateContextAsync(ITurnContext context)
+        public async Task<DialogContext> CreateContextAsync(ITurnContext turnContext)
         {
-            BotAssert.ContextNotNull(context);
+            BotAssert.ContextNotNull(turnContext);
 
             if (_dialogState == null)
             {
@@ -51,10 +51,10 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             // Load/initialize dialog state
-            var state = await _dialogState.GetAsync(context, () => { return new DialogState(); }).ConfigureAwait(false);
+            var state = await _dialogState.GetAsync(turnContext, () => { return new DialogState(); }).ConfigureAwait(false);
 
             // Create and return context
-            return new DialogContext(this, context, state);
+            return new DialogContext(this, turnContext, state);
         }
 
         /// <summary>

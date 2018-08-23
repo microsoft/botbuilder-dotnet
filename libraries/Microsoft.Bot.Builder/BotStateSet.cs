@@ -43,27 +43,27 @@ namespace Microsoft.Bot.Builder
         /// <summary>
         /// Middleware implementation which loads/savesChanges automatically.
         /// </summary>
-        /// <param name="context">turn context.</param>
+        /// <param name="turnContext">turn context.</param>
         /// <param name="next">next middlware.</param>
         /// <param name="cancellationToken">cancellationToken.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public async Task OnTurnAsync(ITurnContext context, NextDelegate next, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task OnTurnAsync(ITurnContext turnContext, NextDelegate next, CancellationToken cancellationToken = default(CancellationToken))
         {
             await next(cancellationToken).ConfigureAwait(false);
-            await SaveChangesAsync(context, false, cancellationToken).ConfigureAwait(false);
+            await SaveChangesAsync(turnContext, false, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
         /// Load all BotState records in parallel.
         /// </summary>
-        /// <param name="context">turn context.</param>
+        /// <param name="turnContext">turn context.</param>
         /// <param name="force">should data be forced into cache.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
-        public async Task LoadAsync(ITurnContext context, bool force = false, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task LoadAsync(ITurnContext turnContext, bool force = false, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var tasks = BotStates.Select(bs => bs.LoadAsync(context, force, cancellationToken)).ToList();
+            var tasks = BotStates.Select(bs => bs.LoadAsync(turnContext, force, cancellationToken)).ToList();
             await Task.WhenAll(tasks).ConfigureAwait(false);
         }
 
@@ -75,9 +75,9 @@ namespace Microsoft.Bot.Builder
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
-        public async Task SaveChangesAsync(ITurnContext context, bool force = false, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task SaveChangesAsync(ITurnContext turnContext, bool force = false, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var tasks = BotStates.Select(bs => bs.SaveChangesAsync(context, force, cancellationToken)).ToList();
+            var tasks = BotStates.Select(bs => bs.SaveChangesAsync(turnContext, force, cancellationToken)).ToList();
             await Task.WhenAll(tasks).ConfigureAwait(false);
         }
     }
