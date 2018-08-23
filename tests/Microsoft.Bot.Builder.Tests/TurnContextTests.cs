@@ -480,27 +480,27 @@ namespace Microsoft.Bot.Builder.Tests
 
         public async Task MyBotLogic(ITurnContext turnContext, CancellationToken cancellationToken)
         {
-            switch (context.Activity.AsMessageActivity().Text)
+            switch (turnContext.Activity.AsMessageActivity().Text)
             {
                 case "count":
-                    await context.SendActivityAsync(context.Activity.CreateReply("one"));
-                    await context.SendActivityAsync(context.Activity.CreateReply("two"));
-                    await context.SendActivityAsync(context.Activity.CreateReply("three"));
+                    await turnContext.SendActivityAsync(turnContext.Activity.CreateReply("one"));
+                    await turnContext.SendActivityAsync(turnContext.Activity.CreateReply("two"));
+                    await turnContext.SendActivityAsync(turnContext.Activity.CreateReply("three"));
                     break;
                 case "ignore":
                     break;
                 case "TestResponded":
-                    if (context.Responded == true)
+                    if (turnContext.Responded == true)
                         throw new InvalidOperationException("Responded Is True");
 
-                    await context.SendActivityAsync(context.Activity.CreateReply("one"));
+                    await turnContext.SendActivityAsync(turnContext.Activity.CreateReply("one"));
 
-                    if (context.Responded == false)
+                    if (turnContext.Responded == false)
                         throw new InvalidOperationException("Responded Is True");
                     break;
                 default:
-                    await context.SendActivityAsync(
-                        context.Activity.CreateReply($"echo:{context.Activity.Text}"));
+                    await turnContext.SendActivityAsync(
+                        turnContext.Activity.CreateReply($"echo:{turnContext.Activity.Text}"));
                     break;
             }
         }

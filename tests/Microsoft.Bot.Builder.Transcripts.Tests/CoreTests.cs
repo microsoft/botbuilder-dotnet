@@ -61,9 +61,9 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
         {
             public async Task OnTurnAsync(ITurnContext turnContext, NextDelegate next, CancellationToken cancellationToken = default(CancellationToken))
             {
-                await context.SendActivityAsync("before message");
+                await turnContext.SendActivityAsync("before message");
                 await next(cancellationToken);
-                await context.SendActivityAsync("after message");
+                await turnContext.SendActivityAsync("after message");
             }
         }
     }

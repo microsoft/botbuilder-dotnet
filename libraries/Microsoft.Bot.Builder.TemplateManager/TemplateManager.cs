@@ -1,8 +1,9 @@
-﻿using Microsoft.Bot.Schema;
-using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.TemplateManager
 {
@@ -28,8 +29,8 @@ namespace Microsoft.Bot.Builder.TemplateManager
 
         public TemplateManager Register(ITemplateRenderer renderer)
         {
-            if (!this._templateRenderers.Contains(renderer))
-                this._templateRenderers.Add(renderer);
+            if (!_templateRenderers.Contains(renderer))
+                _templateRenderers.Add(renderer);
             return this;
         }
 
@@ -39,17 +40,17 @@ namespace Microsoft.Bot.Builder.TemplateManager
         /// <returns></returns>
         public IList<ITemplateRenderer> List()
         {
-            return this._templateRenderers;
+            return _templateRenderers;
         }
 
         public void SetLanguagePolicy(IEnumerable<string> languageFallback)
         {
-            this._languageFallback = new List<string>(languageFallback);
+            _languageFallback = new List<string>(languageFallback);
         }
 
         public IEnumerable<string> GetLanguagePolicy()
         {
-            return this._languageFallback;
+            return _languageFallback;
         }
 
         /// <summary>
@@ -61,13 +62,13 @@ namespace Microsoft.Bot.Builder.TemplateManager
         /// <returns></returns>
         public async Task ReplyWith(ITurnContext turnContext, string templateId, object data = null)
         {
-            BotAssert.ContextNotNull(context);
+            BotAssert.ContextNotNull(turnContext);
 
             // apply template
-            Activity boundActivity = await this.RenderTemplate(context, context.Activity?.AsMessageActivity()?.Locale, templateId, data).ConfigureAwait(false);
+            Activity boundActivity = await RenderTemplate(turnContext, turnContext.Activity?.AsMessageActivity()?.Locale, templateId, data).ConfigureAwait(false);
             if (boundActivity != null)
             {
-                await context.SendActivityAsync(boundActivity);
+                await turnContext.SendActivityAsync(boundActivity);
                 return;
             }
             return;
@@ -77,14 +78,14 @@ namespace Microsoft.Bot.Builder.TemplateManager
         /// <summary>
         /// Render the template
         /// </summary>
-        /// <param name="context"></param>
+        /// <param name="turnContext"></param>
         /// <param name="language"></param>
         /// <param name="templateId"></param>
         /// <param name="data"></param>
         /// <returns></returns>
         public async Task<Activity> RenderTemplate(ITurnContext turnContext, string language, string templateId, object data = null)
         {
-            List<string> fallbackLocales = new List<string>(this._languageFallback);
+            var fallbackLocales = new List<string>(_languageFallback);
 
             if (!string.IsNullOrEmpty(language))
             {
@@ -96,9 +97,9 @@ namespace Microsoft.Bot.Builder.TemplateManager
             // try each locale until successful
             foreach (var locale in fallbackLocales)
             {
-                foreach (var renderer in this._templateRenderers)
+                foreach (var renderer in _templateRenderers)
                 {
-                    object templateOutput = await renderer.RenderTemplate(context, locale, templateId, data);
+                    object templateOutput = await renderer.RenderTemplate(turnContext, locale, templateId, data);
                     if (templateOutput != null)
                     {
                         if (templateOutput is string)

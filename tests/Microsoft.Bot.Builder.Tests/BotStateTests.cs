@@ -613,7 +613,7 @@ namespace Microsoft.Bot.Builder.Tests
             {
             }
 
-            protected override string GetStorageKey(ITurnContext turnContext) => $"botstate/{context.Activity.ChannelId}/{context.Activity.Conversation.Id}/{typeof(BotState).Namespace}.{typeof(BotState).Name}";
+            protected override string GetStorageKey(ITurnContext turnContext) => $"botstate/{turnContext.Activity.ChannelId}/{turnContext.Activity.Conversation.Id}/{typeof(BotState).Namespace}.{typeof(BotState).Name}";
         }
 
         public class CustomState : IStoreItem

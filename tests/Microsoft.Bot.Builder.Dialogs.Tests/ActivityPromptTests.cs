@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             }
             else
             {
-                await context.SendActivityAsync("Please send an 'event'-type Activity with a value of 2.");
+                await turnContext.SendActivityAsync("Please send an 'event'-type Activity with a value of 2.");
             }
         }
 

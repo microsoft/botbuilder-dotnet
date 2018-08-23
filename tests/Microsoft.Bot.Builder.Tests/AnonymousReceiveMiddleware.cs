@@ -28,13 +28,13 @@ namespace Microsoft.Bot.Builder.Tests
         /// Uses the method provided in the <see cref="AnonymousReceiveMiddleware"/> to
         /// process an incoming activity.
         /// </summary>
-        /// <param name="context">The context object for this turn.</param>
+        /// <param name="turnContext">The context object for this turn.</param>
         /// <param name="next">The delegate to call to continue the bot middleware pipeline.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         public Task OnTurnAsync(ITurnContext turnContext, NextDelegate next, CancellationToken cancellationToken)
         {
-            return _toCall(context, next, cancellationToken);
+            return _toCall(turnContext, next, cancellationToken);
         }
     }
 }
