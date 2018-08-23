@@ -32,28 +32,28 @@ namespace Microsoft.Bot.Builder
         /// <summary>
         /// Records incoming and outgoing activities to the conversation store.
         /// </summary>
-        /// <param name="context">The context object for this turn.</param>
+        /// <param name="turnContext">The context object for this turn.</param>
         /// <param name="nextTurn">The delegate to call to continue the bot middleware pipeline.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <seealso cref="ITurnContext"/>
         /// <seealso cref="Bot.Schema.IActivity"/>
-        public async Task OnTurnAsync(ITurnContext context, NextDelegate nextTurn, CancellationToken cancellationToken)
+        public async Task OnTurnAsync(ITurnContext turnContext, NextDelegate nextTurn, CancellationToken cancellationToken)
         {
             // log incoming activity at beginning of turn
-            if (context.Activity != null)
+            if (turnContext.Activity != null)
             {
-                if (string.IsNullOrEmpty((string)context.Activity.From.Properties["role"]))
+                if (string.IsNullOrEmpty((string)turnContext.Activity.From.Properties["role"]))
                 {
-                    context.Activity.From.Properties["role"] = "user";
+                    turnContext.Activity.From.Properties["role"] = "user";
                 }
 
-                LogActivity(CloneActivity(context.Activity));
+                LogActivity(CloneActivity(turnContext.Activity));
             }
 
             // hook up onSend pipeline
-            context.OnSendActivities(async (ctx, activities, nextSend) =>
+            turnContext.OnSendActivities(async (ctx, activities, nextSend) =>
             {
                 // run full pipeline
                 var responses = await nextSend().ConfigureAwait(false);
@@ -67,7 +67,7 @@ namespace Microsoft.Bot.Builder
             });
 
             // hook up update activity pipeline
-            context.OnUpdateActivity(async (ctx, activity, nextUpdate) =>
+            turnContext.OnUpdateActivity(async (ctx, activity, nextUpdate) =>
             {
                 // run full pipeline
                 var response = await nextUpdate().ConfigureAwait(false);
@@ -80,7 +80,7 @@ namespace Microsoft.Bot.Builder
             });
 
             // hook up delete activity pipeline
-            context.OnDeleteActivity(async (ctx, reference, nextDelete) =>
+            turnContext.OnDeleteActivity(async (ctx, reference, nextDelete) =>
             {
                 // run full pipeline
                 await nextDelete().ConfigureAwait(false);

@@ -61,8 +61,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
 
         public static int MaxActionTitleLength(string channelId) => 20;
 
-        public static string GetChannelId(ITurnContext context) => string.IsNullOrEmpty(context.Activity.ChannelId)
-            ? string.Empty : context.Activity.ChannelId;
+        public static string GetChannelId(ITurnContext turnContext) => string.IsNullOrEmpty(turnContext.Activity.ChannelId)
+            ? string.Empty : turnContext.Activity.ChannelId;
 
         public class Channels
         {

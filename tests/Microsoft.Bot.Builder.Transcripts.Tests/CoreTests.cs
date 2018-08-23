@@ -59,11 +59,11 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
 
         public class BeforeAfterMiddleware : IMiddleware
         {
-            public async Task OnTurnAsync(ITurnContext context, NextDelegate next, CancellationToken cancellationToken = default(CancellationToken))
+            public async Task OnTurnAsync(ITurnContext turnContext, NextDelegate next, CancellationToken cancellationToken = default(CancellationToken))
             {
-                await context.SendActivityAsync("before message");
+                await turnContext.SendActivityAsync("before message");
                 await next(cancellationToken);
-                await context.SendActivityAsync("after message");
+                await turnContext.SendActivityAsync("after message");
             }
         }
     }
