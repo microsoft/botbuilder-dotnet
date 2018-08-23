@@ -122,16 +122,16 @@ namespace Microsoft.Bot.Builder.Dialogs
             return Dialog.EndOfTurn;
         }
 
-        public override async Task DialogRepromptAsync(ITurnContext context, DialogInstance instance)
+        public override async Task DialogRepromptAsync(ITurnContext turnContext, DialogInstance instance)
         {
             var state = (IDictionary<string, object>)instance.State[PersistedState];
             var options = (PromptOptions)instance.State[PersistedOptions];
-            await OnPromptAsync(context, state, options, false).ConfigureAwait(false);
+            await OnPromptAsync(turnContext, state, options, false).ConfigureAwait(false);
         }
 
-        protected abstract Task OnPromptAsync(ITurnContext context, IDictionary<string, object> state, PromptOptions options, bool isRetry);
+        protected abstract Task OnPromptAsync(ITurnContext turnContext, IDictionary<string, object> state, PromptOptions options, bool isRetry);
 
-        protected abstract Task<PromptRecognizerResult<T>> OnRecognizeAsync(ITurnContext context, IDictionary<string, object> state, PromptOptions options);
+        protected abstract Task<PromptRecognizerResult<T>> OnRecognizeAsync(ITurnContext turnContext, IDictionary<string, object> state, PromptOptions options);
 
         protected IMessageActivity AppendChoices(IMessageActivity prompt, string channelId, IList<Choice> choices, ListStyle style, ChoiceFactoryOptions options = null)
         {

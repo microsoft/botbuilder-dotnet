@@ -1,6 +1,8 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.TemplateManager
@@ -33,20 +35,20 @@ namespace Microsoft.Bot.Builder.TemplateManager
     /// </summary>
     public class DictionaryRenderer : ITemplateRenderer
     {
-        private LanguageTemplateDictionary languages;
+        private LanguageTemplateDictionary _languages;
 
         public DictionaryRenderer(LanguageTemplateDictionary templates)
         {
-            this.languages = templates;
+            _languages = templates;
         }
 
-        public Task<object> RenderTemplate(ITurnContext context, string language, string templateId, object data)
+        public Task<object> RenderTemplate(ITurnContext turnContext, string language, string templateId, object data)
         {
-            if (this.languages.TryGetValue(language, out var templates))
+            if (_languages.TryGetValue(language, out var templates))
             {
                 if (templates.TryGetValue(templateId, out var template))
                 {
-                    dynamic result = template(context, data);
+                    dynamic result = template(turnContext, data);
                     if (result != null)
                     {
                         return Task.FromResult(result as object);

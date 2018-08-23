@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
     [TestClass]
     public class ActivityPromptTests
     {
-        private async Task _validator(ITurnContext context, PromptValidatorContext<Activity> promptContext)
+        private async Task _validator(ITurnContext turnContext, PromptValidatorContext<Activity> promptContext)
         {
             var activity = (Activity)promptContext.Recognized.Value;
             if (activity.Type == ActivityTypes.Event)
@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             }
             else
             {
-                await context.SendActivityAsync("Please send an 'event'-type Activity with a value of 2.");
+                await turnContext.SendActivityAsync("Please send an 'event'-type Activity with a value of 2.");
             }
         }
 

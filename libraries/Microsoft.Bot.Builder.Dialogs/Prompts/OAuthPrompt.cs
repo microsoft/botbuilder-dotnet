@@ -182,51 +182,51 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <summary>
         /// Get a token for a user signed in.
         /// </summary>
-        /// <param name="context">Context for the current turn of the conversation with the user.</param>
+        /// <param name="turnContext">Context for the current turn of the conversation with the user.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public async Task<TokenResponse> GetUserTokenAsync(ITurnContext context)
+        public async Task<TokenResponse> GetUserTokenAsync(ITurnContext turnContext)
         {
             string magicCode = null;
-            if (!(context.Adapter is BotFrameworkAdapter adapter))
+            if (!(turnContext.Adapter is BotFrameworkAdapter adapter))
             {
                 throw new InvalidOperationException("OAuthPrompt.GetUserToken(): not supported by the current adapter");
             }
             
-            if (IsTeamsVerificationInvoke(context))
+            if (IsTeamsVerificationInvoke(turnContext))
             {
-                var value = context.Activity.Value as JObject;
+                var value = turnContext.Activity.Value as JObject;
                 magicCode = value.GetValue("state")?.ToString();
             }
             
-            if (context.Activity.Type == ActivityTypes.Message && _magicCodeRegex.IsMatch(context.Activity.Text))
+            if (turnContext.Activity.Type == ActivityTypes.Message && _magicCodeRegex.IsMatch(turnContext.Activity.Text))
             {
-                magicCode = context.Activity.Text;
+                magicCode = turnContext.Activity.Text;
             }
 
-            return await adapter.GetUserTokenAsync(context, _settings.ConnectionName, magicCode, default(CancellationToken)).ConfigureAwait(false);
+            return await adapter.GetUserTokenAsync(turnContext, _settings.ConnectionName, magicCode, default(CancellationToken)).ConfigureAwait(false);
         }
 
         /// <summary>
         /// Sign Out the User.
         /// </summary>
-        /// <param name="context">Context for the current turn of the conversation with the user.</param>
+        /// <param name="turnContext">Context for the current turn of the conversation with the user.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public async Task SignOutUserAsync(ITurnContext context)
+        public async Task SignOutUserAsync(ITurnContext turnContext)
         {
-            if (!(context.Adapter is BotFrameworkAdapter adapter))
+            if (!(turnContext.Adapter is BotFrameworkAdapter adapter))
             {
                 throw new InvalidOperationException("OAuthPrompt.SignOutUser(): not supported by the current adapter");
             }
 
             // Sign out user
-            await adapter.SignOutUserAsync(context, _settings.ConnectionName, default(CancellationToken)).ConfigureAwait(false);
+            await adapter.SignOutUserAsync(turnContext, _settings.ConnectionName, default(CancellationToken)).ConfigureAwait(false);
         }
 
-        private async Task SendOAuthCardAsync(ITurnContext context, IMessageActivity prompt)
+        private async Task SendOAuthCardAsync(ITurnContext turnContext, IMessageActivity prompt)
         {
-            BotAssert.ContextNotNull(context);
+            BotAssert.ContextNotNull(turnContext);
 
-            if (!(context.Adapter is BotFrameworkAdapter adapter))
+            if (!(turnContext.Adapter is BotFrameworkAdapter adapter))
             {
                 throw new InvalidOperationException("OAuthPrompt.Prompt(): not supported by the current adapter");
             }
@@ -243,11 +243,11 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             // Append appropriate card if missing
-            if (!ChannelSupportsOAuthCard(context.Activity.ChannelId))
+            if (!ChannelSupportsOAuthCard(turnContext.Activity.ChannelId))
             {
                 if (!prompt.Attachments.Any(a => a.Content is SigninCard))
                 {
-                    var link = await adapter.GetOauthSignInLinkAsync(context, _settings.ConnectionName, default(CancellationToken)).ConfigureAwait(false);
+                    var link = await adapter.GetOauthSignInLinkAsync(turnContext, _settings.ConnectionName, default(CancellationToken)).ConfigureAwait(false);
                     prompt.Attachments.Add(new Attachment
                     {
                         ContentType = SigninCard.ContentType,
@@ -295,47 +295,47 @@ namespace Microsoft.Bot.Builder.Dialogs
                 prompt.InputHint = InputHints.ExpectingInput;
             }
 
-            await context.SendActivityAsync(prompt).ConfigureAwait(false);
+            await turnContext.SendActivityAsync(prompt).ConfigureAwait(false);
         }
 
-        private async Task<PromptRecognizerResult<TokenResponse>> RecognizeTokenAsync(ITurnContext context)
+        private async Task<PromptRecognizerResult<TokenResponse>> RecognizeTokenAsync(ITurnContext turnContext)
         {
             var result = new PromptRecognizerResult<TokenResponse>();
-            if (IsTokenResponseEvent(context))
+            if (IsTokenResponseEvent(turnContext))
             {
-                var tokenResponseObject = context.Activity.Value as JObject;
+                var tokenResponseObject = turnContext.Activity.Value as JObject;
                 var token = tokenResponseObject?.ToObject<TokenResponse>();
                 result.Succeeded = true;
                 result.Value = token;
             }
-            else if (IsTeamsVerificationInvoke(context))
+            else if (IsTeamsVerificationInvoke(turnContext))
             {
-                var magicCodeObject = context.Activity.Value as JObject;
+                var magicCodeObject = turnContext.Activity.Value as JObject;
                 var magicCode = magicCodeObject.GetValue("state")?.ToString();
 
-                if (!(context.Adapter is BotFrameworkAdapter adapter))
+                if (!(turnContext.Adapter is BotFrameworkAdapter adapter))
                 {
                     throw new InvalidOperationException("OAuthPrompt.Recognize(): not supported by the current adapter");
                 }
 
-                var token = await adapter.GetUserTokenAsync(context, _settings.ConnectionName, magicCode, default(CancellationToken)).ConfigureAwait(false);
+                var token = await adapter.GetUserTokenAsync(turnContext, _settings.ConnectionName, magicCode, default(CancellationToken)).ConfigureAwait(false);
                 if (token != null)
                 {
                     result.Succeeded = true;
                     result.Value = token;
                 }
             }
-            else if (context.Activity.Type == ActivityTypes.Message)
+            else if (turnContext.Activity.Type == ActivityTypes.Message)
             {
-                var matched = _magicCodeRegex.Match(context.Activity.Text);
+                var matched = _magicCodeRegex.Match(turnContext.Activity.Text);
                 if (matched.Success)
                 {
-                    if (!(context.Adapter is BotFrameworkAdapter adapter))
+                    if (!(turnContext.Adapter is BotFrameworkAdapter adapter))
                     {
                         throw new InvalidOperationException("OAuthPrompt.Recognize(): not supported by the current adapter");
                     }
 
-                    var token = await adapter.GetUserTokenAsync(context, _settings.ConnectionName, matched.Value, default(CancellationToken)).ConfigureAwait(false);
+                    var token = await adapter.GetUserTokenAsync(turnContext, _settings.ConnectionName, matched.Value, default(CancellationToken)).ConfigureAwait(false);
                     if (token != null)
                     {
                         result.Succeeded = true;
@@ -347,15 +347,15 @@ namespace Microsoft.Bot.Builder.Dialogs
             return result;
         }
 
-        private bool IsTokenResponseEvent(ITurnContext context)
+        private bool IsTokenResponseEvent(ITurnContext turnContext)
         {
-            var activity = context.Activity;
+            var activity = turnContext.Activity;
             return activity.Type == ActivityTypes.Event && activity.Name == "tokens/response";
         }
 
-        private bool IsTeamsVerificationInvoke(ITurnContext context)
+        private bool IsTeamsVerificationInvoke(ITurnContext turnContext)
         {
-            var activity = context.Activity;
+            var activity = turnContext.Activity;
             return activity.Type == ActivityTypes.Invoke && activity.Name == "signin/verifyState";
         }
 

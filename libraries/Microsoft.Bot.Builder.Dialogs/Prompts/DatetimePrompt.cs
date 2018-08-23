@@ -20,11 +20,11 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         public string DefaultLocale { get; set; }
 
-        protected override async Task OnPromptAsync(ITurnContext context, IDictionary<string, object> state, PromptOptions options, bool isRetry)
+        protected override async Task OnPromptAsync(ITurnContext turnContext, IDictionary<string, object> state, PromptOptions options, bool isRetry)
         {
-            if (context == null)
+            if (turnContext == null)
             {
-                throw new ArgumentNullException(nameof(context));
+                throw new ArgumentNullException(nameof(turnContext));
             }
 
             if (options == null)
@@ -34,26 +34,26 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             if (isRetry && options.RetryPrompt != null)
             {
-                await context.SendActivityAsync(options.RetryPrompt).ConfigureAwait(false);
+                await turnContext.SendActivityAsync(options.RetryPrompt).ConfigureAwait(false);
             }
             else if (options.Prompt != null)
             {
-                await context.SendActivityAsync(options.Prompt).ConfigureAwait(false);
+                await turnContext.SendActivityAsync(options.Prompt).ConfigureAwait(false);
             }
         }
 
-        protected override Task<PromptRecognizerResult<IList<DateTimeResolution>>> OnRecognizeAsync(ITurnContext context, IDictionary<string, object> state, PromptOptions options)
+        protected override Task<PromptRecognizerResult<IList<DateTimeResolution>>> OnRecognizeAsync(ITurnContext turnContext, IDictionary<string, object> state, PromptOptions options)
         {
-            if (context == null)
+            if (turnContext == null)
             {
-                throw new ArgumentNullException(nameof(context));
+                throw new ArgumentNullException(nameof(turnContext));
             }
 
             var result = new PromptRecognizerResult<IList<DateTimeResolution>>();
-            if (context.Activity.Type == ActivityTypes.Message)
+            if (turnContext.Activity.Type == ActivityTypes.Message)
             {
-                var message = context.Activity.AsMessageActivity();
-                var culture = context.Activity.Locale ?? DefaultLocale ?? English;
+                var message = turnContext.Activity.AsMessageActivity();
+                var culture = turnContext.Activity.Locale ?? DefaultLocale ?? English;
                 var results = DateTimeRecognizer.RecognizeDateTime(message.Text, culture);
                 if (results.Count > 0)
                 {

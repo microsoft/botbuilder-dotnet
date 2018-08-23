@@ -87,19 +87,19 @@ namespace Microsoft.Bot.Builder.Dialogs
             return Dialog.EndOfTurn;
         }
 
-        public override async Task DialogRepromptAsync(ITurnContext context, DialogInstance instance)
+        public override async Task DialogRepromptAsync(ITurnContext turnContext, DialogInstance instance)
         {
             // Delegate to inner dialog.
             var dialogState = (DialogState)instance.State[PersistedDialogState];
-            var cdc = new DialogContext(_dialogs, context, dialogState);
+            var cdc = new DialogContext(_dialogs, turnContext, dialogState);
             await OnDialogRepromptAsync(cdc).ConfigureAwait(false);
         }
 
-        public override async Task DialogEndAsync(ITurnContext context, DialogInstance instance, DialogReason reason)
+        public override async Task DialogEndAsync(ITurnContext turnContext, DialogInstance instance, DialogReason reason)
         {
             // Notify inner dialog
             var dialogState = (DialogState)instance.State[PersistedDialogState];
-            var cdc = new DialogContext(_dialogs, context, dialogState);
+            var cdc = new DialogContext(_dialogs, turnContext, dialogState);
             await OnDialogEndAsync(cdc, reason).ConfigureAwait(false);
         }
 

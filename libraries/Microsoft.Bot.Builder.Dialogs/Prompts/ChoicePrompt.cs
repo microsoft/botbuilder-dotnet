@@ -39,11 +39,11 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         public FindChoicesOptions RecognizerOptions { get; set; }
 
-        protected override async Task OnPromptAsync(ITurnContext context, IDictionary<string, object> state, PromptOptions options, bool isRetry)
+        protected override async Task OnPromptAsync(ITurnContext turnContext, IDictionary<string, object> state, PromptOptions options, bool isRetry)
         {
-            if (context == null)
+            if (turnContext == null)
             {
-                throw new ArgumentNullException(nameof(context));
+                throw new ArgumentNullException(nameof(turnContext));
             }
 
             if (options == null)
@@ -52,7 +52,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             // Determine culture
-            var culture = context.Activity.Locale ?? DefaultLocale;
+            var culture = turnContext.Activity.Locale ?? DefaultLocale;
             if (string.IsNullOrEmpty(culture) || !DefaultChoiceOptions.ContainsKey(culture))
             {
                 culture = English;
@@ -61,7 +61,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             // Format prompt to send
             IMessageActivity prompt;
             var choices = options.Choices ?? new List<Choice>();
-            var channelId = context.Activity.ChannelId;
+            var channelId = turnContext.Activity.ChannelId;
             var choiceOptions = ChoiceOptions ?? DefaultChoiceOptions[culture];
             if (isRetry && options.RetryPrompt != null)
             {
@@ -73,22 +73,22 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             // Send prompt
-            await context.SendActivityAsync(prompt).ConfigureAwait(false);
+            await turnContext.SendActivityAsync(prompt).ConfigureAwait(false);
         }
 
-        protected override Task<PromptRecognizerResult<FoundChoice>> OnRecognizeAsync(ITurnContext context, IDictionary<string, object> state, PromptOptions options)
+        protected override Task<PromptRecognizerResult<FoundChoice>> OnRecognizeAsync(ITurnContext turnContext, IDictionary<string, object> state, PromptOptions options)
         {
-            if (context == null)
+            if (turnContext == null)
             {
-                throw new ArgumentNullException(nameof(context));
+                throw new ArgumentNullException(nameof(turnContext));
             }
 
             var choices = options.Choices ?? new List<Choice>();
 
             var result = new PromptRecognizerResult<FoundChoice>();
-            if (context.Activity.Type == ActivityTypes.Message)
+            if (turnContext.Activity.Type == ActivityTypes.Message)
             {
-                var activity = context.Activity;
+                var activity = turnContext.Activity;
                 var utterance = activity.Text;
                 var opt = RecognizerOptions ?? new FindChoicesOptions();
                 opt.Locale = activity.Locale ?? opt.Locale ?? DefaultLocale ?? English;
