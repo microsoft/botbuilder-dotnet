@@ -57,16 +57,6 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
             var routes = httpConfiguration.Routes;
             var baseUrl = options.Paths.BasePath;
 
-            if (options.EnableProactiveMessages)
-            {
-                routes.MapHttpRoute(
-                    BotProactiveMessageHandler.RouteName,
-                    baseUrl.Trim('/') + "/" + options.Paths.ProactiveMessagesPath.Trim('/'),
-                    defaults: null,
-                    constraints: null,
-                    handler: new BotProactiveMessageHandler(adapter));
-            }
-
             routes.MapHttpRoute(
                     BotMessageHandler.RouteName,
                     baseUrl.Trim('/') + "/" + options.Paths.MessagesPath.Trim('/'),

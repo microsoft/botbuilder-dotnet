@@ -113,7 +113,7 @@ namespace Microsoft.Bot.Builder.Classic.FormFlowTest
             using (var container = builder.Build())
             {
                 var adapter = new ConsoleAdapter();
-                adapter.ProcessActivity(async (context) =>
+                adapter.ProcessActivity(async (context, cancellationToken) =>
                 {
                     using (var scope = DialogModule.BeginLifetimeScope(container, context))
                     {
@@ -237,14 +237,14 @@ namespace Microsoft.Bot.Builder.Classic.FormFlowTest
                             { Size = SizeOptions.Large, Kind = PizzaOptions.BYOPizza },
                             () => PizzaOrder.BuildForm(),
                             options: FormOptions.PromptInStart | FormOptions.PromptFieldsWithValues,
-                            entities: new Luis.Models.EntityRecommendation[] {
-                                new Luis.Models.EntityRecommendation("DeliveryAddress", entity:"2"),
-                                new Luis.Models.EntityRecommendation("Signature", entity:"Hawaiian"),
-                                new Luis.Models.EntityRecommendation("BYO.Toppings", entity:"onions"),
-                                new Luis.Models.EntityRecommendation("BYO.Toppings", entity:"peppers"),
-                                new Luis.Models.EntityRecommendation("BYO.Toppings", entity:"ice"),
-                                new Luis.Models.EntityRecommendation("NumberOfPizzas", entity:"5"),
-                                new Luis.Models.EntityRecommendation("NotFound", entity:"OK")
+                            entities: new Luis.Models.EntityModel[] {
+                                new Luis.Models.EntityModel("DeliveryAddress", entity:"2"),
+                                new Luis.Models.EntityModel("Signature", entity:"Hawaiian"),
+                                new Luis.Models.EntityModel("BYO.Toppings", entity:"onions"),
+                                new Luis.Models.EntityModel("BYO.Toppings", entity:"peppers"),
+                                new Luis.Models.EntityModel("BYO.Toppings", entity:"ice"),
+                                new Luis.Models.EntityModel("NumberOfPizzas", entity:"5"),
+                                new Luis.Models.EntityModel("NotFound", entity:"OK")
                             }
                             );
                         case DebugOptions.Localized:

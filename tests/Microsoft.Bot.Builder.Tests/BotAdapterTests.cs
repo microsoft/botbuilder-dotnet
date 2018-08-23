@@ -38,7 +38,7 @@ namespace Microsoft.Bot.Builder.Tests
             var a = new SimpleAdapter(ValidateResponses);
             var c = new TurnContext(a, new Activity());
 
-            string activityId = Guid.NewGuid().ToString();
+            var activityId = Guid.NewGuid().ToString();
             var activity = TestMessage.Message();
             activity.Id = activityId;
 
@@ -50,7 +50,7 @@ namespace Microsoft.Bot.Builder.Tests
     public class CallCountingMiddleware : IMiddleware
     {
         public int Calls { get; set; }
-        public async Task OnTurnAsync(ITurnContext context, NextDelegate next, CancellationToken cancellationToken)
+        public async Task OnTurnAsync(ITurnContext turnContext, NextDelegate next, CancellationToken cancellationToken)
         {
             Calls++;
             await next(cancellationToken);

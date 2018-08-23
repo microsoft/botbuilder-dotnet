@@ -83,7 +83,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
-        public async Task ProcessActivityAsync(Activity activity, Func<ITurnContext, Task> callback, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task ProcessActivityAsync(Activity activity, BotCallbackHandler callback, CancellationToken cancellationToken = default(CancellationToken))
         {
             lock (_conversationLock)
             {
@@ -116,7 +116,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <summary>
         /// Sends activities to the conversation.
         /// </summary>
-        /// <param name="context">The context object for the turn.</param>
+        /// <param name="turnContext">The context object for the turn.</param>
         /// <param name="activities">The activities to send.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
@@ -125,11 +125,11 @@ namespace Microsoft.Bot.Builder.Adapters
         /// an array of <see cref="ResourceResponse"/> objects containing the IDs that
         /// the receiving channel assigned to the activities.</remarks>
         /// <seealso cref="ITurnContext.OnSendActivities(SendActivitiesHandler)"/>
-        public async override Task<ResourceResponse[]> SendActivitiesAsync(ITurnContext context, Activity[] activities, CancellationToken cancellationToken)
+        public async override Task<ResourceResponse[]> SendActivitiesAsync(ITurnContext turnContext, Activity[] activities, CancellationToken cancellationToken)
         {
-            if (context == null)
+            if (turnContext == null)
             {
-                throw new ArgumentNullException(nameof(context));
+                throw new ArgumentNullException(nameof(turnContext));
             }
 
             if (activities == null)
@@ -198,7 +198,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <summary>
         /// Replaces an existing activity in the <see cref="ActiveQueue"/>.
         /// </summary>
-        /// <param name="context">The context object for the turn.</param>
+        /// <param name="turnContext">The context object for the turn.</param>
         /// <param name="activity">New replacement activity.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
@@ -209,7 +209,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <para>Before calling this, set the ID of the replacement activity to the ID
         /// of the activity to replace.</para></remarks>
         /// <seealso cref="ITurnContext.OnUpdateActivity(UpdateActivityHandler)"/>
-        public override Task<ResourceResponse> UpdateActivityAsync(ITurnContext context, Activity activity, CancellationToken cancellationToken)
+        public override Task<ResourceResponse> UpdateActivityAsync(ITurnContext turnContext, Activity activity, CancellationToken cancellationToken)
         {
             lock (_activeQueueLock)
             {
@@ -236,7 +236,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <summary>
         /// Deletes an existing activity in the <see cref="ActiveQueue"/>.
         /// </summary>
-        /// <param name="context">The context object for the turn.</param>
+        /// <param name="turnContext">The context object for the turn.</param>
         /// <param name="reference">Conversation reference for the activity to delete.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
@@ -244,7 +244,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <remarks>The <see cref="ConversationReference.ActivityId"/> of the conversation
         /// reference identifies the activity to delete.</remarks>
         /// <seealso cref="ITurnContext.OnDeleteActivity(DeleteActivityHandler)"/>
-        public override Task DeleteActivityAsync(ITurnContext context, ConversationReference reference, CancellationToken cancellationToken)
+        public override Task DeleteActivityAsync(ITurnContext turnContext, ConversationReference reference, CancellationToken cancellationToken)
         {
             lock (_activeQueueLock)
             {
@@ -277,13 +277,13 @@ namespace Microsoft.Bot.Builder.Adapters
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <remarks>This resets the <see cref="ActiveQueue"/>, and does not maintain multiple converstion queues.</remarks>
-        public Task CreateConversationAsync(string channelId, Func<ITurnContext, Task> callback, CancellationToken cancellationToken)
+        public Task CreateConversationAsync(string channelId, BotCallbackHandler callback, CancellationToken cancellationToken)
         {
             ActiveQueue.Clear();
             var update = Activity.CreateConversationUpdateActivity();
             update.Conversation = new ConversationAccount() { Id = Guid.NewGuid().ToString("n") };
             var context = new TurnContext(this, (Activity)update);
-            return callback(context);
+            return callback(context, cancellationToken);
         }
 
         /// <summary>
@@ -335,7 +335,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <seealso cref="TestFlow.Send(string)"/>
-        public Task SendTextToBotAsync(string userSays, Func<ITurnContext, Task> callback, CancellationToken cancellationToken)
+        public Task SendTextToBotAsync(string userSays, BotCallbackHandler callback, CancellationToken cancellationToken)
         {
             return ProcessActivityAsync(MakeActivity(userSays), callback, cancellationToken);
         }

@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
 using System;
@@ -9,7 +9,7 @@ using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.Core.Extensions.Tests
+namespace Microsoft.Bot.Builder.Tests
 {
     public class TranscriptBaseTests
     {

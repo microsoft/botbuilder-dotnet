@@ -1,0 +1,991 @@
+{
+  "Text": "12 years old and 3 days old and monday july 3rd and every monday and between 3am and 5:30am and 4 acres and 4 pico meters and chrimc@hotmail.com and $4 and $4.25 and also 32 and 210.4 and first and 10% and 10.5% and 425-555-1234 and 3 degrees and -27.5 degrees c",
+  "Intents": {
+    "EntityTests": {
+      "score": 0.9815396
+    },
+    "search": {
+      "score": 0.435023278
+    },
+    "None": {
+      "score": 0.0568813831
+    },
+    "Weather_GetForecast": {
+      "score": 0.05395444
+    },
+    "Travel": {
+      "score": 0.0150735639
+    },
+    "Delivery": {
+      "score": 0.00403430453
+    },
+    "SpecifyName": {
+      "score": 0.00316059729
+    },
+    "Help": {
+      "score": 0.0001318411
+    },
+    "Cancel": {
+      "score": 5.48900862E-05
+    },
+    "Greeting": {
+      "score": 1.48596814E-06
+    }
+  },
+  "Entities": {
+    "Composite1": [
+      {
+        "age": [
+          {
+            "number": 12.0,
+            "units": "Year"
+          },
+          {
+            "number": 3.0,
+            "units": "Day"
+          }
+        ],
+        "datetime": [
+          {
+            "type": "duration",
+            "timex": [
+              "P12Y"
+            ]
+          },
+          {
+            "type": "duration",
+            "timex": [
+              "P3D"
+            ]
+          },
+          {
+            "type": "date",
+            "timex": [
+              "XXXX-07-03"
+            ]
+          },
+          {
+            "type": "set",
+            "timex": [
+              "XXXX-WXX-1"
+            ]
+          },
+          {
+            "type": "timerange",
+            "timex": [
+              "(T03,T05:30,PT2H30M)"
+            ]
+          }
+        ],
+        "dimension": [
+          {
+            "number": 4.0,
+            "units": "Acre"
+          },
+          {
+            "number": 4.0,
+            "units": "Picometer"
+          }
+        ],
+        "email": [
+          "chrimc@hotmail.com"
+        ],
+        "money": [
+          {
+            "number": 4.0,
+            "units": "Dollar"
+          },
+          {
+            "number": 4.25,
+            "units": "Dollar"
+          }
+        ],
+        "number": [
+          12.0,
+          3.0,
+          5.0,
+          4.0,
+          4.0,
+          4.0,
+          4.25,
+          32.0,
+          210.4,
+          10.0,
+          10.5,
+          425.0,
+          555.0,
+          1234.0,
+          3.0,
+          -27.5
+        ],
+        "ordinal": [
+          3.0,
+          1.0
+        ],
+        "percentage": [
+          10.0,
+          10.5
+        ],
+        "phonenumber": [
+          "425-555-1234"
+        ],
+        "temperature": [
+          {
+            "number": 3.0,
+            "units": "Degree"
+          },
+          {
+            "number": -27.5,
+            "units": "C"
+          }
+        ],
+        "$instance": {
+          "age": [
+            {
+              "startIndex": 0,
+              "endIndex": 12,
+              "text": "12 years old",
+              "type": "builtin.age"
+            },
+            {
+              "startIndex": 17,
+              "endIndex": 27,
+              "text": "3 days old",
+              "type": "builtin.age"
+            }
+          ],
+          "datetime": [
+            {
+              "startIndex": 0,
+              "endIndex": 8,
+              "text": "12 years",
+              "type": "builtin.datetimeV2.duration"
+            },
+            {
+              "startIndex": 17,
+              "endIndex": 23,
+              "text": "3 days",
+              "type": "builtin.datetimeV2.duration"
+            },
+            {
+              "startIndex": 32,
+              "endIndex": 47,
+              "text": "monday july 3rd",
+              "type": "builtin.datetimeV2.date"
+            },
+            {
+              "startIndex": 52,
+              "endIndex": 64,
+              "text": "every monday",
+              "type": "builtin.datetimeV2.set"
+            },
+            {
+              "startIndex": 69,
+              "endIndex": 91,
+              "text": "between 3am and 5:30am",
+              "type": "builtin.datetimeV2.timerange"
+            }
+          ],
+          "dimension": [
+            {
+              "startIndex": 96,
+              "endIndex": 103,
+              "text": "4 acres",
+              "type": "builtin.dimension"
+            },
+            {
+              "startIndex": 108,
+              "endIndex": 121,
+              "text": "4 pico meters",
+              "type": "builtin.dimension"
+            }
+          ],
+          "email": [
+            {
+              "startIndex": 126,
+              "endIndex": 144,
+              "text": "chrimc@hotmail.com",
+              "type": "builtin.email"
+            }
+          ],
+          "money": [
+            {
+              "startIndex": 149,
+              "endIndex": 151,
+              "text": "$4",
+              "type": "builtin.currency"
+            },
+            {
+              "startIndex": 156,
+              "endIndex": 161,
+              "text": "$4.25",
+              "type": "builtin.currency"
+            }
+          ],
+          "number": [
+            {
+              "startIndex": 0,
+              "endIndex": 2,
+              "text": "12",
+              "type": "builtin.number",
+              "subtype": "integer"
+            },
+            {
+              "startIndex": 17,
+              "endIndex": 18,
+              "text": "3",
+              "type": "builtin.number",
+              "subtype": "integer"
+            },
+            {
+              "startIndex": 85,
+              "endIndex": 86,
+              "text": "5",
+              "type": "builtin.number",
+              "subtype": "integer"
+            },
+            {
+              "startIndex": 96,
+              "endIndex": 97,
+              "text": "4",
+              "type": "builtin.number",
+              "subtype": "integer"
+            },
+            {
+              "startIndex": 108,
+              "endIndex": 109,
+              "text": "4",
+              "type": "builtin.number",
+              "subtype": "integer"
+            },
+            {
+              "startIndex": 150,
+              "endIndex": 151,
+              "text": "4",
+              "type": "builtin.number",
+              "subtype": "integer"
+            },
+            {
+              "startIndex": 157,
+              "endIndex": 161,
+              "text": "4.25",
+              "type": "builtin.number",
+              "subtype": "decimal"
+            },
+            {
+              "startIndex": 171,
+              "endIndex": 173,
+              "text": "32",
+              "type": "builtin.number",
+              "subtype": "integer"
+            },
+            {
+              "startIndex": 178,
+              "endIndex": 183,
+              "text": "210.4",
+              "type": "builtin.number",
+              "subtype": "decimal"
+            },
+            {
+              "startIndex": 198,
+              "endIndex": 200,
+              "text": "10",
+              "type": "builtin.number",
+              "subtype": "integer"
+            },
+            {
+              "startIndex": 206,
+              "endIndex": 210,
+              "text": "10.5",
+              "type": "builtin.number",
+              "subtype": "decimal"
+            },
+            {
+              "startIndex": 216,
+              "endIndex": 219,
+              "text": "425",
+              "type": "builtin.number",
+              "subtype": "integer"
+            },
+            {
+              "startIndex": 220,
+              "endIndex": 223,
+              "text": "555",
+              "type": "builtin.number",
+              "subtype": "integer"
+            },
+            {
+              "startIndex": 224,
+              "endIndex": 228,
+              "text": "1234",
+              "type": "builtin.number",
+              "subtype": "integer"
+            },
+            {
+              "startIndex": 233,
+              "endIndex": 234,
+              "text": "3",
+              "type": "builtin.number",
+              "subtype": "integer"
+            },
+            {
+              "startIndex": 247,
+              "endIndex": 252,
+              "text": "-27.5",
+              "type": "builtin.number",
+              "subtype": "decimal"
+            }
+          ],
+          "ordinal": [
+            {
+              "startIndex": 44,
+              "endIndex": 47,
+              "text": "3rd",
+              "type": "builtin.ordinal"
+            },
+            {
+              "startIndex": 188,
+              "endIndex": 193,
+              "text": "first",
+              "type": "builtin.ordinal"
+            }
+          ],
+          "percentage": [
+            {
+              "startIndex": 198,
+              "endIndex": 201,
+              "text": "10%",
+              "type": "builtin.percentage"
+            },
+            {
+              "startIndex": 206,
+              "endIndex": 211,
+              "text": "10.5%",
+              "type": "builtin.percentage"
+            }
+          ],
+          "phonenumber": [
+            {
+              "startIndex": 216,
+              "endIndex": 228,
+              "text": "425-555-1234",
+              "type": "builtin.phonenumber"
+            }
+          ],
+          "temperature": [
+            {
+              "startIndex": 233,
+              "endIndex": 242,
+              "text": "3 degrees",
+              "type": "builtin.temperature"
+            },
+            {
+              "startIndex": 247,
+              "endIndex": 262,
+              "text": "-27.5 degrees c",
+              "type": "builtin.temperature"
+            }
+          ]
+        }
+      }
+    ],
+    "$instance": {
+      "Composite1": [
+        {
+          "startIndex": 0,
+          "endIndex": 262,
+          "text": "12 years old and 3 days old and monday july 3rd and every monday and between 3am and 5 : 30am and 4 acres and 4 pico meters and chrimc @ hotmail . com and $ 4 and $ 4 . 25 and also 32 and 210 . 4 and first and 10 % and 10 . 5 % and 425 - 555 - 1234 and 3 degrees and - 27 . 5 degrees c",
+          "score": 0.7674513,
+          "type": "Composite1"
+        }
+      ]
+    }
+  },
+  "sentiment": {
+    "label": "neutral",
+    "score": 0.5
+  },
+  "luisResult": {
+    "query": "12 years old and 3 days old and monday july 3rd and every monday and between 3am and 5:30am and 4 acres and 4 pico meters and chrimc@hotmail.com and $4 and $4.25 and also 32 and 210.4 and first and 10% and 10.5% and 425-555-1234 and 3 degrees and -27.5 degrees c",
+    "alteredQuery": null,
+    "topScoringIntent": {
+      "intent": "EntityTests",
+      "score": 0.9815396
+    },
+    "intents": [
+      {
+        "intent": "EntityTests",
+        "score": 0.9815396
+      },
+      {
+        "intent": "search",
+        "score": 0.435023278
+      },
+      {
+        "intent": "None",
+        "score": 0.0568813831
+      },
+      {
+        "intent": "Weather.GetForecast",
+        "score": 0.05395444
+      },
+      {
+        "intent": "Travel",
+        "score": 0.0150735639
+      },
+      {
+        "intent": "Delivery",
+        "score": 0.00403430453
+      },
+      {
+        "intent": "SpecifyName",
+        "score": 0.00316059729
+      },
+      {
+        "intent": "Help",
+        "score": 0.0001318411
+      },
+      {
+        "intent": "Cancel",
+        "score": 5.48900862E-05
+      },
+      {
+        "intent": "Greeting",
+        "score": 1.48596814E-06
+      }
+    ],
+    "entities": [
+      {
+        "entity": "12 years old",
+        "type": "builtin.age",
+        "startIndex": 0.0,
+        "endIndex": 11.0,
+        "resolution": {
+          "unit": "Year",
+          "value": "12"
+        }
+      },
+      {
+        "entity": "3 days old",
+        "type": "builtin.age",
+        "startIndex": 17.0,
+        "endIndex": 26.0,
+        "resolution": {
+          "unit": "Day",
+          "value": "3"
+        }
+      },
+      {
+        "entity": "12 years old and 3 days old and monday july 3rd and every monday and between 3am and 5 : 30am and 4 acres and 4 pico meters and chrimc @ hotmail . com and $ 4 and $ 4 . 25 and also 32 and 210 . 4 and first and 10 % and 10 . 5 % and 425 - 555 - 1234 and 3 degrees and - 27 . 5 degrees c",
+        "type": "Composite1",
+        "startIndex": 0.0,
+        "endIndex": 261.0,
+        "score": 0.7674513
+      },
+      {
+        "entity": "12 years",
+        "type": "builtin.datetimeV2.duration",
+        "startIndex": 0.0,
+        "endIndex": 7.0,
+        "resolution": {
+          "values": [
+            {
+              "timex": "P12Y",
+              "type": "duration",
+              "value": "378432000"
+            }
+          ]
+        }
+      },
+      {
+        "entity": "3 days",
+        "type": "builtin.datetimeV2.duration",
+        "startIndex": 17.0,
+        "endIndex": 22.0,
+        "resolution": {
+          "values": [
+            {
+              "timex": "P3D",
+              "type": "duration",
+              "value": "259200"
+            }
+          ]
+        }
+      },
+      {
+        "entity": "monday july 3rd",
+        "type": "builtin.datetimeV2.date",
+        "startIndex": 32.0,
+        "endIndex": 46.0,
+        "resolution": {
+          "values": [
+            {
+              "timex": "XXXX-07-03",
+              "type": "date",
+              "value": "2018-07-03"
+            },
+            {
+              "timex": "XXXX-07-03",
+              "type": "date",
+              "value": "2019-07-03"
+            }
+          ]
+        }
+      },
+      {
+        "entity": "every monday",
+        "type": "builtin.datetimeV2.set",
+        "startIndex": 52.0,
+        "endIndex": 63.0,
+        "resolution": {
+          "values": [
+            {
+              "timex": "XXXX-WXX-1",
+              "type": "set",
+              "value": "not resolved"
+            }
+          ]
+        }
+      },
+      {
+        "entity": "between 3am and 5:30am",
+        "type": "builtin.datetimeV2.timerange",
+        "startIndex": 69.0,
+        "endIndex": 90.0,
+        "resolution": {
+          "values": [
+            {
+              "timex": "(T03,T05:30,PT2H30M)",
+              "type": "timerange",
+              "start": "03:00:00",
+              "end": "05:30:00"
+            }
+          ]
+        }
+      },
+      {
+        "entity": "4 acres",
+        "type": "builtin.dimension",
+        "startIndex": 96.0,
+        "endIndex": 102.0,
+        "resolution": {
+          "unit": "Acre",
+          "value": "4"
+        }
+      },
+      {
+        "entity": "4 pico meters",
+        "type": "builtin.dimension",
+        "startIndex": 108.0,
+        "endIndex": 120.0,
+        "resolution": {
+          "unit": "Picometer",
+          "value": "4"
+        }
+      },
+      {
+        "entity": "chrimc@hotmail.com",
+        "type": "builtin.email",
+        "startIndex": 126.0,
+        "endIndex": 143.0
+      },
+      {
+        "entity": "$4",
+        "type": "builtin.currency",
+        "startIndex": 149.0,
+        "endIndex": 150.0,
+        "resolution": {
+          "unit": "Dollar",
+          "value": "4"
+        }
+      },
+      {
+        "entity": "$4.25",
+        "type": "builtin.currency",
+        "startIndex": 156.0,
+        "endIndex": 160.0,
+        "resolution": {
+          "unit": "Dollar",
+          "value": "4.25"
+        }
+      },
+      {
+        "entity": "12",
+        "type": "builtin.number",
+        "startIndex": 0.0,
+        "endIndex": 1.0,
+        "resolution": {
+          "subtype": "integer",
+          "value": "12"
+        }
+      },
+      {
+        "entity": "3",
+        "type": "builtin.number",
+        "startIndex": 17.0,
+        "endIndex": 17.0,
+        "resolution": {
+          "subtype": "integer",
+          "value": "3"
+        }
+      },
+      {
+        "entity": "5",
+        "type": "builtin.number",
+        "startIndex": 85.0,
+        "endIndex": 85.0,
+        "resolution": {
+          "subtype": "integer",
+          "value": "5"
+        }
+      },
+      {
+        "entity": "4",
+        "type": "builtin.number",
+        "startIndex": 96.0,
+        "endIndex": 96.0,
+        "resolution": {
+          "subtype": "integer",
+          "value": "4"
+        }
+      },
+      {
+        "entity": "4",
+        "type": "builtin.number",
+        "startIndex": 108.0,
+        "endIndex": 108.0,
+        "resolution": {
+          "subtype": "integer",
+          "value": "4"
+        }
+      },
+      {
+        "entity": "4",
+        "type": "builtin.number",
+        "startIndex": 150.0,
+        "endIndex": 150.0,
+        "resolution": {
+          "subtype": "integer",
+          "value": "4"
+        }
+      },
+      {
+        "entity": "4.25",
+        "type": "builtin.number",
+        "startIndex": 157.0,
+        "endIndex": 160.0,
+        "resolution": {
+          "subtype": "decimal",
+          "value": "4.25"
+        }
+      },
+      {
+        "entity": "32",
+        "type": "builtin.number",
+        "startIndex": 171.0,
+        "endIndex": 172.0,
+        "resolution": {
+          "subtype": "integer",
+          "value": "32"
+        }
+      },
+      {
+        "entity": "210.4",
+        "type": "builtin.number",
+        "startIndex": 178.0,
+        "endIndex": 182.0,
+        "resolution": {
+          "subtype": "decimal",
+          "value": "210.4"
+        }
+      },
+      {
+        "entity": "10",
+        "type": "builtin.number",
+        "startIndex": 198.0,
+        "endIndex": 199.0,
+        "resolution": {
+          "subtype": "integer",
+          "value": "10"
+        }
+      },
+      {
+        "entity": "10.5",
+        "type": "builtin.number",
+        "startIndex": 206.0,
+        "endIndex": 209.0,
+        "resolution": {
+          "subtype": "decimal",
+          "value": "10.5"
+        }
+      },
+      {
+        "entity": "425",
+        "type": "builtin.number",
+        "startIndex": 216.0,
+        "endIndex": 218.0,
+        "resolution": {
+          "subtype": "integer",
+          "value": "425"
+        }
+      },
+      {
+        "entity": "555",
+        "type": "builtin.number",
+        "startIndex": 220.0,
+        "endIndex": 222.0,
+        "resolution": {
+          "subtype": "integer",
+          "value": "555"
+        }
+      },
+      {
+        "entity": "1234",
+        "type": "builtin.number",
+        "startIndex": 224.0,
+        "endIndex": 227.0,
+        "resolution": {
+          "subtype": "integer",
+          "value": "1234"
+        }
+      },
+      {
+        "entity": "3",
+        "type": "builtin.number",
+        "startIndex": 233.0,
+        "endIndex": 233.0,
+        "resolution": {
+          "subtype": "integer",
+          "value": "3"
+        }
+      },
+      {
+        "entity": "-27.5",
+        "type": "builtin.number",
+        "startIndex": 247.0,
+        "endIndex": 251.0,
+        "resolution": {
+          "subtype": "decimal",
+          "value": "-27.5"
+        }
+      },
+      {
+        "entity": "3rd",
+        "type": "builtin.ordinal",
+        "startIndex": 44.0,
+        "endIndex": 46.0,
+        "resolution": {
+          "value": "3"
+        }
+      },
+      {
+        "entity": "first",
+        "type": "builtin.ordinal",
+        "startIndex": 188.0,
+        "endIndex": 192.0,
+        "resolution": {
+          "value": "1"
+        }
+      },
+      {
+        "entity": "10%",
+        "type": "builtin.percentage",
+        "startIndex": 198.0,
+        "endIndex": 200.0,
+        "resolution": {
+          "value": "10%"
+        }
+      },
+      {
+        "entity": "10.5%",
+        "type": "builtin.percentage",
+        "startIndex": 206.0,
+        "endIndex": 210.0,
+        "resolution": {
+          "value": "10.5%"
+        }
+      },
+      {
+        "entity": "425-555-1234",
+        "type": "builtin.phonenumber",
+        "startIndex": 216.0,
+        "endIndex": 227.0,
+        "resolution": {
+          "value": "425-555-1234"
+        }
+      },
+      {
+        "entity": "3 degrees",
+        "type": "builtin.temperature",
+        "startIndex": 233.0,
+        "endIndex": 241.0,
+        "resolution": {
+          "unit": "Degree",
+          "value": "3"
+        }
+      },
+      {
+        "entity": "-27.5 degrees c",
+        "type": "builtin.temperature",
+        "startIndex": 247.0,
+        "endIndex": 261.0,
+        "resolution": {
+          "unit": "C",
+          "value": "-27.5"
+        }
+      }
+    ],
+    "compositeEntities": [
+      {
+        "parentType": "Composite1",
+        "value": "12 years old and 3 days old and monday july 3rd and every monday and between 3am and 5 : 30am and 4 acres and 4 pico meters and chrimc @ hotmail . com and $ 4 and $ 4 . 25 and also 32 and 210 . 4 and first and 10 % and 10 . 5 % and 425 - 555 - 1234 and 3 degrees and - 27 . 5 degrees c",
+        "children": [
+          {
+            "type": "builtin.age",
+            "value": "12 years old"
+          },
+          {
+            "type": "builtin.age",
+            "value": "3 days old"
+          },
+          {
+            "type": "builtin.datetimeV2.duration",
+            "value": "12 years"
+          },
+          {
+            "type": "builtin.datetimeV2.duration",
+            "value": "3 days"
+          },
+          {
+            "type": "builtin.datetimeV2.date",
+            "value": "monday july 3rd"
+          },
+          {
+            "type": "builtin.datetimeV2.set",
+            "value": "every monday"
+          },
+          {
+            "type": "builtin.datetimeV2.timerange",
+            "value": "between 3am and 5:30am"
+          },
+          {
+            "type": "builtin.dimension",
+            "value": "4 acres"
+          },
+          {
+            "type": "builtin.dimension",
+            "value": "4 pico meters"
+          },
+          {
+            "type": "builtin.email",
+            "value": "chrimc@hotmail.com"
+          },
+          {
+            "type": "builtin.currency",
+            "value": "$4"
+          },
+          {
+            "type": "builtin.currency",
+            "value": "$4.25"
+          },
+          {
+            "type": "builtin.number",
+            "value": "12"
+          },
+          {
+            "type": "builtin.number",
+            "value": "3"
+          },
+          {
+            "type": "builtin.number",
+            "value": "5"
+          },
+          {
+            "type": "builtin.number",
+            "value": "4"
+          },
+          {
+            "type": "builtin.number",
+            "value": "4"
+          },
+          {
+            "type": "builtin.number",
+            "value": "4"
+          },
+          {
+            "type": "builtin.number",
+            "value": "4.25"
+          },
+          {
+            "type": "builtin.number",
+            "value": "32"
+          },
+          {
+            "type": "builtin.number",
+            "value": "210.4"
+          },
+          {
+            "type": "builtin.number",
+            "value": "10"
+          },
+          {
+            "type": "builtin.number",
+            "value": "10.5"
+          },
+          {
+            "type": "builtin.number",
+            "value": "425"
+          },
+          {
+            "type": "builtin.number",
+            "value": "555"
+          },
+          {
+            "type": "builtin.number",
+            "value": "1234"
+          },
+          {
+            "type": "builtin.number",
+            "value": "3"
+          },
+          {
+            "type": "builtin.number",
+            "value": "-27.5"
+          },
+          {
+            "type": "builtin.ordinal",
+            "value": "3rd"
+          },
+          {
+            "type": "builtin.ordinal",
+            "value": "first"
+          },
+          {
+            "type": "builtin.percentage",
+            "value": "10%"
+          },
+          {
+            "type": "builtin.percentage",
+            "value": "10.5%"
+          },
+          {
+            "type": "builtin.phonenumber",
+            "value": "425-555-1234"
+          },
+          {
+            "type": "builtin.temperature",
+            "value": "3 degrees"
+          },
+          {
+            "type": "builtin.temperature",
+            "value": "-27.5 degrees c"
+          }
+        ]
+      }
+    ],
+    "sentimentAnalysis": {
+      "label": "neutral",
+      "score": 0.5
+    }
+  }
+}

@@ -77,25 +77,6 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
         }
 
         /// <summary>
-        /// Enables the proactive messaging endpoint and optionally allows specifying the path at which the endpoint should be exposed.
-        /// </summary>
-        /// <param name="proactiveMessagesPath">The path at which the proactive messaging endpoint should be exposed.</param>
-        /// <returns>A reference to this instance after the operation has completed.</returns>
-        /// <seealso cref="BotFrameworkPaths"/>
-        /// <seealso cref="UsePaths(Action{BotFrameworkPaths})"/>
-        public BotFrameworkConfigurationBuilder EnableProactiveMessages(string proactiveMessagesPath = default(string))
-        {
-            BotFrameworkOptions.EnableProactiveMessages = true;
-
-            if (proactiveMessagesPath != null)
-            {
-                BotFrameworkOptions.Paths.ProactiveMessagesPath = proactiveMessagesPath;
-            }
-
-            return this;
-        }
-
-        /// <summary>
         /// Configures which paths should be used to expose the various endpoints of the bot.
         /// </summary>
         /// <param name="configurePaths">A callback to configure the paths that determine where the endpoints of the bot will be exposed.</param>

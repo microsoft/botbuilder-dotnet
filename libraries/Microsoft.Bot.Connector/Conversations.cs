@@ -218,8 +218,7 @@ namespace Microsoft.Bot.Connector
         /// POST to this method with a
         /// * Bot being the bot creating the conversation
         /// * IsGroup set to true if this is not a direct message (default is false)
-        /// * Members array contining the members you want to have be in the
-        /// conversation.
+        /// * Array containing the members to include in the conversation
         ///
         /// The return value is a ResourceResponse which contains a conversation id
         /// which is suitable for use
@@ -430,7 +429,7 @@ namespace Microsoft.Bot.Connector
         /// This method allows you to send an activity to the end of a conversation.
         ///
         /// This is slightly different from ReplyToActivity().
-        /// * SendToConverstion(conversationId) - will append the activity to the end
+        /// * SendToConversation(conversationId) - will append the activity to the end
         /// of the conversation according to the timestamp or semantics of the channel.
         /// * ReplyToActivity(conversationId,ActivityId) - adds the activity as a reply
         /// to another activity, if the channel supports it. If the channel does not
@@ -859,7 +858,7 @@ namespace Microsoft.Bot.Connector
         /// This method allows you to reply to an activity.
         ///
         /// This is slightly different from SendToConversation().
-        /// * SendToConverstion(conversationId) - will append the activity to the end
+        /// * SendToConversation(conversationId) - will append the activity to the end
         /// of the conversation according to the timestamp or semantics of the channel.
         /// * ReplyToActivity(conversationId,ActivityId) - adds the activity as a reply
         /// to another activity, if the channel supports it. If the channel does not
@@ -1220,7 +1219,7 @@ namespace Microsoft.Bot.Connector
         /// GetConversationMembers
         /// </summary>
         /// <remarks>
-        /// Enumerate the members of a converstion.
+        /// Enumerate the members of a conversation.
         ///
         /// This REST API takes a ConversationId and returns an array of ChannelAccount
         /// objects representing the members of the conversation.
@@ -1371,10 +1370,191 @@ namespace Microsoft.Bot.Connector
         }
 
         /// <summary>
+        /// GetConversationPagedMembers
+        /// </summary>
+        /// <remarks>
+        /// Enumerate the members of a conversation one page at a time.
+        ///
+        /// This REST API takes a ConversationId. Optionally a pageSize and/or
+        /// continuationToken can be provided. It returns a PagedMembersResult, which
+        /// contains an array
+        /// of ChannelAccounts representing the members of the conversation and a
+        /// continuation token that can be used to get more values.
+        ///
+        /// One page of ChannelAccounts records are returned with each call. The number
+        /// of records in a page may vary between channels and calls. The pageSize
+        /// parameter can be used as
+        /// a suggestion. If there are no additional results the response will not
+        /// contain a continuation token. If there are no members in the conversation
+        /// the Members will be empty or not present in the response.
+        ///
+        /// A response to a request that has a continuation token from a prior request
+        /// may rarely return members from a previous request.
+        /// </remarks>
+        /// <param name='conversationId'>
+        /// Conversation ID
+        /// </param>
+        /// <param name='pageSize'>
+        /// Suggested page size
+        /// </param>
+        /// <param name='continuationToken'>
+        /// Continuation Token
+        /// </param>
+        /// <param name='customHeaders'>
+        /// Headers that will be added to request.
+        /// </param>
+        /// <param name='cancellationToken'>
+        /// The cancellation token.
+        /// </param>
+        /// <exception cref="HttpOperationException">
+        /// Thrown when the operation returned an invalid status code
+        /// </exception>
+        /// <exception cref="SerializationException">
+        /// Thrown when unable to deserialize the response
+        /// </exception>
+        /// <exception cref="ValidationException">
+        /// Thrown when a required parameter is null
+        /// </exception>
+        /// <exception cref="System.ArgumentNullException">
+        /// Thrown when a required parameter is null
+        /// </exception>
+        /// <return>
+        /// A response object containing the response body and response headers.
+        /// </return>
+        public async Task<HttpOperationResponse<PagedMembersResult>> GetConversationPagedMembersWithHttpMessagesAsync(string conversationId, int? pageSize = default(int?), string continuationToken = default(string), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (conversationId == null)
+            {
+                throw new ValidationException(ValidationRules.CannotBeNull, "conversationId");
+            }
+            // Tracing
+            bool _shouldTrace = ServiceClientTracing.IsEnabled;
+            string _invocationId = null;
+            if (_shouldTrace)
+            {
+                _invocationId = ServiceClientTracing.NextInvocationId.ToString();
+                Dictionary<string, object> tracingParameters = new Dictionary<string, object>();
+                tracingParameters.Add("conversationId", conversationId);
+                tracingParameters.Add("pageSize", pageSize);
+                tracingParameters.Add("continuationToken", continuationToken);
+                tracingParameters.Add("cancellationToken", cancellationToken);
+                ServiceClientTracing.Enter(_invocationId, this, "GetConversationPagedMembers", tracingParameters);
+            }
+            // Construct URL
+            var _baseUrl = Client.BaseUri.AbsoluteUri;
+            var _url = new System.Uri(new System.Uri(_baseUrl + (_baseUrl.EndsWith("/") ? "" : "/")), "v3/conversations/{conversationId}/pagedmembers").ToString();
+            _url = _url.Replace("{conversationId}", System.Uri.EscapeDataString(conversationId));
+            List<string> _queryParameters = new List<string>();
+            if (pageSize != null)
+            {
+                _queryParameters.Add(string.Format("pageSize={0}", System.Uri.EscapeDataString(Rest.Serialization.SafeJsonConvert.SerializeObject(pageSize, Client.SerializationSettings).Trim('"'))));
+            }
+            if (continuationToken != null)
+            {
+                _queryParameters.Add(string.Format("continuationToken={0}", System.Uri.EscapeDataString(continuationToken)));
+            }
+            if (_queryParameters.Count > 0)
+            {
+                _url += "?" + string.Join("&", _queryParameters);
+            }
+            // Create HTTP transport objects
+            var _httpRequest = new HttpRequestMessage();
+            HttpResponseMessage _httpResponse = null;
+            _httpRequest.Method = new HttpMethod("GET");
+            _httpRequest.RequestUri = new System.Uri(_url);
+            // Set Headers
+
+
+            if (customHeaders != null)
+            {
+                foreach(var _header in customHeaders)
+                {
+                    if (_httpRequest.Headers.Contains(_header.Key))
+                    {
+                        _httpRequest.Headers.Remove(_header.Key);
+                    }
+                    _httpRequest.Headers.TryAddWithoutValidation(_header.Key, _header.Value);
+                }
+            }
+
+            // Serialize Request
+            string _requestContent = null;
+            // Set Credentials
+            if (Client.Credentials != null)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                await Client.Credentials.ProcessHttpRequestAsync(_httpRequest, cancellationToken).ConfigureAwait(false);
+            }
+            // Send Request
+            if (_shouldTrace)
+            {
+                ServiceClientTracing.SendRequest(_invocationId, _httpRequest);
+            }
+            cancellationToken.ThrowIfCancellationRequested();
+            _httpResponse = await Client.HttpClient.SendAsync(_httpRequest, cancellationToken).ConfigureAwait(false);
+            if (_shouldTrace)
+            {
+                ServiceClientTracing.ReceiveResponse(_invocationId, _httpResponse);
+            }
+            HttpStatusCode _statusCode = _httpResponse.StatusCode;
+            cancellationToken.ThrowIfCancellationRequested();
+            string _responseContent = null;
+            if ((int)_statusCode != 200)
+            {
+                var ex = new HttpOperationException(string.Format("Operation returned an invalid status code '{0}'", _statusCode));
+                if (_httpResponse.Content != null) {
+                    _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                }
+                else {
+                    _responseContent = string.Empty;
+                }
+                ex.Request = new HttpRequestMessageWrapper(_httpRequest, _requestContent);
+                ex.Response = new HttpResponseMessageWrapper(_httpResponse, _responseContent);
+                if (_shouldTrace)
+                {
+                    ServiceClientTracing.Error(_invocationId, ex);
+                }
+                _httpRequest.Dispose();
+                if (_httpResponse != null)
+                {
+                    _httpResponse.Dispose();
+                }
+                throw ex;
+            }
+            // Create Result
+            var _result = new HttpOperationResponse<PagedMembersResult>();
+            _result.Request = _httpRequest;
+            _result.Response = _httpResponse;
+            // Deserialize Response
+            if ((int)_statusCode == 200)
+            {
+                _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                try
+                {
+                    _result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<PagedMembersResult>(_responseContent, Client.DeserializationSettings);
+                }
+                catch (JsonException ex)
+                {
+                    _httpRequest.Dispose();
+                    if (_httpResponse != null)
+                    {
+                        _httpResponse.Dispose();
+                    }
+                    throw new SerializationException("Unable to deserialize the response.", _responseContent, ex);
+                }
+            }
+            if (_shouldTrace)
+            {
+                ServiceClientTracing.Exit(_invocationId, _result);
+            }
+            return _result;
+        }
+
+        /// <summary>
         /// DeleteConversationMember
         /// </summary>
         /// <remarks>
-        /// Deletes a member from a converstion.
+        /// Deletes a member from a conversation.
         ///
         /// This REST API takes a ConversationId and a memberId (of type string) and
         /// removes that member from the conversation. If that member was the last

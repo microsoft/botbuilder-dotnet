@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.Bot.Builder.Core.Extensions.Tests
+namespace Microsoft.Bot.Builder.Tests
 {
     [TestClass]
     public class OnTurnErrorTests
@@ -28,7 +28,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
                 }
             };
 
-            await new TestFlow(adapter, (context) =>
+            await new TestFlow(adapter, (context, cancellationToken) =>
                 {
                     if (context.Activity.AsMessageActivity().Text == "foo")
                     {

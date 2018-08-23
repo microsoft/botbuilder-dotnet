@@ -11,6 +11,14 @@ namespace Connector.Tests
     public class ConversationsTest : BaseTest
     {
         [Fact]
+        public void AgentStringComponents()
+        {
+            var aspNet = ConnectorClient.GetASPNetVersion();
+            var arch = ConnectorClient.GetArchitecture();
+            var os = ConnectorClient.GetOsVersion();
+        }
+
+        [Fact]
         public void CreateConversation()
         {
             var activity = new Activity()

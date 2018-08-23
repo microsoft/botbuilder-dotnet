@@ -22,14 +22,14 @@ namespace Microsoft.Bot.Builder.Tests
         public SimpleAdapter(Action<Activity> callOnUpdate) { _callOnUpdate = callOnUpdate; }
         public SimpleAdapter(Action<ConversationReference> callOnDelete) { _callOnDelete = callOnDelete; }
 
-        public override Task DeleteActivityAsync(ITurnContext context, ConversationReference reference, CancellationToken cancellationToken)
+        public override Task DeleteActivityAsync(ITurnContext turnContext, ConversationReference reference, CancellationToken cancellationToken)
         {
             Assert.IsNotNull(reference, "SimpleAdapter.deleteActivity: missing reference");
             _callOnDelete?.Invoke(reference);
             return Task.CompletedTask;
         }
 
-        public override Task<ResourceResponse[]> SendActivitiesAsync(ITurnContext context, Activity[] activities, CancellationToken cancellationToken)
+        public override Task<ResourceResponse[]> SendActivitiesAsync(ITurnContext turnContext, Activity[] activities, CancellationToken cancellationToken)
         {
             Assert.IsNotNull(activities, "SimpleAdapter.deleteActivity: missing reference");
             Assert.IsTrue(activities.Count() > 0, "SimpleAdapter.sendActivities: empty activities array.");
@@ -44,14 +44,14 @@ namespace Microsoft.Bot.Builder.Tests
             return Task.FromResult(responses.ToArray());
         }
 
-        public override Task<ResourceResponse> UpdateActivityAsync(ITurnContext context, Activity activity, CancellationToken cancellationToken)
+        public override Task<ResourceResponse> UpdateActivityAsync(ITurnContext turnContext, Activity activity, CancellationToken cancellationToken)
         {
             Assert.IsNotNull(activity, "SimpleAdapter.updateActivity: missing activity");
             _callOnUpdate?.Invoke(activity);
             return Task.FromResult(new ResourceResponse(activity.Id)); // echo back the Id
         }
 
-        public async Task ProcessRequest(Activity activty, Func<ITurnContext, Task> callback, CancellationToken cancellationToken)
+        public async Task ProcessRequest(Activity activty, BotCallbackHandler callback, CancellationToken cancellationToken)
         {
             using (var ctx = new TurnContext(this, activty))
             {

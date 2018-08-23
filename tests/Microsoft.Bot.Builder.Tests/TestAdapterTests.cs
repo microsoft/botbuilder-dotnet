@@ -3,6 +3,7 @@
 
 using System;
 using System.Security;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Schema;
@@ -14,20 +15,20 @@ namespace Microsoft.Bot.Builder.Tests
     [TestCategory("Adapter")]
     public class TestAdapterTests
     {
-        public async Task MyBotLogic(ITurnContext context)
+        public async Task MyBotLogic(ITurnContext turnContext, CancellationToken cancellationToken)
         {
-            switch (context.Activity.AsMessageActivity().Text)
+            switch (turnContext.Activity.AsMessageActivity().Text)
             {
                 case "count":
-                    await context.SendActivityAsync(context.Activity.CreateReply("one"));
-                    await context.SendActivityAsync(context.Activity.CreateReply("two"));
-                    await context.SendActivityAsync(context.Activity.CreateReply("three"));
+                    await turnContext.SendActivityAsync(turnContext.Activity.CreateReply("one"));
+                    await turnContext.SendActivityAsync(turnContext.Activity.CreateReply("two"));
+                    await turnContext.SendActivityAsync(turnContext.Activity.CreateReply("three"));
                     break;
                 case "ignore":
                     break;
                 default:
-                    await context.SendActivityAsync( 
-                        context.Activity.CreateReply($"echo:{context.Activity.AsMessageActivity().Text}"));
+                    await turnContext.SendActivityAsync(
+                        turnContext.Activity.CreateReply($"echo:{turnContext.Activity.AsMessageActivity().Text}"));
                     break;
             }
         }
@@ -40,7 +41,7 @@ namespace Microsoft.Bot.Builder.Tests
 
             try
             {
-                await new TestFlow(adapter, async (context) =>
+                await new TestFlow(adapter, async (context, cancellationToken) =>
                 {
                     await context.SendActivityAsync(context.Activity.CreateReply("one"));
                 })
@@ -63,7 +64,7 @@ namespace Microsoft.Bot.Builder.Tests
 
             try
             {
-                await new TestFlow(adapter, (context) => { throw new Exception(uniqueExceptionId); })
+                await new TestFlow(adapter, (context, cancellationToken) => { throw new Exception(uniqueExceptionId); })
                     .Test("test", activity => Assert.IsNull(null), "uh oh!")
                     .StartTestAsync();
 
@@ -83,7 +84,7 @@ namespace Microsoft.Bot.Builder.Tests
 
             try
             {
-                await new TestFlow(adapter, async (context) => 
+                await new TestFlow(adapter, async (context, cancellationToken) => 
                 {
                     await context.SendActivityAsync(context.Activity.CreateReply("one"));
                 })
@@ -165,7 +166,7 @@ namespace Microsoft.Bot.Builder.Tests
         {
             var adapter = new TestAdapter();
 
-            TestFlow testFlow = new TestFlow(adapter, (ctx) =>
+            TestFlow testFlow = new TestFlow(adapter, (ctx, cancellationToken) =>
                 {
                     Exception innerException = (Exception)Activator.CreateInstance(exceptionType);
                     var taskSource = new TaskCompletionSource<bool>();

@@ -3,6 +3,7 @@
 
 using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Schema;
@@ -58,14 +59,14 @@ namespace Microsoft.Bot.Builder.Tests
         public void GetThrowsOnNullKey()
         {
             var c = new TurnContext(new SimpleAdapter(), new Activity());
-            c.Services.Get<object>(null);
+            c.TurnState.Get<object>(null);
         }
 
         [TestMethod]
         public void GetReturnsNullOnEmptyKey()
         {
             var c = new TurnContext(new SimpleAdapter(), new Activity());
-            var service = c.Services.Get<object>(string.Empty); // empty key
+            var service = c.TurnState.Get<object>(string.Empty); // empty key
             Assert.IsNull(service, "Should not have found a service under an empty key");
         }
 
@@ -73,7 +74,7 @@ namespace Microsoft.Bot.Builder.Tests
         public void GetReturnsNullWithUnknownKey()
         {
             var c = new TurnContext(new SimpleAdapter(), new Activity());
-            var o = c.Services.Get<object>("test");
+            var o = c.TurnState.Get<object>("test");
             Assert.IsNull(o);
         }
 
@@ -82,8 +83,8 @@ namespace Microsoft.Bot.Builder.Tests
         {
             var c = new TurnContext(new SimpleAdapter(), new Activity());
 
-            c.Services.Add("bar", "foo");
-            var result = c.Services.Get<string>("bar");
+            c.TurnState.Add("bar", "foo");
+            var result = c.TurnState.Get<string>("bar");
 
             Assert.AreEqual("foo", result);
         }
@@ -92,8 +93,8 @@ namespace Microsoft.Bot.Builder.Tests
         {
             var c = new TurnContext(new SimpleAdapter(), new Activity());
 
-            c.Services.Add<string>("foo");
-            string result = c.Services.Get<string>();
+            c.TurnState.Add<string>("foo");
+            string result = c.TurnState.Get<string>();
 
             Assert.AreEqual("foo", result);
         }
@@ -477,29 +478,29 @@ namespace Microsoft.Bot.Builder.Tests
             }            
         }        
 
-        public async Task MyBotLogic(ITurnContext context)
+        public async Task MyBotLogic(ITurnContext turnContext, CancellationToken cancellationToken)
         {
-            switch (context.Activity.AsMessageActivity().Text)
+            switch (turnContext.Activity.AsMessageActivity().Text)
             {
                 case "count":
-                    await context.SendActivityAsync(context.Activity.CreateReply("one"));
-                    await context.SendActivityAsync(context.Activity.CreateReply("two"));
-                    await context.SendActivityAsync(context.Activity.CreateReply("three"));
+                    await turnContext.SendActivityAsync(turnContext.Activity.CreateReply("one"));
+                    await turnContext.SendActivityAsync(turnContext.Activity.CreateReply("two"));
+                    await turnContext.SendActivityAsync(turnContext.Activity.CreateReply("three"));
                     break;
                 case "ignore":
                     break;
                 case "TestResponded":
-                    if (context.Responded == true)
+                    if (turnContext.Responded == true)
                         throw new InvalidOperationException("Responded Is True");
 
-                    await context.SendActivityAsync(context.Activity.CreateReply("one"));
+                    await turnContext.SendActivityAsync(turnContext.Activity.CreateReply("one"));
 
-                    if (context.Responded == false)
+                    if (turnContext.Responded == false)
                         throw new InvalidOperationException("Responded Is True");
                     break;
                 default:
-                    await context.SendActivityAsync(
-                        context.Activity.CreateReply($"echo:{context.Activity.Text}"));
+                    await turnContext.SendActivityAsync(
+                        turnContext.Activity.CreateReply($"echo:{turnContext.Activity.Text}"));
                     break;
             }
         }

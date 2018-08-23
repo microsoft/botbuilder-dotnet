@@ -8,14 +8,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
     /// </summary>
     public class SortedValue
     {
-        ///<summary>
+        /// <summary>
+        /// Gets or sets the value that will be sorted.
+        /// </summary>
+        /// <value>
         /// The value that will be sorted.
-        ///</summary>
+        /// </value>
         public string Value { get; set; }
 
-        ///<summary>
+        /// <summary>
+        /// Gets or sets the values original position within its unsorted array.
+        /// </summary>
+        /// <value>
         /// The values original position within its unsorted array.
-        ///</summary>
+        /// </value>
         public int Index { get; set; }
     }
 }

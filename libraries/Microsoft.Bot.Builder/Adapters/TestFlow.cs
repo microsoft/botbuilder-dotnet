@@ -28,14 +28,14 @@ namespace Microsoft.Bot.Builder.Adapters
     {
         private readonly TestAdapter _adapter;
         private readonly Task _testTask;
-        private Func<ITurnContext, Task> _callback;
+        private BotCallbackHandler _callback;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TestFlow"/> class.
         /// </summary>
         /// <param name="adapter">The test adapter to use.</param>
         /// <param name="callback">The bot turn processing logic to test.</param>
-        public TestFlow(TestAdapter adapter, Func<ITurnContext, Task> callback = null)
+        public TestFlow(TestAdapter adapter, BotCallbackHandler callback = null)
         {
             _adapter = adapter;
             _callback = callback;
@@ -61,7 +61,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <param name="adapter">The test adapter to use.</param>
         /// <param name="bot">The bot containing the turn processing logic to test.</param>
         public TestFlow(TestAdapter adapter, IBot bot)
-            : this(adapter, (ctx) => bot.OnTurnAsync(ctx))
+            : this(adapter, bot.OnTurnAsync)
         {
         }
 
@@ -72,10 +72,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <remarks>This methods sends the activities from the user to the bot and
         /// checks the responses from the bot based on the activiies described in the
         /// current test flow.</remarks>
-        public Task StartTestAsync()
-        {
-            return _testTask;
-        }
+        public Task StartTestAsync() => _testTask;
 
         /// <summary>
         /// Adds a message activity from the user to the bot.
