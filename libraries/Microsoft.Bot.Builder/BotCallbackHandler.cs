@@ -9,7 +9,7 @@ namespace Microsoft.Bot.Builder
     /// <summary>
     /// The callback delegate for application code.
     /// </summary>
-    /// <param name="context">The turn context.</param>
+    /// <param name="turnContext">The turn context.</param>
     /// <param name="cancellationToken">The task cancellation token.</param>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     public delegate Task BotCallbackHandler(ITurnContext turnContext, CancellationToken cancellationToken);

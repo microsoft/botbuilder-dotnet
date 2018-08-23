@@ -31,7 +31,7 @@ namespace Microsoft.Bot.Builder
         /// </summary>
         /// <param name="turnContext">The context object.</param>
         /// <exception cref="ArgumentNullException">
-        /// <paramref name="context"/> is <c>null</c>.</exception>
+        /// <paramref name="turnContext"/> is <c>null</c>.</exception>
         public static void ContextNotNull(ITurnContext turnContext)
         {
             if (turnContext == null)

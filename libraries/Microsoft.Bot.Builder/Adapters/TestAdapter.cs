@@ -236,7 +236,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <summary>
         /// Deletes an existing activity in the <see cref="ActiveQueue"/>.
         /// </summary>
-        /// <param name="context">The context object for the turn.</param>
+        /// <param name="turnContext">The context object for the turn.</param>
         /// <param name="reference">Conversation reference for the activity to delete.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
