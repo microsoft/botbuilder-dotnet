@@ -56,7 +56,7 @@ namespace Microsoft.Bot.Builder.TemplateManager
         /// <summary>
         /// Send a reply with the template
         /// </summary>
-        /// <param name="context"></param>
+        /// <param name="turnContext"></param>
         /// <param name="templateId"></param>
         /// <param name="data"></param>
         /// <returns></returns>

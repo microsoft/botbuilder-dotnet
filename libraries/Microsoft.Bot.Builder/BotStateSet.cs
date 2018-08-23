@@ -70,7 +70,7 @@ namespace Microsoft.Bot.Builder
         /// <summary>
         /// Save All BotState changes in parallel.
         /// </summary>
-        /// <param name="context">turn context.</param>
+        /// <param name="turnContext">turn context.</param>
         /// <param name="force">should data be forced to save even if no change were detected.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
