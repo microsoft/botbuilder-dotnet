@@ -46,7 +46,7 @@ namespace Microsoft.Bot.Builder.Tests
         {
             var m = new MiddlewareSet();
             bool wasCalled = false;
-            Task CallMe(ITurnContext context, CancellationToken cancellationToken)
+            Task CallMe(ITurnContext turnContext, CancellationToken cancellationToken)
             {
                 wasCalled = true;
                 return Task.CompletedTask;
@@ -62,7 +62,7 @@ namespace Microsoft.Bot.Builder.Tests
             var simple = new WasCalledMiddlware();
 
             bool wasCalled = false;
-            Task CallMe(ITurnContext context, CancellationToken cancellationToken)
+            Task CallMe(ITurnContext turnContext, CancellationToken cancellationToken)
             {
                 wasCalled = true;
                 return Task.CompletedTask;
@@ -126,7 +126,7 @@ namespace Microsoft.Bot.Builder.Tests
             WasCalledMiddlware two = new WasCalledMiddlware();
 
             int called = 0;
-            Task CallMe(ITurnContext context, CancellationToken cancellationToken)
+            Task CallMe(ITurnContext turnContext, CancellationToken cancellationToken)
             {
                 called++;
                 return Task.CompletedTask;
@@ -460,7 +460,7 @@ namespace Microsoft.Bot.Builder.Tests
         {
             public bool Called { get; set; } = false;
 
-            public Task OnTurnAsync(ITurnContext context, NextDelegate next, CancellationToken cancellationToken)
+            public Task OnTurnAsync(ITurnContext turnContext, NextDelegate next, CancellationToken cancellationToken)
             {
                 Called = true;
                 return next(cancellationToken);
@@ -474,7 +474,7 @@ namespace Microsoft.Bot.Builder.Tests
             {
                 _callMe = callMe;
             }
-            public Task OnTurnAsync(ITurnContext context, NextDelegate next, CancellationToken cancellationToken)
+            public Task OnTurnAsync(ITurnContext turnContext, NextDelegate next, CancellationToken cancellationToken)
             {
                 _callMe();
                 // DO NOT call NEXT
@@ -489,7 +489,7 @@ namespace Microsoft.Bot.Builder.Tests
             {
                 _callMe = callMe;
             }
-            public Task OnTurnAsync(ITurnContext context, NextDelegate next, CancellationToken cancellationToken)
+            public Task OnTurnAsync(ITurnContext turnContext, NextDelegate next, CancellationToken cancellationToken)
             {
                 _callMe();
                 return next(cancellationToken);

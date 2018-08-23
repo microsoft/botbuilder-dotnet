@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Builder
     /// <summary>
     /// A method that can participate in send activity events for the current turn.
     /// </summary>
-    /// <param name="context">The context object for the turn.</param>
+    /// <param name="turnContext">The context object for the turn.</param>
     /// <param name="activities">The activities to send.</param>
     /// <param name="next">The delegate to call to continue event processing.</param>
     /// <returns>A task that represents the work queued to execute.</returns>
@@ -28,12 +28,12 @@ namespace Microsoft.Bot.Builder
     /// <seealso cref="UpdateActivityHandler"/>
     /// <seealso cref="DeleteActivityHandler"/>
     /// <seealso cref="ITurnContext.OnSendActivities(SendActivitiesHandler)"/>
-    public delegate Task<ResourceResponse[]> SendActivitiesHandler(ITurnContext context, List<Activity> activities, Func<Task<ResourceResponse[]>> next);
+    public delegate Task<ResourceResponse[]> SendActivitiesHandler(ITurnContext turnContext, List<Activity> activities, Func<Task<ResourceResponse[]>> next);
 
     /// <summary>
     /// A method that can participate in update activity events for the current turn.
     /// </summary>
-    /// <param name="context">The context object for the turn.</param>
+    /// <param name="turnContext">The context object for the turn.</param>
     /// <param name="activity">The replacement activity.</param>
     /// <param name="next">The delegate to call to continue event processing.</param>
     /// <returns>A task that represents the work queued to execute.</returns>
@@ -51,12 +51,12 @@ namespace Microsoft.Bot.Builder
     /// <seealso cref="SendActivitiesHandler"/>
     /// <seealso cref="DeleteActivityHandler"/>
     /// <seealso cref="ITurnContext.OnUpdateActivity(UpdateActivityHandler)"/>
-    public delegate Task<ResourceResponse> UpdateActivityHandler(ITurnContext context, Activity activity, Func<Task<ResourceResponse>> next);
+    public delegate Task<ResourceResponse> UpdateActivityHandler(ITurnContext turnContext, Activity activity, Func<Task<ResourceResponse>> next);
 
     /// <summary>
     /// A method that can participate in delete activity events for the current turn.
     /// </summary>
-    /// <param name="context">The context object for the turn.</param>
+    /// <param name="turnContext">The context object for the turn.</param>
     /// <param name="reference">The conversation containing the activity.</param>
     /// <param name="next">The delegate to call to continue event processing.</param>
     /// <returns>A task that represents the work queued to execute.</returns>
@@ -71,7 +71,7 @@ namespace Microsoft.Bot.Builder
     /// <seealso cref="SendActivitiesHandler"/>
     /// <seealso cref="UpdateActivityHandler"/>
     /// <seealso cref="ITurnContext.OnDeleteActivity(DeleteActivityHandler)"/>
-    public delegate Task DeleteActivityHandler(ITurnContext context, ConversationReference reference, Func<Task> next);
+    public delegate Task DeleteActivityHandler(ITurnContext turnContext, ConversationReference reference, Func<Task> next);
 
     /// <summary>
     /// Provides context for a turn of a bot.
