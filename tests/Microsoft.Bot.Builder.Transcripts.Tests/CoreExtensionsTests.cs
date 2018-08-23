@@ -150,7 +150,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
 
         private (string command, string value) GetCommandValue(ITurnContext turnContext)
         {
-            var message = context.Activity.Text.Split(' ');
+            var message = turnContext.Activity.Text.Split(' ');
             if (message.Length > 1)
             {
                 return (message[0], message[1]);
