@@ -25,12 +25,12 @@ namespace Microsoft.Bot.Connector.Authentication
         public static readonly MicrosoftAppCredentials Empty = new MicrosoftAppCredentials(null, null);
 
         /// <summary>
-        /// The key for Microsoft app Id.
+        /// The configuration property for the Microsoft app ID.
         /// </summary>
         public const string MicrosoftAppIdKey = "MicrosoftAppId";
 
         /// <summary>
-        /// The key for Microsoft app Password.
+        /// The configuration property for the Microsoft app Password.
         /// </summary>
         public const string MicrosoftAppPasswordKey = "MicrosoftAppPassword";
 
@@ -44,27 +44,33 @@ namespace Microsoft.Bot.Connector.Authentication
         };
 
         /// <summary>
-        /// Cache of outstanding uncompleted or completed tasks for a given token, this is to make sure that we never have more then 1 token request in flight
-        /// per token at a time
+        /// A cache of the outstanding uncompleted or completed tasks for a given token, for ensuring that we never have more then 1 token request in flight
+        /// per token at a time.
         /// </summary>
         protected static readonly Dictionary<string, Task<OAuthResponse>> TokenTaskCache = new Dictionary<string, Task<OAuthResponse>>();
 
         /// <summary>
-        /// Time at which we will next refresh a token
+        /// The time at which we will next refresh each token.
         /// </summary>
         protected static readonly ConcurrentDictionary<string, DateTime> AutoRefreshTimes = new ConcurrentDictionary<string, DateTime>();
 
         /// <summary>
-        /// Cache of the actual valid tokens, this is what is consumed 99.99% of the time regardless if there is a token refresh task in flight (as we refresh tokens on a schedule
-        /// which is faster then their expiration and if there is a network failure we continue to use the good token from the tokenCache while a new background refresh task gets scheduled)
+        /// A cache of the actual valid tokens, this is what is consumed 99.99% of the time regardless o whether there is a token refresh task in flight.
+        /// We refresh tokens on a schedule which is faster then their expiration, and if there is a network failure, we continue to use the good token from
+        /// the tokenCache while a new background refresh task gets scheduled.
         /// </summary>
         protected static readonly ConcurrentDictionary<string, OAuthResponse> TokenCache = new ConcurrentDictionary<string, OAuthResponse>();
 
         /// <summary>
-        /// The actual key we use for the token cache
+        /// The actual key we use for the token cache.
         /// </summary>
         protected readonly string TokenCacheKey;
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="MicrosoftAppCredentials"/> class.
+        /// </summary>
+        /// <param name="appId">The Microsoft app ID.</param>
+        /// <param name="password">The Microsoft app password.</param>
         public MicrosoftAppCredentials(string appId, string password)
         {
             this.MicrosoftAppId = appId;
@@ -72,15 +78,29 @@ namespace Microsoft.Bot.Connector.Authentication
             this.TokenCacheKey = $"{MicrosoftAppId}-cache";
         }
 
+        /// <summary>
+        /// Gets or sets the Microsoft app ID for this credential.
+        /// </summary>
         public string MicrosoftAppId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Microsoft app password for this credential.
+        /// </summary>
         public string MicrosoftAppPassword { get; set; }
 
+        /// <summary>
+        /// Gets the OAuth endpoint to use.
+        /// </summary>
         public virtual string OAuthEndpoint { get { return AuthenticationConstants.ToChannelFromBotLoginUrl; } }
+
+        /// <summary>
+        /// Gets the OAuth scope to use.
+        /// </summary>
         public virtual string OAuthScope { get { return AuthenticationConstants.ToChannelFromBotOAuthScope; } }
 
 
         /// <summary>
-        /// TimeWindow which controls how often the token will be automatically updated
+        /// The time window within which the token will be automatically updated.
         /// </summary>
         public static TimeSpan AutoTokenRefreshTimeSpan { get; set; } = TimeSpan.FromMinutes(10);
 
@@ -135,6 +155,13 @@ namespace Microsoft.Bot.Connector.Authentication
             await base.ProcessHttpRequestAsync(request, cancellationToken).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Gets an OAuth access token.
+        /// </summary>
+        /// <param name="forceRefresh">True to force a refresh of the token; or false to get
+        /// a cached token if it exists.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>If the task is successful, the result contains the access token string.
         public async Task<string> GetTokenAsync(bool forceRefresh = false)
         {
             Task<OAuthResponse> oAuthTokenTask = null;
@@ -269,8 +296,16 @@ namespace Microsoft.Bot.Connector.Authentication
             }
         }
 
+        /// <summary>
+        /// Represents an OAuth exception.
+        /// </summary>
         public sealed class OAuthException : Exception
         {
+            /// <summary>
+            /// Creates a new instance of the <see cref="OAuthException"/> class.
+            /// </summary>
+            /// <param name="body">The OAuth response body or reason.</param>
+            /// <param name="inner">The exception thown during the OAuth request.</param>
             public OAuthException(string body, Exception inner)
                 : base(body, inner)
             {
@@ -329,14 +364,32 @@ namespace Microsoft.Bot.Connector.Authentication
         }
 
 #pragma warning disable IDE1006
+        /// <summary>
+        /// Describes the structure of an OAuth access token response.
+        /// </summary>
         /// <remarks>
         /// Member variables to this class follow the RFC Naming conventions, rather than C# naming conventions. 
         /// </remarks>
         protected class OAuthResponse
         {
+            /// <summary>
+            /// Gets or sets the type of token.
+            /// </summary>
             public string token_type { get; set; }
+
+            /// <summary>
+            /// Gets or sets the time in seconds until the token expires.
+            /// </summary>
             public int expires_in { get; set; }
+
+            /// <summary>
+            /// Gets or sets the access token string.
+            /// </summary>
             public string access_token { get; set; }
+
+            /// <summary>
+            /// Gets or sets the time at which the token expires.
+            /// </summary>
             public DateTime expiration_time { get; set; }
         }
 #pragma warning restore IDE1006

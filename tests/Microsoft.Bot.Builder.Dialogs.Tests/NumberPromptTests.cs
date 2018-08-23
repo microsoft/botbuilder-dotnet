@@ -1,12 +1,12 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
+using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Schema;
 using Microsoft.Recognizers.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using static Microsoft.Bot.Builder.Dialogs.PromptValidatorEx;
 
 namespace Microsoft.Bot.Builder.Dialogs.Tests
 {
@@ -14,28 +14,52 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
     public class NumberPromptTests
     {
         [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void NumberPromptWithEmptyIdShouldFail()
+        {
+            var emptyId = "";
+            var numberPrompt = new NumberPrompt<int>(emptyId);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void NumberPromptWithNullIdShouldFail()
+        {
+            var nullId = "";
+            nullId = null;
+            var numberPrompt = new NumberPrompt<int>(nullId);
+        }
+
+        [TestMethod]
         public async Task NumberPrompt()
         {
-            ConversationState convoState = new ConversationState(new MemoryStorage());
-            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test", () => new Dictionary<string, object>());
+            var convoState = new ConversationState(new MemoryStorage());
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
-            TestAdapter adapter = new TestAdapter()
+            var adapter = new TestAdapter()
                 .Use(convoState);
 
-            await new TestFlow(adapter, async (turnContext) =>
-            {
-                var state = await testProperty.GetAsync(turnContext);
-                var prompt = new NumberPrompt<int>(Culture.English);
+            // Create new DialogSet.
+            var dialogs = new DialogSet(dialogState);
 
-                var dialogCompletion = await prompt.Continue(turnContext, state);
-                if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
+            // Create and add number prompt to DialogSet.
+            var numberPrompt = new NumberPrompt<int>("NumberPrompt", defaultLocale: Culture.English);
+            dialogs.Add(numberPrompt);
+
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            {
+                var dc = await dialogs.CreateContextAsync(turnContext);
+
+                var results = await dc.ContinueAsync();
+                if (!turnContext.Responded && !results.HasActive && !results.HasResult)
                 {
-                    await prompt.Begin(turnContext, state, new PromptOptions { PromptString = "Enter a number." });
+                    var options = new PromptOptions { Prompt = new Activity { Type = ActivityTypes.Message, Text = "Enter a number." } };
+                    await dc.PromptAsync("NumberPrompt", options);
                 }
-                else if (dialogCompletion.IsCompleted)
+                else if (!results.HasActive && results.HasResult)
                 {
-                    var numberResult = (NumberResult<int>)dialogCompletion.Result;
-                    await turnContext.SendActivityAsync($"Bot received the number '{numberResult.Value}'.");
+                    var numberResult = (int)results.Result;
+                    await turnContext.SendActivityAsync($"Bot received the number '{numberResult}'.");
                 }
             })
             .Send("hello")
@@ -48,31 +72,34 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [TestMethod]
         public async Task NumberPromptRetry()
         {
-            ConversationState convoState = new ConversationState(new MemoryStorage());
-            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test", () => new Dictionary<string, object>());
+            var convoState = new ConversationState(new MemoryStorage());
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
-            TestAdapter adapter = new TestAdapter()
+            var adapter = new TestAdapter()
                 .Use(convoState);
 
-            await new TestFlow(adapter, async (turnContext) =>
-            {
-                var state = await testProperty.GetAsync(turnContext);
-                var prompt = new NumberPrompt<int>(Culture.English);
+            var dialogs = new DialogSet(dialogState);
+            
+            var numberPrompt = new NumberPrompt<int>("NumberPrompt", defaultLocale: Culture.English);
+            dialogs.Add(numberPrompt);
 
-                var dialogCompletion = await prompt.Continue(turnContext, state);
-                if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            {
+                var dc = await dialogs.CreateContextAsync(turnContext);
+
+                var results = await dc.ContinueAsync();
+                if (!turnContext.Responded && !results.HasActive && !results.HasResult)
                 {
-                    await prompt.Begin(turnContext, state,
-                        new PromptOptions
-                        {
-                            PromptString = "Enter a number.",
-                            RetryPromptString = "You must enter a number."
-                        });
+                    var options = new PromptOptions {
+                        Prompt = new Activity { Type = ActivityTypes.Message, Text = "Enter a number." },
+                        RetryPrompt = new Activity {  Type = ActivityTypes.Message, Text = "You must enter a number." }
+                    };
+                    await dc.PromptAsync("NumberPrompt", options);
                 }
-                else if (dialogCompletion.IsCompleted)
+                else if (!results.HasActive && results.HasResult)
                 {
-                    var numberResult = (NumberResult<int>)dialogCompletion.Result;
-                    await turnContext.SendActivityAsync($"Bot received the number '{numberResult.Value}'.");
+                    var numberResult = (int)results.Result;
+                    await turnContext.SendActivityAsync($"Bot received the number '{numberResult}'.");
                 }
             })
             .Send("hello")
@@ -87,41 +114,43 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [TestMethod]
         public async Task NumberPromptValidator()
         {
-            ConversationState convoState = new ConversationState(new MemoryStorage());
-            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test", () => new Dictionary<string, object>());
+            var convoState = new ConversationState(new MemoryStorage());
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
-            TestAdapter adapter = new TestAdapter()
+            var adapter = new TestAdapter()
                 .Use(convoState);
 
+            var dialogs = new DialogSet(dialogState);
 
-                PromptValidator<NumberResult<int>> validator = async (ctx, result) =>
+            PromptValidator<int> validator = async (ctx, promptContext) =>
             {
-                if (result.Value < 0)
-                    result.Status = PromptStatus.TooSmall;
-                if (result.Value > 100)
-                    result.Status = PromptStatus.TooBig;
-                await Task.CompletedTask;
-            };
-
-            await new TestFlow(adapter, async (turnContext) =>
-            {
-                var state = await testProperty.GetAsync(turnContext);
-                var prompt = new NumberPrompt<int>(Culture.English, validator);
-
-                var dialogCompletion = await prompt.Continue(turnContext, state);
-                if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
+                var result = (int)promptContext.Recognized.Value;
+                
+                if (result < 100 && result > 0)
                 {
-                    await prompt.Begin(turnContext, state,
-                        new PromptOptions
-                        {
-                            PromptString = "Enter a number.",
-                            RetryPromptString = "You must enter a positive number less than 100."
-                        });
+                    promptContext.End(result);
                 }
-                else if (dialogCompletion.IsCompleted)
+            };
+            var numberPrompt = new NumberPrompt<int>("NumberPrompt", validator, Culture.English);
+            dialogs.Add(numberPrompt);
+
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            {
+                var dc = await dialogs.CreateContextAsync(turnContext);
+
+                var results = await dc.ContinueAsync();
+                if (!turnContext.Responded && !results.HasActive && !results.HasResult)
                 {
-                    var numberResult = (NumberResult<int>)dialogCompletion.Result;
-                    await turnContext.SendActivityAsync($"Bot received the number '{numberResult.Value}'.");
+                    var options = new PromptOptions {
+                        Prompt = new Activity { Type = ActivityTypes.Message, Text = "Enter a number." },
+                        RetryPrompt = new Activity {  Type = ActivityTypes.Message, Text = "You must enter a positive number less than 100." }
+                    };
+                    await dc.PromptAsync("NumberPrompt", options);
+                }
+                else if (!results.HasActive && results.HasResult)
+                {
+                    var numberResult = (int)results.Result;
+                    await turnContext.SendActivityAsync($"Bot received the number '{numberResult}'.");
                 }
             })
             .Send("hello")
@@ -132,30 +161,38 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .AssertReply("Bot received the number '64'.")
             .StartTestAsync();
         }
-
+        
         [TestMethod]
         public async Task FloatNumberPrompt()
         {
-            ConversationState convoState = new ConversationState(new MemoryStorage());
-            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test", () => new Dictionary<string, object>());
+            var convoState = new ConversationState(new MemoryStorage());
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
-            TestAdapter adapter = new TestAdapter()
+            var adapter = new TestAdapter()
                 .Use(convoState);
 
-            await new TestFlow(adapter, async (turnContext) =>
-            {
-                var state = await testProperty.GetAsync(turnContext);
-                var prompt = new NumberPrompt<float>(Culture.English);
+            var dialogs = new DialogSet(dialogState);
 
-                var dialogCompletion = await prompt.Continue(turnContext, state);
-                if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
+            var numberPrompt = new NumberPrompt<float>("NumberPrompt", defaultLocale: Culture.English);
+            dialogs.Add(numberPrompt);
+
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            {
+                var dc = await dialogs.CreateContextAsync(turnContext);
+
+                var results = await dc.ContinueAsync();
+                if (!turnContext.Responded && !results.HasActive && !results.HasResult)
                 {
-                    await prompt.Begin(turnContext, state, new PromptOptions { PromptString = "Enter a number." });
+                    var options = new PromptOptions
+                    {
+                        Prompt = new Activity { Type = ActivityTypes.Message, Text = "Enter a number." }
+                    };
+                    await dc.PromptAsync("NumberPrompt", options);
                 }
-                else if (dialogCompletion.IsCompleted)
+                else if (!results.HasActive && results.HasResult)
                 {
-                    var numberResult = (NumberResult<float>)dialogCompletion.Result;
-                    await turnContext.SendActivityAsync($"Bot received the number '{numberResult.Value}'.");
+                    var numberResult = (float)results.Result;
+                    await turnContext.SendActivityAsync($"Bot received the number '{numberResult}'.");
                 }
             })
             .Send("hello")
@@ -164,30 +201,38 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .AssertReply("Bot received the number '3.14'.")
             .StartTestAsync();
         }
-
+        
         [TestMethod]
         public async Task LongNumberPrompt()
         {
-            ConversationState convoState = new ConversationState(new MemoryStorage());
-            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test", () => new Dictionary<string, object>());
+            var convoState = new ConversationState(new MemoryStorage());
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
-            TestAdapter adapter = new TestAdapter()
+            var adapter = new TestAdapter()
                 .Use(convoState);
 
-            await new TestFlow(adapter, async (turnContext) =>
-            {
-                var state = await testProperty.GetAsync(turnContext);
-                var prompt = new NumberPrompt<long>(Culture.English);
+            var dialogs = new DialogSet(dialogState);
 
-                var dialogCompletion = await prompt.Continue(turnContext, state);
-                if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
+            var numberPrompt = new NumberPrompt<long>("NumberPrompt", defaultLocale: Culture.English);
+            dialogs.Add(numberPrompt);
+
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            {
+                var dc = await dialogs.CreateContextAsync(turnContext);
+
+                var results = await dc.ContinueAsync();
+                if (!turnContext.Responded && !results.HasActive && !results.HasResult)
                 {
-                    await prompt.Begin(turnContext, state, new PromptOptions { PromptString = "Enter a number." });
+                    var options = new PromptOptions
+                    {
+                        Prompt = new Activity { Type = ActivityTypes.Message, Text = "Enter a number." }
+                    };
+                    await dc.PromptAsync("NumberPrompt", options);
                 }
-                else if (dialogCompletion.IsCompleted)
+                else if (!results.HasActive && results.HasResult)
                 {
-                    var numberResult = (NumberResult<long>)dialogCompletion.Result;
-                    await turnContext.SendActivityAsync($"Bot received the number '{numberResult.Value}'.");
+                    var numberResult = (long)results.Result;
+                    await turnContext.SendActivityAsync($"Bot received the number '{numberResult}'.");
                 }
             })
             .Send("hello")
@@ -196,30 +241,38 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .AssertReply("Bot received the number '42'.")
             .StartTestAsync();
         }
-
+        
         [TestMethod]
         public async Task DoubleNumberPrompt()
         {
-            ConversationState convoState = new ConversationState(new MemoryStorage());
-            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test", () => new Dictionary<string, object>());
+            var convoState = new ConversationState(new MemoryStorage());
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
-            TestAdapter adapter = new TestAdapter()
+            var adapter = new TestAdapter()
                 .Use(convoState);
 
-            await new TestFlow(adapter, async (turnContext) =>
-            {
-                var state = await testProperty.GetAsync(turnContext);
-                var prompt = new NumberPrompt<double>(Culture.English);
+            var dialogs = new DialogSet(dialogState);
 
-                var dialogCompletion = await prompt.Continue(turnContext, state);
-                if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
+            var numberPrompt = new NumberPrompt<double>("NumberPrompt", defaultLocale: Culture.English);
+            dialogs.Add(numberPrompt);
+
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            {
+                var dc = await dialogs.CreateContextAsync(turnContext);
+
+                var results = await dc.ContinueAsync();
+                if (!turnContext.Responded && !results.HasActive && !results.HasResult)
                 {
-                    await prompt.Begin(turnContext, state, new PromptOptions { PromptString = "Enter a number." });
+                    var options = new PromptOptions
+                    {
+                        Prompt = new Activity { Type = ActivityTypes.Message, Text = "Enter a number." }
+                    };
+                    await dc.PromptAsync("NumberPrompt", options);
                 }
-                else if (dialogCompletion.IsCompleted)
+                else if (!results.HasActive && results.HasResult)
                 {
-                    var numberResult = (NumberResult<double>)dialogCompletion.Result;
-                    await turnContext.SendActivityAsync($"Bot received the number '{numberResult.Value}'.");
+                    var numberResult = (double)results.Result;
+                    await turnContext.SendActivityAsync($"Bot received the number '{numberResult}'.");
                 }
             })
             .Send("hello")
@@ -232,26 +285,34 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [TestMethod]
         public async Task DecimalNumberPrompt()
         {
-            ConversationState convoState = new ConversationState(new MemoryStorage());
-            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test", () => new Dictionary<string, object>());
+            var convoState = new ConversationState(new MemoryStorage());
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
-            TestAdapter adapter = new TestAdapter()
+            var adapter = new TestAdapter()
                 .Use(convoState);
 
-            await new TestFlow(adapter, async (turnContext) =>
-            {
-                var state = await testProperty.GetAsync(turnContext);
-                var prompt = new NumberPrompt<decimal>(Culture.English);
+            var dialogs = new DialogSet(dialogState);
 
-                var dialogCompletion = await prompt.Continue(turnContext, state);
-                if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
+            var numberPrompt = new NumberPrompt<decimal>("NumberPrompt", defaultLocale: Culture.English);
+            dialogs.Add(numberPrompt);
+
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            {
+                var dc = await dialogs.CreateContextAsync(turnContext);
+
+                var results = await dc.ContinueAsync();
+                if (!turnContext.Responded && !results.HasActive && !results.HasResult)
                 {
-                    await prompt.Begin(turnContext, state, new PromptOptions { PromptString = "Enter a number." });
+                    var options = new PromptOptions
+                    {
+                        Prompt = new Activity { Type = ActivityTypes.Message, Text = "Enter a number." }
+                    };
+                    await dc.PromptAsync("NumberPrompt", options);
                 }
-                else if (dialogCompletion.IsCompleted)
+                else if (!results.HasActive && results.HasResult)
                 {
-                    var numberResult = (NumberResult<decimal>)dialogCompletion.Result;
-                    await turnContext.SendActivityAsync($"Bot received the number '{numberResult.Value}'.");
+                    var numberResult = (decimal)results.Result;
+                    await turnContext.SendActivityAsync($"Bot received the number '{numberResult}'.");
                 }
             })
             .Send("hello")

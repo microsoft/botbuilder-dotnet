@@ -89,7 +89,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                 foreach (var word in words)
                 {
                     toBot.Text = word;
-                    await adapter.ProcessActivityAsync((Activity)toBot, async (context) =>
+                    await adapter.ProcessActivityAsync((Activity)toBot, async (context, cancellationToken) =>
                     {
                         using (var scope = DialogModule.BeginLifetimeScope(container, context))
                         {
@@ -132,7 +132,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                 var toBot = MakeTestMessage();
                 toBot.Text = Phrase;
                 var adapter = new TestAdapter();
-                await adapter.ProcessActivityAsync((Activity)toBot, async (context) =>
+                await adapter.ProcessActivityAsync((Activity)toBot, async (context, cancellationToken) =>
                 {
                     using (var scope = DialogModule.BeginLifetimeScope(container, context))
                     {
@@ -159,7 +159,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                 toBot.Text = true.ToString();
 
                 var adapter = new TestAdapter();
-                await adapter.ProcessActivityAsync((Activity)toBot, async (context) =>
+                await adapter.ProcessActivityAsync((Activity)toBot, async (context, cancellationToken) =>
                 {
                     using (var scope = DialogModule.BeginLifetimeScope(container, context))
                     {
@@ -186,7 +186,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                 var toBot = MakeTestMessage();
                 toBot.Text = false.ToString();
                 var adapter = new TestAdapter();
-                await adapter.ProcessActivityAsync((Activity)toBot, async (context) =>
+                await adapter.ProcessActivityAsync((Activity)toBot, async (context, cancellationToken) =>
                 {
 
                     using (var scope = DialogModule.BeginLifetimeScope(container, context))
@@ -254,7 +254,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                 foreach (var word in words)
                 {
                     toBot.Text = word;
-                    await adapter.ProcessActivityAsync((Activity)toBot, async (context) =>
+                    await adapter.ProcessActivityAsync((Activity)toBot, async (context, cancellationToken) =>
                     {
                         using (var scope = DialogModule.BeginLifetimeScope(container, context))
                         {
@@ -291,7 +291,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                 foreach (var word in words)
                 {
                     toBot.Text = word;
-                    await adapter.ProcessActivityAsync((Activity)toBot, async (context) =>
+                    await adapter.ProcessActivityAsync((Activity)toBot, async (context, cancellationToken) =>
                     {
 
                         using (var scope = DialogModule.BeginLifetimeScope(container, context))
@@ -329,7 +329,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                 foreach (var word in words)
                 {
                     toBot.Text = word;
-                    await adapter.ProcessActivityAsync((Activity)toBot, async (context) =>
+                    await adapter.ProcessActivityAsync((Activity)toBot, async (context, cancellationToken) =>
                     {
                         using (var scope = DialogModule.BeginLifetimeScope(container, context))
                         {

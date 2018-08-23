@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
@@ -11,69 +12,68 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// </summary>
     public class DialogSet
     {
-        private IDictionary<string, IDialog> _dialogs;
+        private IStatePropertyAccessor<DialogState> _dialogState;
+        private IDictionary<string, Dialog> _dialogs;
 
-        public DialogSet()
+        public DialogSet(IStatePropertyAccessor<DialogState> dialogState)
         {
-            _dialogs = new Dictionary<string, IDialog>();
+            _dialogState = dialogState;
+            _dialogs = new Dictionary<string, Dialog>();
         }
 
         /// <summary>
         /// Adds a new dialog to the set and returns the added dialog.
         /// </summary>
-        public IDialog Add(string dialogId, IDialog dialog)
+        /// <param name="dialog">The dialog to add.</param>
+        /// <returns>The added dialog.</returns>
+        public Dialog Add(Dialog dialog)
         {
-            if (string.IsNullOrEmpty(dialogId))
-                throw new ArgumentNullException(nameof(dialogId));
             if (dialog == null)
-                throw new ArgumentNullException(nameof(dialog));
-
-            if (_dialogs.ContainsKey(dialogId))
             {
-                throw new Exception($"DialogSet.add(): A dialog with an id of '{dialogId}' already added.");
+                throw new ArgumentNullException(nameof(dialog));
             }
-            return _dialogs[dialogId] = dialog;
+
+            if (_dialogs.ContainsKey(dialog.Id))
+            {
+                throw new Exception($"DialogSet.Add(): A dialog with an id of '{dialog.Id}' already added.");
+            }
+
+            return _dialogs[dialog.Id] = dialog;
         }
 
-        /// <summary>
-        /// Adds a new waterfall to the set and returns the added waterfall.
-        /// </summary>
-        public Waterfall Add(string dialogId, WaterfallStep[] steps)
+        public async Task<DialogContext> CreateContextAsync(ITurnContext turnContext)
         {
-            if (string.IsNullOrEmpty(dialogId))
-                throw new ArgumentNullException(nameof(dialogId));
-            if (steps == null)
-                throw new ArgumentNullException(nameof(steps));
+            BotAssert.ContextNotNull(turnContext);
 
-            var waterfall = new Waterfall(steps);
-            Add(dialogId, waterfall);
-            return waterfall;
-        }
+            if (_dialogState == null)
+            {
+                throw new Exception($"DialogSet.CreateContextAsync(): DialogSet created with a null IStatePropertyAccessor. Must manually factory DialogContext instances in this scenario.");
+            }
 
-        public DialogContext CreateContext(ITurnContext context, IDictionary<string, object> state)
-        {
-            BotAssert.ContextNotNull(context);
-            if (state == null)
-                throw new ArgumentNullException(nameof(state));
+            // Load/initialize dialog state
+            var state = await _dialogState.GetAsync(turnContext, () => { return new DialogState(); }).ConfigureAwait(false);
 
-            return new DialogContext(this, context, state);
+            // Create and return context
+            return new DialogContext(this, turnContext, state);
         }
 
         /// <summary>
         /// Finds a dialog that was previously added to the set using [add()](#add).
         /// </summary>
         /// <param name="dialogId">ID of the dialog/prompt to lookup.</param>
-        /// <returns>dialog if found otherwise null</returns>
-        public IDialog Find(string dialogId)
+        /// <returns>dialog if found otherwise null.</returns>
+        public Dialog Find(string dialogId)
         {
-            if (string.IsNullOrEmpty(dialogId))
+            if (string.IsNullOrWhiteSpace(dialogId))
+            {
                 throw new ArgumentNullException(nameof(dialogId));
+            }
 
-            IDialog result;
-            if (_dialogs.TryGetValue(dialogId, out result))
+            if (_dialogs.TryGetValue(dialogId, out var result))
             {
                 return result;
             }
+
             return null;
         }
     }

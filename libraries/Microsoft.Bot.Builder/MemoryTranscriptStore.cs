@@ -60,7 +60,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="startDate">A cutoff date. Activities older than this date are not included.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <remarks>If the task completes successfully, the result contains the matching activities.</remarks>
-        public Task<PagedResult<IActivity>> GetTranscriptActivitiesAsync(string channelId, string conversationId, string continuationToken = null, DateTime startDate = default(DateTime))
+        public Task<PagedResult<IActivity>> GetTranscriptActivitiesAsync(string channelId, string conversationId, string continuationToken = null, DateTimeOffset startDate = default(DateTimeOffset))
         {
             if (channelId == null)
             {

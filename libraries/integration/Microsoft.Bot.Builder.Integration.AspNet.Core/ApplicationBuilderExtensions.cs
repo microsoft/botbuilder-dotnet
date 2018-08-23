@@ -34,13 +34,6 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 
             var paths = options.Paths;
 
-            if (options.EnableProactiveMessages)
-            {
-                applicationBuilder.Map(
-                    paths.BasePath + paths.ProactiveMessagesPath,
-                    botProactiveAppBuilder => botProactiveAppBuilder.Run(new BotProactiveMessageHandler().HandleAsync));
-            }
-
             applicationBuilder.Map(
                 paths.BasePath + paths.MessagesPath,
                 botActivitiesAppBuilder => botActivitiesAppBuilder.Run(new BotMessageHandler().HandleAsync));

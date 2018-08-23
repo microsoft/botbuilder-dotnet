@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for
 // license information.
 // 
@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Builder.Classic.Luis.Models
         /// <summary>
         /// Initializes a new instance of the LuisResult class.
         /// </summary>
-        public LuisResult(string query, IList<EntityRecommendation> entities, IntentRecommendation topScoringIntent = default(IntentRecommendation), IList<IntentRecommendation> intents = default(IList<IntentRecommendation>), IList<CompositeEntity> compositeEntities = default(IList<CompositeEntity>), DialogResponse dialog = default(DialogResponse), string alteredQuery = default(string))
+        public LuisResult(string query, IList<EntityModel> entities, IntentRecommendation topScoringIntent = default(IntentRecommendation), IList<IntentRecommendation> intents = default(IList<IntentRecommendation>), IList<CompositeEntityModel> compositeEntities = default(IList<CompositeEntityModel>), DialogResponse dialog = default(DialogResponse), string alteredQuery = default(string))
         {
             Query = query;
             TopScoringIntent = topScoringIntent;
@@ -55,13 +55,13 @@ namespace Microsoft.Bot.Builder.Classic.Luis.Models
         /// The entities found in the query text.
         /// </summary>
         [JsonProperty(PropertyName = "entities")]
-        public IList<EntityRecommendation> Entities { get; set; } = Array.Empty<EntityRecommendation>();
+        public IList<EntityModel> Entities { get; set; } = Array.Empty<EntityModel>();
 
         /// <summary>
         /// The composite entities found in the utterance.
         /// </summary>
         [JsonProperty(PropertyName = "compositeEntities")]
-        public IList<CompositeEntity> CompositeEntities { get; set; } = Array.Empty<CompositeEntity>();
+        public IList<CompositeEntityModel> CompositeEntities { get; set; } = Array.Empty<CompositeEntityModel>();
 
         /// <summary>
         /// </summary>

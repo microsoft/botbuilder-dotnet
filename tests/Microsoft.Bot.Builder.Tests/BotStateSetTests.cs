@@ -2,12 +2,13 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.Bot.Builder.Core.Extensions.Tests
+namespace Microsoft.Bot.Builder.Tests
 {
     [TestClass]
     [TestCategory("State Management")]
@@ -20,43 +21,43 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
 
             // setup userstate
             var userState = new UserState(storage);
-            var userProperty = userState.CreateProperty<int>("userCount", () => 100);
+            var userProperty = userState.CreateProperty<int>("userCount");
 
             // setup convState
             var convState = new ConversationState(storage);
-            var convProperty = convState.CreateProperty<int>("convCount", () => 10);
+            var convProperty = convState.CreateProperty<int>("convCount");
 
             var adapter = new TestAdapter()
                 .Use(new BotStateSet(userState, convState));
 
-            Func<ITurnContext, Task> botLogic = async (context) =>
-                        {
-                            // get userCount and convCount from botStateSet
-                            var userCount = await userProperty.GetAsync(context).ConfigureAwait(false);
-                            var convCount = await convProperty.GetAsync(context).ConfigureAwait(false);
+            BotCallbackHandler botLogic = async (context, cancellationToken) =>
+            {
+                // get userCount and convCount from botStateSet
+                var userCount = await userProperty.GetAsync(context, () => 100).ConfigureAwait(false);
+                var convCount = await convProperty.GetAsync(context, () => 10).ConfigureAwait(false);
                             
-                            // System.Diagnostics.Debug.WriteLine($"{context.Activity.Id} UserCount({context.Activity.From.Id}):{userCount} convCount({context.Activity.Conversation.Id}):{convCount}");
+                // System.Diagnostics.Debug.WriteLine($"{context.Activity.Id} UserCount({context.Activity.From.Id}):{userCount} convCount({context.Activity.Conversation.Id}):{convCount}");
 
-                            if (context.Activity.Type == ActivityTypes.Message)
-                            {
-                                if (context.Activity.Text == "get userCount")
-                                {
-                                    await context.SendActivityAsync(context.Activity.CreateReply($"{userCount}"));
-                                }
-                                else if (context.Activity.Text == "get convCount")
-                                {
-                                    await context.SendActivityAsync(context.Activity.CreateReply($"{convCount}"));
-                                }
-                            }
+                if (context.Activity.Type == ActivityTypes.Message)
+                {
+                    if (context.Activity.Text == "get userCount")
+                    {
+                        await context.SendActivityAsync(context.Activity.CreateReply($"{userCount}"));
+                    }
+                    else if (context.Activity.Text == "get convCount")
+                    {
+                        await context.SendActivityAsync(context.Activity.CreateReply($"{convCount}"));
+                    }
+                }
 
-                            // increment userCount and save (since it's a value type, or changed object you don't need to call Set)
-                            userCount++;
-                            await userProperty.SetAsync(context, userCount);
+                // increment userCount and save (since it's a value type, or changed object you don't need to call Set)
+                userCount++;
+                await userProperty.SetAsync(context, userCount);
 
-                            // increment convCount and save (since it's a value type, or changed object you don't need to call Set)
-                            convCount++;
-                            await convProperty.SetAsync(context, convCount);
-                        };
+                // increment convCount and save (since it's a value type, or changed object you don't need to call Set)
+                convCount++;
+                await convProperty.SetAsync(context, convCount);
+            };
 
             await new TestFlow(adapter, botLogic)
                 .Send("test1")
@@ -85,6 +86,27 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
                 .Send("get convCount")
                     .AssertReply("11", "conversationCount for conversation2 should be reset")
                 .StartTestAsync();
+        }
+
+
+        [TestMethod]
+        public void BotStateSet_Properties()
+        {
+            var storage = new MemoryStorage();
+
+            // setup userstate
+            var userState = new UserState(storage);
+            var userProperty = userState.CreateProperty<int>("userCount");
+
+            // setup convState
+            var convState = new ConversationState(storage);
+            var convProperty = convState.CreateProperty<int>("convCount");
+
+            var stateSet = new BotStateSet(userState, convState);
+
+            Assert.AreEqual(stateSet.BotStates.Count, 2);
+            Assert.IsNotNull(stateSet.BotStates.OfType<UserState>().First());
+            Assert.IsNotNull(stateSet.BotStates.OfType<ConversationState>().First());
         }
 
     }

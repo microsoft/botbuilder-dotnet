@@ -2,37 +2,60 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
-    public class AttachmentPrompt : Prompt<AttachmentResult>
+    public class AttachmentPrompt : Prompt<IList<Attachment>>
     {
-        private AttachmentPromptInternal _prompt;
-
-        public AttachmentPrompt()
+        public AttachmentPrompt(string dialogId, PromptValidator<IList<Attachment>> validator = null)
+            : base(dialogId, validator)
         {
-            _prompt = new AttachmentPromptInternal();
         }
 
-        protected override Task OnPrompt(DialogContext dc, PromptOptions options, bool isRetry)
+        protected override async Task OnPromptAsync(ITurnContext turnContext, IDictionary<string, object> state, PromptOptions options, bool isRetry)
         {
-            if (dc == null)
-                throw new ArgumentNullException(nameof(dc));
-            if (options == null)
-                throw new ArgumentNullException(nameof(options));
+            if (turnContext == null)
+            {
+                throw new ArgumentNullException(nameof(turnContext));
+            }
 
-            return dc.Context.SendActivityAsync(PromptMessageFactory.CreateActivity(options, isRetry));
+            if (options == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
+
+            if (isRetry && options.RetryPrompt != null)
+            {
+                await turnContext.SendActivityAsync(options.RetryPrompt).ConfigureAwait(false);
+            }
+            else if (options.Prompt != null)
+            {
+                await turnContext.SendActivityAsync(options.Prompt).ConfigureAwait(false);
+            }
         }
 
-        protected override async Task<AttachmentResult> OnRecognize(DialogContext dc, PromptOptions options)
+        protected override Task<PromptRecognizerResult<IList<Attachment>>> OnRecognizeAsync(ITurnContext turnContext, IDictionary<string, object> state, PromptOptions options)
         {
-            if (dc == null)
-                throw new ArgumentNullException(nameof(dc));
-            if (options == null)
-                throw new ArgumentNullException(nameof(options));
+            if (turnContext == null)
+            {
+                throw new ArgumentNullException(nameof(turnContext));
+            }
 
-            return await _prompt.Recognize(dc.Context);
+            var result = new PromptRecognizerResult<IList<Attachment>>();
+            if (turnContext.Activity.Type == ActivityTypes.Message)
+            {
+                var message = turnContext.Activity.AsMessageActivity();
+                if (message.Attachments != null && message.Attachments.Count > 0)
+                {
+                    result.Succeeded = true;
+                    result.Value = message.Attachments;
+                }
+            }
+
+            return Task.FromResult(result);
         }
     }
 }

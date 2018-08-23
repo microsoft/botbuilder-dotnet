@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Bot.Schema;
@@ -10,7 +9,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
 {
     public class ChoiceFactory
     {
-        public static IMessageActivity ForChannel(string channelId, List<Choice> list, string text = null, string speak = null, ChoiceFactoryOptions options = null)
+        public static IMessageActivity ForChannel(string channelId, IList<Choice> list, string text = null, string speak = null, ChoiceFactoryOptions options = null)
         {
             channelId = channelId ?? string.Empty;
 
@@ -25,7 +24,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
                 {
                     maxTitleLength = l;
                 }
-            };
+            }
 
             // Determine list style
             var supportsSuggestedActions = Channel.SupportsSuggestedActions(channelId, list.Count);
@@ -52,7 +51,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
             }
         }
 
-        public static Activity Inline(List<Choice> choices, string text = null, string speak = null, ChoiceFactoryOptions options = null)
+        public static Activity Inline(IList<Choice> choices, string text = null, string speak = null, ChoiceFactoryOptions options = null)
         {
             choices = choices ?? new List<Choice>();
             options = options ?? new ChoiceFactoryOptions();
@@ -62,7 +61,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
                 InlineSeparator = options.InlineSeparator ?? ", ",
                 InlineOr = options.InlineOr ?? " or ",
                 InlineOrMore = options.InlineOrMore ?? ", or ",
-                IncludeNumbers = options.IncludeNumbers ?? true
+                IncludeNumbers = options.IncludeNumbers ?? true,
             };
 
             // Format list of choices
@@ -81,6 +80,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
                 {
                     txt += "(" + (index + 1).ToString() + ") ";
                 }
+
                 txt += $"{title}";
                 if (index == (choices.Count - 2))
                 {
@@ -91,27 +91,28 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
                     connector = opt.InlineSeparator ?? string.Empty;
                 }
             }
+
             txt += string.Empty;
 
             // Return activity with choices as an inline list.
             return MessageFactory.Text(txt, speak, InputHints.ExpectingInput);
         }
 
-        public static Activity List(List<string> choices, string text = null, string speak = null, ChoiceFactoryOptions options = null)
+        public static Activity List(IList<string> choices, string text = null, string speak = null, ChoiceFactoryOptions options = null)
         {
             return List(ToChoices(choices), text, speak, options);
         }
 
-        public static Activity List(List<Choice> choices, string text = null, string speak = null, ChoiceFactoryOptions options = null)
+        public static Activity List(IList<Choice> choices, string text = null, string speak = null, ChoiceFactoryOptions options = null)
         {
             choices = choices ?? new List<Choice>();
             options = options ?? new ChoiceFactoryOptions();
 
-            bool includeNumbers = options.IncludeNumbers ?? true;
+            var includeNumbers = options.IncludeNumbers ?? true;
 
             // Format list of choices
             var connector = string.Empty;
-            var txt = (text ?? string.Empty);
+            var txt = text ?? string.Empty;
             txt += "\n\n   ";
 
             for (var index = 0; index < choices.Count; index++)
@@ -129,6 +130,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
                 {
                     txt += "- ";
                 }
+
                 txt += title;
                 connector = "\n   ";
             }
@@ -137,12 +139,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
             return MessageFactory.Text(txt, speak, InputHints.ExpectingInput);
         }
 
-        public static IMessageActivity SuggestedAction(List<string> choices, string text = null, string speak = null)
+        public static IMessageActivity SuggestedAction(IList<string> choices, string text = null, string speak = null)
         {
             return SuggestedAction(ToChoices(choices), text, speak);
         }
 
-        public static IMessageActivity SuggestedAction(List<Choice> choices, string text = null, string speak = null)
+        public static IMessageActivity SuggestedAction(IList<Choice> choices, string text = null, string speak = null)
         {
             choices = choices ?? new List<Choice>();
 
@@ -159,7 +161,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
                     {
                         Type = ActionTypes.ImBack,
                         Value = choice.Value,
-                        Title = choice.Value
+                        Title = choice.Value,
                     };
                 }
             }).ToList();
@@ -168,22 +170,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
             return MessageFactory.SuggestedActions(actions, text, speak, InputHints.ExpectingInput);
         }
 
-        public static List<Choice> ToChoices(List<string> choices)
+        public static IList<Choice> ToChoices(IList<string> choices)
         {
             return (choices == null)
                     ?
                 new List<Choice>()
                     :
                 choices.Select(choice => new Choice { Value = choice }).ToList();
-        }
-
-        public static List<Choice> ToChoicesList(Tuple<Choice, Choice> choices)
-        {
-            return (choices == null)
-                    ?
-                new List<Choice>()
-                    :
-                new List<Choice> { choices.Item1, choices.Item2 };
         }
     }
 }

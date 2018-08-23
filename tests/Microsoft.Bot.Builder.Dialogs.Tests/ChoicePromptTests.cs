@@ -9,7 +9,6 @@ using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Schema;
 using Microsoft.Recognizers.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using static Microsoft.Bot.Builder.Dialogs.PromptValidatorEx;
 
 namespace Microsoft.Bot.Builder.Dialogs.Tests
 {
@@ -18,7 +17,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
     [TestCategory("Choice Prompts")]
     public class ChoicePromptTests
     {
-        private List<string> colorChoices = new List<string> { "red", "green", "blue" };
+        private List<Choice> colorChoices = new List<Choice> {
+            new Choice { Value = "red" },
+            new Choice { Value = "green" },
+            new Choice { Value = "blue" }
+        };
 
         private Action<IActivity> StartsWithValidator(string expected)
         {
@@ -38,7 +41,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 var msg = (IMessageActivity)activity;
                 Assert.AreEqual(expectedText, msg.Text);
                 Assert.AreEqual(expectedSuggestedActions.Actions.Count, msg.SuggestedActions.Actions.Count);
-                for (int i = 0; i < expectedSuggestedActions.Actions.Count; i++)
+                for (var i = 0; i < expectedSuggestedActions.Actions.Count; i++)
                 {
                     Assert.AreEqual(expectedSuggestedActions.Actions[i].Type, msg.SuggestedActions.Actions[i].Type);
                     Assert.AreEqual(expectedSuggestedActions.Actions[i].Value, msg.SuggestedActions.Actions[i].Value);
@@ -59,27 +62,47 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         }
 
         [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void ChoicePromptWithEmptyIdShouldFail()
+        {
+            var emptyId = "";
+            var choicePrompt = new ChoicePrompt(emptyId);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void ChoicePromptWithNullIdShouldFail()
+        {
+            var nullId = "";
+            nullId = null;
+            var choicePrompt = new ChoicePrompt(nullId);
+        }
+
+        [TestMethod]
         public async Task ShouldSendPrompt()
         {
-            ConversationState convoState = new ConversationState(new MemoryStorage());
-            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test", () => new Dictionary<string, object>());
+            var convoState = new ConversationState(new MemoryStorage());
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
-            TestAdapter adapter = new TestAdapter()
+            var adapter = new TestAdapter()
                 .Use(convoState);
 
-            await new TestFlow(adapter, async (turnContext) =>
-            {
-                var state = await testProperty.GetAsync(turnContext);
-                var prompt = new ChoicePrompt(Culture.English);
+            // Create new DialogSet.
+            var dialogs = new DialogSet(dialogState);
+            dialogs.Add(new ChoicePrompt("ChoicePrompt", defaultLocale: Culture.English));
 
-                var dialogCompletion = await prompt.Continue(turnContext, state);
-                if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            {
+                var dc = await dialogs.CreateContextAsync(turnContext);
+
+                var results = await dc.ContinueAsync();
+                if (!turnContext.Responded && !results.HasActive && !results.HasResult)
                 {
-                    await prompt.Begin(turnContext, state,
-                        new ChoicePromptOptions
+                    await dc.PromptAsync("ChoicePrompt",
+                        new PromptOptions
                         {
-                            PromptString = "favorite color?",
-                            Choices = ChoiceFactory.ToChoices(colorChoices)
+                            Prompt = new Activity { Type = ActivityTypes.Message, Text = "favorite color?" },
+                            Choices = colorChoices
                         });
                 }
             })
@@ -91,26 +114,27 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [TestMethod]
         public async Task ShouldSendPromptAsAnInlineList()
         {
-            ConversationState convoState = new ConversationState(new MemoryStorage());
-            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test", () => new Dictionary<string, object>());
+            var convoState = new ConversationState(new MemoryStorage());
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
-            TestAdapter adapter = new TestAdapter()
+            var adapter = new TestAdapter()
                 .Use(convoState);
 
-            await new TestFlow(adapter, async (turnContext) =>
-            {
-                var state = await testProperty.GetAsync(turnContext);
-                var prompt = new ChoicePrompt(Culture.English);
-                prompt.Style = ListStyle.Inline;
+            var dialogs = new DialogSet(dialogState);
+            dialogs.Add(new ChoicePrompt("ChoicePrompt", defaultLocale: Culture.English));
 
-                var dialogCompletion = await prompt.Continue(turnContext, state);
-                if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            {
+                var dc = await dialogs.CreateContextAsync(turnContext);
+
+                var results = await dc.ContinueAsync();
+                if (!turnContext.Responded && !results.HasActive && !results.HasResult)
                 {
-                    await prompt.Begin(turnContext, state,
-                        new ChoicePromptOptions
+                    await dc.PromptAsync("ChoicePrompt",
+                        new PromptOptions
                         {
-                            PromptString = "favorite color?",
-                            Choices = ChoiceFactory.ToChoices(colorChoices)
+                            Prompt = new Activity { Type = ActivityTypes.Message, Text = "favorite color?" },
+                            Choices = colorChoices
                         });
                 }
             })
@@ -122,26 +146,31 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [TestMethod]
         public async Task ShouldSendPromptAsANumberedList()
         {
-            ConversationState convoState = new ConversationState(new MemoryStorage());
-            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test", () => new Dictionary<string, object>());
+            var convoState = new ConversationState(new MemoryStorage());
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
-            TestAdapter adapter = new TestAdapter()
+            var adapter = new TestAdapter()
                 .Use(convoState);
 
-            await new TestFlow(adapter, async (turnContext) =>
-            {
-                var state = await testProperty.GetAsync(turnContext);
-                var prompt = new ChoicePrompt(Culture.English);
-                prompt.Style = ListStyle.List;
+            var dialogs = new DialogSet(dialogState);
 
-                var dialogCompletion = await prompt.Continue(turnContext, state);
-                if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
+            // Create ChoicePrompt and change style to ListStyle.List which affects how choices are presented.
+            var listPrompt = new ChoicePrompt("ChoicePrompt", defaultLocale: Culture.English);
+            listPrompt.Style = ListStyle.List;
+            dialogs.Add(listPrompt);
+
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            {
+                var dc = await dialogs.CreateContextAsync(turnContext);
+
+                var results = await dc.ContinueAsync();
+                if (!turnContext.Responded && !results.HasActive && !results.HasResult)
                 {
-                    await prompt.Begin(turnContext, state,
-                        new ChoicePromptOptions
+                    await dc.PromptAsync("ChoicePrompt",
+                        new PromptOptions
                         {
-                            PromptString = "favorite color?",
-                            Choices = ChoiceFactory.ToChoices(colorChoices)
+                            Prompt = new Activity { Type = ActivityTypes.Message, Text = "favorite color?" },
+                            Choices = colorChoices
                         });
                 }
             })
@@ -153,26 +182,29 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [TestMethod]
         public async Task ShouldSendPromptUsingSuggestedActions()
         {
-            ConversationState convoState = new ConversationState(new MemoryStorage());
-            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test", () => new Dictionary<string, object>());
+            var convoState = new ConversationState(new MemoryStorage());
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
-            TestAdapter adapter = new TestAdapter()
+            var adapter = new TestAdapter()
                 .Use(convoState);
 
-            await new TestFlow(adapter, async (turnContext) =>
-            {
-                var state = await testProperty.GetAsync(turnContext);
-                var prompt = new ChoicePrompt(Culture.English);
-                prompt.Style = ListStyle.SuggestedAction;
+            var dialogs = new DialogSet(dialogState);
+            var listPrompt = new ChoicePrompt("ChoicePrompt", defaultLocale: Culture.English);
+            listPrompt.Style = ListStyle.SuggestedAction;
+            dialogs.Add(listPrompt);
 
-                var dialogCompletion = await prompt.Continue(turnContext, state);
-                if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            {
+                var dc = await dialogs.CreateContextAsync(turnContext);
+
+                var results = await dc.ContinueAsync();
+                if (!turnContext.Responded && !results.HasActive && !results.HasResult)
                 {
-                    await prompt.Begin(turnContext, state,
-                        new ChoicePromptOptions
+                    await dc.PromptAsync("ChoicePrompt",
+                        new PromptOptions
                         {
-                            PromptString = "favorite color?",
-                            Choices = ChoiceFactory.ToChoices(colorChoices)
+                            Prompt = new Activity { Type = ActivityTypes.Message, Text = "favorite color?" },
+                            Choices = colorChoices
                         });
                 }
             })
@@ -193,26 +225,30 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [TestMethod]
         public async Task ShouldSendPromptWithoutAddingAList()
         {
-            ConversationState convoState = new ConversationState(new MemoryStorage());
-            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test", () => new Dictionary<string, object>());
+            var convoState = new ConversationState(new MemoryStorage());
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
-            TestAdapter adapter = new TestAdapter()
+            var adapter = new TestAdapter()
                 .Use(convoState);
 
-            await new TestFlow(adapter, async (turnContext) =>
-            {
-                var state = await testProperty.GetAsync(turnContext);
-                var prompt = new ChoicePrompt(Culture.English);
-                prompt.Style = ListStyle.None;
+            var dialogs = new DialogSet(dialogState);
 
-                var dialogCompletion = await prompt.Continue(turnContext, state);
-                if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
+            var listPrompt = new ChoicePrompt("ChoicePrompt", defaultLocale: Culture.English);
+            listPrompt.Style = ListStyle.None;
+            dialogs.Add(listPrompt);
+
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            {
+                var dc = await dialogs.CreateContextAsync(turnContext);
+
+                var results = await dc.ContinueAsync();
+                if (!turnContext.Responded && !results.HasActive && !results.HasResult)
                 {
-                    await prompt.Begin(turnContext, state,
-                        new ChoicePromptOptions
+                    await dc.PromptAsync("ChoicePrompt",
+                        new PromptOptions
                         {
-                            PromptString = "favorite color?",
-                            Choices = ChoiceFactory.ToChoices(colorChoices)
+                            Prompt = new Activity { Type = ActivityTypes.Message, Text = "favorite color?" },
+                            Choices = colorChoices
                         });
                 }
             })
@@ -224,27 +260,34 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [TestMethod]
         public async Task ShouldSendPromptWithoutAddingAListButAddingSsml()
         {
-            ConversationState convoState = new ConversationState(new MemoryStorage());
-            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test", () => new Dictionary<string, object>());
+            var convoState = new ConversationState(new MemoryStorage());
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
-            TestAdapter adapter = new TestAdapter()
+            var adapter = new TestAdapter()
                 .Use(convoState);
 
-            await new TestFlow(adapter, async (turnContext) =>
-            {
-                var state = await testProperty.GetAsync(turnContext);
-                var prompt = new ChoicePrompt(Culture.English);
-                prompt.Style = ListStyle.None;
+            var dialogs = new DialogSet(dialogState);
 
-                var dialogCompletion = await prompt.Continue(turnContext, state);
-                if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
+            var listPrompt = new ChoicePrompt("ChoicePrompt", defaultLocale: Culture.English);
+            listPrompt.Style = ListStyle.None;
+            dialogs.Add(listPrompt);
+
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            {
+                var dc = await dialogs.CreateContextAsync(turnContext);
+
+                var results = await dc.ContinueAsync();
+                if (!turnContext.Responded && !results.HasActive && !results.HasResult)
                 {
-                    await prompt.Begin(turnContext, state,
-                        new ChoicePromptOptions
+                    await dc.PromptAsync("ChoicePrompt",
+                        new PromptOptions
                         {
-                            PromptString = "favorite color?",
-                            Speak = "spoken prompt",
-                            Choices = ChoiceFactory.ToChoices(colorChoices)
+                            Prompt = new Activity {
+                                Type = ActivityTypes.Message,
+                                Text = "favorite color?",
+                                Speak = "spoken prompt"
+                            },
+                            Choices = colorChoices
                         });
                 }
             })
@@ -254,96 +297,38 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         }
 
         [TestMethod]
-        public async Task ShouldSendActivityBasedPrompt()
-        {
-            ConversationState convoState = new ConversationState(new MemoryStorage());
-            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test", () => new Dictionary<string, object>());
-
-            TestAdapter adapter = new TestAdapter()
-                .Use(convoState);
-
-            await new TestFlow(adapter, async (turnContext) =>
-            {
-                var state = await testProperty.GetAsync(turnContext);
-                var prompt = new ChoicePrompt(Culture.English);
-                prompt.Style = ListStyle.None;
-
-                var dialogCompletion = await prompt.Continue(turnContext, state);
-                if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
-                {
-                    await prompt.Begin(turnContext, state,
-                        new ChoicePromptOptions
-                        {
-                            PromptActivity = MessageFactory.Text("test"),
-                            Choices = ChoiceFactory.ToChoices(colorChoices)
-                        });
-                }
-            })
-            .Send("hello")
-            .AssertReply("test")
-            .StartTestAsync();
-        }
-
-        [TestMethod]
-        public async Task ShouldSendActivityBasedPromptWithSsml()
-        {
-            ConversationState convoState = new ConversationState(new MemoryStorage());
-            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test", () => new Dictionary<string, object>());
-
-            TestAdapter adapter = new TestAdapter()
-                .Use(convoState);
-
-            await new TestFlow(adapter, async (turnContext) =>
-            {
-                var state = await testProperty.GetAsync(turnContext);
-                var prompt = new ChoicePrompt(Culture.English);
-
-                var dialogCompletion = await prompt.Continue(turnContext, state);
-                if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
-                {
-                    await prompt.Begin(turnContext, state,
-                        new ChoicePromptOptions
-                        {
-                            // TODO: the current model adds the Speak to the activity - that seem surprising (and unnecessary) 
-                            PromptActivity = MessageFactory.Text("test"),
-                            Speak = "spoken test"
-                        });
-                }
-            })
-            .Send("hello")
-            .AssertReply(SpeakValidator("test", "spoken test"))
-            .StartTestAsync();
-        }
-
-        [TestMethod]
         public async Task ShouldRecognizeAChoice()
         {
-            ConversationState convoState = new ConversationState(new MemoryStorage());
-            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test", () => new Dictionary<string, object>());
+            var convoState = new ConversationState(new MemoryStorage());
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
-            TestAdapter adapter = new TestAdapter()
+            var adapter = new TestAdapter()
                 .Use(convoState);
 
-            await new TestFlow(adapter, async (turnContext) =>
-            {
-                var state = await testProperty.GetAsync(turnContext);
-                var prompt = new ChoicePrompt(Culture.English);
-                prompt.Style = ListStyle.None;
+            var dialogs = new DialogSet(dialogState);
 
-                var dialogCompletion = await prompt.Continue(turnContext, state);
-                if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
+            var listPrompt = new ChoicePrompt("ChoicePrompt", defaultLocale: Culture.English);
+            listPrompt.Style = ListStyle.None;
+            dialogs.Add(listPrompt);
+
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            {
+                var dc = await dialogs.CreateContextAsync(turnContext);
+
+                var results = await dc.ContinueAsync();
+                if (!turnContext.Responded && !results.HasActive && !results.HasResult)
                 {
-                    await prompt.Begin(turnContext, state,
-                        new ChoicePromptOptions
+                    await dc.PromptAsync("ChoicePrompt",
+                        new PromptOptions
                         {
-                            PromptString = "favorite color?",
-                            Choices = ChoiceFactory.ToChoices(colorChoices)
+                            Prompt = new Activity { Type = ActivityTypes.Message, Text = "favorite color?" },
+                            Choices = colorChoices
                         });
                 }
-                else if (dialogCompletion.IsCompleted)
+                else if (!results.HasActive && results.HasResult)
                 {
-                    var choiceResult = (ChoiceResult)dialogCompletion.Result;
-                    await turnContext.SendActivityAsync($"{choiceResult.Value.Value}");
+                    var choiceResult = (FoundChoice)results.Result;
+                    await turnContext.SendActivityAsync($"{choiceResult.Value}");
                 }
             })
             .Send("hello")
@@ -356,117 +341,107 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [TestMethod]
         public async Task ShouldNOTrecognizeOtherText()
         {
-            ConversationState convoState = new ConversationState(new MemoryStorage());
-            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test", () => new Dictionary<string, object>());
+            var convoState = new ConversationState(new MemoryStorage());
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
-            TestAdapter adapter = new TestAdapter()
+            var adapter = new TestAdapter()
                 .Use(convoState);
 
-            await new TestFlow(adapter, async (turnContext) =>
-            {
-                var state = await testProperty.GetAsync(turnContext);
-                var prompt = new ChoicePrompt(Culture.English);
-                prompt.Style = ListStyle.None;
+            var dialogs = new DialogSet(dialogState);
+            var listPrompt = new ChoicePrompt("ChoicePrompt", defaultLocale: Culture.English);
+            listPrompt.Style = ListStyle.None;
+            dialogs.Add(listPrompt);
 
-                var dialogCompletion = await prompt.Continue(turnContext, state);
-                if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            {
+                var dc = await dialogs.CreateContextAsync(turnContext);
+
+                var results = await dc.ContinueAsync();
+                if (!turnContext.Responded && !results.HasActive && !results.HasResult)
                 {
-                    await prompt.Begin(turnContext, state,
-                        new ChoicePromptOptions
+                    await dc.PromptAsync("ChoicePrompt",
+                        new PromptOptions
                         {
-                            PromptString = "favorite color?",
-                            Choices = ChoiceFactory.ToChoices(colorChoices)
+                            Prompt = new Activity { Type = ActivityTypes.Message, Text = "favorite color?" },
+                            RetryPrompt = new Activity { Type = ActivityTypes.Message, Text = "your favorite color, please?" },
+                            Choices = colorChoices
                         });
-                }
-                // TODO: this is a very awkward way to check for failure in the current model
-                else if (dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
-                {
-                    if (dialogCompletion.Result == null)
-                    {
-                        await turnContext.SendActivityAsync("NotRecognized");
-                    }
                 }
             })
             .Send("hello")
             .AssertReply(StartsWithValidator("favorite color?"))
             .Send("what was that?")
-            .AssertReply("NotRecognized")
+            .AssertReply("your favorite color, please?")
             .StartTestAsync();
         }
 
         [TestMethod]
         public async Task ShouldCallCustomValidator()
         {
-            ConversationState convoState = new ConversationState(new MemoryStorage());
-            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test", () => new Dictionary<string, object>());
+            var convoState = new ConversationState(new MemoryStorage());
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
-            TestAdapter adapter = new TestAdapter()
+            var adapter = new TestAdapter()
                 .Use(convoState);
 
-            PromptValidator<ChoiceResult> validator = (ITurnContext context, ChoiceResult result) =>
+            var dialogs = new DialogSet(dialogState);
+
+            PromptValidator<FoundChoice> validator = async (context, promptContext) =>
             {
-                    // TODO: the current model has no way for this status to bubble up
-                    result.Status = "validation failed";
-                result.Value = null;
-                return Task.CompletedTask;
+                await context.SendActivityAsync("validator called");
             };
+            var listPrompt = new ChoicePrompt("ChoicePrompt", validator, Culture.English);
+            listPrompt.Style = ListStyle.None;
+            dialogs.Add(listPrompt);
 
-            await new TestFlow(adapter, async (turnContext) =>
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                var state = await testProperty.GetAsync(turnContext);
-                var prompt = new ChoicePrompt(Culture.English, validator);
-                prompt.Style = ListStyle.None;
+                var dc = await dialogs.CreateContextAsync(turnContext);
 
-                var dialogCompletion = await prompt.Continue(turnContext, state);
-                if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
+                var results = await dc.ContinueAsync();
+                if (!turnContext.Responded && !results.HasActive && !results.HasResult)
                 {
-                    await prompt.Begin(turnContext, state,
-                        new ChoicePromptOptions
+                    await dc.PromptAsync("ChoicePrompt",
+                        new PromptOptions
                         {
-                            PromptString = "favorite color?",
-                            Choices = ChoiceFactory.ToChoices(colorChoices)
+                            Prompt = new Activity { Type = ActivityTypes.Message, Text = "favorite color?" },
+                            Choices = colorChoices
                         });
-                }
-                else if (dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
-                {
-                    if (dialogCompletion.Result == null)
-                    {
-                        await turnContext.SendActivityAsync("validation failed");
-                    }
                 }
             })
             .Send("hello")
             .AssertReply(StartsWithValidator("favorite color?"))
             .Send("I'll take the red please.")
-            .AssertReply("validation failed")
+            .AssertReply("validator called")
             .StartTestAsync();
         }
 
-        [TestMethod]
+        // TODO: Find purpose of this test and reenable if necessary
+        /*[TestMethod]
         public async Task ShouldHandleAnUndefinedRequest()
         {
-            ConversationState convoState = new ConversationState(new MemoryStorage());
-            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test", () => new Dictionary<string, object>());
+            var convoState = new ConversationState(new MemoryStorage());
+            var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test");
 
-            TestAdapter adapter = new TestAdapter()
+            var adapter = new TestAdapter()
                 .Use(convoState);
 
-            PromptValidator<ChoiceResult> validator = (ITurnContext context, ChoiceResult result) =>
+            PromptValidator<ChoiceResult> validator = (ITurnContext turnContext, ChoiceResult result) =>
             {
                 Assert.IsTrue(false);
                 return Task.CompletedTask;
             };
 
-            await new TestFlow(adapter, async (turnContext) =>
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                var state = await testProperty.GetAsync(turnContext); 
+                var state = await testProperty.GetAsync(turnContext, () => new Dictionary<string, object>());
                 var prompt = new ChoicePrompt(Culture.English, validator);
                 prompt.Style = ListStyle.None;
 
-                var dialogCompletion = await prompt.Continue(turnContext, state);
+                var dialogCompletion = await prompt.ContinueAsync(turnContext, state);
                 if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
                 {
-                    await prompt.Begin(turnContext, state,
+                    await prompt.BeginAsync(turnContext, state,
                         new ChoicePromptOptions
                         {
                             PromptString = "favorite color?",
@@ -486,6 +461,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .Send("value shouldn't have been recognized.")
             .AssertReply("NotRecognized")
             .StartTestAsync();
+        }*/
         }
     }
-}

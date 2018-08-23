@@ -122,9 +122,9 @@ namespace Microsoft.Bot.Builder.Classic.Scorables.Internals
                 var name = tag as string;
                 if (name != null)
                 {
-                    var typeE = type.IsAssignableFrom(typeof(EntityRecommendation));
+                    var typeE = type.IsAssignableFrom(typeof(EntityModel));
                     var typeS = type.IsAssignableFrom(typeof(string));
-                    var typeIE = type.IsAssignableFrom(typeof(IReadOnlyList<EntityRecommendation>));
+                    var typeIE = type.IsAssignableFrom(typeof(IReadOnlyList<EntityModel>));
                     var typeIS = type.IsAssignableFrom(typeof(IReadOnlyList<string>));
                     if (typeE || typeS || typeIE || typeIS)
                     {
