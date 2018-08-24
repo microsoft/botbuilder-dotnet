@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -45,6 +46,9 @@ namespace Microsoft.Bot.Builder
         private readonly RetryPolicy _connectorClientRetryPolicy;
         private Dictionary<string, MicrosoftAppCredentials> _appCredentialMap = new Dictionary<string, MicrosoftAppCredentials>();
         private bool _isEmulatingOAuthCards = false;
+        // There is a significant boost in throughput if we reuse a connectorClient
+        // _connectorClients is a cache using [serviceUrl + appId].
+        private ConcurrentDictionary<string, ConnectorClient> _connectorClients = new ConcurrentDictionary<string, ConnectorClient>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BotFrameworkAdapter"/> class,
@@ -690,6 +694,13 @@ namespace Microsoft.Bot.Builder
         private IConnectorClient CreateConnectorClient(string serviceUrl, MicrosoftAppCredentials appCredentials = null)
         {
             ConnectorClient connectorClient;
+            string clientKey = $"{serviceUrl}{appCredentials?.MicrosoftAppId ?? string.Empty}";
+
+            if (_connectorClients.TryGetValue(clientKey, out connectorClient))
+            {
+                return connectorClient;
+            }
+
             if (appCredentials != null)
             {
                 connectorClient = new ConnectorClient(new Uri(serviceUrl), appCredentials);
@@ -704,6 +715,7 @@ namespace Microsoft.Bot.Builder
                 connectorClient.SetRetryPolicy(_connectorClientRetryPolicy);
             }
 
+            _connectorClients.TryAdd(clientKey, connectorClient);
             return connectorClient;
         }
 
