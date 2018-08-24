@@ -18,11 +18,7 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.Azure
 {
     /// <summary>
-<<<<<<< HEAD
     /// Implements <see cref="IStorage"/> using Azure Blob Storage.
-=======
-    /// Models IStorage using Azure Storge Blobs.
->>>>>>> master
     /// </summary>
     /// <remarks>
     /// This class uses a single Azure Storage Blob Container.
@@ -75,11 +71,7 @@ namespace Microsoft.Bot.Builder.Azure
         /// <param name="keys">An array of entity keys.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
-<<<<<<< HEAD
         /// <returns>A task that represents the work queued to execute.</returns>
-=======
-        /// <returns><see cref="Task"/>A task that represents the work queued to execute.</returns>
->>>>>>> master
         public async Task DeleteAsync(string[] keys, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (keys == null)
@@ -103,11 +95,7 @@ namespace Microsoft.Bot.Builder.Azure
         /// <param name="keys">An array of entity keys.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
-<<<<<<< HEAD
         /// <returns>A task that represents the work queued to execute.</returns>
-=======
-        /// <returns>A <see cref="Task"/>A task that represents the work queued to execute.</returns>
->>>>>>> master
         public async Task<IDictionary<string, object>> ReadAsync(string[] keys, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (keys == null)
@@ -171,17 +159,10 @@ namespace Microsoft.Bot.Builder.Azure
         /// <summary>
         /// Stores a new entity in the configured blob container.
         /// </summary>
-<<<<<<< HEAD
         /// <param name="changes">The changes to write to storage.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
-=======
-        /// <param name="changes">The Dictionary of changes that are to be made.</param>
-        /// <param name="cancellationToken">A cancellation token that can be used by other objects
-        /// or threads to receive notice of cancellation.</param>
-        /// <returns>A <see cref="Task"/>A task that represents the work queued to execute.</returns>
->>>>>>> master
         public async Task WriteAsync(IDictionary<string, object> changes, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (changes == null)
