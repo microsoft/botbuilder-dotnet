@@ -27,7 +27,7 @@ namespace Microsoft.Bot.Builder.Tests
             MiddlewareSet outer = new MiddlewareSet();
             outer.Use(inner);
 
-            await outer.ReceiveActivityAsync(null, default(CancellationToken));
+            await outer.ReceiveActivityWithStatusAsync(null, null, default(CancellationToken));
 
             Assert.IsTrue(innerOnReceiveCalled, "Inner Middleware Receive was not called.");
         }
@@ -38,7 +38,7 @@ namespace Microsoft.Bot.Builder.Tests
             MiddlewareSet m = new MiddlewareSet();
 
             // No middleware. Should not explode. 
-            await m.ReceiveActivityAsync(null, default(CancellationToken));
+            await m.ReceiveActivityWithStatusAsync(null, null, default(CancellationToken));
         }
 
         [TestMethod]
@@ -86,7 +86,7 @@ namespace Microsoft.Bot.Builder.Tests
             m.Use(simple);
 
             Assert.IsFalse(simple.Called);
-            await m.ReceiveActivityAsync(null, default(CancellationToken));
+            await m.ReceiveActivityWithStatusAsync(null, null, default(CancellationToken));
             Assert.IsTrue(simple.Called);
         }
 
@@ -100,7 +100,7 @@ namespace Microsoft.Bot.Builder.Tests
                 throw new InvalidOperationException("test");
             }));
 
-            await m.ReceiveActivityAsync(null, default(CancellationToken));
+            await m.ReceiveActivityWithStatusAsync(null, null, default(CancellationToken));
             Assert.Fail("Should never have gotten here");
         }
 
@@ -114,7 +114,7 @@ namespace Microsoft.Bot.Builder.Tests
             m.Use(one);
             m.Use(two);
 
-            await m.ReceiveActivityAsync(null, default(CancellationToken));
+            await m.ReceiveActivityWithStatusAsync(null, null, default(CancellationToken));
             Assert.IsTrue(one.Called);
             Assert.IsTrue(two.Called);
         }
@@ -164,7 +164,7 @@ namespace Microsoft.Bot.Builder.Tests
             m.Use(one);
             m.Use(two);
 
-            await m.ReceiveActivityAsync(null, default(CancellationToken));
+            await m.ReceiveActivityWithStatusAsync(null, null, default(CancellationToken));
             Assert.IsTrue(called1);
             Assert.IsTrue(called2);
         }
@@ -284,7 +284,7 @@ namespace Microsoft.Bot.Builder.Tests
             }));
 
             Assert.IsFalse(didRun);
-            await m.ReceiveActivityAsync(null, default(CancellationToken));
+            await m.ReceiveActivityWithStatusAsync(null, null, default(CancellationToken));
             Assert.IsTrue(didRun);
         }
 
@@ -306,7 +306,7 @@ namespace Microsoft.Bot.Builder.Tests
                 await next(cancellationToken);
             }));
 
-            await m.ReceiveActivityAsync(null, default(CancellationToken));
+            await m.ReceiveActivityWithStatusAsync(null, null, default(CancellationToken));
             Assert.IsTrue(didRun1);
             Assert.IsTrue(didRun2);
         }
@@ -331,7 +331,7 @@ namespace Microsoft.Bot.Builder.Tests
                 await next(cancellationToken);
             }));
 
-            await m.ReceiveActivityAsync(null, default(CancellationToken));
+            await m.ReceiveActivityWithStatusAsync(null, null, default(CancellationToken));
             Assert.IsTrue(didRun1);
             Assert.IsTrue(didRun2);
         }
@@ -361,7 +361,7 @@ namespace Microsoft.Bot.Builder.Tests
                     didRun2 = true;
                 }));
 
-            await m.ReceiveActivityAsync(null, default(CancellationToken));
+            await m.ReceiveActivityWithStatusAsync(null, null, default(CancellationToken));
             Assert.IsTrue(didRun1);
             Assert.IsTrue(didRun2);
         }
@@ -390,7 +390,7 @@ namespace Microsoft.Bot.Builder.Tests
 
             }));
 
-            await m.ReceiveActivityAsync(null, default(CancellationToken));
+            await m.ReceiveActivityWithStatusAsync(null, null, default(CancellationToken));
             Assert.IsTrue(didRun1);
             Assert.IsTrue(didRun2);
         }
@@ -421,7 +421,7 @@ namespace Microsoft.Bot.Builder.Tests
                 await next(cancellationToken);
             }));
 
-            await m.ReceiveActivityAsync(null, default(CancellationToken));
+            await m.ReceiveActivityWithStatusAsync(null, null, default(CancellationToken));
             Assert.IsTrue(didRun1);
             Assert.IsTrue(didRun2);
             Assert.IsTrue(codeafter2run);
@@ -452,7 +452,7 @@ namespace Microsoft.Bot.Builder.Tests
                 throw new Exception("test");
             }));
 
-            await m.ReceiveActivityAsync(null, default(CancellationToken));
+            await m.ReceiveActivityWithStatusAsync(null, null, default(CancellationToken));
             Assert.IsTrue(caughtException);
         }
 
