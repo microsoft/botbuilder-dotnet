@@ -160,9 +160,14 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 activities.Add(a);
             }
             loggedPagedResult = _transcriptStore.GetTranscriptActivitiesAsync(ChannelId, ConversationIds[0]).Result;
+            var ct = loggedPagedResult.ContinuationToken;
             Assert.AreEqual(20, loggedPagedResult.Items.Length);
-            Assert.IsNotNull(loggedPagedResult.ContinuationToken);
+            Assert.IsNotNull(ct);
             Assert.IsTrue(loggedPagedResult.ContinuationToken.Length > 0);
+            loggedPagedResult = _transcriptStore.GetTranscriptActivitiesAsync(ChannelId, ConversationIds[0], ct).Result;
+            ct = loggedPagedResult.ContinuationToken;
+            Assert.AreEqual(10, loggedPagedResult.Items.Length);
+            Assert.IsNull(ct);
         }
 
         // These tests require Azure Storage Emulator v5.7
