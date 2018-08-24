@@ -10,22 +10,7 @@ namespace Microsoft.Bot.Builder
     /// Represents a bot that can operate on incoming activities.
     /// </summary>
     /// <remarks>A <see cref="BotAdapter"/> passes incoming activities from the user's
-    /// channel to the bot's <see cref="OnTurnAsync(ITurnContext)"/> method.</remarks>
-    /// <example>
-    /// This defines a bot that responds with "Hello world!" to any incoming message.
-    /// <code>
-    /// public class EchoBot : IBot
-    /// {
-    ///     public async Task OnTurnAsync(ITurnContext turnContext)
-    ///     {
-    ///         if (context.Activity.Type is ActivityTypes.Message)
-    ///         {
-    ///             await context.SendActivity("Hello world!");
-    ///         }
-    ///     }
-    /// }
-    /// </code>
-    /// </example>
+    /// channel to the bot's <see cref="OnTurnAsync(ITurnContext, CancellationToken)"/> method.</remarks>
     /// <seealso cref="IMiddleware"/>
     public interface IBot
     {
