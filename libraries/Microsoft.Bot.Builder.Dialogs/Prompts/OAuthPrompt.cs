@@ -68,7 +68,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             _validator = validator;
         }
 
-        public override async Task<DialogTurnResult> DialogBeginAsync(DialogContext dc, DialogOptions options = null)
+        public override async Task<DialogStatus> DialogBeginAsync(DialogContext dc, DialogOptions options = null)
         {
             if (dc == null)
             {
@@ -116,11 +116,11 @@ namespace Microsoft.Bot.Builder.Dialogs
             {
                 // Prompt user to login
                 await SendOAuthCardAsync(dc.Context, opt?.Prompt).ConfigureAwait(false);
-                return Dialog.EndOfTurn;
+                return DialogStatus.Waiting;
             }
         }
 
-        public override async Task<DialogTurnResult> DialogContinueAsync(DialogContext dc)
+        public override async Task<DialogStatus> DialogContinueAsync(DialogContext dc)
         {
             if (dc == null)
             {
@@ -174,7 +174,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                         await dc.Context.SendActivityAsync(promptOptions.RetryPrompt).ConfigureAwait(false);
                     }
 
-                    return Dialog.EndOfTurn;
+                    return DialogStatus.Waiting;
                 }
             }
         }

@@ -6,5 +6,5 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
-    public delegate Task<DialogTurnResult> WaterfallStep(DialogContext dc, WaterfallStepContext step);
+    public delegate Task<DialogStatus> WaterfallStep(DialogContext dc, WaterfallStepContext step);
 }

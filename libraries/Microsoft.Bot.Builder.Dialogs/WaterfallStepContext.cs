@@ -53,7 +53,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </summary>
         /// <param name="result">Optional result to pass to next step.</param>
         /// <returns></returns>
-        public async Task<DialogTurnResult> NextAsync(object result = null)
+        public async Task<DialogStatus> NextAsync(object result = null)
         {
             // Ensure next hasn't been called
             if (_nextCalled)

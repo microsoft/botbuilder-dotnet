@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         protected string InitialDialogId { get; set; }
 
-        public override async Task<DialogTurnResult> DialogBeginAsync(DialogContext dc, DialogOptions options = null)
+        public override async Task<DialogStatus> DialogBeginAsync(DialogContext dc, DialogOptions options = null)
         {
             if (dc == null)
             {
@@ -36,22 +36,10 @@ namespace Microsoft.Bot.Builder.Dialogs
             var dialogState = new DialogState();
             dc.ActiveDialog.State[PersistedDialogState] = dialogState;
             var cdc = new DialogContext(_dialogs, dc.Context, dialogState);
-            var turnResult = await OnDialogBeginAsync(cdc, options).ConfigureAwait(false);
-
-            // Check for end of inner dialog
-            if (turnResult.HasResult)
-            {
-                // Return result to calling dialog
-                return await dc.EndAsync(turnResult.Result).ConfigureAwait(false);
-            }
-            else
-            {
-                // Just signal end of turn
-                return Dialog.EndOfTurn;
-            }
+            return await OnDialogBeginAsync(cdc, options).ConfigureAwait(false);
         }
 
-        public override async Task<DialogTurnResult> DialogContinueAsync(DialogContext dc)
+        public override async Task<DialogStatus> DialogContinueAsync(DialogContext dc)
         {
             if (dc == null)
             {
@@ -61,46 +49,33 @@ namespace Microsoft.Bot.Builder.Dialogs
             // Continue execution of inner dialog.
             var dialogState = (DialogState)dc.ActiveDialog.State[PersistedDialogState];
             var cdc = new DialogContext(_dialogs, dc.Context, dialogState);
-            var turnResult = await OnDialogContinueAsync(cdc).ConfigureAwait(false);
-
-            // Check for end of inner dialog
-            if (turnResult.HasResult)
-            {
-                // Return result to calling dialog
-                return await dc.EndAsync(turnResult.Result).ConfigureAwait(false);
-            }
-            else
-            {
-                // Just signal end of turn
-                return Dialog.EndOfTurn;
-            }
+            return await OnDialogContinueAsync(cdc).ConfigureAwait(false);
         }
 
-        public override async Task<DialogTurnResult> DialogResumeAsync(DialogContext dc, DialogReason reason, object result = null)
+        public override async Task<DialogStatus> DialogResumeAsync(DialogContext dc, DialogReason reason, object result = null)
         {
             // Containers are typically leaf nodes on the stack but the dev is free to push other dialogs
             // on top of the stack which will result in the container receiving an unexpected call to
             // dialogResume() when the pushed on dialog ends.
             // To avoid the container prematurely ending we need to implement this method and simply
             // ask our inner dialog stack to re-prompt.
-            await DialogRepromptAsync(dc.Context, dc.ActiveDialog).ConfigureAwait(false);
-            return Dialog.EndOfTurn;
+            return await DialogRepromptAsync(dc.Context, dc.ActiveDialog).ConfigureAwait(false);
         }
 
-        public override async Task DialogRepromptAsync(ITurnContext turnContext, DialogInstance instance)
+        public override async Task<DialogStatus> DialogRepromptAsync(ITurnContext turnContext, DialogInstance instance)
         {
             // Delegate to inner dialog.
             var dialogState = (DialogState)instance.State[PersistedDialogState];
             var cdc = new DialogContext(_dialogs, turnContext, dialogState);
-            await OnDialogRepromptAsync(cdc).ConfigureAwait(false);
+            return await OnDialogRepromptAsync(cdc).ConfigureAwait(false);
         }
 
-        public override async Task DialogEndAsync(ITurnContext turnContext, DialogInstance instance, DialogReason reason)
+        public override async Task<DialogStatus> DialogEndAsync(ITurnContext turnContext, DialogInstance instance, DialogReason reason)
         {
             // Notify inner dialog
             var dialogState = (DialogState)instance.State[PersistedDialogState];
             var cdc = new DialogContext(_dialogs, turnContext, dialogState);
-            await OnDialogEndAsync(cdc, reason).ConfigureAwait(false);
+            return await OnDialogEndAsync(cdc, reason).ConfigureAwait(false);
         }
 
         protected Dialog AddDialog(Dialog dialog)
@@ -114,27 +89,45 @@ namespace Microsoft.Bot.Builder.Dialogs
             return dialog;
         }
 
-        protected virtual async Task<DialogTurnResult> OnDialogBeginAsync(DialogContext dc, DialogOptions options)
+        protected async Task<DialogStatus> OnDialogRunAsync(DialogContext dc)
+        {
+            return await dc.RunAsync().ConfigureAwait(false);
+        }
+
+        protected virtual async Task<DialogStatus> OnDialogBeginAsync(DialogContext dc, DialogOptions options)
         {
             return await dc.BeginAsync(InitialDialogId, options).ConfigureAwait(false);
         }
 
-        protected virtual async Task OnDialogEndAsync(DialogContext dc, DialogReason reason)
+        protected virtual async Task<DialogStatus> OnDialogEndAsync(DialogContext dc, DialogReason reason)
         {
             if (reason == DialogReason.CancelCalled)
             {
-                await dc.CancelAllAsync().ConfigureAwait(false);
+                return await dc.CancelAllAsync().ConfigureAwait(false);
+            }
+            else
+            {
+                return DialogStatus.Complete;
             }
         }
 
-        protected virtual async Task<DialogTurnResult> OnDialogContinueAsync(DialogContext dc)
+        protected virtual async Task<DialogStatus> OnDialogContinueAsync(DialogContext dc)
         {
-            return await dc.ContinueAsync().ConfigureAwait(false);
+            var result = await dc.ContinueAsync().ConfigureAwait(false);
+
+            if (result == DialogStatus.Cancelled)
+            {
+                return await dc.CancelAllAsync().ConfigureAwait(false);
+            }
+            else
+            {
+                return result;
+            }
         }
 
-        protected virtual async Task OnDialogRepromptAsync(DialogContext dc)
+        protected virtual async Task<DialogStatus> OnDialogRepromptAsync(DialogContext dc)
         {
-            await dc.RepromptAsync().ConfigureAwait(false);
+            return await dc.RepromptAsync().ConfigureAwait(false);
         }
     }
 }

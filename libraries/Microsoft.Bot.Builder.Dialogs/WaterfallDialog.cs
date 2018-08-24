@@ -27,7 +27,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             _steps = steps ?? new WaterfallStep[] { };
         }
 
-        public override async Task<DialogTurnResult> DialogBeginAsync(DialogContext dc, DialogOptions options = null)
+        public override async Task<DialogStatus> DialogBeginAsync(DialogContext dc, DialogOptions options = null)
         {
             if (dc == null)
             {
@@ -43,7 +43,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             return await RunStepAsync(dc, 0, DialogReason.BeginCalled).ConfigureAwait(false);
         }
 
-        public override async Task<DialogTurnResult> DialogContinueAsync(DialogContext dc)
+        public override async Task<DialogStatus> DialogContinueAsync(DialogContext dc)
         {
             if (dc == null)
             {
@@ -53,14 +53,14 @@ namespace Microsoft.Bot.Builder.Dialogs
             // Don't do anything for non-message activities.
             if (dc.Context.Activity.Type != ActivityTypes.Message)
             {
-                return Dialog.EndOfTurn;
+                return DialogStatus.Waiting;
             }
 
             // Run next step with the message text as the result.
             return await DialogResumeAsync(dc, DialogReason.ContinueCalled, dc.Context.Activity.Text).ConfigureAwait(false);
         }
 
-        public override async Task<DialogTurnResult> DialogResumeAsync(DialogContext dc, DialogReason reason, object result)
+        public override async Task<DialogStatus> DialogResumeAsync(DialogContext dc, DialogReason reason, object result)
         {
             if (dc == null)
             {
@@ -73,12 +73,12 @@ namespace Microsoft.Bot.Builder.Dialogs
             return await RunStepAsync(dc, index + 1, reason, result).ConfigureAwait(false);
         }
 
-        protected virtual async Task<DialogTurnResult> OnStepAsync(DialogContext dc, WaterfallStepContext step)
+        protected virtual async Task<DialogStatus> OnStepAsync(DialogContext dc, WaterfallStepContext step)
         {
             return await _steps[step.Index](dc, step).ConfigureAwait(false);
         }
 
-        private async Task<DialogTurnResult> RunStepAsync(DialogContext dc, int index, DialogReason reason, object result = null)
+        private async Task<DialogStatus> RunStepAsync(DialogContext dc, int index, DialogReason reason, object result = null)
         {
             if (dc == null)
             {

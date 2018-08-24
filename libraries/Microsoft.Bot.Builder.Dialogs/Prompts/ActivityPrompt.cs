@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             _validator = validator ?? throw new ArgumentNullException(nameof(validator));
         }
 
-        public override async Task<DialogTurnResult> DialogBeginAsync(DialogContext dc, DialogOptions options)
+        public override async Task<DialogStatus> DialogBeginAsync(DialogContext dc, DialogOptions options)
         {
             if (dc == null)
             {
@@ -55,10 +55,10 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             // Send initial prompt
             await OnPromptAsync(dc.Context, (IDictionary<string, object>)state[PersistedState], (PromptOptions)state[PersistedOptions]).ConfigureAwait(false);
-            return Dialog.EndOfTurn;
+            return DialogStatus.Waiting;
         }
 
-        public override async Task<DialogTurnResult> DialogContinueAsync(DialogContext dc)
+        public override async Task<DialogStatus> DialogContinueAsync(DialogContext dc)
         {
             if (dc == null)
             {
@@ -82,11 +82,11 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
             else
             {
-                return Dialog.EndOfTurn;
+                return DialogStatus.Waiting;
             }
         }
 
-        public override async Task<DialogTurnResult> DialogResumeAsync(DialogContext dc, DialogReason reason, object result = null)
+        public override async Task<DialogStatus> DialogResumeAsync(DialogContext dc, DialogReason reason, object result = null)
         {
             // Prompts are typically leaf nodes on the stack but the dev is free to push other dialogs
             // on top of the stack which will result in the prompt receiving an unexpected call to
@@ -94,14 +94,15 @@ namespace Microsoft.Bot.Builder.Dialogs
             // To avoid the prompt prematurely ending we need to implement this method and
             // simply re-prompt the user.
             await DialogRepromptAsync(dc.Context, dc.ActiveDialog).ConfigureAwait(false);
-            return Dialog.EndOfTurn;
+            return DialogStatus.Waiting;
         }
 
-        public override async Task DialogRepromptAsync(ITurnContext turnContext, DialogInstance instance)
+        public override async Task<DialogStatus> DialogRepromptAsync(ITurnContext turnContext, DialogInstance instance)
         {
             var state = (IDictionary<string, object>)instance.State[PersistedState];
             var options = (PromptOptions)instance.State[PersistedOptions];
             await OnPromptAsync(turnContext, state, options).ConfigureAwait(false);
+            return DialogStatus.Waiting;
         }
 
         protected virtual async Task OnPromptAsync(ITurnContext turnContext, IDictionary<string, object> state, PromptOptions options)

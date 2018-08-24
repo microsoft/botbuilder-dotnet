@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Dialogs.Choices;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
@@ -52,13 +51,31 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
         }
 
+        public virtual async Task<DialogStatus> RunAsync(string dialogId = null, DialogOptions options = null)
+        {
+            if (!string.IsNullOrEmpty(dialogId))
+            {
+                // If the current dialog is not the same, i.e. dialog was not started twice
+                return await BeginAsync(dialogId).ConfigureAwait(false);
+            }
+            else if (ActiveDialog != null)
+            {
+                return await ContinueAsync().ConfigureAwait(false);
+            }
+            else
+            {
+                // the stack is currently empty
+                return DialogStatus.Empty;
+            }
+        }
+
         /// <summary>
         /// Pushes a new dialog onto the dialog stack.
         /// </summary>
         /// <param name="dialogId">ID of the dialog to start.</param>
         /// <param name="options">(Optional) additional argument(s) to pass to the dialog being started.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public async Task<DialogTurnResult> BeginAsync(string dialogId, DialogOptions options = null)
+        public async Task<DialogStatus> BeginAsync(string dialogId, DialogOptions options = null)
         {
             if (string.IsNullOrEmpty(dialogId))
             {
@@ -82,8 +99,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             Stack.Insert(0, instance);
 
             // Call dialogs BeginAsync() method.
-            var turnResult = await dialog.DialogBeginAsync(this, options).ConfigureAwait(false);
-            return VerifyTurnResult(turnResult);
+            return await dialog.DialogBeginAsync(this, options).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -93,7 +109,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="dialogId">ID of the prompt to start.</param>
         /// <param name="options">Contains a Prompt, potentially a RetryPrompt and if using ChoicePrompt, Choices.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public async Task<DialogTurnResult> PromptAsync(string dialogId, PromptOptions options)
+        public async Task<DialogStatus> PromptAsync(string dialogId, PromptOptions options)
         {
             if (string.IsNullOrEmpty(dialogId))
             {
@@ -114,7 +130,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// to determine if a dialog was run and a reply was sent to the user.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public async Task<DialogTurnResult> ContinueAsync()
+        public async Task<DialogStatus> ContinueAsync()
         {
             // Check for a dialog on the stack
             if (ActiveDialog != null)
@@ -127,16 +143,11 @@ namespace Microsoft.Bot.Builder.Dialogs
                 }
 
                 // Continue execution of dialog
-                var turnResult = await dialog.DialogContinueAsync(this).ConfigureAwait(false);
-                return VerifyTurnResult(turnResult);
+                return await dialog.DialogContinueAsync(this).ConfigureAwait(false);
             }
             else
             {
-                return new DialogTurnResult
-                {
-                    HasActive = false,
-                    HasResult = false,
-                };
+                return DialogStatus.Empty;
             }
         }
 
@@ -151,7 +162,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </summary>
         /// <param name="result"> (Optional) result to pass to the parent dialogs.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public async Task<DialogTurnResult> EndAsync(object result = null)
+        public async Task<DialogStatus> EndAsync(object result = null)
         {
             // Pop active dialog off the stack
             if (Stack.Any())
@@ -170,17 +181,11 @@ namespace Microsoft.Bot.Builder.Dialogs
                 }
 
                 // Return result to previous dialog
-                var turnResult = await dialog.DialogResumeAsync(this, DialogReason.EndCalled, result).ConfigureAwait(false);
-                return VerifyTurnResult(turnResult);
+                return await dialog.DialogResumeAsync(this, DialogReason.EndCalled, result).ConfigureAwait(false);
             }
             else
             {
-                return new DialogTurnResult
-                {
-                    HasActive = false,
-                    HasResult = result != null,
-                    Result = result,
-                };
+                return DialogStatus.Complete;
             }
         }
 
@@ -188,12 +193,14 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// Deletes any existing dialog stack thus cancelling all dialogs on the stack.
         /// </summary>
         /// <returns>The dialog context.</returns>
-        public async Task CancelAllAsync()
+        public async Task<DialogStatus> CancelAllAsync()
         {
             while (Stack.Any())
             {
                 await EndActiveDialogAsync(DialogReason.CancelCalled).ConfigureAwait(false);
             }
+
+            return DialogStatus.Cancelled;
         }
 
         /// <summary>
@@ -203,7 +210,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="dialogId">ID of the new dialog to start.</param>
         /// <param name="options">(Optional) additional argument(s) to pass to the new dialog.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public async Task<DialogTurnResult> ReplaceAsync(string dialogId, DialogOptions options = null)
+        public async Task<DialogStatus> ReplaceAsync(string dialogId, DialogOptions options = null)
         {
             // Pop stack
             if (Stack.Any())
@@ -215,7 +222,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             return await BeginAsync(dialogId, options).ConfigureAwait(false);
         }
 
-        public async Task RepromptAsync()
+        public async Task<DialogStatus> RepromptAsync()
         {
             // Check for a dialog on the stack
             if (ActiveDialog != null)
@@ -228,8 +235,10 @@ namespace Microsoft.Bot.Builder.Dialogs
                 }
 
                 // Ask dialog to re-prompt if supported
-                await dialog.DialogRepromptAsync(Context, ActiveDialog).ConfigureAwait(false);
+                return await dialog.DialogRepromptAsync(Context, ActiveDialog).ConfigureAwait(false);
             }
+
+            return DialogStatus.Error;
         }
 
         private async Task EndActiveDialogAsync(DialogReason reason)
