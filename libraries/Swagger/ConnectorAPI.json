@@ -277,6 +277,71 @@
         }
       }
     },
+    "/v3/conversations/{conversationId}/activities/history": {
+        "post": {
+            "tags": [
+                "Conversations"
+            ],
+            "summary": "SendConversationHistory",
+            "description": "This method allows you to upload the historic activities to the conversation.\r\n\r\nSender must ensure that the historic activities have unique ids and appropriate timestamps. The ids are used by the client to deal with duplicate activities and the timestamps are used by the client to render the activities in the right order.",
+            "operationId": "Conversations_SendConversationHistory",
+            "consumes": [
+                "application/json",
+                "text/json",
+                "application/xml",
+                "text/xml",
+                "application/x-www-form-urlencoded"
+            ],
+            "produces": [
+                "application/json",
+                "text/json"
+            ],
+            "parameters": [
+                {
+                    "name": "conversationId",
+                    "in": "path",
+                    "description": "Conversation ID",
+                    "required": true,
+                    "type": "string"
+                },
+                {
+                    "name": "transcript",
+                    "in": "body",
+                    "description": "Transcript of activities",
+                    "required": true,
+                    "schema": {
+                        "$ref": "#/definitions/Transcript"
+                    }
+                }
+            ],
+            "responses": {
+                "200": {
+                    "description": "An object will be returned containing the ID for the resource.",
+                    "schema": {
+                        "$ref": "#/definitions/ResourceResponse"
+                    }
+                },
+                "201": {
+                    "description": "A ResourceResponse object will be returned containing the ID for the resource.",
+                    "schema": {
+                        "$ref": "#/definitions/ResourceResponse"
+                    }
+                },
+                "202": {
+                    "description": "An object will be returned containing the ID for the resource.",
+                    "schema": {
+                        "$ref": "#/definitions/ResourceResponse"
+                    }
+                },
+                "default": {
+                    "description": "The operation failed and the response is an error object describing the status code and failure.",
+                    "schema": {
+                        "$ref": "#/definitions/ErrorResponse"
+                    }
+                }
+            }
+        }
+    },
     "/v3/conversations/{conversationId}/activities/{activityId}": {
       "put": {
         "tags": [
@@ -1286,6 +1351,19 @@
         "id": {
           "description": "Id of the resource",
           "type": "string"
+        }
+      }
+    },
+    "Transcript": {
+      "description": "Conversation Transcript",
+      "type": "object",
+      "properties": {
+        "activities": {
+          "description": "Array of conversation activities.",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Activity"
+          }
         }
       }
     },
