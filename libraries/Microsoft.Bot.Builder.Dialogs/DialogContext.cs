@@ -238,7 +238,8 @@ namespace Microsoft.Bot.Builder.Dialogs
                 return await dialog.DialogRepromptAsync(Context, ActiveDialog).ConfigureAwait(false);
             }
 
-            return DialogStatus.Error;
+            // Couldn't reprompt, mark complete
+            return DialogStatus.Complete;
         }
 
         private async Task EndActiveDialogAsync(DialogReason reason)
