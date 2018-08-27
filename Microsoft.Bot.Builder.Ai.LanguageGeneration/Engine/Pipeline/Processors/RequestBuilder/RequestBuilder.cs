@@ -25,36 +25,46 @@ namespace Microsoft.Bot.Builder.Ai.LanguageGeneration.Engine
                 {
                     if (slot.Type == SlotTypeEnum.BooleanType)
                     {
-                        var lgValue = new LGValue(LgValueType.BooleanType);
-                        lgValue.BooleanValues = (List<bool>)slot.KeyValue.Value;
+                        var lgValue = new LGValue(LgValueType.BooleanType)
+                        {
+                            BooleanValues = (List<bool>)slot.KeyValue.Value
+                        };
                         commonSlotsDictionary.Add(slot.KeyValue.Key, lgValue);
                     }
 
                     else if (slot.Type == SlotTypeEnum.DateTimeType)
                     {
-                        var lgValue = new LGValue(LgValueType.DateTimeType);
-                        lgValue.DateTimeValues = (List<DateTime>)slot.KeyValue.Value;
+                        var lgValue = new LGValue(LgValueType.DateTimeType)
+                        {
+                            DateTimeValues = (List<DateTime>)slot.KeyValue.Value
+                        };
                         commonSlotsDictionary.Add(slot.KeyValue.Key, lgValue);
                     }
 
                     else if (slot.Type == SlotTypeEnum.FloatType)
                     {
-                        var lgValue = new LGValue(LgValueType.FloatType);
-                        lgValue.FloatValues = (List<float>)slot.KeyValue.Value;
+                        var lgValue = new LGValue(LgValueType.FloatType)
+                        {
+                            FloatValues = (List<float>)slot.KeyValue.Value
+                        };
                         commonSlotsDictionary.Add(slot.KeyValue.Key, lgValue);
                     }
 
                     else if (slot.Type == SlotTypeEnum.IntType)
                     {
-                        var lgValue = new LGValue(LgValueType.IntType);
-                        lgValue.IntValues = (List<int>)slot.KeyValue.Value;
+                        var lgValue = new LGValue(LgValueType.IntType)
+                        {
+                            IntValues = (List<int>)slot.KeyValue.Value
+                        };
                         commonSlotsDictionary.Add(slot.KeyValue.Key, lgValue);
                     }
 
                     else if (slot.Type == SlotTypeEnum.StringType)
                     {
-                        var lgValue = new LGValue(LgValueType.StringType);
-                        lgValue.StringValues = (List<string>)slot.KeyValue.Value;
+                        var lgValue = new LGValue(LgValueType.StringType)
+                        {
+                            StringValues = (List<string>)slot.KeyValue.Value
+                        };
                         commonSlotsDictionary.Add(slot.KeyValue.Key, lgValue);
                     }
                 }
@@ -64,8 +74,10 @@ namespace Microsoft.Bot.Builder.Ai.LanguageGeneration.Engine
             {
                 var lgRequest = new LGRequest();
 
-                var lgValue = new LGValue(LgValueType.StringType);
-                lgValue.StringValues = (List<string>)slot.KeyValue.Value;
+                var lgValue = new LGValue(LgValueType.StringType)
+                {
+                    StringValues = (List<string>)slot.KeyValue.Value
+                };
                 lgRequest.Slots = commonSlotsDictionary;
                 lgRequest.Slots.Add(slot.KeyValue.Key, lgValue);
 

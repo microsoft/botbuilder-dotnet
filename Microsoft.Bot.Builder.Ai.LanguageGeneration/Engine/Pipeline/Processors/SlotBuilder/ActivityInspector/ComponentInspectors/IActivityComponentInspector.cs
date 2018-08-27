@@ -8,6 +8,6 @@ namespace Microsoft.Bot.Builder.Ai.LanguageGeneration.Engine
 {
     internal interface IActivityComponentInspector
     {
-        Task<IList<string>> InspectAsync(Activity activity);
+        IList<string> Inspect(Activity activity);
     }
 }

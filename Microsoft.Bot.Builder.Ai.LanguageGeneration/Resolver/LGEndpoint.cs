@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Microsoft.Bot.Builder.Ai.LanguageGeneration.Resolver
 {
-    public class LGEndpoint : ILGEndpoint
+    public class LGEndpoint
     {
         public LGEndpoint(string endpointKey, string lgAppId, string endpointUri)
         {

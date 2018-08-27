@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Builder.Ai.LanguageGeneration.Engine
 {
     internal class ActivityAttachmentInspector : IActivityComponentInspector
     {
-        public async Task<IList<string>> InspectAsync(Activity activity)
+        public IList<string> Inspect(Activity activity)
         {
             throw new NotImplementedException();
         }

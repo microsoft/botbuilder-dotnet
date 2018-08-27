@@ -5,24 +5,25 @@ using System.Text.RegularExpressions;
 
 namespace Microsoft.Bot.Builder.Ai.LanguageGeneration.Helpers
 {
-    internal enum PatternEnum
+    internal static class PatternRecognizer
     {
-        Undefined = 0,
-        Template = 1
-    }
-
-    internal class PatternRecognizer
-    {
-        public PatternEnum Recognize(string token)
+        private static readonly string _templatePattern = @"\{([^}]+)\}|\[([^\]]+)\]";
+        public static IList<string> Recognize(string token)
         {
-            //foreach (KeyValuePair<PatternEnum, string> pattern in patterns)
-            //{
-            //    if (Regex.IsMatch(token, pattern.Value))
-            //    {
-            //        return pattern.Key;
-            //    }
-            //}
-            return PatternEnum.Undefined;
+            if (Regex.IsMatch(token, _templatePattern))
+            {
+                var detectedPatterns = new List<string>();
+                var matches = Regex.Matches(token, _templatePattern);
+                foreach (Match match in matches)
+                {
+                    detectedPatterns.Add(match.Value);
+                }
+                return detectedPatterns;
+            }
+            else
+            {
+                return new List<string>();
+            }
         }
     }
 }

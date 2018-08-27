@@ -19,8 +19,9 @@ namespace Microsoft.Bot.Builder.Ai.LanguageGeneration.Engine
 
         public async Task<IList<Slot>> BuildSlotsAsync(Activity activity, IDictionary<string, object> entities)
         {
-            var activitySlots = await _activityInspector.InspectAsync(activity).ConfigureAwait(false);
-            var entitySlots = await _entityInspector.InspectAsync(entities).ConfigureAwait(false);
+            var activitySlots = _activityInspector.Inspect(activity);
+            //var entitySlots = await _entityInspector.InspectAsync(entities).ConfigureAwait(false);
+            var entitySlots = entities;
 
             var slots = new List<Slot>();
 

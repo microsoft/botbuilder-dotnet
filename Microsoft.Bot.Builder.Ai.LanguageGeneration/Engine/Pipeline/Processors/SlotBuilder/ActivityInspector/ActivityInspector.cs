@@ -15,12 +15,12 @@ namespace Microsoft.Bot.Builder.Ai.LanguageGeneration.Engine
             InitializeComponentBuilders();
         }
 
-        public async Task<IList<string>> InspectAsync(Activity activity)
+        public IList<string> Inspect(Activity activity)
         {
             var foundPatterns = new HashSet<string>();
             foreach (var componentInspector in _componentInspectors)
             {
-                var inspectionResult = await componentInspector.InspectAsync(activity).ConfigureAwait(false);
+                var inspectionResult = componentInspector.Inspect(activity);
                 foundPatterns.UnionWith(inspectionResult);
             }
             return new List<string>(foundPatterns);

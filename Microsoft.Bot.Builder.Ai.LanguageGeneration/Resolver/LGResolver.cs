@@ -11,14 +11,14 @@ using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.Ai.LanguageGeneration.Resolver
 {
-    public class LGResolver : ILGResolver
+    public class LGResolver
     {
-        private readonly ILGEndpoint _lgEndpoint;
-        private readonly ILGOptions _lgOptions;
+        private readonly LGEndpoint _lgEndpoint;
+        private readonly LGOptions _lgOptions;
         private readonly IResolverPipelineFactory _resolverPipelineFactory;
         private readonly IResolverPipeline _resolverPipeline;
 
-        public LGResolver(ILGEndpoint lgEndpoint, ILGOptions lgOptions)
+        public LGResolver(LGEndpoint lgEndpoint, LGOptions lgOptions)
         {
             _lgEndpoint = lgEndpoint ?? throw new ArgumentNullException(nameof(lgEndpoint));
             _lgOptions = lgOptions ?? throw new ArgumentNullException(nameof(lgOptions));

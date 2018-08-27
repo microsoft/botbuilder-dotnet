@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Microsoft.Bot.Builder.Ai.LanguageGeneration.Resolver
 {
-    class LGOptions
+    public class LGOptions
     {
     }
 }
