@@ -6,6 +6,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Azure.Documents.Client;
+using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Tests;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -165,7 +167,43 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => _storage.WriteAsync(null));
             }
         }
+        // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
+        [TestMethod]
+        // Current code throws exception see https://github.com/Microsoft/botbuilder-dotnet/issues/871
+        [ExpectedException(typeof(AggregateException))]
+        public async Task WaterfallCosmos()
+        {
+            var convoState = new ConversationState(_storage);
 
+            var adapter = new TestAdapter()
+                .Use(convoState);
+
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
+            var dialogs = new DialogSet(dialogState);
+            dialogs.Add(new WaterfallDialog("test", new WaterfallStep[]
+            {
+                async (dc, step) => { await dc.Context.SendActivityAsync("step1"); return Dialog.EndOfTurn; },
+                async (dc, step) => { await dc.Context.SendActivityAsync("step2"); return Dialog.EndOfTurn; },
+                async (dc, step) => { await dc.Context.SendActivityAsync("step3"); return Dialog.EndOfTurn; },
+            }));
+
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+                {
+                    var dc = await dialogs.CreateContextAsync(turnContext);
+                    await dc.ContinueAsync();
+                    if (!turnContext.Responded)
+                    {
+                        await dc.BeginAsync("test");
+                    }
+                })
+                .Send("hello")
+                .AssertReply("step1")
+                .Send("hello")
+                .AssertReply("step2")
+                .Send("hello")
+                .AssertReply("step3")
+                .StartTestAsync();
+        }
         public bool CheckEmulator()
         {
             if (!_hasEmulator.Value)
