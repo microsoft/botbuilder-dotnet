@@ -18,15 +18,16 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.Azure
 {
     /// <summary>
-    /// Models IStorage using Azure Storge Blobs.
+    /// Implements <see cref="IStorage"/> using Azure Blob Storage.
     /// </summary>
     /// <remarks>
-    /// The AzureBlobStorage implements State's IStorage using a single Azure Storage Blob Container.
-    /// Each entity or StoreItem is serialized into a JSON string and stored in an individual text blob.
-    /// Each blob is named after the StoreItem key which is encoded and ensure it conforms a valid blob name.
-    /// Concurrency is managed in a per entity (e.g. per blob) basis. If an entity implement IStoreItem
-    /// its eTag property value will be set with the blob's ETag upon Read. Afterward an AccessCondition
-    /// with the ETag value will be generated during Write. New entities will simple have an null ETag.
+    /// This class uses a single Azure Storage Blob Container.
+    /// Each entity or <see cref="IStoreItem"/> is serialized into a JSON string and stored in an individual text blob.
+    /// Each blob is named after the store item key,  which is encoded so that it conforms a valid blob name.
+    /// Concurrency is managed on a per-entity (that is, per-blob) basis. If an entity is an <see cref="IStoreItem"/>,
+    /// the storage object will set the entity's <see cref="IStoreItem.ETag"/> property value to the blob's ETag upon read.
+    /// Afterward, an <see cref="AccessCondition"/> with the ETag value will be generated during Write.
+    /// New entities start with a null ETag.
     /// </remarks>
     public class AzureBlobStorage : IStorage
     {
@@ -70,7 +71,7 @@ namespace Microsoft.Bot.Builder.Azure
         /// <param name="keys">An array of entity keys.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
-        /// <returns><see cref="Task"/>A task that represents the work queued to execute.</returns>
+        /// <returns>A task that represents the work queued to execute.</returns>
         public async Task DeleteAsync(string[] keys, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (keys == null)
@@ -94,7 +95,7 @@ namespace Microsoft.Bot.Builder.Azure
         /// <param name="keys">An array of entity keys.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
-        /// <returns>A <see cref="Task"/>A task that represents the work queued to execute.</returns>
+        /// <returns>A task that represents the work queued to execute.</returns>
         public async Task<IDictionary<string, object>> ReadAsync(string[] keys, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (keys == null)
@@ -158,10 +159,10 @@ namespace Microsoft.Bot.Builder.Azure
         /// <summary>
         /// Stores a new entity in the configured blob container.
         /// </summary>
-        /// <param name="changes">The Dictionary of changes that are to be made.</param>
+        /// <param name="changes">The changes to write to storage.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
-        /// <returns>A <see cref="Task"/>A task that represents the work queued to execute.</returns>
+        /// <returns>A task that represents the work queued to execute.</returns>
         public async Task WriteAsync(IDictionary<string, object> changes, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (changes == null)

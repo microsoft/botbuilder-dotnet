@@ -46,18 +46,6 @@ namespace Microsoft.Bot.Builder
         /// Processes an activity.
         /// </summary>
         /// <param name="turnContext">The context object for the turn.</param>
-        /// <param name="cancellationToken">A cancellation token that can be used by other objects
-        /// or threads to receive notice of cancellation.</param>
-        /// <returns>A task that represents the work queued to execute.</returns>
-        public async Task ReceiveActivityAsync(ITurnContext turnContext, CancellationToken cancellationToken)
-        {
-            await ReceiveActivityInternalAsync(turnContext, null, 0, cancellationToken).ConfigureAwait(false);
-        }
-
-        /// <summary>
-        /// Processes an activity.
-        /// </summary>
-        /// <param name="turnContext">The context object for the turn.</param>
         /// <param name="callback">The delegate to call when the set finishes processing the activity.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
