@@ -13,7 +13,7 @@ using Activity = Microsoft.Bot.Schema.Activity;
 
 // These tests require Azure Storage Emulator v5.7
 // The emulator must be installed at this path C:\Program Files (x86)\Microsoft SDKs\Azure\Storage Emulator\AzureStorageEmulator.exe
-// More info https://docs.microsoft.com/en-us/azure/storage/common/storage-use-emulator
+// More info: https://docs.microsoft.com/en-us/azure/storage/common/storage-use-emulator
 
 namespace Microsoft.Bot.Builder.Azure.Tests
 {
