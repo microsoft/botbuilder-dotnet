@@ -66,7 +66,7 @@ namespace Microsoft.Bot.Builder
         /// <summary>
         /// When overridden in a derived class, sends activities to the conversation.
         /// </summary>
-        /// <param name="context">The context object for the turn.</param>
+        /// <param name="turnContext">The context object for the turn.</param>
         /// <param name="activities">The activities to send.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
@@ -75,13 +75,13 @@ namespace Microsoft.Bot.Builder
         /// an array of <see cref="ResourceResponse"/> objects containing the IDs that
         /// the receiving channel assigned to the activities.</remarks>
         /// <seealso cref="ITurnContext.OnSendActivities(SendActivitiesHandler)"/>
-        public abstract Task<ResourceResponse[]> SendActivitiesAsync(ITurnContext context, Activity[] activities, CancellationToken cancellationToken);
+        public abstract Task<ResourceResponse[]> SendActivitiesAsync(ITurnContext turnContext, Activity[] activities, CancellationToken cancellationToken);
 
         /// <summary>
         /// When overridden in a derived class, replaces an existing activity in the
         /// conversation.
         /// </summary>
-        /// <param name="context">The context object for the turn.</param>
+        /// <param name="turnContext">The context object for the turn.</param>
         /// <param name="activity">New replacement activity.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
@@ -92,13 +92,13 @@ namespace Microsoft.Bot.Builder
         /// <para>Before calling this, set the ID of the replacement activity to the ID
         /// of the activity to replace.</para></remarks>
         /// <seealso cref="ITurnContext.OnUpdateActivity(UpdateActivityHandler)"/>
-        public abstract Task<ResourceResponse> UpdateActivityAsync(ITurnContext context, Activity activity, CancellationToken cancellationToken);
+        public abstract Task<ResourceResponse> UpdateActivityAsync(ITurnContext turnContext, Activity activity, CancellationToken cancellationToken);
 
         /// <summary>
         /// When overridden in a derived class, deletes an existing activity in the
         /// conversation.
         /// </summary>
-        /// <param name="context">The context object for the turn.</param>
+        /// <param name="turnContext">The context object for the turn.</param>
         /// <param name="reference">Conversation reference for the activity to delete.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
@@ -106,7 +106,7 @@ namespace Microsoft.Bot.Builder
         /// <remarks>The <see cref="ConversationReference.ActivityId"/> of the conversation
         /// reference identifies the activity to delete.</remarks>
         /// <seealso cref="ITurnContext.OnDeleteActivity(DeleteActivityHandler)"/>
-        public abstract Task DeleteActivityAsync(ITurnContext context, ConversationReference reference, CancellationToken cancellationToken);
+        public abstract Task DeleteActivityAsync(ITurnContext turnContext, ConversationReference reference, CancellationToken cancellationToken);
 
         /// <summary>
         /// Sends a proactive message to a conversation.
@@ -122,7 +122,7 @@ namespace Microsoft.Bot.Builder
         /// <remarks>Call this method to proactively send a message to a conversation.
         /// Most _channels require a user to initiate a conversation with a bot
         /// before the bot can send activities to the user.</remarks>
-        /// <seealso cref="RunPipelineAsync(ITurnContext, Func{ITurnContext, Task}, CancellationToken)"/>
+        /// <seealso cref="RunPipelineAsync(ITurnContext, BotCallbackHandler, CancellationToken)"/>
         public virtual Task ContinueConversationAsync(string botId, ConversationReference reference, BotCallbackHandler callback, CancellationToken cancellationToken)
         {
             using (var context = new TurnContext(this, reference.GetContinuationActivity()))
@@ -134,13 +134,13 @@ namespace Microsoft.Bot.Builder
         /// <summary>
         /// Starts activity processing for the current bot turn.
         /// </summary>
-        /// <param name="context">The turn's context object.</param>
+        /// <param name="turnContext">The turn's context object.</param>
         /// <param name="callback">A callback method to run at the end of the pipeline.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <exception cref="ArgumentNullException">
-        /// <paramref name="context"/> is null.</exception>
+        /// <paramref name="turnContext"/> is null.</exception>
         /// <remarks>The adapter calls middleware in the order in which you added it.
         /// The adapter passes in the context object for the turn and a next delegate,
         /// and the middleware calls the delegate to pass control to the next middleware
@@ -151,26 +151,26 @@ namespace Microsoft.Bot.Builder
         /// methods or the callback method, and the pipeline short circuits.
         /// <para>When the turn is initiated by a user activity (reactive messaging), the
         /// callback method will be a reference to the bot's
-        /// <see cref="IBot.OnTurnAsync(ITurnContext)"/> method. When the turn is
-        /// initiated by a call to <see cref="ContinueConversationAsync(string, ConversationReference, Func{ITurnContext, Task}, CancellationToken)"/>
+        /// <see cref="IBot.OnTurnAsync(ITurnContext, CancellationToken)"/> method. When the turn is
+        /// initiated by a call to <see cref="ContinueConversationAsync(string, ConversationReference, BotCallbackHandler, CancellationToken)"/>
         /// (proactive messaging), the callback method is the callback method that was provided in the call.</para>
         /// </remarks>
-        protected async Task RunPipelineAsync(ITurnContext context, BotCallbackHandler callback, CancellationToken cancellationToken)
+        protected async Task RunPipelineAsync(ITurnContext turnContext, BotCallbackHandler callback, CancellationToken cancellationToken)
         {
-            BotAssert.ContextNotNull(context);
+            BotAssert.ContextNotNull(turnContext);
 
             // Call any registered Middleware Components looking for ReceiveActivityAsync()
-            if (context.Activity != null)
+            if (turnContext.Activity != null)
             {
                 try
                 {
-                    await MiddlewareSet.ReceiveActivityWithStatusAsync(context, callback, cancellationToken).ConfigureAwait(false);
+                    await MiddlewareSet.ReceiveActivityWithStatusAsync(turnContext, callback, cancellationToken).ConfigureAwait(false);
                 }
                 catch (Exception e)
                 {
                     if (OnTurnError != null)
                     {
-                        await OnTurnError.Invoke(context, e).ConfigureAwait(false);
+                        await OnTurnError.Invoke(turnContext, e).ConfigureAwait(false);
                     }
                     else
                     {
@@ -183,7 +183,7 @@ namespace Microsoft.Bot.Builder
                 // call back to caller on proactive case
                 if (callback != null)
                 {
-                    await callback(context, cancellationToken).ConfigureAwait(false);
+                    await callback(turnContext, cancellationToken).ConfigureAwait(false);
                 }
             }
         }

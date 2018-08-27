@@ -372,7 +372,7 @@ namespace Microsoft.Bot.Builder.Tests
 
             await new TestFlow(adapter, (context, cancellationToken) =>
                    {
-                       var obj = context.Services.Get<UserState>();
+                       var obj = context.TurnState.Get<UserState>();
                        Assert.IsNull(obj, "context.state should not exist");
                        return Task.CompletedTask;
                    }
@@ -613,7 +613,7 @@ namespace Microsoft.Bot.Builder.Tests
             {
             }
 
-            protected override string GetStorageKey(ITurnContext context) => $"botstate/{context.Activity.ChannelId}/{context.Activity.Conversation.Id}/{typeof(BotState).Namespace}.{typeof(BotState).Name}";
+            protected override string GetStorageKey(ITurnContext turnContext) => $"botstate/{turnContext.Activity.ChannelId}/{turnContext.Activity.Conversation.Id}/{typeof(BotState).Namespace}.{typeof(BotState).Name}";
         }
 
         public class CustomState : IStoreItem
@@ -630,7 +630,7 @@ namespace Microsoft.Bot.Builder.Tests
 
             public const string PropertyName = "Microsoft.Bot.Builder.Tests.CustomKeyState";
 
-            protected override string GetStorageKey(ITurnContext context) => "CustomKey";
+            protected override string GetStorageKey(ITurnContext turnContext) => "CustomKey";
         }
     }
 }

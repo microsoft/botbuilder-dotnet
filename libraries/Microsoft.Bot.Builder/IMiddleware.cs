@@ -8,8 +8,8 @@ namespace Microsoft.Bot.Builder
 {
     /// <summary>
     /// Encapsulates an asynchronous method that calls the next
-    /// <see cref="IMiddleware"/>.<see cref="IMiddleware.OnTurnAsync(ITurnContext, NextDelegate, CancellationToken)"/>
-    /// or <see cref="IBot"/>.<see cref="IBot.OnTurnAsync(ITurnContext)"/> method in the middleware pipeline.
+    /// <see cref="IMiddleware"/>.<see cref="IMiddleware.OnTurnAsync"/>
+    /// or <see cref="IBot"/>.<see cref="IBot.OnTurnAsync"/> method in the middleware pipeline.
     /// </summary>
     /// <param name="cancellationToken">A cancellation token that can be used by other objects
     /// or threads to receive notice of cancellation.</param>
@@ -36,7 +36,7 @@ namespace Microsoft.Bot.Builder
         /// <summary>
         /// When implemented in middleware, processess an incoming activity.
         /// </summary>
-        /// <param name="context">The context object for this turn.</param>
+        /// <param name="turnContext">The context object for this turn.</param>
         /// <param name="next">The delegate to call to continue the bot middleware pipeline.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
@@ -45,11 +45,11 @@ namespace Microsoft.Bot.Builder
         /// the next middleware in the pipeline. If middleware doesn’t call the next delegate,
         /// the adapter does not call any of the subsequent middleware’s request handlers or the
         /// bot’s receive handler, and the pipeline short circuits.
-        /// <para>The <paramref name="context"/> provides information about the
+        /// <para>The <paramref name="turnContext"/> provides information about the
         /// incoming activity, and other data needed to process the activity.</para>
         /// </remarks>
         /// <seealso cref="ITurnContext"/>
         /// <seealso cref="Bot.Schema.IActivity"/>
-        Task OnTurnAsync(ITurnContext context, NextDelegate next, CancellationToken cancellationToken = default(CancellationToken));
+        Task OnTurnAsync(ITurnContext turnContext, NextDelegate next, CancellationToken cancellationToken = default(CancellationToken));
     }
 }

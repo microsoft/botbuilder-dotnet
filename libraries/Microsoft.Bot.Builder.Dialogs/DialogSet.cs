@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
@@ -11,71 +12,49 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// </summary>
     public class DialogSet
     {
-        private IDictionary<string, IDialog> _dialogs;
+        private IStatePropertyAccessor<DialogState> _dialogState;
+        private IDictionary<string, Dialog> _dialogs;
 
-        public DialogSet()
+        public DialogSet(IStatePropertyAccessor<DialogState> dialogState)
         {
-            _dialogs = new Dictionary<string, IDialog>();
+            _dialogState = dialogState;
+            _dialogs = new Dictionary<string, Dialog>();
         }
 
         /// <summary>
         /// Adds a new dialog to the set and returns the added dialog.
         /// </summary>
-        /// <param name="dialogId">The id of the dialog to add.</param>
         /// <param name="dialog">The dialog to add.</param>
         /// <returns>The added dialog.</returns>
-        public IDialog Add(string dialogId, IDialog dialog)
+        public Dialog Add(Dialog dialog)
         {
-            if (string.IsNullOrEmpty(dialogId))
-            {
-                throw new ArgumentNullException(nameof(dialogId));
-            }
-
             if (dialog == null)
             {
                 throw new ArgumentNullException(nameof(dialog));
             }
 
-            if (_dialogs.ContainsKey(dialogId))
+            if (_dialogs.ContainsKey(dialog.Id))
             {
-                throw new Exception($"DialogSet.add(): A dialog with an id of '{dialogId}' already added.");
+                throw new Exception($"DialogSet.Add(): A dialog with an id of '{dialog.Id}' already added.");
             }
 
-            return _dialogs[dialogId] = dialog;
+            return _dialogs[dialog.Id] = dialog;
         }
 
-        /// <summary>
-        /// Adds a new waterfall to the set and returns the added waterfall.
-        /// </summary>
-        /// <param name="dialogId">The id of waterfall dialog to add.</param>
-        /// <param name="steps">The steps for the waterfall dialog.</param>
-        /// <returns>A waterfall dialog.</returns>
-        public Waterfall Add(string dialogId, WaterfallStep[] steps)
+        public async Task<DialogContext> CreateContextAsync(ITurnContext turnContext)
         {
-            if (string.IsNullOrEmpty(dialogId))
+            BotAssert.ContextNotNull(turnContext);
+
+            if (_dialogState == null)
             {
-                throw new ArgumentNullException(nameof(dialogId));
+                throw new Exception($"DialogSet.CreateContextAsync(): DialogSet created with a null IStatePropertyAccessor. Must manually factory DialogContext instances in this scenario.");
             }
 
-            if (steps == null)
-            {
-                throw new ArgumentNullException(nameof(steps));
-            }
+            // Load/initialize dialog state
+            var state = await _dialogState.GetAsync(turnContext, () => { return new DialogState(); }).ConfigureAwait(false);
 
-            var waterfall = new Waterfall(steps);
-            Add(dialogId, waterfall);
-            return waterfall;
-        }
-
-        public DialogContext CreateContext(ITurnContext context, IDictionary<string, object> state)
-        {
-            BotAssert.ContextNotNull(context);
-            if (state == null)
-            {
-                throw new ArgumentNullException(nameof(state));
-            }
-
-            return new DialogContext(this, context, state);
+            // Create and return context
+            return new DialogContext(this, turnContext, state);
         }
 
         /// <summary>
@@ -83,9 +62,9 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </summary>
         /// <param name="dialogId">ID of the dialog/prompt to lookup.</param>
         /// <returns>dialog if found otherwise null.</returns>
-        public IDialog Find(string dialogId)
+        public Dialog Find(string dialogId)
         {
-            if (string.IsNullOrEmpty(dialogId))
+            if (string.IsNullOrWhiteSpace(dialogId))
             {
                 throw new ArgumentNullException(nameof(dialogId));
             }

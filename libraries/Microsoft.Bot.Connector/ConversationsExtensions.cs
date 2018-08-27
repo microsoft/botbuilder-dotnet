@@ -63,8 +63,7 @@ namespace Microsoft.Bot.Connector
             /// POST to this method with a
             /// * Bot being the bot creating the conversation
             /// * IsGroup set to true if this is not a direct message (default is false)
-            /// * Members array contining the members you want to have be in the
-            /// conversation.
+            /// * Array containing the members to include in the conversation
             ///
             /// The return value is a ResourceResponse which contains a conversation id
             /// which is suitable for use
@@ -106,7 +105,7 @@ namespace Microsoft.Bot.Connector
             /// This method allows you to send an activity to the end of a conversation.
             ///
             /// This is slightly different from ReplyToActivity().
-            /// * SendToConverstion(conversationId) - will append the activity to the end
+            /// * SendToConversation(conversationId) - will append the activity to the end
             /// of the conversation according to the timestamp or semantics of the channel.
             /// * ReplyToActivity(conversationId,ActivityId) - adds the activity as a reply
             /// to another activity, if the channel supports it. If the channel does not
@@ -179,7 +178,7 @@ namespace Microsoft.Bot.Connector
             /// This method allows you to reply to an activity.
             ///
             /// This is slightly different from SendToConversation().
-            /// * SendToConverstion(conversationId) - will append the activity to the end
+            /// * SendToConversation(conversationId) - will append the activity to the end
             /// of the conversation according to the timestamp or semantics of the channel.
             /// * ReplyToActivity(conversationId,ActivityId) - adds the activity as a reply
             /// to another activity, if the channel supports it. If the channel does not
@@ -243,7 +242,7 @@ namespace Microsoft.Bot.Connector
             /// GetConversationMembers
             /// </summary>
             /// <remarks>
-            /// Enumerate the members of a converstion.
+            /// Enumerate the members of a conversation.
             ///
             /// This REST API takes a ConversationId and returns an array of ChannelAccount
             /// objects representing the members of the conversation.
@@ -266,10 +265,55 @@ namespace Microsoft.Bot.Connector
             }
 
             /// <summary>
+            /// GetConversationPagedMembers
+            /// </summary>
+            /// <remarks>
+            /// Enumerate the members of a conversation one page at a time.
+            ///
+            /// This REST API takes a ConversationId. Optionally a pageSize and/or
+            /// continuationToken can be provided. It returns a PagedMembersResult, which
+            /// contains an array
+            /// of ChannelAccounts representing the members of the conversation and a
+            /// continuation token that can be used to get more values.
+            ///
+            /// One page of ChannelAccounts records are returned with each call. The number
+            /// of records in a page may vary between channels and calls. The pageSize
+            /// parameter can be used as
+            /// a suggestion. If there are no additional results the response will not
+            /// contain a continuation token. If there are no members in the conversation
+            /// the Members will be empty or not present in the response.
+            ///
+            /// A response to a request that has a continuation token from a prior request
+            /// may rarely return members from a previous request.
+            /// </remarks>
+            /// <param name='operations'>
+            /// The operations group for this extension method.
+            /// </param>
+            /// <param name='conversationId'>
+            /// Conversation ID
+            /// </param>
+            /// <param name='pageSize'>
+            /// Suggested page size
+            /// </param>
+            /// <param name='continuationToken'>
+            /// Continuation Token
+            /// </param>
+            /// <param name='cancellationToken'>
+            /// The cancellation token.
+            /// </param>
+            public static async Task<PagedMembersResult> GetConversationPagedMembersAsync(this IConversations operations, string conversationId, int? pageSize = default(int?), string continuationToken = default(string), CancellationToken cancellationToken = default(CancellationToken))
+            {
+                using (var _result = await operations.GetConversationPagedMembersWithHttpMessagesAsync(conversationId, pageSize, continuationToken, null, cancellationToken).ConfigureAwait(false))
+                {
+                    return _result.Body;
+                }
+            }
+
+            /// <summary>
             /// DeleteConversationMember
             /// </summary>
             /// <remarks>
-            /// Deletes a member from a converstion.
+            /// Deletes a member from a conversation.
             ///
             /// This REST API takes a ConversationId and a memberId (of type string) and
             /// removes that member from the conversation. If that member was the last

@@ -17,12 +17,16 @@ namespace Microsoft.Bot.Builder
         /// <summary>
         /// Initializes a new instance of the <see cref="BotStateSet"/> class.
         /// </summary>
-        /// <param name="botStates">initial list of BotState to manage.</param>
+        /// <param name="botStates">initial list of <see cref="BotState"/> objects to manage.</param>
         public BotStateSet(params BotState[] botStates)
         {
             BotStates.AddRange(botStates);
         }
 
+        /// <summary>
+        /// Gets the list of state management objects managed by this object.
+        /// </summary>
+        /// <value>The state management objects managed by this object.</value>
         public List<BotState> BotStates { get; } = new List<BotState>();
 
         /// <summary>
@@ -39,39 +43,41 @@ namespace Microsoft.Bot.Builder
         /// <summary>
         /// Middleware implementation which loads/savesChanges automatically.
         /// </summary>
-        /// <param name="context">turn context.</param>
+        /// <param name="turnContext">turn context.</param>
         /// <param name="next">next middlware.</param>
         /// <param name="cancellationToken">cancellationToken.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public async Task OnTurnAsync(ITurnContext context, NextDelegate next, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task OnTurnAsync(ITurnContext turnContext, NextDelegate next, CancellationToken cancellationToken = default(CancellationToken))
         {
             await next(cancellationToken).ConfigureAwait(false);
-            await SaveChangesAsync(context, false, cancellationToken).ConfigureAwait(false);
+            await SaveChangesAsync(turnContext, false, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
         /// Load all BotState records in parallel.
         /// </summary>
-        /// <param name="context">turn context.</param>
+        /// <param name="turnContext">turn context.</param>
         /// <param name="force">should data be forced into cache.</param>
-        /// <param name="cancellationToken">Cancelation token.</param>
-        /// <returns>task</returns>
-        public async Task LoadAsync(ITurnContext context, bool force = false, CancellationToken cancellationToken = default(CancellationToken))
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        public async Task LoadAsync(ITurnContext turnContext, bool force = false, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var tasks = BotStates.Select(bs => bs.LoadAsync(context, force, cancellationToken)).ToList();
+            var tasks = BotStates.Select(bs => bs.LoadAsync(turnContext, force, cancellationToken)).ToList();
             await Task.WhenAll(tasks).ConfigureAwait(false);
         }
 
         /// <summary>
         /// Save All BotState changes in parallel.
         /// </summary>
-        /// <param name="context">turn context.</param>
+        /// <param name="turnContext">turn context.</param>
         /// <param name="force">should data be forced to save even if no change were detected.</param>
-        /// <param name="cancellationToken">Cancelation token.</param>
-        /// <returns>task</returns>
-        public async Task SaveChangesAsync(ITurnContext context, bool force = false, CancellationToken cancellationToken = default(CancellationToken))
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        public async Task SaveChangesAsync(ITurnContext turnContext, bool force = false, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var tasks = BotStates.Select(bs => bs.SaveChangesAsync(context, force, cancellationToken)).ToList();
+            var tasks = BotStates.Select(bs => bs.SaveChangesAsync(turnContext, force, cancellationToken)).ToList();
             await Task.WhenAll(tasks).ConfigureAwait(false);
         }
     }

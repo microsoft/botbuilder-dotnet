@@ -55,15 +55,15 @@ namespace Microsoft.Bot.Builder.AI.Luis
         }
 
         /// <inheritdoc />
-        public async Task<RecognizerResult> RecognizeAsync(ITurnContext context, CancellationToken ct)
-            => await RecognizeInternalAsync(context, ct).ConfigureAwait(false);
+        public async Task<RecognizerResult> RecognizeAsync(ITurnContext turnContext, CancellationToken cancellationToken)
+            => await RecognizeInternalAsync(turnContext, cancellationToken).ConfigureAwait(false);
 
         /// <inheritdoc />
-        public async Task<T> RecognizeAsync<T>(ITurnContext context, CancellationToken ct)
+        public async Task<T> RecognizeAsync<T>(ITurnContext turnContext, CancellationToken cancellationToken)
             where T : IRecognizerConvert, new()
         {
             var result = new T();
-            result.Convert(await RecognizeInternalAsync(context, ct).ConfigureAwait(false));
+            result.Convert(await RecognizeInternalAsync(turnContext, cancellationToken).ConfigureAwait(false));
             return result;
         }
 
@@ -339,16 +339,16 @@ namespace Microsoft.Bot.Builder.AI.Luis
             }
         }
 
-        private async Task<RecognizerResult> RecognizeInternalAsync(ITurnContext context, CancellationToken ct)
+        private async Task<RecognizerResult> RecognizeInternalAsync(ITurnContext turnContext, CancellationToken cancellationToken)
         {
-            BotAssert.ContextNotNull(context);
+            BotAssert.ContextNotNull(turnContext);
 
-            if (context.Activity.Type != ActivityTypes.Message)
+            if (turnContext.Activity.Type != ActivityTypes.Message)
             {
                 return null;
             }
 
-            var utterance = context.Activity?.AsMessageActivity()?.Text;
+            var utterance = turnContext.Activity?.AsMessageActivity()?.Text;
 
             if (string.IsNullOrWhiteSpace(utterance))
             {
@@ -359,12 +359,12 @@ namespace Microsoft.Bot.Builder.AI.Luis
                 _application.ApplicationId,
                 utterance,
                 timezoneOffset: _options.TimezoneOffset,
-                verbose: _options.Verbose,
+                verbose: _options.IncludeAllIntents,
                 staging: _options.Staging,
                 spellCheck: _options.SpellCheck,
                 bingSpellCheckSubscriptionKey: _options.BingSpellCheckSubscriptionKey,
-                log: _options.Log,
-                cancellationToken: ct).ConfigureAwait(false);
+                log: _options.Log ?? true,
+                cancellationToken: cancellationToken).ConfigureAwait(false);
 
             var recognizerResult = new RecognizerResult
             {
@@ -391,7 +391,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
                     luisResult,
                 });
 
-            await context.TraceActivityAsync("LuisRecognizer", traceInfo, LuisTraceType, LuisTraceLabel, ct).ConfigureAwait(false);
+            await turnContext.TraceActivityAsync("LuisRecognizer", traceInfo, LuisTraceType, LuisTraceLabel, cancellationToken).ConfigureAwait(false);
             return recognizerResult;
         }
     }

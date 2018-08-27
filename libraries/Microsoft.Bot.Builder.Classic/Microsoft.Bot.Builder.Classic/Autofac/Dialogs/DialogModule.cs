@@ -63,11 +63,11 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs.Internals
         public static readonly object Key_DeleteProfile_Regex = new object();
         public static readonly object Key_Dialog_Router = new object();
 
-        public static ILifetimeScope BeginLifetimeScope(ILifetimeScope scope, Microsoft.Bot.Builder.ITurnContext context)
+        public static ILifetimeScope BeginLifetimeScope(ILifetimeScope scope, Microsoft.Bot.Builder.ITurnContext turnContext)
         {
             var inner = scope.BeginLifetimeScope(LifetimeScopeTag);
-            inner.Resolve<Microsoft.Bot.Builder.ITurnContext>(TypedParameter.From(context));
-            inner.Resolve<IActivity>(TypedParameter.From((IActivity)context.Activity));
+            inner.Resolve<Microsoft.Bot.Builder.ITurnContext>(TypedParameter.From(turnContext));
+            inner.Resolve<IActivity>(TypedParameter.From((IActivity)turnContext.Activity));
             return inner;
         }
 

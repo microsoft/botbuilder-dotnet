@@ -31,43 +31,31 @@ namespace Microsoft.Bot.Builder
         /// <summary>
         /// Processes an incoming activity.
         /// </summary>
-        /// <param name="context">The context object for this turn.</param>
+        /// <param name="turnContext">The context object for this turn.</param>
         /// <param name="next">The delegate to call to continue the bot middleware pipeline.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
-        public async Task OnTurnAsync(ITurnContext context, NextDelegate next, CancellationToken cancellationToken)
+        public async Task OnTurnAsync(ITurnContext turnContext, NextDelegate next, CancellationToken cancellationToken)
         {
-            await ReceiveActivityInternalAsync(context, null, 0, cancellationToken).ConfigureAwait(false);
+            await ReceiveActivityInternalAsync(turnContext, null, 0, cancellationToken).ConfigureAwait(false);
             await next(cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
         /// Processes an activity.
         /// </summary>
-        /// <param name="context">The context object for the turn.</param>
-        /// <param name="cancellationToken">A cancellation token that can be used by other objects
-        /// or threads to receive notice of cancellation.</param>
-        /// <returns>A task that represents the work queued to execute.</returns>
-        public async Task ReceiveActivityAsync(ITurnContext context, CancellationToken cancellationToken)
-        {
-            await ReceiveActivityInternalAsync(context, null, 0, cancellationToken).ConfigureAwait(false);
-        }
-
-        /// <summary>
-        /// Processes an activity.
-        /// </summary>
-        /// <param name="context">The context object for the turn.</param>
+        /// <param name="turnContext">The context object for the turn.</param>
         /// <param name="callback">The delegate to call when the set finishes processing the activity.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
-        public async Task ReceiveActivityWithStatusAsync(ITurnContext context, BotCallbackHandler callback, CancellationToken cancellationToken)
+        public async Task ReceiveActivityWithStatusAsync(ITurnContext turnContext, BotCallbackHandler callback, CancellationToken cancellationToken)
         {
-            await ReceiveActivityInternalAsync(context, callback, 0, cancellationToken).ConfigureAwait(false);
+            await ReceiveActivityInternalAsync(turnContext, callback, 0, cancellationToken).ConfigureAwait(false);
         }
 
-        private Task ReceiveActivityInternalAsync(ITurnContext context, BotCallbackHandler callback, int nextMiddlewareIndex, CancellationToken cancellationToken)
+        private Task ReceiveActivityInternalAsync(ITurnContext turnContext, BotCallbackHandler callback, int nextMiddlewareIndex, CancellationToken cancellationToken)
         {
             // Check if we're at the end of the middleware list yet
             if (nextMiddlewareIndex == _middleware.Count)
@@ -82,7 +70,7 @@ namespace Microsoft.Bot.Builder
                 // to run as expected.
 
                 // If a callback was provided invoke it now and return its task, otherwise just return the completed task
-                return callback?.Invoke(context, cancellationToken) ?? Task.CompletedTask;
+                return callback?.Invoke(turnContext, cancellationToken) ?? Task.CompletedTask;
             }
 
             // Get the next piece of middleware
@@ -90,8 +78,8 @@ namespace Microsoft.Bot.Builder
 
             // Execute the next middleware passing a closure that will recurse back into this method at the next piece of middlware as the NextDelegate
             return nextMiddleware.OnTurnAsync(
-                context,
-                (ct) => ReceiveActivityInternalAsync(context, callback, nextMiddlewareIndex + 1, ct),
+                turnContext,
+                (ct) => ReceiveActivityInternalAsync(turnContext, callback, nextMiddlewareIndex + 1, ct),
                 cancellationToken);
         }
     }

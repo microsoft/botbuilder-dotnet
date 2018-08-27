@@ -67,7 +67,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             mockHttp.When(GetRequestUrl()).WithPartialContent(utterance)
                 .Respond("application/json", GetResponse("MultipleIntents_PrebuiltEntity.json"));
 
-            var luisRecognizer = GetLuisRecognizer(mockHttp, true, new LuisPredictionOptions { Verbose = true });
+            var luisRecognizer = GetLuisRecognizer(mockHttp, true, new LuisPredictionOptions { IncludeAllIntents = true });
             var context = GetContext(utterance);
             var result = await luisRecognizer.RecognizeAsync(context, CancellationToken.None);
 
@@ -105,7 +105,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             mockHttp.When(GetRequestUrl()).WithPartialContent(utterance)
                 .Respond("application/json", GetResponse("MultipleIntents_PrebuiltEntitiesWithMultiValues.json"));
 
-            var luisRecognizer = GetLuisRecognizer(mockHttp, true, new LuisPredictionOptions { Verbose = true });
+            var luisRecognizer = GetLuisRecognizer(mockHttp, true, new LuisPredictionOptions { IncludeAllIntents = true });
             var context = GetContext(utterance);
             var result = await luisRecognizer.RecognizeAsync(context, CancellationToken.None);
 
@@ -132,7 +132,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             mockHttp.When(GetRequestUrl()).WithPartialContent(utterance)
                 .Respond("application/json", GetResponse("MultipleIntents_ListEntityWithSingleValue.json"));
 
-            var luisRecognizer = GetLuisRecognizer(mockHttp, true, new LuisPredictionOptions { Verbose = true });
+            var luisRecognizer = GetLuisRecognizer(mockHttp, true, new LuisPredictionOptions { IncludeAllIntents = true });
             var context = GetContext(utterance);
             var result = await luisRecognizer.RecognizeAsync(context, CancellationToken.None);
 
@@ -160,7 +160,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             mockHttp.When(GetRequestUrl()).WithPartialContent(utterance)
                 .Respond("application/json", GetResponse("MultipleIntents_ListEntityWithMultiValues.json"));
 
-            var luisRecognizer = GetLuisRecognizer(mockHttp, true, new LuisPredictionOptions { Verbose = true });
+            var luisRecognizer = GetLuisRecognizer(mockHttp, true, new LuisPredictionOptions { IncludeAllIntents = true });
             var context = GetContext(utterance);
             var result = await luisRecognizer.RecognizeAsync(context, CancellationToken.None);
 
@@ -190,7 +190,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             mockHttp.When(GetRequestUrl()).WithPartialContent(utterance)
                 .Respond("application/json", GetResponse("MultipleIntents_CompositeEntityModel.json"));
 
-            var luisRecognizer = GetLuisRecognizer(mockHttp, true, new LuisPredictionOptions { Verbose = true });
+            var luisRecognizer = GetLuisRecognizer(mockHttp, true, new LuisPredictionOptions { IncludeAllIntents = true });
             var context = GetContext(utterance);
             var result = await luisRecognizer.RecognizeAsync(context, CancellationToken.None);
 
@@ -234,7 +234,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             mockHttp.When(GetRequestUrl()).WithPartialContent(utterance)
                 .Respond("application/json", GetResponse("MultipleDateTimeEntities.json"));
 
-            var luisRecognizer = GetLuisRecognizer(mockHttp, true, new LuisPredictionOptions { Verbose = true });
+            var luisRecognizer = GetLuisRecognizer(mockHttp, true, new LuisPredictionOptions { IncludeAllIntents = true });
             var context = GetContext(utterance);
             var result = await luisRecognizer.RecognizeAsync(context, CancellationToken.None);
 
@@ -274,7 +274,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
                     mockHttp.When(GetRequestUrl()).WithPartialContent(query)
                         .Respond("application/json", mockResponse);
 
-                    var luisRecognizer = GetLuisRecognizer(mockHttp, true, new LuisPredictionOptions { Verbose = true });
+                    var luisRecognizer = GetLuisRecognizer(mockHttp, true, new LuisPredictionOptions { IncludeAllIntents = true });
                     var typedResult = await luisRecognizer.RecognizeAsync<T>(context, CancellationToken.None);
                     var typedJson = Json(typedResult);
 

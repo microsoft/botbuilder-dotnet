@@ -17,6 +17,11 @@ namespace Microsoft.Bot.Builder
         {
         }
 
-        protected override string GetStorageKey(ITurnContext context) => $"conversation/{context.Activity.ChannelId}/{context.Activity.Conversation.Id}";
+        /// <summary>
+        /// Gets the key to use when reading and writing state to and from storage.
+        /// </summary>
+        /// <param name="turnContext">The context object for this turn.</param>
+        /// <returns>The storage key.</returns>
+        protected override string GetStorageKey(ITurnContext turnContext) => $"conversation/{turnContext.Activity.ChannelId}/{turnContext.Activity.Conversation.Id}";
     }
 }
