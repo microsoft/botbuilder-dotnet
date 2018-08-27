@@ -55,7 +55,8 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             {
                 //create the class to test
                 _transcriptStore = new AzureBlobTranscriptStore(ConnectionString, ContainerName);
-                
+                Thread.Sleep(25000);
+                //add elay to ensure creation
             }
         }
 
@@ -70,14 +71,6 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestMethod]
         public void StorageNullTest()
         {
-            //build is failing here
-            //added a delay this to ensure passing
-            int i = 0;
-            while (_transcriptStore == null && i < 10)
-            {
-                Thread.Sleep(5000);
-                i++;
-            }
             Assert.IsNotNull(_transcriptStore);
         }
 
