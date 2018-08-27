@@ -122,14 +122,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             var dialogs = new DialogSet(dialogState);
 
-            PromptValidator<int> validator = async (ctx, promptContext) =>
+            PromptValidator<int> validator = (ctx, promptContext, cancellationToken) =>
             {
-                var result = (int)promptContext.Recognized.Value;
+                var result = promptContext.Recognized.Value;
                 
                 if (result < 100 && result > 0)
                 {
                     promptContext.End(result);
                 }
+                return Task.CompletedTask;
             };
             var numberPrompt = new NumberPrompt<int>("NumberPrompt", validator, Culture.English);
             dialogs.Add(numberPrompt);

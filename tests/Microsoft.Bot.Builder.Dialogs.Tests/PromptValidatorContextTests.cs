@@ -22,21 +22,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             var dialogs = new DialogSet(dialogState);
 
-            dialogs.Add(new TextPrompt("namePrompt", async (context, promptContext) =>
+            dialogs.Add(new TextPrompt("namePrompt", (context, promptContext, cancellationToken) =>
             {
-                promptContext.End((string)promptContext.Recognized.Value);
+                promptContext.End(promptContext.Recognized.Value);
+                return Task.CompletedTask;
             }));
 
             dialogs.Add(new WaterfallDialog("nameDialog", new WaterfallStep[]
                     {
-                        async (dc, step) =>
+                        async (dc, step, cancellationToken) =>
                         {
-                            return await dc.PromptAsync("namePrompt", new PromptOptions { Prompt = new Activity { Text = "Please type your name.", Type = ActivityTypes.Message } });
+                            return await dc.PromptAsync("namePrompt", new PromptOptions { Prompt = new Activity { Text = "Please type your name.", Type = ActivityTypes.Message } }, cancellationToken);
                         },
-                        async (dc, step) =>
+                        async (dc, step, cancellationToken) =>
                         {
                             var name = (string)step.Result;
-                            await dc.Context.SendActivityAsync($"{name} is a great name!");
+                            await dc.Context.SendActivityAsync(MessageFactory.Text($"{name} is a great name!"), cancellationToken);
                             return await dc.EndAsync();
                         }
                     }
@@ -74,7 +75,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             DialogSet dialogs = new DialogSet(dialogState);
 
             // Create TextPrompt with dialogId "namePrompt" and custom validator
-            dialogs.Add(new TextPrompt("namePrompt", async (context, promptContext) =>
+            dialogs.Add(new TextPrompt("namePrompt", async (context, promptContext, cancellationToken) =>
             {
                 string result = promptContext.Recognized.Value;
                 if (result.Length > 3)
@@ -89,14 +90,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             dialogs.Add(new WaterfallDialog("nameDialog", new WaterfallStep[]
                     {
-                        async (dc, step) =>
+                        async (dc, step, cancellationToken) =>
                         {
-                            return await dc.PromptAsync("namePrompt", new PromptOptions { Prompt = new Activity { Text = "Please type your name.", Type = ActivityTypes.Message } });
+                            return await dc.PromptAsync("namePrompt", new PromptOptions { Prompt = new Activity { Text = "Please type your name.", Type = ActivityTypes.Message } }, cancellationToken);
                         },
-                        async (dc, step) =>
+                        async (dc, step, cancellationToken) =>
                         {
                             var name = (string)step.Result;
-                            await dc.Context.SendActivityAsync($"{name} is a great name!");
+                            await dc.Context.SendActivityAsync(MessageFactory.Text($"{name} is a great name!"), cancellationToken);
                             return await dc.EndAsync();
                         }
                     }
@@ -104,11 +105,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                var dc = await dialogs.CreateContextAsync(turnContext);
-                await dc.ContinueAsync();
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
+                await dc.ContinueAsync(cancellationToken);
                 if (!turnContext.Responded)
                 {
-                    await dc.BeginAsync("nameDialog");
+                    await dc.BeginAsync("nameDialog", null, cancellationToken);
                 }
             })
             .Send("hello")
