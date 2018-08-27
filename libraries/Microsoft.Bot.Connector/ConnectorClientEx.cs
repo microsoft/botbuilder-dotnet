@@ -77,17 +77,22 @@ namespace Microsoft.Bot.Connector
             this.HttpClient.DefaultRequestHeaders.ExpectContinue = false;
         }
 
-
+        /// <summary>Gets a description of the operating system of the Azure Bot Service.</summary>
+        /// <returns>A description of the operating system of the Azure Bot Service.</returns>
         public static string GetOsVersion()
         {
             return System.Runtime.InteropServices.RuntimeInformation.OSDescription;
         }
 
+        /// <summary>Gets the platform architecture of the Azure Bot Service.</summary>
+        /// <returns>The platform architecture of the Azure Bot Service.</returns>
         public static string GetArchitecture()
         {
             return System.Runtime.InteropServices.RuntimeInformation.OSArchitecture.ToString();
         }
 
+        /// <summary>Gets the name of the .NET Framework version of the Azure Bot Service..</summary>
+        /// <returns>The name of the .NET Framework version of the Azure Bot Service.</returns>
         public static string GetASPNetVersion()
         {
             return Assembly
@@ -96,6 +101,8 @@ namespace Microsoft.Bot.Connector
                     .FrameworkName;
         }
 
+        /// <summary>Gets the assembly version for the Azure Bot Service.</summary>
+        /// <returns>The assembly version for the Azure Bot Service.</returns>
         public static string GetClientVersion<T>(T client) where T : ServiceClient<T>
         {
             var type = client.GetType();
