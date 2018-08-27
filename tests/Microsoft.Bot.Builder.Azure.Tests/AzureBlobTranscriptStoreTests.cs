@@ -53,6 +53,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             _hasEmulator = StorageEmulatorHelper.StartStorageEmulator() >= 0;
             if (_hasEmulator)
             {
+                //create the class to test
                 _transcriptStore = new AzureBlobTranscriptStore(ConnectionString, ContainerName);
                 
             }
@@ -69,7 +70,8 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestMethod]
         public void StorageNullTest()
         {
-            //build is failing here added a delay this to ensure passing
+            //build is failing here
+            //added a delay this to ensure passing
             int i = 0;
             while (_transcriptStore == null && i < 10)
             {
