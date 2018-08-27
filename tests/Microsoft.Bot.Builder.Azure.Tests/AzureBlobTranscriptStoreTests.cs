@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Tests;
 using Microsoft.Bot.Schema;
@@ -53,6 +54,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             if (_hasEmulator)
             {
                 _transcriptStore = new AzureBlobTranscriptStore(ConnectionString, ContainerName);
+                
             }
         }
 
@@ -61,6 +63,20 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         public void TestCleanUp()
         {
             StorageEmulatorHelper.StopStorageEmulator();
+        }
+
+        // These tests require Azure Storage Emulator v5.7
+        [TestMethod]
+        public void StorageNullTest()
+        {
+            //build is failing here added a delay this to ensure passing
+            int i = 0;
+            while (_transcriptStore == null && i < 10)
+            {
+                Thread.Sleep(5000);
+                i++;
+            }
+            Assert.IsNotNull(_transcriptStore);
         }
 
         // These tests require Azure Storage Emulator v5.7
