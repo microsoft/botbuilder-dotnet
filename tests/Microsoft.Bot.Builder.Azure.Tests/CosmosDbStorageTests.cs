@@ -169,6 +169,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         }
         // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
         [TestMethod]
+        // For issue 871
         public async Task WaterfallCosmos()
         {
             var convoState = new ConversationState(_storage);
