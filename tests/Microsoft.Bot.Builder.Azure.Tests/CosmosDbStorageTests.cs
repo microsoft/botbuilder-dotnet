@@ -169,8 +169,6 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         }
         // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
         [TestMethod]
-        // Current code throws exception see https://github.com/Microsoft/botbuilder-dotnet/issues/871
-        [ExpectedException(typeof(AggregateException))]
         public async Task WaterfallCosmos()
         {
             var convoState = new ConversationState(_storage);
@@ -204,6 +202,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 .AssertReply("step3")
                 .StartTestAsync();
         }
+
         public bool CheckEmulator()
         {
             if (!_hasEmulator.Value)

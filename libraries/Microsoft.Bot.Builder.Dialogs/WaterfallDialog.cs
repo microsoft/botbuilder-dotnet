@@ -69,7 +69,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             // Increment step index and run step
             var state = dc.ActiveDialog.State;
-            var index = (int)state[StepIndex];
+            var index = Convert.ToInt32(state[StepIndex]);
             return await RunStepAsync(dc, index + 1, reason, result).ConfigureAwait(false);
         }
 
