@@ -74,7 +74,7 @@ namespace Microsoft.Bot.Builder.Azure
             }, isThreadSafe: true);
         }
 
-        private Lazy<CloudBlobContainer> Container { get; set; }
+        public Lazy<CloudBlobContainer> Container { get; set; }
 
         /// <summary>
         /// Log an activity to the transcript.
