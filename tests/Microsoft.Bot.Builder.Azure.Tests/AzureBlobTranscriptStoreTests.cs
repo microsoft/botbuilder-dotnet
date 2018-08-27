@@ -64,14 +64,17 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestMethod]
         public void StorageNullTest()
         {
-            _transcriptStore = new AzureBlobTranscriptStore(ConnectionString, ContainerName);
+            CreateTranscriptStore();
             Assert.IsNotNull(_transcriptStore);
         }
+
+
 
         // These tests require Azure Storage Emulator v5.7
         [TestMethod]
         public async Task TranscriptsEmptyTest()
         {
+            CreateTranscriptStore();
             var transcripts = await _transcriptStore.ListTranscriptsAsync(ChannelId);
             Assert.AreEqual(transcripts.Items.Length, 0);
         }
@@ -80,6 +83,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestMethod]
         public async Task ActivityEmptyTest()
         {
+            CreateTranscriptStore();
             foreach (var convoId in ConversationSpecialIds)
             {
                 var activities = await _transcriptStore.GetTranscriptActivitiesAsync(ChannelId, convoId);
@@ -91,6 +95,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestMethod]
         public async Task ActivityAddTest()
         {
+            CreateTranscriptStore();
             var loggedActivities = new IActivity[5];
             var activities = new List<IActivity>();
             for (var i = 0; i < 5; i++)
@@ -107,6 +112,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestMethod]
         public async Task TranscriptRemoveTest()
         {
+            CreateTranscriptStore();
             for (var i = 0; i < 5; i++)
             {
                 var a = CreateActivity(i, i, ConversationIds);
@@ -122,6 +128,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestMethod]
         public async Task ActivityAddSpecialCharsTest()
         {
+            CreateTranscriptStore();
             var loggedActivities = new IActivity[ConversationSpecialIds.Length];
             var activities = new List<IActivity>();
             for (var i = 0; i < ConversationSpecialIds.Length; i++)
@@ -138,6 +145,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestMethod]
         public async Task TranscriptRemoveSpecialCharsTest()
         {
+            CreateTranscriptStore();
             for (var i = 0; i < ConversationSpecialIds.Length; i++)
             {
                 var a = CreateActivity(i, i, ConversationSpecialIds);
@@ -153,6 +161,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestMethod]
         public async Task ActivityAddPagedResultTest()
         {
+            CreateTranscriptStore();
             var loggedPagedResult = new PagedResult<IActivity>();
             var activities = new List<IActivity>();
 
@@ -177,6 +186,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestMethod]
         public async Task TranscriptRemovePagedTest()
         {
+            CreateTranscriptStore();
             var loggedActivities = new PagedResult<IActivity>();
             int i;
             for (i = 0; i < ConversationSpecialIds.Length; i++)
@@ -194,7 +204,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [ExpectedException(typeof(AggregateException))]
         public async Task LongIdAddTest()
         {
-            var loggedActivities = new IActivity[1];
+            CreateTranscriptStore();
             var a = CreateActivity(0, 0, LongId);
             await _transcriptStore.LogActivityAsync(a);
         }
@@ -227,6 +237,11 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 await store.LogActivityAsync(CreateActivity(0, 0, ConversationIds)));
             await Assert.ThrowsExceptionAsync<NullReferenceException>(async () =>
                 await store.GetTranscriptActivitiesAsync(ChannelId, ConversationIds[0]));
+        }
+
+        private void CreateTranscriptStore()
+        {
+            _transcriptStore = new AzureBlobTranscriptStore(ConnectionString, ContainerName);
         }
 
         private static Activity CreateActivity(int i, int j, string[] conversationIds)
