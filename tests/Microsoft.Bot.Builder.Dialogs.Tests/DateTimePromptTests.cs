@@ -3,6 +3,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Schema;
@@ -135,7 +136,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .StartTestAsync();
         }
 
-        private Task CustomValidator(ITurnContext turnContext, PromptValidatorContext<IList<DateTimeResolution>> prompt)
+        private Task CustomValidator(ITurnContext turnContext, PromptValidatorContext<IList<DateTimeResolution>> prompt, CancellationToken cancellationToken)
         {
             if (prompt.Recognized.Succeeded)
             {
