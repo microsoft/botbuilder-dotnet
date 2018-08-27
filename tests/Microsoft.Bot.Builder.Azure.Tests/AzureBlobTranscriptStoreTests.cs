@@ -50,14 +50,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestInitialize]
         public void TestInit()
         {
-            _hasEmulator = StorageEmulatorHelper.StartStorageEmulator() >= 0;
-            if (_hasEmulator)
-            {
-                //create the class to test
-                _transcriptStore = new AzureBlobTranscriptStore(ConnectionString, ContainerName);
-                Thread.Sleep(25000);
-                //add elay to ensure creation
-            }
+            StorageEmulatorHelper.StartStorageEmulator();
         }
 
         // These tests require Azure Storage Emulator v5.7
@@ -71,6 +64,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestMethod]
         public void StorageNullTest()
         {
+            _transcriptStore = new AzureBlobTranscriptStore(ConnectionString, ContainerName);
             Assert.IsNotNull(_transcriptStore);
         }
 
