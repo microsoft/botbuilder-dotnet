@@ -9,6 +9,7 @@ using Microsoft.Bot.Builder.Tests;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Auth;
 using Activity = Microsoft.Bot.Schema.Activity;
 
 // These tests require Azure Storage Emulator v5.7
@@ -54,18 +55,14 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 _transcriptStore = new AzureBlobTranscriptStore(ConnectionString, ContainerName);
             }
         }
+
         // These tests require Azure Storage Emulator v5.7
         [TestCleanup]
         public void TestCleanUp()
         {
             StorageEmulatorHelper.StopStorageEmulator();
         }
-        // These tests require Azure Storage Emulator v5.7
-        [TestMethod]
-        public void StorageNullTest()
-        {
-            Assert.IsNotNull(_transcriptStore);
-        }
+
         // These tests require Azure Storage Emulator v5.7
         [TestMethod]
         public async Task TranscriptsEmptyTest()
@@ -73,6 +70,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             var transcripts = await _transcriptStore.ListTranscriptsAsync(ChannelId);
             Assert.AreEqual(transcripts.Items.Length, 0);
         }
+
         // These tests require Azure Storage Emulator v5.7
         [TestMethod]
         public async Task ActivityEmptyTest()
