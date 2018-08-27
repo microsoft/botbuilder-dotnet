@@ -11,7 +11,11 @@ namespace Microsoft.Bot.Builder.Ai.LanguageGeneration.Engine
     {
         public IList<string> Inspect(Activity activity)
         {
-            if(activity.SuggestedActions.Actions == null || activity.SuggestedActions.Actions.Count == 0)
+            if(activity.SuggestedActions == null)
+            {
+                return new List<string>();
+            }
+            if (activity.SuggestedActions.Actions == null || activity.SuggestedActions.Actions.Count == 0)
             {
                 return new List<string>();
             }
@@ -20,8 +24,21 @@ namespace Microsoft.Bot.Builder.Ai.LanguageGeneration.Engine
                 var referencedPatterns = new List<string>();
                 foreach(var action in activity.SuggestedActions.Actions)
                 {
+                    if (string.IsNullOrEmpty(action.Text))
+                    {
+                        continue;
+                    }
                     var actionTextReferencedPatterns = PatternRecognizer.Recognize(action.Text);
                     referencedPatterns.AddRange(actionTextReferencedPatterns);
+                    
+                }
+
+                foreach (var action in activity.SuggestedActions.Actions)
+                {
+                    if (string.IsNullOrEmpty(action.DisplayText))
+                    {
+                        continue;
+                    }
                     var actionDisplayTextReferencedPatterns = PatternRecognizer.Recognize(action.DisplayText);
                     referencedPatterns.AddRange(actionDisplayTextReferencedPatterns);
                 }

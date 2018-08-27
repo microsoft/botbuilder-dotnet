@@ -25,14 +25,16 @@ namespace Microsoft.Bot.Builder.Ai.LanguageGeneration.Engine
             }
             return new List<string>(foundPatterns);
         }
-        
+
         private void InitializeComponentBuilders()
         {
-            _componentInspectors = new List<IActivityComponentInspector>();
-            _componentInspectors.Add(new ActivityTextInspector());
-            _componentInspectors.Add(new ActivitySpeechInspector());
-            _componentInspectors.Add(new ActivitySuggestedActionsInspector());
-            _componentInspectors.Add(new ActivityAttachmentInspector());
+            _componentInspectors = new List<IActivityComponentInspector>
+            {
+                new ActivityTextInspector(),
+                new ActivitySpeechInspector(),
+                new ActivitySuggestedActionsInspector(),
+                //new ActivityAttachmentInspector()
+            };
         }
     }
 }

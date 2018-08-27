@@ -36,10 +36,10 @@ namespace Microsoft.Bot.Builder.Ai.LanguageGeneration.Engine
                 throw new ArgumentNullException(nameof(entities));
             }
 
-            var slots = await _slotuilder.BuildSlotsAsync(activity, entities).ConfigureAwait(false);
-            var request = await _requestBuilder.BuildRequestAsync(slots).ConfigureAwait(false);
+            var slots = _slotuilder.BuildSlots(activity, entities);
+            var request = _requestBuilder.BuildRequest(slots);
             var response = await _responseGenerator.GenerateResponseAsync(request, _serviceAgent).ConfigureAwait(false);
-            await _activityModifier.ModifyActivityAsync(activity, response).ConfigureAwait(false);
+            _activityModifier.ModifyActivity(activity, response);
         }
     }
 }

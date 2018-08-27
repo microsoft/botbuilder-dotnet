@@ -9,7 +9,7 @@ namespace Microsoft.Bot.Builder.Ai.LanguageGeneration.Engine
 {
     internal class RequestBuilder : IRequestBuilder
     {
-        public async Task<ICompositeRequest> BuildRequestAsync(IList<Slot> slots)
+        public ICompositeRequest BuildRequest(IList<Slot> slots)
         {
             ICompositeRequest compositeRequest = new CompositeRequest();
             IList<Slot> perRequestSlots = new List<Slot>();
@@ -27,7 +27,7 @@ namespace Microsoft.Bot.Builder.Ai.LanguageGeneration.Engine
                     {
                         var lgValue = new LGValue(LgValueType.BooleanType)
                         {
-                            BooleanValues = (List<bool>)slot.KeyValue.Value
+                            BooleanValues = new List<bool> { (bool)slot.KeyValue.Value }
                         };
                         commonSlotsDictionary.Add(slot.KeyValue.Key, lgValue);
                     }
@@ -36,7 +36,7 @@ namespace Microsoft.Bot.Builder.Ai.LanguageGeneration.Engine
                     {
                         var lgValue = new LGValue(LgValueType.DateTimeType)
                         {
-                            DateTimeValues = (List<DateTime>)slot.KeyValue.Value
+                            DateTimeValues = new List<DateTime> { (DateTime)slot.KeyValue.Value }
                         };
                         commonSlotsDictionary.Add(slot.KeyValue.Key, lgValue);
                     }
@@ -45,7 +45,7 @@ namespace Microsoft.Bot.Builder.Ai.LanguageGeneration.Engine
                     {
                         var lgValue = new LGValue(LgValueType.FloatType)
                         {
-                            FloatValues = (List<float>)slot.KeyValue.Value
+                            FloatValues = new List<float> { (float)slot.KeyValue.Value }
                         };
                         commonSlotsDictionary.Add(slot.KeyValue.Key, lgValue);
                     }
@@ -54,7 +54,7 @@ namespace Microsoft.Bot.Builder.Ai.LanguageGeneration.Engine
                     {
                         var lgValue = new LGValue(LgValueType.IntType)
                         {
-                            IntValues = (List<int>)slot.KeyValue.Value
+                            IntValues = new List<int> { (int)slot.KeyValue.Value }
                         };
                         commonSlotsDictionary.Add(slot.KeyValue.Key, lgValue);
                     }
@@ -63,7 +63,7 @@ namespace Microsoft.Bot.Builder.Ai.LanguageGeneration.Engine
                     {
                         var lgValue = new LGValue(LgValueType.StringType)
                         {
-                            StringValues = (List<string>)slot.KeyValue.Value
+                            StringValues = new List<string> { (string)slot.KeyValue.Value }
                         };
                         commonSlotsDictionary.Add(slot.KeyValue.Key, lgValue);
                     }

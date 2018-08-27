@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Builder.Ai.LanguageGeneration.Engine
 {
     internal class ActivityAttachmentsModifier : IActivityComponentModifier
     {
-        public Task ModifyAsync(Activity activity, ICompositeResponse response)
+        public void Modify(Activity activity, ICompositeResponse response)
         {
             throw new NotImplementedException();
         }

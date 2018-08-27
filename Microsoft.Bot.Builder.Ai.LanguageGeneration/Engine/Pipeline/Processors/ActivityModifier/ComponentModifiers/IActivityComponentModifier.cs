@@ -8,6 +8,6 @@ namespace Microsoft.Bot.Builder.Ai.LanguageGeneration.Engine
 {
     internal interface IActivityComponentModifier
     {
-        Task ModifyAsync(Activity activity, ICompositeResponse response);
+        void Modify(Activity activity, ICompositeResponse response);
     }
 }

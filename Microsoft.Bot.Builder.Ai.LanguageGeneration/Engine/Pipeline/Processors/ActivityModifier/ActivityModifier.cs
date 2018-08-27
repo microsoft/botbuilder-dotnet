@@ -15,11 +15,11 @@ namespace Microsoft.Bot.Builder.Ai.LanguageGeneration.Engine
             InitializeComponentModifiers();
         }
 
-        public async Task ModifyActivityAsync(Activity activity, ICompositeResponse response)
+        public void ModifyActivity(Activity activity, ICompositeResponse response)
         {
             foreach (var componentModifier in _componentModifiers)
             {
-                await componentModifier.ModifyAsync(activity, response).ConfigureAwait(false);
+                componentModifier.Modify(activity, response);
             }
         }
 
