@@ -148,6 +148,40 @@ namespace Microsoft.Bot.Connector
         /// </exception>
         Task<HttpOperationResponse<ResourceResponse>> SendToConversationWithHttpMessagesAsync(string conversationId, Activity activity, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
         /// <summary>
+        /// SendConversationHistory
+        /// </summary>
+        /// <remarks>
+        /// This method allows you to upload the historic activities to the
+        /// conversation.
+        ///
+        /// Sender must ensure that the historic activities have unique ids and
+        /// appropriate timestamps. The ids are used by the client to deal with
+        /// duplicate activities and the timestamps are used by the client to
+        /// render the activities in the right order.
+        /// </remarks>
+        /// <param name='conversationId'>
+        /// Conversation ID
+        /// </param>
+        /// <param name='transcript'>
+        /// Transcript of activities
+        /// </param>
+        /// <param name='customHeaders'>
+        /// The headers that will be added to request.
+        /// </param>
+        /// <param name='cancellationToken'>
+        /// The cancellation token.
+        /// </param>
+        /// <exception cref="ErrorResponseException">
+        /// Thrown when the operation returned an invalid status code
+        /// </exception>
+        /// <exception cref="Microsoft.Rest.SerializationException">
+        /// Thrown when unable to deserialize the response
+        /// </exception>
+        /// <exception cref="Microsoft.Rest.ValidationException">
+        /// Thrown when a required parameter is null
+        /// </exception>
+        Task<HttpOperationResponse<ResourceResponse>> SendConversationHistoryWithHttpMessagesAsync(string conversationId, Transcript transcript, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
+        /// <summary>
         /// UpdateActivity
         /// </summary>
         /// <remarks>
