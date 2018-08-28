@@ -34,7 +34,7 @@ namespace AspNetCore_EchoBot_With_AppInsights.AppInsights
         /// <returns>A task that represents the work queued to execute.</returns>
         public async Task OnTurnAsync(ITurnContext context, NextDelegate next, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (context.Services.TryGetValue(MyAppInsightsLoggerMiddleware.AppInsightsServiceKey, out var telemetryClient))
+            if (context.TurnState.TryGetValue(MyAppInsightsLoggerMiddleware.AppInsightsServiceKey, out var telemetryClient))
             {
                 var client = (TelemetryClient)telemetryClient;
                 using (new MyStopwatchDependency(telemetryClient: client, appInsightDependencyName: "MyMiddlewareDependency", command: "Sleep"))

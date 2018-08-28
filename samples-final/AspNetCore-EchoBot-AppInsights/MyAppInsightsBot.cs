@@ -6,7 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AspNetCore_EchoBot_With_AppInsights.AppInsights;
 using Microsoft.Bot.Builder;
-using Microsoft.Bot.Builder.Ai.QnA;
+using Microsoft.Bot.Builder.AI.QnA;
 using Microsoft.Bot.Schema;
 
 namespace AspNetCore_EchoBot_With_AppInsights

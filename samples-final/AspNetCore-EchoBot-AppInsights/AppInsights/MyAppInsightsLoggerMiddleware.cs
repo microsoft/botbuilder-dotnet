@@ -83,7 +83,7 @@ namespace AspNetCore_EchoBot_With_AppInsights.AppInsights
         {
             BotAssert.ContextNotNull(context);
 
-            context.Services.Add(MyAppInsightsLoggerMiddleware.AppInsightsServiceKey, _telemetryClient);
+            context.TurnState.Add(MyAppInsightsLoggerMiddleware.AppInsightsServiceKey, _telemetryClient);
 
             // log incoming activity at beginning of turn
             if (context.Activity != null)

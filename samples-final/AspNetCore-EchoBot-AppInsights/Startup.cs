@@ -14,8 +14,8 @@ using Microsoft.Extensions.Options;
 using Microsoft.Bot.Builder.Integration;
 using System.Collections.Generic;
 using AspNetCore_EchoBot_With_AppInsights.AppInsights;
-using Microsoft.Bot.Builder.Ai.Luis;
-using Microsoft.Bot.Builder.Ai.QnA;
+using Microsoft.Bot.Builder.AI.Luis;
+using Microsoft.Bot.Builder.AI.QnA;
 
 namespace AspNetCore_EchoBot_With_AppInsights
 {

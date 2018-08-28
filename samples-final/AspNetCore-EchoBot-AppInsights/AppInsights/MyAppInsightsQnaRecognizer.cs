@@ -5,7 +5,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.ApplicationInsights;
 using Microsoft.Bot.Builder;
-using Microsoft.Bot.Builder.Ai.QnA;
+using Microsoft.Bot.Builder.AI.QnA;
 
 namespace AspNetCore_EchoBot_With_AppInsights.AppInsights
 {
@@ -43,7 +43,7 @@ namespace AspNetCore_EchoBot_With_AppInsights.AppInsights
             var queryResults = await base.GetAnswersAsync(context);
 
             // Find the Application Insights Telemetry Client
-            if (queryResults != null && context.Services.TryGetValue(MyAppInsightsLoggerMiddleware.AppInsightsServiceKey, out var telemetryClient))
+            if (queryResults != null && context.TurnState.TryGetValue(MyAppInsightsLoggerMiddleware.AppInsightsServiceKey, out var telemetryClient))
             {
                 var telemetryProperties = new Dictionary<string, string>();
                 var telemetryMetrics = new Dictionary<string, double>();

@@ -5,7 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.ApplicationInsights;
 using Microsoft.Bot.Builder;
-using Microsoft.Bot.Builder.Ai.Luis;
+using Microsoft.Bot.Builder.AI.Luis;
 using Newtonsoft.Json.Linq;
 
 namespace AspNetCore_EchoBot_With_AppInsights.AppInsights
@@ -66,7 +66,7 @@ namespace AspNetCore_EchoBot_With_AppInsights.AppInsights
             var conversationId = context.Activity.Conversation.Id;
 
             // Find the Telemetry Client
-            if (context.Services.TryGetValue(MyAppInsightsLoggerMiddleware.AppInsightsServiceKey, out var telemetryClient) && recognizerResult != null)
+            if (context.TurnState.TryGetValue(MyAppInsightsLoggerMiddleware.AppInsightsServiceKey, out var telemetryClient) && recognizerResult != null)
             {
                 var topLuisIntent = recognizerResult.GetTopScoringIntent();
                 var intentScore = topLuisIntent.score.ToString("N2");
