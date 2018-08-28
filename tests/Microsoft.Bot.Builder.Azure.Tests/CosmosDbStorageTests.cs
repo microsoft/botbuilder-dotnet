@@ -177,36 +177,51 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestMethod]
         public async Task WaterfallCosmos()
         {
-            var convoState = new ConversationState(_storage);
-
-            var adapter = new TestAdapter()
-                .Use(convoState);
-
-            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
-            var dialogs = new DialogSet(dialogState);
-            dialogs.Add(new WaterfallDialog("test", new WaterfallStep[]
+            if (CheckEmulator())
             {
-                async (dc, step) => { await dc.Context.SendActivityAsync("step1"); return Dialog.EndOfTurn; },
-                async (dc, step) => { await dc.Context.SendActivityAsync("step2"); return Dialog.EndOfTurn; },
-                async (dc, step) => { await dc.Context.SendActivityAsync("step3"); return Dialog.EndOfTurn; },
-            }));
+                var convoState = new ConversationState(_storage);
 
-            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+                var adapter = new TestAdapter()
+                    .Use(convoState);
+
+                var dialogState = convoState.CreateProperty<DialogState>("dialogState");
+                var dialogs = new DialogSet(dialogState);
+                dialogs.Add(new WaterfallDialog("test", new WaterfallStep[]
                 {
-                    var dc = await dialogs.CreateContextAsync(turnContext);
-                    await dc.ContinueAsync();
-                    if (!turnContext.Responded)
+                    async (dc, step) =>
                     {
-                        await dc.BeginAsync("test");
-                    }
-                })
-                .Send("hello")
-                .AssertReply("step1")
-                .Send("hello")
-                .AssertReply("step2")
-                .Send("hello")
-                .AssertReply("step3")
-                .StartTestAsync();
+                        Assert.AreEqual(dc.ActiveDialog.State["stepIndex"].GetType(), typeof(Int32));
+                        await dc.Context.SendActivityAsync("step1"); return Dialog.EndOfTurn;
+                    },
+                    async (dc, step) =>
+                    {
+                        Assert.AreEqual(dc.ActiveDialog.State["stepIndex"].GetType(), typeof(Int32));
+                        await dc.Context.SendActivityAsync("step2"); return Dialog.EndOfTurn;
+                    },
+                    async (dc, step) =>
+                    {
+                        Assert.AreEqual(dc.ActiveDialog.State["stepIndex"].GetType(), typeof(Int32));
+                        await dc.Context.SendActivityAsync("step3"); return Dialog.EndOfTurn;
+                    },
+                }));
+          
+                await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+                    {
+                        var dc = await dialogs.CreateContextAsync(turnContext);
+                        await dc.ContinueAsync();
+                        if (!turnContext.Responded)
+                        {
+                            await dc.BeginAsync("test");
+                        }
+                    })
+                    .Send("hello")
+                    .AssertReply("step1")
+                    .Send("hello")
+                    .AssertReply("step2")
+                    .Send("hello")
+                    .AssertReply("step3")
+                    .StartTestAsync();
+            }
         }
 
         public bool CheckEmulator()
