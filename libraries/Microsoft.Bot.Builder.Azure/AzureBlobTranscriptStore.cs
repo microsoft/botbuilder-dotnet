@@ -204,7 +204,7 @@ namespace Microsoft.Bot.Builder.Azure
 
                 foreach (var blob in segment.Results.Where(c => c is CloudBlobDirectory).Cast<CloudBlobDirectory>())
                 {
-                    //Unescape the Id we escaped when we saved it
+                    // Unescape the Id we escaped when we saved it
                     var conversation = new Transcript() { Id = Uri.UnescapeDataString(blob.Prefix.Split('/').Where(s => s.Length > 0).Last()), ChannelId = channelId };
                     if (continuationToken != null)
                     {

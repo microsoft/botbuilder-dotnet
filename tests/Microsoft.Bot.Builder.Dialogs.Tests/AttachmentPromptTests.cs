@@ -54,19 +54,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                var dc = await dialogs.CreateContextAsync(turnContext);
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
 
                 var results = await dc.ContinueAsync();
                 if (!turnContext.Responded && !results.HasActive && !results.HasResult)
                 {
                     var options = new PromptOptions { Prompt = new Activity { Type = ActivityTypes.Message, Text = "please add an attachment." } };
-                    await dc.PromptAsync("AttachmentPrompt", options);
+                    await dc.PromptAsync("AttachmentPrompt", options, cancellationToken);
                 }
                 else if (!results.HasActive && results.HasResult)
                 {
                     var attachments = results.Result as List<Attachment>;
-                    var content = (string)attachments[0].Content;
-                    await turnContext.SendActivityAsync(content);
+                    var content = MessageFactory.Text((string)attachments[0].Content);
+                    await turnContext.SendActivityAsync(content, cancellationToken);
 
                 }
             })
@@ -99,18 +99,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                var dc = await dialogs.CreateContextAsync(turnContext);
-                var results = await dc.ContinueAsync();
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
+                var results = await dc.ContinueAsync(cancellationToken);
                 if (!turnContext.Responded && !results.HasActive && !results.HasResult)
                 {
                     var options = new PromptOptions { Prompt = new Activity { Type = ActivityTypes.Message, Text = "please add an attachment." } };
-                    await dc.PromptAsync("AttachmentPrompt", options);
+                    await dc.PromptAsync("AttachmentPrompt", options, cancellationToken);
                 }
                 else if (!results.HasActive && results.HasResult)
                 {
                     var attachments = results.Result as List<Attachment>;
-                    var content = (string)attachments[0].Content;
-                    await turnContext.SendActivityAsync(content);
+                    var content = MessageFactory.Text((string)attachments[0].Content);
+                    await turnContext.SendActivityAsync(content, cancellationToken);
 
                 }
             })

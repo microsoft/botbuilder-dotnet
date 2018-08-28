@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 
@@ -27,7 +28,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             _steps = steps ?? new WaterfallStep[] { };
         }
 
-        public override async Task<DialogTurnResult> DialogBeginAsync(DialogContext dc, DialogOptions options = null)
+        public override async Task<DialogTurnResult> DialogBeginAsync(DialogContext dc, DialogOptions options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (dc == null)
             {
@@ -40,10 +41,10 @@ namespace Microsoft.Bot.Builder.Dialogs
             state[PersistedValues] = new Dictionary<string, object>();
 
             // Run first step
-            return await RunStepAsync(dc, 0, DialogReason.BeginCalled).ConfigureAwait(false);
+            return await RunStepAsync(dc, 0, DialogReason.BeginCalled, null, cancellationToken).ConfigureAwait(false);
         }
 
-        public override async Task<DialogTurnResult> DialogContinueAsync(DialogContext dc)
+        public override async Task<DialogTurnResult> DialogContinueAsync(DialogContext dc, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (dc == null)
             {
@@ -57,10 +58,10 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             // Run next step with the message text as the result.
-            return await DialogResumeAsync(dc, DialogReason.ContinueCalled, dc.Context.Activity.Text).ConfigureAwait(false);
+            return await DialogResumeAsync(dc, DialogReason.ContinueCalled, dc.Context.Activity.Text, cancellationToken).ConfigureAwait(false);
         }
 
-        public override async Task<DialogTurnResult> DialogResumeAsync(DialogContext dc, DialogReason reason, object result)
+        public override async Task<DialogTurnResult> DialogResumeAsync(DialogContext dc, DialogReason reason, object result, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (dc == null)
             {
@@ -70,15 +71,15 @@ namespace Microsoft.Bot.Builder.Dialogs
             // Increment step index and run step
             var state = dc.ActiveDialog.State;
             var index = (int)state[StepIndex];
-            return await RunStepAsync(dc, index + 1, reason, result).ConfigureAwait(false);
+            return await RunStepAsync(dc, index + 1, reason, result, cancellationToken).ConfigureAwait(false);
         }
 
-        protected virtual async Task<DialogTurnResult> OnStepAsync(DialogContext dc, WaterfallStepContext step)
+        protected virtual async Task<DialogTurnResult> OnStepAsync(DialogContext dc, WaterfallStepContext step, CancellationToken cancellationToken)
         {
-            return await _steps[step.Index](dc, step).ConfigureAwait(false);
+            return await _steps[step.Index](dc, step, cancellationToken).ConfigureAwait(false);
         }
 
-        private async Task<DialogTurnResult> RunStepAsync(DialogContext dc, int index, DialogReason reason, object result = null)
+        private async Task<DialogTurnResult> RunStepAsync(DialogContext dc, int index, DialogReason reason, object result, CancellationToken cancellationToken)
         {
             if (dc == null)
             {
@@ -97,7 +98,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 var step = new WaterfallStepContext(this, dc, options, values, index, reason, result);
 
                 // Execute step
-                return await OnStepAsync(dc, step).ConfigureAwait(false);
+                return await OnStepAsync(dc, step, cancellationToken).ConfigureAwait(false);
             }
             else
             {
