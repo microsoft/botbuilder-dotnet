@@ -70,7 +70,13 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             // Increment step index and run step
             var state = dc.ActiveDialog.State;
-            var index = (int)state[StepIndex];
+
+            // For issue https://github.com/Microsoft/botbuilder-dotnet/issues/871
+            // See the linked issue for details. This issue was happening when using the CosmosDB
+            // data store for state. The stepIndex which was an object being cast to an Int64
+            // after deserialization was throwing an exception for not being Int32 datatype.
+            // This change ensures the correct datatype conversion has been done.
+            var index = Convert.ToInt32(state[StepIndex]);
             return await RunStepAsync(dc, index + 1, reason, result, cancellationToken).ConfigureAwait(false);
         }
 
