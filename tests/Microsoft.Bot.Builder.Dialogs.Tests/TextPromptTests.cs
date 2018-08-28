@@ -45,18 +45,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                var dc = await dialogs.CreateContextAsync(turnContext);
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
 
-                var results = await dc.ContinueAsync();
+                var results = await dc.ContinueAsync(cancellationToken);
                 if (!turnContext.Responded && !results.HasActive && !results.HasResult)
                 {
                     var options = new PromptOptions { Prompt = new Activity { Type = ActivityTypes.Message, Text = "Enter some text." } };
-                    await dc.PromptAsync("TextPrompt", options);
+                    await dc.PromptAsync("TextPrompt", options, cancellationToken);
                 }
                 else if (!results.HasActive && results.HasResult)
                 {
                     var textResult = (string)results.Result;
-                    await turnContext.SendActivityAsync($"Bot received the text '{textResult}'.");
+                    await turnContext.SendActivityAsync(MessageFactory.Text($"Bot received the text '{textResult}'."), cancellationToken);
                 }
             })
             .Send("hello")
@@ -82,7 +82,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 var value = promptContext.Recognized.Value;
                 if (value.Length <= 3)
                 {
-                    await ctx.SendActivityAsync("Make sure the text is greater than three characters.");
+                    await ctx.SendActivityAsync(MessageFactory.Text("Make sure the text is greater than three characters."), cancellationToken);
                 }
                 else
                 {
@@ -94,9 +94,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                var dc = await dialogs.CreateContextAsync(turnContext);
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
 
-                var results = await dc.ContinueAsync();
+                var results = await dc.ContinueAsync(cancellationToken);
                 if (!turnContext.Responded && !results.HasActive && !results.HasResult)
                 {
                     var options = new PromptOptions { Prompt = new Activity { Type = ActivityTypes.Message, Text = "Enter some text." } };

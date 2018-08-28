@@ -31,17 +31,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 dialogs.Add(CreateWaterfall());
                 dialogs.Add(new NumberPrompt<int>("number", defaultLocale: Culture.English));
 
-                var dc = await dialogs.CreateContextAsync(turnContext);
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
 
-                var results = await dc.ContinueAsync();
+                var results = await dc.ContinueAsync(cancellationToken);
                 if (!turnContext.Responded && !results.HasActive && !results.HasResult)
                 {
-                    await dc.BeginAsync("test-waterfall");
+                    await dc.BeginAsync("test-waterfall", null, cancellationToken);
                 }
                 else if (!results.HasActive && results.HasResult)
                 {
                     var value = (int)results.Result;
-                    await turnContext.SendActivityAsync($"Bot received the number '{value}'.");
+                    await turnContext.SendActivityAsync(MessageFactory.Text($"Bot received the number '{value}'."), cancellationToken);
                 }
             })
             .Send("hello")
@@ -70,17 +70,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
                 dialogs.Add(new TestComponentDialog());
 
-                var dc = await dialogs.CreateContextAsync(turnContext);
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
 
-                var results = await dc.ContinueAsync();
+                var results = await dc.ContinueAsync(cancellationToken);
                 if (!turnContext.Responded && !results.HasActive && !results.HasResult)
                 {
-                    await dc.BeginAsync("TestComponentDialog");
+                    await dc.BeginAsync("TestComponentDialog", null, cancellationToken);
                 }
                 else if (!results.HasActive && results.HasResult)
                 {
                     var value = (int)results.Result;
-                    await turnContext.SendActivityAsync($"Bot received the number '{value}'.");
+                    await turnContext.SendActivityAsync(MessageFactory.Text($"Bot received the number '{value}'."), cancellationToken);
                 }
             })
             .Send("hello")
@@ -109,17 +109,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
                 dialogs.Add(new TestNestedComponentDialog());
 
-                var dc = await dialogs.CreateContextAsync(turnContext);
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
 
-                var results = await dc.ContinueAsync();
+                var results = await dc.ContinueAsync(cancellationToken);
                 if (!turnContext.Responded && !results.HasActive && !results.HasResult)
                 {
-                    await dc.BeginAsync("TestNestedComponentDialog");
+                    await dc.BeginAsync("TestNestedComponentDialog", null, cancellationToken);
                 }
                 else if (!results.HasActive && results.HasResult)
                 {
                     var value = (int)results.Result;
-                    await turnContext.SendActivityAsync($"Bot received the number '{value}'.");
+                    await turnContext.SendActivityAsync(MessageFactory.Text($"Bot received the number '{value}'."), cancellationToken);
                 }
             })
             .Send("hello")
