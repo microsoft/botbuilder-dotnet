@@ -699,7 +699,10 @@ namespace Microsoft.Bot.Builder
             }
             else
             {
-                connectorClient = new ConnectorClient(new Uri(serviceUrl));
+                var emptyCredentials = (_channelProvider != null && _channelProvider.IsGovernment()) ?
+                    MicrosoftGovernmentAppCredentials.Empty :
+                    MicrosoftAppCredentials.Empty;
+                connectorClient = new ConnectorClient(new Uri(serviceUrl), emptyCredentials);
             }
 
             if (_connectorClientRetryPolicy != null)
@@ -727,7 +730,9 @@ namespace Microsoft.Bot.Builder
             if (!_appCredentialMap.TryGetValue(appId, out var appCredentials))
             {
                 string appPassword = await _credentialProvider.GetAppPasswordAsync(appId).ConfigureAwait(false);
-                appCredentials = new MicrosoftAppCredentials(appId, appPassword);
+                appCredentials = (_channelProvider != null && _channelProvider.IsGovernment()) ?
+                    new MicrosoftGovernmentAppCredentials(appId, appPassword) :
+                    new MicrosoftAppCredentials(appId, appPassword);
                 _appCredentialMap[appId] = appCredentials;
             }
 
