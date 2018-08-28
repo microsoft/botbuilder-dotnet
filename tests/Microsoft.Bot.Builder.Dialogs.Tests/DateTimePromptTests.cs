@@ -33,19 +33,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                var dc = await dialogs.CreateContextAsync(turnContext);
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
 
                 var results = await dc.ContinueAsync();
                 if (!turnContext.Responded && !results.HasActive && !results.HasResult)
                 {
                     var options = new PromptOptions { Prompt = new Activity { Type = ActivityTypes.Message, Text = "What date would you like?" } };
-                    await dc.PromptAsync("DateTimePrompt", options);
+                    await dc.PromptAsync("DateTimePrompt", options, cancellationToken);
                 }
                 else if (!results.HasActive && results.HasResult)
                 {
                     var resolution = ((IList<DateTimeResolution>)results.Result).First();
-                    var reply = $"Timex:'{resolution.Timex}' Value:'{resolution.Value}'";
-                    await turnContext.SendActivityAsync(reply);
+                    var reply = MessageFactory.Text($"Timex:'{resolution.Timex}' Value:'{resolution.Value}'");
+                    await turnContext.SendActivityAsync(reply, cancellationToken);
                 }
             })
             .Send("hello")
@@ -73,20 +73,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                var dc = await dialogs.CreateContextAsync(turnContext);
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
 
-                var results = await dc.ContinueAsync();
+                var results = await dc.ContinueAsync(cancellationToken);
                 if (!turnContext.Responded && !results.HasActive && !results.HasResult)
                 {
                     var options = new PromptOptions { Prompt = new Activity { Type = ActivityTypes.Message, Text = "What date would you like?" } };
-                    await dc.PromptAsync("DateTimePrompt", options);
+                    await dc.PromptAsync("DateTimePrompt", options, cancellationToken);
                 }
                 else if (!results.HasActive && results.HasResult)
                 {
                     var resolutions = (IList<DateTimeResolution>)results.Result;
                     var timexExpressions = resolutions.Select(r => r.Timex).Distinct();
-                    var reply = string.Join(" ", timexExpressions);
-                    await turnContext.SendActivityAsync(reply);
+                    var reply = MessageFactory.Text(string.Join(" ", timexExpressions));
+                    await turnContext.SendActivityAsync(reply, cancellationToken);
                 }
             })
             .Send("hello")
@@ -114,19 +114,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                var dc = await dialogs.CreateContextAsync(turnContext);
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
 
-                var results = await dc.ContinueAsync();
+                var results = await dc.ContinueAsync(cancellationToken);
                 if (!turnContext.Responded && !results.HasActive && !results.HasResult)
                 {
                     var options = new PromptOptions { Prompt = new Activity { Type = ActivityTypes.Message, Text = "What date would you like?" } };
-                    await dc.PromptAsync("DateTimePrompt", options);
+                    await dc.PromptAsync("DateTimePrompt", options, cancellationToken);
                 }
                 else if (!results.HasActive && results.HasResult)
                 {
                     var resolution = ((IList<DateTimeResolution>)results.Result).First();
-                    var reply = $"Timex:'{resolution.Timex}' Value:'{resolution.Value}'";
-                    await turnContext.SendActivityAsync(reply);
+                    var reply = MessageFactory.Text($"Timex:'{resolution.Timex}' Value:'{resolution.Value}'");
+                    await turnContext.SendActivityAsync(reply, cancellationToken);
                 }
             })
             .Send("hello")

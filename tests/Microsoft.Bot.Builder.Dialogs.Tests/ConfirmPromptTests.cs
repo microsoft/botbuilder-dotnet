@@ -44,22 +44,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                var dc = await dialogs.CreateContextAsync(turnContext);
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
 
-                var results = await dc.ContinueAsync();
+                var results = await dc.ContinueAsync(cancellationToken);
                 if (!turnContext.Responded && !results.HasActive && !results.HasResult)
                 {
-                    await dc.PromptAsync("ConfirmPrompt", new PromptOptions { Prompt = new Activity { Type = ActivityTypes.Message, Text = "Please confirm." } });
+                    await dc.PromptAsync("ConfirmPrompt", new PromptOptions { Prompt = new Activity { Type = ActivityTypes.Message, Text = "Please confirm." } }, cancellationToken);
                 }
                 else if (!results.HasActive && results.HasResult)
                 {
                     if ((bool)results.Result)
                     {
-                        await turnContext.SendActivityAsync("Confirmed.");
+                        await turnContext.SendActivityAsync(MessageFactory.Text("Confirmed."), cancellationToken);
                     }
                     else
                     {
-                        await turnContext.SendActivityAsync("Not confirmed.");
+                        await turnContext.SendActivityAsync(MessageFactory.Text("Not confirmed."), cancellationToken);
                     }
                 }
             })
@@ -84,9 +84,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                var dc = await dialogs.CreateContextAsync(turnContext);
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
 
-                var results = await dc.ContinueAsync();
+                var results = await dc.ContinueAsync(cancellationToken);
                 if (!turnContext.Responded && !results.HasActive && !results.HasResult)
                 {
                     var options = new PromptOptions
@@ -102,17 +102,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                             Text = "Please confirm, say 'yes' or 'no' or something like that."
                         }
                     };
-                    await dc.PromptAsync("ConfirmPrompt", options);
+                    await dc.PromptAsync("ConfirmPrompt", options, cancellationToken);
                 }
                 else if (!results.HasActive && results.HasResult)
                 {
                     if ((bool)results.Result)
                     {
-                        await turnContext.SendActivityAsync("Confirmed.");
+                        await turnContext.SendActivityAsync(MessageFactory.Text("Confirmed."), cancellationToken);
                     }
                     else
                     {
-                        await turnContext.SendActivityAsync("Not confirmed.");
+                        await turnContext.SendActivityAsync(MessageFactory.Text("Not confirmed."), cancellationToken);
                     }
                 }
             })
@@ -142,9 +142,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                var dc = await dialogs.CreateContextAsync(turnContext);
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
 
-                var results = await dc.ContinueAsync();
+                var results = await dc.ContinueAsync(cancellationToken);
                 if (!turnContext.Responded && !results.HasActive && !results.HasResult)
                 {
                     var options = new PromptOptions
@@ -160,17 +160,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                             Text = "Please confirm, say 'yes' or 'no' or something like that."
                         }
                     };
-                    await dc.PromptAsync("ConfirmPrompt", options);
+                    await dc.PromptAsync("ConfirmPrompt", options, cancellationToken);
                 }
                 else if (!results.HasActive && results.HasResult)
                 {
                     if ((bool)results.Result)
                     {
-                        await turnContext.SendActivityAsync("Confirmed.");
+                        await turnContext.SendActivityAsync(MessageFactory.Text("Confirmed."), cancellationToken);
                     }
                     else
                     {
-                        await turnContext.SendActivityAsync("Not confirmed.");
+                        await turnContext.SendActivityAsync(MessageFactory.Text("Not confirmed."), cancellationToken);
                     }
                 }
             })
@@ -201,9 +201,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                var dc = await dialogs.CreateContextAsync(turnContext);
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
 
-                var results = await dc.ContinueAsync();
+                var results = await dc.ContinueAsync(cancellationToken);
                 if (!turnContext.Responded && !results.HasActive && !results.HasResult)
                 {
                     var options = new PromptOptions
@@ -219,17 +219,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                             Text = "Please confirm, say 'yes' or 'no' or something like that."
                         }
                     };
-                    await dc.PromptAsync("ConfirmPrompt", options);
+                    await dc.PromptAsync("ConfirmPrompt", options, cancellationToken);
                 }
                 else if (!results.HasActive && results.HasResult)
                 {
                     if ((bool)results.Result)
                     {
-                        await turnContext.SendActivityAsync("Confirmed.");
+                        await turnContext.SendActivityAsync(MessageFactory.Text("Confirmed."), cancellationToken);
                     }
                     else
                     {
-                        await turnContext.SendActivityAsync("Not confirmed.");
+                        await turnContext.SendActivityAsync(MessageFactory.Text("Not confirmed."), cancellationToken);
                     }
                 }
             })

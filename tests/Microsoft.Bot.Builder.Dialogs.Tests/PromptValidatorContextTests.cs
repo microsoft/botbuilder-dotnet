@@ -84,7 +84,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 }
                 else
                 {
-                    await context.SendActivityAsync("Please send a name that is longer than 3 characters.");
+                    await context.SendActivityAsync(MessageFactory.Text("Please send a name that is longer than 3 characters."), cancellationToken);
                 }
             }));
 
