@@ -61,7 +61,7 @@ namespace Microsoft.Bot.Connector.Authentication
         public const string OAuthUrlGov = "https://api.botframework.us";
 
         /// <summary>
-        /// TO BOT FROM CHANNEL: OpenID metadata document for tokens coming from MSA
+        /// TO BOT FROM GOVERNMANT CHANNEL: OpenID metadata document for tokens coming from MSA
         /// </summary>
         public const string ToBotFromGovernmentChannelOpenIdMetadataUrl = "https://login.botframework.us/v1/.well-known/openidconfiguration";
 
