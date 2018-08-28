@@ -169,7 +169,9 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         }
         // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
         [TestMethod]
-        // For issue 871
+        // For issue https://github.com/Microsoft/botbuilder-dotnet/issues/871
+        // The stepIndex in waterfall dialogs is stored as an Int32 in CosmosDB
+        //  which was being cast to int (Int64) this test ensures the correct cast was done.
         public async Task WaterfallCosmos()
         {
             var convoState = new ConversationState(_storage);
