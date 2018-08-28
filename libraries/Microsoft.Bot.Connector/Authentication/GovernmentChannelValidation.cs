@@ -10,16 +10,16 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Microsoft.Bot.Connector.Authentication
 {
-    public class EnterpriseChannelValidation
+    public class GovernmentChannelValidation
     {
         /// <summary>
-        /// TO BOT FROM ENTERPRISE CHANNEL: Token validation parameters when connecting to a bot
+        /// TO BOT FROM GOVERNMENT CHANNEL: Token validation parameters when connecting to a bot
         /// </summary>
-        public static readonly TokenValidationParameters ToBotFromEnterpriseChannelTokenValidationParameters =
+        public static readonly TokenValidationParameters ToBotFromGovernmentChannelTokenValidationParameters =
             new TokenValidationParameters()
             {
                 ValidateIssuer = true,
-                ValidIssuers = new[] { AuthenticationConstants.ToBotFromChannelTokenIssuer },
+                ValidIssuers = new[] { AuthenticationConstants.ToBotFromGovernmentChannelTokenIssuer },
                 // Audience validation takes place in JwtTokenExtractor
                 ValidateAudience = false,
                 ValidateLifetime = true,
@@ -28,24 +28,21 @@ namespace Microsoft.Bot.Connector.Authentication
             };
         
         /// <summary>
-        /// Validate the incoming Auth Header as a token sent from a Bot Framework Channel Service.
+        /// Validate the incoming Auth Header as a token sent from a Bot Framework Government Channel Service.
         /// </summary>
         /// <param name="authHeader">The raw HTTP header in the format: "Bearer [longString]"</param>
         /// <param name="credentials">The user defined set of valid credentials, such as the AppId.</param>
-        /// <param name="channelProvider">The user defined configuration for the channel.</param>
         /// <param name="serviceUrl">The service url from the request</param>
         /// <param name="httpClient">Authentication of tokens requires calling out to validate Endorsements and related documents. The
         /// HttpClient is used for making those calls. Those calls generally require TLS connections, which are expensive to
         /// setup and teardown, so a shared HttpClient is recommended.</param>
         /// <param name="channelId">The ID of the channel to validate.</param>
         /// <returns></returns>
-        public static async Task<ClaimsIdentity> AuthenticateChannelToken(string authHeader, ICredentialProvider credentials, IChannelProvider channelProvider, string serviceUrl, HttpClient httpClient, string channelId)
-        {
-            var channelService = await channelProvider.GetChannelServiceAsync().ConfigureAwait(false);
-            
+        public static async Task<ClaimsIdentity> AuthenticateChannelToken(string authHeader, ICredentialProvider credentials, string serviceUrl, HttpClient httpClient, string channelId)
+        {          
             var tokenExtractor = new JwtTokenExtractor(httpClient,
-                  ToBotFromEnterpriseChannelTokenValidationParameters,
-                  string.Format(AuthenticationConstants.ToBotFromEnterpriseChannelOpenIdMetadataUrlFormat, channelService),
+                  ToBotFromGovernmentChannelTokenValidationParameters,
+                  AuthenticationConstants.ToBotFromGovernmentChannelOpenIdMetadataUrl,
                   AuthenticationConstants.AllowedSigningAlgorithms);
 
             var identity = await tokenExtractor.GetIdentityAsync(authHeader, channelId);
@@ -69,7 +66,7 @@ namespace Microsoft.Bot.Connector.Authentication
 
             // Look for the "aud" claim, but only if issued from the Bot Framework
             Claim audienceClaim = identity.Claims.FirstOrDefault(
-                c => c.Issuer == AuthenticationConstants.ToBotFromChannelTokenIssuer && c.Type == AuthenticationConstants.AudienceClaim);
+                c => c.Issuer == AuthenticationConstants.ToBotFromGovernmentChannelTokenIssuer && c.Type == AuthenticationConstants.AudienceClaim);
 
             if (audienceClaim == null)
             {

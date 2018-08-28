@@ -8,30 +8,23 @@ using Microsoft.Bot.Connector.Authentication;
 namespace Microsoft.Bot.Builder.BotFramework
 {
     /// <summary>
-    /// Channel provider which uses <see cref="ConfigurationManager.AppSettings"/> to lookup the issuers and open id metadata urls.
+    /// Channel provider which uses <see cref="ConfigurationManager.AppSettings"/> to lookup the channel service property.
     /// </summary>
     /// <remarks>
-    /// This will populate the <see cref="SimpleChannelProvider.Issuer"/> from a configuration entry with the key of <see cref="ChannelIssuerKey"/>
-    /// and the <see cref="SimpleChannelProvider.OpenIdMetadataUrl"/> from a configuration entry with the key of <see cref="ChannelOpenIdMetadataUrlKey"/>.
+    /// This will populate the <see cref="SimpleChannelProvider.Issuer"/> from a configuration entry with the key of <see cref="ChannelIssuerKey"/>.
     ///
     /// NOTE: if the keys are not present, a <c>null</c> value will be used.
     /// </remarks>
     public sealed class ConfigurationChannelProvider : SimpleChannelProvider
     {
         /// <summary>
-        /// The key for Issuers.
+        /// The key for ChannelService.
         /// </summary>
-        public const string ChannelIssuerKey = "ChannelIssuer";
-
-        /// <summary>
-        /// The key for Open Id Metadata Urls.
-        /// </summary>
-        public const string ChannelOpenIdMetadataUrlKey = "ChannelOpenIdMetadataUrl";
+        public const string ChannelServiceKey = "ChannelService";
 
         public ConfigurationChannelProvider()
         {
-            this.Issuer = ConfigurationManager.AppSettings[ChannelIssuerKey];
-            this.OpenIdMetadataUrl = ConfigurationManager.AppSettings[ChannelOpenIdMetadataUrlKey];
+            this.ChannelService = ConfigurationManager.AppSettings[ChannelServiceKey];
         }
     }
 }

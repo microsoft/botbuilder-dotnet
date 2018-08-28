@@ -75,9 +75,16 @@ namespace Microsoft.Bot.Connector.Authentication
             {
                 return await EmulatorValidation.AuthenticateEmulatorToken(authHeader, credentials, httpClient ?? _httpClient, channelId);
             }
-            else if(channelProvider != null && await channelProvider.IsTokenFromChannel(authHeader).ConfigureAwait(false))
+            else if(channelProvider != null && !string.IsNullOrEmpty(await channelProvider.GetChannelServiceAsync().ConfigureAwait(false)))
             {
-                return await EnterpriseChannelValidation.AuthenticateChannelToken(authHeader, credentials, channelProvider, serviceUrl, httpClient ?? _httpClient, channelId);
+                if (channelProvider.IsGovernment())
+                {
+                    return await GovernmentChannelValidation.AuthenticateChannelToken(authHeader, credentials, serviceUrl, httpClient ?? _httpClient, channelId).ConfigureAwait(false);
+                }
+                else
+                {
+                    return await EnterpriseChannelValidation.AuthenticateChannelToken(authHeader, credentials, channelProvider, serviceUrl, httpClient ?? _httpClient, channelId).ConfigureAwait(false);
+                }
             }
             else
             {

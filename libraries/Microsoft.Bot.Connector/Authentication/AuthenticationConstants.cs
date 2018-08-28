@@ -11,6 +11,11 @@ namespace Microsoft.Bot.Connector.Authentication
     public static class AuthenticationConstants
     {
         /// <summary>
+        /// Government Channel Service property value
+        /// </summary>
+        public const string GovernmentChannelService = "https://botframework.gov";
+
+        /// <summary>
         /// TO CHANNEL FROM BOT: Login URL
         /// </summary>
         public const string ToChannelFromBotLoginUrl = "https://login.microsoftonline.com/botframework.com/oauth2/v2.0/token";
@@ -19,7 +24,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// TO CHANNEL FROM BOT: OAuth scope to request
         /// </summary>
         public const string ToChannelFromBotOAuthScope = "https://api.botframework.com/.default";
-
+        
         /// <summary>
         /// TO BOT FROM CHANNEL: Token issuer
         /// </summary>
@@ -34,11 +39,41 @@ namespace Microsoft.Bot.Connector.Authentication
         /// TO BOT FROM CHANNEL: OpenID metadata document for tokens coming from MSA
         /// </summary>
         public const string ToBotFromChannelOpenIdMetadataUrl = "https://login.botframework.com/v1/.well-known/openidconfiguration";
-       
+
+        /// <summary>
+        /// TO GOVERNMENT CHANNEL FROM BOT: Login URL
+        /// </summary>
+        public const string ToGovernmentChannelFromBotLoginUrl = "https://login.microsoftonline.us/botframework.com/oauth2/v2.0/token";
+
+        /// <summary>
+        /// TO GOVERNMENT CHANNEL FROM BOT: OAuth scope to request
+        /// </summary>
+        public const string ToGovernmentChannelFromBotOAuthScope = "https://api.botframework.us/.default";
+
+        /// <summary>
+        /// TO BOT FROM GOVERNMENT CHANNEL: Token issuer
+        /// </summary>
+        public const string ToBotFromGovernmentChannelTokenIssuer = "https://api.botframework.us";
+
+        /// <summary>
+        /// OAuth Url used to get a token from OAuthApiClient
+        /// </summary>
+        public const string OAuthUrlGov = "https://api.botframework.us";
+
+        /// <summary>
+        /// TO BOT FROM CHANNEL: OpenID metadata document for tokens coming from MSA
+        /// </summary>
+        public const string ToBotFromGovernmentChannelOpenIdMetadataUrl = "https://login.botframework.us/v1/.well-known/openidconfiguration";
+
         /// <summary>
         /// TO BOT FROM EMULATOR: OpenID metadata document for tokens coming from MSA
         /// </summary>
         public const string ToBotFromEmulatorOpenIdMetadataUrl = "https://login.microsoftonline.com/common/v2.0/.well-known/openid-configuration";
+
+        /// <summary>
+        /// TO BOT FROM ENTERPRISE CHANNEL: OpenID metadata document for tokens coming from MSA
+        /// </summary>
+        public const string ToBotFromEnterpriseChannelOpenIdMetadataUrlFormat = "https://{0}.enterprisechannel.botframework.com/v1/.well-known/openidconfiguration";
 
         /// <summary>
         /// Allowed token signing algorithms. Tokens come from channels to the bot. The code

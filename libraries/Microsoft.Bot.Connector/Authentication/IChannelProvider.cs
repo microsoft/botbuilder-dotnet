@@ -13,22 +13,15 @@ namespace Microsoft.Bot.Connector.Authentication
     public interface IChannelProvider
     {
         /// <summary>
-        /// Determines if the particular auth header is from this channel
+        /// Gets the channel service property for this channel provider
         /// </summary>
-        /// <param name="authHeader">The complete auth header value</param>
-        /// <returns>True if this auth header is from this channel; false if it is not</returns>
-        Task<bool> IsTokenFromChannel(string authHeader);
+        /// <returns>The channel service property for the channel provider</returns>
+        Task<string> GetChannelServiceAsync();
 
         /// <summary>
-        /// Gets the issuer for this channel provider
+        /// Gets a value of whether this provider represents a channel on Governmant Azure or Public Azure
         /// </summary>
-        /// <returns>The issuer for the channel provider</returns>
-        Task<string> GetIssuerAsync();
-        
-        /// <summary>
-        /// Returns the Open ID Metadata Url for this channel provider
-        /// </summary>
-        /// <returns>The Open ID Metadata Url for this channel provider</returns>
-        Task<string> GetOpenIdMetadataUrlAsync();
+        /// <returns>True if this channel provider represents a channel on Government Azure</returns>
+        bool IsGovernment();
     }
 }
