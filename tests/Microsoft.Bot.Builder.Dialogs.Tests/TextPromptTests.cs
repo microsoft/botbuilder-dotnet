@@ -45,18 +45,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                var dc = await dialogs.CreateContextAsync(turnContext);
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
 
-                var results = await dc.ContinueAsync();
+                var results = await dc.ContinueAsync(cancellationToken);
                 if (!turnContext.Responded && !results.HasActive && !results.HasResult)
                 {
                     var options = new PromptOptions { Prompt = new Activity { Type = ActivityTypes.Message, Text = "Enter some text." } };
-                    await dc.PromptAsync("TextPrompt", options);
+                    await dc.PromptAsync("TextPrompt", options, cancellationToken);
                 }
                 else if (!results.HasActive && results.HasResult)
                 {
                     var textResult = (string)results.Result;
-                    await turnContext.SendActivityAsync($"Bot received the text '{textResult}'.");
+                    await turnContext.SendActivityAsync(MessageFactory.Text($"Bot received the text '{textResult}'."), cancellationToken);
                 }
             })
             .Send("hello")
@@ -77,12 +77,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             var dialogs = new DialogSet(dialogState);
 
-            PromptValidator<string> validator = async (ctx, promptContext) =>
+            PromptValidator<string> validator = async (ctx, promptContext, cancellationToken) =>
             {
                 var value = promptContext.Recognized.Value;
                 if (value.Length <= 3)
                 {
-                    await ctx.SendActivityAsync("Make sure the text is greater than three characters.");
+                    await ctx.SendActivityAsync(MessageFactory.Text("Make sure the text is greater than three characters."), cancellationToken);
                 }
                 else
                 {
@@ -94,18 +94,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                var dc = await dialogs.CreateContextAsync(turnContext);
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
 
-                var results = await dc.ContinueAsync();
+                var results = await dc.ContinueAsync(cancellationToken);
                 if (!turnContext.Responded && !results.HasActive && !results.HasResult)
                 {
                     var options = new PromptOptions { Prompt = new Activity { Type = ActivityTypes.Message, Text = "Enter some text." } };
-                    await dc.PromptAsync("TextPrompt", options);
+                    await dc.PromptAsync("TextPrompt", options, cancellationToken);
                 }
                 else if (!results.HasActive && results.HasResult)
                 {
                     var textResult = (string)results.Result;
-                    await turnContext.SendActivityAsync($"Bot received the text '{textResult}'.");
+                    await turnContext.SendActivityAsync(MessageFactory.Text($"Bot received the text '{textResult}'."), cancellationToken);
                 }
             })
             .Send("hello")
@@ -128,34 +128,35 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             var dialogs = new DialogSet(dialogState);
 
-            PromptValidator<string> validator = async (ctx, promptContext) =>
+            PromptValidator<string> validator = async (ctx, promptContext, cancellationToken) =>
             {
                 var value = promptContext.Recognized.Value;
                 if (value.Length >= 3)
                 {
                     promptContext.End(value);
                 }
+                await Task.CompletedTask;
             };
             var textPrompt = new TextPrompt("TextPrompt", validator);
             dialogs.Add(textPrompt);
         
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                var dc = await dialogs.CreateContextAsync(turnContext);
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
 
-                var results = await dc.ContinueAsync();
+                var results = await dc.ContinueAsync(cancellationToken);
                 if (!turnContext.Responded && !results.HasActive && !results.HasResult)
                 {
                     var options = new PromptOptions {
                         Prompt = new Activity { Type = ActivityTypes.Message, Text = "Enter some text." },
                         RetryPrompt = new Activity { Type = ActivityTypes.Message, Text = "Make sure the text is greater than three characters." },
                     };
-                    await dc.PromptAsync("TextPrompt", options);
+                    await dc.PromptAsync("TextPrompt", options, cancellationToken);
                 }
                 else if (!results.HasActive && results.HasResult)
                 {
                     var textResult = (string)results.Result;
-                    await turnContext.SendActivityAsync($"Bot received the text '{textResult}'.");
+                    await turnContext.SendActivityAsync(MessageFactory.Text($"Bot received the text '{textResult}'."), cancellationToken);
                 }
             })
             .Send("hello")
@@ -178,12 +179,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             var dialogs = new DialogSet(dialogState);
 
-            PromptValidator<string> validator = async (ctx, promptContext) =>
+            PromptValidator<string> validator = async (ctx, promptContext, cancellationToken) =>
             {
                 var value = promptContext.Recognized.Value;
                 if (value.Length <= 3)
                 {
-                    await ctx.SendActivityAsync("The text should be greater than 3 chars.");
+                    await ctx.SendActivityAsync(MessageFactory.Text("The text should be greater than 3 chars."), cancellationToken);
                 }
                 else
                 {
@@ -195,9 +196,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                var dc = await dialogs.CreateContextAsync(turnContext);
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
 
-                var results = await dc.ContinueAsync();
+                var results = await dc.ContinueAsync(cancellationToken);
                 if (!turnContext.Responded && !results.HasActive && !results.HasResult)
                 {
                     var options = new PromptOptions
@@ -210,7 +211,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 else if (!results.HasActive && results.HasResult)
                 {
                     var textResult = (string)results.Result;
-                    await turnContext.SendActivityAsync($"Bot received the text '{textResult}'.");
+                    await turnContext.SendActivityAsync(MessageFactory.Text($"Bot received the text '{textResult}'."), cancellationToken);
                 }
             })
             .Send("hello")

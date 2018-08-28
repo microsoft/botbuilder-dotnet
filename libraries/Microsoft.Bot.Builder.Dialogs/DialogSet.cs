@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Dialogs
@@ -41,7 +42,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             return _dialogs[dialog.Id] = dialog;
         }
 
-        public async Task<DialogContext> CreateContextAsync(ITurnContext turnContext)
+        public async Task<DialogContext> CreateContextAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
         {
             BotAssert.ContextNotNull(turnContext);
 
@@ -51,7 +52,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             // Load/initialize dialog state
-            var state = await _dialogState.GetAsync(turnContext, () => { return new DialogState(); }).ConfigureAwait(false);
+            var state = await _dialogState.GetAsync(turnContext, () => { return new DialogState(); }, cancellationToken).ConfigureAwait(false);
 
             // Create and return context
             return new DialogContext(this, turnContext, state);

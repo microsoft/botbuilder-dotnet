@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 using Microsoft.Recognizers.Text.DateTime;
@@ -20,7 +21,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         public string DefaultLocale { get; set; }
 
-        protected override async Task OnPromptAsync(ITurnContext turnContext, IDictionary<string, object> state, PromptOptions options, bool isRetry)
+        protected override async Task OnPromptAsync(ITurnContext turnContext, IDictionary<string, object> state, PromptOptions options, bool isRetry, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (turnContext == null)
             {
@@ -34,15 +35,15 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             if (isRetry && options.RetryPrompt != null)
             {
-                await turnContext.SendActivityAsync(options.RetryPrompt).ConfigureAwait(false);
+                await turnContext.SendActivityAsync(options.RetryPrompt, cancellationToken).ConfigureAwait(false);
             }
             else if (options.Prompt != null)
             {
-                await turnContext.SendActivityAsync(options.Prompt).ConfigureAwait(false);
+                await turnContext.SendActivityAsync(options.Prompt, cancellationToken).ConfigureAwait(false);
             }
         }
 
-        protected override Task<PromptRecognizerResult<IList<DateTimeResolution>>> OnRecognizeAsync(ITurnContext turnContext, IDictionary<string, object> state, PromptOptions options)
+        protected override Task<PromptRecognizerResult<IList<DateTimeResolution>>> OnRecognizeAsync(ITurnContext turnContext, IDictionary<string, object> state, PromptOptions options, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (turnContext == null)
             {
