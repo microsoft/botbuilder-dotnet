@@ -71,8 +71,10 @@ namespace Microsoft.Bot.Builder.Dialogs
             var state = dc.ActiveDialog.State;
 
             // For issue https://github.com/Microsoft/botbuilder-dotnet/issues/871
-            // See the linked issue for details the stepIndex is stored as an Int32 in CosmosDB
-            // which was being cast to int (Int64). This change ensures the correct cast was done.
+            // See the linked issue for details. This issue was happening when using the CosmosDB
+            // data store for state. The stepIndex which was an object being cast to an Int64
+            // after deserialization was throwing an exception for not being Int32 datatype.
+            // This change ensures the correct datatype conversion has been done.
             var index = Convert.ToInt32(state[StepIndex]);
             return await RunStepAsync(dc, index + 1, reason, result).ConfigureAwait(false);
         }
