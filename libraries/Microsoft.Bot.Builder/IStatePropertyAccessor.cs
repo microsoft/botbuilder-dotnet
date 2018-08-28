@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder
@@ -18,22 +19,25 @@ namespace Microsoft.Bot.Builder
         /// </summary>
         /// <param name="turnContext">Turn Context.</param>
         /// <param name="defaultValueFactory">Function which defines the property value to be returned if no value has been set.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
-        Task<T> GetAsync(ITurnContext turnContext, Func<T> defaultValueFactory = null);
+        Task<T> GetAsync(ITurnContext turnContext, Func<T> defaultValueFactory = null, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// Delete the property from the source.
         /// </summary>
         /// <param name="turnContext">Turn Context.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        Task DeleteAsync(ITurnContext turnContext);
+        Task DeleteAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// Set the property value on the source.
         /// </summary>
         /// <param name="turnContext">Turn Context.</param>
-        /// <param name="value">the value to set</param>
+        /// <param name="value">The value to set.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        Task SetAsync(ITurnContext turnContext, T value);
+        Task SetAsync(ITurnContext turnContext, T value, CancellationToken cancellationToken = default(CancellationToken));
     }
 }
