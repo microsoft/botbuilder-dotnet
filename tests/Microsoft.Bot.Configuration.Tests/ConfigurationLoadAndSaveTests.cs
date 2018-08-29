@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Configuration.Tests
             Assert.AreEqual("test", config.Name);
             Assert.AreEqual("test description", config.Description);
             Assert.AreEqual("", config.SecretKey);
-            Assert.AreEqual(9, config.Services.Count);
+            Assert.AreEqual(10, config.Services.Count);
 
             // verify types are right
             foreach (var service in config.Services)
@@ -82,6 +82,32 @@ namespace Microsoft.Bot.Configuration.Tests
                 Assert.Fail("Load should have thrown due to no secret");
             }
             catch { }
+        }
+
+        [TestMethod]
+        public async Task LoadFromFolderWithSecret()
+        {
+            string secret = BotConfiguration.GenerateKey();
+            var config = await BotConfiguration.LoadAsync(@"..\..\test.bot");
+            await config.SaveAsAsync("save.bot", secret);
+            await BotConfiguration.LoadFromFolderAsync(".", secret);
+        }
+
+        [TestMethod][ExpectedException(typeof(System.Exception))]
+        public async Task FailLoadFromFolderWithNoSecret()
+        {
+            string secret = BotConfiguration.GenerateKey();
+            var config = await BotConfiguration.LoadAsync(@"..\..\test.bot");
+            await config.SaveAsAsync("save.bot", secret);
+            await BotConfiguration.LoadFromFolderAsync(".");
+        }
+
+        [TestMethod]
+        public async Task LoadFromFolderNoSecret()
+        {
+            var config = await BotConfiguration.LoadAsync(@"..\..\test.bot");
+            await config.SaveAsAsync("save.bot");
+            await BotConfiguration.LoadFromFolderAsync(".");
         }
 
         [TestMethod]
