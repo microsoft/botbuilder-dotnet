@@ -20,17 +20,13 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Engine
                     var recognizedPatterns = PatternRecognizer.Recognize(action.Text);
                     foreach (var pattern in recognizedPatterns)
                     {
-                        var normalizedMatch = pattern.Substring(1);
-                        normalizedMatch = normalizedMatch.Substring(0, normalizedMatch.Length - 1);
-                        action.Text = action.Text.Replace(pattern, response.TemplateResolutions[normalizedMatch]);
+                        action.Text = action.Text.Replace(pattern, response.TemplateResolutions[pattern]);
                     }
 
                     recognizedPatterns = PatternRecognizer.Recognize(action.DisplayText);
                     foreach (var pattern in recognizedPatterns)
                     {
-                        var normalizedMatch = pattern.Substring(1);
-                        normalizedMatch = normalizedMatch.Substring(0, normalizedMatch.Length - 1);
-                        action.DisplayText = action.DisplayText.Replace(pattern, response.TemplateResolutions[normalizedMatch]);
+                        action.DisplayText = action.DisplayText.Replace(pattern, response.TemplateResolutions[pattern]);
                     }
                 }
             }

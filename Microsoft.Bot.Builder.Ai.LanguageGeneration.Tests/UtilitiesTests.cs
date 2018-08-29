@@ -1,16 +1,16 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Ai.LanguageGeneration.Resolver;
+using Microsoft.Bot.Builder.AI.LanguageGeneration.Resolver;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.Bot.Builder.Ai.LanguageGeneration.Tests
+namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 {
     [TestClass]
-    public class IntegrationTests
+    public class UtilitiesTests
     {
-        private LGEndpoint _lgEndpoint;
-        private LGOptions _lgOptions;
+        private LanguageGenerationApplication _lgEndpoint;
+        private LanguageGenerationOptions _lgOptions;
 
         [TestInitialize]
         public void TestInitialize()
@@ -18,8 +18,8 @@ namespace Microsoft.Bot.Builder.Ai.LanguageGeneration.Tests
             var endpointKey = "<ENDPINT_KEY>";
             var lgAppId = "<APP_ID>";
             var endpointUri = "<ENDPINT_URI>";
-            _lgEndpoint = new LGEndpoint(endpointKey, lgAppId, endpointUri);
-            _lgOptions = new LGOptions();
+            _lgEndpoint = new LanguageGenerationApplication(endpointKey, lgAppId, endpointUri);
+            _lgOptions = new LanguageGenerationOptions();
         }
 
 
@@ -29,7 +29,7 @@ namespace Microsoft.Bot.Builder.Ai.LanguageGeneration.Tests
             var activity = new Activity();
             activity.Text = "[wPhrase] my friend";
 
-            var lgResolver = new LGResolver(_lgEndpoint, _lgOptions);
+            var lgResolver = new LanguageGenerationResolver(_lgEndpoint, _lgOptions);
             var metaData = new Dictionary<string, object>();
             await lgResolver.ResolveAsync(activity, metaData).ConfigureAwait(false);
 

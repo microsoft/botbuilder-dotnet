@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using DialogFoundation.Backend.LG;
+using Microsoft.Bot.Builder.AI.LanguageGeneration.API;
 
-namespace Microsoft.Bot.Builder.Ai.LanguageGeneration.API
+namespace Microsoft.Bot.Builder.AI.LanguageGeneration.API
 {
-    internal class ServiceAgent
+    internal class ServiceAgent: IServiceAgent
     {
         private LGServiceAgent _serviceAgent;
         public ServiceAgent(string endPoint)

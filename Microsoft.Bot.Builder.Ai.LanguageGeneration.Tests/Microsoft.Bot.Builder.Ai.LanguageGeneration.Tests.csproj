@@ -6,6 +6,18 @@
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Documentation|AnyCPU'">
+    <CodeAnalysisRuleSet>Microsoft.Bot.Builder.AI.LanguageGeneration.Tests.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <CodeAnalysisRuleSet>Microsoft.Bot.Builder.AI.LanguageGeneration.Tests.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <CodeAnalysisRuleSet>Microsoft.Bot.Builder.AI.LanguageGeneration.Tests.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+    
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.7.0" />
     <PackageReference Include="MSTest.TestAdapter" Version="1.2.1" />
@@ -13,14 +25,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Tests\ComponentsTests\" />
-    <Folder Include="Tests\EndToEndTests\" />
-    <Folder Include="Mocks\" />
+    <Folder Include="TestData\" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\libraries\Microsoft.Bot.Schema\Microsoft.Bot.Schema.csproj" />
-    <ProjectReference Include="..\Microsoft.Bot.Builder.Ai.LanguageGeneration\Microsoft.Bot.Builder.Ai.LanguageGeneration.csproj" />
+    <ProjectReference Include="..\Microsoft.Bot.Builder.Ai.LanguageGeneration\Microsoft.Bot.Builder.AI.LanguageGeneration.csproj" />
   </ItemGroup>
 
 </Project>

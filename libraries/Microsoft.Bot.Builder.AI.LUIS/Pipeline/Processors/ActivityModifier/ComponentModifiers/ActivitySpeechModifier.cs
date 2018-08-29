@@ -16,9 +16,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Engine
                 var recognizedPatterns = PatternRecognizer.Recognize(activity.Speak);
                 foreach (var pattern in recognizedPatterns)
                 {
-                    var normalizedMatch = pattern.Substring(1);
-                    normalizedMatch = normalizedMatch.Substring(0, normalizedMatch.Length - 1);
-                    activity.Speak = activity.Speak.Replace(pattern, response.TemplateResolutions[normalizedMatch]);
+                    activity.Speak = activity.Speak.Replace(pattern, response.TemplateResolutions[pattern]);
                 }
             }
         }

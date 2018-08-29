@@ -78,11 +78,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Engine
                 {
                     StringValues = slotStringValue
                 };
-                lgRequest.Slots = new LGSlotDictionary();
-                foreach (var commonSlot in commonSlotsDictionary)
-                {
-                    lgRequest.Slots.Add(commonSlot);
-                }
+                lgRequest.Slots = commonSlotsDictionary;
                 lgRequest.Slots.Add(slot.KeyValue.Key, lgValue);
 
                 compositeRequest.Requests.Add(slotStringValue[0], lgRequest);
