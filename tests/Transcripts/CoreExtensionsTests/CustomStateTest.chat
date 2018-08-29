@@ -1,0 +1,20 @@
+bot=bot
+user=user
+
+user:start test
+bot:bot message
+user:set foo
+user:read
+bot:value:foo
+user:delete
+user:read
+bot:value:
+user:set bar
+user:set test
+user:read
+bot:value:test
+user:read
+bot:value:test
+user:delete
+user:read
+bot:value:

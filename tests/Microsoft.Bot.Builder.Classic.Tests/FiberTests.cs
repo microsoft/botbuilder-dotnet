@@ -554,14 +554,14 @@ namespace Microsoft.Bot.Builder.Classic.Tests
             {
                 var fiber = container.Resolve<IFiberLoop<C>>();
                 var method = MockMethod();
-                string valueAsString = "hello world";
-                object valueAsObject = valueAsString;
+                string valueAsstring = "hello world";
+                object valueAsObject = valueAsstring;
                 method
                     .Setup(m => m.CodeAsync(fiber, Context, It.Is(Item(valueAsObject)), Token))
                     .ReturnsAsync(NullWait<C>.Instance);
 
                 // act
-                fiber.Call(method.Object.CodeAsync, valueAsString);
+                fiber.Call(method.Object.CodeAsync, valueAsstring);
                 await PollAsync(fiber);
 
                 // assert

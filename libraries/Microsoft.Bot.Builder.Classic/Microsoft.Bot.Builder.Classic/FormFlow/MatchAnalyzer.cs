@@ -43,7 +43,7 @@ namespace Microsoft.Bot.Builder.Classic.FormFlow.Advanced
         {
             foreach (var match in matches)
             {
-                string message = "";
+                string message = string.Empty;
                 message = message.PadRight(match.Start + offset, ' ');
                 message = message.PadRight(match.End + offset, '_');
                 Console.WriteLine("{0} {1}", message, match.Value);

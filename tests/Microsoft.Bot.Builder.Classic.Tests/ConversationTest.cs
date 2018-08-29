@@ -101,7 +101,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                 else
                     _result.Response = new HttpResponseMessage { StatusCode = HttpStatusCode.InternalServerError };
                 var ex = new HttpOperationException(e?.Message, e);
-                ex.Request = new HttpRequestMessageWrapper(_result.Request, "");
+                ex.Request = new HttpRequestMessageWrapper(_result.Request, string.Empty);
                 ex.Response = new HttpResponseMessageWrapper(_result.Response, e?.Message);
                 throw ex;
             }
@@ -364,7 +364,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
             {
                 var msg = DialogTestBase.MakeTestMessage();
                 msg.Text = "test";
-                await new TestAdapter().ProcessActivity((Activity)msg, async (context) =>
+                await new TestAdapter().ProcessActivityAsync((Activity)msg, async (context, cancellationToken) =>
                 {
                     using (var scope = DialogModule.BeginLifetimeScope(container, context))
                     {
@@ -390,7 +390,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
 
 
                 msg.Text = "inputhint";
-                await new TestAdapter().ProcessActivity((Activity)msg, async (context) =>
+                await new TestAdapter().ProcessActivityAsync((Activity)msg, async (context, cancellationToken) =>
                 {
                     using (var scope = DialogModule.BeginLifetimeScope(container, context))
                     {
@@ -406,7 +406,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                 });
 
                 msg.Text = "reset";
-                await new TestAdapter().ProcessActivity((Activity)msg, async (context) =>
+                await new TestAdapter().ProcessActivityAsync((Activity)msg, async (context, cancellationToken) =>
                 {
                     using (var scope = DialogModule.BeginLifetimeScope(container, context))
                     {
@@ -436,7 +436,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
             {
                 var msg = DialogTestBase.MakeTestMessage();
                 msg.Text = "testMsg";
-                await new TestAdapter().ProcessActivity((Activity)msg, async (context) =>
+                await new TestAdapter().ProcessActivityAsync((Activity)msg, async (context, cancellationToken) =>
                 {
                     using (var scope = DialogModule.BeginLifetimeScope(container, context))
                     {
@@ -456,8 +456,8 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                 });
 
                 var conversationReference = msg.ToConversationReference();
-                var continuationMessage = conversationReference.GetPostToBotMessage();
-                await new TestAdapter().ProcessActivity((Activity)continuationMessage, async (context) =>
+                var continuationActivity = conversationReference.GetContinuationActivity();
+                await new TestAdapter().ProcessActivityAsync((Activity)continuationActivity, async (context, cancellationToken) =>
                 {
                     using (var scope = DialogModule.BeginLifetimeScope(container, context))
                     {

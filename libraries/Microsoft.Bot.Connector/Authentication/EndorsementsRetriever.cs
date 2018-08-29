@@ -3,12 +3,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.IdentityModel.Protocols;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Connector.Authentication
@@ -53,6 +51,16 @@ namespace Microsoft.Bot.Connector.Authentication
         /// </summary>
         public const string JsonWebKeySetUri = "jwks_uri";
 
+        /// <summary>
+        /// Retrieves a populated configuration given an address and a document retriever.
+        /// </summary>
+        /// <param name="address">Address of the discovery document.</param>
+        /// <param name="retriever">The document retriever to use to read the discovery document.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>If the activities are successfully sent, the task result contains
+        /// a populated configuration.</remarks>
         public async Task<IDictionary<string, HashSet<string>>> GetConfigurationAsync(string address, IDocumentRetriever retriever, CancellationToken cancellationToken)
         {
             if (address == null)
@@ -97,6 +105,15 @@ namespace Microsoft.Bot.Connector.Authentication
             return results;
         }
 
+        /// <summary>
+        /// Obtains a document from an address.
+        /// </summary>
+        /// <param name="address">location of document.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>If the activities are successfully sent, the task result contains
+        /// the document as a string.</remarks>
         public async Task<string> GetDocumentAsync(string address, CancellationToken cancellationToken)
         {
             if (address == null)
@@ -108,7 +125,7 @@ namespace Microsoft.Bot.Connector.Authentication
             {
                 if (!documentResponse.IsSuccessStatusCode)
                 {
-                    throw new EndorsementsDocumentRetrievalException(address, $"An non-success status code of {documentResponse.StatusCode} was received while fetching the endorsements document.");
+                    throw new Exception($"An non-success status code of {documentResponse.StatusCode} was received while fetching the endorsements document.");
                 }
 
                 var json = await documentResponse.Content.ReadAsStringAsync();
@@ -130,40 +147,12 @@ namespace Microsoft.Bot.Connector.Authentication
                 {
                     if (!keysResponse.IsSuccessStatusCode)
                     {
-                        throw new EndorsementsDocumentRetrievalException(keysUrl, $"An non-success status code of {keysResponse.StatusCode} was received while fetching the web key set document.");
+                        throw new Exception($"An non-success status code of {keysResponse.StatusCode} was received while fetching the web key set document.");
                     }
 
                     return await keysResponse.Content.ReadAsStringAsync();
                 }
             }
         }
-    }
-
-
-    [Serializable]
-    public class EndorsementsRetrieverException : Exception
-    {
-        public EndorsementsRetrieverException(string message) : base(message)
-        {
-        }
-
-        public EndorsementsRetrieverException(string message, Exception inner) : base(message, inner)
-        {
-        }
-
-        protected EndorsementsRetrieverException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) : base(info, context)
-        {
-        }
-    }
-
-    [Serializable]
-    public sealed class EndorsementsDocumentRetrievalException : EndorsementsRetrieverException
-    {
-        public EndorsementsDocumentRetrievalException(string address, string message) : base(message)
-        {
-            Address = address;
-        }
-
-        public string Address { get; private set; }
     }
 }

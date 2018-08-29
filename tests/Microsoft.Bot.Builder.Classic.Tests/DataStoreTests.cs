@@ -79,7 +79,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
 
         protected IAddress GetAddress([CallerMemberName] string testName = null)
         {
-            return new Address("somebot", testName, "U1", "C1", "");
+            return new Address("somebot", testName, "U1", "C1", string.Empty);
         }
 
         [TestMethod]
@@ -102,7 +102,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
 
             Assert.IsNotNull(botDataGet.ETag);
             Assert.AreNotEqual("*", botDataGet.ETag);
-            Assert.AreNotEqual(String.Empty, botDataGet.ETag);
+            Assert.AreNotEqual(string.Empty, botDataGet.ETag);
             var savedSample = botData.Data as SampleBotData;
             var loadedSample = ((JObject)botDataGet.Data).ToObject<SampleBotData>();
             Assert.AreEqual(savedSample?.Id, loadedSample?.Id, "Stored and retrieved objects don't match");
@@ -123,7 +123,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
         {
             var botDataGet = await dataStore.LoadAsync(address, botStoreType, default(CancellationToken));
             Assert.IsNotNull(botDataGet);
-            Assert.AreEqual(botDataGet.ETag, String.Empty, $"Etag should be String.Empty for unknown object  {botStoreType}");
+            Assert.AreEqual(botDataGet.ETag, string.Empty, $"Etag should be string.Empty for unknown object  {botStoreType}");
             Assert.IsNull(botDataGet.Data, $"Data should be null for unknown object {botStoreType}");
         }
 
@@ -174,7 +174,7 @@ namespace Microsoft.Bot.Builder.Classic.Tests
             var botDataGet3 = await dataStore.LoadAsync(address, botStoreType, default(CancellationToken));
             var loaded3 = ((JObject)botDataGet3.Data)?.ToObject<SampleBotData>();
             Assert.IsNull(loaded3);
-            Assert.AreEqual(String.Empty, botDataGet3.ETag);
+            Assert.AreEqual(string.Empty, botDataGet3.ETag);
         }
     }
 }

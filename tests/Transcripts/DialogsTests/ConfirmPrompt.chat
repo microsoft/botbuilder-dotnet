@@ -1,0 +1,14 @@
+user=User
+bot=Bot
+
+User: hello
+Bot: Please confirm.
+User: hello
+Bot: Please confirm, say 'yes' or 'no' or something like that.
+User: no
+Bot: Not confirmed.
+
+User: hello
+Bot: Please confirm.
+User: yes
+Bot: Confirmed.

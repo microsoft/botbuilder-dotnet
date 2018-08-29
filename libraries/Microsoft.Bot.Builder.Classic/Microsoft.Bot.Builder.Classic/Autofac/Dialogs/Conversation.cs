@@ -100,12 +100,12 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs
         /// <param name="MakeRoot">The factory method to make the root dialog.</param>
         /// <param name="token">The cancellation token.</param>
         /// <returns>A task that represents the message to send inline back to the user.</returns>
-        public static async Task SendAsync(Microsoft.Bot.Builder.ITurnContext v4Context, Func<IDialog<object>> MakeRoot, CancellationToken token = default(CancellationToken))
+        public static async Task SendAsync(Microsoft.Bot.Builder.ITurnContext turnContext, Func<IDialog<object>> MakeRoot, CancellationToken token = default(CancellationToken))
         {
-            using (var scope = DialogModule.BeginLifetimeScope(Container, v4Context))
+            using (var scope = DialogModule.BeginLifetimeScope(Container, turnContext))
             {
                 DialogModule_MakeRoot.Register(scope, MakeRoot);
-                await SendAsync(scope, v4Context, token);
+                await SendAsync(scope, turnContext, token);
             }
         }
 
@@ -113,31 +113,31 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs
         /// Resume a conversation and post the data to the dialog waiting.
         /// </summary>
         /// <param name="resumptionCookie"> The resumption cookie.</param>
-        /// <param name="v4Context">The turn context containing the message sent to the bot.</param>
+        /// <param name="turnContext">The turn context containing the message sent to the bot.</param>
         /// <param name="token"> The cancellation token.</param>
         /// <returns> A task that represent the message to send back to the user after resumption of the conversation.</returns>
         [Obsolete("Use the overload that uses ConversationReference instead of ResumptionCookie")]
-        public static async Task ResumeAsync(ResumptionCookie resumptionCookie, Microsoft.Bot.Builder.ITurnContext v4Context, CancellationToken token = default(CancellationToken))
+        public static async Task ResumeAsync(ResumptionCookie resumptionCookie, Microsoft.Bot.Builder.ITurnContext turnContext, CancellationToken token = default(CancellationToken))
         {
             var conversationRef = resumptionCookie.ToConversationReference();
-            await ResumeAsync(conversationRef, v4Context, token);
+            await ResumeAsync(conversationRef, turnContext, token);
         }
 
         /// <summary>
         /// Resume a conversation and post the data to the dialog waiting.
         /// </summary>
         /// <param name="conversationReference"> The resumption cookie.</param>
-        /// <param name="v4Context">The turn context containing the message sent to the bot.</param>
+        /// <param name="turnContext">The turn context containing the message sent to the bot.</param>
         /// <param name="token"> The cancellation token.</param>
         /// <returns> A task that represent the message to send back to the user after resumption of the conversation.</returns>
-        public static async Task ResumeAsync(ConversationReference conversationReference, Microsoft.Bot.Builder.ITurnContext v4Context, CancellationToken token = default(CancellationToken))
+        public static async Task ResumeAsync(ConversationReference conversationReference, Microsoft.Bot.Builder.ITurnContext turnContext, CancellationToken token = default(CancellationToken))
         {
-            using (var scope = DialogModule.BeginLifetimeScope(Container, v4Context))
+            using (var scope = DialogModule.BeginLifetimeScope(Container, turnContext))
             {
                 Func<IDialog<object>> MakeRoot = () => { throw new InvalidOperationException(); };
                 DialogModule_MakeRoot.Register(scope, MakeRoot);
 
-                await SendAsync(scope, v4Context, token);
+                await SendAsync(scope, turnContext, token);
             }
         }
 
@@ -175,10 +175,10 @@ namespace Microsoft.Bot.Builder.Classic.Dialogs
             });
         }
 
-        public static async Task SendAsync(ILifetimeScope scope, Microsoft.Bot.Builder.ITurnContext v4Context, CancellationToken token = default(CancellationToken))
+        public static async Task SendAsync(ILifetimeScope scope, Microsoft.Bot.Builder.ITurnContext turnContext, CancellationToken token = default(CancellationToken))
         {
             var task = scope.Resolve<IPostToBot>();
-            await task.PostAsync(v4Context.Activity.AsMessageActivity(), token);
+            await task.PostAsync(turnContext.Activity.AsMessageActivity(), token);
         }
     }
 }

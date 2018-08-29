@@ -147,6 +147,7 @@ namespace Microsoft.Bot.Builder.Classic.ConnectorEx
         {
             return new ConversationReference
             {
+                ActivityId = activity.Id,
                 Bot = new ChannelAccount { Id = activity.Recipient.Id, Name = activity.Recipient.Name },
                 ChannelId = activity.ChannelId,
                 User = new ChannelAccount { Id = activity.From.Id, Name = activity.From.Name },

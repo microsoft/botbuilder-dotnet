@@ -1,17 +1,17 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Schema;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mime;
+using System.Threading;
 using System.Threading.Tasks;
-using System.Linq;
+using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Schema;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.Bot.Builder.Core.Extensions.Tests
+namespace Microsoft.Bot.Builder.Tests
 {
     [TestClass]
     [TestCategory("Message")]
@@ -390,7 +390,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
         {
             TestAdapter adapter = new TestAdapter();                 
 
-            async Task ReplyWithimBackBack(ITurnContext ctx)
+            async Task ReplyWithimBackBack(ITurnContext ctx, CancellationToken cancellationToken)
             {
                 if (ctx.Activity.AsMessageActivity().Text == "test")
                 {
@@ -399,7 +399,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
                         new CardAction(type: "imBack", text: "red", title: "redTitle")
                     }, "Select color");
 
-                    await ctx.SendActivity((Activity)activity); 
+                    await ctx.SendActivityAsync((Activity)activity); 
                 }
             }
 
@@ -419,7 +419,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
             await new TestFlow(adapter, ReplyWithimBackBack)
                 .Send("test")
                 .AssertReply(ValidateIMBack, "IMBack Did not validate")
-                .StartTest();
+                .StartTestAsync();
         }
 
         [TestMethod]
@@ -427,7 +427,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
         {
             TestAdapter adapter = new TestAdapter();
 
-            async Task ReplyWithimBackBack(ITurnContext ctx)
+            async Task ReplyWithimBackBack(ITurnContext ctx, CancellationToken cancellationToken)
             {
                 if (ctx.Activity.AsMessageActivity().Text == "test")
                 {
@@ -436,7 +436,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
                         new CardAction(type: "imBack", text: "red", title: "redTitle")
                     }, "");
 
-                    await ctx.SendActivity((Activity) activity); 
+                    await ctx.SendActivityAsync((Activity) activity); 
                 }
             }
 
@@ -456,7 +456,7 @@ namespace Microsoft.Bot.Builder.Core.Extensions.Tests
             await new TestFlow(adapter, ReplyWithimBackBack)
                 .Send("test")
                 .AssertReply(ValidateIMBack, "IMBack Did not validate")
-                .StartTest();
+                .StartTestAsync();
         }
     }
 }

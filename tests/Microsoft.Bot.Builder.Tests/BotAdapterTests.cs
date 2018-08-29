@@ -1,6 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -12,20 +14,17 @@ namespace Microsoft.Bot.Builder.Tests
     public class BotAdapterTests
     {
         [TestMethod]        
-        public async Task AdapterSingleUse()
+        public void AdapterSingleUse()
         {
-            SimpleAdapter a = new SimpleAdapter();
+            var a = new SimpleAdapter();
             a.Use(new CallCountingMiddleware()); 
-
-            // Compiled. Test passed. 
         }
 
         [TestMethod]
-        public async Task AdapterUseChaining()
+        public void AdapterUseChaining()
         {
-            SimpleAdapter a = new SimpleAdapter();
+            var a = new SimpleAdapter();
             a.Use(new CallCountingMiddleware()).Use(new CallCountingMiddleware());
-            // Compiled. Test passed. 
         }
 
         [TestMethod]
@@ -36,14 +35,14 @@ namespace Microsoft.Bot.Builder.Tests
                 // no need to do anything. 
             }
 
-            SimpleAdapter a = new SimpleAdapter(ValidateResponses);
-            TurnContext c = new TurnContext(a, new Activity());
+            var a = new SimpleAdapter(ValidateResponses);
+            var c = new TurnContext(a, new Activity());
 
-            string activityId = Guid.NewGuid().ToString();
+            var activityId = Guid.NewGuid().ToString();
             var activity = TestMessage.Message();
             activity.Id = activityId;
 
-            var resourceResponse = await c.SendActivity(activity);
+            var resourceResponse = await c.SendActivityAsync(activity);
             Assert.IsTrue(resourceResponse.Id == activityId, "Incorrect response Id returned"); 
         }
     }
@@ -51,11 +50,10 @@ namespace Microsoft.Bot.Builder.Tests
     public class CallCountingMiddleware : IMiddleware
     {
         public int Calls { get; set; }
-        public async Task OnTurn(ITurnContext context, MiddlewareSet.NextDelegate next)
+        public async Task OnTurnAsync(ITurnContext turnContext, NextDelegate next, CancellationToken cancellationToken)
         {
             Calls++;
-            await next();
+            await next(cancellationToken);
         }
-
     }
 }

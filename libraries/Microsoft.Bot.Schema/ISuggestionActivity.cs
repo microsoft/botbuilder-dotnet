@@ -6,15 +6,16 @@ using System.Collections.Generic;
 namespace Microsoft.Bot.Schema
 {
     /// <summary>
-    /// SuggestionActivity (Type="suggestion")
+    /// Represents a private suggestion to the <see cref="Activity.Recipient"/> about another activity.
     /// </summary>
     /// <remarks>
-    /// A suggestion is a private message for the Recipient which can offer a suggestion activity for an activity by ReplyToId property
+    /// The activity's <see cref="Activity.ReplyToId"/> property identifies the activity being referenced.
+    /// The activity's <see cref="Activity.Recipient"/> property indicates which user the suggestion is for.
     /// </remarks>
     public interface ISuggestionActivity : IMessageActivity
     {
         /// <summary>
-        /// TextHighlight in the activity represented in the ReplyToId property
+        /// Indicates the sections of text in the referenced message to highlight.
         /// </summary>
         IList<TextHighlight> TextHighlights { get; set; }
     }

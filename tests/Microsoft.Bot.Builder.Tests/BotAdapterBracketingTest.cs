@@ -1,4 +1,8 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -12,7 +16,7 @@ namespace Microsoft.Bot.Builder.Tests
 
         /// <summary>
         /// Developer authored Middleware that looks like this:
-        /// public async Task ReceiveActivity(ITurnContext context, 
+        /// public async Task ReceiveActivityAsync(ITurnContext turnContext, 
         ///    MiddlewareSet.NextDelegate next)
         /// {
         ///    context.Reply("BEFORE");
@@ -30,10 +34,10 @@ namespace Microsoft.Bot.Builder.Tests
             TestAdapter adapter = new TestAdapter()
                 .Use(new BeforeAFterMiddlware());
 
-            async Task Echo(ITurnContext ctx)
+            async Task Echo(ITurnContext ctx, CancellationToken cancellationToken)
             {
                 string toEcho = "ECHO:" + ctx.Activity.AsMessageActivity().Text;
-                await ctx.SendActivity(ctx.Activity.CreateReply(toEcho)); 
+                await ctx.SendActivityAsync(ctx.Activity.CreateReply(toEcho), cancellationToken); 
             }
 
             await new TestFlow(adapter, Echo)
@@ -41,7 +45,7 @@ namespace Microsoft.Bot.Builder.Tests
                 .AssertReply("BEFORE")
                 .AssertReply("ECHO:test")
                 .AssertReply("AFTER")
-                .StartTest();
+                .StartTestAsync();
         }
 
         /// <summary>
@@ -58,10 +62,10 @@ namespace Microsoft.Bot.Builder.Tests
             TestAdapter adapter = new TestAdapter()
                 .Use(new CatchExceptionMiddleware());
 
-            async Task EchoWithException(ITurnContext ctx)
+            async Task EchoWithException(ITurnContext ctx, CancellationToken cancellationToken)
             {
                 string toEcho = "ECHO:" + ctx.Activity.AsMessageActivity().Text;
-                await ctx.SendActivity(ctx.Activity.CreateReply(toEcho));
+                await ctx.SendActivityAsync(ctx.Activity.CreateReply(toEcho));
                 throw new Exception(uniqueId);
             }
 
@@ -71,35 +75,35 @@ namespace Microsoft.Bot.Builder.Tests
                 .AssertReply("ECHO:test")
                 .AssertReply("CAUGHT:" + uniqueId)
                 .AssertReply("AFTER")
-                .StartTest();
+                .StartTestAsync();
         }
 
         public class CatchExceptionMiddleware : IMiddleware
         {
-            public async Task OnTurn(ITurnContext context, MiddlewareSet.NextDelegate next)
+            public async Task OnTurnAsync(ITurnContext turnContext, NextDelegate next, CancellationToken cancellationToken)
             {
-                await context.SendActivity(context.Activity.CreateReply("BEFORE"));
+                await turnContext.SendActivityAsync(turnContext.Activity.CreateReply("BEFORE"));
                 try
                 {
-                    await next();
+                    await next(cancellationToken);
                 }
                 catch (Exception ex)
                 {
-                    await context.SendActivity(context.Activity.CreateReply("CAUGHT:" + ex.Message));                    
+                    await turnContext.SendActivityAsync(turnContext.Activity.CreateReply("CAUGHT:" + ex.Message));                    
                 }
 
-                await context.SendActivity(context.Activity.CreateReply("AFTER"));
+                await turnContext.SendActivityAsync(turnContext.Activity.CreateReply("AFTER"));
             }
 
         }
 
         public class BeforeAFterMiddlware : IMiddleware
         {
-            public async Task OnTurn(ITurnContext context, MiddlewareSet.NextDelegate next)
+            public async Task OnTurnAsync(ITurnContext turnContext, NextDelegate next, CancellationToken cancellationToken)
             {
-                await context.SendActivity(context.Activity.CreateReply("BEFORE"));
-                await next();
-                await context.SendActivity(context.Activity.CreateReply("AFTER"));
+                await turnContext.SendActivityAsync(turnContext.Activity.CreateReply("BEFORE"));
+                await next(cancellationToken);
+                await turnContext.SendActivityAsync(turnContext.Activity.CreateReply("AFTER"));
             }
 
         }

@@ -1,0 +1,13 @@
+user=User
+bot=Bot
+
+User: hello
+Bot: step1
+Bot: step1.1
+User: hello
+Bot: step1.2
+User: hello
+Bot: step2
+Bot: step2.1
+User: hello
+Bot: step2.2

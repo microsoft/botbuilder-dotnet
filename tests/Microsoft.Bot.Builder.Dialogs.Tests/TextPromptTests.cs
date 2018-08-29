@@ -1,12 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Builder.Core.Extensions;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Collections.Generic;
+using System;
 using System.Threading.Tasks;
-using static Microsoft.Bot.Builder.Dialogs.PromptValidatorEx;
+using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Schema;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Bot.Builder.Dialogs.Tests
 {
@@ -14,100 +13,99 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
     public class TextPromptTests
     {
         [TestMethod]
-        public async Task TextPromptOptionsAsDictionary()
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void TextPromptWithEmptyIdShouldFail()
         {
-            TestAdapter adapter = new TestAdapter()
-                .Use(new ConversationState<Dictionary<string, object>>(new MemoryStorage()));
+            var emptyId = "";
+            var textPrompt = new TextPrompt(emptyId);
+        }
 
-            await new TestFlow(adapter, async (turnContext) =>
-            {
-                var state = ConversationState<Dictionary<string, object>>.Get(turnContext);
-                var prompt = new TextPrompt();
-
-                var dialogCompletion = await prompt.Continue(turnContext, state);
-                if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
-                {
-                    var options = new Dictionary<string, object>
-                    {
-                        { nameof(PromptOptions.PromptActivity), MessageFactory.Text("Enter some text.") }
-                    };
-
-                    await prompt.Begin(turnContext, state, options);
-                }
-                else if (dialogCompletion.IsCompleted)
-                {
-                    var textResult = (TextResult)dialogCompletion.Result;
-                    await turnContext.SendActivity($"Bot received the text '{textResult.Value}'.");
-                }
-            })
-            .Send("hello")
-            .AssertReply("Enter some text.")
-            .Send("some text")
-            .AssertReply("Bot received the text 'some text'.")
-            .StartTest();
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void TextPromptWithNullIdShouldFail()
+        {
+            var nullId = "";
+            nullId = null;
+            var textPrompt = new TextPrompt(nullId);
         }
 
         [TestMethod]
         public async Task TextPrompt()
         {
-            TestAdapter adapter = new TestAdapter()
-                .Use(new ConversationState<Dictionary<string, object>>(new MemoryStorage()));
+            var convoState = new ConversationState(new MemoryStorage());
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
-            await new TestFlow(adapter, async (turnContext) =>
+            var adapter = new TestAdapter()
+                .Use(convoState);
+
+            var dialogs = new DialogSet(dialogState);
+
+            var textPrompt = new TextPrompt("TextPrompt");
+            dialogs.Add(textPrompt);
+
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                var state = ConversationState<Dictionary<string, object>>.Get(turnContext);
-                var prompt = new TextPrompt();
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
 
-                var dialogCompletion = await prompt.Continue(turnContext, state);
-                if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
+                var results = await dc.ContinueAsync(cancellationToken);
+                if (!turnContext.Responded && !results.HasActive && !results.HasResult)
                 {
-                    await prompt.Begin(turnContext, state, new PromptOptions { PromptString = "Enter some text." });
+                    var options = new PromptOptions { Prompt = new Activity { Type = ActivityTypes.Message, Text = "Enter some text." } };
+                    await dc.PromptAsync("TextPrompt", options, cancellationToken);
                 }
-                else if (dialogCompletion.IsCompleted)
+                else if (!results.HasActive && results.HasResult)
                 {
-                    var textResult = (TextResult)dialogCompletion.Result;
-                    await turnContext.SendActivity($"Bot received the text '{textResult.Value}'.");
+                    var textResult = (string)results.Result;
+                    await turnContext.SendActivityAsync(MessageFactory.Text($"Bot received the text '{textResult}'."), cancellationToken);
                 }
             })
             .Send("hello")
             .AssertReply("Enter some text.")
             .Send("some text")
             .AssertReply("Bot received the text 'some text'.")
-            .StartTest();
+            .StartTestAsync();
         }
 
         [TestMethod]
         public async Task TextPromptValidator()
         {
-            TestAdapter adapter = new TestAdapter()
-                .Use(new ConversationState<Dictionary<string, object>>(new MemoryStorage()));
+            var convoState = new ConversationState(new MemoryStorage());
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
-            PromptValidator<TextResult> validator = async (ctx, result) =>
+            var adapter = new TestAdapter()
+                .Use(convoState);
+
+            var dialogs = new DialogSet(dialogState);
+
+            PromptValidator<string> validator = async (ctx, promptContext, cancellationToken) =>
             {
-                if (result.Value.Length <= 3)
-                    result.Status = PromptStatus.TooSmall;
-                await Task.CompletedTask;
-            };
-
-            await new TestFlow(adapter, async (turnContext) =>
-            {
-                var state = ConversationState<Dictionary<string, object>>.Get(turnContext);
-                var prompt = new TextPrompt(validator);
-
-                var dialogCompletion = await prompt.Continue(turnContext, state);
-                if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
+                var value = promptContext.Recognized.Value;
+                if (value.Length <= 3)
                 {
-                    await prompt.Begin(turnContext, state,
-                        new PromptOptions
-                        {
-                            PromptString = "Enter some text.",
-                            RetryPromptString = "Make sure the text is greater than three characters."
-                        });
+                    await ctx.SendActivityAsync(MessageFactory.Text("Make sure the text is greater than three characters."), cancellationToken);
                 }
-                else if (dialogCompletion.IsCompleted)
+                else
                 {
-                    var textResult = (TextResult)dialogCompletion.Result;
-                    await turnContext.SendActivity($"Bot received the text '{textResult.Value}'.");
+                    promptContext.End(value);
+                }
+            };
+            var textPrompt = new TextPrompt("TextPrompt", validator);
+            dialogs.Add(textPrompt);
+
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            {
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
+
+                var results = await dc.ContinueAsync(cancellationToken);
+                if (!turnContext.Responded && !results.HasActive && !results.HasResult)
+                {
+                    var options = new PromptOptions { Prompt = new Activity { Type = ActivityTypes.Message, Text = "Enter some text." } };
+                    await dc.PromptAsync("TextPrompt", options, cancellationToken);
+                }
+                else if (!results.HasActive && results.HasResult)
+                {
+                    var textResult = (string)results.Result;
+                    await turnContext.SendActivityAsync(MessageFactory.Text($"Bot received the text '{textResult}'."), cancellationToken);
                 }
             })
             .Send("hello")
@@ -116,7 +114,113 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .AssertReply("Make sure the text is greater than three characters.")
             .Send("hello")
             .AssertReply("Bot received the text 'hello'.")
-            .StartTest();
+            .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task TextPromptWithRetryPrompt()
+        {
+            var convoState = new ConversationState(new MemoryStorage());
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
+
+            var adapter = new TestAdapter()
+                .Use(convoState);
+
+            var dialogs = new DialogSet(dialogState);
+
+            PromptValidator<string> validator = async (ctx, promptContext, cancellationToken) =>
+            {
+                var value = promptContext.Recognized.Value;
+                if (value.Length >= 3)
+                {
+                    promptContext.End(value);
+                }
+                await Task.CompletedTask;
+            };
+            var textPrompt = new TextPrompt("TextPrompt", validator);
+            dialogs.Add(textPrompt);
+        
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            {
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
+
+                var results = await dc.ContinueAsync(cancellationToken);
+                if (!turnContext.Responded && !results.HasActive && !results.HasResult)
+                {
+                    var options = new PromptOptions {
+                        Prompt = new Activity { Type = ActivityTypes.Message, Text = "Enter some text." },
+                        RetryPrompt = new Activity { Type = ActivityTypes.Message, Text = "Make sure the text is greater than three characters." },
+                    };
+                    await dc.PromptAsync("TextPrompt", options, cancellationToken);
+                }
+                else if (!results.HasActive && results.HasResult)
+                {
+                    var textResult = (string)results.Result;
+                    await turnContext.SendActivityAsync(MessageFactory.Text($"Bot received the text '{textResult}'."), cancellationToken);
+                }
+            })
+            .Send("hello")
+            .AssertReply("Enter some text.")
+            .Send("hi")
+            .AssertReply("Make sure the text is greater than three characters.")
+            .Send("hello")
+            .AssertReply("Bot received the text 'hello'.")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task TextPromptValidatorWithMessageShouldNotSendRetryPrompt()
+        {
+            var convoState = new ConversationState(new MemoryStorage());
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
+
+            var adapter = new TestAdapter()
+                .Use(convoState);
+
+            var dialogs = new DialogSet(dialogState);
+
+            PromptValidator<string> validator = async (ctx, promptContext, cancellationToken) =>
+            {
+                var value = promptContext.Recognized.Value;
+                if (value.Length <= 3)
+                {
+                    await ctx.SendActivityAsync(MessageFactory.Text("The text should be greater than 3 chars."), cancellationToken);
+                }
+                else
+                {
+                    promptContext.End(value);
+                }
+            };
+            var textPrompt = new TextPrompt("TextPrompt", validator);
+            dialogs.Add(textPrompt);
+
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            {
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
+
+                var results = await dc.ContinueAsync(cancellationToken);
+                if (!turnContext.Responded && !results.HasActive && !results.HasResult)
+                {
+                    var options = new PromptOptions
+                    {
+                        Prompt = new Activity { Type = ActivityTypes.Message, Text = "Enter some text." },
+                        RetryPrompt = new Activity { Type = ActivityTypes.Message, Text = "Make sure the text is greater than three characters." },
+                    };
+                    await dc.PromptAsync("TextPrompt", options);
+                }
+                else if (!results.HasActive && results.HasResult)
+                {
+                    var textResult = (string)results.Result;
+                    await turnContext.SendActivityAsync(MessageFactory.Text($"Bot received the text '{textResult}'."), cancellationToken);
+                }
+            })
+            .Send("hello")
+            .AssertReply("Enter some text.")
+            .Send("hi")
+            .AssertReply("The text should be greater than 3 chars.")
+            .Send("hello")
+            .AssertReply("Bot received the text 'hello'.")
+            .StartTestAsync();
         }
     }
 }

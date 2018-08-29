@@ -1,0 +1,219 @@
+[
+  {
+    "conversation": {
+      "id": "4Jvm4mNita3ryFDcjRUzEEIP8S4="
+    },
+    "id": "1",
+    "timestamp": "2018-07-18T00:52:38.000Z",
+    "type": "conversationUpdate",
+    "channelId": "chatdown",
+    "membersAdded": [
+      {
+        "id": "OjGS4nkcV4YYDQImS16TRUBa+n0=",
+        "name": "Bot",
+        "role": "bot"
+      }
+    ],
+    "membersRemoved": []
+  },
+  {
+    "conversation": {
+      "id": "4Jvm4mNita3ryFDcjRUzEEIP8S4="
+    },
+    "id": "2",
+    "recipient": {
+      "id": "OjGS4nkcV4YYDQImS16TRUBa+n0=",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "from": {
+      "id": "n4ojiaIMoHUqqelQk1FVF+kOGUw=",
+      "name": "User",
+      "role": "user"
+    },
+    "text": "hello",
+    "timestamp": "2018-07-18T00:52:40.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "4Jvm4mNita3ryFDcjRUzEEIP8S4="
+    },
+    "id": "3",
+    "recipient": {
+      "id": "n4ojiaIMoHUqqelQk1FVF+kOGUw=",
+      "name": "User",
+      "role": "user"
+    },
+    "from": {
+      "id": "OjGS4nkcV4YYDQImS16TRUBa+n0=",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "text": "Please confirm.",
+    "timestamp": "2018-07-18T00:52:42.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "4Jvm4mNita3ryFDcjRUzEEIP8S4="
+    },
+    "id": "4",
+    "recipient": {
+      "id": "OjGS4nkcV4YYDQImS16TRUBa+n0=",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "from": {
+      "id": "n4ojiaIMoHUqqelQk1FVF+kOGUw=",
+      "name": "User",
+      "role": "user"
+    },
+    "text": "hello",
+    "timestamp": "2018-07-18T00:52:44.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "4Jvm4mNita3ryFDcjRUzEEIP8S4="
+    },
+    "id": "5",
+    "recipient": {
+      "id": "n4ojiaIMoHUqqelQk1FVF+kOGUw=",
+      "name": "User",
+      "role": "user"
+    },
+    "from": {
+      "id": "OjGS4nkcV4YYDQImS16TRUBa+n0=",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "text": "Please confirm, say 'yes' or 'no' or something like that.",
+    "timestamp": "2018-07-18T00:52:46.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "4Jvm4mNita3ryFDcjRUzEEIP8S4="
+    },
+    "id": "6",
+    "recipient": {
+      "id": "OjGS4nkcV4YYDQImS16TRUBa+n0=",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "from": {
+      "id": "n4ojiaIMoHUqqelQk1FVF+kOGUw=",
+      "name": "User",
+      "role": "user"
+    },
+    "text": "no",
+    "timestamp": "2018-07-18T00:52:48.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "4Jvm4mNita3ryFDcjRUzEEIP8S4="
+    },
+    "id": "7",
+    "recipient": {
+      "id": "n4ojiaIMoHUqqelQk1FVF+kOGUw=",
+      "name": "User",
+      "role": "user"
+    },
+    "from": {
+      "id": "OjGS4nkcV4YYDQImS16TRUBa+n0=",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "text": "Not confirmed.",
+    "timestamp": "2018-07-18T00:52:50.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "4Jvm4mNita3ryFDcjRUzEEIP8S4="
+    },
+    "id": "8",
+    "recipient": {
+      "id": "OjGS4nkcV4YYDQImS16TRUBa+n0=",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "from": {
+      "id": "n4ojiaIMoHUqqelQk1FVF+kOGUw=",
+      "name": "User",
+      "role": "user"
+    },
+    "text": "hello",
+    "timestamp": "2018-07-18T00:52:52.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "4Jvm4mNita3ryFDcjRUzEEIP8S4="
+    },
+    "id": "9",
+    "recipient": {
+      "id": "n4ojiaIMoHUqqelQk1FVF+kOGUw=",
+      "name": "User",
+      "role": "user"
+    },
+    "from": {
+      "id": "OjGS4nkcV4YYDQImS16TRUBa+n0=",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "text": "Please confirm.",
+    "timestamp": "2018-07-18T00:52:54.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "4Jvm4mNita3ryFDcjRUzEEIP8S4="
+    },
+    "id": "10",
+    "recipient": {
+      "id": "OjGS4nkcV4YYDQImS16TRUBa+n0=",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "from": {
+      "id": "n4ojiaIMoHUqqelQk1FVF+kOGUw=",
+      "name": "User",
+      "role": "user"
+    },
+    "text": "yes",
+    "timestamp": "2018-07-18T00:52:56.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "4Jvm4mNita3ryFDcjRUzEEIP8S4="
+    },
+    "id": "11",
+    "recipient": {
+      "id": "n4ojiaIMoHUqqelQk1FVF+kOGUw=",
+      "name": "User",
+      "role": "user"
+    },
+    "from": {
+      "id": "OjGS4nkcV4YYDQImS16TRUBa+n0=",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "text": "Confirmed.",
+    "timestamp": "2018-07-18T00:52:58.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  }
+]

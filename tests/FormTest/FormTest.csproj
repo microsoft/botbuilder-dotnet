@@ -91,6 +91,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AnnotatedSandwich.cs" />
+    <Compile Include="ConsoleAdapter.cs" />
     <Compile Include="pizza.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -8,7 +8,6 @@ using System.Net.Http;
 using System.Net.Http.Formatting;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Rest.Serialization;
 using Newtonsoft.Json;
 
@@ -16,7 +15,8 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Handlers
 {
     public abstract class BotMessageHandlerBase : HttpMessageHandler
     {
-        public static readonly MediaTypeFormatter[] BotMessageMediaTypeFormatters = new[] {
+        public static readonly MediaTypeFormatter[] BotMessageMediaTypeFormatters = new[]
+        {
             new JsonMediaTypeFormatter
             {
                 SerializerSettings =
@@ -27,9 +27,14 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Handlers
                     DateTimeZoneHandling = DateTimeZoneHandling.Utc,
                     ReferenceLoopHandling = ReferenceLoopHandling.Serialize,
                     ContractResolver = new ReadOnlyJsonContractResolver(),
-                    Converters = new List<JsonConverter> { new Iso8601TimeSpanConverter() }
-                }
-            }
+                    Converters = new List<JsonConverter> { new Iso8601TimeSpanConverter() },
+                },
+                SupportedMediaTypes =
+                {
+                    new System.Net.Http.Headers.MediaTypeHeaderValue("application/json") { CharSet = "utf-8" },
+                    new System.Net.Http.Headers.MediaTypeHeaderValue("text/json") { CharSet = "utf-8" },
+                },
+            },
         };
 
         private readonly BotFrameworkAdapter _botFrameworkAdapter;
@@ -62,10 +67,11 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Handlers
 
             try
             {
+#pragma warning disable UseConfigureAwait // Use ConfigureAwait
                 var invokeResponse = await ProcessMessageRequestAsync(
                     request,
                     _botFrameworkAdapter,
-                    context =>
+                    (context, ct) =>
                     {
                         cancellationToken.ThrowIfCancellationRequested();
 
@@ -75,7 +81,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Handlers
                         {
                             bot = (IBot)request.GetDependencyScope()?.GetService(typeof(IBot));
                         }
-                        catch(Exception exception)
+                        catch (Exception exception)
                         {
                             throw new Exception($"An exception occurred attempting to resolve an {typeof(IBot).Name} service via the dependency resolver. Please check the inner exception for more details.", exception);
                         }
@@ -85,9 +91,10 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Handlers
                             throw new InvalidOperationException($"Did not find an {typeof(IBot).Name} service via the dependency resolver. Please make sure you have registered your bot with your dependency injection container.");
                         }
 
-                        return bot.OnTurn(context);
+                        return bot.OnTurnAsync(context);
                     },
                     cancellationToken);
+#pragma warning restore UseConfigureAwait // Use ConfigureAwait
 
                 if (invokeResponse == null)
                 {
@@ -114,6 +121,6 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Handlers
             }
         }
 
-        protected abstract Task<InvokeResponse> ProcessMessageRequestAsync(HttpRequestMessage request, BotFrameworkAdapter botFrameworkAdapter, Func<ITurnContext, Task> botCallbackHandler, CancellationToken cancellationToken);
+        protected abstract Task<InvokeResponse> ProcessMessageRequestAsync(HttpRequestMessage request, BotFrameworkAdapter botFrameworkAdapter, BotCallbackHandler botCallbackHandler, CancellationToken cancellationToken);
     }
 }

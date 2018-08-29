@@ -1,0 +1,9 @@
+user=User
+bot=Bot
+
+User: hello
+Bot: Enter some text.
+User: hi
+Bot: Make sure the text is greater than three characters.
+User: hello
+Bot: Bot received the text 'hello'.

@@ -1,0 +1,7 @@
+user=User
+bot=Bot
+
+User: hello
+Bot: please add an attachment.
+User: [Attachment=ContentAttachment.json]
+Bot: some content

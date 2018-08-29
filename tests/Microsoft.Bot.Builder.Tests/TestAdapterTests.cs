@@ -3,6 +3,7 @@
 
 using System;
 using System.Security;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Schema;
@@ -14,29 +15,22 @@ namespace Microsoft.Bot.Builder.Tests
     [TestCategory("Adapter")]
     public class TestAdapterTests
     {
-        public async Task MyBotLogic(ITurnContext context)
+        public async Task MyBotLogic(ITurnContext turnContext, CancellationToken cancellationToken)
         {
-            switch (context.Activity.AsMessageActivity().Text)
+            switch (turnContext.Activity.AsMessageActivity().Text)
             {
                 case "count":
-                    await context.SendActivity(context.Activity.CreateReply("one"));
-                    await context.SendActivity(context.Activity.CreateReply("two"));
-                    await context.SendActivity(context.Activity.CreateReply("three"));
+                    await turnContext.SendActivityAsync(turnContext.Activity.CreateReply("one"));
+                    await turnContext.SendActivityAsync(turnContext.Activity.CreateReply("two"));
+                    await turnContext.SendActivityAsync(turnContext.Activity.CreateReply("three"));
                     break;
                 case "ignore":
                     break;
                 default:
-                    await context.SendActivity( 
-                        context.Activity.CreateReply($"echo:{context.Activity.AsMessageActivity().Text}"));
+                    await turnContext.SendActivityAsync(
+                        turnContext.Activity.CreateReply($"echo:{turnContext.Activity.AsMessageActivity().Text}"));
                     break;
             }
-        }
-        [TestMethod]
-        public async Task SingleParameterConstructor()
-        {
-            var adapter = new TestAdapter();
-
-            // If this compiles, the test has passed. :) 
         }
 
         [TestMethod]
@@ -47,12 +41,12 @@ namespace Microsoft.Bot.Builder.Tests
 
             try
             {
-                await new TestFlow(adapter, async (context) =>
+                await new TestFlow(adapter, async (context, cancellationToken) =>
                 {
-                    await context.SendActivity(context.Activity.CreateReply("one"));
+                    await context.SendActivityAsync(context.Activity.CreateReply("one"));
                 })
                     .Test("foo", (activity) => throw new Exception(uniqueExceptionId))
-                    .StartTest();
+                    .StartTestAsync();
 
                 Assert.Fail("An Exception should have been thrown");
             }
@@ -70,9 +64,9 @@ namespace Microsoft.Bot.Builder.Tests
 
             try
             {
-                await new TestFlow(adapter, async (context) => { throw new Exception(uniqueExceptionId); })
+                await new TestFlow(adapter, (context, cancellationToken) => { throw new Exception(uniqueExceptionId); })
                     .Test("test", activity => Assert.IsNull(null), "uh oh!")
-                    .StartTest();
+                    .StartTestAsync();
 
                 Assert.Fail("An Exception should have been thrown");
             }
@@ -90,14 +84,14 @@ namespace Microsoft.Bot.Builder.Tests
 
             try
             {
-                await new TestFlow(adapter, async (context) => 
+                await new TestFlow(adapter, async (context, cancellationToken) => 
                 {
-                    await context.SendActivity(context.Activity.CreateReply("one"));
+                    await context.SendActivityAsync(context.Activity.CreateReply("one"));
                 })
                     .Send("foo")
                     .AssertReply(
                         (activity) => throw new Exception(uniqueExceptionId), "should throw")
-                    .StartTest();
+                    .StartTestAsync();
 
                 Assert.Fail("An Exception should have been thrown");
             }
@@ -113,7 +107,7 @@ namespace Microsoft.Bot.Builder.Tests
             var adapter = new TestAdapter();
             await new TestFlow(adapter, MyBotLogic)
                 .Test("foo", "echo:foo", "say with string works")
-                .StartTest();
+                .StartTestAsync();
         }
 
         [TestMethod]
@@ -124,7 +118,7 @@ namespace Microsoft.Bot.Builder.Tests
                 .Test("foo", "echo:foo", "say with string works")
                 .Test("foo", new Activity(ActivityTypes.Message, text: "echo:foo"), "say with activity works")
                 .Test("foo", (activity) => Assert.AreEqual("echo:foo", activity.AsMessageActivity().Text), "say with validator works")
-                .StartTest();
+                .StartTestAsync();
         }
 
 
@@ -136,7 +130,7 @@ namespace Microsoft.Bot.Builder.Tests
                 .Send("foo").AssertReply("echo:foo", "send/reply with string works")
                 .Send("foo").AssertReply(new Activity(ActivityTypes.Message, text: "echo:foo"), "send/reply with activity works")
                 .Send("foo").AssertReply((activity) => Assert.AreEqual("echo:foo", activity.AsMessageActivity().Text), "send/reply with validator works")
-                .StartTest();
+                .StartTestAsync();
         }
 
         [TestMethod]
@@ -145,7 +139,7 @@ namespace Microsoft.Bot.Builder.Tests
             var adapter = new TestAdapter();
             await new TestFlow(adapter, MyBotLogic)
                 .Send("foo").AssertReplyOneOf(new string[] { "echo:bar", "echo:foo", "echo:blat" }, "say with string works")
-                .StartTest();
+                .StartTestAsync();
         }
 
 
@@ -161,7 +155,7 @@ namespace Microsoft.Bot.Builder.Tests
                     .AssertReply("one")
                     .AssertReply("two")
                     .AssertReply("three")
-                .StartTest();
+                .StartTestAsync();
         }
 
         [DataTestMethod]
@@ -172,7 +166,7 @@ namespace Microsoft.Bot.Builder.Tests
         {
             var adapter = new TestAdapter();
 
-            TestFlow testFlow = new TestFlow(adapter, (ctx) =>
+            TestFlow testFlow = new TestFlow(adapter, (ctx, cancellationToken) =>
                 {
                     Exception innerException = (Exception)Activator.CreateInstance(exceptionType);
                     var taskSource = new TaskCompletionSource<bool>();
@@ -180,7 +174,7 @@ namespace Microsoft.Bot.Builder.Tests
                     return taskSource.Task;
                 })
                 .Send(new Activity());
-            Task task = testFlow.StartTest()
+            await testFlow.StartTestAsync()
                 .ContinueWith(action =>
                 {
                     Assert.IsInstanceOfType(action.Exception.InnerException, exceptionType);

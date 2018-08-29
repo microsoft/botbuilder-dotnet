@@ -1,6 +1,10 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -18,13 +22,14 @@ namespace Microsoft.Bot.Builder.Tests
         public SimpleAdapter(Action<Activity> callOnUpdate) { _callOnUpdate = callOnUpdate; }
         public SimpleAdapter(Action<ConversationReference> callOnDelete) { _callOnDelete = callOnDelete; }
 
-        public async override Task DeleteActivity(ITurnContext context, ConversationReference reference)
+        public override Task DeleteActivityAsync(ITurnContext turnContext, ConversationReference reference, CancellationToken cancellationToken)
         {
             Assert.IsNotNull(reference, "SimpleAdapter.deleteActivity: missing reference");
             _callOnDelete?.Invoke(reference);
+            return Task.CompletedTask;
         }
 
-        public async override Task<ResourceResponse[]> SendActivities(ITurnContext context, Activity[] activities)
+        public override Task<ResourceResponse[]> SendActivitiesAsync(ITurnContext turnContext, Activity[] activities, CancellationToken cancellationToken)
         {
             Assert.IsNotNull(activities, "SimpleAdapter.deleteActivity: missing reference");
             Assert.IsTrue(activities.Count() > 0, "SimpleAdapter.sendActivities: empty activities array.");
@@ -36,21 +41,21 @@ namespace Microsoft.Bot.Builder.Tests
                 responses.Add(new ResourceResponse(activity.Id));
             }
 
-            return responses.ToArray();
+            return Task.FromResult(responses.ToArray());
         }
 
-        public async override Task<ResourceResponse> UpdateActivity(ITurnContext context, Activity activity)
+        public override Task<ResourceResponse> UpdateActivityAsync(ITurnContext turnContext, Activity activity, CancellationToken cancellationToken)
         {
             Assert.IsNotNull(activity, "SimpleAdapter.updateActivity: missing activity");
             _callOnUpdate?.Invoke(activity);
-            return new ResourceResponse(activity.Id); // echo back the Id
+            return Task.FromResult(new ResourceResponse(activity.Id)); // echo back the Id
         }
 
-        public async Task ProcessRequest(Activity activty, Func<ITurnContext, Task> callback)
+        public async Task ProcessRequest(Activity activty, BotCallbackHandler callback, CancellationToken cancellationToken)
         {
-            using (TurnContext ctx = new TurnContext(this, activty))
+            using (var ctx = new TurnContext(this, activty))
             {
-                await this.RunPipeline(ctx, callback);
+                await this.RunPipelineAsync(ctx, callback, cancellationToken);
             }
         }
     }

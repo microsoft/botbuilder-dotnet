@@ -10,7 +10,7 @@ namespace Microsoft.Bot.Schema
     {
         partial void CustomInit()
         {
-            Type = "Mention";
+            Type = "mention";
         }
     }
 }

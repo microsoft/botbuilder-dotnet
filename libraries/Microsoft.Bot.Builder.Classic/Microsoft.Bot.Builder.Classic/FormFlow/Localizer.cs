@@ -296,7 +296,7 @@ namespace Microsoft.Bot.Builder.Classic.FormFlow.Advanced
                 }
             }
 
-            // Write out TEMPLATE;usage;field* -> pattern*
+            // WriteAsync out TEMPLATE;usage;field* -> pattern*
             foreach (var entry in byPattern)
             {
                 var elements = entry.Key.SplitList().ToArray();

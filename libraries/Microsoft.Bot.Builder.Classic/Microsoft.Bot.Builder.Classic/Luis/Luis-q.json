@@ -160,14 +160,14 @@
           "type": "array",
           "description": "The entities found in the query text.",
           "items": {
-            "$ref": "#/definitions/EntityRecommendation"
+            "$ref": "#/definitions/EntityModel"
           }
         },
         "compositeEntities": {
           "type": "array",
           "description": "The composite entities found in the utterance.",
           "items": {
-            "$ref": "#/definitions/CompositeEntity"
+            "$ref": "#/definitions/CompositeEntityModel"
           }
         },
         "dialog": {
@@ -232,12 +232,12 @@
           "type": "array",
           "description": "Value of extracted entities for this parameter.",
           "items": {
-            "$ref": "#/definitions/EntityRecommendation"
+            "$ref": "#/definitions/EntityModel"
           }
         }
       }
     },
-    "EntityRecommendation": {
+    "EntityModel": {
       "description": "Luis entity recommendation. Look at https://www.luis.ai/Help for more information.",
       "type": "object",
       "properties": {
@@ -277,7 +277,7 @@
         "type"
       ]
     },
-    "CompositeEntity": {
+    "CompositeEntityModel": {
       "description": "Luis composite entity. Look at https://www.luis.ai/Help for more information.",
       "type": "object",
       "properties": {

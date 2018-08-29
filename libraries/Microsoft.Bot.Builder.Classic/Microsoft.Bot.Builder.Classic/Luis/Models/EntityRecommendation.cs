@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for
 // license information.
 // 
@@ -20,17 +20,17 @@ namespace Microsoft.Bot.Builder.Classic.Luis.Models
     /// Luis entity recommendation. Look at https://www.luis.ai/Help for more
     /// information.
     /// </summary>
-    public partial class EntityRecommendation
+    public partial class EntityModel
     {
         /// <summary>
-        /// Initializes a new instance of the EntityRecommendation class.
+        /// Initializes a new instance of the EntityModel class.
         /// </summary>
-        public EntityRecommendation() { }
+        public EntityModel() { }
 
         /// <summary>
-        /// Initializes a new instance of the EntityRecommendation class.
+        /// Initializes a new instance of the EntityModel class.
         /// </summary>
-        public EntityRecommendation(string type, string role = default(string), string entity = default(string), int? startIndex = default(int?), int? endIndex = default(int?), double? score = default(double?), IDictionary<string, object> resolution = default(IDictionary<string, object>))
+        public EntityModel(string type, string role = default(string), string entity = default(string), int? startIndex = default(int?), int? endIndex = default(int?), double? score = default(double?), IDictionary<string, object> resolution = default(IDictionary<string, object>))
         {
             Role = role;
             Entity = entity;

@@ -1,9 +1,10 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.Web.Http;
 using FluentAssertions;
 using Microsoft.Bot.Builder.Integration.AspNet.WebApi.Handlers;
-using Microsoft.Bot.Connector.Authentication;
-using Moq;
 using Xunit;
 
 namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Tests
@@ -53,26 +54,6 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Tests
 
                 var botMessageHandlerRoute = routes[BotMessageHandler.RouteName];
                 botMessageHandlerRoute.Handler.Should().BeOfType<BotMessageHandler>();
-            }
-
-            [Fact]
-            public void EnableProactiveShouldMapMultipleHandlers()
-            {
-                var httpConfiguration = new HttpConfiguration();
-
-                httpConfiguration.MapBotFramework(config =>
-                {
-                    config.EnableProactiveMessages();
-                });
-
-                var routes = httpConfiguration.Routes;
-                routes.Count.Should().Be(2);
-
-                var botMessageHandlerRoute = routes[BotMessageHandler.RouteName];
-                botMessageHandlerRoute.Handler.Should().BeOfType<BotMessageHandler>();
-
-                var botProactiveMessageHandlerRoute = routes[BotProactiveMessageHandler.RouteName];
-                botProactiveMessageHandlerRoute.Handler.Should().BeOfType<BotProactiveMessageHandler>();
             }
         }
     }

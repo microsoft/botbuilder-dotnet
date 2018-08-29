@@ -1,8 +1,10 @@
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Moq;
@@ -66,7 +68,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
 
         public sealed class ServiceRegistrationTestBot : IBot
         {
-            public Task OnTurn(ITurnContext turnContext)
+            public Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken)
             {
                 throw new NotImplementedException("This test bot has no implementation and is intended only for testing service registration.");
             }

@@ -225,14 +225,18 @@ namespace Microsoft.Bot.Builder.Classic.Luis
     [Serializable]
     public sealed class LuisService : ILuisService
     {
+        private static readonly HttpClient DefaultHttpClient = new HttpClient() { Timeout = TimeSpan.FromSeconds(20) };
+        private HttpClient _httpClient;
         private readonly ILuisModel model;
 
         /// <summary>
         /// Construct the LUIS service using the model information.
         /// </summary>
         /// <param name="model">The LUIS model information.</param>
-        public LuisService(ILuisModel model)
+        /// <param name="customHttpClient">an optional custom http client</param>
+        public LuisService(ILuisModel model, HttpClient customHttpClient = null)
         {
+            _httpClient = customHttpClient ?? DefaultHttpClient;
             SetField.NotNull(out this.model, nameof(model), model);
         }
 
@@ -274,8 +278,7 @@ namespace Microsoft.Bot.Builder.Classic.Luis
         async Task<LuisResult> ILuisService.QueryAsync(Uri uri, CancellationToken token)
         {
             string json;
-            using (var client = new HttpClient())
-            using (var response = await client.GetAsync(uri, HttpCompletionOption.ResponseContentRead, token))
+            using (var response = await _httpClient.GetAsync(uri, HttpCompletionOption.ResponseContentRead, token))
             {
                 response.EnsureSuccessStatusCode();
                 json = await response.Content.ReadAsStringAsync();

@@ -36,8 +36,8 @@ namespace Microsoft.Bot.Builder.Classic.Tests
         public const string ModelTwo = "modelTwo";
         public const string KeyTwo = "keyTwo";
 
-        public static readonly EntityRecommendation EntityA = new EntityRecommendation(type: EntityTypeA, entity: EntityValueA);
-        public static readonly EntityRecommendation EntityB = new EntityRecommendation(type: EntityTypeB, entity: EntityValueB);
+        public static readonly EntityModel EntityA = new EntityModel(type: EntityTypeA, entity: EntityValueA);
+        public static readonly EntityModel EntityB = new EntityModel(type: EntityTypeB, entity: EntityValueB);
 
         public static LuisResult Result(double? scoreAll, double? scoreOne, double? scoreTwo, double? scoreNone)
         {
@@ -84,18 +84,18 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                 [Entity(EntityTypeA)] IEnumerable<string> entityA_as_IEnumerable_String,
                 [Entity(EntityTypeA)] IReadOnlyCollection<string> entityA_as_IReadOnlyCollection_String,
                 [Entity(EntityTypeA)] IReadOnlyList<string> entityA_as_IReadOnlyList_String,
-                [Entity(EntityTypeA)] EntityRecommendation entityA_as_EntityRecommendation,
-                [Entity(EntityTypeA)] IEnumerable<EntityRecommendation> entityA_as_IEnumerable_EntityRecommendation,
-                [Entity(EntityTypeA)] IReadOnlyCollection<EntityRecommendation> entityA_as_IReadOnlyCollection_EntityRecommendation,
-                [Entity(EntityTypeA)] IReadOnlyList<EntityRecommendation> entityA_as_IReadOnlyList_EntityRecommendation,
+                [Entity(EntityTypeA)] EntityModel entityA_as_EntityModel,
+                [Entity(EntityTypeA)] IEnumerable<EntityModel> entityA_as_IEnumerable_EntityModel,
+                [Entity(EntityTypeA)] IReadOnlyCollection<EntityModel> entityA_as_IReadOnlyCollection_EntityModel,
+                [Entity(EntityTypeA)] IReadOnlyList<EntityModel> entityA_as_IReadOnlyList_EntityModel,
                 [Entity(EntityTypeB)] string entityB_as_String,
                 [Entity(EntityTypeB)] IEnumerable<string> entityB_as_IEnumerable_String,
                 [Entity(EntityTypeB)] IReadOnlyCollection<string> entityB_as_IReadOnlyCollection_String,
                 [Entity(EntityTypeB)] IReadOnlyList<string> entityB_as_IReadOnlyList_String,
-                [Entity(EntityTypeB)] EntityRecommendation entityB_as_EntityRecommendation,
-                [Entity(EntityTypeB)] IEnumerable<EntityRecommendation> entityB_as_IEnumerable_EntityRecommendation,
-                [Entity(EntityTypeB)] IReadOnlyCollection<EntityRecommendation> entityB_as_IReadOnlyCollection_EntityRecommendation,
-                [Entity(EntityTypeB)] IReadOnlyList<EntityRecommendation> entityB_as_IReadOnlyList_EntityRecommendation
+                [Entity(EntityTypeB)] EntityModel entityB_as_EntityModel,
+                [Entity(EntityTypeB)] IEnumerable<EntityModel> entityB_as_IEnumerable_EntityModel,
+                [Entity(EntityTypeB)] IReadOnlyCollection<EntityModel> entityB_as_IReadOnlyCollection_EntityModel,
+                [Entity(EntityTypeB)] IReadOnlyList<EntityModel> entityB_as_IReadOnlyList_EntityModel
                 );
 
             [LuisIntent(IntentOne)]
@@ -361,18 +361,18 @@ namespace Microsoft.Bot.Builder.Classic.Tests
                     new[] { EntityValueA },
                     new[] { EntityValueA },
                     new[] { EntityValueA },
-                    It.Is<EntityRecommendation>(e => e.Entity == EntityValueA),
-                    It.Is<IEnumerable<EntityRecommendation>>(e => e.Single().Entity == EntityValueA),
-                    It.Is<IReadOnlyCollection<EntityRecommendation>>(e => e.Single().Entity == EntityValueA),
-                    It.Is<IReadOnlyList<EntityRecommendation>>(e => e.Single().Entity == EntityValueA),
+                    It.Is<EntityModel>(e => e.Entity == EntityValueA),
+                    It.Is<IEnumerable<EntityModel>>(e => e.Single().Entity == EntityValueA),
+                    It.Is<IReadOnlyCollection<EntityModel>>(e => e.Single().Entity == EntityValueA),
+                    It.Is<IReadOnlyList<EntityModel>>(e => e.Single().Entity == EntityValueA),
                     EntityValueB,
                     new[] { EntityValueB },
                     new[] { EntityValueB },
                     new[] { EntityValueB },
-                    It.Is<EntityRecommendation>(e => e.Entity == EntityValueB),
-                    It.Is<IEnumerable<EntityRecommendation>>(e => e.Single().Entity == EntityValueB),
-                    It.Is<IReadOnlyCollection<EntityRecommendation>>(e => e.Single().Entity == EntityValueB),
-                    It.Is<IReadOnlyList<EntityRecommendation>>(e => e.Single().Entity == EntityValueB)
+                    It.Is<EntityModel>(e => e.Entity == EntityValueB),
+                    It.Is<IEnumerable<EntityModel>>(e => e.Single().Entity == EntityValueB),
+                    It.Is<IReadOnlyCollection<EntityModel>>(e => e.Single().Entity == EntityValueB),
+                    It.Is<IReadOnlyList<EntityModel>>(e => e.Single().Entity == EntityValueB)
                 ))
                 .Returns(Task.CompletedTask);
 

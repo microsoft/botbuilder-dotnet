@@ -1,0 +1,19 @@
+user=user
+bot=bot
+
+user: Hello!
+bot: favorite color? (1) red, (2) green, or (3) blue
+user: red
+bot: Bot received the choice 'red'.
+
+user: Hello!
+bot: favorite color? (1) red, (2) green, or (3) blue
+user: 3
+bot: Bot received the choice 'blue'.
+
+user: Hello!
+bot: favorite color? (1) red, (2) green, or (3) blue
+user: cat
+bot: I didn't catch that. Select a color from the list. (1) red, (2) green, or (3) blue
+user: green
+bot: Bot received the choice 'green'.

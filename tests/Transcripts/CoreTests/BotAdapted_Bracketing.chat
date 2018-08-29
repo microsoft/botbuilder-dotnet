@@ -1,0 +1,15 @@
+bot=bot
+user=user
+
+bot:before message
+bot:conversationUpdate
+bot:after message
+user:use middleware
+bot:before message
+bot:using middleware
+bot:after message
+user:catch exception
+bot:before message
+bot:generating exception
+bot:Caught: exception to catch
+

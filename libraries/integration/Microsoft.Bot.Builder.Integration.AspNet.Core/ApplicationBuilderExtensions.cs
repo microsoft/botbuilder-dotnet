@@ -1,12 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Integration.AspNet.Core.Handlers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using System;
 
 namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 {
@@ -35,20 +34,11 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 
             var paths = options.Paths;
 
-            if (options.EnableProactiveMessages)
-            {
-                applicationBuilder.Map(
-                    paths.BasePath + paths.ProactiveMessagesPath,
-                    botProactiveAppBuilder => botProactiveAppBuilder.Run(new BotProactiveMessageHandler().HandleAsync));
-            }
-
             applicationBuilder.Map(
-                paths.BasePath + paths.MessagesPath, 
+                paths.BasePath + paths.MessagesPath,
                 botActivitiesAppBuilder => botActivitiesAppBuilder.Run(new BotMessageHandler().HandleAsync));
 
             return applicationBuilder;
-
-            
         }
     }
 }

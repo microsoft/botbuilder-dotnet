@@ -2,9 +2,14 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Reflection;
+using System.Runtime.Versioning;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Rest;
 
@@ -27,54 +32,82 @@ namespace Microsoft.Bot.Connector
         {
         }
 
-        private HttpClient _originalHttpClient;
-        protected static Lazy<HttpClient> g_httpClient = new Lazy<HttpClient>(() =>
+        /// <summary>
+        /// Create a new instance of the ConnectorClient class
+        /// </summary>
+        /// <param name="baseUri">Base URI for the Connector service</param>
+        /// <param name="credentials">Credentials for the Connector service</param>
+        /// <param name="addJwtTokenRefresher">(DEPRECATED)</param>
+        /// <param name="handlers">Optional. The delegating handlers to add to the http client pipeline.</param>
+        public ConnectorClient(Uri baseUri, MicrosoftAppCredentials credentials, bool addJwtTokenRefresher = true, params DelegatingHandler[] handlers)
+            : this(baseUri, handlers)
         {
-            var httpClient = new HttpClient();
-            // The Schema version is 3.1, put into the Microsoft-BotFramework header
-            // https://github.com/Microsoft/botbuilder-dotnet/issues/471
-            httpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("Microsoft-BotFramework", "3.1"));
+            this.Credentials = credentials;
+        }
 
-            // The client SDK version is coupled to the version number of the package. 
-            httpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue($"(BotBuilder .Net/{typeof(ConnectorClient).GetTypeInfo().Assembly.GetName().Version})"));
-            httpClient.DefaultRequestHeaders.ExpectContinue = false;
-            return httpClient;
-        });
-
-        public bool UseSharedHttpClient
+        /// <summary>
+        /// Create a new instances of the ConnectorClient.
+        /// </summary>
+        /// <param name="baseUri">Base URI for the Connector service</param>
+        /// <param name="credentials">Credentials for the Connector service</param>
+        /// <param name="httpClientHandler">The httpClientHandler used by http client</param>
+        /// <param name="addJwtTokenRefresher">(DEPRECATED)</param>
+        /// <param name="handlers">Optional. The delegating handlers to add to the http client pipeline.</param>
+        public ConnectorClient(Uri baseUri, MicrosoftAppCredentials credentials, HttpClientHandler httpClientHandler, bool addJwtTokenRefresher = true, params DelegatingHandler[] handlers)
+            : this(baseUri, httpClientHandler, handlers)
         {
-            get { return this._originalHttpClient != null; }
-            set
-            {
-                if (value == false)
-                {
-                    this.HttpClient = this._originalHttpClient;
-                }
-                else
-                {
-                    if (this._originalHttpClient == null)
-                    {
-                        this._originalHttpClient = this.HttpClient;
-                        this.HttpClient = g_httpClient.Value;
-                    }
-                }
-            }
+            this.Credentials = credentials;
         }
 
         partial void CustomInitialize()
         {
-            this.UseSharedHttpClient = true;
+            // The Schema version is 3.1, put into the Microsoft-BotFramework header
+            // https://github.com/Microsoft/botbuilder-dotnet/issues/471
+            this.HttpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("Microsoft-BotFramework", "3.1"));
+
+            // The Client SDK Version 
+            //  https://github.com/Microsoft/botbuilder-dotnet/blob/d342cd66d159a023ac435aec0fdf791f93118f5f/doc/UserAgents.md
+            this.HttpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("BotBuilder", GetClientVersion(this)));
+
+            // Additional Info. 
+            // https://github.com/Microsoft/botbuilder-dotnet/blob/d342cd66d159a023ac435aec0fdf791f93118f5f/doc/UserAgents.md
+            var userAgent = $"({GetASPNetVersion()}; {GetOsVersion()}; {GetArchitecture()})";
+            this.HttpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(userAgent));
+
+            this.HttpClient.DefaultRequestHeaders.ExpectContinue = false;
         }
 
-        protected override void Dispose(bool disposing)
+        /// <summary>Gets a description of the operating system of the Azure Bot Service.</summary>
+        /// <returns>A description of the operating system of the Azure Bot Service.</returns>
+        public static string GetOsVersion()
         {
-            // replace global with original so dispose doesn't dispose the global one
-            if (this._originalHttpClient != null)
-            {
-                this.HttpClient = this._originalHttpClient;
-                this._originalHttpClient = null;
-            }
-            base.Dispose(disposing);
+            return System.Runtime.InteropServices.RuntimeInformation.OSDescription;
+        }
+
+        /// <summary>Gets the platform architecture of the Azure Bot Service.</summary>
+        /// <returns>The platform architecture of the Azure Bot Service.</returns>
+        public static string GetArchitecture()
+        {
+            return System.Runtime.InteropServices.RuntimeInformation.OSArchitecture.ToString();
+        }
+
+        /// <summary>Gets the name of the .NET Framework version of the Azure Bot Service..</summary>
+        /// <returns>The name of the .NET Framework version of the Azure Bot Service.</returns>
+        public static string GetASPNetVersion()
+        {
+            return Assembly
+                    .GetEntryAssembly()?
+                    .GetCustomAttribute<TargetFrameworkAttribute>()?
+                    .FrameworkName;
+        }
+
+        /// <summary>Gets the assembly version for the Azure Bot Service.</summary>
+        /// <returns>The assembly version for the Azure Bot Service.</returns>
+        public static string GetClientVersion<T>(T client) where T : ServiceClient<T>
+        {
+            var type = client.GetType();
+            var assembly = type.GetTypeInfo().Assembly;
+            return assembly.GetName().Version.ToString();
         }
     }
 }

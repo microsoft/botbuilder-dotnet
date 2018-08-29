@@ -116,14 +116,14 @@ namespace Microsoft.Bot.Builder.TemplateManager.Tests
                 .Register(new DictionaryRenderer(templates1))
                 .Register(new DictionaryRenderer(templates2));
 
-            await new TestFlow(adapter, async (context) =>
+            await new TestFlow(adapter, async (context, cancellationToken) =>
                 {
                     var templateId = context.Activity.AsMessageActivity().Text.Trim();
                     await templateManager.ReplyWith(context, templateId, new { name = "joe" });
                 })
                 .Send("stringTemplate").AssertReply("default: joe")
                 .Send("activityTemplate").AssertReply("(Activity)default: joe")
-                .StartTest();
+                .StartTestAsync();
         }
 
         [TestMethod]
@@ -135,7 +135,7 @@ namespace Microsoft.Bot.Builder.TemplateManager.Tests
                 .Register(new DictionaryRenderer(templates1))
                 .Register(new DictionaryRenderer(templates2));
 
-            await new TestFlow(adapter, async (context) =>
+            await new TestFlow(adapter, async (context, cancellationToken) =>
             {
                 context.Activity.AsMessageActivity().Locale = "en"; // force to english
                 var templateId = context.Activity.AsMessageActivity().Text.Trim();
@@ -143,7 +143,7 @@ namespace Microsoft.Bot.Builder.TemplateManager.Tests
             })
                 .Send("stringTemplate").AssertReply("en: joe")
                 .Send("activityTemplate").AssertReply("(Activity)en: joe")
-                .StartTest();
+                .StartTestAsync();
         }
 
         [TestMethod]
@@ -155,7 +155,7 @@ namespace Microsoft.Bot.Builder.TemplateManager.Tests
                 .Register(new DictionaryRenderer(templates1))
                 .Register(new DictionaryRenderer(templates2));
 
-            await new TestFlow(adapter, async (context) =>
+            await new TestFlow(adapter, async (context, cancellationToken) =>
                 {
                     context.Activity.AsMessageActivity().Locale = "fr"; // force to french
                     var templateId = context.Activity.AsMessageActivity().Text.Trim();
@@ -163,7 +163,7 @@ namespace Microsoft.Bot.Builder.TemplateManager.Tests
                 })
                 .Send("stringTemplate").AssertReply("fr: joe")
                 .Send("activityTemplate").AssertReply("(Activity)fr: joe")
-                .StartTest();
+                .StartTestAsync();
         }
 
         [TestMethod]
@@ -175,7 +175,7 @@ namespace Microsoft.Bot.Builder.TemplateManager.Tests
                 .Register(new DictionaryRenderer(templates1))
                 .Register(new DictionaryRenderer(templates2));
 
-            await new TestFlow(adapter, async (context) =>
+            await new TestFlow(adapter, async (context, cancellationToken) =>
                 {
                     context.Activity.AsMessageActivity().Locale = "fr"; // force to french
                     var templateId = context.Activity.AsMessageActivity().Text.Trim();
@@ -183,7 +183,7 @@ namespace Microsoft.Bot.Builder.TemplateManager.Tests
                 })
                 .Send("stringTemplate2").AssertReply("fr: Yo joe")
                 .Send("activityTemplate").AssertReply("(Activity)fr: joe")
-                .StartTest();
+                .StartTestAsync();
         }
 
         [TestMethod]
@@ -195,14 +195,14 @@ namespace Microsoft.Bot.Builder.TemplateManager.Tests
                 .Register(new DictionaryRenderer(templates1))
                 .Register(new DictionaryRenderer(templates2));
 
-            await new TestFlow(adapter, async (context) =>
+            await new TestFlow(adapter, async (context, cancellationToken) =>
                 {
                     var templateId = context.Activity.AsMessageActivity().Text.Trim();
                     await templateManager.ReplyWith(context, templateId, new { name = "joe" });
                 })
                 .Send("stringTemplate").AssertReply("default: joe")
                 .Send("activityTemplate").AssertReply("(Activity)default: joe")
-                .StartTest();
+                .StartTestAsync();
         }
     }
 }

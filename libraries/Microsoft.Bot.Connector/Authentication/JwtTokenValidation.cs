@@ -11,18 +11,24 @@ using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Connector.Authentication
 {
+    /// <summary>
+    /// Contains helper methods for authenticating incoming HTTP requests.
+    /// </summary>
     public static class JwtTokenValidation
     {
         private static HttpClient _httpClient = new HttpClient();
 
         /// <summary>
-        /// Authenticates the request and sets the service url in the set of trusted urls.
+        /// Authenticates the request and add's the activity's <see cref="Activity.ServiceUrl"/>
+        /// to the set of trusted URLs.
         /// </summary>
         /// <param name="activity">The activity.</param>
         /// <param name="authHeader">The authentication header.</param>
-        /// <param name="credentials">The credentials.</param>
+        /// <param name="credentials">The bot's credential provider.</param>
         /// <param name="httpClient">The HTTP client.</param>
-        /// <returns>ClaimsIdentity for the request.</returns>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>If the task completes successfully, the result contains the claims-based
+        /// identity for the request</remarks>
         public static async Task<ClaimsIdentity> AuthenticateRequest(IActivity activity, string authHeader, ICredentialProvider credentials, HttpClient httpClient = null)
         {
             if (string.IsNullOrWhiteSpace(authHeader))
@@ -47,6 +53,17 @@ namespace Microsoft.Bot.Connector.Authentication
             return claimsIdentity;
         }
 
+        /// <summary>
+        /// Validates the authentication header of an incoming request.
+        /// </summary>
+        /// <param name="authHeader">The authentication header to validate.</param>
+        /// <param name="credentials">The bot's credential provider.</param>
+        /// <param name="channelId">The ID of the channel that sent the request.</param>
+        /// <param name="serviceUrl">The service URL for the activity.</param>
+        /// <param name="httpClient">The HTTP client.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>If the task completes successfully, the result contains the claims-based
+        /// identity for the request</remarks>
         public static async Task<ClaimsIdentity> ValidateAuthHeader(string authHeader, ICredentialProvider credentials, string channelId, string serviceUrl = null, HttpClient httpClient = null)
         {
             if (string.IsNullOrEmpty(authHeader))

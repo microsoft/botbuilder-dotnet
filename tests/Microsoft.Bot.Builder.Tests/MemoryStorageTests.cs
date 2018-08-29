@@ -2,10 +2,9 @@
 // Licensed under the MIT License.
 
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Core.Extensions; 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.Bot.Builder.Core.Extensions.Tests
+namespace Microsoft.Bot.Builder.Tests
 {
     [TestClass]
     [TestCategory("Storage")]

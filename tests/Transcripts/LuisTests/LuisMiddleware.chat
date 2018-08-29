@@ -1,0 +1,11 @@
+user=User
+bot=Bot
+
+user:test
+bot:default message
+user:add imax theater to my upcoming events
+bot:intent:Calendar_Add
+user:display weekend plans
+bot:intent:Calendar_Find
+user:test
+bot:default message

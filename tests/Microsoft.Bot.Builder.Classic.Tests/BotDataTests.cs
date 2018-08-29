@@ -117,7 +117,7 @@
 //            using (var stream = new BotDataBagStream(bag, key))
 //            {
 //                Assert.AreEqual(0, stream.Length);
-//                stream.Write(blob, 0, blob.Length);
+//                stream.WriteAsync(blob, 0, blob.Length);
 //                Assert.AreEqual(blob.Length, stream.Length);
 //            }
 
@@ -127,7 +127,7 @@
 //            {
 //                Assert.AreEqual(blob.Length, stream.Length);
 //                var read = new byte[blob.Length];
-//                stream.Read(read, 0, blob.Length);
+//                stream.ReadAsync(read, 0, blob.Length);
 //                CollectionAssert.AreEqual(read, blob);
 //            }
 

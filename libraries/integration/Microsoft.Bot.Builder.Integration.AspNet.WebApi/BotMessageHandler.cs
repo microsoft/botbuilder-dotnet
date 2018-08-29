@@ -1,12 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Schema;
 using System;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Handlers
 {
@@ -14,18 +13,22 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Handlers
     {
         public static readonly string RouteName = "BotFramework - Message Handler";
 
-        public BotMessageHandler(BotFrameworkAdapter botFrameworkAdapter) : base(botFrameworkAdapter)
+        public BotMessageHandler(BotFrameworkAdapter botFrameworkAdapter)
+            : base(botFrameworkAdapter)
         {
         }
 
-        protected override async Task<InvokeResponse> ProcessMessageRequestAsync(HttpRequestMessage request, BotFrameworkAdapter botFrameworkAdapter, Func<ITurnContext, Task> botCallbackHandler, CancellationToken cancellationToken)
+        protected override async Task<InvokeResponse> ProcessMessageRequestAsync(HttpRequestMessage request, BotFrameworkAdapter botFrameworkAdapter, BotCallbackHandler botCallbackHandler, CancellationToken cancellationToken)
         {
-            var activity = await request.Content.ReadAsAsync<Activity>(BotMessageHandlerBase.BotMessageMediaTypeFormatters, cancellationToken);
+            var activity = await request.Content.ReadAsAsync<Activity>(BotMessageHandlerBase.BotMessageMediaTypeFormatters, cancellationToken).ConfigureAwait(false);
 
-            var invokeResponse = await botFrameworkAdapter.ProcessActivity(
+#pragma warning disable UseConfigureAwait // Use ConfigureAwait
+            var invokeResponse = await botFrameworkAdapter.ProcessActivityAsync(
                 request.Headers.Authorization?.ToString(),
                 activity,
-                botCallbackHandler);
+                botCallbackHandler,
+                cancellationToken);
+#pragma warning restore UseConfigureAwait // Use ConfigureAwait
 
             return invokeResponse;
         }

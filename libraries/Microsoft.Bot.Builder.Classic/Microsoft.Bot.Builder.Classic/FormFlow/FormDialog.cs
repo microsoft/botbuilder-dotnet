@@ -129,7 +129,7 @@ namespace Microsoft.Bot.Builder.Classic.FormFlow
         // constructor arguments
         private readonly T _state;
         private readonly BuildFormDelegate<T> _buildForm;
-        private readonly IEnumerable<EntityRecommendation> _entities;
+        private readonly IEnumerable<EntityModel> _entities;
         private readonly FormOptions _options;
 
         // instantiated in constructor, saved when serialized
@@ -155,10 +155,10 @@ namespace Microsoft.Bot.Builder.Classic.FormFlow
         /// <param name="cultureInfo">  The culture to use. </param>
         /// <remarks>For building forms <see cref="IFormBuilder{T}"/>.</remarks>
         #endregion
-        public FormDialog(T state, BuildFormDelegate<T> buildForm = null, FormOptions options = FormOptions.None, IEnumerable<EntityRecommendation> entities = null, CultureInfo cultureInfo = null)
+        public FormDialog(T state, BuildFormDelegate<T> buildForm = null, FormOptions options = FormOptions.None, IEnumerable<EntityModel> entities = null, CultureInfo cultureInfo = null)
         {
             buildForm = buildForm ?? BuildDefaultForm;
-            entities = entities ?? Enumerable.Empty<EntityRecommendation>();
+            entities = entities ?? Enumerable.Empty<EntityModel>();
             if (cultureInfo != null)
             {
                 CultureInfo.CurrentUICulture = cultureInfo;
@@ -838,7 +838,7 @@ namespace Microsoft.Bot.Builder.Classic.FormFlow
 namespace Microsoft.Bot.Builder.Classic.Luis.Models
 {
     [Serializable]
-    public partial class EntityRecommendation
+    public partial class EntityModel
     {
     }
 

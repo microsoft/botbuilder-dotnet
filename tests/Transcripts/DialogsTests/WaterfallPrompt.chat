@@ -1,0 +1,19 @@
+user=User
+bot=Bot
+
+User: hello
+Bot: step1
+Bot: Enter a number.
+User: hello again
+Bot: It must be a number
+User: 42
+Bot: Thanks for '42'
+Bot: step2
+Bot: Enter a number.
+User: apple
+Bot: It must be a number
+User: orange
+Bot: It must be a number
+User: 64
+Bot: Thanks for '64'
+Bot: step3

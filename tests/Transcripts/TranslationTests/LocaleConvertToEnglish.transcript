@@ -1,0 +1,199 @@
+[
+  {
+    "conversation": {
+      "id": "a4oWoAYk+jQyN/C2DUa7Wnvnxeg="
+    },
+    "id": "1",
+    "timestamp": "2018-07-18T00:52:46.000Z",
+    "type": "conversationUpdate",
+    "channelId": "chatdown",
+    "membersAdded": [
+      {
+        "id": "OjGS4nkcV4YYDQImS16TRUBa+n0=",
+        "name": "Bot",
+        "role": "bot"
+      }
+    ],
+    "membersRemoved": []
+  },
+  {
+    "conversation": {
+      "id": "a4oWoAYk+jQyN/C2DUa7Wnvnxeg="
+    },
+    "id": "2",
+    "recipient": {
+      "id": "OjGS4nkcV4YYDQImS16TRUBa+n0=",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "from": {
+      "id": "n4ojiaIMoHUqqelQk1FVF+kOGUw=",
+      "name": "User",
+      "role": "user"
+    },
+    "text": "set language fr-ca",
+    "timestamp": "2018-07-18T00:52:48.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "a4oWoAYk+jQyN/C2DUa7Wnvnxeg="
+    },
+    "id": "3",
+    "recipient": {
+      "id": "OjGS4nkcV4YYDQImS16TRUBa+n0=",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "from": {
+      "id": "n4ojiaIMoHUqqelQk1FVF+kOGUw=",
+      "name": "User",
+      "role": "user"
+    },
+    "text": "Set a meeting on 2018-10-04",
+    "timestamp": "2018-07-18T00:52:50.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "a4oWoAYk+jQyN/C2DUa7Wnvnxeg="
+    },
+    "id": "4",
+    "recipient": {
+      "id": "n4ojiaIMoHUqqelQk1FVF+kOGUw=",
+      "name": "User",
+      "role": "user"
+    },
+    "from": {
+      "id": "OjGS4nkcV4YYDQImS16TRUBa+n0=",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "text": "message: Set a meeting on 10/4/2018",
+    "timestamp": "2018-07-18T00:52:52.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "a4oWoAYk+jQyN/C2DUa7Wnvnxeg="
+    },
+    "id": "5",
+    "recipient": {
+      "id": "OjGS4nkcV4YYDQImS16TRUBa+n0=",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "from": {
+      "id": "n4ojiaIMoHUqqelQk1FVF+kOGUw=",
+      "name": "User",
+      "role": "user"
+    },
+    "text": "set language fr-fr",
+    "timestamp": "2018-07-18T00:52:54.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "a4oWoAYk+jQyN/C2DUa7Wnvnxeg="
+    },
+    "id": "6",
+    "recipient": {
+      "id": "OjGS4nkcV4YYDQImS16TRUBa+n0=",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "from": {
+      "id": "n4ojiaIMoHUqqelQk1FVF+kOGUw=",
+      "name": "User",
+      "role": "user"
+    },
+    "text": "Set a meeting on 26/08/2018",
+    "timestamp": "2018-07-18T00:52:56.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "a4oWoAYk+jQyN/C2DUa7Wnvnxeg="
+    },
+    "id": "7",
+    "recipient": {
+      "id": "n4ojiaIMoHUqqelQk1FVF+kOGUw=",
+      "name": "User",
+      "role": "user"
+    },
+    "from": {
+      "id": "OjGS4nkcV4YYDQImS16TRUBa+n0=",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "text": "message: Set a meeting on 8/26/2018",
+    "timestamp": "2018-07-18T00:52:58.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "a4oWoAYk+jQyN/C2DUa7Wnvnxeg="
+    },
+    "id": "8",
+    "recipient": {
+      "id": "OjGS4nkcV4YYDQImS16TRUBa+n0=",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "from": {
+      "id": "n4ojiaIMoHUqqelQk1FVF+kOGUw=",
+      "name": "User",
+      "role": "user"
+    },
+    "text": "set language en-us",
+    "timestamp": "2018-07-18T00:53:00.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "a4oWoAYk+jQyN/C2DUa7Wnvnxeg="
+    },
+    "id": "9",
+    "recipient": {
+      "id": "OjGS4nkcV4YYDQImS16TRUBa+n0=",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "from": {
+      "id": "n4ojiaIMoHUqqelQk1FVF+kOGUw=",
+      "name": "User",
+      "role": "user"
+    },
+    "text": "Set a meeting on 05/29/2018",
+    "timestamp": "2018-07-18T00:53:02.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "a4oWoAYk+jQyN/C2DUa7Wnvnxeg="
+    },
+    "id": "10",
+    "recipient": {
+      "id": "n4ojiaIMoHUqqelQk1FVF+kOGUw=",
+      "name": "User",
+      "role": "user"
+    },
+    "from": {
+      "id": "OjGS4nkcV4YYDQImS16TRUBa+n0=",
+      "name": "Bot",
+      "role": "bot"
+    },
+    "text": "message: Set a meeting on 05/29/2018",
+    "timestamp": "2018-07-18T00:53:04.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  }
+]
