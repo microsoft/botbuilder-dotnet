@@ -187,5 +187,10 @@ namespace Microsoft.Bot.Builder
                 }
             }
         }
+
+        public Task RunPipelineAsync(TurnContext context, Func<ITurnContext, Task> callback, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

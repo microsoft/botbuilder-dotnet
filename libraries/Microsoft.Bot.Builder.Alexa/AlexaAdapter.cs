@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Alexa.Directives;
 using Microsoft.Bot.Builder.Alexa.Integration;
@@ -27,18 +28,18 @@ namespace Microsoft.Bot.Builder.Alexa
 
             if (alexaRequest.Session.Attributes != null && alexaRequest.Session.Attributes.Any())
             {
-                context.Services.Add("AlexaSessionAttributes", alexaRequest.Session.Attributes);
+                context.TurnState.Add("AlexaSessionAttributes", alexaRequest.Session.Attributes);
             }
             else
             {
-                context.Services.Add("AlexaSessionAttributes", new Dictionary<string, string>());
+                context.TurnState.Add("AlexaSessionAttributes", new Dictionary<string, string>());
             }
 
-            context.Services.Add("AlexaResponseDirectives", new List<IAlexaDirective>());
+            context.TurnState.Add("AlexaResponseDirectives", new List<IAlexaDirective>());
 
             Responses = new Dictionary<string, List<Activity>>();
 
-            await base.RunPipeline(context, callback).ConfigureAwait(false);
+            await base.RunPipelineAsync(context, callback, default(CancellationToken)).ConfigureAwait(false);
 
             var key = $"{activity.Conversation.Id}:{activity.Id}";
 
@@ -58,7 +59,7 @@ namespace Microsoft.Bot.Builder.Alexa
             }
         }
 
-        public override Task<ResourceResponse[]> SendActivities(ITurnContext context, Activity[] activities)
+        public override Task<ResourceResponse[]> SendActivitiesAsync(ITurnContext turnContext, Activity[] activities, CancellationToken cancellationToken)
         {
             var resourceResponses = new List<ResourceResponse>();
 
@@ -278,12 +279,12 @@ namespace Microsoft.Bot.Builder.Alexa
             return alexaCard;
         }
 
-        public override Task<ResourceResponse> UpdateActivity(ITurnContext context, Activity activity)
+        public override Task<ResourceResponse> UpdateActivityAsync(ITurnContext turnContext, Activity activity, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
 
-        public override Task DeleteActivity(ITurnContext context, ConversationReference reference)
+        public override Task DeleteActivityAsync(ITurnContext turnContext, ConversationReference reference, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }

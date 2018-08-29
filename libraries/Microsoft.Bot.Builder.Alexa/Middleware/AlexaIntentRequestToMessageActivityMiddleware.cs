@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 
@@ -19,7 +20,7 @@ namespace Microsoft.Bot.Builder.Alexa.Middleware
             _createMessageActivityText = createMessageActivityText;
         }
 
-        public async Task OnTurn(ITurnContext context, MiddlewareSet.NextDelegate next)
+        public async Task OnTurnAsync(ITurnContext context, NextDelegate next, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (context.Activity.ChannelId == "alexa" && context.Activity.Type == AlexaRequestTypes.IntentRequest)
             {
@@ -54,7 +55,7 @@ namespace Microsoft.Bot.Builder.Alexa.Middleware
                 }
             }
 
-            await next();
+            await next(cancellationToken).ConfigureAwait(false);
         }
     }
 

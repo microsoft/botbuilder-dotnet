@@ -100,7 +100,7 @@ namespace Microsoft.Bot.Builder.Alexa.Integration.AspNet.Core
                     context =>
                     {
                         var bot = httpContext.RequestServices.GetRequiredService<IBot>();
-                        return bot.OnTurn(context);
+                        return bot.OnTurnAsync(context);
                     });
                 
                 var alexaResponseBodyJson = JsonConvert.SerializeObject(alexaResponseBody, Formatting.None,

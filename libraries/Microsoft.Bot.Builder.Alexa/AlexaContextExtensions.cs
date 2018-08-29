@@ -13,12 +13,12 @@ namespace Microsoft.Bot.Builder.Alexa
     {
         public static Dictionary<string, string> AlexaSessionAttributes(this ITurnContext context)
         {
-            return context.Services.Get<Dictionary<string, string>>("AlexaSessionAttributes");
+            return context.TurnState.Get<Dictionary<string, string>>("AlexaSessionAttributes");
         }
 
         public static List<IAlexaDirective> AlexaResponseDirectives(this ITurnContext context)
         {
-            return context.Services.Get<List<IAlexaDirective>>("AlexaResponseDirectives");
+            return context.TurnState.Get<List<IAlexaDirective>>("AlexaResponseDirectives");
         }
 
         public static async Task<HttpResponseMessage> AlexaSendProgressiveResponse(this ITurnContext context, string content)
