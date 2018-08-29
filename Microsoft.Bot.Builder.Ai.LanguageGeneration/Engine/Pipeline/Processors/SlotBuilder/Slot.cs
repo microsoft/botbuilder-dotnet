@@ -25,27 +25,27 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Engine
                     throw new ArgumentNullException(nameof(KeyValue));
                 }
 
-                if (KeyValue.Value is IList<string>)
+                if (KeyValue.Value is string)
                 {
                     return SlotTypeEnum.StringType;
                 }
 
-                if (KeyValue.Value is IList<int>)
+                if (KeyValue.Value is int)
                 {
                     return SlotTypeEnum.IntType;
                 }
 
-                if (KeyValue.Value is IList<float>)
+                if (KeyValue.Value is float)
                 {
                     return SlotTypeEnum.FloatType;
                 }
 
-                if (KeyValue.Value is IList<bool>)
+                if (KeyValue.Value is bool)
                 {
                     return SlotTypeEnum.BooleanType;
                 }
 
-                if (KeyValue.Value is IList<DateTime>)
+                if (KeyValue.Value is DateTime)
                 {
                     return SlotTypeEnum.DateTimeType;
                 }

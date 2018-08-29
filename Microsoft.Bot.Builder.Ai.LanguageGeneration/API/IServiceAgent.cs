@@ -8,8 +8,8 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.API
 {
     public interface IServiceAgent
     {
-        LGResponse Generate(LGRequest request);
+        string Generate(LGRequest request);
 
-        Task<LGResponse> GenerateAsync(LGRequest request);
+        Task<string> GenerateAsync(LGRequest request);
     }
 }

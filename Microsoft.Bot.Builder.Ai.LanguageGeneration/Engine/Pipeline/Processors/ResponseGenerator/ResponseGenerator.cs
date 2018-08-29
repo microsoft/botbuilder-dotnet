@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Engine
             foreach (var request in compositeRequest.Requests)
             {
                 var response = await serviceAgent.GenerateAsync(request.Value).ConfigureAwait(false);
-                compositeResponse.TemplateResolutions.Add(request.Key, response.DisplayText);
+                compositeResponse.TemplateResolutions.Add(request.Key, response);
             }
 
             return compositeResponse;

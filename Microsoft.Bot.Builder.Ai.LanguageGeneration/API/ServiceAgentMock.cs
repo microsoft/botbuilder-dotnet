@@ -14,20 +14,46 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.API
         {
             _resolutionsDictionary = resolutionsDictionary;
         }
-        public LGResponse Generate(LGRequest request)
+        public string Generate(LGRequest request)
         {
-            var response = new LGResponseMock();
-            response.DisplayText = _resolutionsDictionary[request.Slots["GetStateName"].StringValues[0]];
-            return response;
+            return _resolutionsDictionary[request.Slots["GetStateName"].StringValues[0]];
         }
 
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-        public async Task<LGResponse> GenerateAsync(LGRequest request)
+        public async Task<string> GenerateAsync(LGRequest request)
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
-            var response = new LGResponseMock();
-            response.DisplayText = _resolutionsDictionary[request.Slots["GetStateName"].StringValues[0]];
+            var response = _resolutionsDictionary[request.Slots["GetStateName"].StringValues[0]];
+            ResolveEntities(ref response, request);
             return response;
         }
+
+        private void ResolveEntities(ref string uttrance, LGRequest request)
+        {
+            foreach (var slot in request.Slots)
+            {
+                if (slot.Key != "GetStateName")
+                {
+                    if (slot.Value.StringValues != null)
+                    {
+                        uttrance = uttrance.Replace(slot.Key, slot.Value.StringValues[0]);
+                    }
+
+                    if (slot.Value.IntValues != null)
+                    {
+                        uttrance = uttrance.Replace(slot.Key, slot.Value.IntValues[0].ToString());
+                    }
+
+                    if (slot.Value.FloatValues != null)
+                    {
+                        uttrance = uttrance.Replace(slot.Key, slot.Value.FloatValues[0].ToString());
+                    }
+
+                    NormalizeUttrance(ref uttrance);
+                }
+            }
+        }
+
+        private void NormalizeUttrance(ref string uttrance) => uttrance = uttrance.Replace("{", "").Replace("}", "");
     }
 }

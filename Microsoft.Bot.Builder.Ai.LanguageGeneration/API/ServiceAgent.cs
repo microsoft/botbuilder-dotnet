@@ -7,7 +7,7 @@ using Microsoft.Bot.Builder.AI.LanguageGeneration.API;
 
 namespace Microsoft.Bot.Builder.AI.LanguageGeneration.API
 {
-    internal class ServiceAgent: IServiceAgent
+    internal class ServiceAgent : IServiceAgent
     {
         private LGServiceAgent _serviceAgent;
         public ServiceAgent(string endPoint)
@@ -18,12 +18,16 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.API
             };
         }
 
-        public LGResponse Generate(LGRequest request) => _serviceAgent.Generate(request);
+        public string Generate(LGRequest request)
+        {
+            var response = _serviceAgent.Generate(request);
+            return response.DisplayText;
+        }
 
-        public async Task<LGResponse> GenerateAsync(LGRequest request)
+        public async Task<string> GenerateAsync(LGRequest request)
         {
             var response = await _serviceAgent.GenerateAsync(request).ConfigureAwait(false);
-            return response;
+            return response.DisplayText;
         }
     }
 }

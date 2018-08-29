@@ -26,7 +26,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var resolutionsDictionary = new Dictionary<string, string>
             {
                 { "wPhrase", "Hello" },
-                { "welcomeUser", "welcome my friend" },
+                { "welcomeUser", "welcome {userName}" },
                 { "offerHelp", "How can I help you?" },
                 { "errorReadout", "Sorry, something went wrong, could you repeate this again?" },
             };
@@ -128,7 +128,25 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         }
 
         [TestMethod]
-        public async Task TestEndToEnd_MultipleTemplateModifyActivity_ValidAsync()
+        public async Task TestEndToEnd_MultipleTemplateModifyActivityText_ValidAsync()
+        {
+            var activity = new Activity
+            {
+                Text = "[welcomeUser] , [offerHelp]",
+            };
+
+            var lgResolver = new LanguageGenerationResolver(_lgEndpoint, _lgOptions, _serviceAgentMock);
+            var metaData = new Dictionary<string, object>()
+            {
+                { "userName", "Amr" },
+            };
+            await lgResolver.ResolveAsync(activity, metaData).ConfigureAwait(false);
+
+            Assert.AreEqual("welcome Amr , How can I help you?", activity.Text);
+        }
+
+        [TestMethod]
+        public async Task TestEndToEnd_MultipleTemplateModifyActivitySpeakAndText_ValidAsync()
         {
             var activity = new Activity
             {
@@ -137,11 +155,51 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             };
 
             var lgResolver = new LanguageGenerationResolver(_lgEndpoint, _lgOptions, _serviceAgentMock);
-            var metaData = new Dictionary<string, object>();
+            var metaData = new Dictionary<string, object>()
+            {
+                { "userName", "Amr" },
+            };
             await lgResolver.ResolveAsync(activity, metaData).ConfigureAwait(false);
 
             Assert.AreEqual("Hello", activity.Text);
-            Assert.AreEqual("welcome my friend", activity.Speak);
+            Assert.AreEqual("welcome Amr", activity.Speak);
+        }
+
+        [TestMethod]
+        public async Task TestEndToEnd_MultipleTemplateModifyActivityAll_ValidAsync()
+        {
+            var activity = new Activity
+            {
+                Text = "[wPhrase]",
+                Speak = "[welcomeUser]",
+                SuggestedActions = new SuggestedActions()
+                {
+                    Actions = new List<CardAction>()
+                    {
+                        new CardAction()
+                        {
+                            Text = "[offerHelp]",
+                            DisplayText = "[offerHelp] my friend"
+                        }
+                    }
+                }
+            };
+
+            var lgResolver = new LanguageGenerationResolver(_lgEndpoint, _lgOptions, _serviceAgentMock);
+            var metaData = new Dictionary<string, object>()
+            {
+                { "userName", "Amr" },
+            };
+            await lgResolver.ResolveAsync(activity, metaData).ConfigureAwait(false);
+
+            Assert.AreEqual("Hello", activity.Text);
+            Assert.AreEqual("welcome Amr", activity.Speak);
+            Assert.IsNotNull(activity.SuggestedActions);
+            Assert.IsNotNull(activity.SuggestedActions.Actions);
+
+            var cardActions = activity.SuggestedActions.Actions;
+            Assert.AreEqual("How can I help you?", cardActions[0].Text);
+            Assert.AreEqual("How can I help you? my friend", cardActions[0].DisplayText);
         }
     }
 }
