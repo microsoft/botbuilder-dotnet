@@ -8,6 +8,8 @@ namespace Microsoft.Bot.Builder.TestBot
 {
     public class TestBotAccessors
     {
+        public IBotStore State { get; set; }
+
         public IStatePropertyAccessor<DialogState> ConversationDialogState { get; set; }
 
         public SemaphoreSlim SemaphoreSlim { get; } = new SemaphoreSlim(1, 1);
