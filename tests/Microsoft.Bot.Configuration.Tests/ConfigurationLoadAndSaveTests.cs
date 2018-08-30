@@ -110,6 +110,33 @@ namespace Microsoft.Bot.Configuration.Tests
             await BotConfiguration.LoadFromFolderAsync(".");
         }
 
+        [TestMethod][ExpectedException(typeof(System.IO.FileNotFoundException))]
+        public async Task LoadNotExistentFile()
+        {
+            var config = await BotConfiguration.LoadAsync(@"..\..\filedoesntexist.bot");
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(System.ArgumentNullException))]
+        public async Task NullFile()
+        {
+            var config = await BotConfiguration.LoadAsync(null);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(System.IO.DirectoryNotFoundException))]
+        public async Task LoadNotExistentFolder()
+        {
+            var config = await BotConfiguration.LoadFromFolderAsync(@"\prettysurethisdoesnotexist");
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(System.ArgumentNullException))]
+        public async Task NullFolder()
+        {
+            var config = await BotConfiguration.LoadFromFolderAsync(null);
+        }
+
         [TestMethod]
         public async Task CantSaveWithoutSecret()
         {
@@ -127,7 +154,6 @@ namespace Microsoft.Bot.Configuration.Tests
             config2.ClearSecret();
             await config2.SaveAsAsync("save.bot", secret);
         }
-
 
         [TestMethod]
         public async Task LoadAndSaveEncrypted()
