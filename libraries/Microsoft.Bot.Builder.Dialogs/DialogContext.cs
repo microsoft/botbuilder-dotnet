@@ -83,8 +83,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             Stack.Insert(0, instance);
 
             // Call dialogs BeginAsync() method.
-            var turnResult = await dialog.DialogBeginAsync(this, options, cancellationToken).ConfigureAwait(false);
-            return VerifyTurnResult(turnResult);
+            return await dialog.DialogBeginAsync(this, options, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -130,16 +129,11 @@ namespace Microsoft.Bot.Builder.Dialogs
                 }
 
                 // Continue execution of dialog
-                var turnResult = await dialog.DialogContinueAsync(this, cancellationToken).ConfigureAwait(false);
-                return VerifyTurnResult(turnResult);
+                return await dialog.DialogContinueAsync(this, cancellationToken).ConfigureAwait(false);
             }
             else
             {
-                return new DialogTurnResult
-                {
-                    HasActive = false,
-                    HasResult = false,
-                };
+                return new DialogTurnResult(DialogStatus.Empty);
             }
         }
 
@@ -174,17 +168,11 @@ namespace Microsoft.Bot.Builder.Dialogs
                 }
 
                 // Return result to previous dialog
-                var turnResult = await dialog.DialogResumeAsync(this, DialogReason.EndCalled, result, cancellationToken).ConfigureAwait(false);
-                return VerifyTurnResult(turnResult);
+                return await dialog.DialogResumeAsync(this, DialogReason.EndCalled, result, cancellationToken).ConfigureAwait(false);
             }
             else
             {
-                return new DialogTurnResult
-                {
-                    HasActive = false,
-                    HasResult = result != null,
-                    Result = result,
-                };
+                return new DialogTurnResult(DialogStatus.Complete, result);
             }
         }
 
@@ -256,16 +244,15 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
         }
 
-        private DialogTurnResult VerifyTurnResult(DialogTurnResult result)
-        {
-            result.HasActive = Stack.Count() > 0;
-            if (result.HasActive)
-            {
-                result.HasResult = false;
-                result.Result = null;
-            }
-
-            return result;
-        }
+        // private DialogTurnResult VerifyTurnResult(DialogTurnResult result)
+        // {
+        //    result.HasActive = Stack.Count() > 0;
+        //    if (result.HasActive)
+        //    {
+        //        result.HasResult = false;
+        //        result.Result = null;
+        //    }
+        // return result;
+        // }
     }
 }
