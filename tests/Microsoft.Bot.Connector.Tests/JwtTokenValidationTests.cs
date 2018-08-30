@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net.Http;
+using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
@@ -160,6 +163,314 @@ namespace Microsoft.Bot.Connector.Tests
                 emptyClient);
 
             Assert.False(MicrosoftAppCredentials.IsTrustedServiceUrl("https://webchat.botframework.com/"));
+        }
+        
+        [Fact]
+        public async void Emulator_AuthHeader_CorrectAppIdAndServiceUrl_WithGovChannelService_ShouldValidate()
+        {
+            await JwtTokenValidation_ValidateAuthHeader_WithChannelService_Succeeds(
+                "2cd87869-38a0-4182-9251-d056e8f0ac24",         // emulator creds
+                "2.30Vs3VQLKt974F",
+                GovernmentAuthenticationConstants.ChannelService);
+        }
+
+        [Fact]
+        public async void Emulator_AuthHeader_CorrectAppIdAndServiceUrl_WithPrivateChannelService_ShouldValidate()
+        {
+            await JwtTokenValidation_ValidateAuthHeader_WithChannelService_Succeeds(
+                "2cd87869-38a0-4182-9251-d056e8f0ac24",         // emulator creds
+                "2.30Vs3VQLKt974F",
+                "TheChannel");
+        }
+
+        [Fact]
+        public async void Connector_AuthHeader_CorrectAppIdAndServiceUrl_WithGovChannelService_ShouldValidate()
+        {
+            await JwtTokenValidation_ValidateAuthHeader_WithChannelService_Succeeds(
+                "2cd87869-38a0-4182-9251-d056e8f0ac24",         // emulator creds
+                "2.30Vs3VQLKt974F",
+                GovernmentAuthenticationConstants.ChannelService);
+        }
+
+        [Fact]
+        public async void GovernmentChannelValidation_Succeeds()
+        {
+            var appId = "1234567890";
+            var serviceUrl = "https://webchat.botframework.com/";
+            var credentials = new SimpleCredentialProvider(appId, String.Empty);
+            var identity = new SimpleClaimsIdentity(new List<Claim>() {
+                new Claim(AuthenticationConstants.AudienceClaim, appId, null, GovernmentAuthenticationConstants.ToBotFromChannelTokenIssuer),
+                new Claim(AuthenticationConstants.ServiceUrlClaim, serviceUrl, null),
+            }, true);
+            await GovernmentChannelValidation.ValidateIdentity(identity, credentials, serviceUrl);
+        }
+
+        [Fact]
+        public async void GovernmentChannelValidation_NoAuthentication_Fails()
+        {
+            var appId = "1234567890";
+            var serviceUrl = "https://webchat.botframework.com/";
+            var credentials = new SimpleCredentialProvider(appId, String.Empty);
+            var identity = new SimpleClaimsIdentity(new List<Claim>() {
+                new Claim(AuthenticationConstants.AudienceClaim, appId, null, GovernmentAuthenticationConstants.ToBotFromChannelTokenIssuer),
+                new Claim(AuthenticationConstants.ServiceUrlClaim, serviceUrl, null),
+            }, false);
+
+            await Assert.ThrowsAsync<UnauthorizedAccessException>(
+                async () => await GovernmentChannelValidation.ValidateIdentity(identity, credentials, serviceUrl));
+        }
+
+        [Fact]
+        public async void GovernmentChannelValidation_NoAudienceClaim_Fails()
+        {
+            var appId = "1234567890";
+            var serviceUrl = "https://webchat.botframework.com/";
+            var credentials = new SimpleCredentialProvider(appId, String.Empty);
+            var identity = new SimpleClaimsIdentity(new List<Claim>() {
+                new Claim(AuthenticationConstants.ServiceUrlClaim, serviceUrl, null),
+            }, true);
+
+            await Assert.ThrowsAsync<UnauthorizedAccessException>(
+                async () => await GovernmentChannelValidation.ValidateIdentity(identity, credentials, serviceUrl));
+        }
+        
+        [Fact]
+        public async void GovernmentChannelValidation_WrongAudienceClaim_Fails()
+        {
+            var appId = "1234567890";
+            var serviceUrl = "https://webchat.botframework.com/";
+            var credentials = new SimpleCredentialProvider(appId, String.Empty);
+            var identity = new SimpleClaimsIdentity(new List<Claim>() {
+                new Claim(AuthenticationConstants.AudienceClaim, "abc", null, GovernmentAuthenticationConstants.ToBotFromChannelTokenIssuer),
+                new Claim(AuthenticationConstants.ServiceUrlClaim, serviceUrl, null),
+            }, true);
+
+            await Assert.ThrowsAsync<UnauthorizedAccessException>(
+                async () => await GovernmentChannelValidation.ValidateIdentity(identity, credentials, serviceUrl));
+        }
+        
+        [Fact]
+        public async void GovernmentChannelValidation_WrongAudienceClaimIssuer_Fails()
+        {
+            var appId = "1234567890";
+            var serviceUrl = "https://webchat.botframework.com/";
+            var credentials = new SimpleCredentialProvider(appId, String.Empty);
+            var identity = new SimpleClaimsIdentity(new List<Claim>() {
+                new Claim(AuthenticationConstants.AudienceClaim, appId, null, "wrongissuer"),
+                new Claim(AuthenticationConstants.ServiceUrlClaim, serviceUrl, null),
+            }, true);
+
+            await Assert.ThrowsAsync<UnauthorizedAccessException>(
+                async () => await GovernmentChannelValidation.ValidateIdentity(identity, credentials, serviceUrl));
+        }
+
+        [Fact]
+        public async void GovernmentChannelValidation_NoAudienceClaimValue_Fails()
+        {
+            var appId = "1234567890";
+            var serviceUrl = "https://webchat.botframework.com/";
+            var credentials = new SimpleCredentialProvider(appId, String.Empty);
+            var identity = new SimpleClaimsIdentity(new List<Claim>() {
+                new Claim(AuthenticationConstants.AudienceClaim, "", null, GovernmentAuthenticationConstants.ToBotFromChannelTokenIssuer),
+                new Claim(AuthenticationConstants.ServiceUrlClaim, serviceUrl, null),
+            }, true);
+
+            await Assert.ThrowsAsync<UnauthorizedAccessException>(
+                async () => await GovernmentChannelValidation.ValidateIdentity(identity, credentials, serviceUrl));
+        }
+
+        [Fact]
+        public async void GovernmentChannelValidation_NoServiceClaimValue_Fails()
+        {
+            var appId = "1234567890";
+            var serviceUrl = "https://webchat.botframework.com/";
+            var credentials = new SimpleCredentialProvider(appId, String.Empty);
+            var identity = new SimpleClaimsIdentity(new List<Claim>() {
+                new Claim(AuthenticationConstants.AudienceClaim, appId, null, GovernmentAuthenticationConstants.ToBotFromChannelTokenIssuer),
+                new Claim(AuthenticationConstants.ServiceUrlClaim, "", null),
+            }, true);
+
+            await Assert.ThrowsAsync<UnauthorizedAccessException>(
+                async () => await GovernmentChannelValidation.ValidateIdentity(identity, credentials, serviceUrl));
+        }
+
+        [Fact]
+        public async void GovernmentChannelValidation_WrongServiceClaimValue_Fails()
+        {
+            var appId = "1234567890";
+            var serviceUrl = "https://webchat.botframework.com/";
+            var credentials = new SimpleCredentialProvider(appId, String.Empty);
+            var identity = new SimpleClaimsIdentity(new List<Claim>() {
+                new Claim(AuthenticationConstants.AudienceClaim, appId, null, GovernmentAuthenticationConstants.ToBotFromChannelTokenIssuer),
+                new Claim(AuthenticationConstants.ServiceUrlClaim, "other", null),
+            }, true);
+
+            await Assert.ThrowsAsync<UnauthorizedAccessException>(
+                async () => await GovernmentChannelValidation.ValidateIdentity(identity, credentials, serviceUrl));
+        }
+
+        [Fact]
+        public async void EnterpriseChannelValidation_Succeeds()
+        {
+            var appId = "1234567890";
+            var serviceUrl = "https://webchat.botframework.com/";
+            var credentials = new SimpleCredentialProvider(appId, String.Empty);
+            var identity = new SimpleClaimsIdentity(new List<Claim>() {
+                new Claim(AuthenticationConstants.AudienceClaim, appId, null, AuthenticationConstants.ToBotFromChannelTokenIssuer),
+                new Claim(AuthenticationConstants.ServiceUrlClaim, serviceUrl, null),
+            }, true);
+            await EnterpriseChannelValidation.ValidateIdentity(identity, credentials, serviceUrl);
+        }
+
+        [Fact]
+        public async void EnterpriseChannelValidation_NoAuthentication_Fails()
+        {
+            var appId = "1234567890";
+            var serviceUrl = "https://webchat.botframework.com/";
+            var credentials = new SimpleCredentialProvider(appId, String.Empty);
+            var identity = new SimpleClaimsIdentity(new List<Claim>() {
+                new Claim(AuthenticationConstants.AudienceClaim, appId, null, AuthenticationConstants.ToBotFromChannelTokenIssuer),
+                new Claim(AuthenticationConstants.ServiceUrlClaim, serviceUrl, null),
+            }, false);
+
+            await Assert.ThrowsAsync<UnauthorizedAccessException>(
+                async () => await EnterpriseChannelValidation.ValidateIdentity(identity, credentials, serviceUrl));
+        }
+
+        [Fact]
+        public async void EnterpriseChannelValidation_NoAudienceClaim_Fails()
+        {
+            var appId = "1234567890";
+            var serviceUrl = "https://webchat.botframework.com/";
+            var credentials = new SimpleCredentialProvider(appId, String.Empty);
+            var identity = new SimpleClaimsIdentity(new List<Claim>() {
+                new Claim(AuthenticationConstants.ServiceUrlClaim, serviceUrl, null),
+            }, true);
+
+            await Assert.ThrowsAsync<UnauthorizedAccessException>(
+                async () => await EnterpriseChannelValidation.ValidateIdentity(identity, credentials, serviceUrl));
+        }
+
+        [Fact]
+        public async void EnterpriseChannelValidation_WrongAudienceClaim_Fails()
+        {
+            var appId = "1234567890";
+            var serviceUrl = "https://webchat.botframework.com/";
+            var credentials = new SimpleCredentialProvider(appId, String.Empty);
+            var identity = new SimpleClaimsIdentity(new List<Claim>() {
+                new Claim(AuthenticationConstants.AudienceClaim, "abc", null, AuthenticationConstants.ToBotFromChannelTokenIssuer),
+                new Claim(AuthenticationConstants.ServiceUrlClaim, serviceUrl, null),
+            }, true);
+
+            await Assert.ThrowsAsync<UnauthorizedAccessException>(
+                async () => await EnterpriseChannelValidation.ValidateIdentity(identity, credentials, serviceUrl));
+        }
+
+        [Fact]
+        public async void EnterpriseChannelValidation_WrongAudienceClaimIssuer_Fails()
+        {
+            var appId = "1234567890";
+            var serviceUrl = "https://webchat.botframework.com/";
+            var credentials = new SimpleCredentialProvider(appId, String.Empty);
+            var identity = new SimpleClaimsIdentity(new List<Claim>() {
+                new Claim(AuthenticationConstants.AudienceClaim, appId, null, "wrongissuer"),
+                new Claim(AuthenticationConstants.ServiceUrlClaim, serviceUrl, null),
+            }, true);
+
+            await Assert.ThrowsAsync<UnauthorizedAccessException>(
+                async () => await EnterpriseChannelValidation.ValidateIdentity(identity, credentials, serviceUrl));
+        }
+
+        [Fact]
+        public async void EnterpriseChannelValidation_NoAudienceClaimValue_Fails()
+        {
+            var appId = "1234567890";
+            var serviceUrl = "https://webchat.botframework.com/";
+            var credentials = new SimpleCredentialProvider(appId, String.Empty);
+            var identity = new SimpleClaimsIdentity(new List<Claim>() {
+                new Claim(AuthenticationConstants.AudienceClaim, "", null, AuthenticationConstants.ToBotFromChannelTokenIssuer),
+                new Claim(AuthenticationConstants.ServiceUrlClaim, serviceUrl, null),
+            }, true);
+
+            await Assert.ThrowsAsync<UnauthorizedAccessException>(
+                async () => await EnterpriseChannelValidation.ValidateIdentity(identity, credentials, serviceUrl));
+        }
+
+        [Fact]
+        public async void EnterpriseChannelValidation_NoServiceClaimValue_Fails()
+        {
+            var appId = "1234567890";
+            var serviceUrl = "https://webchat.botframework.com/";
+            var credentials = new SimpleCredentialProvider(appId, String.Empty);
+            var identity = new SimpleClaimsIdentity(new List<Claim>() {
+                new Claim(AuthenticationConstants.AudienceClaim, appId, null, AuthenticationConstants.ToBotFromChannelTokenIssuer),
+                new Claim(AuthenticationConstants.ServiceUrlClaim, "", null),
+            }, true);
+
+            await Assert.ThrowsAsync<UnauthorizedAccessException>(
+                async () => await EnterpriseChannelValidation.ValidateIdentity(identity, credentials, serviceUrl));
+        }
+
+        [Fact]
+        public async void EnterpriseChannelValidation_WrongServiceClaimValue_Fails()
+        {
+            var appId = "1234567890";
+            var serviceUrl = "https://webchat.botframework.com/";
+            var credentials = new SimpleCredentialProvider(appId, String.Empty);
+            var identity = new SimpleClaimsIdentity(new List<Claim>() {
+                new Claim(AuthenticationConstants.AudienceClaim, appId, null, AuthenticationConstants.ToBotFromChannelTokenIssuer),
+                new Claim(AuthenticationConstants.ServiceUrlClaim, "other", null),
+            }, true);
+
+            await Assert.ThrowsAsync<UnauthorizedAccessException>(
+                async () => await EnterpriseChannelValidation.ValidateIdentity(identity, credentials, serviceUrl));
+        }
+
+        private async Task JwtTokenValidation_ValidateAuthHeader_WithChannelService_Succeeds(string appId, string pwd, string channelService)
+        {
+            string header = $"Bearer {await new MicrosoftAppCredentials(appId, pwd).GetTokenAsync()}";
+            await JwtTokenValidation_ValidateAuthHeader_WithChannelService_Succeeds(header, appId, pwd, channelService);
+        }
+
+        private async Task JwtTokenValidation_ValidateAuthHeader_WithChannelService_Succeeds(string header, string appId, string pwd, string channelService)
+        {
+            var credentials = new SimpleCredentialProvider(appId, pwd);
+            var channel = new SimpleChannelProvider(channelService);
+            var result = await JwtTokenValidation.ValidateAuthHeader(header, credentials, channel, string.Empty, "https://webchat.botframework.com/", client);
+
+            Assert.True(result.IsAuthenticated);
+        }
+        private async Task JwtTokenValidation_ValidateAuthHeader_WithChannelService_Throws(string appId, string pwd, string channelService)
+        {
+            string header = $"Bearer {await new MicrosoftAppCredentials(appId, pwd).GetTokenAsync()}";
+            await JwtTokenValidation_ValidateAuthHeader_WithChannelService_Succeeds(header, appId, pwd, channelService);
+        }
+
+        private async Task JwtTokenValidation_ValidateAuthHeader_WithChannelService_Throws(string header, string appId, string pwd, string channelService)
+        {
+            var credentials = new SimpleCredentialProvider(appId, pwd);
+            var channel = new SimpleChannelProvider(channelService);
+
+            await Assert.ThrowsAsync<UnauthorizedAccessException>(
+                async () => await JwtTokenValidation.ValidateAuthHeader(
+                    header,
+                    credentials,
+                    channel,
+                    string.Empty,
+                    "https://webchat.botframework.com/",
+                    client));
+        }
+
+        private class SimpleClaimsIdentity : ClaimsIdentity
+        {
+            private bool _isAuthenticated;
+
+            public SimpleClaimsIdentity(IEnumerable<Claim> claims, bool isAuthenticated) : base(claims)
+            {
+                _isAuthenticated = isAuthenticated;
+            }
+
+            public override bool IsAuthenticated { get { return _isAuthenticated; } }
         }
     }
 }

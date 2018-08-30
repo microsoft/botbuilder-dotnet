@@ -10,7 +10,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Microsoft.Bot.Connector.Authentication
 {
-    public class GovernmentChannelValidation
+    public sealed class GovernmentChannelValidation
     {
         /// <summary>
         /// TO BOT FROM GOVERNMENT CHANNEL: Token validation parameters when connecting to a bot
@@ -19,14 +19,14 @@ namespace Microsoft.Bot.Connector.Authentication
             new TokenValidationParameters()
             {
                 ValidateIssuer = true,
-                ValidIssuers = new[] { AuthenticationConstants.ToBotFromGovernmentChannelTokenIssuer },
+                ValidIssuers = new[] { GovernmentAuthenticationConstants.ToBotFromChannelTokenIssuer },
                 // Audience validation takes place in JwtTokenExtractor
                 ValidateAudience = false,
                 ValidateLifetime = true,
                 ClockSkew = TimeSpan.FromMinutes(5),
                 RequireSignedTokens = true
             };
-        
+
         /// <summary>
         /// Validate the incoming Auth Header as a token sent from a Bot Framework Government Channel Service.
         /// </summary>
@@ -39,14 +39,27 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <param name="channelId">The ID of the channel to validate.</param>
         /// <returns></returns>
         public static async Task<ClaimsIdentity> AuthenticateChannelToken(string authHeader, ICredentialProvider credentials, string serviceUrl, HttpClient httpClient, string channelId)
-        {          
+        {
             var tokenExtractor = new JwtTokenExtractor(httpClient,
                   ToBotFromGovernmentChannelTokenValidationParameters,
-                  AuthenticationConstants.ToBotFromGovernmentChannelOpenIdMetadataUrl,
+                  GovernmentAuthenticationConstants.ToBotFromChannelOpenIdMetadataUrl,
                   AuthenticationConstants.AllowedSigningAlgorithms);
 
-            var identity = await tokenExtractor.GetIdentityAsync(authHeader, channelId);
+            var identity = await tokenExtractor.GetIdentityAsync(authHeader, channelId).ConfigureAwait(false);
 
+            await ValidateIdentity(identity, credentials, serviceUrl).ConfigureAwait(false);
+
+            return identity;
+        }
+
+        /// <summary>
+        /// Validate the ClaimsIdentity as sent from a Bot Framework Government Channel Service.
+        /// </summary>
+        /// <param name="identity">The claims identity to validate.</param>
+        /// <param name="credentials">The user defined set of valid credentials, such as the AppId.</param>
+        /// <param name="serviceUrl">The service url from the request</param>
+        public static async Task ValidateIdentity(ClaimsIdentity identity, ICredentialProvider credentials, string serviceUrl)
+        {
             if (identity == null)
             {
                 // No valid identity. Not Authorized. 
@@ -66,7 +79,7 @@ namespace Microsoft.Bot.Connector.Authentication
 
             // Look for the "aud" claim, but only if issued from the Bot Framework
             Claim audienceClaim = identity.Claims.FirstOrDefault(
-                c => c.Issuer == AuthenticationConstants.ToBotFromGovernmentChannelTokenIssuer && c.Type == AuthenticationConstants.AudienceClaim);
+                c => c.Issuer == GovernmentAuthenticationConstants.ToBotFromChannelTokenIssuer && c.Type == AuthenticationConstants.AudienceClaim);
 
             if (audienceClaim == null)
             {
@@ -104,8 +117,6 @@ namespace Microsoft.Bot.Connector.Authentication
                     throw new UnauthorizedAccessException();
                 }
             }
-
-            return identity;
-        }
+        }       
     }
 }

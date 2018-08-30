@@ -10,7 +10,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Microsoft.Bot.Connector.Authentication
 {
-    public class EnterpriseChannelValidation
+    public sealed class EnterpriseChannelValidation
     {
         /// <summary>
         /// TO BOT FROM ENTERPRISE CHANNEL: Token validation parameters when connecting to a bot
@@ -48,8 +48,15 @@ namespace Microsoft.Bot.Connector.Authentication
                   string.Format(AuthenticationConstants.ToBotFromEnterpriseChannelOpenIdMetadataUrlFormat, channelService),
                   AuthenticationConstants.AllowedSigningAlgorithms);
 
-            var identity = await tokenExtractor.GetIdentityAsync(authHeader, channelId);
+            var identity = await tokenExtractor.GetIdentityAsync(authHeader, channelId).ConfigureAwait(false);
 
+            await ValidateIdentity(identity, credentials, serviceUrl).ConfigureAwait(false);
+            
+            return identity;
+        }
+
+        public static async Task ValidateIdentity(ClaimsIdentity identity, ICredentialProvider credentials, string serviceUrl)
+        {
             if (identity == null)
             {
                 // No valid identity. Not Authorized. 
@@ -107,8 +114,6 @@ namespace Microsoft.Bot.Connector.Authentication
                     throw new UnauthorizedAccessException();
                 }
             }
-
-            return identity;
         }
     }
 }
