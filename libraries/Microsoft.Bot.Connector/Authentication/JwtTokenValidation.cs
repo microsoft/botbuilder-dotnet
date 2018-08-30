@@ -25,6 +25,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <param name="activity">The activity.</param>
         /// <param name="authHeader">The authentication header.</param>
         /// <param name="credentials">The bot's credential provider.</param>
+        /// <param name="provider">The bot's channel service provider.</param>
         /// <param name="httpClient">The HTTP client.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <remarks>If the task completes successfully, the result contains the claims-based
@@ -33,7 +34,7 @@ namespace Microsoft.Bot.Connector.Authentication
         {
             if (string.IsNullOrWhiteSpace(authHeader))
             {
-                bool isAuthDisabled = await credentials.IsAuthenticationDisabledAsync();
+                bool isAuthDisabled = await credentials.IsAuthenticationDisabledAsync().ConfigureAwait(false);
                 if (isAuthDisabled)
                 {
                     // In the scenario where Auth is disabled, we still want to have the 
@@ -58,6 +59,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// </summary>
         /// <param name="authHeader">The authentication header to validate.</param>
         /// <param name="credentials">The bot's credential provider.</param>
+        /// <param name="channelProvider">The bot's channel service provider.</param>
         /// <param name="channelId">The ID of the channel that sent the request.</param>
         /// <param name="serviceUrl">The service URL for the activity.</param>
         /// <param name="httpClient">The HTTP client.</param>
@@ -75,18 +77,7 @@ namespace Microsoft.Bot.Connector.Authentication
             {
                 return await EmulatorValidation.AuthenticateEmulatorToken(authHeader, credentials, httpClient ?? _httpClient, channelId);
             }
-            else if(channelProvider != null && !string.IsNullOrEmpty(await channelProvider.GetChannelServiceAsync().ConfigureAwait(false)))
-            {
-                if (channelProvider.IsGovernment())
-                {
-                    return await GovernmentChannelValidation.AuthenticateChannelToken(authHeader, credentials, serviceUrl, httpClient ?? _httpClient, channelId).ConfigureAwait(false);
-                }
-                else
-                {
-                    return await EnterpriseChannelValidation.AuthenticateChannelToken(authHeader, credentials, channelProvider, serviceUrl, httpClient ?? _httpClient, channelId).ConfigureAwait(false);
-                }
-            }
-            else
+            else if(channelProvider == null || channelProvider.IsPublicAzure())
             {
                 // No empty or null check. Empty can point to issues. Null checks only.
                 if (serviceUrl != null)
@@ -97,6 +88,14 @@ namespace Microsoft.Bot.Connector.Authentication
                 {
                     return await ChannelValidation.AuthenticateChannelToken(authHeader, credentials, httpClient ?? _httpClient, channelId);
                 }
+            }
+            else if (channelProvider.IsGovernment())
+            {
+                return await GovernmentChannelValidation.AuthenticateChannelToken(authHeader, credentials, serviceUrl, httpClient ?? _httpClient, channelId).ConfigureAwait(false);
+            }
+            else
+            {
+                return await EnterpriseChannelValidation.AuthenticateChannelToken(authHeader, credentials, channelProvider, serviceUrl, httpClient ?? _httpClient, channelId).ConfigureAwait(false);
             }
         }
     }

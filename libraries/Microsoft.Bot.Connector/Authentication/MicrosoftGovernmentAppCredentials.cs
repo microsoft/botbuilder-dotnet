@@ -15,12 +15,6 @@ namespace Microsoft.Bot.Connector.Authentication
         /// </summary>
         public static new readonly MicrosoftGovernmentAppCredentials Empty = new MicrosoftGovernmentAppCredentials(null, null);
         
-        static MicrosoftGovernmentAppCredentials()
-        {
-            TrustServiceUrl("https://api.botframework.us", DateTime.MaxValue);
-            TrustServiceUrl("https://token.botframework.us", DateTime.MaxValue);
-        }
-
         /// <summary>
         /// Creates a new instance of the <see cref="MicrosoftGovernmentAppCredentials"/> class.
         /// </summary>
@@ -33,11 +27,11 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <summary>
         /// Gets the OAuth endpoint to use.
         /// </summary>
-        public override string OAuthEndpoint { get { return AuthenticationConstants.ToGovernmentChannelFromBotLoginUrl; } }
+        public override string OAuthEndpoint { get { return GovernmentAuthenticationConstants.ToChannelFromBotLoginUrl; } }
 
         /// <summary>
         /// Gets the OAuth scope to use.
         /// </summary>
-        public override string OAuthScope { get { return AuthenticationConstants.ToGovernmentChannelFromBotOAuthScope; } }
+        public override string OAuthScope { get { return GovernmentAuthenticationConstants.ToChannelFromBotOAuthScope; } }
     }
 }

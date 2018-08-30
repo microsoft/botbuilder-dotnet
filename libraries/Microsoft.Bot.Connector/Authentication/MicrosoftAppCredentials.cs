@@ -40,7 +40,9 @@ namespace Microsoft.Bot.Connector.Authentication
         {
             // { "state.botframework.com", DateTime.MaxValue }, // deprecated state api
             { "api.botframework.com", DateTime.MaxValue},       // bot connector API
-            { "token.botframework.com", DateTime.MaxValue }     // oauth token endpoint
+            { "token.botframework.com", DateTime.MaxValue },    // oauth token endpoint
+            { "api.botframework.us", DateTime.MaxValue},        // bot connector API in US Government DataCenters
+            { "token.botframework.us", DateTime.MaxValue }      // oauth token endpoint in US Government DataCenters
         };
 
         /// <summary>
