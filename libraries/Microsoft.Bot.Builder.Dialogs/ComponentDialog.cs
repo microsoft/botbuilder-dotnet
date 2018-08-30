@@ -40,14 +40,14 @@ namespace Microsoft.Bot.Builder.Dialogs
             var turnResult = await OnDialogBeginAsync(cdc, options, cancellationToken).ConfigureAwait(false);
 
             // Check for end of inner dialog
-            if (turnResult.HasResult)
+            if (turnResult.Result != null)
             {
                 // Return result to calling dialog
                 return await dc.EndAsync(turnResult.Result, cancellationToken).ConfigureAwait(false);
             }
             else
             {
-                // Just signal end of turn
+                // Just signal waiting
                 return Dialog.EndOfTurn;
             }
         }
@@ -62,19 +62,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             // Continue execution of inner dialog.
             var dialogState = (DialogState)dc.ActiveDialog.State[PersistedDialogState];
             var cdc = new DialogContext(_dialogs, dc.Context, dialogState);
-            var turnResult = await OnDialogContinueAsync(cdc, cancellationToken).ConfigureAwait(false);
-
-            // Check for end of inner dialog
-            if (turnResult.HasResult)
-            {
-                // Return result to calling dialog
-                return await dc.EndAsync(turnResult.Result, cancellationToken).ConfigureAwait(false);
-            }
-            else
-            {
-                // Just signal end of turn
-                return Dialog.EndOfTurn;
-            }
+            return await OnDialogContinueAsync(cdc, cancellationToken).ConfigureAwait(false);
         }
 
         public override async Task<DialogTurnResult> DialogResumeAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default(CancellationToken))
@@ -120,17 +108,48 @@ namespace Microsoft.Bot.Builder.Dialogs
             return await dc.BeginAsync(InitialDialogId, options, cancellationToken).ConfigureAwait(false);
         }
 
-        protected virtual async Task OnDialogEndAsync(DialogContext dc, DialogReason reason, CancellationToken cancellationToken = default(CancellationToken))
+        protected virtual async Task<DialogTurnResult> OnDialogEndAsync(DialogContext dc, DialogReason reason, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (reason == DialogReason.CancelCalled)
             {
                 await dc.CancelAllAsync(cancellationToken).ConfigureAwait(false);
+                return new DialogTurnResult(DialogStatus.Cancelled);
+            }
+
+            if (dc.ActiveDialog != null)
+            {
+                await this.OnDialogRepromptAsync(dc).ConfigureAwait(false);
+                return Dialog.EndOfTurn;
+            }
+            else
+            {
+                // LAMIL: Why doesn't end follow the same pattern as all the other methods?
+                return new DialogTurnResult(DialogStatus.Complete);
             }
         }
 
         protected virtual async Task<DialogTurnResult> OnDialogContinueAsync(DialogContext dc, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return await dc.ContinueAsync(cancellationToken).ConfigureAwait(false);
+            var result = await dc.ContinueAsync(cancellationToken).ConfigureAwait(false);
+
+            switch (result.Status)
+            {
+                case DialogStatus.Complete:
+                    {
+                        return await dc.EndAsync(result.Result).ConfigureAwait(false);
+                    }
+
+                case DialogStatus.Cancelled:
+                    {
+                        await dc.CancelAllAsync().ConfigureAwait(false);
+                        return result;
+                    }
+
+                default:
+                    {
+                        return result;
+                    }
+            }
         }
 
         protected virtual async Task OnDialogRepromptAsync(DialogContext dc, CancellationToken cancellationToken = default(CancellationToken))
