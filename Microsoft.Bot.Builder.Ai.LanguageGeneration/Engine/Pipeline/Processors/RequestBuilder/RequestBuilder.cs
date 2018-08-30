@@ -67,6 +67,11 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Engine
                         };
                         commonSlotsDictionary.Add(slot.KeyValue.Key, lgValue);
                     }
+
+                    else
+                    {
+                        throw new ArgumentException("Unknown slot type");
+                    }
                 }
             }
 

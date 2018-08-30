@@ -11,6 +11,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Engine
         FloatType = 2,
         BooleanType = 3,
         DateTimeType = 4,
+        UnknownType = 5,
     }
 
     internal class Slot
@@ -20,11 +21,6 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Engine
         {
             get
             {
-                if (KeyValue.Equals(null))
-                {
-                    throw new ArgumentNullException(nameof(KeyValue));
-                }
-
                 if (KeyValue.Value is string)
                 {
                     return SlotTypeEnum.StringType;
@@ -52,7 +48,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Engine
 
                 else
                 {
-                    throw new ArgumentException("Unknown slot type");
+                    return SlotTypeEnum.UnknownType;
                 }
             }
         }

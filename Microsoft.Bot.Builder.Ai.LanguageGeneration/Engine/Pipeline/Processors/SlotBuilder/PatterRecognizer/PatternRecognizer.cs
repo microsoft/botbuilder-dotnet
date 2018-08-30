@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Helpers
     internal static class PatternRecognizer
     {
         private static readonly string _templatePattern = @"\[(.*?)\]";
-        public static IList<string> Recognize(string token)
+        public static List<string> Recognize(string token)
         {
             if (Regex.IsMatch(token, _templatePattern))
             {
