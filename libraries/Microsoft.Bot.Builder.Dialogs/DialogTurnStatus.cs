@@ -3,7 +3,7 @@
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
-    public enum DialogStatus
+    public enum DialogTurnStatus
     {
         /// <summary>
         /// Indicates that there is currently nothing on the dialog stack.

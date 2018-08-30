@@ -133,7 +133,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
             else
             {
-                return new DialogTurnResult(DialogStatus.Empty);
+                return new DialogTurnResult(DialogTurnStatus.Empty);
             }
         }
 
@@ -172,7 +172,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
             else
             {
-                return new DialogTurnResult(DialogStatus.Complete, result);
+                return new DialogTurnResult(DialogTurnStatus.Complete, result);
             }
         }
 

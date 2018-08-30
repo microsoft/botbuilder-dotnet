@@ -9,7 +9,7 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// </summary>
     public class DialogTurnResult
     {
-        public DialogTurnResult(DialogStatus status, object result = null)
+        public DialogTurnResult(DialogTurnStatus status, object result = null)
         {
             Status = status;
             Result = result;
@@ -21,7 +21,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <value>
         /// The current status of the stack.
         /// </value>
-        public DialogStatus Status { get; set; }
+        public DialogTurnStatus Status { get; set; }
 
         /// <summary>
         /// Gets or sets the result returned by a dialog that was just ended.
