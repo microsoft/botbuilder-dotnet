@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Builder.TestBot
 {
     public class TestBotAccessors
     {
-        public IBotStore State { get; set; }
+        public IBotStoreManager StoreManager { get; set; }
 
         public IStatePropertyAccessor<DialogState> ConversationDialogState { get; set; }
 

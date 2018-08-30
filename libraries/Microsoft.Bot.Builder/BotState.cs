@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Builder
     /// <summary>
     /// Reads and writes state for your bot to storage.
     /// </summary>
-    public abstract class BotState : IBotStore, IMiddleware
+    public abstract class BotState : IBotStoreManager, IMiddleware
     {
         private readonly string _contextServiceKey;
         private readonly IStorage _storage;
@@ -132,7 +132,6 @@ namespace Microsoft.Bot.Builder
             return true;
         }
 
-
         /// <summary>
         /// A forced load of the bot state.
         /// </summary>
@@ -178,7 +177,7 @@ namespace Microsoft.Bot.Builder
         /// </summary>
         /// <param name="turnContext">The context object for this turn.</param>
         /// <returns>The storage key.</returns>
-        protected abstract string GetStorageKey(ITurnContext turnContext);
+        public abstract string GetStorageKey(ITurnContext turnContext);
 
         /// <summary>
         /// Gets a property from the state cache in the turn context.

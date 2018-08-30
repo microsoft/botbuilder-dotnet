@@ -6,9 +6,10 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder
 {
-    public interface IBotStore
+    public interface IBotStoreManager
     {
-        Task<bool> LoadAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken));
+        string GetStorageKey(ITurnContext turnContext);
+        Task LoadAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken));
         Task<bool> TrySaveChangesAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken));
     }
 }

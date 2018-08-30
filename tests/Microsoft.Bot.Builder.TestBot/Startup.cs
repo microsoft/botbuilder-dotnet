@@ -47,7 +47,7 @@ namespace Microsoft.Bot.Builder.TestBot
 
                 var accessors = new TestBotAccessors
                 {
-                    State = conversationState,
+                    StoreManager = conversationState,
                     ConversationDialogState = conversationState.CreateProperty<DialogState>("DialogState"),
                 };
 
