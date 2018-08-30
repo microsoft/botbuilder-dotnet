@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Builder
     /// <summary>
     /// Reads and writes state for your bot to storage.
     /// </summary>
-    public abstract class BotState : IMiddleware
+    public abstract class BotState : IBotStoreManager, IMiddleware
     {
         private readonly string _contextServiceKey;
         private readonly IStorage _storage;
@@ -109,8 +109,8 @@ namespace Microsoft.Bot.Builder
         /// <param name="force">Optional. True to save state to storage whether or not there are changes.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
-        /// <returns>A task that represents the work queued to execute.</returns>
-        public async Task SaveChangesAsync(ITurnContext turnContext, bool force = false, CancellationToken cancellationToken = default(CancellationToken))
+        /// <returns>A task of bool indicating success or failure.</returns>
+        public async Task<bool> SaveChangesAsync(ITurnContext turnContext, bool force = false, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (turnContext == null)
             {
@@ -127,9 +127,28 @@ namespace Microsoft.Bot.Builder
                 };
                 await _storage.WriteAsync(changes).ConfigureAwait(false);
                 cachedState.Hash = cachedState.ComputeHash(cachedState.State);
-                return;
             }
+
+            return true;
         }
+
+        /// <summary>
+        /// A forced load of the bot state.
+        /// </summary>
+        /// <param name="turnContext">The context object for this turn.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        public Task LoadAsync(ITurnContext turnContext, CancellationToken cancellationToken) => LoadAsync(turnContext, true, cancellationToken);
+
+        /// <summary>
+        /// Attempt to write any changes that have been made, if this call returns false the caller should retry.
+        /// </summary>
+        /// <param name="turnContext">The context object for this turn.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task of bool indicating success or failure.</returns>
+        public Task<bool> TrySaveChangesAsync(ITurnContext turnContext, CancellationToken cancellationToken) => SaveChangesAsync(turnContext, true, cancellationToken);
 
         /// <summary>
         /// Reset the state cache in the turn context to it's default form.
@@ -158,7 +177,7 @@ namespace Microsoft.Bot.Builder
         /// </summary>
         /// <param name="turnContext">The context object for this turn.</param>
         /// <returns>The storage key.</returns>
-        protected abstract string GetStorageKey(ITurnContext turnContext);
+        public abstract string GetStorageKey(ITurnContext turnContext);
 
         /// <summary>
         /// Gets a property from the state cache in the turn context.

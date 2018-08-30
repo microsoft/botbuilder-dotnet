@@ -181,7 +181,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
             {
             }
 
-            protected override string GetStorageKey(ITurnContext turnContext) => "CustomKey";
+            public override string GetStorageKey(ITurnContext turnContext) => "CustomKey";
         }
     }
 }

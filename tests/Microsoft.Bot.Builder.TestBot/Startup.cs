@@ -32,13 +32,7 @@ namespace Microsoft.Bot.Builder.TestBot
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddBot<TestBot>(options =>
-            {
-                IStorage dataStore = new MemoryStorage();
-                options.State.Add(new ConversationState(dataStore));
-                options.Middleware.Add(new BotStateSet(options.State.ToArray()));
-            });
-
+            services.AddBot<TestBot>();
             services.AddSingleton(sp =>
             {
                 var options = sp.GetRequiredService<IOptions<BotFrameworkOptions>>().Value;
@@ -47,15 +41,14 @@ namespace Microsoft.Bot.Builder.TestBot
                     throw new InvalidOperationException("BotFrameworkOptions must be configured prior to setting up the State Accessors");
                 }
 
-                var conversationState = options.State.OfType<ConversationState>().FirstOrDefault();
-                if (conversationState == null)
-                {
-                    throw new InvalidOperationException("ConversationState must be defined and added before adding conversation-scoped state accessors.");
-                }
+                var dataStore = new MemoryStorage();
+                var conversationState = new ConversationState(dataStore);
+                options.State.Add(conversationState);
 
                 var accessors = new TestBotAccessors
                 {
-                    ConversationDialogState = conversationState.CreateProperty<DialogState>("DialogState")
+                    StoreManager = conversationState,
+                    ConversationDialogState = conversationState.CreateProperty<DialogState>("DialogState"),
                 };
 
                 return accessors;
