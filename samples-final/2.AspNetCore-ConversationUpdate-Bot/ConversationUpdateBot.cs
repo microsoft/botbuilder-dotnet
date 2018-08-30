@@ -15,19 +15,32 @@ namespace AspNetCore_ConversationUpdate_Bot
         {
             switch (context.Activity.Type)
             {
-                // On "conversationUpdate"-type activities this bot will send a greeting message to users joining the conversation.
+                // If Activity has an ActivityType of ConversationUpdate,
+                // this bot will send a greeting message to users joining the conversation.
                 case ActivityTypes.ConversationUpdate:
-                    var newUserName = context.Activity.MembersAdded.FirstOrDefault()?.Name;
-                    if (!string.IsNullOrWhiteSpace(newUserName) && newUserName != "Bot")
+                    
+                    //If members were added, send a welcome message to every member added that is not the bot.
+                    if (context.Activity.MembersAdded.Any())
                     {
-                        return context.SendActivity($"Hello {newUserName}!");
+                        foreach (var member in context.Activity.MembersAdded)
+                        {
+                            var newUserName = member.Name;
+
+                            if (member.Id != context.Activity.Recipient.Id)
+                            {
+                                context.SendActivity($"Hello {newUserName}!");
+                            }
+                        }
                     }
 
                     break;
                 case ActivityTypes.Message:
-                    return context.SendActivity("Welcome to the conversationUpdate-bot! " +
-                        "On a _\"conversationUpdate\"_-type activity, this bot will greet new users.");
+
+                    // If Activity has an ActivityType of Message this bot will reply with this message.
+                    return context.SendActivity("This is the conversationUpdate-bot!  " +
+                                                "On a _\"conversationUpdate\"_-type activity, this bot will greet new users.");
             }
+
             return Task.CompletedTask;
         }
     }
