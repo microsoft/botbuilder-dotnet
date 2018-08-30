@@ -15,26 +15,28 @@ namespace AspNetCore_ConversationUpdate_Bot
         {
             switch (context.Activity.Type)
             {
-                // On "conversationUpdate"-type activities this bot will send a greeting message to users joining the conversation.
+                // If Activity has an ActivityType of ConversationUpdate,
+                // this bot will send a greeting message to users joining the conversation.
                 case ActivityTypes.ConversationUpdate:
-
-                    // Both the bot and the user will be in Activity.MembersAdded.  We only want to send a message to the user.
-                    // The user is not the recipient, the bot is in this case. This is what we are checking for here.
-                    if (context.Activity.MembersAdded.Any(member => member.Id != context.Activity.Recipient.Id))
+                    
+                    //If members were added, send a welcome message to every member added that is not the bot.
+                    if (context.Activity.MembersAdded.Any())
                     {
-                        var newUserName = context.Activity.MembersAdded.FirstOrDefault()?.Name;
-                        
-                        if (!string.IsNullOrWhiteSpace(newUserName) && newUserName != "Bot")
+                        foreach (var member in context.Activity.MembersAdded)
                         {
-                            // Greet new user by name if name exists.
-                            return context.SendActivity($"Hello {newUserName}!");
+                            var newUserName = member.Name;
+
+                            if (member.Id != context.Activity.Recipient.Id)
+                            {
+                                context.SendActivity($"Hello {newUserName}!");
+                            }
                         }
-                        // If no name use this default message.
-                        return context.SendActivity($"Welcome to the conversationUpdate-bot!");
                     }
 
                     break;
                 case ActivityTypes.Message:
+
+                    // If Activity has an ActivityType of Message this bot will reply with this message.
                     return context.SendActivity("This is the conversationUpdate-bot!  " +
                                                 "On a _\"conversationUpdate\"_-type activity, this bot will greet new users.");
             }
