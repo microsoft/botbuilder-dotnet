@@ -15,17 +15,10 @@ namespace Microsoft.Bot.Configuration
     /// <summary>
     /// BotConfiguration represents configuration information for a bot.
     /// </summary>
-    /// <remarks>It is typically loaded from a .bot file on disk
-    /// This class implements methods for encrypting and manipulating the in memory representation of the configuration</remarks>
+    /// <remarks>It is typically loaded from a .bot file on disk.
+    /// This class implements methods for encrypting and manipulating the in memory representation of the configuration.</remarks>
     public class BotConfiguration
     {
-        private string location;
-
-        public BotConfiguration()
-        {
-            this.Version = "2.0";
-        }
-
         /// <summary>
         /// Gets or sets name of the bot.
         /// </summary>
@@ -45,10 +38,10 @@ namespace Microsoft.Bot.Configuration
         public string SecretKey { get; set; }
 
         /// <summary>
-        /// Gets the version .
+        /// Gets the version.
         /// </summary>
         [JsonProperty("version")]
-        public string Version { get; set; }
+        public string Version { get;  } = "2.0";
 
         /// <summary>
         /// Gets or sets connected services.
@@ -57,22 +50,24 @@ namespace Microsoft.Bot.Configuration
         public List<ConnectedService> Services { get; set; } = new List<ConnectedService>();
 
         /// <summary>
-        /// Generate a new key suitable for encrypting.
+        /// Gets or sets the location of the configuration.
         /// </summary>
-        /// <returns>key to use with .Encrypt() method. </returns>
-        public static string GenerateKey()
-        {
-            return EncryptUtilities.GenerateKey();
-        }
+        [JsonIgnore]
+        private string Location { get; set; }
 
         /// <summary>
-        /// Load the bot configuration by looking in a folder and ing the first .bot file in the folder.
+        /// Load the bot configuration by looking in a folder and loading the first .bot file in the folder.
         /// </summary>
         /// <param name="folder">Folder to look for bot files. </param>
         /// <param name="secret">Secret to use to encrypt keys. </param>
-        /// <returns>task for BotConfiguration</returns>
+        /// <returns><see cref="Task"/> of <see cref="BotConfiguration"/>.</returns>
         public static async Task<BotConfiguration> LoadFromFolderAsync(string folder, string secret = null)
         {
+            if (string.IsNullOrEmpty(folder))
+            {
+                throw new ArgumentNullException(nameof(folder));
+            }
+
             var file = Directory.GetFiles(folder, "*.bot", SearchOption.TopDirectoryOnly).FirstOrDefault();
 
             if (file != null)
@@ -84,13 +79,18 @@ namespace Microsoft.Bot.Configuration
         }
 
         /// <summary>
-        /// Load the bot configuration by looking in a folder and ing the first .bot file in the folder.
+        /// Load the bot configuration by looking in a folder and loading the first .bot file in the folder.
         /// </summary>
         /// <param name="folder">Folder to look for bot files. </param>
         /// <param name="secret">Secret to use to encrypt keys. </param>
-        /// <returns>BotConfiguration.</returns>
+        /// <returns><see cref="BotConfiguration"/>.</returns>
         public static BotConfiguration LoadFromFolder(string folder, string secret = null)
         {
+            if (string.IsNullOrEmpty(folder))
+            {
+                throw new ArgumentNullException(nameof(folder));
+            }
+
             return BotConfiguration.LoadFromFolderAsync(folder, secret).GetAwaiter().GetResult();
         }
 
@@ -99,9 +99,14 @@ namespace Microsoft.Bot.Configuration
         /// </summary>
         /// <param name="file">Path to bot file. </param>
         /// <param name="secret">Secret to use to decrypt the file on disk. </param>
-        /// <returns>Async task for BotConfiguration. </returns>
+        /// <returns><see cref="Task"/> of <see cref="BotConfiguration"/>.</returns>
         public static async Task<BotConfiguration> LoadAsync(string file, string secret = null)
         {
+            if (string.IsNullOrEmpty(file))
+            {
+                throw new ArgumentNullException(nameof(file));
+            }
+
             string json = string.Empty;
             using (var stream = File.OpenText(file))
             {
@@ -109,7 +114,7 @@ namespace Microsoft.Bot.Configuration
             }
 
             var bot = JsonConvert.DeserializeObject<BotConfiguration>(json, new BotConfigConverter());
-            bot.location = file;
+            bot.Location = file;
 
             var hasSecret = bot.SecretKey?.Length > 0;
             if (hasSecret)
@@ -125,20 +130,34 @@ namespace Microsoft.Bot.Configuration
         /// </summary>
         /// <param name="file">Path to bot file. </param>
         /// <param name="secret">Secret to use to decrypt the file on disk. </param>
-        /// <returns>BotConfiguration. </returns>
+        /// <returns><see cref="BotConfiguration"/>.</returns>
         public static BotConfiguration Load(string file, string secret = null)
         {
+            if (string.IsNullOrEmpty(file))
+            {
+                throw new ArgumentNullException(nameof(file));
+            }
+
             return BotConfiguration.LoadAsync(file, secret).GetAwaiter().GetResult();
+        }
+
+        /// <summary>
+        /// Generate a new key suitable for encrypting.
+        /// </summary>
+        /// <returns>key to use with <see cref="Encrypt(string)"/> method. </returns>
+        public static string GenerateKey()
+        {
+            return EncryptUtilities.GenerateKey();
         }
 
         /// <summary>
         /// Save the file with secret.
         /// </summary>
         /// <param name="secret">Secret for encryption. </param>
-        /// <returns>task</returns>
+        /// <returns><see cref="Task"/>.</returns>
         public Task SaveAsync(string secret = null)
         {
-            return this.SaveAsAsync(this.location, secret);
+            return this.SaveAsAsync(this.Location, secret);
         }
 
         /// <summary>
@@ -156,8 +175,15 @@ namespace Microsoft.Bot.Configuration
         /// <param name="path">Path to bot file.</param>
         /// <param name="secret">Secret for encrypting the file keys.</param>
         /// <returns>Task. </returns>
-        public async Task SaveAsAsync(string path, string secret = null)
+        public async Task SaveAsAsync(string path = null, string secret = null)
         {
+            // Validate state: Either path needs to be provided or Location needs to be set
+            if (string.IsNullOrEmpty(path) && string.IsNullOrEmpty(this.Location))
+            {
+                // If location is not set, we expect the path to be provided
+                throw new ArgumentException(nameof(path));
+            }
+
             if (!string.IsNullOrEmpty(secret))
             {
                 this.ValidateSecretKey(secret);
@@ -180,7 +206,7 @@ namespace Microsoft.Bot.Configuration
             }
 
             // Save it to disk
-            using (var file = File.Open(path ?? this.location, FileMode.Create))
+            using (var file = File.Open(path ?? this.Location, FileMode.Create))
             {
                 using (var textWriter = new StreamWriter(file))
                 {
@@ -202,6 +228,13 @@ namespace Microsoft.Bot.Configuration
         /// <param name="secret">Secret for encrypting the file keys.</param>
         public void SaveAs(string path, string secret = null)
         {
+            // Validate state: Either path needs to be provided or Location needs to be set
+            if (string.IsNullOrEmpty(path) && string.IsNullOrEmpty(this.Location))
+            {
+                // If location is not set, we expect the path to be provided
+                throw new ArgumentException(nameof(path));
+            }
+
             this.SaveAsAsync(path, secret).GetAwaiter().GetResult();
         }
 
@@ -216,9 +249,14 @@ namespace Microsoft.Bot.Configuration
         /// <summary>
         /// Connect a service to the bot file.
         /// </summary>
-        /// <param name="newService">Sevice to add.</param>
+        /// <param name="newService"><see cref="ConnectedService"/> to add.</param>
         public void ConnectService(ConnectedService newService)
         {
+            if (newService == null)
+            {
+                throw new ArgumentNullException(nameof(newService));
+            }
+
             if (this.Services.Where(s => s.Type == newService.Type && s.Id == newService.Id).Any())
             {
                 throw new Exception($"service with {newService.Id} is already connected");
@@ -269,9 +307,14 @@ namespace Microsoft.Bot.Configuration
         /// Find service by name or id.
         /// </summary>
         /// <param name="nameOrId">Name or service id.</param>
-        /// <returns>Found service.</returns>
+        /// <returns>Found <see cref="ConnectedService"/>.</returns>
         public ConnectedService FindServiceByNameOrId(string nameOrId)
         {
+            if (string.IsNullOrEmpty(nameOrId))
+            {
+                throw new ArgumentNullException(nameof(nameOrId));
+            }
+
             return this.Services.FirstOrDefault(s => s.Id == nameOrId || s.Name == nameOrId);
         }
 
@@ -279,9 +322,14 @@ namespace Microsoft.Bot.Configuration
         /// Find a service by id.
         /// </summary>
         /// <param name="id">Id of the service.</param>
-        /// <returns>Service.</returns>
+        /// <returns><see cref="ConnectedService"/>.</returns>
         public ConnectedService FindService(string id)
         {
+            if (string.IsNullOrEmpty(id))
+            {
+                throw new ArgumentNullException(nameof(id));
+            }
+
             return this.Services.FirstOrDefault(s => s.Id == id);
         }
 
@@ -289,9 +337,14 @@ namespace Microsoft.Bot.Configuration
         /// Remove service by name or id.
         /// </summary>
         /// <param name="nameOrId">Name or service id.</param>
-        /// <returns>Found service.</returns>
+        /// <returns>Found <see cref="ConnectedService"/>.</returns>
         public ConnectedService DisconnectServiceByNameOrId(string nameOrId)
         {
+            if (string.IsNullOrEmpty(nameOrId))
+            {
+                throw new ArgumentNullException(nameof(nameOrId));
+            }
+
             var service = this.FindServiceByNameOrId(nameOrId);
             if (service == null)
             {
@@ -308,6 +361,11 @@ namespace Microsoft.Bot.Configuration
         /// <param name="id">Id of the service.</param>
         public void DisconnectService(string id)
         {
+            if (string.IsNullOrEmpty(id))
+            {
+                throw new ArgumentNullException(nameof(id));
+            }
+
             var service = this.FindService(id);
             if (service != null)
             {
@@ -346,10 +404,15 @@ namespace Microsoft.Bot.Configuration
         }
 
         /// <summary>
-        /// Return strong typed connected service objects.
+        /// Converter for strongly typed connected services.
         /// </summary>
         internal class BotConfigConverter : JsonConverter
         {
+            /// <summary>
+            /// Checks whether the connected service can be converted to the provided type.
+            /// </summary>
+            /// <param name="objectType">Type to be checked for conversion. </param>
+            /// <returns>Whether the connected service can be converted to the provided type.</returns>
             public override bool CanConvert(Type objectType)
             {
                 return typeof(ConnectedService).IsAssignableFrom(objectType);
