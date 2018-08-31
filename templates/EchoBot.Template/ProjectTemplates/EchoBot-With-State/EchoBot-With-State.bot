@@ -1,0 +1,14 @@
+{
+    "name": "$projectname$",
+    "secretKey": "",
+    "services": [
+        {
+            "type": "endpoint",
+            "name": "$projectname$",
+            "id": "http://localhost:53714/api/messages",
+            "appId": "",
+            "appPassword": "",
+            "endpoint": "http://localhost:53714/api/messages"
+        }
+    ]
+}

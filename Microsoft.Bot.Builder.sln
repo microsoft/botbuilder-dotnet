@@ -70,6 +70,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Configuration
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Configuration.Tests", "tests\Microsoft.Bot.Configuration.Tests\Microsoft.Bot.Configuration.Tests.csproj", "{1B7920E6-5262-4054-B72D-3A8DBBA057D2}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Templates", "Templates", "{0ED9F7C8-E059-4F3F-B694-153D550703AE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EchoBot.Template", "templates\EchoBot.Template\EchoBot.Template.csproj", "{17AFBE54-92D5-4F14-A71D-F854BE891CDD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug - NuGet Packages|Any CPU = Debug - NuGet Packages|Any CPU
@@ -293,6 +297,14 @@ Global
 		{1B7920E6-5262-4054-B72D-3A8DBBA057D2}.Documentation|Any CPU.Build.0 = Debug|Any CPU
 		{1B7920E6-5262-4054-B72D-3A8DBBA057D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1B7920E6-5262-4054-B72D-3A8DBBA057D2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{17AFBE54-92D5-4F14-A71D-F854BE891CDD}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
+		{17AFBE54-92D5-4F14-A71D-F854BE891CDD}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
+		{17AFBE54-92D5-4F14-A71D-F854BE891CDD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{17AFBE54-92D5-4F14-A71D-F854BE891CDD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{17AFBE54-92D5-4F14-A71D-F854BE891CDD}.Documentation|Any CPU.ActiveCfg = Debug|Any CPU
+		{17AFBE54-92D5-4F14-A71D-F854BE891CDD}.Documentation|Any CPU.Build.0 = Debug|Any CPU
+		{17AFBE54-92D5-4F14-A71D-F854BE891CDD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{17AFBE54-92D5-4F14-A71D-F854BE891CDD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -330,6 +342,7 @@ Global
 		{F87B093D-A3AC-4125-A8A8-FE167F918FFF} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 		{0B8ABFDB-F9CF-4EC6-988E-9C32D9E01C26} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
 		{1B7920E6-5262-4054-B72D-3A8DBBA057D2} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
+		{17AFBE54-92D5-4F14-A71D-F854BE891CDD} = {0ED9F7C8-E059-4F3F-B694-153D550703AE}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7173C9F3-A7F9-496E-9078-9156E35D6E16}
