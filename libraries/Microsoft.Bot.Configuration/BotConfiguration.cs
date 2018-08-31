@@ -57,9 +57,9 @@ namespace Microsoft.Bot.Configuration
         public List<ConnectedService> Services { get; set; } = new List<ConnectedService>();
 
         /// <summary>
-        /// Generate a new key suitable for encrypting
+        /// Generate a new key suitable for encrypting.
         /// </summary>
-        /// <returns>key to use with .Encrypt() method</returns>
+        /// <returns>key to use with .Encrypt() method. </returns>
         public static string GenerateKey()
         {
             return EncryptUtilities.GenerateKey();
@@ -68,8 +68,8 @@ namespace Microsoft.Bot.Configuration
         /// <summary>
         /// Load the bot configuration by looking in a folder and ing the first .bot file in the folder.
         /// </summary>
-        /// <param name="folder">folder to look for bot files</param>
-        /// <param name="secret">secret to use to encrypt keys</param>
+        /// <param name="folder">Folder to look for bot files. </param>
+        /// <param name="secret">Secret to use to encrypt keys. </param>
         /// <returns>task for BotConfiguration</returns>
         public static async Task<BotConfiguration> LoadFromFolderAsync(string folder, string secret = null)
         {
@@ -84,11 +84,22 @@ namespace Microsoft.Bot.Configuration
         }
 
         /// <summary>
-        /// load the configuration from a .bot file.
+        /// Load the bot configuration by looking in a folder and ing the first .bot file in the folder.
         /// </summary>
-        /// <param name="file">path to bot file</param>
-        /// <param name="secret">secret to use to decrypt the file on disk</param>
-        /// <returns>async task for BotConfiguration</returns>
+        /// <param name="folder">Folder to look for bot files. </param>
+        /// <param name="secret">Secret to use to encrypt keys. </param>
+        /// <returns>BotConfiguration.</returns>
+        public static BotConfiguration LoadFromFolder(string folder, string secret = null)
+        {
+            return LoadFromFolderAsync(folder, secret).GetAwaiter().GetResult();
+        }
+
+        /// <summary>
+        /// Load the configuration from a .bot file.
+        /// </summary>
+        /// <param name="file">Path to bot file. </param>
+        /// <param name="secret">Secret to use to decrypt the file on disk. </param>
+        /// <returns>Async task for BotConfiguration. </returns>
         public static async Task<BotConfiguration> LoadAsync(string file, string secret = null)
         {
             string json = string.Empty;
@@ -110,9 +121,20 @@ namespace Microsoft.Bot.Configuration
         }
 
         /// <summary>
-        /// Save the file with secret
+        /// Load the configuration from a .bot file.
         /// </summary>
-        /// <param name="secret">secret for encryption</param>
+        /// <param name="file">Path to bot file. </param>
+        /// <param name="secret">Secret to use to decrypt the file on disk. </param>
+        /// <returns>BotConfiguration. </returns>
+        public static BotConfiguration Load(string file, string secret = null)
+        {
+            return LoadAsync(file, secret).GetAwaiter().GetResult();
+        }
+
+        /// <summary>
+        /// Save the file with secret.
+        /// </summary>
+        /// <param name="secret">Secret for encryption. </param>
         /// <returns>task</returns>
         public Task SaveAsync(string secret = null)
         {
@@ -120,10 +142,19 @@ namespace Microsoft.Bot.Configuration
         }
 
         /// <summary>
+        /// Save the file with secret.
+        /// </summary>
+        /// <param name="secret">Secret for encryption. </param>
+        public void Save(string secret = null)
+        {
+            this.SaveAsync(secret).GetAwaiter().GetResult();
+        }
+
+        /// <summary>
         /// Save the configuration to a .bot file.
         /// </summary>
-        /// <param name="path">path to bot file</param>
-        /// <param name="secret">secret for encrypting the file keys.</param>
+        /// <param name="path">Path to bot file.</param>
+        /// <param name="secret">Secret for encrypting the file keys.</param>
         public async Task SaveAsAsync(string path, string secret = null)
         {
             if (!string.IsNullOrEmpty(secret))
@@ -133,7 +164,7 @@ namespace Microsoft.Bot.Configuration
 
             var hasSecret = this.SecretKey?.Length > 0;
 
-            // make sure that all dispatch serviceIds still match services that are in the bot
+            // Make sure that all dispatch serviceIds still match services that are in the bot
             foreach (var dispatchService in this.Services.Where(s => s.Type == ServiceTypes.Dispatch).Cast<DispatchService>())
             {
                 dispatchService.ServiceIds = dispatchService.ServiceIds
@@ -143,11 +174,11 @@ namespace Microsoft.Bot.Configuration
 
             if (hasSecret)
             {
-                // make sure fields are encrypted before serialization
+                // Make sure fields are encrypted before serialization
                 this.Encrypt(secret);
             }
 
-            // save it to disk
+            // Save it to disk
             using (var file = File.Open(path ?? this.location, FileMode.Create))
             {
                 using (var textWriter = new StreamWriter(file))
@@ -158,20 +189,33 @@ namespace Microsoft.Bot.Configuration
 
             if (hasSecret)
             {
-                // make sure all in memory fields are decrypted again for continued operations
+                // Make sure all in memory fields are decrypted again for continued operations
                 this.Decrypt(secret);
             }
         }
 
+        /// <summary>
+        /// Save the configuration to a .bot file.
+        /// </summary>
+        /// <param name="path">Path to bot file.</param>
+        /// <param name="secret">Secret for encrypting the file keys.</param>
+        public void SaveAs(string path, string secret = null)
+        {
+            this.SaveAsAsync(path, secret).GetAwaiter().GetResult();
+        }
+
+        /// <summary>
+        /// Clear secret.
+        /// </summary>
         public void ClearSecret()
         {
             this.SecretKey = string.Empty;
         }
 
         /// <summary>
-        /// connect a service to the bot file.
+        /// Connect a service to the bot file.
         /// </summary>
-        /// <param name="newService">sevice to add</param>
+        /// <param name="newService">Sevice to add.</param>
         public void ConnectService(ConnectedService newService)
         {
             if (this.Services.Where(s => s.Type == newService.Type && s.Id == newService.Id).Any())
@@ -180,7 +224,7 @@ namespace Microsoft.Bot.Configuration
             }
             else
             {
-                // assign a unique random id between 0-255 (255 services seems like a LOT of services
+                // Assign a unique random id between 0-255 (255 services seems like a LOT of services
                 var rnd = new Random();
                 do
                 {
@@ -193,9 +237,9 @@ namespace Microsoft.Bot.Configuration
         }
 
         /// <summary>
-        /// encrypt all values in the in memory config
+        /// Encrypt all values in the in memory config.
         /// </summary>
-        /// <param name="secret">secret to encrypt</param>
+        /// <param name="secret">Secret to encrypt.</param>
         public void Encrypt(string secret)
         {
             this.ValidateSecretKey(secret);
@@ -207,9 +251,9 @@ namespace Microsoft.Bot.Configuration
         }
 
         /// <summary>
-        /// decrypt all values in the in memory config.
+        /// Decrypt all values in the in memory config.
         /// </summary>
-        /// <param name="secret">secret to encrypt</param>
+        /// <param name="secret">Secret to encrypt.</param>
         public void Decrypt(string secret)
         {
             this.ValidateSecretKey(secret);
@@ -221,30 +265,30 @@ namespace Microsoft.Bot.Configuration
         }
 
         /// <summary>
-        /// find service by name or id.
+        /// Find service by name or id.
         /// </summary>
-        /// <param name="nameOrId">name or service id</param>
-        /// <returns>found service</returns>
+        /// <param name="nameOrId">Name or service id.</param>
+        /// <returns>Found service.</returns>
         public ConnectedService FindServiceByNameOrId(string nameOrId)
         {
             return this.Services.FirstOrDefault(s => s.Id == nameOrId || s.Name == nameOrId);
         }
 
         /// <summary>
-        /// find a service by id.
+        /// Find a service by id.
         /// </summary>
-        /// <param name="id">id of the service</param>
-        /// <returns>service</returns>
+        /// <param name="id">Id of the service.</param>
+        /// <returns>Service.</returns>
         public ConnectedService FindService(string id)
         {
             return this.Services.FirstOrDefault(s => s.Id == id);
         }
 
         /// <summary>
-        /// remove service by name or id.
+        /// Remove service by name or id.
         /// </summary>
-        /// <param name="nameOrId">name or service id</param>
-        /// <returns>found service</returns>
+        /// <param name="nameOrId">Name or service id.</param>
+        /// <returns>Found service.</returns>
         public ConnectedService DisconnectServiceByNameOrId(string nameOrId)
         {
             var service = this.FindServiceByNameOrId(nameOrId);
@@ -258,9 +302,9 @@ namespace Microsoft.Bot.Configuration
         }
 
         /// <summary>
-        /// remove a service by id.
+        /// Remove a service by id.
         /// </summary>
-        /// <param name="id">id of the service</param>
+        /// <param name="id">Id of the service.</param>
         public void DisconnectService(string id)
         {
             var service = this.FindService(id);
@@ -271,9 +315,9 @@ namespace Microsoft.Bot.Configuration
         }
 
         /// <summary>
-        ///  make sure secret is correct by decrypting the secretKey with it
+        /// Make sure secret is correct by decrypting the secretKey with it.
         /// </summary>
-        /// <param name="secret">secret to use</param>
+        /// <param name="secret">Secret to use.</param>
         protected void ValidateSecretKey(string secret)
         {
             if (secret?.Length == null)
@@ -285,12 +329,12 @@ namespace Microsoft.Bot.Configuration
             {
                 if (this.SecretKey?.Length == 0)
                 {
-                    // if no key, create a guid and enrypt that to use as secret validator
+                    // If no key, create a guid and enrypt that to use as secret validator.
                     this.SecretKey = Guid.NewGuid().ToString("n").Encrypt(secret);
                 }
                 else
                 {
-                    // this will throw exception if invalid secret
+                    // This will throw exception if invalid secret.
                     this.SecretKey.Decrypt(secret);
                 }
             }
@@ -301,7 +345,7 @@ namespace Microsoft.Bot.Configuration
         }
 
         /// <summary>
-        /// return strong typed connected service objects.
+        /// Return strong typed connected service objects.
         /// </summary>
         internal class BotConfigConverter : JsonConverter
         {

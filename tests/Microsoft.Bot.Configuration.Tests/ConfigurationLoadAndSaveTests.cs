@@ -70,6 +70,16 @@ namespace Microsoft.Bot.Configuration.Tests
         }
 
         [TestMethod]
+        public void LoadAndSaveUnencryptedBotFileSync()
+        {
+            var config = BotConfiguration.Load(@"..\..\test.bot");
+            config.SaveAs("save.bot");
+
+            var config2 = BotConfiguration.Load(@"..\..\test.bot");
+            Assert.AreEqual(JsonConvert.SerializeObject(config2), JsonConvert.SerializeObject(config), "saved should be the same");
+        }
+
+        [TestMethod]
         public async Task CantLoadWithoutSecret()
         {
             string secret = BotConfiguration.GenerateKey();
@@ -93,6 +103,15 @@ namespace Microsoft.Bot.Configuration.Tests
             await BotConfiguration.LoadFromFolderAsync(".", secret);
         }
 
+        [TestMethod]
+        public void LoadFromFolderWithSecretSync()
+        {
+            string secret = BotConfiguration.GenerateKey();
+            var config = BotConfiguration.Load(@"..\..\test.bot");
+            config.SaveAs("save.bot", secret);
+            BotConfiguration.LoadFromFolder(".", secret);
+        }
+
         [TestMethod][ExpectedException(typeof(System.Exception))]
         public async Task FailLoadFromFolderWithNoSecret()
         {
@@ -108,6 +127,14 @@ namespace Microsoft.Bot.Configuration.Tests
             var config = await BotConfiguration.LoadAsync(@"..\..\test.bot");
             await config.SaveAsAsync("save.bot");
             await BotConfiguration.LoadFromFolderAsync(".");
+        }
+
+        [TestMethod]
+        public void LoadFromFolderNoSecretSync()
+        {
+            var config = BotConfiguration.Load(@"..\..\test.bot");
+            config.SaveAs("save.bot");
+            BotConfiguration.LoadFromFolder(".");
         }
 
         [TestMethod][ExpectedException(typeof(System.IO.FileNotFoundException))]
