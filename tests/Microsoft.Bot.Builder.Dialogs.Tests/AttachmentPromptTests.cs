@@ -57,12 +57,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
 
                 var results = await dc.ContinueAsync();
-                if (!turnContext.Responded && !results.HasActive && !results.HasResult)
+                if (results.Status == DialogTurnStatus.Empty)
                 {
                     var options = new PromptOptions { Prompt = new Activity { Type = ActivityTypes.Message, Text = "please add an attachment." } };
                     await dc.PromptAsync("AttachmentPrompt", options, cancellationToken);
                 }
-                else if (!results.HasActive && results.HasResult)
+                else if (results.Status == DialogTurnStatus.Complete)
                 {
                     var attachments = results.Result as List<Attachment>;
                     var content = MessageFactory.Text((string)attachments[0].Content);
@@ -101,12 +101,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             {
                 var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
                 var results = await dc.ContinueAsync(cancellationToken);
-                if (!turnContext.Responded && !results.HasActive && !results.HasResult)
+                if (results.Status == DialogTurnStatus.Empty)
                 {
                     var options = new PromptOptions { Prompt = new Activity { Type = ActivityTypes.Message, Text = "please add an attachment." } };
                     await dc.PromptAsync("AttachmentPrompt", options, cancellationToken);
                 }
-                else if (!results.HasActive && results.HasResult)
+                else if (results.Status == DialogTurnStatus.Complete)
                 {
                     var attachments = results.Result as List<Attachment>;
                     var content = MessageFactory.Text((string)attachments[0].Content);
