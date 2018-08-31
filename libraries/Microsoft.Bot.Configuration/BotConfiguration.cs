@@ -91,7 +91,7 @@ namespace Microsoft.Bot.Configuration
         /// <returns>BotConfiguration.</returns>
         public static BotConfiguration LoadFromFolder(string folder, string secret = null)
         {
-            return LoadFromFolderAsync(folder, secret).GetAwaiter().GetResult();
+            return BotConfiguration.LoadFromFolderAsync(folder, secret).GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -128,7 +128,7 @@ namespace Microsoft.Bot.Configuration
         /// <returns>BotConfiguration. </returns>
         public static BotConfiguration Load(string file, string secret = null)
         {
-            return LoadAsync(file, secret).GetAwaiter().GetResult();
+            return BotConfiguration.LoadAsync(file, secret).GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -155,6 +155,7 @@ namespace Microsoft.Bot.Configuration
         /// </summary>
         /// <param name="path">Path to bot file.</param>
         /// <param name="secret">Secret for encrypting the file keys.</param>
+        /// <returns>Task. </returns>
         public async Task SaveAsAsync(string path, string secret = null)
         {
             if (!string.IsNullOrEmpty(secret))
