@@ -183,7 +183,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <returns>The dialog context.</returns>
         public async Task<DialogTurnResult> CancelAllAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (Stack.Count > 0)
+            if (Stack.Any())
             {
                 while (Stack.Any())
                 {
