@@ -12,11 +12,7 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// </summary>
     public abstract class Dialog
     {
-        public static readonly DialogTurnResult EndOfTurn = new DialogTurnResult
-        {
-            HasActive = true,
-            HasResult = false,
-        };
+        public static readonly DialogTurnResult EndOfTurn = new DialogTurnResult(DialogTurnStatus.Waiting);
 
         public Dialog(string dialogId)
         {

@@ -9,21 +9,19 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// </summary>
     public class DialogTurnResult
     {
-        /// <summary>
-        /// Gets or sets a value indicating whether the dialog is still active.
-        /// </summary>
-        /// <value>
-        /// <c>true</c> the dialog is still active; otherwise <c>false</c>.
-        /// </value>
-        public bool HasActive { get; set; }
+        public DialogTurnResult(DialogTurnStatus status, object result = null)
+        {
+            Status = status;
+            Result = result;
+        }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the dialog completed and its final [result](#result) can be retrieved.
+        /// Gets or sets the current status of the stack.
         /// </summary>
         /// <value>
-        /// <c>true</c> if the dialog just completed and the final [result](#result) can be retrieved; otherwise <c>false</c>.
+        /// The current status of the stack.
         /// </value>
-        public bool HasResult { get; set; }
+        public DialogTurnStatus Status { get; set; }
 
         /// <summary>
         /// Gets or sets the result returned by a dialog that was just ended.

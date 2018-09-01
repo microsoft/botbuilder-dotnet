@@ -83,8 +83,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             Stack.Insert(0, instance);
 
             // Call dialogs BeginAsync() method.
-            var turnResult = await dialog.DialogBeginAsync(this, options, cancellationToken).ConfigureAwait(false);
-            return VerifyTurnResult(turnResult);
+            return await dialog.DialogBeginAsync(this, options, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -130,16 +129,11 @@ namespace Microsoft.Bot.Builder.Dialogs
                 }
 
                 // Continue execution of dialog
-                var turnResult = await dialog.DialogContinueAsync(this, cancellationToken).ConfigureAwait(false);
-                return VerifyTurnResult(turnResult);
+                return await dialog.DialogContinueAsync(this, cancellationToken).ConfigureAwait(false);
             }
             else
             {
-                return new DialogTurnResult
-                {
-                    HasActive = false,
-                    HasResult = false,
-                };
+                return new DialogTurnResult(DialogTurnStatus.Empty);
             }
         }
 
@@ -174,17 +168,11 @@ namespace Microsoft.Bot.Builder.Dialogs
                 }
 
                 // Return result to previous dialog
-                var turnResult = await dialog.DialogResumeAsync(this, DialogReason.EndCalled, result, cancellationToken).ConfigureAwait(false);
-                return VerifyTurnResult(turnResult);
+                return await dialog.DialogResumeAsync(this, DialogReason.EndCalled, result, cancellationToken).ConfigureAwait(false);
             }
             else
             {
-                return new DialogTurnResult
-                {
-                    HasActive = false,
-                    HasResult = result != null,
-                    Result = result,
-                };
+                return new DialogTurnResult(DialogTurnStatus.Complete, result);
             }
         }
 
@@ -193,11 +181,20 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </summary>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The dialog context.</returns>
-        public async Task CancelAllAsync(CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<DialogTurnResult> CancelAllAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
-            while (Stack.Any())
+            if (Stack.Any())
             {
-                await EndActiveDialogAsync(DialogReason.CancelCalled, cancellationToken).ConfigureAwait(false);
+                while (Stack.Any())
+                {
+                    await EndActiveDialogAsync(DialogReason.CancelCalled, cancellationToken).ConfigureAwait(false);
+                }
+
+                return new DialogTurnResult(DialogTurnStatus.Cancelled);
+            }
+            else
+            {
+                return new DialogTurnResult(DialogTurnStatus.Empty);
             }
         }
 
@@ -254,18 +251,6 @@ namespace Microsoft.Bot.Builder.Dialogs
                 // Pop dialog off stack
                 Stack.RemoveAt(0);
             }
-        }
-
-        private DialogTurnResult VerifyTurnResult(DialogTurnResult result)
-        {
-            result.HasActive = Stack.Count() > 0;
-            if (result.HasActive)
-            {
-                result.HasResult = false;
-                result.Result = null;
-            }
-
-            return result;
         }
     }
 }
