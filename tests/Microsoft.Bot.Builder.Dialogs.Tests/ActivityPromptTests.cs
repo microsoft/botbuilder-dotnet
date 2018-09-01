@@ -79,12 +79,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
 
                 var results = await dc.ContinueAsync(cancellationToken);
-                if (!turnContext.Responded && !results.HasActive && !results.HasResult)
+                if (results.Status == DialogTurnStatus.Empty)
                 {
                     var options = new PromptOptions { Prompt = new Activity { Type = ActivityTypes.Message, Text = "please send an event." } };
                     await dc.PromptAsync("EventActivityPrompt", options, cancellationToken);
                 }
-                else if (!results.HasActive && results.HasResult)
+                else if (results.Status == DialogTurnStatus.Complete)
                 {
                     var content = MessageFactory.Text(results.Result.ToString());
                     await turnContext.SendActivityAsync(content, cancellationToken);
@@ -117,12 +117,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             {
                 var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
                 var results = await dc.ContinueAsync(cancellationToken);
-                if (!turnContext.Responded && !results.HasActive && !results.HasResult)
+                if (results.Status == DialogTurnStatus.Empty)
                 {
                     var options = new PromptOptions { Prompt = new Activity { Type = ActivityTypes.Message, Text = "please send an event." } };
                     await dc.PromptAsync("EventActivityPrompt", options);
                 }
-                else if (!results.HasActive && results.HasResult)
+                else if (results.Status == DialogTurnStatus.Complete)
                 {
                     var content = MessageFactory.Text(results.Result.ToString());
                     await turnContext.SendActivityAsync(content, cancellationToken);

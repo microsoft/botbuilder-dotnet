@@ -36,12 +36,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
 
                 var results = await dc.ContinueAsync();
-                if (!turnContext.Responded && !results.HasActive && !results.HasResult)
+                if (results.Status == DialogTurnStatus.Empty)
                 {
                     var options = new PromptOptions { Prompt = new Activity { Type = ActivityTypes.Message, Text = "What date would you like?" } };
                     await dc.PromptAsync("DateTimePrompt", options, cancellationToken);
                 }
-                else if (!results.HasActive && results.HasResult)
+                else if (results.Status == DialogTurnStatus.Complete)
                 {
                     var resolution = ((IList<DateTimeResolution>)results.Result).First();
                     var reply = MessageFactory.Text($"Timex:'{resolution.Timex}' Value:'{resolution.Value}'");
@@ -76,12 +76,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
 
                 var results = await dc.ContinueAsync(cancellationToken);
-                if (!turnContext.Responded && !results.HasActive && !results.HasResult)
+                if (results.Status == DialogTurnStatus.Empty)
                 {
                     var options = new PromptOptions { Prompt = new Activity { Type = ActivityTypes.Message, Text = "What date would you like?" } };
                     await dc.PromptAsync("DateTimePrompt", options, cancellationToken);
                 }
-                else if (!results.HasActive && results.HasResult)
+                else if (results.Status == DialogTurnStatus.Complete)
                 {
                     var resolutions = (IList<DateTimeResolution>)results.Result;
                     var timexExpressions = resolutions.Select(r => r.Timex).Distinct();
@@ -117,12 +117,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
 
                 var results = await dc.ContinueAsync(cancellationToken);
-                if (!turnContext.Responded && !results.HasActive && !results.HasResult)
+                if (results.Status == DialogTurnStatus.Empty)
                 {
                     var options = new PromptOptions { Prompt = new Activity { Type = ActivityTypes.Message, Text = "What date would you like?" } };
                     await dc.PromptAsync("DateTimePrompt", options, cancellationToken);
                 }
-                else if (!results.HasActive && results.HasResult)
+                else if (results.Status == DialogTurnStatus.Complete)
                 {
                     var resolution = ((IList<DateTimeResolution>)results.Result).First();
                     var reply = MessageFactory.Text($"Timex:'{resolution.Timex}' Value:'{resolution.Value}'");
