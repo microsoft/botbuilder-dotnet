@@ -76,7 +76,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Configuration
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Configuration.Tests", "tests\Microsoft.Bot.Configuration.Tests\Microsoft.Bot.Configuration.Tests.csproj", "{1B7920E6-5262-4054-B72D-3A8DBBA057D2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Builder.AI.LanguageGeneration.Tests", "Microsoft.Bot.Builder.Ai.LanguageGeneration.Tests\Microsoft.Bot.Builder.AI.LanguageGeneration.Tests.csproj", "{CBBB03DA-6BA7-451A-9BA4-5E952F90032B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.AI.LanguageGeneration.Tests", "Microsoft.Bot.Builder.Ai.LanguageGeneration.Tests\Microsoft.Bot.Builder.AI.LanguageGeneration.Tests.csproj", "{CBBB03DA-6BA7-451A-9BA4-5E952F90032B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{5E8DE51E-78A6-4450-B0E7-599CCFC9A5B4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspNetCore-LuisLG-Bot", "AspNetCore-LuisLG-Bot\AspNetCore-LuisLG-Bot.csproj", "{8F69DC7F-8134-47A1-8F64-BB08E9C28727}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -332,6 +336,14 @@ Global
 		{CBBB03DA-6BA7-451A-9BA4-5E952F90032B}.Documentation|Any CPU.Build.0 = Debug|Any CPU
 		{CBBB03DA-6BA7-451A-9BA4-5E952F90032B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CBBB03DA-6BA7-451A-9BA4-5E952F90032B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8F69DC7F-8134-47A1-8F64-BB08E9C28727}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
+		{8F69DC7F-8134-47A1-8F64-BB08E9C28727}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
+		{8F69DC7F-8134-47A1-8F64-BB08E9C28727}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8F69DC7F-8134-47A1-8F64-BB08E9C28727}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8F69DC7F-8134-47A1-8F64-BB08E9C28727}.Documentation|Any CPU.ActiveCfg = Debug|Any CPU
+		{8F69DC7F-8134-47A1-8F64-BB08E9C28727}.Documentation|Any CPU.Build.0 = Debug|Any CPU
+		{8F69DC7F-8134-47A1-8F64-BB08E9C28727}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8F69DC7F-8134-47A1-8F64-BB08E9C28727}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -373,6 +385,7 @@ Global
 		{0B8ABFDB-F9CF-4EC6-988E-9C32D9E01C26} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
 		{1B7920E6-5262-4054-B72D-3A8DBBA057D2} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 		{CBBB03DA-6BA7-451A-9BA4-5E952F90032B} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
+		{8F69DC7F-8134-47A1-8F64-BB08E9C28727} = {5E8DE51E-78A6-4450-B0E7-599CCFC9A5B4}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7173C9F3-A7F9-496E-9078-9156E35D6E16}

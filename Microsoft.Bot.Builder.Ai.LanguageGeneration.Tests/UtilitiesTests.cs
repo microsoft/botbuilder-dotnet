@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.AI.LanguageGeneration.Engine;
 using Microsoft.Bot.Builder.AI.LanguageGeneration.Helpers;
 using Microsoft.Bot.Builder.AI.LanguageGeneration.Resolver;
+using Microsoft.Bot.Builder.AI.LanguageGeneration.Tests.TestData.Mocks;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -394,6 +395,105 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             };
 
             CollectionAssert.AreEquivalent(expectedRecognizedTemplates, recognizedTemplates);
+        }
+
+        [TestMethod]
+        [TestCategory("ActivityInspector")]
+        public void TestActivityModifier_ModifyText_Valid()
+        {
+            var activity = new Activity()
+            {
+                Text = "[wPhrase] sir, [offerHelp]"
+            };
+
+            var compositeResponseMock = new CompositeResponseMock()
+            {
+                TemplateResolutions = new Dictionary<string, string>()
+                {
+                    {"wPhrase", "Hello" },
+                    {"offerHelp", "How can I help you Today" },
+                }
+            };
+
+            var activityTextModifier = new ActivityTextModifier();
+            activityTextModifier.Modify(activity, compositeResponseMock);
+            Assert.IsNotNull(activity.Text);
+            Assert.AreEqual("Hello sir, How can I help you Today", activity.Text);
+        }
+
+        [TestMethod]
+        [TestCategory("ActivityInspector")]
+        public void TestActivityModifier_ModifySpeech_Valid()
+        {
+            var activity = new Activity()
+            {
+                Speak = "[wPhrase] sir, [offerHelp]"
+            };
+
+            var compositeResponseMock = new CompositeResponseMock()
+            {
+                TemplateResolutions = new Dictionary<string, string>()
+                {
+                    {"wPhrase", "Hello" },
+                    {"offerHelp", "How can I help you Today" },
+                }
+            };
+
+            var activitySpeechModifier = new ActivitySpeechModifier();
+            activitySpeechModifier.Modify(activity, compositeResponseMock);
+            Assert.IsNotNull(activity.Speak);
+            Assert.AreEqual("Hello sir, How can I help you Today", activity.Speak);
+        }
+
+        [TestMethod]
+        [TestCategory("ActivityInspector")]
+        public void TestActivityModifier_ModifySuggestedActions_Valid()
+        {
+            var activity = new Activity()
+            {
+                SuggestedActions = new SuggestedActions()
+                {
+                    Actions = new List<CardAction>()
+                    {
+                        new CardAction()
+                        {
+                            Text = "[wPhrase] sir",
+                            DisplayText = "[offerHelp]"
+                        }
+                    }
+                }
+            };
+
+            var compositeResponseMock = new CompositeResponseMock()
+            {
+                TemplateResolutions = new Dictionary<string, string>()
+                {
+                    {"wPhrase", "Hello" },
+                    {"offerHelp", "How can I help you Today" },
+                }
+            };
+
+            var activitySuggestedActionsModifier = new ActivitySuggestedActionsModifier();
+            activitySuggestedActionsModifier.Modify(activity, compositeResponseMock);
+
+
+            var expectedSuggestedActions = new List<CardAction>()
+            {
+                new CardAction()
+                {
+                    Text = "Hello sir",
+                    DisplayText = "How can I help you Today",
+                }
+            };
+
+            var actualSuggestedActions = (List<CardAction>)activity.SuggestedActions.Actions;
+
+            Assert.IsNotNull(activity.SuggestedActions);
+            Assert.IsNotNull(activity.SuggestedActions.Actions);
+            Assert.IsNotNull(expectedSuggestedActions[0].DisplayText);
+            Assert.IsNotNull(expectedSuggestedActions[0].Text);
+            Assert.AreEqual(expectedSuggestedActions[0].DisplayText, actualSuggestedActions[0].DisplayText);
+            Assert.AreEqual(expectedSuggestedActions[0].Text, actualSuggestedActions[0].Text);
         }
     }
 }
