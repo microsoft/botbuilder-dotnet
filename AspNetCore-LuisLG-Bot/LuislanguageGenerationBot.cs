@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot;
 using Microsoft.Bot.Builder;
@@ -15,21 +15,21 @@ namespace AspNetCore_LuisLG_Bot
             switch (context.Activity.Type)
             {
                 case ActivityTypes.Message:
-
                     var luisResult = context.Services.Get<RecognizerResult>(LuisRecognizerMiddleware.LuisRecognizerResultKey);
 
-                    if (luisResult != null)
+                    var (intent, score) = luisResult.GetTopScoringIntent();
+                    var outgoingActivity = new Activity();
+                    if (intent == "greeting")
                     {
-                        (string key, double score) topItem = luisResult.GetTopScoringIntent();
-                        await context.SendActivity($"The **top intent** was: **'{topItem.key}'**, with score **{topItem.score}**");
+                        outgoingActivity.Text = "hello my friend";
+                        await context.SendActivity(outgoingActivity);
 
-                        await context.SendActivity($"Detail of intents scorings:");
-                        var intentsResult = new List<string>();
-                        foreach (var intent in luisResult.Intents)
-                        {
-                            intentsResult.Add($"* '{intent.Key}', score {intent.Value}");
-                        }
-                        await context.SendActivity(string.Join("\n\n", intentsResult));
+                    }
+                    else if (intent == "help")
+                    {
+                        outgoingActivity.Text = "how can I help you dear?";
+                        await context.SendActivity(outgoingActivity);
+
                     }
                     break;
                 case ActivityTypes.ConversationUpdate:

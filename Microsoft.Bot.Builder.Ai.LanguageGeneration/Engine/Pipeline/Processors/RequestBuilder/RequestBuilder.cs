@@ -11,6 +11,11 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Engine
     {
         public ICompositeRequest BuildRequest(IList<Slot> slots)
         {
+            if (slots == null)
+            {
+                throw new ArgumentNullException(nameof(slots));
+            }
+
             ICompositeRequest compositeRequest = new CompositeRequest();
             IList<Slot> perRequestSlots = new List<Slot>();
             var commonSlotsDictionary = new LGSlotDictionary();
@@ -78,10 +83,10 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Engine
             foreach (var slot in perRequestSlots)
             {
                 var lgRequest = new LGRequest();
-                var slotStringValue = (List<string>)slot.KeyValue.Value;
+                var slotStringValues = new List<string> { (string)slot.KeyValue.Value };
                 var lgValue = new LGValue(LgValueType.StringType)
                 {
-                    StringValues = slotStringValue
+                    StringValues = new List<string> { (string)slot.KeyValue.Value }
                 };
                 lgRequest.Slots = new LGSlotDictionary();
                 foreach (var commonSlot in commonSlotsDictionary)
@@ -90,7 +95,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Engine
                 }
                 lgRequest.Slots.Add(slot.KeyValue.Key, lgValue);
 
-                compositeRequest.Requests.Add(slotStringValue[0], lgRequest);
+                compositeRequest.Requests.Add(slotStringValues[0], lgRequest);
             }
 
             return compositeRequest;

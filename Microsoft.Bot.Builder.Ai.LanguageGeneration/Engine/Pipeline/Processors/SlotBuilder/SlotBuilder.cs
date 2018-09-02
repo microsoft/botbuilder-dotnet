@@ -30,7 +30,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Engine
             {
                 var slot = new Slot
                 {
-                    KeyValue = new KeyValuePair<string, object>("GetStateName", new List<string> { activitySlot.Replace("[", "").Replace("]", "") })
+                    KeyValue = new KeyValuePair<string, object>("GetStateName", activitySlot.Replace("[", "").Replace("]", ""))
                 };
                 slots.Add(slot);
             }

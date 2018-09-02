@@ -35,8 +35,8 @@ namespace AspNetCore_LuisLG_Bot
             {
                 options.CredentialProvider = new ConfigurationCredentialProvider(Configuration);
 
-                string luisModelId = "<Your Model Here>";
-                string luisSubscriptionKey = "<Your Key here>";
+                string luisModelId = Keys.LuisModelId;
+                string luisSubscriptionKey = Keys.LuisSubscriptionKey;
                 Uri luisUri = new Uri("https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/");
                 var luisModel = new LuisModel(luisModelId, luisSubscriptionKey, luisUri);
 

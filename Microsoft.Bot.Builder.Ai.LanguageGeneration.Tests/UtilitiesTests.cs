@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using DialogFoundation.Backend.LG;
+using Microsoft.Bot.Builder.AI.LanguageGeneration.API;
 using Microsoft.Bot.Builder.AI.LanguageGeneration.Engine;
 using Microsoft.Bot.Builder.AI.LanguageGeneration.Helpers;
 using Microsoft.Bot.Builder.AI.LanguageGeneration.Resolver;
@@ -494,6 +496,341 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.IsNotNull(expectedSuggestedActions[0].Text);
             Assert.AreEqual(expectedSuggestedActions[0].DisplayText, actualSuggestedActions[0].DisplayText);
             Assert.AreEqual(expectedSuggestedActions[0].Text, actualSuggestedActions[0].Text);
+        }
+
+        [TestMethod]
+        [TestCategory("RequestBuilder")]
+        public void TestRequestBuilder_BuildRequestNullParameters_InValid()
+        {
+            try
+            {
+                var requestBuilder = new RequestBuilder();
+                requestBuilder.BuildRequest(null);
+            }
+            catch (ArgumentNullException e)
+            {
+                Assert.AreEqual("slots", e.ParamName);
+            }
+        }
+
+        [TestMethod]
+        [TestCategory("RequestBuilder")]
+        public void TestRequestBuilder_BuildRequestOneTemplate_Valid()
+        {
+            var requestBuilder = new RequestBuilder();
+            var slots = new List<Slot>()
+            {
+                new Slot()
+                {
+                    KeyValue = new KeyValuePair<string, object>("GetStateName", "wPhrase")
+                },
+
+                new Slot()
+                {
+                    KeyValue = new KeyValuePair<string, object>("name", "Amr")
+                },
+            };
+
+            var compositeRequest = requestBuilder.BuildRequest(slots);
+
+            var expectedRequests = new Dictionary<string, LGRequest>()
+            {
+                {
+                    "wPhrase", new LGRequest()
+                    {
+                        Slots = new LGSlotDictionary()
+                        {
+                            new KeyValuePair<string, LGValue>("GetStateName", "wPhrase"),
+                            new KeyValuePair<string, LGValue>("name", "Amr"),
+                        }
+                    }
+                }
+            };
+
+            var actualRequests = compositeRequest.Requests;
+
+            Assert.IsNotNull(compositeRequest);
+            Assert.IsNotNull(compositeRequest.Requests);
+            CollectionAssert.AreEqual(expectedRequests["wPhrase"].Slots["GetStateName"].StringValues, compositeRequest.Requests["wPhrase"].Slots["GetStateName"].StringValues);
+            CollectionAssert.AreEqual(expectedRequests["wPhrase"].Slots["name"].StringValues, compositeRequest.Requests["wPhrase"].Slots["name"].StringValues);
+        }
+
+        [TestMethod]
+        [TestCategory("RequestBuilder")]
+        public void TestRequestBuilder_BuildRequestMultipleTemplates_Valid()
+        {
+            var requestBuilder = new RequestBuilder();
+            var slots = new List<Slot>()
+            {
+                new Slot()
+                {
+                    KeyValue = new KeyValuePair<string, object>("GetStateName", "wPhrase")
+                },
+
+                new Slot()
+                {
+                    KeyValue = new KeyValuePair<string, object>("GetStateName", "welcomeUser")
+                },
+
+                new Slot()
+                {
+                    KeyValue = new KeyValuePair<string, object>("name", "Amr")
+                },
+
+                new Slot()
+                {
+                    KeyValue = new KeyValuePair<string, object>("age", 20)
+                },
+            };
+
+            var compositeRequest = requestBuilder.BuildRequest(slots);
+
+            var expectedRequests = new Dictionary<string, LGRequest>()
+            {
+                {
+                    "wPhrase", new LGRequest()
+                    {
+                        Slots = new LGSlotDictionary()
+                        {
+                            new KeyValuePair<string, LGValue>("GetStateName", "wPhrase"),
+                            new KeyValuePair<string, LGValue>("name", "Amr"),
+                            new KeyValuePair<string, LGValue>("age", 20),
+                        }
+                    }
+                },
+
+                {
+                    "welcomeUser", new LGRequest()
+                    {
+                        Slots = new LGSlotDictionary()
+                        {
+                            new KeyValuePair<string, LGValue>("GetStateName", "welcomeUser"),
+                            new KeyValuePair<string, LGValue>("name", "Amr"),
+                            new KeyValuePair<string, LGValue>("age", 20),
+                        }
+                    }
+                },
+            };
+
+            var actualRequests = compositeRequest.Requests;
+
+            Assert.IsNotNull(compositeRequest);
+            Assert.IsNotNull(compositeRequest.Requests);
+            CollectionAssert.AreEqual(expectedRequests["wPhrase"].Slots["GetStateName"].StringValues, compositeRequest.Requests["wPhrase"].Slots["GetStateName"].StringValues);
+            CollectionAssert.AreEqual(expectedRequests["wPhrase"].Slots["name"].StringValues, compositeRequest.Requests["wPhrase"].Slots["name"].StringValues);
+            CollectionAssert.AreEqual(expectedRequests["wPhrase"].Slots["age"].IntValues, compositeRequest.Requests["wPhrase"].Slots["age"].IntValues);
+            CollectionAssert.AreEqual(expectedRequests["welcomeUser"].Slots["GetStateName"].StringValues, compositeRequest.Requests["welcomeUser"].Slots["GetStateName"].StringValues);
+            CollectionAssert.AreEqual(expectedRequests["welcomeUser"].Slots["name"].StringValues, compositeRequest.Requests["welcomeUser"].Slots["name"].StringValues);
+            CollectionAssert.AreEqual(expectedRequests["welcomeUser"].Slots["age"].IntValues, compositeRequest.Requests["welcomeUser"].Slots["age"].IntValues);
+        }
+
+        [TestMethod]
+        [TestCategory("ResponseGenerator")]
+        public async Task TestResponseGenerator_GenerateResponseNullCompositeRequest_InValidAsync()
+        {
+            var responseGenerator = new ResponseGenerator();
+            var serviceAgent = new ServiceAgentMock(new Dictionary<string, string>());
+            try
+            {
+                await responseGenerator.GenerateResponseAsync(null, serviceAgent);
+            }
+            catch (ArgumentNullException e)
+            {
+                Assert.AreEqual("compositeRequest", e.ParamName);
+            }
+        }
+
+        [TestMethod]
+        [TestCategory("ResponseGenerator")]
+        public async Task TestResponseGenerator_GenerateResponseNullServiceAgent_InValidAsync()
+        {
+            var responseGenerator = new ResponseGenerator();
+            var compositeRequest = new CompositeRequest();
+            try
+            {
+                await responseGenerator.GenerateResponseAsync(compositeRequest, null);
+            }
+            catch (ArgumentNullException e)
+            {
+                Assert.AreEqual("serviceAgent", e.ParamName);
+            }
+        }
+
+        [TestMethod]
+        [TestCategory("ResponseGenerator")]
+        public async Task TestResponseGenerator_GenerateResponseAllNull_InValidAsync()
+        {
+            var responseGenerator = new ResponseGenerator();
+            try
+            {
+                await responseGenerator.GenerateResponseAsync(null, null);
+            }
+            catch (ArgumentNullException e)
+            {
+                //because it's the first parameter to be checked in the function logic
+                Assert.AreEqual("compositeRequest", e.ParamName);
+            }
+        }
+
+        [TestMethod]
+        [TestCategory("ResponseGenerator")]
+        public async Task TestResponseGenerator_GenerateResponseOneTemplateSimple_ValidAsync()
+        {
+            var resolutionsDictionary = new Dictionary<string, string>
+            {
+                { "wPhrase", "Hello" },
+                { "welcomeUser", "welcome {name}, happy {age} years" },
+                { "offerHelp", "How can I help you?" },
+                { "errorReadout", "Sorry, something went wrong, could you repeate this again?" },
+            };
+            var serviceAgentMock = new ServiceAgentMock(resolutionsDictionary);
+            var responseGenerator = new ResponseGenerator();
+
+            var compositeRequest = new CompositeRequestMock()
+            {
+                Requests = new Dictionary<string, LGRequest>()
+                {
+                    {
+                        "wPhrase", new LGRequest()
+                        {
+                            Slots = new LGSlotDictionary()
+                            {
+                                new KeyValuePair<string, LGValue>("GetStateName", "wPhrase"),
+                                new KeyValuePair<string, LGValue>("name", "Amr"),
+                                new KeyValuePair<string, LGValue>("age", 20),
+                            }
+                        }
+                    },
+                }
+            };
+
+            var compositeResponse = await responseGenerator.GenerateResponseAsync(compositeRequest, serviceAgentMock).ConfigureAwait(false);
+
+            Assert.IsNotNull(compositeResponse);
+            Assert.IsNotNull(compositeResponse.TemplateResolutions);
+
+            var expectedResponse = new CompositeResponse()
+            {
+                TemplateResolutions = new Dictionary<string, string>()
+                {
+                    {"wPhrase", "Hello" },
+                }
+            };
+
+
+            Assert.AreEqual(expectedResponse.TemplateResolutions["wPhrase"], compositeResponse.TemplateResolutions["wPhrase"]);
+        }
+
+        [TestMethod]
+        [TestCategory("ResponseGenerator")]
+        public async Task TestResponseGenerator_GenerateResponseOneTemplateComplex_ValidAsync()
+        {
+            var resolutionsDictionary = new Dictionary<string, string>
+            {
+                { "wPhrase", "Hello" },
+                { "welcomeUser", "welcome {name}, happy {age} years" },
+                { "offerHelp", "How can I help you?" },
+                { "errorReadout", "Sorry, something went wrong, could you repeate this again?" },
+            };
+            var serviceAgentMock = new ServiceAgentMock(resolutionsDictionary);
+            var responseGenerator = new ResponseGenerator();
+
+            var compositeRequest = new CompositeRequestMock()
+            {
+                Requests = new Dictionary<string, LGRequest>()
+                {
+                    {
+                        "welcomeUser", new LGRequest()
+                        {
+                            Slots = new LGSlotDictionary()
+                            {
+                                new KeyValuePair<string, LGValue>("GetStateName", "welcomeUser"),
+                                new KeyValuePair<string, LGValue>("name", "Amr"),
+                                new KeyValuePair<string, LGValue>("age", 20),
+                            }
+                        }
+                    }
+                }
+            };
+
+            var compositeResponse = await responseGenerator.GenerateResponseAsync(compositeRequest, serviceAgentMock).ConfigureAwait(false);
+
+            Assert.IsNotNull(compositeResponse);
+            Assert.IsNotNull(compositeResponse.TemplateResolutions);
+
+            var expectedResponse = new CompositeResponse()
+            {
+                TemplateResolutions = new Dictionary<string, string>()
+                {
+                    {"welcomeUser", "welcome Amr, happy 20 years" },
+                }
+            };
+
+
+            Assert.AreEqual(expectedResponse.TemplateResolutions["welcomeUser"], compositeResponse.TemplateResolutions["welcomeUser"]);
+        }
+
+        [TestMethod]
+        [TestCategory("ResponseGenerator")]
+        public async Task TestResponseGenerator_GenerateResponseMultipleTemplates_ValidAsync()
+        {
+            var resolutionsDictionary = new Dictionary<string, string>
+            {
+                { "wPhrase", "Hello" },
+                { "welcomeUser", "welcome {name}, happy {age} years" },
+                { "offerHelp", "How can I help you?" },
+                { "errorReadout", "Sorry, something went wrong, could you repeate this again?" },
+            };
+            var serviceAgentMock = new ServiceAgentMock(resolutionsDictionary);
+            var responseGenerator = new ResponseGenerator();
+
+            var compositeRequest = new CompositeRequestMock()
+            {
+                Requests = new Dictionary<string, LGRequest>()
+                {
+                    {
+                        "wPhrase", new LGRequest()
+                        {
+                            Slots = new LGSlotDictionary()
+                            {
+                                new KeyValuePair<string, LGValue>("GetStateName", "wPhrase"),
+                                new KeyValuePair<string, LGValue>("name", "Amr"),
+                                new KeyValuePair<string, LGValue>("age", 20),
+                            }
+                        }
+                    },
+
+                    {
+                        "welcomeUser", new LGRequest()
+                        {
+                            Slots = new LGSlotDictionary()
+                            {
+                                new KeyValuePair<string, LGValue>("GetStateName", "welcomeUser"),
+                                new KeyValuePair<string, LGValue>("name", "Amr"),
+                                new KeyValuePair<string, LGValue>("age", 20),
+                            }
+                        }
+                    }
+                }
+            };
+
+            var compositeResponse = await responseGenerator.GenerateResponseAsync(compositeRequest, serviceAgentMock).ConfigureAwait(false);
+
+            Assert.IsNotNull(compositeResponse);
+            Assert.IsNotNull(compositeResponse.TemplateResolutions);
+
+            var expectedResponse = new CompositeResponse()
+            {
+                TemplateResolutions = new Dictionary<string, string>()
+                {
+                    {"wPhrase", "Hello" },
+                    {"welcomeUser", "welcome Amr, happy 20 years" },
+                }
+            };
+
+
+            Assert.AreEqual(expectedResponse.TemplateResolutions["wPhrase"], compositeResponse.TemplateResolutions["wPhrase"]);
+            Assert.AreEqual(expectedResponse.TemplateResolutions["welcomeUser"], compositeResponse.TemplateResolutions["welcomeUser"]);
         }
     }
 }

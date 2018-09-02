@@ -10,6 +10,16 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Engine
     {
         public async Task<ICompositeResponse> GenerateResponseAsync(ICompositeRequest compositeRequest, IServiceAgent serviceAgent)
         {
+            if (compositeRequest == null)
+            {
+                throw new ArgumentNullException(nameof(compositeRequest));
+            }
+
+            if (serviceAgent == null)
+            {
+                throw new ArgumentNullException(nameof(serviceAgent));
+            }
+
             var compositeResponse = new CompositeResponse();
             if (compositeRequest == null)
             {
