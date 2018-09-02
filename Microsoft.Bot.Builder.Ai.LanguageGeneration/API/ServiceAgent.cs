@@ -7,7 +7,7 @@ using Microsoft.Bot.Builder.AI.LanguageGeneration.API;
 
 namespace Microsoft.Bot.Builder.AI.LanguageGeneration.API
 {
-    internal class ServiceAgent : IServiceAgent
+    public class ServiceAgent : IServiceAgent
     {
         private LGServiceAgent _serviceAgent;
         public ServiceAgent(string endPoint)

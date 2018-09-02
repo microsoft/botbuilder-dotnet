@@ -66,11 +66,18 @@
     <PackageReference Include="AsyncUsageAnalyzers" Version="1.0.0-alpha003" PrivateAssets="all" />
     <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(PackageVersion)' != '' " Version="$(PackageVersion)" />
     <PackageReference Include="Microsoft.Rest.ClientRuntime" Version="2.3.11" />
-		<PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
+		<PackageReference Include="Newtonsoft.Json" Version="10.0.4" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.0-beta008" PrivateAssets="all" />
 	</ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Microsoft.Bot.Builder.Ai.LanguageGeneration\Microsoft.Bot.Builder.AI.LanguageGeneration.csproj" />
     <ProjectReference Include="..\Microsoft.Bot.Builder\Microsoft.Bot.Builder.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\..\..\..\Users\a-amelse\.nuget\packages\newtonsoft.json\10.0.4\lib\net40\Newtonsoft.Json.dll</HintPath>
+    </Reference>
   </ItemGroup>
 </Project>
