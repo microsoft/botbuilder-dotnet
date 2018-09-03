@@ -2,8 +2,12 @@
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
         <Identity Id="Microsoft.Bot.Builder.Template.EchoBot" Version="1.0" Language="en-US" Publisher="Microsoft" />
-        <DisplayName>EchoBot Template</DisplayName>
-        <Description xml:space="preserve">This template shows how to integrate a simple EchoBot bot with ASP.Net Core 2.</Description>
+        <DisplayName>Bot Builder V4 SDK Template for Visual Studio</DisplayName>
+        <Description xml:space="preserve">Template to create conversational bots using Microsoft Bot Framework. It uses Bot Framework V4 SDK.</Description>
+        <MoreInfo>https://aka.ms/BotBuilderOverview</MoreInfo>
+        <License>LICENSE.txt</License>
+        <Icon>Package.ico</Icon>
+        <Tags>Bot, Bot Framework</Tags>
     </Metadata>
     <Installation>
         <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[15.0, 16.0)" />
