@@ -535,23 +535,74 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
-        /// Signs the user out with the token server.
+        /// Get the raw signin link to be sent to the user for signin for a connection name.
         /// </summary>
         /// <param name="turnContext">Context for the current turn of conversation with the user.</param>
         /// <param name="connectionName">Name of the auth connection to use.</param>
+        /// <param name="userId">The user id that will be associated with the token.</param>
+        /// <param name="finalRedirect">The final URL that the OAuth flow will redirect to.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
-        public async Task SignOutUserAsync(ITurnContext turnContext, string connectionName, CancellationToken cancellationToken)
+        /// <remarks>If the task completes successfully, the result contains the raw signin link.</remarks>
+        public async Task<string> GetOauthSignInLinkAsync(ITurnContext turnContext, string connectionName, string userId, string finalRedirect = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             BotAssert.ContextNotNull(turnContext);
+
             if (string.IsNullOrWhiteSpace(connectionName))
             {
                 throw new ArgumentNullException(nameof(connectionName));
             }
 
+            if (string.IsNullOrWhiteSpace(userId))
+            {
+                throw new ArgumentNullException(nameof(userId));
+            }
+
             var client = CreateOAuthApiClient(turnContext);
-            await client.SignOutUserAsync(turnContext.Activity.From.Id, connectionName, cancellationToken).ConfigureAwait(false);
+            return await client.GetSignInLinkAsync(connectionName, userId, finalRedirect, cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Signs the user out with the token server.
+        /// </summary>
+        /// <param name="turnContext">Context for the current turn of conversation with the user.</param>
+        /// <param name="connectionName">Name of the auth connection to use.</param>
+        /// <param name="userId">User id of user to sign out.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        public async Task SignOutUserAsync(ITurnContext turnContext, string connectionName = null, string userId = null, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            BotAssert.ContextNotNull(turnContext);
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                userId = turnContext.Activity?.From?.Id;
+            }
+
+            var client = CreateOAuthApiClient(turnContext);
+            await client.SignOutUserAsync(userId, connectionName, cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Retrieves the token status for each configured connection for the given user.
+        /// </summary>
+        /// <param name="context">Context for the current turn of conversation with the user.</param>
+        /// <param name="userId">The user Id for which token status is retrieved.</param>
+        /// <param name="includeFilter">Optional comma seperated list of connection's to include. Blank will return token status for all configured connections.</param>
+        /// <returns>Array of TokenStatus.</returns>
+        public async Task<TokenStatus[]> GetTokenStatusAsync(ITurnContext context, string userId, string includeFilter = null)
+        {
+            BotAssert.ContextNotNull(context);
+
+            if (string.IsNullOrWhiteSpace(userId))
+            {
+                throw new ArgumentNullException(nameof(userId));
+            }
+
+            var client = this.CreateOAuthApiClient(context);
+            return await client.GetTokenStatusAsync(userId, includeFilter).ConfigureAwait(false);
         }
 
         /// <summary>
