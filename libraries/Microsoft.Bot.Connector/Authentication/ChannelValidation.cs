@@ -13,6 +13,11 @@ namespace Microsoft.Bot.Connector.Authentication
     public static class ChannelValidation
     {
         /// <summary>
+        /// The default endpoint that is used for Open ID Metadata requests.
+        /// </summary>
+        public static string OpenIdMetadataUrl { get; set; } = AuthenticationConstants.ToBotFromChannelOpenIdMetadataUrl;
+
+        /// <summary>
         /// TO BOT FROM CHANNEL: Token validation parameters when connecting to a bot
         /// </summary>
         public static readonly TokenValidationParameters ToBotFromChannelTokenValidationParameters =
@@ -46,7 +51,7 @@ namespace Microsoft.Bot.Connector.Authentication
         {
             var tokenExtractor = new JwtTokenExtractor(httpClient,
                   ToBotFromChannelTokenValidationParameters,
-                  AuthenticationConstants.ToBotFromChannelOpenIdMetadataUrl,
+                  OpenIdMetadataUrl,
                   AuthenticationConstants.AllowedSigningAlgorithms);
 
             var identity = await tokenExtractor.GetIdentityAsync(authHeader, channelId);
