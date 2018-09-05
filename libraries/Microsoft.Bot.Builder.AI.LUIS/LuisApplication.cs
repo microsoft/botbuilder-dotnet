@@ -15,8 +15,8 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// </summary>
         /// <param name="applicationId">LUIS _application ID.</param>
         /// <param name="endpointKey">LUIS subscription or endpoint key.</param>
-        /// <param name="azureRegion">Azure region with endpoint.</param>
-        public LuisApplication(string applicationId, string endpointKey, string azureRegion)
+        /// <param name="endpoint">LUIS endpoint to use.</param>
+        public LuisApplication(string applicationId, string endpointKey, string endpoint)
         {
             if (!Guid.TryParse(applicationId, out var appGuid))
             {
@@ -28,20 +28,14 @@ namespace Microsoft.Bot.Builder.AI.Luis
                 throw new ArgumentException($"\"{applicationId}\" is not a valid LUIS subscription key.");
             }
 
-            if (azureRegion != null && azureRegion.Length > 0)
+            if (string.IsNullOrWhiteSpace(endpoint) || !Uri.IsWellFormedUriString(endpoint, UriKind.Absolute))
             {
-                // Enum values are normalized to first char being capital and the rest lower
-                azureRegion = char.ToUpper(azureRegion[0]) + azureRegion.Substring(1).ToLower();
-            }
-
-            if (!Enum.TryParse<AzureRegions>(azureRegion, out var region))
-            {
-                throw new ArgumentException($"\"{azureRegion}\" is not a valid LUIS region.");
+                throw new ArgumentException($"\"{endpoint}\" is not a valid LUIS endpoint.");
             }
 
             ApplicationId = applicationId;
             EndpointKey = endpointKey;
-            AzureRegion = azureRegion;
+            Endpoint = endpoint;
         }
 
         /// <summary>
@@ -61,11 +55,11 @@ namespace Microsoft.Bot.Builder.AI.Luis
         public string EndpointKey { get; set; }
 
         /// <summary>
-        /// Gets or sets Azure Region where endpoint is located.
+        /// Gets or sets LUIS endpoint.
         /// </summary>
         /// <value>
-        /// Azure Region where endpoint is located.
+        /// LUIS endpoint where application is hosted.
         /// </value>
-        public string AzureRegion { get; set; }
+        public string Endpoint { get; set; }
     }
 }

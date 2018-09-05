@@ -31,7 +31,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// </summary>
         public const string LuisTraceLabel = "Luis Trace";
         private const string _metadataKey = "$instance";
-        private readonly LuisRuntimeAPI _runtime;
+        private readonly ILUISRuntimeClient _runtime;
         private readonly LuisApplication _application;
         private readonly LuisPredictionOptions _options;
         private readonly bool _includeApiResults;
@@ -45,9 +45,9 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// <param name="clientHandler">Custom handler for LUIS API calls.</param>
         public LuisRecognizer(LuisApplication application, LuisPredictionOptions predictionOptions = null, bool includeApiResults = false, HttpClientHandler clientHandler = null)
         {
-            _runtime = new LuisRuntimeAPI(new ApiKeyServiceClientCredentials(application.EndpointKey), clientHandler)
+            _runtime = new LUISRuntimeClient(new ApiKeyServiceClientCredentials(application.EndpointKey), clientHandler)
             {
-                AzureRegion = (AzureRegions)Enum.Parse(typeof(AzureRegions), application.AzureRegion),
+                Endpoint = application.Endpoint,
             };
             _application = application;
             _options = predictionOptions ?? new LuisPredictionOptions();
