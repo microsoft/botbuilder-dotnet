@@ -3,9 +3,6 @@
 
 namespace Microsoft.Bot.Configuration
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Text;
     using Microsoft.Bot.Configuration.Encryption;
     using Newtonsoft.Json;
 
@@ -35,14 +32,20 @@ namespace Microsoft.Bot.Configuration
         public override void Encrypt(string secret)
         {
             base.Encrypt(secret);
-            this.ConnectionString = this.ConnectionString.Encrypt(secret);
+            if (!string.IsNullOrEmpty(this.ConnectionString))
+            {
+                this.ConnectionString = this.ConnectionString.Encrypt(secret);
+            }
         }
 
         /// <inheritdoc/>
         public override void Decrypt(string secret)
         {
             base.Decrypt(secret);
-            this.ConnectionString = this.ConnectionString.Decrypt(secret);
+            if (!string.IsNullOrEmpty(this.ConnectionString))
+            {
+                this.ConnectionString = this.ConnectionString.Decrypt(secret);
+            }
         }
     }
 }

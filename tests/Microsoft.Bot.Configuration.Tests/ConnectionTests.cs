@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -90,6 +91,123 @@ namespace Microsoft.Bot.Configuration.Tests
                 config2.DisconnectServiceByNameOrId(name);
             }
             Assert.AreEqual(config2.Services.Count, 0, "didn't remove all services");
+        }
+
+        [TestMethod]
+        public void EmptyServiceEncryptionIsOK()
+        {
+            var secret = Guid.NewGuid().ToString("n");
+
+            try
+            {
+                var generic = new GenericService();
+                generic.Encrypt(secret);
+                generic.Decrypt(secret);
+            }
+            catch (Exception)
+            {
+                Assert.Fail("generic failed with empty values");
+            }
+
+            try
+            {
+                var file = new FileService();
+                file.Encrypt(secret);
+                file.Decrypt(secret);
+            }
+            catch (Exception)
+            {
+                Assert.Fail("file failed with empty values");
+            }
+
+            try
+            {
+                var luis = new LuisService();
+                luis.Encrypt(secret);
+                luis.Decrypt(secret);
+            }
+            catch (Exception)
+            {
+                Assert.Fail("luis failed with empty values");
+            }
+
+            try
+            {
+                var dispatch = new DispatchService();
+                dispatch.Encrypt(secret);
+                dispatch.Decrypt(secret);
+            }
+            catch (Exception)
+            {
+                Assert.Fail("dispatch failed with empty values");
+            }
+
+            try
+            {
+                var insights = new AppInsightsService();
+                insights.Encrypt(secret);
+                insights.Decrypt(secret);
+            }
+            catch (Exception)
+            {
+                Assert.Fail("insights failed with empty values");
+            }
+
+            try
+            {
+                var bot = new BotService();
+                bot.Encrypt(secret);
+                bot.Decrypt(secret);
+            }
+            catch (Exception)
+            {
+                Assert.Fail("bot failed with empty values");
+            }
+
+            try
+            {
+                var cosmos = new CosmosDbService();
+                cosmos.Encrypt(secret);
+                cosmos.Decrypt(secret);
+            }
+            catch (Exception)
+            {
+                Assert.Fail("cosmos failed with empty values");
+            }
+
+            try
+            {
+                var qna = new QnAMakerService();
+                qna.Encrypt(secret);
+                qna.Decrypt(secret);
+            }
+            catch (Exception)
+            {
+                Assert.Fail("qna failed with empty values");
+            }
+
+            try
+            {
+                var blob = new BlobStorageService();
+                blob.Encrypt(secret);
+                blob.Decrypt(secret);
+            }
+            catch (Exception)
+            {
+                Assert.Fail("blob failed with empty values");
+            }
+
+            try
+            {
+                var endpoint = new EndpointService();
+                endpoint.Encrypt(secret);
+                endpoint.Decrypt(secret);
+            }
+            catch (Exception)
+            {
+                Assert.Fail("endpoint failed with empty values");
+            }
+
         }
     }
 }
