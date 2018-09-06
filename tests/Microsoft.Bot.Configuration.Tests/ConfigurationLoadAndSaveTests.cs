@@ -118,7 +118,8 @@ namespace Microsoft.Bot.Configuration.Tests
             BotConfiguration.LoadFromFolder(".", secret);
         }
 
-        [TestMethod][ExpectedException(typeof(System.Exception))]
+        [TestMethod]
+        [ExpectedException(typeof(System.Exception))]
         public async Task FailLoadFromFolderWithNoSecret()
         {
             string secret = BotConfiguration.GenerateKey();
@@ -143,7 +144,8 @@ namespace Microsoft.Bot.Configuration.Tests
             BotConfiguration.LoadFromFolder(".");
         }
 
-        [TestMethod][ExpectedException(typeof(System.IO.FileNotFoundException))]
+        [TestMethod]
+        [ExpectedException(typeof(System.IO.FileNotFoundException))]
         public async Task LoadNotExistentFile()
         {
             var config = await BotConfiguration.LoadAsync(@"..\..\filedoesntexist.bot");
@@ -235,7 +237,8 @@ namespace Microsoft.Bot.Configuration.Tests
                     case ServiceTypes.CosmosDB:
                         {
                             var cosmosDb = (CosmosDbService)config2.Services[i];
-                            Assert.AreEqual("UseDevelopmentStorage=true;", cosmosDb.ConnectionString, "failed to decrypt connectionString");
+                            Assert.AreEqual("https://localhost:8081/", cosmosDb.Endpoint, "failed to decrypt endpoint");
+                            Assert.AreEqual("C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==", cosmosDb.Key, "failed to decrypt key");
                             Assert.AreEqual("testDatabase", cosmosDb.Database, "failed to decrypt database");
                             Assert.AreEqual("testCollection", cosmosDb.Collection, "failed to decrypt collection");
 
@@ -320,7 +323,8 @@ namespace Microsoft.Bot.Configuration.Tests
                     case ServiceTypes.CosmosDB:
                         {
                             var cosmosdb = (CosmosDbService)config2.Services[i];
-                            Assert.AreNotEqual("UseDevelopmentStorage=true;", cosmosdb.ConnectionString, "failed to encrypt connectionString");
+                            Assert.AreEqual("https://localhost:8081/", cosmosdb.Endpoint, "should not change endpoint" );
+                            Assert.AreNotEqual("C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==", cosmosdb.Key, "failed to encrypt key");
                             Assert.AreEqual("testDatabase", cosmosdb.Database, "should not change database");
                             Assert.AreEqual("testCollection", cosmosdb.Collection, "should not change collection");
                         }
