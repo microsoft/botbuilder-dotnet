@@ -42,6 +42,7 @@ namespace Microsoft.Bot.Builder
 
         private static readonly HttpClient DefaultHttpClient = new HttpClient();
         private readonly ICredentialProvider _credentialProvider;
+        private readonly IChannelProvider _channelProvider;
         private readonly HttpClient _httpClient;
         private readonly RetryPolicy _connectorClientRetryPolicy;
         private ConcurrentDictionary<string, MicrosoftAppCredentials> _appCredentialMap = new ConcurrentDictionary<string, MicrosoftAppCredentials>();
@@ -55,6 +56,7 @@ namespace Microsoft.Bot.Builder
         /// using a credential provider.
         /// </summary>
         /// <param name="credentialProvider">The credential provider.</param>
+        /// <param name="channelProvider">The channel provider.</param>
         /// <param name="connectorClientRetryPolicy">Retry policy for retrying HTTP operations.</param>
         /// <param name="customHttpClient">The HTTP client.</param>
         /// <param name="middleware">The middleware to initially add to the adapter.</param>
@@ -64,9 +66,10 @@ namespace Microsoft.Bot.Builder
         /// components in the conustructor. Use the <see cref="Use(IMiddleware)"/> method to
         /// add additional middleware to the adapter after construction.
         /// </remarks>
-        public BotFrameworkAdapter(ICredentialProvider credentialProvider, RetryPolicy connectorClientRetryPolicy = null, HttpClient customHttpClient = null, IMiddleware middleware = null)
+        public BotFrameworkAdapter(ICredentialProvider credentialProvider, IChannelProvider channelProvider = null, RetryPolicy connectorClientRetryPolicy = null, HttpClient customHttpClient = null, IMiddleware middleware = null)
         {
             _credentialProvider = credentialProvider ?? throw new ArgumentNullException(nameof(credentialProvider));
+            _channelProvider = channelProvider;
             _httpClient = customHttpClient ?? DefaultHttpClient;
             _connectorClientRetryPolicy = connectorClientRetryPolicy;
 
@@ -180,7 +183,7 @@ namespace Microsoft.Bot.Builder
         {
             BotAssert.ActivityNotNull(activity);
 
-            var claimsIdentity = await JwtTokenValidation.AuthenticateRequest(activity, authHeader, _credentialProvider, _httpClient).ConfigureAwait(false);
+            var claimsIdentity = await JwtTokenValidation.AuthenticateRequest(activity, authHeader, _credentialProvider, _channelProvider, _httpClient).ConfigureAwait(false);
             return await ProcessActivityAsync(claimsIdentity, activity, callback, cancellationToken).ConfigureAwait(false);
         }
 
@@ -704,7 +707,10 @@ namespace Microsoft.Bot.Builder
                 }
                 else
                 {
-                    connectorClient = new ConnectorClient(new Uri(serviceUrl));
+                    var emptyCredentials = (_channelProvider != null && _channelProvider.IsGovernment()) ?
+                        MicrosoftGovernmentAppCredentials.Empty :
+                        MicrosoftAppCredentials.Empty;
+                    connectorClient = new ConnectorClient(new Uri(serviceUrl), emptyCredentials);
                 }
 
                 if (_connectorClientRetryPolicy != null)
@@ -736,8 +742,9 @@ namespace Microsoft.Bot.Builder
 
             // NOTE: we can't do async operations inside of a AddOrUpdate, so we split access pattern
             string appPassword = await _credentialProvider.GetAppPasswordAsync(appId).ConfigureAwait(false);
-
-            appCredentials = new MicrosoftAppCredentials(appId, appPassword);
+            appCredentials = (_channelProvider != null && _channelProvider.IsGovernment()) ?
+                new MicrosoftGovernmentAppCredentials(appId, appPassword) :
+                new MicrosoftAppCredentials(appId, appPassword);
             _appCredentialMap[appId] = appCredentials;
             return appCredentials;
         }
