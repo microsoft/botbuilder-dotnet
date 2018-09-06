@@ -46,7 +46,7 @@ namespace Microsoft.Bot.Builder.Classic.Internals.Fibers
     /// <summary>
     /// Autofac module for Fiber components.
     /// </summary>
-    public abstract class FiberModule : Module
+    public class FiberModule : Module
     {
         /// <summary>
         /// Services keyed with <see cref="Key_DoNotSerialize"/> will not be serialized.
