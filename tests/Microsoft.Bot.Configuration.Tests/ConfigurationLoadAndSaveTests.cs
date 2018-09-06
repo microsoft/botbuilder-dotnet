@@ -15,7 +15,9 @@ namespace Microsoft.Bot.Configuration.Tests
             Assert.AreEqual("test", config.Name);
             Assert.AreEqual("test description", config.Description);
             Assert.AreEqual("", config.SecretKey);
-            Assert.AreEqual(10, config.Services.Count);
+            Assert.AreEqual(11, config.Services.Count);
+            dynamic properties = config.Properties;
+            Assert.AreEqual(true, (bool)properties.extra, "extra property should round trip");
 
             // verify types are right
             foreach (var service in config.Services)
@@ -52,6 +54,9 @@ namespace Microsoft.Bot.Configuration.Tests
                     case ServiceTypes.QnA:
                         Assert.AreEqual(typeof(QnAMakerService), service.GetType());
                         break;
+                    case "unknown":
+                        // this is cool, because we want to round-trip unknown service types for future proofing
+                        break;
                     default:
                         throw new Exception("Unknown service type!");
                 }
@@ -65,7 +70,8 @@ namespace Microsoft.Bot.Configuration.Tests
             var config = await BotConfiguration.LoadAsync(@"..\..\test.bot");
             await config.SaveAsAsync("save.bot");
 
-            var config2 = await BotConfiguration.LoadAsync(@"..\..\test.bot");
+            var config2 = await BotConfiguration.LoadAsync(@"save.bot");
+
             Assert.AreEqual(JsonConvert.SerializeObject(config2), JsonConvert.SerializeObject(config), "saved should be the same");
         }
 
@@ -75,7 +81,7 @@ namespace Microsoft.Bot.Configuration.Tests
             var config = BotConfiguration.Load(@"..\..\test.bot");
             config.SaveAs("save.bot");
 
-            var config2 = BotConfiguration.Load(@"..\..\test.bot");
+            var config2 = BotConfiguration.Load(@"save.bot");
             Assert.AreEqual(JsonConvert.SerializeObject(config2), JsonConvert.SerializeObject(config), "saved should be the same");
         }
 
@@ -279,8 +285,9 @@ namespace Microsoft.Bot.Configuration.Tests
                             Assert.AreEqual(generic.Configuration["key2"], "testKey2", "failed to decrypt key2");
                         }
                         break;
+
                     default:
-                        throw new ArgumentException($"Unknown service type {config.Services[i].Type}");
+                        break;
                 }
             }
 
@@ -372,7 +379,8 @@ namespace Microsoft.Bot.Configuration.Tests
                         }
                         break;
                     default:
-                        throw new ArgumentException($"Unknown service type {config.Services[i].Type}");
+                        // ignore unknown service type
+                        break;
                 }
             }
         }

@@ -38,10 +38,20 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Documentation|AnyCPU'">
     <DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Configuration.xml</DocumentationFile>
+    <CodeAnalysisRuleSet>Microsoft.Bot.Configuration.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Configuration.xml</DocumentationFile>
+    <CodeAnalysisRuleSet>Microsoft.Bot.Configuration.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <CodeAnalysisRuleSet>Microsoft.Bot.Configuration.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug - NuGet Packages|AnyCPU'">
+    <CodeAnalysisRuleSet>Microsoft.Bot.Configuration.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
 
   <ItemGroup>
