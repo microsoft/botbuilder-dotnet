@@ -110,7 +110,14 @@ namespace Microsoft.Bot.Builder
                 Type = ActivityTypes.Typing,
                 RelatesTo = turnContext.Activity.RelatesTo,
             };
-            await turnContext.SendActivityAsync(typingActivity, cancellationToken).ConfigureAwait(false);
+
+            // sending the Activity directly on the Adapter avoids other Middleware and avoids setting the Responded
+            // flag, however, this also requires that the conversation reference details are explicitly added.
+            var conversationReference = turnContext.Activity.GetConversationReference();
+            typingActivity.ApplyConversationReference(conversationReference);
+
+            // make sure to send the Activity directly on the Adapter rather than via the TurnContext
+            await turnContext.Adapter.SendActivitiesAsync(turnContext, new Activity[] { typingActivity }, cancellationToken).ConfigureAwait(false);
         }
     }
 }

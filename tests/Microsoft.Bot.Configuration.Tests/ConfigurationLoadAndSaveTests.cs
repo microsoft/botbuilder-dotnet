@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Configuration.Tests
             Assert.AreEqual("test", config.Name);
             Assert.AreEqual("test description", config.Description);
             Assert.AreEqual("", config.SecretKey);
-            Assert.AreEqual(9, config.Services.Count);
+            Assert.AreEqual(10, config.Services.Count);
 
             // verify types are right
             foreach (var service in config.Services)
@@ -70,6 +70,16 @@ namespace Microsoft.Bot.Configuration.Tests
         }
 
         [TestMethod]
+        public void LoadAndSaveUnencryptedBotFileSync()
+        {
+            var config = BotConfiguration.Load(@"..\..\test.bot");
+            config.SaveAs("save.bot");
+
+            var config2 = BotConfiguration.Load(@"..\..\test.bot");
+            Assert.AreEqual(JsonConvert.SerializeObject(config2), JsonConvert.SerializeObject(config), "saved should be the same");
+        }
+
+        [TestMethod]
         public async Task CantLoadWithoutSecret()
         {
             string secret = BotConfiguration.GenerateKey();
@@ -82,6 +92,76 @@ namespace Microsoft.Bot.Configuration.Tests
                 Assert.Fail("Load should have thrown due to no secret");
             }
             catch { }
+        }
+
+        [TestMethod]
+        public async Task LoadFromFolderWithSecret()
+        {
+            string secret = BotConfiguration.GenerateKey();
+            var config = await BotConfiguration.LoadAsync(@"..\..\test.bot");
+            await config.SaveAsAsync("save.bot", secret);
+            await BotConfiguration.LoadFromFolderAsync(".", secret);
+        }
+
+        [TestMethod]
+        public void LoadFromFolderWithSecretSync()
+        {
+            string secret = BotConfiguration.GenerateKey();
+            var config = BotConfiguration.Load(@"..\..\test.bot");
+            config.SaveAs("save.bot", secret);
+            BotConfiguration.LoadFromFolder(".", secret);
+        }
+
+        [TestMethod][ExpectedException(typeof(System.Exception))]
+        public async Task FailLoadFromFolderWithNoSecret()
+        {
+            string secret = BotConfiguration.GenerateKey();
+            var config = await BotConfiguration.LoadAsync(@"..\..\test.bot");
+            await config.SaveAsAsync("save.bot", secret);
+            await BotConfiguration.LoadFromFolderAsync(".");
+        }
+
+        [TestMethod]
+        public async Task LoadFromFolderNoSecret()
+        {
+            var config = await BotConfiguration.LoadAsync(@"..\..\test.bot");
+            await config.SaveAsAsync("save.bot");
+            await BotConfiguration.LoadFromFolderAsync(".");
+        }
+
+        [TestMethod]
+        public void LoadFromFolderNoSecretSync()
+        {
+            var config = BotConfiguration.Load(@"..\..\test.bot");
+            config.SaveAs("save.bot");
+            BotConfiguration.LoadFromFolder(".");
+        }
+
+        [TestMethod][ExpectedException(typeof(System.IO.FileNotFoundException))]
+        public async Task LoadNotExistentFile()
+        {
+            var config = await BotConfiguration.LoadAsync(@"..\..\filedoesntexist.bot");
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(System.ArgumentNullException))]
+        public async Task NullFile()
+        {
+            var config = await BotConfiguration.LoadAsync(null);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(System.IO.DirectoryNotFoundException))]
+        public async Task LoadNotExistentFolder()
+        {
+            var config = await BotConfiguration.LoadFromFolderAsync(@"\prettysurethisdoesnotexist");
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(System.ArgumentNullException))]
+        public async Task NullFolder()
+        {
+            var config = await BotConfiguration.LoadFromFolderAsync(null);
         }
 
         [TestMethod]
@@ -101,7 +181,6 @@ namespace Microsoft.Bot.Configuration.Tests
             config2.ClearSecret();
             await config2.SaveAsAsync("save.bot", secret);
         }
-
 
         [TestMethod]
         public async Task LoadAndSaveEncrypted()

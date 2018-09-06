@@ -48,18 +48,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                var dc = await dialogs.CreateContextAsync(turnContext);
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
 
-                var results = await dc.ContinueAsync();
-                if (!turnContext.Responded && !results.HasActive && !results.HasResult)
+                var results = await dc.ContinueAsync(cancellationToken);
+                if (results.Status == DialogTurnStatus.Empty)
                 {
                     var options = new PromptOptions { Prompt = new Activity { Type = ActivityTypes.Message, Text = "Enter a number." } };
-                    await dc.PromptAsync("NumberPrompt", options);
+                    await dc.PromptAsync("NumberPrompt", options, cancellationToken);
                 }
-                else if (!results.HasActive && results.HasResult)
+                else if (results.Status == DialogTurnStatus.Complete)
                 {
                     var numberResult = (int)results.Result;
-                    await turnContext.SendActivityAsync($"Bot received the number '{numberResult}'.");
+                    await turnContext.SendActivityAsync(MessageFactory.Text($"Bot received the number '{numberResult}'."), cancellationToken);
                 }
             })
             .Send("hello")
@@ -85,21 +85,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                var dc = await dialogs.CreateContextAsync(turnContext);
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
 
-                var results = await dc.ContinueAsync();
-                if (!turnContext.Responded && !results.HasActive && !results.HasResult)
+                var results = await dc.ContinueAsync(cancellationToken);
+                if (results.Status == DialogTurnStatus.Empty)
                 {
                     var options = new PromptOptions {
                         Prompt = new Activity { Type = ActivityTypes.Message, Text = "Enter a number." },
                         RetryPrompt = new Activity {  Type = ActivityTypes.Message, Text = "You must enter a number." }
                     };
-                    await dc.PromptAsync("NumberPrompt", options);
+                    await dc.PromptAsync("NumberPrompt", options, cancellationToken);
                 }
-                else if (!results.HasActive && results.HasResult)
+                else if (results.Status == DialogTurnStatus.Complete)
                 {
                     var numberResult = (int)results.Result;
-                    await turnContext.SendActivityAsync($"Bot received the number '{numberResult}'.");
+                    await turnContext.SendActivityAsync(MessageFactory.Text($"Bot received the number '{numberResult}'."), cancellationToken);
                 }
             })
             .Send("hello")
@@ -122,35 +122,36 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             var dialogs = new DialogSet(dialogState);
 
-            PromptValidator<int> validator = async (ctx, promptContext) =>
+            PromptValidator<int> validator = (ctx, promptContext, cancellationToken) =>
             {
-                var result = (int)promptContext.Recognized.Value;
+                var result = promptContext.Recognized.Value;
                 
                 if (result < 100 && result > 0)
                 {
                     promptContext.End(result);
                 }
+                return Task.CompletedTask;
             };
             var numberPrompt = new NumberPrompt<int>("NumberPrompt", validator, Culture.English);
             dialogs.Add(numberPrompt);
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                var dc = await dialogs.CreateContextAsync(turnContext);
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
 
-                var results = await dc.ContinueAsync();
-                if (!turnContext.Responded && !results.HasActive && !results.HasResult)
+                var results = await dc.ContinueAsync(cancellationToken);
+                if (results.Status == DialogTurnStatus.Empty)
                 {
                     var options = new PromptOptions {
                         Prompt = new Activity { Type = ActivityTypes.Message, Text = "Enter a number." },
                         RetryPrompt = new Activity {  Type = ActivityTypes.Message, Text = "You must enter a positive number less than 100." }
                     };
-                    await dc.PromptAsync("NumberPrompt", options);
+                    await dc.PromptAsync("NumberPrompt", options, cancellationToken);
                 }
-                else if (!results.HasActive && results.HasResult)
+                else if (results.Status == DialogTurnStatus.Complete)
                 {
                     var numberResult = (int)results.Result;
-                    await turnContext.SendActivityAsync($"Bot received the number '{numberResult}'.");
+                    await turnContext.SendActivityAsync(MessageFactory.Text($"Bot received the number '{numberResult}'."), cancellationToken);
                 }
             })
             .Send("hello")
@@ -178,21 +179,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                var dc = await dialogs.CreateContextAsync(turnContext);
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
 
-                var results = await dc.ContinueAsync();
-                if (!turnContext.Responded && !results.HasActive && !results.HasResult)
+                var results = await dc.ContinueAsync(cancellationToken);
+                if (results.Status == DialogTurnStatus.Empty)
                 {
                     var options = new PromptOptions
                     {
                         Prompt = new Activity { Type = ActivityTypes.Message, Text = "Enter a number." }
                     };
-                    await dc.PromptAsync("NumberPrompt", options);
+                    await dc.PromptAsync("NumberPrompt", options, cancellationToken);
                 }
-                else if (!results.HasActive && results.HasResult)
+                else if (results.Status == DialogTurnStatus.Complete)
                 {
                     var numberResult = (float)results.Result;
-                    await turnContext.SendActivityAsync($"Bot received the number '{numberResult}'.");
+                    await turnContext.SendActivityAsync(MessageFactory.Text($"Bot received the number '{numberResult}'."), cancellationToken);
                 }
             })
             .Send("hello")
@@ -218,21 +219,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                var dc = await dialogs.CreateContextAsync(turnContext);
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
 
-                var results = await dc.ContinueAsync();
-                if (!turnContext.Responded && !results.HasActive && !results.HasResult)
+                var results = await dc.ContinueAsync(cancellationToken);
+                if (results.Status == DialogTurnStatus.Empty)
                 {
                     var options = new PromptOptions
                     {
                         Prompt = new Activity { Type = ActivityTypes.Message, Text = "Enter a number." }
                     };
-                    await dc.PromptAsync("NumberPrompt", options);
+                    await dc.PromptAsync("NumberPrompt", options, cancellationToken);
                 }
-                else if (!results.HasActive && results.HasResult)
+                else if (results.Status == DialogTurnStatus.Complete)
                 {
                     var numberResult = (long)results.Result;
-                    await turnContext.SendActivityAsync($"Bot received the number '{numberResult}'.");
+                    await turnContext.SendActivityAsync(MessageFactory.Text($"Bot received the number '{numberResult}'."), cancellationToken);
                 }
             })
             .Send("hello")
@@ -258,10 +259,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                var dc = await dialogs.CreateContextAsync(turnContext);
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
 
-                var results = await dc.ContinueAsync();
-                if (!turnContext.Responded && !results.HasActive && !results.HasResult)
+                var results = await dc.ContinueAsync(cancellationToken);
+                if (results.Status == DialogTurnStatus.Empty)
                 {
                     var options = new PromptOptions
                     {
@@ -269,10 +270,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                     };
                     await dc.PromptAsync("NumberPrompt", options);
                 }
-                else if (!results.HasActive && results.HasResult)
+                else if (results.Status == DialogTurnStatus.Complete)
                 {
                     var numberResult = (double)results.Result;
-                    await turnContext.SendActivityAsync($"Bot received the number '{numberResult}'.");
+                    await turnContext.SendActivityAsync(MessageFactory.Text($"Bot received the number '{numberResult}'."), cancellationToken);
                 }
             })
             .Send("hello")
@@ -298,21 +299,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                var dc = await dialogs.CreateContextAsync(turnContext);
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
 
-                var results = await dc.ContinueAsync();
-                if (!turnContext.Responded && !results.HasActive && !results.HasResult)
+                var results = await dc.ContinueAsync(cancellationToken);
+                if (results.Status == DialogTurnStatus.Empty)
                 {
                     var options = new PromptOptions
                     {
                         Prompt = new Activity { Type = ActivityTypes.Message, Text = "Enter a number." }
                     };
-                    await dc.PromptAsync("NumberPrompt", options);
+                    await dc.PromptAsync("NumberPrompt", options, cancellationToken);
                 }
-                else if (!results.HasActive && results.HasResult)
+                else if (results.Status == DialogTurnStatus.Complete)
                 {
                     var numberResult = (decimal)results.Result;
-                    await turnContext.SendActivityAsync($"Bot received the number '{numberResult}'.");
+                    await turnContext.SendActivityAsync(MessageFactory.Text($"Bot received the number '{numberResult}'."), cancellationToken);
                 }
             })
             .Send("hello")

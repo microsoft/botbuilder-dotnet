@@ -292,10 +292,11 @@ namespace Microsoft.Bot.Builder
             /// Delete the property.
             /// </summary>
             /// <param name="turnContext">The turn context.</param>
+            /// <param name="cancellationToken">The cancellation token.</param>
             /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-            public Task DeleteAsync(ITurnContext turnContext)
+            public Task DeleteAsync(ITurnContext turnContext, CancellationToken cancellationToken)
             {
-                return _botState.DeletePropertyValueAsync(turnContext, Name);
+                return _botState.DeletePropertyValueAsync(turnContext, Name, cancellationToken);
             }
 
             /// <summary>
@@ -303,13 +304,14 @@ namespace Microsoft.Bot.Builder
             /// </summary>
             /// <param name="turnContext">The context object for this turn.</param>
             /// <param name="defaultValueFactory">Defines the default value. Invoked when no value been set for the requested state property.  If defaultValueFactory is defined as null, the MissingMemberException will be thrown if the underlying property is not set.</param>
+            /// <param name="cancellationToken">The cancellation token.</param>
             /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-            public async Task<T> GetAsync(ITurnContext turnContext, Func<T> defaultValueFactory = null)
+            public async Task<T> GetAsync(ITurnContext turnContext, Func<T> defaultValueFactory, CancellationToken cancellationToken)
             {
-                await _botState.LoadAsync(turnContext).ConfigureAwait(false);
+                await _botState.LoadAsync(turnContext, false, cancellationToken).ConfigureAwait(false);
                 try
                 {
-                    return await _botState.GetPropertyValueAsync<T>(turnContext, Name).ConfigureAwait(false);
+                    return await _botState.GetPropertyValueAsync<T>(turnContext, Name, cancellationToken).ConfigureAwait(false);
                 }
                 catch (KeyNotFoundException)
                 {
@@ -322,7 +324,7 @@ namespace Microsoft.Bot.Builder
                     var result = defaultValueFactory();
 
                     // save default value for any further calls
-                    await SetAsync(turnContext, result).ConfigureAwait(false);
+                    await SetAsync(turnContext, result, cancellationToken).ConfigureAwait(false);
                     return result;
                 }
             }
@@ -332,11 +334,12 @@ namespace Microsoft.Bot.Builder
             /// </summary>
             /// <param name="turnContext">turn context.</param>
             /// <param name="value">value.</param>
+            /// <param name="cancellationToken">The cancellation token.</param>
             /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-            public async Task SetAsync(ITurnContext turnContext, T value)
+            public async Task SetAsync(ITurnContext turnContext, T value, CancellationToken cancellationToken)
             {
-                await _botState.LoadAsync(turnContext).ConfigureAwait(false);
-                await _botState.SetPropertyValueAsync(turnContext, Name, value).ConfigureAwait(false);
+                await _botState.LoadAsync(turnContext, false, cancellationToken).ConfigureAwait(false);
+                await _botState.SetPropertyValueAsync(turnContext, Name, value, cancellationToken).ConfigureAwait(false);
             }
         }
     }

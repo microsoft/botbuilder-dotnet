@@ -29,6 +29,16 @@ namespace Microsoft.Bot.Connector.Authentication
         /// OAuth Url used to get a token from OAuthApiClient
         /// </summary>
         public const string OAuthUrl = "https://api.botframework.com";
+        
+        /// <summary>
+        /// Application Setting Key for the OpenIdMetadataUrl value
+        /// </summary>
+        public const string BotOpenIdMetadataKey = "BotOpenIdMetadata";
+        
+        /// <summary>
+        /// Application Setting Key for the OAuthUrl value
+        /// </summary>
+        public const string OAuthUrlKey = "OAuthApiEndpoint";
 
         /// <summary>
         /// TO BOT FROM CHANNEL: OpenID metadata document for tokens coming from MSA

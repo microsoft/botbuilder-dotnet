@@ -4,6 +4,9 @@
 using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Bot.Builder.Integration.AspNet.Core.Handlers;
+using Microsoft.Bot.Connector;
+using Microsoft.Bot.Connector.Authentication;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
@@ -30,6 +33,26 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             }
 
             var applicationServices = applicationBuilder.ApplicationServices;
+
+            var configuration = applicationServices.GetService<IConfiguration>();
+
+            if (configuration != null)
+            {
+                var openIdEndpoint = configuration.GetSection(AuthenticationConstants.BotOpenIdMetadataKey)?.Value;
+
+                if (!string.IsNullOrEmpty(openIdEndpoint))
+                {
+                    ChannelValidation.OpenIdMetadataUrl = openIdEndpoint;
+                }
+
+                var oauthApiEndpoint = configuration.GetSection(AuthenticationConstants.OAuthUrlKey)?.Value;
+
+                if (!string.IsNullOrEmpty(oauthApiEndpoint))
+                {
+                    OAuthClient.OAuthEndpoint = oauthApiEndpoint;
+                }
+            }
+
             var options = applicationServices.GetRequiredService<IOptions<BotFrameworkOptions>>().Value;
 
             var paths = options.Paths;
