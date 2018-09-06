@@ -1,0 +1,14 @@
+{
+    "name": "AspNetCore-EchoBot-With-AppInsights",
+    "secretKey": "",
+    "services": [
+        {
+            "type": "endpoint",
+            "name": "AspNetCore-EchoBot-With-AppInsights",
+            "id": "http://localhost:5000/api/messages",
+            "appId": "",
+            "appPassword": "",
+            "endpoint": "http://localhost:5000/api/messages"
+        }
+    ]
+}
