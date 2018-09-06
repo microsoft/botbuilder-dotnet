@@ -647,7 +647,7 @@ namespace Microsoft.Bot.Builder
                 return new OAuthClient(client, turnContext.Activity.ServiceUrl);
             }
 
-            return new OAuthClient(client, AuthenticationConstants.OAuthUrl);
+            return new OAuthClient(client, OAuthClient.OAuthEndpoint);
         }
 
         /// <summary>
