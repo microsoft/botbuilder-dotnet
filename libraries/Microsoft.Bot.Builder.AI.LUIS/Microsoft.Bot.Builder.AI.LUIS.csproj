@@ -42,19 +42,6 @@
 		<CodeAnalysisRuleSet>Microsoft.Bot.Builder.AI.LUIS.ruleset</CodeAnalysisRuleSet>
 	</PropertyGroup>
 
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-		<DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Builder.AI.LUIS.xml</DocumentationFile>
-		<CodeAnalysisRuleSet>Microsoft.Bot.Builder.AI.LUIS.ruleset</CodeAnalysisRuleSet>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-	  <CodeAnalysisRuleSet>Microsoft.Bot.Builder.AI.LUIS.ruleset</CodeAnalysisRuleSet>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug - NuGet Packages|AnyCPU'">
-	  <CodeAnalysisRuleSet>Microsoft.Bot.Builder.AI.LUIS.ruleset</CodeAnalysisRuleSet>
-	</PropertyGroup>
-
 	<PropertyGroup>
 	  <CodeAnalysisRuleSet>Microsoft.Bot.Builder.AI.LUIS.ruleset</CodeAnalysisRuleSet>
 	  <AssemblyName>Microsoft.Bot.Builder.AI.Luis</AssemblyName>

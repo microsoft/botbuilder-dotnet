@@ -16,7 +16,6 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
         public void LuisApplication_Construction()
         {
             var model = GetValidModel();
-            var badEndpoint = "abc";
             Assert.IsNotNull(model);
 
             Assert.ThrowsException<ArgumentException>(() => new LuisApplication(null, Guid.Empty.ToString(), Endpoint));
@@ -26,7 +25,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             Assert.ThrowsException<ArgumentException>(() => new LuisApplication(Guid.Empty.ToString(), string.Empty, Endpoint));
             Assert.ThrowsException<ArgumentException>(() => new LuisApplication(Guid.Empty.ToString(), "0000", Endpoint));
             Assert.ThrowsException<ArgumentException>(() => new LuisApplication(Guid.Empty.ToString(), Guid.Empty.ToString(), null));
-            Assert.ThrowsException<ArgumentException>(() => new LuisApplication(Guid.Empty.ToString(), Guid.Empty.ToString(), badEndpoint));
+            Assert.ThrowsException<ArgumentException>(() => new LuisApplication(Guid.Empty.ToString(), Guid.Empty.ToString(), "abc"));
         }
 
         [TestMethod]
