@@ -26,7 +26,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
         private readonly string _endpoint = TestUtilities.GetKey("LUISENDPOINT", "https://westus.api.cognitive.microsoft.com");
         // Changing this to false will cause running against the actual LUIS service.
         // This is useful in order to see if the oracles for mocking or testing have changed.
-        private readonly bool _mock = false;
+        private readonly bool _mock = true;
 
         [TestMethod]
         public async Task SingleIntent_SimplyEntity()
