@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -43,8 +44,11 @@ namespace Microsoft.Bot.Builder
         private readonly ICredentialProvider _credentialProvider;
         private readonly HttpClient _httpClient;
         private readonly RetryPolicy _connectorClientRetryPolicy;
-        private Dictionary<string, MicrosoftAppCredentials> _appCredentialMap = new Dictionary<string, MicrosoftAppCredentials>();
+        private ConcurrentDictionary<string, MicrosoftAppCredentials> _appCredentialMap = new ConcurrentDictionary<string, MicrosoftAppCredentials>();
         private bool _isEmulatingOAuthCards = false;
+        // There is a significant boost in throughput if we reuse a connectorClient
+        // _connectorClients is a cache using [serviceUrl + appId].
+        private ConcurrentDictionary<string, ConnectorClient> _connectorClients = new ConcurrentDictionary<string, ConnectorClient>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BotFrameworkAdapter"/> class,
@@ -689,22 +693,26 @@ namespace Microsoft.Bot.Builder
         /// <returns>Connector client instance.</returns>
         private IConnectorClient CreateConnectorClient(string serviceUrl, MicrosoftAppCredentials appCredentials = null)
         {
-            ConnectorClient connectorClient;
-            if (appCredentials != null)
-            {
-                connectorClient = new ConnectorClient(new Uri(serviceUrl), appCredentials);
-            }
-            else
-            {
-                connectorClient = new ConnectorClient(new Uri(serviceUrl));
-            }
+            string clientKey = $"{serviceUrl}{appCredentials?.MicrosoftAppId ?? string.Empty}";
 
-            if (_connectorClientRetryPolicy != null)
+            return _connectorClients.GetOrAdd(clientKey, (key) =>
             {
-                connectorClient.SetRetryPolicy(_connectorClientRetryPolicy);
-            }
+                ConnectorClient connectorClient;
+                if (appCredentials != null)
+                {
+                    connectorClient = new ConnectorClient(new Uri(serviceUrl), appCredentials);
+                }
+                else
+                {
+                    connectorClient = new ConnectorClient(new Uri(serviceUrl));
+                }
 
-            return connectorClient;
+                if (_connectorClientRetryPolicy != null)
+                {
+                    connectorClient.SetRetryPolicy(_connectorClientRetryPolicy);
+                }
+                return connectorClient;
+            });
         }
 
         /// <summary>
@@ -721,13 +729,16 @@ namespace Microsoft.Bot.Builder
                 return MicrosoftAppCredentials.Empty;
             }
 
-            if (!_appCredentialMap.TryGetValue(appId, out var appCredentials))
+            if (_appCredentialMap.TryGetValue(appId, out var appCredentials))
             {
-                string appPassword = await _credentialProvider.GetAppPasswordAsync(appId).ConfigureAwait(false);
-                appCredentials = new MicrosoftAppCredentials(appId, appPassword);
-                _appCredentialMap[appId] = appCredentials;
+                return appCredentials;
             }
 
+            // NOTE: we can't do async operations inside of a AddOrUpdate, so we split access pattern
+            string appPassword = await _credentialProvider.GetAppPasswordAsync(appId).ConfigureAwait(false);
+
+            appCredentials = new MicrosoftAppCredentials(appId, appPassword);
+            _appCredentialMap[appId] = appCredentials;
             return appCredentials;
         }
     }
