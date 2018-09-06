@@ -34,6 +34,7 @@ namespace Connector.Tests
 
         private string ClassName => GetType().FullName;
 
+#pragma warning disable 162
 
         public BaseTest()
         {
@@ -68,6 +69,7 @@ namespace Connector.Tests
             }
         }
 
+
         public async Task UseOAuthClientFor(Func<OAuthClient, Task> doTest, string className = null, [CallerMemberName] string methodName = null)
         {
             using (MockContext context = MockContext.Start(className ?? ClassName, methodName))
@@ -88,6 +90,8 @@ namespace Connector.Tests
             }
         }
     }
+
+#pragma warning restore 162
 
     public class BotAccessTokenStub : ServiceClientCredentials
     {

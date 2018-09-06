@@ -6,16 +6,16 @@ using Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime.Models;
 namespace Microsoft.Bot.Builder.AI.Luis
 {
     /// <summary>
-    /// Data describing a LUIS _application.
+    /// Data describing a LUIS application.
     /// </summary>
     public class LuisApplication
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="LuisApplication"/> class.
         /// </summary>
-        /// <param name="applicationId">LUIS _application ID.</param>
+        /// <param name="applicationId">LUIS application ID.</param>
         /// <param name="endpointKey">LUIS subscription or endpoint key.</param>
-        /// <param name="endpoint">LUIS endpoint to use.</param>
+        /// <param name="endpoint">LUIS endpoint to use like https://westus.api.cognitive.microsoft.com.</param>
         public LuisApplication(string applicationId, string endpointKey, string endpoint)
         {
             if (!Guid.TryParse(applicationId, out var appGuid))
@@ -39,27 +39,27 @@ namespace Microsoft.Bot.Builder.AI.Luis
         }
 
         /// <summary>
-        /// Gets or sets LUIS _application ID.
+        /// Gets LUIS application ID.
         /// </summary>
         /// <value>
-        /// LUIS _application ID.
+        /// LUIS application ID.
         /// </value>
-        public string ApplicationId { get; set; }
+        public string ApplicationId { get; }
 
         /// <summary>
-        /// Gets or sets LUIS subscription or endpoint key.
+        /// Gets LUIS subscription or endpoint key.
         /// </summary>
         /// <value>
         /// LUIS subscription or endpoint key.
         /// </value>
-        public string EndpointKey { get; set; }
+        public string EndpointKey { get; }
 
         /// <summary>
-        /// Gets or sets LUIS endpoint.
+        /// Gets LUIS endpoint like https://westus.api.cognitive.microsoft.com.
         /// </summary>
         /// <value>
         /// LUIS endpoint where application is hosted.
         /// </value>
-        public string Endpoint { get; set; }
+        public string Endpoint { get; }
     }
 }
