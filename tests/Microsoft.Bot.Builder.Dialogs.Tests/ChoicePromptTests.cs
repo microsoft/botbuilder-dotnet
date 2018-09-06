@@ -93,17 +93,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                var dc = await dialogs.CreateContextAsync(turnContext);
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
 
-                var results = await dc.ContinueAsync();
-                if (!turnContext.Responded && !results.HasActive && !results.HasResult)
+                var results = await dc.ContinueAsync(cancellationToken);
+                if (results.Status == DialogTurnStatus.Empty)
                 {
                     await dc.PromptAsync("ChoicePrompt",
                         new PromptOptions
                         {
                             Prompt = new Activity { Type = ActivityTypes.Message, Text = "favorite color?" },
                             Choices = colorChoices
-                        });
+                        },
+                        cancellationToken);
                 }
             })
             .Send("hello")
@@ -125,17 +126,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                var dc = await dialogs.CreateContextAsync(turnContext);
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
 
                 var results = await dc.ContinueAsync();
-                if (!turnContext.Responded && !results.HasActive && !results.HasResult)
+                if (results.Status == DialogTurnStatus.Empty)
                 {
                     await dc.PromptAsync("ChoicePrompt",
                         new PromptOptions
                         {
                             Prompt = new Activity { Type = ActivityTypes.Message, Text = "favorite color?" },
                             Choices = colorChoices
-                        });
+                        },
+                        cancellationToken);
                 }
             })
             .Send("hello")
@@ -161,17 +163,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                var dc = await dialogs.CreateContextAsync(turnContext);
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
 
-                var results = await dc.ContinueAsync();
-                if (!turnContext.Responded && !results.HasActive && !results.HasResult)
+                var results = await dc.ContinueAsync(cancellationToken);
+                if (results.Status == DialogTurnStatus.Empty)
                 {
                     await dc.PromptAsync("ChoicePrompt",
                         new PromptOptions
                         {
                             Prompt = new Activity { Type = ActivityTypes.Message, Text = "favorite color?" },
                             Choices = colorChoices
-                        });
+                        },
+                        cancellationToken);
                 }
             })
             .Send("hello")
@@ -195,17 +198,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                var dc = await dialogs.CreateContextAsync(turnContext);
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
 
-                var results = await dc.ContinueAsync();
-                if (!turnContext.Responded && !results.HasActive && !results.HasResult)
+                var results = await dc.ContinueAsync(cancellationToken);
+                if (results.Status == DialogTurnStatus.Empty)
                 {
                     await dc.PromptAsync("ChoicePrompt",
                         new PromptOptions
                         {
                             Prompt = new Activity { Type = ActivityTypes.Message, Text = "favorite color?" },
                             Choices = colorChoices
-                        });
+                        },
+                        cancellationToken);
                 }
             })
             .Send("hello")
@@ -239,17 +243,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                var dc = await dialogs.CreateContextAsync(turnContext);
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
 
-                var results = await dc.ContinueAsync();
-                if (!turnContext.Responded && !results.HasActive && !results.HasResult)
+                var results = await dc.ContinueAsync(cancellationToken);
+                if (results.Status == DialogTurnStatus.Empty)
                 {
                     await dc.PromptAsync("ChoicePrompt",
                         new PromptOptions
                         {
                             Prompt = new Activity { Type = ActivityTypes.Message, Text = "favorite color?" },
                             Choices = colorChoices
-                        });
+                        },
+                        cancellationToken);
                 }
             })
             .Send("hello")
@@ -274,10 +279,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                var dc = await dialogs.CreateContextAsync(turnContext);
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
 
-                var results = await dc.ContinueAsync();
-                if (!turnContext.Responded && !results.HasActive && !results.HasResult)
+                var results = await dc.ContinueAsync(cancellationToken);
+                if (results.Status == DialogTurnStatus.Empty)
                 {
                     await dc.PromptAsync("ChoicePrompt",
                         new PromptOptions
@@ -288,7 +293,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                                 Speak = "spoken prompt"
                             },
                             Choices = colorChoices
-                        });
+                        },
+                        cancellationToken);
                 }
             })
             .Send("hello")
@@ -313,22 +319,23 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                var dc = await dialogs.CreateContextAsync(turnContext);
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
 
-                var results = await dc.ContinueAsync();
-                if (!turnContext.Responded && !results.HasActive && !results.HasResult)
+                var results = await dc.ContinueAsync(cancellationToken);
+                if (results.Status == DialogTurnStatus.Empty)
                 {
                     await dc.PromptAsync("ChoicePrompt",
                         new PromptOptions
                         {
                             Prompt = new Activity { Type = ActivityTypes.Message, Text = "favorite color?" },
                             Choices = colorChoices
-                        });
+                        },
+                        cancellationToken);
                 }
-                else if (!results.HasActive && results.HasResult)
+                else if (results.Status == DialogTurnStatus.Complete)
                 {
                     var choiceResult = (FoundChoice)results.Result;
-                    await turnContext.SendActivityAsync($"{choiceResult.Value}");
+                    await turnContext.SendActivityAsync(MessageFactory.Text($"{choiceResult.Value}"), cancellationToken);
                 }
             })
             .Send("hello")
@@ -354,10 +361,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                var dc = await dialogs.CreateContextAsync(turnContext);
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
 
-                var results = await dc.ContinueAsync();
-                if (!turnContext.Responded && !results.HasActive && !results.HasResult)
+                var results = await dc.ContinueAsync(cancellationToken);
+                if (results.Status == DialogTurnStatus.Empty)
                 {
                     await dc.PromptAsync("ChoicePrompt",
                         new PromptOptions
@@ -365,7 +372,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                             Prompt = new Activity { Type = ActivityTypes.Message, Text = "favorite color?" },
                             RetryPrompt = new Activity { Type = ActivityTypes.Message, Text = "your favorite color, please?" },
                             Choices = colorChoices
-                        });
+                        },
+                        cancellationToken);
                 }
             })
             .Send("hello")
@@ -386,9 +394,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             var dialogs = new DialogSet(dialogState);
 
-            PromptValidator<FoundChoice> validator = async (context, promptContext) =>
+            PromptValidator<FoundChoice> validator = async (context, promptContext, cancellationToken) =>
             {
-                await context.SendActivityAsync("validator called");
+                await context.SendActivityAsync(MessageFactory.Text("validator called"), cancellationToken);
             };
             var listPrompt = new ChoicePrompt("ChoicePrompt", validator, Culture.English);
             listPrompt.Style = ListStyle.None;
@@ -396,17 +404,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                var dc = await dialogs.CreateContextAsync(turnContext);
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
 
-                var results = await dc.ContinueAsync();
-                if (!turnContext.Responded && !results.HasActive && !results.HasResult)
+                var results = await dc.ContinueAsync(cancellationToken);
+                if (results.Status == DialogTurnStatus.Empty)
                 {
                     await dc.PromptAsync("ChoicePrompt",
                         new PromptOptions
                         {
                             Prompt = new Activity { Type = ActivityTypes.Message, Text = "favorite color?" },
                             Choices = colorChoices
-                        });
+                        },
+                        cancellationToken);
                 }
             })
             .Send("hello")
@@ -416,8 +425,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .StartTestAsync();
         }
 
-        // TODO: Find purpose of this test and reenable if necessary
-        /*[TestMethod]
+        /*
+        [TestMethod]
         public async Task ShouldHandleAnUndefinedRequest()
         {
             var convoState = new ConversationState(new MemoryStorage());
@@ -426,7 +435,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var adapter = new TestAdapter()
                 .Use(convoState);
 
-            PromptValidator<ChoiceResult> validator = (ITurnContext turnContext, ChoiceResult result) =>
+            PromptValidator<FoundChoice> validator = (context, promptContext, cancellationToken) =>
             {
                 Assert.IsTrue(false);
                 return Task.CompletedTask;

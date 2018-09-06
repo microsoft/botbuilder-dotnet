@@ -68,7 +68,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             _validator = validator;
         }
 
-        public override async Task<DialogTurnResult> DialogBeginAsync(DialogContext dc, DialogOptions options = null)
+        public override async Task<DialogTurnResult> DialogBeginAsync(DialogContext dc, DialogOptions options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (dc == null)
             {
@@ -106,21 +106,21 @@ namespace Microsoft.Bot.Builder.Dialogs
             state[PersistedExpires] = DateTime.Now.AddMilliseconds(timeout);
 
             // Attempt to get the users token
-            var output = await GetUserTokenAsync(dc.Context).ConfigureAwait(false);
+            var output = await GetUserTokenAsync(dc.Context, cancellationToken).ConfigureAwait(false);
             if (output != null)
             {
                 // Return token
-                return await dc.EndAsync(output).ConfigureAwait(false);
+                return await dc.EndAsync(output, cancellationToken).ConfigureAwait(false);
             }
             else
             {
                 // Prompt user to login
-                await SendOAuthCardAsync(dc.Context, opt?.Prompt).ConfigureAwait(false);
+                await SendOAuthCardAsync(dc.Context, opt?.Prompt, cancellationToken).ConfigureAwait(false);
                 return Dialog.EndOfTurn;
             }
         }
 
-        public override async Task<DialogTurnResult> DialogContinueAsync(DialogContext dc)
+        public override async Task<DialogTurnResult> DialogContinueAsync(DialogContext dc, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (dc == null)
             {
@@ -128,7 +128,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             // Recognize token
-            var recognized = await RecognizeTokenAsync(dc.Context).ConfigureAwait(false);
+            var recognized = await RecognizeTokenAsync(dc.Context, cancellationToken).ConfigureAwait(false);
 
             // Check for timeout
             var state = dc.ActiveDialog.State;
@@ -139,7 +139,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             if (hasTimedOut)
             {
                 // if the token fetch request timesout, complete the prompt with no result.
-                return await dc.EndAsync().ConfigureAwait(false);
+                return await dc.EndAsync(cancellationToken).ConfigureAwait(false);
             }
             else
             {
@@ -152,7 +152,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 if (_validator != null)
                 {
                     var prompt = new PromptValidatorContext<TokenResponse>(dc, promptState, promptOptions, recognized);
-                    await _validator(dc.Context, prompt).ConfigureAwait(false);
+                    await _validator(dc.Context, prompt, cancellationToken).ConfigureAwait(false);
                     end = prompt.HasEnded;
                     endResult = prompt.EndResult;
                 }
@@ -165,13 +165,13 @@ namespace Microsoft.Bot.Builder.Dialogs
                 // Return recognized value or re-prompt
                 if (end)
                 {
-                    return await dc.EndAsync(endResult).ConfigureAwait(false);
+                    return await dc.EndAsync(endResult, cancellationToken).ConfigureAwait(false);
                 }
                 else
                 {
                     if (!dc.Context.Responded && isMessage && promptOptions != null && promptOptions.RetryPrompt != null)
                     {
-                        await dc.Context.SendActivityAsync(promptOptions.RetryPrompt).ConfigureAwait(false);
+                        await dc.Context.SendActivityAsync(promptOptions.RetryPrompt, cancellationToken).ConfigureAwait(false);
                     }
 
                     return Dialog.EndOfTurn;
@@ -183,35 +183,37 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// Get a token for a user signed in.
         /// </summary>
         /// <param name="turnContext">Context for the current turn of the conversation with the user.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public async Task<TokenResponse> GetUserTokenAsync(ITurnContext turnContext)
+        public async Task<TokenResponse> GetUserTokenAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
         {
             string magicCode = null;
             if (!(turnContext.Adapter is BotFrameworkAdapter adapter))
             {
                 throw new InvalidOperationException("OAuthPrompt.GetUserToken(): not supported by the current adapter");
             }
-            
+
             if (IsTeamsVerificationInvoke(turnContext))
             {
                 var value = turnContext.Activity.Value as JObject;
                 magicCode = value.GetValue("state")?.ToString();
             }
-            
+
             if (turnContext.Activity.Type == ActivityTypes.Message && _magicCodeRegex.IsMatch(turnContext.Activity.Text))
             {
                 magicCode = turnContext.Activity.Text;
             }
 
-            return await adapter.GetUserTokenAsync(turnContext, _settings.ConnectionName, magicCode, default(CancellationToken)).ConfigureAwait(false);
+            return await adapter.GetUserTokenAsync(turnContext, _settings.ConnectionName, magicCode, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
         /// Sign Out the User.
         /// </summary>
         /// <param name="turnContext">Context for the current turn of the conversation with the user.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public async Task SignOutUserAsync(ITurnContext turnContext)
+        public async Task SignOutUserAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (!(turnContext.Adapter is BotFrameworkAdapter adapter))
             {
@@ -219,10 +221,10 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             // Sign out user
-            await adapter.SignOutUserAsync(turnContext, _settings.ConnectionName, default(CancellationToken)).ConfigureAwait(false);
+            await adapter.SignOutUserAsync(turnContext, _settings.ConnectionName, cancellationToken).ConfigureAwait(false);
         }
 
-        private async Task SendOAuthCardAsync(ITurnContext turnContext, IMessageActivity prompt)
+        private async Task SendOAuthCardAsync(ITurnContext turnContext, IMessageActivity prompt, CancellationToken cancellationToken = default(CancellationToken))
         {
             BotAssert.ContextNotNull(turnContext);
 
@@ -247,7 +249,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             {
                 if (!prompt.Attachments.Any(a => a.Content is SigninCard))
                 {
-                    var link = await adapter.GetOauthSignInLinkAsync(turnContext, _settings.ConnectionName, default(CancellationToken)).ConfigureAwait(false);
+                    var link = await adapter.GetOauthSignInLinkAsync(turnContext, _settings.ConnectionName, cancellationToken).ConfigureAwait(false);
                     prompt.Attachments.Add(new Attachment
                     {
                         ContentType = SigninCard.ContentType,
@@ -295,10 +297,10 @@ namespace Microsoft.Bot.Builder.Dialogs
                 prompt.InputHint = InputHints.ExpectingInput;
             }
 
-            await turnContext.SendActivityAsync(prompt).ConfigureAwait(false);
+            await turnContext.SendActivityAsync(prompt, cancellationToken).ConfigureAwait(false);
         }
 
-        private async Task<PromptRecognizerResult<TokenResponse>> RecognizeTokenAsync(ITurnContext turnContext)
+        private async Task<PromptRecognizerResult<TokenResponse>> RecognizeTokenAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
         {
             var result = new PromptRecognizerResult<TokenResponse>();
             if (IsTokenResponseEvent(turnContext))
@@ -318,7 +320,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                     throw new InvalidOperationException("OAuthPrompt.Recognize(): not supported by the current adapter");
                 }
 
-                var token = await adapter.GetUserTokenAsync(turnContext, _settings.ConnectionName, magicCode, default(CancellationToken)).ConfigureAwait(false);
+                var token = await adapter.GetUserTokenAsync(turnContext, _settings.ConnectionName, magicCode, cancellationToken).ConfigureAwait(false);
                 if (token != null)
                 {
                     result.Succeeded = true;
@@ -335,7 +337,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                         throw new InvalidOperationException("OAuthPrompt.Recognize(): not supported by the current adapter");
                     }
 
-                    var token = await adapter.GetUserTokenAsync(turnContext, _settings.ConnectionName, matched.Value, default(CancellationToken)).ConfigureAwait(false);
+                    var token = await adapter.GetUserTokenAsync(turnContext, _settings.ConnectionName, matched.Value, cancellationToken).ConfigureAwait(false);
                     if (token != null)
                     {
                         result.Succeeded = true;

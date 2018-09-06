@@ -137,6 +137,38 @@ namespace Microsoft.Bot.Connector
             }
 
             /// <summary>
+            /// SendConversationHistory
+            /// </summary>
+            /// <remarks>
+            /// This method allows you to upload the historic activities to the
+            /// conversation.
+            ///
+            /// Sender must ensure that the historic activities have unique ids and
+            /// appropriate timestamps. The ids are used by the client to deal with
+            /// duplicate activities and the timestamps are used by the client to render
+            /// the activities in the right order.
+            /// </remarks>
+            /// <param name='operations'>
+            /// The operations group for this extension method.
+            /// </param>
+            /// <param name='conversationId'>
+            /// Conversation ID
+            /// </param>
+            /// <param name='transcript'>
+            /// Transcript of activities
+            /// </param>
+            /// <param name='cancellationToken'>
+            /// The cancellation token.
+            /// </param>
+            public static async Task<ResourceResponse> SendConversationHistoryAsync(this IConversations operations, string conversationId, Transcript transcript, CancellationToken cancellationToken = default(CancellationToken))
+            {
+                using (var _result = await operations.SendConversationHistoryWithHttpMessagesAsync(conversationId, transcript, null, cancellationToken).ConfigureAwait(false))
+                {
+                    return _result.Body;
+                }
+            }
+
+            /// <summary>
             /// UpdateActivity
             /// </summary>
             /// <remarks>

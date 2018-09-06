@@ -5,6 +5,7 @@ using System;
 using System.Configuration;
 using System.Web.Http;
 using Microsoft.Bot.Builder.Integration.AspNet.WebApi.Handlers;
+using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
 
 namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
@@ -49,6 +50,8 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
 
             ConfigureBotRoutes(httpConfiguration, options, botFrameworkAdapter);
 
+            ConfigureCustomEndpoints();
+
             return httpConfiguration;
         }
 
@@ -76,6 +79,27 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
             }
 
             return new SimpleCredentialProvider(ConfigurationManager.AppSettings[MicrosoftAppCredentials.MicrosoftAppIdKey], ConfigurationManager.AppSettings[MicrosoftAppCredentials.MicrosoftAppPasswordKey]);
+        }
+
+        /// <summary>
+        /// Sets custom endpoints for the Open ID Metadata Document and OAuth API Endpoint 
+        /// from the App Settings.
+        /// </summary>
+        private static void ConfigureCustomEndpoints()
+        {
+            var openIdEndpoint = ConfigurationManager.AppSettings[AuthenticationConstants.BotOpenIdMetadataKey];
+
+            if (!string.IsNullOrEmpty(openIdEndpoint))
+            {
+                ChannelValidation.OpenIdMetadataUrl = openIdEndpoint;
+            }
+
+            var oauthApiEndpoint = ConfigurationManager.AppSettings[AuthenticationConstants.OAuthUrlKey];
+
+            if (!string.IsNullOrEmpty(oauthApiEndpoint))
+            {
+                OAuthClient.OAuthEndpoint = oauthApiEndpoint;
+            }
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Recognizers.Text;
@@ -30,17 +31,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 dialogs.Add(CreateWaterfall());
                 dialogs.Add(new NumberPrompt<int>("number", defaultLocale: Culture.English));
 
-                var dc = await dialogs.CreateContextAsync(turnContext);
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
 
-                var results = await dc.ContinueAsync();
-                if (!turnContext.Responded && !results.HasActive && !results.HasResult)
+                var results = await dc.ContinueAsync(cancellationToken);
+                if (results.Status == DialogTurnStatus.Empty)
                 {
-                    await dc.BeginAsync("test-waterfall");
+                    await dc.BeginAsync("test-waterfall", null, cancellationToken);
                 }
-                else if (!results.HasActive && results.HasResult)
+                else if (results.Status == DialogTurnStatus.Complete)
                 {
                     var value = (int)results.Result;
-                    await turnContext.SendActivityAsync($"Bot received the number '{value}'.");
+                    await turnContext.SendActivityAsync(MessageFactory.Text($"Bot received the number '{value}'."), cancellationToken);
                 }
             })
             .Send("hello")
@@ -69,17 +70,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
                 dialogs.Add(new TestComponentDialog());
 
-                var dc = await dialogs.CreateContextAsync(turnContext);
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
 
-                var results = await dc.ContinueAsync();
-                if (!turnContext.Responded && !results.HasActive && !results.HasResult)
+                var results = await dc.ContinueAsync(cancellationToken);
+                if (results.Status == DialogTurnStatus.Empty)
                 {
-                    await dc.BeginAsync("TestComponentDialog");
+                    await dc.BeginAsync("TestComponentDialog", null, cancellationToken);
                 }
-                else if (!results.HasActive && results.HasResult)
+                else if (results.Status == DialogTurnStatus.Complete)
                 {
                     var value = (int)results.Result;
-                    await turnContext.SendActivityAsync($"Bot received the number '{value}'.");
+                    await turnContext.SendActivityAsync(MessageFactory.Text($"Bot received the number '{value}'."), cancellationToken);
                 }
             })
             .Send("hello")
@@ -108,17 +109,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
                 dialogs.Add(new TestNestedComponentDialog());
 
-                var dc = await dialogs.CreateContextAsync(turnContext);
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
 
-                var results = await dc.ContinueAsync();
-                if (!turnContext.Responded && !results.HasActive && !results.HasResult)
+                var results = await dc.ContinueAsync(cancellationToken);
+                if (results.Status == DialogTurnStatus.Empty)
                 {
-                    await dc.BeginAsync("TestNestedComponentDialog");
+                    await dc.BeginAsync("TestNestedComponentDialog", null, cancellationToken);
                 }
-                else if (!results.HasActive && results.HasResult)
+                else if (results.Status == DialogTurnStatus.Complete)
                 {
                     var value = (int)results.Result;
-                    await turnContext.SendActivityAsync($"Bot received the number '{value}'.");
+                    await turnContext.SendActivityAsync(MessageFactory.Text($"Bot received the number '{value}'."), cancellationToken);
                 }
             })
             .Send("hello")
@@ -155,28 +156,28 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             });
         }
 
-        private static async Task<DialogTurnResult> WaterfallStep1(DialogContext dc, WaterfallStepContext stepContext)
+        private static async Task<DialogTurnResult> WaterfallStep1(DialogContext dc, WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            return await dc.PromptAsync("number", new PromptOptions { Prompt = MessageFactory.Text("Enter a number.") });
+            return await dc.PromptAsync("number", new PromptOptions { Prompt = MessageFactory.Text("Enter a number.") }, cancellationToken);
         }
-        private static async Task<DialogTurnResult> WaterfallStep2(DialogContext dc, WaterfallStepContext stepContext)
+        private static async Task<DialogTurnResult> WaterfallStep2(DialogContext dc, WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             if (stepContext.Values != null)
             {
                 var numberResult = (int)stepContext.Result;
-                await dc.Context.SendActivityAsync($"Thanks for '{numberResult}'");
+                await dc.Context.SendActivityAsync(MessageFactory.Text($"Thanks for '{numberResult}'"), cancellationToken);
             }
-            return await dc.PromptAsync("number", new PromptOptions { Prompt = MessageFactory.Text("Enter another number.") });
+            return await dc.PromptAsync("number", new PromptOptions { Prompt = MessageFactory.Text("Enter another number.") }, cancellationToken);
         }
 
-        private static async Task<DialogTurnResult> WaterfallStep3(DialogContext dc, WaterfallStepContext stepContext)
+        private static async Task<DialogTurnResult> WaterfallStep3(DialogContext dc, WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             if (stepContext.Values != null)
             {
                 var numberResult = (int)stepContext.Result;
-                await dc.Context.SendActivityAsync($"Got '{numberResult}'.");
+                await dc.Context.SendActivityAsync(MessageFactory.Text($"Got '{numberResult}'."), cancellationToken);
             }
-            return await dc.BeginAsync("TestComponentDialog");
+            return await dc.BeginAsync("TestComponentDialog", null, cancellationToken);
         }
 
         private class TestComponentDialog : ComponentDialog
