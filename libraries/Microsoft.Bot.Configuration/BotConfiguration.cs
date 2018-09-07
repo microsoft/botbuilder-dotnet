@@ -47,6 +47,7 @@ namespace Microsoft.Bot.Configuration
         /// Gets or sets connected services.
         /// </summary>
         [JsonProperty("services")]
+        [JsonConverter(typeof(BotConfigConverter))]
         public List<ConnectedService> Services { get; set; } = new List<ConnectedService>();
 
         /// <summary>
