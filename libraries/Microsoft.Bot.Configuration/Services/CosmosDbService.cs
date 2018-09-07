@@ -3,9 +3,6 @@
 
 namespace Microsoft.Bot.Configuration
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Text;
     using Microsoft.Bot.Configuration.Encryption;
     using Newtonsoft.Json;
 
@@ -20,10 +17,16 @@ namespace Microsoft.Bot.Configuration
         }
 
         /// <summary>
-        /// Gets or sets connection string.
+        /// Gets or sets endpoint for CosmosDB.
         /// </summary>
-        [JsonProperty("connectionString")]
-        public string ConnectionString { get; set; }
+        [JsonProperty("endpoint")]
+        public string Endpoint { get; set; }
+
+        /// <summary>
+        /// Gets or sets key for accessing CosmosDB.
+        /// </summary>
+        [JsonProperty("key")]
+        public string Key { get; set; }
 
         /// <summary>
         /// Gets or sets database.
@@ -41,14 +44,22 @@ namespace Microsoft.Bot.Configuration
         public override void Encrypt(string secret)
         {
             base.Encrypt(secret);
-            this.ConnectionString = this.ConnectionString.Encrypt(secret);
+
+            if (!string.IsNullOrEmpty(this.Key))
+            {
+                this.Key = this.Key.Encrypt(secret);
+            }
         }
 
         /// <inheritdoc/>
         public override void Decrypt(string secret)
         {
             base.Decrypt(secret);
-            this.ConnectionString = this.ConnectionString.Decrypt(secret);
+
+            if (!string.IsNullOrEmpty(this.Key))
+            {
+                this.Key = this.Key.Decrypt(secret);
+            }
         }
     }
 }

@@ -40,10 +40,21 @@ namespace Microsoft.Bot.Configuration
         public override void Encrypt(string secret)
         {
             base.Encrypt(secret);
-            this.InstrumentationKey = this.InstrumentationKey.Encrypt(secret);
-            foreach (var key in this.ApiKeys.Keys.ToArray())
+
+            if (!string.IsNullOrEmpty(this.InstrumentationKey))
             {
-                this.ApiKeys[key] = this.ApiKeys[key].Encrypt(secret);
+                this.InstrumentationKey = this.InstrumentationKey.Encrypt(secret);
+            }
+
+            if (this.ApiKeys != null)
+            {
+                foreach (var key in this.ApiKeys.Keys.ToArray())
+                {
+                    if (!string.IsNullOrEmpty(this.ApiKeys[key]))
+                    {
+                        this.ApiKeys[key] = this.ApiKeys[key].Encrypt(secret);
+                    }
+                }
             }
         }
 
@@ -51,10 +62,20 @@ namespace Microsoft.Bot.Configuration
         public override void Decrypt(string secret)
         {
             base.Decrypt(secret);
-            this.InstrumentationKey = this.InstrumentationKey.Decrypt(secret);
-            foreach (var key in this.ApiKeys.Keys.ToArray())
+            if (!string.IsNullOrEmpty(this.InstrumentationKey))
             {
-                this.ApiKeys[key] = this.ApiKeys[key].Decrypt(secret);
+                this.InstrumentationKey = this.InstrumentationKey.Decrypt(secret);
+            }
+
+            if (this.ApiKeys != null)
+            {
+                foreach (var key in this.ApiKeys.Keys.ToArray())
+                {
+                    if (!string.IsNullOrEmpty(this.ApiKeys[key]))
+                    {
+                        this.ApiKeys[key] = this.ApiKeys[key].Decrypt(secret);
+                    }
+                }
             }
         }
     }

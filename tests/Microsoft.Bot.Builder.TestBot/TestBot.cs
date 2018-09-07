@@ -45,7 +45,7 @@ namespace Microsoft.Bot.Builder.TestBot
                 // HasResults = true if the dialog just completed and the final  result can be retrived
                 // if both are false this indicates a new dialog needs to start
                 // an additional check for Responded stops a new waterfall from being automatically started over
-                if (!turnContext.Responded && !results.HasActive && !results.HasResult)
+                if (results.Status == DialogTurnStatus.Empty)
                 {
                     await dialogContext.BeginAsync("test-waterfall", null, cancellationToken);
                 }
