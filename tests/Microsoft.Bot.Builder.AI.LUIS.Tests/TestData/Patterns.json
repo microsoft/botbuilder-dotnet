@@ -136,28 +136,28 @@
       {
         "entity": "kb435",
         "type": "Part",
-        "startIndex": 71.0,
-        "endIndex": 75.0
+        "startIndex": 71,
+        "endIndex": 75
       },
       {
         "entity": "something wicked this way comes",
         "type": "subject",
-        "startIndex": 12.0,
-        "endIndex": 42.0,
+        "startIndex": 12,
+        "endIndex": 42,
         "role": ""
       },
       {
         "entity": "bart simpson",
         "type": "person",
-        "startIndex": 49.0,
-        "endIndex": 60.0,
+        "startIndex": 49,
+        "endIndex": 60,
         "role": ""
       },
       {
         "entity": "kb435",
         "type": "subject",
-        "startIndex": 71.0,
-        "endIndex": 75.0,
+        "startIndex": 71,
+        "endIndex": 75,
         "role": "extra"
       }
     ],
