@@ -291,7 +291,7 @@ namespace Microsoft.Bot.Configuration.Tests
             try
             {
                 var cosmos = new CosmosDbService();
-                cosmos.ConnectionString = String.Empty;
+                cosmos.Key = String.Empty;
                 cosmos.Encrypt(secret);
                 cosmos.Decrypt(secret);
             }

@@ -17,7 +17,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
 {
     /// <inheritdoc />
     /// <summary>
-    /// A LUIS based implementation of IRecognizer.
+    /// A LUIS based implementation of <see cref="IRecognizer"/>.
     /// </summary>
     public class LuisRecognizer : IRecognizer
     {
@@ -31,7 +31,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// </summary>
         public const string LuisTraceLabel = "Luis Trace";
         private const string _metadataKey = "$instance";
-        private readonly LuisRuntimeAPI _runtime;
+        private readonly ILUISRuntimeClient _runtime;
         private readonly LuisApplication _application;
         private readonly LuisPredictionOptions _options;
         private readonly bool _includeApiResults;
@@ -39,19 +39,19 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// <summary>
         /// Initializes a new instance of the <see cref="LuisRecognizer"/> class.
         /// </summary>
-        /// <param name="application">The LUIS _application to use to recognize text.</param>
-        /// <param name="predictionOptions">The LUIS prediction options to use.</param>
-        /// <param name="includeApiResults">TRUE to include raw LUIS API response.</param>
-        /// <param name="clientHandler">Custom handler for LUIS API calls.</param>
+        /// <param name="application">The LUIS application to use to recognize text.</param>
+        /// <param name="predictionOptions">(Optional) The LUIS prediction options to use.</param>
+        /// <param name="includeApiResults">(Optional) TRUE to include raw LUIS API response.</param>
+        /// <param name="clientHandler">(Optional) Custom handler for LUIS API calls to allow mocking.</param>
         public LuisRecognizer(LuisApplication application, LuisPredictionOptions predictionOptions = null, bool includeApiResults = false, HttpClientHandler clientHandler = null)
         {
-            _runtime = new LuisRuntimeAPI(new ApiKeyServiceClientCredentials(application.EndpointKey), clientHandler)
-            {
-                AzureRegion = (AzureRegions)Enum.Parse(typeof(AzureRegions), application.AzureRegion),
-            };
-            _application = application;
+            _application = application ?? throw new ArgumentNullException(nameof(application));
             _options = predictionOptions ?? new LuisPredictionOptions();
             _includeApiResults = includeApiResults;
+            _runtime = new LUISRuntimeClient(new ApiKeyServiceClientCredentials(application.EndpointKey), clientHandler)
+            {
+                Endpoint = application.Endpoint,
+            };
         }
 
         /// <inheritdoc />

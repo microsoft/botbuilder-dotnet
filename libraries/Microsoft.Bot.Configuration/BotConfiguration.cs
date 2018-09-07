@@ -38,16 +38,26 @@ namespace Microsoft.Bot.Configuration
         public string SecretKey { get; set; }
 
         /// <summary>
-        /// Gets the version.
+        /// Gets or sets the version.
         /// </summary>
         [JsonProperty("version")]
-        public string Version { get;  } = "2.0";
+        public string Version { get; set; } = "2.0";
 
         /// <summary>
         /// Gets or sets connected services.
         /// </summary>
         [JsonProperty("services")]
         public List<ConnectedService> Services { get; set; } = new List<ConnectedService>();
+
+        /// <summary>
+        /// Gets or sets properties that are not otherwise defined.
+        /// </summary>
+        /// <value>The extended properties for the object.</value>
+        /// <remarks>With this, properties not represented in the defined type are not dropped when
+        /// the JSON object is deserialized, but are instead stored in this property. Such properties
+        /// will be written to a JSON object when the instance is serialized.</remarks>
+        [JsonExtensionData(ReadData = true, WriteData = true)]
+        public JObject Properties { get; set; } = new JObject();
 
         /// <summary>
         /// Gets or sets the location of the configuration.
@@ -72,7 +82,7 @@ namespace Microsoft.Bot.Configuration
 
             if (file != null)
             {
-                return await BotConfiguration.LoadAsync(file, secret);
+                return await BotConfiguration.LoadAsync(file, secret).ConfigureAwait(false);
             }
 
             throw new FileNotFoundException($"Error: no bot file found in {folder}. Choose a different location or use msbot init to create a.bot file.");
@@ -115,6 +125,7 @@ namespace Microsoft.Bot.Configuration
 
             var bot = JsonConvert.DeserializeObject<BotConfiguration>(json, new BotConfigConverter());
             bot.Location = file;
+            bot.MigrateData();
 
             var hasSecret = bot.SecretKey?.Length > 0;
             if (hasSecret)
@@ -404,6 +415,40 @@ namespace Microsoft.Bot.Configuration
         }
 
         /// <summary>
+        /// migrate old records to new records.
+        /// </summary>
+        protected virtual void MigrateData()
+        {
+            foreach (var service in this.Services)
+            {
+                switch (service.Type)
+                {
+                    case ServiceTypes.Bot:
+                        {
+                            var botService = (BotService)service;
+
+                            // old bot service records may not have the appId on the bot, but we probably have it already on an endpoint
+                            if (string.IsNullOrEmpty(botService.AppId))
+                            {
+                                botService.AppId = this.Services.Where(s => s.Type == ServiceTypes.Endpoint).Cast<EndpointService>()
+                                    .Where(ep => !string.IsNullOrEmpty(ep.AppId))
+                                    .Select(ep => ep.AppId)
+                                    .FirstOrDefault();
+                            }
+                        }
+
+                        break;
+
+                    default:
+                        break;
+                }
+            }
+
+            // this is now a 2.0 version of the schema
+            this.Version = "2.0";
+        }
+
+        /// <summary>
         /// Converter for strongly typed connected services.
         /// </summary>
         internal class BotConfigConverter : JsonConverter
@@ -422,32 +467,33 @@ namespace Microsoft.Bot.Configuration
             public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
             {
                 // Load JObject from stream
-                var jObject = JObject.Load(reader);
+                var obj = JObject.Load(reader);
 
-                switch ((string)jObject["type"])
+                switch ((string)obj["type"])
                 {
                     case ServiceTypes.Bot:
-                        return jObject.ToObject<BotService>();
+                        return obj.ToObject<BotService>();
                     case ServiceTypes.AppInsights:
-                        return jObject.ToObject<AppInsightsService>();
+                        return obj.ToObject<AppInsightsService>();
                     case ServiceTypes.BlobStorage:
-                        return jObject.ToObject<BlobStorageService>();
+                        return obj.ToObject<BlobStorageService>();
                     case ServiceTypes.CosmosDB:
-                        return jObject.ToObject<CosmosDbService>();
+                        return obj.ToObject<CosmosDbService>();
                     case ServiceTypes.Dispatch:
-                        return jObject.ToObject<DispatchService>();
+                        return obj.ToObject<DispatchService>();
                     case ServiceTypes.Endpoint:
-                        return jObject.ToObject<EndpointService>();
+                        return obj.ToObject<EndpointService>();
                     case ServiceTypes.File:
-                        return jObject.ToObject<FileService>();
+                        return obj.ToObject<FileService>();
                     case ServiceTypes.Luis:
-                        return jObject.ToObject<LuisService>();
+                        return obj.ToObject<LuisService>();
                     case ServiceTypes.QnA:
-                        return jObject.ToObject<QnAMakerService>();
+                        return obj.ToObject<QnAMakerService>();
                     case ServiceTypes.Generic:
-                        return jObject.ToObject<GenericService>();
+                        return obj.ToObject<GenericService>();
                     default:
-                        throw new Exception($"Unknown service type {(string)jObject["type"]}");
+                        System.Diagnostics.Trace.TraceWarning($"Unknown service type {(string)obj["type"]}");
+                        return obj.ToObject<ConnectedService>();
                 }
             }
 
