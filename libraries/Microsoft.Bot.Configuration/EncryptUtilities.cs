@@ -70,10 +70,10 @@ namespace Microsoft.Bot.Configuration.Encryption
                 throw new ArgumentException("EncryptedText is not properly formatted");
             }
 
-            byte[] rgIv;
+            byte[] bytesIv;
             try
             {
-                rgIv = Convert.FromBase64String(parts[0]);
+                bytesIv = Convert.FromBase64String(parts[0]);
             }
             catch (FormatException)
             {
@@ -90,10 +90,10 @@ namespace Microsoft.Bot.Configuration.Encryption
                 throw new ArgumentException("EncryptedText[1] is not properly formatted");
             }
 
-            byte[] rgKey;
+            byte[] bytesKey;
             try
             {
-                rgKey = Convert.FromBase64String(key);
+                bytesKey = Convert.FromBase64String(key);
             }
             catch (FormatException)
             {
@@ -101,7 +101,7 @@ namespace Microsoft.Bot.Configuration.Encryption
             }
 
             // parts[0] == base64 iv parts[1] == base64 encoded encrypted bytes
-            return EncryptUtilities.DecryptStringFromBytes_Aes(cipherText: cipherText, key: rgKey, iv: rgIv);
+            return EncryptUtilities.DecryptStringFromBytes_Aes(cipherText: cipherText, key: bytesKey, iv: bytesIv);
         }
 
         /// <summary>
@@ -141,17 +141,17 @@ namespace Microsoft.Bot.Configuration.Encryption
                 ICryptoTransform encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
 
                 // Create the streams used for encryption.
-                using (MemoryStream msEncrypt = new MemoryStream())
+                using (var memoryStream = new MemoryStream())
                 {
-                    using (CryptoStream csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write))
+                    using (var cryptoStream = new CryptoStream(memoryStream, encryptor, CryptoStreamMode.Write))
                     {
-                        using (StreamWriter swEncrypt = new StreamWriter(csEncrypt))
+                        using (var cryptoWriter = new StreamWriter(cryptoStream))
                         {
                             // Write all data to the stream.
-                            swEncrypt.Write(plainText);
+                            cryptoWriter.Write(plainText);
                         }
 
-                        encrypted = msEncrypt.ToArray();
+                        encrypted = memoryStream.ToArray();
                     }
                 }
 
@@ -200,15 +200,15 @@ namespace Microsoft.Bot.Configuration.Encryption
                 ICryptoTransform decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
 
                 // Create the streams used for decryption.
-                using (MemoryStream msDecrypt = new MemoryStream(cipherText))
+                using (MemoryStream memoryStream = new MemoryStream(cipherText))
                 {
-                    using (CryptoStream csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read))
+                    using (CryptoStream cryptoStream = new CryptoStream(memoryStream, decryptor, CryptoStreamMode.Read))
                     {
-                        using (StreamReader srDecrypt = new StreamReader(csDecrypt))
+                        using (StreamReader decryptReader = new StreamReader(cryptoStream))
                         {
                             // Read the decrypted bytes from the decrypting stream
                             // and place them in a string.
-                            plaintext = srDecrypt.ReadToEnd();
+                            plaintext = decryptReader.ReadToEnd();
                         }
                     }
                 }

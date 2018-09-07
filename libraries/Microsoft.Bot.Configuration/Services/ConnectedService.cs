@@ -4,6 +4,7 @@
 namespace Microsoft.Bot.Configuration
 {
     using Newtonsoft.Json;
+    using Newtonsoft.Json.Linq;
 
     public class ConnectedService
     {
@@ -29,6 +30,16 @@ namespace Microsoft.Bot.Configuration
         /// </summary>
         [JsonProperty("id")]
         public string Id { get; set; }
+
+        /// <summary>
+        /// Gets or sets properties that are not otherwise defined.
+        /// </summary>
+        /// <value>The extended properties for the object.</value>
+        /// <remarks>With this, properties not represented in the defined type are not dropped when
+        /// the JSON object is deserialized, but are instead stored in this property. Such properties
+        /// will be written to a JSON object when the instance is serialized.</remarks>
+        [JsonExtensionData(ReadData = true, WriteData = true)]
+        public JObject Properties { get; set; } = new JObject();
 
         /// <summary>
         /// Encrypt properties on this service.
