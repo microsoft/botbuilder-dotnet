@@ -2,6 +2,7 @@
     "name": "test",
     "description": "test description",
     "version": "2.0",
+    "extra": true,
     "services": [
         {
             "type": "abs",
@@ -80,7 +81,8 @@
             "tenantId": "tenant.test.com",
             "subscriptionId": "00000000-0000-0000-0000-000000000000",
             "resourceGroup": "testGroup",
-            "connectionString": "UseDevelopmentStorage=true;",
+            "endpoint": "https://localhost:8081/",
+            "key": "C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==",
             "database": "testDatabase",
             "collection": "testCollection"
         },
@@ -93,7 +95,19 @@
                 "key1": "testKey1",
                 "key2": "testKey2"
             }
+        },
+        {
+            "type": "file",
+            "id": "10",
+            "name": "testFile",
+            "path": "..\\..\\test.bot",
+        },
+        {
+            "type": "unknown",
+            "id": "11",
+            "name": "unknown"
         }
+
     ],
     "secretKey": ""
 }

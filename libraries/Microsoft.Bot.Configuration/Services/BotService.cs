@@ -17,5 +17,11 @@ namespace Microsoft.Bot.Configuration
             : base(ServiceTypes.Bot)
         {
         }
+
+        /// <summary>
+        /// Gets or sets appId for the bot.
+        /// </summary>
+        [JsonProperty("appId")]
+        public string AppId { get; set; }
     }
 }

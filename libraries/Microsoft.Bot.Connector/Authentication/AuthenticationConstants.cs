@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// TO CHANNEL FROM BOT: OAuth scope to request
         /// </summary>
         public const string ToChannelFromBotOAuthScope = "https://api.botframework.com/.default";
-
+        
         /// <summary>
         /// TO BOT FROM CHANNEL: Token issuer
         /// </summary>
@@ -29,16 +29,31 @@ namespace Microsoft.Bot.Connector.Authentication
         /// OAuth Url used to get a token from OAuthApiClient
         /// </summary>
         public const string OAuthUrl = "https://api.botframework.com";
+        
+        /// <summary>
+        /// Application Setting Key for the OpenIdMetadataUrl value
+        /// </summary>
+        public const string BotOpenIdMetadataKey = "BotOpenIdMetadata";
+        
+        /// <summary>
+        /// Application Setting Key for the OAuthUrl value
+        /// </summary>
+        public const string OAuthUrlKey = "OAuthApiEndpoint";
 
         /// <summary>
         /// TO BOT FROM CHANNEL: OpenID metadata document for tokens coming from MSA
         /// </summary>
         public const string ToBotFromChannelOpenIdMetadataUrl = "https://login.botframework.com/v1/.well-known/openidconfiguration";
-       
+        
         /// <summary>
         /// TO BOT FROM EMULATOR: OpenID metadata document for tokens coming from MSA
         /// </summary>
         public const string ToBotFromEmulatorOpenIdMetadataUrl = "https://login.microsoftonline.com/common/v2.0/.well-known/openid-configuration";
+
+        /// <summary>
+        /// TO BOT FROM ENTERPRISE CHANNEL: OpenID metadata document for tokens coming from MSA
+        /// </summary>
+        public const string ToBotFromEnterpriseChannelOpenIdMetadataUrlFormat = "https://{0}.enterprisechannel.botframework.com/v1/.well-known/openidconfiguration";
 
         /// <summary>
         /// Allowed token signing algorithms. Tokens come from channels to the bot. The code

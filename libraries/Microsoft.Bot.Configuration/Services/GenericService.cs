@@ -3,6 +3,7 @@
 
 namespace Microsoft.Bot.Configuration
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using Microsoft.Bot.Configuration.Encryption;
@@ -32,9 +33,16 @@ namespace Microsoft.Bot.Configuration
         {
             base.Encrypt(secret);
 
-            foreach (var key in this.Configuration.Keys.ToArray())
+            if (this.Configuration != null)
             {
-                this.Configuration[key] = this.Configuration[key].Encrypt(secret);
+                foreach (var key in this.Configuration.Keys.ToArray())
+                {
+                    var value = this.Configuration[key];
+                    if (!string.IsNullOrEmpty(value))
+                    {
+                        this.Configuration[key] = value.Encrypt(secret);
+                    }
+                }
             }
         }
 
@@ -43,9 +51,16 @@ namespace Microsoft.Bot.Configuration
         {
             base.Decrypt(secret);
 
-            foreach (var key in this.Configuration.Keys.ToArray())
+            if (this.Configuration != null)
             {
-                this.Configuration[key] = this.Configuration[key].Decrypt(secret);
+                foreach (var key in this.Configuration.Keys.ToArray())
+                {
+                    var value = this.Configuration[key];
+                    if (!string.IsNullOrEmpty(value))
+                    {
+                        this.Configuration[key] = value.Decrypt(secret);
+                    }
+                }
             }
         }
     }

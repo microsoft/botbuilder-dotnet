@@ -23,6 +23,10 @@ namespace Microsoft.Bot.Connector
         private readonly ConnectorClient _client;
         private readonly string _uri;
 
+        /// <summary>
+        /// The default endpoint that is used for API requests.
+        /// </summary>
+        public static string OAuthEndpoint { get; set; } = AuthenticationConstants.OAuthUrl;
 
         /// <summary>
         /// Initializes an new instance of the <see cref="OAuthClient"/> class.
