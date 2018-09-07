@@ -6,11 +6,12 @@ using System.IO;
 using System.IO.Compression;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading;
 using System.Threading.Tasks;
-using Autofac;
 using Microsoft.Bot.Builder.Classic.Dialogs;
 using Microsoft.Bot.Builder.Classic.Internals.Fibers;
+using static Microsoft.Bot.Builder.Classic.Internals.Fibers.Serialization;
 
 namespace Microsoft.Bot.Builder.Dialogs.Bridge
 {
@@ -20,31 +21,35 @@ namespace Microsoft.Bot.Builder.Dialogs.Bridge
         public const string TurnStateKey = "ActivityConsumed";
 
         private readonly IFormatter _formatter;
-        public BridgeDialog() : base(DialogId)
+        public BridgeDialog(IFormatter formatter) : base(DialogId)
         {
-            var builder = new ContainerBuilder();
-            builder.RegisterModule(new FiberModule());
-            builder
-                .Register(c => new NetStandardSerialization.TypeSerializationSurrogate())
-                .Keyed<Serialization.ISurrogateProvider>(FiberModule.Key_SurrogateProvider)
-                .SingleInstance();
-            builder
-                .Register(c => new NetStandardSerialization.MemberInfoSerializationSurrogate())
-                .Keyed<Serialization.ISurrogateProvider>(FiberModule.Key_SurrogateProvider)
-                .SingleInstance();
-            builder
-                .Register(c => new NetStandardSerialization.DelegateSerializationSurrogate())
-                .Keyed<Serialization.ISurrogateProvider>(FiberModule.Key_SurrogateProvider)
-                .SingleInstance();
-            builder
-                .Register(c => new NetStandardSerialization.RegexSerializationSurrogate())
-                .Keyed<Serialization.ISurrogateProvider>(FiberModule.Key_SurrogateProvider)
-                .SingleInstance();
+            _formatter = formatter;
+        }
 
-            using (var container = builder.Build())
-            {
-                _formatter = container.Resolve<IFormatter>();
-            }            
+        public BridgeDialog() : this(GetBinaryFormatter())
+        {
+        }
+   
+        private static IFormatter GetBinaryFormatter()
+        {
+            return new BinaryFormatter(new Serialization.SurrogateSelector(GetSurrogates()), new StreamingContext(StreamingContextStates.All));
+        }
+
+        private static ISurrogateProvider[] GetSurrogates()
+        {
+            //these two surrogates are not required (though users can provide them, 
+            //  if using autofac to create the BinaryFormatter
+            //ISurrogateProvider instanceSurrogate = new StoreInstanceByTypeSurrogate(priority: int.MaxValue);
+            //var decoratorSurrogate = new Serialization.SurrogateLogDecorator(inner, new DefaultTraceListener());
+            ISurrogateProvider closureSurrogate = new ClosureCaptureErrorSurrogate(priority: 1);
+            ISurrogateProvider jObjectSurrogate = new JObjectSurrogate(priority: 3);
+
+            ISurrogateProvider typeSurrogate = new NetStandardSerialization.TypeSerializationSurrogate();
+            ISurrogateProvider numberInfoSurrogate = new NetStandardSerialization.MemberInfoSerializationSurrogate();
+            ISurrogateProvider delegateSurrogate = new NetStandardSerialization.DelegateSerializationSurrogate();
+            ISurrogateProvider regexSurrogate = new NetStandardSerialization.RegexSerializationSurrogate();
+
+            return new[] { closureSurrogate, jObjectSurrogate, typeSurrogate, numberInfoSurrogate, delegateSurrogate, regexSurrogate };
         }
 
         public bool GetActivityConsumed(DialogContext dc)
