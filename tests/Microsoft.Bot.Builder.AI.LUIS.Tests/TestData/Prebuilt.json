@@ -130,21 +130,21 @@
       {
         "entity": "http : / / foo . com is where you can get a weather forecast for seattle",
         "type": "Composite2",
-        "startIndex": 0.0,
-        "endIndex": 65.0,
+        "startIndex": 0,
+        "endIndex": 65,
         "score": 0.6157282
       },
       {
         "entity": "http://foo.com",
         "type": "builtin.url",
-        "startIndex": 0.0,
-        "endIndex": 13.0
+        "startIndex": 0,
+        "endIndex": 13
       },
       {
         "entity": "seattle",
         "type": "Weather.Location",
-        "startIndex": 59.0,
-        "endIndex": 65.0,
+        "startIndex": 59,
+        "endIndex": 65,
         "score": 0.8966654
       }
     ],
