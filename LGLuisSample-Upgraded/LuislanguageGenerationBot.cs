@@ -39,9 +39,11 @@ namespace LGLuisSample_Upgraded
             {
                 case ActivityTypes.Message:
                     var luisResult = turnContext.TurnState.Get<RecognizerResult>(LuisRecognizerMiddleware.LuisRecognizerResultKey);
+                    //var userState = turnContext.TurnState.Get<BotState>()
                     //var luisResult = await _luisRecognizer.RecognizeAsync(turnContext, cancellationToken).ConfigureAwait(false);
 
                     var (intent, score) = luisResult.GetTopScoringIntent();
+                    var luisEntities = luisResult.Entities;
                     var outgoingActivity = new Activity();
                     if (intent == "greeting")
                     {
@@ -53,10 +55,27 @@ namespace LGLuisSample_Upgraded
                     else if (intent == "help")
                     {
                         outgoingActivity.Text = "[offerHelp]";
+                        object currentUserName = "";
+                        turnContext.TurnState.TryGetValue("userName", out currentUserName);
                         var entities = new Dictionary<string, object>()
                         {
-                            {"userName", "Sehemy"}
+                            //{"userName", "Sehemy"}
+                            {"userName", (string)currentUserName}
                         };
+                        await _languageGenerationResolver.ResolveAsync(outgoingActivity, entities).ConfigureAwait(false);
+                        await turnContext.SendActivityAsync(outgoingActivity);
+
+                    }
+
+                    else if (intent == "introduction")
+                    {
+                        var userName = luisEntities.GetValue("userName")[0].ToString();
+                        outgoingActivity.Text = "[wPhrase] " + userName;
+                        var entities = new Dictionary<string, object>()
+                        {
+                            {"userName", userName}
+                        };
+                        turnContext.TurnState.Add("userName", userName);
                         await _languageGenerationResolver.ResolveAsync(outgoingActivity, entities).ConfigureAwait(false);
                         await turnContext.SendActivityAsync(outgoingActivity);
 

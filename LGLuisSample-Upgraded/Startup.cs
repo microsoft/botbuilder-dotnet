@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Ai.LUIS;
+using System.Linq;
 
 namespace LGLuisSample_Upgraded
 {
@@ -43,7 +44,17 @@ namespace LGLuisSample_Upgraded
 
                 IStorage dataStore = new MemoryStorage();
                 //Microsoft.Bot.Builder.Core.Extensions.IStorage dataStore = new Microsoft.Bot.Builder.Core.Extensions.MemoryStorage();
-                options.Middleware.Add(new ConversationState(dataStore));
+                //options.Middleware.Add(new ConversationState(dataStore));
+                //options.Middleware.Add(new UserState(dataStore));
+                var converstationState = new ConversationState(dataStore);
+                options.State.Add(converstationState);
+
+                var userState = new UserState(dataStore);
+                options.State.Add(userState);
+
+                var stateSet = new BotStateSet(options.State.ToArray());
+                options.Middleware.Add(stateSet);
+
                 //options.Middleware.Add(new LuisRecognizerMiddleware(luisModel, luisOptions: luisOptions));
                 //options.Middleware.Add(new UserState<UserState>(dataStore));
                 options.Middleware.Add(new LuisRecognizerMiddleware(luisRecognizer));

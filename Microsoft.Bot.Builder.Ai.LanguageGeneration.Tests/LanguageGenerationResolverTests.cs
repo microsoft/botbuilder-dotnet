@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using DialogFoundation.Backend.LG;
 using Microsoft.Bot.Builder.AI.LanguageGeneration.API;
 using Microsoft.Bot.Builder.AI.LanguageGeneration.Resolver;
 using Microsoft.Bot.Schema;

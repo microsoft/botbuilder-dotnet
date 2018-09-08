@@ -16,14 +16,18 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Helpers
                 var matches = Regex.Matches(token, _templatePattern);
                 foreach (Match match in matches)
                 {
+                    if (match.Index > 0 && IsEscapedPattern(token[match.Index - 1] + match.Value))
+                    {
+                        continue;
+                    }
                     detectedPatterns.Add(match.Value);
                 }
                 return detectedPatterns;
             }
-            else
-            {
-                return new List<string>();
-            }
+
+            return new List<string>();
         }
+
+        private static bool IsEscapedPattern(string pattern) => (pattern.StartsWith(@"\") && pattern.EndsWith(@"\]"));
     }
 }
