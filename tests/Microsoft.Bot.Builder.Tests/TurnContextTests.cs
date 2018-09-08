@@ -507,6 +507,7 @@ namespace Microsoft.Bot.Builder.Tests
             var disposableObject1 = new TrackDisposed();
             var disposableObject2 = new TrackDisposed();
             var disposableObject3 = new TrackDisposed();
+            Assert.IsFalse(disposableObject1.Disposed);
             Assert.IsTrue(disposableObject1 is IDisposable);
 
             var connector = new ConnectorClientThrowExceptionOnDispose();
@@ -573,6 +574,11 @@ namespace Microsoft.Bot.Builder.Tests
 
         public void Dispose() => throw new Exception("Should not be disposed!");
     }
+
+    /// <summary>
+    /// Vanilla <see cref="IDisposable"/> tracks if Dispose has been called.
+    /// </summary>
+    /// <remarks>Moq failed to create this properly.  Boo moq!</remarks>
     public class TrackDisposed : IDisposable
     {
         public bool Disposed { get; private set; } = false;
