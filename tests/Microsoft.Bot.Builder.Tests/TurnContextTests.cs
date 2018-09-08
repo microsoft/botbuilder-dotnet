@@ -497,11 +497,34 @@ namespace Microsoft.Bot.Builder.Tests
             Assert.IsTrue(connector is IConnectorClient);
 
             var stateCollection = new TurnContextStateCollection();
-            stateCollection.Add(connector);
+            stateCollection.Add("connector", connector);
             stateCollection.Dispose();
         }
 
-        
+        [TestMethod]
+        public void TurnContextStateDisposeNonConnectorClient()
+        {
+            var disposableObject1 = new TrackDisposed();
+            var disposableObject2 = new TrackDisposed();
+            var disposableObject3 = new TrackDisposed();
+            Assert.IsTrue(disposableObject1 is IDisposable);
+
+            var connector = new ConnectorClientThrowExceptionOnDispose();
+            Assert.IsTrue(connector is IDisposable);
+            Assert.IsTrue(connector is IConnectorClient);
+
+            var stateCollection = new TurnContextStateCollection();
+            stateCollection.Add("disposable1", disposableObject1);
+            stateCollection.Add("disposable2", disposableObject2);
+            stateCollection.Add("disposable3", disposableObject3);
+            stateCollection.Add("connector", connector);
+            stateCollection.Dispose();
+
+            Assert.IsTrue(disposableObject1.Disposed);
+            Assert.IsTrue(disposableObject2.Disposed);
+            Assert.IsTrue(disposableObject3.Disposed);
+        }
+
 
         public async Task MyBotLogic(ITurnContext turnContext, CancellationToken cancellationToken)
         {
@@ -549,6 +572,14 @@ namespace Microsoft.Bot.Builder.Tests
         public IConversations Conversations => throw new NotImplementedException();
 
         public void Dispose() => throw new Exception("Should not be disposed!");
+    }
+    public class TrackDisposed : IDisposable
+    {
+        public bool Disposed { get; private set; } = false;
+        public void Dispose()
+        {
+            Disposed = true;
+        }
     }
 
 }
