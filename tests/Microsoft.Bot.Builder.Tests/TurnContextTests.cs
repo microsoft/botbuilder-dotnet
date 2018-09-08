@@ -6,8 +6,12 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
+using Microsoft.Rest;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Tests
 {
@@ -476,7 +480,28 @@ namespace Microsoft.Bot.Builder.Tests
             {
                 Assert.IsTrue(ex.Message == "test");
             }            
-        }        
+        }
+
+        [TestMethod]
+        public void TurnContextStateNoDispose()
+        {
+            // Verify any ConnectorClient in TurnContextCollection doesn't get disposed.
+            // - Adapter caches ConnectorClient.
+            // - Adapter lifetime is singleton.
+            // - ConnectorClient implements IDisposable.
+            // - ConnectorClient added in turnContet.TurnCollection.
+            // - TurnContextCollection disposes elements after each turn.
+
+            var connector = new ConnectorClientThrowExceptionOnDispose();
+            Assert.IsTrue(connector is IDisposable);
+            Assert.IsTrue(connector is IConnectorClient);
+
+            var stateCollection = new TurnContextStateCollection();
+            stateCollection.Add(connector);
+            stateCollection.Dispose();
+        }
+
+        
 
         public async Task MyBotLogic(ITurnContext turnContext, CancellationToken cancellationToken)
         {
@@ -505,5 +530,26 @@ namespace Microsoft.Bot.Builder.Tests
             }
         }
     }
+    /// <summary>
+    /// ConnectorClient which throws exception when disposed.
+    /// </summary>
+    /// <remarks>Moq failed to create this properly. Boo moq!</remarks>
+    public class ConnectorClientThrowExceptionOnDispose : IConnectorClient
+    {
+        public Uri BaseUri { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
+        public JsonSerializerSettings SerializationSettings => throw new NotImplementedException();
+
+        public JsonSerializerSettings DeserializationSettings => throw new NotImplementedException();
+
+        public ServiceClientCredentials Credentials => throw new NotImplementedException();
+
+        public IAttachments Attachments => throw new NotImplementedException();
+
+        public IConversations Conversations => throw new NotImplementedException();
+
+        public void Dispose() => throw new Exception("Should not be disposed!");
+    }
+
 }
 
