@@ -3,7 +3,7 @@
 ## Problem Being Solved
 The Bot Framework team needs to know more about the shape of Bots that are running. The shape of bots includes data such as the host operating system, the middleware components that are being used, and the Cognitive Services that are integrated into the Bot. 
 
-This data is needed to effectivly prioritize features investments, as the process today is largley guesswork. 
+This data is needed to effectively prioritize features investments, as the process today is largely guesswork. 
 
 Data today around usage is implied from Nuget / NPM package downloads and GitHub activity. 
 
@@ -66,7 +66,7 @@ Add the Following:
 2. SDK Host. The SDK Host, .Net Core, JVM, Node version, MUST be added to the user-agent string. 
 3. Operating System. The OS that hosts the Bot SHOULD be added to the user-agent string. 
 4. Azure Bot Service Version (if applicable)
-5. Active Middleware Components. A RFC 2616 compatable list of Middleware SHOULD be added. The format is:
+5. Active Middleware Components. A RFC 2616 compatible list of Middleware SHOULD be added. The format is:
     ```
     (Middleware1/version; Middleware2/version; Middleware3/version)
     ```
@@ -82,7 +82,7 @@ Add the Following:
     ```
     (QnAMaker/APIVersion)
     ```
-9. Classic. Usage of the "Classic / Compatability" layers SHOULD be added to the user-agent string.
+9. Classic. Usage of the "Classic / Compatibility" layers SHOULD be added to the user-agent string.
     ```
     classic/version
     ```
@@ -96,7 +96,7 @@ Implementation is platform specific.
 
 For static (build-time) strings, attributes SHOULD be put on Middleware to define the names that are used by the User Agent strings, and the BotAdapter can scan for those attributes. C#, TS, JS, Java, and Python all support this. 
 
-For more dynamic strings (O/S, LUIS API Version, QnA Maker API Verion), relevant libraries will need to look for a shared list of "Active" components anb update accordingly. 
+For more dynamic strings (O/S, LUIS API Version, QnA Maker API Verion), relevant libraries will need to look for a shared list of "Active" components and update accordingly. 
 
 
 
