@@ -47,7 +47,7 @@ namespace Microsoft.Bot.Configuration
         /// Gets or sets connected services.
         /// </summary>
         [JsonProperty("services")]
-        [JsonConverter(typeof(BotConfigConverter))]
+        [JsonConverter(typeof(BotServiceConverter))]
         public List<ConnectedService> Services { get; set; } = new List<ConnectedService>();
 
         /// <summary>
@@ -124,7 +124,7 @@ namespace Microsoft.Bot.Configuration
                 json = await stream.ReadToEndAsync().ConfigureAwait(false);
             }
 
-            var bot = JsonConvert.DeserializeObject<BotConfiguration>(json, new BotConfigConverter());
+            var bot = JsonConvert.DeserializeObject<BotConfiguration>(json);
             bot.Location = file;
             bot.MigrateData();
 
@@ -452,7 +452,7 @@ namespace Microsoft.Bot.Configuration
         /// <summary>
         /// Converter for strongly typed connected services.
         /// </summary>
-        internal class BotConfigConverter : JsonConverter
+        internal class BotServiceConverter : JsonConverter
         {
             /// <summary>
             /// Checks whether the connected service can be converted to the provided type.
@@ -461,43 +461,59 @@ namespace Microsoft.Bot.Configuration
             /// <returns>Whether the connected service can be converted to the provided type.</returns>
             public override bool CanConvert(Type objectType)
             {
-                return typeof(ConnectedService).IsAssignableFrom(objectType);
+                return objectType == typeof(List<ConnectedService>);
             }
 
             /// <inheritdoc/>
             public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
             {
-                // Load JObject from stream
-                var obj = JObject.Load(reader);
-
-                switch ((string)obj["type"])
+                List<ConnectedService> services = new List<ConnectedService>();
+                JArray array = JArray.Load(reader);
+                foreach (JToken token in array)
                 {
-                    case ServiceTypes.Bot:
-                        return obj.ToObject<BotService>();
-                    case ServiceTypes.AppInsights:
-                        return obj.ToObject<AppInsightsService>();
-                    case ServiceTypes.BlobStorage:
-                        return obj.ToObject<BlobStorageService>();
-                    case ServiceTypes.CosmosDB:
-                        return obj.ToObject<CosmosDbService>();
-                    case ServiceTypes.Dispatch:
-                        return obj.ToObject<DispatchService>();
-                    case ServiceTypes.Endpoint:
-                        return obj.ToObject<EndpointService>();
-                    case ServiceTypes.File:
-                        return obj.ToObject<FileService>();
-                    case ServiceTypes.Luis:
-                        return obj.ToObject<LuisService>();
-                    case ServiceTypes.QnA:
-                        return obj.ToObject<QnAMakerService>();
-                    case ServiceTypes.Generic:
-                        return obj.ToObject<GenericService>();
-                    default:
-                        System.Diagnostics.Trace.TraceWarning($"Unknown service type {(string)obj["type"]}");
-                        return obj.ToObject<ConnectedService>();
+                    string type = token.Value<string>("type");
+                    switch (type)
+                    {
+                        case ServiceTypes.Bot:
+                            services.Add(token.ToObject<BotService>());
+                            break;
+                        case ServiceTypes.AppInsights:
+                            services.Add(token.ToObject<AppInsightsService>());
+                            break;
+                        case ServiceTypes.BlobStorage:
+                            services.Add(token.ToObject<BlobStorageService>());
+                            break;
+                        case ServiceTypes.CosmosDB:
+                            services.Add(token.ToObject<CosmosDbService>());
+                            break;
+                        case ServiceTypes.Dispatch:
+                            services.Add(token.ToObject<DispatchService>());
+                            break;
+                        case ServiceTypes.Endpoint:
+                            services.Add(token.ToObject<EndpointService>());
+                            break;
+                        case ServiceTypes.File:
+                            services.Add(token.ToObject<FileService>());
+                            break;
+                        case ServiceTypes.Luis:
+                            services.Add(token.ToObject<LuisService>());
+                            break;
+                        case ServiceTypes.QnA:
+                            services.Add(token.ToObject<QnAMakerService>());
+                            break;
+                        case ServiceTypes.Generic:
+                            services.Add(token.ToObject<GenericService>());
+                            break;
+                        default:
+                            System.Diagnostics.Trace.TraceWarning($"Unknown service type {type}");
+                            services.Add(token.ToObject<ConnectedService>());
+                            break;
+                    }
                 }
-            }
 
+                return services;
+            }
+            
             /// <inheritdoc/>
             public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
             {
