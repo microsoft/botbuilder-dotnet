@@ -221,22 +221,18 @@ namespace Microsoft.Bot.Connector
         /// <summary>
         /// Get the raw signin link to be sent to the user for signin for a connection name.
         /// </summary>
-        /// <param name="activity">An activity from the user to the bot.</param>
-        /// <param name="connectionName">Name of the auth connection to get a link for.</param>
+        /// <param name="state">A serialized and encoded parameter of a TokenExchangeState parameter.</param>
+        /// <param name="finalRedirect">The endpoint URL for the final page of a succesful login attempt.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <remarks>If the task completes successfully and the call to the OAuth client is successful,
         /// the result contains the signin link.</remarks>
-        public async Task<string> GetSignInLinkAsync(IActivity activity, string connectionName, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<string> GetSignInLinkAsync(string state, string finalRedirect = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (string.IsNullOrEmpty(connectionName))
+            if (string.IsNullOrEmpty(state))
             {
-                throw new ArgumentNullException(nameof(connectionName));
-            }
-            if (activity == null)
-            {
-                throw new ArgumentNullException(nameof(activity));
+                throw new ArgumentNullException(nameof(state));
             }
 
             bool shouldTrace = ServiceClientTracing.IsEnabled;
@@ -245,34 +241,18 @@ namespace Microsoft.Bot.Connector
             {
                 invocationId = ServiceClientTracing.NextInvocationId.ToString();
                 Dictionary<string, object> tracingParameters = new Dictionary<string, object>();
-                tracingParameters.Add("activity", activity);
-                tracingParameters.Add("connectionName", connectionName);
+                tracingParameters.Add("state", state);
+                tracingParameters.Add("finalRedirect", finalRedirect);
                 tracingParameters.Add("cancellationToken", cancellationToken);
                 ServiceClientTracing.Enter(invocationId, this, "GetSignInLinkAsync", tracingParameters);
             }
 
-            var tokenExchangeState = new TokenExchangeState()
-            {
-                ConnectionName = connectionName,
-                Conversation = new ConversationReference()
-                {
-                    ActivityId = activity.Id,
-                    Bot = activity.Recipient,       // Activity is from the user to the bot
-                    ChannelId = activity.ChannelId,
-                    Conversation = activity.Conversation,
-                    ServiceUrl = activity.ServiceUrl,
-                    User = activity.From
-                },
-                MsAppId = (_client.Credentials as MicrosoftAppCredentials)?.MicrosoftAppId
-            };
-
-            var serializedState = JsonConvert.SerializeObject(tokenExchangeState);
-            var encodedState = Encoding.UTF8.GetBytes(serializedState);
-            var finalState = Convert.ToBase64String(encodedState);
-
             // Construct URL
-            var tokenUrl = new Uri(new Uri(_uri + (_uri.EndsWith("/") ? "" : "/")), "api/botsignin/getsigninurl?&state={state}").ToString();
-            tokenUrl = tokenUrl.Replace("{state}", finalState);
+            var tokenUrl = new Uri(new Uri(_uri + (_uri.EndsWith("/") ? "" : "/")), "api/botsignin/getsigninurl?&state={state}{finalRedirectParam}").ToString();
+            tokenUrl = tokenUrl.Replace("{state}", state);
+            tokenUrl = tokenUrl.Replace("{finalRedirectParam}", string.IsNullOrEmpty(finalRedirect) ?
+                String.Empty :
+                $"&finalRedirect={Uri.EscapeDataString(finalRedirect)}");
 
             // add botframework api service url to the list of trusted service url's for these app credentials.
             MicrosoftAppCredentials.TrustServiceUrl(tokenUrl);
@@ -311,101 +291,6 @@ namespace Microsoft.Bot.Connector
             return String.Empty;
         }
 
-        /// <summary>
-        /// Get the raw signin link to be sent to the user for signin for a connection name.
-        /// </summary>
-        /// <param name="connectionName">Name of the auth connection to get a link for.</param>
-        /// <param name="userId">The user id that the token will be associated with.</param>
-        /// <param name="finalRedirect">Final URL that will be redirected to during the OAuth flow.</param>
-        /// <param name="cancellationToken">A cancellation token that can be used by other objects
-        /// or threads to receive notice of cancellation.</param>
-        /// <returns>A task that represents the work queued to execute.</returns>
-        /// <remarks>If the task completes successfully and the call to the OAuth client is successful,
-        /// the result contains the signin link.</remarks>
-        public async Task<string> GetSignInLinkAsync(string connectionName, string userId, string finalRedirect = null, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            if (string.IsNullOrEmpty(connectionName))
-            {
-                throw new ArgumentNullException(nameof(connectionName));
-            }
-            if (userId == null)
-            {
-                throw new ArgumentNullException(nameof(userId));
-            }
-
-            bool shouldTrace = ServiceClientTracing.IsEnabled;
-            string invocationId = null;
-            if (shouldTrace)
-            {
-                invocationId = ServiceClientTracing.NextInvocationId.ToString();
-                Dictionary<string, object> tracingParameters = new Dictionary<string, object>();
-                tracingParameters.Add("activity", userId);
-                tracingParameters.Add("connectionName", connectionName);
-                tracingParameters.Add("finalRedirect", finalRedirect);
-                tracingParameters.Add("cancellationToken", cancellationToken);
-                ServiceClientTracing.Enter(invocationId, this, "GetSignInLinkAsync", tracingParameters);
-            }
-
-            var tokenExchangeState = new TokenExchangeState()
-            {
-                ConnectionName = connectionName,
-                Conversation = new ConversationReference()
-                {
-                    ActivityId = null,
-                    Bot = new ChannelAccount { Role = "bot" },
-                    ChannelId = "directline",
-                    Conversation = new ConversationAccount(),
-                    ServiceUrl = null,
-                    User = new ChannelAccount { Role ="user", Id = userId }
-                },
-                MsAppId = (_client.Credentials as MicrosoftAppCredentials)?.MicrosoftAppId
-            };
-
-            var serializedState = JsonConvert.SerializeObject(tokenExchangeState);
-            var encodedState = Encoding.UTF8.GetBytes(serializedState);
-            var finalState = Convert.ToBase64String(encodedState);
-
-            // Construct URL
-            var tokenUrl = new Uri(new Uri(_uri + (_uri.EndsWith("/") ? "" : "/")), "api/botsignin/getsigninurl?&state={state}{finalRedirectParam}").ToString();
-            tokenUrl = tokenUrl.Replace("{state}", finalState);
-            tokenUrl = tokenUrl.Replace("{finalRedirectParam}", string.IsNullOrEmpty(finalRedirect) ? 
-                String.Empty : 
-                $"&finalRedirect={Uri.EscapeDataString(finalRedirect)}");
-
-            // Create HTTP transport objects
-            var httpRequest = new HttpRequestMessage();
-            HttpResponseMessage httpResponse = null;
-            httpRequest.Method = new HttpMethod("GET");
-            httpRequest.RequestUri = new Uri(tokenUrl);
-
-            // Set Credentials
-            if (_client.Credentials != null)
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-                await _client.Credentials.ProcessHttpRequestAsync(httpRequest, cancellationToken).ConfigureAwait(false);
-            }
-            cancellationToken.ThrowIfCancellationRequested();
-
-            if (shouldTrace)
-            {
-                ServiceClientTracing.SendRequest(invocationId, httpRequest);
-            }
-            httpResponse = await _client.HttpClient.SendAsync(httpRequest, cancellationToken).ConfigureAwait(false);
-            if (shouldTrace)
-            {
-                ServiceClientTracing.ReceiveResponse(invocationId, httpResponse);
-            }
-
-            HttpStatusCode statusCode = httpResponse.StatusCode;
-            cancellationToken.ThrowIfCancellationRequested();
-            if (statusCode == HttpStatusCode.OK)
-            {
-                var link = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                return link;
-            }
-            return String.Empty;
-        }
-        
         /// <summary>
         /// Get the status of tokens for connections for this bot for a particular user
         /// </summary>
