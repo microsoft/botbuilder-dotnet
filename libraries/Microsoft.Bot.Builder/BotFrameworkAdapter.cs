@@ -8,12 +8,14 @@ using System.Linq;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Security.Principal;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Rest.TransientFaultHandling;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder
 {
@@ -537,8 +539,29 @@ namespace Microsoft.Bot.Builder
                 throw new ArgumentNullException(nameof(connectionName));
             }
 
+            var activity = turnContext.Activity;
+
+            var tokenExchangeState = new TokenExchangeState()
+            {
+                ConnectionName = connectionName,
+                Conversation = new ConversationReference()
+                {
+                    ActivityId = activity.Id,
+                    Bot = activity.Recipient,       // Activity is from the user to the bot
+                    ChannelId = activity.ChannelId,
+                    Conversation = activity.Conversation,
+                    ServiceUrl = activity.ServiceUrl,
+                    User = activity.From,
+                },
+                MsAppId = (_credentialProvider as MicrosoftAppCredentials)?.MicrosoftAppId,
+            };
+
+            var serializedState = JsonConvert.SerializeObject(tokenExchangeState);
+            var encodedState = Encoding.UTF8.GetBytes(serializedState);
+            var state = Convert.ToBase64String(encodedState);
+
             var client = CreateOAuthApiClient(turnContext);
-            return await client.GetSignInLinkAsync(turnContext.Activity, connectionName, cancellationToken).ConfigureAwait(false);
+            return await client.GetSignInLinkAsync(state, null, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -566,8 +589,27 @@ namespace Microsoft.Bot.Builder
                 throw new ArgumentNullException(nameof(userId));
             }
 
+            var tokenExchangeState = new TokenExchangeState()
+            {
+                ConnectionName = connectionName,
+                Conversation = new ConversationReference()
+                {
+                    ActivityId = null,
+                    Bot = new ChannelAccount { Role = "bot" },
+                    ChannelId = "directline",
+                    Conversation = new ConversationAccount(),
+                    ServiceUrl = null,
+                    User = new ChannelAccount { Role = "user", Id = userId, },
+                },
+                MsAppId = (this._credentialProvider as MicrosoftAppCredentials)?.MicrosoftAppId,
+            };
+
+            var serializedState = JsonConvert.SerializeObject(tokenExchangeState);
+            var encodedState = Encoding.UTF8.GetBytes(serializedState);
+            var state = Convert.ToBase64String(encodedState);
+
             var client = CreateOAuthApiClient(turnContext);
-            return await client.GetSignInLinkAsync(connectionName, userId, finalRedirect, cancellationToken).ConfigureAwait(false);
+            return await client.GetSignInLinkAsync(state, finalRedirect, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
