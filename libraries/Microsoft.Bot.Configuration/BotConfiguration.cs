@@ -518,7 +518,7 @@ namespace Microsoft.Bot.Configuration
 
                 return services;
             }
-            
+
             /// <inheritdoc/>
             public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
             {
