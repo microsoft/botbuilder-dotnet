@@ -454,6 +454,11 @@ namespace Microsoft.Bot.Configuration
         /// </summary>
         internal class BotServiceConverter : JsonConverter
         {
+            public override bool CanWrite
+            {
+                get { return false; }
+            }
+
             /// <summary>
             /// Checks whether the connected service can be converted to the provided type.
             /// </summary>
