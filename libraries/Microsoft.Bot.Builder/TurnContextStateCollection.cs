@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using Microsoft.Bot.Connector;
 
 namespace Microsoft.Bot.Builder
 {
@@ -106,6 +107,13 @@ namespace Microsoft.Bot.Builder
             {
                 if (entry is IDisposable disposableService)
                 {
+                    // Don't dispose the ConnectorClient, since this is cached in the adapter (singleton).
+                    // Disposing will release the HttpClient causing Response Sends to fail.
+                    if (entry is IConnectorClient)
+                    {
+                        continue;
+                    }
+
                     disposableService.Dispose();
                 }
             }
