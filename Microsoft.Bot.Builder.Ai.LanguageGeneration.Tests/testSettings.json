@@ -1,0 +1,22 @@
+{
+  "mockApiTestSettings": {
+    "subscriptionKey": "",
+    "endpointURI": "",
+    "tokenGenerationEndPoint": ""
+  },
+
+  "externalApiTestSettings": {
+    "subscriptionKey": "",
+    "endpointURI": "",
+    "tokenGenerationEndPoint": ""
+  },
+
+  "exclude": [
+    "**/bin",
+    "**/bower_components",
+    "**/jspm_packages",
+    "**/node_modules",
+    "**/obj",
+    "**/platforms"
+  ]
+}

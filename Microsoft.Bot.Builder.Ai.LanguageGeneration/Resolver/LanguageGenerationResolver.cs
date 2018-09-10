@@ -21,7 +21,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Resolver
         {
             _languageGenerationApplication = languageGenerationApplication ?? throw new ArgumentNullException(nameof(_languageGenerationApplication));
             var resolverPipelineFactory = new ResolverPipelineFactory();
-            _resolverPipeline = resolverPipelineFactory.CreateResolverPipeline(_languageGenerationApplication.AzureRegion, serviceAgent);
+            _resolverPipeline = resolverPipelineFactory.CreateResolverPipeline(_languageGenerationApplication.EndpointUri, _languageGenerationApplication.EndpointKey, _languageGenerationApplication.ApplicationId, serviceAgent);
         }
 
         public async Task ResolveAsync(Activity activity, IDictionary<string, object> entities)

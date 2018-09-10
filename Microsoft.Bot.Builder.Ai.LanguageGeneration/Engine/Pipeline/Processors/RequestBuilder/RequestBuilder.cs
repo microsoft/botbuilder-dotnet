@@ -9,7 +9,16 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Engine
 {
     internal class RequestBuilder : IRequestBuilder
     {
-        public ICompositeRequest BuildRequest(IList<Slot> slots)
+        private readonly string _applicationId;
+        public RequestBuilder(string applicationId)
+        {
+            if (string.IsNullOrWhiteSpace(applicationId))
+            {
+                throw new ArgumentException($"\"{applicationId}\" is not a valid Language generation application id.");
+            }
+            _applicationId = applicationId;
+        }
+        public ICompositeRequest BuildRequest(IList<Slot> slots, string locale)
         {
             if (slots == null)
             {
@@ -82,7 +91,10 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Engine
 
             foreach (var slot in perRequestSlots)
             {
-                var lgRequest = new LGRequest();
+                var lgRequest = new LGRequest()
+                {
+                    Scenario = _applicationId
+                };
                 var slotStringValues = new List<string> { (string)slot.KeyValue.Value };
                 var lgValue = new LGValue(LgValueType.StringType)
                 {
@@ -94,7 +106,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Engine
                     lgRequest.Slots.Add(commonSlot);
                 }
                 lgRequest.Slots.Add(slot.KeyValue.Key, lgValue);
-
+                lgRequest.Locale = locale;
                 compositeRequest.Requests.Add(slotStringValues[0], lgRequest);
             }
 

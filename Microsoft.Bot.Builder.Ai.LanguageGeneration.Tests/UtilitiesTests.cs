@@ -504,8 +504,9 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         {
             try
             {
-                var requestBuilder = new RequestBuilder();
-                requestBuilder.BuildRequest(null);
+                var dummyAppId = "TEST_ID";
+                var requestBuilder = new RequestBuilder(dummyAppId);
+                requestBuilder.BuildRequest(null, null);
             }
             catch (ArgumentNullException e)
             {
@@ -517,7 +518,8 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestCategory("RequestBuilder")]
         public void TestRequestBuilder_BuildRequestOneTemplate_Valid()
         {
-            var requestBuilder = new RequestBuilder();
+            var dummyAppId = "TEST_ID";
+            var requestBuilder = new RequestBuilder(dummyAppId);
             var slots = new List<Slot>()
             {
                 new Slot()
@@ -531,7 +533,8 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                 },
             };
 
-            var compositeRequest = requestBuilder.BuildRequest(slots);
+            var locale = "en-US";
+            var compositeRequest = requestBuilder.BuildRequest(slots, locale);
 
             var expectedRequests = new Dictionary<string, LGRequest>()
             {
@@ -559,7 +562,8 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestCategory("RequestBuilder")]
         public void TestRequestBuilder_BuildRequestMultipleTemplates_Valid()
         {
-            var requestBuilder = new RequestBuilder();
+            var dummyAppId = "TEST_ID";
+            var requestBuilder = new RequestBuilder(dummyAppId);
             var slots = new List<Slot>()
             {
                 new Slot()
@@ -582,8 +586,8 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                     KeyValue = new KeyValuePair<string, object>("age", 20)
                 },
             };
-
-            var compositeRequest = requestBuilder.BuildRequest(slots);
+            var locale = "en-US";
+            var compositeRequest = requestBuilder.BuildRequest(slots, locale);
 
             var expectedRequests = new Dictionary<string, LGRequest>()
             {

@@ -10,14 +10,16 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Engine
     internal class ResolverPipeline : IResolverPipeline
     {
         private readonly ISlotBuilder _slotuilder;
+        private readonly ILocaleExtractor _localeExtractor;
         private readonly IRequestBuilder _requestBuilder;
         private readonly IResponseGenerator _responseGenerator;
         private readonly IActivityModifier _activityModifier;
         private readonly IServiceAgent _serviceAgent;
 
-        public ResolverPipeline(ISlotBuilder slotBuilder, IRequestBuilder requestBuilder, IResponseGenerator responseGenerator, IActivityModifier activityModifier, IServiceAgent serviceAgent)
+        public ResolverPipeline(ISlotBuilder slotBuilder, ILocaleExtractor localeExtractor, IRequestBuilder requestBuilder, IResponseGenerator responseGenerator, IActivityModifier activityModifier, IServiceAgent serviceAgent)
         {
             _slotuilder = slotBuilder ?? throw new ArgumentNullException(nameof(slotBuilder));
+            _localeExtractor = localeExtractor ?? throw new ArgumentNullException(nameof(localeExtractor));
             _requestBuilder = requestBuilder ?? throw new ArgumentNullException(nameof(requestBuilder));
             _responseGenerator = responseGenerator ?? throw new ArgumentNullException(nameof(responseGenerator));
             _activityModifier = activityModifier ?? throw new ArgumentNullException(nameof(activityModifier));
@@ -37,7 +39,8 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Engine
             }
 
             var slots = _slotuilder.BuildSlots(activity, entities);
-            var request = _requestBuilder.BuildRequest(slots);
+            var locale = _localeExtractor.ExtractLocale(activity);
+            var request = _requestBuilder.BuildRequest(slots, locale);
             var response = await _responseGenerator.GenerateResponseAsync(request, _serviceAgent).ConfigureAwait(false);
             _activityModifier.ModifyActivity(activity, response);
         }
