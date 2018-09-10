@@ -7,7 +7,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Engine
 {
     internal class ResolverPipelineFactory : IResolverPipelineFactory
     {
-        public IResolverPipeline CreateResolverPipeline(string endpointURI, string endpointKey, string applicationId, IServiceAgent serviceAgent = null)
+        public IResolverPipeline CreateResolverPipeline(string endpointURI, string endpointKey, string applicationId, string tokenGenerationEndpoint = null, IServiceAgent serviceAgent = null)
         {
             var slotBuilder = new SlotBuilder();
             var localeExtractor = new LocaleExtractor();
@@ -17,7 +17,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Engine
             if (serviceAgent != null)
                 return new ResolverPipeline(slotBuilder, localeExtractor, requestBuilder, responseGenerator, activityModifier, serviceAgent);
             else
-                serviceAgent = new ServiceAgent(endpointURI, endpointKey);
+                serviceAgent = new ServiceAgent(endpointURI, endpointKey, tokenGenerationEndpoint);
             return new ResolverPipeline(slotBuilder, localeExtractor, requestBuilder, responseGenerator, activityModifier, serviceAgent);
         }
     }

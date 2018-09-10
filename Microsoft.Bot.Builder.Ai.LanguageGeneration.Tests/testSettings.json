@@ -1,14 +1,18 @@
 {
+  "mock": "false",
+
   "mockApiTestSettings": {
-    "subscriptionKey": "",
-    "endpointURI": "",
-    "tokenGenerationEndPoint": ""
+    "subscriptionKey": "9c05a515-62dc-44f3-86a3-7787ab3ced64",
+    "endpointURI": "dummy-end-point",
+    "tokenGenerationEndPoint": "dummy-token-gen-end-point",
+    "languageGenerationApplicationId": "lgmodelfortesting"
   },
 
   "externalApiTestSettings": {
     "subscriptionKey": "",
-    "endpointURI": "",
-    "tokenGenerationEndPoint": ""
+    "endpointURI": "https://platform.bing.com/speechdx/lg-dev/v1/lg",
+    "tokenGenerationEndPoint": "https://wuppe.api.cognitive.microsoft.com/sts/v1.0/issueToken",
+    "languageGenerationApplicationId": "lgmodelfortesting"
   },
 
   "exclude": [

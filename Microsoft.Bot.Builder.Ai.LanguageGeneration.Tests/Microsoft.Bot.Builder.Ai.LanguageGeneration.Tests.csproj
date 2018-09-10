@@ -19,6 +19,14 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <CodeAnalysisRuleSet>Microsoft.Bot.Builder.AI.LanguageGeneration.Tests.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="testSettings.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="testSettings.json" />
+  </ItemGroup>
     
   <ItemGroup>
     <PackageReference Include="Microsoft.Azure.KeyVault" Version="3.0.0" />

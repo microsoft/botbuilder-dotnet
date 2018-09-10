@@ -17,11 +17,15 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Resolver
         private readonly LanguageGenerationApplication _languageGenerationApplication;
         private readonly IResolverPipeline _resolverPipeline;
 
-        public LanguageGenerationResolver(LanguageGenerationApplication languageGenerationApplication, LanguageGenerationOptions lgOptions = null, IServiceAgent serviceAgent = null)
+        public LanguageGenerationResolver(LanguageGenerationApplication languageGenerationApplication, LanguageGenerationOptions languageGenerationOptions = null, IServiceAgent serviceAgent = null)
         {
             _languageGenerationApplication = languageGenerationApplication ?? throw new ArgumentNullException(nameof(_languageGenerationApplication));
             var resolverPipelineFactory = new ResolverPipelineFactory();
-            _resolverPipeline = resolverPipelineFactory.CreateResolverPipeline(_languageGenerationApplication.EndpointUri, _languageGenerationApplication.EndpointKey, _languageGenerationApplication.ApplicationId, serviceAgent);
+            if (languageGenerationOptions == null)
+            {
+                languageGenerationOptions = new LanguageGenerationOptions();
+            }
+            _resolverPipeline = resolverPipelineFactory.CreateResolverPipeline(_languageGenerationApplication.EndpointUri, _languageGenerationApplication.EndpointKey, _languageGenerationApplication.ApplicationId, languageGenerationOptions.TokenGenerationApiEndpoint, serviceAgent);
         }
 
         public async Task ResolveAsync(Activity activity, IDictionary<string, object> entities)
