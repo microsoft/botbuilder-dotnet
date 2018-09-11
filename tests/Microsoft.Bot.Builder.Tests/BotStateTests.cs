@@ -499,6 +499,35 @@ namespace Microsoft.Bot.Builder.Tests
                 .StartTestAsync();
         }
 
+        [TestMethod]
+        public async Task State_RememberPocoPrivateConversationState()
+        {
+            var privateConversationState = new PrivateConversationState(new MemoryStorage());
+            var testPocoProperty = privateConversationState.CreateProperty<TestPocoState>("testPoco");
+            var adapter = new TestAdapter()
+                .Use(privateConversationState);
+            await new TestFlow(adapter,
+                    async (context, cancellationToken) =>
+                    {
+                        var conversationState = await testPocoProperty.GetAsync(context, () => new TestPocoState());
+                        Assert.IsNotNull(conversationState, "state.conversation should exist");
+                        switch (context.Activity.AsMessageActivity().Text)
+                        {
+                            case "set value":
+                                conversationState.Value = "test";
+                                await context.SendActivityAsync("value saved");
+                                break;
+                            case "get value":
+                                await context.SendActivityAsync(conversationState.Value);
+                                break;
+                        }
+                    }
+                )
+                .Test("set value", "value saved")
+                .Test("get value", "test")
+                .StartTestAsync();
+        }
+
 
         [TestMethod]
         public async Task State_CustomStateManagerTest()
