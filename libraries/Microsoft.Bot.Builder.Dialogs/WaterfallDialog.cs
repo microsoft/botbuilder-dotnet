@@ -20,12 +20,35 @@ namespace Microsoft.Bot.Builder.Dialogs
         private const string StepIndex = "stepIndex";
         private const string PersistedValues = "values";
 
-        private WaterfallStep[] _steps;
+        private readonly List<WaterfallStep> _steps;
 
-        public WaterfallDialog(string dialogId, WaterfallStep[] steps = null)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WaterfallDialog"/> class.
+        /// </summary>
+        /// <param name="dialogId">dialog id</param>
+        /// <param name="steps">optional steps to be defined by caller</param>
+        public WaterfallDialog(string dialogId, IEnumerable<WaterfallStep> steps = null)
             : base(dialogId)
         {
-            _steps = steps ?? new WaterfallStep[] { };
+            if (steps != null)
+            {
+                _steps = new List<WaterfallStep>(steps);
+            }
+            else
+            {
+                _steps = new List<WaterfallStep>();
+            }
+        }
+
+        /// <summary>
+        /// Add a new step to the waterfall.
+        /// </summary>
+        /// <param name="step">step to add</param>
+        /// <returns>waterfall dialog for fluent calls to .AddStep()</returns>
+        public WaterfallDialog AddStep(WaterfallStep step)
+        {
+            this._steps.Add(step ?? throw new ArgumentNullException(nameof(step)));
+            return this;
         }
 
         public override async Task<DialogTurnResult> DialogBeginAsync(DialogContext dc, DialogOptions options = null, CancellationToken cancellationToken = default(CancellationToken))
@@ -92,7 +115,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 throw new ArgumentNullException(nameof(dc));
             }
 
-            if (index < _steps.Length)
+            if (index < _steps.Count)
             {
                 // Update persisted step index
                 var state = dc.ActiveDialog.State;

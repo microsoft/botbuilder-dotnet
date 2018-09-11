@@ -48,7 +48,7 @@ namespace Microsoft.Bot.Builder.Tests
         }
         */
 
-        static Lazy<Dictionary<string, string>> environmentKeys = new Lazy<Dictionary<string, string>>(()=>
+        private static Lazy<Dictionary<string, string>> environmentKeys = new Lazy<Dictionary<string, string>>(() =>
         {
             try
             {

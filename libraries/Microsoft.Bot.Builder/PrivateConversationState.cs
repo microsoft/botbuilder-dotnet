@@ -6,16 +6,16 @@ using System;
 namespace Microsoft.Bot.Builder
 {
     /// <summary>
-    /// Handles persistence of a user state object using the user ID as part of the key.
+    /// Handles persistence of a conversation state object using the conversation.Id and from.Id part of an activity.
     /// </summary>
-    public class UserState : BotState
+    public class PrivateConversationState : BotState
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="UserState"/> class.
+        /// Initializes a new instance of the <see cref="PrivateConversationState"/> class.
         /// </summary>
         /// <param name="storage">The storage provider to use.</param>
-        public UserState(IStorage storage)
-            : base(storage, nameof(UserState))
+        public PrivateConversationState(IStorage storage)
+            : base(storage, nameof(PrivateConversationState))
         {
         }
 
@@ -27,8 +27,10 @@ namespace Microsoft.Bot.Builder
         protected override string GetStorageKey(ITurnContext turnContext)
         {
             var channelId = turnContext.Activity.ChannelId ?? throw new ArgumentNullException("invalid activity-missing channelId");
+            var conversationId = turnContext.Activity.Conversation?.Id ?? throw new ArgumentNullException("invalid activity-missing Conversation.Id");
             var userId = turnContext.Activity.From?.Id ?? throw new ArgumentNullException("invalid activity-missing From.Id");
-            return $"{channelId}/users/{userId}";
+            return $"{channelId}/conversations/{conversationId}/users/{userId}";
         }
+
     }
 }

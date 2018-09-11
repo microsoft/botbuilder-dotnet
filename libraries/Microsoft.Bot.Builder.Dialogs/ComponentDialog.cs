@@ -21,7 +21,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 throw new ArgumentNullException(nameof(dialogId));
             }
 
-            _dialogs = new DialogSet(null);
+            _dialogs = new DialogSet();
         }
 
         protected string InitialDialogId { get; set; }
