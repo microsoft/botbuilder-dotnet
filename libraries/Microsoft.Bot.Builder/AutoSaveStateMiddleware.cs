@@ -10,11 +10,6 @@ namespace Microsoft.Bot.Builder
     /// <summary>
     ///  Middleware to automatically call .SaveChanges() at the end of the turn for all BotState class it is managing.
     /// </summary>
-    /// <remarks>
-    /// This Middleware manages a collection of BotState Objects, and provides 2 functionalities:
-    /// 1. If it is added as middleware it will automatically SaveChangesAsync() at the end of the turn.
-    /// 2. You can call LoadAsync() or SaveChangesAsync() to load or save in parallel.
-    /// </remarks>
     public class AutoSaveStateMiddleware : IMiddleware
     {
         /// <summary>
