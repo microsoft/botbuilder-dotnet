@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Builder.Tests
             {
                 Type = ActivityTypes.Message,
                 ChannelId = "EmptyContext",
-                Conversation = new ConversationAccount()
+                Conversation = new ConversationAccount
                 {
                     Id = "test"
                 },
