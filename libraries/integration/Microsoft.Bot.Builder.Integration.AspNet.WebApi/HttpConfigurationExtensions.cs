@@ -82,8 +82,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
         }
 
         /// <summary>
-        /// Sets custom endpoints for the Open ID Metadata Document and OAuth API Endpoint 
-        /// from the App Settings.
+        /// Sets custom endpoints for the Open ID Metadata Document and OAuth API Endpoint from the App Settings.
         /// </summary>
         private static void ConfigureCustomEndpoints()
         {
