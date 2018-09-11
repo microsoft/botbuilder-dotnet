@@ -139,11 +139,11 @@ namespace Microsoft.Bot.Builder
         /// </summary>
         /// <param name="textReplyToSend">The text of the message to send.</param>
         /// <param name="speak">Optional, text to be spoken by your bot on a speech-enabled
-        /// channel.</param>
+        /// channel. If no text is give, textReplyToSend will be used.</param>
         /// <param name="inputHint">Optional, indicates whether your bot is accepting,
         /// expecting, or ignoring user input after the message is delivered to the client.
         /// One of: "acceptingInput", "ignoringInput", or "expectingInput".
-        /// Default is null.</param>
+        /// Default is expectingInput.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <exception cref="ArgumentNullException">
@@ -164,17 +164,12 @@ namespace Microsoft.Bot.Builder
                 throw new ArgumentNullException(nameof(textReplyToSend));
             }
 
-            var activityToSend = new Activity(ActivityTypes.Message) { Text = textReplyToSend };
-
-            if (!string.IsNullOrEmpty(speak))
+            var activityToSend = new Activity(ActivityTypes.Message)
             {
-                activityToSend.Speak = speak;
-            }
-
-            if (!string.IsNullOrEmpty(inputHint))
-            {
-                activityToSend.InputHint = inputHint;
-            }
+                Text = textReplyToSend,
+                Speak = !string.IsNullOrEmpty(speak) ? speak : textReplyToSend,
+                InputHint = !string.IsNullOrEmpty(inputHint) ? inputHint : InputHints.ExpectingInput,
+            };
 
             return await SendActivityAsync(activityToSend, cancellationToken).ConfigureAwait(false);
         }
