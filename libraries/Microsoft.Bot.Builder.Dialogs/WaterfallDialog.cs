@@ -20,14 +20,14 @@ namespace Microsoft.Bot.Builder.Dialogs
         private const string StepIndex = "stepIndex";
         private const string PersistedValues = "values";
 
-        private List<WaterfallStep> _steps;
+        private readonly List<WaterfallStep> _steps;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WaterfallDialog"/> class.
         /// </summary>
         /// <param name="dialogId">dialog id</param>
         /// <param name="steps">optional steps to be defined by caller</param>
-        public WaterfallDialog(string dialogId, WaterfallStep[] steps = null)
+        public WaterfallDialog(string dialogId, IEnumerable<WaterfallStep> steps = null)
             : base(dialogId)
         {
             if (steps != null)
@@ -47,7 +47,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <returns>waterfall dialog for fluent calls to .AddStep()</returns>
         public WaterfallDialog AddStep(WaterfallStep step)
         {
-            this._steps.Add(step);
+            this._steps.Add(step ?? throw new ArgumentNullException(nameof(step)));
             return this;
         }
 
