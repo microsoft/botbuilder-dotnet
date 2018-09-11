@@ -19,6 +19,10 @@ namespace Microsoft.Bot.Builder.Tests
             {
                 Type = ActivityTypes.Message,
                 ChannelId = "EmptyContext",
+                Conversation = new ConversationAccount
+                {
+                    Id = "test"
+                },
                 From = new ChannelAccount
                 {
                     Id = "empty@empty.context.org",
