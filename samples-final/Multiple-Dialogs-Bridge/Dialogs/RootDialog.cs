@@ -65,7 +65,7 @@ namespace Multiple_Dialogs_Bridge.Dialogs
             }
         }
 
-        private async Task ResumeAfterSupportDialog(IDialogContext context, IAwaitable<int> result)
+        private async Task ResumeAfterSupportDialog(IDialogContext context, IAwaitable<object> result)
         {
             var ticketNumber = await result;
 

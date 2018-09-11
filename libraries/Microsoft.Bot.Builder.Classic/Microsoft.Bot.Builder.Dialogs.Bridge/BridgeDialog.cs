@@ -18,8 +18,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Bridge
     public sealed class BridgeDialog : Dialog
     {
         public const string DialogId = nameof(BridgeDialog);
-        public const string TurnStateKey = "ActivityConsumed";
-
+       
         private readonly IFormatter _formatter;
         public BridgeDialog(IFormatter formatter) : base(DialogId)
         {
@@ -52,18 +51,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Bridge
             return new[] { closureSurrogate, jObjectSurrogate, typeSurrogate, numberInfoSurrogate, delegateSurrogate, regexSurrogate };
         }
 
-        public bool GetActivityConsumed(DialogContext dc)
-        {
-            var turn = dc.Context.TurnState;
-            return turn.TryGetValue(TurnStateKey, out var value) && (bool)value == true;
-        }
-
-        public void SetActivityConsumed(DialogContext dc, bool consumed)
-        {
-            var turn = dc.Context.TurnState;
-            turn[TurnStateKey] = consumed;
-        }
-
         public override async Task<DialogTurnResult> DialogBeginAsync(DialogContext dc, DialogOptions options, CancellationToken cancellationToken = default(CancellationToken))
         {
             var instance = dc.ActiveDialog;
@@ -76,8 +63,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Bridge
             // V4 seems to assume dialogs are started in response to incoming messages
             var result = await ToV4Async(dc, instance, context, dialog);
 
-            bool consumed = GetActivityConsumed(dc);
-            SetActivityConsumed(dc, true);
+            bool consumed = dc.GetActivityConsumed();
+            dc.SetActivityConsumed(true);
 
             if (result.Item1 == Action.Wait && !consumed)
             {
@@ -94,7 +81,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Bridge
             Trace(dc.Context);
             var instance = dc.ActiveDialog;
             var state = Load(_formatter, instance);
-            SetActivityConsumed(dc, true);
+            dc.SetActivityConsumed(true);
             return await DialogNextAsync(dc, instance, state, dc.Context.Activity);
         }
 

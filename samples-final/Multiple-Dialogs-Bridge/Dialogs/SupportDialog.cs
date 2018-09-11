@@ -8,7 +8,7 @@ using Microsoft.Bot.Schema;
 namespace Multiple_Dialogs_Bridge.Dialogs
 {
     [Serializable]
-    public class SupportDialog : IDialog<int>
+    public class SupportDialog : IDialog<object>
     {
         public async Task StartAsync(IDialogContext context)
         {

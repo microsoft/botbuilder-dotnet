@@ -78,8 +78,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Bridge
 
         async Task IDialogStack.Forward<R, T>(IDialog<R> child, ResumeAfter<R> resume, T item, CancellationToken token)
         {
+            Call = child as IDialog<object>;
+            Rest = resume;
 
-            throw new NotImplementedException();
+            HasResultValue = false;
+            Result.Result = null;
+
+            dc.SetActivityConsumed(false);
         }
 
         Task IBotData.LoadAsync(CancellationToken cancellationToken)
