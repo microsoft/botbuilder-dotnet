@@ -635,6 +635,55 @@ namespace Microsoft.Bot.Builder.Tests
                 .StartTestAsync();
         }
 
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException), "bad activity should throw ArgumentNullException")]
+        public async Task UserState_BadFromThrows()
+        {
+            var dictionary = new Dictionary<string, JObject>();
+            var userState = new UserState(new MemoryStorage(dictionary));
+            var context = TestUtilities.CreateEmptyContext();
+            context.Activity.From = null;
+            var testProperty = userState.CreateProperty<TestPocoState>("test");
+            var value = await testProperty.GetAsync(context);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException), "bad activity should throw ArgumentNullException")]
+        public async Task ConversationState_BadConverationThrows()
+        {
+            var dictionary = new Dictionary<string, JObject>();
+            var userState = new ConversationState(new MemoryStorage(dictionary));
+            var context = TestUtilities.CreateEmptyContext();
+            context.Activity.Conversation = null;
+            var testProperty = userState.CreateProperty<TestPocoState>("test");
+            var value = await testProperty.GetAsync(context);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException), "bad activity should throw ArgumentNullException")]
+        public async Task PrivateConversationState_BadActivityFromThrows()
+        {
+            var dictionary = new Dictionary<string, JObject>();
+            var userState = new PrivateConversationState(new MemoryStorage(dictionary));
+            var context = TestUtilities.CreateEmptyContext();
+            context.Activity.Conversation = null;
+            context.Activity.From = null;
+            var testProperty = userState.CreateProperty<TestPocoState>("test");
+            var value = await testProperty.GetAsync(context);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException), "bad activity should throw ArgumentNullException")]
+        public async Task PrivateConversationState_BadActivityConversationThrows()
+        {
+            var dictionary = new Dictionary<string, JObject>();
+            var userState = new PrivateConversationState(new MemoryStorage(dictionary));
+            var context = TestUtilities.CreateEmptyContext();
+            context.Activity.Conversation = null;
+            var testProperty = userState.CreateProperty<TestPocoState>("test");
+            var value = await testProperty.GetAsync(context);
+        }
+
         public class TestBotState : BotState
         {
             public TestBotState(IStorage storage)
