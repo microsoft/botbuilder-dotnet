@@ -23,6 +23,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 From = new ChannelAccount
                 {
                     Id = "empty@empty.context.org",
+                }, 
+                Conversation = new ConversationAccount()
+                {
+                    Id="213123123123"
                 }
             };
             var bc = new TurnContext(b, a);
