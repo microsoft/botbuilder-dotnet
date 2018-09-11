@@ -87,13 +87,6 @@ namespace Connector.Tests
         }
 
         [Fact]
-        public async Task SignOutUser_ShouldThrowOnEmptyConnectionName()
-        {
-            var client = new OAuthClient(mockConnectorClient, "https://localhost");
-            await Assert.ThrowsAsync<ArgumentNullException>(() => client.SignOutUserAsync("userid", string.Empty));
-        }
-
-        [Fact]
         public async Task GetSigninLink_ShouldThrowOnNullState()
         {
             var client = new OAuthClient(mockConnectorClient, "https://localhost");
