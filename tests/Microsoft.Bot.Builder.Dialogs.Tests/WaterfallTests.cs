@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -47,6 +48,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .Send("hello")
             .AssertReply("step3")
             .StartTestAsync();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public async Task WaterfallWithStepsNull()
+        {
+            var waterfall = new WaterfallDialog("test");
+            waterfall.AddStep(null);
         }
 
         [TestMethod]
