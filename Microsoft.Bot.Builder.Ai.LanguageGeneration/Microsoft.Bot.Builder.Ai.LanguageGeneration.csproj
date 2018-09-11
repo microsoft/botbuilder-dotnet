@@ -9,8 +9,8 @@
 
   <ItemGroup>
     <PackageReference Include="AsyncUsageAnalyzers" Version="1.0.0-alpha003" />
-    <PackageReference Include="LanguageGeneration.V2.Interface" Version="1.0.1.814" />
-    <PackageReference Include="LanguageGenerationSDK" Version="0.9.6" />
+    <PackageReference Include="LanguageGeneration.V2.Interface" Version="1.0.1.906" />
+    <PackageReference Include="LanguageGenerationSDK" Version="0.9.8" />
     <PackageReference Include="Newtonsoft.Json" Version="10.0.4" />
   </ItemGroup>
 

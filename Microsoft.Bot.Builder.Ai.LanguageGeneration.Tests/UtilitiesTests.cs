@@ -543,9 +543,9 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                     {
                         Slots = new LGSlotDictionary()
                         {
-                            new KeyValuePair<string, LGValue>("GetStateName", "wPhrase"),
                             new KeyValuePair<string, LGValue>("name", "Amr"),
-                        }
+                        },
+                        TemplateId = "wPhrase"
                     }
                 }
             };
@@ -554,7 +554,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             Assert.IsNotNull(compositeRequest);
             Assert.IsNotNull(compositeRequest.Requests);
-            CollectionAssert.AreEqual(expectedRequests["wPhrase"].Slots["GetStateName"].StringValues, compositeRequest.Requests["wPhrase"].Slots["GetStateName"].StringValues);
+            Assert.AreEqual(expectedRequests["wPhrase"].TemplateId, compositeRequest.Requests["wPhrase"].TemplateId);
             CollectionAssert.AreEqual(expectedRequests["wPhrase"].Slots["name"].StringValues, compositeRequest.Requests["wPhrase"].Slots["name"].StringValues);
         }
 
@@ -596,10 +596,10 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                     {
                         Slots = new LGSlotDictionary()
                         {
-                            new KeyValuePair<string, LGValue>("GetStateName", "wPhrase"),
                             new KeyValuePair<string, LGValue>("name", "Amr"),
                             new KeyValuePair<string, LGValue>("age", 20),
-                        }
+                        },
+                        TemplateId = "wPhrase"
                     }
                 },
 
@@ -608,10 +608,10 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                     {
                         Slots = new LGSlotDictionary()
                         {
-                            new KeyValuePair<string, LGValue>("GetStateName", "welcomeUser"),
                             new KeyValuePair<string, LGValue>("name", "Amr"),
                             new KeyValuePair<string, LGValue>("age", 20),
-                        }
+                        },
+                        TemplateId = "welcomeUser"
                     }
                 },
             };
@@ -620,10 +620,10 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             Assert.IsNotNull(compositeRequest);
             Assert.IsNotNull(compositeRequest.Requests);
-            CollectionAssert.AreEqual(expectedRequests["wPhrase"].Slots["GetStateName"].StringValues, compositeRequest.Requests["wPhrase"].Slots["GetStateName"].StringValues);
+            Assert.AreEqual(expectedRequests["wPhrase"].TemplateId, compositeRequest.Requests["wPhrase"].TemplateId);
             CollectionAssert.AreEqual(expectedRequests["wPhrase"].Slots["name"].StringValues, compositeRequest.Requests["wPhrase"].Slots["name"].StringValues);
             CollectionAssert.AreEqual(expectedRequests["wPhrase"].Slots["age"].IntValues, compositeRequest.Requests["wPhrase"].Slots["age"].IntValues);
-            CollectionAssert.AreEqual(expectedRequests["welcomeUser"].Slots["GetStateName"].StringValues, compositeRequest.Requests["welcomeUser"].Slots["GetStateName"].StringValues);
+            Assert.AreEqual(expectedRequests["welcomeUser"].TemplateId, compositeRequest.Requests["welcomeUser"].TemplateId);
             CollectionAssert.AreEqual(expectedRequests["welcomeUser"].Slots["name"].StringValues, compositeRequest.Requests["welcomeUser"].Slots["name"].StringValues);
             CollectionAssert.AreEqual(expectedRequests["welcomeUser"].Slots["age"].IntValues, compositeRequest.Requests["welcomeUser"].Slots["age"].IntValues);
         }
@@ -699,10 +699,10 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                         {
                             Slots = new LGSlotDictionary()
                             {
-                                new KeyValuePair<string, LGValue>("GetStateName", "wPhrase"),
                                 new KeyValuePair<string, LGValue>("name", "Amr"),
                                 new KeyValuePair<string, LGValue>("age", 20),
-                            }
+                            },
+                            TemplateId = "wPhrase"
                         }
                     },
                 }
@@ -748,10 +748,10 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                         {
                             Slots = new LGSlotDictionary()
                             {
-                                new KeyValuePair<string, LGValue>("GetStateName", "welcomeUser"),
                                 new KeyValuePair<string, LGValue>("name", "Amr"),
                                 new KeyValuePair<string, LGValue>("age", 20),
-                            }
+                            },
+                            TemplateId = "welcomeUser"
                         }
                     }
                 }
@@ -797,10 +797,10 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                         {
                             Slots = new LGSlotDictionary()
                             {
-                                new KeyValuePair<string, LGValue>("GetStateName", "wPhrase"),
                                 new KeyValuePair<string, LGValue>("name", "Amr"),
                                 new KeyValuePair<string, LGValue>("age", 20),
-                            }
+                            },
+                            TemplateId = "wPhrase"
                         }
                     },
 
@@ -809,10 +809,10 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                         {
                             Slots = new LGSlotDictionary()
                             {
-                                new KeyValuePair<string, LGValue>("GetStateName", "welcomeUser"),
                                 new KeyValuePair<string, LGValue>("name", "Amr"),
                                 new KeyValuePair<string, LGValue>("age", 20),
-                            }
+                            },
+                            TemplateId = "welcomeUser"
                         }
                     }
                 }

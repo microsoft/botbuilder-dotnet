@@ -14,16 +14,13 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.API
         {
             _resolutionsDictionary = resolutionsDictionary;
         }
-        public string Generate(LGRequest request)
-        {
-            return _resolutionsDictionary[request.Slots["GetStateName"].StringValues[0]];
-        }
+        public string Generate(LGRequest request) => _resolutionsDictionary[request.TemplateId];
 
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
         public async Task<string> GenerateAsync(LGRequest request)
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
-            var response = _resolutionsDictionary[request.Slots["GetStateName"].StringValues[0]];
+            var response = _resolutionsDictionary[request.TemplateId];
             ResolveEntities(ref response, request);
             return response;
         }

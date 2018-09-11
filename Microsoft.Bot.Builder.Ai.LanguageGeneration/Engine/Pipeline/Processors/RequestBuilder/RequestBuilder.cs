@@ -93,21 +93,13 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Engine
             {
                 var lgRequest = new LGRequest()
                 {
-                    Scenario = _applicationId
+                    Scenario = _applicationId,
+                    Locale = locale,
+                    TemplateId = (string)slot.KeyValue.Value
                 };
-                var slotStringValues = new List<string> { (string)slot.KeyValue.Value };
-                var lgValue = new LGValue(LgValueType.StringType)
-                {
-                    StringValues = new List<string> { (string)slot.KeyValue.Value }
-                };
-                lgRequest.Slots = new LGSlotDictionary();
-                foreach (var commonSlot in commonSlotsDictionary)
-                {
-                    lgRequest.Slots.Add(commonSlot);
-                }
-                lgRequest.Slots.Add(slot.KeyValue.Key, lgValue);
-                lgRequest.Locale = locale;
-                compositeRequest.Requests.Add(slotStringValues[0], lgRequest);
+
+                lgRequest.Slots = commonSlotsDictionary;
+                compositeRequest.Requests.Add(lgRequest.TemplateId, lgRequest);
             }
 
             return compositeRequest;
