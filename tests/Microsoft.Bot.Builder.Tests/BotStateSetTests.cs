@@ -59,7 +59,7 @@ namespace Microsoft.Bot.Builder.Tests
                 await userProperty.SetAsync(turnContext, 10);
                 await convProperty.SetAsync(turnContext, 20);
 
-                await stateSet.SaveChangesAsync(turnContext);
+                await stateSet.SaveAllChangesAsync(turnContext);
             }
 
             {
@@ -73,7 +73,7 @@ namespace Microsoft.Bot.Builder.Tests
 
                 var stateSet = new BotStateSet(userState, convState);
 
-                await stateSet.LoadAsync(turnContext);
+                await stateSet.LoadAllAsync(turnContext);
 
                 var userCount = await userProperty.GetAsync(turnContext, () => 0);
                 Assert.AreEqual(10, userCount);
@@ -100,7 +100,7 @@ namespace Microsoft.Bot.Builder.Tests
 
             Assert.AreEqual(stateSet.BotStates.Count, 2);
             var context = TestUtilities.CreateEmptyContext();
-            await stateSet.LoadAsync(context);
+            await stateSet.LoadAllAsync(context);
 
             var userCount = await userProperty.GetAsync(context, () => 0);
             Assert.AreEqual(0, userCount);
@@ -110,7 +110,7 @@ namespace Microsoft.Bot.Builder.Tests
             await userProperty.SetAsync(context, 10);
             await convProperty.SetAsync(context, 20);
 
-            await stateSet.SaveChangesAsync(context);
+            await stateSet.SaveAllChangesAsync(context);
 
             userCount = await userProperty.GetAsync(context, () => 0);
             Assert.AreEqual(10, userCount);
