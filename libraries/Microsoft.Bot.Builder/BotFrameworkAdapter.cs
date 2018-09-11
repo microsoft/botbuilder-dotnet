@@ -47,6 +47,7 @@ namespace Microsoft.Bot.Builder
         private readonly RetryPolicy _connectorClientRetryPolicy;
         private ConcurrentDictionary<string, MicrosoftAppCredentials> _appCredentialMap = new ConcurrentDictionary<string, MicrosoftAppCredentials>();
         private bool _isEmulatingOAuthCards = false;
+
         // There is a significant boost in throughput if we reuse a connectorClient
         // _connectorClients is a cache using [serviceUrl + appId].
         private ConcurrentDictionary<string, ConnectorClient> _connectorClients = new ConcurrentDictionary<string, ConnectorClient>();
@@ -717,6 +718,7 @@ namespace Microsoft.Bot.Builder
                 {
                     connectorClient.SetRetryPolicy(_connectorClientRetryPolicy);
                 }
+
                 return connectorClient;
             });
         }
