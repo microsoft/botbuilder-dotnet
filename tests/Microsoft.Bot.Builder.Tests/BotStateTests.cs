@@ -276,7 +276,7 @@ namespace Microsoft.Bot.Builder.Tests
             await userState.SaveChangesAsync(context);
 
             // Assert
-            var obj = dictionary["user/EmptyContext/empty@empty.context.org"];
+            var obj = dictionary["EmptyContext/users/empty@empty.context.org"];
             Assert.AreEqual("hello", obj["property-a"]);
             Assert.AreEqual("world", obj["property-b"]);
         }
@@ -302,7 +302,7 @@ namespace Microsoft.Bot.Builder.Tests
             await userState.SaveChangesAsync(context);
 
             // Assert
-            var obj = dictionary["user/EmptyContext/empty@empty.context.org"];
+            var obj = dictionary["EmptyContext/users/empty@empty.context.org"];
             Assert.AreEqual("hello", obj["property-a"]);
             Assert.AreEqual("world", obj["property-b"]);
 
@@ -318,7 +318,7 @@ namespace Microsoft.Bot.Builder.Tests
             await userState2.SaveChangesAsync(context);
 
             // Assert 2
-            var obj2 = dictionary["user/EmptyContext/empty@empty.context.org"];
+            var obj2 = dictionary["EmptyContext/users/empty@empty.context.org"];
             Assert.AreEqual("hello-2", obj2["property-a"]);
             Assert.AreEqual("world-2", obj2["property-b"]);
             Assert.AreEqual("test", obj2["property-c"]);
@@ -343,7 +343,7 @@ namespace Microsoft.Bot.Builder.Tests
             await userState.SaveChangesAsync(context);
 
             // Assert
-            var obj = dictionary["user/EmptyContext/empty@empty.context.org"];
+            var obj = dictionary["EmptyContext/users/empty@empty.context.org"];
             Assert.AreEqual("hello", obj["property-a"]);
             Assert.AreEqual("world", obj["property-b"]);
 
@@ -359,7 +359,7 @@ namespace Microsoft.Bot.Builder.Tests
             await userState2.SaveChangesAsync(context);
 
             // Assert 2
-            var obj2 = dictionary["user/EmptyContext/empty@empty.context.org"];
+            var obj2 = dictionary["EmptyContext/users/empty@empty.context.org"];
             Assert.AreEqual("hello-2", obj2["property-a"]);
             Assert.IsNull(obj2["property-b"]);
         }
