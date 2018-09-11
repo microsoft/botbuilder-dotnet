@@ -58,7 +58,7 @@ namespace Microsoft.Bot.Builder
         public async Task OnTurnAsync(ITurnContext turnContext, NextDelegate next, CancellationToken cancellationToken = default(CancellationToken))
         {
             await next(cancellationToken).ConfigureAwait(false);
-            await this.BotStateSet.SaveChangesAsync(turnContext, false, cancellationToken).ConfigureAwait(false);
+            await this.BotStateSet.SaveAllChangesAsync(turnContext, false, cancellationToken).ConfigureAwait(false);
         }
     }
 }
