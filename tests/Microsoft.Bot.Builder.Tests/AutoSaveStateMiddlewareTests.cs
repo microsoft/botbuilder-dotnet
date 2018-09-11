@@ -103,8 +103,8 @@ namespace Microsoft.Bot.Builder.Tests
             var convState = new ConversationState(storage);
             var convProperty = convState.CreateProperty<int>("convCount");
             var bss = new AutoSaveStateMiddleware()
-                .Use(userState)
-                .Use(convState);
+                .Add(userState)
+                .Add(convState);
             var adapter = new TestAdapter()
                 .Use(bss);
 
@@ -149,8 +149,8 @@ namespace Microsoft.Bot.Builder.Tests
 
             // new adapter on new conversation
             var bss2 = new AutoSaveStateMiddleware()
-                .Use(userState)
-                .Use(convState);
+                .Add(userState)
+                .Add(convState);
 
             adapter = new TestAdapter(new ConversationReference
             {
@@ -171,26 +171,6 @@ namespace Microsoft.Bot.Builder.Tests
 
         }
 
-
-        [TestMethod]
-        public void AutoSaveStateMiddleware_Properties()
-        {
-            var storage = new MemoryStorage();
-
-            // setup userstate
-            var userState = new UserState(storage);
-            var userProperty = userState.CreateProperty<int>("userCount");
-
-            // setup convState
-            var convState = new ConversationState(storage);
-            var convProperty = convState.CreateProperty<int>("convCount");
-
-            var stateSet = new AutoSaveStateMiddleware(userState, convState);
-
-            Assert.AreEqual(stateSet.BotStates.Count, 2);
-            Assert.IsNotNull(stateSet.BotStates.OfType<UserState>().First());
-            Assert.IsNotNull(stateSet.BotStates.OfType<ConversationState>().First());
-        }
 
     }
 }
