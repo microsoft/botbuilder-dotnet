@@ -18,7 +18,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         public DialogSet(IStatePropertyAccessor<DialogState> dialogState)
         {
-            _dialogState = dialogState;
+            _dialogState = dialogState ?? throw new ArgumentNullException($"missing {nameof(dialogState)}");
             _dialogs = new Dictionary<string, Dialog>();
         }
 
@@ -26,8 +26,8 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// Adds a new dialog to the set and returns the added dialog.
         /// </summary>
         /// <param name="dialog">The dialog to add.</param>
-        /// <returns>The added dialog.</returns>
-        public Dialog Add(Dialog dialog)
+        /// <returns>The DialogSet for fluent calls to Add().</returns>
+        public DialogSet Add(Dialog dialog)
         {
             if (dialog == null)
             {
@@ -39,7 +39,8 @@ namespace Microsoft.Bot.Builder.Dialogs
                 throw new Exception($"DialogSet.Add(): A dialog with an id of '{dialog.Id}' already added.");
             }
 
-            return _dialogs[dialog.Id] = dialog;
+            _dialogs[dialog.Id] = dialog;
+            return this;
         }
 
         public async Task<DialogContext> CreateContextAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
