@@ -13,13 +13,19 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// </summary>
     public class DialogSet
     {
-        private IStatePropertyAccessor<DialogState> _dialogState;
-        private IDictionary<string, Dialog> _dialogs;
+        private readonly IStatePropertyAccessor<DialogState> _dialogState;
+        private readonly IDictionary<string, Dialog> _dialogs = new Dictionary<string, Dialog>();
 
         public DialogSet(IStatePropertyAccessor<DialogState> dialogState)
         {
             _dialogState = dialogState ?? throw new ArgumentNullException($"missing {nameof(dialogState)}");
-            _dialogs = new Dictionary<string, Dialog>();
+        }
+
+        internal DialogSet()
+        {
+            // TODO: This is only used by ComponentDialog and future release
+            // will refactor to use IStatePropertyAccessor from context
+            _dialogState = null;
         }
 
         /// <summary>
@@ -36,7 +42,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             if (_dialogs.ContainsKey(dialog.Id))
             {
-                throw new Exception($"DialogSet.Add(): A dialog with an id of '{dialog.Id}' already added.");
+                throw new ArgumentException($"DialogSet.Add(): A dialog with an id of '{dialog.Id}' already added.");
             }
 
             _dialogs[dialog.Id] = dialog;
@@ -47,9 +53,12 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             BotAssert.ContextNotNull(turnContext);
 
+            // ToDo: Component Dialog doesn't call this code path. This needs to be cleaned up in 4.1.
+
             if (_dialogState == null)
             {
-                throw new Exception($"DialogSet.CreateContextAsync(): DialogSet created with a null IStatePropertyAccessor. Must manually factory DialogContext instances in this scenario.");
+                // Note: This shouldn't ever trigger, as the _dialogState is set in the constructor and validated there.
+                throw new InvalidOperationException($"DialogSet.CreateContextAsync(): DialogSet created with a null IStatePropertyAccessor.");
             }
 
             // Load/initialize dialog state
