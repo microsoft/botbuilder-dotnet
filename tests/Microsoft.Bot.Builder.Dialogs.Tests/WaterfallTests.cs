@@ -49,7 +49,37 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .StartTestAsync();
         }
 
-        
+        [TestMethod]
+        public async Task WaterfallWithClass()
+        {
+            var convoState = new ConversationState(new MemoryStorage());
+
+            var adapter = new TestAdapter()
+                .Use(convoState);
+
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
+            var dialogs = new DialogSet(dialogState);
+            dialogs.Add(new MyWaterfallDialog("test"));
+
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            {
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
+                await dc.ContinueAsync(cancellationToken);
+                if (!turnContext.Responded)
+                {
+                    await dc.BeginAsync("test", null, cancellationToken);
+                }
+            })
+            .Send("hello")
+            .AssertReply("step1")
+            .Send("hello")
+            .AssertReply("step2")
+            .Send("hello")
+            .AssertReply("step3")
+            .StartTestAsync();
+        }
+
+
         [TestMethod]
         public async Task WaterfallPrompt()
         {
@@ -107,7 +137,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         private static async Task<DialogTurnResult> Waterfall2_Step1(DialogContext dc, WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             await dc.Context.SendActivityAsync("step1");
-            return await dc.PromptAsync("number", new PromptOptions {
+            return await dc.PromptAsync("number", new PromptOptions
+            {
                 Prompt = MessageFactory.Text("Enter a number."),
                 RetryPrompt = MessageFactory.Text("It must be a number")
             });
@@ -121,7 +152,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             }
             await dc.Context.SendActivityAsync("step2");
             return await dc.PromptAsync("number",
-                new PromptOptions {
+                new PromptOptions
+                {
                     Prompt = MessageFactory.Text("Enter a number."),
                     RetryPrompt = MessageFactory.Text("It must be a number")
                 });
@@ -277,4 +309,32 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         }
 
     }
+
+    public class MyWaterfallDialog : WaterfallDialog
+    {
+        public MyWaterfallDialog(string id)
+            : base(id)
+        {
+            this.AddStep(Waterfall2_Step1);
+            this.AddStep(Waterfall2_Step2);
+            this.AddStep(Waterfall2_Step3);
+        }
+
+        private static async Task<DialogTurnResult> Waterfall2_Step1(DialogContext dc, WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        {
+            await dc.Context.SendActivityAsync("step1");
+            return Dialog.EndOfTurn; 
+        }
+        private static async Task<DialogTurnResult> Waterfall2_Step2(DialogContext dc, WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        {
+            await dc.Context.SendActivityAsync("step2");
+            return Dialog.EndOfTurn;
+        }
+        private static async Task<DialogTurnResult> Waterfall2_Step3(DialogContext dc, WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        {
+            await dc.Context.SendActivityAsync("step3");
+            return Dialog.EndOfTurn; 
+        }
+    }
+
 }
