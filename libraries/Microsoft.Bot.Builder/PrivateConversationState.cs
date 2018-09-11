@@ -1,10 +1,12 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
+
 namespace Microsoft.Bot.Builder
 {
     /// <summary>
-    /// Handles persistence of a conversation state object using the conversation ID and From ID as part of the key.
+    /// Handles persistence of a conversation state object using the conversation.Id and from.Id part of an activity.
     /// </summary>
     public class PrivateConversationState : BotState
     {
@@ -22,7 +24,13 @@ namespace Microsoft.Bot.Builder
         /// </summary>
         /// <param name="turnContext">The context object for this turn.</param>
         /// <returns>The storage key.</returns>
-        protected override string GetStorageKey(ITurnContext turnContext) => $"{turnContext.Activity.ChannelId}/conversations/{turnContext.Activity.Conversation.Id}/users/{turnContext.Activity.From.Id}";
+        protected override string GetStorageKey(ITurnContext turnContext)
+        {
+            var channelId = turnContext.Activity.ChannelId ?? throw new ArgumentNullException("invalid activity-missing channelId");
+            var conversationId = turnContext.Activity.Conversation?.Id ?? throw new ArgumentNullException("invalid activity-missing Conversation.Id");
+            var userId = turnContext.Activity.From?.Id ?? throw new ArgumentNullException("invalid activity-missing From.Id");
+            return $"{channelId}/conversations/{conversationId}/users/{userId}";
+        }
 
     }
 }
