@@ -394,9 +394,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             var dialogs = new DialogSet(dialogState);
 
-            PromptValidator<FoundChoice> validator = async (context, promptContext, cancellationToken) =>
+            PromptValidator<FoundChoice> validator = async (promptContext, cancellationToken) =>
             {
-                await context.SendActivityAsync(MessageFactory.Text("validator called"), cancellationToken);
+                await promptContext.Context.SendActivityAsync(MessageFactory.Text("validator called"), cancellationToken);
+                return true;
             };
             var listPrompt = new ChoicePrompt("ChoicePrompt", validator, Culture.English);
             listPrompt.Style = ListStyle.None;

@@ -188,20 +188,20 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 var dialogs = new DialogSet(dialogState);
                 dialogs.Add(new WaterfallDialog("test", new WaterfallStep[]
                 {
-                    async (dc, step, ct) =>
+                    async (stepContext, ct) =>
                     {
-                        Assert.AreEqual(dc.ActiveDialog.State["stepIndex"].GetType(), typeof(Int32));
-                        await dc.Context.SendActivityAsync("step1"); return Dialog.EndOfTurn;
+                        Assert.AreEqual(stepContext.ActiveDialog.State["stepIndex"].GetType(), typeof(Int32));
+                        await stepContext.Context.SendActivityAsync("step1"); return Dialog.EndOfTurn;
                     },
-                    async (dc, step, ct) =>
+                    async (stepContext, ct) =>
                     {
-                        Assert.AreEqual(dc.ActiveDialog.State["stepIndex"].GetType(), typeof(Int32));
-                        await dc.Context.SendActivityAsync("step2"); return Dialog.EndOfTurn;
+                        Assert.AreEqual(stepContext.ActiveDialog.State["stepIndex"].GetType(), typeof(Int32));
+                        await stepContext.Context.SendActivityAsync("step2"); return Dialog.EndOfTurn;
                     },
-                    async (dc, step, ct) =>
+                    async (stepContext, ct) =>
                     {
-                        Assert.AreEqual(dc.ActiveDialog.State["stepIndex"].GetType(), typeof(Int32));
-                        await dc.Context.SendActivityAsync("step3"); return Dialog.EndOfTurn;
+                        Assert.AreEqual(stepContext.ActiveDialog.State["stepIndex"].GetType(), typeof(Int32));
+                        await stepContext.Context.SendActivityAsync("step3"); return Dialog.EndOfTurn;
                     },
                 }));
 

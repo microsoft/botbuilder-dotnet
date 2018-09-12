@@ -13,20 +13,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
     [TestClass]
     public class ActivityPromptTests
     {
-        private async Task _validator(ITurnContext turnContext, PromptValidatorContext<Activity> promptContext, CancellationToken cancellationToken)
+        private async Task<bool> _validator(PromptValidatorContext<Activity> promptContext, CancellationToken cancellationToken)
         {
-            var activity = (Activity)promptContext.Recognized.Value;
+            var activity = promptContext.Recognized.Value;
             if (activity.Type == ActivityTypes.Event)
             {
                 if ((int)activity.Value == 2)
                 {
-                    promptContext.End(activity.Value);
+                    promptContext.Recognized.Value = MessageFactory.Text(activity.Value.ToString());
+                    return true;
                 }
             }
             else
             {
-                await turnContext.SendActivityAsync("Please send an 'event'-type Activity with a value of 2.");
+                await promptContext.Context.SendActivityAsync("Please send an 'event'-type Activity with a value of 2.");
             }
+            return false;
         }
 
         [TestMethod]
@@ -86,7 +88,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 }
                 else if (results.Status == DialogTurnStatus.Complete)
                 {
-                    var content = MessageFactory.Text(results.Result.ToString());
+                    var content = (Activity)results.Result;
                     await turnContext.SendActivityAsync(content, cancellationToken);
                 }
             })
@@ -124,7 +126,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 }
                 else if (results.Status == DialogTurnStatus.Complete)
                 {
-                    var content = MessageFactory.Text(results.Result.ToString());
+                    var content = (Activity)results.Result;
                     await turnContext.SendActivityAsync(content, cancellationToken);
                 }
             })
