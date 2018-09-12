@@ -26,7 +26,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         protected string InitialDialogId { get; set; }
 
-        public override async Task<DialogTurnResult> DialogBeginAsync(DialogContext outerDc, DialogOptions options = null, CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task<DialogTurnResult> DialogBeginAsync(DialogContext outerDc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (outerDc == null)
             {
@@ -120,7 +120,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             return dialog;
         }
 
-        protected virtual Task<DialogTurnResult> OnDialogBeginAsync(DialogContext innerDc, DialogOptions options, CancellationToken cancellationToken = default(CancellationToken))
+        protected virtual Task<DialogTurnResult> OnDialogBeginAsync(DialogContext innerDc, object options, CancellationToken cancellationToken = default(CancellationToken))
         {
             return innerDc.BeginAsync(InitialDialogId, options, cancellationToken);
         }

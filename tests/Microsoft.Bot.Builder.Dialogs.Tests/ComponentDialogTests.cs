@@ -156,28 +156,28 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             });
         }
 
-        private static async Task<DialogTurnResult> WaterfallStep1(DialogContext dc, WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        private static async Task<DialogTurnResult> WaterfallStep1(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            return await dc.PromptAsync("number", new PromptOptions { Prompt = MessageFactory.Text("Enter a number.") }, cancellationToken);
+            return await stepContext.PromptAsync("number", new PromptOptions { Prompt = MessageFactory.Text("Enter a number.") }, cancellationToken);
         }
-        private static async Task<DialogTurnResult> WaterfallStep2(DialogContext dc, WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        private static async Task<DialogTurnResult> WaterfallStep2(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             if (stepContext.Values != null)
             {
                 var numberResult = (int)stepContext.Result;
-                await dc.Context.SendActivityAsync(MessageFactory.Text($"Thanks for '{numberResult}'"), cancellationToken);
+                await stepContext.Context.SendActivityAsync(MessageFactory.Text($"Thanks for '{numberResult}'"), cancellationToken);
             }
-            return await dc.PromptAsync("number", new PromptOptions { Prompt = MessageFactory.Text("Enter another number.") }, cancellationToken);
+            return await stepContext.PromptAsync("number", new PromptOptions { Prompt = MessageFactory.Text("Enter another number.") }, cancellationToken);
         }
 
-        private static async Task<DialogTurnResult> WaterfallStep3(DialogContext dc, WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        private static async Task<DialogTurnResult> WaterfallStep3(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             if (stepContext.Values != null)
             {
                 var numberResult = (int)stepContext.Result;
-                await dc.Context.SendActivityAsync(MessageFactory.Text($"Got '{numberResult}'."), cancellationToken);
+                await stepContext.Context.SendActivityAsync(MessageFactory.Text($"Got '{numberResult}'."), cancellationToken);
             }
-            return await dc.BeginAsync("TestComponentDialog", null, cancellationToken);
+            return await stepContext.BeginAsync("TestComponentDialog", null, cancellationToken);
         }
 
         private class TestComponentDialog : ComponentDialog

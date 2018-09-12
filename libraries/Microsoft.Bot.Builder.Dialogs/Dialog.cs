@@ -33,7 +33,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="options">(Optional) arguments that were passed to the dialog during `begin()` call that started the instance.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public abstract Task<DialogTurnResult> DialogBeginAsync(DialogContext dc, DialogOptions options = null, CancellationToken cancellationToken = default(CancellationToken));
+        public abstract Task<DialogTurnResult> DialogBeginAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// Method called when an instance of the dialog is the "current" dialog and the

@@ -8,36 +8,20 @@ namespace Microsoft.Bot.Builder.Dialogs
 {
     public class PromptValidatorContext<T>
     {
-        private readonly DialogContext _dc;
-
-        internal PromptValidatorContext(DialogContext dc, IDictionary<string, object> state,  PromptOptions options, PromptRecognizerResult<T> recognized)
+        internal PromptValidatorContext(ITurnContext turnContext, PromptRecognizerResult<T> recognized, IDictionary<string, object> state,  PromptOptions options)
         {
-            _dc = dc;
-            HasEnded = false;
-            EndResult = null;
+            Context = turnContext;
             Options = options;
             Recognized = recognized;
+            State = state;
         }
 
-        public PromptOptions Options { get; }
+        public ITurnContext Context { get; }
 
         public PromptRecognizerResult<T> Recognized { get; }
 
+        public PromptOptions Options { get; }
+
         public IDictionary<string, object> State { get; }
-
-        internal bool HasEnded { get; private set; }
-
-        internal object EndResult { get; private set; }
-
-        public void End(object result)
-        {
-            if (HasEnded)
-            {
-                throw new Exception($"PromptValidatorContext.End(): method already called for the turn.");
-            }
-
-            HasEnded = true;
-            EndResult = result;
-        }
     }
 }

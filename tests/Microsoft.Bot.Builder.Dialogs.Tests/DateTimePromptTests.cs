@@ -136,7 +136,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .StartTestAsync();
         }
 
-        private Task CustomValidator(ITurnContext turnContext, PromptValidatorContext<IList<DateTimeResolution>> prompt, CancellationToken cancellationToken)
+        private Task<bool> CustomValidator(PromptValidatorContext<IList<DateTimeResolution>> prompt, CancellationToken cancellationToken)
         {
             if (prompt.Recognized.Succeeded)
             {
@@ -147,9 +147,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                     Timex = resolution.Timex.Split('T')[0],
                     Value = resolution.Value.Split(' ')[0]
                 };
-                prompt.End(new List<DateTimeResolution> { rewrittenResolution });
+                prompt.Recognized.Value = new List<DateTimeResolution> { rewrittenResolution };
+                return Task.FromResult(true);
             }
-            return Task.CompletedTask;
+            return Task.FromResult(false);
         }
     }
 }
