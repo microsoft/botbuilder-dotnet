@@ -48,7 +48,6 @@ namespace Microsoft.Bot.Builder
         private readonly HttpClient _httpClient;
         private readonly RetryPolicy _connectorClientRetryPolicy;
         private ConcurrentDictionary<string, MicrosoftAppCredentials> _appCredentialMap = new ConcurrentDictionary<string, MicrosoftAppCredentials>();
-        private bool _isEmulatingOAuthCards = false;
 
         // There is a significant boost in throughput if we reuse a connectorClient
         // _connectorClients is a cache using [serviceUrl + appId].
@@ -519,7 +518,7 @@ namespace Microsoft.Bot.Builder
                 throw new ArgumentNullException(nameof(connectionName));
             }
 
-            var client = CreateOAuthApiClient(turnContext);
+            var client = await CreateOAuthApiClientAsync(turnContext).ConfigureAwait(false);
             return await client.GetUserTokenAsync(turnContext.Activity.From.Id, connectionName, magicCode, null, cancellationToken).ConfigureAwait(false);
         }
 
@@ -561,7 +560,7 @@ namespace Microsoft.Bot.Builder
             var encodedState = Encoding.UTF8.GetBytes(serializedState);
             var state = Convert.ToBase64String(encodedState);
 
-            var client = CreateOAuthApiClient(turnContext);
+            var client = await CreateOAuthApiClientAsync(turnContext).ConfigureAwait(false);
             return await client.GetSignInLinkAsync(state, null, cancellationToken).ConfigureAwait(false);
         }
 
@@ -609,7 +608,7 @@ namespace Microsoft.Bot.Builder
             var encodedState = Encoding.UTF8.GetBytes(serializedState);
             var state = Convert.ToBase64String(encodedState);
 
-            var client = CreateOAuthApiClient(turnContext);
+            var client = await CreateOAuthApiClientAsync(turnContext).ConfigureAwait(false);
             return await client.GetSignInLinkAsync(state, finalRedirect, cancellationToken).ConfigureAwait(false);
         }
 
@@ -631,7 +630,7 @@ namespace Microsoft.Bot.Builder
                 userId = turnContext.Activity?.From?.Id;
             }
 
-            var client = CreateOAuthApiClient(turnContext);
+            var client = await CreateOAuthApiClientAsync(turnContext).ConfigureAwait(false);
             await client.SignOutUserAsync(userId, connectionName, cancellationToken).ConfigureAwait(false);
         }
 
@@ -651,7 +650,7 @@ namespace Microsoft.Bot.Builder
                 throw new ArgumentNullException(nameof(userId));
             }
 
-            var client = this.CreateOAuthApiClient(context);
+            var client = await this.CreateOAuthApiClientAsync(context).ConfigureAwait(false);
             return await client.GetTokenStatusAsync(userId, includeFilter).ConfigureAwait(false);
         }
 
@@ -706,32 +705,11 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
-        /// Checks the current operating environment to determine whether to emulate the client for OAuth requests.
-        /// </summary>
-        /// <param name="turnContext">The context object for the current turn.</param>
-        /// <param name="cancellationToken">A cancellation token that can be used by other objects
-        /// or threads to receive notice of cancellation.</param>
-        /// <returns>A task that represents the work queued to execute.</returns>
-        /// <remarks>If the task completes successfully, the result indicates whether the adapter will
-        /// emaulate an OAuth client.</remarks>
-        protected async Task<bool> TrySetEmulatingOAuthCardsAsync(ITurnContext turnContext, CancellationToken cancellationToken)
-        {
-            if (!_isEmulatingOAuthCards &&
-                string.Equals(turnContext.Activity.ChannelId, "emulator", StringComparison.InvariantCultureIgnoreCase) &&
-                (await _credentialProvider.IsAuthenticationDisabledAsync().ConfigureAwait(false)))
-            {
-                _isEmulatingOAuthCards = true;
-            }
-
-            return _isEmulatingOAuthCards;
-        }
-
-        /// <summary>
         /// Creates an OAuth client for the bot.
         /// </summary>
         /// <param name="turnContext">The context object for the current turn.</param>
         /// <returns>An OAuth client for the bot.</returns>
-        protected OAuthClient CreateOAuthApiClient(ITurnContext turnContext)
+        protected async Task<OAuthClient> CreateOAuthApiClientAsync(ITurnContext turnContext)
         {
             var client = turnContext.TurnState.Get<IConnectorClient>() as ConnectorClient;
             if (client == null)
@@ -739,9 +717,18 @@ namespace Microsoft.Bot.Builder
                 throw new ArgumentNullException("CreateOAuthApiClient: OAuth requires a valid ConnectorClient instance");
             }
 
-            if (_isEmulatingOAuthCards)
+            if (!OAuthClient.EmulateOAuthCards &&
+                string.Equals(turnContext.Activity.ChannelId, "emulator", StringComparison.InvariantCultureIgnoreCase) &&
+                (await _credentialProvider.IsAuthenticationDisabledAsync().ConfigureAwait(false)))
             {
-                return new OAuthClient(client, turnContext.Activity.ServiceUrl);
+                OAuthClient.EmulateOAuthCards = true;
+            }
+
+            if (OAuthClient.EmulateOAuthCards)
+            {
+                var oauthClient = new OAuthClient(client, turnContext.Activity.ServiceUrl);
+                Task.Run(async () => await oauthClient.SendEmulateOAuthCardsAsync(OAuthClient.EmulateOAuthCards).ConfigureAwait(false)).Wait();
+                return oauthClient;
             }
 
             return new OAuthClient(client, OAuthClient.OAuthEndpoint);

@@ -51,6 +51,13 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                 {
                     OAuthClient.OAuthEndpoint = oauthApiEndpoint;
                 }
+
+                var emulateOAuthCards = configuration.GetSection(AuthenticationConstants.EmulateOAuthCardsKey)?.Value;
+
+                if (!string.IsNullOrEmpty(emulateOAuthCards) && bool.TryParse(emulateOAuthCards, out bool emualteOAuthCardsValue))
+                {
+                    OAuthClient.EmulateOAuthCards = emualteOAuthCardsValue;
+                }
             }
 
             var options = applicationServices.GetRequiredService<IOptions<BotFrameworkOptions>>().Value;

@@ -39,6 +39,11 @@ namespace Microsoft.Bot.Connector.Authentication
         /// Application Setting Key for the OAuthUrl value
         /// </summary>
         public const string OAuthUrlKey = "OAuthApiEndpoint";
+        
+        /// <summary>
+        /// Application Settings Key for whether to emulate OAuthCards when using the emulator
+        /// </summary>
+        public const string EmulateOAuthCardsKey = "EmulateOAuthCards";
 
         /// <summary>
         /// TO BOT FROM CHANNEL: OpenID metadata document for tokens coming from MSA
