@@ -99,6 +99,13 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
             {
                 OAuthClient.OAuthEndpoint = oauthApiEndpoint;
             }
+
+            var emulateOAuthCards = ConfigurationManager.AppSettings[AuthenticationConstants.EmulateOAuthCardsKey];
+
+            if (!string.IsNullOrEmpty(emulateOAuthCards) && bool.TryParse(emulateOAuthCards, out bool emualteOAuthCardsValue))
+            {
+                OAuthClient.EmulateOAuthCards = emualteOAuthCardsValue;
+            }
         }
     }
 }

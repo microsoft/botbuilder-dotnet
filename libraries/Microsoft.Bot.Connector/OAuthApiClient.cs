@@ -28,6 +28,12 @@ namespace Microsoft.Bot.Connector
         /// </summary>
         public static string OAuthEndpoint { get; set; } = AuthenticationConstants.OAuthUrl;
 
+
+        /// <summary>
+        /// When using the Emulator, whether to emulate the OAuthCard behavior or use connected flows
+        /// </summary>
+        public static bool EmulateOAuthCards { get; set; } = false;
+
         /// <summary>
         /// Initializes an new instance of the <see cref="OAuthClient"/> class.
         /// </summary>
@@ -35,7 +41,7 @@ namespace Microsoft.Bot.Connector
         /// <param name="uri">The URL to use to get a token.</param>
         public OAuthClient(ConnectorClient client, string uri)
         {
-            if (!(Uri.TryCreate(uri, UriKind.Absolute, out var uriResult) && uriResult.Scheme == Uri.UriSchemeHttps))
+            if (!(Uri.TryCreate(uri, UriKind.Absolute, out var uriResult)))
                 throw new ArgumentException("Please supply a valid https uri");
             _client = client ?? throw new ArgumentNullException(nameof(client));
             _uri = uri;
@@ -94,9 +100,6 @@ namespace Microsoft.Bot.Connector
             HttpResponseMessage httpResponse = null;
             httpRequest.Method = new HttpMethod("GET");
             httpRequest.RequestUri = new Uri(tokenUrl);
-
-            // add botframework api service url to the list of trusted service url's for these app credentials.
-            MicrosoftAppCredentials.TrustServiceUrl(tokenUrl);
 
             // Set Credentials
             if (_client.Credentials != null)
@@ -253,10 +256,7 @@ namespace Microsoft.Bot.Connector
             tokenUrl = tokenUrl.Replace("{finalRedirectParam}", string.IsNullOrEmpty(finalRedirect) ?
                 String.Empty :
                 $"&finalRedirect={Uri.EscapeDataString(finalRedirect)}");
-
-            // add botframework api service url to the list of trusted service url's for these app credentials.
-            MicrosoftAppCredentials.TrustServiceUrl(tokenUrl);
-
+            
             // Create HTTP transport objects
             var httpRequest = new HttpRequestMessage();
             HttpResponseMessage httpResponse = null;
@@ -416,9 +416,6 @@ namespace Microsoft.Bot.Connector
             httpRequest.Method = new HttpMethod("POST");
             httpRequest.RequestUri = new Uri(tokenUrl);
             
-            // add botframework api service url to the list of trusted service url's for these app credentials.
-            MicrosoftAppCredentials.TrustServiceUrl(tokenUrl);
-
             // Set Credentials
             if (_client.Credentials != null)
             {
