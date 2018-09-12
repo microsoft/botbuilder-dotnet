@@ -8,12 +8,14 @@ using System.Linq;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Security.Principal;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Rest.TransientFaultHandling;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder
 {
@@ -47,6 +49,7 @@ namespace Microsoft.Bot.Builder
         private readonly RetryPolicy _connectorClientRetryPolicy;
         private ConcurrentDictionary<string, MicrosoftAppCredentials> _appCredentialMap = new ConcurrentDictionary<string, MicrosoftAppCredentials>();
         private bool _isEmulatingOAuthCards = false;
+
         // There is a significant boost in throughput if we reuse a connectorClient
         // _connectorClients is a cache using [serviceUrl + appId].
         private ConcurrentDictionary<string, ConnectorClient> _connectorClients = new ConcurrentDictionary<string, ConnectorClient>();
@@ -537,8 +540,77 @@ namespace Microsoft.Bot.Builder
                 throw new ArgumentNullException(nameof(connectionName));
             }
 
+            var activity = turnContext.Activity;
+
+            var tokenExchangeState = new TokenExchangeState()
+            {
+                ConnectionName = connectionName,
+                Conversation = new ConversationReference()
+                {
+                    ActivityId = activity.Id,
+                    Bot = activity.Recipient,       // Activity is from the user to the bot
+                    ChannelId = activity.ChannelId,
+                    Conversation = activity.Conversation,
+                    ServiceUrl = activity.ServiceUrl,
+                    User = activity.From,
+                },
+                MsAppId = (_credentialProvider as MicrosoftAppCredentials)?.MicrosoftAppId,
+            };
+
+            var serializedState = JsonConvert.SerializeObject(tokenExchangeState);
+            var encodedState = Encoding.UTF8.GetBytes(serializedState);
+            var state = Convert.ToBase64String(encodedState);
+
             var client = CreateOAuthApiClient(turnContext);
-            return await client.GetSignInLinkAsync(turnContext.Activity, connectionName, cancellationToken).ConfigureAwait(false);
+            return await client.GetSignInLinkAsync(state, null, cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Get the raw signin link to be sent to the user for signin for a connection name.
+        /// </summary>
+        /// <param name="turnContext">Context for the current turn of conversation with the user.</param>
+        /// <param name="connectionName">Name of the auth connection to use.</param>
+        /// <param name="userId">The user id that will be associated with the token.</param>
+        /// <param name="finalRedirect">The final URL that the OAuth flow will redirect to.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>If the task completes successfully, the result contains the raw signin link.</remarks>
+        public async Task<string> GetOauthSignInLinkAsync(ITurnContext turnContext, string connectionName, string userId, string finalRedirect = null, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            BotAssert.ContextNotNull(turnContext);
+
+            if (string.IsNullOrWhiteSpace(connectionName))
+            {
+                throw new ArgumentNullException(nameof(connectionName));
+            }
+
+            if (string.IsNullOrWhiteSpace(userId))
+            {
+                throw new ArgumentNullException(nameof(userId));
+            }
+
+            var tokenExchangeState = new TokenExchangeState()
+            {
+                ConnectionName = connectionName,
+                Conversation = new ConversationReference()
+                {
+                    ActivityId = null,
+                    Bot = new ChannelAccount { Role = "bot" },
+                    ChannelId = "directline",
+                    Conversation = new ConversationAccount(),
+                    ServiceUrl = null,
+                    User = new ChannelAccount { Role = "user", Id = userId, },
+                },
+                MsAppId = (this._credentialProvider as MicrosoftAppCredentials)?.MicrosoftAppId,
+            };
+
+            var serializedState = JsonConvert.SerializeObject(tokenExchangeState);
+            var encodedState = Encoding.UTF8.GetBytes(serializedState);
+            var state = Convert.ToBase64String(encodedState);
+
+            var client = CreateOAuthApiClient(turnContext);
+            return await client.GetSignInLinkAsync(state, finalRedirect, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -546,19 +618,41 @@ namespace Microsoft.Bot.Builder
         /// </summary>
         /// <param name="turnContext">Context for the current turn of conversation with the user.</param>
         /// <param name="connectionName">Name of the auth connection to use.</param>
+        /// <param name="userId">User id of user to sign out.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
-        public async Task SignOutUserAsync(ITurnContext turnContext, string connectionName, CancellationToken cancellationToken)
+        public async Task SignOutUserAsync(ITurnContext turnContext, string connectionName = null, string userId = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             BotAssert.ContextNotNull(turnContext);
-            if (string.IsNullOrWhiteSpace(connectionName))
+
+            if (string.IsNullOrEmpty(userId))
             {
-                throw new ArgumentNullException(nameof(connectionName));
+                userId = turnContext.Activity?.From?.Id;
             }
 
             var client = CreateOAuthApiClient(turnContext);
-            await client.SignOutUserAsync(turnContext.Activity.From.Id, connectionName, cancellationToken).ConfigureAwait(false);
+            await client.SignOutUserAsync(userId, connectionName, cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Retrieves the token status for each configured connection for the given user.
+        /// </summary>
+        /// <param name="context">Context for the current turn of conversation with the user.</param>
+        /// <param name="userId">The user Id for which token status is retrieved.</param>
+        /// <param name="includeFilter">Optional comma seperated list of connection's to include. Blank will return token status for all configured connections.</param>
+        /// <returns>Array of TokenStatus.</returns>
+        public async Task<TokenStatus[]> GetTokenStatusAsync(ITurnContext context, string userId, string includeFilter = null)
+        {
+            BotAssert.ContextNotNull(context);
+
+            if (string.IsNullOrWhiteSpace(userId))
+            {
+                throw new ArgumentNullException(nameof(userId));
+            }
+
+            var client = this.CreateOAuthApiClient(context);
+            return await client.GetTokenStatusAsync(userId, includeFilter).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -717,6 +811,7 @@ namespace Microsoft.Bot.Builder
                 {
                     connectorClient.SetRetryPolicy(_connectorClientRetryPolicy);
                 }
+
                 return connectorClient;
             });
         }

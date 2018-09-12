@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Builder
     /// <summary>
     /// Reads and writes state for your bot to storage.
     /// </summary>
-    public abstract class BotState : IMiddleware
+    public abstract class BotState : IMiddleware, IPropertyManager
     {
         private readonly string _contextServiceKey;
         private readonly IStorage _storage;

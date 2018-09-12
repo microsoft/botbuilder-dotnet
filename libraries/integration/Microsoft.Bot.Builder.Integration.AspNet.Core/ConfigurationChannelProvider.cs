@@ -21,7 +21,7 @@ namespace Microsoft.Bot.Builder.BotFramework
         /// The key for ChannelService.
         /// </summary>
         public const string ChannelServiceKey = "ChannelService";
-        
+
         public ConfigurationChannelProvider(IConfiguration configuration)
         {
             this.ChannelService = configuration.GetSection(ChannelServiceKey)?.Value;

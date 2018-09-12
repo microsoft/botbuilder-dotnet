@@ -221,7 +221,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             // Sign out user
-            await adapter.SignOutUserAsync(turnContext, _settings.ConnectionName, cancellationToken).ConfigureAwait(false);
+            await adapter.SignOutUserAsync(turnContext, _settings.ConnectionName, turnContext.Activity?.From?.Id, cancellationToken).ConfigureAwait(false);
         }
 
         private async Task SendOAuthCardAsync(ITurnContext turnContext, IMessageActivity prompt, CancellationToken cancellationToken = default(CancellationToken))

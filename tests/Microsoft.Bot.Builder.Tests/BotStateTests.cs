@@ -276,7 +276,7 @@ namespace Microsoft.Bot.Builder.Tests
             await userState.SaveChangesAsync(context);
 
             // Assert
-            var obj = dictionary["user/EmptyContext/empty@empty.context.org"];
+            var obj = dictionary["EmptyContext/users/empty@empty.context.org"];
             Assert.AreEqual("hello", obj["property-a"]);
             Assert.AreEqual("world", obj["property-b"]);
         }
@@ -302,7 +302,7 @@ namespace Microsoft.Bot.Builder.Tests
             await userState.SaveChangesAsync(context);
 
             // Assert
-            var obj = dictionary["user/EmptyContext/empty@empty.context.org"];
+            var obj = dictionary["EmptyContext/users/empty@empty.context.org"];
             Assert.AreEqual("hello", obj["property-a"]);
             Assert.AreEqual("world", obj["property-b"]);
 
@@ -318,7 +318,7 @@ namespace Microsoft.Bot.Builder.Tests
             await userState2.SaveChangesAsync(context);
 
             // Assert 2
-            var obj2 = dictionary["user/EmptyContext/empty@empty.context.org"];
+            var obj2 = dictionary["EmptyContext/users/empty@empty.context.org"];
             Assert.AreEqual("hello-2", obj2["property-a"]);
             Assert.AreEqual("world-2", obj2["property-b"]);
             Assert.AreEqual("test", obj2["property-c"]);
@@ -343,7 +343,7 @@ namespace Microsoft.Bot.Builder.Tests
             await userState.SaveChangesAsync(context);
 
             // Assert
-            var obj = dictionary["user/EmptyContext/empty@empty.context.org"];
+            var obj = dictionary["EmptyContext/users/empty@empty.context.org"];
             Assert.AreEqual("hello", obj["property-a"]);
             Assert.AreEqual("world", obj["property-b"]);
 
@@ -359,7 +359,7 @@ namespace Microsoft.Bot.Builder.Tests
             await userState2.SaveChangesAsync(context);
 
             // Assert 2
-            var obj2 = dictionary["user/EmptyContext/empty@empty.context.org"];
+            var obj2 = dictionary["EmptyContext/users/empty@empty.context.org"];
             Assert.AreEqual("hello-2", obj2["property-a"]);
             Assert.IsNull(obj2["property-b"]);
         }
@@ -499,6 +499,35 @@ namespace Microsoft.Bot.Builder.Tests
                 .StartTestAsync();
         }
 
+        [TestMethod]
+        public async Task State_RememberPocoPrivateConversationState()
+        {
+            var privateConversationState = new PrivateConversationState(new MemoryStorage());
+            var testPocoProperty = privateConversationState.CreateProperty<TestPocoState>("testPoco");
+            var adapter = new TestAdapter()
+                .Use(privateConversationState);
+            await new TestFlow(adapter,
+                    async (context, cancellationToken) =>
+                    {
+                        var conversationState = await testPocoProperty.GetAsync(context, () => new TestPocoState());
+                        Assert.IsNotNull(conversationState, "state.conversation should exist");
+                        switch (context.Activity.AsMessageActivity().Text)
+                        {
+                            case "set value":
+                                conversationState.Value = "test";
+                                await context.SendActivityAsync("value saved");
+                                break;
+                            case "get value":
+                                await context.SendActivityAsync(conversationState.Value);
+                                break;
+                        }
+                    }
+                )
+                .Test("set value", "value saved")
+                .Test("get value", "test")
+                .StartTestAsync();
+        }
+
 
         [TestMethod]
         public async Task State_CustomStateManagerTest()
@@ -604,6 +633,55 @@ namespace Microsoft.Bot.Builder.Tests
                     }
                 )
                 .StartTestAsync();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException), "bad activity should throw ArgumentNullException")]
+        public async Task UserState_BadFromThrows()
+        {
+            var dictionary = new Dictionary<string, JObject>();
+            var userState = new UserState(new MemoryStorage(dictionary));
+            var context = TestUtilities.CreateEmptyContext();
+            context.Activity.From = null;
+            var testProperty = userState.CreateProperty<TestPocoState>("test");
+            var value = await testProperty.GetAsync(context);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException), "bad activity should throw ArgumentNullException")]
+        public async Task ConversationState_BadConverationThrows()
+        {
+            var dictionary = new Dictionary<string, JObject>();
+            var userState = new ConversationState(new MemoryStorage(dictionary));
+            var context = TestUtilities.CreateEmptyContext();
+            context.Activity.Conversation = null;
+            var testProperty = userState.CreateProperty<TestPocoState>("test");
+            var value = await testProperty.GetAsync(context);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException), "bad activity should throw ArgumentNullException")]
+        public async Task PrivateConversationState_BadActivityFromThrows()
+        {
+            var dictionary = new Dictionary<string, JObject>();
+            var userState = new PrivateConversationState(new MemoryStorage(dictionary));
+            var context = TestUtilities.CreateEmptyContext();
+            context.Activity.Conversation = null;
+            context.Activity.From = null;
+            var testProperty = userState.CreateProperty<TestPocoState>("test");
+            var value = await testProperty.GetAsync(context);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException), "bad activity should throw ArgumentNullException")]
+        public async Task PrivateConversationState_BadActivityConversationThrows()
+        {
+            var dictionary = new Dictionary<string, JObject>();
+            var userState = new PrivateConversationState(new MemoryStorage(dictionary));
+            var context = TestUtilities.CreateEmptyContext();
+            context.Activity.Conversation = null;
+            var testProperty = userState.CreateProperty<TestPocoState>("test");
+            var value = await testProperty.GetAsync(context);
         }
 
         public class TestBotState : BotState
