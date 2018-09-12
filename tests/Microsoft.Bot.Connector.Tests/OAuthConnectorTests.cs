@@ -87,25 +87,17 @@ namespace Connector.Tests
         }
 
         [Fact]
-        public async Task SignOutUser_ShouldThrowOnEmptyConnectionName()
+        public async Task GetSigninLink_ShouldThrowOnNullState()
         {
             var client = new OAuthClient(mockConnectorClient, "https://localhost");
-            await Assert.ThrowsAsync<ArgumentNullException>(() => client.SignOutUserAsync("userid", string.Empty));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => client.GetSignInLinkAsync(null));
         }
-
+        
         [Fact]
-        public async Task GetSigninLink_ShouldThrowOnEmptyConnectionName()
-        {
-            var activity = new Activity();
-            var client = new OAuthClient(mockConnectorClient, "https://localhost");
-            await Assert.ThrowsAsync<ArgumentNullException>(() => client.GetSignInLinkAsync(activity, string.Empty));
-        }
-
-        [Fact]
-        public async Task GetSigninLink_ShouldThrowOnNullActivity()
+        public async Task GetTokenStatus_ShouldThrowOnNullUserId()
         {
             var client = new OAuthClient(mockConnectorClient, "https://localhost");
-            await Assert.ThrowsAsync<ArgumentNullException>(() => client.GetSignInLinkAsync(null, "mockConnection"));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => client.GetTokenStatusAsync(null));
         }
     }
 }
