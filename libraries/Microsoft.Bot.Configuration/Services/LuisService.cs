@@ -46,6 +46,15 @@ namespace Microsoft.Bot.Configuration
         [JsonProperty("region")]
         public string Region { get; set; }
 
+        /// <summary>
+        /// Get the endpoint for this luis service.
+        /// </summary>
+        /// <returns>endpoint url</returns>
+        public string GetEndpoint()
+        {
+            return $"https://{this.Region}.api.cognitive.microsoft.com";
+        }
+
         /// <inheritdoc/>
         public override void Encrypt(string secret)
         {
