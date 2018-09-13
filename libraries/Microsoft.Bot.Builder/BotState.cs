@@ -235,6 +235,10 @@ namespace Microsoft.Bot.Builder
 
         /// <summary>
         /// Implements IPropertyAccessor for an IPropertyContainer.
+        /// Note the semantic of this accessor are intended to be lazy, this means teh Get, Set and Delete
+        /// methods will first call LoadAsync. This will be a no-op if the data is already loaded.
+        /// The implication is you can just use this accessor in the application code directly without first calling LoadAsync
+        /// this approach works with the AutoSaveStateMiddleware which will save as needed at the end of a turn.
         /// </summary>
         /// <typeparam name="T">type of value the propertyAccessor accesses.</typeparam>
         private class BotStatePropertyAccessor<T> : IStatePropertyAccessor<T>
@@ -256,7 +260,7 @@ namespace Microsoft.Bot.Builder
             public string Name { get; private set; }
 
             /// <summary>
-            /// Delete the property.
+            /// Delete the property. The semantics are intended to be lazy, note the use of LoadAsync at the start.
             /// </summary>
             /// <param name="turnContext">The turn context.</param>
             /// <param name="cancellationToken">The cancellation token.</param>
@@ -268,8 +272,8 @@ namespace Microsoft.Bot.Builder
             }
 
             /// <summary>
-            /// Get the property value.
-            /// </summary>
+            /// Get the property value. The semantics are intended to be lazy, note the use of LoadAsync at the start.
+            /// /// </summary>
             /// <param name="turnContext">The context object for this turn.</param>
             /// <param name="defaultValueFactory">Defines the default value. Invoked when no value been set for the requested state property.  If defaultValueFactory is defined as null, the MissingMemberException will be thrown if the underlying property is not set.</param>
             /// <param name="cancellationToken">The cancellation token.</param>
@@ -298,7 +302,7 @@ namespace Microsoft.Bot.Builder
             }
 
             /// <summary>
-            /// Set the property value.
+            /// Set the property value. The semantics are intended to be lazy, note the use of LoadAsync at the start.
             /// </summary>
             /// <param name="turnContext">turn context.</param>
             /// <param name="value">value.</param>
