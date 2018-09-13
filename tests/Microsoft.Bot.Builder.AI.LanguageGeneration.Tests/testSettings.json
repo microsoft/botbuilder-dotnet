@@ -1,5 +1,5 @@
 {
-  "mock": "false",
+  "mock": "true",
 
   "mockApiTestSettings": {
     "subscriptionKey": "9c05a515-62dc-44f3-86a3-7787ab3ced64",

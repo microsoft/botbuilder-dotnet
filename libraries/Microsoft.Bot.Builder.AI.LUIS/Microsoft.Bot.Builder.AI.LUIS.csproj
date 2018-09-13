@@ -71,7 +71,6 @@
 	</ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Microsoft.Bot.Builder.Ai.LanguageGeneration\Microsoft.Bot.Builder.AI.LanguageGeneration.csproj" />
     <ProjectReference Include="..\Microsoft.Bot.Builder\Microsoft.Bot.Builder.csproj" />
   </ItemGroup>
 
