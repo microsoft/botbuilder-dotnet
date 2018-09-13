@@ -100,7 +100,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
                             break;
                     }
                 }
-                await convoState.LoadAsync(turnContext);
+                await convoState.SaveChangesAsync(turnContext);
             });
 
             await flow.Test(activities).StartTestAsync();
