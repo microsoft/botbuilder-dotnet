@@ -2,13 +2,9 @@
 // Licensed under the MIT License.
 using System;
 using System.Linq;
-using System.Runtime.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
-using Autofac;
 using Microsoft.Bot.Builder;
-using Microsoft.Bot.Builder.Classic.Dialogs;
-using Microsoft.Bot.Builder.Classic.Internals.Fibers;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Bridge;
 using Microsoft.Bot.Schema;
@@ -29,7 +25,8 @@ namespace Multiple_Dialogs_Bridge
         {
             this.Accessors = accessors ?? throw new ArgumentNullException(nameof(accessors));
             this.Dialogs = new DialogSet(this.Accessors.ConversationDialogState);
-            this.Dialogs.Add(new BridgeDialog());
+            var bridgeDialog = new BridgeDialog(this.Accessors.PrivateConversationState, this.Accessors.ConversationState, this.Accessors.UserState);
+            this.Dialogs.Add(bridgeDialog);
         }
 
         /// <summary>

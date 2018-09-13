@@ -14,9 +14,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Bridge
     public sealed class Context : IDialogContext
     {
         private readonly DialogContext dc;
-        public Context(DialogContext dc)
+        private readonly DictionaryDataBag _userData;
+        private readonly DictionaryDataBag _conversationData;
+        private readonly DictionaryDataBag _privateConversationData;
+
+        public Context(DialogContext dc,
+                        DictionaryDataBag userState = null,
+                        DictionaryDataBag conversationState = null,
+                        DictionaryDataBag privateConversationState = null)
         {
             this.dc = dc ?? throw new ArgumentNullException(nameof(dc));
+            this._userData = userState;
+            this._conversationData = conversationState;
+            this._privateConversationData = privateConversationState;
         }
 
         public DialogContext V4 => this.dc;
@@ -28,9 +38,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Bridge
         IReadOnlyList<Delegate> IDialogStack.Frames => throw new NotImplementedException();
         CancellationToken IBotContext.CancellationToken => CancellationToken.None;
         IActivity IBotContext.Activity => dc.Context.Activity;
-        IBotDataBag IBotData.UserData => throw new NotImplementedException();
-        IBotDataBag IBotData.ConversationData => throw new NotImplementedException();
-        IBotDataBag IBotData.PrivateConversationData => throw new NotImplementedException();
+        IBotDataBag IBotData.UserData { get { return _userData; } }
+        IBotDataBag IBotData.ConversationData { get { return _conversationData; } }
+        IBotDataBag IBotData.PrivateConversationData { get { return _privateConversationData; } }
 
         IMessageActivity IBotToUser.MakeMessage()
         {
@@ -64,6 +74,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Bridge
         {
             await this.dc.Context.SendActivityAsync(message, cancellationToken);
         }
+        
+        async Task IDialogStack.Forward<R, T>(IDialog<R> child, ResumeAfter<R> resume, T item, CancellationToken token)
+        {
+            Call = child as IDialog<object>;
+            Rest = resume;
+
+            HasResultValue = false;
+            Result.Result = null;
+
+            dc.SetActivityConsumed(false);
+        }
 
         void IDialogStack.Fail(Exception error)
         {
@@ -74,17 +95,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Bridge
         Task IBotData.FlushAsync(CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
-        }
-
-        async Task IDialogStack.Forward<R, T>(IDialog<R> child, ResumeAfter<R> resume, T item, CancellationToken token)
-        {
-            Call = child as IDialog<object>;
-            Rest = resume;
-
-            HasResultValue = false;
-            Result.Result = null;
-
-            dc.SetActivityConsumed(false);
         }
 
         Task IBotData.LoadAsync(CancellationToken cancellationToken)

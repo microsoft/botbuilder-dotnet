@@ -18,17 +18,31 @@ namespace Microsoft.Bot.Builder.Dialogs.Bridge
     public sealed class BridgeDialog : Dialog
     {
         public const string DialogId = nameof(BridgeDialog);
-       
+
         private readonly IFormatter _formatter;
-        public BridgeDialog(IFormatter formatter) : base(DialogId)
+        private readonly IStatePropertyAccessor<DictionaryDataBag> _privateConversationStateAccessor;
+        private readonly IStatePropertyAccessor<DictionaryDataBag> _conversationStateAccessor;
+        private readonly IStatePropertyAccessor<DictionaryDataBag> _userStateAccessor;
+
+        public BridgeDialog(IFormatter formatter,
+                            IStatePropertyAccessor<DictionaryDataBag> privateConversationStateAccessor = null,
+                            IStatePropertyAccessor<DictionaryDataBag> conversationStateAccessor = null,
+                            IStatePropertyAccessor<DictionaryDataBag> userStateAccessor = null)
+            : base(DialogId)
         {
-            _formatter = formatter;
+            _formatter = formatter ?? throw new ArgumentNullException(nameof(formatter));
+            _privateConversationStateAccessor = privateConversationStateAccessor;
+            _conversationStateAccessor = conversationStateAccessor;
+            _userStateAccessor = userStateAccessor;
         }
 
-        public BridgeDialog() : this(GetBinaryFormatter())
+        public BridgeDialog(IStatePropertyAccessor<DictionaryDataBag> privateConversationStateAccessor = null,
+                            IStatePropertyAccessor<DictionaryDataBag> conversationStateAccessor = null,
+                            IStatePropertyAccessor<DictionaryDataBag> userStateAccessor = null)
+            : this(GetBinaryFormatter(), privateConversationStateAccessor, conversationStateAccessor, userStateAccessor)
         {
         }
-   
+
         private static IFormatter GetBinaryFormatter()
         {
             return new BinaryFormatter(new Serialization.SurrogateSelector(GetSurrogates()), new StreamingContext(StreamingContextStates.All));
@@ -51,14 +65,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Bridge
             return new[] { closureSurrogate, jObjectSurrogate, typeSurrogate, numberInfoSurrogate, delegateSurrogate, regexSurrogate };
         }
 
+        private async Task<Context> GetBridgeContext(DialogContext dc)
+        {
+            var userState = await _userStateAccessor.GetAsync(dc.Context, ()=> { return new DictionaryDataBag(); });
+            var privateConversationState = await _privateConversationStateAccessor.GetAsync(dc.Context, () => { return new DictionaryDataBag(); });
+            var conversationState = await _conversationStateAccessor.GetAsync(dc.Context, () => { return new DictionaryDataBag(); });
+            return new Context(dc, userState, conversationState, privateConversationState);
+        }
+
         public override async Task<DialogTurnResult> DialogBeginAsync(DialogContext dc, DialogOptions options, CancellationToken cancellationToken = default(CancellationToken))
         {
             var instance = dc.ActiveDialog;
             Trace(dc.Context);
             var option = (Options)options;
 
-            var dialog = option.Dialog;
-            var context = new Context(dc);
+            var dialog = option.Dialog;            
+            var context = await GetBridgeContext(dc);
             await option.StartAsync(context);
             // V4 seems to assume dialogs are started in response to incoming messages
             var result = await ToV4Async(dc, instance, context, dialog);
@@ -116,7 +138,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Bridge
             var awaitable = Activator.CreateInstance(wrapType, item);
 
             var rest = state.Rest;
-            var context = new Context(dc);
+            var context = await GetBridgeContext(dc);
             var task = (Task)rest.Invoke(state.Dialog, new object[] { context, awaitable });
             await task;
             var result = await ToV4Async(dc, instance, context, state.Dialog);

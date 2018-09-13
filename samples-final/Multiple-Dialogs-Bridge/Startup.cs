@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.BotFramework;
 using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Bot.Builder.Dialogs.Bridge;
 using Microsoft.Bot.Builder.Integration;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Extensions.Configuration;
@@ -66,14 +67,17 @@ namespace Multiple_Dialogs_Bridge
                 // https://www.nuget.org/packages/Microsoft.Bot.Builder.Azure/
                 // Uncomment this line to use Azure Blob Storage
                 // IStorage dataStore = new Microsoft.Bot.Builder.Azure.AzureBlobStorage("AzureBlobConnectionString", "containerName");
-                // Create and add conversation state.
-                var convoState = new ConversationState(dataStore);
-                options.State.Add(convoState);
+                // Create and add conversation, User and PrivateConversation state.
+                
+                options.State.Add(new ConversationState(dataStore));
+                options.State.Add(new PrivateConversationState(dataStore));
+                options.State.Add(new UserState(dataStore));
 
                 // The BotStateSet middleware forces state storage to auto-save when the bot is complete processing the message.
                 // Note: Developers may choose not to add all the state providers to this middleware if save is not required.
                 var stateSet = new BotStateSet(options.State.ToArray());
-                options.Middleware.Add(stateSet);
+                var autoSave = new AutoSaveStateMiddleware(stateSet);
+                options.Middleware.Add(autoSave);
             });
 
             services.AddSingleton(sp =>
@@ -92,7 +96,11 @@ namespace Multiple_Dialogs_Bridge
 
                 var accessors = new MultipleDialogsAccessors
                 {
-                    ConversationDialogState = conversationState.CreateProperty<DialogState>("DialogState")
+                    ConversationDialogState = conversationState.CreateProperty<DialogState>("DialogState"),
+
+                    ConversationState = conversationState.CreateProperty<DictionaryDataBag>("ConversationState"),
+                    PrivateConversationState = options.State.OfType<PrivateConversationState>().FirstOrDefault().CreateProperty<DictionaryDataBag>("PrivateConversationState"),
+                    UserState = options.State.OfType<UserState>().FirstOrDefault().CreateProperty<DictionaryDataBag>("UserState"),
                 };
 
                 return accessors;
