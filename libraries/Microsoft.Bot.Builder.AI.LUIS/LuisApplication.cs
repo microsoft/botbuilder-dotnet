@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 using System;
 using Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime.Models;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.AI.Luis
 {
@@ -10,6 +11,12 @@ namespace Microsoft.Bot.Builder.AI.Luis
     /// </summary>
     public class LuisApplication
     {
+
+        public LuisApplication()
+        {
+
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="LuisApplication"/> class.
         /// </summary>
@@ -28,7 +35,12 @@ namespace Microsoft.Bot.Builder.AI.Luis
                 throw new ArgumentException($"\"{applicationId}\" is not a valid LUIS subscription key.");
             }
 
-            if (string.IsNullOrWhiteSpace(endpoint) || !Uri.IsWellFormedUriString(endpoint, UriKind.Absolute))
+            if (string.IsNullOrWhiteSpace(endpoint))
+            {
+                throw new ArgumentException($"\"{endpoint}\" is not a valid LUIS endpoint.");
+            }
+
+            if (!Uri.IsWellFormedUriString(endpoint, UriKind.Absolute))
             {
                 throw new ArgumentException($"\"{endpoint}\" is not a valid LUIS endpoint.");
             }
@@ -39,27 +51,27 @@ namespace Microsoft.Bot.Builder.AI.Luis
         }
 
         /// <summary>
-        /// Gets LUIS application ID.
+        /// Gets or sets lUIS application ID.
         /// </summary>
         /// <value>
         /// LUIS application ID.
         /// </value>
-        public string ApplicationId { get; }
+        public string ApplicationId { get; set;}
 
         /// <summary>
-        /// Gets LUIS subscription or endpoint key.
+        /// Gets or sets lUIS subscription or endpoint key.
         /// </summary>
         /// <value>
         /// LUIS subscription or endpoint key.
         /// </value>
-        public string EndpointKey { get; }
+        public string EndpointKey { get; set; }
 
         /// <summary>
-        /// Gets LUIS endpoint like https://westus.api.cognitive.microsoft.com.
+        /// Gets or sets lUIS endpoint like https://westus.api.cognitive.microsoft.com.
         /// </summary>
         /// <value>
         /// LUIS endpoint where application is hosted.
         /// </value>
-        public string Endpoint { get; }
+        public string Endpoint { get; set; }
     }
 }
