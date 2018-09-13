@@ -26,11 +26,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             Assert.ThrowsException<ArgumentException>(() => new LuisApplication(Guid.NewGuid().ToString(), "0000", Endpoint));
             Assert.ThrowsException<ArgumentException>(() => new LuisApplication(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), null));
 
-            // test valid cases
-            var luisApp = new LuisApplication(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), "eastus");
-            Assert.AreEqual("https://eastus.api.cognitive.microsoft.com/luis/v2.0/", luisApp.Endpoint);
-
-            luisApp = new LuisApplication(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), Endpoint);
+            var luisApp = new LuisApplication(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), Endpoint);
             Assert.AreEqual(Endpoint, luisApp.Endpoint);
         }
 
