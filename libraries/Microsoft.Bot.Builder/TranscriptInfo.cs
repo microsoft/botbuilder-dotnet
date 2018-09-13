@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Builder
     /// <summary>
     /// Represents a copy of a conversation.
     /// </summary>
-    public class Transcript
+    public class TranscriptInfo
     {
         /// <summary>
         /// Gets or sets the ID of the channel in which the conversation occurred.

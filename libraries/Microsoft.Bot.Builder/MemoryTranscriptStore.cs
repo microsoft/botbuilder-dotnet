@@ -155,21 +155,21 @@ namespace Microsoft.Bot.Builder
         /// <param name="continuationToken"></param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <remarks></remarks>
-        public Task<PagedResult<Transcript>> ListTranscriptsAsync(string channelId, string continuationToken = null)
+        public Task<PagedResult<TranscriptInfo>> ListTranscriptsAsync(string channelId, string continuationToken = null)
         {
             if (channelId == null)
             {
                 throw new ArgumentNullException($"missing {nameof(channelId)}");
             }
 
-            var pagedResult = new PagedResult<Transcript>();
+            var pagedResult = new PagedResult<TranscriptInfo>();
             lock (_channels)
             {
                 if (_channels.TryGetValue(channelId, out var channel))
                 {
                     if (continuationToken != null)
                     {
-                        pagedResult.Items = channel.Select(c => new Transcript()
+                        pagedResult.Items = channel.Select(c => new TranscriptInfo()
                         {
                             ChannelId = channelId,
                             Id = c.Key,
@@ -189,7 +189,7 @@ namespace Microsoft.Bot.Builder
                     else
                     {
                         pagedResult.Items = channel.Select(
-                            c => new Transcript
+                            c => new TranscriptInfo
                             {
                                 ChannelId = channelId,
                                 Id = c.Key,
