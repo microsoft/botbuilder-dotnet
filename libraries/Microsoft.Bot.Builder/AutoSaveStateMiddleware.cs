@@ -27,7 +27,7 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
-        /// Gets the list of state management objects managed by this object.
+        /// Gets or sets the list of state management objects managed by this object.
         /// </summary>
         /// <value>The state management objects managed by this object.</value>
         public BotStateSet BotStateSet { get; set; }
