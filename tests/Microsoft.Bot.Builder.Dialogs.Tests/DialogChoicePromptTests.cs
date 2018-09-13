@@ -43,7 +43,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                     {
                         var choiceResult = (ChoiceResult)args;
                         await dc.Context.SendActivityAsync($"Bot received the choice '{choiceResult.Value.Value}'.");
-                        await dc.EndAsync();
+                        await dc.EndDialogAsync();
                     }
                 }
             );
@@ -59,7 +59,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 var state = await testProperty.GetAsync(turnContext, () => new Dictionary<string, object>());
                 var dc = dialogs.CreateContext(turnContext, state);
 
-                await dc.ContinueAsync();
+                await dc.ContinueDialogAsync();
 
                 if (!turnContext.Responded)
                 {

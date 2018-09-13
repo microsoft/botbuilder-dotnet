@@ -208,10 +208,10 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 await new TestFlow(adapter, async (turnContext, cancellationToken) =>
                 {
                     var dc = await dialogs.CreateContextAsync(turnContext);
-                    await dc.ContinueAsync();
+                    await dc.ContinueDialogAsync();
                     if (!turnContext.Responded)
                     {
-                        await dc.BeginAsync("test");
+                        await dc.BeginDialogAsync("test");
                     }
                 })
                     .Send("hello")

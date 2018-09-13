@@ -11,22 +11,22 @@ namespace Microsoft.Bot.Builder.Dialogs
         BeginCalled,
 
         /// <summary>
-        /// A dialog is being continued through a call to `DialogContext.ContinueAsync()`.
+        /// A dialog is being continued through a call to `DialogContext.ContinueDialogAsync()`.
         /// </summary>
         ContinueCalled,
 
         /// <summary>
-        /// A dialog ended normally through a call to `DialogContext.EndAsync()`.
+        /// A dialog ended normally through a call to `DialogContext.EndDialogAsync()`.
         /// </summary>
         EndCalled,
 
         /// <summary>
-        /// A dialog is ending because its being replaced through a call to `DialogContext.ReplaceAsync()`.
+        /// A dialog is ending because its being replaced through a call to `DialogContext.ReplaceDialogAsync()`.
         /// </summary>
         ReplaceCalled,
 
         /// <summary>
-        /// A dialog was cancelled as part of a call to `DialogContext.CancelAllAsync()`.
+        /// A dialog was cancelled as part of a call to `DialogContext.CancelAllDialogsAsync()`.
         /// </summary>
         CancelCalled,
 

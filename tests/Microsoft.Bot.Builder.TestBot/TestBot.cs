@@ -39,7 +39,7 @@ namespace Microsoft.Bot.Builder.TestBot
                 // run the DialogSet - let the framework identify the current state of the dialog from 
                 // the dialog stack and figure out what (if any) is the active dialog
                 var dialogContext = await _dialogs.CreateContextAsync(turnContext, cancellationToken);
-                var results = await dialogContext.ContinueAsync(cancellationToken);
+                var results = await dialogContext.ContinueDialogAsync(cancellationToken);
 
                 // HasActive = true if there is an active dialog on the dialogstack
                 // HasResults = true if the dialog just completed and the final  result can be retrived
@@ -47,7 +47,7 @@ namespace Microsoft.Bot.Builder.TestBot
                 // an additional check for Responded stops a new waterfall from being automatically started over
                 if (results.Status == DialogTurnStatus.Empty)
                 {
-                    await dialogContext.BeginAsync("test-waterfall", null, cancellationToken);
+                    await dialogContext.BeginDialogAsync("test-waterfall", null, cancellationToken);
                 }
             }
             finally
@@ -70,7 +70,7 @@ namespace Microsoft.Bot.Builder.TestBot
             // we are only interested in Message activities - any other type of activity we will immediately complete teh waterfall
             if (stepContext.Context.Activity.Type != ActivityTypes.Message)
             {
-                return await stepContext.EndAsync(cancellationToken);
+                return await stepContext.EndDialogAsync(cancellationToken);
             }
 
             // this prompt will not continue until we receive a number
@@ -90,7 +90,7 @@ namespace Microsoft.Bot.Builder.TestBot
         {
             var value = (int)stepContext.Result;
             await stepContext.Context.SendActivityAsync(MessageFactory.Text($"Bot received the number '{value}'."), cancellationToken);
-            return await stepContext.EndAsync(cancellationToken);
+            return await stepContext.EndDialogAsync(cancellationToken);
         }
     }
 }
