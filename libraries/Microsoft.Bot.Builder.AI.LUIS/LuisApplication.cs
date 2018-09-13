@@ -22,8 +22,8 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// </summary>
         /// <param name="applicationId">LUIS application ID.</param>
         /// <param name="endpointKey">LUIS subscription or endpoint key.</param>
-        /// <param name="endpointOrRegion">Azure region or LUIS endpoint to use like https://westus.api.cognitive.microsoft.com.</param>
-        public LuisApplication(string applicationId, string endpointKey, string endpointOrRegion)
+        /// <param name="endpoint">LUIS endpoint to use like https://westus.api.cognitive.microsoft.com.</param>
+        public LuisApplication(string applicationId, string endpointKey, string endpoint)
         {
             if (!Guid.TryParse(applicationId, out var appGuid))
             {
@@ -35,24 +35,19 @@ namespace Microsoft.Bot.Builder.AI.Luis
                 throw new ArgumentException($"\"{applicationId}\" is not a valid LUIS subscription key.");
             }
 
-            if (string.IsNullOrWhiteSpace(endpointOrRegion))
+            if (string.IsNullOrWhiteSpace(endpoint))
             {
-                throw new ArgumentException($"\"{endpointOrRegion}\" is not a valid LUIS endpoint.");
+                throw new ArgumentException($"\"{endpoint}\" is not a valid LUIS endpoint.");
             }
 
-            if (!Uri.IsWellFormedUriString(endpointOrRegion, UriKind.Absolute))
+            if (!Uri.IsWellFormedUriString(endpoint, UriKind.Absolute))
             {
-                endpointOrRegion = $"https://{endpointOrRegion}.api.cognitive.microsoft.com/luis/v2.0/";
-            }
-
-            if (!Uri.IsWellFormedUriString(endpointOrRegion, UriKind.Absolute))
-            {
-                throw new ArgumentException($"\"{endpointOrRegion}\" is not a valid LUIS endpoint.");
+                throw new ArgumentException($"\"{endpoint}\" is not a valid LUIS endpoint.");
             }
 
             ApplicationId = applicationId;
             EndpointKey = endpointKey;
-            Endpoint = endpointOrRegion;
+            Endpoint = endpoint;
         }
 
         /// <summary>
