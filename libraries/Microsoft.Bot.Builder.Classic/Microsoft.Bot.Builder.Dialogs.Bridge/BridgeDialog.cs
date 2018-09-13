@@ -67,10 +67,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Bridge
 
         private async Task<Context> GetBridgeContext(DialogContext dc)
         {
-            var userState = await _userStateAccessor.GetAsync(dc.Context, ()=> { return new DictionaryDataBag(); });
-            var privateConversationState = await _privateConversationStateAccessor.GetAsync(dc.Context, () => { return new DictionaryDataBag(); });
-            var conversationState = await _conversationStateAccessor.GetAsync(dc.Context, () => { return new DictionaryDataBag(); });
+            DictionaryDataBag userState = await GetDataBag(dc, _userStateAccessor);
+            DictionaryDataBag privateConversationState = await GetDataBag(dc, _privateConversationStateAccessor);
+            DictionaryDataBag conversationState = await GetDataBag(dc, _conversationStateAccessor);
+            
             return new Context(dc, userState, conversationState, privateConversationState);
+        }
+
+        private async Task<DictionaryDataBag> GetDataBag(DialogContext dc, IStatePropertyAccessor<DictionaryDataBag> propertyAccessor)
+        {
+            DictionaryDataBag state = null;
+            if (propertyAccessor != null)
+            {
+                state = await propertyAccessor.GetAsync(dc.Context, () => { return new DictionaryDataBag(); });
+            }
+            return state;
         }
 
         public override async Task<DialogTurnResult> DialogBeginAsync(DialogContext dc, DialogOptions options, CancellationToken cancellationToken = default(CancellationToken))
