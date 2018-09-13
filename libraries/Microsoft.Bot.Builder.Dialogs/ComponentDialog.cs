@@ -37,7 +37,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             var dialogState = new DialogState();
             outerDc.ActiveDialog.State[PersistedDialogState] = dialogState;
             var innerDc = new DialogContext(_dialogs, outerDc.Context, dialogState);
-            var turnResult = await OnDialogBeginAsync(innerDc, options, cancellationToken).ConfigureAwait(false);
+            var turnResult = await OnBeginDialogAsync(innerDc, options, cancellationToken).ConfigureAwait(false);
 
             // Check for end of inner dialog
             if (turnResult.Status != DialogTurnStatus.Waiting)
@@ -62,7 +62,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             // Continue execution of inner dialog.
             var dialogState = (DialogState)outerDc.ActiveDialog.State[PersistedDialogState];
             var innerDc = new DialogContext(_dialogs, outerDc.Context, dialogState);
-            var turnResult = await OnDialogContinueAsync(innerDc, cancellationToken).ConfigureAwait(false);
+            var turnResult = await OnContinueDialogAsync(innerDc, cancellationToken).ConfigureAwait(false);
 
             if (turnResult.Status != DialogTurnStatus.Waiting)
             {
@@ -93,7 +93,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             await innerDc.RepromptDialogAsync(cancellationToken).ConfigureAwait(false);
 
             // Notify component
-            await OnDialogRepromptAsync(turnContext, instance, cancellationToken).ConfigureAwait(false);
+            await OnRepromptDialogAsync(turnContext, instance, cancellationToken).ConfigureAwait(false);
         }
 
         public override async Task EndDialogAsync(ITurnContext turnContext, DialogInstance instance, DialogReason reason, CancellationToken cancellationToken = default(CancellationToken))
@@ -106,7 +106,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 await innerDc.CancelAllDialogsAsync(cancellationToken).ConfigureAwait(false);
             }
 
-            await OnDialogEndAsync(turnContext, instance, reason, cancellationToken).ConfigureAwait(false);
+            await OnEndDialogAsync(turnContext, instance, reason, cancellationToken).ConfigureAwait(false);
         }
 
         protected Dialog AddDialog(Dialog dialog)
@@ -120,22 +120,22 @@ namespace Microsoft.Bot.Builder.Dialogs
             return dialog;
         }
 
-        protected virtual Task<DialogTurnResult> OnDialogBeginAsync(DialogContext innerDc, object options, CancellationToken cancellationToken = default(CancellationToken))
+        protected virtual Task<DialogTurnResult> OnBeginDialogAsync(DialogContext innerDc, object options, CancellationToken cancellationToken = default(CancellationToken))
         {
             return innerDc.BeginDialogAsync(InitialDialogId, options, cancellationToken);
         }
 
-        protected virtual Task<DialogTurnResult> OnDialogContinueAsync(DialogContext innerDc, CancellationToken cancellationToken = default(CancellationToken))
+        protected virtual Task<DialogTurnResult> OnContinueDialogAsync(DialogContext innerDc, CancellationToken cancellationToken = default(CancellationToken))
         {
             return innerDc.ContinueDialogAsync(cancellationToken);
         }
 
-        protected virtual Task OnDialogEndAsync(ITurnContext context, DialogInstance instance, DialogReason reason, CancellationToken cancellationToken = default(CancellationToken))
+        protected virtual Task OnEndDialogAsync(ITurnContext context, DialogInstance instance, DialogReason reason, CancellationToken cancellationToken = default(CancellationToken))
         {
             return Task.CompletedTask;
         }
 
-        protected virtual Task OnDialogRepromptAsync(ITurnContext turnContext, DialogInstance instance, CancellationToken cancellationToken = default(CancellationToken))
+        protected virtual Task OnRepromptDialogAsync(ITurnContext turnContext, DialogInstance instance, CancellationToken cancellationToken = default(CancellationToken))
         {
             return Task.CompletedTask;
         }
