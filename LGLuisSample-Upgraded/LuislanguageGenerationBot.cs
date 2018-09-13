@@ -17,8 +17,8 @@ namespace LGLuisSample_Upgraded
         public LuisLanguageGenerationBot()
         {
             var endpointKey = "cc7bbcc0-3715-44f0-b7c9-d8fee333dce1";
-            var lgAppId = "ab48996d-abe2-4785-8eff-f18d15fc3560";
-            var azureRegion = "westus";
+            var lgAppId = "cafebot";
+            var azureRegion = "https://platform.bing.com/speechdx/lg-dev/v1/lg";
 
             var lgApp = new LanguageGenerationApplication(lgAppId, endpointKey, azureRegion);
             var lgOptions = new LanguageGenerationOptions();
