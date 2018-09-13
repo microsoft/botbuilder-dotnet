@@ -10,7 +10,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
     [TestClass]
     public class LuisApplicationTests
     {
-        private const string Endpoint = "https://westus.api.cognitive.microsoft.com/luis/v2.0/";
+        private const string Endpoint = "https://westus.api.cognitive.microsoft.com";
 
         [TestMethod]
         public void LuisApplication_Construction()

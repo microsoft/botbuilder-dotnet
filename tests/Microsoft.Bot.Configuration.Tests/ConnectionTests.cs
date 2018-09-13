@@ -342,7 +342,7 @@ namespace Microsoft.Bot.Configuration.Tests
         public void TestLuisEndpoint()
         {
             var luisApp = new LuisService() { Region = "westus" };
-            Assert.AreEqual(luisApp.GetEndpoint(), $"https://{luisApp.Region}.api.cognitive.microsoft.com/luis/v2.0/");
+            Assert.AreEqual(luisApp.GetEndpoint(), $"https://{luisApp.Region}.api.cognitive.microsoft.com");
         }
     }
 }

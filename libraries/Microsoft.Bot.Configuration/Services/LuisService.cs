@@ -52,7 +52,7 @@ namespace Microsoft.Bot.Configuration
         /// <returns>endpoint url</returns>
         public string GetEndpoint()
         {
-            return $"https://{this.Region}.api.cognitive.microsoft.com/luis/v2.0/";
+            return $"https://{this.Region}.api.cognitive.microsoft.com";
         }
 
         /// <inheritdoc/>
