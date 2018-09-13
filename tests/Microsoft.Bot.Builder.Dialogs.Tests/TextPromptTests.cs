@@ -77,18 +77,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             var dialogs = new DialogSet(dialogState);
 
-            PromptValidator<string> validator = async (ctx, promptContext, cancellationToken) =>
+            PromptValidator<string> validator = async (promptContext, cancellationToken) =>
             {
                 var value = promptContext.Recognized.Value;
                 if (value.Length <= 3)
                 {
-                    await ctx.SendActivityAsync(MessageFactory.Text("Make sure the text is greater than three characters."), cancellationToken);
+                    await promptContext.Context.SendActivityAsync(MessageFactory.Text("Make sure the text is greater than three characters."), cancellationToken);
+                    return false;
                 }
                 else
                 {
-                    promptContext.End(value);
+                    return true;
                 }
             };
+
             var textPrompt = new TextPrompt("TextPrompt", validator);
             dialogs.Add(textPrompt);
 
@@ -128,14 +130,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             var dialogs = new DialogSet(dialogState);
 
-            PromptValidator<string> validator = async (ctx, promptContext, cancellationToken) =>
+            PromptValidator<string> validator = (promptContext, cancellationToken) =>
             {
                 var value = promptContext.Recognized.Value;
                 if (value.Length >= 3)
                 {
-                    promptContext.End(value);
+                    return Task.FromResult(true);
                 }
-                await Task.CompletedTask;
+                return Task.FromResult(false);
             };
             var textPrompt = new TextPrompt("TextPrompt", validator);
             dialogs.Add(textPrompt);
@@ -179,16 +181,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             var dialogs = new DialogSet(dialogState);
 
-            PromptValidator<string> validator = async (ctx, promptContext, cancellationToken) =>
+            PromptValidator<string> validator = async (promptContext, cancellationToken) =>
             {
                 var value = promptContext.Recognized.Value;
                 if (value.Length <= 3)
                 {
-                    await ctx.SendActivityAsync(MessageFactory.Text("The text should be greater than 3 chars."), cancellationToken);
+                    await promptContext.Context.SendActivityAsync(MessageFactory.Text("The text should be greater than 3 chars."), cancellationToken);
+                    return false;
                 }
                 else
                 {
-                    promptContext.End(value);
+                    return true;
                 }
             };
             var textPrompt = new TextPrompt("TextPrompt", validator);

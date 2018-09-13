@@ -8,22 +8,21 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
-    public class WaterfallStepContext
+    public class WaterfallStepContext : DialogContext
     {
         private readonly WaterfallDialog _parent;
-        private readonly DialogContext _dc;
         private bool _nextCalled;
 
-        internal WaterfallStepContext(WaterfallDialog parent, DialogContext dc, DialogOptions options, IDictionary<string, object> values, int index, DialogReason reason, object result = null)
+        internal WaterfallStepContext(WaterfallDialog parent, DialogContext dc, object options, IDictionary<string, object> values, int index, DialogReason reason, object result = null)
+            : base(dc.Dialogs, dc.Context, new DialogState(dc.Stack))
         {
             _parent = parent;
-            _dc = dc;
             _nextCalled = false;
-            Options = options;
-            Values = values;
             Index = index;
+            Options = options;
             Reason = reason;
             Result = result;
+            Values = values;
         }
 
         /// <summary>
@@ -34,7 +33,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <summary>
         /// Gets any options the waterfall dialog was called with.
         /// </summary>
-        public DialogOptions Options { get; }
+        public object Options { get; }
 
         /// <summary>
         /// Gets the reason the waterfall step is being executed.
@@ -56,7 +55,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </summary>
         /// <param name="result">Optional result to pass to next step.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns></returns>
+        /// <returns>A <see cref="Task"/> of <see cref="cref="DialogTurnResult"/> representing the asynchronous operation.</returns>
         public async Task<DialogTurnResult> NextAsync(object result = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Ensure next hasn't been called
@@ -67,7 +66,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             // Trigger next step
             _nextCalled = true;
-            return await _parent.DialogResumeAsync(_dc, DialogReason.NextCalled, result).ConfigureAwait(false);
+            return await _parent.DialogResumeAsync(this, DialogReason.NextCalled, result).ConfigureAwait(false);
         }
     }
 }

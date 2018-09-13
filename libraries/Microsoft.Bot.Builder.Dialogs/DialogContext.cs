@@ -59,7 +59,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="options">(Optional) additional argument(s) to pass to the dialog being started.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public async Task<DialogTurnResult> BeginAsync(string dialogId, DialogOptions options = null, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<DialogTurnResult> BeginAsync(string dialogId, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (string.IsNullOrEmpty(dialogId))
             {
@@ -206,7 +206,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="options">(Optional) additional argument(s) to pass to the new dialog.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public async Task<DialogTurnResult> ReplaceAsync(string dialogId, DialogOptions options = null, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<DialogTurnResult> ReplaceAsync(string dialogId, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Pop stack
             if (Stack.Any())
@@ -218,6 +218,11 @@ namespace Microsoft.Bot.Builder.Dialogs
             return await BeginAsync(dialogId, options, cancellationToken).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Calls reprompt on the currently active dialog, if there is one. Used with Prompts that have a reprompt behavior.
+        /// </summary>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task RepromptAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
             // Check for a dialog on the stack

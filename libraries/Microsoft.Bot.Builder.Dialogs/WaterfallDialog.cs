@@ -25,8 +25,8 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <summary>
         /// Initializes a new instance of the <see cref="WaterfallDialog"/> class.
         /// </summary>
-        /// <param name="dialogId">dialog id</param>
-        /// <param name="steps">optional steps to be defined by caller</param>
+        /// <param name="dialogId">The dialog id.</param>
+        /// <param name="steps">Optional steps to be defined by caller.</param>
         public WaterfallDialog(string dialogId, IEnumerable<WaterfallStep> steps = null)
             : base(dialogId)
         {
@@ -43,15 +43,15 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <summary>
         /// Add a new step to the waterfall.
         /// </summary>
-        /// <param name="step">step to add</param>
-        /// <returns>waterfall dialog for fluent calls to .AddStep()</returns>
+        /// <param name="step">Step to add.</param>
+        /// <returns>Waterfall dialog for fluent calls to .AddStep().</returns>
         public WaterfallDialog AddStep(WaterfallStep step)
         {
-            this._steps.Add(step ?? throw new ArgumentNullException(nameof(step)));
+            _steps.Add(step ?? throw new ArgumentNullException(nameof(step)));
             return this;
         }
 
-        public override async Task<DialogTurnResult> DialogBeginAsync(DialogContext dc, DialogOptions options = null, CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task<DialogTurnResult> DialogBeginAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (dc == null)
             {
@@ -103,9 +103,9 @@ namespace Microsoft.Bot.Builder.Dialogs
             return await RunStepAsync(dc, index + 1, reason, result, cancellationToken).ConfigureAwait(false);
         }
 
-        protected virtual async Task<DialogTurnResult> OnStepAsync(DialogContext dc, WaterfallStepContext step, CancellationToken cancellationToken)
+        protected virtual async Task<DialogTurnResult> OnStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            return await _steps[step.Index](dc, step, cancellationToken).ConfigureAwait(false);
+            return await _steps[stepContext.Index](stepContext, cancellationToken).ConfigureAwait(false);
         }
 
         private async Task<DialogTurnResult> RunStepAsync(DialogContext dc, int index, DialogReason reason, object result, CancellationToken cancellationToken)
@@ -122,12 +122,12 @@ namespace Microsoft.Bot.Builder.Dialogs
                 state[StepIndex] = index;
 
                 // Create step context
-                var options = (DialogOptions)state[PersistedOptions];
+                var options = state[PersistedOptions];
                 var values = (IDictionary<string, object>)state[PersistedValues];
-                var step = new WaterfallStepContext(this, dc, options, values, index, reason, result);
+                var stepContext = new WaterfallStepContext(this, dc, options, values, index, reason, result);
 
                 // Execute step
-                return await OnStepAsync(dc, step, cancellationToken).ConfigureAwait(false);
+                return await OnStepAsync(stepContext, cancellationToken).ConfigureAwait(false);
             }
             else
             {

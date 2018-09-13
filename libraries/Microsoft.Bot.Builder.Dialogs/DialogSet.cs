@@ -54,7 +54,6 @@ namespace Microsoft.Bot.Builder.Dialogs
             BotAssert.ContextNotNull(turnContext);
 
             // ToDo: Component Dialog doesn't call this code path. This needs to be cleaned up in 4.1.
-
             if (_dialogState == null)
             {
                 // Note: This shouldn't ever trigger, as the _dialogState is set in the constructor and validated there.
