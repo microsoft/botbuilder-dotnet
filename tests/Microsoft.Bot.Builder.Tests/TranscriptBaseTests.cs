@@ -293,7 +293,7 @@ namespace Microsoft.Bot.Builder.Tests
                 await Task.WhenAll(group.Select(a => store.LogActivityAsync(a)));
 
             HashSet<string> seen = new HashSet<string>();
-            PagedResult<Transcript> pagedResult = null;
+            PagedResult<TranscriptInfo> pagedResult = null;
             var pageSize = 0;
             do
             {

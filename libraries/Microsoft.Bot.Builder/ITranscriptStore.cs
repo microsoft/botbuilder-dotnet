@@ -30,7 +30,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="continuationToken">Continuation token (if available).</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <remarks>List all transcripts for given ChannelID.</remarks>
-        Task<PagedResult<Transcript>> ListTranscriptsAsync(string channelId, string continuationToken = null);
+        Task<PagedResult<TranscriptInfo>> ListTranscriptsAsync(string channelId, string continuationToken = null);
 
         /// <summary>
         /// Deletes conversation data from the store.
