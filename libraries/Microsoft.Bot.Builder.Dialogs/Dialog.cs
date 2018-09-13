@@ -33,7 +33,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="options">(Optional) arguments that were passed to the dialog during `begin()` call that started the instance.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public abstract Task<DialogTurnResult> DialogBeginAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken));
+        public abstract Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// Method called when an instance of the dialog is the "current" dialog and the
@@ -44,10 +44,10 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="dc">The dialog context for the current turn of conversation.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public virtual async Task<DialogTurnResult> DialogContinueAsync(DialogContext dc, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual async Task<DialogTurnResult> ContinueDialogAsync(DialogContext dc, CancellationToken cancellationToken = default(CancellationToken))
         {
             // By default just end the current dialog.
-            return await dc.EndAsync(cancellationToken).ConfigureAwait(false);
+            return await dc.EndDialogAsync(cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -62,19 +62,19 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="result">(Optional) value returned from the dialog that was called. The type of the value returned is dependant on the dialog that was called.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public virtual async Task<DialogTurnResult> DialogResumeAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual async Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             // By default just end the current dialog and return result to parent.
-            return await dc.EndAsync(result, cancellationToken).ConfigureAwait(false);
+            return await dc.EndDialogAsync(result, cancellationToken).ConfigureAwait(false);
         }
 
-        public virtual Task DialogRepromptAsync(ITurnContext turnContext, DialogInstance instance, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task RepromptDialogAsync(ITurnContext turnContext, DialogInstance instance, CancellationToken cancellationToken = default(CancellationToken))
         {
             // No-op by default
             return Task.CompletedTask;
         }
 
-        public virtual Task DialogEndAsync(ITurnContext turnContext, DialogInstance instance, DialogReason reason, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task EndDialogAsync(ITurnContext turnContext, DialogInstance instance, DialogReason reason, CancellationToken cancellationToken = default(CancellationToken))
         {
             // No-op by default
             return Task.CompletedTask;

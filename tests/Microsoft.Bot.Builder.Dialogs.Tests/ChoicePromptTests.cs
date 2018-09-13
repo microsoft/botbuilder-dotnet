@@ -95,7 +95,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             {
                 var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
 
-                var results = await dc.ContinueAsync(cancellationToken);
+                var results = await dc.ContinueDialogAsync(cancellationToken);
                 if (results.Status == DialogTurnStatus.Empty)
                 {
                     await dc.PromptAsync("ChoicePrompt",
@@ -128,7 +128,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             {
                 var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
 
-                var results = await dc.ContinueAsync();
+                var results = await dc.ContinueDialogAsync();
                 if (results.Status == DialogTurnStatus.Empty)
                 {
                     await dc.PromptAsync("ChoicePrompt",
@@ -165,7 +165,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             {
                 var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
 
-                var results = await dc.ContinueAsync(cancellationToken);
+                var results = await dc.ContinueDialogAsync(cancellationToken);
                 if (results.Status == DialogTurnStatus.Empty)
                 {
                     await dc.PromptAsync("ChoicePrompt",
@@ -200,7 +200,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             {
                 var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
 
-                var results = await dc.ContinueAsync(cancellationToken);
+                var results = await dc.ContinueDialogAsync(cancellationToken);
                 if (results.Status == DialogTurnStatus.Empty)
                 {
                     await dc.PromptAsync("ChoicePrompt",
@@ -245,7 +245,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             {
                 var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
 
-                var results = await dc.ContinueAsync(cancellationToken);
+                var results = await dc.ContinueDialogAsync(cancellationToken);
                 if (results.Status == DialogTurnStatus.Empty)
                 {
                     await dc.PromptAsync("ChoicePrompt",
@@ -281,7 +281,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             {
                 var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
 
-                var results = await dc.ContinueAsync(cancellationToken);
+                var results = await dc.ContinueDialogAsync(cancellationToken);
                 if (results.Status == DialogTurnStatus.Empty)
                 {
                     await dc.PromptAsync("ChoicePrompt",
@@ -321,7 +321,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             {
                 var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
 
-                var results = await dc.ContinueAsync(cancellationToken);
+                var results = await dc.ContinueDialogAsync(cancellationToken);
                 if (results.Status == DialogTurnStatus.Empty)
                 {
                     await dc.PromptAsync("ChoicePrompt",
@@ -363,7 +363,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             {
                 var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
 
-                var results = await dc.ContinueAsync(cancellationToken);
+                var results = await dc.ContinueDialogAsync(cancellationToken);
                 if (results.Status == DialogTurnStatus.Empty)
                 {
                     await dc.PromptAsync("ChoicePrompt",
@@ -407,7 +407,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             {
                 var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
 
-                var results = await dc.ContinueAsync(cancellationToken);
+                var results = await dc.ContinueDialogAsync(cancellationToken);
                 if (results.Status == DialogTurnStatus.Empty)
                 {
                     await dc.PromptAsync("ChoicePrompt",
@@ -448,7 +448,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 var prompt = new ChoicePrompt(Culture.English, validator);
                 prompt.Style = ListStyle.None;
 
-                var dialogCompletion = await prompt.ContinueAsync(turnContext, state);
+                var dialogCompletion = await prompt.ContinueDialogAsync(turnContext, state);
                 if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
                 {
                     await prompt.BeginAsync(turnContext, state,
