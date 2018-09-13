@@ -10,7 +10,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
     [TestClass]
     public class LuisApplicationTests
     {
-        private const string Endpoint = "https://westus.api.cognitive.microsoft.com/luis/v2.0/";
+        private const string Endpoint = "https://westus.api.cognitive.microsoft.com";
 
         [TestMethod]
         public void LuisApplication_Construction()
@@ -18,14 +18,16 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             var model = GetValidModel();
             Assert.IsNotNull(model);
 
-            Assert.ThrowsException<ArgumentException>(() => new LuisApplication(null, Guid.Empty.ToString(), Endpoint));
-            Assert.ThrowsException<ArgumentException>(() => new LuisApplication(string.Empty, Guid.Empty.ToString(), Endpoint));
-            Assert.ThrowsException<ArgumentException>(() => new LuisApplication("0000", Guid.Empty.ToString(), Endpoint));
-            Assert.ThrowsException<ArgumentException>(() => new LuisApplication(Guid.Empty.ToString(), null, Endpoint));
-            Assert.ThrowsException<ArgumentException>(() => new LuisApplication(Guid.Empty.ToString(), string.Empty, Endpoint));
-            Assert.ThrowsException<ArgumentException>(() => new LuisApplication(Guid.Empty.ToString(), "0000", Endpoint));
-            Assert.ThrowsException<ArgumentException>(() => new LuisApplication(Guid.Empty.ToString(), Guid.Empty.ToString(), null));
-            Assert.ThrowsException<ArgumentException>(() => new LuisApplication(Guid.Empty.ToString(), Guid.Empty.ToString(), "abc"));
+            Assert.ThrowsException<ArgumentException>(() => new LuisApplication(null, Guid.NewGuid().ToString(), Endpoint));
+            Assert.ThrowsException<ArgumentException>(() => new LuisApplication(string.Empty, Guid.NewGuid().ToString(), Endpoint));
+            Assert.ThrowsException<ArgumentException>(() => new LuisApplication("0000", Guid.NewGuid().ToString(), Endpoint));
+            Assert.ThrowsException<ArgumentException>(() => new LuisApplication(Guid.NewGuid().ToString(), null, Endpoint));
+            Assert.ThrowsException<ArgumentException>(() => new LuisApplication(Guid.NewGuid().ToString(), string.Empty, Endpoint));
+            Assert.ThrowsException<ArgumentException>(() => new LuisApplication(Guid.NewGuid().ToString(), "0000", Endpoint));
+            Assert.ThrowsException<ArgumentException>(() => new LuisApplication(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), null));
+
+            var luisApp = new LuisApplication(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), Endpoint);
+            Assert.AreEqual(Endpoint, luisApp.Endpoint);
         }
 
         [TestMethod]
@@ -42,6 +44,6 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
         }
 
         private LuisApplication GetValidModel()
-            => new LuisApplication(Guid.Empty.ToString(), Guid.Empty.ToString(), Endpoint);
+            => new LuisApplication(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), Endpoint);
     }
 }
