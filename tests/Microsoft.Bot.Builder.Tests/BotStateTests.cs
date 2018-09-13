@@ -387,7 +387,7 @@ namespace Microsoft.Bot.Builder.Tests
             var userState = new UserState(new MemoryStorage());
             var testProperty = userState.CreateProperty<TestPocoState>("test");
             var adapter = new TestAdapter()
-                .Use(userState);
+                .Use(new AutoSaveStateMiddleware(userState));
 
             await new TestFlow(adapter,
                     async (context, cancellationToken) =>
@@ -417,7 +417,7 @@ namespace Microsoft.Bot.Builder.Tests
             var userState = new UserState(new MemoryStorage());
             var testPocoProperty = userState.CreateProperty<TestPocoState>("testPoco");
             var adapter = new TestAdapter()
-                .Use(userState);
+                .Use(new AutoSaveStateMiddleware(userState));
             await new TestFlow(adapter,
                     async (context, cancellationToken) =>
                     {
@@ -447,7 +447,8 @@ namespace Microsoft.Bot.Builder.Tests
             var testProperty = userState.CreateProperty<TestState>("test");
 
             var adapter = new TestAdapter()
-                .Use(userState);
+                .Use(new AutoSaveStateMiddleware(userState));
+
             await new TestFlow(adapter,
                     async (context, cancellationToken) =>
                     {
@@ -476,7 +477,8 @@ namespace Microsoft.Bot.Builder.Tests
             var userState = new UserState(new MemoryStorage());
             var testPocoProperty = userState.CreateProperty<TestPocoState>("testPoco");
             var adapter = new TestAdapter()
-                .Use(userState);
+                .Use(new AutoSaveStateMiddleware(userState));
+
             await new TestFlow(adapter,
                     async (context, cancellationToken) =>
                     {
@@ -505,7 +507,8 @@ namespace Microsoft.Bot.Builder.Tests
             var privateConversationState = new PrivateConversationState(new MemoryStorage());
             var testPocoProperty = privateConversationState.CreateProperty<TestPocoState>("testPoco");
             var adapter = new TestAdapter()
-                .Use(privateConversationState);
+                .Use(new AutoSaveStateMiddleware(privateConversationState));
+
             await new TestFlow(adapter,
                     async (context, cancellationToken) =>
                     {
@@ -539,7 +542,7 @@ namespace Microsoft.Bot.Builder.Tests
             var testProperty = customState.CreateProperty<TestPocoState>("test");
 
             var adapter = new TestAdapter()
-                .Use(customState);
+                .Use(new AutoSaveStateMiddleware(customState));
 
             await new TestFlow(adapter, async (context, cancellationToken) =>
                     {
@@ -573,7 +576,7 @@ namespace Microsoft.Bot.Builder.Tests
             var convoState = new ConversationState(new MemoryStorage());
             var testProperty = convoState.CreateProperty<TypedObject>("typed");
             var adapter = new TestAdapter()
-                .Use(convoState);
+                .Use(new AutoSaveStateMiddleware(convoState));
 
             await new TestFlow(adapter,
                     async (context, cancellationToken) =>
