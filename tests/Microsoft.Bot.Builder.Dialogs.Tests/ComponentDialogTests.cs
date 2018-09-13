@@ -20,8 +20,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var convoState = new ConversationState(new MemoryStorage());
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
-            var adapter = new TestAdapter()
-                .Use(convoState);
+            var adapter = new TestAdapter();
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
@@ -43,6 +42,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                     var value = (int)results.Result;
                     await turnContext.SendActivityAsync(MessageFactory.Text($"Bot received the number '{value}'."), cancellationToken);
                 }
+                await convoState.SaveChangesAsync(turnContext);
             })
             .Send("hello")
             .AssertReply("Enter a number.")
@@ -60,8 +60,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var convoState = new ConversationState(new MemoryStorage());
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
-            var adapter = new TestAdapter()
-                .Use(convoState);
+            var adapter = new TestAdapter();
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
@@ -82,6 +81,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                     var value = (int)results.Result;
                     await turnContext.SendActivityAsync(MessageFactory.Text($"Bot received the number '{value}'."), cancellationToken);
                 }
+                await convoState.SaveChangesAsync(turnContext);
             })
             .Send("hello")
             .AssertReply("Enter a number.")
@@ -99,8 +99,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var convoState = new ConversationState(new MemoryStorage());
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
-            var adapter = new TestAdapter()
-                .Use(convoState);
+            var adapter = new TestAdapter();
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
@@ -121,6 +120,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                     var value = (int)results.Result;
                     await turnContext.SendActivityAsync(MessageFactory.Text($"Bot received the number '{value}'."), cancellationToken);
                 }
+                await convoState.SaveChangesAsync(turnContext);
             })
             .Send("hello")
 

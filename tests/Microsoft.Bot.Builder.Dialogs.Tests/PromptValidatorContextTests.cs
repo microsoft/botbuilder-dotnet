@@ -17,8 +17,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var convoState = new ConversationState(new MemoryStorage());
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
-            var adapter = new TestAdapter()
-                .Use(convoState);
+            var adapter = new TestAdapter();
 
             var dialogs = new DialogSet(dialogState);
 
@@ -50,6 +49,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 {
                     await dc.BeginAsync("nameDialog");
                 }
+                await convoState.SaveChangesAsync(turnContext);
             })
             .Send("hello")
             .AssertReply("Please type your name.")
@@ -68,8 +68,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var convoState = new ConversationState(new MemoryStorage());
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
-            TestAdapter adapter = new TestAdapter()
-                .Use(convoState);
+            TestAdapter adapter = new TestAdapter();
 
             DialogSet dialogs = new DialogSet(dialogState);
 
@@ -109,8 +108,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 await dc.ContinueAsync(cancellationToken);
                 if (!turnContext.Responded)
                 {
-                    await dc.BeginAsync("nameDialog", null, cancellationToken);
+                    await dc.BeginAsync("nameDialog", cancellationToken: cancellationToken);
                 }
+                await convoState.SaveChangesAsync(turnContext);
             })
             .Send("hello")
             .AssertReply("Please type your name.")

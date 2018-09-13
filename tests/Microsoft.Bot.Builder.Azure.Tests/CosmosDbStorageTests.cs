@@ -181,8 +181,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             {
                 var convoState = new ConversationState(_storage);
 
-                var adapter = new TestAdapter()
-                    .Use(convoState);
+                var adapter = new TestAdapter();
 
                 var dialogState = convoState.CreateProperty<DialogState>("dialogState");
                 var dialogs = new DialogSet(dialogState);
@@ -207,12 +206,14 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 
                 await new TestFlow(adapter, async (turnContext, cancellationToken) =>
                 {
+                    await convoState.LoadAsync(turnContext);
                     var dc = await dialogs.CreateContextAsync(turnContext);
                     await dc.ContinueAsync();
                     if (!turnContext.Responded)
                     {
                         await dc.BeginAsync("test");
                     }
+                    await convoState.SaveChangesAsync(turnContext);
                 })
                     .Send("hello")
                     .AssertReply("step1")

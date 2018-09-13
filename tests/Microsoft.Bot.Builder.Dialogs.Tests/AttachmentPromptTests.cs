@@ -36,8 +36,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var convoState = new ConversationState(new MemoryStorage());
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
-            var adapter = new TestAdapter()
-                .Use(convoState);
+            var adapter = new TestAdapter();
 
             // Create new DialogSet.
             var dialogs = new DialogSet(dialogState);
@@ -69,6 +68,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                     await turnContext.SendActivityAsync(content, cancellationToken);
 
                 }
+                await convoState.SaveChangesAsync(turnContext);
             })
             .Send("hello")
             .AssertReply("please add an attachment.")
@@ -83,8 +83,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var convoState = new ConversationState(new MemoryStorage());
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
-            var adapter = new TestAdapter()
-                .Use(convoState);
+            var adapter = new TestAdapter();
 
             // Create new DialogSet.
             var dialogs = new DialogSet(dialogState);
@@ -113,6 +112,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                     await turnContext.SendActivityAsync(content, cancellationToken);
 
                 }
+                await convoState.SaveChangesAsync(turnContext);
             })
             .Send("hello")
             .AssertReply("please add an attachment.")
