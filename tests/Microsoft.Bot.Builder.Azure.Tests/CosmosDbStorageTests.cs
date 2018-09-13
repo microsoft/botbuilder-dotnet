@@ -182,7 +182,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 var convoState = new ConversationState(_storage);
 
                 var adapter = new TestAdapter()
-                    .Use(convoState);
+                    .Use(new AutoSaveStateMiddleware(convoState));
 
                 var dialogState = convoState.CreateProperty<DialogState>("dialogState");
                 var dialogs = new DialogSet(dialogState);
