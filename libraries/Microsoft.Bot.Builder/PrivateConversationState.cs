@@ -31,6 +31,5 @@ namespace Microsoft.Bot.Builder
             var userId = turnContext.Activity.From?.Id ?? throw new ArgumentNullException("invalid activity-missing From.Id");
             return $"{channelId}/conversations/{conversationId}/users/{userId}";
         }
-
     }
 }

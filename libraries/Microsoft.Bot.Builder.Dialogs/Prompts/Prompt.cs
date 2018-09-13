@@ -27,7 +27,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             _validator = validator;
         }
 
-        public override async Task<DialogTurnResult> DialogBeginAsync(DialogContext dc, DialogOptions options, CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task<DialogTurnResult> DialogBeginAsync(DialogContext dc, object options, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (dc == null)
             {
@@ -81,25 +81,21 @@ namespace Microsoft.Bot.Builder.Dialogs
             var recognized = await OnRecognizeAsync(dc.Context, state, options, cancellationToken).ConfigureAwait(false);
 
             // Validate the return value
-            var end = false;
-            object endResult = null;
+            var isValid = false;
             if (_validator != null)
             {
-                var prompt = new PromptValidatorContext<T>(dc, state, options, recognized);
-                await _validator(dc.Context, prompt, cancellationToken).ConfigureAwait(false);
-                end = prompt.HasEnded;
-                endResult = prompt.EndResult;
+                var promptContext = new PromptValidatorContext<T>(dc.Context, recognized, state, options);
+                isValid = await _validator(promptContext, cancellationToken).ConfigureAwait(false);
             }
             else if (recognized.Succeeded)
             {
-                end = true;
-                endResult = recognized.Value;
+                isValid = true;
             }
 
             // Return recognized value or re-prompt
-            if (end)
+            if (isValid)
             {
-                return await dc.EndAsync(endResult).ConfigureAwait(false);
+                return await dc.EndAsync(recognized.Value).ConfigureAwait(false);
             }
             else
             {

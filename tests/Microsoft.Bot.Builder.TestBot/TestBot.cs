@@ -65,32 +65,32 @@ namespace Microsoft.Bot.Builder.TestBot
             });
         }
 
-        private static async Task<DialogTurnResult> WaterfallStep1(DialogContext dc, WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        private static async Task<DialogTurnResult> WaterfallStep1(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             // we are only interested in Message activities - any other type of activity we will immediately complete teh waterfall
-            if (dc.Context.Activity.Type != ActivityTypes.Message)
+            if (stepContext.Context.Activity.Type != ActivityTypes.Message)
             {
-                return await dc.EndAsync(cancellationToken);
+                return await stepContext.EndAsync(cancellationToken);
             }
 
             // this prompt will not continue until we receive a number
-            return await dc.PromptAsync("number", new PromptOptions { Prompt = MessageFactory.Text("Enter a number.") }, cancellationToken);
+            return await stepContext.PromptAsync("number", new PromptOptions { Prompt = MessageFactory.Text("Enter a number.") }, cancellationToken);
         }
-        private static async Task<DialogTurnResult> WaterfallStep2(DialogContext dc, WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        private static async Task<DialogTurnResult> WaterfallStep2(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             // step context represents values from previous (waterfall) step - in this case the first number
             if (stepContext.Values != null)
             {
                 var numberResult = (int)stepContext.Result;
-                await dc.Context.SendActivityAsync(MessageFactory.Text($"Thanks for '{numberResult}'"), cancellationToken);
+                await stepContext.Context.SendActivityAsync(MessageFactory.Text($"Thanks for '{numberResult}'"), cancellationToken);
             }
-            return await dc.PromptAsync("number", new PromptOptions { Prompt = MessageFactory.Text("Enter another number.") }, cancellationToken);
+            return await stepContext.PromptAsync("number", new PromptOptions { Prompt = MessageFactory.Text("Enter another number.") }, cancellationToken);
         }
-        private static async Task<DialogTurnResult> WaterfallStep3(DialogContext dc, WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        private static async Task<DialogTurnResult> WaterfallStep3(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var value = (int)stepContext.Result;
-            await dc.Context.SendActivityAsync(MessageFactory.Text($"Bot received the number '{value}'."), cancellationToken);
-            return await dc.EndAsync(cancellationToken);
+            await stepContext.Context.SendActivityAsync(MessageFactory.Text($"Bot received the number '{value}'."), cancellationToken);
+            return await stepContext.EndAsync(cancellationToken);
         }
     }
 }

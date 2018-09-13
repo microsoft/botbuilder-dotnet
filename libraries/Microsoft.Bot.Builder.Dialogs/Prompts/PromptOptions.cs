@@ -7,7 +7,7 @@ using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
-    public class PromptOptions : DialogOptions
+    public class PromptOptions
     {
         /// <summary>
         /// Gets or sets the initial prompt to send the user as <seealso cref="Activity"/>Activity.

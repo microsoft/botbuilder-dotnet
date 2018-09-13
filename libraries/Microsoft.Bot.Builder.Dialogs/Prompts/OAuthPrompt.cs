@@ -68,7 +68,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             _validator = validator;
         }
 
-        public override async Task<DialogTurnResult> DialogBeginAsync(DialogContext dc, DialogOptions options = null, CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task<DialogTurnResult> DialogBeginAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (dc == null)
             {
@@ -147,25 +147,21 @@ namespace Microsoft.Bot.Builder.Dialogs
                 var promptOptions = (PromptOptions)state[PersistedOptions];
 
                 // Validate the return value
-                var end = false;
-                object endResult = null;
+                var isValid = false;
                 if (_validator != null)
                 {
-                    var prompt = new PromptValidatorContext<TokenResponse>(dc, promptState, promptOptions, recognized);
-                    await _validator(dc.Context, prompt, cancellationToken).ConfigureAwait(false);
-                    end = prompt.HasEnded;
-                    endResult = prompt.EndResult;
+                    var promptContext = new PromptValidatorContext<TokenResponse>(dc.Context, recognized, promptState, promptOptions);
+                    isValid = await _validator(promptContext, cancellationToken).ConfigureAwait(false);
                 }
                 else if (recognized.Succeeded)
                 {
-                    end = true;
-                    endResult = recognized.Value;
+                    isValid = true;
                 }
 
                 // Return recognized value or re-prompt
-                if (end)
+                if (isValid)
                 {
-                    return await dc.EndAsync(endResult, cancellationToken).ConfigureAwait(false);
+                    return await dc.EndAsync(recognized.Value, cancellationToken).ConfigureAwait(false);
                 }
                 else
                 {
