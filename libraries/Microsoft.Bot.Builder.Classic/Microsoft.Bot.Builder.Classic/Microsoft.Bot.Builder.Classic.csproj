@@ -50,10 +50,6 @@
     <Reference Include="Autofac, Version=4.7.1.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\Autofac.4.7.1\lib\net45\Autofac.dll</HintPath>
     </Reference>
-    <Reference Include="Chronic">
-      <HintPath>..\..\..\packages\Chronic.Signed.0.3.2\lib\net40\Chronic.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Microsoft.Rest.ClientRuntime, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\Microsoft.Rest.ClientRuntime.2.3.13\lib\net452\Microsoft.Rest.ClientRuntime.dll</HintPath>
     </Reference>
@@ -250,6 +246,10 @@
     <ProjectReference Include="..\..\Microsoft.Bot.Schema\Microsoft.Bot.Schema.csproj">
       <Project>{c1f54cdc-ad1d-45bb-8f7d-f49e411afaf1}</Project>
       <Name>Microsoft.Bot.Schema</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Chronic.NetStandard\Chronic.NetStandard.csproj">
+      <Project>{dc02edfa-62da-4780-a71f-95ddf9f2aa70}</Project>
+      <Name>Chronic.NetStandard</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
