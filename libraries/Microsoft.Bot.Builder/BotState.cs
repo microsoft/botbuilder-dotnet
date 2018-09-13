@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -65,7 +66,7 @@ namespace Microsoft.Bot.Builder
             {
                 var items = await _storage.ReadAsync(new[] { storageKey }, cancellationToken).ConfigureAwait(false);
                 items.TryGetValue(storageKey, out object val);
-                turnContext.TurnState[_contextServiceKey] = new CachedBotState((IDictionary<string, object>)val ?? new Dictionary<string, object>());
+                turnContext.TurnState[_contextServiceKey] = new CachedBotState((IDictionary<string, object>)val);
             }
         }
 
@@ -214,7 +215,7 @@ namespace Microsoft.Bot.Builder
         {
             public CachedBotState(IDictionary<string, object> state = null)
             {
-                State = state ?? new Dictionary<string, object>();
+                State = state ?? new ConcurrentDictionary<string, object>();
                 Hash = ComputeHash(State);
             }
 

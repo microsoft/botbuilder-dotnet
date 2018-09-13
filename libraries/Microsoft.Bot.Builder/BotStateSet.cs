@@ -2,7 +2,6 @@
 // Licensed under the MIT license.
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -27,6 +26,7 @@ namespace Microsoft.Bot.Builder
         /// <summary>
         /// Gets or sets the BotStates list for the BotStateSet.
         /// </summary>
+        /// <value>The BotState objects managed by this class.</value>
         public List<BotState> BotStates { get; set; } = new List<BotState>();
 
         /// <summary>
