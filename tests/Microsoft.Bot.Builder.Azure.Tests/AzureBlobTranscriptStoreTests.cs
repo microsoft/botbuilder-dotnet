@@ -47,18 +47,26 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         };
 
         // These tests require Azure Storage Emulator v5.7
+        [ClassInitialize]
+        public static void ClassInitialize(TestContext context)
+        {
+            StorageEmulatorHelper.StartStorageEmulator();
+        }
+
         [TestInitialize]
         public void TestInit()
         {
-            StorageEmulatorHelper.StartStorageEmulator();
             _transcriptStore = new AzureBlobTranscriptStore(ConnectionString, ContainerName);
         }
 
-        // These tests require Azure Storage Emulator v5.7
         [TestCleanup]
-        public void TestCleanUp()
+        public void TestCleanup()
         {
-            StorageEmulatorHelper.StopStorageEmulator();
+            var storage = CloudStorageAccount.Parse(ConnectionString);
+            var client = storage.CreateCloudBlobClient();
+            var container = client.GetContainerReference(ContainerName);
+            container.DeleteIfExistsAsync().Wait();
+            container.CreateIfNotExistsAsync().Wait();
         }
 
         // These tests require Azure Storage Emulator v5.7
@@ -67,8 +75,6 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             Assert.IsNotNull(_transcriptStore);
         }
-
-
 
         // These tests require Azure Storage Emulator v5.7
         [TestMethod]
