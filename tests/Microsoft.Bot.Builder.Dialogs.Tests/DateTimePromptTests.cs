@@ -21,8 +21,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var convoState = new ConversationState(new MemoryStorage());
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
-            TestAdapter adapter = new TestAdapter()
-                .Use(convoState);
+            TestAdapter adapter = new TestAdapter();
 
             // Create new DialogSet.
             var dialogs = new DialogSet(dialogState);
@@ -47,6 +46,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                     var reply = MessageFactory.Text($"Timex:'{resolution.Timex}' Value:'{resolution.Value}'");
                     await turnContext.SendActivityAsync(reply, cancellationToken);
                 }
+                await convoState.SaveChangesAsync(turnContext);
             })
             .Send("hello")
             .AssertReply("What date would you like?")
@@ -61,8 +61,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var convoState = new ConversationState(new MemoryStorage());
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
-            TestAdapter adapter = new TestAdapter()
-                .Use(convoState);
+            TestAdapter adapter = new TestAdapter();
 
             // Create new DialogSet.
             var dialogs = new DialogSet(dialogState);
@@ -88,6 +87,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                     var reply = MessageFactory.Text(string.Join(" ", timexExpressions));
                     await turnContext.SendActivityAsync(reply, cancellationToken);
                 }
+                await convoState.SaveChangesAsync(turnContext);
             })
             .Send("hello")
             .AssertReply("What date would you like?")
@@ -102,8 +102,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var convoState = new ConversationState(new MemoryStorage());
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
-            TestAdapter adapter = new TestAdapter()
-                .Use(convoState);
+            TestAdapter adapter = new TestAdapter();
 
             // Create new DialogSet.
             var dialogs = new DialogSet(dialogState);
@@ -128,6 +127,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                     var reply = MessageFactory.Text($"Timex:'{resolution.Timex}' Value:'{resolution.Value}'");
                     await turnContext.SendActivityAsync(reply, cancellationToken);
                 }
+                await convoState.SaveChangesAsync(turnContext);
             })
             .Send("hello")
             .AssertReply("What date would you like?")

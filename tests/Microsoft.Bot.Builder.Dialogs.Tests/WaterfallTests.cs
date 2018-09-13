@@ -20,8 +20,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         {
             var convoState = new ConversationState(new MemoryStorage());
 
-            var adapter = new TestAdapter()
-                .Use(convoState);
+            var adapter = new TestAdapter();
 
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
             var dialogs = new DialogSet(dialogState);
@@ -40,6 +39,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 {
                     await dc.BeginAsync("test", null, cancellationToken);
                 }
+                await convoState.SaveChangesAsync(turnContext);
             })
             .Send("hello")
             .AssertReply("step1")
@@ -64,8 +64,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         {
             var convoState = new ConversationState(new MemoryStorage());
 
-            var adapter = new TestAdapter()
-                .Use(convoState);
+            var adapter = new TestAdapter();
 
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
             var dialogs = new DialogSet(dialogState);
@@ -79,6 +78,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 {
                     await dc.BeginAsync("test", null, cancellationToken);
                 }
+                await convoState.SaveChangesAsync(turnContext);
             })
             .Send("hello")
             .AssertReply("step1")
@@ -96,8 +96,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var convoState = new ConversationState(new MemoryStorage());
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
-            var adapter = new TestAdapter()
-                .Use(convoState);
+            var adapter = new TestAdapter();
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
@@ -115,6 +114,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 {
                     await dc.BeginAsync("test-waterfall");
                 }
+                await convoState.SaveChangesAsync(turnContext);
             })
             .Send("hello")
             .AssertReply("step1")
@@ -184,8 +184,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         {
             var convoState = new ConversationState(new MemoryStorage());
 
-            var adapter = new TestAdapter()
-                .Use(convoState);
+            var adapter = new TestAdapter();
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
@@ -203,6 +202,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 {
                     await dc.BeginAsync("test-waterfall-a");
                 }
+                await convoState.SaveChangesAsync(turnContext);
             })
             .Send("hello")
             .AssertReply("step1")
@@ -238,8 +238,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 }
             }));
 
-            var adapter = new TestAdapter()
-                .Use(convoState);
+            var adapter = new TestAdapter();
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
@@ -253,6 +252,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 {
                     await dc.BeginAsync("test-dateTimePrompt", null, cancellationToken);
                 }
+                await convoState.SaveChangesAsync(turnContext);
             })
             .Send("hello")
             .AssertReply("Provide a date")

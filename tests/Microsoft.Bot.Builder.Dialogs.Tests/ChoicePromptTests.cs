@@ -84,8 +84,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var convoState = new ConversationState(new MemoryStorage());
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
-            var adapter = new TestAdapter()
-                .Use(convoState);
+            var adapter = new TestAdapter();
 
             // Create new DialogSet.
             var dialogs = new DialogSet(dialogState);
@@ -106,6 +105,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                         },
                         cancellationToken);
                 }
+                await convoState.SaveChangesAsync(turnContext);
             })
             .Send("hello")
             .AssertReply(StartsWithValidator("favorite color?"))
@@ -118,8 +118,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var convoState = new ConversationState(new MemoryStorage());
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
-            var adapter = new TestAdapter()
-                .Use(convoState);
+            var adapter = new TestAdapter();
 
             var dialogs = new DialogSet(dialogState);
             dialogs.Add(new ChoicePrompt("ChoicePrompt", defaultLocale: Culture.English));
@@ -139,6 +138,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                         },
                         cancellationToken);
                 }
+                await convoState.SaveChangesAsync(turnContext);
             })
             .Send("hello")
             .AssertReply("favorite color? (1) red, (2) green, or (3) blue")
@@ -151,8 +151,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var convoState = new ConversationState(new MemoryStorage());
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
-            var adapter = new TestAdapter()
-                .Use(convoState);
+            var adapter = new TestAdapter();
 
             var dialogs = new DialogSet(dialogState);
 
@@ -176,6 +175,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                         },
                         cancellationToken);
                 }
+                await convoState.SaveChangesAsync(turnContext);
             })
             .Send("hello")
             .AssertReply("favorite color?\n\n   1. red\n   2. green\n   3. blue")
@@ -188,8 +188,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var convoState = new ConversationState(new MemoryStorage());
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
-            var adapter = new TestAdapter()
-                .Use(convoState);
+            var adapter = new TestAdapter();
 
             var dialogs = new DialogSet(dialogState);
             var listPrompt = new ChoicePrompt("ChoicePrompt", defaultLocale: Culture.English);
@@ -211,6 +210,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                         },
                         cancellationToken);
                 }
+                await convoState.SaveChangesAsync(turnContext);
             })
             .Send("hello")
             .AssertReply(SuggestedActionsValidator("favorite color?",
@@ -232,8 +232,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var convoState = new ConversationState(new MemoryStorage());
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
-            var adapter = new TestAdapter()
-                .Use(convoState);
+            var adapter = new TestAdapter();
 
             var dialogs = new DialogSet(dialogState);
 
@@ -256,6 +255,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                         },
                         cancellationToken);
                 }
+                await convoState.SaveChangesAsync(turnContext);
             })
             .Send("hello")
             .AssertReply("favorite color?")
@@ -268,8 +268,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var convoState = new ConversationState(new MemoryStorage());
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
-            var adapter = new TestAdapter()
-                .Use(convoState);
+            var adapter = new TestAdapter();
 
             var dialogs = new DialogSet(dialogState);
 
@@ -296,6 +295,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                         },
                         cancellationToken);
                 }
+                await convoState.SaveChangesAsync(turnContext);
             })
             .Send("hello")
             .AssertReply(SpeakValidator("favorite color?", "spoken prompt"))
@@ -308,8 +308,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var convoState = new ConversationState(new MemoryStorage());
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
-            var adapter = new TestAdapter()
-                .Use(convoState);
+            var adapter = new TestAdapter();
 
             var dialogs = new DialogSet(dialogState);
 
@@ -337,6 +336,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                     var choiceResult = (FoundChoice)results.Result;
                     await turnContext.SendActivityAsync(MessageFactory.Text($"{choiceResult.Value}"), cancellationToken);
                 }
+                await convoState.SaveChangesAsync(turnContext);
             })
             .Send("hello")
             .AssertReply(StartsWithValidator("favorite color?"))
@@ -351,8 +351,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var convoState = new ConversationState(new MemoryStorage());
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
-            var adapter = new TestAdapter()
-                .Use(convoState);
+            var adapter = new TestAdapter();
 
             var dialogs = new DialogSet(dialogState);
             var listPrompt = new ChoicePrompt("ChoicePrompt", defaultLocale: Culture.English);
@@ -375,6 +374,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                         },
                         cancellationToken);
                 }
+                await convoState.SaveChangesAsync(turnContext);
             })
             .Send("hello")
             .AssertReply(StartsWithValidator("favorite color?"))
@@ -389,8 +389,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var convoState = new ConversationState(new MemoryStorage());
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
-            var adapter = new TestAdapter()
-                .Use(convoState);
+            var adapter = new TestAdapter();
 
             var dialogs = new DialogSet(dialogState);
 
@@ -418,6 +417,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                         },
                         cancellationToken);
                 }
+                await convoState.SaveChangesAsync(turnContext);
             })
             .Send("hello")
             .AssertReply(StartsWithValidator("favorite color?"))

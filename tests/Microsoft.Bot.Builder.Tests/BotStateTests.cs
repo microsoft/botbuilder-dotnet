@@ -386,24 +386,25 @@ namespace Microsoft.Bot.Builder.Tests
         {
             var userState = new UserState(new MemoryStorage());
             var testProperty = userState.CreateProperty<TestPocoState>("test");
-            var adapter = new TestAdapter()
-                .Use(userState);
+            var adapter = new TestAdapter();
 
             await new TestFlow(adapter,
-                    async (context, cancellationToken) =>
+                    async (turnContext, cancellationToken) =>
                     {
-                        var state = await testProperty.GetAsync(context, () => new TestPocoState());
+                        await userState.LoadAsync(turnContext);
+                        var state = await testProperty.GetAsync(turnContext, () => new TestPocoState());
                         Assert.IsNotNull(state, "user state should exist");
-                        switch (context.Activity.Text)
+                        switch (turnContext.Activity.Text)
                         {
                             case "set value":
                                 state.Value = "test";
-                                await context.SendActivityAsync("value saved");
+                                await turnContext.SendActivityAsync("value saved");
                                 break;
                             case "get value":
-                                await context.SendActivityAsync(state.Value);
+                                await turnContext.SendActivityAsync(state.Value);
                                 break;
                         }
+                        await userState.SaveChangesAsync(turnContext);
                     }
                 )
                 .Test("set value", "value saved")
@@ -416,23 +417,24 @@ namespace Microsoft.Bot.Builder.Tests
         {
             var userState = new UserState(new MemoryStorage());
             var testPocoProperty = userState.CreateProperty<TestPocoState>("testPoco");
-            var adapter = new TestAdapter()
-                .Use(userState);
+            var adapter = new TestAdapter();
             await new TestFlow(adapter,
-                    async (context, cancellationToken) =>
+                    async (turnContext, cancellationToken) =>
                     {
-                        var testPocoState = await testPocoProperty.GetAsync(context, () => new TestPocoState());
+                        await userState.LoadAsync(turnContext);
+                        var testPocoState = await testPocoProperty.GetAsync(turnContext, () => new TestPocoState());
                         Assert.IsNotNull(userState, "user state should exist");
-                        switch (context.Activity.AsMessageActivity().Text)
+                        switch (turnContext.Activity.AsMessageActivity().Text)
                         {
                             case "set value":
                                 testPocoState.Value = "test";
-                                await context.SendActivityAsync("value saved");
+                                await turnContext.SendActivityAsync("value saved");
                                 break;
                             case "get value":
-                                await context.SendActivityAsync(testPocoState.Value);
+                                await turnContext.SendActivityAsync(testPocoState.Value);
                                 break;
                         }
+                        await userState.SaveChangesAsync(turnContext);
                     }
                 )
                 .Test("set value", "value saved")
@@ -446,23 +448,24 @@ namespace Microsoft.Bot.Builder.Tests
             var userState = new UserState(new MemoryStorage());
             var testProperty = userState.CreateProperty<TestState>("test");
 
-            var adapter = new TestAdapter()
-                .Use(userState);
+            var adapter = new TestAdapter();
             await new TestFlow(adapter,
-                    async (context, cancellationToken) =>
+                    async (turnContext, cancellationToken) =>
                     {
-                        var conversationState = await testProperty.GetAsync(context, () => new TestState());
+                        await userState.LoadAsync(turnContext);
+                        var conversationState = await testProperty.GetAsync(turnContext, () => new TestState());
                         Assert.IsNotNull(conversationState, "state.conversation should exist");
-                        switch (context.Activity.AsMessageActivity().Text)
+                        switch (turnContext.Activity.AsMessageActivity().Text)
                         {
                             case "set value":
                                 conversationState.Value = "test";
-                                await context.SendActivityAsync("value saved");
+                                await turnContext.SendActivityAsync("value saved");
                                 break;
                             case "get value":
-                                await context.SendActivityAsync(conversationState.Value);
+                                await turnContext.SendActivityAsync(conversationState.Value);
                                 break;
                         }
+                        await userState.SaveChangesAsync(turnContext);
                     }
                 )
                 .Test("set value", "value saved")
@@ -475,23 +478,24 @@ namespace Microsoft.Bot.Builder.Tests
         {
             var userState = new UserState(new MemoryStorage());
             var testPocoProperty = userState.CreateProperty<TestPocoState>("testPoco");
-            var adapter = new TestAdapter()
-                .Use(userState);
+            var adapter = new TestAdapter();
             await new TestFlow(adapter,
-                    async (context, cancellationToken) =>
+                    async (turnContext, cancellationToken) =>
                     {
-                        var conversationState = await testPocoProperty.GetAsync(context, () => new TestPocoState());
+                        await userState.LoadAsync(turnContext);
+                        var conversationState = await testPocoProperty.GetAsync(turnContext, () => new TestPocoState());
                         Assert.IsNotNull(conversationState, "state.conversation should exist");
-                        switch (context.Activity.AsMessageActivity().Text)
+                        switch (turnContext.Activity.AsMessageActivity().Text)
                         {
                             case "set value":
                                 conversationState.Value = "test";
-                                await context.SendActivityAsync("value saved");
+                                await turnContext.SendActivityAsync("value saved");
                                 break;
                             case "get value":
-                                await context.SendActivityAsync(conversationState.Value);
+                                await turnContext.SendActivityAsync(conversationState.Value);
                                 break;
                         }
+                        await userState.SaveChangesAsync(turnContext);
                     }
                 )
                 .Test("set value", "value saved")
@@ -504,23 +508,24 @@ namespace Microsoft.Bot.Builder.Tests
         {
             var privateConversationState = new PrivateConversationState(new MemoryStorage());
             var testPocoProperty = privateConversationState.CreateProperty<TestPocoState>("testPoco");
-            var adapter = new TestAdapter()
-                .Use(privateConversationState);
+            var adapter = new TestAdapter();
             await new TestFlow(adapter,
-                    async (context, cancellationToken) =>
+                    async (turnContext, cancellationToken) =>
                     {
-                        var conversationState = await testPocoProperty.GetAsync(context, () => new TestPocoState());
+                        await privateConversationState.LoadAsync(turnContext);
+                        var conversationState = await testPocoProperty.GetAsync(turnContext, () => new TestPocoState());
                         Assert.IsNotNull(conversationState, "state.conversation should exist");
-                        switch (context.Activity.AsMessageActivity().Text)
+                        switch (turnContext.Activity.AsMessageActivity().Text)
                         {
                             case "set value":
                                 conversationState.Value = "test";
-                                await context.SendActivityAsync("value saved");
+                                await turnContext.SendActivityAsync("value saved");
                                 break;
                             case "get value":
-                                await context.SendActivityAsync(conversationState.Value);
+                                await turnContext.SendActivityAsync(conversationState.Value);
                                 break;
                         }
+                        await privateConversationState.SaveChangesAsync(turnContext);
                     }
                 )
                 .Test("set value", "value saved")
@@ -538,22 +543,23 @@ namespace Microsoft.Bot.Builder.Tests
 
             var testProperty = customState.CreateProperty<TestPocoState>("test");
 
-            var adapter = new TestAdapter()
-                .Use(customState);
+            var adapter = new TestAdapter();
 
-            await new TestFlow(adapter, async (context, cancellationToken) =>
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
                     {
-                        var test = await testProperty.GetAsync(context, () => new TestPocoState());
-                        switch (context.Activity.AsMessageActivity().Text)
+                        await customState.LoadAsync(turnContext);
+                        var test = await testProperty.GetAsync(turnContext, () => new TestPocoState());
+                        switch (turnContext.Activity.AsMessageActivity().Text)
                         {
                             case "set value":
                                 test.Value = testGuid;
-                                await context.SendActivityAsync("value saved");
+                                await turnContext.SendActivityAsync("value saved");
                                 break;
                             case "get value":
-                                await context.SendActivityAsync(test.Value);
+                                await turnContext.SendActivityAsync(test.Value);
                                 break;
                         }
+                        await customState.SaveChangesAsync(turnContext);
                     }
                 )
                 .Test("set value", "value saved")
@@ -572,24 +578,25 @@ namespace Microsoft.Bot.Builder.Tests
         {
             var convoState = new ConversationState(new MemoryStorage());
             var testProperty = convoState.CreateProperty<TypedObject>("typed");
-            var adapter = new TestAdapter()
-                .Use(convoState);
+            var adapter = new TestAdapter();
 
             await new TestFlow(adapter,
-                    async (context, cancellationToken) =>
+                    async (turnContext, cancellationToken) =>
                     {
-                        var conversation = await testProperty.GetAsync(context, () => new TypedObject());
+                        await convoState.LoadAsync(turnContext);
+                        var conversation = await testProperty.GetAsync(turnContext, () => new TypedObject());
                         Assert.IsNotNull(conversation, "conversationstate should exist");
-                        switch (context.Activity.AsMessageActivity().Text)
+                        switch (turnContext.Activity.AsMessageActivity().Text)
                         {
                             case "set value":
                                 conversation.Name = "test";
-                                await context.SendActivityAsync("value saved");
+                                await turnContext.SendActivityAsync("value saved");
                                 break;
                             case "get value":
-                                await context.SendActivityAsync(conversation.GetType().Name);
+                                await turnContext.SendActivityAsync(conversation.GetType().Name);
                                 break;
                         }
+                        await convoState.SaveChangesAsync(turnContext);
                     }
                 )
                 .Test("set value", "value saved")

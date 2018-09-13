@@ -22,37 +22,38 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
             var userState = new UserState(new MemoryStorage());
             var testProperty = userState.CreateProperty<UserStateObject>("test");
 
-            var adapter = new TestAdapter()
-                .Use(userState);
+            var adapter = new TestAdapter();
 
-            var flow = new TestFlow(adapter, async (context, cancellationToken) =>
+            var flow = new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                if (context.Activity.Type == ActivityTypes.Message)
+                await userState.LoadAsync(turnContext);
+                if (turnContext.Activity.Type == ActivityTypes.Message)
                 {
-                    var (command, value) = GetCommandValue(context);
+                    var (command, value) = GetCommandValue(turnContext);
                     switch (command)
                     {
                         case "delete":
-                            await testProperty.DeleteAsync(context);
+                            await testProperty.DeleteAsync(turnContext);
                             break;
                         case "set":
                             {
-                                var data = await testProperty.GetAsync(context, () => new UserStateObject());
+                                var data = await testProperty.GetAsync(turnContext, () => new UserStateObject());
                                 data.Value = value;
-                                await testProperty.SetAsync(context, data);
+                                await testProperty.SetAsync(turnContext, data);
                             }
                             break;
                         case "read":
                             {
-                                var data = await testProperty.GetAsync(context, () => new UserStateObject());
-                                await context.SendActivityAsync($"value:{data.Value}");
+                                var data = await testProperty.GetAsync(turnContext, () => new UserStateObject());
+                                await turnContext.SendActivityAsync($"value:{data.Value}");
                             }
                             break;
                         default:
-                            await context.SendActivityAsync("bot message");
+                            await turnContext.SendActivityAsync("bot message");
                             break;
                     }
                 }
+                await userState.SaveChangesAsync(turnContext);
             });
 
             await flow.Test(activities).StartTestAsync();
@@ -68,37 +69,38 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
             var convoState = new ConversationState(new MemoryStorage());
             var testProperty = convoState.CreateProperty<ConversationStateObject>("test");
 
-            var adapter = new TestAdapter()
-                .Use(convoState);
+            var adapter = new TestAdapter();
 
-            var flow = new TestFlow(adapter, async (context, cancellationToken) =>
+            var flow = new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                if (context.Activity.Type == ActivityTypes.Message)
+                await convoState.LoadAsync(turnContext);
+                if (turnContext.Activity.Type == ActivityTypes.Message)
                 {
-                    var (command, value) = GetCommandValue(context);
+                    var (command, value) = GetCommandValue(turnContext);
                     switch (command)
                     {
                         case "delete":
-                            await testProperty.DeleteAsync(context);
+                            await testProperty.DeleteAsync(turnContext);
                             break;
                         case "set":
                             {
-                                var data = await testProperty.GetAsync(context, () => new ConversationStateObject());
+                                var data = await testProperty.GetAsync(turnContext, () => new ConversationStateObject());
                                 data.Value = value;
-                                await testProperty.SetAsync(context, data);
+                                await testProperty.SetAsync(turnContext, data);
                             }
                             break;
                         case "read":
                             {
-                                var data = await testProperty.GetAsync(context, () => new ConversationStateObject());
-                                await context.SendActivityAsync($"value:{data.Value}");
+                                var data = await testProperty.GetAsync(turnContext, () => new ConversationStateObject());
+                                await turnContext.SendActivityAsync($"value:{data.Value}");
                             }
                             break;
                         default:
-                            await context.SendActivityAsync("bot message");
+                            await turnContext.SendActivityAsync("bot message");
                             break;
                     }
                 }
+                await convoState.SaveChangesAsync(turnContext);
             });
 
             await flow.Test(activities).StartTestAsync();
@@ -112,37 +114,38 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
             var storage = new MemoryStorage();
             var customState = new CustomState(storage);
             var testProperty = customState.CreateProperty<CustomStateObject>("Test");
-            var adapter = new TestAdapter()
-                .Use(customState);
+            var adapter = new TestAdapter();
 
-            var flow = new TestFlow(adapter, async (context, cancellationToken) =>
+            var flow = new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                if (context.Activity.Type == ActivityTypes.Message)
+                await customState.LoadAsync(turnContext);
+                if (turnContext.Activity.Type == ActivityTypes.Message)
                 {
-                    var (command, value) = GetCommandValue(context);
+                    var (command, value) = GetCommandValue(turnContext);
                     switch (command)
                     {
                         case "delete":
-                            await testProperty.DeleteAsync(context);
+                            await testProperty.DeleteAsync(turnContext);
                             break;
                         case "set":
                             {
-                                var data = await testProperty.GetAsync(context, () => new CustomStateObject());
+                                var data = await testProperty.GetAsync(turnContext, () => new CustomStateObject());
                                 data.Value = value;
-                                await testProperty.SetAsync(context, data);
+                                await testProperty.SetAsync(turnContext, data);
                             }
                             break;
                         case "read":
                             {
-                                var data = await testProperty.GetAsync(context, () => new CustomStateObject());
-                                await context.SendActivityAsync($"value:{data.Value}");
+                                var data = await testProperty.GetAsync(turnContext, () => new CustomStateObject());
+                                await turnContext.SendActivityAsync($"value:{data.Value}");
                             }
                             break;
                         default:
-                            await context.SendActivityAsync("bot message");
+                            await turnContext.SendActivityAsync("bot message");
                             break;
                     }
                 }
+                await customState.SaveChangesAsync(turnContext);
             });
 
             await flow.Test(activities).StartTestAsync();

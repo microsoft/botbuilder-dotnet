@@ -35,8 +35,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var convoState = new ConversationState(new MemoryStorage());
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
-            var adapter = new TestAdapter()
-                .Use(convoState);
+            var adapter = new TestAdapter();
 
             var dialogs = new DialogSet(dialogState);
 
@@ -58,6 +57,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                     var textResult = (string)results.Result;
                     await turnContext.SendActivityAsync(MessageFactory.Text($"Bot received the text '{textResult}'."), cancellationToken);
                 }
+                await convoState.SaveChangesAsync(turnContext);
             })
             .Send("hello")
             .AssertReply("Enter some text.")
@@ -72,8 +72,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var convoState = new ConversationState(new MemoryStorage());
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
-            var adapter = new TestAdapter()
-                .Use(convoState);
+            var adapter = new TestAdapter();
 
             var dialogs = new DialogSet(dialogState);
 
@@ -109,6 +108,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                     var textResult = (string)results.Result;
                     await turnContext.SendActivityAsync(MessageFactory.Text($"Bot received the text '{textResult}'."), cancellationToken);
                 }
+                await convoState.SaveChangesAsync(turnContext);
             })
             .Send("hello")
             .AssertReply("Enter some text.")
@@ -125,8 +125,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var convoState = new ConversationState(new MemoryStorage());
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
-            var adapter = new TestAdapter()
-                .Use(convoState);
+            var adapter = new TestAdapter();
 
             var dialogs = new DialogSet(dialogState);
 
@@ -160,6 +159,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                     var textResult = (string)results.Result;
                     await turnContext.SendActivityAsync(MessageFactory.Text($"Bot received the text '{textResult}'."), cancellationToken);
                 }
+                await convoState.SaveChangesAsync(turnContext);
             })
             .Send("hello")
             .AssertReply("Enter some text.")
@@ -176,8 +176,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var convoState = new ConversationState(new MemoryStorage());
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
-            var adapter = new TestAdapter()
-                .Use(convoState);
+            var adapter = new TestAdapter();
 
             var dialogs = new DialogSet(dialogState);
 
@@ -216,6 +215,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                     var textResult = (string)results.Result;
                     await turnContext.SendActivityAsync(MessageFactory.Text($"Bot received the text '{textResult}'."), cancellationToken);
                 }
+                await convoState.SaveChangesAsync(turnContext);
             })
             .Send("hello")
             .AssertReply("Enter some text.")

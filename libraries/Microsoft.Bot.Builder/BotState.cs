@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Builder
     /// <summary>
     /// Reads and writes state for your bot to storage.
     /// </summary>
-    public abstract class BotState : IMiddleware, IPropertyManager
+    public abstract class BotState : IPropertyManager
     {
         private readonly string _contextServiceKey;
         private readonly IStorage _storage;
@@ -42,39 +42,6 @@ namespace Microsoft.Bot.Builder
             }
 
             return new BotStatePropertyAccessor<T>(this, name);
-        }
-
-        /// <summary>
-        /// Processess an incoming activity.
-        /// </summary>
-        /// <param name="turnContext">The context object for this turn.</param>
-        /// <param name="next">The delegate to call to continue the bot middleware pipeline.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns>A task that represents the work queued to execute.</returns>
-        /// <remarks>This middleware loads the state object on the leading edge of the middleware pipeline
-        /// and persists the state object on the trailing edge. Note this is different than BotStateSet,
-        /// which does not pre-load the set on entry into the pipeline.
-        /// </remarks>
-        public async Task OnTurnAsync(ITurnContext turnContext, NextDelegate next, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            if (turnContext == null)
-            {
-                throw new ArgumentNullException(nameof(turnContext));
-            }
-
-            if (next == null)
-            {
-                throw new ArgumentNullException(nameof(next));
-            }
-
-            // Load state
-            await LoadAsync(turnContext, true, cancellationToken).ConfigureAwait(false);
-
-            // process activity
-            await next(cancellationToken).ConfigureAwait(false);
-
-            // Save changes
-            await SaveChangesAsync(turnContext, false, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
