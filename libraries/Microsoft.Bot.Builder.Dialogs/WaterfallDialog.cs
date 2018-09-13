@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 
@@ -19,15 +20,38 @@ namespace Microsoft.Bot.Builder.Dialogs
         private const string StepIndex = "stepIndex";
         private const string PersistedValues = "values";
 
-        private WaterfallStep[] _steps;
+        private readonly List<WaterfallStep> _steps;
 
-        public WaterfallDialog(string dialogId, WaterfallStep[] steps = null)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WaterfallDialog"/> class.
+        /// </summary>
+        /// <param name="dialogId">The dialog id.</param>
+        /// <param name="steps">Optional steps to be defined by caller.</param>
+        public WaterfallDialog(string dialogId, IEnumerable<WaterfallStep> steps = null)
             : base(dialogId)
         {
-            _steps = steps ?? new WaterfallStep[] { };
+            if (steps != null)
+            {
+                _steps = new List<WaterfallStep>(steps);
+            }
+            else
+            {
+                _steps = new List<WaterfallStep>();
+            }
         }
 
-        public override async Task<DialogTurnResult> DialogBeginAsync(DialogContext dc, DialogOptions options = null)
+        /// <summary>
+        /// Add a new step to the waterfall.
+        /// </summary>
+        /// <param name="step">Step to add.</param>
+        /// <returns>Waterfall dialog for fluent calls to .AddStep().</returns>
+        public WaterfallDialog AddStep(WaterfallStep step)
+        {
+            _steps.Add(step ?? throw new ArgumentNullException(nameof(step)));
+            return this;
+        }
+
+        public override async Task<DialogTurnResult> DialogBeginAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (dc == null)
             {
@@ -40,10 +64,10 @@ namespace Microsoft.Bot.Builder.Dialogs
             state[PersistedValues] = new Dictionary<string, object>();
 
             // Run first step
-            return await RunStepAsync(dc, 0, DialogReason.BeginCalled).ConfigureAwait(false);
+            return await RunStepAsync(dc, 0, DialogReason.BeginCalled, null, cancellationToken).ConfigureAwait(false);
         }
 
-        public override async Task<DialogTurnResult> DialogContinueAsync(DialogContext dc)
+        public override async Task<DialogTurnResult> DialogContinueAsync(DialogContext dc, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (dc == null)
             {
@@ -57,10 +81,10 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             // Run next step with the message text as the result.
-            return await DialogResumeAsync(dc, DialogReason.ContinueCalled, dc.Context.Activity.Text).ConfigureAwait(false);
+            return await DialogResumeAsync(dc, DialogReason.ContinueCalled, dc.Context.Activity.Text, cancellationToken).ConfigureAwait(false);
         }
 
-        public override async Task<DialogTurnResult> DialogResumeAsync(DialogContext dc, DialogReason reason, object result)
+        public override async Task<DialogTurnResult> DialogResumeAsync(DialogContext dc, DialogReason reason, object result, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (dc == null)
             {
@@ -69,35 +93,41 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             // Increment step index and run step
             var state = dc.ActiveDialog.State;
-            var index = (int)state[StepIndex];
-            return await RunStepAsync(dc, index + 1, reason, result).ConfigureAwait(false);
+
+            // For issue https://github.com/Microsoft/botbuilder-dotnet/issues/871
+            // See the linked issue for details. This issue was happening when using the CosmosDB
+            // data store for state. The stepIndex which was an object being cast to an Int64
+            // after deserialization was throwing an exception for not being Int32 datatype.
+            // This change ensures the correct datatype conversion has been done.
+            var index = Convert.ToInt32(state[StepIndex]);
+            return await RunStepAsync(dc, index + 1, reason, result, cancellationToken).ConfigureAwait(false);
         }
 
-        protected virtual async Task<DialogTurnResult> OnStepAsync(DialogContext dc, WaterfallStepContext step)
+        protected virtual async Task<DialogTurnResult> OnStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            return await _steps[step.Index](dc, step).ConfigureAwait(false);
+            return await _steps[stepContext.Index](stepContext, cancellationToken).ConfigureAwait(false);
         }
 
-        private async Task<DialogTurnResult> RunStepAsync(DialogContext dc, int index, DialogReason reason, object result = null)
+        private async Task<DialogTurnResult> RunStepAsync(DialogContext dc, int index, DialogReason reason, object result, CancellationToken cancellationToken)
         {
             if (dc == null)
             {
                 throw new ArgumentNullException(nameof(dc));
             }
 
-            if (index < _steps.Length)
+            if (index < _steps.Count)
             {
                 // Update persisted step index
                 var state = dc.ActiveDialog.State;
                 state[StepIndex] = index;
 
                 // Create step context
-                var options = (DialogOptions)state[PersistedOptions];
+                var options = state[PersistedOptions];
                 var values = (IDictionary<string, object>)state[PersistedValues];
-                var step = new WaterfallStepContext(this, dc, options, values, index, reason, result);
+                var stepContext = new WaterfallStepContext(this, dc, options, values, index, reason, result);
 
                 // Execute step
-                return await OnStepAsync(dc, step).ConfigureAwait(false);
+                return await OnStepAsync(stepContext, cancellationToken).ConfigureAwait(false);
             }
             else
             {

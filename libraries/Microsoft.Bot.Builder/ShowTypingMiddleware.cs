@@ -44,7 +44,7 @@ namespace Microsoft.Bot.Builder
         /// <summary>
         /// Processess an incoming activity.
         /// </summary>
-        /// <param name="context">The context object for this turn.</param>
+        /// <param name="turnContext">The context object for this turn.</param>
         /// <param name="next">The delegate to call to continue the bot middleware pipeline.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
@@ -53,19 +53,19 @@ namespace Microsoft.Bot.Builder
         /// </remarks>
         /// <seealso cref="ITurnContext"/>
         /// <seealso cref="Bot.Schema.IActivity"/>
-        public async Task OnTurnAsync(ITurnContext context, NextDelegate next, CancellationToken cancellationToken)
+        public async Task OnTurnAsync(ITurnContext turnContext, NextDelegate next, CancellationToken cancellationToken)
         {
             CancellationTokenSource cts = null;
             try
             {
                 // If the incoming activity is a MessageActivity, start a timer to periodically send the typing activity
-                if (context.Activity.Type == ActivityTypes.Message)
+                if (turnContext.Activity.Type == ActivityTypes.Message)
                 {
                     cts = new CancellationTokenSource();
                     cancellationToken.Register(() => cts.Cancel());
 
                     // do not await task - we want this to run in thw background and we wil cancel it when its done
-                    var task = Task.Run(() => SendTypingAsync(context, _delay, _period, cts.Token), cancellationToken);
+                    var task = Task.Run(() => SendTypingAsync(turnContext, _delay, _period, cts.Token), cancellationToken);
                 }
 
                 await next(cancellationToken).ConfigureAwait(false);
@@ -79,7 +79,7 @@ namespace Microsoft.Bot.Builder
             }
         }
 
-        private static async Task SendTypingAsync(ITurnContext context, TimeSpan delay, TimeSpan period, CancellationToken cancellationToken)
+        private static async Task SendTypingAsync(ITurnContext turnContext, TimeSpan delay, TimeSpan period, CancellationToken cancellationToken)
         {
             try
             {
@@ -89,7 +89,7 @@ namespace Microsoft.Bot.Builder
                 {
                     if (!cancellationToken.IsCancellationRequested)
                     {
-                        await SendTypingActivityAsync(context, cancellationToken).ConfigureAwait(false);
+                        await SendTypingActivityAsync(turnContext, cancellationToken).ConfigureAwait(false);
                     }
 
                     // if we happen to cancel when in the delay we will get a TaskCanceledException
@@ -102,15 +102,22 @@ namespace Microsoft.Bot.Builder
             }
         }
 
-        private static async Task SendTypingActivityAsync(ITurnContext context, CancellationToken cancellationToken)
+        private static async Task SendTypingActivityAsync(ITurnContext turnContext, CancellationToken cancellationToken)
         {
             // create a TypingActivity, associate it with the conversation and send immediately
             var typingActivity = new Activity
             {
                 Type = ActivityTypes.Typing,
-                RelatesTo = context.Activity.RelatesTo,
+                RelatesTo = turnContext.Activity.RelatesTo,
             };
-            await context.SendActivityAsync(typingActivity, cancellationToken).ConfigureAwait(false);
+
+            // sending the Activity directly on the Adapter avoids other Middleware and avoids setting the Responded
+            // flag, however, this also requires that the conversation reference details are explicitly added.
+            var conversationReference = turnContext.Activity.GetConversationReference();
+            typingActivity.ApplyConversationReference(conversationReference);
+
+            // make sure to send the Activity directly on the Adapter rather than via the TurnContext
+            await turnContext.Adapter.SendActivitiesAsync(turnContext, new Activity[] { typingActivity }, cancellationToken).ConfigureAwait(false);
         }
     }
 }

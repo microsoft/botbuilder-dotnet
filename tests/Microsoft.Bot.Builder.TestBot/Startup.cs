@@ -36,7 +36,8 @@ namespace Microsoft.Bot.Builder.TestBot
             {
                 IStorage dataStore = new MemoryStorage();
                 options.State.Add(new ConversationState(dataStore));
-                options.Middleware.Add(new BotStateSet(options.State.ToArray()));
+                options.Middleware.Add(new AutoSaveStateMiddleware(options.State.ToArray()));
+                options.Middleware.Add(new ShowTypingMiddleware());
             });
 
             services.AddSingleton(sp =>

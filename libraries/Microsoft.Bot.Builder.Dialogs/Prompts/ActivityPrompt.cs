@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 
@@ -24,7 +25,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             _validator = validator ?? throw new ArgumentNullException(nameof(validator));
         }
 
-        public override async Task<DialogTurnResult> DialogBeginAsync(DialogContext dc, DialogOptions options)
+        public override async Task<DialogTurnResult> DialogBeginAsync(DialogContext dc, object options, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (dc == null)
             {
@@ -54,11 +55,11 @@ namespace Microsoft.Bot.Builder.Dialogs
             state[PersistedState] = new Dictionary<string, object>();
 
             // Send initial prompt
-            await OnPromptAsync(dc.Context, (IDictionary<string, object>)state[PersistedState], (PromptOptions)state[PersistedOptions]).ConfigureAwait(false);
+            await OnPromptAsync(dc.Context, (IDictionary<string, object>)state[PersistedState], (PromptOptions)state[PersistedOptions], cancellationToken).ConfigureAwait(false);
             return Dialog.EndOfTurn;
         }
 
-        public override async Task<DialogTurnResult> DialogContinueAsync(DialogContext dc)
+        public override async Task<DialogTurnResult> DialogContinueAsync(DialogContext dc, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (dc == null)
             {
@@ -69,16 +70,16 @@ namespace Microsoft.Bot.Builder.Dialogs
             var instance = dc.ActiveDialog;
             var state = (IDictionary<string, object>)instance.State[PersistedState];
             var options = (PromptOptions)instance.State[PersistedOptions];
-            var recognized = await OnRecognizeAsync(dc.Context, state, options).ConfigureAwait(false);
+            var recognized = await OnRecognizeAsync(dc.Context, state, options, cancellationToken).ConfigureAwait(false);
 
             // Validate the return value
-            var prompt = new PromptValidatorContext<Activity>(dc, state, options, recognized);
-            await _validator(dc.Context, prompt).ConfigureAwait(false);
+            var promptContext = new PromptValidatorContext<Activity>(dc.Context, recognized, state, options);
+            var isValid = await _validator(promptContext, cancellationToken).ConfigureAwait(false);
 
             // Return recognized value or re-prompt
-            if (prompt.HasEnded)
+            if (isValid)
             {
-                return await dc.EndAsync(prompt.EndResult).ConfigureAwait(false);
+                return await dc.EndAsync(recognized.Value, cancellationToken).ConfigureAwait(false);
             }
             else
             {
@@ -86,29 +87,29 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
         }
 
-        public override async Task<DialogTurnResult> DialogResumeAsync(DialogContext dc, DialogReason reason, object result = null)
+        public override async Task<DialogTurnResult> DialogResumeAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Prompts are typically leaf nodes on the stack but the dev is free to push other dialogs
             // on top of the stack which will result in the prompt receiving an unexpected call to
             // dialogResume() when the pushed on dialog ends.
             // To avoid the prompt prematurely ending we need to implement this method and
             // simply re-prompt the user.
-            await DialogRepromptAsync(dc.Context, dc.ActiveDialog).ConfigureAwait(false);
+            await DialogRepromptAsync(dc.Context, dc.ActiveDialog, cancellationToken).ConfigureAwait(false);
             return Dialog.EndOfTurn;
         }
 
-        public override async Task DialogRepromptAsync(ITurnContext context, DialogInstance instance)
+        public override async Task DialogRepromptAsync(ITurnContext turnContext, DialogInstance instance, CancellationToken cancellationToken = default(CancellationToken))
         {
             var state = (IDictionary<string, object>)instance.State[PersistedState];
             var options = (PromptOptions)instance.State[PersistedOptions];
-            await OnPromptAsync(context, state, options).ConfigureAwait(false);
+            await OnPromptAsync(turnContext, state, options, cancellationToken).ConfigureAwait(false);
         }
 
-        protected virtual async Task OnPromptAsync(ITurnContext context, IDictionary<string, object> state, PromptOptions options)
+        protected virtual async Task OnPromptAsync(ITurnContext turnContext, IDictionary<string, object> state, PromptOptions options, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (context == null)
+            if (turnContext == null)
             {
-                throw new ArgumentNullException(nameof(context));
+                throw new ArgumentNullException(nameof(turnContext));
             }
 
             if (options == null)
@@ -118,16 +119,16 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             if (options.Prompt != null)
             {
-                await context.SendActivityAsync(options.Prompt).ConfigureAwait(false);
+                await turnContext.SendActivityAsync(options.Prompt, cancellationToken).ConfigureAwait(false);
             }
         }
 
-        protected virtual Task<PromptRecognizerResult<Activity>> OnRecognizeAsync(ITurnContext context, IDictionary<string, object> state, PromptOptions options)
+        protected virtual Task<PromptRecognizerResult<Activity>> OnRecognizeAsync(ITurnContext turnContext, IDictionary<string, object> state, PromptOptions options, CancellationToken cancellationToken = default(CancellationToken))
         {
             return Task.FromResult(new PromptRecognizerResult<Activity>
             {
                 Succeeded = true,
-                Value = context.Activity,
+                Value = turnContext.Activity,
             });
         }
     }

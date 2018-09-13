@@ -6,8 +6,12 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
+using Microsoft.Rest;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Tests
 {
@@ -476,34 +480,113 @@ namespace Microsoft.Bot.Builder.Tests
             {
                 Assert.IsTrue(ex.Message == "test");
             }            
-        }        
+        }
 
-        public async Task MyBotLogic(ITurnContext context, CancellationToken cancellationToken)
+        [TestMethod]
+        public void TurnContextStateNoDispose()
         {
-            switch (context.Activity.AsMessageActivity().Text)
+            // Verify any ConnectorClient in TurnContextCollection doesn't get disposed.
+            // - Adapter caches ConnectorClient.
+            // - Adapter lifetime is singleton.
+            // - ConnectorClient implements IDisposable.
+            // - ConnectorClient added in turnContet.TurnCollection.
+            // - TurnContextCollection disposes elements after each turn.
+
+            var connector = new ConnectorClientThrowExceptionOnDispose();
+            Assert.IsTrue(connector is IDisposable);
+            Assert.IsTrue(connector is IConnectorClient);
+
+            var stateCollection = new TurnContextStateCollection();
+            stateCollection.Add("connector", connector);
+            stateCollection.Dispose();
+        }
+
+        [TestMethod]
+        public void TurnContextStateDisposeNonConnectorClient()
+        {
+            var disposableObject1 = new TrackDisposed();
+            var disposableObject2 = new TrackDisposed();
+            var disposableObject3 = new TrackDisposed();
+            Assert.IsFalse(disposableObject1.Disposed);
+            Assert.IsTrue(disposableObject1 is IDisposable);
+
+            var connector = new ConnectorClientThrowExceptionOnDispose();
+            Assert.IsTrue(connector is IDisposable);
+            Assert.IsTrue(connector is IConnectorClient);
+
+            var stateCollection = new TurnContextStateCollection();
+            stateCollection.Add("disposable1", disposableObject1);
+            stateCollection.Add("disposable2", disposableObject2);
+            stateCollection.Add("disposable3", disposableObject3);
+            stateCollection.Add("connector", connector);
+            stateCollection.Dispose();
+
+            Assert.IsTrue(disposableObject1.Disposed);
+            Assert.IsTrue(disposableObject2.Disposed);
+            Assert.IsTrue(disposableObject3.Disposed);
+        }
+
+
+        public async Task MyBotLogic(ITurnContext turnContext, CancellationToken cancellationToken)
+        {
+            switch (turnContext.Activity.AsMessageActivity().Text)
             {
                 case "count":
-                    await context.SendActivityAsync(context.Activity.CreateReply("one"));
-                    await context.SendActivityAsync(context.Activity.CreateReply("two"));
-                    await context.SendActivityAsync(context.Activity.CreateReply("three"));
+                    await turnContext.SendActivityAsync(turnContext.Activity.CreateReply("one"));
+                    await turnContext.SendActivityAsync(turnContext.Activity.CreateReply("two"));
+                    await turnContext.SendActivityAsync(turnContext.Activity.CreateReply("three"));
                     break;
                 case "ignore":
                     break;
                 case "TestResponded":
-                    if (context.Responded == true)
+                    if (turnContext.Responded == true)
                         throw new InvalidOperationException("Responded Is True");
 
-                    await context.SendActivityAsync(context.Activity.CreateReply("one"));
+                    await turnContext.SendActivityAsync(turnContext.Activity.CreateReply("one"));
 
-                    if (context.Responded == false)
+                    if (turnContext.Responded == false)
                         throw new InvalidOperationException("Responded Is True");
                     break;
                 default:
-                    await context.SendActivityAsync(
-                        context.Activity.CreateReply($"echo:{context.Activity.Text}"));
+                    await turnContext.SendActivityAsync(
+                        turnContext.Activity.CreateReply($"echo:{turnContext.Activity.Text}"));
                     break;
             }
         }
     }
+    /// <summary>
+    /// ConnectorClient which throws exception when disposed.
+    /// </summary>
+    /// <remarks>Moq failed to create this properly. Boo moq!</remarks>
+    public class ConnectorClientThrowExceptionOnDispose : IConnectorClient
+    {
+        public Uri BaseUri { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
+        public JsonSerializerSettings SerializationSettings => throw new NotImplementedException();
+
+        public JsonSerializerSettings DeserializationSettings => throw new NotImplementedException();
+
+        public ServiceClientCredentials Credentials => throw new NotImplementedException();
+
+        public IAttachments Attachments => throw new NotImplementedException();
+
+        public IConversations Conversations => throw new NotImplementedException();
+
+        public void Dispose() => throw new Exception("Should not be disposed!");
+    }
+
+    /// <summary>
+    /// Vanilla <see cref="IDisposable"/> tracks if Dispose has been called.
+    /// </summary>
+    /// <remarks>Moq failed to create this properly.  Boo moq!</remarks>
+    public class TrackDisposed : IDisposable
+    {
+        public bool Disposed { get; private set; } = false;
+        public void Dispose()
+        {
+            Disposed = true;
+        }
+    }
+
 }
 

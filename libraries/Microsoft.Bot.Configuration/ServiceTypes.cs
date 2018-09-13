@@ -10,8 +10,10 @@ namespace Microsoft.Bot.Configuration
     public class ServiceTypes
     {
         public const string AppInsights = "appInsights";
-        public const string AzureStorage = "azureStorage";
-        public const string AzureBot = "abs";
+        public const string BlobStorage = "blob";
+        public const string CosmosDB = "cosmosdb";
+        public const string Bot = "abs";
+        public const string Generic = "generic";
         public const string Dispatch = "dispatch";
         public const string Endpoint = "endpoint";
         public const string File = "file";

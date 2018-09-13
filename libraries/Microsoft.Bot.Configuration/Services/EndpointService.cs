@@ -35,14 +35,22 @@ namespace Microsoft.Bot.Configuration
         public override void Encrypt(string secret)
         {
             base.Encrypt(secret);
-            this.AppPassword = this.AppPassword.Encrypt(secret);
+
+            if (!string.IsNullOrEmpty(this.AppPassword))
+            {
+                this.AppPassword = this.AppPassword.Encrypt(secret);
+            }
         }
 
         /// <inheritdoc/>
         public override void Decrypt(string secret)
         {
             base.Decrypt(secret);
-            this.AppPassword = this.AppPassword.Decrypt(secret);
+
+            if (!string.IsNullOrEmpty(this.AppPassword))
+            {
+                this.AppPassword = this.AppPassword.Decrypt(secret);
+            }
         }
     }
 }

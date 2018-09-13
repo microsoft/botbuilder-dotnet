@@ -1,9 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Bot.Builder.Dialogs.Tests
@@ -22,22 +22,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             var dialogs = new DialogSet(dialogState);
 
-            dialogs.Add(new TextPrompt("namePrompt", async (context, promptContext) =>
+            dialogs.Add(new TextPrompt("namePrompt", (promptContext, cancellationToken) =>
             {
-                promptContext.End((string)promptContext.Recognized.Value);
+                return Task.FromResult(true);
             }));
 
             dialogs.Add(new WaterfallDialog("nameDialog", new WaterfallStep[]
                     {
-                        async (dc, step) =>
+                        async (stepContext, cancellationToken) =>
                         {
-                            return await dc.PromptAsync("namePrompt", "Please type your name.");
+                            return await stepContext.PromptAsync("namePrompt", new PromptOptions { Prompt = new Activity { Text = "Please type your name.", Type = ActivityTypes.Message } }, cancellationToken);
                         },
-                        async (dc, step) =>
+                        async (stepContext, cancellationToken) =>
                         {
-                            var name = (string)step.Result;
-                            await dc.Context.SendActivityAsync($"{name} is a great name!");
-                            return await dc.EndAsync();
+                            var name = (string)stepContext.Result;
+                            await stepContext.Context.SendActivityAsync(MessageFactory.Text($"{name} is a great name!"), cancellationToken);
+                            return await stepContext.EndAsync();
                         }
                     }
                 ));
@@ -74,41 +74,42 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             DialogSet dialogs = new DialogSet(dialogState);
 
             // Create TextPrompt with dialogId "namePrompt" and custom validator
-            dialogs.Add(new TextPrompt("namePrompt", async (context, promptContext) =>
+            dialogs.Add(new TextPrompt("namePrompt", async (promptContext, cancellationToken) =>
             {
                 string result = promptContext.Recognized.Value;
                 if (result.Length > 3)
                 {
-                    promptContext.End(result);
+                    return true;
                 }
                 else
                 {
-                    await context.SendActivityAsync("Please send a name that is longer than 3 characters.");
+                    await promptContext.Context.SendActivityAsync(MessageFactory.Text("Please send a name that is longer than 3 characters."), cancellationToken);
                 }
+                return false;
             }));
 
             dialogs.Add(new WaterfallDialog("nameDialog", new WaterfallStep[]
                     {
-                        async (dc, step) =>
+                        async (stepContext, cancellationToken) =>
                         {
-                            return await dc.PromptAsync("namePrompt", "Please type your name.");
+                            return await stepContext.PromptAsync("namePrompt", new PromptOptions { Prompt = new Activity { Text = "Please type your name.", Type = ActivityTypes.Message } }, cancellationToken);
                         },
-                        async (dc, step) =>
+                        async (stepContext, cancellationToken) =>
                         {
-                            var name = (string)step.Result;
-                            await dc.Context.SendActivityAsync($"{name} is a great name!");
-                            return await dc.EndAsync();
+                            var name = (string)stepContext.Result;
+                            await stepContext.Context.SendActivityAsync(MessageFactory.Text($"{name} is a great name!"), cancellationToken);
+                            return await stepContext.EndAsync();
                         }
                     }
                 ));
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                var dc = await dialogs.CreateContextAsync(turnContext);
-                await dc.ContinueAsync();
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
+                await dc.ContinueAsync(cancellationToken);
                 if (!turnContext.Responded)
                 {
-                    await dc.BeginAsync("nameDialog");
+                    await dc.BeginAsync("nameDialog", null, cancellationToken);
                 }
             })
             .Send("hello")

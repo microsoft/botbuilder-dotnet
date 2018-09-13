@@ -1,9 +1,12 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Schema;
 using Microsoft.Recognizers.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -24,18 +27,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var dialogs = new DialogSet(dialogState);
             dialogs.Add(new WaterfallDialog("test", new WaterfallStep[]
             {
-                async (dc, step) => { await dc.Context.SendActivityAsync("step1"); return Dialog.EndOfTurn; },
-                async (dc, step) => { await dc.Context.SendActivityAsync("step2"); return Dialog.EndOfTurn; },
-                async (dc, step) => { await dc.Context.SendActivityAsync("step3"); return Dialog.EndOfTurn; },
+                async (step, cancellationToken) => { await step.Context.SendActivityAsync("step1"); return Dialog.EndOfTurn; },
+                async (step, cancellationToken) => { await step.Context.SendActivityAsync("step2"); return Dialog.EndOfTurn; },
+                async (step, cancellationToken) => { await step.Context.SendActivityAsync("step3"); return Dialog.EndOfTurn; },
             }));
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                var dc = await dialogs.CreateContextAsync(turnContext);
-                await dc.ContinueAsync();
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
+                await dc.ContinueAsync(cancellationToken);
                 if (!turnContext.Responded)
                 {
-                    await dc.BeginAsync("test");
+                    await dc.BeginAsync("test", null, cancellationToken);
                 }
             })
             .Send("hello")
@@ -47,7 +50,46 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .StartTestAsync();
         }
 
-        
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public Task WaterfallWithStepsNull()
+        {
+            var waterfall = new WaterfallDialog("test");
+            waterfall.AddStep(null);
+            return Task.CompletedTask;
+        }
+
+        [TestMethod]
+        public async Task WaterfallWithClass()
+        {
+            var convoState = new ConversationState(new MemoryStorage());
+
+            var adapter = new TestAdapter()
+                .Use(convoState);
+
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
+            var dialogs = new DialogSet(dialogState);
+            dialogs.Add(new MyWaterfallDialog("test"));
+
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            {
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
+                await dc.ContinueAsync(cancellationToken);
+                if (!turnContext.Responded)
+                {
+                    await dc.BeginAsync("test", null, cancellationToken);
+                }
+            })
+            .Send("hello")
+            .AssertReply("step1")
+            .Send("hello")
+            .AssertReply("step2")
+            .Send("hello")
+            .AssertReply("step3")
+            .StartTestAsync();
+        }
+
+
         [TestMethod]
         public async Task WaterfallPrompt()
         {
@@ -102,37 +144,39 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             });
         }
 
-        private static async Task<DialogTurnResult> Waterfall2_Step1(DialogContext dc, WaterfallStepContext stepContext)
+        private static async Task<DialogTurnResult> Waterfall2_Step1(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            await dc.Context.SendActivityAsync("step1");
-            return await dc.PromptAsync("number", new PromptOptions {
+            await stepContext.Context.SendActivityAsync("step1");
+            return await stepContext.PromptAsync("number", new PromptOptions
+            {
                 Prompt = MessageFactory.Text("Enter a number."),
                 RetryPrompt = MessageFactory.Text("It must be a number")
             });
         }
-        private static async Task<DialogTurnResult> Waterfall2_Step2(DialogContext dc, WaterfallStepContext stepContext)
+        private static async Task<DialogTurnResult> Waterfall2_Step2(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             if (stepContext.Values != null)
             {
                 var numberResult = (int)stepContext.Result;
-                await dc.Context.SendActivityAsync($"Thanks for '{numberResult}'");
+                await stepContext.Context.SendActivityAsync($"Thanks for '{numberResult}'");
             }
-            await dc.Context.SendActivityAsync("step2");
-            return await dc.PromptAsync("number",
-                new PromptOptions {
+            await stepContext.Context.SendActivityAsync("step2");
+            return await stepContext.PromptAsync("number",
+                new PromptOptions
+                {
                     Prompt = MessageFactory.Text("Enter a number."),
                     RetryPrompt = MessageFactory.Text("It must be a number")
                 });
         }
-        private static async Task<DialogTurnResult> Waterfall2_Step3(DialogContext dc, WaterfallStepContext stepContext)
+        private static async Task<DialogTurnResult> Waterfall2_Step3(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             if (stepContext.Values != null)
             {
                 var numberResult = (int)stepContext.Result;
-                await dc.Context.SendActivityAsync($"Thanks for '{numberResult}'");
+                await stepContext.Context.SendActivityAsync($"Thanks for '{numberResult}'");
             }
-            await dc.Context.SendActivityAsync("step3");
-            return await dc.EndAsync(new Dictionary<string, object> { { "Value", "All Done!" } });
+            await stepContext.Context.SendActivityAsync("step3");
+            return await stepContext.EndAsync(new Dictionary<string, object> { { "Value", "All Done!" } });
         }
 
         [TestMethod]
@@ -183,14 +227,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             dialogs.Add(new DateTimePrompt("dateTimePrompt", defaultLocale: Culture.English));
             dialogs.Add(new WaterfallDialog("test-dateTimePrompt", new WaterfallStep[]
             {
-                async (dc, args) =>
+                async (stepContext, cancellationToken) =>
                 {
-                    return await dc.PromptAsync("dateTimePrompt", "Provide a date");
+                    return await stepContext.PromptAsync("dateTimePrompt", new PromptOptions{ Prompt = new Activity { Text = "Provide a date", Type = ActivityTypes.Message }});
                 },
-                async (dc, args) =>
+                async (stepContext, cancellationToken) =>
                 {
-                    Assert.IsNotNull(args);
-                    return await dc.EndAsync();
+                    Assert.IsNotNull(stepContext);
+                    return await stepContext.EndAsync();
                 }
             }));
 
@@ -201,13 +245,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             {
                 var state = await dialogState.GetAsync(turnContext, () => new DialogState());
 
-                var dc = await dialogs.CreateContextAsync(turnContext);
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
 
-                await dc.ContinueAsync();
+                await dc.ContinueAsync(cancellationToken);
 
                 if (!turnContext.Responded)
                 {
-                    await dc.BeginAsync("test-dateTimePrompt");
+                    await dc.BeginAsync("test-dateTimePrompt", null, cancellationToken);
                 }
             })
             .Send("hello")
@@ -241,38 +285,66 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             });
         }
 
-        private static async Task<DialogTurnResult> Waterfall3_Step1(DialogContext dc, WaterfallStepContext stepContext)
+        private static async Task<DialogTurnResult> Waterfall3_Step1(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            await dc.Context.SendActivityAsync("step1");
-            return await dc.BeginAsync("test-waterfall-b");
+            await stepContext.Context.SendActivityAsync(MessageFactory.Text("step1"), cancellationToken);
+            return await stepContext.BeginAsync("test-waterfall-b", null, cancellationToken);
         }
-        private static async Task<DialogTurnResult> Waterfall3_Step2(DialogContext dc, WaterfallStepContext stepContext)
+        private static async Task<DialogTurnResult> Waterfall3_Step2(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            await dc.Context.SendActivityAsync("step2");
-            return await dc.BeginAsync("test-waterfall-c");
-        }
-
-        private static async Task<DialogTurnResult> Waterfall4_Step1(DialogContext dc, WaterfallStepContext stepContext)
-        {
-            await dc.Context.SendActivityAsync("step1.1");
-            return Dialog.EndOfTurn;
-        }
-        private static async Task<DialogTurnResult> Waterfall4_Step2(DialogContext dc, WaterfallStepContext stepContext)
-        {
-            await dc.Context.SendActivityAsync("step1.2");
-            return Dialog.EndOfTurn;
+            await stepContext.Context.SendActivityAsync(MessageFactory.Text("step2"), cancellationToken);
+            return await stepContext.BeginAsync("test-waterfall-c", null, cancellationToken);
         }
 
-        private static async Task<DialogTurnResult> Waterfall5_Step1(DialogContext dc, WaterfallStepContext stepContext)
+        private static async Task<DialogTurnResult> Waterfall4_Step1(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            await dc.Context.SendActivityAsync("step2.1");
+            await stepContext.Context.SendActivityAsync(MessageFactory.Text("step1.1"), cancellationToken);
             return Dialog.EndOfTurn;
         }
-        private static async Task<DialogTurnResult> Waterfall5_Step2(DialogContext dc, WaterfallStepContext stepContext)
+        private static async Task<DialogTurnResult> Waterfall4_Step2(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            await dc.Context.SendActivityAsync("step2.2");
-            return await dc.EndAsync();
+            await stepContext.Context.SendActivityAsync(MessageFactory.Text("step1.2"), cancellationToken);
+            return Dialog.EndOfTurn;
+        }
+
+        private static async Task<DialogTurnResult> Waterfall5_Step1(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        {
+            await stepContext.Context.SendActivityAsync(MessageFactory.Text("step2.1"), cancellationToken);
+            return Dialog.EndOfTurn;
+        }
+        private static async Task<DialogTurnResult> Waterfall5_Step2(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        {
+            await stepContext.Context.SendActivityAsync(MessageFactory.Text("step2.2"), cancellationToken);
+            return await stepContext.EndAsync(cancellationToken);
         }
 
     }
+
+    public class MyWaterfallDialog : WaterfallDialog
+    {
+        public MyWaterfallDialog(string id)
+            : base(id)
+        {
+            AddStep(Waterfall2_Step1);
+            AddStep(Waterfall2_Step2);
+            AddStep(Waterfall2_Step3);
+        }
+
+        private static async Task<DialogTurnResult> Waterfall2_Step1(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        {
+            await stepContext.Context.SendActivityAsync("step1");
+            return Dialog.EndOfTurn; 
+        }
+        private static async Task<DialogTurnResult> Waterfall2_Step2(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        {
+            await stepContext.Context.SendActivityAsync("step2");
+            return Dialog.EndOfTurn;
+        }
+        private static async Task<DialogTurnResult> Waterfall2_Step3(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        {
+            await stepContext.Context.SendActivityAsync("step3");
+            return Dialog.EndOfTurn; 
+        }
+    }
+
 }

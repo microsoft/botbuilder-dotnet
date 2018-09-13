@@ -47,16 +47,32 @@ namespace Microsoft.Bot.Configuration
         public override void Encrypt(string secret)
         {
             base.Encrypt(secret);
-            this.EndpointKey = this.EndpointKey.Encrypt(secret);
-            this.SubscriptionKey = this.SubscriptionKey.Encrypt(secret);
+
+            if (!string.IsNullOrEmpty(this.EndpointKey))
+            {
+                this.EndpointKey = this.EndpointKey.Encrypt(secret);
+            }
+
+            if (!string.IsNullOrEmpty(this.SubscriptionKey))
+            {
+                this.SubscriptionKey = this.SubscriptionKey.Encrypt(secret);
+            }
         }
 
         /// <inheritdoc/>
         public override void Decrypt(string secret)
         {
             base.Decrypt(secret);
-            this.EndpointKey = this.EndpointKey.Decrypt(secret);
-            this.SubscriptionKey = this.SubscriptionKey.Decrypt(secret);
+
+            if (!string.IsNullOrEmpty(this.EndpointKey))
+            {
+                this.EndpointKey = this.EndpointKey.Decrypt(secret);
+            }
+
+            if (!string.IsNullOrEmpty(this.SubscriptionKey))
+            {
+                this.SubscriptionKey = this.SubscriptionKey.Decrypt(secret);
+            }
         }
     }
 }

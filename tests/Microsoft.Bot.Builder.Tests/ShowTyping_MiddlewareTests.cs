@@ -22,6 +22,10 @@ namespace Microsoft.Bot.Builder.Tests
             await new TestFlow(adapter, async (context, cancellationToken) =>
                 {
                     await Task.Delay(TimeSpan.FromMilliseconds(2500));
+
+                    // note the ShowTypingMiddleware should not cause the Responded flag to be set
+                    Assert.IsFalse(context.Responded);
+
                     await context.SendActivityAsync("Message sent after delay");
                     await Task.CompletedTask;
                 })

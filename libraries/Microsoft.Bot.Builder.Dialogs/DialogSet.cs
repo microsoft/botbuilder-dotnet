@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Dialogs
@@ -12,21 +13,27 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// </summary>
     public class DialogSet
     {
-        private IStatePropertyAccessor<DialogState> _dialogState;
-        private IDictionary<string, Dialog> _dialogs;
+        private readonly IStatePropertyAccessor<DialogState> _dialogState;
+        private readonly IDictionary<string, Dialog> _dialogs = new Dictionary<string, Dialog>();
 
         public DialogSet(IStatePropertyAccessor<DialogState> dialogState)
         {
-            _dialogState = dialogState;
-            _dialogs = new Dictionary<string, Dialog>();
+            _dialogState = dialogState ?? throw new ArgumentNullException($"missing {nameof(dialogState)}");
+        }
+
+        internal DialogSet()
+        {
+            // TODO: This is only used by ComponentDialog and future release
+            // will refactor to use IStatePropertyAccessor from context
+            _dialogState = null;
         }
 
         /// <summary>
         /// Adds a new dialog to the set and returns the added dialog.
         /// </summary>
         /// <param name="dialog">The dialog to add.</param>
-        /// <returns>The added dialog.</returns>
-        public Dialog Add(Dialog dialog)
+        /// <returns>The DialogSet for fluent calls to Add().</returns>
+        public DialogSet Add(Dialog dialog)
         {
             if (dialog == null)
             {
@@ -35,26 +42,29 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             if (_dialogs.ContainsKey(dialog.Id))
             {
-                throw new Exception($"DialogSet.Add(): A dialog with an id of '{dialog.Id}' already added.");
+                throw new ArgumentException($"DialogSet.Add(): A dialog with an id of '{dialog.Id}' already added.");
             }
 
-            return _dialogs[dialog.Id] = dialog;
+            _dialogs[dialog.Id] = dialog;
+            return this;
         }
 
-        public async Task<DialogContext> CreateContextAsync(ITurnContext context)
+        public async Task<DialogContext> CreateContextAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
         {
-            BotAssert.ContextNotNull(context);
+            BotAssert.ContextNotNull(turnContext);
 
+            // ToDo: Component Dialog doesn't call this code path. This needs to be cleaned up in 4.1.
             if (_dialogState == null)
             {
-                throw new Exception($"DialogSet.CreateContextAsync(): DialogSet created with a null IStatePropertyAccessor. Must manually factory DialogContext instances in this scenario.");
+                // Note: This shouldn't ever trigger, as the _dialogState is set in the constructor and validated there.
+                throw new InvalidOperationException($"DialogSet.CreateContextAsync(): DialogSet created with a null IStatePropertyAccessor.");
             }
 
             // Load/initialize dialog state
-            var state = await _dialogState.GetAsync(context, () => { return new DialogState(); }).ConfigureAwait(false);
+            var state = await _dialogState.GetAsync(turnContext, () => { return new DialogState(); }, cancellationToken).ConfigureAwait(false);
 
             // Create and return context
-            return new DialogContext(this, context, state);
+            return new DialogContext(this, turnContext, state);
         }
 
         /// <summary>

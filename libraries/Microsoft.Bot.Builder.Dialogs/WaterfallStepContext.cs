@@ -1,50 +1,52 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
-    public class WaterfallStepContext
+    public class WaterfallStepContext : DialogContext
     {
         private readonly WaterfallDialog _parent;
-        private readonly DialogContext _dc;
         private bool _nextCalled;
 
-        internal WaterfallStepContext(WaterfallDialog parent, DialogContext dc, DialogOptions options, IDictionary<string, object> values, int index, DialogReason reason, object result = null)
+        internal WaterfallStepContext(WaterfallDialog parent, DialogContext dc, object options, IDictionary<string, object> values, int index, DialogReason reason, object result = null)
+            : base(dc.Dialogs, dc.Context, new DialogState(dc.Stack))
         {
             _parent = parent;
-            _dc = dc;
             _nextCalled = false;
-            Options = options;
-            Values = values;
             Index = index;
+            Options = options;
             Reason = reason;
             Result = result;
+            Values = values;
         }
 
         /// <summary>
-        /// The index of the current waterfall step being executed.
+        /// Gets the index of the current waterfall step being executed.
         /// </summary>
         public int Index { get; }
 
         /// <summary>
-        /// Any options the waterfall dialog was called with.
+        /// Gets any options the waterfall dialog was called with.
         /// </summary>
-        public DialogOptions Options { get; }
+        public object Options { get; }
 
         /// <summary>
-        /// The reason the waterfall step is being executed.
+        /// Gets the reason the waterfall step is being executed.
         /// </summary>
         public DialogReason Reason { get; }
 
         /// <summary>
-        /// Results returned by a dialog called in the previous waterfall step.
+        /// Gets results returned by a dialog called in the previous waterfall step.
         /// </summary>
         public object Result { get; }
 
         /// <summary>
-        /// A dictionary of values which will be persisted across all waterfall steps.
+        /// Gets a dictionary of values which will be persisted across all waterfall steps.
         /// </summary>
         public IDictionary<string, object> Values { get; }
 
@@ -52,8 +54,9 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// Used to skip to the next waterfall step.
         /// </summary>
         /// <param name="result">Optional result to pass to next step.</param>
-        /// <returns></returns>
-        public async Task<DialogTurnResult> NextAsync(object result = null)
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>A <see cref="Task"/> of <see cref="cref="DialogTurnResult"/> representing the asynchronous operation.</returns>
+        public async Task<DialogTurnResult> NextAsync(object result = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Ensure next hasn't been called
             if (_nextCalled)
@@ -63,7 +66,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             // Trigger next step
             _nextCalled = true;
-            return await _parent.DialogResumeAsync(_dc, DialogReason.NextCalled, result).ConfigureAwait(false);
+            return await _parent.DialogResumeAsync(this, DialogReason.NextCalled, result).ConfigureAwait(false);
         }
     }
 }

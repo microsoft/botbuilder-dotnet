@@ -4,6 +4,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -45,12 +46,52 @@ namespace Microsoft.Bot.Builder.Tests
             var resourceResponse = await c.SendActivityAsync(activity);
             Assert.IsTrue(resourceResponse.Id == activityId, "Incorrect response Id returned"); 
         }
+        [TestMethod]
+        public async Task ContinueConversation_DirectMsgAsync()
+        {
+            bool callbackInvoked = false;
+            var adapter = new TestAdapter();
+            ConversationReference cr = new ConversationReference
+            {
+                ActivityId = "activityId",
+                Bot = new ChannelAccount
+                {
+                    Id = "channelId",
+                    Name = "testChannelAccount",
+                    Role = "bot",
+                },
+                ChannelId = "testChannel",
+                ServiceUrl = "testUrl",
+                Conversation = new ConversationAccount
+                {
+                    ConversationType = "",
+                    Id = "testConversationId",
+                    IsGroup = false,
+                    Name = "testConversationName",
+                    Role = "user",
+                },
+                User = new ChannelAccount
+                {
+                    Id = "channelId",
+                    Name = "testChannelAccount",
+                    Role = "bot",
+                },
+            };
+            Task continueCallback(ITurnContext turnContext, CancellationToken cancellationToken)
+            {
+                callbackInvoked = true;
+                return Task.CompletedTask;
+            }
+            await adapter.ContinueConversationAsync("MyBot", cr, continueCallback, default(CancellationToken));
+            Assert.IsTrue(callbackInvoked);
+        }
+
     }
 
     public class CallCountingMiddleware : IMiddleware
     {
         public int Calls { get; set; }
-        public async Task OnTurnAsync(ITurnContext context, NextDelegate next, CancellationToken cancellationToken)
+        public async Task OnTurnAsync(ITurnContext turnContext, NextDelegate next, CancellationToken cancellationToken)
         {
             Calls++;
             await next(cancellationToken);

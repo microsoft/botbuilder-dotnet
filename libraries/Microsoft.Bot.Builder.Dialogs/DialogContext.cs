@@ -4,8 +4,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Dialogs.Choices;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
@@ -15,14 +15,14 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// Initializes a new instance of the <see cref="DialogContext"/> class.
         /// </summary>
         /// <param name="dialogs">Parent dialog set.</param>
-        /// <param name="context">Context for the current turn of conversation with the user.</param>
+        /// <param name="turnContext">Context for the current turn of conversation with the user.</param>
         /// <param name="state">Current dialog state.</param>
         /// <param name="onCompleted">An action to perform when the dialog completes, that is,
         /// when <see cref="EndAsync(IDictionary{string, object})"/> is called on the current context.</param>
-        internal DialogContext(DialogSet dialogs, ITurnContext context, DialogState state)
+        internal DialogContext(DialogSet dialogs, ITurnContext turnContext, DialogState state)
         {
             Dialogs = dialogs ?? throw new ArgumentNullException(nameof(dialogs));
-            Context = context ?? throw new ArgumentNullException(nameof(context));
+            Context = turnContext ?? throw new ArgumentNullException(nameof(turnContext));
 
             Stack = state.DialogStack;
         }
@@ -57,8 +57,9 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </summary>
         /// <param name="dialogId">ID of the dialog to start.</param>
         /// <param name="options">(Optional) additional argument(s) to pass to the dialog being started.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public async Task<DialogTurnResult> BeginAsync(string dialogId, DialogOptions options = null)
+        public async Task<DialogTurnResult> BeginAsync(string dialogId, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (string.IsNullOrEmpty(dialogId))
             {
@@ -82,35 +83,18 @@ namespace Microsoft.Bot.Builder.Dialogs
             Stack.Insert(0, instance);
 
             // Call dialogs BeginAsync() method.
-            var turnResult = await dialog.DialogBeginAsync(this, options).ConfigureAwait(false);
-            return VerifyTurnResult(turnResult);
+            return await dialog.DialogBeginAsync(this, options, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
         /// Helper function to simplify formatting the options for calling a prompt dialog. This helper will
-        /// construct a `PromptOptions` structure and then call[begin(context, dialogId, options)](#begin).
+        /// take a `PromptOptions` argument and then call[begin(context, dialogId, options)](#begin).
         /// </summary>
         /// <param name="dialogId">ID of the prompt to start.</param>
-        /// <param name="prompt">Initial prompt to send the user.</param>
-        /// <param name="choices">(Optional) array of choices to prompt the user for or additional prompt options.</param>
+        /// <param name="options">Contains a Prompt, potentially a RetryPrompt and if using ChoicePrompt, Choices.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public async Task<DialogTurnResult> PromptAsync(string dialogId, string prompt, IList<Choice> choices = null)
-        {
-            if (string.IsNullOrEmpty(dialogId))
-            {
-                throw new ArgumentNullException(nameof(dialogId));
-            }
-
-            var options = new PromptOptions { Prompt = MessageFactory.Text(prompt) };
-            if (choices != null)
-            {
-                options.Choices = choices;
-            }
-
-            return await BeginAsync(dialogId, options).ConfigureAwait(false);
-        }
-
-        public async Task<DialogTurnResult> PromptAsync(string dialogId, PromptOptions options)
+        public async Task<DialogTurnResult> PromptAsync(string dialogId, PromptOptions options, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (string.IsNullOrEmpty(dialogId))
             {
@@ -122,7 +106,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 throw new ArgumentNullException(nameof(options));
             }
 
-            return await BeginAsync(dialogId, options).ConfigureAwait(false);
+            return await BeginAsync(dialogId, options, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -130,8 +114,9 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// its `Dialog.ContinueAsync()` method. You can check `context.responded` after the call completes
         /// to determine if a dialog was run and a reply was sent to the user.
         /// </summary>
+        /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public async Task<DialogTurnResult> ContinueAsync()
+        public async Task<DialogTurnResult> ContinueAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
             // Check for a dialog on the stack
             if (ActiveDialog != null)
@@ -144,16 +129,11 @@ namespace Microsoft.Bot.Builder.Dialogs
                 }
 
                 // Continue execution of dialog
-                var turnResult = await dialog.DialogContinueAsync(this).ConfigureAwait(false);
-                return VerifyTurnResult(turnResult);
+                return await dialog.DialogContinueAsync(this, cancellationToken).ConfigureAwait(false);
             }
             else
             {
-                return new DialogTurnResult
-                {
-                    HasActive = false,
-                    HasResult = false,
-                };
+                return new DialogTurnResult(DialogTurnStatus.Empty);
             }
         }
 
@@ -167,8 +147,9 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// parent dialogs on the stack then processing of the turn will end.
         /// </summary>
         /// <param name="result"> (Optional) result to pass to the parent dialogs.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public async Task<DialogTurnResult> EndAsync(object result = null)
+        public async Task<DialogTurnResult> EndAsync(object result = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Pop active dialog off the stack
             if (Stack.Any())
@@ -187,29 +168,33 @@ namespace Microsoft.Bot.Builder.Dialogs
                 }
 
                 // Return result to previous dialog
-                var turnResult = await dialog.DialogResumeAsync(this, DialogReason.EndCalled, result).ConfigureAwait(false);
-                return VerifyTurnResult(turnResult);
+                return await dialog.DialogResumeAsync(this, DialogReason.EndCalled, result, cancellationToken).ConfigureAwait(false);
             }
             else
             {
-                return new DialogTurnResult
-                {
-                    HasActive = false,
-                    HasResult = result != null,
-                    Result = result,
-                };
+                return new DialogTurnResult(DialogTurnStatus.Complete, result);
             }
         }
 
         /// <summary>
         /// Deletes any existing dialog stack thus cancelling all dialogs on the stack.
         /// </summary>
+        /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The dialog context.</returns>
-        public async Task CancelAllAsync()
+        public async Task<DialogTurnResult> CancelAllAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
-            while (Stack.Any())
+            if (Stack.Any())
             {
-                await EndActiveDialogAsync(DialogReason.CancelCalled).ConfigureAwait(false);
+                while (Stack.Any())
+                {
+                    await EndActiveDialogAsync(DialogReason.CancelCalled, cancellationToken).ConfigureAwait(false);
+                }
+
+                return new DialogTurnResult(DialogTurnStatus.Cancelled);
+            }
+            else
+            {
+                return new DialogTurnResult(DialogTurnStatus.Empty);
             }
         }
 
@@ -219,8 +204,9 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </summary>
         /// <param name="dialogId">ID of the new dialog to start.</param>
         /// <param name="options">(Optional) additional argument(s) to pass to the new dialog.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public async Task<DialogTurnResult> ReplaceAsync(string dialogId, DialogOptions options = null)
+        public async Task<DialogTurnResult> ReplaceAsync(string dialogId, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Pop stack
             if (Stack.Any())
@@ -229,10 +215,15 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             // Start replacement dialog
-            return await BeginAsync(dialogId, options).ConfigureAwait(false);
+            return await BeginAsync(dialogId, options, cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task RepromptAsync()
+        /// <summary>
+        /// Calls reprompt on the currently active dialog, if there is one. Used with Prompts that have a reprompt behavior.
+        /// </summary>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        public async Task RepromptAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
             // Check for a dialog on the stack
             if (ActiveDialog != null)
@@ -245,11 +236,11 @@ namespace Microsoft.Bot.Builder.Dialogs
                 }
 
                 // Ask dialog to re-prompt if supported
-                await dialog.DialogRepromptAsync(Context, ActiveDialog).ConfigureAwait(false);
+                await dialog.DialogRepromptAsync(Context, ActiveDialog, cancellationToken).ConfigureAwait(false);
             }
         }
 
-        private async Task EndActiveDialogAsync(DialogReason reason)
+        private async Task EndActiveDialogAsync(DialogReason reason, CancellationToken cancellationToken = default(CancellationToken))
         {
             var instance = ActiveDialog;
             if (instance != null)
@@ -259,24 +250,12 @@ namespace Microsoft.Bot.Builder.Dialogs
                 if (dialog != null)
                 {
                     // Notify dialog of end
-                    await dialog.DialogEndAsync(Context, instance, reason).ConfigureAwait(false);
+                    await dialog.DialogEndAsync(Context, instance, reason, cancellationToken).ConfigureAwait(false);
                 }
 
                 // Pop dialog off stack
                 Stack.RemoveAt(0);
             }
-        }
-
-        private DialogTurnResult VerifyTurnResult(DialogTurnResult result)
-        {
-            result.HasActive = Stack.Count() > 0;
-            if (result.HasActive)
-            {
-                result.HasResult = false;
-                result.Result = null;
-            }
-
-            return result;
         }
     }
 }

@@ -11,37 +11,48 @@ namespace Microsoft.Bot.Builder.TestBot
 {
     public class TestBot : IBot
     {
-        private TestBotAccessors _accessors;
+        private DialogSet _dialogs;
+        private SemaphoreSlim _semaphore;
 
         public TestBot(TestBotAccessors accessors)
         {
-            _accessors = accessors;
+            // create the DialogSet from accessor
+            _dialogs = new DialogSet(accessors.ConversationDialogState);
+
+            // a semaphore to serialize access to the bot state
+            _semaphore = accessors.SemaphoreSlim;
+
+            // add the various named dialogs that can be used
+            _dialogs.Add(CreateWaterfall());
+            _dialogs.Add(new NumberPrompt<int>("number", defaultLocale: Culture.English));
         }
 
         public async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (turnContext.Activity.Type == ActivityTypes.Message)
+            // We only want to pump one activity at a time through the state.
+            // Note the state is shared across all instances of this IBot class so we
+            // create the semaphore globally with the accessors.
+            try
             {
-                // create the DialogSet 
-                await _accessors.ConversationDialogState.GetAsync(turnContext, () => new DialogState());
-                var dialogs = new DialogSet(_accessors.ConversationDialogState);
+                await _semaphore.WaitAsync();
 
-                dialogs.Add(CreateWaterfall());
-                dialogs.Add(new NumberPrompt<int>("number", defaultLocale: Culture.English));
+                // run the DialogSet - let the framework identify the current state of the dialog from 
+                // the dialog stack and figure out what (if any) is the active dialog
+                var dialogContext = await _dialogs.CreateContextAsync(turnContext, cancellationToken);
+                var results = await dialogContext.ContinueAsync(cancellationToken);
 
-                // run the DialogSet
-                var dc = await dialogs.CreateContextAsync(turnContext);
-
-                var results = await dc.ContinueAsync();
-                if (!turnContext.Responded && !results.HasActive && !results.HasResult)
+                // HasActive = true if there is an active dialog on the dialogstack
+                // HasResults = true if the dialog just completed and the final  result can be retrived
+                // if both are false this indicates a new dialog needs to start
+                // an additional check for Responded stops a new waterfall from being automatically started over
+                if (results.Status == DialogTurnStatus.Empty)
                 {
-                    await dc.BeginAsync("test-waterfall");
+                    await dialogContext.BeginAsync("test-waterfall", null, cancellationToken);
                 }
-                else if (!results.HasActive && results.HasResult)
-                {
-                    var value = (int)results.Result;
-                    await turnContext.SendActivityAsync($"Bot received the number '{value}'.");
-                }
+            }
+            finally
+            {
+                _semaphore.Release();
             }
         }
 
@@ -50,21 +61,36 @@ namespace Microsoft.Bot.Builder.TestBot
             return new WaterfallDialog("test-waterfall", new WaterfallStep[] {
                 WaterfallStep1,
                 WaterfallStep2,
+                WaterfallStep3
             });
         }
 
-        private static async Task<DialogTurnResult> WaterfallStep1(DialogContext dc, WaterfallStepContext stepContext)
+        private static async Task<DialogTurnResult> WaterfallStep1(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            return await dc.PromptAsync("number", new PromptOptions { Prompt = MessageFactory.Text("Enter a number.") });
+            // we are only interested in Message activities - any other type of activity we will immediately complete teh waterfall
+            if (stepContext.Context.Activity.Type != ActivityTypes.Message)
+            {
+                return await stepContext.EndAsync(cancellationToken);
+            }
+
+            // this prompt will not continue until we receive a number
+            return await stepContext.PromptAsync("number", new PromptOptions { Prompt = MessageFactory.Text("Enter a number.") }, cancellationToken);
         }
-        private static async Task<DialogTurnResult> WaterfallStep2(DialogContext dc, WaterfallStepContext stepContext)
+        private static async Task<DialogTurnResult> WaterfallStep2(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
+            // step context represents values from previous (waterfall) step - in this case the first number
             if (stepContext.Values != null)
             {
                 var numberResult = (int)stepContext.Result;
-                await dc.Context.SendActivityAsync($"Thanks for '{numberResult}'");
+                await stepContext.Context.SendActivityAsync(MessageFactory.Text($"Thanks for '{numberResult}'"), cancellationToken);
             }
-            return await dc.PromptAsync("number", new PromptOptions { Prompt = MessageFactory.Text("Enter another number.") });
+            return await stepContext.PromptAsync("number", new PromptOptions { Prompt = MessageFactory.Text("Enter another number.") }, cancellationToken);
+        }
+        private static async Task<DialogTurnResult> WaterfallStep3(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        {
+            var value = (int)stepContext.Result;
+            await stepContext.Context.SendActivityAsync(MessageFactory.Text($"Bot received the number '{value}'."), cancellationToken);
+            return await stepContext.EndAsync(cancellationToken);
         }
     }
 }

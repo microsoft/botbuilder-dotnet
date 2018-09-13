@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Builder
     /// <summary>
     /// Reads and writes state for your bot to storage.
     /// </summary>
-    public abstract class BotState : IMiddleware
+    public abstract class BotState : IMiddleware, IPropertyManager
     {
         private readonly string _contextServiceKey;
         private readonly IStorage _storage;
@@ -33,7 +33,7 @@ namespace Microsoft.Bot.Builder
         /// </summary>
         /// <typeparam name="T">type of property.</typeparam>
         /// <param name="name">name of the property.</param>
-        /// <returns>returns an IPropertyAccessor</returns>
+        /// <returns>The created state property accessor.</returns>
         public IStatePropertyAccessor<T> CreateProperty<T>(string name)
         {
             if (string.IsNullOrWhiteSpace(name))
@@ -47,7 +47,7 @@ namespace Microsoft.Bot.Builder
         /// <summary>
         /// Processess an incoming activity.
         /// </summary>
-        /// <param name="context">The context object for this turn.</param>
+        /// <param name="turnContext">The context object for this turn.</param>
         /// <param name="next">The delegate to call to continue the bot middleware pipeline.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
@@ -55,11 +55,11 @@ namespace Microsoft.Bot.Builder
         /// and persists the state object on the trailing edge. Note this is different than BotStateSet,
         /// which does not pre-load the set on entry into the pipeline.
         /// </remarks>
-        public async Task OnTurnAsync(ITurnContext context, NextDelegate next, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task OnTurnAsync(ITurnContext turnContext, NextDelegate next, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (context == null)
+            if (turnContext == null)
             {
-                throw new ArgumentNullException(nameof(context));
+                throw new ArgumentNullException(nameof(turnContext));
             }
 
             if (next == null)
@@ -68,59 +68,59 @@ namespace Microsoft.Bot.Builder
             }
 
             // Load state
-            await LoadAsync(context, true, cancellationToken).ConfigureAwait(false);
+            await LoadAsync(turnContext, true, cancellationToken).ConfigureAwait(false);
 
             // process activity
             await next(cancellationToken).ConfigureAwait(false);
 
             // Save changes
-            await SaveChangesAsync(context, false, cancellationToken).ConfigureAwait(false);
+            await SaveChangesAsync(turnContext, false, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
-        /// Reads in and caches the current state object in the TurnContext
+        /// Reads in  the current state object and caches it in the context object for this turm.
         /// </summary>
-        /// <param name="context">The context object for this turn.</param>
-        /// <param name="force">(optional) if true the cache will be bypassed </param>
-        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <param name="turnContext">The context object for this turn.</param>
+        /// <param name="force">Optional. True to bypass the cache.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
-        /// <remarks>If successful, the task result contains the state object, read from storage.</remarks>
-        public async Task LoadAsync(ITurnContext context, bool force = false, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task LoadAsync(ITurnContext turnContext, bool force = false, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (context == null)
+            if (turnContext == null)
             {
-                throw new ArgumentNullException(nameof(context));
+                throw new ArgumentNullException(nameof(turnContext));
             }
 
-            var cachedState = context.TurnState.Get<CachedBotState>(_contextServiceKey);
-            var storageKey = GetStorageKey(context);
+            var cachedState = turnContext.TurnState.Get<CachedBotState>(_contextServiceKey);
+            var storageKey = GetStorageKey(turnContext);
             if (force || cachedState == null || cachedState.State == null)
             {
                 var items = await _storage.ReadAsync(new[] { storageKey }, cancellationToken).ConfigureAwait(false);
                 items.TryGetValue(storageKey, out object val);
-                context.TurnState[_contextServiceKey] = new CachedBotState((IDictionary<string, object>)val ?? new Dictionary<string, object>());
+                turnContext.TurnState[_contextServiceKey] = new CachedBotState((IDictionary<string, object>)val ?? new Dictionary<string, object>());
             }
         }
 
         /// <summary>
-        /// Writes the state object cached in the TurnContext if it is changed.
+        /// If it has changed, writes to storage the state object that is cached in the current context object for this turn.
         /// </summary>
-        /// <param name="context">The context object for this turn.</param>
-        /// <param name="force">force the saving of changes even if there are no changes.</param>
+        /// <param name="turnContext">The context object for this turn.</param>
+        /// <param name="force">Optional. True to save state to storage whether or not there are changes.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
-        public async Task SaveChangesAsync(ITurnContext context, bool force = false, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task SaveChangesAsync(ITurnContext turnContext, bool force = false, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (context == null)
+            if (turnContext == null)
             {
-                throw new ArgumentNullException(nameof(context));
+                throw new ArgumentNullException(nameof(turnContext));
             }
 
-            var cachedState = context.TurnState.Get<CachedBotState>(_contextServiceKey);
+            var cachedState = turnContext.TurnState.Get<CachedBotState>(_contextServiceKey);
             if (force || (cachedState != null && cachedState.IsChanged()))
             {
-                var key = GetStorageKey(context);
+                var key = GetStorageKey(turnContext);
                 var changes = new Dictionary<string, object>
                 {
                     { key, cachedState.State },
@@ -132,36 +132,44 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
-        /// Reset the state object to it's default form.
+        /// Reset the state cache in the turn context to it's default form.
         /// </summary>
-        /// <param name="context">turn context.</param>
+        /// <param name="turnContext">The context object for this turn.</param>
         /// <param name="cancellationToken">cancellation token.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public Task ClearStateAsync(ITurnContext context, CancellationToken cancellationToken = default(CancellationToken))
+        public Task ClearStateAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (context == null)
+            if (turnContext == null)
             {
-                throw new ArgumentNullException(nameof(context));
+                throw new ArgumentNullException(nameof(turnContext));
             }
 
-            var cachedState = context.TurnState.Get<CachedBotState>(_contextServiceKey);
+            var cachedState = turnContext.TurnState.Get<CachedBotState>(_contextServiceKey);
             if (cachedState != null)
             {
-                context.TurnState[_contextServiceKey] = new CachedBotState();
+                turnContext.TurnState[_contextServiceKey] = new CachedBotState();
             }
 
             return Task.CompletedTask;
         }
 
-        protected abstract string GetStorageKey(ITurnContext context);
+        /// <summary>
+        /// When overridden in a derived class, gets the key to use when reading and writing state to and from storage.
+        /// </summary>
+        /// <param name="turnContext">The context object for this turn.</param>
+        /// <returns>The storage key.</returns>
+        protected abstract string GetStorageKey(ITurnContext turnContext);
 
         /// <summary>
-        /// gives IPropertyAccessor ability to get property Value from container.
+        /// Gets a property from the state cache in the turn context.
         /// </summary>
-        /// <param name="turnContext">turn context.</param>
-        /// <param name="propertyName">name of the property.</param>
-        /// <param name="cancellationToken">cancellationToken.</param>
-        /// <returns>T</returns>
+        /// <typeparam name="T">The property type.</typeparam>
+        /// <param name="turnContext">The context object for this turn.</param>
+        /// <param name="propertyName">The name of the property to get.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>If the task is successful, the result contains the property value.</remarks>
         protected Task<T> GetPropertyValueAsync<T>(ITurnContext turnContext, string propertyName, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (turnContext == null)
@@ -182,12 +190,13 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
-        /// gives IPropertyAccessor ability to delete from it's container.
+        /// Deletes a property from the state cache in the turn context.
         /// </summary>
-        /// <param name="turnContext">turn context.</param>
-        /// <param name="propertyName">name of the property.</param>
-        /// <param name="cancellationToken">cancellationToken.</param>
-        /// <returns>Task</returns>
+        /// <param name="turnContext">The context object for this turn.</param>
+        /// <param name="propertyName">The name of the property to delete.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
         protected Task DeletePropertyValueAsync(ITurnContext turnContext, string propertyName, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (turnContext == null)
@@ -206,13 +215,14 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
-        /// gives IPropertyAccessor ability to set the value in it's container.
+        /// Set the value of a property in the state cache in the turn context.
         /// </summary>
-        /// <param name="turnContext">turn context.</param>
-        /// <param name="propertyName">name of the property.</param>
-        /// <param name="value">value of the property.</param>
-        /// <param name="cancellationToken">cancellationToken.</param>
-        /// <returns>Task</returns>
+        /// <param name="turnContext">The context object for this turn.</param>
+        /// <param name="propertyName">The name of the property to set.</param>
+        /// <param name="value">The value to set on the property.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
         protected Task SetPropertyValueAsync(ITurnContext turnContext, string propertyName, object value, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (turnContext == null)
@@ -281,11 +291,12 @@ namespace Microsoft.Bot.Builder
             /// <summary>
             /// Delete the property.
             /// </summary>
-            /// <param name="turnContext">turn context</param>
+            /// <param name="turnContext">The turn context.</param>
+            /// <param name="cancellationToken">The cancellation token.</param>
             /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-            public Task DeleteAsync(ITurnContext turnContext)
+            public Task DeleteAsync(ITurnContext turnContext, CancellationToken cancellationToken)
             {
-                return _botState.DeletePropertyValueAsync(turnContext, Name);
+                return _botState.DeletePropertyValueAsync(turnContext, Name, cancellationToken);
             }
 
             /// <summary>
@@ -293,13 +304,14 @@ namespace Microsoft.Bot.Builder
             /// </summary>
             /// <param name="turnContext">The context object for this turn.</param>
             /// <param name="defaultValueFactory">Defines the default value. Invoked when no value been set for the requested state property.  If defaultValueFactory is defined as null, the MissingMemberException will be thrown if the underlying property is not set.</param>
+            /// <param name="cancellationToken">The cancellation token.</param>
             /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-            public async Task<T> GetAsync(ITurnContext turnContext, Func<T> defaultValueFactory = null)
+            public async Task<T> GetAsync(ITurnContext turnContext, Func<T> defaultValueFactory, CancellationToken cancellationToken)
             {
-                await _botState.LoadAsync(turnContext).ConfigureAwait(false);
+                await _botState.LoadAsync(turnContext, false, cancellationToken).ConfigureAwait(false);
                 try
                 {
-                    return await _botState.GetPropertyValueAsync<T>(turnContext, Name).ConfigureAwait(false);
+                    return await _botState.GetPropertyValueAsync<T>(turnContext, Name, cancellationToken).ConfigureAwait(false);
                 }
                 catch (KeyNotFoundException)
                 {
@@ -312,7 +324,7 @@ namespace Microsoft.Bot.Builder
                     var result = defaultValueFactory();
 
                     // save default value for any further calls
-                    await SetAsync(turnContext, result).ConfigureAwait(false);
+                    await SetAsync(turnContext, result, cancellationToken).ConfigureAwait(false);
                     return result;
                 }
             }
@@ -322,11 +334,12 @@ namespace Microsoft.Bot.Builder
             /// </summary>
             /// <param name="turnContext">turn context.</param>
             /// <param name="value">value.</param>
+            /// <param name="cancellationToken">The cancellation token.</param>
             /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-            public async Task SetAsync(ITurnContext turnContext, T value)
+            public async Task SetAsync(ITurnContext turnContext, T value, CancellationToken cancellationToken)
             {
-                await _botState.LoadAsync(turnContext).ConfigureAwait(false);
-                await _botState.SetPropertyValueAsync(turnContext, Name, value).ConfigureAwait(false);
+                await _botState.LoadAsync(turnContext, false, cancellationToken).ConfigureAwait(false);
+                await _botState.SetPropertyValueAsync(turnContext, Name, value, cancellationToken).ConfigureAwait(false);
             }
         }
     }
