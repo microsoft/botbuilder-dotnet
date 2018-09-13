@@ -10,7 +10,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Helpers
         private static readonly string _templatePattern = @"\[(.*?)\]";
         public static List<string> Recognize(string token)
         {
-            if (Regex.IsMatch(token, _templatePattern))
+            if (!string.IsNullOrEmpty(token) && Regex.IsMatch(token, _templatePattern))
             {
                 var detectedPatterns = new List<string>();
                 var matches = Regex.Matches(token, _templatePattern);

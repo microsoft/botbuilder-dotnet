@@ -167,7 +167,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
         [TestMethod]
         [TestCategory("ActivityInspector")]
-        public void TestEntityInspector_InspectText_Valid()
+        public void TestActivityInspector_InspectText_Valid()
         {
             var activity = new Activity()
             {
@@ -187,7 +187,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
         [TestMethod]
         [TestCategory("ActivityInspector")]
-        public void TestEntityInspector_InspectText_InValid()
+        public void TestActivityInspector_InspectText_InValid()
         {
             var activity = new Activity()
             {
@@ -205,7 +205,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
         [TestMethod]
         [TestCategory("ActivityInspector")]
-        public void TestEntityInspector_InspectSpeak_Valid()
+        public void TestActivityInspector_InspectSpeak_Valid()
         {
             var activity = new Activity()
             {
@@ -225,7 +225,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
         [TestMethod]
         [TestCategory("ActivityInspector")]
-        public void TestEntityInspector_InspectSpeak_InValid()
+        public void TestActivityInspector_InspectSpeak_InValid()
         {
             var activity = new Activity()
             {
@@ -242,7 +242,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
         [TestMethod]
         [TestCategory("ActivityInspector")]
-        public void TestEntityInspector_InspectSuggestedActions_Valid()
+        public void TestActivityInspector_InspectSuggestedActions_Valid()
         {
             var activity = new Activity()
             {
@@ -274,7 +274,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
         [TestMethod]
         [TestCategory("ActivityInspector")]
-        public void TestEntityInspector_InspectSuggestedActionsNullText_Valid()
+        public void TestActivityInspector_InspectSuggestedActionsNullText_Valid()
         {
             var activity = new Activity()
             {
@@ -305,7 +305,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
         [TestMethod]
         [TestCategory("ActivityInspector")]
-        public void TestEntityInspector_InspectSuggestedActionsNullAll_InValid()
+        public void TestActivityInspector_InspectSuggestedActionsNullAll_InValid()
         {
             var activity = new Activity()
             {
@@ -334,7 +334,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
         [TestMethod]
         [TestCategory("ActivityInspector")]
-        public void TestEntityInspector_InspectAllNoDublicates_Valid()
+        public void TestActivityInspector_InspectAllNoDublicates_Valid()
         {
             var activity = new Activity()
             {
@@ -368,7 +368,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
         [TestMethod]
         [TestCategory("ActivityInspector")]
-        public void TestEntityInspector_InspectAllWithDublicates_Valid()
+        public void TestActivityInspector_InspectAllWithDublicates_Valid()
         {
             var activity = new Activity()
             {
@@ -393,6 +393,65 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             {
                 "[wPhrase]",
                 "[offerHelp]",
+            };
+
+            CollectionAssert.AreEquivalent(expectedRecognizedTemplates, recognizedTemplates);
+        }
+
+        [TestMethod]
+        [TestCategory("ActivityInspector")]
+        public void TestActivityInspector_InspectAttachments_Valid()
+        {
+            var heroCard = new HeroCard()
+            {
+                Text = "[wPhrase]",
+                Title = "[offerHelp]",
+                Subtitle = "[wPhrase]",
+            };
+
+            var receiptCard = new ReceiptCard()
+            {
+                Title = "[wPhrase]",
+                Items = new List<ReceiptItem>()
+                {
+                    new ReceiptItem()
+                    {
+                        Title = "[wPhrase]",
+                        Subtitle = "[wPhrase]",
+                    }
+                },
+                Buttons = new List<CardAction>()
+                {
+                    new CardAction()
+                    {
+                        Title = "[wPhrase]",
+                        Text = "[wPhrase]",
+                    }
+                }
+            };
+
+            var activity = new Activity()
+            {
+
+                Attachments = new List<Attachment>()
+                {
+                    heroCard.ToAttachment(),
+                    receiptCard.ToAttachment()
+                }
+            };
+
+            var activityAttachmentsInspector = new ActivityAttachmentInspector();
+            var recognizedTemplates = (List<string>)activityAttachmentsInspector.Inspect(activity);
+            var expectedRecognizedTemplates = new List<string>()
+            {
+                "[wPhrase]",
+                "[offerHelp]",
+                "[wPhrase]",
+                "[wPhrase]",
+                "[wPhrase]",
+                "[wPhrase]",
+                "[wPhrase]",
+                "[wPhrase]",
             };
 
             CollectionAssert.AreEquivalent(expectedRecognizedTemplates, recognizedTemplates);
@@ -495,6 +554,120 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.IsNotNull(expectedSuggestedActions[0].Text);
             Assert.AreEqual(expectedSuggestedActions[0].DisplayText, actualSuggestedActions[0].DisplayText);
             Assert.AreEqual(expectedSuggestedActions[0].Text, actualSuggestedActions[0].Text);
+        }
+
+        [TestMethod]
+        [TestCategory("ActivityInspector")]
+        public void TestActivityModifier_ModifyAttachments_Valid()
+        {
+            var heroCard = new HeroCard()
+            {
+                Text = "[wPhrase]",
+                Title = "[offerHelp]",
+                Subtitle = "[wPhrase]",
+            };
+
+            var receiptCard = new ReceiptCard()
+            {
+                Title = "[wPhrase]",
+                Items = new List<ReceiptItem>()
+                {
+                    new ReceiptItem()
+                    {
+                        Title = "[wPhrase]",
+                        Subtitle = "[wPhrase]",
+                    }
+                },
+                Buttons = new List<CardAction>()
+                {
+                    new CardAction()
+                    {
+                        Title = "[wPhrase]",
+                        Text = "[wPhrase]",
+                    }
+                }
+            };
+
+            var activity = new Activity()
+            {
+
+                Attachments = new List<Attachment>()
+                {
+                    heroCard.ToAttachment(),
+                    receiptCard.ToAttachment()
+                }
+            };
+
+            var compositeResponseMock = new CompositeResponseMock()
+            {
+                TemplateResolutions = new Dictionary<string, string>()
+                {
+                    {"wPhrase", "Hello" },
+                    {"offerHelp", "How can I help you Today" },
+                }
+            };
+
+            var activityAttachmentsModifier = new ActivityAttachmentsModifier();
+            activityAttachmentsModifier.Modify(activity, compositeResponseMock);
+
+
+            var expectedHeroCard = new HeroCard()
+            {
+                Text = "Hello",
+                Title = "How can I help you Today",
+                Subtitle = "Hello",
+            };
+
+            var expectedReceiptCard = new ReceiptCard()
+            {
+                Title = "Hello",
+                Items = new List<ReceiptItem>()
+                {
+                    new ReceiptItem()
+                    {
+                        Title = "Hello",
+                        Subtitle = "Hello",
+                    }
+                },
+                Buttons = new List<CardAction>()
+                {
+                    new CardAction()
+                    {
+                        Title = "Hello",
+                        Text = "Hello",
+                    }
+                }
+            };
+
+            var actualAttachments = (List<Attachment>)activity.Attachments;
+
+            Assert.IsNotNull(actualAttachments);
+            Assert.AreEqual(2, actualAttachments.Count);
+
+            var actualHeroCard = new HeroCard();
+            var actualReceiptCard = new ReceiptCard();
+
+            if (actualAttachments[0].ContentType == HeroCard.ContentType)
+            {
+                actualHeroCard = actualAttachments[0].Content as HeroCard;
+                actualReceiptCard = actualAttachments[1].Content as ReceiptCard;
+            }
+            else
+            {
+                actualReceiptCard = actualAttachments[0].Content as ReceiptCard;
+                actualHeroCard = actualAttachments[1].Content as HeroCard;
+            }
+
+            Assert.AreEqual(expectedHeroCard.Text, actualHeroCard.Text);
+            Assert.AreEqual(expectedHeroCard.Title, actualHeroCard.Title);
+            Assert.AreEqual(expectedHeroCard.Subtitle, actualHeroCard.Subtitle);
+
+            Assert.AreEqual(expectedReceiptCard.Title, actualReceiptCard.Title);
+            Assert.IsNotNull(expectedReceiptCard.Items[0]);
+            Assert.AreEqual(expectedReceiptCard.Items[0].Title, actualReceiptCard.Items[0].Title);
+            Assert.AreEqual(expectedReceiptCard.Items[0].Subtitle, actualReceiptCard.Items[0].Subtitle);
+            Assert.AreEqual(expectedReceiptCard.Buttons[0].Title, actualReceiptCard.Buttons[0].Title);
+            Assert.AreEqual(expectedReceiptCard.Buttons[0].Text, actualReceiptCard.Buttons[0].Text);
         }
 
         [TestMethod]

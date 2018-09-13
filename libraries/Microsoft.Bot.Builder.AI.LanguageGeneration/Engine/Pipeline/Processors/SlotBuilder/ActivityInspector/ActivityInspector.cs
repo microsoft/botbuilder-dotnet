@@ -33,7 +33,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Engine
                 new ActivityTextInspector(),
                 new ActivitySpeechInspector(),
                 new ActivitySuggestedActionsInspector(),
-                //new ActivityAttachmentInspector()
+                new ActivityAttachmentInspector()
             };
         }
     }

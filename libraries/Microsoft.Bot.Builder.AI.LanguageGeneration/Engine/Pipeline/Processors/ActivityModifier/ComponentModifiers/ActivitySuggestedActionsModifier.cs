@@ -13,7 +13,6 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Engine
         {
             if ((activity.SuggestedActions != null) && !(activity.SuggestedActions.Actions == null || activity.SuggestedActions.Actions.Count == 0))
             {
-                var referencedPatterns = new List<string>();
                 foreach (var action in activity.SuggestedActions.Actions)
                 {
 
