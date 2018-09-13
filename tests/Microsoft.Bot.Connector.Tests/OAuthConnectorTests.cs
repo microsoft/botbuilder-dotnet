@@ -15,9 +15,10 @@ namespace Connector.Tests
         private ConnectorClient mockConnectorClient = new ConnectorClient(new Uri("https://localhost"));
 
         [Fact]
-        public void OAuthClient_ShouldThrowOnInvalidUrl()
+        public void OAuthClient_ShouldNotThrowOnHttpUrl()
         {
-            Assert.Throws<ArgumentException>(() => new OAuthClient(mockConnectorClient, "http://localhost"));
+            var client = new OAuthClient(mockConnectorClient, "http://localhost");
+            Assert.NotNull(client);
         }
 
         [Fact]
