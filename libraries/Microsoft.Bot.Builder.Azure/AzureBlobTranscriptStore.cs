@@ -186,7 +186,7 @@ namespace Microsoft.Bot.Builder.Azure
         /// <param name="channelId">Channel Id.</param>
         /// <param name="continuationToken">Continuatuation token to page through results.</param>
         /// <returns>A <see cref="Task"/> A task that represents the work queued to execute.</returns>
-        public async Task<PagedResult<Transcript>> ListTranscriptsAsync(string channelId, string continuationToken = null)
+        public async Task<PagedResult<TranscriptInfo>> ListTranscriptsAsync(string channelId, string continuationToken = null)
         {
             if (string.IsNullOrEmpty(channelId))
             {
@@ -197,7 +197,7 @@ namespace Microsoft.Bot.Builder.Azure
             var dir = this.Container.Value.GetDirectoryReference(dirName);
             int pageSize = 20;
             BlobContinuationToken token = null;
-            List<Transcript> conversations = new List<Transcript>();
+            List<TranscriptInfo> conversations = new List<TranscriptInfo>();
             do
             {
                 var segment = await dir.ListBlobsSegmentedAsync(false, BlobListingDetails.Metadata, null, token, null, null).ConfigureAwait(false);
@@ -205,7 +205,7 @@ namespace Microsoft.Bot.Builder.Azure
                 foreach (var blob in segment.Results.Where(c => c is CloudBlobDirectory).Cast<CloudBlobDirectory>())
                 {
                     // Unescape the Id we escaped when we saved it
-                    var conversation = new Transcript() { Id = Uri.UnescapeDataString(blob.Prefix.Split('/').Where(s => s.Length > 0).Last()), ChannelId = channelId };
+                    var conversation = new TranscriptInfo() { Id = Uri.UnescapeDataString(blob.Prefix.Split('/').Where(s => s.Length > 0).Last()), ChannelId = channelId };
                     if (continuationToken != null)
                     {
                         if (conversation.Id == continuationToken)
@@ -233,7 +233,7 @@ namespace Microsoft.Bot.Builder.Azure
             }
             while (token != null && conversations.Count < pageSize);
 
-            var pagedResult = new PagedResult<Transcript>();
+            var pagedResult = new PagedResult<TranscriptInfo>();
             pagedResult.Items = conversations.ToArray();
 
             if (pagedResult.Items.Length == 20)
