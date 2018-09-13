@@ -36,7 +36,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
                     var state = await testProperty.GetAsync(turnContext, () => new Dictionary<string, object>());
                     var prompt = new AttachmentPrompt();
 
-                    var dialogCompletion = await prompt.ContinueAsync(turnContext, state);
+                    var dialogCompletion = await prompt.ContinueDialogAsync(turnContext, state);
                     if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
                     {
                         await prompt.BeginAsync(turnContext, state, new PromptOptions { PromptString = "please add an attachment." });
@@ -82,7 +82,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
                     {
                         var choiceResult = (ChoiceResult)args;
                         await dc.Context.SendActivityAsync($"Bot received the choice '{choiceResult.Value.Value}'.");
-                        await dc.EndAsync();
+                        await dc.EndDialogAsync();
                     }
                 }
             );
@@ -102,7 +102,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
                     var state = await testProperty.GetAsync(turnContext, () => new Dictionary<string, object>());
                     var dc = dialogs.CreateContext(turnContext, state);
 
-                    await dc.ContinueAsync();
+                    await dc.ContinueDialogAsync();
 
                     if (!turnContext.Responded)
                     {
@@ -132,7 +132,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
                     var state = await testProperty.GetAsync(turnContext, () => new Dictionary<string, object>());
                     var prompt = new ConfirmPrompt(Culture.English) { Style = ListStyle.None };
 
-                    var dialogCompletion = await prompt.ContinueAsync(turnContext, state);
+                    var dialogCompletion = await prompt.ContinueDialogAsync(turnContext, state);
                     if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
                     {
                         await prompt.BeginAsync(turnContext, state,
@@ -177,7 +177,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
                     var state = await testProperty.GetAsync(turnContext, () => new Dictionary<string, object>());
                     var prompt = new DateTimePrompt(Culture.English);
 
-                    var dialogCompletion = await prompt.ContinueAsync(turnContext, state);
+                    var dialogCompletion = await prompt.ContinueDialogAsync(turnContext, state);
                     if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
                     {
                         await prompt.BeginAsync(turnContext, state, new PromptOptions { PromptString = "What date would you like?", RetryPromptString = "Sorry, but that is not a date. What date would you like?" });
@@ -223,7 +223,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
                     var state = await testProperty.GetAsync(turnContext, () => new Dictionary<string, object>());
                     var prompt = new NumberPrompt<int>(Culture.English, validator);
 
-                    var dialogCompletion = await prompt.ContinueAsync(turnContext, state);
+                    var dialogCompletion = await prompt.ContinueDialogAsync(turnContext, state);
                     if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
                     {
                         await prompt.BeginAsync(turnContext, state,
@@ -270,7 +270,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
                     var state = await testProperty.GetAsync(turnContext, () => new Dictionary<string, object>());
                     var prompt = new TextPrompt(validator);
 
-                    var dialogCompletion = await prompt.ContinueAsync(turnContext, state);
+                    var dialogCompletion = await prompt.ContinueDialogAsync(turnContext, state);
                     if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
                     {
                         await prompt.BeginAsync(turnContext, state,
@@ -317,7 +317,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
                     });
 
 
-                    var dialogCompletion = await waterfall.ContinueAsync(turnContext, state);
+                    var dialogCompletion = await waterfall.ContinueDialogAsync(turnContext, state);
                     if (!dialogCompletion.IsActive && !dialogCompletion.IsCompleted)
                     {
                         await waterfall.BeginAsync(turnContext, state);
@@ -351,7 +351,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
 
                     var dc = dialogs.CreateContext(turnContext, state);
 
-                    await dc.ContinueAsync();
+                    await dc.ContinueDialogAsync();
 
                     if (!turnContext.Responded)
                     {
@@ -395,7 +395,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
                 await dc.Context.SendActivityAsync($"Thanks for '{numberResult.Value}'");
             }
             await dc.Context.SendActivityAsync("step3");
-            await dc.EndAsync(new Dictionary<string, object> { { "Value", "All Done!" } });
+            await dc.EndDialogAsync(new Dictionary<string, object> { { "Value", "All Done!" } });
         }
 
         [TestMethod]
@@ -421,7 +421,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
 
                     var dc = dialogs.CreateContext(turnContext, state);
 
-                    await dc.ContinueAsync();
+                    await dc.ContinueDialogAsync();
 
                     if (!turnContext.Responded)
                     {
@@ -483,7 +483,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
         private static async Task Waterfall5_Step2(DialogContext dc, WaterfallStepContext stepContext)
         {
             await dc.Context.SendActivityAsync("step2.2");
-            await dc.EndAsync();
+            await dc.EndDialogAsync();
         }
     }
 }*/

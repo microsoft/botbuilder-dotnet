@@ -51,7 +51,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             return this;
         }
 
-        public override async Task<DialogTurnResult> DialogBeginAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (dc == null)
             {
@@ -67,7 +67,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             return await RunStepAsync(dc, 0, DialogReason.BeginCalled, null, cancellationToken).ConfigureAwait(false);
         }
 
-        public override async Task<DialogTurnResult> DialogContinueAsync(DialogContext dc, CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task<DialogTurnResult> ContinueDialogAsync(DialogContext dc, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (dc == null)
             {
@@ -81,10 +81,10 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             // Run next step with the message text as the result.
-            return await DialogResumeAsync(dc, DialogReason.ContinueCalled, dc.Context.Activity.Text, cancellationToken).ConfigureAwait(false);
+            return await ResumeDialogAsync(dc, DialogReason.ContinueCalled, dc.Context.Activity.Text, cancellationToken).ConfigureAwait(false);
         }
 
-        public override async Task<DialogTurnResult> DialogResumeAsync(DialogContext dc, DialogReason reason, object result, CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (dc == null)
             {
@@ -132,7 +132,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             else
             {
                 // End of waterfall so just return any result to parent
-                return await dc.EndAsync(result).ConfigureAwait(false);
+                return await dc.EndDialogAsync(result).ConfigureAwait(false);
             }
         }
     }

@@ -66,7 +66,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             // Trigger next step
             _nextCalled = true;
-            return await _parent.DialogResumeAsync(this, DialogReason.NextCalled, result).ConfigureAwait(false);
+            return await _parent.ResumeDialogAsync(this, DialogReason.NextCalled, result).ConfigureAwait(false);
         }
     }
 }

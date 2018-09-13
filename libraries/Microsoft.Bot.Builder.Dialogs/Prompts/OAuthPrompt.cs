@@ -68,7 +68,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             _validator = validator;
         }
 
-        public override async Task<DialogTurnResult> DialogBeginAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (dc == null)
             {
@@ -110,7 +110,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             if (output != null)
             {
                 // Return token
-                return await dc.EndAsync(output, cancellationToken).ConfigureAwait(false);
+                return await dc.EndDialogAsync(output, cancellationToken).ConfigureAwait(false);
             }
             else
             {
@@ -120,7 +120,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
         }
 
-        public override async Task<DialogTurnResult> DialogContinueAsync(DialogContext dc, CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task<DialogTurnResult> ContinueDialogAsync(DialogContext dc, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (dc == null)
             {
@@ -139,7 +139,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             if (hasTimedOut)
             {
                 // if the token fetch request timesout, complete the prompt with no result.
-                return await dc.EndAsync(cancellationToken).ConfigureAwait(false);
+                return await dc.EndDialogAsync(cancellationToken).ConfigureAwait(false);
             }
             else
             {
@@ -161,7 +161,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 // Return recognized value or re-prompt
                 if (isValid)
                 {
-                    return await dc.EndAsync(recognized.Value, cancellationToken).ConfigureAwait(false);
+                    return await dc.EndDialogAsync(recognized.Value, cancellationToken).ConfigureAwait(false);
                 }
                 else
                 {
