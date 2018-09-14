@@ -60,6 +60,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="legacy.bot" />
     <None Include="test.bot" />
   </ItemGroup>
   <ItemGroup>
