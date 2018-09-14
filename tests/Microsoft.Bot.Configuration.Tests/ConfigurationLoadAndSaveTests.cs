@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
@@ -14,7 +15,7 @@ namespace Microsoft.Bot.Configuration.Tests
             var config = await BotConfiguration.LoadAsync(@"..\..\test.bot");
             Assert.AreEqual("test", config.Name);
             Assert.AreEqual("test description", config.Description);
-            Assert.AreEqual("", config.SecretKey);
+            Assert.AreEqual("", config.Padlock);
             Assert.AreEqual(11, config.Services.Count);
             dynamic properties = config.Properties;
             Assert.AreEqual(true, (bool)properties.extra, "extra property should round trip");
@@ -195,16 +196,16 @@ namespace Microsoft.Bot.Configuration.Tests
         {
             string secret = BotConfiguration.GenerateKey();
             var config = await BotConfiguration.LoadAsync(@"..\..\test.bot");
-            Assert.AreEqual("", config.SecretKey, "There should be no secretKey");
+            Assert.AreEqual("", config.Padlock, "There should be no padlock");
 
             // save with secret
             await config.SaveAsAsync("savesecret.bot", secret);
-            Assert.IsTrue(config.SecretKey?.Length > 0, "There should be a secretKey");
+            Assert.IsTrue(config.Padlock?.Length > 0, "There should be a padlock");
 
             // load with secret
             var config2 = await BotConfiguration.LoadAsync("savesecret.bot", secret);
-            Assert.IsTrue(config2.SecretKey?.Length > 0, "There should be a secretKey");
-            Assert.AreEqual(config.SecretKey, config2.SecretKey, "SecretKeys should be the same");
+            Assert.IsTrue(config2.Padlock?.Length > 0, "There should be a padlock");
+            Assert.AreEqual(config.Padlock, config2.Padlock, "Padlocks should be the same");
 
             // make sure these were decrypted
             for (int i = 0; i < config.Services.Count; i++)
@@ -323,7 +324,7 @@ namespace Microsoft.Bot.Configuration.Tests
                     case ServiceTypes.CosmosDB:
                         {
                             var cosmosdb = (CosmosDbService)config2.Services[i];
-                            Assert.AreEqual("https://localhost:8081/", cosmosdb.Endpoint, "should not change endpoint" );
+                            Assert.AreEqual("https://localhost:8081/", cosmosdb.Endpoint, "should not change endpoint");
                             Assert.AreNotEqual("C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==", cosmosdb.Key, "failed to encrypt key");
                             Assert.AreEqual("testDatabase", cosmosdb.Database, "should not change database");
                             Assert.AreEqual("testCollection", cosmosdb.Collection, "should not change collection");
@@ -387,6 +388,22 @@ namespace Microsoft.Bot.Configuration.Tests
                         break;
                 }
             }
+        }
+
+        [TestMethod]
+        public async Task LegacyEncryption()
+        {
+            var secretKey = "d+Mhts8yQIJIj9P/l1pO7n1fQExss7vvE8t9rg8qXsc=";
+            var config = await BotConfiguration.LoadAsync(@"..\..\legacy.bot", secretKey);
+            Assert.AreEqual("xyzpdq", ((EndpointService)config.Services[0]).AppPassword, "value should be unencrypted");
+            Assert.IsTrue(!String.IsNullOrEmpty(config.Padlock), "padlock should exist");
+            Assert.IsNull(config.Properties["secretKey"], "secretKey should not exist");
+
+            await config.SaveAsAsync("save.bot", secretKey);
+            config = await BotConfiguration.LoadAsync("save.bot", secretKey);
+            File.Delete("save.bot");
+            Assert.IsTrue(!String.IsNullOrEmpty(config.Padlock), "padlock should exist");
+            Assert.IsNull(config.Properties["secretKey"], "secretKey should not exist");
         }
     }
 }
