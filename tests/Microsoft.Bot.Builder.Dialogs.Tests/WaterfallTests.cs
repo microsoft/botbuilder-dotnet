@@ -262,14 +262,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .StartTestAsync();
         }
 
-        private static WaterfallDialog Create_Waterfall3()
+        public static WaterfallDialog Create_Waterfall3()
         {
             return new WaterfallDialog("test-waterfall-a", new WaterfallStep[] {
                 Waterfall3_Step1,
                 Waterfall3_Step2
             });
         }
-        private static WaterfallDialog Create_Waterfall4()
+        public static WaterfallDialog Create_Waterfall4()
         {
             return new WaterfallDialog("test-waterfall-b", new WaterfallStep[] {
                 Waterfall4_Step1,
@@ -277,7 +277,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             });
         }
 
-        private static WaterfallDialog Create_Waterfall5()
+        public static WaterfallDialog Create_Waterfall5()
         {
             return new WaterfallDialog("test-waterfall-c", new WaterfallStep[] {
                 Waterfall5_Step1,
