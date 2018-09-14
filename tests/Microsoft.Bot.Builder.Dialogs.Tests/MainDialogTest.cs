@@ -2,15 +2,11 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Builder.Dialogs.Tests;
-using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.Bot.Builder.Tests
+namespace Microsoft.Bot.Builder.Dialogs.Tests
 {
 
     public class TestMainDialog : MainDialog
@@ -32,7 +28,7 @@ namespace Microsoft.Bot.Builder.Tests
     public class MainDialogTest
     {
         [TestMethod]
-        public void DialogSet_ConstructorValid()
+        public void MainDialog_ConstructorValid()
         {
             var convoState = new ConversationState(new MemoryStorage());
             var dialogStateProperty = convoState.CreateProperty<DialogState>("dialogstate");
@@ -41,13 +37,13 @@ namespace Microsoft.Bot.Builder.Tests
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
-        public void DialogSet_ConstructorNullProperty()
+        public void MainDialog_ConstructorNullProperty()
         {
             var mainDialog = new MainDialog(null);
         }
 
         [TestMethod]
-        public async Task DialogSet_CreateContextAsync()
+        public async Task MainDialog_CreateContextAsync()
         {
             var convoState = new ConversationState(new MemoryStorage());
             var dialogStateProperty = convoState.CreateProperty<DialogState>("dialogstate");
@@ -58,7 +54,7 @@ namespace Microsoft.Bot.Builder.Tests
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
-        public async Task DialogSet_NullCreateContextAsync()
+        public async Task MainDialog_NullCreateContextAsync()
         {
             var convoState = new ConversationState(new MemoryStorage());
             var dialogStateProperty = convoState.CreateProperty<DialogState>("dialogstate");
@@ -67,15 +63,15 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [TestMethod]
-        public async Task DialogSet_FullDialogs()
+        public async Task MainDialog_DerivedMainDialog()
         {
             var convoState = new ConversationState(new MemoryStorage());
 
             var adapter = new TestAdapter()
                 .Use(new AutoSaveStateMiddleware(convoState));
 
-            var mainDialog = new TestMainDialog(convoState.CreateProperty<DialogState>("dialogState") );
-            
+            var mainDialog = new TestMainDialog(convoState.CreateProperty<DialogState>("dialogState"));
+
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
                 await mainDialog.RunAsync(turnContext).ConfigureAwait(false);
@@ -92,5 +88,37 @@ namespace Microsoft.Bot.Builder.Tests
                 .AssertReply("step2.2")
             .StartTestAsync();
         }
+
+        [TestMethod]
+        public async Task MainDialog_DynamicMainDialog()
+        {
+            var convoState = new ConversationState(new MemoryStorage());
+
+            var adapter = new TestAdapter()
+                .Use(new AutoSaveStateMiddleware(convoState));
+
+            var mainDialog = new MainDialog(convoState.CreateProperty<DialogState>("dialogState"));
+            mainDialog
+                .AddDialog(WaterfallTests.Create_Waterfall3())
+                .AddDialog(WaterfallTests.Create_Waterfall4())
+                .AddDialog(WaterfallTests.Create_Waterfall5());
+
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            {
+                await mainDialog.RunAsync(turnContext).ConfigureAwait(false);
+            })
+            .Send("hello")
+                .AssertReply("step1")
+                .AssertReply("step1.1")
+            .Send("hello")
+                .AssertReply("step1.2")
+            .Send("hello")
+                .AssertReply("step2")
+                .AssertReply("step2.1")
+            .Send("hello")
+                .AssertReply("step2.2")
+            .StartTestAsync();
+        }
+
     }
 }
