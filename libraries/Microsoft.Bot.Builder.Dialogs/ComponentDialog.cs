@@ -109,7 +109,12 @@ namespace Microsoft.Bot.Builder.Dialogs
             await OnEndDialogAsync(turnContext, instance, reason, cancellationToken).ConfigureAwait(false);
         }
 
-        protected Dialog AddDialog(Dialog dialog)
+        /// <summary>
+        /// Add a dialog to the component dialog.
+        /// </summary>
+        /// <param name="dialog">dialog</param>
+        /// <returns>componentDialog for fluent calls</returns>
+        public ComponentDialog AddDialog(Dialog dialog)
         {
             _dialogs.Add(dialog);
             if (string.IsNullOrEmpty(InitialDialogId))
@@ -117,7 +122,17 @@ namespace Microsoft.Bot.Builder.Dialogs
                 InitialDialogId = dialog.Id;
             }
 
-            return dialog;
+            return this;
+        }
+
+        /// <summary>
+        /// find a dialog by id.
+        /// </summary>
+        /// <param name="dialogId">dialogId</param>
+        /// <returns>Dialog</returns>
+        public Dialog FindDialog(string dialogId)
+        {
+            return _dialogs.Find(dialogId);
         }
 
         protected virtual Task<DialogTurnResult> OnBeginDialogAsync(DialogContext innerDc, object options, CancellationToken cancellationToken = default(CancellationToken))
