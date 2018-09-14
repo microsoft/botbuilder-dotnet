@@ -19,6 +19,8 @@ namespace Microsoft.Bot.Configuration
     /// This class implements methods for encrypting and manipulating the in memory representation of the configuration.</remarks>
     public class BotConfiguration
     {
+        private const string SECRETKEY = "secretKey";
+
         /// <summary>
         /// Gets or sets name of the bot.
         /// </summary>
@@ -32,10 +34,10 @@ namespace Microsoft.Bot.Configuration
         public string Description { get; set; }
 
         /// <summary>
-        /// Gets or sets secretKey - Used to validate that the secret is consistent for all encrypted fields.
+        /// Gets or sets padlock - Used to validate that the secret is consistent for all encrypted fields.
         /// </summary>
-        [JsonProperty("secretKey")]
-        public string SecretKey { get; set; }
+        [JsonProperty("padlock")]
+        public string Padlock { get; set; }
 
         /// <summary>
         /// Gets or sets the version.
@@ -128,7 +130,7 @@ namespace Microsoft.Bot.Configuration
             bot.Location = file;
             bot.MigrateData();
 
-            var hasSecret = bot.SecretKey?.Length > 0;
+            var hasSecret = bot.Padlock?.Length > 0;
             if (hasSecret)
             {
                 bot.Decrypt(secret);
@@ -198,10 +200,10 @@ namespace Microsoft.Bot.Configuration
 
             if (!string.IsNullOrEmpty(secret))
             {
-                this.ValidateSecretKey(secret);
+                this.ValidateSecret(secret);
             }
 
-            var hasSecret = this.SecretKey?.Length > 0;
+            var hasSecret = this.Padlock?.Length > 0;
 
             // Make sure that all dispatch serviceIds still match services that are in the bot
             foreach (var dispatchService in this.Services.Where(s => s.Type == ServiceTypes.Dispatch).Cast<DispatchService>())
@@ -255,7 +257,7 @@ namespace Microsoft.Bot.Configuration
         /// </summary>
         public void ClearSecret()
         {
-            this.SecretKey = string.Empty;
+            this.Padlock = string.Empty;
         }
 
         /// <summary>
@@ -293,7 +295,7 @@ namespace Microsoft.Bot.Configuration
         /// <param name="secret">Secret to encrypt.</param>
         public void Encrypt(string secret)
         {
-            this.ValidateSecretKey(secret);
+            this.ValidateSecret(secret);
 
             foreach (var service in this.Services)
             {
@@ -307,7 +309,7 @@ namespace Microsoft.Bot.Configuration
         /// <param name="secret">Secret to encrypt.</param>
         public void Decrypt(string secret)
         {
-            this.ValidateSecretKey(secret);
+            this.ValidateSecret(secret);
 
             foreach (var service in this.Services)
             {
@@ -389,7 +391,7 @@ namespace Microsoft.Bot.Configuration
         /// Make sure secret is correct by decrypting the secretKey with it.
         /// </summary>
         /// <param name="secret">Secret to use.</param>
-        protected void ValidateSecretKey(string secret)
+        protected void ValidateSecret(string secret)
         {
             if (secret?.Length == null)
             {
@@ -398,15 +400,15 @@ namespace Microsoft.Bot.Configuration
 
             try
             {
-                if (this.SecretKey?.Length == 0)
+                if (this.Padlock?.Length == 0)
                 {
                     // If no key, create a guid and enrypt that to use as secret validator.
-                    this.SecretKey = Guid.NewGuid().ToString("n").Encrypt(secret);
+                    this.Padlock = Guid.NewGuid().ToString("n").Encrypt(secret);
                 }
                 else
                 {
                     // This will throw exception if invalid secret.
-                    this.SecretKey.Decrypt(secret);
+                    this.Padlock.Decrypt(secret);
                 }
             }
             catch
@@ -420,6 +422,18 @@ namespace Microsoft.Bot.Configuration
         /// </summary>
         protected virtual void MigrateData()
         {
+            // migrate old secretKey
+            string secretKey = (string)this.Properties[SECRETKEY];
+            if (secretKey != null)
+            {
+                if (this.Padlock == null)
+                {
+                    this.Padlock = secretKey;
+                }
+
+                this.Properties.Remove(SECRETKEY);
+            }
+
             foreach (var service in this.Services)
             {
                 switch (service.Type)
