@@ -655,6 +655,37 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
+        /// Retrieves Azure Active Directory tokens for particular resources on a configured connection.
+        /// </summary>
+        /// <param name="context">Context for the current turn of conversation with the user.</param>
+        /// <param name="connectionName">The name of the Azure Active Direcotry connection configured with this bot.</param>
+        /// <param name="resourceUrls">The list of resource URLs to retrieve tokens for.</param>
+        /// <param name="userId">The user Id for which tokens are retrieved. If passing in null the userId is taken from the Activity in the ITurnContext.</param>
+        /// <returns>Dictionary of resourceUrl to the corresponding TokenResponse.</returns>
+        public async Task<Dictionary<string, TokenResponse>> GetAadTokensAsync(ITurnContext context, string connectionName, string[] resourceUrls, string userId = null)
+        {
+            BotAssert.ContextNotNull(context);
+
+            if (string.IsNullOrWhiteSpace(connectionName))
+            {
+                throw new ArgumentNullException(nameof(connectionName));
+            }
+
+            if (resourceUrls == null)
+            {
+                throw new ArgumentNullException(nameof(userId));
+            }
+
+            if (string.IsNullOrWhiteSpace(userId))
+            {
+                userId = context.Activity?.From?.Id;
+            }
+
+            var client = await this.CreateOAuthApiClientAsync(context).ConfigureAwait(false);
+            return await client.GetAadTokensAsync(userId, connectionName, resourceUrls).ConfigureAwait(false);
+        }
+
+        /// <summary>
         /// Creates a conversation on the specified channel.
         /// </summary>
         /// <param name="channelId">The ID for the channel.</param>

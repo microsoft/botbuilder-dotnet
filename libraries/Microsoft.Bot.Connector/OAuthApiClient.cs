@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
@@ -385,6 +386,149 @@ namespace Microsoft.Bot.Connector
             else
             {
                 return null;
+            }
+        }
+
+        /// <summary>
+        /// Retrieve an Azure Active Directory token for particular AAD resources.
+        /// </summary>
+        /// <param name="userId">The user's ID.</param>
+        /// <param name="connectionName">Name of the auth connection to use for AAD token exchange.</param>
+        /// <param name="resourceUrls">The collection of resource URLs for which to get tokens</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>If the task completes successfully, the response includes a collection of TokenResponse
+        /// objects with the resourceUrl and its corresponding TokenResponse.</remarks>
+        public async Task<Dictionary<string, TokenResponse>> GetAadTokensAsync(string userId, string connectionName, string[] resourceUrls, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (string.IsNullOrEmpty(userId))
+            {
+                throw new ArgumentNullException(nameof(userId));
+            }
+            
+            if (string.IsNullOrEmpty(connectionName))
+            {
+                throw new ArgumentNullException(nameof(connectionName));
+            }
+
+            if (resourceUrls == null)
+            {
+                throw new ArgumentNullException(nameof(resourceUrls));
+            }
+            
+            if (resourceUrls.Length == 0)
+            {
+                throw new ArgumentException("Collection cannot be empty", nameof(resourceUrls));
+            }
+
+            if (resourceUrls.Any(s => string.IsNullOrEmpty(s)))
+            {
+                throw new ArgumentException("Resource URLs must have a value", nameof(resourceUrls));
+            }
+
+            bool shouldTrace = ServiceClientTracing.IsEnabled;
+            string invocationId = null;
+            if (shouldTrace)
+            {
+                invocationId = ServiceClientTracing.NextInvocationId.ToString();
+                Dictionary<string, object> tracingParameters = new Dictionary<string, object>();
+                tracingParameters.Add("userId", userId);
+                tracingParameters.Add("connectionName", connectionName);
+                tracingParameters.Add("resourceUrls", resourceUrls);
+                tracingParameters.Add("cancellationToken", cancellationToken);
+                ServiceClientTracing.Enter(invocationId, this, "SignOutUserAsync", tracingParameters);
+            }
+
+            // Construct URL
+            var tokenUrl = new Uri(new Uri(_uri + (_uri.EndsWith("/") ? "" : "/")), "api/usertoken/GetAadTokens?userId={userId}&connectionName={connectionName}").ToString();
+            tokenUrl = tokenUrl.Replace("{userId}", Uri.EscapeDataString(userId));
+            tokenUrl = tokenUrl.Replace("{connectionName}", Uri.EscapeDataString(connectionName));
+
+            // Create HTTP transport objects
+            var httpRequest = new HttpRequestMessage();
+            HttpResponseMessage httpResponse = null;
+            httpRequest.Method = new HttpMethod("POST");
+            httpRequest.RequestUri = new Uri(tokenUrl);
+
+            // Serialize Request
+            string requestContent = Rest.Serialization.SafeJsonConvert.SerializeObject(new AadResourceUrls() { ResourceUrls = resourceUrls }, _client.SerializationSettings);
+            httpRequest.Content = new StringContent(requestContent, System.Text.Encoding.UTF8);
+            httpRequest.Content.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
+           
+            // Set Credentials
+            if (_client.Credentials != null)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                await _client.Credentials.ProcessHttpRequestAsync(httpRequest, cancellationToken).ConfigureAwait(false);
+            }
+            cancellationToken.ThrowIfCancellationRequested();
+
+            if (shouldTrace)
+            {
+                ServiceClientTracing.SendRequest(invocationId, httpRequest);
+            }
+            httpResponse = await _client.HttpClient.SendAsync(httpRequest, cancellationToken).ConfigureAwait(false);
+            if (shouldTrace)
+            {
+                ServiceClientTracing.ReceiveResponse(invocationId, httpResponse);
+            }
+
+            HttpStatusCode statusCode = httpResponse.StatusCode;
+            cancellationToken.ThrowIfCancellationRequested();
+            try
+            {
+                if (statusCode == HttpStatusCode.OK)
+                {
+                    string responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    try
+                    {
+                        var tokens = Rest.Serialization.SafeJsonConvert.DeserializeObject<Dictionary<string, TokenResponse>>(responseContent);
+                        return tokens;
+                    }
+                    catch (JsonException)
+                    {
+                        // ignore json exception and return null
+                        return null;
+                    }
+                }
+                else if (statusCode == HttpStatusCode.NotFound)
+                {
+                    return null;
+                }
+                else
+                {
+                    var ex = new ErrorResponseException(string.Format("Operation returned an invalid status code '{0}'", statusCode));
+                    string responseContent = null;
+                    try
+                    {
+                        responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                        ErrorResponse errorBody = Rest.Serialization.SafeJsonConvert.DeserializeObject<ErrorResponse>(responseContent, _client.DeserializationSettings);
+                        if (errorBody != null)
+                        {
+                            ex.Body = errorBody;
+                        }
+                    }
+                    catch (JsonException)
+                    {
+                        // Ignore the exception
+                    }
+                    ex.Request = new HttpRequestMessageWrapper(httpRequest, requestContent);
+                    ex.Response = new HttpResponseMessageWrapper(httpResponse, responseContent);
+                    if (shouldTrace)
+                    {
+                        ServiceClientTracing.Error(invocationId, ex);
+                    }
+                    throw ex;
+                }
+            }
+            finally
+            {
+                httpRequest.Dispose();
+                if (httpResponse != null)
+                {
+                    httpResponse.Dispose();
+                }
             }
         }
 
