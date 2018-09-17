@@ -48,7 +48,7 @@ namespace Microsoft.BotBuilderSamples
             _dialogs.Add(new TextPrompt("name"));
 
             var applicationId = "cafebot";
-            var endpointKey = "";
+            var endpointKey = Keys.LanguageGenerationSubscriptionKey;
             var endpointUri = "https://platform.bing.com/speechdx/lg-dev/v1/lg";
             var tokenGenerationApiEndpoint = "https://wuppe.api.cognitive.microsoft.com/sts/v1.0/issueToken";
 
@@ -104,7 +104,7 @@ namespace Microsoft.BotBuilderSamples
                 {
                     var activity = new Activity()
                     {
-                        Text = "[wPhrase] , " + $"Thank you, I have your name as '{results.Result}'.",
+                        Text = TemplateResponses.WelcomeUserTemplate + " , " + $"Thank you, I have your name as '{results.Result}'.",
                     };
 
                     // Finish by sending a message to the user. Next time ContinueAsync is called it will return DialogTurnStatus.Empty.
