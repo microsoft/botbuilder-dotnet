@@ -11,6 +11,8 @@ namespace Microsoft.Bot.Configuration
 
     public class QnAMakerService : ConnectedService
     {
+        private string _hostname;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="QnAMakerService"/> class.
         /// </summary>
@@ -35,7 +37,7 @@ namespace Microsoft.Bot.Configuration
         /// Gets or sets url for the deployed qnaMaker instance.
         /// </summary>
         [JsonProperty("hostname")]
-        public string Hostname { get; set; }
+        public string Hostname { get => _hostname; set => _hostname = new Uri(new Uri(value), "/qnamaker").AbsoluteUri; }
 
         /// <summary>
         /// Gets or sets endpointKey.
