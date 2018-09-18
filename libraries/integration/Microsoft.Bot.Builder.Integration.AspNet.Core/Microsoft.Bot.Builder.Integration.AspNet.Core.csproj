@@ -13,6 +13,8 @@
 		<PackageId>Microsoft.Bot.Builder.Integration.AspNet.Core</PackageId>
 		<Description>This library integrates the Microsoft Bot Builder SDK with ASP.NET Core. It offers idiomatic configuration APIs in addition to providing all the plumbing to direct incoming bot messages to a configured bot.</Description>
 		<Summary>This library provides integration between the Microsoft Bot Builder SDK and ASP.NET Core.</Summary>
+		<!-- Required in both test/product projects. This is a temporary workaround for https://github.com/Microsoft/vstest/issues/800 -->
+		<DebugType>Full</DebugType>
 	</PropertyGroup>
 
 	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">

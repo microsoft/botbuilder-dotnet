@@ -20,6 +20,8 @@
 		<PackageId>Microsoft.Bot.Builder.Dialogs</PackageId>
 		<Description>This library implements .NET Simple Dialog classes </Description>
 		<Summary>This library implements .NET Simple Dialog classes </Summary>
+		<!-- Required in both test/product projects. This is a temporary workaround for https://github.com/Microsoft/vstest/issues/800 -->
+		<DebugType>Full</DebugType>
 	</PropertyGroup>
 
 	<PropertyGroup>
