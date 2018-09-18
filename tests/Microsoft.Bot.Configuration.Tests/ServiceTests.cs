@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Configuration.Tests
 {
@@ -20,6 +21,9 @@ namespace Microsoft.Bot.Configuration.Tests
             Assert.AreEqual("http://foo.azurewebsites.net/qnamaker", qnamaker.Hostname);
 
             qnamaker = new QnAMakerService() { Hostname = "http://foo.azurewebsites.net/asdf?x=15" };
+            Assert.AreEqual("http://foo.azurewebsites.net/qnamaker", qnamaker.Hostname);
+
+            qnamaker = JsonConvert.DeserializeObject<QnAMakerService>("{\"hostname\":\"http://foo.azurewebsites.net/asdf?x=15\"}");
             Assert.AreEqual("http://foo.azurewebsites.net/qnamaker", qnamaker.Hostname);
         }
     }
