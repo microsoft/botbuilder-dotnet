@@ -29,12 +29,12 @@ namespace Microsoft.Bot.Configuration.Encryption
         /// <returns>encrypted value as Base64 string</returns>
         public static string Encrypt(this string plainText, string key)
         {
-            if (plainText == null)
+            if (string.IsNullOrEmpty(plainText))
             {
-                throw new ArgumentNullException("Missing plainText");
+                return plainText;
             }
 
-            if (key == null)
+            if (string.IsNullOrEmpty(key))
             {
                 throw new ArgumentNullException("Missing key");
             }
@@ -54,12 +54,12 @@ namespace Microsoft.Bot.Configuration.Encryption
         /// <returns>original unecrypted value</returns>
         public static string Decrypt(this string encryptedText, string key)
         {
-            if (encryptedText == null)
+            if (string.IsNullOrEmpty(encryptedText))
             {
-                throw new ArgumentNullException("Missing encryptedText");
+                return encryptedText;
             }
 
-            if (key == null)
+            if (string.IsNullOrEmpty(key))
             {
                 throw new ArgumentNullException("Missing key");
             }
