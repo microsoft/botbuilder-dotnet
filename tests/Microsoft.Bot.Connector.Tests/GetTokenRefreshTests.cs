@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Builder.Tests
         [Fact]
         public async Task TokenTests_GetCredentialsWorks()
         {
-            MicrosoftAppCredentials credentials = new MicrosoftAppCredentials("10c55330-7945-4008-b2c5-9e91cb5e5d34", "cPVCp1|l!8T=>-Fz");
+            MicrosoftAppCredentials credentials = new MicrosoftAppCredentials("12604f0f-bc92-4318-a6dd-aed704445ba4", "H_k}}7b75BEl+KY1");
             var result = await credentials.GetTokenAsync();
             Assert.NotNull(result);
         }
@@ -29,7 +29,7 @@ namespace Microsoft.Bot.Builder.Tests
         [Fact]
         public async Task TokenTests_RefreshTokenWorks()
         {
-            MicrosoftAppCredentials credentials = new MicrosoftAppCredentials("10c55330-7945-4008-b2c5-9e91cb5e5d34", "cPVCp1|l!8T=>-Fz");
+            MicrosoftAppCredentials credentials = new MicrosoftAppCredentials("12604f0f-bc92-4318-a6dd-aed704445ba4", "H_k}}7b75BEl+KY1");
             var result = await credentials.GetTokenAsync();
             Assert.NotNull(result);
             var result2 = await credentials.GetTokenAsync();
@@ -42,7 +42,7 @@ namespace Microsoft.Bot.Builder.Tests
         [Fact]
         public async Task TokenTests_RefreshTestLoad()
         {
-            MicrosoftAppCredentials credentials = new MicrosoftAppCredentials("10c55330-7945-4008-b2c5-9e91cb5e5d34", "cPVCp1|l!8T=>-Fz");
+            MicrosoftAppCredentials credentials = new MicrosoftAppCredentials("12604f0f-bc92-4318-a6dd-aed704445ba4", "H_k}}7b75BEl+KY1");
             List<Task<string>> tasks = new List<Task<string>>();
             for (int i = 0; i < 1000; i++)
             {
