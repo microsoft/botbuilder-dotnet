@@ -41,9 +41,9 @@ else
 {
     $uploadArgs += "--commitBranch ""$($env:Build_SourceBranch -replace ""refs/heads/"", """")"""
 }
-if (Test-Path env:System_PullRequest_PullRequestId)
+if (Test-Path env:System_PullRequest_PullRequestNumber)
 {
-    $uploadArgs += "--pullRequest ""$env:System_PullRequest_PullRequestId"""
+    $uploadArgs += "--pullRequest ""$env:System_PullRequest_PullRequestNumber"""
 }
 Foreach ($i in $uploadArgs) { Write-Host "  $i" }
 Start-Process $coverageUploader -ArgumentList $uploadArgs -NoNewWindow
