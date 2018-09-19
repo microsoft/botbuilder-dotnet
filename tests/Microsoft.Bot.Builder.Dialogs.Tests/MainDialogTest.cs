@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -14,14 +15,25 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         public TestMainDialog(IStatePropertyAccessor<DialogState> state)
             : base(state, nameof(MainDialog))
         {
-            this.DialogStateProperty = state;
+            DialogStateProperty = state;
 
             AddDialog(WaterfallTests.Create_Waterfall3());
             AddDialog(WaterfallTests.Create_Waterfall4());
             AddDialog(WaterfallTests.Create_Waterfall5());
         }
-    }
 
+        protected override async Task<DialogTurnResult> OnRunTurnAsync(DialogContext dc, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            var result = await dc.ContinueDialogAsync(cancellationToken);
+
+            if (result.Status == DialogTurnStatus.Empty)
+            {
+                result = await dc.BeginDialogAsync(InitialDialogId);
+            }
+
+            return result;
+        }
+    }
 
     [TestClass]
     [TestCategory("MainDialog")]
@@ -32,14 +44,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         {
             var convoState = new ConversationState(new MemoryStorage());
             var dialogStateProperty = convoState.CreateProperty<DialogState>("dialogstate");
-            var mainDialog = new MainDialog(dialogStateProperty);
+            var mainDialog = new TestMainDialog(dialogStateProperty);
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
         public void MainDialog_ConstructorNullProperty()
         {
-            var mainDialog = new MainDialog(null);
+            var mainDialog = new TestMainDialog(null);
         }
 
         [TestMethod]
@@ -97,11 +109,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var adapter = new TestAdapter()
                 .Use(new AutoSaveStateMiddleware(convoState));
 
-            var mainDialog = new MainDialog(convoState.CreateProperty<DialogState>("dialogState"));
-            mainDialog
-                .AddDialog(WaterfallTests.Create_Waterfall3())
-                .AddDialog(WaterfallTests.Create_Waterfall4())
-                .AddDialog(WaterfallTests.Create_Waterfall5());
+            var mainDialog = new TestMainDialog(convoState.CreateProperty<DialogState>("dialogState"));
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
