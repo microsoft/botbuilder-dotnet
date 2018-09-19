@@ -8,14 +8,11 @@ dotnet tool install coveralls.net --version 1.0.0 --tool-path tools
 $coverageUploader = ".\tools\csmacnz.Coveralls.exe"
 
 Write-Host Analyze coverage
-$coverageFiles = Get-ChildItem -Include "*.coverage" -Recurse | Select -Exp FullName
+$coverageFiles = Get-ChildItem -Path "$env:Build_SourcesDirectory\CodeCoverage" -Include "*.coverage" -Recurse | Select -Exp FullName
 Write-Host with files: $coverageFiles
-."$coverageAnalyzer" analyze /output:coverage.coveragexml $coverageFiles
+."$coverageAnalyzer" analyze /output:"$env:Build_SourcesDirectory\CodeCoverage\coverage.coveragexml" $coverageFiles
 
 Write-Host Upload coverage
-Write-Host with args: --repoToken $coverallsToken --commitId $env:Build_SourceVersion --commitBranch $env:Build_SourceBranch --commitAuthor $env:Build_RequestedFor --commitEmail $env:Build_RequestedForEmail --commitMessage $env:Build_SourceVersionMessage --jobId $env:Build_BuildId --useRelativePaths --basePath "$env:Build_SourcesDirectory"
-."$coverageUploader" --dynamiccodecoverage -i "coverage.coveragexml" --repoToken $coverallsToken --commitId $env:Build_SourceVersion --commitBranch "$env:Build_SourceBranch" --commitAuthor "$env:Build_RequestedFor" --commitEmail "$env:Build_RequestedForEmail" --commitMessage "$env:Build_SourceVersionMessage" --jobId $env:Build_BuildId --useRelativePaths --basePath "$env:Build_SourcesDirectory" -o coverage.json
-
-Write-Host Clean
-Remove-Item coverage.coveragexml -ErrorAction Ignore
-Remove-Item coverage.json -ErrorAction Ignore
+$branchName = $env:Build_SourceBranch -replace "refs/heads/", ""
+Write-Host with args: --repoToken $coverallsToken --commitId $env:Build_SourceVersion --commitBranch $branchName --commitAuthor $env:Build_RequestedFor --commitEmail $env:Build_RequestedForEmail --commitMessage $env:Build_SourceVersionMessage --jobId $env:Build_BuildId --useRelativePaths --basePath "$env:Build_SourcesDirectory"
+."$coverageUploader" --dynamiccodecoverage -i "$env:Build_SourcesDirectory\CodeCoverage\coverage.coveragexml" --repoToken $coverallsToken --commitId $env:Build_SourceVersion --commitBranch "$branchName" --commitAuthor "$env:Build_RequestedFor" --commitEmail "$env:Build_RequestedForEmail" --commitMessage "$env:Build_SourceVersionMessage" --jobId $env:Build_BuildId --useRelativePaths --basePath "$env:Build_SourcesDirectory" -o "$env:Build_SourcesDirectory\CodeCoverage\coverage.json"
