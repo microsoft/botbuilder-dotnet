@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Dialogs
@@ -8,28 +11,31 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// </summary>
     public class MainDialog : ComponentDialog
     {
-        private DialogSet mainDialogSet;
+        private DialogSet _mainDialogSet;
 
         public MainDialog(IStatePropertyAccessor<DialogState> dialogState, string dialogId = nameof(MainDialog))
             : base(dialogId)
         {
-            this.DialogStateProperty = dialogState ?? throw new ArgumentNullException(nameof(dialogState));
+            DialogStateProperty = dialogState ?? throw new ArgumentNullException(nameof(dialogState));
 
             // create dialog set for the outer dialog
-            this.mainDialogSet = new DialogSet(this.DialogStateProperty)
-                .Add(this);
+            _mainDialogSet = new DialogSet(DialogStateProperty);
+            _mainDialogSet.Add(this);
         }
 
         /// <summary>
-        /// gets or sets the DialogState property Accessor.
+        /// Gets or sets the DialogState property Accessor.
         /// </summary>
+        /// <value>
+        /// A property accessor for the current DialogState.
+        /// </value>
         protected IStatePropertyAccessor<DialogState> DialogStateProperty { get; set; }
 
         /// <summary>
         /// Run the current dialog stack.
         /// </summary>
-        /// <param name="turnContext">turn context</param>
-        /// <returns>result of running the current main dialog</returns>
+        /// <param name="turnContext">The turn context.</param>
+        /// <returns>The result of running the current main dialog.</returns>
         public async Task<DialogTurnResult> RunAsync(ITurnContext turnContext)
         {
             if (turnContext == null)
@@ -38,7 +44,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             // Create a dialog context and try to continue running the current dialog
-            var dialogContext = await this.mainDialogSet.CreateContextAsync(turnContext).ConfigureAwait(false);
+            var dialogContext = await _mainDialogSet.CreateContextAsync(turnContext).ConfigureAwait(false);
 
             // continue any running dialog
             var result = await dialogContext.ContinueDialogAsync().ConfigureAwait(false);
