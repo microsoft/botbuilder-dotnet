@@ -7,6 +7,9 @@ using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Engine
 {
+    /// <summary>
+    /// The main language generation resolver pipeline.
+    /// </summary>
     internal class ResolverPipeline : IResolverPipeline
     {
         private readonly ISlotBuilder _slotuilder;
@@ -16,6 +19,15 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Engine
         private readonly IActivityModifier _activityModifier;
         private readonly IServiceAgent _serviceAgent;
 
+        /// <summary>
+        /// Constructs a new instance of <see cref="ResolverPipeline"/> using the main pipeline processors.
+        /// </summary>
+        /// <param name="slotBuilder">A <see cref="ISlotBuilder"/> object.</param>
+        /// <param name="localeExtractor">A <see cref="ILocaleExtractor"/> object.</param>
+        /// <param name="requestBuilder">A <see cref="IRequestBuilder"/> object.</param>
+        /// <param name="responseGenerator">A <see cref="IResponseGenerator"/> object.</param>
+        /// <param name="activityModifier">A <see cref="IActivityModifier"/> object.</param>
+        /// <param name="serviceAgent">A <see cref="IServiceAgent"/> object.</param>
         public ResolverPipeline(ISlotBuilder slotBuilder, ILocaleExtractor localeExtractor, IRequestBuilder requestBuilder, IResponseGenerator responseGenerator, IActivityModifier activityModifier, IServiceAgent serviceAgent)
         {
             _slotuilder = slotBuilder ?? throw new ArgumentNullException(nameof(slotBuilder));
@@ -26,6 +38,12 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Engine
             _serviceAgent = serviceAgent ?? throw new ArgumentNullException(nameof(serviceAgent));
         }
 
+        /// <summary>
+        /// The entry point for the pipeline, that executes all the necessary language generation logic.
+        /// </summary>
+        /// <param name="activity">A <see cref="Activity"/> object.</param>
+        /// <param name="entities">A <see cref="IDictionary{string, object}"/> that contains entities/slots used to resolve referenced templates.</param>
+        /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         public async Task ExecuteAsync(Activity activity, IDictionary<string, object> entities)
         {
             if (activity == null)
@@ -38,6 +56,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Engine
                 throw new ArgumentNullException(nameof(entities));
             }
 
+            // inistanciate pipeline processors.
             var slots = _slotuilder.BuildSlots(activity, entities);
             var locale = _localeExtractor.ExtractLocale(activity);
             var request = _requestBuilder.BuildRequest(slots, locale);

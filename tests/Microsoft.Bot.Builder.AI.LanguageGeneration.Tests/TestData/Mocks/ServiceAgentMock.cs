@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using DialogFoundation.Backend.LG;
+using Microsoft.Bot.Builder.AI.LanguageGeneration.API;
 
-namespace Microsoft.Bot.Builder.AI.LanguageGeneration.API
+namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests.TestData.Mocks
 {
     public class ServiceAgentMock : IServiceAgent
     {

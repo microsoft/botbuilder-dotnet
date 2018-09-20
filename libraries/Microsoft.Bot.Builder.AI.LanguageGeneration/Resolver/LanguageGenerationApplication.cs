@@ -6,9 +6,12 @@ using Newtonsoft.Json.Converters;
 
 namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Resolver
 {
+    /// <summary>
+    /// Data describing a language generation application.
+    /// </summary>
     public class LanguageGenerationApplication
     {
-        public LanguageGenerationApplication(string applicationId, string endpointKey, string endpointUri)
+        public LanguageGenerationApplication(string applicationId, string endpointKey, string endpoint)
         {
             if (string.IsNullOrWhiteSpace(applicationId))
             {
@@ -20,18 +23,23 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Resolver
                 throw new ArgumentException($"\"{endpointKey}\" is not a valid Language generation subscription key.");
             }
 
-            if (string.IsNullOrWhiteSpace(endpointUri))
+            if (string.IsNullOrWhiteSpace(endpoint))
             {
-                throw new ArgumentException($"\"{endpointUri}\" is not a valid Language generation endpoint.");
+                throw new ArgumentException($"\"{endpoint}\" is not a valid Language generation endpoint.");
+            }
+
+            if (!Uri.IsWellFormedUriString(endpoint, UriKind.Absolute))
+            {
+                throw new ArgumentException($"\"{endpoint}\" is not a valid Language generation endpoint.");
             }
 
             ApplicationId = applicationId;
             EndpointKey = endpointKey;
-            EndpointUri = endpointUri;
+            Endpoint = endpoint;
         }
 
         /// <summary>
-        /// Gets or sets LUIS _application ID.
+        /// Gets or sets language generation application id.
         /// </summary>
         /// <value>
         /// LUIS _application ID.
@@ -39,7 +47,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Resolver
         public string ApplicationId { get; set; }
 
         /// <summary>
-        /// Gets or sets LUIS subscription or endpoint key.
+        /// Gets or sets language generation subscription or endpoint key.
         /// </summary>
         /// <value>
         /// LUIS subscription or endpoint key.
@@ -47,11 +55,8 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Resolver
         public string EndpointKey { get; private set; }
 
         /// <summary>
-        /// Gets or sets Azure Region where endpoint is located.
+        /// Gets or sets language generation  endpoint where the application is hosted
         /// </summary>
-        /// <value>
-        /// Azure Region where endpoint is located.
-        /// </value>
-        public string EndpointUri { get; set; }
+        public string Endpoint { get; set; }
     }
 }

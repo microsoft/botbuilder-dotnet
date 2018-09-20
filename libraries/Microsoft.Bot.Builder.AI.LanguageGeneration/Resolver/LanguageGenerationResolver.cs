@@ -13,7 +13,7 @@ using Microsoft.Bot.Schema;
 namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Resolver
 {
     /// <summary>
-    /// Language generation resolution engine, used for resolving templates references by bot developer to generate responses in a more human-like manner. 
+    /// Language generation resolver engine, used for resolving templates references by bot developer to generate responses in a more human-like manner. 
     /// </summary>
     public class LanguageGenerationResolver
     {
@@ -34,7 +34,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Resolver
             {
                 languageGenerationOptions = new LanguageGenerationOptions();
             }
-            _resolverPipeline = resolverPipelineFactory.CreateResolverPipeline(_languageGenerationApplication.EndpointUri, _languageGenerationApplication.EndpointKey, _languageGenerationApplication.ApplicationId, languageGenerationOptions.TokenGenerationApiEndpoint, serviceAgent);
+            _resolverPipeline = resolverPipelineFactory.CreateResolverPipeline(_languageGenerationApplication.Endpoint, _languageGenerationApplication.EndpointKey, _languageGenerationApplication.ApplicationId, languageGenerationOptions.TokenGenerationApiEndpoint, serviceAgent);
         }
 
         /// <summary>
