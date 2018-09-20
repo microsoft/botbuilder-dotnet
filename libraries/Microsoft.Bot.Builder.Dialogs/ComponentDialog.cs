@@ -110,10 +110,10 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// Add a dialog to the component dialog.
+        /// Adds a dialog to the component dialog.
         /// </summary>
-        /// <param name="dialog">dialog</param>
-        /// <returns>componentDialog for fluent calls</returns>
+        /// <param name="dialog">The dialog to add.</param>
+        /// <returns>The updated <see cref="ComponentDialog"/>.</returns>
         public ComponentDialog AddDialog(Dialog dialog)
         {
             _dialogs.Add(dialog);
@@ -126,10 +126,10 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// find a dialog by id.
+        /// Fings a dialog by ID.
         /// </summary>
-        /// <param name="dialogId">dialogId</param>
-        /// <returns>Dialog</returns>
+        /// <param name="dialogId">The ID of the dialog to find.</param>
+        /// <returns>The dialog; or <c>null</c> if there is not a match for the ID.</returns>
         public Dialog FindDialog(string dialogId)
         {
             return _dialogs.Find(dialogId);

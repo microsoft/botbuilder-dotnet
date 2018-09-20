@@ -16,10 +16,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
 
         /// <summary>
         /// Gets or sets a value indicating whether the title of the choices action will NOT be searched over.
-        /// The default is <c><false</c>. This is optional.
+        /// The default is <c>false</c>. This is optional.
         /// </summary>
         /// <value>
-        /// A <c>true</c> if the title of the choices action will NOT be searched over; otherwise <c><false</c>.
+        /// A <c>true</c> if the title of the choices action will NOT be searched over; otherwise <c>false</c>.
         /// </value>
         public bool NoAction { get; set; }
     }
