@@ -17,8 +17,6 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="dialogs">Parent dialog set.</param>
         /// <param name="turnContext">Context for the current turn of conversation with the user.</param>
         /// <param name="state">Current dialog state.</param>
-        /// <param name="onCompleted">An action to perform when the dialog completes, that is,
-        /// when <see cref="EndAsync(IDictionary{string, object})"/> is called on the current context.</param>
         internal DialogContext(DialogSet dialogs, ITurnContext turnContext, DialogState state)
         {
             Dialogs = dialogs ?? throw new ArgumentNullException(nameof(dialogs));
