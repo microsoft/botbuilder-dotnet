@@ -54,9 +54,11 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// Initializes a new instance of the <see cref="ConfirmPrompt"/> class.
         /// </summary>
         /// <param name="dialogId">Dialog identifier.</param>
-        /// <param name="culture">Culture to use if <c>DialogContext.Context.Activity.Locale</c> property not specified. Defaults to a value of. <code>CultureInfo.CurrentCulture</code>.</param>
-        /// <param name="validator">Validator that will be called each time the user responds to the prompt.  If the validator replies with a message no additional retry prompt will be sent.</param>
-        /// <param name="defaultLocale">The Locale used by default.</param>
+        /// <param name="validator">Validator that will be called each time the user responds to the prompt.
+        /// If the validator replies with a message no additional retry prompt will be sent.</param>
+        /// <param name="defaultLocale">The default culture or locale to use if the <see cref="Activity.Locale"/>
+        /// of the <see cref="DialogContext"/>.<see cref="DialogContext.Context"/>.<see cref="ITurnContext.Activity"/>
+        /// is not specified.</param>
         public ConfirmPrompt(string dialogId, PromptValidator<bool> validator = null, string defaultLocale = null)
             : base(dialogId, validator)
         {

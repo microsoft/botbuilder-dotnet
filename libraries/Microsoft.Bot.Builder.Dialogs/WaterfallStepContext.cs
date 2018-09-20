@@ -55,7 +55,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </summary>
         /// <param name="result">Optional result to pass to next step.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns>A <see cref="Task"/> of <see cref="cref="DialogTurnResult"/> representing the asynchronous operation.</returns>
+        /// <returns>A <see cref="Task"/> of <see cref="DialogTurnResult"/> representing the asynchronous operation.</returns>
         public async Task<DialogTurnResult> NextAsync(object result = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Ensure next hasn't been called
