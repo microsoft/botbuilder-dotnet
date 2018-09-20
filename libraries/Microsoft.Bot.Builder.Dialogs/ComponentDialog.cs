@@ -126,7 +126,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// Fings a dialog by ID.
+        /// Finds a dialog by ID.
         /// </summary>
         /// <param name="dialogId">The ID of the dialog to find.</param>
         /// <returns>The dialog; or <c>null</c> if there is not a match for the ID.</returns>
