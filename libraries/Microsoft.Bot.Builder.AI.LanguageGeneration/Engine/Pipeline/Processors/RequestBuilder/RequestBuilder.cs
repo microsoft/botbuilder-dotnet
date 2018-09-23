@@ -7,6 +7,9 @@ using LanguageGeneration.V2;
 
 namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Engine
 {
+    /// <summary>
+    /// The concrete class for building the <see cref="ICompositeRequest"/> object, which in turn contains all the unique template refereces in user <see cref="Activity"/> and the <see cref="Slot"/> objets that contains user entity values.
+    /// </summary>
     internal class RequestBuilder : IRequestBuilder
     {
         private readonly string _applicationId;
@@ -18,6 +21,13 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Engine
             }
             _applicationId = applicationId;
         }
+
+        /// <summary>
+        /// The main method to build the <see cref="ICompositeRequest"/> object.
+        /// </summary>
+        /// <param name="slots">The <see cref="IList{Slot}"/>.</param>
+        /// <param name="locale">Locale.</param>
+        /// <returns>A <see cref="ICompositeRequest"/>.</returns>
         public ICompositeRequest BuildRequest(IList<Slot> slots, string locale)
         {
             if (slots == null)

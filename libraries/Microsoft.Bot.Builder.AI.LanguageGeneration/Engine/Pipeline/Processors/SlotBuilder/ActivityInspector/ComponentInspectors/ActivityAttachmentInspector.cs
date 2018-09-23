@@ -7,8 +7,16 @@ using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Engine
 {
+    /// <summary>
+    /// Class to inspect/search a <see cref="Activity"/> object for template references in <see cref="Activity.Attachments"/>. 
+    /// </summary>
     internal class ActivityAttachmentInspector : IActivityComponentInspector
     {
+        /// <summary>
+        /// Inspect/search a <see cref="Activity"/> object for template references in <see cref="Activity.Attachments"/>. 
+        /// </summary>
+        /// <param name="activity">The <see cref="Activity"/> to be searched.</param>
+        /// <returns>A <see cref="IList{string}"/> containing all the referenced templates in <see cref="Activity.Attachments"/>.</returns>
         public IList<string> Inspect(Activity activity)
         {
             if (activity.Attachments == null || activity.Attachments.Count == 0)

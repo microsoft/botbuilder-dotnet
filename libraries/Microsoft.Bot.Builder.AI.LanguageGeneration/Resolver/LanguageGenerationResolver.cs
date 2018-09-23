@@ -39,6 +39,11 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Resolver
 
         /// <summary>
         /// Resolve outgoing activity to generate a response based on the template references in <see cref="Activity"/>.
+        /// Example : 
+        /// Activity outgoingActivity.Text = "[sayHello]"
+        /// await resolver.ResolveAsync(outgoingActivity).configureAwait(false);
+        /// await SendActivityAsync(outgoingActivity).configureAwait(false);
+        /// the user sees something like "hello there" or any other resolution that was previously configured for template [sayHello].
         /// </summary>
         /// <param name="activity">activity object that contains template references.</param>
         /// <param name="entities">entity list that will be used for resolving templates.</param>

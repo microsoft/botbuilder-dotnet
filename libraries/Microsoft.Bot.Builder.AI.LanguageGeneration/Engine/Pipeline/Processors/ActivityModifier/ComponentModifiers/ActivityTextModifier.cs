@@ -7,8 +7,16 @@ using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Engine
 {
+    // <summary>
+    /// Class to modify/substitute a <see cref="Activity"/> object for template references in <see cref="Activity.Text"/>. 
+    /// </summary>
     internal class ActivityTextModifier : IActivityComponentModifier
     {
+        /// <summary>
+        /// Modify/substitute  a <see cref="Activity"/> object for template references in <see cref="Activity.Text"/>. 
+        /// </summary>
+        /// <param name="activity">The <see cref="Activity"/> to be modified.</param>
+        /// <param name="response">The <see cref="ICompositeResponse"/> object that carries the tempolate resolution values, which will be used to modify the activity.</param>
         public void Modify(Activity activity, ICompositeResponse response)
         {
             if (!string.IsNullOrWhiteSpace(activity.Text))

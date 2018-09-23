@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using DialogFoundation.Backend.LG;
 using Microsoft.Bot.Builder.AI.LanguageGeneration.API;
 using Microsoft.Bot.Builder.AI.LanguageGeneration.Resolver;
+using Microsoft.Bot.Builder.AI.LanguageGeneration.Tests.TestData.Mocks;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json.Linq;
