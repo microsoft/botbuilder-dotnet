@@ -84,7 +84,7 @@ namespace Microsoft.BotBuilderSamples
             // Run the DialogSet - let the framework identify the current state of the dialog from
             // the dialog stack and figure out what (if any) is the active dialog.
             var dialogContext = await _dialogs.CreateContextAsync(turnContext, cancellationToken);
-            var results = await dialogContext.ContinueAsync(cancellationToken);
+            var results = await dialogContext.ContinueDialogAsync(cancellationToken);
 
             // If the DialogTurnStatus is Empty we should start a new dialog.
             if (results.Status == DialogTurnStatus.Empty)

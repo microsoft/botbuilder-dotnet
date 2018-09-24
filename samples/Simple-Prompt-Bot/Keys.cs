@@ -7,6 +7,6 @@ namespace Microsoft.BotBuilderSamples
 {
     public static class Keys
     {
-        public static string LanguageGenerationSubscriptionKey = "<YOUR_KEY_HERE>";
+        public static string LanguageGenerationSubscriptionKey { get; set; } = "<YOUR_KEY_HERE>";
     }
 }

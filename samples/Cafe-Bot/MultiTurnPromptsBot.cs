@@ -30,10 +30,8 @@ namespace Microsoft.BotBuilderSamples
         /// The <see cref="LanguageGenerationResolver"/> used to generate responses to the user chatting with the bot.
         /// </summary>
         private static LanguageGenerationResolver _languageGenerationResolver;
-
+        private static Random _random = new Random();
         private readonly BotAccessors _accessors;
-
-        private static Random random = new Random();
 
         /// <summary>
         /// The <see cref="DialogSet"/> that contains all the Dialogs that can be used at runtime.
@@ -108,12 +106,12 @@ namespace Microsoft.BotBuilderSamples
             // Run the DialogSet - let the framework identify the current state of the dialog from
             // the dialog stack and figure out what (if any) is the active dialog.
             var dialogContext = await _dialogs.CreateContextAsync(turnContext, cancellationToken);
-            var results = await dialogContext.ContinueAsync(cancellationToken);
+            var results = await dialogContext.ContinueDialogAsync(cancellationToken);
 
             // If the DialogTurnStatus is Empty we should start a new dialog.
             if (results.Status == DialogTurnStatus.Empty)
             {
-                await dialogContext.BeginAsync("details", null, cancellationToken);
+                await dialogContext.BeginDialogAsync("details", null, cancellationToken);
             }
 
             // Save the dialog state into the conversation state.
@@ -179,7 +177,7 @@ namespace Microsoft.BotBuilderSamples
             {
                 // User said "no" so we will skip the next step. Give -1 as the age.
                 await stepContext.Context.SendActivityAsync(MessageFactory.Text(FallbackMessages.UnableToHelp), cancellationToken).ConfigureAwait(false);
-                return await stepContext.EndAsync().ConfigureAwait(false);
+                return await stepContext.EndDialogAsync().ConfigureAwait(false);
             }
         }
 
@@ -215,7 +213,7 @@ namespace Microsoft.BotBuilderSamples
             else
             {
                 await stepContext.Context.SendActivityAsync(MessageFactory.Text(FallbackMessages.NotAvailableInThisPlace), cancellationToken).ConfigureAwait(false);
-                return await stepContext.EndAsync().ConfigureAwait(false);
+                return await stepContext.EndDialogAsync().ConfigureAwait(false);
             }
         }
 
@@ -295,7 +293,7 @@ namespace Microsoft.BotBuilderSamples
 
                 var metaData = new Dictionary<string, object>()
                 {
-                    { "confNumber", RandomString(5) },
+                    { "confNumber", GenerateRandomString(5) },
                 };
 
                 await _languageGenerationResolver.ResolveAsync(outgoingActivity, metaData).ConfigureAwait(false);
@@ -307,14 +305,15 @@ namespace Microsoft.BotBuilderSamples
             {
                 await stepContext.Context.SendActivityAsync(MessageFactory.Text("Alright then, let's start over !"), cancellationToken).ConfigureAwait(false);
             }
-            return await stepContext.EndAsync().ConfigureAwait(false);
+
+            return await stepContext.EndDialogAsync().ConfigureAwait(false);
         }
 
-        public static string RandomString(int length)
+        private string GenerateRandomString(int length)
         {
             const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
             return new string(Enumerable.Repeat(chars, length)
-              .Select(s => s[random.Next(s.Length)]).ToArray());
+              .Select(s => s[_random.Next(s.Length)]).ToArray());
         }
     }
 }
