@@ -21,7 +21,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var convoState = new ConversationState(new MemoryStorage());
 
             var adapter = new TestAdapter()
-                .Use(convoState);
+                .Use(new AutoSaveStateMiddleware(convoState));
 
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
             var dialogs = new DialogSet(dialogState);
@@ -35,10 +35,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
                 var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
-                await dc.ContinueAsync(cancellationToken);
+                await dc.ContinueDialogAsync(cancellationToken);
                 if (!turnContext.Responded)
                 {
-                    await dc.BeginAsync("test", null, cancellationToken);
+                    await dc.BeginDialogAsync("test", null, cancellationToken);
                 }
             })
             .Send("hello")
@@ -65,7 +65,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var convoState = new ConversationState(new MemoryStorage());
 
             var adapter = new TestAdapter()
-                .Use(convoState);
+                .Use(new AutoSaveStateMiddleware(convoState));
 
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
             var dialogs = new DialogSet(dialogState);
@@ -74,10 +74,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
                 var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
-                await dc.ContinueAsync(cancellationToken);
+                await dc.ContinueDialogAsync(cancellationToken);
                 if (!turnContext.Responded)
                 {
-                    await dc.BeginAsync("test", null, cancellationToken);
+                    await dc.BeginDialogAsync("test", null, cancellationToken);
                 }
             })
             .Send("hello")
@@ -97,7 +97,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
             var adapter = new TestAdapter()
-                .Use(convoState);
+                .Use(new AutoSaveStateMiddleware(convoState));
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
@@ -109,11 +109,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
                 var dc = await dialogs.CreateContextAsync(turnContext);
 
-                await dc.ContinueAsync();
+                await dc.ContinueDialogAsync();
 
                 if (!turnContext.Responded)
                 {
-                    await dc.BeginAsync("test-waterfall");
+                    await dc.BeginDialogAsync("test-waterfall");
                 }
             })
             .Send("hello")
@@ -176,7 +176,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 await stepContext.Context.SendActivityAsync($"Thanks for '{numberResult}'");
             }
             await stepContext.Context.SendActivityAsync("step3");
-            return await stepContext.EndAsync(new Dictionary<string, object> { { "Value", "All Done!" } });
+            return await stepContext.EndDialogAsync(new Dictionary<string, object> { { "Value", "All Done!" } });
         }
 
         [TestMethod]
@@ -185,7 +185,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var convoState = new ConversationState(new MemoryStorage());
 
             var adapter = new TestAdapter()
-                .Use(convoState);
+                .Use(new AutoSaveStateMiddleware(convoState));
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
@@ -197,11 +197,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
                 var dc = await dialogs.CreateContextAsync(turnContext);
 
-                await dc.ContinueAsync();
+                await dc.ContinueDialogAsync();
 
                 if (!turnContext.Responded)
                 {
-                    await dc.BeginAsync("test-waterfall-a");
+                    await dc.BeginDialogAsync("test-waterfall-a");
                 }
             })
             .Send("hello")
@@ -234,12 +234,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 async (stepContext, cancellationToken) =>
                 {
                     Assert.IsNotNull(stepContext);
-                    return await stepContext.EndAsync();
+                    return await stepContext.EndDialogAsync();
                 }
             }));
 
             var adapter = new TestAdapter()
-                .Use(convoState);
+                .Use(new AutoSaveStateMiddleware(convoState));
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
@@ -247,11 +247,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
                 var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
 
-                await dc.ContinueAsync(cancellationToken);
+                await dc.ContinueDialogAsync(cancellationToken);
 
                 if (!turnContext.Responded)
                 {
-                    await dc.BeginAsync("test-dateTimePrompt", null, cancellationToken);
+                    await dc.BeginDialogAsync("test-dateTimePrompt", null, cancellationToken);
                 }
             })
             .Send("hello")
@@ -262,14 +262,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .StartTestAsync();
         }
 
-        private static WaterfallDialog Create_Waterfall3()
+        public static WaterfallDialog Create_Waterfall3()
         {
             return new WaterfallDialog("test-waterfall-a", new WaterfallStep[] {
                 Waterfall3_Step1,
                 Waterfall3_Step2
             });
         }
-        private static WaterfallDialog Create_Waterfall4()
+        public static WaterfallDialog Create_Waterfall4()
         {
             return new WaterfallDialog("test-waterfall-b", new WaterfallStep[] {
                 Waterfall4_Step1,
@@ -277,7 +277,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             });
         }
 
-        private static WaterfallDialog Create_Waterfall5()
+        public static WaterfallDialog Create_Waterfall5()
         {
             return new WaterfallDialog("test-waterfall-c", new WaterfallStep[] {
                 Waterfall5_Step1,
@@ -288,12 +288,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         private static async Task<DialogTurnResult> Waterfall3_Step1(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             await stepContext.Context.SendActivityAsync(MessageFactory.Text("step1"), cancellationToken);
-            return await stepContext.BeginAsync("test-waterfall-b", null, cancellationToken);
+            return await stepContext.BeginDialogAsync("test-waterfall-b", null, cancellationToken);
         }
         private static async Task<DialogTurnResult> Waterfall3_Step2(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             await stepContext.Context.SendActivityAsync(MessageFactory.Text("step2"), cancellationToken);
-            return await stepContext.BeginAsync("test-waterfall-c", null, cancellationToken);
+            return await stepContext.BeginDialogAsync("test-waterfall-c", null, cancellationToken);
         }
 
         private static async Task<DialogTurnResult> Waterfall4_Step1(WaterfallStepContext stepContext, CancellationToken cancellationToken)
@@ -315,7 +315,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         private static async Task<DialogTurnResult> Waterfall5_Step2(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             await stepContext.Context.SendActivityAsync(MessageFactory.Text("step2.2"), cancellationToken);
-            return await stepContext.EndAsync(cancellationToken);
+            return await stepContext.EndDialogAsync(cancellationToken);
         }
 
     }

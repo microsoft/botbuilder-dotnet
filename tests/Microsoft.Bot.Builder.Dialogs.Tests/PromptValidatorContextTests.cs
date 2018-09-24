@@ -18,7 +18,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
             var adapter = new TestAdapter()
-                .Use(convoState);
+                .Use(new AutoSaveStateMiddleware(convoState));
 
             var dialogs = new DialogSet(dialogState);
 
@@ -37,7 +37,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                         {
                             var name = (string)stepContext.Result;
                             await stepContext.Context.SendActivityAsync(MessageFactory.Text($"{name} is a great name!"), cancellationToken);
-                            return await stepContext.EndAsync();
+                            return await stepContext.EndDialogAsync();
                         }
                     }
                 ));
@@ -45,10 +45,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
                 var dc = await dialogs.CreateContextAsync(turnContext);
-                await dc.ContinueAsync();
+                await dc.ContinueDialogAsync();
                 if (!turnContext.Responded)
                 {
-                    await dc.BeginAsync("nameDialog");
+                    await dc.BeginDialogAsync("nameDialog");
                 }
             })
             .Send("hello")
@@ -69,7 +69,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
             TestAdapter adapter = new TestAdapter()
-                .Use(convoState);
+                .Use(new AutoSaveStateMiddleware(convoState));
 
             DialogSet dialogs = new DialogSet(dialogState);
 
@@ -98,7 +98,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                         {
                             var name = (string)stepContext.Result;
                             await stepContext.Context.SendActivityAsync(MessageFactory.Text($"{name} is a great name!"), cancellationToken);
-                            return await stepContext.EndAsync();
+                            return await stepContext.EndDialogAsync();
                         }
                     }
                 ));
@@ -106,10 +106,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
                 var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
-                await dc.ContinueAsync(cancellationToken);
+                await dc.ContinueDialogAsync(cancellationToken);
                 if (!turnContext.Responded)
                 {
-                    await dc.BeginAsync("nameDialog", null, cancellationToken);
+                    await dc.BeginDialogAsync("nameDialog", null, cancellationToken);
                 }
             })
             .Send("hello")

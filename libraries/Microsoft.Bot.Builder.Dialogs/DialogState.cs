@@ -7,7 +7,12 @@ namespace Microsoft.Bot.Builder.Dialogs
 {
     public class DialogState
     {
-        public DialogState(List<DialogInstance> stack = null)
+        public DialogState()
+            : this(null)
+        {
+        }
+
+        public DialogState(List<DialogInstance> stack)
         {
             DialogStack = stack ?? new List<DialogInstance>();
         }

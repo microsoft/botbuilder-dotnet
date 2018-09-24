@@ -17,8 +17,6 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="dialogs">Parent dialog set.</param>
         /// <param name="turnContext">Context for the current turn of conversation with the user.</param>
         /// <param name="state">Current dialog state.</param>
-        /// <param name="onCompleted">An action to perform when the dialog completes, that is,
-        /// when <see cref="EndAsync(IDictionary{string, object})"/> is called on the current context.</param>
         internal DialogContext(DialogSet dialogs, ITurnContext turnContext, DialogState state)
         {
             Dialogs = dialogs ?? throw new ArgumentNullException(nameof(dialogs));
@@ -59,7 +57,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="options">(Optional) additional argument(s) to pass to the dialog being started.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public async Task<DialogTurnResult> BeginAsync(string dialogId, object options = null, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<DialogTurnResult> BeginDialogAsync(string dialogId, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (string.IsNullOrEmpty(dialogId))
             {
@@ -70,7 +68,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             var dialog = Dialogs.Find(dialogId);
             if (dialog == null)
             {
-                throw new Exception($"DialogContext.BeginAsync(): A dialog with an id of '{dialogId}' wasn't found.");
+                throw new Exception($"DialogContext.BeginDialogAsync(): A dialog with an id of '{dialogId}' wasn't found.");
             }
 
             // Push new instance onto stack.
@@ -83,7 +81,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             Stack.Insert(0, instance);
 
             // Call dialogs BeginAsync() method.
-            return await dialog.DialogBeginAsync(this, options, cancellationToken).ConfigureAwait(false);
+            return await dialog.BeginDialogAsync(this, options, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -106,17 +104,17 @@ namespace Microsoft.Bot.Builder.Dialogs
                 throw new ArgumentNullException(nameof(options));
             }
 
-            return await BeginAsync(dialogId, options, cancellationToken).ConfigureAwait(false);
+            return await BeginDialogAsync(dialogId, options, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
         /// Continues execution of the active dialog, if there is one, by passing the context object to
-        /// its `Dialog.ContinueAsync()` method. You can check `context.responded` after the call completes
+        /// its `Dialog.ContinueDialogAsync()` method. You can check `context.responded` after the call completes
         /// to determine if a dialog was run and a reply was sent to the user.
         /// </summary>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public async Task<DialogTurnResult> ContinueAsync(CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<DialogTurnResult> ContinueDialogAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
             // Check for a dialog on the stack
             if (ActiveDialog != null)
@@ -125,11 +123,11 @@ namespace Microsoft.Bot.Builder.Dialogs
                 var dialog = Dialogs.Find(ActiveDialog.Id);
                 if (dialog == null)
                 {
-                    throw new Exception($"DialogContext.ContinueAsync(): Can't continue dialog. A dialog with an id of '{ActiveDialog.Id}' wasn't found.");
+                    throw new Exception($"DialogContext.ContinueDialogAsync(): Can't continue dialog. A dialog with an id of '{ActiveDialog.Id}' wasn't found.");
                 }
 
                 // Continue execution of dialog
-                return await dialog.DialogContinueAsync(this, cancellationToken).ConfigureAwait(false);
+                return await dialog.ContinueDialogAsync(this, cancellationToken).ConfigureAwait(false);
             }
             else
             {
@@ -149,7 +147,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="result"> (Optional) result to pass to the parent dialogs.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public async Task<DialogTurnResult> EndAsync(object result = null, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<DialogTurnResult> EndDialogAsync(object result = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Pop active dialog off the stack
             if (Stack.Any())
@@ -164,11 +162,11 @@ namespace Microsoft.Bot.Builder.Dialogs
                 var dialog = Dialogs.Find(ActiveDialog.Id);
                 if (dialog == null)
                 {
-                    throw new Exception($"DialogContext.EndAsync(): Can't resume previous dialog. A dialog with an id of '{ActiveDialog.Id}' wasn't found.");
+                    throw new Exception($"DialogContext.EndDialogAsync(): Can't resume previous dialog. A dialog with an id of '{ActiveDialog.Id}' wasn't found.");
                 }
 
                 // Return result to previous dialog
-                return await dialog.DialogResumeAsync(this, DialogReason.EndCalled, result, cancellationToken).ConfigureAwait(false);
+                return await dialog.ResumeDialogAsync(this, DialogReason.EndCalled, result, cancellationToken).ConfigureAwait(false);
             }
             else
             {
@@ -181,7 +179,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </summary>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The dialog context.</returns>
-        public async Task<DialogTurnResult> CancelAllAsync(CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<DialogTurnResult> CancelAllDialogsAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
             if (Stack.Any())
             {
@@ -206,7 +204,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="options">(Optional) additional argument(s) to pass to the new dialog.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public async Task<DialogTurnResult> ReplaceAsync(string dialogId, object options = null, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<DialogTurnResult> ReplaceDialogAsync(string dialogId, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Pop stack
             if (Stack.Any())
@@ -215,7 +213,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             // Start replacement dialog
-            return await BeginAsync(dialogId, options, cancellationToken).ConfigureAwait(false);
+            return await BeginDialogAsync(dialogId, options, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -223,7 +221,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </summary>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public async Task RepromptAsync(CancellationToken cancellationToken = default(CancellationToken))
+        public async Task RepromptDialogAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
             // Check for a dialog on the stack
             if (ActiveDialog != null)
@@ -232,11 +230,11 @@ namespace Microsoft.Bot.Builder.Dialogs
                 var dialog = Dialogs.Find(ActiveDialog.Id);
                 if (dialog == null)
                 {
-                    throw new Exception($"DialogSet.RepromptAsync(): Can't find A dialog with an id of '{ActiveDialog.Id}'.");
+                    throw new Exception($"DialogSet.RepromptDialogAsync(): Can't find A dialog with an id of '{ActiveDialog.Id}'.");
                 }
 
                 // Ask dialog to re-prompt if supported
-                await dialog.DialogRepromptAsync(Context, ActiveDialog, cancellationToken).ConfigureAwait(false);
+                await dialog.RepromptDialogAsync(Context, ActiveDialog, cancellationToken).ConfigureAwait(false);
             }
         }
 
@@ -250,7 +248,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 if (dialog != null)
                 {
                     // Notify dialog of end
-                    await dialog.DialogEndAsync(Context, instance, reason, cancellationToken).ConfigureAwait(false);
+                    await dialog.EndDialogAsync(Context, instance, reason, cancellationToken).ConfigureAwait(false);
                 }
 
                 // Pop dialog off stack

@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
             var testProperty = userState.CreateProperty<UserStateObject>("test");
 
             var adapter = new TestAdapter()
-                .Use(userState);
+                .Use(new AutoSaveStateMiddleware(userState));
 
             var flow = new TestFlow(adapter, async (context, cancellationToken) =>
             {
@@ -69,7 +69,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
             var testProperty = convoState.CreateProperty<ConversationStateObject>("test");
 
             var adapter = new TestAdapter()
-                .Use(convoState);
+                .Use(new AutoSaveStateMiddleware(convoState));
 
             var flow = new TestFlow(adapter, async (context, cancellationToken) =>
             {
@@ -113,7 +113,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
             var customState = new CustomState(storage);
             var testProperty = customState.CreateProperty<CustomStateObject>("Test");
             var adapter = new TestAdapter()
-                .Use(customState);
+                .Use(new AutoSaveStateMiddleware(customState));
 
             var flow = new TestFlow(adapter, async (context, cancellationToken) =>
             {

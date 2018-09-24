@@ -21,7 +21,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
             var adapter = new TestAdapter()
-                .Use(convoState);
+                .Use(new AutoSaveStateMiddleware(convoState));
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
@@ -33,10 +33,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
                 var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
 
-                var results = await dc.ContinueAsync(cancellationToken);
+                var results = await dc.ContinueDialogAsync(cancellationToken);
                 if (results.Status == DialogTurnStatus.Empty)
                 {
-                    await dc.BeginAsync("test-waterfall", null, cancellationToken);
+                    await dc.BeginDialogAsync("test-waterfall", null, cancellationToken);
                 }
                 else if (results.Status == DialogTurnStatus.Complete)
                 {
@@ -61,7 +61,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
             var adapter = new TestAdapter()
-                .Use(convoState);
+                .Use(new AutoSaveStateMiddleware(convoState));
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
@@ -72,10 +72,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
                 var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
 
-                var results = await dc.ContinueAsync(cancellationToken);
+                var results = await dc.ContinueDialogAsync(cancellationToken);
                 if (results.Status == DialogTurnStatus.Empty)
                 {
-                    await dc.BeginAsync("TestComponentDialog", null, cancellationToken);
+                    await dc.BeginDialogAsync("TestComponentDialog", null, cancellationToken);
                 }
                 else if (results.Status == DialogTurnStatus.Complete)
                 {
@@ -100,7 +100,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
             var adapter = new TestAdapter()
-                .Use(convoState);
+                .Use(new AutoSaveStateMiddleware(convoState));
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
@@ -111,10 +111,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
                 var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
 
-                var results = await dc.ContinueAsync(cancellationToken);
+                var results = await dc.ContinueDialogAsync(cancellationToken);
                 if (results.Status == DialogTurnStatus.Empty)
                 {
-                    await dc.BeginAsync("TestNestedComponentDialog", null, cancellationToken);
+                    await dc.BeginDialogAsync("TestNestedComponentDialog", null, cancellationToken);
                 }
                 else if (results.Status == DialogTurnStatus.Complete)
                 {
@@ -177,7 +177,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 var numberResult = (int)stepContext.Result;
                 await stepContext.Context.SendActivityAsync(MessageFactory.Text($"Got '{numberResult}'."), cancellationToken);
             }
-            return await stepContext.BeginAsync("TestComponentDialog", null, cancellationToken);
+            return await stepContext.BeginDialogAsync("TestComponentDialog", null, cancellationToken);
         }
 
         private class TestComponentDialog : ComponentDialog

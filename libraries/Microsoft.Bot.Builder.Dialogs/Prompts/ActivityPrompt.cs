@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             _validator = validator ?? throw new ArgumentNullException(nameof(validator));
         }
 
-        public override async Task<DialogTurnResult> DialogBeginAsync(DialogContext dc, object options, CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (dc == null)
             {
@@ -59,7 +59,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             return Dialog.EndOfTurn;
         }
 
-        public override async Task<DialogTurnResult> DialogContinueAsync(DialogContext dc, CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task<DialogTurnResult> ContinueDialogAsync(DialogContext dc, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (dc == null)
             {
@@ -79,7 +79,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             // Return recognized value or re-prompt
             if (isValid)
             {
-                return await dc.EndAsync(recognized.Value, cancellationToken).ConfigureAwait(false);
+                return await dc.EndDialogAsync(recognized.Value, cancellationToken).ConfigureAwait(false);
             }
             else
             {
@@ -87,18 +87,18 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
         }
 
-        public override async Task<DialogTurnResult> DialogResumeAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Prompts are typically leaf nodes on the stack but the dev is free to push other dialogs
             // on top of the stack which will result in the prompt receiving an unexpected call to
             // dialogResume() when the pushed on dialog ends.
             // To avoid the prompt prematurely ending we need to implement this method and
             // simply re-prompt the user.
-            await DialogRepromptAsync(dc.Context, dc.ActiveDialog, cancellationToken).ConfigureAwait(false);
+            await RepromptDialogAsync(dc.Context, dc.ActiveDialog, cancellationToken).ConfigureAwait(false);
             return Dialog.EndOfTurn;
         }
 
-        public override async Task DialogRepromptAsync(ITurnContext turnContext, DialogInstance instance, CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task RepromptDialogAsync(ITurnContext turnContext, DialogInstance instance, CancellationToken cancellationToken = default(CancellationToken))
         {
             var state = (IDictionary<string, object>)instance.State[PersistedState];
             var options = (PromptOptions)instance.State[PersistedOptions];

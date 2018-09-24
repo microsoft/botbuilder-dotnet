@@ -55,11 +55,13 @@
   <ItemGroup>
     <Compile Include="ConnectionTests.cs" />
     <Compile Include="ConfigurationLoadAndSaveTests.cs" />
+    <Compile Include="ServiceTests.cs" />
     <Compile Include="EncryptionTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="legacy.bot" />
     <None Include="test.bot" />
   </ItemGroup>
   <ItemGroup>

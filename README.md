@@ -1,13 +1,14 @@
-# Bot Builder SDK v4 (Preview)
+# Bot Builder SDK v4
 
 ![Build Status](https://fuselabs.visualstudio.com/_apis/public/build/definitions/86659c66-c9df-418a-a371-7de7aed35064/211/badge)
 
-This repository contains code for the .NET version of the [Microsoft Bot Builder SDK](https://github.com/Microsoft/botbuilder). The Bot Builder SDK v4 is the latest SDK for building bot applications. It is in **Preview** state and is being actively developed. 
-Production bots should continue to be developed using the [v3 SDK](https://github.com/Microsoft/BotBuilder/tree/master/CSharp). 
+This repository contains code for the .NET version of the [Microsoft Bot Builder SDK](https://github.com/Microsoft/botbuilder). The Bot Builder SDK v4 is the latest SDK for building bot applications.  
 
-In addition to the .NET SDK, Bot Builder supports creating bots in other popular programming languages like [JavaScript](https://github.com/Microsoft/botbuilder-js), [Python](https://github.com/Microsoft/botbuilder-python), and [Java](https://github.com/Microsoft/botbuilder-java).
+In addition to the .NET SDK, Bot Builder supports creating bots in other popular programming languages like [JavaScript](https://github.com/Microsoft/botbuilder-js), [Python (Preview)](https://github.com/Microsoft/botbuilder-python), and [Java (Preview)](https://github.com/Microsoft/botbuilder-java).
 
 To get started see the [Azure Bot Service Documentation](https://docs.microsoft.com/en-us/azure/bot-service/?view=azure-bot-service-4.0) for the v4 SDK.
+
+A rich set of samples are available at [BotBuilder-Samples](https://github.com/microsoft/botbuilder-samples) repository.
 
 ## Contributing
 

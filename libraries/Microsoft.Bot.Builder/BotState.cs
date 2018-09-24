@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,7 +13,7 @@ namespace Microsoft.Bot.Builder
     /// <summary>
     /// Reads and writes state for your bot to storage.
     /// </summary>
-    public abstract class BotState : IMiddleware, IPropertyManager
+    public abstract class BotState : IPropertyManager
     {
         private readonly string _contextServiceKey;
         private readonly IStorage _storage;
@@ -45,39 +46,6 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
-        /// Processess an incoming activity.
-        /// </summary>
-        /// <param name="turnContext">The context object for this turn.</param>
-        /// <param name="next">The delegate to call to continue the bot middleware pipeline.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns>A task that represents the work queued to execute.</returns>
-        /// <remarks>This middleware loads the state object on the leading edge of the middleware pipeline
-        /// and persists the state object on the trailing edge. Note this is different than BotStateSet,
-        /// which does not pre-load the set on entry into the pipeline.
-        /// </remarks>
-        public async Task OnTurnAsync(ITurnContext turnContext, NextDelegate next, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            if (turnContext == null)
-            {
-                throw new ArgumentNullException(nameof(turnContext));
-            }
-
-            if (next == null)
-            {
-                throw new ArgumentNullException(nameof(next));
-            }
-
-            // Load state
-            await LoadAsync(turnContext, true, cancellationToken).ConfigureAwait(false);
-
-            // process activity
-            await next(cancellationToken).ConfigureAwait(false);
-
-            // Save changes
-            await SaveChangesAsync(turnContext, false, cancellationToken).ConfigureAwait(false);
-        }
-
-        /// <summary>
         /// Reads in  the current state object and caches it in the context object for this turm.
         /// </summary>
         /// <param name="turnContext">The context object for this turn.</param>
@@ -98,7 +66,7 @@ namespace Microsoft.Bot.Builder
             {
                 var items = await _storage.ReadAsync(new[] { storageKey }, cancellationToken).ConfigureAwait(false);
                 items.TryGetValue(storageKey, out object val);
-                turnContext.TurnState[_contextServiceKey] = new CachedBotState((IDictionary<string, object>)val ?? new Dictionary<string, object>());
+                turnContext.TurnState[_contextServiceKey] = new CachedBotState((IDictionary<string, object>)val);
             }
         }
 
@@ -247,7 +215,7 @@ namespace Microsoft.Bot.Builder
         {
             public CachedBotState(IDictionary<string, object> state = null)
             {
-                State = state ?? new Dictionary<string, object>();
+                State = state ?? new ConcurrentDictionary<string, object>();
                 Hash = ComputeHash(State);
             }
 
@@ -268,6 +236,10 @@ namespace Microsoft.Bot.Builder
 
         /// <summary>
         /// Implements IPropertyAccessor for an IPropertyContainer.
+        /// Note the semantic of this accessor are intended to be lazy, this means teh Get, Set and Delete
+        /// methods will first call LoadAsync. This will be a no-op if the data is already loaded.
+        /// The implication is you can just use this accessor in the application code directly without first calling LoadAsync
+        /// this approach works with the AutoSaveStateMiddleware which will save as needed at the end of a turn.
         /// </summary>
         /// <typeparam name="T">type of value the propertyAccessor accesses.</typeparam>
         private class BotStatePropertyAccessor<T> : IStatePropertyAccessor<T>
@@ -289,19 +261,20 @@ namespace Microsoft.Bot.Builder
             public string Name { get; private set; }
 
             /// <summary>
-            /// Delete the property.
+            /// Delete the property. The semantics are intended to be lazy, note the use of LoadAsync at the start.
             /// </summary>
             /// <param name="turnContext">The turn context.</param>
             /// <param name="cancellationToken">The cancellation token.</param>
             /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-            public Task DeleteAsync(ITurnContext turnContext, CancellationToken cancellationToken)
+            public async Task DeleteAsync(ITurnContext turnContext, CancellationToken cancellationToken)
             {
-                return _botState.DeletePropertyValueAsync(turnContext, Name, cancellationToken);
+                await _botState.LoadAsync(turnContext, false, cancellationToken).ConfigureAwait(false);
+                await _botState.DeletePropertyValueAsync(turnContext, Name, cancellationToken).ConfigureAwait(false);
             }
 
             /// <summary>
-            /// Get the property value.
-            /// </summary>
+            /// Get the property value. The semantics are intended to be lazy, note the use of LoadAsync at the start.
+            /// /// </summary>
             /// <param name="turnContext">The context object for this turn.</param>
             /// <param name="defaultValueFactory">Defines the default value. Invoked when no value been set for the requested state property.  If defaultValueFactory is defined as null, the MissingMemberException will be thrown if the underlying property is not set.</param>
             /// <param name="cancellationToken">The cancellation token.</param>
@@ -330,7 +303,7 @@ namespace Microsoft.Bot.Builder
             }
 
             /// <summary>
-            /// Set the property value.
+            /// Set the property value. The semantics are intended to be lazy, note the use of LoadAsync at the start.
             /// </summary>
             /// <param name="turnContext">turn context.</param>
             /// <param name="value">value.</param>

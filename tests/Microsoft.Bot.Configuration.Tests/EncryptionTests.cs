@@ -22,6 +22,30 @@ namespace Microsoft.Bot.Configuration.Tests
         }
 
         [TestMethod]
+        public void EncryptDecryptEmptyWorks()
+        {
+            var key = "lgCbJPXnfOlatjbBDKMbh0ie6bc8PD/cjqA/2tPgMS0=";
+
+            string encrypted = string.Empty.Encrypt(key);
+            Assert.AreEqual(string.Empty, encrypted, "encryption failed");
+
+            string decrypted = encrypted.Decrypt(key);
+            Assert.AreEqual(string.Empty, decrypted, "decryption failed");
+        }
+
+        [TestMethod]
+        public void EncryptDecryptNullWorks()
+        {
+            var key = "lgCbJPXnfOlatjbBDKMbh0ie6bc8PD/cjqA/2tPgMS0=";
+
+            string encrypted = EncryptUtilities.Encrypt(null, key);
+            Assert.AreEqual(null, encrypted, "encryption failed");
+
+            string decrypted = EncryptUtilities.Decrypt(encrypted, key);
+            Assert.AreEqual(null, decrypted, "decryption failed");
+        }
+
+        [TestMethod]
         public void GenerateKeyWorks()
         {
             string value = "1234567890";
