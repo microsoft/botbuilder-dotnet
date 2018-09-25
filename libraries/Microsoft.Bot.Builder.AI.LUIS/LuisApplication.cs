@@ -11,10 +11,8 @@ namespace Microsoft.Bot.Builder.AI.Luis
     /// </summary>
     public class LuisApplication
     {
-
         public LuisApplication()
         {
-
         }
 
         /// <summary>
@@ -32,7 +30,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
 
             if (!Guid.TryParse(endpointKey, out var subscriptionGuid))
             {
-                throw new ArgumentException($"\"{applicationId}\" is not a valid LUIS subscription key.");
+                throw new ArgumentException($"\"{subscriptionGuid}\" is not a valid LUIS subscription key.");
             }
 
             if (string.IsNullOrWhiteSpace(endpoint))
