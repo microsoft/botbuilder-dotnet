@@ -138,6 +138,96 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .AssertReply("2")
             .StartTestAsync();
         }
+
+        [TestMethod]
+        public async Task ActivityPromptShouldReturnDialogEndOfTurnIfValidationFailed()
+        {
+            var convoState = new ConversationState(new MemoryStorage());
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
+
+            var adapter = new TestAdapter()
+                .Use(new AutoSaveStateMiddleware(convoState));
+
+            var dialogs = new DialogSet(dialogState);
+
+            PromptValidator<Activity> validator = async (prompt, cancellationToken) =>
+            {
+                return false;
+            };
+
+            var eventPrompt = new EventActivityPrompt("EventActivityPrompt", validator);
+            dialogs.Add(eventPrompt);
+
+            var eventActivity = new Activity { Type = ActivityTypes.Event, Value = 2 };
+
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            {
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
+                var results = await dc.ContinueDialogAsync(cancellationToken);
+                if (results.Status == DialogTurnStatus.Empty)
+                {
+                    var options = new PromptOptions { Prompt = new Activity { Type = ActivityTypes.Message, Text = "please send an event." } };
+                    await dc.PromptAsync("EventActivityPrompt", options);
+                }
+                else if (results.Status == DialogTurnStatus.Complete)
+                {
+                    var content = (Activity)results.Result;
+                    await turnContext.SendActivityAsync(content, cancellationToken);
+                } else if (results.Status == DialogTurnStatus.Waiting)
+                {
+                    await turnContext.SendActivityAsync("Test complete.");
+                }
+            })
+            .Send("hello")
+            .AssertReply("please send an event.")
+            .Send("test")
+            .AssertReply("Test complete.")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task ActivityPromptResumeDialogShouldReturnDialogEndOfTurn()
+        {
+            var convoState = new ConversationState(new MemoryStorage());
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
+
+            var adapter = new TestAdapter()
+                .Use(new AutoSaveStateMiddleware(convoState));
+
+            var dialogs = new DialogSet(dialogState);
+
+            PromptValidator<Activity> validator = async (prompt, cancellationToken) =>
+            {
+                return false;
+            };
+
+            var eventPrompt = new EventActivityPrompt("EventActivityPrompt", validator);
+            dialogs.Add(eventPrompt);
+
+            var eventActivity = new Activity { Type = ActivityTypes.Event, Value = 2 };
+
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            {
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
+                var results = await dc.ContinueDialogAsync(cancellationToken);
+                if (results.Status == DialogTurnStatus.Empty)
+                {
+                    var options = new PromptOptions { Prompt = new Activity { Type = ActivityTypes.Message, Text = "please send an event." } };
+                    await dc.PromptAsync("EventActivityPrompt", options);
+                }
+                var secondResults = await eventPrompt.ResumeDialogAsync(dc, DialogReason.NextCalled);
+
+                if (secondResults.Status == DialogTurnStatus.Waiting)
+                {
+                    await turnContext.SendActivityAsync("Test complete.");
+                }
+            })
+            .Send("hello")
+            .AssertReply("please send an event.")
+            .AssertReply("please send an event.")
+            .AssertReply("Test complete.")
+            .StartTestAsync();
+        }
     }
 
     public class EventActivityPrompt : ActivityPrompt
