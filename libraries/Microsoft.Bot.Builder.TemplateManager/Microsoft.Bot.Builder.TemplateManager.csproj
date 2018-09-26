@@ -55,7 +55,7 @@
 	<ItemGroup>
     <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(PackageVersion)' == '' " Version="4.0.0-local" />
     <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(PackageVersion)' != '' " Version="$(PackageVersion)" />
-		<PackageReference Include="Microsoft.CSharp" Version="4.4.1" />
+		<PackageReference Include="Microsoft.CSharp" Version="4.5.0" />
 		<PackageReference Include="SourceLink.Create.CommandLine" Version="2.8.1" />
 	</ItemGroup>
 
