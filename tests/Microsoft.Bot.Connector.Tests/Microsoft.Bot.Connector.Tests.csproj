@@ -20,7 +20,7 @@
 
   <ItemGroup>
     <PackageReference Include="FluentAssertions" Version="5.3.0" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.7.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.8.0" />
     <PackageReference Include="Microsoft.Rest.ClientRuntime.Azure.TestFramework" Version="1.6.0" />
     <PackageReference Include="Moq" Version="4.8.2" />
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
