@@ -18,8 +18,6 @@
 		<TargetFramework>netstandard2.0</TargetFramework>
 		<PackageId>Microsoft.Bot.Builder.Azure</PackageId>
 		<Description>Azure classes for using Azure Services on the Microsoft Bot Builder SDK</Description>
-		<!-- Required in both test/product projects. This is a temporary workaround for https://github.com/Microsoft/vstest/issues/800 -->
-		<DebugType>Full</DebugType>
 	</PropertyGroup>
 
 	<PropertyGroup>
