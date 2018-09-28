@@ -10,6 +10,20 @@ To get started see the [Azure Bot Service Documentation](https://docs.microsoft.
 
 A rich set of samples are available at [BotBuilder-Samples](https://github.com/microsoft/botbuilder-samples) repository.
 
+## Packages
+|  Name 	|Stable  	| 
+|---	|---	|---	
+|Microsoft.Bot.Builder   	|[![BotBuilder Badge](https://buildstats.info/nuget/Microsoft.Bot.Builder)](https://www.nuget.org/packages/Microsoft.Bot.Builder/)   	| 
+|Microsoft.Bot.Configuration 	|[![BotBuilder Badge](https://buildstats.info/nuget/Microsoft.Bot.Configuration)](https://www.nuget.org/packages/Microsoft.Bot.Configuration/)   	|
+|Microsoft.Bot.Connector   	|[![BotBuilder Badge](https://buildstats.info/nuget/Microsoft.Bot.Connector)](https://www.nuget.org/packages/Microsoft.Bot.Connector/)   	|
+|Microsoft.Bot.Schema   	|[![BotBuilder Badge](https://buildstats.info/nuget/Microsoft.Bot.Schema)](https://www.nuget.org/packages/Microsoft.Bot.Schema/)   	|
+|Microsoft.Bot.Builder.AI.LUIS   	|[![BotBuilder Badge](https://buildstats.info/nuget/Microsoft.Bot.Builder.AI.LUIS)](https://www.nuget.org/packages/Microsoft.Bot.Builder.AI.LUIS/)   	|
+|Microsoft.Bot.Builder.AI.QnA   	|[![BotBuilder Badge](https://buildstats.info/nuget/Microsoft.Bot.Builder.AI.QnA)](https://www.nuget.org/packages/Microsoft.Bot.Builder.AI.Qna/)   	|
+|Microsoft.Bot.Builder.Azure   	|[![BotBuilder Badge](https://buildstats.info/nuget/Microsoft.Bot.Builder.Azure)](https://www.nuget.org/packages/Microsoft.Bot.Builder.Azure/)   	|
+|Microsoft.Bot.Builder.Dialogs   	|[![BotBuilder Badge](https://buildstats.info/nuget/Microsoft.Bot.Builder.Dialogs)](https://www.nuget.org/packages/Microsoft.Bot.Builder.Dialogs/)   	|
+|Microsoft.Bot.Builder.TemplateManager   	|[![BotBuilder Badge](https://buildstats.info/nuget/Microsoft.Bot.Builder.TemplateManager)](https://www.nuget.org/packages/Microsoft.Bot.Builder.TemplateManager/)   	|
+
+
 ## Contributing
 
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a
