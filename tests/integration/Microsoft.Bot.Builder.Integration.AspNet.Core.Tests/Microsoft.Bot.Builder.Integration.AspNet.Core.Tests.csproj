@@ -8,6 +8,9 @@
     <AssemblyName>Microsoft.Bot.Builder.Integration.AspNet.Core.Tests</AssemblyName>
 
     <RootNamespace>Microsoft.Bot.Builder.Integration.AspNet.Core.Tests</RootNamespace>
+
+    <!-- Required in both test/product projects. This is a temporary workaround for https://github.com/Microsoft/vstest/issues/800 -->
+    <DebugType>Full</DebugType>
   </PropertyGroup>
 
   <ItemGroup>

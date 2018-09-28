@@ -24,6 +24,8 @@
 		<PackageId>Microsoft.Bot.Builder</PackageId>
 		<Description>Library for building bots using Microsoft Bot Framework Connector</Description>
 		<Summary>Library for building bots using Microsoft Bot Framework Connector</Summary>
+		<!-- Required in both test/product projects. This is a temporary workaround for https://github.com/Microsoft/vstest/issues/800 -->
+		<DebugType>Full</DebugType>
 	</PropertyGroup>
 
 	<PropertyGroup>
