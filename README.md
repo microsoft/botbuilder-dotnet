@@ -11,8 +11,8 @@ To get started see the [Azure Bot Service Documentation](https://docs.microsoft.
 A rich set of samples are available at [BotBuilder-Samples](https://github.com/microsoft/botbuilder-samples) repository.
 
 ## Packages
-|  Name 	|Stable  	| 
-|---	|---	|---	
+|  Name 	|Stable
+|---	|---
 |Microsoft.Bot.Builder   	|[![BotBuilder Badge](https://buildstats.info/nuget/Microsoft.Bot.Builder)](https://www.nuget.org/packages/Microsoft.Bot.Builder/)   	| 
 |Microsoft.Bot.Configuration 	|[![BotBuilder Badge](https://buildstats.info/nuget/Microsoft.Bot.Configuration)](https://www.nuget.org/packages/Microsoft.Bot.Configuration/)   	|
 |Microsoft.Bot.Connector   	|[![BotBuilder Badge](https://buildstats.info/nuget/Microsoft.Bot.Connector)](https://www.nuget.org/packages/Microsoft.Bot.Connector/)   	|
