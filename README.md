@@ -1,6 +1,6 @@
 # Bot Builder SDK v4
 
-![Build Status](https://fuselabs.visualstudio.com/_apis/public/build/definitions/86659c66-c9df-418a-a371-7de7aed35064/211/badge) [![Coverage Status](https://coveralls.io/repos/github/Microsoft/botbuilder-dotnet/badge.svg)](https://coveralls.io/github/Microsoft/botbuilder-dotnet)
+[![Build status](https://fuselabs.visualstudio.com/SDK_v4/_apis/build/status/Bot.Builder-DotNet)](https://fuselabs.visualstudio.com/SDK_v4/_build/latest?definitionId=215) [![Coverage Status](https://coveralls.io/repos/github/Microsoft/botbuilder-dotnet/badge.svg)](https://coveralls.io/github/Microsoft/botbuilder-dotnet)
 
 This repository contains code for the .NET version of the [Microsoft Bot Builder SDK](https://github.com/Microsoft/botbuilder). The Bot Builder SDK v4 is the latest SDK for building bot applications.  
 
