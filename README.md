@@ -1,6 +1,18 @@
 # Bot Builder SDK v4
 
-[![Build status](https://fuselabs.visualstudio.com/SDK_v4/_apis/build/status/Bot.Builder-DotNet?branchName=master)](https://fuselabs.visualstudio.com/SDK_v4/_build/latest?definitionId=215) [![Coverage Status](https://coveralls.io/repos/github/Microsoft/botbuilder-dotnet/badge.svg)](https://coveralls.io/github/Microsoft/botbuilder-dotnet)
+[![Build status](https://fuselabs.visualstudio.com/SDK_v4/_apis/build/status/Bot.Builder-DotNet?branchName=master)](https://fuselabs.visualstudio.com/SDK_v4/_build/latest?definitionId=215&branchName=master)
+[![Coverage Status](https://coveralls.io/repos/github/Microsoft/botbuilder-dotnet/badge.svg)](https://coveralls.io/github/Microsoft/botbuilder-dotnet)
+
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Gitter](https://img.shields.io/gitter/room/Microsoft/BotBuilder.svg)](https://gitter.im/Microsoft/BotBuilder)
+
+[![GitHub issues open](https://img.shields.io/github/issues-raw/Microsoft/botbuilder-dotnet.svg)](https://github.com/Microsoft/BotBuilder-dotnet/issues)
+[![GitHub closed issues](https://img.shields.io/github/issues-closed-raw/Microsoft/botbuilder-dotnet.svg)](https://github.com/Microsoft/BotBuilder-dotnet/issues?utf8=%E2%9C%93&q=is%3Aissue+is%3Aclosed)
+[![GitHub last commit](https://img.shields.io/github/last-commit/Microsoft/botbuilder-dotnet.svg)](https://github.com/Microsoft/botbuilder-dotnet/graphs/commit-activity)
+[![GitHub contributors](https://img.shields.io/github/contributors/Microsoft/botbuilder-dotnet.svg)](https://github.com/Microsoft/botbuilder-dotnet/graphs/contributors)
+
+[![StackExchange](https://img.shields.io/stackexchange/stackoverflow/t/botframework.svg)](https://stackoverflow.com/questions/tagged/botframework)
+[![StackExchange](https://img.shields.io/stackexchange/stackoverflow/t/botframework-v4.svg)](https://stackoverflow.com/questions/tagged/botframework-v4)
 
 This repository contains code for the .NET version of the [Microsoft Bot Builder SDK](https://github.com/Microsoft/botbuilder). The Bot Builder SDK v4 is the latest SDK for building bot applications.  
 
