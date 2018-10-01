@@ -42,7 +42,7 @@ namespace Microsoft.Bot.Configuration
         public JObject Properties { get; set; } = new JObject();
 
         /// <summary>
-        /// Encrypt properties on this service.
+        /// Decrypt properties on this service.
         /// </summary>
         /// <param name="secret"> secret to use to decrypt the keys in this service.</param>
         public virtual void Decrypt(string secret)
@@ -50,7 +50,7 @@ namespace Microsoft.Bot.Configuration
         }
 
         /// <summary>
-        /// Decrypt properties on this service
+        /// Encrypt properties on this service.
         /// </summary>
         /// <param name="secret">secret to use to encrypt the keys in this service.</param>
         public virtual void Encrypt(string secret)
