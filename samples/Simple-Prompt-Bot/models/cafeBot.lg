@@ -1,0 +1,31 @@
+# welcomeMessage
+    - [wPhrase] I'm the Café bot. I can help book a table, find café locations and more. [offerHelp]
+# wPhrase
+    - Hi,
+    - Hello,
+# offerHelp
+    - How can I be of help today?
+    - What do you need today?
+    
+> LG for book table
+# AskForLocation
+    - CASE: {knowCurUserLocation}
+        - In {curUserLocation}, right?
+        - You wan to come in to our {curUserLocation} store, right?
+    - DEFAULT:
+        - What city?
+# AskForDateTime
+    - CASE: {haveDate} =  true && {haveTime} = true
+        - For {date} at {time} right? 
+    - CASE: {haveDate} = true
+        - What time? 
+    - CASE: {haveTime} = true
+        - What date? 
+# AskForPartySize
+    - How many guests? 
+# ConfirmBookingReadout
+    - Should I go ahead and book a table for {partySize} at our {userLocation} store on {dateTimeReadout}?
+# BookingConfirmationReadout
+    - Ok, I've booked your table. The confirmation number is {confNumber}
+# ErrorReadout
+    - Sorry, something went wrong. Can you try again in a bit?
