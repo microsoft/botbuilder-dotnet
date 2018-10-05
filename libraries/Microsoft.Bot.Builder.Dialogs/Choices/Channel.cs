@@ -64,22 +64,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
         public static string GetChannelId(ITurnContext turnContext) => string.IsNullOrEmpty(turnContext.Activity.ChannelId)
             ? string.Empty : turnContext.Activity.ChannelId;
 
-        public class Channels
+        public class Channels : Connector.Channels
         {
-            public const string Facebook = "facebook";
-            public const string Skype = "skype";
-            public const string Msteams = "msteams";
-            public const string Telegram = "telegram";
-            public const string Kik = "kik";
-            public const string Email = "email";
-            public const string Slack = "slack";
-            public const string Groupme = "groupme";
-            public const string Sms = "sms";
-            public const string Emulator = "emulator";
-            public const string Directline = "directline";
-            public const string Webchat = "webchat";
-            public const string Console = "console";
-            public const string Cortana = "cortana";
         }
     }
 }
