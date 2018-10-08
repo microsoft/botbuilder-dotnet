@@ -1,0 +1,19 @@
+﻿{
+  "query": "4",
+  "topScoringIntent": {
+    "intent": "None",
+    "score": 0.8575135
+  },
+  "entities": [
+    {
+      "entity": "4",
+      "type": "builtin.datetime.time",
+      "startIndex": 0,
+      "endIndex": 0,
+      "resolution": {
+        "comment": "ampm",
+        "time": "T04"
+      }
+    }
+  ]
+}
