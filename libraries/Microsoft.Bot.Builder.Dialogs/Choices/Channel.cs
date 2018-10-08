@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
+
 namespace Microsoft.Bot.Builder.Dialogs.Choices
 {
     public class Channel
@@ -64,6 +66,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
         public static string GetChannelId(ITurnContext turnContext) => string.IsNullOrEmpty(turnContext.Activity.ChannelId)
             ? string.Empty : turnContext.Activity.ChannelId;
 
+        [Obsolete("This class has is deprecated, please use Microsoft.Bot.Connector.Channels")]
         public class Channels : Connector.Channels
         {
         }
