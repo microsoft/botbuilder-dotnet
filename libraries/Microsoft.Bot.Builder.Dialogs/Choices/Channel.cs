@@ -66,10 +66,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
         public static string GetChannelId(ITurnContext turnContext) => string.IsNullOrEmpty(turnContext.Activity.ChannelId)
             ? string.Empty : turnContext.Activity.ChannelId;
 
-        // This class has been deprecated in favor of the class in Microsoft.Bot.Connector.Channels.
-        // https://github.com/Microsoft/botbuilder-dotnet/libraries/Microsoft.Bot.Connector/Channels.cs
+        // This class has been deprecated in favor of the class in Microsoft.Bot.Connector.Channels located
+        // at https://github.com/Microsoft/botbuilder-dotnet/libraries/Microsoft.Bot.Connector/Channels.cs.
         // This change is non-breaking and this class now inherits from the class in the connector library.
-        [Obsolete("This class has is deprecated, please use Microsoft.Bot.Connector.Channels instead of this")]
+        [Obsolete("This class has is deprecated, please use Microsoft.Bot.Connector.Channels in it's place")]
         public class Channels : Connector.Channels
         {
         }
