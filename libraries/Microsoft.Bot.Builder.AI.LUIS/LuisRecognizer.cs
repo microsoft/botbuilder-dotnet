@@ -140,7 +140,11 @@ namespace Microsoft.Bot.Builder.AI.Luis
                 return entity.Entity;
             }
 
-            if (entity.Type.StartsWith("builtin.datetimeV2."))
+            if (entity.Type.StartsWith("builtin.datetime."))
+            {
+                return JObject.FromObject(resolution);
+            }
+            else if (entity.Type.StartsWith("builtin.datetimeV2."))
             {
                 if (resolution.values == null || resolution.values.Count == 0)
                 {
