@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime;
 using Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime.Models;
 using Microsoft.Bot.Builder.TraceExtensions;
+using Microsoft.Bot.Configuration;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json.Linq;
 
@@ -55,6 +56,18 @@ namespace Microsoft.Bot.Builder.AI.Luis
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="LuisRecognizer"/> class.
+        /// </summary>
+        /// <param name="service">The LUIS service from configuration.</param>
+        /// <param name="predictionOptions">(Optional) The LUIS prediction options to use.</param>
+        /// <param name="includeApiResults">(Optional) TRUE to include raw LUIS API response.</param>
+        /// <param name="clientHandler">(Optional) Custom handler for LUIS API calls to allow mocking.</param>
+        public LuisRecognizer(LuisService service, LuisPredictionOptions predictionOptions = null, bool includeApiResults = false, HttpClientHandler clientHandler = null)
+            : this(new LuisApplication(service), predictionOptions, includeApiResults, clientHandler)
+        {
+        }
+
+        /// <summary>
         /// Returns the name of the top scoring intent from a set of LUIS results.
         /// </summary>
         /// <param name="results">Result set to be searched.</param>
@@ -84,7 +97,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
             }
 
             return !string.IsNullOrEmpty(topIntent) ? topIntent : defaultIntent;
-        }
+	}
 
         /// <inheritdoc />
         public async Task<RecognizerResult> RecognizeAsync(ITurnContext turnContext, CancellationToken cancellationToken)
