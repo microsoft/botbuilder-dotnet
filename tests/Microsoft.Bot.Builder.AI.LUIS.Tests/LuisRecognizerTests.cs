@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -24,6 +25,15 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
         private readonly string _luisAppId = TestUtilities.GetKey("LUISAPPID", "ab48996d-abe2-4785-8eff-f18d15fc3560");
         private readonly string _subscriptionKey = TestUtilities.GetKey("LUISAPPKEY", "cc7bbcc0-3715-44f0-b7c9-d8fee333dce1");
         private readonly string _endpoint = TestUtilities.GetKey("LUISENDPOINT", "https://westus.api.cognitive.microsoft.com");
+
+        private readonly RecognizerResult _mockedResults = new RecognizerResult
+        {
+            Intents = new Dictionary<string, IntentScore>()
+                {
+                    { "Test", new IntentScore { Score = 0.2 } },
+                    { "Greeting", new IntentScore { Score = 0.4 } }
+                }
+        };
         // LUIS tests run off of recorded HTTP responses to avoid service dependencies.
         // To update the recorded responses:
         // 1) Change _mock to false below
@@ -386,6 +396,42 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
 
         [TestMethod]
         public async Task TypedPrebuiltDomains() => await TestJson<Contoso_App>("TypedPrebuilt.json");
+
+        [TestMethod]
+        public void TopIntentReturnsTopIntent()
+        {
+            var greetingIntent = LuisRecognizer.TopIntent(_mockedResults);
+            Assert.AreEqual(greetingIntent, "Greeting");
+        }
+
+        [TestMethod]
+        public void TopIntentReturnsDefaultIntentIfMinScoreIsHigher()
+        {
+            var defaultIntent = LuisRecognizer.TopIntent(_mockedResults, minScore: 0.5);
+            Assert.AreEqual(defaultIntent, "None");
+        }
+
+        [TestMethod]
+        public void TopIntentReturnsDefaultIntentIfProvided()
+        {
+            var defaultIntent = LuisRecognizer.TopIntent(_mockedResults, "Test2", 0.5);
+            Assert.AreEqual(defaultIntent, "Test2");
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void TopIntentThrowsArgumentNullExceptionIfResultsIsNull()
+        {
+            RecognizerResult nullResults = null;
+            var noIntent = LuisRecognizer.TopIntent(nullResults);
+        }
+
+        [TestMethod]
+        public void TopIntentReturnsTopIntentIfScoreEqualsMinScore()
+        {
+            var defaultIntent = LuisRecognizer.TopIntent(_mockedResults, minScore: 0.4);
+            Assert.AreEqual(defaultIntent, "Greeting");
+        }
 
         // Compare two JSON structures and ensure entity and intent scores are within delta
         private bool WithinDelta(JToken token1, JToken token2, double delta, bool compare = false)
