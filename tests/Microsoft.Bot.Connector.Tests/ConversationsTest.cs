@@ -3,9 +3,12 @@
 
 namespace Connector.Tests
 {
+    using System.Collections.Generic;
+    using System.Net.Http;
     using Microsoft.Bot.Connector;
     using Microsoft.Bot.Schema;
     using Microsoft.Rest;
+    using Moq;
     using Xunit;
 
     public class ConversationsTest : BaseTest
@@ -183,6 +186,121 @@ namespace Connector.Tests
             {
                 var ex = await Assert.ThrowsAsync<ValidationException>(() => client.Conversations.GetConversationMembersAsync(null));
                 Assert.Contains("cannot be null", ex.Message);
+            });
+        }
+
+        [Fact]
+        public void GetConversationPagedMembers()
+        {
+            var createMessage = new ConversationParameters()
+            {
+                Members = new ChannelAccount[] { User },
+                Bot = Bot
+            };
+
+            UseClientFor(async client =>
+            {
+                var conversation = await client.Conversations.CreateConversationAsync(createMessage);
+                var membersResult = await client.Conversations.GetConversationPagedMembersAsync(conversation.Id);
+
+                var hasUser = false;
+
+                foreach (var member in membersResult.Members)
+                {
+                    hasUser = member.Id == User.Id;
+                    if (hasUser) break;
+                }
+
+                Assert.True(hasUser);
+            });
+        }
+
+        [Fact]
+        public void GetConversationPagedMembersWithInvalidConversationId()
+        {
+            var createMessage = new ConversationParameters()
+            {
+                Members = new ChannelAccount[] { User },
+                Bot = Bot
+            };
+
+            UseClientFor(async client =>
+            {
+                var conversation = await client.Conversations.CreateConversationAsync(createMessage);
+                var ex = await Assert.ThrowsAsync<HttpOperationException>(() => client.Conversations.GetConversationPagedMembersAsync(string.Concat(conversation.Id, "M")));
+                Assert.Equal(System.Net.HttpStatusCode.BadRequest, ex.Response.StatusCode);
+            });
+        }
+
+        [Fact]
+        public void GetConversationPagedMembersWithNullConversationId()
+        {
+            UseClientFor(async client =>
+            {
+                var ex = await Assert.ThrowsAsync<ValidationException>(() => client.Conversations.GetConversationPagedMembersAsync(null));
+                Assert.Contains("cannot be null", ex.Message);
+            });
+        }
+
+        [Fact]
+        public void GetConversationPagedMembersWithPageSize()
+        {
+            var createMessage = new ConversationParameters()
+            {
+                Members = new ChannelAccount[] { User },
+                Bot = Bot
+            };
+
+            UseClientFor(async client =>
+            {
+                var conversation = await client.Conversations.CreateConversationAsync(createMessage);
+                var membersResult = await client.Conversations.GetConversationPagedMembersAsync(conversation.Id, pageSize: 10);
+
+                var hasUser = false;
+
+                foreach (var member in membersResult.Members)
+                {
+                    hasUser = member.Id == User.Id;
+                    if (hasUser) break;
+                }
+
+                Assert.True(hasUser);
+            });
+        }
+
+        [Fact]
+        public void GetConversationPagedMembersWithTracing()
+        {
+            var createMessage = new ConversationParameters()
+            {
+                Members = new ChannelAccount[] { User },
+                Bot = Bot
+            };
+
+            var traceInterceptor = new Mock<IServiceClientTracingInterceptor>();
+            var invocationId = default(string);
+            traceInterceptor.Setup(
+                i => i.EnterMethod(It.IsAny<string>(), It.IsAny<object>(), It.IsAny<string>(), It.IsAny<IDictionary<string, object>>()))
+                .Callback((string id, object instance, string method, IDictionary<string, object> parameters) => invocationId = id);
+            ServiceClientTracing.AddTracingInterceptor(traceInterceptor.Object);
+
+            UseClientFor(async client =>
+            {
+                var conversation = await client.Conversations.CreateConversationAsync(createMessage);
+
+                ServiceClientTracing.IsEnabled = true;
+                var membersResult = await client.Conversations.GetConversationPagedMembersAsync(conversation.Id);
+                ServiceClientTracing.IsEnabled = false;
+
+                traceInterceptor.Verify(
+                    i => i.EnterMethod(invocationId, It.IsAny<object>(), "GetConversationPagedMembers", It.IsAny<IDictionary<string, object>>()), Times.Once());
+                traceInterceptor.Verify(
+                    i => i.SendRequest(invocationId, It.IsAny<HttpRequestMessage>()), Times.Once());
+                traceInterceptor.Verify(
+                    i => i.ReceiveResponse(invocationId, It.IsAny<HttpResponseMessage>()), Times.Once());
+                traceInterceptor.Verify(
+                    i => i.ExitMethod(invocationId, It.Is<HttpOperationResponse<PagedMembersResult>>(
+                        r => r.Body == membersResult)), Times.Once());
             });
         }
 
@@ -912,6 +1030,5 @@ namespace Connector.Tests
                 Assert.Contains("cannot be null", ex.Message);
             });
         }
-
     }
 }
