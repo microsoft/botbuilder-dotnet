@@ -1,14 +1,12 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
+using Microsoft.Bot.Configuration.Encryption;
+using Newtonsoft.Json;
+
 namespace Microsoft.Bot.Configuration
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Text;
-    using Microsoft.Bot.Configuration.Encryption;
-    using Newtonsoft.Json;
-
     public class QnAMakerService : ConnectedService
     {
         private string _hostname;
