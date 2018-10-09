@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.TraceExtensions;
+using Microsoft.Bot.Configuration;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 
@@ -85,6 +86,18 @@ namespace Microsoft.Bot.Builder.AI.QnA
             {
                 _options.MetadataBoost = new Metadata[] { };
             }
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="QnAMaker"/> class.
+        /// </summary>
+        /// <param name="service">QnA service details from configuration.</param>
+        /// <param name="options">The options for the QnA Maker knowledge base.</param>
+        /// <param name="httpClient">An alternate client with which to talk to QnAMaker.
+        /// If null, a default client is used for this instance.</param>
+        public QnAMaker(QnAMakerService service, QnAMakerOptions options = null, HttpClient httpClient = null)
+            : this(new QnAMakerEndpoint(service), options, httpClient)
+        {
         }
 
         /// <summary>
