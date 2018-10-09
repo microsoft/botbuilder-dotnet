@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Azure.Documents;
@@ -21,10 +20,12 @@ namespace Microsoft.Bot.Builder.Azure
     /// </summary>
     public class CosmosDbStorage : IStorage
     {
-        private static readonly char[] IllegalKeyCharacters = new char[] { '\\', '?', '/', '#', ' ' };
-        private static readonly Lazy<Dictionary<char, string>> IllegalKeyCharacterReplacementMap = new Lazy<Dictionary<char, string>>(() => IllegalKeyCharacters.ToDictionary(c => c, c => '*' + ((int)c).ToString("x2")));
+        private static readonly JsonSerializer _jsonSerializer = JsonSerializer.Create(new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All });
 
-        private static JsonSerializer _jsonSerializer = JsonSerializer.Create(new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All });
+        // When setting up the database, calls are made to CosmosDB. If multiple calls are made, we'll end up setting the
+        // collectionLink member variable more than once. The semaphore is for making sure the initialization of the
+        // database is done only once.
+        private static SemaphoreSlim _semaphore = new SemaphoreSlim(1);
 
         private readonly string _databaseId;
         private readonly string _collectionId;
@@ -38,6 +39,11 @@ namespace Microsoft.Bot.Builder.Azure
         /// <param name="cosmosDbStorageOptions">Cosmos DB storage configuration options.</param>
         public CosmosDbStorage(CosmosDbStorageOptions cosmosDbStorageOptions)
         {
+            if (cosmosDbStorageOptions == null)
+            {
+                throw new ArgumentNullException(nameof(cosmosDbStorageOptions));
+            }
+
             if (cosmosDbStorageOptions.CosmosDBEndpoint == null)
             {
                 throw new ArgumentNullException(nameof(cosmosDbStorageOptions.CosmosDBEndpoint), "Service EndPoint for CosmosDB is required.");
@@ -70,52 +76,8 @@ namespace Microsoft.Bot.Builder.Azure
             _client = new DocumentClient(cosmosDbStorageOptions.CosmosDBEndpoint, cosmosDbStorageOptions.AuthKey, connectionPolicy);
         }
 
-        /// <summary>
-        /// Converts the key into a DocumentID that can be used safely with CosmosDB.
-        /// The following characters are restricted and cannot be used in the Id property: '/', '\', '?', '#'
-        /// More information at https://docs.microsoft.com/en-us/dotnet/api/microsoft.azure.documents.resource.id?view=azure-dotnet#remarks.
-        /// </summary>
-        /// <param name="key">The key to sanitize.</param>
-        /// <returns>A sanitized key that can be used safely with CosmosDB.</returns>
-        public static string SanitizeKey(string key)
-        {
-            var firstIllegalCharIndex = key.IndexOfAny(IllegalKeyCharacters);
-
-            // If there are no illegal characters return immediately and avoid any further processing/allocations
-            if (firstIllegalCharIndex == -1)
-            {
-                return key;
-            }
-
-            // Allocate a builder that assumes that all remaining characters might be replaced to avoid any extra allocations
-            var sanitizedKeyBuilder = new StringBuilder(key.Length + ((key.Length - firstIllegalCharIndex + 1) * 3));
-
-            // Add all good characters up to the first bad character to the builder first
-            for (var index = 0; index < firstIllegalCharIndex; index++)
-            {
-                sanitizedKeyBuilder.Append(key[index]);
-            }
-
-            var illegalCharacterReplacementMap = IllegalKeyCharacterReplacementMap.Value;
-
-            // Now walk the remaining characters, starting at the first known bad character, replacing any bad ones with their designated replacement value from the map
-            for (var index = firstIllegalCharIndex; index < key.Length; index++)
-            {
-                var ch = key[index];
-
-                // Check if this next character is considered illegal and, if so, append its replacement; otherwise just append the good character as is
-                if (illegalCharacterReplacementMap.TryGetValue(ch, out var replacement))
-                {
-                    sanitizedKeyBuilder.Append(replacement);
-                }
-                else
-                {
-                    sanitizedKeyBuilder.Append(ch);
-                }
-            }
-
-            return sanitizedKeyBuilder.ToString();
-        }
+        [Obsolete("Replaced by CosmosDBKeyEscape.EscapeKey.")]
+        public static string SanitizeKey(string key) => CosmosDBKeyEscape.EscapeKey(key);
 
         /// <summary>
         /// Deletes storage items from storage.
@@ -133,12 +95,14 @@ namespace Microsoft.Bot.Builder.Azure
                 return;
             }
 
-            // Ensure collection exists
-            var collectionLink = await GetCollectionLink();
+            // Ensure Initialization has been run
+            await InitializeAsync().ConfigureAwait(false);
 
             // Parallelize deletion
             var tasks = keys.Select(key =>
-                _client.DeleteDocumentAsync(UriFactory.CreateDocumentUri(_databaseId, _collectionId, SanitizeKey(key))));
+                _client.DeleteDocumentAsync(
+                    UriFactory.CreateDocumentUri(_databaseId, _collectionId, CosmosDBKeyEscape.EscapeKey(key)),
+                    cancellationToken: cancellationToken));
 
             // await to deletion tasks to complete
             await Task.WhenAll(tasks).ConfigureAwait(false);
@@ -159,26 +123,26 @@ namespace Microsoft.Bot.Builder.Azure
         {
             if (keys == null || keys.Length == 0)
             {
-                throw new ArgumentException("Please provide at least one key to read from storage", nameof(keys));
+                throw new ArgumentException("Please provide at least one key to read from storage.", nameof(keys));
             }
+
+            // Ensure Initialization has been run
+            await InitializeAsync().ConfigureAwait(false);
 
             var storeItems = new Dictionary<string, object>(keys.Length);
 
-            // Ensure collection exists
-            var collectionLink = await GetCollectionLink();
-
             var parameterSequence = string.Join(",", Enumerable.Range(0, keys.Length).Select(i => $"@id{i}"));
-            var parameterValues = keys.Select((key, ix) => new SqlParameter($"@id{ix}", SanitizeKey(key)));
+            var parameterValues = keys.Select((key, ix) => new SqlParameter($"@id{ix}", CosmosDBKeyEscape.EscapeKey(key)));
             var querySpec = new SqlQuerySpec
             {
                 QueryText = $"SELECT c.id, c.realId, c.document, c._etag FROM c WHERE c.id in ({parameterSequence})",
                 Parameters = new SqlParameterCollection(parameterValues),
             };
 
-            var query = _client.CreateDocumentQuery<DocumentStoreItem>(collectionLink, querySpec).AsDocumentQuery();
+            var query = _client.CreateDocumentQuery<DocumentStoreItem>(_collectionLink, querySpec).AsDocumentQuery();
             while (query.HasMoreResults)
             {
-                foreach (var doc in await query.ExecuteNextAsync<DocumentStoreItem>().ConfigureAwait(false))
+                foreach (var doc in await query.ExecuteNextAsync<DocumentStoreItem>(cancellationToken).ConfigureAwait(false))
                 {
                     var item = doc.Document.ToObject(typeof(object), _jsonSerializer);
                     if (item is IStoreItem storeItem)
@@ -210,7 +174,9 @@ namespace Microsoft.Bot.Builder.Azure
                 throw new ArgumentNullException(nameof(changes), "Please provide a StoreItems with changes to persist.");
             }
 
-            var collectionLink = await GetCollectionLink();
+            // Ensure Initialization has been run
+            await InitializeAsync().ConfigureAwait(false);
+
             foreach (var change in changes)
             {
                 var json = JObject.FromObject(change.Value, _jsonSerializer);
@@ -221,7 +187,7 @@ namespace Microsoft.Bot.Builder.Azure
 
                 var documentChange = new DocumentStoreItem
                 {
-                    Id = SanitizeKey(change.Key),
+                    Id = CosmosDBKeyEscape.EscapeKey(change.Key),
                     ReadlId = change.Key,
                     Document = json,
                 };
@@ -230,14 +196,22 @@ namespace Microsoft.Bot.Builder.Azure
                 if (etag == null || etag == "*")
                 {
                     // if new item or * then insert or replace unconditionaly
-                    await _client.UpsertDocumentAsync(collectionLink, documentChange, disableAutomaticIdGeneration: true).ConfigureAwait(false);
+                    await _client.UpsertDocumentAsync(
+                        _collectionLink,
+                        documentChange,
+                        disableAutomaticIdGeneration: true,
+                        cancellationToken: cancellationToken).ConfigureAwait(false);
                 }
                 else if (etag.Length > 0)
                 {
                     // if we have an etag, do opt. concurrency replace
                     var uri = UriFactory.CreateDocumentUri(_databaseId, _collectionId, documentChange.Id);
                     var ac = new AccessCondition { Condition = etag, Type = AccessConditionType.IfMatch };
-                    await _client.ReplaceDocumentAsync(uri, documentChange, new RequestOptions { AccessCondition = ac }).ConfigureAwait(false);
+                    await _client.ReplaceDocumentAsync(
+                        uri,
+                        documentChange,
+                        new RequestOptions { AccessCondition = ac },
+                        cancellationToken: cancellationToken).ConfigureAwait(false);
                 }
                 else
                 {
@@ -247,19 +221,41 @@ namespace Microsoft.Bot.Builder.Azure
         }
 
         /// <summary>
-        /// Delayed Database and Collection creation if they do not exist.
+        /// Creates the CosmosDB Database and populates the _collectionLink member variable.
         /// </summary>
-        private async ValueTask<string> GetCollectionLink()
+        /// <remarks>
+        /// This method is idempotent, and thread safe.
+        /// </remarks>
+        private async Task InitializeAsync()
         {
+            // In the steady-state case, we'll already have a connection string to the
+            // database setup. If so, no need to enter locks or call CosmosDB to get one.
             if (_collectionLink == null)
             {
-                await _client.CreateDatabaseIfNotExistsAsync(new Database { Id = _databaseId }).ConfigureAwait(false);
+                // We don't (probably) have a database link yet. Enter the lock,
+                // then check again (aka: Double-Check Lock pattern).
+                await _semaphore.WaitAsync().ConfigureAwait(false);
+                try
+                {
+                    if (_collectionLink == null)
+                    {
+                        // We don't have a database link. Create one. Note that we're inside a semaphore at this point
+                        // so other threads may be blocked on us.
+                        await _client.CreateDatabaseIfNotExistsAsync(new Database { Id = _databaseId }).ConfigureAwait(false);
 
-                var response = await _client.CreateDocumentCollectionIfNotExistsAsync(UriFactory.CreateDatabaseUri(_databaseId), new DocumentCollection { Id = _collectionId }).ConfigureAwait(false);
-                _collectionLink = response.Resource.SelfLink;
+                        var response = await _client.CreateDocumentCollectionIfNotExistsAsync(
+                            UriFactory.CreateDatabaseUri(_databaseId),
+                            new DocumentCollection { Id = _collectionId })
+                            .ConfigureAwait(false);
+
+                        _collectionLink = response.Resource.SelfLink;
+                    }
+                }
+                finally
+                {
+                    _semaphore.Release();
+                }
             }
-
-            return _collectionLink;
         }
 
         /// <summary>

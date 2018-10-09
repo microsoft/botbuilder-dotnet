@@ -5,6 +5,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs;
@@ -29,7 +30,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         private static Lazy<bool> _hasEmulator = new Lazy<bool>(() =>
         {
             if (File.Exists(_emulatorPath))
-            { 
+            {
                 Process p = new Process();
                 p.StartInfo.UseShellExecute = true;
                 p.StartInfo.FileName = _emulatorPath;
@@ -75,6 +76,83 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                     Debug.WriteLine("Error cleaning up resources: {0}", ex.ToString());
                 }
             }
+        }
+
+        [TestMethod]
+        public void Sanatize_Key_Should_Work()
+        {
+            // Note: The SanatizeKey method delegates to the CosmosDBKeyEscape class. The method is 
+            // marked as obsolete, and should no longer be used. This test is here to make sure
+            // the method does actually delegate, as we can't remove it due to back-compat reasons.
+
+#pragma warning disable 0618
+            // Ascii code of "?" is "3f".
+            var sanitizedKey = CosmosDbStorage.SanitizeKey("?test?");
+            Assert.AreEqual(sanitizedKey, "*3ftest*3f");
+#pragma warning restore 0618
+        }
+
+        [TestMethod]
+        public void Constructor_Should_Throw_On_InvalidOptions()
+        {
+            // No Options. Should throw. 
+            Assert.ThrowsException<ArgumentNullException>(() => new CosmosDbStorage(null));
+
+            // No Endpoint. Should throw. 
+            Assert.ThrowsException<ArgumentNullException>(() => new CosmosDbStorage(new CosmosDbStorageOptions
+            {
+                AuthKey = "test",
+                CollectionId = "testId",
+                DatabaseId = "testDb",
+                CosmosDBEndpoint = null,
+            }));
+
+            // No Auth Key. Should throw. 
+            Assert.ThrowsException<ArgumentException>(() => new CosmosDbStorage( new CosmosDbStorageOptions
+            {
+                AuthKey = null,
+                CollectionId = "testId",
+                DatabaseId = "testDb",
+                CosmosDBEndpoint = new Uri("https://test.com"),
+            }));
+
+            // No Database Id. Should throw. 
+            Assert.ThrowsException<ArgumentException>(() => new CosmosDbStorage(new CosmosDbStorageOptions
+            {
+                AuthKey = "test",
+                CollectionId = "testId",
+                DatabaseId = null,
+                CosmosDBEndpoint = new Uri("https://test.com"),
+            }));
+
+            // No Collection Id. Should throw. 
+            Assert.ThrowsException<ArgumentException>(() => new CosmosDbStorage(new CosmosDbStorageOptions
+            {
+                AuthKey = "test",
+                CollectionId = null,
+                DatabaseId = "testDb",
+                CosmosDBEndpoint = new Uri("https://test.com"),
+            }));
+        }
+
+        [TestMethod]
+        public void Connection_Policy_Configurator_Should_Be_Called_If_Present()
+        {
+            var wasCalled = false;
+
+            var optionsWithConfigurator = new CosmosDbStorageOptions
+            {
+                AuthKey = "test",
+                CollectionId = "testId",
+                DatabaseId = "testDb",
+                CosmosDBEndpoint = new Uri("https://test.com"),
+
+                // Make sure the Callback is called.
+                ConnectionPolicyConfigurator = (ConnectionPolicy p) => wasCalled = true,
+            };
+
+            var storage = new CosmosDbStorage(optionsWithConfigurator);
+            Assert.IsTrue(wasCalled, "The Connection Policy Configurator was not called.");
         }
 
         // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
