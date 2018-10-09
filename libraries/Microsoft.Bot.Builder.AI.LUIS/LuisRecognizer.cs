@@ -54,6 +54,38 @@ namespace Microsoft.Bot.Builder.AI.Luis
             };
         }
 
+        /// <summary>
+        /// Returns the name of the top scoring intent from a set of LUIS results.
+        /// </summary>
+        /// <param name="results">Result set to be searched.</param>
+        /// <param name="defaultIntent">(Optional) Intent name to return should a top intent be found. Defaults to a value of "None".</param>
+        /// <param name="minScore">(Optional) Minimum score needed for an intent to be considered as a top intent. If all intents in the set are below this threshold then the `defaultIntent` will be returned.  Defaults to a value of `0.0`.</param>
+        /// <returns>The top scoring intent name.</returns>
+        public static string TopIntent(RecognizerResult results, string defaultIntent = "None", double minScore = 0.0)
+        {
+            if (results == null)
+            {
+                throw new ArgumentNullException(nameof(results));
+            }
+
+            string topIntent = null;
+            double topScore = -1.0;
+            if (results.Intents.Count > 0)
+            {
+                foreach (var intent in results.Intents)
+                {
+                    var score = (double)intent.Value.Score;
+                    if (score > topScore && score >= minScore)
+                    {
+                        topIntent = intent.Key;
+                        topScore = score;
+                    }
+                }
+            }
+
+            return !string.IsNullOrEmpty(topIntent) ? topIntent : defaultIntent;
+        }
+
         /// <inheritdoc />
         public async Task<RecognizerResult> RecognizeAsync(ITurnContext turnContext, CancellationToken cancellationToken)
             => await RecognizeInternalAsync(turnContext, cancellationToken).ConfigureAwait(false);
