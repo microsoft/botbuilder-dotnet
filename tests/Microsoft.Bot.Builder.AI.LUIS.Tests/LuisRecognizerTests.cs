@@ -400,8 +400,8 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
         [TestMethod]
         public void TopIntentReturnsTopIntent()
         {
-            var defaultIntent = LuisRecognizer.TopIntent(_mockedResults);
-            Assert.AreEqual(defaultIntent, "Greeting");
+            var greetingIntent = LuisRecognizer.TopIntent(_mockedResults);
+            Assert.AreEqual(greetingIntent, "Greeting");
         }
 
         [TestMethod]
@@ -416,6 +416,21 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
         {
             var defaultIntent = LuisRecognizer.TopIntent(_mockedResults, "Test2", 0.5);
             Assert.AreEqual(defaultIntent, "Test2");
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void TopIntentThrowsArgumentNullExceptionIfResultsIsNull()
+        {
+            RecognizerResult nullResults = null;
+            var noIntent = LuisRecognizer.TopIntent(nullResults);
+        }
+
+        [TestMethod]
+        public void TopIntentReturnsTopIntentIfScoreEqualsMinScore()
+        {
+            var defaultIntent = LuisRecognizer.TopIntent(_mockedResults, minScore: 0.4);
+            Assert.AreEqual(defaultIntent, "Greeting");
         }
 
         // Compare two JSON structures and ensure entity and intent scores are within delta
