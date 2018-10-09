@@ -259,6 +259,26 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             Assert.AreEqual(3, result.Entities["$instance"]["datetime"].Count());
         }
 
+        [TestMethod]
+        public async Task V1DatetimeResolution()
+        {
+            const string utterance = "at 4";
+
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(GetRequestUrl()).WithPartialContent(utterance)
+                .Respond("application/json", GetResponse("V1DatetimeResolution.json"));
+
+            var luisRecognizer = GetLuisRecognizer(mockHttp, true, new LuisPredictionOptions { IncludeAllIntents = true });
+            var context = GetContext(utterance);
+            var result = await luisRecognizer.RecognizeAsync(context, CancellationToken.None);
+
+            Assert.IsNotNull(result.Entities["datetime_time"]);
+            Assert.AreEqual(1, result.Entities["datetime_time"].Count());
+            Assert.AreEqual("ampm", (string)result.Entities["datetime_time"][0]["comment"]);
+            Assert.AreEqual("T04", (string)result.Entities["datetime_time"][0]["time"]);
+            Assert.AreEqual(1, result.Entities["$instance"]["datetime_time"].Count());
+        }
+
         // To create a file to test:
         // 1) Create a <name>.json file with an object { Text:<query> } in it.
         // 2) Run this test which will fail and generate a <name>.json.new file.
