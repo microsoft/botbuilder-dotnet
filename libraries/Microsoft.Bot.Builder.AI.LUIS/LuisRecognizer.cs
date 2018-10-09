@@ -115,18 +115,24 @@ namespace Microsoft.Bot.Builder.AI.Luis
         private static string NormalizedIntent(string intent) => intent.Replace('.', '_').Replace(' ', '_');
 
         private static IDictionary<string, IntentScore> GetIntents(LuisResult luisResult)
-            => luisResult.Intents != null ?
-                luisResult.Intents.ToDictionary(
+        {
+            if (luisResult.Intents != null)
+            {
+                return luisResult.Intents.ToDictionary(
                     i => NormalizedIntent(i.Intent),
-                    i => new IntentScore { Score = i.Score ?? 0 })
-                    :
-                new Dictionary<string, IntentScore>()
+                    i => new IntentScore { Score = i.Score ?? 0 });
+            }
+            else
+            {
+                return new Dictionary<string, IntentScore>()
                 {
                     {
                         NormalizedIntent(luisResult.TopScoringIntent.Intent),
                         new IntentScore() { Score = luisResult.TopScoringIntent.Score ?? 0 }
                     },
                 };
+            }
+        }
 
         private static JObject ExtractEntitiesAndMetadata(IList<EntityModel> entities, IList<CompositeEntityModel> compositeEntities, bool verbose)
         {
