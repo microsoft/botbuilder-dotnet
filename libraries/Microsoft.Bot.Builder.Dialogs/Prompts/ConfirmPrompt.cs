@@ -29,7 +29,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         private static readonly Dictionary<string, Tuple<Choice, Choice>> DefaultConfirmChoices = new Dictionary<string, Tuple<Choice, Choice>>()
         {
             { Spanish, new Tuple<Choice, Choice>(new Choice { Value = "Sí" }, new Choice { Value = "No" }) },
-            { Dutch, new Tuple<Choice, Choice>(new Choice { Value = "Ja" }, new Choice { Value = "Niet" }) },
+            { Dutch, new Tuple<Choice, Choice>(new Choice { Value = "Ja" }, new Choice { Value = "Nee" }) },
             { English, new Tuple<Choice, Choice>(new Choice { Value = "Yes" }, new Choice { Value = "No" }) },
             { French, new Tuple<Choice, Choice>(new Choice { Value = "Oui" }, new Choice { Value = "Non" }) },
             { German, new Tuple<Choice, Choice>(new Choice { Value = "Ja" }, new Choice { Value = "Nein" }) },
