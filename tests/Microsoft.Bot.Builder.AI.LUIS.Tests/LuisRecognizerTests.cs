@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Configuration;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
@@ -44,6 +45,44 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
         // Changing this to false will cause running against the actual LUIS service.
         // This is useful in order to see if the oracles for mocking or testing have changed.
         private readonly bool _mock = true;
+
+        [TestMethod]
+        public async Task LuisRecognizer_Configuration()
+        {
+            var service = new LuisService
+            {
+                AppId = _luisAppId,
+                SubscriptionKey = _subscriptionKey,
+                Region = "westus"
+            };
+
+            const string utterance = "My name is Emad";
+
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(GetRequestUrl()).WithPartialContent(utterance)
+                .Respond("application/json", GetResponse("SingleIntent_SimplyEntity.json"));
+
+            var luisRecognizer = new LuisRecognizer(service, null, false, new MockedHttpClientHandler(mockHttp.ToHttpClient()));
+
+            var context = GetContext(utterance);
+            var result = await luisRecognizer.RecognizeAsync(context, CancellationToken.None);
+
+            Assert.IsNotNull(result);
+            Assert.IsNull(result.AlteredText);
+            Assert.AreEqual(utterance, result.Text);
+            Assert.IsNotNull(result.Intents);
+            Assert.AreEqual(1, result.Intents.Count);
+            Assert.IsNotNull(result.Intents["SpecifyName"]);
+            Assert.IsTrue(result.Intents["SpecifyName"].Score > 0 && result.Intents["SpecifyName"].Score <= 1);
+            Assert.IsNotNull(result.Entities);
+            Assert.IsNotNull(result.Entities["Name"]);
+            Assert.AreEqual("emad", (string)result.Entities["Name"].First);
+            Assert.IsNotNull(result.Entities["$instance"]);
+            Assert.IsNotNull(result.Entities["$instance"]["Name"]);
+            Assert.AreEqual(11, (int)result.Entities["$instance"]["Name"].First["startIndex"]);
+            Assert.AreEqual(15, (int)result.Entities["$instance"]["Name"].First["endIndex"]);
+            AssertScore(result.Entities["$instance"]["Name"].First["score"]);
+        }
 
         [TestMethod]
         public async Task SingleIntent_SimplyEntity()

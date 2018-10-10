@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Configuration;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
@@ -145,7 +146,6 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             };
             var context = new TurnContext(adapter, activity);
 
-
             var results = await qna.GetAnswersAsync(context);
         }
 
@@ -203,8 +203,6 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             var results = await qna.GetAnswersAsync(context);
         }
 
-
-
         [TestMethod]
         [TestCategory("AI")]
         [TestCategory("QnAMaker")]
@@ -225,6 +223,36 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                 {
                     Top = 1
                 });
+
+            var results = await qna.GetAnswersAsync(GetContext("how do I clean the stove?"));
+            Assert.IsNotNull(results);
+            Assert.AreEqual(results.Length, 1, "should get one result");
+            StringAssert.StartsWith(results[0].Answer, "BaseCamp: You can use a damp rag to clean around the Power Pack");
+        }
+
+        [TestMethod]
+        [TestCategory("AI")]
+        [TestCategory("QnAMaker")]
+        public async Task QnaMaker_ReturnsAnswer_Configuration()
+        {
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(HttpMethod.Post, GetRequestUrl())
+                .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswer.json"));
+
+            var service = new QnAMakerService
+            {
+                KbId = _knowlegeBaseId,
+                EndpointKey = _endpointKey,
+                Hostname = _hostname
+            };
+
+            var options = new QnAMakerOptions
+            {
+                Top = 1
+            };
+
+            var client = new HttpClient(mockHttp);
+            var qna = new QnAMaker(service, options, client);
 
             var results = await qna.GetAnswersAsync(GetContext("how do I clean the stove?"));
             Assert.IsNotNull(results);
@@ -336,12 +364,12 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             return qna;
         }
 
-
         private QnAMaker GetQnAMaker(HttpMessageHandler messageHandler, QnAMakerEndpoint endpoint, QnAMakerOptions options = null)
         {
             var client = new HttpClient(messageHandler);
             return new QnAMaker(endpoint, options, client);
         }
+
         private static TurnContext GetContext(string utterance)
         {
             var b = new TestAdapter();

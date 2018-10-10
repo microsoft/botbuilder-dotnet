@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using Microsoft.Bot.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 
@@ -41,6 +42,23 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             Assert.AreEqual(model.ApplicationId, deserialized.ApplicationId);
             Assert.AreEqual(model.EndpointKey, deserialized.EndpointKey);
             Assert.AreEqual(model.Endpoint, deserialized.Endpoint);
+        }
+
+        [TestMethod]
+        public void LuisApplication_Configuration()
+        {
+            var service = new LuisService
+            {
+                AppId = Guid.NewGuid().ToString(),
+                SubscriptionKey = Guid.NewGuid().ToString(),
+                Region = "westus"
+            };
+
+            var model = new LuisApplication(service);
+
+            Assert.AreEqual(service.AppId, model.ApplicationId);
+            Assert.AreEqual(service.SubscriptionKey, model.EndpointKey);
+            Assert.AreEqual(service.GetEndpoint(), model.Endpoint);
         }
 
         private LuisApplication GetValidModel()
