@@ -19,6 +19,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
                 case Channels.Slack:
                 case Channels.Telegram:
                 case Channels.Emulator:
+                case Channels.Directline:
+                case Channels.Webchat:
                     return buttonCnt <= 100;
 
                 default:
