@@ -5,7 +5,6 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
-using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs;
@@ -153,6 +152,22 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 
             var storage = new CosmosDbStorage(optionsWithConfigurator);
             Assert.IsTrue(wasCalled, "The Connection Policy Configurator was not called.");
+        }
+
+        [TestMethod]
+        public void Database_Creation_Request_Options_Should_Be_Used()
+        {
+            var optionsWithConfigurator = new CosmosDbStorageOptions
+            {
+                AuthKey = "test",
+                CollectionId = "testId",
+                DatabaseId = "testDb",
+                CosmosDBEndpoint = new Uri("https://test.com"),
+                DocumentCollectionRequestOptions = new RequestOptions { OfferThroughput = 1000 }, 
+            };
+
+            var storage = new CosmosDbStorage(optionsWithConfigurator);
+
         }
 
         // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!

@@ -29,6 +29,8 @@ namespace Microsoft.Bot.Builder.Azure
 
         private readonly string _databaseId;
         private readonly string _collectionId;
+        private readonly RequestOptions _documentCollectionCreationRequestOptions = null;
+        private readonly RequestOptions _databaseCreationRequestOptions = null;
         private readonly DocumentClient _client;
         private string _collectionLink = null;
 
@@ -66,6 +68,8 @@ namespace Microsoft.Bot.Builder.Azure
 
             _databaseId = cosmosDbStorageOptions.DatabaseId;
             _collectionId = cosmosDbStorageOptions.CollectionId;
+            _documentCollectionCreationRequestOptions = cosmosDbStorageOptions.DocumentCollectionRequestOptions;
+            _databaseCreationRequestOptions = cosmosDbStorageOptions.DatabaseCreationRequestOptions;
 
             // Inject BotBuilder version to CosmosDB Requests
             var version = GetType().Assembly.GetName().Version;
@@ -241,11 +245,20 @@ namespace Microsoft.Bot.Builder.Azure
                     {
                         // We don't have a database link. Create one. Note that we're inside a semaphore at this point
                         // so other threads may be blocked on us.
-                        await _client.CreateDatabaseIfNotExistsAsync(new Database { Id = _databaseId }).ConfigureAwait(false);
+                        await _client.CreateDatabaseIfNotExistsAsync(
+                            new Database { Id = _databaseId },
+                            _databaseCreationRequestOptions) // pass in any user set database creation flags
+                            .ConfigureAwait(false);
+
+                        var documentCollection = new DocumentCollection
+                        {
+                            Id = _collectionId,
+                        };
 
                         var response = await _client.CreateDocumentCollectionIfNotExistsAsync(
                             UriFactory.CreateDatabaseUri(_databaseId),
-                            new DocumentCollection { Id = _collectionId })
+                            documentCollection,
+                            _documentCollectionCreationRequestOptions) // pass in any user set collection creation flags
                             .ConfigureAwait(false);
 
                         _collectionLink = response.Resource.SelfLink;
