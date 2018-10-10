@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,7 +14,7 @@ namespace Microsoft.Bot.Builder.Azure
         // the CosmostDB docs: https://docs.microsoft.com/en-us/dotnet/api/microsoft.azure.documents.resource.id?view=azure-dotnet#remarks
         private static char[] _illegalKeys = new[] { '\\', '?', '/', '#' };
 
-        // We are escaping illegal characters using a "*{AsciiCodeInHex}" pattern. This 
+        // We are escaping illegal characters using a "*{AsciiCodeInHex}" pattern. This
         // means a key of "?test?" would be escaped as "*3ftest*3f".
         private static readonly Dictionary<char, string> _illegalKeyCharacterReplacementMap =
                 new Dictionary<char, string>(_illegalKeys.ToDictionary(c => c, c => '*' + ((int)c).ToString("x2")));

@@ -55,5 +55,23 @@ namespace Microsoft.Bot.Builder.Azure
         /// The connection policy configurator.
         /// </value>
         public Action<ConnectionPolicy> ConnectionPolicyConfigurator { get; set; } = (options) => { };
+
+        /// <summary>
+        /// Gets or sets the CosmosDB <see cref="https://docs.microsoft.com/en-us/dotnet/api/microsoft.azure.documents.client.requestoptions?view=azure-dotnet"/>RequestOptions that
+        /// are passed when the document collection is created. Null is the default.
+        /// </summary>
+        /// <value>
+        /// The set of options passed into <see cref="https://docs.microsoft.com/en-us/dotnet/api/microsoft.azure.documents.client.documentclient.createdocumentcollectionifnotexistsasync?view=azure-dotnet"/>CreateDocumentCollectionIfNotExistsAsync.
+        /// </value>
+        public RequestOptions DocumentCollectionRequestOptions { get; set; } = null;
+
+        /// <summary>
+        /// Gets or sets the CosmosDB <see cref="https://docs.microsoft.com/en-us/dotnet/api/microsoft.azure.documents.client.requestoptions?view=azure-dotnet"/>RequestOptions that
+        /// are passed when the database is created. Null is the default.
+        /// </summary>
+        /// <value>
+        /// The set of options passed into <see cref="https://docs.microsoft.com/en-us/dotnet/api/microsoft.azure.documents.client.documentclient.createdatabaseifnotexistsasync?view=azure-dotnet"/>CreateDatabaseIfNotExistsAsync.
+        /// </value>
+        public RequestOptions DatabaseCreationRequestOptions { get; set; } = null;
     }
 }
