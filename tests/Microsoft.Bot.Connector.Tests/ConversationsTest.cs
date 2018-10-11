@@ -45,6 +45,10 @@ namespace Connector.Tests
         }
 
         [Fact]
+        public async Task CreateConversation_WithTracing()
+            => await AssertTracingFor(CreateConversation, nameof(ConversationsExtensions.CreateConversationAsync));
+
+        [Fact]
         public async Task CreateConversationWithInvalidBot()
         {
             var activity = new Activity()
@@ -69,6 +73,10 @@ namespace Connector.Tests
                 Assert.StartsWith("Invalid userId", ex.Body.Error.Message);
             });
         }
+
+        [Fact]
+        public async Task CreateConversationWithInvalidBot_WithTracing()
+            => await AssertTracingFor(CreateConversationWithInvalidBot, nameof(ConversationsExtensions.CreateConversationAsync), isSuccesful: false);
 
         [Fact]
         public async Task CreateConversationWithoutMembers()
@@ -97,6 +105,10 @@ namespace Connector.Tests
         }
 
         [Fact]
+        public async Task CreateConversationWithoutMembers_WithTracing()
+            => await AssertTracingFor(CreateConversationWithoutMembers, nameof(ConversationsExtensions.CreateConversationAsync), isSuccesful: false);
+
+        [Fact]
         public async Task CreateConversationWithBotMember()
         {
             var activity = new Activity()
@@ -120,6 +132,10 @@ namespace Connector.Tests
                 Assert.Equal("BadArgument", ex.Body.Error.Code);
             });
         }
+
+        [Fact]
+        public async Task CreateConversationWithBotMember_WithTracing()
+            => await AssertTracingFor(CreateConversationWithBotMember, nameof(ConversationsExtensions.CreateConversationAsync), isSuccesful: false);
 
         [Fact]
         public async Task CreateConversationWithNullParameter()
@@ -158,6 +174,10 @@ namespace Connector.Tests
         }
 
         [Fact]
+        public async Task GetConversationMembers_WithTracing()
+            => await AssertTracingFor(GetConversationMembers, nameof(ConversationsExtensions.GetConversationMembersAsync));
+
+        [Fact]
         public async Task GetConversationMembersWithInvalidConversationId()
         {
 
@@ -175,6 +195,10 @@ namespace Connector.Tests
                 Assert.Contains("The specified channel was not found", ex.Body.Error.Message);
             });
         }
+
+        [Fact]
+        public async Task GetConversationMembersWithInvalidConversationId_WithTracing()
+            => await AssertTracingFor(GetConversationMembersWithInvalidConversationId, nameof(ConversationsExtensions.GetConversationMembersAsync), isSuccesful: false);
 
         [Fact]
         public async Task GetConversationMembersWithNullConversationId()
@@ -216,6 +240,10 @@ namespace Connector.Tests
         }
 
         [Fact]
+        public async Task SendToConversation_WithTracing()
+            => await AssertTracingFor(SendToConversation, nameof(ConversationsExtensions.SendToConversationAsync));
+
+        [Fact]
         public async Task SendToConversationWithInvalidConversationId()
         {
 
@@ -245,6 +273,10 @@ namespace Connector.Tests
         }
 
         [Fact]
+        public async Task SendToConversationWithInvalidConversationId_WithTracing()
+            => await AssertTracingFor(SendToConversationWithInvalidConversationId, nameof(ConversationsExtensions.SendToConversationAsync), isSuccesful: false);
+
+        [Fact]
         public async Task SendToConversationWithInvalidBotId()
         {
             var createMessage = new ConversationParameters()
@@ -269,6 +301,10 @@ namespace Connector.Tests
                 Assert.Equal("The bot referenced by the 'from' field is unrecognized", ex.Body.Error.Message);
             });
         }
+
+        [Fact]
+        public async Task SendToConversationWithInvalidBotId_WithTracing()
+            => await AssertTracingFor(SendToConversationWithInvalidBotId, nameof(ConversationsExtensions.SendToConversationAsync), isSuccesful: false);
 
         [Fact]
         public async Task SendToConversationWithNullConversationId()
@@ -364,6 +400,10 @@ namespace Connector.Tests
         }
 
         [Fact]
+        public async Task SendCardToConversation_WithTracing()
+            => await AssertTracingFor(SendCardToConversation, nameof(ConversationsExtensions.SendToConversationAsync));
+
+        [Fact]
         public async Task GetActivityMembers()
         {
             var activity = new Activity()
@@ -386,17 +426,21 @@ namespace Connector.Tests
                 var conversation = await client.Conversations.CreateConversationAsync(createMessage);
                 var members = await client.Conversations.GetActivityMembersAsync(conversation.Id, conversation.ActivityId);
 
-                var hasUser = false;
+            var hasUser = false;
 
-                foreach (var member in members)
-                {
-                    hasUser = member.Id == User.Id;
-                    if (hasUser) break;
-                }
+            foreach (var member in members)
+            {
+                hasUser = member.Id == User.Id;
+                if (hasUser) break;
+            }
 
-                Assert.True(hasUser);
+            Assert.True(hasUser);
             });
         }
+
+        [Fact]
+        public async Task GetActivityMembers_WithTracing()
+            => await AssertTracingFor(GetActivityMembers, nameof(ConversationsExtensions.GetActivityMembersAsync));
 
         [Fact]
         public async Task GetActivityMembersWithInvalidConversationId()
@@ -424,6 +468,10 @@ namespace Connector.Tests
                 Assert.Contains("The specified channel was not found", ex.Body.Error.Message);
             });
         }
+
+        [Fact]
+        public async Task GetActivityMembersWithInvalidConversationId_WithTracing()
+            => await AssertTracingFor(GetActivityMembersWithInvalidConversationId, nameof(ConversationsExtensions.GetActivityMembersAsync), isSuccesful: false);
 
         [Fact]
         public async Task GetActivityMembersWithNullConversationId()
@@ -513,6 +561,10 @@ namespace Connector.Tests
         }
 
         [Fact]
+        public async Task ReplyToActivity_WithTracing()
+            => await AssertTracingFor(ReplyToActivity, nameof(ConversationsExtensions.ReplyToActivityAsync));
+
+        [Fact]
         public async Task ReplyToActivityWithInvalidConversationId()
         {
 
@@ -547,6 +599,10 @@ namespace Connector.Tests
                 Assert.Contains("The specified channel was not found", ex.Body.Error.Message);
             });
         }
+
+        [Fact]
+        public async Task ReplyToActivityWithInvalidConversationId_WithTracing()
+            => await AssertTracingFor(ReplyToActivityWithInvalidConversationId, nameof(ConversationsExtensions.ReplyToActivityAsync), isSuccesful: false);
 
         [Fact]
         public async Task ReplyToActivityWithNullConversationId()
@@ -672,6 +728,10 @@ namespace Connector.Tests
         }
 
         [Fact]
+        public async Task DeleteActivity_WithTracing()
+            => await AssertTracingFor(DeleteActivity, nameof(ConversationsExtensions.DeleteActivityAsync));
+
+        [Fact]
         public async Task DeleteActivityWithInvalidConversationId()
         {
             var activity = new Activity()
@@ -697,6 +757,10 @@ namespace Connector.Tests
                 Assert.Contains("Invalid ConversationId", ex.Body.Error.Message);
             });
         }
+
+        [Fact]
+        public async Task DeleteActivityWithInvalidConversationId_WithTracing()
+            => await AssertTracingFor(DeleteActivityWithInvalidConversationId, nameof(ConversationsExtensions.DeleteActivityAsync), isSuccesful: false);
 
         [Fact]
         public async Task DeleteActivityWithNullConversationId()
@@ -786,6 +850,10 @@ namespace Connector.Tests
         }
 
         [Fact]
+        public async Task UpdateActivity_WithTracing()
+            => await AssertTracingFor(UpdateActivity, nameof(ConversationsExtensions.UpdateActivity));
+
+        [Fact]
         public async Task UpdateActivityWithInvalidConversationId()
         {
             var activity = new Activity()
@@ -819,6 +887,10 @@ namespace Connector.Tests
                 Assert.Contains("Invalid ConversationId", ex.Body.Error.Message);
             });
         }
+
+        [Fact]
+        public async Task UpdateActivityWithInvalidConversationId_WithTracing()
+            => await AssertTracingFor(UpdateActivityWithInvalidConversationId, nameof(ConversationsExtensions.UpdateActivity), isSuccesful: false);
 
         [Fact]
         public async Task UpdateActivityWithNullConversationId()
