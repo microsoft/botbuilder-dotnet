@@ -212,6 +212,87 @@ namespace Connector.Tests
         }
 
         [Fact]
+        public async Task GetConversationPagedMembers()
+        {
+            var createMessage = new ConversationParameters()
+            {
+                Members = new ChannelAccount[] { User },
+                Bot = Bot
+            };
+
+            await UseClientFor(async client =>
+            {
+                var conversation = await client.Conversations.CreateConversationAsync(createMessage);
+                var membersResult = await client.Conversations.GetConversationPagedMembersAsync(conversation.Id);
+
+                var hasUser = false;
+
+                foreach (var member in membersResult.Members)
+                {
+                    hasUser = member.Id == User.Id;
+                    if (hasUser) break;
+                }
+
+                Assert.True(hasUser);
+            });
+        }
+
+        [Fact]
+        public async Task GetConversationPagedMembers_WithTracing()
+            => await AssertTracingFor(GetConversationPagedMembers, nameof(ConversationsExtensions.GetConversationPagedMembersAsync));
+
+        [Fact]
+        public async Task GetConversationPagedMembersWithInvalidConversationId()
+        {
+            var createMessage = new ConversationParameters()
+            {
+                Members = new ChannelAccount[] { User },
+                Bot = Bot
+            };
+
+            await UseClientFor(async client =>
+            {
+                var conversation = await client.Conversations.CreateConversationAsync(createMessage);
+                var ex = await Assert.ThrowsAsync<HttpOperationException>(() => client.Conversations.GetConversationPagedMembersAsync(string.Concat(conversation.Id, "M")));
+                Assert.Equal(System.Net.HttpStatusCode.BadRequest, ex.Response.StatusCode);
+            });
+        }
+
+        [Fact]
+        public async Task GetConversationPagedMembersWithInvalidConversationId_WithTracing()
+            => await AssertTracingFor(GetConversationPagedMembersWithInvalidConversationId, nameof(ConversationsExtensions.GetConversationPagedMembersAsync), isSuccesful: false);
+
+        [Fact]
+        public async Task GetConversationPagedMembersWithPageSize()
+        {
+            var createMessage = new ConversationParameters()
+            {
+                Members = new ChannelAccount[] { User },
+                Bot = Bot
+            };
+
+            await UseClientFor(async client =>
+            {
+                var conversation = await client.Conversations.CreateConversationAsync(createMessage);
+                var membersResult = await client.Conversations.GetConversationPagedMembersAsync(conversation.Id, pageSize: 10);
+
+                var hasUser = false;
+
+                foreach (var member in membersResult.Members)
+                {
+                    hasUser = member.Id == User.Id;
+                    if (hasUser) break;
+                }
+
+                Assert.True(hasUser);
+            });
+        }
+
+        [Fact]
+        public async Task GetConversationPagedMembersWithPageSize_WithTracing()
+            => await AssertTracingFor(GetConversationPagedMembersWithPageSize, nameof(ConversationsExtensions.GetConversationPagedMembersAsync));
+
+        [Fact]
         public async Task SendToConversation()
         {
             var activity = new Activity()
