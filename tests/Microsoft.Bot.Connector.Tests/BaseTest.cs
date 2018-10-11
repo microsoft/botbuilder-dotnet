@@ -4,6 +4,8 @@
 namespace Connector.Tests
 {
     using System;
+    using System.Collections.Generic;
+    using System.Linq;
     using System.Net.Http;
     using System.Net.Http.Headers;
     using System.Runtime.CompilerServices;
@@ -15,6 +17,7 @@ namespace Connector.Tests
     using Microsoft.Bot.Schema;
     using Microsoft.Rest;
     using Microsoft.Rest.ClientRuntime.Azure.TestFramework;
+    using Moq;
 
     public class BaseTest
     {
@@ -54,9 +57,9 @@ namespace Connector.Tests
             User = new ChannelAccount() { Id = userId };
         }
 
-        public async void UseClientFor(Func<IConnectorClient, Task> doTest, string className = null, [CallerMemberName] string methodName = null)
+        public async Task UseClientFor(Func<IConnectorClient, Task> doTest, string className = null, [CallerMemberName] string methodName = null)
         {
-            using (MockContext context = MockContext.Start(className ?? ClassName, methodName))
+            using (var context = MockContext.Start(className ?? ClassName, methodName))
             {
                 HttpMockServer.Initialize(className ?? ClassName, methodName, mode);
 
@@ -68,7 +71,6 @@ namespace Connector.Tests
                 context.Stop();
             }
         }
-
 
         public async Task UseOAuthClientFor(Func<OAuthClient, Task> doTest, string className = null, [CallerMemberName] string methodName = null)
         {
