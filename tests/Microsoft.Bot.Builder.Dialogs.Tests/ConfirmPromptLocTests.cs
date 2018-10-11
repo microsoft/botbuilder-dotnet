@@ -13,8 +13,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
     public class ConfirmPromptLocTests
     {
         [TestMethod]
-        [DataRow(Culture.Dutch, "(1) Ja of (2) Niet", "Ja", "1")]
-        [DataRow(Culture.Dutch, "(1) Ja of (2) Niet", "Niet", "0")]
+        [DataRow(Culture.Dutch, "(1) Ja of (2) Nee", "Ja", "1")]
+        [DataRow(Culture.Dutch, "(1) Ja of (2) Nee", "Nee", "0")]
         [DataRow(Culture.Spanish, "(1) Sí o (2) No", "Sí", "1")]
         [DataRow(Culture.Spanish, "(1) Sí o (2) No", "No", "0")]
         [DataRow(Culture.English, "(1) Yes or (2) No", "Yes", "1")]
