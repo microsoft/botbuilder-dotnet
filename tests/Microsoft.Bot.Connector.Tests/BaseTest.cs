@@ -57,6 +57,43 @@ namespace Connector.Tests
             User = new ChannelAccount() { Id = userId };
         }
 
+        public async Task AssertTracingFor(Func<Task> doTest, string tracedMethodName, bool isSuccesful = true)
+        {
+            tracedMethodName = tracedMethodName.EndsWith("Async") ? tracedMethodName.Remove(tracedMethodName.LastIndexOf("Async")) : tracedMethodName;
+
+            var traceInterceptor = new Mock<IServiceClientTracingInterceptor>();
+            var invocationIds = new List<string>();
+            traceInterceptor.Setup(
+                i => i.EnterMethod(It.IsAny<string>(), It.IsAny<object>(), It.IsAny<string>(), It.IsAny<IDictionary<string, object>>()))
+                .Callback((string id, object instance, string method, IDictionary<string, object> parameters) => invocationIds.Add(id));
+            ServiceClientTracing.AddTracingInterceptor(traceInterceptor.Object);
+            var wasTracingEnabled = ServiceClientTracing.IsEnabled;
+            ServiceClientTracing.IsEnabled = true;
+
+            await doTest();
+
+            ServiceClientTracing.IsEnabled = wasTracingEnabled;
+
+            var invocationId = invocationIds.Last();
+            traceInterceptor.Verify(
+                i => i.EnterMethod(invocationId, It.IsAny<object>(), tracedMethodName, It.IsAny<IDictionary<string, object>>()), Times.Once());
+            traceInterceptor.Verify(
+                i => i.SendRequest(invocationId, It.IsAny<HttpRequestMessage>()), Times.Once());
+            traceInterceptor.Verify(
+                i => i.ReceiveResponse(invocationId, It.IsAny<HttpResponseMessage>()), Times.Once());
+
+            if (isSuccesful)
+            {
+                traceInterceptor.Verify(
+                    i => i.ExitMethod(invocationId, It.IsAny<HttpOperationResponse>()), Times.Once());
+            }
+            else
+            {
+                traceInterceptor.Verify(
+                    i => i.TraceError(invocationId, It.IsAny<Exception>()), Times.Once());
+            }
+        }
+
         public async Task UseClientFor(Func<IConnectorClient, Task> doTest, string className = null, [CallerMemberName] string methodName = null)
         {
             using (var context = MockContext.Start(className ?? ClassName, methodName))
