@@ -297,7 +297,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             })
             .Send("hello")
             .AssertReply("Please confirm. Yes or No")
-            .Send("lala")
+            .Send("2")
             .AssertReply("Please confirm, say 'yes' or 'no' or something like that. Yes or No")
             .Send("no")
             .AssertReply("Not confirmed.")
