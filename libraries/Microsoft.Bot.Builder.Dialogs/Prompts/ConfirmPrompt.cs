@@ -150,6 +150,25 @@ namespace Microsoft.Bot.Builder.Dialogs
                         result.Value = value;
                     }
                 }
+                else
+                {
+                    // First check whether the prompt was sent to the user with numbers - if it was we should recognize numbers
+                    var choiceOptions = ChoiceOptions ?? DefaultChoiceOptions[culture];
+
+                    // This logic reflects the fact that IncludeNumbers is nullable and True is the default set in Inline style
+                    if (!choiceOptions.IncludeNumbers.HasValue || choiceOptions.IncludeNumbers.Value)
+                    {
+                        // The text may be a number in which case we will interpret that as a choice.
+                        var confirmChoices = ConfirmChoices ?? DefaultConfirmChoices[culture];
+                        var choices = new List<Choice> { confirmChoices.Item1, confirmChoices.Item2 };
+                        var secondAttemptResults = ChoiceRecognizers.RecognizeChoices(message.Text, choices);
+                        if (secondAttemptResults.Count > 0)
+                        {
+                            result.Succeeded = true;
+                            result.Value = secondAttemptResults[0].Resolution.Index == 0;
+                        }
+                    }
+                }
             }
 
             return Task.FromResult(result);
