@@ -51,9 +51,30 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             var sanitizedKey4 = CosmosDBKeyEscape.EscapeKey("#test#");
             Assert.AreEqual(sanitizedKey4, "*23test*23");
 
+            // Ascii code of "*" is "2a".
+            var sanitizedKey5 = CosmosDBKeyEscape.EscapeKey("*test*");
+            Assert.AreEqual(sanitizedKey5, "*2atest*2a");
+
             // Check a compound key
             var compoundSanitizedKey = CosmosDBKeyEscape.EscapeKey("?#/");
             Assert.AreEqual(compoundSanitizedKey, "*3f*23*2f");
+        }
+
+        [TestMethod]
+        public void Collisions_Should_Not_Happen()
+        {
+            var validKey = "*2atest*2a";
+            var validKey2 = "*test*";
+
+            // If we failed to esacpe the "*", then validKey2 would
+            // escape to the same value as validKey. To prevent this
+            // we makes sure to escape the *. 
+
+            // Ascii code of "*" is "2a".
+            var escaped1 = CosmosDBKeyEscape.EscapeKey(validKey);
+            var escaped2 = CosmosDBKeyEscape.EscapeKey(validKey2);
+
+            Assert.AreNotEqual(escaped1, escaped2); 
         }
     }
 }

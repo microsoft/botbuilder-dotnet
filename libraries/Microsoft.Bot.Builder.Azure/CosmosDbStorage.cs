@@ -127,7 +127,8 @@ namespace Microsoft.Bot.Builder.Azure
         {
             if (keys == null || keys.Length == 0)
             {
-                throw new ArgumentException("Please provide at least one key to read from storage.", nameof(keys));
+                // No keys passed in, no result to return.
+                return new Dictionary<string, object>();
             }
 
             // Ensure Initialization has been run

@@ -12,7 +12,9 @@ namespace Microsoft.Bot.Builder.Azure
     {
         // The list of illegal characters for CosmosDB Keys comes from this list on
         // the CosmostDB docs: https://docs.microsoft.com/en-us/dotnet/api/microsoft.azure.documents.resource.id?view=azure-dotnet#remarks
-        private static char[] _illegalKeys = new[] { '\\', '?', '/', '#' };
+        // Note: We are also escapting the "*" character, as that what we're using
+        // as our escape character.
+        private static char[] _illegalKeys = new[] { '\\', '?', '/', '#', '*' };
 
         // We are escaping illegal characters using a "*{AsciiCodeInHex}" pattern. This
         // means a key of "?test?" would be escaped as "*3ftest*3f".
