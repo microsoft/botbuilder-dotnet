@@ -12,6 +12,8 @@ namespace Microsoft.Bot.Connector.Authentication
 {
     public sealed class GovernmentChannelValidation
     {
+        public static string OpenIdMetadataUrl { get; set; } = GovernmentAuthenticationConstants.ToBotFromChannelOpenIdMetadataUrl;
+
         /// <summary>
         /// TO BOT FROM GOVERNMENT CHANNEL: Token validation parameters when connecting to a bot
         /// </summary>
@@ -42,7 +44,7 @@ namespace Microsoft.Bot.Connector.Authentication
         {
             var tokenExtractor = new JwtTokenExtractor(httpClient,
                   ToBotFromGovernmentChannelTokenValidationParameters,
-                  GovernmentAuthenticationConstants.ToBotFromChannelOpenIdMetadataUrl,
+                  OpenIdMetadataUrl,
                   AuthenticationConstants.AllowedSigningAlgorithms);
 
             var identity = await tokenExtractor.GetIdentityAsync(authHeader, channelId).ConfigureAwait(false);

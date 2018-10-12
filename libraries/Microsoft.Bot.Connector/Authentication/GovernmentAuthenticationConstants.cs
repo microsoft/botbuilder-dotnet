@@ -13,12 +13,12 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <summary>
         /// Government Channel Service property value
         /// </summary>
-        public const string ChannelService = "https://botframework.us";
+        public const string ChannelService = "https://botframework.azure.us";
 
         /// <summary>
         /// TO GOVERNMENT CHANNEL FROM BOT: Login URL
         /// </summary>
-        public const string ToChannelFromBotLoginUrl = "https://login.microsoftonline.us/botframework.com/oauth2/v2.0/token";
+        public const string ToChannelFromBotLoginUrl = "https://login.microsoftonline.us/cab8a31a-1906-4287-a0d8-4eef66b95f6e/oauth2/v2.0/token";
 
         /// <summary>
         /// TO GOVERNMENT CHANNEL FROM BOT: OAuth scope to request
@@ -33,11 +33,11 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <summary>
         /// OAuth Url used to get a token from OAuthApiClient
         /// </summary>
-        public const string OAuthUrlGov = "https://api.botframework.us";
+        public const string OAuthUrlGov = "https://api.botframework.azure.us";
 
         /// <summary>
         /// TO BOT FROM GOVERNMANT CHANNEL: OpenID metadata document for tokens coming from MSA
         /// </summary>
-        public const string ToBotFromChannelOpenIdMetadataUrl = "https://login.botframework.us/v1/.well-known/openidconfiguration";
+        public const string ToBotFromChannelOpenIdMetadataUrl = "https://login.botframework.azure.us/v1/.well-known/openidconfiguration";
     }
 }
