@@ -138,6 +138,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var prompt = new ConfirmPrompt("ConfirmPrompt", defaultLocale: Culture.English);
             // Set options
             prompt.ChoiceOptions = new Choices.ChoiceFactoryOptions { IncludeNumbers = true };
+            prompt.Style = Choices.ListStyle.Inline;
             dialogs.Add(prompt);
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
@@ -178,11 +179,72 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .AssertReply("Please confirm. (1) Yes or (2) No")
             .Send("lala")
             .AssertReply("Please confirm, say 'yes' or 'no' or something like that. (1) Yes or (2) No")
-            .Send("no")
+            .Send("2")
             .AssertReply("Not confirmed.")
             .StartTestAsync();
         }
-        
+
+        [TestMethod]
+        public async Task ConfirmPromptChoiceOptionsMultipleAttempts()
+        {
+            var convoState = new ConversationState(new MemoryStorage());
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
+
+            var adapter = new TestAdapter()
+                .Use(new AutoSaveStateMiddleware(convoState));
+
+            var dialogs = new DialogSet(dialogState);
+            var prompt = new ConfirmPrompt("ConfirmPrompt", defaultLocale: Culture.English);
+            // Set options
+            prompt.ChoiceOptions = new Choices.ChoiceFactoryOptions { IncludeNumbers = true };
+            prompt.Style = Choices.ListStyle.Inline;
+            dialogs.Add(prompt);
+
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            {
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
+
+                var results = await dc.ContinueDialogAsync(cancellationToken);
+                if (results.Status == DialogTurnStatus.Empty)
+                {
+                    var options = new PromptOptions
+                    {
+                        Prompt = new Activity
+                        {
+                            Type = ActivityTypes.Message,
+                            Text = "Please confirm."
+                        },
+                        RetryPrompt = new Activity
+                        {
+                            Type = ActivityTypes.Message,
+                            Text = "Please confirm, say 'yes' or 'no' or something like that."
+                        }
+                    };
+                    await dc.PromptAsync("ConfirmPrompt", options, cancellationToken);
+                }
+                else if (results.Status == DialogTurnStatus.Complete)
+                {
+                    if ((bool)results.Result)
+                    {
+                        await turnContext.SendActivityAsync(MessageFactory.Text("Confirmed."), cancellationToken);
+                    }
+                    else
+                    {
+                        await turnContext.SendActivityAsync(MessageFactory.Text("Not confirmed."), cancellationToken);
+                    }
+                }
+            })
+            .Send("hello")
+            .AssertReply("Please confirm. (1) Yes or (2) No")
+            .Send("lala")
+            .AssertReply("Please confirm, say 'yes' or 'no' or something like that. (1) Yes or (2) No")
+            .Send("what")
+            .AssertReply("Please confirm, say 'yes' or 'no' or something like that. (1) Yes or (2) No")
+            .Send("2")
+            .AssertReply("Not confirmed.")
+            .StartTestAsync();
+        }
+
         [TestMethod]
         public async Task ConfirmPromptChoiceOptionsNoNumbers()
         {
