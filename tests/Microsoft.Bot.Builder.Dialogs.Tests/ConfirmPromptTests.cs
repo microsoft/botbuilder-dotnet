@@ -124,7 +124,50 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .AssertReply("Not confirmed.")
             .StartTestAsync();
         }
-        
+
+        [TestMethod]
+        public async Task ConfirmPromptNoOptions()
+        {
+            var convoState = new ConversationState(new MemoryStorage());
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
+
+            var adapter = new TestAdapter()
+                .Use(new AutoSaveStateMiddleware(convoState));
+
+            var dialogs = new DialogSet(dialogState);
+            dialogs.Add(new ConfirmPrompt("ConfirmPrompt", defaultLocale: Culture.English));
+
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            {
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
+
+                var results = await dc.ContinueDialogAsync(cancellationToken);
+                if (results.Status == DialogTurnStatus.Empty)
+                {
+                    var options = new PromptOptions();
+                    await dc.PromptAsync("ConfirmPrompt", options, cancellationToken);
+                }
+                else if (results.Status == DialogTurnStatus.Complete)
+                {
+                    if ((bool)results.Result)
+                    {
+                        await turnContext.SendActivityAsync(MessageFactory.Text("Confirmed."), cancellationToken);
+                    }
+                    else
+                    {
+                        await turnContext.SendActivityAsync(MessageFactory.Text("Not confirmed."), cancellationToken);
+                    }
+                }
+            })
+            .Send("hello")
+            .AssertReply(" (1) Yes or (2) No")
+            .Send("lala")
+            .AssertReply(" (1) Yes or (2) No")
+            .Send("no")
+            .AssertReply("Not confirmed.")
+            .StartTestAsync();
+        }
+
         [TestMethod]
         public async Task ConfirmPromptChoiceOptionsNumbers()
         {
