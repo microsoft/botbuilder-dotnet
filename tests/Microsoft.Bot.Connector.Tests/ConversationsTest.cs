@@ -3,6 +3,9 @@
 
 namespace Connector.Tests
 {
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.Bot.Connector;
     using Microsoft.Bot.Schema;
@@ -148,6 +151,38 @@ namespace Connector.Tests
         }
 
         [Fact]
+        public async Task CreateConversationWithCustomHeader()
+        {
+            var activity = new Activity()
+            {
+                Type = ActivityTypes.Message,
+                Recipient = User,
+                From = Bot,
+                Text = "TEST Create Conversation"
+            };
+
+            var param = new ConversationParameters()
+            {
+                Members = new ChannelAccount[] { User },
+                Bot = Bot,
+                Activity = activity
+            };
+
+            var customHeaders = new Dictionary<string, List<string>>() { { "customHeader", new List<string>() { "customValue" } } };
+
+            await AssertTracingFor(async () =>
+                await UseClientFor(async client =>
+                {
+                    var result = await client.Conversations.CreateConversationWithHttpMessagesAsync(param, customHeaders, default(CancellationToken));
+                    Assert.NotNull(result.Body);
+                    Assert.NotNull(result.Body.ActivityId);
+                }),
+            nameof(ConversationsExtensions.CreateConversationAsync),
+            assertHttpRequestMessage:
+                (h) => h.Headers.Contains("customHeader") && h.Headers.GetValues("customHeader").Contains("customValue"));
+        }
+
+        [Fact]
         public async Task GetConversationMembers()
         {
             var createMessage = new ConversationParameters()
@@ -209,6 +244,39 @@ namespace Connector.Tests
                 var ex = await Assert.ThrowsAsync<ValidationException>(() => client.Conversations.GetConversationMembersAsync(null));
                 Assert.Contains("cannot be null", ex.Message);
             });
+        }
+
+        [Fact]
+        public async Task GetConversationMembersWithCustomHeader()
+        {
+            var createMessage = new ConversationParameters()
+            {
+                Members = new ChannelAccount[] { User },
+                Bot = Bot
+            };
+
+            var customHeaders = new Dictionary<string, List<string>>() { { "customHeader", new List<string>() { "customValue" } } };
+
+            await AssertTracingFor(
+                async () =>
+                    await UseClientFor(async client =>
+                                {
+                                    var conversation = await client.Conversations.CreateConversationAsync(createMessage);
+                                    var members = await client.Conversations.GetConversationMembersWithHttpMessagesAsync(conversation.Id, customHeaders, default(CancellationToken));
+
+                                    var hasUser = false;
+
+                                    foreach (var member in members.Body)
+                                    {
+                                        hasUser = member.Id == User.Id;
+                                        if (hasUser) break;
+                                    }
+
+                                    Assert.True(hasUser);
+                                }),
+                nameof(ConversationsExtensions.GetConversationMembersAsync),
+                assertHttpRequestMessage:
+                    (h) => h.Headers.Contains("customHeader") && h.Headers.GetValues("customHeader").Contains("customValue"));
         }
 
         [Fact]
@@ -291,6 +359,39 @@ namespace Connector.Tests
         [Fact]
         public async Task GetConversationPagedMembersWithPageSize_WithTracing()
             => await AssertTracingFor(GetConversationPagedMembersWithPageSize, nameof(ConversationsExtensions.GetConversationPagedMembersAsync));
+
+        [Fact]
+        public async Task GetConversationPagedMembersWithCustomHeaders()
+        {
+            var createMessage = new ConversationParameters()
+            {
+                Members = new ChannelAccount[] { User },
+                Bot = Bot
+            };
+
+            var customHeaders = new Dictionary<string, List<string>>() { { "customHeader", new List<string>() { "customValue" } } };
+
+            await AssertTracingFor(async () =>
+                await UseClientFor(async client =>
+                {
+                    var conversation = await client.Conversations.CreateConversationAsync(createMessage);
+                    var members = await client.Conversations.GetConversationPagedMembersWithHttpMessagesAsync(
+                        conversation.Id, customHeaders: customHeaders, cancellationToken: default(CancellationToken));
+
+                    var hasUser = false;
+
+                    foreach (var member in members.Body.Members)
+                    {
+                        hasUser = member.Id == User.Id;
+                        if (hasUser) break;
+                    }
+
+                    Assert.True(hasUser);
+                }),
+                nameof(ConversationsExtensions.GetConversationPagedMembersAsync),
+                assertHttpRequestMessage:
+                    (h) => h.Headers.Contains("customHeader") && h.Headers.GetValues("customHeader").Contains("customValue"));
+        }
 
         [Fact]
         public async Task SendToConversation()
@@ -485,6 +586,39 @@ namespace Connector.Tests
             => await AssertTracingFor(SendCardToConversation, nameof(ConversationsExtensions.SendToConversationAsync));
 
         [Fact]
+        public async Task SendToConversationWithCustomHeaders()
+        {
+            var activity = new Activity()
+            {
+                Type = ActivityTypes.Message,
+                Recipient = User,
+                From = Bot,
+                Name = "acticity",
+                Text = "TEST Send to Conversation"
+            };
+
+            var createMessage = new ConversationParameters()
+            {
+                Members = new ChannelAccount[] { User },
+                Bot = Bot,
+                Activity = activity
+            };
+
+            var customHeaders = new Dictionary<string, List<string>>() { { "customHeader", new List<string>() { "customValue" } } };
+
+            await AssertTracingFor(async () =>
+                await UseClientFor(async client =>
+                {
+                    var conversation = await client.Conversations.CreateConversationAsync(createMessage);
+                    var response = await client.Conversations.SendToConversationWithHttpMessagesAsync(conversation.Id, activity, customHeaders, default(CancellationToken));
+                    Assert.NotNull(response.Body.Id);
+                }),
+                nameof(ConversationsExtensions.SendToConversationAsync),
+                assertHttpRequestMessage:
+                    (h) => h.Headers.Contains("customHeader") && h.Headers.GetValues("customHeader").Contains("customValue"));
+        }
+
+        [Fact]
         public async Task GetActivityMembers()
         {
             var activity = new Activity()
@@ -507,15 +641,15 @@ namespace Connector.Tests
                 var conversation = await client.Conversations.CreateConversationAsync(createMessage);
                 var members = await client.Conversations.GetActivityMembersAsync(conversation.Id, conversation.ActivityId);
 
-            var hasUser = false;
+                var hasUser = false;
 
-            foreach (var member in members)
-            {
-                hasUser = member.Id == User.Id;
-                if (hasUser) break;
-            }
+                foreach (var member in members)
+                {
+                    hasUser = member.Id == User.Id;
+                    if (hasUser) break;
+                }
 
-            Assert.True(hasUser);
+                Assert.True(hasUser);
             });
         }
 
@@ -604,6 +738,49 @@ namespace Connector.Tests
                 var ex = await Assert.ThrowsAsync<ValidationException>(() => client.Conversations.GetActivityMembersAsync(conversation.Id, null));
                 Assert.Contains("cannot be null", ex.Message);
             });
+        }
+
+        [Fact]
+        public async Task GetActivityMembersWithCustomHeaders()
+        {
+            var activity = new Activity()
+            {
+                Type = ActivityTypes.Message,
+                Recipient = User,
+                From = Bot,
+                Text = "TEST Get Activity Members"
+            };
+
+            var createMessage = new ConversationParameters()
+            {
+                Members = new ChannelAccount[] { User },
+                Bot = Bot,
+                Activity = activity
+            };
+
+            var customHeaders = new Dictionary<string, List<string>>() { { "customHeader", new List<string>() { "customValue" } } };
+
+            await AssertTracingFor(
+                async () =>
+                    await UseClientFor(async client =>
+                    {
+                        var conversation = await client.Conversations.CreateConversationAsync(createMessage);
+                        var members = await client.Conversations.GetActivityMembersWithHttpMessagesAsync(
+                            conversation.Id, conversation.ActivityId, customHeaders, default(CancellationToken));
+
+                        var hasUser = false;
+
+                        foreach (var member in members.Body)
+                        {
+                            hasUser = member.Id == User.Id;
+                            if (hasUser) break;
+                        }
+
+                        Assert.True(hasUser);
+                    }),
+                    nameof(ConversationsExtensions.GetActivityMembersAsync),
+                    assertHttpRequestMessage:
+                        (h) => h.Headers.Contains("customHeader") && h.Headers.GetValues("customHeader").Contains("customValue"));
         }
 
         [Fact]
@@ -783,6 +960,48 @@ namespace Connector.Tests
         }
 
         [Fact]
+        public async Task ReplyToActivityWithCustomHeaders()
+        {
+            var activity = new Activity()
+            {
+                Type = ActivityTypes.Message,
+                Recipient = User,
+                From = Bot,
+                Text = "TEST Activity gets a reply"
+            };
+
+            var reply = new Activity()
+            {
+                Type = ActivityTypes.Message,
+                Recipient = User,
+                From = Bot,
+                Text = "TEST Reply to Activity"
+            };
+
+            var createMessage = new ConversationParameters()
+            {
+                Members = new ChannelAccount[] { User },
+                Bot = Bot
+            };
+
+            var customHeaders = new Dictionary<string, List<string>>() { { "customHeader", new List<string>() { "customValue" } } };
+
+            await AssertTracingFor(async () =>
+                await UseClientFor(async client =>
+                {
+                    var conversation = await client.Conversations.CreateConversationAsync(createMessage);
+                    var response = await client.Conversations.SendToConversationAsync(conversationId: conversation.Id, activity: activity);
+                    var replyResponse = await client.Conversations.ReplyToActivityWithHttpMessagesAsync(
+                        conversation.Id, response.Id, reply, customHeaders, default(CancellationToken));
+
+                    Assert.NotNull(replyResponse.Body.Id);
+                }),
+                nameof(ConversationsExtensions.ReplyToActivityAsync),
+                assertHttpRequestMessage:
+                    (h) => h.Headers.Contains("customHeader") && h.Headers.GetValues("customHeader").Contains("customValue"));
+        }
+
+        [Fact]
         public async Task DeleteActivity()
         {
             var activity = new Activity()
@@ -893,6 +1112,40 @@ namespace Connector.Tests
                 var ex = await Assert.ThrowsAsync<ValidationException>(() => client.Conversations.DeleteActivityAsync("B21S8SG7K:T03CWQ0QB", null));
                 Assert.Contains("cannot be null", ex.Message);
             });
+        }
+
+        [Fact]
+        public async Task DeleteActivityWithCustomHeaders()
+        {
+            var activity = new Activity()
+            {
+                Type = ActivityTypes.Message,
+                Recipient = User,
+                From = Bot,
+                Text = "TEST Activity to be deleted"
+            };
+
+            var createMessage = new ConversationParameters()
+            {
+                Members = new ChannelAccount[] { User },
+                Bot = Bot,
+                Activity = activity
+            };
+
+            var customHeaders = new Dictionary<string, List<string>>() { { "customHeader", new List<string>() { "customValue" } } };
+
+            await AssertTracingFor(
+                async () =>
+                    await UseClientFor(async client =>
+                    {
+                        var conversation = await client.Conversations.CreateConversationAsync(createMessage);
+                        await client.Conversations.DeleteActivityWithHttpMessagesAsync(
+                            conversation.Id, conversation.ActivityId, customHeaders, default(CancellationToken));
+                        Assert.NotNull(conversation.ActivityId);
+                    }),
+                    nameof(ConversationsExtensions.DeleteActivityAsync),
+                    assertHttpRequestMessage:
+                        (h) => h.Headers.Contains("customHeader") && h.Headers.GetValues("customHeader").Contains("customValue"));
         }
 
         [Fact]
@@ -1065,6 +1318,46 @@ namespace Connector.Tests
                 var ex = await Assert.ThrowsAsync<ValidationException>(() => client.Conversations.UpdateActivityAsync(conversation.Id, response.Id, null));
                 Assert.Contains("cannot be null", ex.Message);
             });
+        }
+        [Fact]
+        public async Task UpdateActivityWithCustomHeaders()
+        {
+            var activity = new Activity()
+            {
+                Type = ActivityTypes.Message,
+                Recipient = User,
+                From = Bot,
+                Text = "TEST Activity to be updated"
+            };
+
+            var createMessage = new ConversationParameters()
+            {
+                Members = new ChannelAccount[] { User },
+                Bot = Bot
+            };
+
+            var customHeaders = new Dictionary<string, List<string>>() { { "customHeader", new List<string>() { "customValue" } } };
+
+            await AssertTracingFor(async () =>
+                await UseClientFor(async client =>
+                {
+                    var conversation = await client.Conversations.CreateConversationAsync(createMessage);
+                    var response = await client.Conversations.SendToConversationAsync(conversationId: conversation.Id, activity: activity);
+                    var update = new Activity()
+                    {
+                        Id = response.Id,
+                        Type = ActivityTypes.Message,
+                        Recipient = User,
+                        From = Bot,
+                        Text = "TEST Successfully activity updated"
+                    };
+                    var updateResponse = await client.Conversations.UpdateActivityWithHttpMessagesAsync(
+                        conversation.Id, response.Id, update, customHeaders, default(CancellationToken));
+                    Assert.NotNull(updateResponse.Body.Id);
+                }),
+                nameof(ConversationsExtensions.UpdateActivity),
+                assertHttpRequestMessage:
+                    (h) => h.Headers.Contains("customHeader") && h.Headers.GetValues("customHeader").Contains("customValue"));
         }
     }
 }

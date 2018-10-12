@@ -57,15 +57,17 @@ namespace Connector.Tests
             User = new ChannelAccount() { Id = userId };
         }
 
-        public async Task AssertTracingFor(Func<Task> doTest, string tracedMethodName, bool isSuccesful = true)
+        public async Task AssertTracingFor(Func<Task> doTest, string tracedMethodName,
+            bool isSuccesful = true, Func<HttpRequestMessage, bool> assertHttpRequestMessage = null)
         {
             tracedMethodName = tracedMethodName.EndsWith("Async") ? tracedMethodName.Remove(tracedMethodName.LastIndexOf("Async")) : tracedMethodName;
 
             var traceInterceptor = new Mock<IServiceClientTracingInterceptor>();
             var invocationIds = new List<string>();
             traceInterceptor.Setup(
-                i => i.EnterMethod(It.IsAny<string>(), It.IsAny<object>(), It.IsAny<string>(), It.IsAny<IDictionary<string, object>>()))
+                i => i.EnterMethod(It.IsAny<string>(), It.IsAny<object>(), tracedMethodName, It.IsAny<IDictionary<string, object>>()))
                 .Callback((string id, object instance, string method, IDictionary<string, object> parameters) => invocationIds.Add(id));
+
             ServiceClientTracing.AddTracingInterceptor(traceInterceptor.Object);
             var wasTracingEnabled = ServiceClientTracing.IsEnabled;
             ServiceClientTracing.IsEnabled = true;
@@ -91,6 +93,12 @@ namespace Connector.Tests
             {
                 traceInterceptor.Verify(
                     i => i.TraceError(invocationId, It.IsAny<Exception>()), Times.Once());
+            }
+
+            if (assertHttpRequestMessage != null)
+            {
+                traceInterceptor.Verify(
+                    i => i.SendRequest(invocationId, It.Is<HttpRequestMessage>(h => assertHttpRequestMessage(h))), "HttpRequestMessage does not validate condition.");
             }
         }
 
