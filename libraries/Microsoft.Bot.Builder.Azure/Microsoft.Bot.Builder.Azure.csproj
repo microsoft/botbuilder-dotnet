@@ -50,14 +50,14 @@
 
 	<ItemGroup>
 		<PackageReference Include="AsyncUsageAnalyzers" Version="1.0.0-alpha003" PrivateAssets="all" />
-		<PackageReference Include="Microsoft.Azure.DocumentDB.Core" Version="1.9.1" />
+		<PackageReference Include="Microsoft.Azure.DocumentDB.Core" Version="2.1.2" />
 		<PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
 		<PackageReference Include="SourceLink.Create.CommandLine" Version="2.8.1" />
 		<PackageReference Include="StyleCop.Analyzers" Version="1.1.0-beta008" PrivateAssets="all" />
 		<PackageReference Include="System.Threading.Tasks.Extensions" Version="4.4.0" />
     <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(PackageVersion)' == '' " Version="4.0.0-local" />
     <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(PackageVersion)' != '' " Version="$(PackageVersion)" />
-    <PackageReference Include="WindowsAzure.Storage" Version="9.3.0" />
+    <PackageReference Include="WindowsAzure.Storage" Version="9.3.2" />
   </ItemGroup>
 
 	<ItemGroup>
