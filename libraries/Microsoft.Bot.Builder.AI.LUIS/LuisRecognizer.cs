@@ -82,7 +82,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
             }
 
             string topIntent = null;
-            double topScore = -1.0;
+            var topScore = -1.0;
             if (results.Intents.Count > 0)
             {
                 foreach (var intent in results.Intents)
@@ -97,7 +97,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
             }
 
             return !string.IsNullOrEmpty(topIntent) ? topIntent : defaultIntent;
-	}
+        }
 
         /// <inheritdoc />
         public async Task<RecognizerResult> RecognizeAsync(ITurnContext turnContext, CancellationToken cancellationToken)
