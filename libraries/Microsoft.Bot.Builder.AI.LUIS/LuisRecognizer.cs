@@ -82,7 +82,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
             }
 
             string topIntent = null;
-            var topScore = -1.0;
+            double topScore = -1.0;
             if (results.Intents.Count > 0)
             {
                 foreach (var intent in results.Intents)
