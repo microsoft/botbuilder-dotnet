@@ -37,11 +37,11 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                 services.Configure(configureAction);
             }
 
-            services.AddSingleton(sp =>
+            services.AddSingleton<ILogger<BotFrameworkAdapter>>(sp =>
             {
                 // Loggers introduce a lock during creation, make a singleton.
                 var loggerFactory = sp.GetRequiredService<ILoggerFactory>();
-                return loggerFactory.CreateLogger<BotFrameworkAdapter>();
+                return new Logger<BotFrameworkAdapter>(loggerFactory);
             });
 
             services.AddTransient<IBot, TBot>();
