@@ -134,10 +134,7 @@ namespace Microsoft.Bot.Builder
                 throw new ArgumentNullException(nameof(callback));
             }
 
-            if (_logger != null)
-            {
-                _logger.LogInformation($"Sending proactive message.  botAppId: {botAppId}");
-            }
+            _logger?.LogInformation($"Sending proactive message.  botAppId: {botAppId}");
 
             using (var context = new TurnContext(this, reference.GetContinuationActivity()))
             {
@@ -216,10 +213,7 @@ namespace Microsoft.Bot.Builder
         {
             BotAssert.ActivityNotNull(activity);
 
-            if (_logger != null)
-            {
-                _logger.LogInformation($"Received an incoming activity.  ActivityId: {activity.Id}");
-            }
+            _logger?.LogInformation($"Received an incoming activity.  ActivityId: {activity.Id}");
 
             using (var context = new TurnContext(this, activity))
             {
@@ -292,10 +286,7 @@ namespace Microsoft.Bot.Builder
                 var activity = activities[index];
                 var response = default(ResourceResponse);
 
-                if (_logger != null)
-                {
-                    _logger.LogInformation($"Sending activity.  ReplyToId: {activity.ReplyToId}");
-                }
+                _logger?.LogInformation($"Sending activity.  ReplyToId: {activity.ReplyToId}");
 
                 if (activity.Type == ActivityTypesEx.Delay)
                 {
