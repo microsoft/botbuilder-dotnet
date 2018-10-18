@@ -1,0 +1,118 @@
+{
+  "Entries": [
+    {
+      "RequestUri": "/v3/conversations",
+      "EncodedRequestUri": "L3YzL2NvbnZlcnNhdGlvbnM=",
+      "RequestMethod": "POST",
+      "RequestBody": "{\r\n  \"bot\": {\r\n    \"id\": \"B21UTEF8S:T03CWQ0QB\"\r\n  },\r\n  \"members\": [\r\n    {\r\n      \"id\": \"U19KH8EHJ:T03CWQ0QB\"\r\n    }\r\n  ],\r\n  \"activity\": {\r\n    \"type\": \"message\",\r\n    \"from\": {\r\n      \"id\": \"B21UTEF8S:T03CWQ0QB\"\r\n    },\r\n    \"recipient\": {\r\n      \"id\": \"U19KH8EHJ:T03CWQ0QB\"\r\n    },\r\n    \"membersAdded\": [],\r\n    \"membersRemoved\": [],\r\n    \"reactionsAdded\": [],\r\n    \"reactionsRemoved\": [],\r\n    \"text\": \"TEST Send to Conversation\",\r\n    \"attachments\": [],\r\n    \"entities\": [],\r\n    \"name\": \"acticity\"\r\n  }\r\n}",
+      "RequestHeaders": {
+        "Content-Type": [
+          "application/json; charset=utf-8"
+        ],
+        "Content-Length": [
+          "512"
+        ],
+        "User-Agent": [
+          "FxVersion/4.7.2600.0",
+          "OSName/Windows10Enterprise",
+          "OSVersion/6.3.16299",
+          "Microsoft.Bot.Connector.ConnectorClient/0.0.0.0",
+          "Microsoft-BotFramework/4.0",
+          "(BotBuilder .Net/0.0.0.0)"
+        ]
+      },
+      "ResponseBody": "{\r\n  \"activityId\": \"1516641079.000548\",\r\n  \"id\": \"B21UTEF8S:T03CWQ0QB:D2369CT7C\"\r\n}",
+      "ResponseHeaders": {
+        "Content-Length": [
+          "83"
+        ],
+        "Content-Type": [
+          "application/json; charset=utf-8"
+        ],
+        "Expires": [
+          "-1"
+        ],
+        "Pragma": [
+          "no-cache"
+        ],
+        "Request-Context": [
+          "appId=cid-v1:6814484e-c0d5-40ea-9dba-74ff29ca4f62"
+        ],
+        "Strict-Transport-Security": [
+          "max-age=31536000"
+        ],
+        "Cache-Control": [
+          "no-cache"
+        ],
+        "Date": [
+          "Mon, 22 Jan 2018 17:11:19 GMT"
+        ],
+        "Server": [
+          "Microsoft-IIS/10.0"
+        ],
+        "X-Powered-By": [
+          "ASP.NET"
+        ]
+      },
+      "StatusCode": 200
+    },
+    {
+      "RequestUri": "/v3/conversations/B21UTEF8S:T03CWQ0QB:D2369CT7C/activities",
+      "EncodedRequestUri": "L3YzL2NvbnZlcnNhdGlvbnMvQjIxVVRFRjhTJTNBVDAzQ1dRMFFCJTNBRDIzNjlDVDdDL2FjdGl2aXRpZXM=",
+      "RequestMethod": "POST",
+      "RequestBody": "{\r\n  \"type\": \"message\",\r\n  \"from\": {\r\n    \"id\": \"B21UTEF8S:T03CWQ0QB\"\r\n  },\r\n  \"recipient\": {\r\n    \"id\": \"U19KH8EHJ:T03CWQ0QB\"\r\n  },\r\n  \"membersAdded\": [],\r\n  \"membersRemoved\": [],\r\n  \"reactionsAdded\": [],\r\n  \"reactionsRemoved\": [],\r\n  \"text\": \"TEST Send to Conversation\",\r\n  \"attachments\": [],\r\n  \"entities\": [],\r\n  \"name\": \"acticity\"\r\n}",
+      "RequestHeaders": {
+        "Content-Type": [
+          "application/json; charset=utf-8"
+        ],
+        "Content-Length": [
+          "338"
+        ],
+        "User-Agent": [
+          "FxVersion/4.7.2600.0",
+          "OSName/Windows10Enterprise",
+          "OSVersion/6.3.16299",
+          "Microsoft.Bot.Connector.ConnectorClient/0.0.0.0",
+          "Microsoft-BotFramework/4.0",
+          "(BotBuilder .Net/0.0.0.0)"
+        ]
+      },
+      "ResponseBody": "{\r\n  \"id\": \"1516641080.000236\"\r\n}",
+      "ResponseHeaders": {
+        "Content-Length": [
+          "33"
+        ],
+        "Content-Type": [
+          "application/json; charset=utf-8"
+        ],
+        "Expires": [
+          "-1"
+        ],
+        "Pragma": [
+          "no-cache"
+        ],
+        "Request-Context": [
+          "appId=cid-v1:6814484e-c0d5-40ea-9dba-74ff29ca4f62"
+        ],
+        "Strict-Transport-Security": [
+          "max-age=31536000"
+        ],
+        "Cache-Control": [
+          "no-cache"
+        ],
+        "Date": [
+          "Mon, 22 Jan 2018 17:11:19 GMT"
+        ],
+        "Server": [
+          "Microsoft-IIS/10.0"
+        ],
+        "X-Powered-By": [
+          "ASP.NET"
+        ]
+      },
+      "StatusCode": 200
+    }
+  ],
+  "Names": {},
+  "Variables": {}
+}
