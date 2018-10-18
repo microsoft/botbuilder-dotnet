@@ -15,6 +15,7 @@ using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Rest.TransientFaultHandling;
 using Newtonsoft.Json;
 
@@ -82,7 +83,7 @@ namespace Microsoft.Bot.Builder
             _channelProvider = channelProvider;
             _httpClient = customHttpClient ?? DefaultHttpClient;
             _connectorClientRetryPolicy = connectorClientRetryPolicy;
-            _logger = logger;
+            _logger = logger ?? NullLogger<BotFrameworkAdapter>.Instance;
 
             if (middleware != null)
             {
@@ -134,7 +135,7 @@ namespace Microsoft.Bot.Builder
                 throw new ArgumentNullException(nameof(callback));
             }
 
-            _logger?.LogInformation($"Sending proactive message.  botAppId: {botAppId}");
+            _logger.LogInformation($"Sending proactive message.  botAppId: {botAppId}");
 
             using (var context = new TurnContext(this, reference.GetContinuationActivity()))
             {
@@ -213,7 +214,7 @@ namespace Microsoft.Bot.Builder
         {
             BotAssert.ActivityNotNull(activity);
 
-            _logger?.LogInformation($"Received an incoming activity.  ActivityId: {activity.Id}");
+            _logger.LogInformation($"Received an incoming activity.  ActivityId: {activity.Id}");
 
             using (var context = new TurnContext(this, activity))
             {
@@ -286,7 +287,7 @@ namespace Microsoft.Bot.Builder
                 var activity = activities[index];
                 var response = default(ResourceResponse);
 
-                _logger?.LogInformation($"Sending activity.  ReplyToId: {activity.ReplyToId}");
+                _logger.LogInformation($"Sending activity.  ReplyToId: {activity.ReplyToId}");
 
                 if (activity.Type == ActivityTypesEx.Delay)
                 {
