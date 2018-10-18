@@ -3,6 +3,10 @@
 
 namespace Connector.Tests
 {
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading;
+    using System.Threading.Tasks;
     using Microsoft.Bot.Connector;
     using Microsoft.Bot.Schema;
     using Microsoft.Rest;
@@ -19,7 +23,7 @@ namespace Connector.Tests
         }
 
         [Fact]
-        public void CreateConversation()
+        public async Task CreateConversation()
         {
             var activity = new Activity()
             {
@@ -36,7 +40,7 @@ namespace Connector.Tests
                 Activity = activity
             };
 
-            UseClientFor(async client =>
+            await UseClientFor(async client =>
             {
                 var result = await client.Conversations.CreateConversationAsync(param);
                 Assert.NotNull(result.ActivityId);
@@ -44,7 +48,11 @@ namespace Connector.Tests
         }
 
         [Fact]
-        public void CreateConversationWithInvalidBot()
+        public async Task CreateConversation_WithTracing()
+            => await AssertTracingFor(CreateConversation, nameof(ConversationsExtensions.CreateConversationAsync));
+
+        [Fact]
+        public async Task CreateConversationWithInvalidBot()
         {
             var activity = new Activity()
             {
@@ -61,7 +69,7 @@ namespace Connector.Tests
                 Activity = activity
             };
 
-            UseClientFor(async client =>
+            await UseClientFor(async client =>
             {
                 var ex = await Assert.ThrowsAsync<ErrorResponseException>(() => client.Conversations.CreateConversationAsync(param));
                 Assert.Equal("ServiceError", ex.Body.Error.Code);
@@ -70,7 +78,11 @@ namespace Connector.Tests
         }
 
         [Fact]
-        public void CreateConversationWithoutMembers()
+        public async Task CreateConversationWithInvalidBot_WithTracing()
+            => await AssertTracingFor(CreateConversationWithInvalidBot, nameof(ConversationsExtensions.CreateConversationAsync), isSuccesful: false);
+
+        [Fact]
+        public async Task CreateConversationWithoutMembers()
         {
             var activity = new Activity()
             {
@@ -87,7 +99,7 @@ namespace Connector.Tests
                 Activity = activity
             };
 
-            UseClientFor(async client =>
+            await UseClientFor(async client =>
             {
                 var ex = await Assert.ThrowsAsync<ErrorResponseException>(() => client.Conversations.CreateConversationAsync(param));
                 Assert.Equal("BadArgument", ex.Body.Error.Code);
@@ -96,7 +108,11 @@ namespace Connector.Tests
         }
 
         [Fact]
-        public void CreateConversationWithBotMember()
+        public async Task CreateConversationWithoutMembers_WithTracing()
+            => await AssertTracingFor(CreateConversationWithoutMembers, nameof(ConversationsExtensions.CreateConversationAsync), isSuccesful: false);
+
+        [Fact]
+        public async Task CreateConversationWithBotMember()
         {
             var activity = new Activity()
             {
@@ -113,7 +129,7 @@ namespace Connector.Tests
                 Activity = activity
             };
 
-            UseClientFor(async client =>
+            await UseClientFor(async client =>
             {
                 var ex = await Assert.ThrowsAsync<ErrorResponseException>(() => client.Conversations.CreateConversationAsync(param));
                 Assert.Equal("BadArgument", ex.Body.Error.Code);
@@ -121,9 +137,13 @@ namespace Connector.Tests
         }
 
         [Fact]
-        public void CreateConversationWithNullParameter()
+        public async Task CreateConversationWithBotMember_WithTracing()
+            => await AssertTracingFor(CreateConversationWithBotMember, nameof(ConversationsExtensions.CreateConversationAsync), isSuccesful: false);
+
+        [Fact]
+        public async Task CreateConversationWithNullParameter()
         {
-            UseClientFor(async client =>
+            await UseClientFor(async client =>
             {
                 var ex = await Assert.ThrowsAsync<ValidationException>(() => client.Conversations.CreateConversationAsync(null));
                 Assert.Contains("cannot be null", ex.Message);
@@ -131,7 +151,39 @@ namespace Connector.Tests
         }
 
         [Fact]
-        public void GetConversationMembers()
+        public async Task CreateConversationWithCustomHeader()
+        {
+            var activity = new Activity()
+            {
+                Type = ActivityTypes.Message,
+                Recipient = User,
+                From = Bot,
+                Text = "TEST Create Conversation"
+            };
+
+            var param = new ConversationParameters()
+            {
+                Members = new ChannelAccount[] { User },
+                Bot = Bot,
+                Activity = activity
+            };
+
+            var customHeaders = new Dictionary<string, List<string>>() { { "customHeader", new List<string>() { "customValue" } } };
+
+            await AssertTracingFor(async () =>
+                await UseClientFor(async client =>
+                {
+                    var result = await client.Conversations.CreateConversationWithHttpMessagesAsync(param, customHeaders, default(CancellationToken));
+                    Assert.NotNull(result.Body);
+                    Assert.NotNull(result.Body.ActivityId);
+                }),
+            nameof(ConversationsExtensions.CreateConversationAsync),
+            assertHttpRequestMessage:
+                (h) => h.Headers.Contains("customHeader") && h.Headers.GetValues("customHeader").Contains("customValue"));
+        }
+
+        [Fact]
+        public async Task GetConversationMembers()
         {
             var createMessage = new ConversationParameters()
             {
@@ -139,7 +191,7 @@ namespace Connector.Tests
                 Bot = Bot
             };
 
-            UseClientFor(async client =>
+            await UseClientFor(async client =>
             {
                 var conversation = await client.Conversations.CreateConversationAsync(createMessage);
                 var members = await client.Conversations.GetConversationMembersAsync(conversation.Id);
@@ -157,7 +209,11 @@ namespace Connector.Tests
         }
 
         [Fact]
-        public void GetConversationMembersWithInvalidConversationId()
+        public async Task GetConversationMembers_WithTracing()
+            => await AssertTracingFor(GetConversationMembers, nameof(ConversationsExtensions.GetConversationMembersAsync));
+
+        [Fact]
+        public async Task GetConversationMembersWithInvalidConversationId()
         {
 
             var createMessage = new ConversationParameters()
@@ -166,7 +222,7 @@ namespace Connector.Tests
                 Bot = Bot
             };
 
-            UseClientFor(async client =>
+            await UseClientFor(async client =>
             {
                 var conversation = await client.Conversations.CreateConversationAsync(createMessage);
                 var ex = await Assert.ThrowsAsync<ErrorResponseException>(() => client.Conversations.GetConversationMembersAsync(string.Concat(conversation.Id, "M")));
@@ -176,10 +232,14 @@ namespace Connector.Tests
         }
 
         [Fact]
-        public void GetConversationMembersWithNullConversationId()
+        public async Task GetConversationMembersWithInvalidConversationId_WithTracing()
+            => await AssertTracingFor(GetConversationMembersWithInvalidConversationId, nameof(ConversationsExtensions.GetConversationMembersAsync), isSuccesful: false);
+
+        [Fact]
+        public async Task GetConversationMembersWithNullConversationId()
         {
 
-            UseClientFor(async client =>
+            await UseClientFor(async client =>
             {
                 var ex = await Assert.ThrowsAsync<ValidationException>(() => client.Conversations.GetConversationMembersAsync(null));
                 Assert.Contains("cannot be null", ex.Message);
@@ -187,7 +247,154 @@ namespace Connector.Tests
         }
 
         [Fact]
-        public void SendToConversation()
+        public async Task GetConversationMembersWithCustomHeader()
+        {
+            var createMessage = new ConversationParameters()
+            {
+                Members = new ChannelAccount[] { User },
+                Bot = Bot
+            };
+
+            var customHeaders = new Dictionary<string, List<string>>() { { "customHeader", new List<string>() { "customValue" } } };
+
+            await AssertTracingFor(
+                async () =>
+                    await UseClientFor(async client =>
+                                {
+                                    var conversation = await client.Conversations.CreateConversationAsync(createMessage);
+                                    var members = await client.Conversations.GetConversationMembersWithHttpMessagesAsync(conversation.Id, customHeaders, default(CancellationToken));
+
+                                    var hasUser = false;
+
+                                    foreach (var member in members.Body)
+                                    {
+                                        hasUser = member.Id == User.Id;
+                                        if (hasUser) break;
+                                    }
+
+                                    Assert.True(hasUser);
+                                }),
+                nameof(ConversationsExtensions.GetConversationMembersAsync),
+                assertHttpRequestMessage:
+                    (h) => h.Headers.Contains("customHeader") && h.Headers.GetValues("customHeader").Contains("customValue"));
+        }
+
+        [Fact]
+        public async Task GetConversationPagedMembers()
+        {
+            var createMessage = new ConversationParameters()
+            {
+                Members = new ChannelAccount[] { User },
+                Bot = Bot
+            };
+
+            await UseClientFor(async client =>
+            {
+                var conversation = await client.Conversations.CreateConversationAsync(createMessage);
+                var membersResult = await client.Conversations.GetConversationPagedMembersAsync(conversation.Id);
+
+                var hasUser = false;
+
+                foreach (var member in membersResult.Members)
+                {
+                    hasUser = member.Id == User.Id;
+                    if (hasUser) break;
+                }
+
+                Assert.True(hasUser);
+            });
+        }
+
+        [Fact]
+        public async Task GetConversationPagedMembers_WithTracing()
+            => await AssertTracingFor(GetConversationPagedMembers, nameof(ConversationsExtensions.GetConversationPagedMembersAsync));
+
+        [Fact]
+        public async Task GetConversationPagedMembersWithInvalidConversationId()
+        {
+            var createMessage = new ConversationParameters()
+            {
+                Members = new ChannelAccount[] { User },
+                Bot = Bot
+            };
+
+            await UseClientFor(async client =>
+            {
+                var conversation = await client.Conversations.CreateConversationAsync(createMessage);
+                var ex = await Assert.ThrowsAsync<HttpOperationException>(() => client.Conversations.GetConversationPagedMembersAsync(string.Concat(conversation.Id, "M")));
+                Assert.Equal(System.Net.HttpStatusCode.BadRequest, ex.Response.StatusCode);
+            });
+        }
+
+        [Fact]
+        public async Task GetConversationPagedMembersWithInvalidConversationId_WithTracing()
+            => await AssertTracingFor(GetConversationPagedMembersWithInvalidConversationId, nameof(ConversationsExtensions.GetConversationPagedMembersAsync), isSuccesful: false);
+
+        [Fact]
+        public async Task GetConversationPagedMembersWithPageSize()
+        {
+            var createMessage = new ConversationParameters()
+            {
+                Members = new ChannelAccount[] { User },
+                Bot = Bot
+            };
+
+            await UseClientFor(async client =>
+            {
+                var conversation = await client.Conversations.CreateConversationAsync(createMessage);
+                var membersResult = await client.Conversations.GetConversationPagedMembersAsync(conversation.Id, pageSize: 10);
+
+                var hasUser = false;
+
+                foreach (var member in membersResult.Members)
+                {
+                    hasUser = member.Id == User.Id;
+                    if (hasUser) break;
+                }
+
+                Assert.True(hasUser);
+            });
+        }
+
+        [Fact]
+        public async Task GetConversationPagedMembersWithPageSize_WithTracing()
+            => await AssertTracingFor(GetConversationPagedMembersWithPageSize, nameof(ConversationsExtensions.GetConversationPagedMembersAsync));
+
+        [Fact]
+        public async Task GetConversationPagedMembersWithCustomHeaders()
+        {
+            var createMessage = new ConversationParameters()
+            {
+                Members = new ChannelAccount[] { User },
+                Bot = Bot
+            };
+
+            var customHeaders = new Dictionary<string, List<string>>() { { "customHeader", new List<string>() { "customValue" } } };
+
+            await AssertTracingFor(async () =>
+                await UseClientFor(async client =>
+                {
+                    var conversation = await client.Conversations.CreateConversationAsync(createMessage);
+                    var members = await client.Conversations.GetConversationPagedMembersWithHttpMessagesAsync(
+                        conversation.Id, customHeaders: customHeaders, cancellationToken: default(CancellationToken));
+
+                    var hasUser = false;
+
+                    foreach (var member in members.Body.Members)
+                    {
+                        hasUser = member.Id == User.Id;
+                        if (hasUser) break;
+                    }
+
+                    Assert.True(hasUser);
+                }),
+                nameof(ConversationsExtensions.GetConversationPagedMembersAsync),
+                assertHttpRequestMessage:
+                    (h) => h.Headers.Contains("customHeader") && h.Headers.GetValues("customHeader").Contains("customValue"));
+        }
+
+        [Fact]
+        public async Task SendToConversation()
         {
             var activity = new Activity()
             {
@@ -205,7 +412,7 @@ namespace Connector.Tests
                 Activity = activity
             };
 
-            UseClientFor(async client =>
+            await UseClientFor(async client =>
             {
                 var conversation = await client.Conversations.CreateConversationAsync(createMessage);
                 var response = await client.Conversations.SendToConversationAsync(conversation.Id, activity);
@@ -215,7 +422,11 @@ namespace Connector.Tests
         }
 
         [Fact]
-        public void SendToConversationWithInvalidConversationId()
+        public async Task SendToConversation_WithTracing()
+            => await AssertTracingFor(SendToConversation, nameof(ConversationsExtensions.SendToConversationAsync));
+
+        [Fact]
+        public async Task SendToConversationWithInvalidConversationId()
         {
 
             var activity = new Activity()
@@ -234,7 +445,7 @@ namespace Connector.Tests
                 Activity = activity
             };
 
-            UseClientFor(async client =>
+            await UseClientFor(async client =>
             {
                 var conversation = await client.Conversations.CreateConversationAsync(createMessage);
                 var ex = await Assert.ThrowsAsync<ErrorResponseException>(() => client.Conversations.SendToConversationAsync(conversationId: string.Concat(conversation.Id, "M"), activity: activity));
@@ -244,7 +455,11 @@ namespace Connector.Tests
         }
 
         [Fact]
-        public void SendToConversationWithInvalidBotId()
+        public async Task SendToConversationWithInvalidConversationId_WithTracing()
+            => await AssertTracingFor(SendToConversationWithInvalidConversationId, nameof(ConversationsExtensions.SendToConversationAsync), isSuccesful: false);
+
+        [Fact]
+        public async Task SendToConversationWithInvalidBotId()
         {
             var createMessage = new ConversationParameters()
             {
@@ -252,7 +467,7 @@ namespace Connector.Tests
                 Bot = Bot
             };
 
-            UseClientFor(async client =>
+            await UseClientFor(async client =>
             {
                 var conversation = await client.Conversations.CreateConversationAsync(createMessage);
                 var activity = new Activity()
@@ -270,7 +485,11 @@ namespace Connector.Tests
         }
 
         [Fact]
-        public void SendToConversationWithNullConversationId()
+        public async Task SendToConversationWithInvalidBotId_WithTracing()
+            => await AssertTracingFor(SendToConversationWithInvalidBotId, nameof(ConversationsExtensions.SendToConversationAsync), isSuccesful: false);
+
+        [Fact]
+        public async Task SendToConversationWithNullConversationId()
         {
             var activity = new Activity()
             {
@@ -288,7 +507,7 @@ namespace Connector.Tests
                 Activity = activity
             };
 
-            UseClientFor(async client =>
+            await UseClientFor(async client =>
             {
                 var ex = await Assert.ThrowsAsync<ValidationException>(() => client.Conversations.SendToConversationAsync(conversationId: null, activity: activity));
                 Assert.Contains("cannot be null", ex.Message);
@@ -296,7 +515,7 @@ namespace Connector.Tests
         }
 
         [Fact]
-        public void SendToConversationWithNullActivity()
+        public async Task SendToConversationWithNullActivity()
         {
             var createMessage = new ConversationParameters()
             {
@@ -304,7 +523,7 @@ namespace Connector.Tests
                 Bot = Bot
             };
 
-            UseClientFor(async client =>
+            await UseClientFor(async client =>
             {
                 var conversation = await client.Conversations.CreateConversationAsync(createMessage);
                 var ex = await Assert.ThrowsAsync<ValidationException>(() => client.Conversations.SendToConversationAsync(conversationId: conversation.Id, activity: null));
@@ -313,7 +532,7 @@ namespace Connector.Tests
         }
 
         [Fact]
-        public void SendCardToConversation()
+        public async Task SendCardToConversation()
         {
             var activity = new Activity()
             {
@@ -354,7 +573,7 @@ namespace Connector.Tests
                 Bot = Bot
             };
 
-            UseClientFor(async client =>
+            await UseClientFor(async client =>
             {
                 var conversation = await client.Conversations.CreateConversationAsync(createMessage);
                 var response = await client.Conversations.SendToConversationAsync(conversationId: conversation.Id, activity: activity);
@@ -363,7 +582,44 @@ namespace Connector.Tests
         }
 
         [Fact]
-        public void GetActivityMembers()
+        public async Task SendCardToConversation_WithTracing()
+            => await AssertTracingFor(SendCardToConversation, nameof(ConversationsExtensions.SendToConversationAsync));
+
+        [Fact]
+        public async Task SendToConversationWithCustomHeaders()
+        {
+            var activity = new Activity()
+            {
+                Type = ActivityTypes.Message,
+                Recipient = User,
+                From = Bot,
+                Name = "acticity",
+                Text = "TEST Send to Conversation"
+            };
+
+            var createMessage = new ConversationParameters()
+            {
+                Members = new ChannelAccount[] { User },
+                Bot = Bot,
+                Activity = activity
+            };
+
+            var customHeaders = new Dictionary<string, List<string>>() { { "customHeader", new List<string>() { "customValue" } } };
+
+            await AssertTracingFor(async () =>
+                await UseClientFor(async client =>
+                {
+                    var conversation = await client.Conversations.CreateConversationAsync(createMessage);
+                    var response = await client.Conversations.SendToConversationWithHttpMessagesAsync(conversation.Id, activity, customHeaders, default(CancellationToken));
+                    Assert.NotNull(response.Body.Id);
+                }),
+                nameof(ConversationsExtensions.SendToConversationAsync),
+                assertHttpRequestMessage:
+                    (h) => h.Headers.Contains("customHeader") && h.Headers.GetValues("customHeader").Contains("customValue"));
+        }
+
+        [Fact]
+        public async Task GetActivityMembers()
         {
             var activity = new Activity()
             {
@@ -380,7 +636,7 @@ namespace Connector.Tests
                 Activity = activity
             };
 
-            UseClientFor(async client =>
+            await UseClientFor(async client =>
             {
                 var conversation = await client.Conversations.CreateConversationAsync(createMessage);
                 var members = await client.Conversations.GetActivityMembersAsync(conversation.Id, conversation.ActivityId);
@@ -398,7 +654,11 @@ namespace Connector.Tests
         }
 
         [Fact]
-        public void GetActivityMembersWithInvalidConversationId()
+        public async Task GetActivityMembers_WithTracing()
+            => await AssertTracingFor(GetActivityMembers, nameof(ConversationsExtensions.GetActivityMembersAsync));
+
+        [Fact]
+        public async Task GetActivityMembersWithInvalidConversationId()
         {
             var activity = new Activity()
             {
@@ -415,7 +675,7 @@ namespace Connector.Tests
                 Activity = activity
             };
 
-            UseClientFor(async client =>
+            await UseClientFor(async client =>
             {
                 var conversation = await client.Conversations.CreateConversationAsync(createMessage);
                 var ex = await Assert.ThrowsAsync<ErrorResponseException>(() => client.Conversations.GetActivityMembersAsync(string.Concat(conversation.Id, "M"), conversation.ActivityId));
@@ -425,7 +685,11 @@ namespace Connector.Tests
         }
 
         [Fact]
-        public void GetActivityMembersWithNullConversationId()
+        public async Task GetActivityMembersWithInvalidConversationId_WithTracing()
+            => await AssertTracingFor(GetActivityMembersWithInvalidConversationId, nameof(ConversationsExtensions.GetActivityMembersAsync), isSuccesful: false);
+
+        [Fact]
+        public async Task GetActivityMembersWithNullConversationId()
         {
             var activity = new Activity()
             {
@@ -442,7 +706,7 @@ namespace Connector.Tests
                 Activity = activity
             };
 
-            UseClientFor(async client =>
+            await UseClientFor(async client =>
             {
                 var conversation = await client.Conversations.CreateConversationAsync(createMessage);
                 var ex = await Assert.ThrowsAsync<ValidationException>(() => client.Conversations.GetActivityMembersAsync(null, conversation.ActivityId));
@@ -451,7 +715,7 @@ namespace Connector.Tests
         }
 
         [Fact]
-        public void GetActivityMembersWithNullActivityId()
+        public async Task GetActivityMembersWithNullActivityId()
         {
             var activity = new Activity()
             {
@@ -468,7 +732,7 @@ namespace Connector.Tests
                 Activity = activity
             };
 
-            UseClientFor(async client =>
+            await UseClientFor(async client =>
             {
                 var conversation = await client.Conversations.CreateConversationAsync(createMessage);
                 var ex = await Assert.ThrowsAsync<ValidationException>(() => client.Conversations.GetActivityMembersAsync(conversation.Id, null));
@@ -477,7 +741,50 @@ namespace Connector.Tests
         }
 
         [Fact]
-        public void ReplyToActivity()
+        public async Task GetActivityMembersWithCustomHeaders()
+        {
+            var activity = new Activity()
+            {
+                Type = ActivityTypes.Message,
+                Recipient = User,
+                From = Bot,
+                Text = "TEST Get Activity Members"
+            };
+
+            var createMessage = new ConversationParameters()
+            {
+                Members = new ChannelAccount[] { User },
+                Bot = Bot,
+                Activity = activity
+            };
+
+            var customHeaders = new Dictionary<string, List<string>>() { { "customHeader", new List<string>() { "customValue" } } };
+
+            await AssertTracingFor(
+                async () =>
+                    await UseClientFor(async client =>
+                    {
+                        var conversation = await client.Conversations.CreateConversationAsync(createMessage);
+                        var members = await client.Conversations.GetActivityMembersWithHttpMessagesAsync(
+                            conversation.Id, conversation.ActivityId, customHeaders, default(CancellationToken));
+
+                        var hasUser = false;
+
+                        foreach (var member in members.Body)
+                        {
+                            hasUser = member.Id == User.Id;
+                            if (hasUser) break;
+                        }
+
+                        Assert.True(hasUser);
+                    }),
+                    nameof(ConversationsExtensions.GetActivityMembersAsync),
+                    assertHttpRequestMessage:
+                        (h) => h.Headers.Contains("customHeader") && h.Headers.GetValues("customHeader").Contains("customValue"));
+        }
+
+        [Fact]
+        public async Task ReplyToActivity()
         {
             var activity = new Activity()
             {
@@ -501,7 +808,7 @@ namespace Connector.Tests
                 Bot = Bot
             };
 
-            UseClientFor(async client =>
+            await UseClientFor(async client =>
             {
                 var conversation = await client.Conversations.CreateConversationAsync(createMessage);
                 var response = await client.Conversations.SendToConversationAsync(conversationId: conversation.Id, activity: activity);
@@ -512,7 +819,11 @@ namespace Connector.Tests
         }
 
         [Fact]
-        public void ReplyToActivityWithInvalidConversationId()
+        public async Task ReplyToActivity_WithTracing()
+            => await AssertTracingFor(ReplyToActivity, nameof(ConversationsExtensions.ReplyToActivityAsync));
+
+        [Fact]
+        public async Task ReplyToActivityWithInvalidConversationId()
         {
 
             var activity = new Activity()
@@ -537,7 +848,7 @@ namespace Connector.Tests
                 Bot = Bot
             };
 
-            UseClientFor(async client =>
+            await UseClientFor(async client =>
             {
                 var conversation = await client.Conversations.CreateConversationAsync(createMessage);
                 var response = await client.Conversations.SendToConversationAsync(conversationId: conversation.Id, activity: activity);
@@ -548,7 +859,11 @@ namespace Connector.Tests
         }
 
         [Fact]
-        public void ReplyToActivityWithNullConversationId()
+        public async Task ReplyToActivityWithInvalidConversationId_WithTracing()
+            => await AssertTracingFor(ReplyToActivityWithInvalidConversationId, nameof(ConversationsExtensions.ReplyToActivityAsync), isSuccesful: false);
+
+        [Fact]
+        public async Task ReplyToActivityWithNullConversationId()
         {
 
             var activity = new Activity()
@@ -573,7 +888,7 @@ namespace Connector.Tests
                 Bot = Bot
             };
 
-            UseClientFor(async client =>
+            await UseClientFor(async client =>
             {
                 var conversation = await client.Conversations.CreateConversationAsync(createMessage);
                 var response = await client.Conversations.SendToConversationAsync(conversationId: conversation.Id, activity: activity);
@@ -583,7 +898,7 @@ namespace Connector.Tests
         }
 
         [Fact]
-        public void ReplyToActivityWithNullActivityId()
+        public async Task ReplyToActivityWithNullActivityId()
         {
 
             var activity = new Activity()
@@ -608,7 +923,7 @@ namespace Connector.Tests
                 Bot = Bot
             };
 
-            UseClientFor(async client =>
+            await UseClientFor(async client =>
             {
                 var conversation = await client.Conversations.CreateConversationAsync(createMessage);
                 var response = await client.Conversations.SendToConversationAsync(conversationId: conversation.Id, activity: activity);
@@ -618,7 +933,7 @@ namespace Connector.Tests
         }
 
         [Fact]
-        public void ReplyToActivityWithNullReply()
+        public async Task ReplyToActivityWithNullReply()
         {
 
             var activity = new Activity()
@@ -635,7 +950,7 @@ namespace Connector.Tests
                 Bot = Bot
             };
 
-            UseClientFor(async client =>
+            await UseClientFor(async client =>
             {
                 var conversation = await client.Conversations.CreateConversationAsync(createMessage);
                 var response = await client.Conversations.SendToConversationAsync(conversationId: conversation.Id, activity: activity);
@@ -645,7 +960,49 @@ namespace Connector.Tests
         }
 
         [Fact]
-        public void DeleteActivity()
+        public async Task ReplyToActivityWithCustomHeaders()
+        {
+            var activity = new Activity()
+            {
+                Type = ActivityTypes.Message,
+                Recipient = User,
+                From = Bot,
+                Text = "TEST Activity gets a reply"
+            };
+
+            var reply = new Activity()
+            {
+                Type = ActivityTypes.Message,
+                Recipient = User,
+                From = Bot,
+                Text = "TEST Reply to Activity"
+            };
+
+            var createMessage = new ConversationParameters()
+            {
+                Members = new ChannelAccount[] { User },
+                Bot = Bot
+            };
+
+            var customHeaders = new Dictionary<string, List<string>>() { { "customHeader", new List<string>() { "customValue" } } };
+
+            await AssertTracingFor(async () =>
+                await UseClientFor(async client =>
+                {
+                    var conversation = await client.Conversations.CreateConversationAsync(createMessage);
+                    var response = await client.Conversations.SendToConversationAsync(conversationId: conversation.Id, activity: activity);
+                    var replyResponse = await client.Conversations.ReplyToActivityWithHttpMessagesAsync(
+                        conversation.Id, response.Id, reply, customHeaders, default(CancellationToken));
+
+                    Assert.NotNull(replyResponse.Body.Id);
+                }),
+                nameof(ConversationsExtensions.ReplyToActivityAsync),
+                assertHttpRequestMessage:
+                    (h) => h.Headers.Contains("customHeader") && h.Headers.GetValues("customHeader").Contains("customValue"));
+        }
+
+        [Fact]
+        public async Task DeleteActivity()
         {
             var activity = new Activity()
             {
@@ -662,7 +1019,7 @@ namespace Connector.Tests
                 Activity = activity
             };
 
-            UseClientFor(async client =>
+            await UseClientFor(async client =>
             {
                 var conversation = await client.Conversations.CreateConversationAsync(createMessage);
                 await client.Conversations.DeleteActivityAsync(conversation.Id, conversation.ActivityId);
@@ -671,7 +1028,11 @@ namespace Connector.Tests
         }
 
         [Fact]
-        public void DeleteActivityWithInvalidConversationId()
+        public async Task DeleteActivity_WithTracing()
+            => await AssertTracingFor(DeleteActivity, nameof(ConversationsExtensions.DeleteActivityAsync));
+
+        [Fact]
+        public async Task DeleteActivityWithInvalidConversationId()
         {
             var activity = new Activity()
             {
@@ -688,7 +1049,7 @@ namespace Connector.Tests
                 Activity = activity
             };
 
-            UseClientFor(async client =>
+            await UseClientFor(async client =>
             {
                 var conversation = await client.Conversations.CreateConversationAsync(createMessage);
                 var ex = await Assert.ThrowsAsync<ErrorResponseException>(() => client.Conversations.DeleteActivityAsync("B21S8SG7K:T03CWQ0QB", conversation.ActivityId));
@@ -698,7 +1059,11 @@ namespace Connector.Tests
         }
 
         [Fact]
-        public void DeleteActivityWithNullConversationId()
+        public async Task DeleteActivityWithInvalidConversationId_WithTracing()
+            => await AssertTracingFor(DeleteActivityWithInvalidConversationId, nameof(ConversationsExtensions.DeleteActivityAsync), isSuccesful: false);
+
+        [Fact]
+        public async Task DeleteActivityWithNullConversationId()
         {
             var activity = new Activity()
             {
@@ -715,7 +1080,7 @@ namespace Connector.Tests
                 Activity = activity
             };
 
-            UseClientFor(async client =>
+            await UseClientFor(async client =>
             {
                 var conversation = await client.Conversations.CreateConversationAsync(createMessage);
                 var ex = await Assert.ThrowsAsync<ValidationException>(() => client.Conversations.DeleteActivityAsync(null, conversation.ActivityId));
@@ -724,7 +1089,7 @@ namespace Connector.Tests
         }
 
         [Fact]
-        public void DeleteActivityWithNullActivityId()
+        public async Task DeleteActivityWithNullActivityId()
         {
             var activity = new Activity()
             {
@@ -741,7 +1106,7 @@ namespace Connector.Tests
                 Activity = activity
             };
 
-            UseClientFor(async client =>
+            await UseClientFor(async client =>
             {
                 var conversation = await client.Conversations.CreateConversationAsync(createMessage);
                 var ex = await Assert.ThrowsAsync<ValidationException>(() => client.Conversations.DeleteActivityAsync("B21S8SG7K:T03CWQ0QB", null));
@@ -750,7 +1115,41 @@ namespace Connector.Tests
         }
 
         [Fact]
-        public void UpdateActivity()
+        public async Task DeleteActivityWithCustomHeaders()
+        {
+            var activity = new Activity()
+            {
+                Type = ActivityTypes.Message,
+                Recipient = User,
+                From = Bot,
+                Text = "TEST Activity to be deleted"
+            };
+
+            var createMessage = new ConversationParameters()
+            {
+                Members = new ChannelAccount[] { User },
+                Bot = Bot,
+                Activity = activity
+            };
+
+            var customHeaders = new Dictionary<string, List<string>>() { { "customHeader", new List<string>() { "customValue" } } };
+
+            await AssertTracingFor(
+                async () =>
+                    await UseClientFor(async client =>
+                    {
+                        var conversation = await client.Conversations.CreateConversationAsync(createMessage);
+                        await client.Conversations.DeleteActivityWithHttpMessagesAsync(
+                            conversation.Id, conversation.ActivityId, customHeaders, default(CancellationToken));
+                        Assert.NotNull(conversation.ActivityId);
+                    }),
+                    nameof(ConversationsExtensions.DeleteActivityAsync),
+                    assertHttpRequestMessage:
+                        (h) => h.Headers.Contains("customHeader") && h.Headers.GetValues("customHeader").Contains("customValue"));
+        }
+
+        [Fact]
+        public async Task UpdateActivity()
         {
             var activity = new Activity()
             {
@@ -766,7 +1165,7 @@ namespace Connector.Tests
                 Bot = Bot
             };
 
-            UseClientFor(async client =>
+            await UseClientFor(async client =>
             {
                 var conversation = await client.Conversations.CreateConversationAsync(createMessage);
                 var response = await client.Conversations.SendToConversationAsync(conversationId: conversation.Id, activity: activity);
@@ -785,7 +1184,11 @@ namespace Connector.Tests
         }
 
         [Fact]
-        public void UpdateActivityWithInvalidConversationId()
+        public async Task UpdateActivity_WithTracing()
+            => await AssertTracingFor(UpdateActivity, nameof(ConversationsExtensions.UpdateActivity));
+
+        [Fact]
+        public async Task UpdateActivityWithInvalidConversationId()
         {
             var activity = new Activity()
             {
@@ -801,7 +1204,7 @@ namespace Connector.Tests
                 Bot = Bot
             };
 
-            UseClientFor(async client =>
+            await UseClientFor(async client =>
             {
                 var conversation = await client.Conversations.CreateConversationAsync(createMessage);
                 var response = await client.Conversations.SendToConversationAsync(conversationId: conversation.Id, activity: activity);
@@ -820,7 +1223,11 @@ namespace Connector.Tests
         }
 
         [Fact]
-        public void UpdateActivityWithNullConversationId()
+        public async Task UpdateActivityWithInvalidConversationId_WithTracing()
+            => await AssertTracingFor(UpdateActivityWithInvalidConversationId, nameof(ConversationsExtensions.UpdateActivity), isSuccesful: false);
+
+        [Fact]
+        public async Task UpdateActivityWithNullConversationId()
         {
             var activity = new Activity()
             {
@@ -836,7 +1243,7 @@ namespace Connector.Tests
                 Bot = Bot
             };
 
-            UseClientFor(async client =>
+            await UseClientFor(async client =>
             {
                 var conversation = await client.Conversations.CreateConversationAsync(createMessage);
                 var response = await client.Conversations.SendToConversationAsync(conversationId: conversation.Id, activity: activity);
@@ -854,7 +1261,7 @@ namespace Connector.Tests
         }
 
         [Fact]
-        public void UpdateActivityWithNullActivityId()
+        public async Task UpdateActivityWithNullActivityId()
         {
             var activity = new Activity()
             {
@@ -870,7 +1277,7 @@ namespace Connector.Tests
                 Bot = Bot
             };
 
-            UseClientFor(async client =>
+            await UseClientFor(async client =>
             {
                 var conversation = await client.Conversations.CreateConversationAsync(createMessage);
                 var response = await client.Conversations.SendToConversationAsync(conversationId: conversation.Id, activity: activity);
@@ -888,7 +1295,7 @@ namespace Connector.Tests
         }
 
         [Fact]
-        public void UpdateActivityWithNullActivity()
+        public async Task UpdateActivityWithNullActivity()
         {
             var activity = new Activity()
             {
@@ -904,7 +1311,7 @@ namespace Connector.Tests
                 Bot = Bot
             };
 
-            UseClientFor(async client =>
+            await UseClientFor(async client =>
             {
                 var conversation = await client.Conversations.CreateConversationAsync(createMessage);
                 var response = await client.Conversations.SendToConversationAsync(conversationId: conversation.Id, activity: activity);
@@ -912,6 +1319,45 @@ namespace Connector.Tests
                 Assert.Contains("cannot be null", ex.Message);
             });
         }
+        [Fact]
+        public async Task UpdateActivityWithCustomHeaders()
+        {
+            var activity = new Activity()
+            {
+                Type = ActivityTypes.Message,
+                Recipient = User,
+                From = Bot,
+                Text = "TEST Activity to be updated"
+            };
 
+            var createMessage = new ConversationParameters()
+            {
+                Members = new ChannelAccount[] { User },
+                Bot = Bot
+            };
+
+            var customHeaders = new Dictionary<string, List<string>>() { { "customHeader", new List<string>() { "customValue" } } };
+
+            await AssertTracingFor(async () =>
+                await UseClientFor(async client =>
+                {
+                    var conversation = await client.Conversations.CreateConversationAsync(createMessage);
+                    var response = await client.Conversations.SendToConversationAsync(conversationId: conversation.Id, activity: activity);
+                    var update = new Activity()
+                    {
+                        Id = response.Id,
+                        Type = ActivityTypes.Message,
+                        Recipient = User,
+                        From = Bot,
+                        Text = "TEST Successfully activity updated"
+                    };
+                    var updateResponse = await client.Conversations.UpdateActivityWithHttpMessagesAsync(
+                        conversation.Id, response.Id, update, customHeaders, default(CancellationToken));
+                    Assert.NotNull(updateResponse.Body.Id);
+                }),
+                nameof(ConversationsExtensions.UpdateActivity),
+                assertHttpRequestMessage:
+                    (h) => h.Headers.Contains("customHeader") && h.Headers.GetValues("customHeader").Contains("customValue"));
+        }
     }
 }
